@@ -1,0 +1,46 @@
+-CURL.
+-Render/JPEG6.
+-openGL.
+-idCmdSystem.ArgCompletion_Integer.
+-a class to house all the reinterpret casters.
+-camel case the variables.
+-remove idStr where possible.
+-exception handling.
+-grandfather inherited function calls (super.super.function(int bla);).
+-replace all == and != with equals() and !equals().
+-replace all 0== and null== with NOT.
+--jvm server/client mode????????
+--multi-threading!!!!!!
+-check whether exceptions should be thrown or handled!
+-override equals and hashcodes
+--KILL ALL THE MULTIDIMENSIONAL ARRAYS!!!
+-beware missing links in linked lists(a.next.next.next.NULL.next).
+-remove default constructors.
+-remove deprecated functions and their usages.
+-certain functions pass references by pointer for reuse within the same function, but no back reference to the initial function call.
+ double triple quadruple check this.
+--make sure the serializable objects have the same width in bytes, so an unsigned short should be 2 bytes and not a 4 btyte int.
+--add -XX:USESSE=4 to start up, also the graphics acceleration switch.
+-remove all unnecessary toString() calls.
+-finalize all classes that have no children.
+-convert all one line descriptions to javadoc one liners.
+-uppercase all constant(static final) variables.
+
+*maybe create a wrapper type class with array and index pointer?
+*make script that compresses single line javadocs to single liners, eg:
+        /**
+         * blabla
+         */
+         
+         becomes
+
+         /**blabla*/
+
+*do we really need stupid enums?
+ maybe group them in subclasses instead.
+    
+
+
+
+-at a certain point you start a massive campaign of TODO-inserts, which makes you feel a little fuzzy inside.
+-LAZY: take the idWinStr classes for example; normally we would create nice and cool encapsulation functions to hide all the stuff from the outside world. but we just go lazy and use the "data" subtype.
