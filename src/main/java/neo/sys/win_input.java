@@ -1135,8 +1135,7 @@ static char[] keyScanTable = s_scantokey;
     }
 
     public static char Sys_MapCharForKey(int key) {
-        throw new TODO_Exception();
-//	return (unsigned char)key;
+        return (char) (key & 0xFF);
     }
 
 }

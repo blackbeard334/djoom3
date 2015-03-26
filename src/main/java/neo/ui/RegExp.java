@@ -29,6 +29,7 @@ import neo.ui.Winvar.idWinBool;
 import neo.ui.Winvar.idWinFloat;
 import neo.ui.Winvar.idWinInt;
 import neo.ui.Winvar.idWinRectangle;
+import neo.ui.Winvar.idWinStr;
 import neo.ui.Winvar.idWinVar;
 import neo.ui.Winvar.idWinVec2;
 import neo.ui.Winvar.idWinVec3;
@@ -58,6 +59,7 @@ public class RegExp {
         public int     regCount;
         public /*unsigned*/ final short[] regs = new short[4];
         public idWinVar var;
+        public boolean DBG_D3_KEY = false;
         //
         //
 
@@ -273,6 +275,9 @@ public class RegExp {
                 if (type == idRegister.REGTYPE.STRING.ordinal()) {
                     idToken tok = new idToken();
                     if (src.ReadToken(tok)) {
+                        if("#str_07184".equals(tok.toString())){
+                            reg.DBG_D3_KEY = true;
+                        }
                         tok.oSet(common.GetLanguageDict().GetString(tok.toString()));
                         var.Init(tok.toString(), win);
                     }
@@ -318,12 +323,12 @@ public class RegExp {
                 regHash.Add(hash, regs.Append(reg));
             }
         }
-//
 
         public idRegister FindReg(final String name) {
             int hash = regHash.GenerateKey(name, false);
             for (int i = regHash.First(hash); i != -1; i = regHash.Next(i)) {
                 if (regs.oGet(i).name.Icmp(name) == 0) {
+//                    System.out.println(regs.oGet(i));
                     return regs.oGet(i);
                 }
             }

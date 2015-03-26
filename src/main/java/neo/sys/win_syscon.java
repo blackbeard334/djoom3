@@ -642,7 +642,7 @@ public class win_syscon {
      ** Sys_ConsoleInput
      */
     static String Sys_ConsoleInput() {
-        throw new TODO_Exception();
+        return null;
 //	
 //	if ( s_wcd.consoleText[0] == 0 ) {
 //		return NULL;

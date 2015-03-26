@@ -133,8 +133,10 @@ import neo.framework.Session.TakeViewNotes_f;
 import neo.framework.Session.idSession;
 import neo.framework.Session.logStats_t;
 import neo.framework.Session.msgBoxType_t;
+import static neo.framework.Session.msgBoxType_t.MSG_CDKEY;
 import static neo.framework.Session.msgBoxType_t.MSG_OK;
 import static neo.framework.Session.msgBoxType_t.MSG_OKCANCEL;
+import static neo.framework.Session.msgBoxType_t.MSG_PROMPT;
 import static neo.framework.Session.msgBoxType_t.MSG_WAIT;
 import static neo.framework.Session.msgBoxType_t.MSG_YESNO;
 import static neo.framework.Session.sessLocal;
@@ -1083,7 +1085,144 @@ public class Session_local {
 
         @Override
         public String MessageBox(msgBoxType_t type, String message, String title, boolean wait, String fire_yes, String fire_no, boolean network) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            common.DPrintf("MessageBox: %s - %s\n", "" + title, "" + message);
+
+            if (!BoxDialogSanityCheck()) {
+                return null;
+            }
+
+            guiMsg.SetStateString("title", "" + title);
+            guiMsg.SetStateString("message", "" + message);
+            if (type == MSG_WAIT) {
+                guiMsg.SetStateString("visible_msgbox", "0");
+                guiMsg.SetStateString("visible_waitbox", "1");
+            } else {
+                guiMsg.SetStateString("visible_msgbox", "1");
+                guiMsg.SetStateString("visible_waitbox", "0");
+            }
+
+            guiMsg.SetStateString("visible_entry", "0");
+            guiMsg.SetStateString("visible_cdkey", "0");
+            switch (type) {
+                case MSG_INFO:
+                    guiMsg.SetStateString("mid", "");
+                    guiMsg.SetStateString("visible_mid", "0");
+                    guiMsg.SetStateString("visible_left", "0");
+                    guiMsg.SetStateString("visible_right", "0");
+                    break;
+                case MSG_OK:
+                    guiMsg.SetStateString("mid", common.GetLanguageDict().GetString("#str_04339"));
+                    guiMsg.SetStateString("visible_mid", "1");
+                    guiMsg.SetStateString("visible_left", "0");
+                    guiMsg.SetStateString("visible_right", "0");
+                    break;
+                case MSG_ABORT:
+                    guiMsg.SetStateString("mid", common.GetLanguageDict().GetString("#str_04340"));
+                    guiMsg.SetStateString("visible_mid", "1");
+                    guiMsg.SetStateString("visible_left", "0");
+                    guiMsg.SetStateString("visible_right", "0");
+                    break;
+                case MSG_OKCANCEL:
+                    guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
+                    guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
+                    guiMsg.SetStateString("visible_mid", "0");
+                    guiMsg.SetStateString("visible_left", "1");
+                    guiMsg.SetStateString("visible_right", "1");
+                    break;
+                case MSG_YESNO:
+                    guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04341"));
+                    guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04342"));
+                    guiMsg.SetStateString("visible_mid", "0");
+                    guiMsg.SetStateString("visible_left", "1");
+                    guiMsg.SetStateString("visible_right", "1");
+                    break;
+                case MSG_PROMPT:
+                    guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
+                    guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
+                    guiMsg.SetStateString("visible_mid", "0");
+                    guiMsg.SetStateString("visible_left", "1");
+                    guiMsg.SetStateString("visible_right", "1");
+                    guiMsg.SetStateString("visible_entry", "1");
+                    guiMsg.HandleNamedEvent("Prompt");
+                    break;
+                case MSG_CDKEY:
+                    guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
+                    guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
+                    guiMsg.SetStateString("visible_msgbox", "0");
+                    guiMsg.SetStateString("visible_cdkey", "1");
+                    guiMsg.SetStateString("visible_hasxp", fileSystem.HasD3XP() ? "1" : "0");
+		    // the current cdkey / xpkey values may have bad/random data in them
+                    // it's best to avoid printing them completely, unless the key is good
+                    if (cdkey_state == CDKEY_OK) {
+                        guiMsg.SetStateString("str_cdkey", new String(cdkey));
+                        guiMsg.SetStateString("visible_cdchk", "0");
+                    } else {
+                        guiMsg.SetStateString("str_cdkey", "");
+                        guiMsg.SetStateString("visible_cdchk", "1");
+                    }
+                    guiMsg.SetStateString("str_cdchk", "");
+                    if (xpkey_state == CDKEY_OK) {
+                        guiMsg.SetStateString("str_xpkey", new String(xpkey));
+                        guiMsg.SetStateString("visible_xpchk", "0");
+                    } else {
+                        guiMsg.SetStateString("str_xpkey", "");
+                        guiMsg.SetStateString("visible_xpchk", "1");
+                    }
+                    guiMsg.SetStateString("str_xpchk", "");
+                    guiMsg.HandleNamedEvent("CDKey");
+                    break;
+                case MSG_WAIT:
+                    break;
+                default:
+                    common.Printf("idSessionLocal::MessageBox: unknown msg box type\n");
+            }
+            msgFireBack[0].oSet(fire_yes != null ? fire_yes : "");
+            msgFireBack[1].oSet(fire_no != null ? fire_no : "");
+            guiMsgRestore = guiActive;
+            guiActive = guiMsg;
+            guiMsg.SetCursor(325, 290);
+            guiActive.Activate(true, com_frameTime);
+            msgRunning = true;
+            msgRetIndex = -1;
+
+            if (wait) {
+                // play one frame ignoring events so we don't get confused by parasite button releases
+                msgIgnoreButtons = true;
+                common.GUIFrame(true, network);
+                msgIgnoreButtons = false;
+                while (msgRunning) {
+                    common.GUIFrame(true, network);
+                }
+                if (msgRetIndex < 0) {
+                    // MSG_WAIT and other StopBox calls
+                    return null;
+                }
+                if (type == MSG_PROMPT) {
+                    if (msgRetIndex == 0) {
+                        guiMsg.State().GetString("str_entry", "", msgFireBack[0]);
+                        return msgFireBack[0].toString();
+                    } else {
+                        return null;
+                    }
+                } else if (type == MSG_CDKEY) {
+                    if (msgRetIndex == 0) {
+                        // the visible_ values distinguish looking at a valid key, or editing it
+                        msgFireBack[0].oSet(String.format("%1s;%16s;%2s;%1s;%16s;%2s",
+                                guiMsg.State().GetString("visible_cdchk"),
+                                guiMsg.State().GetString("str_cdkey"),
+                                guiMsg.State().GetString("str_cdchk"),
+                                guiMsg.State().GetString("visible_xpchk"),
+                                guiMsg.State().GetString("str_xpkey"),
+                                guiMsg.State().GetString("str_xpchk")));
+                        return msgFireBack[0].toString();
+                    } else {
+                        return null;
+                    }
+                } else {
+                    return msgFireBack[msgRetIndex].toString();
+                }
+            }
+            return null;
         }
 
         @Override
@@ -4217,7 +4356,6 @@ public class Session_local {
             fileSystem.FindMapScreenshot(cvarSystem.GetCVarString("si_map"), screenshot, MAX_STRING_CHARS);
             guiMainMenu.SetStateString("current_levelshot", screenshot[0]);
         }
-//
 
         public void SetSaveGameGuiVars() {
             int i;
@@ -4348,8 +4486,6 @@ public class Session_local {
 
         public void SetPbMenuGuiVars() {
         }
-//	
-//
 
         private boolean BoxDialogSanityCheck() {
             if (!common.IsInitialized()) {

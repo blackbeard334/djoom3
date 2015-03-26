@@ -411,7 +411,11 @@ public class Window {
             gui = ui;
             CommonInit();
         }
-//	abstract ~idWindow();
+        
+        /** ~idWindow() */
+        public void close() {
+            CleanUp();
+        }
 
         public enum ON {
 
@@ -1044,7 +1048,7 @@ public class Window {
             matColor.oSet(new idVec4(1, 1, 1, 1));
             borderColor.Zero();
             background = null;
-            backGroundName.data.oSet("");
+            backGroundName.oSet(new idStr(""));
             focusedChild = null;
             captureChild = null;
             overChild = null;
@@ -1172,6 +1176,7 @@ public class Window {
                     }
                     src.ExpectTokenType(TT_NAME, 0, token);
                     token2 = token;
+                    System.out.printf(">>>>>>>>%s\n", token.toString());
                     src.UnreadToken(token);
                     drawWin_t dw = FindChildByName(token2.toString());
                     if (dw != null && dw.win != null) {
@@ -1190,7 +1195,7 @@ public class Window {
                             idSimpleWindow simple = new idSimpleWindow(win);
                             dwt.simp = simple;
                             drawWindows.Append(dwt);
-//					delete win;
+			    win.close();//delete win;
                             simpleCount++;
                         } else {
                             AddChild(win);

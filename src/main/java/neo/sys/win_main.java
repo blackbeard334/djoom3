@@ -829,7 +829,7 @@ public class win_main {//TODO: rename to plain "main" or something.
 //        Sys_PumpEvents();
 //
         // make sure mouse and joystick are only called once a frame
-        IN_Frame();
+//        IN_Frame();//TODO:do we need this function?
 
         // check for console commands
         s = Sys_ConsoleInput();

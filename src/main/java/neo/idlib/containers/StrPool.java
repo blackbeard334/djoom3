@@ -111,6 +111,7 @@ public class StrPool {
                 for (i = poolHash.First(hash); i != -1; i = poolHash.Next(i)) {
                     if (pool.oGet(i).Icmp(string) == 0) {
                         pool.oGet(i).numUsers++;
+//                        System.out.printf("AllocString, i = %d\n", i);
                         return pool.oGet(i);
                     }
                 }
