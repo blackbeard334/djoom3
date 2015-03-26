@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.djoom3</groupId>
     <artifactId>djoom3</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     
@@ -118,6 +118,24 @@
             <groupId>uk.com.robust-it</groupId>
             <artifactId>cloning</artifactId>
             <version>${cloning.version}</version>
-        </dependency>    
+        </dependency>
+        <dependency>
+            <groupId>org.gagravarr</groupId>
+            <artifactId>vorbis-java</artifactId>
+            <version>0.7</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.gagravarr</groupId>
+            <artifactId>vorbis-java-core</artifactId>
+            <version>0.7</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.gagravarr</groupId>
+            <artifactId>vorbis-java-parent</artifactId>
+            <version>0.7</version>
+            <type>pom</type>
+        </dependency>
     </dependencies>
 </project>
