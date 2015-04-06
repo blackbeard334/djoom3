@@ -171,7 +171,7 @@ public class sound {
         public idStr name;
         public idStr format;
         public int numChannels;
-        public int numSamplesPerSecond;
+        public long numSamplesPerSecond;
         public int num44kHzSamples;
         public int numBytes;
         public boolean looping;

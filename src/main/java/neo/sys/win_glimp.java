@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package neo.sys;
 
 import java.io.IOException;
@@ -97,7 +92,7 @@ public class win_glimp {
 //			return false;
 //		}
             if (devmode.getWidth() >= parms.width
-                    && (int) devmode.getHeight() >= parms.height
+                    && devmode.getHeight() >= parms.height
                     && devmode.getBitsPerPixel() == 32) {
 
                 matched = true;
@@ -127,8 +122,8 @@ public class win_glimp {
         // try setting the exact mode requested, because some drivers don't report
         // the low res modes in EnumDisplaySettings, but still work
         if (dm != null) {
-            Display.setDisplayModeAndFullscreen(dm);
-//            Display.setDisplayMode(dm);//TODO: change this back to setDisplayModeAndFullscreen.
+//            Display.setDisplayModeAndFullscreen(dm);
+            Display.setDisplayMode(dm);//TODO: change this back to setDisplayModeAndFullscreen.
             Display.setVSyncEnabled(true);
             Display.setTitle("BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!");
             if (Display.getDisplayMode().equals(dm)) {

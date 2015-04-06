@@ -1063,15 +1063,20 @@ public class Str {
         }
 
         public idStr StripFileExtension() {// remove any file extension
-            int i;
+            final int i;
 
-            for (i = len - 1; i >= 0; i--) {
-                if (data.charAt(i) == '.') {
-//			data[i] = '\0';
-                    len = i;
-                    data = data.substring(0, len - 1);
-                    break;
-                }
+//            for (i = len - 1; i >= 0; i--) {
+//                if (data.charAt(i) == '.') {
+////			data[i] = '\0';
+//                    len = i;
+//                    data = data.substring(0, len);
+//                    break;
+//                }
+//            }
+            i = data.lastIndexOf('.');
+            if (i > -1) {
+                len = i;
+                data = data.substring(0, len);
             }
             return this;
         }
@@ -1414,8 +1419,12 @@ public class Str {
             char[] s2Array = s2.toCharArray();
             int c1 = 0, c2 = 0, d;
 
-            if (s1.length() == 0) {//when s1 is empty.
-                return (INTSIGNBITNOTSET(-s2Array[c2]) << 1) - 1;
+            if (s1.isEmpty()) {//when s1 is empty.
+                if(s2.isEmpty()){
+                    return 0;
+                }          
+                d = 0 - s2Array[c2];
+                return (INTSIGNBITNOTSET(d) << 1) - 1;
             }
 
             do {
@@ -2603,7 +2612,7 @@ public class Str {
             alloced = STR_ALLOC_BASE;
 //	data = baseBuffer;
 //	data[ 0 ] = '\0';
-            data = "\0";
+            data = "";
 //#ifdef ID_DEBUG_UNINITIALIZED_MEMORY
 //	memset( baseBuffer, 0, sizeof( baseBuffer ) );
 //#endif

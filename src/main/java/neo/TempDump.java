@@ -368,6 +368,18 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         return atobb(ctos(ascii));
     }
 
+    public static ByteBuffer stobb(short[] arrau) {
+        ByteBuffer buffer;
+
+        if (NOT(arrau)) {
+            return null;
+        }
+        buffer = ByteBuffer.allocate(arrau.length * 2);
+        buffer.asShortBuffer().put(arrau);
+
+        return (ByteBuffer) buffer.flip();
+    }
+
     public static CharBuffer atocb(String ascii) {
 
         if (NOT(ascii)) {
@@ -558,7 +570,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      *
      */
     @Deprecated
-    public static interface SERiAL extends Serializable {
+    public static interface SERiAL extends Serializable {//TODO:remove Serializable
 
         public static final int SIZE = Integer.MIN_VALUE;
         public static final int SIZE_B = SIZE / Byte.SIZE;

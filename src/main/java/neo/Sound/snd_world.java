@@ -3,6 +3,7 @@ package neo.Sound;
 import static java.lang.Math.atan;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import neo.Renderer.Cinematic.idSndWindow;
 import neo.Renderer.Material.idMaterial;
@@ -11,11 +12,14 @@ import neo.Renderer.RenderWorld.exitPortal_t;
 import neo.Renderer.RenderWorld.idRenderWorld;
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_AIR;
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_VIEW;
+import neo.Sound.snd_cache.idSoundSample;
 import static neo.Sound.snd_emitter.REMOVE_STATUS_ALIVE;
 import static neo.Sound.snd_emitter.REMOVE_STATUS_SAMPLEFINISHED;
+import neo.Sound.snd_emitter.idSlowChannel;
 import neo.Sound.snd_emitter.idSoundChannel;
 import neo.Sound.snd_emitter.idSoundEmitterLocal;
 import neo.Sound.snd_emitter.idSoundFade;
+import static neo.Sound.snd_local.SND_EPSILON;
 import static neo.Sound.snd_local.SOUND_MAX_CHANNELS;
 import neo.Sound.snd_local.idSampleDecoder;
 import neo.Sound.snd_local.soundDemoCommand_t;
@@ -30,9 +34,14 @@ import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_STOP;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_UPDATE;
 import static neo.Sound.snd_shader.DOOM_TO_METERS;
 import static neo.Sound.snd_shader.SOUND_MAX_CLASSES;
+import static neo.Sound.snd_shader.SSF_ANTI_PRIVATE_SOUND;
 import static neo.Sound.snd_shader.SSF_GLOBAL;
 import static neo.Sound.snd_shader.SSF_LOOPING;
 import static neo.Sound.snd_shader.SSF_NO_FLICKER;
+import static neo.Sound.snd_shader.SSF_NO_OCCLUSION;
+import static neo.Sound.snd_shader.SSF_OMNIDIRECTIONAL;
+import static neo.Sound.snd_shader.SSF_PRIVATE_SOUND;
+import static neo.Sound.snd_shader.SSF_UNCLAMPED;
 import neo.Sound.snd_shader.idSoundShader;
 import neo.Sound.snd_shader.soundShaderParms_t;
 import neo.Sound.snd_system.idSoundSystemLocal;
@@ -46,6 +55,8 @@ import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
+import static neo.framework.BuildDefines.ID_OPENAL;
+import static neo.framework.BuildDefines.MACOS_X;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DemoFile.demoSystem_t.DS_SOUND;
@@ -64,15 +75,40 @@ import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
+import static neo.idlib.math.Simd.SIMDProcessor;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
+import static org.lwjgl.openal.AL10.AL_BUFFER;
+import static org.lwjgl.openal.AL10.AL_BUFFERS_PROCESSED;
+import static org.lwjgl.openal.AL10.AL_FALSE;
+import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
+import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
 import static org.lwjgl.openal.AL10.AL_GAIN;
+import static org.lwjgl.openal.AL10.AL_LOOPING;
+import static org.lwjgl.openal.AL10.AL_MAX_DISTANCE;
 import static org.lwjgl.openal.AL10.AL_ORIENTATION;
+import static org.lwjgl.openal.AL10.AL_PITCH;
 import static org.lwjgl.openal.AL10.AL_POSITION;
+import static org.lwjgl.openal.AL10.AL_REFERENCE_DISTANCE;
+import static org.lwjgl.openal.AL10.AL_SOURCE_RELATIVE;
+import static org.lwjgl.openal.AL10.AL_TRUE;
+import static org.lwjgl.openal.AL10.alBufferData;
+import static org.lwjgl.openal.AL10.alDeleteBuffers;
+import static org.lwjgl.openal.AL10.alGenBuffers;
+import static org.lwjgl.openal.AL10.alGetEnumValue;
+import static org.lwjgl.openal.AL10.alGetSourcei;
+import static org.lwjgl.openal.AL10.alIsSource;
 import static org.lwjgl.openal.AL10.alListener3f;
 import static org.lwjgl.openal.AL10.alListenerf;
+import static org.lwjgl.openal.AL10.alSource3f;
+import static org.lwjgl.openal.AL10.alSourcePlay;
+import static org.lwjgl.openal.AL10.alSourceQueueBuffers;
+import static org.lwjgl.openal.AL10.alSourceStop;
+import static org.lwjgl.openal.AL10.alSourceUnqueueBuffers;
+import static org.lwjgl.openal.AL10.alSourcef;
+import static org.lwjgl.openal.AL10.alSourcei;
 
 /**
  *
@@ -542,7 +578,7 @@ public class snd_world {
          this is called from the main thread
          ===============
          */
-        private static idRandom rnd;
+        private static final idRandom rnd  = new idRandom();
 
         @Override
         public void PlayShaderDirectly(final String shaderName, int channel /*= -1*/) {
@@ -1340,347 +1376,343 @@ public class snd_world {
          ===============
          */
         public void AddChannelContribution(idSoundEmitterLocal sound, idSoundChannel chan, int current44kHz, int numSpeakers, float[] finalMixBuffer) {
-            throw new TODO_Exception();
-//            int j;
-//            float volume;
-//
-//            //
-//            // get the sound definition and parameters from the entity
-//            //
-//            soundShaderParms_t parms = chan.parms;
-//
-//            // assume we have a sound triggered on this channel
-//            assert (chan.triggerState);
-//
-//            // fetch the actual wave file and see if it's valid
-//            idSoundSample sample = chan.leadinSample;
-//            if (sample == null) {
-//                return;
-//            }
-//
-//            // if you don't want to hear all the beeps from missing sounds
-//            if (sample.defaultSound && !idSoundSystemLocal.s_playDefaultSound.GetBool()) {
-//                return;
-//            }
-//
-//            // get the actual shader
-//            final idSoundShader shader = chan.soundShader;
-//
-//            // this might happen if the foreground thread just deleted the sound emitter
-//            if (null == shader) {
-//                return;
-//            }
-//
-//            float maxd = parms.maxDistance;
-//            float mind = parms.minDistance;
-//
-//            int mask = shader.speakerMask;
-//            boolean omni = (parms.soundShaderFlags & SSF_OMNIDIRECTIONAL) != 0;
-//            boolean looping = (parms.soundShaderFlags & SSF_LOOPING) != 0;
-//            boolean global = (parms.soundShaderFlags & SSF_GLOBAL) != 0;
-//            boolean noOcclusion = ((parms.soundShaderFlags & SSF_NO_OCCLUSION) != 0) || !idSoundSystemLocal.s_useOcclusion.GetBool();
-//
-//            // speed goes from 1 to 0.2
-//            if (idSoundSystemLocal.s_slowAttenuate.GetBool() && slowmoActive && !chan.disallowSlow) {
-//                maxd *= slowmoSpeed;
-//            }
-//
-//            // stereo samples are always omni
-//            if (sample.objectInfo.nChannels == 2) {
-//                omni = true;
-//            }
-//
-//            // if the sound is playing from the current listener, it will not be spatialized at all
-//            if (sound.listenerId == listenerPrivateId) {
-//                global = true;
-//            }
-//
-//            //
-//            // see if it's in range
-//            //
-//            // convert volumes from decibels to float scale
-//            // leadin volume scale for shattering lights
-//            // this isn't exactly correct, because the modified volume will get applied to
-//            // some initial chunk of the loop as well, because the volume is scaled for the
-//            // entire mix buffer
-//            if (shader.leadinVolume != 0 && current44kHz - chan.trigger44kHzTime < sample.LengthIn44kHzSamples()) {
-//                volume = soundSystemLocal.dB2Scale(shader.leadinVolume);
-//            } else {
-//                volume = soundSystemLocal.dB2Scale(parms.volume);
-//            }
-//
-//            // global volume scale
-//            volume *= soundSystemLocal.dB2Scale(idSoundSystemLocal.s_volume.GetFloat());
-//
-//            // volume fading
-//            float fadeDb = chan.channelFade.FadeDbAt44kHz(current44kHz);
-//            volume *= soundSystemLocal.dB2Scale(fadeDb);
-//
-//            fadeDb = soundClassFade[parms.soundClass].FadeDbAt44kHz(current44kHz);
-//            volume *= soundSystemLocal.dB2Scale(fadeDb);
-//
-//            //
-//            // if it's a global sound then
-//            // it's not affected by distance or occlusion
-//            //
-//            float spatialize = 1;
-//            idVec3 spatializedOriginInMeters = new idVec3();
-//            if (!global) {
-//                float dlen;
-//
-//                if (noOcclusion) {
-//                    // use the real origin and distance
-//                    spatializedOriginInMeters = sound.origin.oMultiply(DOOM_TO_METERS);
-//                    dlen = sound.realDistance;
-//                } else {
-//                    // use the possibly portal-occluded origin and distance
-//                    spatializedOriginInMeters = sound.spatializedOrigin.oMultiply(DOOM_TO_METERS);
-//                    dlen = sound.distance;
-//                }
-//
-//                // reduce volume based on distance
-//                if (dlen >= maxd) {
-//                    volume = 0.0f;
-//                } else if (dlen > mind) {
-//                    float frac = idMath.ClampFloat(0.0f, 1.0f, 1.0f - ((dlen - mind) / (maxd - mind)));
-//                    if (idSoundSystemLocal.s_quadraticFalloff.GetBool()) {
-//                        frac *= frac;
-//                    }
-//                    volume *= frac;
-//                } else if (mind > 0.0f) {
-//                    // we tweak the spatialization bias when you are inside the minDistance
-//                    spatialize = dlen / mind;
-//                }
-//            }
-//
-//            //
-//            // if it is a private sound, set the volume to zero
-//            // unless we match the listenerId
-//            //
-//            if ((parms.soundShaderFlags & SSF_PRIVATE_SOUND) != 0) {
-//                if (sound.listenerId != listenerPrivateId) {
-//                    volume = 0;
-//                }
-//            }
-//            if ((parms.soundShaderFlags & SSF_ANTI_PRIVATE_SOUND) != 0) {
-//                if (sound.listenerId == listenerPrivateId) {
-//                    volume = 0;
-//                }
-//            }
-//
-//            //
-//            // do we have anything to add?
-//            //
-//            if (volume < SND_EPSILON && chan.lastVolume < SND_EPSILON) {
-//                return;
-//            }
-//            chan.lastVolume = volume;
-//
-//            //
-//            // fetch the sound from the cache as 44kHz, 16 bit samples
-//            //
-//            int offset = current44kHz - chan.trigger44kHzTime;
-////            float[] inputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
-////            float[] alignedInputSamples = (float[]) ((((int) inputSamples) + 15) & ~15);
-//            float[] alignedInputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
-//
-//            //
-//            // allocate and initialize hardware source
-//            // 
-//            if (idSoundSystemLocal.useOpenAL && sound.removeStatus < REMOVE_STATUS_SAMPLEFINISHED) {
-//                if (!alIsSource(chan.openalSource)) {
-//                    chan.openalSource = soundSystemLocal.AllocOpenALSource(chan, !chan.leadinSample.hardwareBuffer || !chan.soundShader.entries[0].hardwareBuffer || looping, chan.leadinSample.objectInfo.nChannels == 2);
-//                }
-//
-//                if (alIsSource(chan.openalSource)) {
-//
-//                    // stop source if needed..
-//                    if (chan.triggered) {
-//                        alSourceStop(chan.openalSource);
-//                    }
-//
-//                    // update source parameters
-//                    if (global || omni) {
-//                        alSourcei(chan.openalSource, AL_SOURCE_RELATIVE, AL_TRUE);
-//                        alSource3f(chan.openalSource, AL_POSITION, 0.0f, 0.0f, 0.0f);
-//                        alSourcef(chan.openalSource, AL_GAIN, (volume) < (1.0f) ? (volume) : (1.0f));
-//                    } else {
-//                        alSourcei(chan.openalSource, AL_SOURCE_RELATIVE, AL_FALSE);
-//                        alSource3f(chan.openalSource, AL_POSITION, -spatializedOriginInMeters.y, spatializedOriginInMeters.z, -spatializedOriginInMeters.x);
-//                        alSourcef(chan.openalSource, AL_GAIN, (volume) < (1.0f) ? (volume) : (1.0f));
-//                    }
-//                    alSourcei(chan.openalSource, AL_LOOPING, (looping && chan.soundShader.entries[0].hardwareBuffer) ? AL_TRUE : AL_FALSE);
-//                    if (!MACOS_X) {
-//                        alSourcef(chan.openalSource, AL_REFERENCE_DISTANCE, mind);
-//                        alSourcef(chan.openalSource, AL_MAX_DISTANCE, maxd);
-//                    }
-//                    alSourcef(chan.openalSource, AL_PITCH, (slowmoActive && !chan.disallowSlow) ? (slowmoSpeed) : (1.0f));
-//                    if (ID_OPENAL) {
-//                        long lOcclusion = (enviroSuitActive ? -1150 : 0);
+            int j;
+            float volume;
+
+            //
+            // get the sound definition and parameters from the entity
+            //
+            soundShaderParms_t parms = chan.parms;
+
+            // assume we have a sound triggered on this channel
+            assert (chan.triggerState);
+
+            // fetch the actual wave file and see if it's valid
+            idSoundSample sample = chan.leadinSample;
+            if (sample == null) {
+                return;
+            }
+
+            // if you don't want to hear all the beeps from missing sounds
+            if (sample.defaultSound && !idSoundSystemLocal.s_playDefaultSound.GetBool()) {
+                return;
+            }
+
+            // get the actual shader
+            final idSoundShader shader = chan.soundShader;
+
+            // this might happen if the foreground thread just deleted the sound emitter
+            if (null == shader) {
+                return;
+            }
+
+            float maxD = parms.maxDistance;
+            float minD = parms.minDistance;
+
+            int mask = shader.speakerMask;
+            boolean omni = (parms.soundShaderFlags & SSF_OMNIDIRECTIONAL) != 0;
+            boolean looping = (parms.soundShaderFlags & SSF_LOOPING) != 0;
+            boolean global = (parms.soundShaderFlags & SSF_GLOBAL) != 0;
+            boolean noOcclusion = ((parms.soundShaderFlags & SSF_NO_OCCLUSION) != 0) || !idSoundSystemLocal.s_useOcclusion.GetBool();
+
+            // speed goes from 1 to 0.2
+            if (idSoundSystemLocal.s_slowAttenuate.GetBool() && slowmoActive && !chan.disallowSlow) {
+                maxD *= slowmoSpeed;
+            }
+
+            // stereo samples are always omni
+            if (sample.objectInfo.nChannels == 2) {
+                omni = true;
+            }
+
+            // if the sound is playing from the current listener, it will not be spatialized at all
+            if (sound.listenerId == listenerPrivateId) {
+                global = true;
+            }
+
+            //
+            // see if it's in range
+            //
+            // convert volumes from decibels to float scale
+            // leadin volume scale for shattering lights
+            // this isn't exactly correct, because the modified volume will get applied to
+            // some initial chunk of the loop as well, because the volume is scaled for the
+            // entire mix buffer
+            if (shader.leadinVolume != 0 && current44kHz - chan.trigger44kHzTime < sample.LengthIn44kHzSamples()) {
+                volume = soundSystemLocal.dB2Scale(shader.leadinVolume);
+            } else {
+                volume = soundSystemLocal.dB2Scale(parms.volume);
+            }
+
+            // global volume scale
+            volume *= soundSystemLocal.dB2Scale(idSoundSystemLocal.s_volume.GetFloat());
+
+            // volume fading
+            float fadeDb = chan.channelFade.FadeDbAt44kHz(current44kHz);
+            volume *= soundSystemLocal.dB2Scale(fadeDb);
+
+            fadeDb = soundClassFade[parms.soundClass].FadeDbAt44kHz(current44kHz);
+            volume *= soundSystemLocal.dB2Scale(fadeDb);
+
+            //
+            // if it's a global sound then
+            // it's not affected by distance or occlusion
+            //
+            float spatialize = 1;
+            idVec3 spatializedOriginInMeters = new idVec3();
+            if (!global) {
+                float dlen;
+
+                if (noOcclusion) {
+                    // use the real origin and distance
+                    spatializedOriginInMeters = sound.origin.oMultiply(DOOM_TO_METERS);
+                    dlen = sound.realDistance;
+                } else {
+                    // use the possibly portal-occluded origin and distance
+                    spatializedOriginInMeters = sound.spatializedOrigin.oMultiply(DOOM_TO_METERS);
+                    dlen = sound.distance;
+                }
+
+                // reduce volume based on distance
+                if (dlen >= maxD) {
+                    volume = 0.0f;
+                } else if (dlen > minD) {
+                    float frac = idMath.ClampFloat(0.0f, 1.0f, 1.0f - ((dlen - minD) / (maxD - minD)));
+                    if (idSoundSystemLocal.s_quadraticFalloff.GetBool()) {
+                        frac *= frac;
+                    }
+                    volume *= frac;
+                } else if (minD > 0.0f) {
+                    // we tweak the spatialization bias when you are inside the minDistance
+                    spatialize = dlen / minD;
+                }
+            }
+
+            //
+            // if it is a private sound, set the volume to zero
+            // unless we match the listenerId
+            //
+            if ((parms.soundShaderFlags & SSF_PRIVATE_SOUND) != 0) {
+                if (sound.listenerId != listenerPrivateId) {
+                    volume = 0;
+                }
+            }
+            if ((parms.soundShaderFlags & SSF_ANTI_PRIVATE_SOUND) != 0) {
+                if (sound.listenerId == listenerPrivateId) {
+                    volume = 0;
+                }
+            }
+
+            //
+            // do we have anything to add?
+            //
+            if (volume < SND_EPSILON && chan.lastVolume < SND_EPSILON) {
+                return;
+            }
+            chan.lastVolume = volume;
+
+            //
+            // fetch the sound from the cache as 44kHz, 16 bit samples
+            //
+            int offset = current44kHz - chan.trigger44kHzTime;
+//            float[] inputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
+//            float[] alignedInputSamples = (float[]) ((((int) inputSamples) + 15) & ~15);
+            float[] alignedInputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
+
+            //
+            // allocate and initialize hardware source
+            // 
+            if (idSoundSystemLocal.useOpenAL && sound.removeStatus < REMOVE_STATUS_SAMPLEFINISHED) {
+                if (!alIsSource(chan.openalSource)) {
+                    chan.openalSource = soundSystemLocal.AllocOpenALSource(chan, !chan.leadinSample.hardwareBuffer || !chan.soundShader.entries[0].hardwareBuffer || looping, chan.leadinSample.objectInfo.nChannels == 2);
+                }
+
+                if (alIsSource(chan.openalSource)) {
+
+                    // stop source if needed..
+                    if (chan.triggered) {
+                        alSourceStop(chan.openalSource);
+                    }
+
+                    // update source parameters
+                    if (global || omni) {
+                        alSourcei(chan.openalSource, AL_SOURCE_RELATIVE, AL_TRUE);
+                        alSource3f(chan.openalSource, AL_POSITION, 0.0f, 0.0f, 0.0f);
+                        alSourcef(chan.openalSource, AL_GAIN, (volume) < (1.0f) ? (volume) : (1.0f));
+                    } else {
+                        alSourcei(chan.openalSource, AL_SOURCE_RELATIVE, AL_FALSE);
+                        alSource3f(chan.openalSource, AL_POSITION, -spatializedOriginInMeters.y, spatializedOriginInMeters.z, -spatializedOriginInMeters.x);
+                        alSourcef(chan.openalSource, AL_GAIN, (volume) < (1.0f) ? (volume) : (1.0f));
+                    }
+                    alSourcei(chan.openalSource, AL_LOOPING, (looping && chan.soundShader.entries[0].hardwareBuffer) ? AL_TRUE : AL_FALSE);
+                    if (!MACOS_X) {
+                        alSourcef(chan.openalSource, AL_REFERENCE_DISTANCE, minD);
+                        alSourcef(chan.openalSource, AL_MAX_DISTANCE, maxD);
+                    }
+                    alSourcef(chan.openalSource, AL_PITCH, (slowmoActive && !chan.disallowSlow) ? (slowmoSpeed) : (1.0f));
+                    if (ID_OPENAL) {
+                        long lOcclusion = (enviroSuitActive ? -1150 : 0);
 //                        if (soundSystemLocal.alEAXSet) {
 //                            soundSystemLocal.alEAXSet(EAXPROPERTYID_EAX_Source, EAXSOURCE_OCCLUSION, chan.openalSource, lOcclusion, sizeof(lOcclusion));
 //                        }
-//                    }
-//                    if ((!looping && chan.leadinSample.hardwareBuffer) || (looping && chan.soundShader.entries[0].hardwareBuffer)) {
-//                        // handle uncompressed (non streaming) single shot and looping sounds
-//                        if (chan.triggered) {
-//                            alSourcei(chan.openalSource, AL_BUFFER, looping ? chan.soundShader.entries[0].openalBuffer : chan.leadinSample.openalBuffer);
-//                        }
-//                    } else {
-//                        int/*ALint*/ finishedbuffers = 0;
-//                        int/*ALuint*/[] buffers = new int[3];
-//
-//                        // handle streaming sounds (decode on the fly) both single shot AND looping
-//                        if (chan.triggered) {
-//                            alSourcei(chan.openalSource, AL_BUFFER, 0);
-//                            alDeleteBuffers(chan.lastopenalStreamingBuffer);//alDeleteBuffers(3, chan.lastopenalStreamingBuffer[0]);
-//                            chan.lastopenalStreamingBuffer.put(0, chan.openalStreamingBuffer.get(0));
-//                            chan.lastopenalStreamingBuffer.put(1, chan.openalStreamingBuffer.get(1));
-//                            chan.lastopenalStreamingBuffer.put(2, chan.openalStreamingBuffer.get(2));
-//                            alGenBuffers(chan.openalStreamingBuffer);//alGenBuffers(3, chan.openalStreamingBuffer[0]);
+                    }
+                    if ((!looping && chan.leadinSample.hardwareBuffer) || (looping && chan.soundShader.entries[0].hardwareBuffer)) {
+                        // handle uncompressed (non streaming) single shot and looping sounds
+                        if (chan.triggered) {
+                            alSourcei(chan.openalSource, AL_BUFFER, looping ? chan.soundShader.entries[0].openalBuffer : chan.leadinSample.openalBuffer);
+                        }
+                    } else {
+                        int/*ALint*/ finishedbuffers = 0;
+                        int/*ALuint*/[] buffers = new int[3];
+
+                        // handle streaming sounds (decode on the fly) both single shot AND looping
+                        if (chan.triggered) {
+                            alSourcei(chan.openalSource, AL_BUFFER, 0);
+                            alDeleteBuffers(chan.lastopenalStreamingBuffer);//alDeleteBuffers(3, chan.lastopenalStreamingBuffer[0]);
+                            chan.lastopenalStreamingBuffer.put(0, chan.openalStreamingBuffer.get(0));
+                            chan.lastopenalStreamingBuffer.put(1, chan.openalStreamingBuffer.get(1));
+                            chan.lastopenalStreamingBuffer.put(2, chan.openalStreamingBuffer.get(2));
+                            alGenBuffers(chan.openalStreamingBuffer);//alGenBuffers(3, chan.openalStreamingBuffer[0]);
 //                            if (soundSystemLocal.alEAXSetBufferMode) {
 //                                soundSystemLocal.alEAXSetBufferMode(3, chan.openalStreamingBuffer[0], alGetEnumValue(ID_ALCHAR + "AL_STORAGE_ACCESSIBLE"));
 //                            }
-//                            buffers[0] = chan.openalStreamingBuffer.get(0);
-//                            buffers[1] = chan.openalStreamingBuffer.get(1);
-//                            buffers[2] = chan.openalStreamingBuffer.get(2);
-//                            finishedbuffers = 3;
-//                        } else {
-//                            alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED);//alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED, finishedbuffers);
-//                            alSourceUnqueueBuffers(chan.openalSource, IntBuffer.wrap(buffers));//alSourceUnqueueBuffers(chan.openalSource, finishedbuffers, buffers[0]);
-//                            if (finishedbuffers == 3) {
-//                                chan.triggered = true;
-//                            }
-//                        }
-//
-//                        for (j = 0; j < finishedbuffers; j++) {
-//                            chan.GatherChannelSamples(chan.openalStreamingOffset * sample.objectInfo.nChannels, MIXBUFFER_SAMPLES * sample.objectInfo.nChannels, FloatBuffer.wrap(alignedInputSamples));
-//                            for (int i = 0; i < (MIXBUFFER_SAMPLES * sample.objectInfo.nChannels); i++) {
-//                                if (alignedInputSamples[i] < -32768.0f) {
-//                                    alignedInputSamples[i] = -32768;
-//                                } else if (alignedInputSamples[i] > 32767.0f) {
-//                                    alignedInputSamples[i] = 32767;
-//                                } else {
-//                                    alignedInputSamples[i] = idMath.FtoiFast(alignedInputSamples[i]);
-//                                }
-//                            }
-//                            ByteBuffer data = ByteBuffer.allocate(MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * 2);
-//                            data.asFloatBuffer().put(alignedInputSamples);
-//                            alBufferData(buffers[j], chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
-//                                    data, /*MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * sizeof(short),*/ 44100);
-//                            chan.openalStreamingOffset += MIXBUFFER_SAMPLES;
-//                        }
-//
-//                        if (finishedbuffers != 0) {
-//                            alSourceQueueBuffers(chan.openalSource, /*finishedbuffers,*/ IntBuffer.wrap(buffers));
-//                        }
-//                    }
-//
-//                    // (re)start if needed..
-//                    if (chan.triggered) {
-//                        alSourcePlay(chan.openalSource);
-//                        chan.triggered = false;
-//                    }
-//                }
-//            } else {
-//
-//                if (slowmoActive && !chan.disallowSlow) {
-//                    idSlowChannel slow = sound.GetSlowChannel(chan);
-//
-//                    slow.AttachSoundChannel(chan);
-//
-//                    if (sample.objectInfo.nChannels == 2) {
-//                        // need to add a stereo path, but very few samples go through this
-////                        memset(alignedInputSamples, 0, sizeof(alignedInputSamples[0]) * MIXBUFFER_SAMPLES * 2);
-//                        Arrays.fill(alignedInputSamples, 0);
-//                    } else {
-//                        slow.GatherChannelSamples(offset, MIXBUFFER_SAMPLES, alignedInputSamples);
-//                    }
-//
-//                    sound.SetSlowChannel(chan, slow);
-//                } else {
-//                    sound.ResetSlowChannel(chan);
-//
-//                    // if we are getting a stereo sample adjust accordingly
-//                    if (sample.objectInfo.nChannels == 2) {
-//                        // we should probably check to make sure any looping is also to a stereo sample...
-//                        chan.GatherChannelSamples(offset * 2, MIXBUFFER_SAMPLES * 2, FloatBuffer.wrap(alignedInputSamples));
-//                    } else {
-//                        chan.GatherChannelSamples(offset, MIXBUFFER_SAMPLES, FloatBuffer.wrap(alignedInputSamples));
-//                    }
-//                }
-//
-//                //
-//                // work out the left / right ear values
-//                //
-//                float[] ears = new float[6];
-//                if (global || omni) {
-//                    // same for all speakers
-//                    for (int i = 0; i < 6; i++) {
-//                        ears[i] = idSoundSystemLocal.s_globalFraction.GetFloat() * volume;
-//                    }
-//                    ears[3] = idSoundSystemLocal.s_subFraction.GetFloat() * volume;		// subwoofer
-//
-//                } else {
-//                    CalcEars(numSpeakers, spatializedOriginInMeters, listenerPos, listenerAxis, ears, spatialize);
-//
-//                    for (int i = 0; i < 6; i++) {
-//                        ears[i] *= volume;
-//                    }
-//                }
-//
-//                // if the mask is 0, it really means do every channel
-//                if (0 == mask) {
-//                    mask = 255;
-//                }
-//                // cleared mask bits set the mix volume to zero
-//                for (int i = 0; i < 6; i++) {
-//                    if (0 == (mask & (1 << i))) {
-//                        ears[i] = 0;
-//                    }
-//                }
-//
-//                // if sounds are generally normalized, using a mixing volume over 1.0 will
-//                // almost always cause clipping noise.  If samples aren't normalized, there
-//                // is a good call to allow overvolumes
-//                if (idSoundSystemLocal.s_clipVolumes.GetBool() && 0 == (parms.soundShaderFlags & SSF_UNCLAMPED)) {
-//                    for (int i = 0; i < 6; i++) {
-//                        if (ears[i] > 1.0f) {
-//                            ears[i] = 1.0f;
-//                        }
-//                    }
-//                }
-//
-//                // if this is the very first mixing block, set the lastV
-//                // to the current volume
-//                if (current44kHz == chan.trigger44kHzTime) {
-//                    for (j = 0; j < 6; j++) {
-//                        chan.lastV[j] = ears[j];
-//                    }
-//                }
-//
-//                if (numSpeakers == 6) {
-//                    if (sample.objectInfo.nChannels == 1) {
-//                        SIMDProcessor.MixSoundSixSpeakerMono(finalMixBuffer, alignedInputSamples, MIXBUFFER_SAMPLES, chan.lastV, ears);
-//                    } else {
-//                        SIMDProcessor.MixSoundSixSpeakerStereo(finalMixBuffer, alignedInputSamples, MIXBUFFER_SAMPLES, chan.lastV, ears);
-//                    }
-//                } else {
-//                    if (sample.objectInfo.nChannels == 1) {
-//                        SIMDProcessor.MixSoundTwoSpeakerMono(finalMixBuffer, alignedInputSamples, MIXBUFFER_SAMPLES, chan.lastV, ears);
-//                    } else {
-//                        SIMDProcessor.MixSoundTwoSpeakerStereo(finalMixBuffer, alignedInputSamples, MIXBUFFER_SAMPLES, chan.lastV, ears);
-//                    }
-//                }
-//
-//                for (j = 0; j < 6; j++) {
-//                    chan.lastV[j] = ears[j];
-//                }
-//
-//            }
-//
-//            soundSystemLocal.soundStats.activeSounds++;
-//
+                            buffers[0] = chan.openalStreamingBuffer.get(0);
+                            buffers[1] = chan.openalStreamingBuffer.get(1);
+                            buffers[2] = chan.openalStreamingBuffer.get(2);
+                            finishedbuffers = 3;
+                        } else {
+                            alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED);//alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED, finishedbuffers);
+                            alSourceUnqueueBuffers(chan.openalSource, IntBuffer.wrap(buffers));//alSourceUnqueueBuffers(chan.openalSource, finishedbuffers, buffers[0]);
+                            if (finishedbuffers == 3) {
+                                chan.triggered = true;
+                            }
+                        }
+
+                        for (j = 0; j < finishedbuffers; j++) {
+                            chan.GatherChannelSamples(chan.openalStreamingOffset * sample.objectInfo.nChannels, MIXBUFFER_SAMPLES * sample.objectInfo.nChannels, FloatBuffer.wrap(alignedInputSamples));
+                            for (int i = 0; i < (MIXBUFFER_SAMPLES * sample.objectInfo.nChannels); i++) {
+                                if (alignedInputSamples[i] < -32768.0f) {
+                                    alignedInputSamples[i] = -32768;
+                                } else if (alignedInputSamples[i] > 32767.0f) {
+                                    alignedInputSamples[i] = 32767;
+                                } else {
+                                    alignedInputSamples[i] = idMath.FtoiFast(alignedInputSamples[i]);
+                                }
+                            }
+                            ByteBuffer data = ByteBuffer.allocate(MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * 2);
+                            data.asFloatBuffer().put(alignedInputSamples);
+                            alBufferData(buffers[j], chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
+                                    data, /*MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * sizeof(short),*/ 44100);
+                            chan.openalStreamingOffset += MIXBUFFER_SAMPLES;
+                        }
+
+                        if (finishedbuffers != 0) {
+                            alSourceQueueBuffers(chan.openalSource, /*finishedbuffers,*/ IntBuffer.wrap(buffers));
+                        }
+                    }
+
+                    // (re)start if needed..
+                    if (chan.triggered) {
+                        alSourcePlay(chan.openalSource);
+                        chan.triggered = false;
+                    }
+                }
+            } else {
+
+                if (slowmoActive && !chan.disallowSlow) {
+                    idSlowChannel slow = sound.GetSlowChannel(chan);
+
+                    slow.AttachSoundChannel(chan);
+
+                    if (sample.objectInfo.nChannels == 2) {
+                        // need to add a stereo path, but very few samples go through this
+                        alignedInputSamples = new float[MIXBUFFER_SAMPLES * 2];//memset(alignedInputSamples, 0, sizeof(alignedInputSamples[0]) * MIXBUFFER_SAMPLES * 2);
+                    } else {
+                        slow.GatherChannelSamples(offset, MIXBUFFER_SAMPLES, alignedInputSamples);
+                    }
+
+                    sound.SetSlowChannel(chan, slow);
+                } else {
+                    sound.ResetSlowChannel(chan);
+
+                    // if we are getting a stereo sample adjust accordingly
+                    if (sample.objectInfo.nChannels == 2) {
+                        // we should probably check to make sure any looping is also to a stereo sample...
+                        chan.GatherChannelSamples(offset * 2, MIXBUFFER_SAMPLES * 2, FloatBuffer.wrap(alignedInputSamples));
+                    } else {
+                        chan.GatherChannelSamples(offset, MIXBUFFER_SAMPLES, FloatBuffer.wrap(alignedInputSamples));
+                    }
+                }
+
+                //
+                // work out the left / right ear values
+                //
+                float[] ears = new float[6];
+                if (global || omni) {
+                    // same for all speakers
+                    for (int i = 0; i < 6; i++) {
+                        ears[i] = idSoundSystemLocal.s_globalFraction.GetFloat() * volume;
+                    }
+                    ears[3] = idSoundSystemLocal.s_subFraction.GetFloat() * volume;// subwoofer
+
+                } else {
+                    CalcEars(numSpeakers, spatializedOriginInMeters, listenerPos, listenerAxis, ears, spatialize);
+
+                    for (int i = 0; i < 6; i++) {
+                        ears[i] *= volume;
+                    }
+                }
+
+                // if the mask is 0, it really means do every channel
+                if (0 == mask) {
+                    mask = 255;
+                }
+                // cleared mask bits set the mix volume to zero
+                for (int i = 0; i < 6; i++) {
+                    if (0 == (mask & (1 << i))) {
+                        ears[i] = 0;
+                    }
+                }
+
+                // if sounds are generally normalized, using a mixing volume over 1.0 will
+                // almost always cause clipping noise.  If samples aren't normalized, there
+                // is a good call to allow overvolumes
+                if (idSoundSystemLocal.s_clipVolumes.GetBool() && 0 == (parms.soundShaderFlags & SSF_UNCLAMPED)) {
+                    for (int i = 0; i < 6; i++) {
+                        if (ears[i] > 1.0f) {
+                            ears[i] = 1.0f;
+                        }
+                    }
+                }
+
+                // if this is the very first mixing block, set the lastV
+                // to the current volume
+                if (current44kHz == chan.trigger44kHzTime) {
+                    for (j = 0; j < 6; j++) {
+                        chan.lastV[j] = ears[j];
+                    }
+                }
+
+                if (numSpeakers == 6) {
+                    if (sample.objectInfo.nChannels == 1) {
+                        SIMDProcessor.MixSoundSixSpeakerMono(finalMixBuffer, alignedInputSamples, MIXBUFFER_SAMPLES, chan.lastV, ears);
+                    } else {
+                        SIMDProcessor.MixSoundSixSpeakerStereo(finalMixBuffer, alignedInputSamples, MIXBUFFER_SAMPLES, chan.lastV, ears);
+                    }
+                } else {
+                    if (sample.objectInfo.nChannels == 1) {
+                        SIMDProcessor.MixSoundTwoSpeakerMono(finalMixBuffer, alignedInputSamples, MIXBUFFER_SAMPLES, chan.lastV, ears);
+                    } else {
+                        SIMDProcessor.MixSoundTwoSpeakerStereo(finalMixBuffer, alignedInputSamples, MIXBUFFER_SAMPLES, chan.lastV, ears);
+                    }
+                }
+
+                for (j = 0; j < 6; j++) {
+                    chan.lastV[j] = ears[j];
+                }
+
+            }
+            soundSystemLocal.soundStats.activeSounds++;
         }
 
         /*

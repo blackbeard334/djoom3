@@ -411,7 +411,11 @@ public class Window {
             gui = ui;
             CommonInit();
         }
-//	abstract ~idWindow();
+        
+        /** ~idWindow() */
+        public void close() {
+            CleanUp();
+        }
 
         public enum ON {
 
@@ -1044,7 +1048,7 @@ public class Window {
             matColor.oSet(new idVec4(1, 1, 1, 1));
             borderColor.Zero();
             background = null;
-            backGroundName.data.oSet("");
+            backGroundName.oSet(new idStr(""));
             focusedChild = null;
             captureChild = null;
             overChild = null;
@@ -1172,6 +1176,7 @@ public class Window {
                     }
                     src.ExpectTokenType(TT_NAME, 0, token);
                     token2 = token;
+//                    System.out.printf(">>>>>>>>%s\n", token.toString());
                     src.UnreadToken(token);
                     drawWin_t dw = FindChildByName(token2.toString());
                     if (dw != null && dw.win != null) {
@@ -1190,7 +1195,7 @@ public class Window {
                             idSimpleWindow simple = new idSimpleWindow(win);
                             dwt.simp = simple;
                             drawWindows.Append(dwt);
-//					delete win;
+			    win.close();//delete win;
                             simpleCount++;
                         } else {
                             AddChild(win);
@@ -2053,7 +2058,7 @@ public class Window {
         }
 
         public String RouteMouseCoords(float xd, float yd) {
-            String[] str = {null};
+            String str;
             if (GetCaptureChild() != null) {
                 //FIXME: unkludge this whole mechanism
                 return GetCaptureChild().RouteMouseCoords(xd, yd);
@@ -2074,16 +2079,16 @@ public class Window {
                     if (overChild != child) {
                         if (overChild != null) {
                             overChild.MouseExit();
-                            str[0] = overChild.cmd.toString();
-                            if (isNotNullOrEmpty(str[0])) {
+                            str = overChild.cmd.toString();
+                            if (isNotNullOrEmpty(str)) {
                                 gui.GetDesktop().AddCommand(str);
                                 overChild.cmd.oSet("");
                             }
                         }
                         overChild = child;
                         overChild.MouseEnter();
-                        str[0] = overChild.cmd.toString();
-                        if (isNotNullOrEmpty(str[0])) {
+                        str = overChild.cmd.toString();
+                        if (isNotNullOrEmpty(str)) {
                             gui.GetDesktop().AddCommand(str);
                             overChild.cmd.oSet("");
                         }
@@ -2097,8 +2102,8 @@ public class Window {
             }
             if (overChild != null) {
                 overChild.MouseExit();
-                str[0] = overChild.cmd.toString();
-                if (isNotNullOrEmpty(str[0])) {
+                str = overChild.cmd.toString();
+                if (isNotNullOrEmpty(str)) {
                     gui.GetDesktop().AddCommand(str);
                     overChild.cmd.oSet("");
                 }
@@ -3054,15 +3059,15 @@ public class Window {
             return regList;
         }
 
-        public void AddCommand(final String[] _cmd) {
+        public void AddCommand(final String _cmd) {
             String str = cmd.toString();
             if (!str.isEmpty()) {
                 str += " ; ";
-                str += _cmd[0];
+                str += _cmd;
             } else {
-                str = _cmd[0];
+                str = _cmd;
             }
-            _cmd[0] = str;
+            cmd.oSet(str);
         }
 
         static int DEBUG_updateVars = 0;

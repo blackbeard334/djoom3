@@ -1,20 +1,28 @@
 package neo.Sound;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import neo.Sound.snd_cache.idSoundSample;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 import neo.Sound.snd_local.idSampleDecoder;
 import static neo.Sound.snd_system.soundSystemLocal;
 import neo.TempDump.TODO_Exception;
-import static neo.TempDump.sizeof;
 import neo.framework.File_h.idFile;
 import neo.framework.File_h.idFile_Memory;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
+import org.gagravarr.ogg.OggFile;
+import org.gagravarr.ogg.OggPacket;
+import org.gagravarr.vorbis.VorbisAudioData;
+import org.gagravarr.vorbis.VorbisFile;
 
 /**
  *
@@ -124,8 +132,18 @@ public class snd_decoder {
      ov_openFile
      ====================
      */
-    static int ov_openFile(idFile f, OggVorbis_File vf) {
-        throw new TODO_Exception();
+    static OggFile ov_openFile(idFile f) throws IOException {
+        ByteBuffer fileBuffer = ByteBuffer.allocate(f.Length());
+//        final int curPtr = f.Tell();
+//        f.Seek(0, FS_SEEK_SET);
+        f.Read(fileBuffer);
+//        System.out.println(Arrays.toString(fileBuffer.array()));
+//        f.Seek(curPtr, FS_SEEK_SET);
+//        OggPacketReader oggPacketReader = new OggPacketReader(new ByteArrayInputStream(buffer.array()));
+//        return new VorbisFile(oggPacketReader);
+//        return new VorbisFile(new OggFile(new ByteArrayInputStream(fileBuffer.array())));
+        return new OggFile(new ByteArrayInputStream(fileBuffer.array()));
+//        throw new TODO_Exception();
 //        ov_callbacks callbacks;
 //
 //        memset(vf, 0, sizeof(OggVorbis_File));
@@ -153,9 +171,13 @@ public class snd_decoder {
         private int            lastDecodeTime;     // last time decoding sound
         private idFile_Memory  file;               // encoded file in memory
         //
-        private OggVorbis_File ogg;                // OggVorbis file
+        private OggFile     ogg;                   // OggVorbis file
         //
         //
+        
+        idSampleDecoderLocal(){
+            this.file = new idFile_Memory();
+        }
 
         @Override
         public void Decode(idSoundSample sample, int sampleOffset44k, int sampleCount44k, FloatBuffer dest) {
@@ -176,22 +198,24 @@ public class snd_decoder {
             // samples can be decoded both from the sound thread and the main thread for shakes
             Sys_EnterCriticalSection(CRITICAL_SECTION_ONE);
 
-            switch (sample.objectInfo.wFormatTag) {
-                case WAVE_FORMAT_TAG_PCM: {
-                    readSamples44k = DecodePCM(sample, sampleOffset44k, sampleCount44k, dest.array());//TODO:fix with offset
-                    break;
+            try {
+                switch (sample.objectInfo.wFormatTag) {
+                    case WAVE_FORMAT_TAG_PCM: {
+                        readSamples44k = DecodePCM(sample, sampleOffset44k, sampleCount44k, dest.array());//TODO:fix with offset
+                        break;
+                    }
+                    case WAVE_FORMAT_TAG_OGG: {
+                        readSamples44k = DecodeOGG(sample, sampleOffset44k, sampleCount44k, dest.array());
+                        break;
+                    }
+                    default: {
+                        readSamples44k = 0;
+                        break;
+                    }
                 }
-                case WAVE_FORMAT_TAG_OGG: {
-                    readSamples44k = DecodeOGG(sample, sampleOffset44k, sampleCount44k, dest.array());
-                    break;
-                }
-                default: {
-                    readSamples44k = 0;
-                    break;
-                }
+            } finally {
+                Sys_LeaveCriticalSection(CRITICAL_SECTION_ONE);
             }
-
-            Sys_LeaveCriticalSection(CRITICAL_SECTION_ONE);
 
             if (readSamples44k < sampleCount44k) {
 //                memset(dest + readSamples44k, 0, (sampleCount44k - readSamples44k) * sizeof(dest[0]));
@@ -203,21 +227,23 @@ public class snd_decoder {
         public void ClearDecoder() {
             Sys_EnterCriticalSection(CRITICAL_SECTION_ONE);
 
-            switch (lastFormat) {
-                case WAVE_FORMAT_TAG_PCM: {
-                    break;
-                }
-                case WAVE_FORMAT_TAG_OGG: {
+            try {
+                switch (lastFormat) {
+                    case WAVE_FORMAT_TAG_PCM: {
+                        break;
+                    }
+                    case WAVE_FORMAT_TAG_OGG: {
 //                    ov_clear(ogg);
 //                    memset(ogg, 0, sizeof(ogg));
-                    ogg = new OggVorbis_File();
-                    break;
+                        ogg = null;
+                        break;
+                    }
                 }
+
+                Clear();
+            } finally {
+                Sys_LeaveCriticalSection(CRITICAL_SECTION_ONE);
             }
-
-            Clear();
-
-            Sys_LeaveCriticalSection(CRITICAL_SECTION_ONE);
         }
 
         @Override
@@ -276,34 +302,38 @@ public class snd_decoder {
         }
 
         public int DecodeOGG(idSoundSample sample, int sampleOffset44k, int sampleCount44k, float[] dest) {
-            throw new TODO_Exception();
-//            int readSamples, totalSamples;
-//
-//            int shift = (int) (22050 / sample.objectInfo.nSamplesPerSec);
-//            int sampleOffset = sampleOffset44k >> shift;
-//            int sampleCount = sampleCount44k >> shift;
-//
-//            // open OGG file if not yet opened
-//            if (lastSample == null) {
-//                // make sure there is enough space for another decoder
+            int readSamples, totalSamples;
+
+            int shift = (int) (22050 / sample.objectInfo.nSamplesPerSec);
+            int sampleOffset = sampleOffset44k >> shift;
+            int sampleCount = sampleCount44k >> shift;
+
+            // open OGG file if not yet opened
+            if (lastSample == null) {
+                // make sure there is enough space for another decoder
 //                if (decoderMemoryAllocator.GetFreeBlockMemory() < MIN_OGGVORBIS_MEMORY) {
 //                    return 0;
 //                }
-//                if (sample.nonCacheData == null) {
-//                    assert (false);	// this should never happen
-//                    failed = true;
-//                    return 0;
-//                }
-//                file.SetData( /*const char *)*/sample.nonCacheData, sample.objectMemSize);
-//                if (ov_openFile(file, ogg) < 0) {
-//                    failed = true;
-//                    return 0;
-//                }
-//                lastFormat = WAVE_FORMAT_TAG_OGG;
-//                lastSample = sample;
-//            }
-//
-//            // seek to the right offset if necessary
+                if (sample.nonCacheData == null) {
+                    assert (false);	// this should never happen
+                    failed = true;
+                    return 0;
+                }
+                file.SetData(sample.nonCacheData, sample.objectMemSize);
+                try {
+                    ogg = ov_openFile(file);
+                } catch (IOException ex) {
+                    Logger.getLogger(snd_decoder.class.getName()).log(Level.SEVERE, null, ex);
+                    failed = true;
+                    return 0;
+                }
+                lastFormat = WAVE_FORMAT_TAG_OGG;
+                lastSample = sample;
+            }
+
+            byte[] blight = null;
+            try {
+                //            // seek to the right offset if necessary
 //            if (sampleOffset != lastSampleOffset) {
 //                if (ov_pcm_seek(ogg, sampleOffset / sample.objectInfo.nChannels) != 0) {
 //                    failed = true;
@@ -316,8 +346,36 @@ public class snd_decoder {
 //            // decode OGG samples
 //            totalSamples = sampleCount;
 //            readSamples = 0;
+//                blight = ogg.getNextAudioPacket().getData();
+                OggPacket bla = ogg.getPacketReader().getNextPacket();
+                while (!bla.isBeginningOfStream()) {
+                    System.out.println(bla.getSid());
+                    System.out.println(bla.getSequenceNumber());
+                    System.out.println(bla.getGranulePosition());
+                    System.out.println("----");
+                    bla = ogg.getPacketReader().getNextPacket();
+                    if (bla == null) {
+                        int x = 0;
+                    }
+                }
+                
+//                while(bla!=null){
+//                    System.out.println("~~" + (bla.getData()[0] & 0xFF));
+//                    bla = ogg.getPacketReader().getNextPacket();
+//                }
+                ByteBuffer bb = ByteBuffer.wrap(bla.getData());
+//                ogg.getType();
+//                ogg.getComment();
+//                ogg.getInfo();
+//                ogg.getSetup();
+//                ogg.getTags();
+                bb.order(ByteOrder.LITTLE_ENDIAN);
+                bb.getFloat();
+            } catch (IOException ex) {
+                Logger.getLogger(snd_decoder.class.getName()).log(Level.SEVERE, null, ex);
+            }
 //            do {
-//                float[] samples = {0};
+//                float[] samples = {0}ogg.getNextAudioPacket()getInfo().getBlocksize1();
 //                int ret = ov_read_float(ogg, samples, totalSamples / sample.objectInfo.nChannels, ogg.stream);
 //                if (ret == 0) {
 //                    failed = true;
@@ -327,6 +385,7 @@ public class snd_decoder {
 //                    failed = true;
 //                    return 0;
 //                }
+//                
 //                ret *= sample.objectInfo.nChannels;
 //
 //                SIMDProcessor.UpSampleOGGTo44kHz(dest + (readSamples << shift), samples, ret, sample.objectInfo.nSamplesPerSec, sample.objectInfo.nChannels);
@@ -338,14 +397,8 @@ public class snd_decoder {
 //            lastSampleOffset += readSamples;
 //
 //            return (readSamples << shift);
+            throw new TODO_Exception();
         }
     };
 //    static final idBlockAlloc<idSampleDecoderLocal> sampleDecoderAllocator = new idBlockAlloc<>(64);
-
-    private static class OggVorbis_File {
-
-        public OggVorbis_File() {
-            throw new TODO_Exception();
-        }
-    }
 }

@@ -103,6 +103,11 @@ public class Dict_h {
 
             return Objects.equals(this.value, other.value);
         }
+
+        @Override
+        public String toString() {
+            return "idKeyValue{" + "key=" + key + ", value=" + value + '}';
+        }        
     }
 
     public static class idDict {

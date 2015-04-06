@@ -208,7 +208,6 @@ public class KeyInput {
 //	delete [] keys;
             keys = null;
         }
-//
 
         public static class ArgCompletion_KeyName extends argCompletion_t {
 
