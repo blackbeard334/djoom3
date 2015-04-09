@@ -1,5 +1,8 @@
 package neo.Sound;
 
+import com.jcraft.jorbis.Info;
+import com.jcraft.jorbis.JOrbisException;
+import com.jcraft.jorbis.VorbisFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -9,7 +12,7 @@ import neo.Sound.snd_local.mminfo_s;
 import neo.Sound.snd_local.pcmwaveformat_s;
 import neo.Sound.snd_local.waveformatex_s;
 import neo.Sound.snd_local.waveformatextensible_s;
-import neo.Sound.snd_system.idSoundSystemLocal;
+import static neo.Sound.snd_system.idSoundSystemLocal.s_realTimeDecoding;
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.stobb;
 import static neo.framework.FileSystem_h.fileSystem;
@@ -22,9 +25,6 @@ import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
-import org.gagravarr.ogg.OggFile;
-import org.gagravarr.vorbis.VorbisFile;
-import org.gagravarr.vorbis.VorbisInfo;
 
 /**
  *
@@ -389,10 +389,7 @@ public class snd_wavefile {
         }
 
         private int OpenOGG(final String strFileName, waveformatex_s[] pwfx /*= NULL*/) {
-            VorbisFile ov;
-
 //            memset(pwfx, 0, sizeof(waveformatex_t));
-
             mhmmio = fileSystem.OpenFileRead(strFileName);
             if (null == mhmmio) {
                 return -1;
@@ -400,37 +397,28 @@ public class snd_wavefile {
 
             Sys_EnterCriticalSection(CRITICAL_SECTION_ONE);
 
-            try {
-                ByteBuffer buffer = ByteBuffer.allocate(mhmmio.Length());
-                mhmmio.Read(buffer);
-                OggFile oggFile = new OggFile(new ByteArrayInputStream(buffer.array()));
-
-                ov = new VorbisFile(oggFile);
-
+            ByteBuffer buffer = ByteBuffer.allocate(mhmmio.Length());
+            mhmmio.Read(buffer);
+            try (VorbisFile ov = new VorbisFile(buffer)) {
                 mfileTime = mhmmio.Timestamp();
 
-                VorbisInfo vi = ov.getInfo();
+                Info vi = ov.getInfo()[0];
 
-                mpwfx.Format.nSamplesPerSec = vi.getRate();
-                mpwfx.Format.nChannels = vi.getChannels();
+                mpwfx.Format.nSamplesPerSec = vi.rate;
+                mpwfx.Format.nChannels = vi.channels;
                 mpwfx.Format.wBitsPerSample = Short.SIZE;
-//            mdwSize = ov_pcm_total(ov, -1) * vi.getChannels();	// pcm samples * num channels
-                mdwSize = vi.getRate() * vi.getChannels();	// pcm samples * num channels
+                mdwSize = ov.pcm_total(-1) * vi.channels;	// pcm samples * num channels
                 mbIsReadingFromMemory = false;
 
-                if (idSoundSystemLocal.s_realTimeDecoding.GetBool()) {
-
-//                ov.close();//ov_clear(ov);
+                if (s_realTimeDecoding.GetBool()) {
                     fileSystem.CloseFile(mhmmio);
                     mhmmio = null;
-//		delete ov;
 
                     mpwfx.Format.wFormatTag = WAVE_FORMAT_TAG_OGG;
                     mhmmio = fileSystem.OpenFileRead(strFileName);
                     mMemSize = mhmmio.Length();
 
                 } else {
-
                     ogg = ov;
 
                     mpwfx.Format.wFormatTag = WAVE_FORMAT_TAG_PCM;
@@ -440,8 +428,7 @@ public class snd_wavefile {
                 if (pwfx != null) {
                     pwfx[0] = new waveformatex_s(mpwfx.Format);
                 }
-            } catch (IOException ex) {
-//		delete ov;
+            } catch (JOrbisException | IOException ex) {
                 fileSystem.CloseFile(mhmmio);
                 mhmmio = null;
                 return -1;

@@ -1,5 +1,6 @@
 package neo.idlib.math;
 
+import java.nio.FloatBuffer;
 import java.util.Arrays;
 import neo.Renderer.Model.dominantTri_s;
 import neo.TempDump.TODO_Exception;
@@ -458,7 +459,13 @@ public class Simd {
 
         public abstract void /*VPCALL*/ UpSamplePCMTo44kHz(float[] dest, final short[] pcm, final int numSamples, final int kHz, final int numChannels);
 
-        public abstract void /*VPCALL*/ UpSampleOGGTo44kHz(float[] dest, final float[][] ogg, final int numSamples, final int kHz, final int numChannels);
+        public void /*VPCALL*/ UpSampleOGGTo44kHz(float[] dest, final float[][] ogg, final int numSamples, final int kHz, final int numChannels) {
+            this.UpSampleOGGTo44kHz(dest, 0, ogg, numSamples, kHz, numChannels);
+        }
+        
+        public abstract void /*VPCALL*/ UpSampleOGGTo44kHz(float[] dest, int offset,  final float[][] ogg, final int numSamples, final int kHz, final int numChannels);
+        
+        public abstract void /*VPCALL*/ UpSampleOGGTo44kHz(FloatBuffer dest, int offset,  final float[][] ogg, final int numSamples, final int kHz, final int numChannels);
 
         public abstract void /*VPCALL*/ MixSoundTwoSpeakerMono(float[] mixBuffer, final float[] samples, final int numSamples, final float lastV[], final float currentV[]);
 

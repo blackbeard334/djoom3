@@ -1,5 +1,6 @@
 package neo.idlib.math;
 
+import java.nio.FloatBuffer;
 import java.util.Arrays;
 import neo.Renderer.Model.dominantTri_s;
 import neo.idlib.geometry.DrawVert.idDrawVert;
@@ -3066,42 +3067,94 @@ public class Simd_Generic {
          ============
          */
         @Override
-        public void UpSampleOGGTo44kHz(float[] dest, float[][] ogg, int numSamples, int kHz, int numChannels) {
+        public void UpSampleOGGTo44kHz(float[] dest, int offset, float[][] ogg, int numSamples, int kHz, int numChannels) {
             if (kHz == 11025) {
                 if (numChannels == 1) {
                     for (int i = 0; i < numSamples; i++) {
-                        dest[i * 4 + 0] = dest[i * 4 + 1] = dest[i * 4 + 2] = dest[i * 4 + 3] = ogg[0][i] * 32768.0f;
+                        dest[offset + (i * 4 + 0)] = dest[offset + (i * 4 + 1)] = dest[offset + (i * 4 + 2)] = dest[offset + (i * 4 + 3)] = ogg[0][i] * 32768.0f;
                     }
                 } else {
                     for (int i = 0; i < numSamples >> 1; i++) {
-                        dest[i * 8 + 0] = dest[i * 8 + 2] = dest[i * 8 + 4] = dest[i * 8 + 6] = ogg[0][i] * 32768.0f;
-                        dest[i * 8 + 1] = dest[i * 8 + 3] = dest[i * 8 + 5] = dest[i * 8 + 7] = ogg[1][i] * 32768.0f;
+                        dest[offset + (i * 8 + 0)] = dest[offset + (i * 8 + 2)] = dest[offset + (i * 8 + 4)] = dest[offset + (i * 8 + 6)] = ogg[0][i] * 32768.0f;
+                        dest[offset + (i * 8 + 1)] = dest[offset + (i * 8 + 3)] = dest[offset + (i * 8 + 5)] = dest[offset + (i * 8 + 7)] = ogg[1][i] * 32768.0f;
                     }
                 }
             } else if (kHz == 22050) {
                 if (numChannels == 1) {
                     for (int i = 0; i < numSamples; i++) {
-                        dest[i * 2 + 0] = dest[i * 2 + 1] = ogg[0][i] * 32768.0f;
+                        dest[offset + (i * 2 + 0)] = dest[offset + (i * 2 + 1)] = ogg[0][i] * 32768.0f;
                     }
                 } else {
                     for (int i = 0; i < numSamples >> 1; i++) {
-                        dest[i * 4 + 0] = dest[i * 4 + 2] = ogg[0][i] * 32768.0f;
-                        dest[i * 4 + 1] = dest[i * 4 + 3] = ogg[1][i] * 32768.0f;
+                        dest[offset + (i * 4 + 0)] = dest[offset + (i * 4 + 2)] = ogg[0][i] * 32768.0f;
+                        dest[offset + (i * 4 + 1)] = dest[offset + (i * 4 + 3)] = ogg[1][i] * 32768.0f;
                     }
                 }
             } else if (kHz == 44100) {
                 if (numChannels == 1) {
                     for (int i = 0; i < numSamples; i++) {
-                        dest[i * 1 + 0] = ogg[0][i] * 32768.0f;
+                        dest[offset + (i * 1 + 0)] = ogg[0][i] * 32768.0f;
                     }
                 } else {
                     for (int i = 0; i < numSamples >> 1; i++) {
-                        dest[i * 2 + 0] = ogg[0][i] * 32768.0f;
-                        dest[i * 2 + 1] = ogg[1][i] * 32768.0f;
+                        dest[offset + (i * 2 + 0)] = ogg[0][i] * 32768.0f;
+                        dest[offset + (i * 2 + 1)] = ogg[1][i] * 32768.0f;
                     }
                 }
             } else {
-//		assert( 0 );
+                assert (false);
+            }
+        }
+        
+        @Override
+        public void UpSampleOGGTo44kHz(FloatBuffer dest, int offset, float[][] ogg, int numSamples, int kHz, int numChannels) {
+            offset += dest.position();
+            if (kHz == 11025) {
+                if (numChannels == 1) {
+                    for (int i = 0; i < numSamples; i++) {
+                        dest.put(offset + (i * 4 + 0), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 4 + 1), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 4 + 2), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 4 + 3), ogg[0][i] * 32768.0f);
+                    }
+                } else {
+                    for (int i = 0; i < numSamples >> 1; i++) {
+                        dest.put(offset + (i * 8 + 0), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 8 + 2), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 8 + 4), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 8 + 6), ogg[0][i] * 32768.0f);
+                        dest.put(offset + (i * 8 + 1), ogg[1][i] * 32768.0f)
+                            .put(offset + (i * 8 + 3), ogg[1][i] * 32768.0f)
+                            .put(offset + (i * 8 + 5), ogg[1][i] * 32768.0f)
+                            .put(offset + (i * 8 + 7), ogg[1][i] * 32768.0f);
+                    }
+                }
+            } else if (kHz == 22050) {
+                if (numChannels == 1) {
+                    for (int i = 0; i < numSamples; i++) {
+                        dest.put(offset + (i * 2 + 0), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 2 + 1), ogg[0][i] * 32768.0f);
+                    }
+                } else {
+                    for (int i = 0; i < numSamples >> 1; i++) {
+                        dest.put(offset + (i * 4 + 0), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 4 + 2), ogg[0][i] * 32768.0f);
+                        dest.put(offset + (i * 4 + 1), ogg[1][i] * 32768.0f)
+                            .put(offset + (i * 4 + 3), ogg[1][i] * 32768.0f);
+                    }
+                }
+            } else if (kHz == 44100) {
+                if (numChannels == 1) {
+                    for (int i = 0; i < numSamples; i++) {
+                        dest.put(offset + (i * 1 + 0), ogg[0][i] * 32768.0f);
+                    }
+                } else {
+                    for (int i = 0; i < numSamples >> 1; i++) {
+                        dest.put(offset + (i * 2 + 0), ogg[0][i] * 32768.0f)
+                            .put(offset + (i * 2 + 1), ogg[1][i] * 32768.0f);
+                    }
+                }
+            } else {
                 assert (false);
             }
         }

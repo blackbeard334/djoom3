@@ -1,9 +1,9 @@
 package neo.Sound;
 
+import com.jcraft.jorbis.JOrbisException;
+import com.jcraft.jorbis.VorbisFile;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -16,13 +16,10 @@ import static neo.Sound.snd_system.soundSystemLocal;
 import neo.TempDump.TODO_Exception;
 import neo.framework.File_h.idFile;
 import neo.framework.File_h.idFile_Memory;
+import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
-import org.gagravarr.ogg.OggFile;
-import org.gagravarr.ogg.OggPacket;
-import org.gagravarr.vorbis.VorbisAudioData;
-import org.gagravarr.vorbis.VorbisFile;
 
 /**
  *
@@ -132,7 +129,7 @@ public class snd_decoder {
      ov_openFile
      ====================
      */
-    static OggFile ov_openFile(idFile f) throws IOException {
+    static VorbisFile ov_openFile(idFile f) throws JOrbisException {
         ByteBuffer fileBuffer = ByteBuffer.allocate(f.Length());
 //        final int curPtr = f.Tell();
 //        f.Seek(0, FS_SEEK_SET);
@@ -142,7 +139,7 @@ public class snd_decoder {
 //        OggPacketReader oggPacketReader = new OggPacketReader(new ByteArrayInputStream(buffer.array()));
 //        return new VorbisFile(oggPacketReader);
 //        return new VorbisFile(new OggFile(new ByteArrayInputStream(fileBuffer.array())));
-        return new OggFile(new ByteArrayInputStream(fileBuffer.array()));
+        return new VorbisFile(fileBuffer);
 //        throw new TODO_Exception();
 //        ov_callbacks callbacks;
 //
@@ -171,7 +168,7 @@ public class snd_decoder {
         private int            lastDecodeTime;     // last time decoding sound
         private idFile_Memory  file;               // encoded file in memory
         //
-        private OggFile     ogg;                   // OggVorbis file
+        private VorbisFile     ogg;                // OggVorbis file
         //
         //
         
@@ -179,6 +176,7 @@ public class snd_decoder {
             this.file = new idFile_Memory();
         }
 
+        private static int DBG_Decode = 0;
         @Override
         public void Decode(idSoundSample sample, int sampleOffset44k, int sampleCount44k, FloatBuffer dest) {
             int readSamples44k;
@@ -205,7 +203,8 @@ public class snd_decoder {
                         break;
                     }
                     case WAVE_FORMAT_TAG_OGG: {
-                        readSamples44k = DecodeOGG(sample, sampleOffset44k, sampleCount44k, dest.array());
+                        DBG_Decode++;
+                        readSamples44k = DecodeOGG(sample, sampleOffset44k, sampleCount44k, dest);
                         break;
                     }
                     default: {
@@ -301,7 +300,7 @@ public class snd_decoder {
 //            return (readSamples << shift);
         }
 
-        public int DecodeOGG(idSoundSample sample, int sampleOffset44k, int sampleCount44k, float[] dest) {
+        public int DecodeOGG(idSoundSample sample, int sampleOffset44k, int sampleCount44k, FloatBuffer dest) {
             int readSamples, totalSamples;
 
             int shift = (int) (22050 / sample.objectInfo.nSamplesPerSec);
@@ -322,7 +321,7 @@ public class snd_decoder {
                 file.SetData(sample.nonCacheData, sample.objectMemSize);
                 try {
                     ogg = ov_openFile(file);
-                } catch (IOException ex) {
+                } catch (JOrbisException ex) {
                     Logger.getLogger(snd_decoder.class.getName()).log(Level.SEVERE, null, ex);
                     failed = true;
                     return 0;
@@ -331,73 +330,42 @@ public class snd_decoder {
                 lastSample = sample;
             }
 
-            byte[] blight = null;
-            try {
-                //            // seek to the right offset if necessary
-//            if (sampleOffset != lastSampleOffset) {
-//                if (ov_pcm_seek(ogg, sampleOffset / sample.objectInfo.nChannels) != 0) {
-//                    failed = true;
-//                    return 0;
-//                }
-//            }
-//
-//            lastSampleOffset = sampleOffset;
-//
-//            // decode OGG samples
-//            totalSamples = sampleCount;
-//            readSamples = 0;
-//                blight = ogg.getNextAudioPacket().getData();
-                OggPacket bla = ogg.getPacketReader().getNextPacket();
-                while (!bla.isBeginningOfStream()) {
-                    System.out.println(bla.getSid());
-                    System.out.println(bla.getSequenceNumber());
-                    System.out.println(bla.getGranulePosition());
-                    System.out.println("----");
-                    bla = ogg.getPacketReader().getNextPacket();
-                    if (bla == null) {
-                        int x = 0;
-                    }
+            // seek to the right offset if necessary
+            if (sampleOffset != lastSampleOffset) {
+                if (ogg.pcm_seek((sampleOffset / sample.objectInfo.nChannels)) != 0) {
+                    failed = true;
+                    return 0;
                 }
-                
-//                while(bla!=null){
-//                    System.out.println("~~" + (bla.getData()[0] & 0xFF));
-//                    bla = ogg.getPacketReader().getNextPacket();
-//                }
-                ByteBuffer bb = ByteBuffer.wrap(bla.getData());
-//                ogg.getType();
-//                ogg.getComment();
-//                ogg.getInfo();
-//                ogg.getSetup();
-//                ogg.getTags();
-                bb.order(ByteOrder.LITTLE_ENDIAN);
-                bb.getFloat();
-            } catch (IOException ex) {
-                Logger.getLogger(snd_decoder.class.getName()).log(Level.SEVERE, null, ex);
             }
-//            do {
-//                float[] samples = {0}ogg.getNextAudioPacket()getInfo().getBlocksize1();
-//                int ret = ov_read_float(ogg, samples, totalSamples / sample.objectInfo.nChannels, ogg.stream);
-//                if (ret == 0) {
-//                    failed = true;
-//                    break;
-//                }
-//                if (ret < 0) {
-//                    failed = true;
-//                    return 0;
-//                }
-//                
-//                ret *= sample.objectInfo.nChannels;
-//
-//                SIMDProcessor.UpSampleOGGTo44kHz(dest + (readSamples << shift), samples, ret, sample.objectInfo.nSamplesPerSec, sample.objectInfo.nChannels);
-//
-//                readSamples += ret;
-//                totalSamples -= ret;
-//            } while (totalSamples > 0);
-//
-//            lastSampleOffset += readSamples;
-//
-//            return (readSamples << shift);
-            throw new TODO_Exception();
+
+            lastSampleOffset = sampleOffset;
+
+            // decode OGG samples
+            totalSamples = sampleCount;
+            readSamples = 0;
+            do {
+                float[][][] samples = new float[1][][];
+                int ret = ogg.read_float(samples, totalSamples / sample.objectInfo.nChannels, null);
+                if (ret == 0) {
+                    failed = true;
+                    break;
+                }
+                if (ret < 0) {
+                    failed = true;
+                    return 0;
+                }
+
+                ret *= sample.objectInfo.nChannels;
+
+                SIMDProcessor.UpSampleOGGTo44kHz(dest, (readSamples << shift), samples[0], ret, (int) sample.objectInfo.nSamplesPerSec, sample.objectInfo.nChannels);
+
+                readSamples += ret;
+                totalSamples -= ret;
+            } while (totalSamples > 0);
+
+            lastSampleOffset += readSamples;
+
+            return (readSamples << shift);
         }
     };
 //    static final idBlockAlloc<idSampleDecoderLocal> sampleDecoderAllocator = new idBlockAlloc<>(64);

@@ -30,7 +30,6 @@ import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
 import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
 import static org.lwjgl.openal.AL10.AL_NO_ERROR;
 import static org.lwjgl.openal.AL10.alGetError;
-import static org.lwjgl.openal.AL10.alIsExtensionPresent;
 
 /**
  *
@@ -273,14 +272,12 @@ public class snd_cache {
                 // OGG decompressed at load time (when smaller than s_decompressionLimit seconds, 6 seconds by default)
                 if (objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
                     if ((MACOS_X && (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))
-                            || ((alIsExtensionPresent(/*ID_ALCHAR+*/"EAX-RAM")) && (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))) {
+                            || /*((alIsExtensionPresent(ID_ALCHAR "EAX-RAM")) && */ (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger()))) {
                         alGetError();
-//                        alGenBuffers(1, openalBuffer);
                         openalBuffer = AL10.alGenBuffers();
                         if (alGetError() != AL_NO_ERROR) {
                             common.Error("idSoundCache: error generating OpenAL hardware buffer");
                         }
-//                        if (alIsBuffer(openalBuffer)) {
                         if (AL10.alIsBuffer(openalBuffer)) {
                             idSampleDecoder decoder = idSampleDecoder.Alloc();
                             ByteBuffer destData = BufferUtils.createByteBuffer((LengthIn44kHzSamples() + 1) * 4);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
@@ -463,12 +460,12 @@ public class snd_cache {
             }
 
             if (output != null) {
-                int pos = nonCacheData.position();
+                nonCacheData.mark();
                 nonCacheData.position(offset);
 
                 output.put(nonCacheData);
 
-                nonCacheData.position(pos);
+                nonCacheData.reset();
             }
             if (position != null) {
                 position[0] = 0;
