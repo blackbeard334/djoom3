@@ -26,6 +26,8 @@
 
 package com.jcraft.jorbis;
 
+import java.util.Arrays;
+
 public class DspState{
   static final float M_PI=3.1415926539f;
   static final int VI_TRANSFORMB=1;
@@ -221,6 +223,33 @@ public class DspState{
     sequence=-1;
     return (0);
   }
+  
+    public int synthesis_restart() {
+//        codec_setup_info ci;
+        int hs = 0;
+
+//        if (!backend_state) {
+//            return -1;
+//        }
+        if (vi == null) {
+            return -1;
+        }
+//        ci = vi.codec_setup;
+//        if (!ci) {
+//            return -1;
+//        }
+//        hs = vi.halfrate_flag;
+        centerW = vi.blocksizes[1] >> (hs + 1);
+        pcm_current = centerW >> hs;
+
+        pcm_returned = -1;
+        granulepos = -1;
+        sequence = -1;
+        eofflag = 0;
+//        ((private_state) (backend_state)).sample_count = -1;
+
+        return 0;
+    }
 
   DspState(Info vi){
     this();
@@ -351,15 +380,17 @@ public class DspState{
   }
 
   // pcm==NULL indicates we just want the pending samples, no more
-  public int synthesis_pcmout(float[][][] _pcm, int[] index){
-    if(pcm_returned<centerW){
+  public int synthesis_pcmout(float[][][] _pcm){
+//    if(pcm_returned<centerW){
+      if (pcm_returned > -1 && pcm_returned < pcm_current) {
       if(_pcm!=null){
+        _pcm[0]=new float[pcm.length][];
         for(int i=0; i<vi.channels; i++){
-          index[i]=pcm_returned;
+            _pcm[0][i] = Arrays.copyOfRange(pcm[i], pcm_returned, pcm[i].length);
         }
-        _pcm[0]=pcm;
       }
-      return (centerW-pcm_returned);
+//      return (centerW-pcm_returned);
+        return pcm_current - pcm_returned;
     }
     return (0);
   }

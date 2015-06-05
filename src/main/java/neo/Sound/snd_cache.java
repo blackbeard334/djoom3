@@ -30,6 +30,7 @@ import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
 import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
 import static org.lwjgl.openal.AL10.AL_NO_ERROR;
 import static org.lwjgl.openal.AL10.alGetError;
+import static org.lwjgl.openal.AL10.alIsExtensionPresent;
 
 /**
  *
@@ -107,7 +108,7 @@ public class snd_cache {
 
             fileSystem.ReadFile(name.toString(), null, timestamp);
             if (timestamp[0] == FILE_NOT_FOUND_TIMESTAMP) {
-                idStr oggName = name;
+                idStr oggName = new idStr(name);
                 oggName.SetFileExtension(".ogg");
                 fileSystem.ReadFile(oggName.toString(), null, timestamp);
             }
@@ -246,7 +247,7 @@ public class snd_cache {
                             int blockSize = (int) (512 * objectInfo.nSamplesPerSec / 44100);
 
                             // Allocate amplitude data array
-                            amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
+                            amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
 
                             // Creating array of min/max amplitude pairs per blockSize samples
                             int i;
@@ -272,7 +273,7 @@ public class snd_cache {
                 // OGG decompressed at load time (when smaller than s_decompressionLimit seconds, 6 seconds by default)
                 if (objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
                     if ((MACOS_X && (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))
-                            || /*((alIsExtensionPresent(ID_ALCHAR "EAX-RAM")) && */ (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger()))) {
+                            || (alIsExtensionPresent("EAX-RAM") &&  (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))) {
                         alGetError();
                         openalBuffer = AL10.alGenBuffers();
                         if (alGetError() != AL_NO_ERROR) {
@@ -280,7 +281,7 @@ public class snd_cache {
                         }
                         if (AL10.alIsBuffer(openalBuffer)) {
                             idSampleDecoder decoder = idSampleDecoder.Alloc();
-                            ByteBuffer destData = BufferUtils.createByteBuffer((LengthIn44kHzSamples() + 1) * 4);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
+                            ByteBuffer destData = BufferUtils.createByteBuffer((LengthIn44kHzSamples() + 1) * Float.BYTES);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
 
                             // Decoder *always* outputs 44 kHz data
                             decoder.Decode(this, 0, LengthIn44kHzSamples(), destData.asFloatBuffer());
@@ -328,7 +329,7 @@ public class snd_cache {
                                 int blockSize = (int) (512 * objectInfo.nSamplesPerSec / 44100);
 
                                 // Allocate amplitude data array
-                                amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short ) );
+                                amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short ) );
 
                                 // Creating array of min/max amplitude pairs per blockSize samples
                                 int i;
@@ -514,7 +515,7 @@ public class snd_cache {
         public idSoundSample FindSound(final idStr filename, boolean loadOnDemandOnly) {
             idStr fname;
 
-            fname = filename;
+            fname = new idStr(filename);
             fname.BackSlashesToSlashes();
             fname.ToLower();
 

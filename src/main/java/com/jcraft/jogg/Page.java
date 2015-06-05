@@ -61,9 +61,9 @@ public class Page{
     return header_base[header+4]&0xff;
   }
 
-  int continued(){
-    return (header_base[header+5]&0x01);
-  }
+    public int continued() {
+        return (header_base[header + 5] & 0x01);
+    }
 
   public int bos(){
     return (header_base[header+5]&0x02);

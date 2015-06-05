@@ -10,6 +10,7 @@
     <properties>
         <cloning.version>1.9.1</cloning.version>
         <lwjgl.version>2.9.3</lwjgl.version>
+        <vorbis.version>0.7</vorbis.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.exec.version>1.3.2</maven.exec.version>
@@ -122,19 +123,13 @@
         <dependency>
             <groupId>org.gagravarr</groupId>
             <artifactId>vorbis-java</artifactId>
-            <version>0.7</version>
+            <version>${vorbis.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.gagravarr</groupId>
-            <artifactId>vorbis-java-core</artifactId>
-            <version>0.7</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.gagravarr</groupId>
             <artifactId>vorbis-java-parent</artifactId>
-            <version>0.7</version>
+            <version>${vorbis.version}</version>
             <type>pom</type>
         </dependency>
     </dependencies>

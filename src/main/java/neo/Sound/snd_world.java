@@ -80,6 +80,7 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
+import org.lwjgl.BufferUtils;
 import static org.lwjgl.openal.AL10.AL_BUFFER;
 import static org.lwjgl.openal.AL10.AL_BUFFERS_PROCESSED;
 import static org.lwjgl.openal.AL10.AL_FALSE;
@@ -1550,20 +1551,20 @@ public class snd_world {
                         alSourcef(chan.openalSource, AL_MAX_DISTANCE, maxD);
                     }
                     alSourcef(chan.openalSource, AL_PITCH, (slowmoActive && !chan.disallowSlow) ? (slowmoSpeed) : (1.0f));
-                    if (ID_OPENAL) {
-                        long lOcclusion = (enviroSuitActive ? -1150 : 0);
+//                    if (ID_OPENAL) {
+//                        long lOcclusion = (enviroSuitActive ? -1150 : 0);
 //                        if (soundSystemLocal.alEAXSet) {
 //                            soundSystemLocal.alEAXSet(EAXPROPERTYID_EAX_Source, EAXSOURCE_OCCLUSION, chan.openalSource, lOcclusion, sizeof(lOcclusion));
 //                        }
-                    }
+//                    }
                     if ((!looping && chan.leadinSample.hardwareBuffer) || (looping && chan.soundShader.entries[0].hardwareBuffer)) {
                         // handle uncompressed (non streaming) single shot and looping sounds
                         if (chan.triggered) {
                             alSourcei(chan.openalSource, AL_BUFFER, looping ? chan.soundShader.entries[0].openalBuffer : chan.leadinSample.openalBuffer);
                         }
                     } else {
-                        int/*ALint*/ finishedbuffers = 0;
-                        int/*ALuint*/[] buffers = new int[3];
+                        final int/*ALint*/ finishedbuffers;
+                        IntBuffer buffers = BufferUtils.createIntBuffer(3);
 
                         // handle streaming sounds (decode on the fly) both single shot AND looping
                         if (chan.triggered) {
@@ -1576,13 +1577,14 @@ public class snd_world {
 //                            if (soundSystemLocal.alEAXSetBufferMode) {
 //                                soundSystemLocal.alEAXSetBufferMode(3, chan.openalStreamingBuffer[0], alGetEnumValue(ID_ALCHAR + "AL_STORAGE_ACCESSIBLE"));
 //                            }
-                            buffers[0] = chan.openalStreamingBuffer.get(0);
-                            buffers[1] = chan.openalStreamingBuffer.get(1);
-                            buffers[2] = chan.openalStreamingBuffer.get(2);
+                            buffers.put(0, chan.openalStreamingBuffer.get(0));
+                            buffers.put(1, chan.openalStreamingBuffer.get(1));
+                            buffers.put(2, chan.openalStreamingBuffer.get(2));
                             finishedbuffers = 3;
                         } else {
-                            alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED);//alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED, finishedbuffers);
-                            alSourceUnqueueBuffers(chan.openalSource, IntBuffer.wrap(buffers));//alSourceUnqueueBuffers(chan.openalSource, finishedbuffers, buffers[0]);
+                            finishedbuffers  = alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED);//alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED, finishedbuffers);
+//                            DBG_AddChannelContribution++;
+                            alSourceUnqueueBuffers(chan.openalSource, buffers);//alSourceUnqueueBuffers(chan.openalSource, finishedbuffers, buffers[0]);
                             if (finishedbuffers == 3) {
                                 chan.triggered = true;
                             }
@@ -1599,15 +1601,15 @@ public class snd_world {
                                     alignedInputSamples[i] = idMath.FtoiFast(alignedInputSamples[i]);
                                 }
                             }
-                            ByteBuffer data = ByteBuffer.allocate(MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * 2);
-                            data.asFloatBuffer().put(alignedInputSamples);
-                            alBufferData(buffers[j], chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
+                            ByteBuffer data = BufferUtils.createByteBuffer(MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * Short.BYTES);
+                            data.asFloatBuffer().put(alignedInputSamples, 0, data.capacity() / Float.BYTES);
+                            alBufferData(buffers.get(j), chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
                                     data, /*MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * sizeof(short),*/ 44100);
                             chan.openalStreamingOffset += MIXBUFFER_SAMPLES;
                         }
 
                         if (finishedbuffers != 0) {
-                            alSourceQueueBuffers(chan.openalSource, /*finishedbuffers,*/ IntBuffer.wrap(buffers));
+                            alSourceQueueBuffers(chan.openalSource, /*finishedbuffers,*/ buffers);
                         }
                     }
 

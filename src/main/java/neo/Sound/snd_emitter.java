@@ -549,7 +549,7 @@ public class snd_emitter {
                     len = sampleCount44k;
                 }
 //		memset( dest_p, 0, len * sizeof( dest_p[0] ) );
-                dest.clear();
+//                dest.clear();
                 dest_p += len;
                 sampleCount44k -= len;
                 sampleOffset44k += len;
@@ -559,7 +559,7 @@ public class snd_emitter {
             idSoundSample leadin = leadinSample;
             if (NOT(leadin) || sampleOffset44k < 0 || sampleCount44k <= 0) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
-                dest.clear();
+//                dest.clear();
                 return;
             }
 
@@ -580,7 +580,7 @@ public class snd_emitter {
             // if not looping, zero fill any remaining spots
             if (null == soundShader || 0 == (parms.soundShaderFlags & SSF_LOOPING)) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
-                dest.clear();
+//                dest.clear();
                 return;
             }
 
@@ -589,7 +589,7 @@ public class snd_emitter {
 
             if (null == loop) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
-                dest.clear();
+//                dest.clear();
                 return;
             }
 
@@ -1282,7 +1282,7 @@ public class snd_emitter {
 
                         if (idSoundSystemLocal.useOpenAL && alIsSource(chan.openalSource)) {
 //                            alGetSourcei(chan.openalSource, AL_SOURCE_STATE, state);
-                            AL10.alGetSourcei(chan.openalSource, AL_SOURCE_STATE);
+                            state = AL10.alGetSourcei(chan.openalSource, AL_SOURCE_STATE);
                         }
                         idSlowChannel slow = GetSlowChannel(chan);
 

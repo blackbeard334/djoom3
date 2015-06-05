@@ -48,7 +48,7 @@ public class StreamState{
    	 logical bitstream */
   int b_o_s; /* set after we've written the initial page
    of a logical bitstream */
-  int serialno;
+  long serialno;
   int pageno;
   long packetno; /* sequence number for decode; the framing
                       knows where there's a hole in the data,
@@ -74,7 +74,7 @@ public class StreamState{
     granule_vals=new long[lacing_storage];
   }
 
-  public void init(int serialno){
+  public void init(long serialno){
     if(body_data==null){
       init();
     }
@@ -171,58 +171,77 @@ public class StreamState{
     return (0);
   }
 
-  public int packetout(Packet op){
-
-    /* The last part of decode. We have the stream broken into packet
-       segments.  Now we need to group them into packets (or return the
-       out of sync markers) */
-
-    int ptr=lacing_returned;
-
-    if(lacing_packet<=ptr){
-      return (0);
+    public int packetout(Packet op) {
+        return packetout(op, true);
     }
 
-    if((lacing_vals[ptr]&0x400)!=0){
-      /* We lost sync here; let the app know */
-      lacing_returned++;
+    public int packetout(Packet op, boolean adv) {
 
-      /* we need to tell the codec there's a gap; it might need to
-         handle previous packet dependencies. */
-      packetno++;
-      return (-1);
+        /* The last part of decode. We have the stream broken into packet
+         segments.  Now we need to group them into packets (or return the
+         out of sync markers) */
+        int ptr = lacing_returned;
+
+        if (lacing_packet <= ptr) {
+            return 0;
+        }
+
+        if ((lacing_vals[ptr] & 0x400) != 0) {
+            /* We lost sync here; let the app know */
+            lacing_returned++;
+
+            /* we need to tell the codec there's a gap; it might need to
+             handle previous packet dependencies. */
+            packetno++;
+            return -1;
+        }
+
+        if (op == null && !adv) {
+            return 1; /* just using peek as an inexpensive way
+             to ask if there's a whole packet
+             waiting */
+
+        }
+
+        /* Gather the whole packet. We'll have no holes or a partial packet */
+        {
+            int size = lacing_vals[ptr] & 0xff;
+            int bytes = size;
+            int eos = lacing_vals[ptr] & 0x200; // last packet of the stream?
+            int bos = lacing_vals[ptr] & 0x100; // first packet of the stream?
+
+            while (size == 255) {
+                int val = lacing_vals[++ptr];
+                size = val & 0xff;
+                if ((val & 0x200) != 0) {
+                    e_o_s = 0x200;
+                }
+                bytes += size;
+            }
+
+            if (op != null) {
+                op.e_o_s = eos;
+                op.b_o_s = bos;
+                op.packet_base = body_data;//TODO:replace with a byteBuffer?
+                op.packet = body_returned;
+                op.packetno = packetno;
+                op.granulepos = granule_vals[ptr];
+                op.bytes = bytes;
+            }
+
+            if (adv) {
+                body_returned += bytes;
+                lacing_returned = ptr + 1;
+                packetno++;
+            }
+        }
+
+        return 1;
     }
-
-    /* Gather the whole packet. We'll have no holes or a partial packet */
-    {
-      int size=lacing_vals[ptr]&0xff;
-      int bytes=0;
-
-      op.packet_base=body_data;
-      op.packet=body_returned;
-      op.e_o_s=lacing_vals[ptr]&0x200; /* last packet of the stream? */
-      op.b_o_s=lacing_vals[ptr]&0x100; /* first packet of the stream? */
-      bytes+=size;
-
-      while(size==255){
-        int val=lacing_vals[++ptr];
-        size=val&0xff;
-        if((val&0x200)!=0)
-          op.e_o_s=0x200;
-        bytes+=size;
-      }
-
-      op.packetno=packetno;
-      op.granulepos=granule_vals[ptr];
-      op.bytes=bytes;
-
-      body_returned+=bytes;
-
-      lacing_returned=ptr+1;
+    
+    public int packetpeek(Packet op) {
+        return packetout(op, false);
     }
-    packetno++;
-    return (1);
-  }
 
   // add the incoming page to the stream state; we decompose the page
   // into packet segments here as well.
@@ -430,7 +449,7 @@ public class StreamState{
 
     /* 32 bits of stream serial number */
     {
-      int _serialno=serialno;
+      long _serialno=serialno;
       for(i=14; i<18; i++){
         header[i]=(byte)_serialno;
         _serialno>>>=8;
@@ -523,4 +542,10 @@ public class StreamState{
     granulepos=0;
     return (0);
   }
+  
+    public int reset_serialno(long serialno) {
+        reset();
+        this.serialno = serialno;
+        return 0;
+    }
 }
