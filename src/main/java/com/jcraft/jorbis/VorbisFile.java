@@ -57,7 +57,7 @@ public final class VorbisFile implements AutoCloseable {
     private static final int OV_EREAD      = -128;
     private static final int OV_EFAULT     = -129;
     private static final int OV_EIMPL      = -130;
-    private static final int OV_EINVAL     = -131;
+    public  static final int OV_EINVAL     = -131;
     private static final int OV_ENOTVORBIS = -132;
     private static final int OV_EBADHEADER = -133;
     private static final int OV_EVERSION   = -134;

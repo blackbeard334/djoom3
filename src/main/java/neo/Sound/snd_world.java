@@ -55,7 +55,6 @@ import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
-import static neo.framework.BuildDefines.ID_OPENAL;
 import static neo.framework.BuildDefines.MACOS_X;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
@@ -98,7 +97,6 @@ import static org.lwjgl.openal.AL10.AL_TRUE;
 import static org.lwjgl.openal.AL10.alBufferData;
 import static org.lwjgl.openal.AL10.alDeleteBuffers;
 import static org.lwjgl.openal.AL10.alGenBuffers;
-import static org.lwjgl.openal.AL10.alGetEnumValue;
 import static org.lwjgl.openal.AL10.alGetSourcei;
 import static org.lwjgl.openal.AL10.alIsSource;
 import static org.lwjgl.openal.AL10.alListener3f;
@@ -164,7 +162,7 @@ public class snd_world {
         public idSoundFade[] soundClassFade = new idSoundFade[SOUND_MAX_CLASSES];    // for global sound fading
         //
         // avi stuff
-        public idFile[]      fpa            = new idFile[6];
+        public idFile[]            fpa = new idFile[6];
         public idStr               aviDemoPath;
         public idStr               aviDemoName;
         //
@@ -373,7 +371,7 @@ public class snd_world {
                 common.Error("idSoundWorldLocal::FadeSoundClasses: bad soundClass %d", soundClass);
             }
 
-            idSoundFade fade = soundClassFade[ soundClass];
+            idSoundFade fade = soundClassFade[soundClass];
 
             int length44kHz = soundSystemLocal.MillisecondsToSamples((int) (over * 1000));
 
@@ -821,7 +819,7 @@ public class snd_world {
 
                 // write the channel data
                 for (j = 0; j < SOUND_MAX_CHANNELS; j++) {
-                    idSoundChannel chan = def.channels[ j];
+                    idSoundChannel chan = def.channels[j];
 
                     // Write out any sound commands for this def
                     if (chan.triggerState && chan.soundShader != null && chan.leadinSample != null) {
@@ -1256,7 +1254,7 @@ public class snd_world {
                     continue;
                 }
                 for (j = 0; j < SOUND_MAX_CHANNELS; j++) {
-                    idSoundChannel chan = emitters.oGet(i).channels[ j];
+                    idSoundChannel chan = emitters.oGet(i).channels[j];
 
                     if (!chan.triggerState) {
                         continue;
@@ -1563,7 +1561,7 @@ public class snd_world {
                             alSourcei(chan.openalSource, AL_BUFFER, looping ? chan.soundShader.entries[0].openalBuffer : chan.leadinSample.openalBuffer);
                         }
                     } else {
-                        final int/*ALint*/ finishedbuffers;
+                        int/*ALint*/ finishedbuffers;
                         IntBuffer buffers = BufferUtils.createIntBuffer(3);
 
                         // handle streaming sounds (decode on the fly) both single shot AND looping
@@ -1582,7 +1580,7 @@ public class snd_world {
                             buffers.put(2, chan.openalStreamingBuffer.get(2));
                             finishedbuffers = 3;
                         } else {
-                            finishedbuffers  = alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED);//alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED, finishedbuffers);
+                            finishedbuffers = alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED);//alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED, finishedbuffers);
 //                            DBG_AddChannelContribution++;
                             alSourceUnqueueBuffers(chan.openalSource, buffers);//alSourceUnqueueBuffers(chan.openalSource, finishedbuffers, buffers[0]);
                             if (finishedbuffers == 3) {
@@ -1592,19 +1590,20 @@ public class snd_world {
 
                         for (j = 0; j < finishedbuffers; j++) {
                             chan.GatherChannelSamples(chan.openalStreamingOffset * sample.objectInfo.nChannels, MIXBUFFER_SAMPLES * sample.objectInfo.nChannels, FloatBuffer.wrap(alignedInputSamples));
+                            ByteBuffer data = BufferUtils.createByteBuffer(MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * Short.BYTES);
+                            ShortBuffer data2 = data.asShortBuffer();
                             for (int i = 0; i < (MIXBUFFER_SAMPLES * sample.objectInfo.nChannels); i++) {
                                 if (alignedInputSamples[i] < -32768.0f) {
-                                    alignedInputSamples[i] = -32768;
+                                    data2.put(i, Short.MIN_VALUE);
                                 } else if (alignedInputSamples[i] > 32767.0f) {
-                                    alignedInputSamples[i] = 32767;
+                                    data2.put(i, Short.MAX_VALUE);
                                 } else {
-                                    alignedInputSamples[i] = idMath.FtoiFast(alignedInputSamples[i]);
+                                    data2.put(i, (short) idMath.FtoiFast(alignedInputSamples[i]));
                                 }
                             }
-                            ByteBuffer data = BufferUtils.createByteBuffer(MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * Short.BYTES);
-                            data.asFloatBuffer().put(alignedInputSamples, 0, data.capacity() / Float.BYTES);
-                            alBufferData(buffers.get(j), chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
-                                    data, /*MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * sizeof(short),*/ 44100);
+                            ByteBuffer DBG_alignedInputSamples = ByteBuffer.allocate(data.capacity());
+                            DBG_alignedInputSamples.put(data);
+                            alBufferData(buffers.get(j), chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, data, 44100);
                             chan.openalStreamingOffset += MIXBUFFER_SAMPLES;
                         }
 
@@ -1879,7 +1878,7 @@ public class snd_world {
                 ByteBuffer outD = ByteBuffer.allocate(MIXBUFFER_SAMPLES * 2);
 
                 for (int j = 0; j < MIXBUFFER_SAMPLES; j++) {
-                    float s = mix_p[ j * numSpeakers + i];
+                    float s = mix_p[j * numSpeakers + i];
                     if (s < -32768.0f) {
                         outD.putShort(Short.MIN_VALUE);
                     } else if (s > 32767.0f) {
@@ -2093,7 +2092,7 @@ public class snd_world {
             activeChannelCount = 0;
 
             for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                idSoundChannel chan = sound.channels[ i];
+                idSoundChannel chan = sound.channels[i];
 
                 if (!chan.triggerState) {
                     continue;
@@ -2184,12 +2183,12 @@ public class snd_world {
                 if (activeChannelCount == 1) {
                     // store to the buffer
                     for (j = 0; j < AMPLITUDE_SAMPLES; j++) {
-                        sumBuffer[ j] = volume * sourceBuffer[ j];
+                        sumBuffer[j] = volume * sourceBuffer[j];
                     }
                 } else {
                     // add to the buffer
                     for (j = 0; j < AMPLITUDE_SAMPLES; j++) {
-                        sumBuffer[ j] += volume * sourceBuffer[ j];
+                        sumBuffer[j] += volume * sourceBuffer[j];
                     }
                 }
             }

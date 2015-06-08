@@ -26,6 +26,7 @@
 
 package com.jcraft.jorbis;
 
+import static com.jcraft.jorbis.VorbisFile.OV_EINVAL;
 import java.util.Arrays;
 
 public class DspState{
@@ -379,28 +380,29 @@ public class DspState{
     return (0);
   }
 
-  // pcm==NULL indicates we just want the pending samples, no more
-  public int synthesis_pcmout(float[][][] _pcm){
+    // pcm==NULL indicates we just want the pending samples, no more
+    public int synthesis_pcmout(float[][][] _pcm) {
 //    if(pcm_returned<centerW){
-      if (pcm_returned > -1 && pcm_returned < pcm_current) {
-      if(_pcm!=null){
-        _pcm[0]=new float[pcm.length][];
-        for(int i=0; i<vi.channels; i++){
-            _pcm[0][i] = Arrays.copyOfRange(pcm[i], pcm_returned, pcm[i].length);
-        }
-      }
+        if (pcm_returned > -1 && pcm_returned < pcm_current) {
+            if (_pcm != null) {
+                _pcm[0] = new float[pcm.length][];
+                for (int i = 0; i < vi.channels; i++) {
+                    _pcm[0][i] = Arrays.copyOfRange(pcm[i], pcm_returned, pcm[i].length);
+                }
+            }
 //      return (centerW-pcm_returned);
-        return pcm_current - pcm_returned;
+            return pcm_current - pcm_returned;
+        }
+        return (0);
     }
-    return (0);
-  }
 
-  public int synthesis_read(int bytes){
-    if(bytes!=0&&pcm_returned+bytes>centerW)
-      return (-1);
-    pcm_returned+=bytes;
-    return (0);
-  }
+    public int synthesis_read(int bytes) {
+        if (bytes != 0 && pcm_returned + bytes > pcm_current) {
+            return OV_EINVAL;
+        }
+        pcm_returned += bytes;
+        return (0);
+    }
 
   public void clear(){
   }
