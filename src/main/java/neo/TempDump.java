@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
@@ -40,6 +41,7 @@ import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
 import neo.ui.UserInterface.idUserInterface;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
 
 /**
  *
@@ -410,6 +412,15 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         return (ByteBuffer) BufferUtils.createByteBuffer(bytes.length).put(bytes).flip();
     }
 
+    public static FloatBuffer wrapToDirectBuffer(final float[] array) {
+
+        if (null == array) {
+            return null;
+        }
+
+        return (FloatBuffer) BufferUtils.createFloatBuffer(array.length).put(array).flip();
+    }
+
     /**
      * Integer array TO Int array
      */
@@ -540,6 +551,13 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             } else {
                 CALL_STACK_MAP.put(key, 1);
             }
+        }
+    }
+    
+    private static void breakOnALError() {
+        final int e;
+        if ((e = AL10.alGetError()) != 0) {
+            throw new RuntimeException(e + " minutes, to miiiiiiiidnight!");
         }
     }
 

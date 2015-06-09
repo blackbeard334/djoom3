@@ -80,12 +80,14 @@ import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
 import static org.lwjgl.openal.AL10.AL_BUFFER;
 import static org.lwjgl.openal.AL10.AL_BUFFERS_PROCESSED;
 import static org.lwjgl.openal.AL10.AL_FALSE;
 import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
 import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
 import static org.lwjgl.openal.AL10.AL_GAIN;
+import static org.lwjgl.openal.AL10.AL_INVALID_NAME;
 import static org.lwjgl.openal.AL10.AL_LOOPING;
 import static org.lwjgl.openal.AL10.AL_MAX_DISTANCE;
 import static org.lwjgl.openal.AL10.AL_ORIENTATION;
@@ -99,6 +101,7 @@ import static org.lwjgl.openal.AL10.alDeleteBuffers;
 import static org.lwjgl.openal.AL10.alGenBuffers;
 import static org.lwjgl.openal.AL10.alGetSourcei;
 import static org.lwjgl.openal.AL10.alIsSource;
+import static org.lwjgl.openal.AL10.alListener;
 import static org.lwjgl.openal.AL10.alListener3f;
 import static org.lwjgl.openal.AL10.alListenerf;
 import static org.lwjgl.openal.AL10.alSource3f;
@@ -1373,7 +1376,7 @@ public class snd_world {
          Mixes MIXBUFFER_SAMPLES samples starting at current44kHz sample time into
          finalMixBuffer
          ===============
-         */
+         */private static int DBG_AddChannelContribution = 0;
         public void AddChannelContribution(idSoundEmitterLocal sound, idSoundChannel chan, int current44kHz, int numSpeakers, float[] finalMixBuffer) {
             int j;
             float volume;
@@ -1517,7 +1520,7 @@ public class snd_world {
 //            float[] inputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
 //            float[] alignedInputSamples = (float[]) ((((int) inputSamples) + 15) & ~15);
             float[] alignedInputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
-
+            
             //
             // allocate and initialize hardware source
             // 
@@ -1561,7 +1564,7 @@ public class snd_world {
                             alSourcei(chan.openalSource, AL_BUFFER, looping ? chan.soundShader.entries[0].openalBuffer : chan.leadinSample.openalBuffer);
                         }
                     } else {
-                        int/*ALint*/ finishedbuffers;
+                        final int/*ALint*/ finishedbuffers;
                         IntBuffer buffers = BufferUtils.createIntBuffer(3);
 
                         // handle streaming sounds (decode on the fly) both single shot AND looping
@@ -1581,8 +1584,11 @@ public class snd_world {
                             finishedbuffers = 3;
                         } else {
                             finishedbuffers = alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED);//alGetSourcei(chan.openalSource, AL_BUFFERS_PROCESSED, finishedbuffers);
-//                            DBG_AddChannelContribution++;
-                            alSourceUnqueueBuffers(chan.openalSource, buffers);//alSourceUnqueueBuffers(chan.openalSource, finishedbuffers, buffers[0]);
+                            DBG_AddChannelContribution++;
+                            for (int i = 0; i < finishedbuffers; i++) {//jake2
+                                buffers.put(i, alSourceUnqueueBuffers(chan.openalSource));//alSourceUnqueueBuffers(chan.openalSource, finishedbuffers, buffers[0]);
+                            }
+//                            System.out.println("====" + AL10.alGetError());
                             if (finishedbuffers == 3) {
                                 chan.triggered = true;
                             }
@@ -1601,14 +1607,17 @@ public class snd_world {
                                     data2.put(i, (short) idMath.FtoiFast(alignedInputSamples[i]));
                                 }
                             }
-                            ByteBuffer DBG_alignedInputSamples = ByteBuffer.allocate(data.capacity());
-                            DBG_alignedInputSamples.put(data);
+//                            ByteBuffer DBG_alignedInputSamples = ByteBuffer.allocate(data.capacity());
+//                            DBG_alignedInputSamples.put(data);
+//                            data.asFloatBuffer().put(alignedInputSamples, 0, data.capacity() / Float.BYTES);
+//                            System.out.println("  buffers1 " + AL10.alGetError());
                             alBufferData(buffers.get(j), chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, data, 44100);
+//                            System.out.println("  buffers2 " + AL10.alGetError());
                             chan.openalStreamingOffset += MIXBUFFER_SAMPLES;
                         }
 
-                        if (finishedbuffers != 0) {
-                            alSourceQueueBuffers(chan.openalSource, /*finishedbuffers,*/ buffers);
+                        for (int i = 0; i < finishedbuffers; i++) {
+                            alSourceQueueBuffers(chan.openalSource, buffers.get(i));
                         }
                     }
 
@@ -1731,7 +1740,7 @@ public class snd_world {
         public void MixLoop(int current44kHz, int numSpeakers, float[] finalMixBuffer) {
             int i, j;
             idSoundEmitterLocal sound;
-
+            
             // if noclip flying outside the world, leave silence
             if (listenerArea == -1) {
                 if (idSoundSystemLocal.useOpenAL) {
@@ -1748,19 +1757,19 @@ public class snd_world {
                 listenerPosition[1] = listenerPos.z;
                 listenerPosition[2] = -listenerPos.x;
 
-                float/*ALfloat*/[] listenerOrientation = new float[6];
+                FloatBuffer listenerOrientation = BufferUtils.createFloatBuffer(6);
 
-                listenerOrientation[0] = -listenerAxis.oGet(0).y;
-                listenerOrientation[1] = listenerAxis.oGet(0).z;
-                listenerOrientation[2] = -listenerAxis.oGet(0).x;
+                listenerOrientation.put(0, -listenerAxis.oGet(0).y);
+                listenerOrientation.put(1, +listenerAxis.oGet(0).z);
+                listenerOrientation.put(2, -listenerAxis.oGet(0).x);
 
-                listenerOrientation[3] = -listenerAxis.oGet(2).y;
-                listenerOrientation[4] = listenerAxis.oGet(2).z;
-                listenerOrientation[5] = -listenerAxis.oGet(2).x;
+                listenerOrientation.put(3, -listenerAxis.oGet(2).y);
+                listenerOrientation.put(4, +listenerAxis.oGet(2).z);
+                listenerOrientation.put(5, -listenerAxis.oGet(2).x);
 
                 alListenerf(AL_GAIN, 1.0f);
                 alListener3f(AL_POSITION, listenerPosition[0], listenerPosition[1], listenerPosition[2]);
-                alListener3f(AL_ORIENTATION, listenerOrientation[0], listenerOrientation[1], listenerOrientation[2]);
+                alListener(AL_ORIENTATION, listenerOrientation);//SO6874122
 
 // #if ID_OPENAL
                 // if ( soundSystemLocal.s_useEAXReverb.GetBool() ) {
@@ -1782,7 +1791,7 @@ public class snd_world {
                 // if ( soundSystemLocal.s_muteEAXReverb.GetBool() ) {
                 // EnvironmentParameters.lRoom = -10000;
                 // EnvironmentID = -2;
-                // }
+// }
                 // if ( soundSystemLocal.alEAXSet ) {
                 // soundSystemLocal.alEAXSet( &EAXPROPERTYID_EAX_FXSlot0, EAXREVERB_ALLPARAMETERS, 0, &EnvironmentParameters, sizeof( EnvironmentParameters ) );
                 // }
