@@ -317,7 +317,7 @@ public class snd_shader {
                 } // description
                 else if (0 == token.Icmp("description")) {
                     src.ReadTokenOnLine(token);
-                    desc = token;
+                    desc.oSet(token);
                 } // mindistance
                 else if (0 == token.Icmp("mindistance")) {
                     parms.minDistance = src.ParseFloat();
