@@ -1,28 +1,43 @@
 package neo.Sound;
 
 import static java.lang.Math.atan;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
 import neo.Renderer.Cinematic.idSndWindow;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Material.shaderStage_t;
 import neo.Renderer.RenderWorld.exitPortal_t;
 import neo.Renderer.RenderWorld.idRenderWorld;
+
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_AIR;
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_VIEW;
+
 import neo.Sound.snd_cache.idSoundSample;
+
 import static neo.Sound.snd_emitter.REMOVE_STATUS_ALIVE;
 import static neo.Sound.snd_emitter.REMOVE_STATUS_SAMPLEFINISHED;
+
 import neo.Sound.snd_emitter.idSlowChannel;
 import neo.Sound.snd_emitter.idSoundChannel;
 import neo.Sound.snd_emitter.idSoundEmitterLocal;
 import neo.Sound.snd_emitter.idSoundFade;
+
 import static neo.Sound.snd_local.SND_EPSILON;
 import static neo.Sound.snd_local.SOUND_MAX_CHANNELS;
+
 import neo.Sound.snd_local.idSampleDecoder;
 import neo.Sound.snd_local.soundDemoCommand_t;
+
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_ALLOC_EMITTER;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_FADE;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_FREE;
@@ -42,45 +57,67 @@ import static neo.Sound.snd_shader.SSF_NO_OCCLUSION;
 import static neo.Sound.snd_shader.SSF_OMNIDIRECTIONAL;
 import static neo.Sound.snd_shader.SSF_PRIVATE_SOUND;
 import static neo.Sound.snd_shader.SSF_UNCLAMPED;
+
 import neo.Sound.snd_shader.idSoundShader;
 import neo.Sound.snd_shader.soundShaderParms_t;
 import neo.Sound.snd_system.idSoundSystemLocal;
+
 import static neo.Sound.snd_system.idSoundSystemLocal.s_showLevelMeter;
 import static neo.Sound.snd_system.soundSystemLocal;
 import static neo.Sound.sound.SCHANNEL_ANY;
 import static neo.Sound.sound.SCHANNEL_ONE;
+
 import neo.Sound.sound.idSoundEmitter;
 import neo.Sound.sound.idSoundWorld;
+
 import static neo.TempDump.NOT;
+
 import neo.TempDump.TODO_Exception;
+
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.BuildDefines.MACOS_X;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DemoFile.demoSystem_t.DS_SOUND;
+
 import neo.framework.DemoFile.idDemoFile;
+
 import static neo.framework.FileSystem_h.fileSystem;
+
 import neo.framework.File_h.idFile;
+
 import static neo.framework.Session.session;
+
 import neo.idlib.BV.Bounds.idBounds;
+
 import static neo.idlib.Lib.colorRed;
+
 import neo.idlib.Text.Str.idStr;
+
 import static neo.idlib.Text.Str.va;
+
 import neo.idlib.containers.List.idList;
+
 import static neo.idlib.math.Math_h.DEG2RAD;
+
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
+
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
 import static neo.idlib.math.Simd.SIMDProcessor;
+
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
+
 import static org.lwjgl.openal.AL10.AL_BUFFER;
 import static org.lwjgl.openal.AL10.AL_BUFFERS_PROCESSED;
 import static org.lwjgl.openal.AL10.AL_FALSE;
@@ -134,13 +171,17 @@ public class snd_world {
             missedUpdateWindow = 0;
             activeSounds = 0;
         }
-    };
+    }
+
+    ;
 
     static class soundPortalTrace_s {
 
-        int portalArea;
+        int                portalArea;
         soundPortalTrace_s prevStack;
-    };
+    }
+
+    ;
 
     public static class idSoundWorldLocal extends idSoundWorld {
 
@@ -165,7 +206,7 @@ public class snd_world {
         public idSoundFade[] soundClassFade = new idSoundFade[SOUND_MAX_CLASSES];    // for global sound fading
         //
         // avi stuff
-        public idFile[]            fpa = new idFile[6];
+        public idFile[]      fpa            = new idFile[6];
         public idStr               aviDemoPath;
         public idStr               aviDemoName;
         //
@@ -341,14 +382,14 @@ public class snd_world {
 
             listenerPrivateId = listenerId;
 
-            listenerQU = origin;							// Doom units
-            listenerPos = origin.oMultiply(DOOM_TO_METERS);			// meters
+            listenerQU = origin;                            // Doom units
+            listenerPos = origin.oMultiply(DOOM_TO_METERS);            // meters
             listenerAxis = axis;
             listenerAreaName = areaName;
             listenerAreaName.ToLower();
 
             if (rw != null) {
-                listenerArea = rw.PointInArea(listenerQU);	// where are we?
+                listenerArea = rw.PointInArea(listenerQU);    // where are we?
             } else {
                 listenerArea = 0;
             }
@@ -570,6 +611,7 @@ public class snd_world {
                 break;
             }
         }
+
         // background music
         /*
          ===============
@@ -580,7 +622,7 @@ public class snd_world {
          this is called from the main thread
          ===============
          */
-        private static final idRandom rnd  = new idRandom();
+        private static final idRandom rnd = new idRandom();
 
         @Override
         public void PlayShaderDirectly(final String shaderName, int channel /*= -1*/) {
@@ -901,7 +943,7 @@ public class snd_world {
                 def = emitters.oGet(i);
 
                 def.removeStatus = REMOVE_STATUS_ALIVE;
-                def.playing = true;		// may be reset by the first UpdateListener
+                def.playing = true;        // may be reset by the first UpdateListener
 
                 savefile.ReadVec3(def.origin);
                 def.listenerId = savefile.ReadInt();
@@ -1318,12 +1360,12 @@ public class snd_world {
          ===============
          */
         private static final idVec3[] speakerVector = {
-            new idVec3(0.707f, 0.707f, 0.0f), // front left
-            new idVec3(0.707f, -0.707f, 0.0f), // front right
-            new idVec3(0.707f, 0.0f, 0.0f), // front center
-            new idVec3(0.0f, 0.0f, 0.0f), // sub
-            new idVec3(-0.707f, 0.707f, 0.0f), // rear left
-            new idVec3(-0.707f, -0.707f, 0.0f) // rear right
+                new idVec3(0.707f, 0.707f, 0.0f), // front left
+                new idVec3(0.707f, -0.707f, 0.0f), // front right
+                new idVec3(0.707f, 0.0f, 0.0f), // front center
+                new idVec3(0.0f, 0.0f, 0.0f), // sub
+                new idVec3(-0.707f, 0.707f, 0.0f), // rear left
+                new idVec3(-0.707f, -0.707f, 0.0f) // rear right
         };
 
         public void CalcEars(int numSpeakers, idVec3 spatializedOrigin, idVec3 listenerPos, idMat3 listenerAxis, float[] ears/*[6]*/, float spatialize) {
@@ -1335,7 +1377,7 @@ public class snd_world {
             if (numSpeakers == 6) {
                 for (int i = 0; i < 6; i++) {
                     if (i == 3) {
-                        ears[i] = idSoundSystemLocal.s_subFraction.GetFloat();		// subwoofer
+                        ears[i] = idSoundSystemLocal.s_subFraction.GetFloat();        // subwoofer
                         continue;
                     }
                     float dot = ovec.oMultiply(speakerVector[i]);
@@ -1377,6 +1419,7 @@ public class snd_world {
          finalMixBuffer
          ===============
          */private static int DBG_AddChannelContribution = 0;
+
         public void AddChannelContribution(idSoundEmitterLocal sound, idSoundChannel chan, int current44kHz, int numSpeakers, float[] finalMixBuffer) {
             int j;
             float volume;
@@ -1520,10 +1563,10 @@ public class snd_world {
 //            float[] inputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
 //            float[] alignedInputSamples = (float[]) ((((int) inputSamples) + 15) & ~15);
             float[] alignedInputSamples = new float[MIXBUFFER_SAMPLES * 2 + 16];
-            
+
             //
             // allocate and initialize hardware source
-            // 
+            //
             if (idSoundSystemLocal.useOpenAL && sound.removeStatus < REMOVE_STATUS_SAMPLEFINISHED) {
                 if (!alIsSource(chan.openalSource)) {
                     chan.openalSource = soundSystemLocal.AllocOpenALSource(chan, !chan.leadinSample.hardwareBuffer || !chan.soundShader.entries[0].hardwareBuffer || looping, chan.leadinSample.objectInfo.nChannels == 2);
@@ -1594,24 +1637,28 @@ public class snd_world {
                             }
                         }
 
+                        final int length = MIXBUFFER_SAMPLES * sample.objectInfo.nChannels;
                         for (j = 0; j < finishedbuffers; j++) {
-                            chan.GatherChannelSamples(chan.openalStreamingOffset * sample.objectInfo.nChannels, MIXBUFFER_SAMPLES * sample.objectInfo.nChannels, FloatBuffer.wrap(alignedInputSamples));
-                            ByteBuffer data = BufferUtils.createByteBuffer(MIXBUFFER_SAMPLES * sample.objectInfo.nChannels * Short.BYTES);
-                            ShortBuffer data2 = data.asShortBuffer();
-                            for (int i = 0; i < (MIXBUFFER_SAMPLES * sample.objectInfo.nChannels); i++) {
+                            FloatBuffer samples = FloatBuffer.wrap(alignedInputSamples);
+                            chan.GatherChannelSamples(chan.openalStreamingOffset * sample.objectInfo.nChannels, length, samples);
+                            ByteBuffer data = BufferUtils.createByteBuffer(length * Short.BYTES);
+                            ShortBuffer dataS = data.asShortBuffer();
+                            for (int i = 0; i < length; i++) {
                                 if (alignedInputSamples[i] < -32768.0f) {
-                                    data2.put(i, Short.MIN_VALUE);
+                                    dataS.put(i, Short.MIN_VALUE);
                                 } else if (alignedInputSamples[i] > 32767.0f) {
-                                    data2.put(i, Short.MAX_VALUE);
+                                    dataS.put(i, Short.MAX_VALUE);
                                 } else {
-                                    data2.put(i, (short) idMath.FtoiFast(alignedInputSamples[i]));
+                                    final short bla = (short) idMath.FtoiFast(alignedInputSamples[i]);
+                                    dataS.put(i, bla);
+//                                    System.out.println("<<" + bla);
                                 }
                             }
-//                            ByteBuffer DBG_alignedInputSamples = ByteBuffer.allocate(data.capacity());
-//                            DBG_alignedInputSamples.put(data);
-//                            data.asFloatBuffer().put(alignedInputSamples, 0, data.capacity() / Float.BYTES);
-//                            System.out.println("  buffers1 " + AL10.alGetError());
+                            ByteBuffer d = (ByteBuffer) data.duplicate().position(0);
+//                            System.out.printf(">>\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n", d.get(), d.get(), d.get(), d.get(), d.get(), d.get(), d.get(), d.get(), d.get(), d.get());
+//                            System.out.printf(">>\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n%f\n", d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat(), d.getFloat());
                             alBufferData(buffers.get(j), chan.leadinSample.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, data, 44100);
+//                                fc.write(d);
 //                            System.out.println("  buffers2 " + AL10.alGetError());
                             chan.openalStreamingOffset += MIXBUFFER_SAMPLES;
                         }
@@ -1740,7 +1787,7 @@ public class snd_world {
         public void MixLoop(int current44kHz, int numSpeakers, float[] finalMixBuffer) {
             int i, j;
             idSoundEmitterLocal sound;
-            
+
             // if noclip flying outside the world, leave silence
             if (listenerArea == -1) {
                 if (idSoundSystemLocal.useOpenAL) {
@@ -1783,7 +1830,7 @@ public class snd_world {
                 // soundSystemLocal.EFXDatabase.FindEffect( listenerAreaName, &effect, &EnvironmentID );
                 // if (!effect)
                 // soundSystemLocal.EFXDatabase.FindEffect( defaultStr, &effect, &EnvironmentID );
-                // // only update if change in settings 
+                // // only update if change in settings
                 // if ( soundSystemLocal.s_muteEAXReverb.GetBool() || ( listenerEnvironmentID != EnvironmentID ) ) {
                 // EAXREVERBPROPERTIES EnvironmentParameters;
                 // // get area reverb setting from EAX Manager
@@ -1880,7 +1927,7 @@ public class snd_world {
             float[] mix_p = new float[MIXBUFFER_SAMPLES * 6 + 16];
 
 //            SIMDProcessor.Memset(mix_p, 0, MIXBUFFER_SAMPLES * sizeof(float) * numSpeakers);
-//            
+//
             MixLoop(lastAVI44kHz, numSpeakers, mix_p);
 
             for (int i = 0; i < numSpeakers; i++) {
@@ -2168,7 +2215,7 @@ public class snd_world {
                         sourceBuffer[j] = (j & 1) == 1 ? 32767.0f : -32767.0f;
                     }
                 } else {
-                    int offset = (localTime - localTriggerTimes);	// offset in samples
+                    int offset = (localTime - localTriggerTimes);    // offset in samples
                     int size = (looping ? chan.soundShader.entries[0].LengthIn44kHzSamples() : chan.leadinSample.LengthIn44kHzSamples());
                     ShortBuffer amplitudeData = (looping ? chan.soundShader.entries[0].amplitudeData : chan.leadinSample.amplitudeData).asShortBuffer();
 
@@ -2226,5 +2273,7 @@ public class snd_world {
             return sout;
         }
 
-    };
+    }
+
+    ;
 }

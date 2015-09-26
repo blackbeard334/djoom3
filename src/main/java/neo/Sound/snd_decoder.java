@@ -2,20 +2,26 @@ package neo.Sound;
 
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
-import java.io.ByteArrayInputStream;
+
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import neo.Sound.snd_cache.idSoundSample;
+
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
+
 import neo.Sound.snd_local.idSampleDecoder;
+
 import static neo.Sound.snd_system.soundSystemLocal;
+
 import neo.TempDump.TODO_Exception;
 import neo.framework.File_h.idFile;
 import neo.framework.File_h.idFile_Memory;
+
 import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
@@ -161,22 +167,23 @@ public class snd_decoder {
      */
     public static class idSampleDecoderLocal extends idSampleDecoder {
 
-        private boolean        failed;             // set if decoding failed
-        private int            lastFormat;         // last format being decoded
-        private idSoundSample  lastSample;         // last sample being decoded
-        private int            lastSampleOffset;   // last offset into the decoded sample
-        private int            lastDecodeTime;     // last time decoding sound
-        private idFile_Memory  file;               // encoded file in memory
+        private boolean       failed;             // set if decoding failed
+        private int           lastFormat;         // last format being decoded
+        private idSoundSample lastSample;         // last sample being decoded
+        private int           lastSampleOffset;   // last offset into the decoded sample
+        private int           lastDecodeTime;     // last time decoding sound
+        private idFile_Memory file;               // encoded file in memory
         //
-        private VorbisFile     ogg;                // OggVorbis file
+        private VorbisFile    ogg;                // OggVorbis file
         //
         //
-        
-        idSampleDecoderLocal(){
+
+        idSampleDecoderLocal() {
             this.file = new idFile_Memory();
         }
 
         private static int DBG_Decode = 0;
+
         @Override
         public void Decode(idSoundSample sample, int sampleOffset44k, int sampleCount44k, FloatBuffer dest) {
             int readSamples44k;
@@ -314,7 +321,7 @@ public class snd_decoder {
 //                    return 0;
 //                }
                 if (sample.nonCacheData == null) {
-                    assert (false);	// this should never happen
+                    assert (false);    // this should never happen
                     failed = true;
                     return 0;
                 }
@@ -345,7 +352,7 @@ public class snd_decoder {
             readSamples = 0;
             do {
                 float[][][] samples = new float[1][][];
-                int ret = ogg.read_float(samples, totalSamples / sample.objectInfo.nChannels, null);
+                int ret = ogg.read_float(samples, totalSamples / sample.objectInfo.nChannels);
                 if (ret == 0) {
                     failed = true;
                     break;
@@ -358,7 +365,6 @@ public class snd_decoder {
                 ret *= sample.objectInfo.nChannels;
 
                 SIMDProcessor.UpSampleOGGTo44kHz(dest, (readSamples << shift), samples[0], ret, (int) sample.objectInfo.nSamplesPerSec, sample.objectInfo.nChannels);
-
                 readSamples += ret;
                 totalSamples -= ret;
             } while (totalSamples > 0);
@@ -367,6 +373,7 @@ public class snd_decoder {
 
             return (readSamples << shift);
         }
-    };
+    }
+
 //    static final idBlockAlloc<idSampleDecoderLocal> sampleDecoderAllocator = new idBlockAlloc<>(64);
 }

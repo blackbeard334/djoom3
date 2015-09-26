@@ -412,15 +412,6 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         return (ByteBuffer) BufferUtils.createByteBuffer(bytes.length).put(bytes).flip();
     }
 
-    public static FloatBuffer wrapToDirectBuffer(final float[] array) {
-
-        if (null == array) {
-            return null;
-        }
-
-        return (FloatBuffer) BufferUtils.createFloatBuffer(array.length).put(array).flip();
-    }
-
     /**
      * Integer array TO Int array
      */
