@@ -67,15 +67,15 @@ public class snd_local {
         //byte offsets
         public int  wFormatTag;      // format type
         public int  nChannels;       // number of channels (i.e. mono, stereo...)
-        public long nSamplesPerSec;  // sample rate
+        public int  nSamplesPerSec;  // sample rate
         public int  nAvgBytesPerSec; // for buffer estimation
         public int  nBlockAlign;     // block size of data
         public int  wBitsPerSample;  // Number of bits per sample of mono data
         public int  cbSize;          // The count in bytes of the size of extra information (after cbSize)
-        
+
         waveformatex_s() {
         }
-        
+
         waveformatex_s(waveformatex_s mpwfx) {
             this.wFormatTag = mpwfx.wFormatTag;
             this.nChannels = mpwfx.nChannels;
@@ -139,7 +139,7 @@ public class snd_local {
             this.wf.nSamplesPerSec = buffer.getInt();
             this.wf.nAvgBytesPerSec = buffer.getInt();
             this.wf.nBlockAlign = buffer.getShort();
-            
+
             this.wBitsPerSample = buffer.getShort();
         }
 
@@ -170,7 +170,7 @@ public class snd_local {
 //            word wSamplesPerBlock;          /* valid if wBitsPerSample==0*/
 //            word wReserved;                 /* If neither applies, set to zero*/
 //            } Samples;
-        public int/*word*/ Samples;       
+        public int/*word*/ Samples;
         public int/*dword*/ dwChannelMask;   // which channels are */
 //                                            // present in stream  */
         public int SubFormat;
@@ -178,7 +178,7 @@ public class snd_local {
         waveformatextensible_s(){
             this.Format = new waveformatex_s();
         }
-        
+
         waveformatextensible_s(pcmwaveformat_s pcmWaveFormat) {
             this();
             this.Format.wFormatTag = pcmWaveFormat.wf.wFormatTag;
@@ -215,11 +215,11 @@ public class snd_local {
         public void Read(ByteBuffer buffer) {
             this.ckid = buffer.getInt();
             this.cksize = buffer.getInt();
-            
+
             if (buffer.hasRemaining()) {
                 this.fccType = buffer.getInt();
             }
-            
+
             if (buffer.hasRemaining()) {
                 this.dwDataOffset = buffer.getInt();
             }

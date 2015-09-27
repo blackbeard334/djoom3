@@ -364,7 +364,7 @@ public class snd_decoder {
 
                 ret *= sample.objectInfo.nChannels;
 
-                SIMDProcessor.UpSampleOGGTo44kHz(dest, (readSamples << shift), samples[0], ret, (int) sample.objectInfo.nSamplesPerSec, sample.objectInfo.nChannels);
+                SIMDProcessor.UpSampleOGGTo44kHz(dest, (readSamples << shift), samples[0], ret, sample.objectInfo.nSamplesPerSec, sample.objectInfo.nChannels);
                 readSamples += ret;
                 totalSamples -= ret;
             } while (totalSamples > 0);

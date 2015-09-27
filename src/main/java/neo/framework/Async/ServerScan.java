@@ -269,7 +269,7 @@ public class ServerScan {
         public void EndServers() {
             incoming_net = false;
             l_serverScan = this;
-            m_sortedServers.Sort(new idServerScan.Cmp());
+            m_sortedServers.Sort(new Cmp());
             ApplyFilter();
         }
 //
@@ -496,7 +496,7 @@ public class ServerScan {
             } else {
                 m_sort = sort;
                 m_sortAscending = true; // is the default for any new sort
-                m_sortedServers.Sort(new idServerScan.Cmp());
+                m_sortedServers.Sort(new Cmp());
             }
             // trigger a redraw
             ApplyFilter();

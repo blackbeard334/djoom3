@@ -38,10 +38,10 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 
 public class VorbisFile implements AutoCloseable {
-    static final int CHUNKSIZE = 8500;
-    static final int SEEK_SET  = 0;
-    static final int SEEK_CUR  = 1;
-    static final int SEEK_END  = 2;
+    static final int CHUNK_SIZE = 8500;
+    static final int SEEK_SET   = 0;
+    static final int SEEK_CUR   = 1;
+    static final int SEEK_END   = 2;
 
     static final int OV_FALSE = -1;
     static final int OV_EOF   = -2;
@@ -119,35 +119,21 @@ public class VorbisFile implements AutoCloseable {
     }
 
     private int get_data() {
-//        int index = oy.buffer(CHUNKSIZE);
-//        byte[] buffer = oy.data;
-//        int bytes = 0;
-//        try {
-//            bytes = datasource.read(buffer, index, CHUNKSIZE);
-//        } catch (Exception e) {
-//            return OV_EREAD;
-//        }
-//        oy.wrote(bytes);
-//        if (bytes == -1) {
-//            bytes = 0;
-//        }
-//        return bytes;
-
         if (datasource != null) {
-            oy.buffer(CHUNKSIZE);
+            final int index = oy.buffer(CHUNK_SIZE);
             byte[] buffer = oy.data;
             final int remainingChunk = datasource.remaining();
-            final int chunk;
+            final int chunkSize;
 
-            if (remainingChunk >= CHUNKSIZE) {
-                chunk = CHUNKSIZE;
+            if (remainingChunk >= CHUNK_SIZE) {
+                chunkSize = CHUNK_SIZE;
             } else {
-                chunk = remainingChunk;
+                chunkSize = remainingChunk;
             }
 
-            datasource.get(buffer, 0, chunk);
-            oy.wrote(chunk);
-            return chunk;
+            datasource.get(buffer, index, chunkSize);
+            oy.wrote(chunkSize);
+            return chunkSize;
         }
         return 0;
     }
@@ -195,12 +181,12 @@ public class VorbisFile implements AutoCloseable {
         int ret;
         int offst = -1;
         while (offst == -1) {
-            begin -= CHUNKSIZE;
+            begin -= CHUNK_SIZE;
             if (begin < 0)
                 begin = 0;
             seek_helper(begin);
-            while (offset < begin + CHUNKSIZE) {
-                ret = get_next_page(page, begin + CHUNKSIZE - offset);
+            while (offset < begin + CHUNK_SIZE) {
+                ret = get_next_page(page, begin + CHUNK_SIZE - offset);
                 if (ret == OV_EREAD) {
                     return OV_EREAD;
                 }
@@ -214,7 +200,7 @@ public class VorbisFile implements AutoCloseable {
             }
         }
         seek_helper(offst); //!!!
-        ret = get_next_page(page, CHUNKSIZE);
+        ret = get_next_page(page, CHUNK_SIZE);
         if (ret < 0) {
             return OV_EFAULT;
         }
@@ -230,7 +216,7 @@ public class VorbisFile implements AutoCloseable {
 
         while (searched < endsearched) {
             long bisect;
-            if (endsearched - searched < CHUNKSIZE) {
+            if (endsearched - searched < CHUNK_SIZE) {
                 bisect = searched;
             } else {
                 bisect = (searched + endsearched) / 2;
@@ -274,7 +260,7 @@ public class VorbisFile implements AutoCloseable {
         int ret;
 
         if (og_ptr == null) {
-            ret = get_next_page(og, CHUNKSIZE);
+            ret = get_next_page(og, CHUNK_SIZE);
             if (ret == OV_EREAD)
                 return OV_EREAD;
             if (ret < 0)
@@ -442,7 +428,8 @@ public class VorbisFile implements AutoCloseable {
         return 0;
     }
 
-    int open_nonseekable() {
+    @Deprecated
+    private int open_nonseekable() {
         // we cannot seek. Set up a 'single' (current) logical bitstream entry
         links = 1;
         vi = new Info[links];
@@ -928,7 +915,7 @@ public class VorbisFile implements AutoCloseable {
                 long bisect;
                 int ret;
 
-                if (end - begin < CHUNKSIZE) {
+                if (end - begin < CHUNK_SIZE) {
                     bisect = begin;
                 } else {
                     bisect = (end + begin) / 2;
@@ -1070,7 +1057,7 @@ public class VorbisFile implements AutoCloseable {
             }
         }
 
-        return ((float) time_total + (float) (pcm_offset - pcm_total) / vi[link].rate);
+        return (time_total + (float) (pcm_offset - pcm_total) / vi[link].rate);
     }
 
     //  link:   -1) return the vorbis_info struct for the bitstream section
@@ -1339,7 +1326,7 @@ public class VorbisFile implements AutoCloseable {
     }
 
     @Override
-    public void close() throws java.io.IOException {
+    public void close() throws IOException {
         datasource.clear();
     }
 }
