@@ -234,7 +234,7 @@ public class Lexer {
         private               int             length;           // length of the script in bytes
         private               int             line;             // current line in script
         private               int             lastline;         // line before reading token
-        private               boolean         tokenavailable;   // set by unreadToken
+        private               boolean         tokenAvailable;   // set by unreadToken
         private               long            flags;            // several script flags
         private               punctuation_t[] punctuations;     // the punctuations used in the script
         private               int[]           punctuationTable; // ASCII table with punctuations
@@ -259,7 +259,7 @@ public class Lexer {
             this.length = 0;
             this.line = 0;
             this.lastline = 0;
-            this.tokenavailable = false;
+            this.tokenAvailable = false;
             this.token = new idToken();
             this.next = null;
             this.hadError = false;
@@ -275,7 +275,7 @@ public class Lexer {
             this.length = 0;
             this.line = 0;
             this.lastline = 0;
-            this.tokenavailable = false;
+            this.tokenAvailable = false;
             this.token = new idToken();
             this.next = null;
             this.hadError = false;
@@ -394,7 +394,7 @@ public class Lexer {
             // pointer to end of script buffer
             this.end_p = this.buffer.length();//(this.buffer[length]);
 
-            this.tokenavailable = false;//0;
+            this.tokenAvailable = false;//0;
             this.line = 1;
             this.lastline = 1;
             this.allocated = true;
@@ -434,7 +434,7 @@ public class Lexer {
             // pointer to end of script buffer
             this.end_p = this.buffer.length();//(this.buffer[length]);
 
-            this.tokenavailable = false;//0;
+            this.tokenAvailable = false;//0;
             this.line = startLine;
             this.lastline = startLine;
             this.allocated = false;
@@ -468,7 +468,7 @@ public class Lexer {
                 this.buffer = null;
                 this.allocated = false;
             }
-            this.tokenavailable = false;//0;
+            this.tokenAvailable = false;//0;
             this.token = null;
             this.loaded = false;
         }
@@ -488,8 +488,8 @@ public class Lexer {
             }
 
             // if there is a token available (from unreadToken)
-            if (tokenavailable) {
-                tokenavailable = false;
+            if (tokenAvailable) {
+                tokenAvailable = false;
                 token.oSet(this.token);
                 return true;
             }
@@ -800,11 +800,11 @@ public class Lexer {
 
         // unread the given token
         public void UnreadToken(final idToken token) throws idException {
-            if (this.tokenavailable) {
+            if (this.tokenAvailable) {
                 idLib.common.FatalError("idLexer::unreadToken, unread token twice\n");
             }
             this.token = token;
-            this.tokenavailable = true;
+            this.tokenAvailable = true;
         }
 
         // read a token only if on the same line
@@ -1274,7 +1274,7 @@ public class Lexer {
             // end of white space
             this.whiteSpaceEnd_p = 0;
             // set if there's a token available in this.token
-            this.tokenavailable = false;
+            this.tokenAvailable = false;
 
             this.line = 1;
             this.lastline = 1;

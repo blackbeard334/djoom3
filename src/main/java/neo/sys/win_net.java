@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package neo.sys;
 
 import java.net.Inet6Address;
@@ -30,13 +25,13 @@ import neo.sys.sys_public.netadr_t;
 public class win_net {
 
     //    static WSADATA winsockdata;
-    static boolean winsockInitialized = false;
-    static boolean usingSocks         = false;
+    static boolean winsockInitialized     = false;
+    static boolean usingSocks             = false;
 
-    static final idCVar net_ip           = new idCVar("net_ip", "localhost", CVAR_SYSTEM, "local IP address");
-    static final idCVar net_port         = new idCVar("net_port", "0", CVAR_SYSTEM | CVAR_INTEGER, "local IP port number");
-    static final idCVar net_forceLatency = new idCVar("net_forceLatency", "0", CVAR_SYSTEM | CVAR_INTEGER, "milliseconds latency");
-    static final idCVar net_forceDrop    = new idCVar("net_forceDrop", "0", CVAR_SYSTEM | CVAR_INTEGER, "percentage packet loss");
+    static final idCVar net_ip            = new idCVar("net_ip", "localhost", CVAR_SYSTEM, "local IP address");
+    static final idCVar net_port          = new idCVar("net_port", "0", CVAR_SYSTEM | CVAR_INTEGER, "local IP port number");
+    static final idCVar net_forceLatency  = new idCVar("net_forceLatency", "0", CVAR_SYSTEM | CVAR_INTEGER, "milliseconds latency");
+    static final idCVar net_forceDrop     = new idCVar("net_forceDrop", "0", CVAR_SYSTEM | CVAR_INTEGER, "percentage packet loss");
 
     static final idCVar net_socksEnabled  = new idCVar("net_socksEnabled", "0", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_BOOL, "");
     static final idCVar net_socksServer   = new idCVar("net_socksServer", "", CVAR_SYSTEM | CVAR_ARCHIVE, "");

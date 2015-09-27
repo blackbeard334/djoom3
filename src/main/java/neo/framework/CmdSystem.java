@@ -518,16 +518,18 @@ public class CmdSystem {
             }
         }
 
+        private static int DBG_ExecuteCommandBuffer = 0;
         @Override
         public void ExecuteCommandBuffer() throws idException {
-            int i, j = 0;
+            int i;
             char[] text = null;
-            byte[] textBuf2 = null;
             String txt;
             int quotes;
             idCmdArgs args = new idCmdArgs();
+            
 
             while (textLength != 0) {
+                DBG_ExecuteCommandBuffer++;
 
                 if (wait != 0) {
                     // skip out while text still remains in buffer, leaving it for next frame
@@ -535,11 +537,9 @@ public class CmdSystem {
                     break;
                 }
 
-                if (null == text//TODO: Arrays.equals has too much overhead.
-                        || !Arrays.equals(textBuf, textBuf2)) {//first iteration, or buffer was changed.
-                    // find a \n or ; line break
-                    text = new String(textBuf).toCharArray();//TODO:??
-                }
+                // find a \n or ; line break
+                text = new String(textBuf).toCharArray();//TODO:??
+                    
                 quotes = 0;
                 for (i = 0; i < textLength; i++) {
                     if (text[i] == '"') {
@@ -554,8 +554,8 @@ public class CmdSystem {
                 }
 
 //                text[i] = 0;
-                j++;
-                txt = new String(text).substring(0, i);//do not use ctos!
+                String bla = new String(text);
+                txt = bla.substring(0, i);//do not use ctos!
                 if (0 == idStr.Cmp(txt, "_execTokenized")) {
                     args = tokenizedCmds.oGet(0);
                     tokenizedCmds.RemoveIndex(0);
@@ -569,11 +569,11 @@ public class CmdSystem {
                 if (i == textLength) {
                     textLength = 0;
                 } else {
+                    final byte[] textBuf2 = textBuf;
                     i++;
                     textLength -= i;
-//                    memmove(text, text + i, textLength);
-                    System.arraycopy(text, i, text, 0, textLength);
-                    textBuf2 = textBuf.clone();
+                    textBuf = new byte[textBuf.length];//memmove(text, text + i, textLength);
+                    System.arraycopy(textBuf2, i, textBuf, 0, textLength);
                 }
 
                 // execute the command line that we have already tokenized

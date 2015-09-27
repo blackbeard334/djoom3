@@ -317,7 +317,7 @@ public class snd_shader {
                 } // description
                 else if (0 == token.Icmp("description")) {
                     src.ReadTokenOnLine(token);
-                    desc = token;
+                    desc.oSet(token);
                 } // mindistance
                 else if (0 == token.Icmp("mindistance")) {
                     parms.minDistance = src.ParseFloat();
@@ -436,7 +436,7 @@ public class snd_shader {
                         token.BackSlashesToSlashes();
                         idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
                         if (lang.Icmp("english") != 0 && token.Find("sound/vo/", false) >= 0) {
-                            idStr work = token;
+                            idStr work = new idStr(token);
                             work.ToLower();
                             work.StripLeading("sound/vo/");
                             work.oSet(va("sound/vo/%s/%s", lang.toString(), work.toString()));

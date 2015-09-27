@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package neo.sys;
 
 import java.awt.Color;
@@ -41,15 +36,15 @@ import static neo.sys.win_main.Sys_Error;
  */
 public class win_syscon {
 
-    static final int COPY_ID  = 1;
-    static final int QUIT_ID  = 2;
-    static final int CLEAR_ID = 3;
+    static final int COPY_ID      = 1;
+    static final int QUIT_ID      = 2;
+    static final int CLEAR_ID     = 3;
 
     static final int ERRORBOX_ID  = 10;
     static final int ERRORTEXT_ID = 11;
 
-    static final int EDIT_ID  = 100;
-    static final int INPUT_ID = 101;
+    static final int EDIT_ID      = 100;
+    static final int INPUT_ID     = 101;
 
     static final int COMMAND_HISTORY = 64;
 
@@ -588,6 +583,7 @@ public class win_syscon {
      }
      }
      */
+
     /**
      * ******
      * </editor-fold>
@@ -642,7 +638,7 @@ public class win_syscon {
      ** Sys_ConsoleInput
      */
     static String Sys_ConsoleInput() {
-        throw new TODO_Exception();
+        return null;
 //	
 //	if ( s_wcd.consoleText[0] == 0 ) {
 //		return NULL;

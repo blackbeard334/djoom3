@@ -38,7 +38,7 @@ public class LangDict {
 
     public static class idLangDict {
 
-        private idList<idLangKeyValue> args = new idList<>();
+        public idList<idLangKeyValue> args = new idList<>();
         private idHashIndex hash = new idHashIndex();
         //
         private int baseID;
@@ -96,6 +96,9 @@ public class LangDict {
                     kv.key = tok;
                     kv.value = tok2;
                     assert (kv.key.Cmpn(STRTABLE_ID, STRTABLE_ID_LENGTH) == 0);
+//                    if (tok.equals("#str_07184")) {
+//                        tok2.oSet("006");
+//                    }
                     hash.Add(GetHashKey(kv.key), args.Append(kv));
                 }
             }
@@ -157,11 +160,16 @@ public class LangDict {
             return args.oGet(c).key.toString();
         }
 
+        private static int DBG_GetString = 1;
         public String GetString(final String str) throws idException {
+            if ("#str_07184".equals(str)) {
+//                System.out.printf("GetString#%d\n", DBG_GetString);
+//                return (DBG_GetString++) + "bnlaaaaaaaaaaa";
+            }
 
             if (str == null || str.isEmpty()) {
                 return "";
-            }
+            }            
 
             if (idStr.Cmpn(str, STRTABLE_ID, STRTABLE_ID_LENGTH) != 0) {
                 return str;
@@ -191,7 +199,6 @@ public class LangDict {
             hash.Add(GetHashKey(kv.key), args.Append(kv));
         }
 
-//
         public int GetNumKeyVals() {
             return args.Num();
         }

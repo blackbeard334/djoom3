@@ -3,22 +3,25 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.djoom3</groupId>
     <artifactId>djoom3</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
+
     <packaging>jar</packaging>
     
     
     <properties>
         <cloning.version>1.9.1</cloning.version>
+        <jorbis.version>0.0.17-2</jorbis.version>
         <lwjgl.version>2.9.3</lwjgl.version>
+
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.exec.version>1.3.2</maven.exec.version>
         <maven.jar.version>2.5</maven.jar.version>
         <maven.natives.version>0.0.7</maven.natives.version>
         <maven.resources.version>2.7</maven.resources.version>
-        
+
         <output.folder>/bla</output.folder>
-        
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     
@@ -118,6 +121,11 @@
             <groupId>uk.com.robust-it</groupId>
             <artifactId>cloning</artifactId>
             <version>${cloning.version}</version>
-        </dependency>    
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>jorbis</artifactId>
+            <version>${jorbis.version}</version>
+        </dependency>
     </dependencies>
 </project>

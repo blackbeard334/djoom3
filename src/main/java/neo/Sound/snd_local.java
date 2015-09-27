@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import neo.Sound.snd_cache.idSoundSample;
 import neo.Sound.snd_decoder.idSampleDecoderLocal;
+import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
 import static neo.framework.UsercmdGen.USERCMD_MSEC;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
@@ -64,13 +65,27 @@ public class snd_local {
         private static final int SIZE_B = SIZE / Byte.SIZE;
 
         //byte offsets
-        private static final int/*word*/  wFormatTag      = 0;                                          // format type
-        private static final int/*word*/  nChannels       = wFormatTag + (Short.SIZE / Byte.SIZE);      // number of channels (i.e. mono, stereo...)
-        private static final int/*dword*/ nSamplesPerSec  = nChannels + (Integer.SIZE / Byte.SIZE);     // sample rate
-        private static final int/*dword*/ nAvgBytesPerSec = nSamplesPerSec + (Integer.SIZE / Byte.SIZE);// for buffer estimation
-        private static final int/*word*/  nBlockAlign     = nAvgBytesPerSec + (Short.SIZE / Byte.SIZE); // block size of data
-        private static final int/*word*/  wBitsPerSample  = nBlockAlign + (Short.SIZE / Byte.SIZE);     // Number of bits per sample of mono data
-        private static final int/*word*/  cbSize          = wBitsPerSample + (Short.SIZE / Byte.SIZE);  // The count in bytes of the size of extra information (after cbSize)
+        public int  wFormatTag;      // format type
+        public int  nChannels;       // number of channels (i.e. mono, stereo...)
+        public int  nSamplesPerSec;  // sample rate
+        public int  nAvgBytesPerSec; // for buffer estimation
+        public int  nBlockAlign;     // block size of data
+        public int  wBitsPerSample;  // Number of bits per sample of mono data
+        public int  cbSize;          // The count in bytes of the size of extra information (after cbSize)
+
+        waveformatex_s() {
+        }
+
+        waveformatex_s(waveformatex_s mpwfx) {
+            this.wFormatTag = mpwfx.wFormatTag;
+            this.nChannels = mpwfx.nChannels;
+            this.nSamplesPerSec = mpwfx.nSamplesPerSec;
+            this.nAvgBytesPerSec = mpwfx.nAvgBytesPerSec;
+            this.nBlockAlign = mpwfx.nBlockAlign;
+            this.wBitsPerSample = mpwfx.wBitsPerSample;
+            this.cbSize = mpwfx.cbSize;
+        }
+
     };
 
 
@@ -86,11 +101,11 @@ public class snd_local {
         private static final int SIZE_B = SIZE / Byte.SIZE;
 
         //offsets
-        private static final int/*word*/  wFormatTag      = 0;                                           // format type
-        private static final int/*word*/  nChannels       = Short.SIZE / Byte.SIZE;                      // number of channels (i.e. mono, stereo, etc.)
-        private static final int/*dword*/ nSamplesPerSec  = nChannels + Short.SIZE / Byte.SIZE;          // sample rate
-        private static final int/*dword*/ nAvgBytesPerSec = nSamplesPerSec + Integer.SIZE / Byte.SIZE;   // for buffer estimation
-        private static final int/*word*/  nBlockAlign     = nAvgBytesPerSec + Integer.SIZE / Byte.SIZE;  // block size of data
+        public int/*word*/ wFormatTag;      // format type
+        public int/*word*/ nChannels;       // number of channels (i.e. mono, stereo, etc.)
+        public int/*dword*/nSamplesPerSec;  // sample rate
+        public int/*dword*/nAvgBytesPerSec; // for buffer estimation
+        public int/*word*/ nBlockAlign;     // block size of data
     };
 
 
@@ -101,72 +116,37 @@ public class snd_local {
 // };
 
     /* specific waveform format structure for PCM data */
-    static class pcmwaveformat_s {
+    static class pcmwaveformat_s implements SERiAL{
 
         private static final int SIZE
                 = waveformat_s.SIZE
                 + Short.SIZE;
         static final         int SIZE_B = SIZE / Byte.SIZE;
 
-        private waveformat_s wf;
-        private static final int/*word*/ wBitsPerSample = waveformat_s.SIZE_B;
-        //
-        final                ByteBuffer  buffer         = ByteBuffer.allocate(SIZE_B);
-        //
-        //
+        public waveformat_s wf;
+        public int/*word*/ wBitsPerSample;
 
-        public int getwBitsPerSample() {
-            return buffer.getShort(wBitsPerSample) & 0xFFFF;
+        @Override
+        public ByteBuffer AllocBuffer() {
+            return ByteBuffer.allocate(SIZE_B);
         }
 
-        public void setwBitsPerSample(int wBitsPerSample) {
-            buffer.putShort(wBitsPerSample, (short) wBitsPerSample);
-        }
-        //
-        //
-        //
-        //
+        @Override
+        public void Read(ByteBuffer buffer) {
+            this.wf = new waveformat_s();
+            this.wf.wFormatTag = buffer.getShort();
+            this.wf.nChannels = buffer.getShort();
+            this.wf.nSamplesPerSec = buffer.getInt();
+            this.wf.nAvgBytesPerSec = buffer.getInt();
+            this.wf.nBlockAlign = buffer.getShort();
 
-        public int getWf_wFormatTag() {
-            return buffer.getShort(waveformat_s.wFormatTag) & 0xFFFF;
-        }
-
-        public void setWf_wFormatTag(int wFormatTag) {
-            buffer.putShort(waveformat_s.wFormatTag, (short) wFormatTag);
+            this.wBitsPerSample = buffer.getShort();
         }
 
-        public int getWf_nChannels() {
-            return buffer.getShort(waveformat_s.nChannels) & 0xFFFF;
+        @Override
+        public ByteBuffer Write() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-
-        public void setWf_nChannels(int nChannels) {
-            buffer.putShort(waveformat_s.nChannels, (short) nChannels);
-        }
-
-        public long getWf_nSamplesPerSec() {
-            return buffer.getInt(waveformat_s.nSamplesPerSec) & 0xFFFF_FFFFL;
-        }
-
-        public void setWf_nSamplesPerSec(long nSamplesPerSec) {
-            buffer.putInt(waveformat_s.nSamplesPerSec, (int) nSamplesPerSec);
-        }
-
-        public long getWf_nAvgBytesPerSec() {
-            return buffer.getInt(waveformat_s.nAvgBytesPerSec) & 0xFFFF_FFFFL;
-        }
-
-        public void setWf_nAvgBytesPerSec(long nAvgBytesPerSec) {
-            buffer.putInt(waveformat_s.nAvgBytesPerSec, (int) nAvgBytesPerSec);
-        }
-
-        public int getWf_nBlockAlign() {
-            return buffer.getShort(waveformat_s.nBlockAlign) & 0xFFFF;
-        }
-
-        public void setWf_nBlockAlign(int nBlockAlign) {
-            buffer.putShort(waveformat_s.nBlockAlign, (short) nBlockAlign);
-        }
-
     };
 
 // #ifndef mmioFOURCC
@@ -184,168 +164,70 @@ public class snd_local {
                 + Integer.SIZE;
         private static final int SIZE_B = SIZE / Byte.SIZE;
 
-//        waveformatex_s Format;
-//        // union {
-        private static final int/*word*/ wValidBitsPerSample = waveformatex_s.SIZE_B;// bits of precision  
-//        int/*word*/ wSamplesPerBlock;          // valid if wBitsPerSample==0
-//        int/*word*/ wReserved;                 // If neither applies, set to zero
-//        // } Samples;
-        private static final int/*dword*/ dwChannelMask = wValidBitsPerSample + (Short.SIZE / Byte.SIZE);// which channels are */
-//                                               // present in stream  */
-        private static final int SubFormat = dwChannelMask + (Integer.SIZE / Byte.SIZE);
-        //
-        final ByteBuffer buffer = ByteBuffer.allocate(SIZE_B);
-        //
-        //
+        public waveformatex_s Format;
+//        union {
+//            word wValidBitsPerSample;       /* bits of precision  */
+//            word wSamplesPerBlock;          /* valid if wBitsPerSample==0*/
+//            word wReserved;                 /* If neither applies, set to zero*/
+//            } Samples;
+        public int/*word*/ Samples;
+        public int/*dword*/ dwChannelMask;   // which channels are */
+//                                            // present in stream  */
+        public int SubFormat;
 
-        public int getwValidBitsPerSample() {
-            return buffer.getShort(this.wValidBitsPerSample) & 0xFFFF;
+        waveformatextensible_s(){
+            this.Format = new waveformatex_s();
         }
 
-        public void setwValidBitsPerSample(int wValidBitsPerSample) {
-            buffer.putShort(this.wValidBitsPerSample, (short) wValidBitsPerSample);
-        }
-
-        public int getwSamplesPerBlock() {
-            return getwValidBitsPerSample();
-        }
-
-        public void setwSamplesPerBlock(int wSamplesPerBlock) {
-            this.setwValidBitsPerSample(wSamplesPerBlock);
-        }
-
-        public int getwReserved() {
-            return getwValidBitsPerSample();
-        }
-
-        public void setwReserved(int wReserved) {
-            this.setwValidBitsPerSample(wReserved);
-        }
-        //
-        //
-
-        public long getDwChannelMask() {
-            return buffer.getInt(this.dwChannelMask) & 0xFFFF_FFFFL;
-        }
-
-        public void setDwChannelMask(long dwChannelMask) {
-            buffer.putInt(this.dwChannelMask, (int) dwChannelMask);
-        }
-
-        public int getSubFormat() {
-            return buffer.getInt(this.SubFormat);
-        }
-
-        public void setSubFormat(int SubFormat) {
-            buffer.putInt(this.SubFormat, SubFormat);
-        }
-        //
-        //
-        //
-        //
-
-        public int getFormat_wFormatTag() {
-            return buffer.getShort(waveformatex_s.wFormatTag) & 0xFFFF;
-        }
-
-        public void setFormat_wFormatTag(int wFormatTag) {
-            buffer.putInt(waveformatex_s.wFormatTag, wFormatTag);
-        }
-
-        public int getFormat_nChannels() {
-            return buffer.getShort(waveformatex_s.nChannels) & 0xFFFF;
-        }
-
-        public void setFormat_nChannels(int nChannels) {
-            buffer.putInt(waveformatex_s.nChannels, nChannels);
-        }
-
-        public long getFormat_nSamplesPerSec() {
-            return buffer.getInt(waveformatex_s.nSamplesPerSec) & 0xFFFF_FFFFL;
-        }
-
-        public void setFormat_nSamplesPerSec(long nSamplesPerSec) {
-            buffer.putInt(waveformatex_s.nSamplesPerSec, (int) nSamplesPerSec);
-        }
-
-        public long getFormat_nAvgBytesPerSec() {
-            return buffer.getInt(waveformatex_s.nAvgBytesPerSec) & 0xFFFF_FFFFL;
-        }
-
-        public void setFormat_nAvgBytesPerSec(long nAvgBytesPerSec) {
-            buffer.putInt(waveformatex_s.nAvgBytesPerSec, (int) nAvgBytesPerSec);
-        }
-
-        public int getFormat_nBlockAlign() {
-            return buffer.getShort(waveformatex_s.nBlockAlign) & 0xFFFF;
-        }
-
-        public void setFormat_nBlockAlign(int nBlockAlign) {
-            buffer.putInt(waveformatex_s.nBlockAlign, nBlockAlign);
-        }
-
-        public int getFormat_wBitsPerSample() {
-            return buffer.getShort(waveformatex_s.wBitsPerSample) & 0xFFFF;
-        }
-
-        public void setFormat_wBitsPerSample(int wBitsPerSample) {
-            buffer.putInt(waveformatex_s.wBitsPerSample, wBitsPerSample);
-        }
-
-        public int getFormat_CbSize() {
-            return buffer.getShort(waveformatex_s.cbSize) & 0xFFFF;
-        }
-
-        public void setFormat_CbSize(int cbSize) {
-            buffer.putInt(waveformatex_s.cbSize, cbSize);
+        waveformatextensible_s(pcmwaveformat_s pcmWaveFormat) {
+            this();
+            this.Format.wFormatTag = pcmWaveFormat.wf.wFormatTag;
+            this.Format.nChannels = pcmWaveFormat.wf.nChannels;
+            this.Format.nSamplesPerSec = pcmWaveFormat.wf.nSamplesPerSec;
+            this.Format.nAvgBytesPerSec = pcmWaveFormat.wf.nAvgBytesPerSec;
+            this.Format.nBlockAlign = pcmWaveFormat.wf.nBlockAlign;
+            this.Format.wBitsPerSample = pcmWaveFormat.wBitsPerSample;
         }
     };
 
 // typedef dword fourcc;
 
     /* RIFF chunk information data structure */
-    static class mminfo_s {
+    static class mminfo_s implements SERiAL{
+        private static final int SIZE
+                = Integer.SIZE
+                + Integer.SIZE
+                + Integer.SIZE
+                + Integer.SIZE;
+        private static final int SIZE_B = SIZE / Byte.SIZE;
 
-        //offsets
-        private static final int/*fourcc*/ ckid = 0;                            // chunk ID 
-        private static final int/*dword*/ cksize = Integer.SIZE / Byte.SIZE;    // chunk size 
-        private static final int/*fourcc*/ fccType = cksize * 2;                // form type or list type 
-        private static final int/*dword*/ dwDataOffset = cksize * 3;            // offset of data portion of chunk 
-        //
-        final ByteBuffer buffer = ByteBuffer.allocate(Integer.SIZE * 4 / Byte.SIZE);
-        //
-        //
+        int/*fourcc*/ckid;         // chunk ID 
+        int/*dword*/ cksize;       // chunk size 
+        int/*fourcc*/fccType;      // form type or list type 
+        int/*dword*/ dwDataOffset; // offset of data portion of chunk 
 
-        public long getCkid() {
-            return buffer.getInt(ckid) & 0xFFFF_FFFFL;
+        @Override
+        public ByteBuffer AllocBuffer() {
+            return ByteBuffer.allocate(SIZE_B);
         }
 
-        public void setCkid(long ckid) {
-            buffer.putInt(this.ckid, (int) ckid);
+        @Override
+        public void Read(ByteBuffer buffer) {
+            this.ckid = buffer.getInt();
+            this.cksize = buffer.getInt();
+
+            if (buffer.hasRemaining()) {
+                this.fccType = buffer.getInt();
+            }
+
+            if (buffer.hasRemaining()) {
+                this.dwDataOffset = buffer.getInt();
+            }
         }
 
-        public long getCksize() {
-            return buffer.getInt(cksize) & 0xFFFF_FFFFL;
-        }
-
-        public void setCksize(long cksize) {
-            buffer.putInt(this.cksize, (int) cksize);
-        }
-
-        public long getFccType() {
-            return buffer.getInt(fccType) & 0xFFFF_FFFFL;
-        }
-
-        public void setFccType(long fccType) {
-            buffer.putInt(this.fccType, (int) fccType);
-        }
-
-        public long getDwDataOffset() {
-            return buffer.getInt(dwDataOffset) & 0xFFFF_FFFFL;
-        }
-
-        public void setDwDataOffset(long dwDataOffset) {
-            buffer.putInt(this.dwDataOffset, (int) dwDataOffset);
+        @Override
+        public ByteBuffer Write() {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
     };
 

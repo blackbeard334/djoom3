@@ -7,6 +7,7 @@ import neo.Sound.snd_cache.idSoundSample;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 import neo.Sound.snd_local.idSampleDecoder;
+import neo.Sound.snd_local.waveformatex_s;
 import neo.Sound.snd_system.idSoundSystemLocal;
 import neo.Sound.snd_wavefile.idWaveFile;
 import static neo.TempDump.NOT;
@@ -35,17 +36,7 @@ import static org.lwjgl.openal.AL10.alIsExtensionPresent;
  *
  */
 public class snd_cache {
-
-    static class waveformatex_s {
-
-        int/*word*/   wFormatTag;       // format type
-        int/*word*/   nChannels;        // number of channels (i.e. mono, stereo...)
-        int/*dword*/  nSamplesPerSec;   // sample rate
-        long/*dword*/ nAvgBytesPerSec;  // for buffer estimation
-        int/*word*/   nBlockAlign;      // block size of data
-        int/*word*/   wBitsPerSample;   // Number of bits per sample of mono data
-        int/*word*/   cbSize;           // The count in bytes of the size of extra information (after cbSize)
-    }
+    
 //    static final boolean USE_SOUND_CACHE_ALLOCATOR = true;
 //    static final idDynamicBlockAlloc<Byte> soundCacheAllocator;
 //
@@ -117,7 +108,7 @@ public class snd_cache {
 
             fileSystem.ReadFile(name.toString(), null, timestamp);
             if (timestamp[0] == FILE_NOT_FOUND_TIMESTAMP) {
-                idStr oggName = name;
+                idStr oggName = new idStr(name);
                 oggName.SetFileExtension(".ogg");
                 fileSystem.ReadFile(oggName.toString(), null, timestamp);
             }
@@ -161,7 +152,7 @@ public class snd_cache {
 
                 alGetError();
 //                alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, objectMemSize, objectInfo.nSamplesPerSec);
-                AL10.alBufferData(openalBuffer/*  <<TODO>>   */, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, objectInfo.nSamplesPerSec);
+                AL10.alBufferData(openalBuffer/*  <<TODO>>   */, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, (int) objectInfo.nSamplesPerSec);
                 if (alGetError() != AL_NO_ERROR) {
                     common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                 } else {
@@ -195,7 +186,7 @@ public class snd_cache {
 
             // load it
             idWaveFile fh = new idWaveFile();
-            waveformatex_s info = new waveformatex_s();
+            waveformatex_s[] info = {null};
 
             if (fh.Open(name.toString(), info) == -1) {
                 common.Warning("Couldn't load sound '%s' using default", name);
@@ -203,32 +194,32 @@ public class snd_cache {
                 return;
             }
 
-            if (info.nChannels != 1 && info.nChannels != 2) {
-                common.Warning("idSoundSample: %s has %d channels, using default", name, info.nChannels);
+            if (info[0].nChannels != 1 && info[0].nChannels != 2) {
+                common.Warning("idSoundSample: %s has %d channels, using default", name, info[0].nChannels);
                 fh.Close();
                 MakeDefault();
                 return;
             }
 
-            if (info.wBitsPerSample != 16) {
-                common.Warning("idSoundSample: %s is %dbits, expected 16bits using default", name, info.wBitsPerSample);
+            if (info[0].wBitsPerSample != 16) {
+                common.Warning("idSoundSample: %s is %dbits, expected 16bits using default", name, info[0].wBitsPerSample);
                 fh.Close();
                 MakeDefault();
                 return;
             }
 
-            if (info.nSamplesPerSec != 44100 && info.nSamplesPerSec != 22050 && info.nSamplesPerSec != 11025) {
-                common.Warning("idSoundCache: %s is %dHz, expected 11025, 22050 or 44100 Hz. Using default", name, info.nSamplesPerSec);
+            if (info[0].nSamplesPerSec != 44100 && info[0].nSamplesPerSec != 22050 && info[0].nSamplesPerSec != 11025) {
+                common.Warning("idSoundCache: %s is %dHz, expected 11025, 22050 or 44100 Hz. Using default", name, info[0].nSamplesPerSec);
                 fh.Close();
                 MakeDefault();
                 return;
             }
 
-            objectInfo = info;
+            objectInfo = info[0];
             objectSize = fh.GetOutputSize();
             objectMemSize = fh.GetMemorySize();
 
-            nonCacheData = BufferUtils.createByteBuffer(objectMemSize);//soundCacheAllocator.Alloc( objectMemSize );
+            nonCacheData = ByteBuffer.allocate(objectMemSize);//soundCacheAllocator.Alloc( objectMemSize );
             fh.Read(nonCacheData, objectMemSize, null);
 
             // optionally convert it to 22kHz to save memory
@@ -236,7 +227,7 @@ public class snd_cache {
 
             // create hardware audio buffers 
             if (idSoundSystemLocal.useOpenAL) {
-                // PCM loads directly
+                // PCM loads directly;
                 if (objectInfo.wFormatTag == WAVE_FORMAT_TAG_PCM) {
                     alGetError();
 //                    alGenBuffers(1, openalBuffer);
@@ -248,7 +239,7 @@ public class snd_cache {
                     if (AL10.alIsBuffer(openalBuffer)) {
                         alGetError();
 //                        alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, objectMemSize, objectInfo.nSamplesPerSec);
-                        AL10.alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, objectInfo.nSamplesPerSec);
+                        AL10.alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, (int) objectInfo.nSamplesPerSec);
                         if (alGetError() != AL_NO_ERROR) {
                             common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                         } else {
@@ -256,7 +247,7 @@ public class snd_cache {
                             int blockSize = (int) (512 * objectInfo.nSamplesPerSec / 44100);
 
                             // Allocate amplitude data array
-                            amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
+                            amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
 
                             // Creating array of min/max amplitude pairs per blockSize samples
                             int i;
@@ -281,18 +272,16 @@ public class snd_cache {
 
                 // OGG decompressed at load time (when smaller than s_decompressionLimit seconds, 6 seconds by default)
                 if (objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
-                    if ((MACOS_X && (objectSize < ((int) objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))
-                            || ((alIsExtensionPresent(/*ID_ALCHAR+*/"EAX-RAM")) && (objectSize < ((int) objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))) {
+                    if ((MACOS_X && (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))
+                            || (alIsExtensionPresent("EAX-RAM") &&  (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))) {
                         alGetError();
-//                        alGenBuffers(1, openalBuffer);
                         openalBuffer = AL10.alGenBuffers();
                         if (alGetError() != AL_NO_ERROR) {
                             common.Error("idSoundCache: error generating OpenAL hardware buffer");
                         }
-//                        if (alIsBuffer(openalBuffer)) {
                         if (AL10.alIsBuffer(openalBuffer)) {
                             idSampleDecoder decoder = idSampleDecoder.Alloc();
-                            ByteBuffer destData = BufferUtils.createByteBuffer((LengthIn44kHzSamples() + 1) * 4);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
+                            ByteBuffer destData = BufferUtils.createByteBuffer((LengthIn44kHzSamples() + 1) * Float.BYTES);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
 
                             // Decoder *always* outputs 44 kHz data
                             decoder.Decode(this, 0, LengthIn44kHzSamples(), destData.asFloatBuffer());
@@ -332,7 +321,7 @@ public class snd_cache {
 
                             alGetError();
 //                            alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, objectSize * sizeof(short), objectInfo.nSamplesPerSec);
-                            AL10.alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, objectInfo.nSamplesPerSec);
+                            AL10.alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, (int) objectInfo.nSamplesPerSec);
                             if (alGetError() != AL_NO_ERROR) {
                                 common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                             } else {
@@ -340,7 +329,7 @@ public class snd_cache {
                                 int blockSize = (int) (512 * objectInfo.nSamplesPerSec / 44100);
 
                                 // Allocate amplitude data array
-                                amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short ) );
+                                amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short ) );
 
                                 // Creating array of min/max amplitude pairs per blockSize samples
                                 int i;
@@ -472,12 +461,12 @@ public class snd_cache {
             }
 
             if (output != null) {
-                int pos = nonCacheData.position();
+                nonCacheData.mark();
                 nonCacheData.position(offset);
 
                 output.put(nonCacheData);
 
-                nonCacheData.position(pos);
+                nonCacheData.reset();
             }
             if (position != null) {
                 position[0] = 0;
@@ -526,7 +515,7 @@ public class snd_cache {
         public idSoundSample FindSound(final idStr filename, boolean loadOnDemandOnly) {
             idStr fname;
 
-            fname = filename;
+            fname = new idStr(filename);
             fname.BackSlashesToSlashes();
             fname.ToLower();
 

@@ -77,7 +77,7 @@ public class BindWindow {
         @Override
         public void PostParse() {
             super.PostParse();
-            bindName.SetGuiInfo(gui.GetStateDict(), bindName.toString());
+            bindName.SetGuiInfo(gui.GetStateDict(), bindName.c_str());
             bindName.Update();
             //bindName = state.GetString("bind");
             flags |= (WIN_HOLDCAPTURE | WIN_CANFOCUS);

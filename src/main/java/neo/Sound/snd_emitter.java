@@ -3,12 +3,16 @@ package neo.Sound;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
 import neo.Renderer.RenderWorld.idRenderWorld;
 import neo.Sound.snd_cache.idSoundSample;
+
 import static neo.Sound.snd_local.PRIMARYFREQ;
 import static neo.Sound.snd_local.SOUND_DECODER_FREE_DELAY;
 import static neo.Sound.snd_local.SOUND_MAX_CHANNELS;
+
 import neo.Sound.snd_local.idSampleDecoder;
+
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_FADE;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_FREE;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_MODIFY;
@@ -20,25 +24,36 @@ import static neo.Sound.snd_shader.METERS_TO_DOOM;
 import static neo.Sound.snd_shader.SSF_LOOPING;
 import static neo.Sound.snd_shader.SSF_NO_DUPS;
 import static neo.Sound.snd_shader.SSF_PLAY_ONCE;
+
 import neo.Sound.snd_shader.idSoundShader;
 import neo.Sound.snd_shader.soundShaderParms_t;
 import neo.Sound.snd_system.idSoundSystemLocal;
+
 import static neo.Sound.snd_system.soundSystemLocal;
+
 import neo.Sound.snd_world.idSoundWorldLocal;
 import neo.Sound.sound.idSoundEmitter;
+
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
 import static neo.TempDump.indexOf;
 import static neo.framework.Common.common;
 import static neo.framework.DemoFile.demoSystem_t.DS_SOUND;
 import static neo.framework.Session.session;
+
 import neo.idlib.math.Math_h.idMath;
+
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
+
 import neo.idlib.math.Vector.idVec3;
+
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 import static neo.sys.win_shared.Sys_Milliseconds;
+import org.lwjgl.BufferUtils;
+
 import org.lwjgl.openal.AL10;
+
 import static org.lwjgl.openal.AL10.AL_BUFFER;
 import static org.lwjgl.openal.AL10.AL_NO_ERROR;
 import static org.lwjgl.openal.AL10.AL_PLAYING;
@@ -65,7 +80,7 @@ public class snd_emitter {
 
         public int   fadeStart44kHz;
         public int   fadeEnd44kHz;
-        public float fadeStartVolume;    // in dB
+        public float fadeStartVolume;  // in dB
         public float fadeEndVolume;    // in dB
 //
 //
@@ -115,7 +130,7 @@ public class snd_emitter {
 //            memset(continuitySamples, 0, sizeof(float) * 4);
         }
 
-//	virtual				~SoundFX()										{ if ( buffer ) delete buffer; };
+        //	virtual				~SoundFX()										{ if ( buffer ) delete buffer; };
         public void Initialize() {
         }
 
@@ -268,7 +283,7 @@ public class snd_emitter {
 
     static class FracTime {
 
-        public int time;
+        public int   time;
         public float frac;
 //
 //
@@ -286,25 +301,26 @@ public class snd_emitter {
             }
         }
     };
-//enum {
-    public static final int PLAYBACK_RESET = 0;
+    
+    //enum {
+    public static final int PLAYBACK_RESET     = 0;
     public static final int PLAYBACK_ADVANCING = 1;
 //};
 
     static class idSlowChannel {
 
-        boolean active;
+        boolean        active;
         idSoundChannel chan;
-//
-        int playbackState;
-        int triggerOffset;
-//
-        FracTime newPosition;
+        //
+        int            playbackState;
+        int            triggerOffset;
+        //
+        FracTime newPosition = new FracTime();
         int newSampleOffset;
-//
-        FracTime curPosition;
-        int curSampleOffset;
-//
+        //
+        FracTime curPosition = new FracTime();
+        int                 curSampleOffset;
+        //
         SoundFX_LowpassFast lowpass;
 //
 //
@@ -440,33 +456,33 @@ public class snd_emitter {
 
     static class idSoundChannel {
 
-        public boolean triggerState;
-        public int trigger44kHzTime;		// hardware time sample the channel started
-        public int triggerGame44kHzTime;	// game time sample time the channel started
-        public soundShaderParms_t parms;	// combines the shader parms and the per-channel overrides
-        public idSoundSample leadinSample;	// if not looped, this is the only sample
+        public boolean              triggerState;
+        public int                  trigger44kHzTime;        // hardware time sample the channel started
+        public int                  triggerGame44kHzTime;    // game time sample time the channel started
+        public soundShaderParms_t   parms;    // combines the shader parms and the per-channel overrides
+        public idSoundSample        leadinSample;    // if not looped, this is the only sample
         public int/*s_channelType*/ triggerChannel;
-        public idSoundShader soundShader;
-        public idSampleDecoder decoder;
-        public float diversity;
-        public float lastVolume;		// last calculated volume based on distance
-        public float[] lastV = new float[6];	// last calculated volume for each speaker, so we can smoothly fade
-        public idSoundFade channelFade;
-        public boolean triggered;
-        public int/*ALuint*/ openalSource;
-        public int/*ALuint*/ openalStreamingOffset;
+        public idSoundShader        soundShader;
+        public idSampleDecoder      decoder;
+        public float                diversity;
+        public float                lastVolume;        // last calculated volume based on distance
+        public float[] lastV = new float[6];    // last calculated volume for each speaker, so we can smoothly fade
+        public idSoundFade         channelFade;
+        public boolean             triggered;
+        public int/*ALuint*/       openalSource;
+        public int/*ALuint*/       openalStreamingOffset;
         public IntBuffer/*ALuint*/ openalStreamingBuffer;
         public IntBuffer/*ALuint*/ lastopenalStreamingBuffer;
         //
-        public boolean disallowSlow;
+        public boolean             disallowSlow;
         //
         //
 
         public idSoundChannel() {
             decoder = null;
             this.channelFade = new idSoundFade();
-            this.openalStreamingBuffer = IntBuffer.allocate(3);
-            this.lastopenalStreamingBuffer = IntBuffer.allocate(3);
+            this.openalStreamingBuffer = BufferUtils.createIntBuffer(3);
+            this.lastopenalStreamingBuffer = BufferUtils.createIntBuffer(3);
             Clear();
         }
 //						~idSoundChannel( void );
@@ -533,7 +549,7 @@ public class snd_emitter {
                     len = sampleCount44k;
                 }
 //		memset( dest_p, 0, len * sizeof( dest_p[0] ) );
-                dest.clear();
+//                dest.clear();
                 dest_p += len;
                 sampleCount44k -= len;
                 sampleOffset44k += len;
@@ -543,7 +559,7 @@ public class snd_emitter {
             idSoundSample leadin = leadinSample;
             if (NOT(leadin) || sampleOffset44k < 0 || sampleCount44k <= 0) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
-                dest.clear();
+//                dest.clear();
                 return;
             }
 
@@ -564,7 +580,7 @@ public class snd_emitter {
             // if not looping, zero fill any remaining spots
             if (null == soundShader || 0 == (parms.soundShaderFlags & SSF_LOOPING)) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
-                dest.clear();
+//                dest.clear();
                 return;
             }
 
@@ -573,7 +589,7 @@ public class snd_emitter {
 
             if (null == loop) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
-                dest.clear();
+//                dest.clear();
                 return;
             }
 
@@ -627,6 +643,7 @@ public class snd_emitter {
             }
         }
     };
+    
     /*
      ===============================================================================
 
@@ -635,55 +652,57 @@ public class snd_emitter {
      ===============================================================================
      */
     // sound channels
-    static final int SCHANNEL_ANY = 0;	// used in queries and commands to effect every channel at once, in
+    static final int SCHANNEL_ANY = 0;    // used in queries and commands to effect every channel at once, in
     // startSound to have it not override any other channel
-    static final int SCHANNEL_ONE = 1;	// any following integer can be used as a channel number
-    // typedef int s_channelType;	// the game uses its own series of enums, and we don't want to require casts
+    static final int SCHANNEL_ONE = 1;    // any following integer can be used as a channel number
+    // typedef int s_channelType;	  // the game uses its own series of enums, and we don't want to require casts
 
     static class idSoundEmitterLocal extends idSoundEmitter {
 
-        public idSoundWorldLocal soundWorld;			// the world that holds this emitter
+        public idSoundWorldLocal     soundWorld;            // the world that holds this emitter
         //
-        public int index;					// in world emitter list
+        public int                   index;                 // in world emitter list
         public int/*removeStatus_t*/ removeStatus;
         //
-        public idVec3 origin;
-        public int listenerId;
-        public soundShaderParms_t parms;			// default overrides for all channels
+        public idVec3                origin;
+        public int                   listenerId;
+        public soundShaderParms_t    parms;                 // default overrides for all channels
         //
         //
         // the following are calculated in UpdateEmitter, and don't need to be archived
-        public float maxDistance;				// greatest of all playing channel distances
-        public int lastValidPortalArea;                         // so an emitter that slides out of the world continues playing
-        public boolean playing;					// if false, no channel is active
-        public boolean hasShakes;
-        public idVec3 spatializedOrigin;			// the virtual sound origin, either the real sound origin,
-        //							// or a point through a portal chain
-        public float realDistance;				// in meters
-        public float distance;					// in meters, this may be the straight-line distance, or
-        //                                                      // it may go through a chain of portals.  If there
-        //                                                      // is not an open-portal path, distance will be > maxDistance
-        //
-        // a single soundEmitter can have many channels playing from the same point
-        public idSoundChannel[] channels = new idSoundChannel[SOUND_MAX_CHANNELS];
-        //
-        public idSlowChannel[] slowChannels = new idSlowChannel[SOUND_MAX_CHANNELS];
+        public float                 maxDistance;           // greatest of all playing channel distances
+        public int                   lastValidPortalArea;   // so an emitter that slides out of the world continues playing
+        public boolean               playing;               // if false, no channel is active
+        public boolean               hasShakes;
+        public idVec3                spatializedOrigin;     // the virtual sound origin, either the real sound origin,
+        //						    // or a point through a portal chain
+        public float                 realDistance;          // in meters
+        public float                 distance;              // in meters, this may be the straight-line distance, or
+        public idSoundChannel[]      channels;
+        public idSlowChannel[]       slowChannels;
         //
         // this is just used for feedback to the game or rendering system:
         // flashing lights and screen shakes.  Because the material expression
         // evaluation doesn't do common subexpression removal, we cache the
         // last generated value
-        public int ampTime;
+        public int   ampTime;
         public float amplitude;
         //
         //
 
         public idSoundEmitterLocal() {
             soundWorld = null;
+            this.origin = new idVec3();
             this.spatializedOrigin = new idVec3();
 
+            this.channels = new idSoundChannel[SOUND_MAX_CHANNELS];
             for (int c = 0; c < channels.length; c++) {
                 channels[c] = new idSoundChannel();
+            }
+
+            this.slowChannels = new idSlowChannel[SOUND_MAX_CHANNELS];
+            for (int s = 0; s < slowChannels.length; s++) {
+                slowChannels[s] = new idSlowChannel();
             }
             Clear();
         }
@@ -906,9 +925,9 @@ public class snd_emitter {
             chan = channels[i];
 
             if (shader.leadins[choice] != null) {
-                chan.leadinSample = shader.leadins[ choice];
+                chan.leadinSample = shader.leadins[choice];
             } else {
-                chan.leadinSample = shader.entries[ choice];
+                chan.leadinSample = shader.entries[choice];
             }
 
             // if the sample is onDemand (voice mails, etc), load it now
@@ -1263,7 +1282,7 @@ public class snd_emitter {
 
                         if (idSoundSystemLocal.useOpenAL && alIsSource(chan.openalSource)) {
 //                            alGetSourcei(chan.openalSource, AL_SOURCE_STATE, state);
-                            AL10.alGetSourcei(chan.openalSource, AL_SOURCE_STATE);
+                            state = AL10.alGetSourcei(chan.openalSource, AL_SOURCE_STATE);
                         }
                         idSlowChannel slow = GetSlowChannel(chan);
 

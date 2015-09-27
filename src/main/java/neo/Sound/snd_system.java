@@ -7,7 +7,6 @@ import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.RenderWorld.idRenderWorld;
 import neo.Sound.snd_cache.idSoundCache;
 import neo.Sound.snd_cache.idSoundSample;
-import neo.Sound.snd_cache.waveformatex_s;
 import neo.Sound.snd_efxfile.idEFXFile;
 import neo.Sound.snd_emitter.SoundFX;
 import neo.Sound.snd_emitter.SoundFX_Comb;
@@ -21,6 +20,7 @@ import static neo.Sound.snd_local.SOUND_MAX_CHANNELS;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import neo.Sound.snd_local.idAudioHardware;
 import neo.Sound.snd_local.idSampleDecoder;
+import neo.Sound.snd_local.waveformatex_s;
 import static neo.Sound.snd_shader.SSF_LOOPING;
 import neo.Sound.snd_world.idSoundWorldLocal;
 import neo.Sound.snd_world.s_stats;
@@ -144,14 +144,14 @@ public class snd_system {
         public ALCcontext      openalContext;
         public int/*ALsizei*/  openalSourceCount;
         public openalSource_t[] openalSources = new openalSource_t[256];
-        public boolean alEAXSet;
-        public boolean alEAXGet;
-        public boolean alEAXSetBufferMode;
-        public boolean alEAXGetBufferMode;
+//        public boolean alEAXSet;
+//        public boolean alEAXGet;
+//        public boolean alEAXSetBufferMode;
+//        public boolean alEAXGetBufferMode;
         public idEFXFile EFXDatabase = new idEFXFile();
         public boolean efxloaded;
         // latches
-        public static boolean useOpenAL    = false;
+        public static boolean useOpenAL;
         public static boolean useEAXReverb = false;
         // mark available during initialization, or through an explicit test
         public static int     EAXAvailable = -1;
@@ -210,8 +210,8 @@ public class snd_system {
             if (ID_OPENAL) {//TODO: turn on the rest of our openAL extensions.
                 // off by default. OpenAL DLL gets loaded on-demand. EDIT: not anymore.
                 s_libOpenAL = new idCVar("s_libOpenAL", "openal32.dll", CVAR_SOUND | CVAR_ARCHIVE, "OpenAL DLL name/path");
-                s_useOpenAL = new idCVar("s_useOpenAL", "0", CVAR_SOUND | CVAR_BOOL | CVAR_ARCHIVE, "use OpenAL");
-                s_useEAXReverb = new idCVar("s_useEAXReverb", "0", CVAR_SOUND | CVAR_BOOL | CVAR_ARCHIVE, "use EAX reverb");
+                s_useOpenAL = new idCVar("s_useOpenAL", "1", CVAR_SOUND | CVAR_BOOL | CVAR_ARCHIVE, "use OpenAL");
+                s_useEAXReverb = new idCVar("s_useEAXReverb", "1", CVAR_SOUND | CVAR_BOOL | CVAR_ARCHIVE, "use EAX reverb");
                 s_muteEAXReverb = new idCVar("s_muteEAXReverb", "0", CVAR_SOUND | CVAR_BOOL, "mute eax reverb");
                 s_decompressionLimit = new idCVar("s_decompressionLimit", "6", CVAR_SOUND | CVAR_INTEGER | CVAR_ARCHIVE, "specifies maximum uncompressed sample length in seconds");
             } else {
@@ -292,26 +292,26 @@ public class snd_system {
                     // try to obtain EAX extensions
                     if (idSoundSystemLocal.s_useEAXReverb.GetBool() && alIsExtensionPresent(/*ID_ALCHAR*/"EAX4.0")) {
                         idSoundSystemLocal.s_useOpenAL.SetBool(true);	// EAX presence causes AL enable
-                        alEAXSet = true;//(EAXSet) alGetProcAddress(/*ID_ALCHAR*/"EAXSet");
-                        alEAXGet = true;//(EAXGet) alGetProcAddress(/*ID_ALCHAR*/"EAXGet");
+//                        alEAXSet = true;//(EAXSet) alGetProcAddress(/*ID_ALCHAR*/"EAXSet");
+//                        alEAXGet = true;//(EAXGet) alGetProcAddress(/*ID_ALCHAR*/"EAXGet");
                         common.Printf("OpenAL: found EAX 4.0 extension\n");
                     } else {
                         common.Printf("OpenAL: EAX 4.0 extension not found\n");
                         idSoundSystemLocal.s_useEAXReverb.SetBool(false);
-                        alEAXSet = false;//(EAXSet) null;
-                        alEAXGet = false;//(EAXGet) null;
+//                        alEAXSet = false;//(EAXSet) null;
+//                        alEAXGet = false;//(EAXGet) null;
                     }
 
                     // try to obtain EAX-RAM extension - not required for operation
-                    if (alIsExtensionPresent(/*ID_ALCHAR*/"EAX-RAM")) {
-                        alEAXSetBufferMode = true;//(EAXSetBufferMode) alGetProcAddress(/*ID_ALCHAR*/"EAXSetBufferMode");
-                        alEAXGetBufferMode = true;//(EAXGetBufferMode) alGetProcAddress(/*ID_ALCHAR*/"EAXGetBufferMode");
-                        common.Printf("OpenAL: found EAX-RAM extension, %dkB\\%dkB\n", alGetInteger(alGetEnumValue(/*ID_ALCHAR*/"AL_EAX_RAM_FREE")) / 1024, alGetInteger(alGetEnumValue(/*ID_ALCHAR*/"AL_EAX_RAM_SIZE")) / 1024);
-                    } else {
-                        alEAXSetBufferMode = false;//(EAXSetBufferMode) null;
-                        alEAXGetBufferMode = false;//(EAXGetBufferMode) null;
-                        common.Printf("OpenAL: no EAX-RAM extension\n");
-                    }
+//                    if (alIsExtensionPresent(/*ID_ALCHAR*/"EAX-RAM")) {
+//                        alEAXSetBufferMode = true;//(EAXSetBufferMode) alGetProcAddress(/*ID_ALCHAR*/"EAXSetBufferMode");
+//                        alEAXGetBufferMode = true;//(EAXGetBufferMode) alGetProcAddress(/*ID_ALCHAR*/"EAXGetBufferMode");
+//                        common.Printf("OpenAL: found EAX-RAM extension, %dkB\\%dkB\n", alGetInteger(alGetEnumValue(/*ID_ALCHAR*/"AL_EAX_RAM_FREE")) / 1024, alGetInteger(alGetEnumValue(/*ID_ALCHAR*/"AL_EAX_RAM_SIZE")) / 1024);
+//                    } else {
+//                        alEAXSetBufferMode = false;//(EAXSetBufferMode) null;
+//                        alEAXGetBufferMode = false;//(EAXGetBufferMode) null;
+//                        common.Printf("OpenAL: no EAX-RAM extension\n");
+//                    }
 
                     if (!idSoundSystemLocal.s_useOpenAL.GetBool()) {
                         common.Printf("OpenAL: disabling ( no EAX ). Using legacy mixer.\n");
@@ -530,7 +530,7 @@ public class snd_system {
             // If not using openal, get actual playback position from sound hardware
             if (useOpenAL) {
                 // here we do it in samples ( overflows in 27 hours or so )
-                dwCurrentWritePos = idMath.Ftol((float) Sys_Milliseconds() * 44.1f) % (MIXBUFFER_SAMPLES * ROOM_SLICES_IN_BUFFER);
+                dwCurrentWritePos = idMath.Ftol(Sys_Milliseconds() * 44.1f) % (MIXBUFFER_SAMPLES * ROOM_SLICES_IN_BUFFER);
                 dwCurrentBlock = (int) (dwCurrentWritePos / MIXBUFFER_SAMPLES);
             } else {
                 // and here in bytes
@@ -1067,7 +1067,7 @@ public class snd_system {
             } else {
                 // NOTE: this would overflow 31bits within about 1h20 ( not that important since we get a snd_audio_hw right away pbly )
                 //return ( ( Sys_Milliseconds()*441 ) / 10 ) * 4; 
-                return idMath.FtoiFast((float) Sys_Milliseconds() * 176.4f);
+                return idMath.FtoiFast(Sys_Milliseconds() * 176.4f);
             }
         }
 

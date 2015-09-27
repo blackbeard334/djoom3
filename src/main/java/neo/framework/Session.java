@@ -30,6 +30,8 @@ import neo.framework.Session_local.idSessionLocal;
 import static neo.framework.Session_local.timeDemo_t.TD_YES;
 import static neo.framework.Session_local.timeDemo_t.TD_YES_THEN_QUIT;
 import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Dict_h;
+import neo.idlib.LangDict;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
@@ -487,6 +489,10 @@ public class Session {
                 if (prompt_msg.isEmpty()/*[ 0 ] == '\0'*/) {
                     prompt_msg = common.GetLanguageDict().GetString("#str_04308");
                 }
+//                for (int d = 0; d < common.GetLanguageDict().args.Size(); d++) {
+//                    LangDict.idLangKeyValue bla = common.GetLanguageDict().args.oGet(d);
+//                    System.out.println(bla.key + " >>> " + bla.value);
+//                }
                 retkey = sessLocal.MessageBox(MSG_CDKEY, prompt_msg, common.GetLanguageDict().GetString("#str_04305"), true, null, null, true);
                 if (retkey != null) {
                     if (sessLocal.CheckKey(retkey, false, valid)) {

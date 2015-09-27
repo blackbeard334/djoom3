@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
@@ -40,6 +41,7 @@ import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
 import neo.ui.UserInterface.idUserInterface;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
 
 /**
  *
@@ -368,6 +370,18 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         return atobb(ctos(ascii));
     }
 
+    public static ByteBuffer stobb(short[] arrau) {
+        ByteBuffer buffer;
+
+        if (NOT(arrau)) {
+            return null;
+        }
+        buffer = ByteBuffer.allocate(arrau.length * 2);
+        buffer.asShortBuffer().put(arrau);
+
+        return (ByteBuffer) buffer.flip();
+    }
+
     public static CharBuffer atocb(String ascii) {
 
         if (NOT(ascii)) {
@@ -530,6 +544,13 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             }
         }
     }
+    
+    private static void breakOnALError() {
+        final int e;
+        if ((e = AL10.alGetError()) != 0) {
+            throw new RuntimeException(e + " minutes, to miiiiiiiidnight!");
+        }
+    }
 
     public static void printCallStackCount() {
         System.out.println(Arrays.toString(CALL_STACK_MAP.entrySet().toArray()));
@@ -558,7 +579,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      *
      */
     @Deprecated
-    public static interface SERiAL extends Serializable {
+    public static interface SERiAL extends Serializable {//TODO:remove Serializable
 
         public static final int SIZE = Integer.MIN_VALUE;
         public static final int SIZE_B = SIZE / Byte.SIZE;

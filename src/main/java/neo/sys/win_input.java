@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package neo.sys;
 
 import java.awt.event.InputEvent;
@@ -1135,8 +1130,7 @@ static char[] keyScanTable = s_scantokey;
     }
 
     public static char Sys_MapCharForKey(int key) {
-        throw new TODO_Exception();
-//	return (unsigned char)key;
+        return (char) (key & 0xFF);
     }
 
 }
