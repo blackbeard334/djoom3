@@ -3,7 +3,6 @@ package neo.Sound;
 import com.jcraft.jorbis.Info;
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
