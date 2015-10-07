@@ -37,8 +37,11 @@ public class Winvar {
         protected boolean eval;
         //
         //
+        public static int DBG_counter = 0;
+        public final int DBG_id;
 
         public idWinVar() {
+            DBG_id = DBG_counter++;
             guiDict = null;
             name = null;
             eval = true;
@@ -85,15 +88,13 @@ public class Winvar {
             return (guiDict != null);
         }
 
+        public static int DBG_Init = 0;
         public void Init(final String _name, idWindow win) {
             idStr key = new idStr(_name);
             guiDict = null;
             int len = key.Length();
-            if (len > 5
-                    && key.oGet(0) == 'g'
-                    && key.oGet(1) == 'u'
-                    && key.oGet(2) == 'i'
-                    && key.oGet(3) == ':') {
+            if (len > 5 && _name.startsWith("gui:")) {
+                DBG_Init++;
                 key = key.Right(len - VAR_GUIPREFIX_LEN);
                 SetGuiInfo(win.GetGui().GetStateDict(), key.toString());
                 win.AddUpdateVar(this);
@@ -130,6 +131,11 @@ public class Winvar {
         public boolean GetEval() {
             return eval;
         }
+
+        @Override
+        public String toString() {
+            return "idWinVar{" + "guiDict=" + guiDict + ", name=" + name + '}';
+        }
     };
 
     static class idWinBool extends idWinVar {
@@ -149,6 +155,7 @@ public class Winvar {
 
         //copy constructor
         idWinBool(idWinBool winBool) {
+            super.oSet(winBool);
             this.data = winBool.data;
         }
 
@@ -174,14 +181,12 @@ public class Winvar {
             if (obj == null) {
                 return false;
             }
-            if (getClass() != obj.getClass()) {
+            if (obj.getClass() != boolean.class) {
                 return false;
             }
-            final idWinBool other = (idWinBool) obj;
-            if (this.data != other.data) {
-                return false;
-            }
-            return true;
+            final boolean other = (boolean) obj;
+            
+            return (this.data == other);
         }
 
         public boolean oSet(final boolean other) {
@@ -259,8 +264,9 @@ public class Winvar {
         }
 
         //copy constructor
-        idWinStr(idWinStr text) {
-            this.data = new idStr(text.data);
+        idWinStr(idWinStr other) {
+            super.oSet(other);
+            this.data = new idStr(other.data);
         }
 
         @Override
@@ -289,14 +295,22 @@ public class Winvar {
             if (obj == null) {
                 return false;
             }
-            if (getClass() != obj.getClass()) {
-                return false;
+
+            //operator==( const idStr &other )
+            if (obj.getClass() == idStr.class) {
+                final idStr other = (idStr) obj;
+
+                return Objects.equals(this.data, other);
             }
-            final idWinStr other = (idWinStr) obj;
-            if (!Objects.equals(this.data, other.data)) {
-                return false;
+
+            //operator==( const char *other )
+            if (obj.getClass() == String.class) {
+                final String other = (String) obj;
+
+                return Objects.equals(this.data, other);
             }
-            return true;
+
+            return false;
         }
 
         public idStr oSet(final idStr other) {
@@ -356,7 +370,7 @@ public class Winvar {
         @Override
         public void Update() {
             final String s = GetName();
-            if (guiDict != null && s.charAt(0) != '\0') {
+            if (guiDict != null && !s.isEmpty()) {
                 data.oSet(guiDict.GetString(s));
             }
         }
@@ -499,6 +513,7 @@ public class Winvar {
 
         //copy constructor
         idWinFloat(idWinFloat winFloat) {
+            super.oSet(winFloat);
             this.data = winFloat.data;
         }
 
@@ -586,6 +601,7 @@ public class Winvar {
 
         //copy constructor
         idWinRectangle(idWinRectangle rect) {
+            super.oSet(rect);
             this.data = new idRectangle(rect.data);
         }
 
@@ -731,6 +747,26 @@ public class Winvar {
             eval = savefile.ReadBool();
             savefile.Read(data);
         }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 97 * hash + Objects.hashCode(this.data);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj.getClass() != idRectangle.class) {
+                return false;
+            }
+            final idRectangle other = (idRectangle) obj;
+            
+            return Objects.equals(this.data, other);
+        }
     };
 
     static class idWinVec2 extends idWinVar {
@@ -746,6 +782,9 @@ public class Winvar {
         //copy constructor
         idWinVec2(idVec2 vec2) {
             this.data = new idVec2(vec2);
+            if (guiDict != null) {
+                guiDict.SetVec2(GetName(), data);
+            }
         }
 
 //	~idWinVec2() {};
@@ -772,14 +811,12 @@ public class Winvar {
             if (obj == null) {
                 return false;
             }
-            if (getClass() != obj.getClass()) {
+            if (obj.getClass() != idVec2.class) {
                 return false;
             }
-            final idWinVec2 other = (idWinVec2) obj;
-            if (!Objects.equals(this.data, other.data)) {
-                return false;
-            }
-            return true;
+            final idVec2 other = (idVec2) obj;
+            
+            return Objects.equals(this.data, other);
         }
 
         idWinVec2 oSet(final idWinVec2 other) {
@@ -884,6 +921,7 @@ public class Winvar {
 
         //copy constructor
         idWinVec4(idWinVec4 winVec4) {
+            super.oSet(winVec4);
             this.data = new idVec4(winVec4.data);
         }
 
@@ -911,14 +949,12 @@ public class Winvar {
             if (obj == null) {
                 return false;
             }
-            if (getClass() != obj.getClass()) {
+            if (obj.getClass() != idVec4.class) {
                 return false;
             }
-            final idWinVec4 other = (idWinVec4) obj;
-            if (!Objects.equals(this.data, other.data)) {
-                return false;
-            }
-            return true;
+            final idVec4 other = (idVec4) obj;
+            
+            return Objects.equals(this.data, other);
         }
 
         public idWinVec4 oSet(final idWinVec4 other) {
@@ -1071,14 +1107,12 @@ public class Winvar {
             if (obj == null) {
                 return false;
             }
-            if (getClass() != obj.getClass()) {
+            if (obj.getClass() != idVec3.class) {
                 return false;
             }
-            final idWinVec3 other = (idWinVec3) obj;
-            if (!Objects.equals(this.data, other.data)) {
-                return false;
-            }
-            return true;
+            final idVec3 other = (idVec3) obj;
+            
+            return Objects.equals(this.data, other);
         }
 
         public idWinVec3 oSet(final idWinVec3 other) {
@@ -1207,24 +1241,12 @@ public class Winvar {
 
         @Override
         public int hashCode() {
-            int hash = 7;
-            hash = 71 * hash + Objects.hashCode(this.data);
-            return hash;
+            return super.hashCode();
         }
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final idWinBackground other = (idWinBackground) obj;
-            if (!Objects.equals(this.data, other.data)) {
-                return false;
-            }
-            return true;
+            return super.equals(obj);
         }
 
         @Override

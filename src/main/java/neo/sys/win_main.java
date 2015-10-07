@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package neo.sys;
 
 import java.awt.Toolkit;
@@ -21,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import neo.Sound.snd_decoder;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.atobb;
@@ -82,8 +78,6 @@ import static neo.sys.sys_public.CRITICAL_SECTION_ZERO;
 import static neo.sys.sys_public.MAX_CRITICAL_SECTIONS;
 import static neo.sys.sys_public.MAX_THREADS;
 import static neo.sys.sys_public.TRIGGER_EVENT_ZERO;
-import static neo.sys.sys_public.g_thread_count;
-import static neo.sys.sys_public.g_threads;
 import neo.sys.sys_public.sysEventType_t;
 import static neo.sys.sys_public.sysEventType_t.SE_CONSOLE;
 import neo.sys.sys_public.sysEvent_s;
@@ -96,7 +90,6 @@ import neo.sys.sys_public.xthread_t;
 import static neo.sys.win_cpu.Sys_ClockTicksPerSecond;
 import static neo.sys.win_cpu.Sys_GetCPUId;
 import static neo.sys.win_glimp.GLimp_Shutdown;
-import static neo.sys.win_input.IN_Frame;
 import static neo.sys.win_input.Sys_InitInput;
 import static neo.sys.win_input.Sys_ShutdownInput;
 import neo.sys.win_local.Win32Vars_t;
@@ -131,7 +124,7 @@ public class win_main {//TODO: rename to plain "main" or something.
     static final StringBuilder sys_cmdline = new StringBuilder(MAX_STRING_CHARS);
 
     static xthreadInfo                         threadInfo;
-    static ScheduledExecutorService /*HANDLE*/ hTimer;
+    public static ScheduledExecutorService /*HANDLE*/ hTimer;
 
     static /*unsigned*/ int debug_total_alloc         = 0;
     static /*unsigned*/ int debug_total_alloc_count   = 0;
@@ -225,18 +218,14 @@ public class win_main {//TODO: rename to plain "main" or something.
      Sys_EnterCriticalSection
      ==================
      */
-    @Deprecated
-    public static void Sys_EnterCriticalSection(int index) {
+    public static boolean Sys_EnterCriticalSection(int index) {
         assert (index >= 0 && index < MAX_CRITICAL_SECTIONS);
-        if (win32.criticalSections[index].tryLock()) {
-            win32.criticalSections[index].lock();
 //		Sys_DebugPrintf( "busy lock '%s' in thread '%s'\n", lock->name, Sys_GetThreadName() );
-        }
+        return win32.criticalSections[index].tryLock();
     }
 
-    @Deprecated
-    public static void Sys_EnterCriticalSection() {
-        Sys_EnterCriticalSection(CRITICAL_SECTION_ZERO);
+    public static boolean Sys_EnterCriticalSection() {
+        return Sys_EnterCriticalSection(CRITICAL_SECTION_ZERO);
     }
 
     /*
@@ -244,13 +233,13 @@ public class win_main {//TODO: rename to plain "main" or something.
      Sys_LeaveCriticalSection
      ==================
      */
-    @Deprecated
     public static void Sys_LeaveCriticalSection(int index) {
         assert (index >= 0 && index < MAX_CRITICAL_SECTIONS);
-        win32.criticalSections[index].unlock();
+        if (((ReentrantLock) win32.criticalSections[index]).isLocked()) {
+            win32.criticalSections[index].unlock();
+        }
     }
 
-    @Deprecated
     public static void Sys_LeaveCriticalSection() {
         Sys_LeaveCriticalSection(CRITICAL_SECTION_ZERO);
     }
@@ -969,7 +958,12 @@ public class win_main {//TODO: rename to plain "main" or something.
             @Override
             public void run() {
 //                if (!DEBUG) {//TODO:Session_local.java::742
-                common.Async();
+                try {
+                    common.Async();
+                } catch (Exception e) {
+                    Logger.getLogger(win_main.class.getName()).log(Level.SEVERE, null, e);
+                    System.err.println("AsyncThread terminated.");
+                }
 //                }
             }
         }, 0, USERCMD_MSEC, TimeUnit.MILLISECONDS);

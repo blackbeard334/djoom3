@@ -245,6 +245,14 @@ public class File_h {
 
             return reads;
         }
+        
+        public final int Read(SERiAL object, int len) {
+            ByteBuffer buffer = object.AllocBuffer();
+            int reads = Read(buffer, len);
+            object.Read(buffer);
+
+            return reads;
+        }
 
         @Deprecated// Read data from the file to the buffer.
         public int Read(ByteBuffer buffer, int len) {
@@ -855,14 +863,14 @@ public class File_h {
         }
 
         // set data for reading
-        public void SetData(final ByteBuffer data) {
+        public void SetData(final ByteBuffer data, final int length) {
             maxSize = 0;
-            fileSize = data.capacity();
+            fileSize = length;
             allocated = 0;
             granularity = 16384;
 
             mode = (1 << etoi(FS_READ));
-            filePtr.put(data);
+            filePtr = data.duplicate();
             curPtr = 0;
         }
 

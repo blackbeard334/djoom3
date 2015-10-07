@@ -2,6 +2,7 @@ package neo.framework;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.concurrent.locks.ReentrantLock;
 import neo.Game.Game.escReply_t;
 import static neo.Game.Game.escReply_t.ESC_GUI;
 import static neo.Game.Game.escReply_t.ESC_IGNORE;
@@ -180,6 +181,7 @@ import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.sys_public.sysEventType_t.SE_NONE;
 import neo.sys.sys_public.sysEvent_s;
 import static neo.sys.win_input.Sys_GrabMouseCursor;
+import neo.sys.win_main;
 import static neo.sys.win_main.Sys_ClearEvents;
 import static neo.sys.win_main.Sys_GenerateEvents;
 import static neo.sys.win_main.Sys_IsWindowVisible;
@@ -189,6 +191,7 @@ import static neo.sys.win_shared.Sys_GetDriveFreeSpace;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.sys.win_shared.Sys_SetPhysicalWorkMemory;
 import neo.ui.ListGUI.idListGUI;
+import neo.ui.SimpleWindow;
 import neo.ui.UserInterface.idUserInterface;
 import static neo.ui.UserInterface.uiManager;
 
@@ -744,6 +747,7 @@ public class Session_local {
                         break;
                     }
                     Sys_Sleep(1);
+                    win_main.hTimer.isTerminated();
 //                    if (win_main.DEBUG) {
 //                        //TODO:the debugger slows the code too much at this point, so we shall manually move to the next frame.
 //                        com_ticNumber = minTic;
@@ -1176,8 +1180,8 @@ public class Session_local {
                 default:
                     common.Printf("idSessionLocal::MessageBox: unknown msg box type\n");
             }
-            msgFireBack[0].oSet(fire_yes != null ? fire_yes : "");
-            msgFireBack[1].oSet(fire_no != null ? fire_no : "");
+            msgFireBack[0].oSet("" + fire_yes);
+            msgFireBack[1].oSet("" + fire_no);
             guiMsgRestore = guiActive;
             guiActive = guiMsg;
             guiMsg.SetCursor(325, 290);
@@ -2236,7 +2240,7 @@ public class Session_local {
                 if (guiLoading != null) {
                     guiLoading.Redraw(com_frameTime);
                 }
-                if (guiActive.equals(guiMsg)) {
+                if (guiActive == guiMsg) {
                     guiMsg.Redraw(com_frameTime);
                 }
             } else if (guiTest != null) {
@@ -2249,7 +2253,7 @@ public class Session_local {
             } else if (guiActive != null && !guiActive.State().GetBool("gameDraw")) {
 
                 // draw the frozen gui in the background
-                if (guiActive.equals(guiMsg) && guiMsgRestore != null) {
+                if (guiActive == guiMsg && guiMsgRestore != null) {
                     guiMsgRestore.Redraw(com_frameTime);
                 }
 

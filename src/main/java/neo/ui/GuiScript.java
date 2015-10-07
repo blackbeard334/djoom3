@@ -467,26 +467,24 @@ public class GuiScript {
         @Override
         public void run(idWindow window, idList<idGSWinVar> src) {
             scriptSetTotal++;
-            String[] key, val = {null};
+            String key, val;
             idWinStr dest = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(0).var);
             if (dest != null) {
                 if (idStr.Icmp(dest.data, "cmd") == 0) {
                     dest = (idWinStr) src.oGet(1).var;
                     int parmCount = src.Num();
                     if (parmCount > 2) {
-                        val[0] = dest.c_str();
+                        val = dest.c_str();
                         int i = 2;
                         while (i < parmCount) {
-                            val[0] += " \"";
-                            val[0] += src.oGet(i).var.c_str();
-                            val[0] += "\"";
+                            val += " \"";
+                            val += src.oGet(i).var.c_str();
+                            val += "\"";
                             i++;
                         }
                         window.AddCommand(val);
                     } else {
-                        String[] d = {dest.data.toString()};
-                        window.AddCommand(d);
-                        dest.data.oSet(d[0]);
+                        window.AddCommand(dest.data.toString());
                     }
                     return;
                 }

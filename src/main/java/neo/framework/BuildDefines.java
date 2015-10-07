@@ -1,8 +1,3 @@
-        /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package neo.framework;
 
 /**
@@ -10,12 +5,12 @@ package neo.framework;
  */
 public class BuildDefines {
 
-    public static final boolean _DEBUG = false;
+    public static final boolean _DEBUG    = false;
     //
-    public static final boolean _WIN32 = System.getProperty("os.name").startsWith("Windows");
-    public static final boolean WIN32 = _WIN32;
-    public static final boolean MACOS_X = System.getProperty("os.name").equals("MacOSX");
-    public static final boolean __ppc__ = MACOS_X;//TODO:can macosx run on non ppc?
+    public static final boolean _WIN32    = System.getProperty("os.name").startsWith("Windows");
+    public static final boolean WIN32     = _WIN32;
+    public static final boolean MACOS_X   = System.getProperty("os.name").equals("MacOSX");
+    public static final boolean __ppc__   = MACOS_X;//TODO:can macosx run on non ppc?
     public static final boolean __linux__ = System.getProperty("os.name").equals("Linux");
 
     /*
@@ -47,18 +42,18 @@ public class BuildDefines {
     }
 
     // useful for network debugging, turns off 'LAN' checks, all IPs are classified 'internet'
-    public static final boolean ID_NOLANADDRESS = false;
+    public static final boolean ID_NOLANADDRESS    = false;
 
     // let .dds be loaded from FS without altering pure state. only for developement.
-    public static final boolean ID_PURE_ALLOWDDS = false;
+    public static final boolean ID_PURE_ALLOWDDS   = false;
 
     // build an exe with no CVAR_CHEAT controls
-    public static final boolean ID_ALLOW_CHEATS = false;
+    public static final boolean ID_ALLOW_CHEATS    = false;
 
-    public static final boolean ID_ENABLE_CURL = true;
+    public static final boolean ID_ENABLE_CURL     = true;
 
     // fake a pure client. useful to connect an all-debug client to a server
-    public static final boolean ID_FAKE_PURE = false;
+    public static final boolean ID_FAKE_PURE       = false;
 
     // verify checksums in clientinfo traffic
     // NOTE: this makes the network protocol incompatible
@@ -66,11 +61,11 @@ public class BuildDefines {
 
     // for win32 this is defined in preprocessor settings so that MFC can be
     // compiled out.
-    public static final boolean ID_DEDICATED = false;
+    public static final boolean ID_DEDICATED       = false;
 
     // if this is defined, the executable positively won't work with any paks other
     // than the demo pak, even if productid is present.
-    public static final boolean ID_DEMO_BUILD = false;
+    public static final boolean ID_DEMO_BUILD      = false;
 
     // don't define ID_ALLOW_TOOLS when we don't want tool code in the executable.
     public static final boolean ID_ALLOW_TOOLS;
@@ -110,15 +105,15 @@ public class BuildDefines {
         }
     }
 
-    public static final boolean ID_OPENAL;
+    public static final boolean ID_OPENAL = true;
 
-    static {
-        if ((_WIN32 || MACOS_X) && !ID_DEDICATED) {
-            ID_OPENAL = true;
-        } else {
-            ID_OPENAL = false;
-        }
-    }
+//    static {
+//        if ((_WIN32 || MACOS_X) && !ID_DEDICATED) {
+//            ID_OPENAL = true;
+//        } else {
+//            ID_OPENAL = false;
+//        }
+//    }
 
     public static final boolean ID_ALLOW_D3XP = true;
 

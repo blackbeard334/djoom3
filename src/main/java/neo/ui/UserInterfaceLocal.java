@@ -124,10 +124,7 @@ public class UserInterfaceLocal {
 //            sz = sizeof(idSimpleWindow.class);
             loading = true;
 
-            if (rebuild) {
-//                delete desktop;
-                desktop = new idWindow(this);
-            } else if (desktop == null) {
+            if (rebuild || desktop == null) {
                 desktop = new idWindow(this);
             }
 //            System.out.println("FAAAAAAAAAAAAAAAAAAR " + desktop);

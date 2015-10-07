@@ -461,7 +461,7 @@ public class AsyncServer {
             session.Stop();
         }
 
-        public void ExecuteMapChange() throws Lib.idException {
+        public void ExecuteMapChange() throws idException {
             int i;
             idBitMsg msg = new idBitMsg();
             ByteBuffer msgBuf = ByteBuffer.allocate(MAX_MESSAGE_SIZE);
@@ -761,7 +761,7 @@ public class AsyncServer {
         }
 //
 
-        public void RunFrame() throws Lib.idException {
+        public void RunFrame() throws idException {
             int i, msec;
             int[] size = new int[1];
             boolean newPacket;
@@ -1650,7 +1650,7 @@ public class AsyncServer {
             return true;
         }
 
-        private void ProcessUnreliableClientMessage(int clientNum, final idBitMsg msg) throws Lib.idException {
+        private void ProcessUnreliableClientMessage(int clientNum, final idBitMsg msg) throws idException {
             int i, id, acknowledgeSequence, clientGameInitId, clientGameFrame, numUsercmds, index;
             usercmd_t last;
 
@@ -1818,7 +1818,7 @@ public class AsyncServer {
             }
         }
 
-        private void ProcessChallengeMessage(final netadr_t from, final idBitMsg msg) throws Lib.idException {
+        private void ProcessChallengeMessage(final netadr_t from, final idBitMsg msg) throws idException {
             int i, clientId, oldest, oldestTime;
             idBitMsg outMsg = new idBitMsg();
             ByteBuffer msgBuf = ByteBuffer.allocate(MAX_MESSAGE_SIZE);

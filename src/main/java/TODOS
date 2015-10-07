@@ -44,3 +44,5 @@
 
 -at a certain point you start a massive campaign of TODO-inserts, which makes you feel a little fuzzy inside.
 -LAZY: take the idWinStr classes for example; normally we would create nice and cool encapsulation functions to hide all the stuff from the outside world. but we just go lazy and use the "data" subtype.
+-replace \n with %n
+-replace Float.SIZE with Float.BYTES...etc.

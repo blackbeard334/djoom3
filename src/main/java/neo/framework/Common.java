@@ -3,8 +3,6 @@ package neo.framework;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static neo.Game.GameSys.SysCvar.__DATE__;
@@ -151,10 +149,12 @@ import static neo.sys.win_input.Sys_InitScanTable;
 import static neo.sys.win_main.DEBUG;
 import static neo.sys.win_main.Sys_AlreadyRunning;
 import static neo.sys.win_main.Sys_DoPreferences;
+import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_Error;
 import static neo.sys.win_main.Sys_GenerateEvents;
 import static neo.sys.win_main.Sys_GetProcessorId;
 import static neo.sys.win_main.Sys_Init;
+import static neo.sys.win_main.Sys_LeaveCriticalSection;
 import static neo.sys.win_main.Sys_Printf;
 import static neo.sys.win_main.Sys_Quit;
 import static neo.sys.win_main.Sys_SetClipboardData;
@@ -412,7 +412,7 @@ public class Common {
 //#ifdef ID_WRITE_VERSION
         idCompressor config_compressor;
 //#endif
-        private static final Lock SINGLE_ASYNC_TIC_LOCK = new ReentrantLock();//TODO:collect the locks into a single bundle.
+//        private static final Lock SINGLE_ASYNC_TIC_LOCK = new ReentrantLock();//TODO:collect the locks into a single bundle.
         //
         //
 
@@ -2053,36 +2053,35 @@ public class Common {
             }
         }
 
-        private void SingleAsyncTic() {
+        private /*synchronized*/ void SingleAsyncTic() {
             // main thread code can prevent this from happening while modifying
             // critical data structures
-            if (SINGLE_ASYNC_TIC_LOCK.tryLock()) {//Sys_EnterCriticalSection();
-                try {
-                    asyncStats_t stat = com_asyncStats[com_ticNumber & (MAX_ASYNC_STATS - 1)];//memset( stat, 0, sizeof( *stat ) );
-                    stat.milliseconds = Sys_Milliseconds();
-                    stat.deltaMsec = stat.milliseconds - com_asyncStats[(com_ticNumber - 1) & (MAX_ASYNC_STATS - 1)].milliseconds;
+            Sys_EnterCriticalSection();
+            try {
+                asyncStats_t stat = com_asyncStats[com_ticNumber & (MAX_ASYNC_STATS - 1)];//memset( stat, 0, sizeof( *stat ) );
+                stat.milliseconds = Sys_Milliseconds();
+                stat.deltaMsec = stat.milliseconds - com_asyncStats[(com_ticNumber - 1) & (MAX_ASYNC_STATS - 1)].milliseconds;
 
-                    if (usercmdGen != null && com_asyncInput.GetBool()) {
-                        usercmdGen.UsercmdInterrupt();
-                    }
-
-                    switch (com_asyncSound.GetInteger()) {
-                        case 1:
-                            soundSystem.AsyncUpdate(stat.milliseconds);
-                            break;
-                        case 3:
-                            soundSystem.AsyncUpdateWrite(stat.milliseconds);
-                            break;
-                    }
-
-                    // we update com_ticNumber after all the background tasks
-                    // have completed their work for this tic
-                    com_ticNumber++;
-//                    System.out.println(com_ticNumber);
-                    stat.timeConsumed = Sys_Milliseconds() - stat.milliseconds;
-                } finally {
-                    SINGLE_ASYNC_TIC_LOCK.unlock();//Sys_LeaveCriticalSection();
+                if (usercmdGen != null && com_asyncInput.GetBool()) {
+                    usercmdGen.UsercmdInterrupt();
                 }
+
+                switch (com_asyncSound.GetInteger()) {
+                    case 1:
+                        soundSystem.AsyncUpdate(stat.milliseconds);
+                        break;
+                    case 3:
+                        soundSystem.AsyncUpdateWrite(stat.milliseconds);
+                        break;
+                }
+
+            // we update com_ticNumber after all the background tasks
+                // have completed their work for this tic
+                com_ticNumber++;
+//                    System.out.println(com_ticNumber);
+                stat.timeConsumed = Sys_Milliseconds() - stat.milliseconds;
+            } finally {
+                Sys_LeaveCriticalSection();
             }
         }
         static float DEBUG_fraction = 0;

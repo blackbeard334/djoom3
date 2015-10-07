@@ -975,10 +975,10 @@ public class RenderWorld_local {
             int nodeNum;
             float d;
 
-            node = areaNodes[0];
-            if (null == node) {
+            if (null == areaNodes) {
                 return -1;
             }
+            node = areaNodes[0];
             while (true) {
                 d = node.plane.Normal().oMultiply(point) + node.plane.oGet(3);
                 if (d > 0) {

@@ -41,9 +41,16 @@ public class SimpleWindow {
 
         idWindow win;
         idSimpleWindow simp;
+        
+        final int DBG_index;
+        private static int DBG_counter = 0;
+
+        public drawWin_t() {
+            this.DBG_index = DBG_counter++;
+        }
     };
 
-    static class idSimpleWindow {
+    public static class idSimpleWindow {
 //	friend class idWindow;
 
         protected idUserInterfaceLocal gui;
@@ -89,11 +96,12 @@ public class SimpleWindow {
         public idStr name;
         //
         //
-        private static int countersOfCreation = 0;
-        private        int count              = 0;
+        private static int DBG_countersOfCreation = 0;
+        private        int DBG_count              = 0;
 
+        public static int DBG_idSimpleWindow = 0;
         public idSimpleWindow(idWindow win) {
-            count = countersOfCreation++;
+            DBG_count = DBG_countersOfCreation++;
             gui = win.GetGui();
             dc = win.dc;
             drawRect = new idRectangle(win.drawRect);
@@ -101,7 +109,7 @@ public class SimpleWindow {
             textRect = new idRectangle(win.textRect);
             origin = new idVec2(win.origin);
             fontNum = win.fontNum;
-            name = win.name;
+            name = new idStr(win.name);
             matScalex = win.matScalex;
             matScaley = win.matScaley;
             borderSize = win.borderSize;
@@ -140,7 +148,11 @@ public class SimpleWindow {
             idWindow parent = win.GetParent();
             if (parent != null) {
                 if (text.NeedsUpdate()) {
+                    DBG_idSimpleWindow++;
+//                    if(DBG_idSimpleWindow++==26)
+//                    if(DBG_idSimpleWindow++==27)
                     parent.AddUpdateVar(text);
+//                    System.out.println(">>" + this);
                 }
                 if (visible.NeedsUpdate()) {
                     parent.AddUpdateVar(visible);

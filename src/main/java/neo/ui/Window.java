@@ -1176,7 +1176,7 @@ public class Window {
                     }
                     src.ExpectTokenType(TT_NAME, 0, token);
                     token2 = token;
-                    System.out.printf(">>>>>>>>%s\n", token.toString());
+//                    System.out.printf(">>>>>>>>%s\n", token.toString());
                     src.UnreadToken(token);
                     drawWin_t dw = FindChildByName(token2.toString());
                     if (dw != null && dw.win != null) {
@@ -1959,7 +1959,7 @@ public class Window {
 
             RunScript(n);
             int c = children.Num();
-            for (int i = 0; i < c; i++) {
+            for (int i = 0; i < c; i++) {                
                 children.oGet(i).Activate(activate, act);
             }
 
@@ -2058,7 +2058,7 @@ public class Window {
         }
 
         public String RouteMouseCoords(float xd, float yd) {
-            String[] str = {null};
+            String str;
             if (GetCaptureChild() != null) {
                 //FIXME: unkludge this whole mechanism
                 return GetCaptureChild().RouteMouseCoords(xd, yd);
@@ -2079,16 +2079,16 @@ public class Window {
                     if (overChild != child) {
                         if (overChild != null) {
                             overChild.MouseExit();
-                            str[0] = overChild.cmd.toString();
-                            if (isNotNullOrEmpty(str[0])) {
+                            str = overChild.cmd.toString();
+                            if (isNotNullOrEmpty(str)) {
                                 gui.GetDesktop().AddCommand(str);
                                 overChild.cmd.oSet("");
                             }
                         }
                         overChild = child;
                         overChild.MouseEnter();
-                        str[0] = overChild.cmd.toString();
-                        if (isNotNullOrEmpty(str[0])) {
+                        str = overChild.cmd.toString();
+                        if (isNotNullOrEmpty(str)) {
                             gui.GetDesktop().AddCommand(str);
                             overChild.cmd.oSet("");
                         }
@@ -2102,8 +2102,8 @@ public class Window {
             }
             if (overChild != null) {
                 overChild.MouseExit();
-                str[0] = overChild.cmd.toString();
-                if (isNotNullOrEmpty(str[0])) {
+                str = overChild.cmd.toString();
+                if (isNotNullOrEmpty(str)) {
                     gui.GetDesktop().AddCommand(str);
                     overChild.cmd.oSet("");
                 }
@@ -3059,15 +3059,15 @@ public class Window {
             return regList;
         }
 
-        public void AddCommand(final String[] _cmd) {
+        public void AddCommand(final String _cmd) {
             String str = cmd.toString();
             if (!str.isEmpty()) {
                 str += " ; ";
-                str += _cmd[0];
+                str += _cmd;
             } else {
-                str = _cmd[0];
+                str = _cmd;
             }
-            _cmd[0] = str;
+            cmd.oSet(str);
         }
 
         static int DEBUG_updateVars = 0;
@@ -3075,6 +3075,7 @@ public class Window {
         public void AddUpdateVar(idWinVar var) {
             var.DEBUG_COUNTER = DEBUG_updateVars++;
             updateVars.AddUnique(var);
+//            System.out.printf("%d %s\n", DEBUG_updateVars, var.GetName());
         }
 
         public boolean Interactive() {
@@ -3207,9 +3208,15 @@ public class Window {
 
          Returns the child window at the given index
          ================
-         */
+         */private static int DBG_GetChild = 0;
         public idWindow GetChild(int index) {
-            return drawWindows.oGet(index).win;
+            DBG_GetChild++;
+            final drawWin_t win_t = drawWindows.oGet(index);
+            final idWindow win = win_t.win;
+            if (win_t != null && win_t.DBG_index == 10670) {
+                int a = 0;
+            }
+            return win;
         }
 
         /*
@@ -3452,6 +3459,7 @@ public class Window {
         protected void UpdateWinVars() {
             int c = updateVars.Num();
             for (int i = 0; i < c; i++) {
+//                System.out.printf("%d %s\n", DEBUG_Activate, updateVars.oGet(i).c_str());
                 updateVars.oGet(i).Update();
             }
         }
@@ -4034,6 +4042,7 @@ public class Window {
             return false;
         }
 
+        private static int DBG_ParseRegEntry = 0;
         protected boolean ParseRegEntry(final String name, idParser src) {
             idStr work;
             work = new idStr(name);
@@ -4044,6 +4053,7 @@ public class Window {
                 for (int i = 0; i < NumRegisterVars; i++) {
                     if (idStr.Icmp(work, RegisterVars[i].name) == 0) {
                         regList.AddReg(work.toString(), etoi(RegisterVars[i].type), src, this, var);
+                        DBG_ParseRegEntry++;
                         return true;
                     }
                 }
