@@ -1179,8 +1179,8 @@ public class Session_local {
                 default:
                     common.Printf("idSessionLocal::MessageBox: unknown msg box type\n");
             }
-            msgFireBack[0].oSet(fire_yes != null ? fire_yes : "");
-            msgFireBack[1].oSet(fire_no != null ? fire_no : "");
+            msgFireBack[0].oSet("" + fire_yes);
+            msgFireBack[1].oSet("" + fire_no);
             guiMsgRestore = guiActive;
             guiActive = guiMsg;
             guiMsg.SetCursor(325, 290);
@@ -2239,7 +2239,7 @@ public class Session_local {
                 if (guiLoading != null) {
                     guiLoading.Redraw(com_frameTime);
                 }
-                if (guiActive.equals(guiMsg)) {
+                if (guiActive == guiMsg) {
                     guiMsg.Redraw(com_frameTime);
                 }
             } else if (guiTest != null) {
@@ -2252,7 +2252,7 @@ public class Session_local {
             } else if (guiActive != null && !guiActive.State().GetBool("gameDraw")) {
 
                 // draw the frozen gui in the background
-                if (guiActive.equals(guiMsg) && guiMsgRestore != null) {
+                if (guiActive == guiMsg && guiMsgRestore != null) {
                     guiMsgRestore.Redraw(com_frameTime);
                 }
 
