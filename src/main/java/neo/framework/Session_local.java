@@ -191,7 +191,6 @@ import static neo.sys.win_shared.Sys_GetDriveFreeSpace;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.sys.win_shared.Sys_SetPhysicalWorkMemory;
 import neo.ui.ListGUI.idListGUI;
-import neo.ui.SimpleWindow;
 import neo.ui.UserInterface.idUserInterface;
 import static neo.ui.UserInterface.uiManager;
 
@@ -1180,8 +1179,8 @@ public class Session_local {
                 default:
                     common.Printf("idSessionLocal::MessageBox: unknown msg box type\n");
             }
-            msgFireBack[0].oSet("" + fire_yes);
-            msgFireBack[1].oSet("" + fire_no);
+            msgFireBack[0].oSet(fire_yes != null ? fire_yes : "");
+            msgFireBack[1].oSet(fire_no != null ? fire_no : "");
             guiMsgRestore = guiActive;
             guiActive = guiMsg;
             guiMsg.SetCursor(325, 290);
@@ -2240,7 +2239,7 @@ public class Session_local {
                 if (guiLoading != null) {
                     guiLoading.Redraw(com_frameTime);
                 }
-                if (guiActive == guiMsg) {
+                if (guiActive.equals(guiMsg)) {
                     guiMsg.Redraw(com_frameTime);
                 }
             } else if (guiTest != null) {
@@ -2253,7 +2252,7 @@ public class Session_local {
             } else if (guiActive != null && !guiActive.State().GetBool("gameDraw")) {
 
                 // draw the frozen gui in the background
-                if (guiActive == guiMsg && guiMsgRestore != null) {
+                if (guiActive.equals(guiMsg) && guiMsgRestore != null) {
                     guiMsgRestore.Redraw(com_frameTime);
                 }
 
