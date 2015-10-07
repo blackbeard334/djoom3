@@ -288,7 +288,7 @@ public class DeviceContext {
                 return idMath.FtoiFast(rectDraw.w / charSkip);
             }
 
-            if (!text.contains("\0")) {
+            if (!text.contains("\\0")) {
                 text += '\0';//TODO:we temporarily append a '\0' here, but we should refactor the code.
             }
 
@@ -316,11 +316,11 @@ public class DeviceContext {
                     }
                 }
 
-//                int nextCharWidth = (int) (idStr.CharIsPrintable(p) ? CharWidth(p, textScale) : cursorSkip);
+                int nextCharWidth = (int) (idStr.CharIsPrintable(p) ? CharWidth(p, textScale) : cursorSkip);
                 // FIXME: this is a temp hack until the guis can be fixed not not overflow the bounding rectangles
-                //		  the side-effect is that list boxes and edit boxes will draw over their scroll bars
-                //	The following line and the !linebreak in the if statement below should be removed
-                final int nextCharWidth = 0;
+                //	      the side-effect is that list boxes and edit boxes will draw over their scroll bars
+                //  The following line and the !linebreak in the if statement below should be removed
+                nextCharWidth = 0;
 
                 if (!lineBreak && (textWidth + nextCharWidth) > rectDraw.w) {
                     // The next character will cause us to overflow, if we haven't yet found a suitable

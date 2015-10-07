@@ -1,5 +1,6 @@
 package neo.idlib;
 
+import java.util.Arrays;
 import java.util.Objects;
 import static neo.TempDump.atof;
 import static neo.TempDump.atoi;
