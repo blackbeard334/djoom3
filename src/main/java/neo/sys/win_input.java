@@ -62,7 +62,6 @@ import static neo.framework.KeyInput.K_SCROLL;
 import static neo.framework.KeyInput.K_SHIFT;
 import static neo.framework.KeyInput.K_UPARROW;
 import static neo.idlib.Lib.idLib.cvarSystem;
-import static neo.sys.win_main.Sys_QueEvent;
 import neo.idlib.Text.Str.idStr;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
@@ -71,6 +70,7 @@ import static neo.sys.sys_public.sys_mEvents.M_DELTAX;
 import static neo.sys.sys_public.sys_mEvents.M_DELTAY;
 import static neo.sys.sys_public.sys_mEvents.M_DELTAZ;
 import static neo.sys.win_local.win32;
+import static neo.sys.win_main.Sys_QueEvent;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -579,6 +579,7 @@ static char[] keyScanTable = s_scantokey;
     public static boolean IN_InitDIMouse() {
         try {
             Mouse.create();
+            Mouse.setClipMouseCoordinatesToWindow(false);
 
 //    HRESULT		hr;
 //
