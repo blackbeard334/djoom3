@@ -942,15 +942,14 @@ public class AASFile_local {
         }
 
         private boolean ParseIndex(idLexer src, idList<Integer/*aasIndex_t*/> indexes) {
-            int numIndexes, i;
             int/*aasIndex_s*/ index;
 
-            numIndexes = src.ParseInt();
+            final int numIndexes = src.ParseInt();
             indexes.Resize(numIndexes);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numIndexes; i++) {
+            for (int i = 0; i < numIndexes; i++) {
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 index = src.ParseInt();
@@ -964,16 +963,14 @@ public class AASFile_local {
         }
 
         private boolean ParsePlanes(idLexer src) {
-            int numPlanes, i;
-            idPlane plane = new idPlane();
-            idVec4 vec = new idVec4();
-
-            numPlanes = src.ParseInt();
+            final int numPlanes = src.ParseInt();
             planeList.Resize(numPlanes);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numPlanes; i++) {
+            for (int i = 0; i < numPlanes; i++) {
+                idPlane plane = new idPlane();
+                idVec4 vec = new idVec4();
                 src.ParseInt();
                 if (!src.Parse1DMatrix(4, vec)) {
                     return false;
@@ -989,15 +986,13 @@ public class AASFile_local {
         }
 
         private boolean ParseVertices(idLexer src) {
-            int numVertices, i;
-            idVec3 vec = new idVec3();
-
-            numVertices = src.ParseInt();
+            final int numVertices = src.ParseInt();
             vertices.Resize(numVertices);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numVertices; i++) {
+            for (int i = 0; i < numVertices; i++) {
+                idVec3 vec = new idVec3();
                 src.ParseInt();
                 if (!src.Parse1DMatrix(3, vec)) {
                     return false;
@@ -1011,15 +1006,13 @@ public class AASFile_local {
         }
 
         private boolean ParseEdges(idLexer src) {
-            int numEdges, i;
-            aasEdge_s edge = new aasEdge_s();
-
-            numEdges = src.ParseInt();
+            final int numEdges = src.ParseInt();
             edges.Resize(numEdges);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numEdges; i++) {
+            for (int i = 0; i < numEdges; i++) {
+                aasEdge_s edge = new aasEdge_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 edge.vertexNum[0] = src.ParseInt();
@@ -1034,15 +1027,13 @@ public class AASFile_local {
         }
 
         private boolean ParseFaces(idLexer src) {
-            int numFaces, i;
-            aasFace_s face = new aasFace_s();
-
-            numFaces = src.ParseInt();
+            final int numFaces = src.ParseInt();
             faces.Resize(numFaces);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numFaces; i++) {
+            for (int i = 0; i < numFaces; i++) {
+                aasFace_s face = new aasFace_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 face.planeNum = src.ParseInt();
@@ -1061,19 +1052,16 @@ public class AASFile_local {
         }
 
         private boolean ParseReachabilities(idLexer src, int areaNum) {
-            int num, j;
-            aasArea_s area;
-            idReachability reach = new idReachability(), newReach;
-            idReachability_Special special;
+            aasArea_s area = areas.oGet(areaNum);
 
-            area = areas.oGet(areaNum);
-
-            num = src.ParseInt();
+            final int num = src.ParseInt();
             src.ExpectTokenString("{");
             area.reach = null;
             area.rev_reach = null;
             area.travelFlags = AreaContentsTravelFlags(areaNum);
-            for (j = 0; j < num; j++) {
+            for (int j = 0; j < num; j++) {
+                idReachability reach = new idReachability(), newReach;
+                idReachability_Special special;
                 Reachability_Read(src, reach);
 //		switch( reach.travelType ) {
 //			case TFL_SPECIAL:
@@ -1100,15 +1088,13 @@ public class AASFile_local {
         }
 
         private boolean ParseAreas(idLexer src) {
-            int numAreas, i;
-            aasArea_s area = new aasArea_s();
-
-            numAreas = src.ParseInt();
+            final int numAreas = src.ParseInt();
             areas.Resize(numAreas);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numAreas; i++) {
+            for (int i = 0; i < numAreas; i++) {
+                aasArea_s area = new aasArea_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 area.flags = src.ParseInt();
@@ -1131,15 +1117,13 @@ public class AASFile_local {
         }
 
         private boolean ParseNodes(idLexer src) {
-            int numNodes, i;
-            aasNode_s node = new aasNode_s();
-
-            numNodes = src.ParseInt();
+            final int numNodes = src.ParseInt();
             nodes.Resize(numNodes);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numNodes; i++) {
+            for (int i = 0; i < numNodes; i++) {
+                aasNode_s node = new aasNode_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 node.planeNum = src.ParseInt();
@@ -1155,15 +1139,13 @@ public class AASFile_local {
         }
 
         private boolean ParsePortals(idLexer src) {
-            int numPortals, i;
-            aasPortal_s portal = new aasPortal_s();
-
-            numPortals = src.ParseInt();
+            final int numPortals = src.ParseInt();
             portals.Resize(numPortals);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numPortals; i++) {
+            for (int i = 0; i < numPortals; i++) {
+                aasPortal_s portal = new aasPortal_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 portal.areaNum = (short) src.ParseInt();
@@ -1181,15 +1163,13 @@ public class AASFile_local {
         }
 
         private boolean ParseClusters(idLexer src) {
-            int numClusters, i;
-            aasCluster_s cluster = new aasCluster_s();
-
-            numClusters = src.ParseInt();
+            final int numClusters = src.ParseInt();
             clusters.Resize(numClusters);
             if (!src.ExpectTokenString("{")) {
                 return false;
             }
-            for (i = 0; i < numClusters; i++) {
+            for (int i = 0; i < numClusters; i++) {
+                aasCluster_s cluster = new aasCluster_s();
                 src.ParseInt();
                 src.ExpectTokenString("(");
                 cluster.numAreas = src.ParseInt();
