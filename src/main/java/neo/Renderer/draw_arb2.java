@@ -282,12 +282,12 @@ public class draw_arb2 {
 //            qglVertexAttribPointerARB(8, 2, GL_FLOAT, false, 0/*sizeof(idDrawVert)*/, ac.stOffset());
 //            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyzOffset());
             
-            qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.SIZE_B, ac.colorOffset());
-            qglVertexAttribPointerARB(11, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.normalOffset());
-            qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.tangentsOffset_1());
-            qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.tangentsOffset_0());
-            qglVertexAttribPointerARB(8, 2, GL_FLOAT, false, idDrawVert.SIZE_B, ac.stOffset());
-            qglVertexPointer(3, GL_FLOAT, idDrawVert.SIZE_B, ac.xyzOffset());
+            qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.BYTES, ac.colorOffset());
+            qglVertexAttribPointerARB(11, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.normalOffset());
+            qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_1());
+            qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_0());
+            qglVertexAttribPointerARB(8, 2, GL_FLOAT, false, idDrawVert.BYTES, ac.stOffset());
+            qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
 
             // this may cause RB_ARB2_DrawInteraction to be exacuted multiple
             // times with different colors and images if the surface or light have multiple layers

@@ -582,7 +582,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static interface SERiAL extends Serializable {//TODO:remove Serializable
 
         public static final int SIZE = Integer.MIN_VALUE;
-        public static final int SIZE_B = SIZE / Byte.SIZE;
+        public static final int BYTES = SIZE / Byte.SIZE;
 
         /**
          * Prepares an <b>empty</b> ByteBuffer representation of the class for

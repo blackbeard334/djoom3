@@ -162,7 +162,7 @@ public class RenderSystem {
                 = (glyphInfo_t.SIZE * GLYPHS_PER_FONT)
                 + Float.SIZE
                 + (Char.SIZE * 64);
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public glyphInfo_t[] glyphs = new glyphInfo_t[GLYPHS_PER_FONT];
         public float glyphScale;

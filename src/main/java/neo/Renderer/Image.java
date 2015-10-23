@@ -312,7 +312,7 @@ public class Image {
                 + CPP_class.Long.SIZE
                 + CPP_class.Long.SIZE
                 + (CPP_class.Long.SIZE * 3);
-        public static final transient  int SIZE_B = SIZE / 8;
+        public static final transient  int BYTES = SIZE / 8;
 
         int /*long*/ dwSize;
         int /*long*/ dwFlags;
@@ -2205,7 +2205,7 @@ public class Image {
             }
 
             int len = f.Length();
-            if (len < ddsFileHeader_t.SIZE_B) {
+            if (len < ddsFileHeader_t.BYTES) {
                 fileSystem.CloseFile(f);
                 return false;
             }
@@ -2375,7 +2375,7 @@ public class Image {
             uploadWidth = uploadWidth2[0];
             uploadHeight = uploadHeight2[0];
 
-            int offset = ddsFileHeader_t.SIZE_B + 4;// + sizeof(ddsFileHeader_t) + 4;
+            int offset = ddsFileHeader_t.BYTES + 4;// + sizeof(ddsFileHeader_t) + 4;
             for (int i = 0; i < numMipmaps; i++) {
                 final int size;
                 if (FormatIsDXT(internalFormat)) {
@@ -2543,7 +2543,7 @@ public class Image {
             }
             bgl.file.position = 0;
             bgl.file.length = bgl.f.Length();
-            if (bgl.file.length < ddsFileHeader_t.SIZE_B) {
+            if (bgl.file.length < ddsFileHeader_t.BYTES) {
                 common.Warning("idImageManager::StartBackgroundImageLoad: %s had a bad file length", imgName.toString());
                 return;
             }

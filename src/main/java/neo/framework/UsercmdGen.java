@@ -1,9 +1,6 @@
 package neo.framework;
 
-import java.io.Serializable;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static neo.TempDump.SERIAL_SIZE;
 import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;

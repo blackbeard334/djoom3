@@ -584,7 +584,7 @@ public class Script_Interpreter {
 //                        data[ i] = GetEntity(source.entityNumberPtr);
 //                        entity = GetEntity(source.getEntityNumberPtr());
                         entity = GetEntity(source.oGet());
-                        length = idEntity.SIZE_B;
+                        length = idEntity.BYTES;
                         entity.Write().asIntBuffer().get(data, i, length);
                         break;
 

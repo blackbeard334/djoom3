@@ -673,7 +673,7 @@ public class GuiModel {
             }
 
             // move the verts to the vertex cache
-            tri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.SIZE_B);
+            tri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.BYTES);
 
             // if we are out of vertex cache, don't create the surface
             if (NOT(tri.ambientCache)) {

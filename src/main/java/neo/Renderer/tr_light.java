@@ -108,7 +108,7 @@ public class tr_light {
             R_DeriveTangents(tri);
         }
 
-        tri.ambientCache = vertexCache.Alloc(tri.verts, tri.numVerts * idDrawVert.SIZE_B);
+        tri.ambientCache = vertexCache.Alloc(tri.verts, tri.numVerts * idDrawVert.BYTES);
         if (NOT(tri.ambientCache)) {
             return false;
         }

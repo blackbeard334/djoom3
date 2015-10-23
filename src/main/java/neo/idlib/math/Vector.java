@@ -60,7 +60,7 @@ public class Vector {
     public static class idVec2 implements idVec<idVec2>, SERiAL {
 
         public static final transient int SIZE = 2 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
         public float y;
@@ -333,7 +333,7 @@ public class Vector {
     public static class idVec3 implements idVec<idVec3>, SERiAL {
 
         public static final transient int SIZE = 3 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
         public float y;
@@ -1062,7 +1062,7 @@ public class Vector {
 
         @Override
         public ByteBuffer Write() {
-            ByteBuffer buffer = ByteBuffer.allocate(SIZE_B);
+            ByteBuffer buffer = ByteBuffer.allocate(BYTES);
 
             buffer.putFloat(x).putFloat(y).putFloat(z).flip();
 
@@ -1099,7 +1099,7 @@ public class Vector {
     public static class idVec4 implements idVec<idVec4>, SERiAL {
 
         public static final transient int SIZE = 4 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
         public float y;
@@ -1416,7 +1416,7 @@ public class Vector {
     public static class idVec5 implements idVec<idVec5>, SERiAL {
 
         public static final transient int SIZE = 5 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
         public float y;
@@ -1592,7 +1592,7 @@ public class Vector {
     public static class idVec6 implements idVec<idVec6>, SERiAL {
 
         public static final transient int SIZE = 6 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float p[] = new float[6];
         //

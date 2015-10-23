@@ -60,7 +60,7 @@ public class tr_deform {
             newTri.verts = null;
         }
 
-        newTri.ambientCache = vertexCache.AllocFrameTemp(ac, newTri.numVerts * idDrawVert.SIZE_B);
+        newTri.ambientCache = vertexCache.AllocFrameTemp(ac, newTri.numVerts * idDrawVert.BYTES);
         // if we are out of vertex cache, leave it the way it is
         if (newTri.ambientCache != null) {
             drawSurf.geo = newTri;
@@ -1225,7 +1225,7 @@ public class tr_deform {
                         indexes += 6;
                     }
                     tri.numIndexes = indexes;
-                    tri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.SIZE_B);
+                    tri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.BYTES);
                     if (tri.ambientCache != null) {
                         // add the drawsurf
                         R_AddDrawSurf(tri, surf.space, renderEntity, stage.material, surf.scissorRect);

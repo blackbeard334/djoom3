@@ -246,8 +246,8 @@ public class tr_render {
         }
 
         idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-        qglVertexPointer(3, GL_FLOAT, idDrawVert.SIZE_B, ac.xyzOffset());
-        qglTexCoordPointer(2, GL_FLOAT, idDrawVert.SIZE_B, ac.stOffset());
+        qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
+        qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
 
         RB_DrawElementsWithCounters(tri);
     }
@@ -538,7 +538,7 @@ public class tr_render {
         // texgens
         if (texture.texgen == TG_DIFFUSE_CUBE) {
             idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
-            qglTexCoordPointer(3, GL_FLOAT, idDrawVert.SIZE_B, vert.normal.ToFloatPtr());
+            qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, vert.normal.ToFloatPtr());
 
         }
         if (texture.texgen == TG_SKYBOX_CUBE || texture.texgen == TG_WOBBLESKY_CUBE) {
@@ -555,7 +555,7 @@ public class tr_render {
             qglTexGenf(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP/*_EXT*/);
             qglEnableClientState(GL_NORMAL_ARRAY);
             idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
-            qglNormalPointer(GL_FLOAT, idDrawVert.SIZE_B, vert.normalOffset());
+            qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, vert.normalOffset());
 
             qglMatrixMode(GL_TEXTURE);
             float[] mat = new float[16];
@@ -581,7 +581,7 @@ public class tr_render {
         if (texture.texgen == TG_DIFFUSE_CUBE || texture.texgen == TG_SKYBOX_CUBE
                 || texture.texgen == TG_WOBBLESKY_CUBE) {
             idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
-            qglTexCoordPointer(2, GL_FLOAT, idDrawVert.SIZE_B,
+            qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES,
                     //			(void *)&(((idDrawVert *)vertexCache.Position( surf.geo.ambientCache )).st) );
                     vert.st.ToFloatPtr());//TODO:WDF?
         }

@@ -279,7 +279,7 @@ public class draw_common {
 
         // texgens
         if (pStage.texture.texgen == TG_DIFFUSE_CUBE) {
-            qglTexCoordPointer(3, GL_FLOAT, idDrawVert.SIZE_B, ac.normalOffset());
+            qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
         }
         if (pStage.texture.texgen == TG_SKYBOX_CUBE || pStage.texture.texgen == TG_WOBBLESKY_CUBE) {
             for (vertCache_s dynamicTexCoords : surf.dynamicTexCoords) {
@@ -390,9 +390,9 @@ public class draw_common {
                     bumpStage.texture.image[0].Bind();
                     GL_SelectTexture(0);
 
-                    qglNormalPointer(GL_FLOAT, idDrawVert.SIZE_B, ac.normalOffset());
-                    qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.tangentsOffset_1());
-                    qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.tangentsOffset_0());
+                    qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
+                    qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_1());
+                    qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_0());
 
                     qglEnableVertexAttribArrayARB(9);
                     qglEnableVertexAttribArrayARB(10);
@@ -405,7 +405,7 @@ public class draw_common {
                     qglEnable(GL_VERTEX_PROGRAM_ARB);
                 } else {
                     // per-pixel reflection mapping without a normal map
-                    qglNormalPointer(GL_FLOAT, idDrawVert.SIZE_B, ac.normalOffset());
+                    qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
                     qglEnableClientState(GL_NORMAL_ARRAY);
 
                     qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FPROG_ENVIRONMENT);
@@ -421,7 +421,7 @@ public class draw_common {
                 qglTexGenf(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP/*_EXT*/);
                 qglTexGenf(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP/*_EXT*/);
                 qglEnableClientState(GL_NORMAL_ARRAY);
-                qglNormalPointer(GL_FLOAT, idDrawVert.SIZE_B, ac.normalOffset());
+                qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
 
                 qglMatrixMode(GL_TEXTURE);
                 float[] mat = new float[16];
@@ -448,7 +448,7 @@ public class draw_common {
 
         if (pStage.texture.texgen == TG_DIFFUSE_CUBE || pStage.texture.texgen == TG_SKYBOX_CUBE
                 || pStage.texture.texgen == TG_WOBBLESKY_CUBE) {
-            qglTexCoordPointer(2, GL_FLOAT, idDrawVert.SIZE_B, ac.stOffset());
+            qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
         }
 
         if (pStage.texture.texgen == TG_SCREEN) {
@@ -625,8 +625,8 @@ public class draw_common {
             }
 
             idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-            qglVertexPointer(3, GL_FLOAT, idDrawVert.SIZE_B, ac.xyzOffset());
-            qglTexCoordPointer(2, GL_FLOAT, idDrawVert.SIZE_B, /*reinterpret_cast<void *>*/ ac.stOffset());
+            qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
+            qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, /*reinterpret_cast<void *>*/ ac.stOffset());
 
             boolean drawSolid = false;
 
@@ -950,8 +950,8 @@ public class draw_common {
         }
 
         idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts. EDIT:easy peasy.
-        qglVertexPointer(3, GL_FLOAT, idDrawVert.SIZE_B, ac.xyzOffset());
-        qglTexCoordPointer(2, GL_FLOAT, idDrawVert.SIZE_B, ac.stOffset());
+        qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
+        qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
 
         for (stage = 0; stage < shader.GetNumStages(); stage++) {
             if (stage > 1) {
@@ -991,10 +991,10 @@ public class draw_common {
                 if (r_skipNewAmbient.GetBool()) {
                     continue;
                 }
-                qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.SIZE_B, ac.colorOffset());
-                qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.tangentsOffset_0());
-                qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.tangentsOffset_1());
-                qglNormalPointer(GL_FLOAT, idDrawVert.SIZE_B, ac.normalOffset());
+                qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.BYTES, ac.colorOffset());
+                qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_0());
+                qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_1());
+                qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
 
                 qglEnableClientState(GL_COLOR_ARRAY);
                 qglEnableVertexAttribArrayARB(9);
@@ -1087,7 +1087,7 @@ public class draw_common {
                 qglColor4f(color.get(0), color.get(1), color.get(2), color.get(3));//marquis logo
 //                System.out.printf("qglColor4f(%f, %f, %f, %f)\n",color.get(0), color.get(1), color.get(2), color.get(3));
             } else {
-                qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.SIZE_B, /*(void *)&*/ ac.colorOffset());
+                qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.BYTES, /*(void *)&*/ ac.colorOffset());
                 qglEnableClientState(GL_COLOR_ARRAY);
 
                 if (pStage.vertexColor == SVC_INVERSE_MODULATE) {
@@ -1486,7 +1486,7 @@ public class draw_common {
             // this gets used for both blend lights and shadow draws
             if (tri.ambientCache != null) {
                 idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-                qglVertexPointer(3, GL_FLOAT, idDrawVert.SIZE_B, ac.xyz.ToFloatPtr());
+                qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyz.ToFloatPtr());
             } else if (tri.shadowCache != null) {
                 shadowCache_s sc = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
                 qglVertexPointer(3, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, sc.xyz.ToFloatPtr());

@@ -107,7 +107,7 @@ public class Script_Program {
                 + Integer.SIZE
                 + Integer.SIZE
                 + idList.SIZE;
-        static final int SIZE_B = SIZE / Byte.SIZE;
+        static final int BYTES = SIZE / Byte.SIZE;
 
         private idStr name = new idStr();
         //

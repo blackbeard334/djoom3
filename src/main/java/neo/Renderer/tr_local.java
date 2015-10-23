@@ -1665,7 +1665,7 @@ public class tr_local {
                 idStr.Copynz(outFont.name, name.toString());
 
                 len = fileSystem.ReadFile(name.toString(), null, fTime);
-                if (len != fontInfo_t.SIZE_B) {
+                if (len != fontInfo_t.BYTES) {
                     common.Warning("RegisterFont: couldn't find font: '%s'", name);
                     return false;
                 }

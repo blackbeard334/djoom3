@@ -172,7 +172,7 @@ public class Event {
                         break;
 
                     case D_EVENT_VECTOR:
-                        argsize += idVec3.SIZE_B;
+                        argsize += idVec3.BYTES;
                         break;
 
                     case D_EVENT_STRING:
