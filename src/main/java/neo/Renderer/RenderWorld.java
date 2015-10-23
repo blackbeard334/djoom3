@@ -107,7 +107,7 @@ public class RenderWorld {
         // The callback function should clear renderEntity->callback if it doesn't
         // want to be called again next time the entity is referenced (ie, if the
         // callback has now made the entity valid until the next updateEntity)
-        public idBounds bounds;			// only needs to be set for deferred models and md5s
+        public idBounds bounds;                         // only needs to be set for deferred models and md5s
         public deferredEntityCallback_t callback;
         //
         public ByteBuffer callbackData;			// used for whatever the callback wants
@@ -131,8 +131,8 @@ public class RenderWorld {
         // axis rotation vectors must be unit length for many
         // R_LocalToGlobal functions to work, so don't scale models!
         // axis vectors are [0] = forward, [1] = left, [2] = up
-        public idVec3 origin = new idVec3();
-        public idMat3 axis = new idMat3();
+        public idVec3 origin;
+        public idMat3 axis;
         //
         // texturing
         public idMaterial customShader;		// if non-0, all surfaces will use this
@@ -167,6 +167,9 @@ public class RenderWorld {
         public int xrayIndex;
 
         public renderEntity_s() {
+            this.origin = new idVec3();
+            this.axis = new idMat3();
+            this.bounds = new idBounds();
         }
 
         public renderEntity_s(renderEntity_s newEntity) {

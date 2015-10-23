@@ -1454,7 +1454,7 @@ public class AAS_local {
 //	bytePtr = ((byte *)areaCacheIndex) + file.GetNumClusters() * sizeof( idRoutingCache ** );
             bytePtr = file.GetNumClusters();
             for (i = 0; i < file.GetNumClusters(); i++) {
-                areaCacheIndex[i] = areaCacheIndex[bytePtr];
+                areaCacheIndex[i] = new idRoutingCache[bytePtr];
                 bytePtr += file.GetCluster(i).numReachableAreas /* sizeof( idRoutingCache * )*/;
             }
 

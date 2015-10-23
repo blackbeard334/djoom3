@@ -393,20 +393,22 @@ public class Entity {
 //        public static idEventFunc<idEntity>[] eventCallbacks;
 //
         public idEntity() {
-            this.targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<idEntity>().getClass());
+            targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<idEntity>().getClass());
 
             entityNumber = ENTITYNUM_NONE;
             entityDefNumber = -1;
 
-            this.spawnNode = new idLinkList<>();
+            spawnNode = new idLinkList<>();
             spawnNode.SetOwner(this);
-            this.activeNode = new idLinkList<>();
+            activeNode = new idLinkList<>();
             activeNode.SetOwner(this);
 
-            this.snapshotNode = new idLinkList<>();
+            snapshotNode = new idLinkList<>();
             snapshotNode.SetOwner(this);
             snapshotSequence = -1;
             snapshotBits = 0;
+            
+            spawnArgs = new idDict();
 
             thinkFlags = 0;
             dormantStart = 0;

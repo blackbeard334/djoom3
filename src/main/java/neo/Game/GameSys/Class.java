@@ -4,14 +4,12 @@ import neo.Game.GameSys.Class.eventCallback_t;
 import static neo.Game.GameSys.Class.idEventArg.toEvent;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
 import static neo.Game.GameSys.Event.D_EVENT_INTEGER;
-import static neo.Game.GameSys.Event.D_EVENT_MAXARGS;
 import neo.Game.GameSys.Event.idEvent;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.Game_local.gameLocal;
-import static neo.Game.Game_local.gameState_t.GAMESTATE_STARTUP;
-import neo.Game.Script.Script_Thread.idThread;
+import neo.TempDump.Deprecation_Exception;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.sizeof;
@@ -234,11 +232,7 @@ public class Class {
          ================
          */
         public String GetClassname() {
-            throw new TODO_Exception();
-//            java.lang.Class/*idTypeInfo*/ type;
-//
-//            type = GetType();
-//            return type.classname;
+            return this.getClass().getSimpleName();
         }
 
         /*
@@ -587,40 +581,44 @@ public class Class {
          Returns the idTypeInfo for the name of the class passed in.  This is a static function
          so it must be called as idClass::GetClass( classname )
          ================
-         */
+         */@Deprecated
         public static idTypeInfo GetClass(final String name) {
-            idTypeInfo c;
-            int order;
-            int mid;
-            int min;
-            int max;
-
-            if (!initialized) {
-                // idClass::Init hasn't been called yet, so do a slow lookup
-                for (c = typelist; c != null; c = c.next) {
-                    if (NOT(idStr.Cmp(c.classname, name))) {
-                        return c;
-                    }
+            switch (name) {
+                    case "idWorldspawn":
                 }
-            } else {
-                // do a binary search through the list of types
-                min = 0;
-                max = types.Num() - 1;
-                while (min <= max) {
-                    mid = (min + max) / 2;
-                    c = types.oGet(mid);
-                    order = idStr.Cmp(c.classname, name);
-                    if (0 == order) {
-                        return c;
-                    } else if (order > 0) {
-                        max = mid - 1;
-                    } else {
-                        min = mid + 1;
-                    }
-                }
-            }
-
-            return null;
+            throw new Deprecation_Exception();
+//            idTypeInfo c;
+//            int order;
+//            int mid;
+//            int min;
+//            int max;
+//
+//            if (!initialized) {
+//                // idClass::Init hasn't been called yet, so do a slow lookup
+//                for (c = typelist; c != null; c = c.next) {
+//                    if (NOT(idStr.Cmp(c.classname, name))) {
+//                        return c;
+//                    }
+//                }
+//            } else {
+//                // do a binary search through the list of types
+//                min = 0;
+//                max = types.Num() - 1;
+//                while (min <= max) {
+//                    mid = (min + max) / 2;
+//                    c = types.oGet(mid);
+//                    order = idStr.Cmp(c.classname, name);
+//                    if (0 == order) {
+//                        return c;
+//                    } else if (order > 0) {
+//                        max = mid - 1;
+//                    } else {
+//                        min = mid + 1;
+//                    }
+//                }
+//            }
+//
+//            return null;
         }
 
         public abstract void oSet(idClass oGet);

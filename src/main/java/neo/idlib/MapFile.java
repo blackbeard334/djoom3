@@ -75,18 +75,18 @@ public class MapFile {
     public static class idMapBrushSide {
 //	friend class idMapBrush;
 
-        protected idStr   material;
-        protected idPlane plane;
+        protected idStr    material;
+        protected idPlane  plane;
         protected idVec3[] texMat = new idVec3[2];
-        protected idVec3 origin;
+        protected idVec3   origin;
         //
         //
 
         public idMapBrushSide() {
-            plane.Zero();
-            texMat[0].Zero();
-            texMat[1].Zero();
-            origin.Zero();
+            plane = new idPlane();
+            texMat[0] = new idVec3();
+            texMat[1] = new idVec3();
+            origin = new idVec3();
         }
 //public							~idMapBrushSide( void ) { }
 
@@ -167,6 +167,7 @@ public class MapFile {
 
         public idMapBrush() {
             type = TYPE_BRUSH;
+            sides = new idList<>();
             sides.Resize(8, 4);
         }
 //public							~idMapBrush( void ) { sides.DeleteContents( true ); }
@@ -180,7 +181,7 @@ public class MapFile {
             idMapBrushSide side;
             idDict epairs = new idDict();
 
-            if (src.ExpectTokenString("{")) {
+            if (!src.ExpectTokenString("{")) {
                 return null;
             }
 
@@ -273,7 +274,7 @@ public class MapFile {
                 if (version < 2.0f) {
                     side.material = new idStr("textures/" + token.toString());
                 } else {
-                    side.material = token;
+                    side.material = new idStr(token);
                 }
 
                 // Q2 allowed override of default flags and values, but we don't any more
@@ -413,7 +414,7 @@ public class MapFile {
         public int GetGeometryCRC() {
             int i, j;
             idMapBrushSide mapSide;
-            int crc;
+            long crc;
 
             crc = 0;
             for (i = 0; i < GetNumSides(); i++) {
@@ -424,15 +425,15 @@ public class MapFile {
                 crc ^= StringCRC(mapSide.GetMaterial().toString());
             }
 
-            return crc;
+            return (int) crc;
         }
     };
 
-    static int FloatCRC(float f) {
-        return (int) f;
+    private static long FloatCRC(float f) {
+        return Integer.toUnsignedLong(Float.floatToIntBits(f));
     }
 
-    static int StringCRC(final String str) {
+    private static int StringCRC(final String str) {
         int i, crc;
 
         crc = 0;
@@ -444,7 +445,7 @@ public class MapFile {
 
     public static class idMapPatch extends idMapPrimitive {
 
-        protected idStr material;
+        protected idStr material = new idStr();
         protected int horzSubdivisions;
         protected int vertSubdivisions;
         protected boolean explicitSubdivisions;
@@ -471,10 +472,10 @@ public class MapFile {
             expanded = false;
         }
 
+        @Deprecated
         public idMapPatch(idMapPrimitive mapPrimitive) {
             this.epairs = mapPrimitive.epairs;
             this.type = mapPrimitive.type;
-
         }
 
 //public							~idMapPatch( void ) { }
@@ -485,7 +486,7 @@ public class MapFile {
             idToken token = new idToken();
             int i, j;
 
-            if (src.ExpectTokenString("{")) {
+            if (!src.ExpectTokenString("{")) {
                 return null;
             }
 
@@ -524,20 +525,17 @@ public class MapFile {
 
             if (patch.GetWidth() < 0 || patch.GetHeight() < 0) {
                 src.Error("idMapPatch::Parse: bad size");
-//		delete patch;
                 return null;
             }
 
             // these were written out in the wrong order, IMHO
-            if (src.ExpectTokenString("(")) {
+            if (!src.ExpectTokenString("(")) {
                 src.Error("idMapPatch::Parse: bad patch vertex data");
-//		delete patch;
                 return null;
             }
             for (j = 0; j < patch.GetWidth(); j++) {
-                if (src.ExpectTokenString("(")) {
+                if (!src.ExpectTokenString("(")) {
                     src.Error("idMapPatch::Parse: bad vertex row data");
-//			delete patch;
                     return null;
                 }
                 for (i = 0; i < patch.GetHeight(); i++) {
@@ -545,27 +543,24 @@ public class MapFile {
 
                     if (!src.Parse1DMatrix(5, v)) {
                         src.Error("idMapPatch::Parse: bad vertex column data");
-//				delete patch;
                         return null;
                     }
 
 //                    vert = patch.oGet(i * patch.GetWidth() + j);
-                    vert = patch.verts.oGet(i * patch.GetWidth() + j);
+                    vert = patch.verts.oSet(i * patch.GetWidth() + j, new idDrawVert());
                     vert.xyz.oSet(0, v[0] - origin.oGet(0));
                     vert.xyz.oSet(1, v[1] - origin.oGet(1));
                     vert.xyz.oSet(2, v[2] - origin.oGet(2));
                     vert.st.oSet(0, v[3]);
                     vert.st.oSet(1, v[4]);
                 }
-                if (src.ExpectTokenString(")")) {
-//			delete patch;
+                if (!src.ExpectTokenString(")")) {
                     src.Error("idMapPatch::Parse: unable to parse patch control points");
                     return null;
                 }
             }
-            if (src.ExpectTokenString(")")) {
+            if (!src.ExpectTokenString(")")) {
                 src.Error("idMapPatch::Parse: unable to parse patch control points, no closure");
-//		delete patch;
                 return null;
             }
 
@@ -671,10 +666,10 @@ public class MapFile {
          */
         protected int width;			// width of patch
         protected int height;			// height of patch
-        protected int maxWidth;		// maximum width allocated for
+        protected int maxWidth;		        // maximum width allocated for
         protected int maxHeight;		// maximum height allocated for
         protected boolean expanded;		// true if vertices are spaced out
-        protected idList<idDrawVert> verts;			// vertices
+        protected idList<idDrawVert> verts = new idList<>();	// vertices
 
         public int GetWidth() {
             return width;
@@ -789,9 +784,9 @@ public class MapFile {
                     idStr key, value;
 
                     // parse a key / value pair
-                    key = token;
+                    key = new idStr(token);
                     src.ReadTokenOnLine(token);
-                    value = token;
+                    value = new idStr(token);
 
                     // strip trailing spaces that sometimes get accidentally
                     // added in the editor
@@ -800,15 +795,15 @@ public class MapFile {
 
                     mapEnt.epairs.Set(key, value);
 
-                    if (0 == idStr.Icmp(key.toString(), "origin")) {
+                    if (0 == idStr.Icmp(key, "origin")) {
                         // scanf into doubles, then assign, so it is idVec size independent
                         v1 = v2 = v3 = 0;
 //                        sscanf(value, "%lf %lf %lf",  & v1,  & v2,  & v3);
                         String[] values = value.toString().split(" ");
-                        origin.x = v1 = Float.parseFloat(String.format("%lf", values[0]));
-                        origin.y = v2 = Float.parseFloat(String.format("%lf", values[1]));
-                        origin.z = v3 = Float.parseFloat(String.format("%lf", values[2]));
-                    } else if (0 == idStr.Icmp(key.toString(), "classname") && 0 == idStr.Icmp(value.toString(), "worldspawn")) {
+                        origin.x = v1 = Float.parseFloat(values[0]);
+                        origin.y = v2 = Float.parseFloat(values[1]);
+                        origin.z = v3 = Float.parseFloat(values[2]);
+                    } else if (0 == idStr.Icmp(key, "classname") && 0 == idStr.Icmp(value, "worldspawn")) {
                         worldent = true;
                     }
                 }
@@ -840,7 +835,7 @@ public class MapFile {
                         ((idMapBrush) mapPrim).Write(fp, i, origin);
                         break;
                     case TYPE_PATCH:
-                        new idMapPatch(mapPrim).Write(fp, i, origin);
+                        ((idMapPatch) mapPrim).Write(fp, i, origin);
                         break;
                 }
             }
@@ -876,7 +871,7 @@ public class MapFile {
                         crc ^= ((idMapBrush) mapPrim).GetGeometryCRC();
                         break;
                     case TYPE_PATCH:
-                        crc ^= new idMapPatch(mapPrim).GetGeometryCRC();
+                        crc ^= ((idMapPatch) mapPrim).GetGeometryCRC();
                         break;
                 }
             }
@@ -1173,6 +1168,7 @@ public class MapFile {
             geometryCRC = 0;
             for (i = 0; i < entities.Num(); i++) {
                 geometryCRC ^= entities.oGet(i).GetGeometryCRC();
+//                System.out.println(">>"+geometryCRC);
             }
         }
     };

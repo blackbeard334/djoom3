@@ -1,6 +1,7 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
 import neo.Game.SmokeParticles.activeSmokeStage_t;
@@ -76,7 +77,7 @@ public class SmokeParticles {
         private int            renderEntityHandle;        // handle to static renderer model
         //
         private static final int             MAX_SMOKE_PARTICLES = 10000;
-        private              singleSmoke_t[] smokes              = new singleSmoke_t[MAX_SMOKE_PARTICLES];
+        private              singleSmoke_t[] smokes;
         //
         private idList<activeSmokeStage_t> activeStages;
         private singleSmoke_t              freeSmokes;
@@ -87,10 +88,10 @@ public class SmokeParticles {
 
         public idSmokeParticles() {
             initialized = false;
-//	memset( &renderEntity, 0, sizeof( renderEntity ) );
-            renderEntity = new renderEntity_s();
+            renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
             renderEntityHandle = -1;
-//	memset( smokes, 0, sizeof( smokes ) );
+            smokes = Stream.generate(()->new singleSmoke_t()).limit(MAX_SMOKE_PARTICLES).toArray(singleSmoke_t[]::new);
+            activeStages = new idList<>();
             freeSmokes = null;
             numActiveSmokes = 0;
             currentParticleTime = -1;

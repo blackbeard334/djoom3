@@ -1,14 +1,22 @@
 package neo.idlib.geometry;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Surface.idSurface;
-import static neo.idlib.math.Math_h.*;
+import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
+import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
+import static neo.idlib.math.Math_h.INTSIGNBITNOTSET;
+import static neo.idlib.math.Math_h.INTSIGNBITSET;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane;
-import static neo.idlib.math.Plane.*;
+import static neo.idlib.math.Plane.ON_EPSILON;
+import static neo.idlib.math.Plane.SIDE_BACK;
+import static neo.idlib.math.Plane.SIDE_CROSS;
+import static neo.idlib.math.Plane.SIDE_FRONT;
+import static neo.idlib.math.Plane.SIDE_ON;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Vector.idVec3;
@@ -47,10 +55,14 @@ public class Surface {
 
      ===============================================================================
      */
-    class surfaceEdge_t {
+    static class surfaceEdge_t {
 
         int[] verts = new int[2];	// edge vertices always with ( verts[0] < verts[1] )
         int[] tris = new int[2];	// edge triangles
+
+        private static surfaceEdge_t[] generateArray(final int length) {
+            return Stream.generate(() -> new surfaceEdge_t()).limit(length).toArray(surfaceEdge_t[]::new);
+        }
     };
 
     public static class idSurface {
@@ -62,6 +74,10 @@ public class Surface {
         //
 
         public idSurface() {
+            this.verts = new idList<>();
+            this.indexes = new idList<>();
+            this.edges = new idList<>();
+            this.edgeIndexes = new idList<>();
         }
 
         public idSurface(final idSurface surf) {
@@ -955,11 +971,12 @@ public class Surface {
          */
         protected void GenerateEdgeIndexes() {
             int i, j, i0, i1, i2, s, v0, v1, edgeNum;
-            int[] index, vertexEdges, edgeChain;
-            surfaceEdge_t[] e = new surfaceEdge_t[3];
+            int[]  vertexEdges, edgeChain;
+            Integer[] index;
+            surfaceEdge_t[] e = surfaceEdge_t.generateArray(3);
 
             vertexEdges = new int[verts.Num()];
-            Arrays.fill(vertexEdges, -1, 0, verts.Num());
+            Arrays.fill(vertexEdges, 0, verts.Num(), -1);
             edgeChain = new int[indexes.Num()];
 
             edgeIndexes.SetNum(indexes.Num(), true);
@@ -971,23 +988,21 @@ public class Surface {
             edges.Append(e[0]);
 
             for (i = 0; i < indexes.Num(); i += 3) {
-//                index = indexes.Ptr() + i;
-                index = new int[indexes.Ptr().length - i];
-                System.arraycopy(indexes.Ptr(), i, index, 0, index.length);
+                index = indexes.Ptr();//index = indexes.Ptr() + i;
                 // vertex numbers
-                i0 = index[0];
-                i1 = index[1];
-                i2 = index[2];
+                i0 = index[i + 0];
+                i1 = index[i + 1];
+                i2 = index[i + 2];
                 // setup edges each with smallest vertex number first
                 s = INTSIGNBITSET(i1 - i0);
-                e[0].verts[0] = index[s];
-                e[0].verts[1] = index[s ^ 1];
+                e[0].verts[0] = index[i + s];
+                e[0].verts[1] = index[i + s ^ 1];
                 s = INTSIGNBITSET(i2 - i1) + 1;
-                e[1].verts[0] = index[s];
-                e[1].verts[1] = index[s ^ 3];
+                e[1].verts[0] = index[i + s];
+                e[1].verts[1] = index[i + s ^ 3];
                 s = INTSIGNBITSET(i2 - i0) << 1;
-                e[2].verts[0] = index[s];
-                e[2].verts[1] = index[s ^ 2];
+                e[2].verts[0] = index[i + s];
+                e[2].verts[1] = index[i + s ^ 2];
                 // get edges
                 for (j = 0; j < 3; j++) {
                     v0 = e[j].verts[0];
@@ -1005,7 +1020,7 @@ public class Surface {
                         vertexEdges[v0] = edgeNum;
                     }
                     // update edge index and edge tri references
-                    if (index[j] == v0) {
+                    if (index[i + j] == v0) {
                         assert (edges.oGet(edgeNum).tris[0] == -1); // edge may not be shared by more than two triangles
                         edges.oGet(edgeNum).tris[0] = i;
                         edgeIndexes.oSet(i + j, edgeNum);

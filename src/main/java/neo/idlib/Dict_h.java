@@ -1,6 +1,5 @@
 package neo.idlib;
 
-import java.util.Arrays;
 import java.util.Objects;
 import static neo.TempDump.atof;
 import static neo.TempDump.atoi;
@@ -53,7 +52,7 @@ public class Dict_h {
      *
      * ===============================================================================
      */
-    public static class idKeyValue extends idDict {
+    public static class idKeyValue extends idDict implements Cloneable {
 //	friend class idDict;
 
         private idPoolStr key;
@@ -108,7 +107,12 @@ public class Dict_h {
         @Override
         public String toString() {
             return "idKeyValue{" + "key=" + key + ", value=" + value + '}';
-        }        
+        }       
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
     }
 
     public static class idDict {
@@ -243,8 +247,11 @@ public class Dict_h {
             n = other.args.Num();
             args.SetNum(n);
             for (i = 0; i < n; i++) {
-                args.oGet(i).key = other.args.oGet(i).key;
-                args.oGet(i).value = other.args.oGet(i).value;
+                try {
+                    args.oSet(i, other.args.oGet(i).clone());
+                } catch (CloneNotSupportedException ex) {
+                    throw new idException(ex);
+                }
             }
             argHash = other.argHash;
 
@@ -287,14 +294,12 @@ public class Dict_h {
 
         // copy key/value pairs from other dict not present in this dict
         public void SetDefaults(final idDict dict) throws idException {
-            int i, n;
-            idKeyValue kv, def;
-            idKeyValue newkv = new idKeyValue();
+            final int n = dict.args.Num();
 
-            n = dict.args.Num();
-            for (i = 0; i < n; i++) {
-                def = dict.args.oGet(i);
-                kv = FindKey(def.GetKey() + "");//TODO:override toString?
+            for (int i = 0; i < n; i++) {
+                idKeyValue def = dict.args.oGet(i);
+                idKeyValue kv = FindKey(def.GetKey() + "");//TODO:override toString?
+                idKeyValue newkv = new idKeyValue();
                 if (null == kv) {
                     newkv.key = globalKeys.CopyString(def.key);
                     newkv.value = globalValues.CopyString(def.value);

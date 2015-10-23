@@ -1170,4 +1170,20 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             System.exit(666);
         }
     }
+    
+    public static final class Deprecation_Exception extends UnsupportedOperationException {
+
+        public Deprecation_Exception() {
+            printStackTrace();
+            System.err.println(
+                    "DARKNESS!!\n"
+                    + "Imprisoning me\n"
+                    + "All that I see\n"
+                    + "Absolute horror\n"
+                    + "I cannot live..."
+                    + "I cannot die..."
+                    + "body my holding cell!");
+            System.exit(666);
+        }
+    }
 }

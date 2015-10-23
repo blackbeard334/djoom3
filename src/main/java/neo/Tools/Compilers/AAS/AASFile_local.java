@@ -487,8 +487,8 @@ public class AASFile_local {
         public boolean Load(final idStr fileName, long/*unsigned int*/ mapFileCRC) {
             idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES);
             idToken token = new idToken();
-            int depth;
-            long/*unsigned int*/ c;
+            final int depth;
+            final int c;
 
             name = fileName;
             crc = mapFileCRC;
@@ -515,7 +515,7 @@ public class AASFile_local {
                 return false;
             }
 
-            c = token.GetUnsignedLongValue();
+            c = (int) token.GetUnsignedLongValue();
             if (mapFileCRC != 0 && c != mapFileCRC) {
                 common.Warning("AAS file '%s' is out of date", name);
                 return false;

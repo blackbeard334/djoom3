@@ -29,7 +29,6 @@ import static neo.Game.Entity.TH_PHYSICS;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
 import static neo.Game.Game.GAME_API_VERSION;
-import static neo.Game.Game.SCRIPT_DEFAULT;
 import static neo.Game.Game.SCRIPT_DEFAULTFUNC;
 import neo.Game.Game.allowReply_t;
 import static neo.Game.Game.allowReply_t.ALLOW_BADPASS;
@@ -3313,7 +3312,7 @@ public class Game_local {
             String[] classname = {null};
             String[] spawn = {null};
             idTypeInfo cls;
-            idClass obj;
+//            idClass obj;
             String error = "";
             String[] name = new String[1];
 
@@ -3332,7 +3331,7 @@ public class Game_local {
             final idDeclEntityDef def = FindEntityDef(classname[0], false);
 
             if (null == def) {
-                Warning("Unknown classname '%s'%s.", classname, error);
+                Warning("Unknown classname '%s'%s.", classname[0], error);
                 return false;
             }
 
@@ -3341,23 +3340,29 @@ public class Game_local {
             // check if we should spawn a class object
             spawnArgs.GetString("spawnclass", null, spawn);
             if (spawn[0] != null) {
+                switch (spawn[0]) {
+                    case "idWorldspawn":
+                }
 
-                cls = idClass.GetClass(spawn[0]);
+                obj = idClass.GetClass(spawn[0]);
                 if (NOT(cls)) {
-                    Warning("Could not spawn '%s'.  Class '%s' not found%s.", classname, spawn, error);
+                    Warning("Could not spawn '%s'.  Class '%s' not found%s.", classname[0], spawn[0], error);
                     return false;
                 }
+//
+//                obj = (idClass) cls.CreateInstance.run();
+//                if (NOT(obj)) {
+//                    Warning("Could not spawn '%s'. Instance could not be created%s.", classname[0], error);
+//                    return false;
+//                }
+//
+//                obj.CallSpawn();
+                
+                idEntity obj = new idEntity();
+                obj.Spawn();
 
-                obj = (idClass) cls.CreateInstance.run();
-                if (NOT(obj)) {
-                    Warning("Could not spawn '%s'. Instance could not be created%s.", classname, error);
-                    return false;
-                }
-
-                obj.CallSpawn();
-
-                if (ent != null && obj.IsType(idEntity.class)) {
-                    ent[0] = ((idEntity) obj);
+                if (ent != null) {// && obj.IsType(idEntity.class)) {
+                    ent[0] = obj;
                 }
 
                 return true;
@@ -3368,7 +3373,7 @@ public class Game_local {
             if (spawn[0] != null) {
                 final function_t func = program.FindFunction(spawn[0]);
                 if (null == func) {
-                    Warning("Could not spawn '%s'.  Script function '%s' not found%s.", classname, spawn, error);
+                    Warning("Could not spawn '%s'.  Script function '%s' not found%s.", classname[0], spawn[0], error);
                     return false;
                 }
                 idThread thread = new idThread(func);
@@ -3376,7 +3381,7 @@ public class Game_local {
                 return true;
             }
 
-            Warning("%s doesn't include a spawnfunc or spawnclass%s.", classname, error);
+            Warning("%s doesn't include a spawnfunc or spawnclass%s.", classname[0], error);
             return false;
         }
 

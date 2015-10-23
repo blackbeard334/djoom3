@@ -286,6 +286,13 @@ public class Game {
                                                     // samples in a multi-sample list from the shader are used
         public boolean            waitfortrigger;   // don't start it at spawn time
         public soundShaderParms_t parms;            // override volume, flags, etc
+
+        public refSound_t() {
+            this.referenceSound = null;
+            this.origin = new idVec3();
+            this.shader = new idSoundShader();
+            this.parms = new soundShaderParms_t();
+        }
     };
 
     //enum {

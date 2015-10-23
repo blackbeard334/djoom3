@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Arrays;
 import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.atocb;
 import static neo.TempDump.bbtocb;
 import neo.framework.File_h.idFile;
@@ -985,13 +984,11 @@ public class Lexer {
 
         // parse matrices with floats
         private boolean Parse1DMatrix(int x, float[] m, final int offset) throws idException {
-            int i;
-
             if (!this.ExpectTokenString("(")) {
                 return false;
             }
 
-            for (i = 0; i < x; i++) {
+            for (int i = 0; i < x; i++) {
                 m[offset + i] = this.ParseFloat();
             }
 
@@ -999,13 +996,17 @@ public class Lexer {
         }
 
         public boolean Parse2DMatrix(int y, int x, idVec3[] m) throws idException {
+            if (!this.ExpectTokenString("(")) {
+                return false;
+            }
+            
             for (int i = 0; i < y; i++) {
                 if (!Parse1DMatrix(x, m[i])) {
                     return false;
                 }
             }
 
-            return true;
+            return (this.ExpectTokenString(")"));
         }
 
         public boolean Parse2DMatrix(int y, int x, float[] m) throws idException {
@@ -1013,13 +1014,11 @@ public class Lexer {
         }
 
         private boolean Parse2DMatrix(int y, int x, float[] m, final int offset) throws idException {
-            int i;
-
             if (!this.ExpectTokenString("(")) {
                 return false;
             }
 
-            for (i = 0; i < y; i++) {
+            for (int i = 0; i < y; i++) {
                 if (!this.Parse1DMatrix(x, m, offset + (i * x))) {
                     return false;
                 }
@@ -1029,13 +1028,11 @@ public class Lexer {
         }
 
         public boolean Parse3DMatrix(int z, int y, int x, float[] m) throws idException {
-            int i;
-
             if (!this.ExpectTokenString("(")) {
                 return false;
             }
 
-            for (i = 0; i < z; i++) {
+            for (int i = 0; i < z; i++) {
                 if (!this.Parse2DMatrix(y, x, m, i * x * y)) {
                     return false;
                 }

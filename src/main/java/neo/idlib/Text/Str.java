@@ -89,7 +89,7 @@ public class Str {
                 + Pointer.SIZE//Character.SIZE //pointer.//TODO:ascertain a char pointer size. EDIT: done.
                 + Integer.SIZE
                 + (Char.SIZE * STR_ALLOC_BASE);//TODO:char size
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         protected int len;//TODO:data is a pointer in the original class.
         protected String data = "";//i·ro·ny: when your program breaks because of two measly double quotes. stu·pid·i·ty: when it takes you 2 days to find said "bug".
@@ -1289,26 +1289,12 @@ public class Str {
         }
 
         public static boolean IsNumeric(final String s) {
-            char[] sArray = s.toCharArray();
-            int i = 0;
-            boolean dot;
-
-            if (sArray[i] == '-') {
-                i++;
+            try {
+                Double.parseDouble(s);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
             }
-
-            dot = false;
-            for (; i < s.length() && sArray[i] != 0; i++) {//TODO: eliminate the '\0's.
-                if (!isdigit(sArray[i])) {
-                    if ((sArray[i] == '.') && !dot) {
-                        dot = true;
-                        continue;
-                    }
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         static boolean isdigit(char c) {

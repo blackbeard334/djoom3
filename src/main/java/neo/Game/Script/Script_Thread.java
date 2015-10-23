@@ -145,12 +145,12 @@ public class Script_Thread {
         private        idThread      waitingForThread;
         private        int           waitingFor;
         private        int           waitingUntil;
-        private        idInterpreter interpreter;
+        private        idInterpreter interpreter = new idInterpreter();
         //
         private        idDict        spawnArgs;
         //
         private        int           threadNum;
-        private        idStr         threadName;
+        private        idStr         threadName = new idStr();
         //
         private        int           lastExecuteTime;
         private        int           creationTime;

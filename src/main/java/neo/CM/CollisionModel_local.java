@@ -2,6 +2,7 @@ package neo.CM;
 
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Stream;
 import static neo.CM.CollisionModel.CM_BOX_EPSILON;
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import static neo.CM.CollisionModel.CM_MAX_TRACE_DIST;
@@ -185,7 +186,7 @@ public class CollisionModel_local {
         int numWindings;                                              // number of windings
         idFixedWinding[] w = new idFixedWinding[MAX_WINDING_LIST];    // windings
         idVec3   normal;                                              // normal for all windings
-        idBounds bounds;                                              // bounds of all windings in list
+        idBounds bounds = new idBounds();                             // bounds of all windings in list
         idVec3   origin;                                              // origin for radius
         float    radius;                                              // radius relative to origin for all windings
         int      contents;                                            // winding surface contents
@@ -201,6 +202,8 @@ public class CollisionModel_local {
      ===============================================================================
      */
     static class cm_vertex_s {
+        static final int SIZE = idVec3.SIZE + Integer.SIZE + Long.SIZE + Long.SIZE;
+        static final int Bytes = SIZE / Byte.SIZE;
 
         idVec3 p;                           // vertex point
         int    checkcount;                  // for multi-check avoidance
@@ -210,9 +213,18 @@ public class CollisionModel_local {
         public cm_vertex_s() {
             this.p = new idVec3();
         }
+        
+        static cm_vertex_s[]generateArray(final int length){
+            return Stream.generate(() -> new cm_vertex_s()).
+                    limit(length).
+                    toArray(cm_vertex_s[]::new);
+        }
     }
 
     static class cm_edge_s {
+         static final int SIZE = Integer.SIZE + Short.SIZE + Short.SIZE + Long.SIZE + Long.SIZE + Integer.SIZE + idVec3.SIZE;
+         static final int Bytes = SIZE / Byte.SIZE;
+
 
         int   checkcount;                   // for multi-check avoidance
         short internal;                     // a trace model can never collide with internal edges
@@ -220,30 +232,20 @@ public class CollisionModel_local {
         long  side;                         // each bit tells at which side of this edge one of the trace model vertices passes
         long  sideSet;                      // each bit tells if sidedness for the trace model vertex has been calculated yet
         int[] vertexNum = new int[2];       // start and end point of edge
-        idVec3 normal;                      // edge normal
+        idVec3 normal = new idVec3();       // edge normal
+        
+        static cm_edge_s[] generateArray(final int length) {
+            return Stream.generate(() -> new cm_edge_s()).
+                    limit(length).
+                    toArray(cm_edge_s[]::new);
+        }
     }
 
 
     static class cm_polygonBlock_s {
 
         int bytesRemaining;
-        //        byte[] next;
-        private int            index;
-        private cm_polygon_s[] polygons;
-
-        public cm_polygon_s current() {
-            return polygons[index];
-        }
-
-        public cm_polygon_s next() {
-            bytesRemaining--;
-            return polygons[index++];
-        }
-
-        public cm_polygon_s next(final Object value) {
-            --bytesRemaining;
-            return polygons[++index] = (cm_polygon_s) value;
-        }
+        cm_polygonBlock_s next;
     }
 
 
@@ -289,25 +291,8 @@ public class CollisionModel_local {
     static class cm_brushBlock_s {
 
         int bytesRemaining;
-        int index;
-        //        byte[] next;
-        private cm_brush_s[] brushes;
-
-        public cm_brush_s current() {
-            return brushes[index];
-        }
-
-        public cm_brush_s next() {
-            bytesRemaining--;
-            return brushes[index++];
-        }
-
-        public cm_brush_s next(final Object value) {
-            --bytesRemaining;
-            return brushes[++index] = (cm_brush_s) value;
-        }
+        cm_brushBlock_s next;
     }
-
 
     static class cm_brush_s {
 
@@ -399,9 +384,15 @@ public class CollisionModel_local {
         int                  numRemovedPolys;
         int                  numMergedPolys;
         int                  usedMemory;
-    }
 
-    ;
+        cm_model_s() {
+            bounds = new idBounds();
+        }
+        
+        private static cm_model_s[] generateArray(final int length) {
+            return Stream.generate(() -> new cm_model_s()).limit(length).toArray(cm_model_s[]::new);
+        }
+    }
 
     /*
      ===============================================================================
@@ -565,7 +556,7 @@ public class CollisionModel_local {
             // models
             maxModels = MAX_SUBMODELS;
             numModels = 0;
-            models = new cm_model_s[maxModels + 1];// Mem_ClearedAlloc(maxModels + 1);
+            models = cm_model_s.generateArray(maxModels + 1);
 
             // setup hash to speed up finding shared vertices and edges
             SetupHash();
@@ -5134,7 +5125,7 @@ public class CollisionModel_local {
             for (i = 0; i < numProcNodes; i++) {
                 cm_procNode_s node;
 
-                node = procNodes[i];
+                node = procNodes[i] = new cm_procNode_s();
 
                 src.Parse1DMatrix(4, node.plane);
                 node.children[0] = src.ParseInt();
@@ -5649,13 +5640,14 @@ public class CollisionModel_local {
             size = numEdges - 1;//sizeof( cm_polygon_t ) + ( numEdges - 1 ) * sizeof( poly.edges[0] );
             model.numPolygons++;
             model.polygonMemory += size;
-            if (model.polygonBlock != null && model.polygonBlock.bytesRemaining >= size) {
-                poly = model.polygonBlock.current();//next;
-                model.polygonBlock.next();// += size;
-//                model.polygonBlock.bytesRemaining -= size;
-            } else {
-                poly = new cm_polygon_s();// Mem_Alloc(size);
-            }
+//            if (model.polygonBlock != null && model.polygonBlock.bytesRemaining >= size) {
+//                poly = model.polygonBlock.current();//next;
+//                model.polygonBlock.next();// += size;
+////                model.polygonBlock.bytesRemaining -= size;
+//            } else {
+            poly = new cm_polygon_s();// Mem_Alloc(size);
+            poly.edges = new int[numEdges];
+//            }
             return poly;
         }
 
@@ -5666,13 +5658,12 @@ public class CollisionModel_local {
             size = numPlanes - 1;//sizeof( cm_brush_t ) + ( numPlanes - 1 ) * sizeof( brush.planes[0] );
             model.numBrushes++;
             model.brushMemory += size;
-            if (model.brushBlock != null && model.brushBlock.bytesRemaining >= size) {
-                brush = model.brushBlock.next();
-//                model.brushBlock.next += size;
-//                model.brushBlock.bytesRemaining -= size;
-            } else {
+//            if (model.brushBlock != null && model.brushBlock.bytesRemaining >= size) {
+//                brush = model.brushBlock.next;
+//            } else {
                 brush = new cm_brush_s();// Mem_Alloc(size);
-            }
+                brush.planes = new idPlane[numPlanes];
+//            }
             return brush;
         }
 
@@ -5713,10 +5704,10 @@ public class CollisionModel_local {
             // allocate vertex and edge arrays
             model.numVertices = 0;
             model.maxVertices = MAX_TRACEMODEL_VERTS;
-            model.vertices = new cm_vertex_s[model.maxVertices];//) Mem_ClearedAlloc(model.maxVertices/*sizeof(cm_vertex_t)*/);
+            model.vertices = cm_vertex_s.generateArray(model.maxVertices);
             model.numEdges = 0;
             model.maxEdges = MAX_TRACEMODEL_EDGES + 1;
-            model.edges = new cm_edge_s[model.maxEdges];// Mem_ClearedAlloc(model.maxEdges /* * sizeof(cm_edge_t)*/);
+            model.edges = cm_edge_s.generateArray(model.maxEdges);
             // create a material for the trace model polygons
             trmMaterial = declManager.FindMaterial("_tracemodel", false);
             if (null == trmMaterial) {
@@ -6001,10 +5992,8 @@ public class CollisionModel_local {
                 // resize vertex array
                 model.maxVertices = (int) (model.maxVertices * 1.5f + 1);
                 oldVertices = model.vertices;
-                model.vertices = new cm_vertex_s[model.maxVertices];// Mem_ClearedAlloc(model.maxVertices/*sizeof(cm_vertex_t)*/);
-//		memcpy( model.vertices, oldVertices, model.numVertices * sizeof(cm_vertex_t) );
+                model.vertices = cm_vertex_s.generateArray(model.maxVertices);
                 System.arraycopy(oldVertices, 0, model.vertices, 0, model.numVertices);
-                oldVertices = null;//Mem_Free(oldVertices);
 
                 cm_vertexHash.ResizeIndex(model.maxVertices);
             }
@@ -6081,9 +6070,8 @@ public class CollisionModel_local {
                 // resize edge array
                 model.maxEdges = (int) (model.maxEdges * 1.5f + 1);//TODO:float precision cast???
                 oldEdges = model.edges;
-                model.edges = new cm_edge_s[model.maxEdges];// Mem_ClearedAlloc(model.maxEdges);
-//		memcpy( model.edges, oldEdges, model.numEdges * sizeof(cm_edge_t) );
-                oldEdges = null;//Mem_Free(oldEdges);
+                model.edges = cm_edge_s.generateArray(model.maxEdges);
+                System.arraycopy(oldEdges, 0, model.edges, 0, model.numEdges);
 
                 cm_edgeHash.ResizeIndex(model.maxEdges);
             }
@@ -6445,18 +6433,18 @@ public class CollisionModel_local {
         }
 
         private void PrintModelInfo(final cm_model_s model) {
-            common.Printf("%6i vertices (%d KB)\n", model.numVertices, (model.numVertices /* sizeof(cm_vertex_t)*/) >> 10);
-            common.Printf("%6i edges (%d KB)\n", model.numEdges, (model.numEdges /* sizeof(cm_edge_t)*/) >> 10);
-            common.Printf("%6i polygons (%d KB)\n", model.numPolygons, model.polygonMemory >> 10);
-            common.Printf("%6i brushes (%d KB)\n", model.numBrushes, model.brushMemory >> 10);
-            common.Printf("%6i nodes (%d KB)\n", model.numNodes, (model.numNodes /* sizeof(cm_node_t)*/) >> 10);
-            common.Printf("%6i polygon refs (%d KB)\n", model.numPolygonRefs, (model.numPolygonRefs /* sizeof(cm_polygonRef_t)*/) >> 10);
-            common.Printf("%6i brush refs (%d KB)\n", model.numBrushRefs, (model.numBrushRefs /* sizeof(cm_brushRef_t)*/) >> 10);
-            common.Printf("%6i internal edges\n", model.numInternalEdges);
-            common.Printf("%6i sharp edges\n", model.numSharpEdges);
-            common.Printf("%6i contained polygons removed\n", model.numRemovedPolys);
-            common.Printf("%6i polygons merged\n", model.numMergedPolys);
-            common.Printf("%6i KB total memory used\n", model.usedMemory >> 10);
+            common.Printf("%6d vertices (%d KB)\n", model.numVertices, (model.numVertices /* sizeof(cm_vertex_t)*/) >> 10);
+            common.Printf("%6d edges (%d KB)\n", model.numEdges, (model.numEdges /* sizeof(cm_edge_t)*/) >> 10);
+            common.Printf("%6d polygons (%d KB)\n", model.numPolygons, model.polygonMemory >> 10);
+            common.Printf("%6d brushes (%d KB)\n", model.numBrushes, model.brushMemory >> 10);
+            common.Printf("%6d nodes (%d KB)\n", model.numNodes, (model.numNodes /* sizeof(cm_node_t)*/) >> 10);
+            common.Printf("%6d polygon refs (%d KB)\n", model.numPolygonRefs, (model.numPolygonRefs /* sizeof(cm_polygonRef_t)*/) >> 10);
+            common.Printf("%6d brush refs (%d KB)\n", model.numBrushRefs, (model.numBrushRefs /* sizeof(cm_brushRef_t)*/) >> 10);
+            common.Printf("%6d internal edges\n", model.numInternalEdges);
+            common.Printf("%6d sharp edges\n", model.numSharpEdges);
+            common.Printf("%6d contained polygons removed\n", model.numRemovedPolys);
+            common.Printf("%6d polygons merged\n", model.numMergedPolys);
+            common.Printf("%6d KB total memory used\n", model.usedMemory >> 10);
         }
 
         private void AccumulateModelInfo(cm_model_s model) {
@@ -6570,19 +6558,15 @@ public class CollisionModel_local {
             // realloc vertices
             oldVertices = model.vertices;
             if (oldVertices != null) {
-                model.vertices = new cm_vertex_s[model.numVertices];// Mem_ClearedAlloc(model.numVertices /* sizeof(cm_vertex_t)*/);//TODO:init normally instead.
-//		memcpy( model.vertices, oldVertices, model.numVertices * sizeof(cm_vertex_t) );
+                model.vertices = cm_vertex_s.generateArray(model.numVertices);
                 System.arraycopy(oldVertices, 0, model.vertices, 0, model.numVertices);
-                oldVertices = null;//Mem_Free(oldVertices);
             }
 
             // realloc edges
             oldEdges = model.edges;
             if (oldEdges != null) {
-                model.edges = new cm_edge_s[model.numEdges];// Mem_ClearedAlloc(model.numEdges /* sizeof(cm_edge_t)*/);
-//		memcpy( model.edges, oldEdges, model.numEdges * sizeof(cm_edge_t) );
+                model.edges = cm_edge_s.generateArray(model.numEdges);
                 System.arraycopy(oldEdges, 0, model.edges, 0, model.numEdges);
-                oldEdges = null;//Mem_Free(oldEdges);
             }
         }
 
@@ -6659,7 +6643,7 @@ public class CollisionModel_local {
             cm_model_s model = new cm_model_s();
             AccumulateModelInfo(model);
             common.Printf("collision data:\n");
-            common.Printf("%6i models\n", numModels);
+            common.Printf("%6d models\n", numModels);
             PrintModelInfo(model);
             common.Printf("%.0f msec to load collision data.\n", timer.Milliseconds());
         }
@@ -6714,8 +6698,8 @@ public class CollisionModel_local {
             model.maxEdges = maxEdges[0];
             model.numVertices = 0;
             model.numEdges = 0;
-            model.vertices = new cm_vertex_s[model.maxVertices];// Mem_ClearedAlloc(model.maxVertices);
-            model.edges = new cm_edge_s[model.maxEdges];// Mem_ClearedAlloc(model.maxEdges);
+            model.vertices = cm_vertex_s.generateArray(model.maxVertices);
+            model.edges = cm_edge_s.generateArray(model.maxEdges);
 
             cm_vertexHash.ResizeIndex(model.maxVertices);
             cm_edgeHash.ResizeIndex(model.maxEdges);
@@ -6833,8 +6817,8 @@ public class CollisionModel_local {
                 model.maxEdges += surf.geometry.numIndexes;
             }
 
-            model.vertices = new cm_vertex_s[model.maxVertices];// Mem_ClearedAlloc(model.maxVertices);
-            model.edges = new cm_edge_s[model.maxEdges];// Mem_ClearedAlloc(model.maxEdges);
+            model.vertices = cm_vertex_s.generateArray(model.maxVertices);
+            model.edges = cm_edge_s.generateArray(model.maxEdges);
 
             // setup hash to speed up finding shared vertices and edges
             SetupHash();
@@ -7266,13 +7250,11 @@ public class CollisionModel_local {
             int i, numEdges;
             idVec3 normal = new idVec3();
             idToken token = new idToken();
-            Object[] cm_polygonBlock_t;
 
             if (src.CheckTokenType(TT_NUMBER, 0, token) != 0) {
-                cm_polygonBlock_t = new cm_polygonBlock_s[token.GetIntValue()];// Mem_Alloc(token.GetIntValue());
-                model.polygonBlock = (cm_polygonBlock_s) cm_polygonBlock_t[0];
+                model.polygonBlock = new cm_polygonBlock_s();
                 model.polygonBlock.bytesRemaining = token.GetIntValue();
-                model.polygonBlock.next((cm_polygonBlock_s) cm_polygonBlock_t[1]);
+                model.polygonBlock.next = new cm_polygonBlock_s();
             }
 
             src.ExpectTokenString("{");
@@ -7306,13 +7288,11 @@ public class CollisionModel_local {
             int i, numPlanes;
             idVec3 normal = new idVec3();
             idToken token = new idToken();
-            Object[] cm_brushBlock_t;
 
             if (src.CheckTokenType(TT_NUMBER, 0, token) != 0) {
-                cm_brushBlock_t = new cm_brushBlock_s[token.GetIntValue()];// Mem_Alloc(token.GetIntValue());
-                model.brushBlock = (cm_brushBlock_s) cm_brushBlock_t[0];
+                model.brushBlock = new cm_brushBlock_s();
                 model.brushBlock.bytesRemaining = token.GetIntValue();
-                model.brushBlock.next((cm_brushBlock_s) cm_brushBlock_t[1]);
+                model.brushBlock.next = new cm_brushBlock_s();
             }
 
             src.ExpectTokenString("{");
@@ -7324,6 +7304,7 @@ public class CollisionModel_local {
                 src.ExpectTokenString("{");
                 for (i = 0; i < b.numPlanes; i++) {
                     src.Parse1DMatrix(3, normal);
+                    b.planes[i] = new idPlane();
                     b.planes[i].SetNormal(normal);
                     b.planes[i].SetDist(src.ParseFloat());
                 }
@@ -7399,22 +7380,22 @@ public class CollisionModel_local {
             // get model contents
             model.contents = CM_GetNodeContents(model.node);
             // total memory used by this model
-            model.usedMemory = model.numVertices * sizeof(cm_vertex_s.class)
-                    + model.numEdges * sizeof(cm_edge_s.class)
+            model.usedMemory = model.numVertices * cm_vertex_s.Bytes
+                    + model.numEdges * cm_edge_s.Bytes
                     + model.polygonMemory
                     + model.brushMemory
-                    + model.numNodes * sizeof(cm_node_s.class)
-                    + model.numPolygonRefs * sizeof(cm_polygonRef_s.class)
-                    + model.numBrushRefs * sizeof(cm_brushRef_s.class);
+                    + model.numNodes       //* cm_node_s.Bytes
+                    + model.numPolygonRefs //* cm_polygonRef_s.Bytes
+                    + model.numBrushRefs;  //* cm_brushRef_s.Bytes;
 
             return true;
         }
 
-        private boolean LoadCollisionModelFile(final idStr fileName, long mapFileCRC) {
+        private boolean LoadCollisionModelFile(final idStr fileName, int mapFileCRC) {
 //	idStr fileName;
             idToken token = new idToken();
             idLexer src;
-            long crc;
+            int crc;
 
             // load it
 //	fileName = name;
@@ -7422,32 +7403,27 @@ public class CollisionModel_local {
             src = new idLexer(fileName.toString());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
             if (!src.IsLoaded()) {
-//		delete src;
                 return false;
             }
 
             if (!src.ExpectTokenString(CM_FILEID)) {
                 common.Warning("%s is not an CM file.", fileName);
-//		delete src;
                 return false;
             }
 
             if (!src.ReadToken(token) || !token.equals(CM_FILEVERSION)) {
                 common.Warning("%s has version %s instead of %s", fileName, token, CM_FILEVERSION);
-//		delete src;
                 return false;
             }
 
             if (0 == src.ExpectTokenType(TT_NUMBER, TT_INTEGER, token)) {
                 common.Warning("%s has no map file CRC", fileName);
-//		delete src;
                 return false;
             }
 
-            crc = token.GetUnsignedLongValue();
+            crc = (int) token.GetUnsignedLongValue();
             if (mapFileCRC != 0 && crc != mapFileCRC) {
                 common.Printf("%s is out of date\n", fileName);
-//		delete src;
                 return false;
             }
 
