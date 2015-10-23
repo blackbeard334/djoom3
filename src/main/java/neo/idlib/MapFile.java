@@ -160,6 +160,10 @@ public class MapFile {
     }
 
     public static class idMapBrush extends idMapPrimitive {
+        protected int numSides;
+        protected idList<idMapBrushSide> sides;
+        //
+        //
 
         public idMapBrush() {
             type = TYPE_BRUSH;
@@ -227,16 +231,16 @@ public class MapFile {
                 sides.Append(side);
 
                 if (newFormat) {
-                    if (!src.Parse1DMatrix(4, side.plane.ToFloatPtr())) {
+                    if (!src.Parse1DMatrix(4, side.plane)) {
                         src.Error("idMapBrush::Parse: unable to read brush side plane definition");
                         sides.DeleteContents(true);
                         return null;
                     }
                 } else {
                     // read the three point plane definition
-                    if (!src.Parse1DMatrix(3, planepts[0].ToFloatPtr())
-                            || !src.Parse1DMatrix(3, planepts[1].ToFloatPtr())
-                            || !src.Parse1DMatrix(3, planepts[2].ToFloatPtr())) {
+                    if (!src.Parse1DMatrix(3, planepts[0])
+                            || !src.Parse1DMatrix(3, planepts[1])
+                            || !src.Parse1DMatrix(3, planepts[2])) {
                         src.Error("idMapBrush::Parse: unable to read brush side plane definition");
                         sides.DeleteContents(true);
                         return null;
@@ -251,7 +255,7 @@ public class MapFile {
 
                 // read the texture matrix
                 // this is odd, because the texmat is 2D relative to default planar texture axis
-                if (!src.Parse2DMatrix(2, 3, side.texMat[0].ToFloatPtr())) {
+                if (!src.Parse2DMatrix(2, 3, side.texMat)) {
                     src.Error("idMapBrush::Parse: unable to read brush side texture matrix");
                     sides.DeleteContents(true);
                     return null;
@@ -315,9 +319,9 @@ public class MapFile {
                 sides.Append(side);
 
                 // read the three point plane definition
-                if (!src.Parse1DMatrix(3, planepts[0].ToFloatPtr())
-                        || !src.Parse1DMatrix(3, planepts[1].ToFloatPtr())
-                        || !src.Parse1DMatrix(3, planepts[2].ToFloatPtr())) {
+                if (!src.Parse1DMatrix(3, planepts[0])
+                        || !src.Parse1DMatrix(3, planepts[1])
+                        || !src.Parse1DMatrix(3, planepts[2])) {
                     src.Error("idMapBrush::ParseQ3: unable to read brush side plane definition");
                     sides.DeleteContents(true);
                     return null;
@@ -422,10 +426,6 @@ public class MapFile {
 
             return crc;
         }
-//
-//
-        protected int numSides;
-        protected idList<idMapBrushSide> sides;
     };
 
     static int FloatCRC(float f) {
@@ -709,7 +709,9 @@ public class MapFile {
         //
 
         public idMapEntity() {
+            epairs = new idDict();
             epairs.SetHashSize(64);
+            primitives = new idList<>();
         }
 //public							~idMapEntity( void ) { primitives.DeleteContents( true ); }
 //public	static idMapEntity *	Parse( idLexer &src, bool worldSpawn = false, float version = CURRENT_MAP_VERSION );

@@ -599,7 +599,7 @@ public class AASFile {
             if (!src.ExpectTokenString("=")) {
                 return false;
             }
-            return (src.Parse1DMatrix(3, vec.ToFloatPtr()));
+            return src.Parse1DMatrix(3, vec);
         }
 
         private boolean ParseBBoxes(idLexer src) {
@@ -616,11 +616,11 @@ public class AASFile {
                     return true;
                 }
                 src.UnreadToken(token);
-                src.Parse1DMatrix(3, bounds.oGet(0).ToFloatPtr());
+                src.Parse1DMatrix(3, bounds.oGet(0));
                 if (!src.ExpectTokenString("-")) {
                     return false;
                 }
-                src.Parse1DMatrix(3, bounds.oGet(1).ToFloatPtr());
+                src.Parse1DMatrix(3, bounds.oGet(1));
 
                 boundingBoxes[numBoundingBoxes++] = bounds;
             }
@@ -830,8 +830,8 @@ public class AASFile {
     static boolean Reachability_Read(idLexer src, idReachability reach) {
         reach.travelType = src.ParseInt();
         reach.toAreaNum = (short) src.ParseInt();
-        src.Parse1DMatrix(3, reach.start.ToFloatPtr());
-        src.Parse1DMatrix(3, reach.end.ToFloatPtr());
+        src.Parse1DMatrix(3, reach.start);
+        src.Parse1DMatrix(3, reach.end);
         reach.edgeNum = src.ParseInt();
         reach.travelTime = src.ParseInt();
         return true;

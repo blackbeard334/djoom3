@@ -2923,8 +2923,8 @@ public class SysCmds {
                 }
             }
 
-            if (parser.ExpectTokenString("view") && parser.Parse1DMatrix(3, origin.ToFloatPtr())
-                    && parser.Parse1DMatrix(9, axis.ToFloatPtr()) && parser.ExpectTokenString("comments") && parser.ReadToken(token)) {
+            if (parser.ExpectTokenString("view") && parser.Parse1DMatrix(3, origin)
+                    && parser.Parse1DMatrix(9, axis) && parser.ExpectTokenString("comments") && parser.ReadToken(token)) {
                 player.hud.SetStateString("viewcomments", token.toString());
                 player.hud.HandleNamedEvent("showViewComments");
                 player.Teleport(origin, axis.ToAngles(), null);

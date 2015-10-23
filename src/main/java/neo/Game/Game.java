@@ -1371,7 +1371,7 @@ public class Game {
             idMapFile mapFile = gameLocal.GetLevelMap();
             if (mapFile != null) {
                 idMapEntity ent = new idMapEntity();
-                ent.epairs = dict;
+                ent.epairs.oSet(dict);
                 mapFile.AddEntity(ent);
             }
         }

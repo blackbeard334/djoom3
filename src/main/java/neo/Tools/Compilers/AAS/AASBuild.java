@@ -378,7 +378,7 @@ public class AASBuild {
 
                 node = (this.procNodes[i]);
 
-                src.Parse1DMatrix(4, node.plane.ToFloatPtr());
+                src.Parse1DMatrix(4, node.plane);
                 node.children[0] = src.ParseInt();
                 node.children[1] = src.ParseInt();
             }

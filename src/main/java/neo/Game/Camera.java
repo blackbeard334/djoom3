@@ -575,8 +575,8 @@ public class Camera {
             parser.ExpectTokenString("{");
             camera.SetNum(numFrames);
             for (i = 0; i < numFrames; i++) {
-                parser.Parse1DMatrix(3, camera.oGet(i).t.ToFloatPtr());
-                parser.Parse1DMatrix(3, camera.oGet(i).q.ToFloatPtr());
+                parser.Parse1DMatrix(3, camera.oGet(i).t);
+                parser.Parse1DMatrix(3, camera.oGet(i).q);
                 camera.oGet(i).fov = parser.ParseFloat();
             }
             parser.ExpectTokenString("}");

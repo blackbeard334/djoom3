@@ -1898,7 +1898,7 @@ public class RenderWorld_local {
                 w = new idWinding(numPoints);
                 w.SetNumPoints(numPoints);
                 for (j = 0; j < numPoints; j++) {
-                    src.Parse1DMatrix(3, w.oGet(j).ToFloatPtr());
+                    src.Parse1DMatrix(3, w.oGet(j));
                     // no texture coordinates
                     w.oGet(j).oSet(3, 0);
                     w.oGet(j).oSet(4, 0);
@@ -1943,7 +1943,7 @@ public class RenderWorld_local {
             areaNodes = TempDump.allocArray(areaNode_t.class, numAreaNodes);
 
             for (areaNode_t node : areaNodes) {
-                src.Parse1DMatrix(4, node.plane.ToFloatPtr());
+                src.Parse1DMatrix(4, node.plane);
                 node.children[0] = src.ParseInt();
                 node.children[1] = src.ParseInt();
             }

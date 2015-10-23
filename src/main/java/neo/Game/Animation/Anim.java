@@ -15,7 +15,6 @@ import static neo.TempDump.indexOf;
 import static neo.TempDump.sizeof;
 import neo.framework.DeclSkin.idDeclSkin;
 import neo.idlib.BV.Bounds.idBounds;
-import static neo.idlib.Lib.BIT;
 import neo.idlib.Lib.idException;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
@@ -343,8 +342,8 @@ public class Anim {
             bounds.SetGranularity(1);
             bounds.SetNum(numFrames);
             for (i = 0; i < numFrames; i++) {
-                parser.Parse1DMatrix(3, bounds.oGet(i).oGet(0).ToFloatPtr());
-                parser.Parse1DMatrix(3, bounds.oGet(i).oGet(1).ToFloatPtr());
+                parser.Parse1DMatrix(3, bounds.oGet(i).oGet(0));
+                parser.Parse1DMatrix(3, bounds.oGet(i).oGet(1));
             }
             parser.ExpectTokenString("}");
 
@@ -354,10 +353,8 @@ public class Anim {
             parser.ExpectTokenString("baseframe");
             parser.ExpectTokenString("{");
             for (i = 0; i < numJoints; i++) {
-                idCQuat q = new idCQuat();
-                parser.Parse1DMatrix(3, baseFrame.oGet(i).t.ToFloatPtr());
-                parser.Parse1DMatrix(3, q.ToFloatPtr());//baseFrame[ i ].q.ToFloatPtr() );
-                baseFrame.oGet(i).q = q.ToQuat();//.w = baseFrame[ i ].q.CalcW();
+                parser.Parse1DMatrix(3, baseFrame.oGet(i).t);
+                parser.Parse1DMatrix(3, baseFrame.oGet(i).q);
             }
             parser.ExpectTokenString("}");
 

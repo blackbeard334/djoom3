@@ -1242,7 +1242,7 @@ public class Anim_Blend {
                         return false;
                     }
                 } else if (token.equals("offset")) {
-                    if (!src.Parse1DMatrix(3, offset.ToFloatPtr())) {
+                    if (!src.Parse1DMatrix(3, offset)) {
                         src.Warning("Expected vector following 'offset'");
                         MakeDefault();
                         return false;

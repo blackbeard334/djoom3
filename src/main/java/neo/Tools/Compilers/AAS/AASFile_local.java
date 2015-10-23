@@ -974,7 +974,7 @@ public class AASFile_local {
             }
             for (i = 0; i < numPlanes; i++) {
                 src.ParseInt();
-                if (!src.Parse1DMatrix(4, vec.ToFloatPtr())) {
+                if (!src.Parse1DMatrix(4, vec)) {
                     return false;
                 }
                 plane.SetNormal(vec.ToVec3());
@@ -998,7 +998,7 @@ public class AASFile_local {
             }
             for (i = 0; i < numVertices; i++) {
                 src.ParseInt();
-                if (!src.Parse1DMatrix(3, vec.ToFloatPtr())) {
+                if (!src.Parse1DMatrix(3, vec)) {
                     return false;
                 }
                 vertices.Append(vec);

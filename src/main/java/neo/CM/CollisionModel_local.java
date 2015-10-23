@@ -49,6 +49,7 @@ import neo.Renderer.Model.modelSurface_s;
 import static neo.Renderer.ModelManager.renderModelManager;
 import static neo.Renderer.RenderWorld.PROC_FILE_EXT;
 import static neo.Renderer.RenderWorld.PROC_FILE_ID;
+import neo.TempDump;
 import static neo.TempDump.ctos;
 import static neo.TempDump.reinterpret_cast_int;
 import static neo.TempDump.sizeof;
@@ -199,14 +200,17 @@ public class CollisionModel_local {
 
      ===============================================================================
      */
-    class cm_vertex_s {
+    static class cm_vertex_s {
 
         idVec3 p;                           // vertex point
         int    checkcount;                  // for multi-check avoidance
         long   side;                        // each bit tells at which side this vertex passes one of the trace model edges
         long   sideSet;                     // each bit tells if sidedness for the trace model edge has been calculated yet
-    }
 
+        public cm_vertex_s() {
+            this.p = new idVec3();
+        }
+    }
 
     static class cm_edge_s {
 
@@ -253,16 +257,25 @@ public class CollisionModel_local {
         int        numEdges;                // number of edges
         int[] edges = new int[1];           // variable sized, indexes into cm_edge_t list
 
+        public cm_polygon_s() {
+            this.bounds = new idBounds();
+            this.plane = new idPlane();
+        }
+
         private void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
 
 
-    static class cm_polygonRef_s {
+    public static class cm_polygonRef_s {
 
         cm_polygon_s    p;                  // pointer to polygon
         cm_polygonRef_s next;               // next polygon in chain
+
+        public cm_polygonRef_s() {
+            this.p = new cm_polygon_s();
+        }
     }
 
 
@@ -306,6 +319,10 @@ public class CollisionModel_local {
         int        numPlanes;               // number of bounding planes
         idPlane[] planes = new idPlane[1];  // variable sized
 
+        public cm_brush_s() {
+            this.bounds = new idBounds();
+        }
+        
         private void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
@@ -345,7 +362,7 @@ public class CollisionModel_local {
 
         cm_node_s      nextNode;            // next node in block
         cm_nodeBlock_s next;                // next block with nodes
-    }
+        }
 
     ;
 
@@ -495,8 +512,6 @@ public class CollisionModel_local {
     ;
 
     public static class idCollisionModelManagerLocal extends idCollisionModelManager {
-
-        // collision map data
         private idStr        mapName;
         private long         mapFileTime;
         private boolean      loaded;
@@ -520,6 +535,10 @@ public class CollisionModel_local {
         private int             numContacts;
         //
         //
+
+        public idCollisionModelManagerLocal() {
+            this.mapName = new idStr();
+        }
 
         @Override// load collision models from a map file
         public void LoadMap(final idMapFile mapFile) {
@@ -4352,7 +4371,7 @@ public class CollisionModel_local {
             numModels = 0;
             models = null;
 //	memset( trmPolygons, 0, sizeof( trmPolygons ) );
-            Arrays.fill(trmPolygons, 0);
+            trmPolygons = TempDump.allocArray(cm_polygonRef_s.class ,trmPolygons.length);
             trmBrushes[0] = null;
             trmMaterial = null;
             numProcNodes = 0;
@@ -5117,7 +5136,7 @@ public class CollisionModel_local {
 
                 node = procNodes[i];
 
-                src.Parse1DMatrix(4, node.plane.ToFloatPtr());
+                src.Parse1DMatrix(4, node.plane);
                 node.children[0] = src.ParseInt();
                 node.children[1] = src.ParseInt();
             }
@@ -5553,16 +5572,16 @@ public class CollisionModel_local {
         private cm_node_s AllocNode(cm_model_s model, int blockSize) {
             int i;
             cm_node_s node;
-            /*cm_nodeBlock_s*/ Object[] nodeBlock;
+            cm_nodeBlock_s  nodeBlock;
 
             if (null == model.nodeBlocks || null == model.nodeBlocks.nextNode) {
-                nodeBlock = new cm_nodeBlock_s[blockSize];// Mem_ClearedAlloc( /*sizeof( cm_nodeBlock_t ) +*/blockSize /*sizeof(cm_node_t)*/);
-                ((cm_nodeBlock_s) nodeBlock[0]).nextNode = (cm_node_s) nodeBlock[1];//(cm_node_s []) ( ( (byte *) nodeBlock ) + sizeof( cm_nodeBlock_t ) );
-                ((cm_nodeBlock_s) nodeBlock[0]).next = model.nodeBlocks;
-                model.nodeBlocks = (cm_nodeBlock_s) nodeBlock[0];
-                node = ((cm_nodeBlock_s) nodeBlock[0]).nextNode;//TODO:check this debacle!!
+                nodeBlock = new cm_nodeBlock_s();
+                nodeBlock.nextNode = new cm_node_s();
+                nodeBlock.next = model.nodeBlocks;
+                model.nodeBlocks = nodeBlock;
+                node = nodeBlock.nextNode;//TODO:check this debacle!!
                 for (i = 0; i < blockSize - 1; i++) {
-                    node.parent = (cm_node_s) nodeBlock[2 + i];//node + 1;
+                    node.parent = new cm_node_s();
                     node = node.parent;
                 }
                 node.parent = null;
@@ -5579,17 +5598,15 @@ public class CollisionModel_local {
             int i;
             cm_polygonRef_s pref;
             cm_polygonRefBlock_s prefBlock;
-            Object[] cm_polygonRefBlock_t;
 
             if (null == model.polygonRefBlocks || null == model.polygonRefBlocks.nextRef) {
-                cm_polygonRefBlock_t = new cm_polygonRefBlock_s[blockSize];// /*(cm_polygonRefBlock_s [])*/ Mem_Alloc( /*sizeof( cm_polygonRefBlock_t ) + */blockSize/* * sizeof(cm_polygonRef_t) */);
-                prefBlock = (cm_polygonRefBlock_s) cm_polygonRefBlock_t[0];
-                prefBlock.nextRef = (cm_polygonRef_s) cm_polygonRefBlock_t[1];//(cm_polygonRef_t *) ( ( (byte *) prefBlock ) + sizeof( cm_polygonRefBlock_t ) );
+                prefBlock = new cm_polygonRefBlock_s();
+                prefBlock.nextRef = new cm_polygonRef_s();
                 prefBlock.next = model.polygonRefBlocks;
                 model.polygonRefBlocks = prefBlock;
                 pref = prefBlock.nextRef;
                 for (i = 0; i < blockSize - 1; i++) {
-                    pref.next = (cm_polygonRef_s) cm_polygonRefBlock_t[2 + i];
+                    pref.next = new cm_polygonRef_s();
                     pref = pref.next;
                 }
                 pref.next = null;
@@ -5605,17 +5622,15 @@ public class CollisionModel_local {
             int i;
             cm_brushRef_s bref;
             cm_brushRefBlock_s brefBlock;
-            Object[] cm_brushRefBlock_t;
 
             if (null == model.brushRefBlocks || null == model.brushRefBlocks.nextRef) {
-                cm_brushRefBlock_t = new Object[blockSize];// Mem_Alloc( /*sizeof(cm_brushRefBlock_t) + blockSize * sizeof(cm_brushRef_t) */);
-                brefBlock = (cm_brushRefBlock_s) cm_brushRefBlock_t[0];//(cm_brushRefBlock_t *) Mem_Alloc( sizeof(cm_brushRefBlock_t) + blockSize * sizeof(cm_brushRef_t) );
-                brefBlock.nextRef = (cm_brushRef_s) cm_brushRefBlock_t[1];//(cm_brushRef_t *) ( ( (byte *) brefBlock ) + sizeof(cm_brushRefBlock_t) );
+                brefBlock = new cm_brushRefBlock_s();
+                brefBlock.nextRef = new cm_brushRef_s();
                 brefBlock.next = model.brushRefBlocks;
                 model.brushRefBlocks = brefBlock;
                 bref = brefBlock.nextRef;
                 for (i = 0; i < blockSize - 1; i++) {
-                    bref.next = (cm_brushRef_s) cm_brushRefBlock_t[2 + i];
+                    bref.next = new cm_brushRef_s();
                     bref = bref.next;
                 }
                 bref.next = null;
@@ -7213,7 +7228,8 @@ public class CollisionModel_local {
             model.maxVertices = model.numVertices;
             model.vertices = new cm_vertex_s[model.maxVertices];// Mem_Alloc(model.maxVertices);
             for (i = 0; i < model.numVertices; i++) {
-                src.Parse1DMatrix(3, model.vertices[i].p.ToFloatPtr());
+                model.vertices[i] = new cm_vertex_s();
+                src.Parse1DMatrix(3, model.vertices[i].p);
                 model.vertices[i].side = 0;
                 model.vertices[i].sideSet = 0;
                 model.vertices[i].checkcount = 0;
@@ -7230,6 +7246,7 @@ public class CollisionModel_local {
             model.edges = new cm_edge_s[model.maxEdges];// Mem_Alloc(model.maxEdges);
             for (i = 0; i < model.numEdges; i++) {
                 src.ExpectTokenString("(");
+                model.edges[i] = new cm_edge_s();
                 model.edges[i].vertexNum[0] = src.ParseInt();
                 model.edges[i].vertexNum[1] = src.ParseInt();
                 src.ExpectTokenString(")");
@@ -7269,11 +7286,11 @@ public class CollisionModel_local {
                     p.edges[i] = src.ParseInt();
                 }
                 src.ExpectTokenString(")");
-                src.Parse1DMatrix(3, normal.ToFloatPtr());
+                src.Parse1DMatrix(3, normal);
                 p.plane.SetNormal(normal);
                 p.plane.SetDist(src.ParseFloat());
-                src.Parse1DMatrix(3, p.bounds.oGet(0).ToFloatPtr());
-                src.Parse1DMatrix(3, p.bounds.oGet(1).ToFloatPtr());
+                src.Parse1DMatrix(3, p.bounds.oGet(0));
+                src.Parse1DMatrix(3, p.bounds.oGet(1));
                 src.ExpectTokenType(TT_STRING, 0, token);
                 // get material
                 p.material = declManager.FindMaterial(token);
@@ -7306,13 +7323,13 @@ public class CollisionModel_local {
                 b.numPlanes = numPlanes;
                 src.ExpectTokenString("{");
                 for (i = 0; i < b.numPlanes; i++) {
-                    src.Parse1DMatrix(3, normal.ToFloatPtr());
+                    src.Parse1DMatrix(3, normal);
                     b.planes[i].SetNormal(normal);
                     b.planes[i].SetDist(src.ParseFloat());
                 }
                 src.ExpectTokenString("}");
-                src.Parse1DMatrix(3, b.bounds.oGet(0).ToFloatPtr());
-                src.Parse1DMatrix(3, b.bounds.oGet(1).ToFloatPtr());
+                src.Parse1DMatrix(3, b.bounds.oGet(0));
+                src.Parse1DMatrix(3, b.bounds.oGet(1));
                 src.ReadToken(token);
                 if (token.type == TT_NUMBER) {
                     b.contents = token.GetIntValue();		// old .cm files use a single integer

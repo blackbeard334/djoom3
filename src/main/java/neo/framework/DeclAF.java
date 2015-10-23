@@ -930,7 +930,7 @@ public class DeclAF {
                 } else if (0 == token.Icmp("density")) {
                     body.density = src.ParseFloat();
                 } else if (0 == token.Icmp("inertiaScale")) {
-                    src.Parse1DMatrix(9, body.inertiaScale.oGet(0).ToFloatPtr());
+                    src.Parse1DMatrix(9, body.inertiaScale.oGet(0));
                 } else if (0 == token.Icmp("friction")) {
                     body.linearFriction = src.ParseFloat();
                     src.ExpectTokenString(",");

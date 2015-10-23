@@ -150,7 +150,7 @@ public class Model_md5 {
                 parser.ExpectTokenString("vert");
                 parser.ParseInt();
 
-                parser.Parse1DMatrix(2, texCoords.oGet(i).ToFloatPtr());
+                parser.Parse1DMatrix(2, texCoords.oGet(i));
 
                 firstWeightForVertex.oSet(i, parser.ParseInt());
                 numWeightsForVertex.oSet(i, parser.ParseInt());
@@ -212,7 +212,7 @@ public class Model_md5 {
                 tempWeights.oGet(i).joint = jointnum;
                 tempWeights.oGet(i).jointWeight = parser.ParseFloat();
 
-                parser.Parse1DMatrix(3, tempWeights.oGet(i).offset.ToFloatPtr());
+                parser.Parse1DMatrix(3, tempWeights.oGet(i).offset);
             }
 
             // create pre-scaled weights and an index for the vertex/joint lookup
@@ -598,8 +598,8 @@ public class Model_md5 {
             //
             // parse default pose
             //
-            parser.Parse1DMatrix(3, defaultPose.t.ToFloatPtr());
-            parser.Parse1DMatrix(3, defaultPose.q.ToFloatPtr());
+            parser.Parse1DMatrix(3, defaultPose.t);
+            parser.Parse1DMatrix(3, defaultPose.q);
             defaultPose.q.w = defaultPose.q.CalcW();
         }
     };
