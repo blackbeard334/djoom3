@@ -57,11 +57,11 @@ public class Math_h {
     }
 
     public static int INTSIGNBITSET(int i) {
-        return ((i)) >> 31;
+        return ((i)) >>> 31;
     }
 
     public static int INTSIGNBITNOTSET(int i) {
-        return (~((i))) >> 31;
+        return (~((i))) >>> 31;
     }
 
     public static boolean FLOAT_IS_NAN(float x) /*(((*(const unsigned long *)&x) & 0x7f800000) == 0x7f800000)*/ {
