@@ -653,8 +653,8 @@ public class optimize {
         }
 
         if (dmapGlobals.verbose) {
-            common.Printf("%6i tested segments\n", numLengths);
-            common.Printf("%6i added interior edges\n", c_addedEdges);
+            common.Printf("%6d tested segments\n", numLengths);
+            common.Printf("%6d added interior edges\n", c_addedEdges);
         }
 
         lengths = null;//Mem_Free(lengths);
@@ -821,7 +821,7 @@ public class optimize {
             c_edges++;
         }
         if (dmapGlobals.verbose) {
-            common.Printf("%6i original exterior edges\n", c_edges);
+            common.Printf("%6d original exterior edges\n", c_edges);
         }
 
         for (ov = island.verts; ov != null; ov = ov.islandLink) {
@@ -833,7 +833,7 @@ public class optimize {
             c_edges++;
         }
         if (dmapGlobals.verbose) {
-            common.Printf("%6i optimized exterior edges\n", c_edges);
+            common.Printf("%6d optimized exterior edges\n", c_edges);
         }
     }
 
@@ -1312,7 +1312,7 @@ public class optimize {
         FreeOptTriangles(island);
 
         if (dmapGlobals.verbose) {
-            common.Printf("%6i tris out\n", c_out);
+            common.Printf("%6d tris out\n", c_out);
         }
     }
 
@@ -1360,8 +1360,8 @@ public class optimize {
         }
 
         if (dmapGlobals.verbose) {
-            common.Printf("%6i original interior edges\n", c_interiorEdges);
-            common.Printf("%6i original exterior edges\n", c_exteriorEdges);
+            common.Printf("%6d original interior edges\n", c_interiorEdges);
+            common.Printf("%6d original exterior edges\n", c_exteriorEdges);
         }
     }
 
@@ -1482,7 +1482,7 @@ public class optimize {
 
         if (dmapGlobals.verbose) {
             common.Printf("----\n");
-            common.Printf("%6i original tris\n", CountTriList(opt.triList));
+            common.Printf("%6d original tris\n", CountTriList(opt.triList));
         }
 
         optBounds.Clear();
@@ -1682,10 +1682,10 @@ public class optimize {
         }
 
         if (dmapGlobals.verbose) {
-            common.Printf("%6i original edges\n", numOriginalEdges);
-            common.Printf("%6i edges after splits\n", numOptEdges);
-            common.Printf("%6i original vertexes\n", numOriginalVerts);
-            common.Printf("%6i vertexes after splits\n", numOptVerts);
+            common.Printf("%6d original edges\n", numOriginalEdges);
+            common.Printf("%6d edges after splits\n", numOptEdges);
+            common.Printf("%6d original vertexes\n", numOriginalVerts);
+            common.Printf("%6d vertexes after splits\n", numOptVerts);
         }
     }
 
@@ -1732,8 +1732,8 @@ public class optimize {
         }
 
         if (dmapGlobals.verbose) {
-            common.Printf("%6i verts kept\n", c_keep);
-            common.Printf("%6i verts freed\n", c_free);
+            common.Printf("%6d verts kept\n", c_keep);
+            common.Printf("%6d verts freed\n", c_free);
         }
     }
 
@@ -1857,7 +1857,7 @@ public class optimize {
             OptimizeIsland(island);
         }
         if (dmapGlobals.verbose) {
-            common.Printf("%6i islands\n", numIslands);
+            common.Printf("%6d islands\n", numIslands);
         }
     }
 
@@ -2008,9 +2008,9 @@ public class optimize {
         SetGroupTriPlaneNums(groupList);
 
         common.Printf("----- OptimizeAreaGroups Results -----\n");
-        common.Printf("%6i tris in\n", c_in);
-        common.Printf("%6i tris after edge removal optimization\n", c_edge);
-        common.Printf("%6i tris after final t junction fixing\n", c_tjunc2);
+        common.Printf("%6d tris in\n", c_in);
+        common.Printf("%6d tris after edge removal optimization\n", c_edge);
+        common.Printf("%6d tris after final t junction fixing\n", c_tjunc2);
     }
 
 

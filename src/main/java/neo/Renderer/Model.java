@@ -2,6 +2,7 @@ package neo.Renderer;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.stream.Stream;
 import static neo.Renderer.Interaction.LIGHT_TRIS_DEFERRED;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.RenderWorld.renderEntity_s;
@@ -59,6 +60,13 @@ public class Model {
 
         public silEdge_t() {
         }        
+        
+        static silEdge_t[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new silEdge_t()).
+                    limit(length).
+                    toArray(silEdge_t[]::new);
+        }
     };
 
     // this is used for calculating unsmoothed normals and tangents for deformed models

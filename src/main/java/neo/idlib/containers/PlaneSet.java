@@ -24,6 +24,10 @@ public class PlaneSet {
         //
         //
 
+        public idPlaneSet() {
+            hash = new idHashIndex();
+        }
+
         @Override
         public void Clear() {
             super.Clear();

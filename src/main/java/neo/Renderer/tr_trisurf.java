@@ -1,6 +1,7 @@
 package neo.Renderer;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 import static neo.Renderer.Interaction.LIGHT_TRIS_DEFERRED;
 import neo.Renderer.Model.dominantTri_s;
 import neo.Renderer.Model.shadowCache_s;
@@ -171,7 +172,7 @@ public class tr_trisurf {
      ===============
      */
     public static void R_InitTriSurfData() {
-        silEdges = tr_main.R_ClearedStaticAlloc(MAX_SIL_EDGES, silEdge_t.class);
+        silEdges = silEdge_t.generateArray(MAX_SIL_EDGES);
 
 //
 //        // initialize allocators for triangle surfaces
@@ -1172,7 +1173,7 @@ public class tr_trisurf {
         tri.silEdges = new silEdge_t[numSilEdges];//triSilEdgeAllocator.Alloc(numSilEdges);
 //	memcpy( tri.silEdges, silEdges, numSilEdges * sizeof( tri.silEdges[0] ) );
         System.arraycopy(silEdges, 0, tri.silEdges, 0, numSilEdges);
-        silEdges = tr_main.R_ClearedStaticAlloc(silEdges.length, silEdge_t.class);
+        silEdges = silEdge_t.generateArray(silEdges.length);
     }
 
     /*
@@ -1214,6 +1215,13 @@ public class tr_trisurf {
         idVec3[] tangents = new idVec3[2];
         boolean negativePolarity;
         boolean degenerate;
+        
+        static faceTangents_t[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new faceTangents_t()).
+                    limit(length).
+                    toArray(faceTangents_t[]::new);
+        }
     };
 
     public static void R_DeriveFaceTangents(final srfTriangles_s tri, faceTangents_t[] faceTangents) {
@@ -1446,7 +1454,7 @@ public class tr_trisurf {
         faceTangents_t ft;
         idDrawVert vert;
 
-        faceTangents = tr_main.R_ClearedStaticAlloc(tri.numIndexes / 3, faceTangents_t.class);
+        faceTangents = faceTangents_t.generateArray(tri.numIndexes / 3);
         R_DeriveFaceTangents(tri, faceTangents);
 
         // clear the tangents

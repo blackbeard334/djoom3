@@ -2,6 +2,7 @@ package neo.idlib.math;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import neo.TempDump.SERiAL;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Angles.idAngles;
@@ -322,6 +323,13 @@ public class Vector {
         @Override
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+        public static idVec2[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new idVec2()).
+                    limit(length).
+                    toArray(idVec2[]::new);
         }
     }
 
@@ -1089,6 +1097,13 @@ public class Vector {
 
             return (this.x == other.x) && (this.y == other.y) && (this.z == other.z);
         }
+        
+        public static idVec3[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new idVec3()).
+                    limit(length).
+                    toArray(idVec3[]::new);
+        }
     }
 
     //===============================================================
@@ -1406,6 +1421,13 @@ public class Vector {
         public idVec4 oDivide(float a) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+        
+        public static idVec4[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new idVec4()).
+                    limit(length).
+                    toArray(idVec4[]::new);
+        }
     }
 
     //===============================================================
@@ -1581,6 +1603,13 @@ public class Vector {
         @Override
         public idVec5 oDivide(float a) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+        public static idVec5[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new idVec5()).
+                    limit(length).
+                    toArray(idVec5[]::new);
         }
     }
 

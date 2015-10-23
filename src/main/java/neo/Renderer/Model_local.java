@@ -3,6 +3,7 @@ package neo.Renderer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import static neo.Renderer.Image_files.R_WriteTGA;
 import static neo.Renderer.Material.deform_t.DFRM_NONE;
 import neo.Renderer.Material.idMaterial;
@@ -42,7 +43,6 @@ import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.tr_local.demoCommand_t.DC_DEFINE_MODEL;
 import static neo.Renderer.tr_local.tr;
 import neo.Renderer.tr_local.viewDef_s;
-import static neo.Renderer.tr_main.R_ClearedStaticAlloc;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
@@ -1028,6 +1028,13 @@ public class Model_local {
 //
 //                return i;
 //            }
+            
+            static matchVert_s[] generateArray(final int length) {
+                return Stream.
+                        generate(() -> new matchVert_s()).
+                        limit(length).
+                        toArray(matchVert_s[]::new);
+            }
         };
         static final short[] identityColor/*[4]*/ = {255, 255, 255, 255};
 
@@ -1184,10 +1191,10 @@ public class Model_local {
                 // we need to find out how many unique vertex / texcoord combinations
                 // there are, because ASE tracks them separately but we need them unified
                 // the maximum possible number of combined vertexes is the number of indexes
-                mvTable = R_ClearedStaticAlloc(mesh.numFaces * 3, matchVert_s.class /* sizeof( mvTable[0] )*/);
+                mvTable = matchVert_s.generateArray(mesh.numFaces * 3);
 
                 // we will have a hash chain based on the xyz values
-                mvHash = R_ClearedStaticAlloc(mesh.numVertexes, matchVert_s.class /* sizeof( mvHash[0] )*/);
+                mvHash = matchVert_s.generateArray(mesh.numVertexes);
 
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
@@ -1445,7 +1452,7 @@ public class Model_local {
             }
 
             if (numTVertexes != 0) {
-                tvList = R_ClearedStaticAlloc(numTVertexes, idVec2.class);// Mem_Alloc(numTVertexes /* sizeof( tvList[0] ) */);
+                tvList = idVec2.generateArray(numTVertexes);
                 int offset = 0;
                 for (lwVMap vm = layer.vmap; vm != null; vm = vm.next) {
                     if (vm.type == LWID_('T', 'X', 'U', 'V')) {
@@ -1526,7 +1533,7 @@ public class Model_local {
 
                 // we need to find out how many unique vertex / texcoord combinations there are
                 // the maximum possible number of combined vertexes is the number of indexes
-                mvTable = R_ClearedStaticAlloc(layer.polygon.count * 3, matchVert_s.class/* sizeof( mvTable[0] )*/);
+                mvTable = matchVert_s.generateArray(layer.polygon.count * 3);
 
                 // we will have a hash chain based on the xyz values
                 mvHash = new matchVert_s[layer.point.count];// R_ClearedStaticAlloc(layer.point.count, matchVert_s.class/* sizeof( mvHash[0] ) */);

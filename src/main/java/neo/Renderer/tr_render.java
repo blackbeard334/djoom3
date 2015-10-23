@@ -1,6 +1,5 @@
 package neo.Renderer;
 
-import java.util.Arrays;
 import neo.Renderer.Cinematic.cinData_t;
 import static neo.Renderer.Image.globalImages;
 import neo.Renderer.Image.idImage;
@@ -63,12 +62,10 @@ import neo.Renderer.tr_local.drawSurfsCommand_t;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
 import neo.Renderer.tr_local.viewLight_s;
-import static neo.Renderer.tr_main.R_ClearedStaticAlloc;
 import static neo.Renderer.tr_main.R_GlobalPlaneToLocal;
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
 import static neo.Renderer.tr_main.R_TransposeGLMatrix;
 import static neo.Renderer.tr_rendertools.RB_ShowOverdraw;
-import neo.TempDump;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
 import neo.idlib.geometry.DrawVert.idDrawVert;
@@ -860,7 +857,7 @@ public class tr_render {
         inter.ambientLight = btoi(lightShader.IsAmbientLight());
 
         // the base projections may be modified by texture matrix on light stages
-        idPlane[] lightProject = R_ClearedStaticAlloc(4, idPlane.class);
+        idPlane[] lightProject = idPlane.generateArray(4);
         for (int i = 0; i < 4; i++) {
             R_GlobalPlaneToLocal(surf.space.modelMatrix, backEnd.vLight.lightProject[i], lightProject[i]);
         }

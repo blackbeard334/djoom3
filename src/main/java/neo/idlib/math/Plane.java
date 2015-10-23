@@ -1,5 +1,6 @@
 package neo.idlib.math;
 
+import java.util.stream.Stream;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat2;
 import neo.idlib.math.Matrix.idMat3;
@@ -591,6 +592,13 @@ public class Plane {
             return new float[]{abc.x, abc.y, abc.z, d};
         }
 //public	float *			ToFloatPtr( void );
+        
+        public static idPlane[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new idPlane()).
+                    limit(length).
+                    toArray(idPlane[]::new);
+        }
 
         @Override
         public String toString() {

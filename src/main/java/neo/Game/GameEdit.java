@@ -398,7 +398,7 @@ public class GameEdit {
         //
 
         public idEditEntities() {
-            selectableEntityClasses.Clear();
+            selectableEntityClasses = new idList<>();
             nextSelectTime = 0;
         }
 

@@ -2,6 +2,7 @@ package neo.Renderer;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import neo.Renderer.Interaction.areaNumRef_s;
 import neo.Renderer.Interaction.idInteraction;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
@@ -156,6 +157,7 @@ import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_shared.Sys_Milliseconds;
@@ -201,6 +203,7 @@ public class RenderWorld_local {
 
     public static class portalArea_s {
 
+
         int areaNum;
         int[] connectedAreaNum;         // if two areas have matching connectedAreaNum, they are
         //                              // not separated by a portal with the apropriate PS_BLOCK_* blockingBits
@@ -213,6 +216,13 @@ public class RenderWorld_local {
             this.connectedAreaNum = new int[NUM_PORTAL_ATTRIBUTES];
             this.entityRefs = new areaReference_s();
             this.lightRefs = new areaReference_s();
+        }
+
+        public static portalArea_s[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new portalArea_s()).
+                    limit(length).
+                    toArray(portalArea_s[]::new);
         }
     };
     static final int CHILDREN_HAVE_MULTIPLE_AREAS = -2;
@@ -1872,8 +1882,8 @@ public class RenderWorld_local {
                 src.Error("R_ParseInterAreaPortals: bad numPortalAreas");
                 return;
             }
-            portalAreas = tr_main.R_ClearedStaticAlloc(numPortalAreas, portalArea_s.class);
-            areaScreenRect = tr_main.R_ClearedStaticAlloc(numPortalAreas, idScreenRect.class);
+            portalAreas = portalArea_s.generateArray(numPortalAreas);
+            areaScreenRect = idScreenRect.generateArray(numPortalAreas);
 
             // set the doubly linked lists
             SetupAreaRefs();
@@ -2052,8 +2062,8 @@ public class RenderWorld_local {
          */
         public void ClearWorld() {
             numPortalAreas = 1;
-            portalAreas = tr_main.R_ClearedStaticAlloc(1, portalArea_s.class);
-            areaScreenRect = tr_main.R_ClearedStaticAlloc(1, idScreenRect.class);
+            portalAreas = portalArea_s.generateArray(1);
+            areaScreenRect = idScreenRect.generateArray(1);
 
             SetupAreaRefs();
 

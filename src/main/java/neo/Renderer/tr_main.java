@@ -239,7 +239,7 @@ public class tr_main {
      =================
      */
     @Deprecated
-    public static <T> T[] R_ClearedStaticAlloc(int length, Class<T> clazz) {
+    private static <T> T[] R_ClearedStaticAlloc(int length, Class<T> clazz) {
         T[] array = (T[]) Array.newInstance(clazz, length);
 
         for (int a = 0; a < length; a++) {
@@ -563,7 +563,7 @@ public class tr_main {
      */    private static int DBG_R_CornerCullLocalBox = 0;
     public static boolean R_CornerCullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         int i, j;
-        idVec3[] transformed = tr_main.R_ClearedStaticAlloc(8, idVec3.class);
+        idVec3[] transformed = idVec3.generateArray(8);
         float[] dists = new float[8];
         idVec3 v = new idVec3();
         idPlane frust;

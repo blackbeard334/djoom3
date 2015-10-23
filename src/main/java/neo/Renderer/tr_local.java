@@ -6,6 +6,7 @@ import java.nio.channels.FileChannel;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import neo.Renderer.Cinematic.idCinematic;
 import neo.Renderer.GuiModel.idGuiModel;
 import static neo.Renderer.Image.globalImages;
@@ -125,7 +126,6 @@ import static neo.Renderer.tr_local.tr;
 import neo.Renderer.tr_local.viewDef_s;
 import neo.Renderer.tr_local.viewEntity_s;
 import neo.Renderer.tr_local.viewLight_s;
-import static neo.Renderer.tr_main.R_ClearedStaticAlloc;
 import static neo.Renderer.tr_main.R_GlobalToNormalizedDeviceCoordinates;
 import static neo.Renderer.tr_main.R_ShutdownFrameData;
 import static neo.Renderer.tr_main.R_ToggleSmpFrame;
@@ -133,7 +133,6 @@ import static neo.Renderer.tr_main.R_TransformEyeZToWin;
 import static neo.Renderer.tr_rendertools.RB_ShutdownDebugTools;
 import static neo.Renderer.tr_trisurf.R_InitTriSurfData;
 import static neo.Renderer.tr_trisurf.R_ShutdownTriSurfData;
-import neo.TempDump;
 import static neo.TempDump.btoi;
 import static neo.TempDump.ctos;
 import static neo.TempDump.fprintf;
@@ -144,7 +143,6 @@ import static neo.framework.DemoFile.demoSystem_t.DS_RENDER;
 import static neo.framework.EventLoop.eventLoop;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.Session.session;
-import static neo.idlib.BV.Bounds.bounds_zero;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.BV.Frustum.idFrustum;
 import static neo.idlib.Lib.colorBlue;
@@ -194,7 +192,7 @@ public class tr_local {
     // idScreenRect gets carried around with each drawSurf, so it makes sense
     // to keep it compact, instead of just using the idBounds class
     public static class idScreenRect {
-
+      
         public int x1, y1, x2, y2;					// inclusive pixel bounds inside viewport
         public float zmin, zmax;					// for depth bounds test
         //
@@ -322,6 +320,13 @@ public class tr_local {
         @Override
         public String toString() {
             return "idScreenRect{" + "x1=" + x1 + ", y1=" + y1 + ", x2=" + x2 + ", y2=" + y2 + '}';
+        }
+        
+        static idScreenRect[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new idScreenRect()).
+                    limit(length).
+                    toArray(idScreenRect[]::new);
         }
     };
 
@@ -871,7 +876,7 @@ public class tr_local {
             this.viewport = new idScreenRect();
             this.scissor = new idScreenRect();
             this.viewFrustum = new idFrustum();
-            this.frustum = tr_main.R_ClearedStaticAlloc(5, idPlane.class);
+            this.frustum = idPlane.generateArray(5);
         }
     };
 
@@ -898,9 +903,9 @@ public class tr_local {
         public final idVec4 localLightOrigin = new idVec4();
         public final idVec4 localViewOrigin = new idVec4();
         public idVec4[] lightProjection = new idVec4[4];	// in local coordinates, possibly with a texture matrix baked in
-        public idVec4[] bumpMatrix = R_ClearedStaticAlloc(2, idVec4.class);
-        public idVec4[] diffuseMatrix = R_ClearedStaticAlloc(2, idVec4.class);
-        public idVec4[] specularMatrix = R_ClearedStaticAlloc(2, idVec4.class);
+        public idVec4[] bumpMatrix = idVec4.generateArray(2);
+        public idVec4[] diffuseMatrix = idVec4.generateArray(2);
+        public idVec4[] specularMatrix = idVec4.generateArray(2);
 
         void oSet(drawInteraction_t d) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

@@ -525,7 +525,7 @@ public class Winding {
 
             maxpts = numPoints + 4;		// cant use counts[0]+2 because of fp grouping errors
 
-            newPoints = tr_main.R_ClearedStaticAlloc(maxpts, idVec5.class);
+            newPoints = idVec5.generateArray(maxpts);
             newNumPoints = 0;
 
             for (i = 0; i < numPoints; i++) {

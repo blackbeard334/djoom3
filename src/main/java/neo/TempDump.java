@@ -8,16 +8,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -492,7 +488,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static long[] reinterpret_cast_long_array(final byte[] array) {
-        final long[] temp = new long[array.length / 8];
+        final long[] temp = new long[array.length];
 
         for (int b = 0, l = 0; b < array.length; l++) {
             temp[l] |= (array[b++] & 0xFFL) << 56;
@@ -565,6 +561,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         System.out.println(Arrays.toString(CALL_STACK_MAP.entrySet().toArray()));
     }
 
+    @Deprecated
     public static <T> T[] allocArray(Class<T> clazz, int length) {
         
         T[] array = (T[]) Array.newInstance(clazz, length);

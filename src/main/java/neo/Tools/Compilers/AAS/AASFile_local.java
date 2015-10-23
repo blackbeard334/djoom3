@@ -1,6 +1,7 @@
 package neo.Tools.Compilers.AAS;
 
 import static java.lang.Math.abs;
+import neo.TempDump;
 import static neo.TempDump.NOT;
 import static neo.Tools.Compilers.AAS.AASFile.AAS_FILEID;
 import static neo.Tools.Compilers.AAS.AASFile.AAS_FILEVERSION;
@@ -77,6 +78,7 @@ public class AASFile_local {
         // friend class idAASCluster;
 
         public idAASFileLocal() {
+            super();
             planeList.SetGranularity(AAS_PLANE_GRANULARITY);
             vertices.SetGranularity(AAS_VERTEX_GRANULARITY);
             edges.SetGranularity(AAS_EDGE_GRANULARITY);
@@ -298,7 +300,7 @@ public class AASFile_local {
             int side, nodeNum, tmpPlaneNum;
             double front, back, frac;
             idVec3 cur_start, cur_end, cur_mid, v1, v2;
-            aasTraceStack_s[] tracestack = new aasTraceStack_s[MAX_AAS_TREE_DEPTH];
+            aasTraceStack_s[] tracestack = TempDump.allocArray(aasTraceStack_s.class, MAX_AAS_TREE_DEPTH);
             int tstack_p;
             aasNode_s node;
             idPlane plane;
@@ -318,7 +320,6 @@ public class AASFile_local {
 
                 tstack_p--;
                 // if the trace stack is empty
-//                if ( tstack_p < tracestack ) {
                 if (tstack_p < 0) {
                     if (NOT(trace.lastAreaNum)) {
                         // completely in solid
@@ -1316,11 +1317,16 @@ public class AASFile_local {
         }
     };
 
-    static class aasTraceStack_s {
+    public static class aasTraceStack_s {
 
         idVec3 start;
         idVec3 end;
         int    planeNum;
         int    nodeNum;
+
+        public aasTraceStack_s() {
+            start = new idVec3();
+            end = new idVec3();
+        }
     };
 }

@@ -20,7 +20,6 @@ import neo.Renderer.tr_local.idRenderEntityLocal;
 import neo.Renderer.tr_local.idRenderLightLocal;
 import static neo.Renderer.tr_local.tr;
 import static neo.Renderer.tr_main.R_AxisToModelMatrix;
-import static neo.Renderer.tr_main.R_ClearedStaticAlloc;
 import static neo.Renderer.tr_main.R_LocalPlaneToGlobal;
 import static neo.Renderer.tr_main.R_LocalPointToGlobal;
 import static neo.Renderer.tr_polytope.R_PolytopeSurface;
@@ -186,7 +185,7 @@ public class tr_lightrun {
      */
     public static void R_CreateEntityRefs(idRenderEntityLocal def) {
         int i;
-        idVec3[] transformed = R_ClearedStaticAlloc(8, idVec3.class);
+        idVec3[] transformed = idVec3.generateArray(8);
         idVec3 v = new idVec3();
 
         if (null == def.parms.hModel) {

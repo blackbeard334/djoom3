@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 import neo.Renderer.Model_lwo.lwClip;
 import neo.Renderer.Model_lwo.lwEnvelope;
 import neo.Renderer.Model_lwo.lwGradKey;
@@ -23,7 +24,6 @@ import neo.Renderer.Model_lwo.lwTagList;
 import neo.Renderer.Model_lwo.lwTexture;
 import neo.Renderer.Model_lwo.lwVMap;
 import neo.Renderer.Model_lwo.lwVMapPt;
-import static neo.Renderer.tr_main.R_ClearedStaticAlloc;
 import static neo.TempDump.NOT;
 import neo.TempDump.NiLLABLE;
 import neo.TempDump.TODO_Exception;
@@ -800,10 +800,18 @@ public class Model_lwo {
 
     static class lwVMapPt {
 
+
         lwVMap vmap;
         int index;               // vindex or pindex element 
 
         public lwVMapPt() {
+        }
+        
+        static lwVMapPt[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new lwVMapPt()).
+                    limit(length).
+                    toArray(lwVMapPt[]::new);
         }
     };
 
@@ -5531,7 +5539,7 @@ public class Model_lwo {
             for (j = 0; j < polygon.pol[ i].nverts; j++) {
                 pv = polygon.pol[ i].getV(j);
                 if (pv.nvmaps != 0) {
-                    pv.vm = R_ClearedStaticAlloc(pv.nvmaps, lwVMapPt.class);// Mem_ClearedAlloc(pv.nvmaps);
+                    pv.vm = lwVMapPt.generateArray(pv.nvmaps);
                     if (null == pv.vm) {
                         return false;
                     }

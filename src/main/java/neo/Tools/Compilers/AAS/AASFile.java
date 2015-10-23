@@ -107,6 +107,11 @@ public class AASFile {
         //
         //
 
+        public idReachability() {
+            start = new idVec3();
+            end = new idVec3();
+        }
+        
         public void CopyBase(idReachability reach) {
             travelType = reach.travelType;
             toAreaNum = reach.toAreaNum;
@@ -669,6 +674,23 @@ public class AASFile {
         protected idAASSettings                 settings;
         //
         //
+
+        protected idAASFile() {
+            name = new idStr();
+
+            planeList = new idPlaneSet();
+            vertices = new idList();
+            edges = new idList();
+            edgeIndex = new idList();
+            faces = new idList();
+            faceIndex = new idList();
+            areas = new idList();
+            nodes = new idList();
+            portals = new idList();
+            portalIndex = new idList();
+            clusters = new idList();
+            settings = new idAASSettings();
+        }
 
         // virtual 					~idAASFile() {}
         public String GetName() {

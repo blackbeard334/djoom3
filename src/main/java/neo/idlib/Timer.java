@@ -29,7 +29,7 @@ public class Timer {
     public static class idTimer {
 
         private State state;
-        private /*static*/ double base = -1;
+        private static double base = -1;
         private double start;
         private double clockTicks;
         //

@@ -2,18 +2,28 @@ package neo.idlib.geometry;
 
 import java.util.Arrays;
 import java.util.Objects;
+import neo.TempDump;
 import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.geometry.TraceModel.idTraceModel.polygonIntegrals_t.polygonIntegrals_s;
-import neo.idlib.geometry.TraceModel.idTraceModel.projectionIntegrals_t.projectionIntegrals_s;
-import neo.idlib.geometry.TraceModel.idTraceModel.volumeIntegrals_t.volumeIntegrals_s;
-import static neo.idlib.geometry.TraceModel.traceModel_t.*;
+import neo.idlib.Lib.idLib;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_BONE;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_BOX;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_CONE;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_CUSTOM;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_CYLINDER;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_DODECAHEDRON;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_INVALID;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_OCTAHEDRON;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_POLYGON;
+import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_POLYGONVOLUME;
 import neo.idlib.geometry.Winding.idWinding;
-import static neo.idlib.math.Math_h.*;
+import static neo.idlib.math.Math_h.Cube;
+import static neo.idlib.math.Math_h.INTSIGNBITNOTSET;
+import static neo.idlib.math.Math_h.INTSIGNBITSET;
+import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
 import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.Lib.idLib;
 
 /**
  *
@@ -56,8 +66,13 @@ public class TraceModel {
 
     public static class traceModelEdge_t {
 
-        public int[] v = new int[2];
+        public int[] v;
         public idVec3 normal;
+
+        public traceModelEdge_t() {
+            this.v = new int[2];
+            normal = new idVec3();
+        }
     };
 
     public static class traceModelPoly_t {
@@ -66,7 +81,13 @@ public class TraceModel {
         public float dist;
         public idBounds bounds;
         public int numEdges;
-        public int[] edges = new int[MAX_TRACEMODEL_POLYEDGES];
+        public int[] edges;
+
+        public traceModelPoly_t() {    
+            normal = new idVec3();
+            bounds = new idBounds();
+            this.edges = new int[MAX_TRACEMODEL_POLYEDGES];
+        }        
     };
 
     public static class idTraceModel {
@@ -74,11 +95,11 @@ public class TraceModel {
 
         public traceModel_t       type;
         public int                numVerts;
-        public traceModelVert_t[] verts = new traceModelVert_t[MAX_TRACEMODEL_VERTS];
+        public traceModelVert_t[] verts = TempDump.allocArray(traceModelVert_t.class, MAX_TRACEMODEL_VERTS);
         public int                numEdges;
-        public traceModelEdge_t[] edges = new traceModelEdge_t[MAX_TRACEMODEL_EDGES + 1];
+        public traceModelEdge_t[] edges = TempDump.allocArray(traceModelEdge_t.class, MAX_TRACEMODEL_EDGES + 1);
         public int                numPolys;
-        public traceModelPoly_t[] polys = new traceModelPoly_t[MAX_TRACEMODEL_POLYS];
+        public traceModelPoly_t[] polys = TempDump.allocArray(traceModelPoly_t.class, MAX_TRACEMODEL_POLYS);
         public idVec3             offset;            // offset to center of model
         public idBounds           bounds;            // bounds of model
         public boolean            isConvex;          // true when model is convex
@@ -87,26 +108,28 @@ public class TraceModel {
         public idTraceModel() {
             type = TRM_INVALID;
             numVerts = numEdges = numPolys = 0;
-            bounds.Zero();
+            bounds = new idBounds();
         }
 
         // axial bounding box
         public idTraceModel(final idBounds boxBounds) {
+            this();
             InitBox();
             SetupBox(boxBounds);
         }
 
         // cylinder approximation
         public idTraceModel(final idBounds cylBounds, final int numSides) {
+            this();
             SetupCylinder(cylBounds, numSides);
         }
 
         // bone
         public idTraceModel(final float length, final float width) {
+            this();
             InitBone();
             SetupBone(length, width);
         }
-//
 
         // axial box
         public void SetupBox(final idBounds boxBounds) {
@@ -648,7 +671,6 @@ public class TraceModel {
             numSharpEdges = 0;
             for (i = 0; i < numPolys; i++) {
                 poly = polys[i];
-                System.arraycopy(polys, i, poly, 0, polys.length - i);
                 for (j = 0; j < poly.numEdges; j++) {
                     edgeNum = poly.edges[j];
                     edge = edges[Math.abs(edgeNum)];
@@ -905,7 +927,7 @@ public class TraceModel {
                 return;
             }
 
-            VolumeIntegrals((volumeIntegrals_s) integrals);
+            VolumeIntegrals(integrals);
 
             // if no volume
             if (integrals.T0 == 0.0f) {
@@ -959,12 +981,12 @@ public class TraceModel {
 
             // set box edges
             for (i = 0; i < 4; i++) {
-                edges[ i + 1].v[0] = i;
-                edges[ i + 1].v[1] = (i + 1) & 3;
-                edges[ i + 5].v[0] = 4 + i;
-                edges[ i + 5].v[1] = 4 + ((i + 1) & 3);
-                edges[ i + 9].v[0] = i;
-                edges[ i + 9].v[1] = 4 + i;
+                edges[i + 1].v[0] = i;
+                edges[i + 1].v[1] = (i + 1) & 3;
+                edges[i + 5].v[0] = 4 + i;
+                edges[i + 5].v[1] = 4 + ((i + 1) & 3);
+                edges[i + 9].v[0] = i;
+                edges[i + 9].v[1] = 4 + i;
             }
 
             // all edges of a polygon go counter clockwise
@@ -1333,12 +1355,9 @@ public class TraceModel {
             float Pa, Pb;
             float Paa, Pab, Pbb;
             float Paaa, Paab, Pabb, Pbbb;
-
-            class projectionIntegrals_s extends projectionIntegrals_t {
-            }
         };
 
-        private void ProjectionIntegrals(int polyNum, int a, int b, projectionIntegrals_s integrals) {
+        private void ProjectionIntegrals(int polyNum, int a, int b, projectionIntegrals_t integrals) {
             traceModelPoly_t poly;
             int i, edgeNum;
             idVec3 v1, v2;
@@ -1416,18 +1435,15 @@ public class TraceModel {
             float Faa, Fbb, Fcc;
             float Faaa, Fbbb, Fccc;
             float Faab, Fbbc, Fcca;
-
-            class polygonIntegrals_s extends polygonIntegrals_t {
-            }
         };
 
-        private void PolygonIntegrals(int polyNum, int a, int b, int c, polygonIntegrals_s integrals) {
+        private void PolygonIntegrals(int polyNum, int a, int b, int c, polygonIntegrals_t integrals) {
             projectionIntegrals_t pi = new projectionIntegrals_t();
             idVec3 n;
             float w;
             float k1, k2, k3, k4;
 
-            ProjectionIntegrals(polyNum, a, b, (projectionIntegrals_s) pi);
+            ProjectionIntegrals(polyNum, a, b, pi);
 
             n = polys[polyNum].normal;
             w = -polys[polyNum].dist;
@@ -1465,11 +1481,14 @@ public class TraceModel {
             idVec3 T2;
             idVec3 TP;
 
-            class volumeIntegrals_s extends volumeIntegrals_t {
+            volumeIntegrals_t() {
+                T1 = new idVec3();
+                T2 = new idVec3();
+                TP = new idVec3();
             }
         };
 
-        private void VolumeIntegrals(volumeIntegrals_s integrals) {
+        private void VolumeIntegrals(volumeIntegrals_t integrals) {
             traceModelPoly_t poly;
             polygonIntegrals_t pi = new polygonIntegrals_t();
             int i, a, b, c;
@@ -1490,7 +1509,7 @@ public class TraceModel {
                 a = (c + 1) % 3;
                 b = (a + 1) % 3;
 
-                PolygonIntegrals(i, a, b, c, (polygonIntegrals_s) pi);
+                PolygonIntegrals(i, a, b, c, pi);
 
                 integrals.T0 += poly.normal.oGet(0) * ((a == 0) ? pi.Fa : ((b == 0) ? pi.Fb : pi.Fc));
 

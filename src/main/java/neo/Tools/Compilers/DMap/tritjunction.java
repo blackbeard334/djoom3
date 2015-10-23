@@ -495,7 +495,7 @@ public class tritjunction {
 
         if (dmapGlobals.verbose) {
             common.Printf("----- FixAreaGroupsTjunctions -----\n");
-            common.Printf("%6i triangles in\n", startCount);
+            common.Printf("%6d triangles in\n", startCount);
         }
 
         HashTriangles(groupList);
@@ -517,7 +517,7 @@ public class tritjunction {
 
         endCount = CountGroupListTris(groupList);
         if (dmapGlobals.verbose) {
-            common.Printf("%6i triangles out\n", endCount);
+            common.Printf("%6d triangles out\n", endCount);
         }
     }
 

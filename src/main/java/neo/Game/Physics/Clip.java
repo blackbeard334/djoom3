@@ -91,6 +91,11 @@ public class Clip {
         float volume;
         idVec3 centerOfMass;
         idMat3 inertiaTensor;
+
+        public trmCache_s() {
+            centerOfMass = new idVec3();
+            inertiaTensor = new idMat3();
+        }
     };
     public static final idVec3 vec3_boxEpsilon = new idVec3(CM_BOX_EPSILON, CM_BOX_EPSILON, CM_BOX_EPSILON);
 //    public static final idBlockAlloc<clipLink_s> clipLinkAllocator = new idBlockAlloc<>(1024);
@@ -1411,8 +1416,7 @@ public class Clip {
             idVec3 size;
             idBounds front, back;
 
-            anode = clipSectors[this.numClipSectors];
-            this.numClipSectors++;
+            anode = clipSectors[this.numClipSectors++] = new clipSector_s();
 
             if (depth == MAX_SECTOR_DEPTH) {
                 anode.axis = -1;

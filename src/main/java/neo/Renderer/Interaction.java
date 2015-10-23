@@ -1,6 +1,7 @@
 package neo.Renderer;
 
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
 import neo.Renderer.Interaction.clipTri_t;
 import neo.Renderer.Interaction.idInteraction;
 import static neo.Renderer.Interaction.idInteraction.frustumStates.FRUSTUM_INVALID;
@@ -45,7 +46,6 @@ import neo.Renderer.tr_local.idScreenRect;
 import static neo.Renderer.tr_local.tr;
 import neo.Renderer.tr_local.viewEntity_s;
 import neo.Renderer.tr_local.viewLight_s;
-import static neo.Renderer.tr_main.R_ClearedStaticAlloc;
 import static neo.Renderer.tr_main.R_CullLocalBox;
 import static neo.Renderer.tr_main.R_GlobalPlaneToLocal;
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
@@ -121,7 +121,7 @@ public class Interaction {
         public byte[] cullBits;
 //        
         // Clip planes in surface space used to calculate the cull bits.
-        public final idPlane[] localClipPlanes = R_ClearedStaticAlloc(6, idPlane.class);
+        public final idPlane[] localClipPlanes = idPlane.generateArray(6);
     }
 
     static class surfaceInteraction_t {
@@ -146,6 +146,13 @@ public class Interaction {
 
         public surfaceInteraction_t() {
             this.cullInfo = new srfCullInfo_t();
+        }
+        
+        static surfaceInteraction_t[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new surfaceInteraction_t()).
+                    limit(length).
+                    toArray(surfaceInteraction_t[]::new);
         }
     };
 
@@ -701,7 +708,7 @@ public class Interaction {
             // create slots for each of the model's surfaces
             //
             numSurfaces = model.NumSurfaces();
-            surfaces = R_ClearedStaticAlloc(numSurfaces, surfaceInteraction_t.class);
+            surfaces = surfaceInteraction_t.generateArray(numSurfaces);
 
             interactionGenerated = false;
 
