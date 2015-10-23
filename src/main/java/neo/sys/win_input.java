@@ -74,6 +74,7 @@ import static neo.sys.win_main.Sys_QueEvent;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 
 /**
  *
@@ -579,7 +580,8 @@ static char[] keyScanTable = s_scantokey;
     public static boolean IN_InitDIMouse() {
         try {
             Mouse.create();
-            Mouse.setClipMouseCoordinatesToWindow(false);
+            Mouse.setClipMouseCoordinatesToWindow(true);
+            Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
 
 //    HRESULT		hr;
 //
@@ -1001,15 +1003,25 @@ static char[] keyScanTable = s_scantokey;
         if (Keyboard.next()) {
             ch[0] = IN_DIMapKey(Keyboard.getEventKey());
             state[0] = Keyboard.getEventKeyState();//state = (polled_didod[ n ].dwData & 0x80) == 0x80;
-            if (ch[0] == K_PRINT_SCR || ch[0] == K_CTRL || ch[0] == K_ALT || ch[0] == K_RIGHT_ALT) {
-            // for windows, add a keydown event for print screen here, since
-                // windows doesn't send keydown events to the WndProc for this key.
-                // ctrl and alt are handled here to get around windows sending ctrl and
-                // alt messages when the right-alt is pressed on non-US 102 keyboards.
-                Sys_QueEvent(GetTickCount(), SE_KEY, ch[0], btoi(state[0]), 0, null);//TODO:enable this
-            } else {// nabbed from MainWndProc.
-                int key = ch[0];//MapKey(ch[0]);
-                Sys_QueEvent(System.nanoTime(), SE_KEY, key, btoi(true), 0, null);
+            switch (ch[0]) {
+                case K_PRINT_SCR:
+                    if (!state[0]) {
+                        // don't queue printscreen keys.  Since windows doesn't send us key
+                        // down events for this, we handle queueing them with DirectInput
+                        break;
+                    }
+                case K_CTRL:
+                case K_ALT:
+                case K_RIGHT_ALT:
+                    // for windows, add a keydown event for print screen here, since
+                    // windows doesn't send keydown events to the WndProc for this key.
+                    // ctrl and alt are handled here to get around windows sending ctrl and
+                    // alt messages when the right-alt is pressed on non-US 102 keyboards.
+                    Sys_QueEvent(GetTickCount(), SE_KEY, ch[0], btoi(state[0]), 0, null);//TODO:enable this
+                    break;
+                default:// nabbed from MainWndProc.
+                    int key = ch[0];//MapKey(ch[0]);
+                    Sys_QueEvent(System.nanoTime(), SE_KEY, key, btoi(state[0]), 0, null);
             }
             return ch[0];
         }
@@ -1090,39 +1102,41 @@ static char[] keyScanTable = s_scantokey;
 
     public static void Sys_ReturnMouseInputEvent(int[] action, int[] value) {
 
-        final int x, y, w;
         final long dwTimeStamp = Mouse.getEventNanoseconds();
 
-        if ((x = Mouse.getDX()) != 0) {
-            value[0] = x;
-            action[0] = etoi(M_DELTAX);
-            Sys_QueEvent(dwTimeStamp, SE_MOUSE, value[0], 0, 0, null);
+        while (Mouse.next()) {
+            final int x, y, w;
+            if ((x = Mouse.getDX()) != 0) {
+                value[0] = x;
+                action[0] = etoi(M_DELTAX);
+                Sys_QueEvent(dwTimeStamp, SE_MOUSE, value[0], 0, 0, null);
 //            return true;
-        }
-        if ((y = Mouse.getDY()) != 0) {
-            value[0] = -y;//TODO:negative a la ogl?
-            action[0] = etoi(M_DELTAY);
-            Sys_QueEvent(dwTimeStamp, SE_MOUSE, 0, value[0], 0, null);
-//            return true;
-        }
-        if ((w = Mouse.getDWheel()) != 0) {
-            // mouse wheel actions are impulses, without a specific up / down
-            int wheelValue = value[0] = w;//(int) polled_didod[n].dwData ) / WHEEL_DELTA;
-            final int key = value[0] < 0 ? K_MWHEELDOWN : K_MWHEELUP;
-            action[0] = etoi(M_DELTAZ);
-
-            while (wheelValue-- > 0) {
-                Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(true), 0, null);
-                Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(false), 0, null);
             }
-//            return value[0] != 0;
-        }
-        if (Mouse.next() && Mouse.getEventButtonState()) {//TODO:find out what Mouse.next() does exactly.
-            int diaction = Mouse.getEventButton();
-            value[0] = Mouse.getEventButtonState() ? 1 : 0;// (polled_didod[n].dwData & 0x80) == 0x80;
-            action[0] = etoi(M_ACTION1) + diaction;//- DIMOFS_BUTTON0 );
-            Sys_QueEvent(dwTimeStamp, SE_KEY, K_MOUSE1 + diaction, value[0], 0, null);
+            if ((y = Mouse.getDY()) != 0) {
+                value[0] = -y;//TODO:negative a la ogl?
+                action[0] = etoi(M_DELTAY);
+                Sys_QueEvent(dwTimeStamp, SE_MOUSE, 0, value[0], 0, null);
 //            return true;
+            }
+            if ((w = Mouse.getDWheel()) != 0) {
+                // mouse wheel actions are impulses, without a specific up / down
+                int wheelValue = value[0] = w;//(int) polled_didod[n].dwData ) / WHEEL_DELTA;
+                final int key = value[0] < 0 ? K_MWHEELDOWN : K_MWHEELUP;
+                action[0] = etoi(M_DELTAZ);
+
+                while (wheelValue-- > 0) {
+                    Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(true), 0, null);
+                    Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(false), 0, null);
+                }
+//            return value[0] != 0;
+            }
+            if (Mouse.getEventButtonState()) {//TODO:find out what Mouse.next() does exactly.
+                final int diaction = Mouse.getEventButton();
+                value[0] = Mouse.isButtonDown(diaction) ? 0x80 : 0;// (polled_didod[n].dwData & 0x80) == 0x80;
+                action[0] = etoi(M_ACTION1) + diaction;//- DIMOFS_BUTTON0 );
+                Sys_QueEvent(dwTimeStamp, SE_KEY, K_MOUSE1 + diaction, value[0], 0, null);
+//            return true;
+            }
         }
 //        return false;
     }
