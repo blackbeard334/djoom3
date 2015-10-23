@@ -903,6 +903,7 @@ public class MapFile {
             version = CURRENT_MAP_VERSION;
             fileTime = 0;
             geometryCRC = 0;
+            entities = new idList<>();
             entities.Resize(1024, 256);
             hasPrimitiveData = false;
         }

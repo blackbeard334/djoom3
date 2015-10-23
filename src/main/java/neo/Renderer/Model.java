@@ -83,6 +83,7 @@ public class Model {
         public idVec4 xyz;			// we use homogenous coordinate tricks
 
         public shadowCache_s() {
+            xyz = new idVec4();
         }
 
         shadowCache_s(ByteBuffer Position) {

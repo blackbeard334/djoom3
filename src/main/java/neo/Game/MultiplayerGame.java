@@ -88,6 +88,7 @@ import static neo.Game.MultiplayerGame.snd_evt_t.SND_YOULOSE;
 import static neo.Game.MultiplayerGame.snd_evt_t.SND_YOUWIN;
 import neo.Game.Player.idPlayer;
 import neo.Sound.snd_shader.idSoundShader;
+import neo.TempDump;
 import static neo.TempDump.NOT;
 import static neo.TempDump.atoi;
 import static neo.TempDump.btoi;
@@ -182,6 +183,10 @@ public class MultiplayerGame {
 
         idStr line;
         short fade;			// starts high and decreases, line is removed once reached 0
+
+        public mpChatLine_s() {
+            line  = new idStr();
+        }
     };
 
     public enum snd_evt_t {
@@ -251,7 +256,7 @@ public class MultiplayerGame {
         private boolean bCurrentMenuMsg;	// send menu state updates to server
         //
         // chat data
-        private mpChatLine_s[] chatHistory = new mpChatLine_s[NUM_CHAT_NOTIFY];
+        private mpChatLine_s[] chatHistory = TempDump.allocArray(mpChatLine_s.class, NUM_CHAT_NOTIFY);
         private int chatHistoryIndex;
         private int chatHistorySize;		// 0 <= x < NUM_CHAT_NOTIFY
         private boolean chatDataUpdated;
@@ -3064,8 +3069,7 @@ public class MultiplayerGame {
             currentTourneyPlayer[ 0] = -1;
             currentTourneyPlayer[ 1] = -1;
             one = two = three = false;
-//	memset( &playerState, 0 , sizeof( playerState ) );
-            playerState = new mpPlayerState_s[playerState.length];
+            playerState = TempDump.allocArray(mpPlayerState_s.class, playerState.length);
             lastWinner = -1;
             currentMenu = 0;
             bCurrentMenuMsg = false;
@@ -3087,9 +3091,9 @@ public class MultiplayerGame {
             for (i = 0; i < NUM_CHAT_NOTIFY; i++) {
                 chatHistory[ i].line.Clear();
             }
-            warmupText.Clear();
-            voteValue.Clear();
-            voteString.Clear();
+            warmupText = new idStr();
+            voteValue = new idStr();
+            voteString = new idStr();
             startFragLimit = -1;
         }
 

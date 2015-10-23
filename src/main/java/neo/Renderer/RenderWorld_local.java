@@ -14,6 +14,7 @@ import static neo.Renderer.Model.dynamicModel_t.DM_CACHED;
 import static neo.Renderer.Model.dynamicModel_t.DM_STATIC;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.shadowCache_s;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.ModelDecal.decalProjectionInfo_s;
 import neo.Renderer.ModelDecal.idRenderModelDecal;
@@ -178,6 +179,12 @@ public class RenderWorld_local {
         idPlane plane;			// view must be on the positive side of the plane to cross
         portal_s next;			// next portal of the area
         doublePortal_s doublePortal;
+        
+        public portal_s(){
+            intoArea = 0;
+            w = new idWinding();
+            plane = new idPlane();
+        }
     };
 
     public static class doublePortal_s {
@@ -1811,10 +1818,12 @@ public class RenderWorld_local {
 
             R_AllocStaticTriSurfShadowVerts(tri, tri.numVerts);
             tri.bounds.Clear();
+            tri.shadowVertexes = new Model.shadowCache_s[tri.numVerts];
             for (j = 0; j < tri.numVerts; j++) {
                 float[] vec = new float[8];
 
                 src.Parse1DMatrix(3, vec);
+                tri.shadowVertexes[j] = new shadowCache_s();
                 tri.shadowVertexes[j].xyz.oSet(0, vec[0]);
                 tri.shadowVertexes[j].xyz.oSet(1, vec[1]);
                 tri.shadowVertexes[j].xyz.oSet(2, vec[2]);
@@ -1875,7 +1884,7 @@ public class RenderWorld_local {
                 return;
             }
 
-            doublePortals = new doublePortal_s[numInterAreaPortals];// R_ClearedStaticAlloc(numInterAreaPortals);
+            doublePortals = TempDump.allocArray(doublePortal_s.class, numInterAreaPortals);
 
             for (i = 0; i < numInterAreaPortals; i++) {
                 int numPoints, a1, a2;
@@ -1924,7 +1933,6 @@ public class RenderWorld_local {
         }
 
         public void ParseNodes(idLexer src) throws idException {
-            int i;
 
             src.ExpectTokenString("{");
 
@@ -1932,13 +1940,9 @@ public class RenderWorld_local {
             if (numAreaNodes < 0) {
                 src.Error("R_ParseNodes: bad numAreaNodes");
             }
-            areaNodes = new areaNode_t[numAreaNodes];// R_ClearedStaticAlloc(numAreaNodes);
+            areaNodes = TempDump.allocArray(areaNode_t.class, numAreaNodes);
 
-            for (i = 0; i < numAreaNodes; i++) {
-                areaNode_t node;
-
-                node = areaNodes[i];
-
+            for (areaNode_t node : areaNodes) {
                 src.Parse1DMatrix(4, node.plane.ToFloatPtr());
                 node.children[0] = src.ParseInt();
                 node.children[1] = src.ParseInt();

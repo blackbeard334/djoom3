@@ -107,6 +107,7 @@ import static neo.Renderer.tr_render.RB_RenderDrawSurfListWithFunction;
 import static neo.Renderer.tr_render.RB_RenderTriangleSurface;
 import neo.Renderer.tr_render.RB_T_RenderTriangleSurface;
 import static neo.Renderer.tr_trace.RB_ShowTrace;
+import neo.TempDump;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
@@ -178,7 +179,7 @@ public class tr_rendertools {
     static final int MAX_DEBUG_TEXT = 512;
 //
 
-    static class debugText_s {
+    public static class debugText_s {
 
         idStr text;
         idVec3 origin;
@@ -188,9 +189,18 @@ public class tr_rendertools {
         int align;
         int lifeTime;
         boolean depthTest;
+
+        public debugText_s() {
+            text = new idStr();
+            origin = new idVec3();
+            color = new idVec4();
+            viewAxis = new idMat3();
+            scale = align = lifeTime = 0;
+            depthTest = false;
+        }
     };
 //
-    static final debugText_s[] rb_debugText = new debugText_s[MAX_DEBUG_TEXT];
+    static debugText_s[] rb_debugText = TempDump.allocArray(debugText_s.class, MAX_DEBUG_TEXT);
     static int rb_numDebugText = 0;
     static int rb_debugTextTime = 0;
 //
@@ -1796,24 +1806,19 @@ public class tr_rendertools {
         int i;
         int num;
         debugText_s text;
-        int text_index;
 
         rb_debugTextTime = time;
 
         if (0 == time) {
             // free up our strings
-            text = rb_debugText[text_index = 0];
-            for (i = 0; i < MAX_DEBUG_TEXT; i++, text = rb_debugText[++text_index]) {
-                text.text.Clear();
-            }
+            rb_debugText = TempDump.allocArray(debugText_s.class, rb_debugText.length);
             rb_numDebugText = 0;
             return;
         }
 
         // copy any text that still needs to be drawn
-        num = 0;
-        text = rb_debugText[text_index = 0];
-        for (i = 0; i < rb_numDebugText; i++, text = rb_debugText[++text_index]) {
+        for (i = num = 0; i < rb_numDebugText; i++) {
+            text = rb_debugText[i];
             if (text.lifeTime > time) {
                 if (num != i) {
                     rb_debugText[num] = text;

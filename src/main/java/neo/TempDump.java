@@ -2,6 +2,7 @@ package neo;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -458,21 +459,29 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         //it's all binary here.
-        mode = mode.replace("b", "");
-        mode = mode.replace("t", "");
+        mode = mode.replace("b", "").replace("t", "");
 
-        if (mode.contains("r+")
-                || mode.contains("w+")
-                || mode.contains("w")) {
-            temp.add(StandardOpenOption.WRITE);
-        } else if (mode.contains("r")) {
+        if (mode.contains("r")) {
             temp.add(StandardOpenOption.READ);
+            if (mode.contains("r+")) {
+                temp.add(StandardOpenOption.WRITE);
+            }
         }
-
-        if (mode.contains("a+")) {
+        if (mode.contains("w")) {
+            temp.add(StandardOpenOption.CREATE);
+            temp.add(StandardOpenOption.TRUNCATE_EXISTING);
             temp.add(StandardOpenOption.WRITE);
-        } else if (mode.contains("a")) {
+            if (mode.contains("w+")) {
+                temp.add(StandardOpenOption.READ);
+            }
+        }
+        if (mode.contains("a")) {
             temp.add(StandardOpenOption.APPEND);
+            temp.add(StandardOpenOption.CREATE);
+            temp.add(StandardOpenOption.WRITE);
+            if (mode.contains("a+")) {
+                temp.add(StandardOpenOption.READ);
+            }
         }
 
         return temp;
@@ -556,6 +565,21 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         System.out.println(Arrays.toString(CALL_STACK_MAP.entrySet().toArray()));
     }
 
+    public static <T> T[] allocArray(Class<T> clazz, int length) {
+        
+        T[] array = (T[]) Array.newInstance(clazz, length);
+
+        for (int a = 0; a < length; a++) {
+            try {
+                array[a] = (T) clazz.getConstructor().newInstance();
+            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new TODO_Exception();//missing default constructor
+            }
+        }
+
+        return array;
+    }
+    
     /**
      *
      *

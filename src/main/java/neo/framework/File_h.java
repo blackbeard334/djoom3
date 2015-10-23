@@ -1015,6 +1015,7 @@ public class File_h {
 
         public idFile_Permanent() {
             name = new idStr("invalid");
+            fullPath = new idStr();
             o = null;
             mode = 0;
             fileSize = 0;
@@ -1118,7 +1119,7 @@ public class File_h {
             }
 
 //            buf = (byte[]) buffer;
-            len = buffer.capacity();
+            len = buffer.limit();
 
             remaining = len;
             tries = 0;

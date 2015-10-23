@@ -1256,8 +1256,8 @@ public class tr_trisurf {
             if (Math.abs(area) < 1e-20f) {
                 ft.negativePolarity = false;
                 ft.degenerate = true;
-                ft.tangents[0].Zero();
-                ft.tangents[1].Zero();
+                ft.tangents[0] = new idVec3();
+                ft.tangents[1] = new idVec3();
                 c_textureDegenerateFaces++;
                 continue;
             }

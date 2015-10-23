@@ -622,7 +622,7 @@ public class Game_local {
 //
         public idStr sessionCommand = new idStr();              // a target_sessionCommand can set this to return something to the session 
 //
-        public idMultiplayerGame mpGame;			// handles rules for standard dm
+        public idMultiplayerGame mpGame = new idMultiplayerGame();// handles rules for standard dm
 //
         public idSmokeParticles smokeParticles;			// global smoke trails
         public idEditEntities editEntities;			// in game editing
@@ -5380,7 +5380,7 @@ public class Game_local {
 
             for (i = 0; i < MAX_CLIENTS; i++) {
                 for (type = 0; type < declManager.GetNumDeclTypes(); type++) {
-                    clientDeclRemap[i][type].Clear();
+                    clientDeclRemap[i][type] = new idList<>();
                 }
             }
 

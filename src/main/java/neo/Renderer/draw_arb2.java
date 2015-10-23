@@ -567,7 +567,7 @@ public class draw_arb2 {
         stripped.StripFileExtension();
 
         // see if it is already loaded
-        for (i = 0; isNotNullOrEmpty(pro/gs[i].name); i++) {
+        for (i = 0; progs[i] != null && isNotNullOrEmpty(progs[i].name); i++) {
             if (progs[i].target != target) {
                 continue;
             }
@@ -585,10 +585,7 @@ public class draw_arb2 {
         }
 
         // add it to the list and load it
-        progs[i].ident = program_t.PROG_INVALID;// 0;	// will be gen'd by R_LoadARBProgram
-        progs[i].target = target;
-//        strncpy(progs[i].name, program, sizeof(progs[i].name) - 1);
-        progs[i].name = program;
+        progs[i] = new progDef_t(target, FPROG_TEST, program);// will be gen'd by R_LoadARBProgram
 
         R_LoadARBProgram(i);
 
