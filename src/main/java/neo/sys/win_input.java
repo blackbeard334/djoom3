@@ -1110,13 +1110,11 @@ static char[] keyScanTable = s_scantokey;
                 value[0] = x;
                 action[0] = etoi(M_DELTAX);
                 Sys_QueEvent(dwTimeStamp, SE_MOUSE, value[0], 0, 0, null);
-//            return true;
             }
             if ((y = Mouse.getDY()) != 0) {
                 value[0] = -y;//TODO:negative a la ogl?
                 action[0] = etoi(M_DELTAY);
                 Sys_QueEvent(dwTimeStamp, SE_MOUSE, 0, value[0], 0, null);
-//            return true;
             }
             if ((w = Mouse.getDWheel()) != 0) {
                 // mouse wheel actions are impulses, without a specific up / down
@@ -1128,19 +1126,21 @@ static char[] keyScanTable = s_scantokey;
                     Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(true), 0, null);
                     Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(false), 0, null);
                 }
-//            return value[0] != 0;
             }
             if (Mouse.getEventButtonState()) {//TODO:find out what Mouse.next() does exactly.
                 final int diaction = Mouse.getEventButton();
                 value[0] = Mouse.isButtonDown(diaction) ? 0x80 : 0;// (polled_didod[n].dwData & 0x80) == 0x80;
                 action[0] = etoi(M_ACTION1) + diaction;//- DIMOFS_BUTTON0 );
                 Sys_QueEvent(dwTimeStamp, SE_KEY, K_MOUSE1 + diaction, value[0], 0, null);
-//            return true;
+                B1 = true;
+            } else if (B1) {
+                Sys_QueEvent(dwTimeStamp, SE_KEY, K_MOUSE1, value[0] = 0, 0, null);
+                B1 = false;
             }
         }
-//        return false;
     }
-
+    private static boolean B1 = false;
+    
     public static void Sys_EndMouseInputEvents() {
     }
 

@@ -567,7 +567,7 @@ public class draw_arb2 {
         stripped.StripFileExtension();
 
         // see if it is already loaded
-        for (i = 0; isNotNullOrEmpty(progs[i].name); i++) {
+        for (i = 0; isNotNullOrEmpty(pro/gs[i].name); i++) {
             if (progs[i].target != target) {
                 continue;
             }

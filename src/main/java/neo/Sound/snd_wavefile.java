@@ -344,12 +344,12 @@ public class snd_wavefile {
 
             // Expect the 'fmt' chunk to be at least as large as <PCMWAVEFORMAT>;
             // if there are extra parameters at the end, we'll ignore them
-            if (ckIn.cksize < pcmwaveformat_s.SIZE_B) {
+            if (ckIn.cksize < pcmwaveformat_s.BYTES) {
                 return -1;
             }
 
             // Read the 'fmt ' chunk into <pcmWaveFormat>.
-            if (mhmmio.Read(pcmWaveFormat) != pcmwaveformat_s.SIZE_B) {
+            if (mhmmio.Read(pcmWaveFormat) != pcmwaveformat_s.BYTES) {
                 return -1;
             }
             assert (!isOgg);
