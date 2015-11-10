@@ -3340,15 +3340,19 @@ public class Game_local {
             // check if we should spawn a class object
             spawnArgs.GetString("spawnclass", null, spawn);
             if (spawn[0] != null) {
+                idEntity obj = null;
                 switch (spawn[0]) {
                     case "idWorldspawn":
+                        obj = new idWorldspawn();
                 }
 
-                obj = idClass.GetClass(spawn[0]);
-                if (NOT(cls)) {
-                    Warning("Could not spawn '%s'.  Class '%s' not found%s.", classname[0], spawn[0], error);
-                    return false;
-                }
+                obj.Spawn();
+
+//                obj = idClass.GetClass(spawn[0]);
+//                if (NOT(cls)) {
+//                    Warning("Could not spawn '%s'.  Class '%s' not found%s.", classname[0], spawn[0], error);
+//                    return false;
+//                }
 //
 //                obj = (idClass) cls.CreateInstance.run();
 //                if (NOT(obj)) {
@@ -3358,7 +3362,6 @@ public class Game_local {
 //
 //                obj.CallSpawn();
                 
-                idEntity obj = new idEntity();
                 obj.Spawn();
 
                 if (ent != null) {// && obj.IsType(idEntity.class)) {

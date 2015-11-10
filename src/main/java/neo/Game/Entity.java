@@ -411,6 +411,7 @@ public class Entity {
             snapshotNode.SetOwner(this);
             snapshotSequence = -1;
             snapshotBits = 0;
+            name = new idStr();
 
             spawnArgs = new idDict();
 
@@ -438,6 +439,7 @@ public class Entity {
             renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
             modelDefHandle = -1;
             refSound = new refSound_t();//memset( &refSound, 0, sizeof( refSound ) );
+            defaultPhysicsObj = new idPhysics_Static();
 
             mpGUIState = -1;
 

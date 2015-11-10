@@ -38,6 +38,8 @@ public class WorldSpawn {
 //					~idWorldspawn();
         @Override
         public void Spawn() {
+            super.Spawn();
+
             idStr scriptname;
             idThread thread;
             function_t func;

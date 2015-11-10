@@ -40,6 +40,13 @@ public class Physics_Static {
         idMat3 axis;
         idVec3 localOrigin;
         idMat3 localAxis;
+
+        public staticPState_s() {
+            this.origin = new idVec3();
+            this.axis = new idMat3();
+            this.localOrigin = new idVec3();
+            this.localAxis = new idMat3();
+        }
     };
 
     public static class idPhysics_Static extends idPhysics {
@@ -58,6 +65,7 @@ public class Physics_Static {
         public idPhysics_Static() {
             self = null;
             clipModel = null;
+            current = new staticPState_s();
             current.origin.Zero();
             current.axis.Identity();
             current.localOrigin.Zero();

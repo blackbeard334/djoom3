@@ -220,7 +220,7 @@ public class Class {
         public boolean IsType(final java.lang.Class/*idTypeInfo*/ superclass) {
             java.lang.Class/*idTypeInfo*/ subclass;
 
-            subclass = GetType();
+            subclass = this.getClass();
             return subclass.isInstance(superclass);
         }
 
