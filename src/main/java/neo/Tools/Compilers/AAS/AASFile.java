@@ -1,6 +1,7 @@
 package neo.Tools.Compilers.AAS;
 
-import neo.TempDump.IntArrPtr;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
 import neo.framework.DeclEntityDef.idDeclEntityDef;
@@ -103,7 +104,7 @@ public class AASFile {
         public byte disableCount;                           // number of times this reachability has been disabled
         public idReachability next;                         // next reachability in list
         public idReachability rev_next;                     // next reachability in reversed list
-        public IntArrPtr areaTravelTimes;                   // travel times within the fromAreaNum from reachabilities that lead towards this area
+        public IntBuffer areaTravelTimes;                 // travel times within the fromAreaNum from reachabilities that lead towards this area
         //
         //
 
