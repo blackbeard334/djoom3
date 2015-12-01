@@ -39,6 +39,7 @@ import static neo.Game.Script.Script_Program.type_object;
 import static neo.Game.Script.Script_Program.type_string;
 import static neo.Game.Script.Script_Program.type_vector;
 import static neo.Game.Script.Script_Program.type_void;
+import neo.Game.Script.Script_Program.varEval_s;
 import neo.Game.Script.Script_Thread.idThread;
 import static neo.TempDump.indexOf;
 import static neo.TempDump.isNotNullOrEmpty;
@@ -353,7 +354,7 @@ public final class idProgram {
             for (i = 0; i < varDefs.Num(); i++) {
                 def = varDefs.oGet(i);
                 if ((def.Type() == ev_function) && ((def.scope.Type() == ev_namespace) || def.scope.TypeDef().Inherits(type_object))) {
-                    if (null == def.value.getFunctionPtr().eventdef && 0 == def.value.getFunctionPtr().firstStatement) {
+                    if (null == def.value.functionPtr[0].eventdef && 0 == def.value.functionPtr[0].firstStatement) {
                         throw new idCompileError(va("function %s was not defined\n", def.GlobalName()));
                     }
                 }
@@ -682,18 +683,18 @@ public final class idProgram {
             //
             // vector
             //
-            if (name.equals(RESULT_STRING)) {
+            if (RESULT_STRING.equals(name)) {
                 // <RESULT> vector defs don't need the _x, _y and _z components
                 assert (scope.Type() == ev_function);
-                def.value.setStackOffset(scope.value.getFunctionPtr().locals);
+                def.value = new varEval_s(scope.value.functionPtr[0].locals);
                 def.initialized = stackVariable;
-                scope.value.getFunctionPtr().locals += type.Size();
+                scope.value.functionPtr[0].locals++;
             } else if (scope.TypeDef().Inherits(type_object)) {
                 idTypeDef newtype = new idTypeDef(ev_field, null, "float field", 0, type_float);
                 idTypeDef type2 = GetType(newtype, true);
 
                 // set the value to the variable's position in the object
-                def.value.setPtrOffset(scope.TypeDef().Size());
+                def.value = new varEval_s(scope.TypeDef().Size());
 
                 // make automatic defs for the vectors elements
                 // origin can be accessed as origin_x, origin_y, and origin_z
@@ -702,11 +703,11 @@ public final class idProgram {
 
                 element = String.format("%s_y", def.Name());
                 def_y = AllocDef(type2, element, scope, constant);
-                def_y.value.setPtrOffset(def_x.value.getPtrOffset() + type_float.Size());
+                def_y.value = new varEval_s(def_x.value.getPtrOffset() + type_float.Size());
 
                 element = String.format("%s_z", def.Name());
                 def_z = AllocDef(type2, element, scope, constant);
-                def_z.value.setPtrOffset(def_y.value.getPtrOffset() + type_float.Size());
+                def_z.value = new varEval_s(def_y.value.getPtrOffset() + type_float.Size());
             } else {
                 // make automatic defs for the vectors elements
                 // origin can be accessed as origin_x, origin_y, and origin_z
@@ -728,36 +729,34 @@ public final class idProgram {
             // object variable
             //
             // set the value to the variable's position in the object
-            def.value.setPtrOffset(scope.TypeDef().Size());
+            def.value = new varEval_s(scope.TypeDef().Size());
         } else if (scope.Type() == ev_function) {
             //
             // stack variable
             //
             // since we don't know how many local variables there are,
             // we have to have them go backwards on the stack
-            def.value.setStackOffset(scope.value.getFunctionPtr().locals);
+            def.value = new varEval_s(scope.value.functionPtr[0].locals);
             def.initialized = stackVariable;
 
             if (type.Inherits(type_object)) {
                 // objects only have their entity number on the stack, not the entire object
-                scope.value.getFunctionPtr().locals += type_object.Size();
+                scope.value.functionPtr[0].locals += type_object.Size();
             } else {
-                scope.value.getFunctionPtr().locals += type.Size();
+                scope.value.functionPtr[0].locals += type.Size();
             }
         } else {
             //
             // global variable
             //
-//            def->value.bytePtr = &variables[ numVariables ];
-            final int pos = numVariables;
-            Arrays.fill(variables, pos, pos + def.TypeDef().Size(), (byte) 0);
-//                memset(def.value.bytePtr, 0, def.TypeDef().Size());
-
-            def.value.setBytePtr(variables, numVariables);
+            def.value = new varEval_s(variables, numVariables);
             numVariables += def.TypeDef().Size();
             if (numVariables > variables.length) {
                 throw new idCompileError(va("Exceeded global memory size (%d bytes)", variables.length));
             }
+
+            Arrays.fill(variables, numVariables, variables.length, (byte) 0);
+//                memset(def.value.bytePtr, 0, def.TypeDef().Size());
         }
 
         return def;
@@ -937,8 +936,8 @@ public final class idProgram {
             return null;
         }
 
-        if ((def.Type() == ev_function) && (def.value.getFunctionPtr().eventdef == null)) {
-            return def.value.getFunctionPtr();
+        if ((def.Type() == ev_function) && (def.value.functionPtr[0].eventdef == null)) {
+            return def.value.functionPtr[0];
         }
 
         // is not a function, or is an eventdef
@@ -968,7 +967,7 @@ public final class idProgram {
         for (tdef = type.def; tdef != def_object; tdef = tdef.TypeDef().SuperClass().def) {
             def = GetDef(null, name, tdef);
             if (def != null) {
-                return def.value.getFunctionPtr();
+                return def.value.functionPtr[0];
             }
         }
 
@@ -1016,9 +1015,9 @@ public final class idProgram {
         if (def != null && (def.initialized != stackVariable)) {
             // 0 is reserved for NULL entity
             if (null == ent) {
-                def.value.setEntityNumberPtr(0);
+                def.value.entityNumberPtr[0] = 0;
             } else {
-                def.value.setEntityNumberPtr(ent.entityNumber + 1);
+                def.value.entityNumberPtr[0] = ent.entityNumber + 1;
             }
         }
     }
@@ -1039,30 +1038,30 @@ public final class idProgram {
     }
 
     public int GetReturnedInteger() {
-        return returnDef.value.getIntPtr();
+        return returnDef.value.intPtr[0];
     }
 
     public void ReturnFloat(float value) {
-        returnDef.value.setFloatPtr(value);
+        returnDef.value.floatPtr[0] = value;
     }
 
     public void ReturnInteger(int value) {
-        returnDef.value.setIntPtr(value);
+        returnDef.value.intPtr[0] = value;
     }
 
     public void ReturnVector(idVec3 vec) {
-        returnDef.value.setVectorPtr(vec);
+        returnDef.value.vectorPtr[0] = (vec);
     }
 
     public void ReturnString(final String string) {
-        returnStringDef.value.setStringPtr(string);//idStr.Copynz(returnStringDef.value.stringPtr, string, MAX_STRING_LEN);
+        returnStringDef.value.stringPtr[0] = string;//idStr.Copynz(returnStringDef.value.stringPtr, string, MAX_STRING_LEN);
     }
 
     public void ReturnEntity(idEntity ent) {
         if (ent != null) {
-            returnDef.value.setEntityNumberPtr(ent.entityNumber + 1);
+            returnDef.value.entityNumberPtr[0] = ent.entityNumber + 1;
         } else {
-            returnDef.value.setEntityNumberPtr(0);//TODO:pointer position.
+            returnDef.value.entityNumberPtr[0] = 0;
         }
     }
 

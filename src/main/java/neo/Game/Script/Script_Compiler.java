@@ -511,189 +511,194 @@ public class Script_Compiler {
          ============
          */
         private idVarDef OptimizeOpcode(final opcode_s op, idVarDef var_a, idVarDef var_b) {
-            eval_s c = new eval_s();
+            final eval_s c;
             idTypeDef type;
 
-//            if (var_a != null && var_a.initialized != initializedConstant) {
-            if (var_a == null || var_a.initialized != initializedConstant) {
+            if (var_a != null && var_a.initialized != initializedConstant) {
                 return null;
             }
-//            if (var_b != null && var_b.initialized != initializedConstant) {
-            if (var_b == null || var_b.initialized != initializedConstant) {
+            if (var_b != null && var_b.initialized != initializedConstant) {
                 return null;
             }
 
-//            idVec3 &vec_c = *reinterpret_cast<idVec3 *>( &c.vector[ 0 ] );
-            idVec3 vec_c = new idVec3(c.vector(0), c.vector(1), c.vector(2));//TODO:why are we using an array that is deleted below?
+            idVec3 vec_c = null;//*reinterpret_cast<idVec3 *>( &c.vector[ 0 ] );
+            float float_c = 0;
+            int int_c = 0;            
 
-//	memset( &c, 0, sizeof( c ) );
-            c = new eval_s();
             switch (indexOf(op, opcodes)) {
                 case OP_ADD_F:
-                    c._float(var_a.value.getFloatPtr() + var_b.value.getFloatPtr());
+                    float_c = var_a.value.floatPtr[0] + var_b.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_ADD_V:
-                    vec_c = var_a.value.getVectorPtr().oPlus(var_b.value.getVectorPtr());
+                    vec_c = var_a.value.vectorPtr[0].oPlus(var_b.value.vectorPtr[0]);
                     type = type_vector;
                     break;
                 case OP_SUB_F:
-                    c._float(var_a.value.getFloatPtr() - var_b.value.getFloatPtr());
+                    float_c = var_a.value.floatPtr[0] - var_b.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_SUB_V:
-                    vec_c = var_a.value.getVectorPtr().oMinus(var_b.value.getVectorPtr());
+                    vec_c = var_a.value.vectorPtr[0].oMinus(var_b.value.vectorPtr[0]);
                     type = type_vector;
                     break;
                 case OP_MUL_F:
-                    c._float(var_a.value.getFloatPtr() * var_b.value.getFloatPtr());
+                    float_c = var_a.value.floatPtr[0] * var_b.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_MUL_V:
-                    c._float(var_a.value.getVectorPtr().oMultiply(var_b.value.getVectorPtr()));
+                    float_c = var_a.value.vectorPtr[0].oMultiply(var_b.value.vectorPtr[0]);
                     type = type_float;
                     break;
                 case OP_MUL_FV:
-                    vec_c = var_b.value.getVectorPtr().oMultiply(var_a.value.getFloatPtr());
+                    vec_c = var_b.value.vectorPtr[0].oMultiply(var_a.value.floatPtr[0]);
                     type = type_vector;
                     break;
                 case OP_MUL_VF:
-                    vec_c = var_a.value.getVectorPtr().oMultiply(var_b.value.getFloatPtr());
+                    vec_c = var_a.value.vectorPtr[0].oMultiply(var_b.value.floatPtr[0]);
                     type = type_vector;
                     break;
                 case OP_DIV_F:
-                    c._float(Divide(var_a.value.getFloatPtr(), var_b.value.getFloatPtr()));
+                    float_c = Divide(var_a.value.floatPtr[0], var_b.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_MOD_F:
-                    c._float((int) var_a.value.getFloatPtr() % (int) var_b.value.getFloatPtr());
+                    float_c = (int) var_a.value.floatPtr[0] % (int) var_b.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_BITAND:
-                    c._float((int) var_a.value.getFloatPtr() & (int) var_b.value.getFloatPtr());
+                    float_c = (int) var_a.value.floatPtr[0] & (int) var_b.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_BITOR:
-                    c._float((int) var_a.value.getFloatPtr() | (int) var_b.value.getFloatPtr());
+                    float_c = (int) var_a.value.floatPtr[0] | (int) var_b.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_GE:
-                    c._float(btoi(var_a.value.getFloatPtr() >= var_b.value.getFloatPtr()));
+                    float_c = btoi(var_a.value.floatPtr[0] >= var_b.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_LE:
-                    c._float(btoi(var_a.value.getFloatPtr() <= var_b.value.getFloatPtr()));
+                    float_c = btoi(var_a.value.floatPtr[0] <= var_b.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_GT:
-                    c._float(btoi(var_a.value.getFloatPtr() > var_b.value.getFloatPtr()));
+                    float_c = btoi(var_a.value.floatPtr[0] > var_b.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_LT:
-                    c._float(btoi(var_a.value.getFloatPtr() < var_b.value.getFloatPtr()));
+                    float_c = btoi(var_a.value.floatPtr[0] < var_b.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_AND:
-                    c._float(btoi(var_a.value.getFloatPtr() != 0 && var_b.value.getFloatPtr() != 0));
+                    float_c = btoi(var_a.value.floatPtr[0] != 0 && var_b.value.floatPtr[0] != 0);
                     type = type_float;
                     break;
                 case OP_OR:
-                    c._float(btoi(var_a.value.getFloatPtr() != 0 || var_b.value.getFloatPtr() != 0));
+                    float_c = btoi(var_a.value.floatPtr[0] != 0 || var_b.value.floatPtr[0] != 0);
                     type = type_float;
                     break;
                 case OP_NOT_BOOL:
-                    c._int(btoi(!itob(var_a.value.getIntPtr())));
+                    int_c = btoi(!itob(var_a.value.intPtr[0]));
                     type = type_boolean;
                     break;
                 case OP_NOT_F:
-                    c._float(btoi(!itob((int) var_a.value.getFloatPtr())));
+                    float_c = btoi(!itob((int) var_a.value.floatPtr[0]));
                     type = type_float;
                     break;
                 case OP_NOT_V:
-                    c._float(btoi(0 == var_a.value.getVectorPtr().x
-                            && 0 == var_a.value.getVectorPtr().y
-                            && 0 == var_a.value.getVectorPtr().z));
+                    float_c = btoi(0 == var_a.value.vectorPtr[0].x
+                            && 0 == var_a.value.vectorPtr[0].y
+                            && 0 == var_a.value.vectorPtr[0].z);
                     type = type_float;
                     break;
                 case OP_NEG_F:
-                    c._float(-var_a.value.getFloatPtr());
+                    float_c = -var_a.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_NEG_V:
-                    vec_c = var_a.value.getVectorPtr().oNegative();
+                    vec_c = var_a.value.vectorPtr[0].oNegative();
                     type = type_vector;
                     break;
                 case OP_INT_F:
-                    c._float((int) var_a.value.getFloatPtr());
+                    float_c = (int) var_a.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_EQ_F:
-                    c._float(btoi(var_a.value.getFloatPtr() == var_b.value.getFloatPtr()));
+                    float_c = btoi(var_a.value.floatPtr[0] == var_b.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_EQ_V:
-                    c._float(btoi(var_a.value.getVectorPtr().Compare(var_b.value.getVectorPtr())));
+                    float_c = btoi(var_a.value.vectorPtr[0].Compare(var_b.value.vectorPtr[0]));
                     type = type_float;
                     break;
                 case OP_EQ_E:
-                    c._float(btoi(var_a.value.getIntPtr() == var_b.value.getIntPtr()));
+                    float_c = btoi(var_a.value.intPtr[0] == var_b.value.intPtr[0]);
                     type = type_float;
                     break;
                 case OP_NE_F:
-                    c._float(btoi(var_a.value.getFloatPtr() != var_b.value.getFloatPtr()));
+                    float_c = btoi(var_a.value.floatPtr[0] != var_b.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_NE_V:
-                    c._float(btoi(!var_a.value.getVectorPtr().Compare(var_b.value.getVectorPtr())));
+                    float_c = btoi(!var_a.value.vectorPtr[0].Compare(var_b.value.vectorPtr[0]));
                     type = type_float;
                     break;
                 case OP_NE_E:
-                    c._float(btoi(var_a.value.getIntPtr() != var_b.value.getIntPtr()));
+                    float_c = btoi(var_a.value.intPtr[0] != var_b.value.intPtr[0]);
                     type = type_float;
                     break;
                 case OP_UADD_F:
-                    c._float(var_b.value.getFloatPtr() + var_a.value.getFloatPtr());
+                    float_c = var_b.value.floatPtr[0] + var_a.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_USUB_F:
-                    c._float(var_b.value.getFloatPtr() - var_a.value.getFloatPtr());
+                    float_c = var_b.value.floatPtr[0] - var_a.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_UMUL_F:
-                    c._float(var_b.value.getFloatPtr() * var_a.value.getFloatPtr());
+                    float_c = var_b.value.floatPtr[0] * var_a.value.floatPtr[0];
                     type = type_float;
                     break;
                 case OP_UDIV_F:
-                    c._float(Divide(var_b.value.getFloatPtr(), var_a.value.getFloatPtr()));
+                    float_c = Divide(var_b.value.floatPtr[0], var_a.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_UMOD_F:
-                    c._float(((int) var_b.value.getFloatPtr()) % ((int) var_a.value.getFloatPtr()));
+                    float_c = ((int) var_b.value.floatPtr[0]) % ((int) var_a.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_UOR_F:
-                    c._float(((int) var_b.value.getFloatPtr()) | ((int) var_a.value.getFloatPtr()));
+                    float_c = ((int) var_b.value.floatPtr[0]) | ((int) var_a.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_UAND_F:
-                    c._float(((int) var_b.value.getFloatPtr()) & ((int) var_a.value.getFloatPtr()));
+                    float_c = ((int) var_b.value.floatPtr[0]) & ((int) var_a.value.floatPtr[0]);
                     type = type_float;
                     break;
                 case OP_UINC_F:
-                    c._float(var_a.value.getFloatPtr() + 1);
+                    float_c = var_a.value.floatPtr[0] + 1;
                     type = type_float;
                     break;
                 case OP_UDEC_F:
-                    c._float(var_a.value.getFloatPtr() - 1);
+                    float_c = var_a.value.floatPtr[0] - 1;
                     type = type_float;
                     break;
                 case OP_COMP_F:
-                    c._float((float) ~(int) var_a.value.getFloatPtr());
+                    float_c = (float) ~(int) var_a.value.floatPtr[0];
                     type = type_float;
                     break;
                 default:
                     type = null;
                     break;
+            }
+            
+            if (type == type_vector) {
+                c = new eval_s(vec_c.ToFloatPtr());
+            } else if (type == type_float) {
+                c = new eval_s(float_c);
+            } else {
+                c = new eval_s(int_c);
             }
 
             if (null == type) {
@@ -824,8 +829,6 @@ public class Script_Compiler {
 
             // reset our type
             immediateType = null;
-//	memset( &immediate, 0, sizeof( immediate ) );
-            immediate = new eval_s();
 
             // Save the token's line number and filename since when we emit opcodes the current 
             // token is always the next one to be read 
@@ -864,6 +867,7 @@ public class Script_Compiler {
                     immediateType = type_vector;
                     idLexer lex = new idLexer(token.toString(), token.Length(), parserPtr.GetFileName().toString(), LEXFL_NOERRORS);
                     idToken token2 = new idToken();
+                    immediate = new eval_s(new float[3]);
                     for (i = 0; i < 3; i++) {
                         if (!lex.ReadToken(token2)) {
                             Error("Couldn't read vector. '%s' is not in the form of 'x y z'", token);
@@ -872,9 +876,9 @@ public class Script_Compiler {
                             if (NOT(lex.CheckTokenType(TT_NUMBER, 0, token2))) {
                                 Error("expected a number following '-' but found '%s' in vector '%s'", token2, token);
                             }
-                            immediate.vector(i, -token2.GetFloatValue());
+                            immediate.vector[i] = -token2.GetFloatValue();
                         } else if (token2.type == TT_NUMBER) {
-                            immediate.vector(i, token2.GetFloatValue());
+                            immediate.vector[i] = token2.GetFloatValue();
                         } else {
                             Error("vector '%s' is not in the form of 'x y z'.  expected float value, found '%s'", token, token2);
                         }
@@ -884,7 +888,7 @@ public class Script_Compiler {
 
                 case TT_NUMBER:
                     immediateType = type_float;
-                    immediate._float(token.GetFloatValue());
+                    immediate = new eval_s(token.GetFloatValue());
                     return;
 
                 case TT_PUNCTUATION:
@@ -1089,51 +1093,51 @@ public class Script_Compiler {
 
                 switch (etype) {
                     case ev_field:
-                        if (def.value.getIntPtr() == eval._int()) {
+                        if (def.value.intPtr[0] == eval._int) {
                             return def;
                         }
                         break;
 
                     case ev_argsize:
-                        if (def.value.getArgSize() == eval._int()) {
+                        if (def.value.getArgSize() == eval._int) {
                             return def;
                         }
                         break;
 
                     case ev_jumpoffset:
-                        if (def.value.getJumpOffset() == eval._int()) {
+                        if (def.value.getJumpOffset() == eval._int) {
                             return def;
                         }
                         break;
 
                     case ev_entity:
-                        if (def.value.getIntPtr() == eval.entity()) {
+                        if (def.value.intPtr[0] == eval.entity) {
                             return def;
                         }
                         break;
 
                     case ev_string:
-                        if (idStr.Cmp(def.value.getStringPtr(), string) == 0) {
+                        if (idStr.Cmp(def.value.stringPtr[0], string) == 0) {
                             return def;
                         }
                         break;
 
                     case ev_float:
-                        if (def.value.getFloatPtr() == eval._float()) {
+                        if (def.value.floatPtr[0] == eval._float) {
                             return def;
                         }
                         break;
 
                     case ev_virtualfunction:
-                        if (def.value.getVirtualFunction() == eval._int()) {
+                        if (def.value.getVirtualFunction() == eval._int) {
                             return def;
                         }
                         break;
 
                     case ev_vector:
-                        if ((def.value.getVectorPtr().x == eval.vector(0))
-                                && (def.value.getVectorPtr().y == eval.vector(1))
-                                && (def.value.getVectorPtr().z == eval.vector(2))) {
+                        if ((def.value.vectorPtr[0].x == eval.vector[0])
+                                && (def.value.vectorPtr[0].y == eval.vector[1])
+                                && (def.value.vectorPtr[0].z == eval.vector[2])) {
                             return def;
                         }
                         break;
@@ -1184,9 +1188,8 @@ public class Script_Compiler {
             eval_s eval;
 
 //	memset( &eval, 0, sizeof( eval ) );
-            eval = new eval_s();
-            eval._int(func.scope.TypeDef().GetFunctionNumber(func.value.getFunctionPtr()));
-            if (eval._int() < 0) {
+            eval = new eval_s(func.scope.TypeDef().GetFunctionNumber(func.value.functionPtr[0]));
+            if (eval._int < 0) {
                 Error("Function '%s' not found in scope '%s'", func.Name(), func.scope.Name());
             }
 
@@ -1204,8 +1207,7 @@ public class Script_Compiler {
             eval_s eval;
 
 //	memset( &eval, 0, sizeof( eval ) );
-            eval = new eval_s();
-            eval._int(size);
+            eval = new eval_s(size);
             return GetImmediate(type_argsize, eval, "");
         }
 
@@ -1220,8 +1222,7 @@ public class Script_Compiler {
             eval_s eval;
 
 //	memset( &eval, 0, sizeof( eval ) );
-            eval = new eval_s();
-            eval._int(value);
+            eval = new eval_s(value);
             return GetImmediate(type_jumpoffset, eval, "");
         }
 
@@ -1330,7 +1331,7 @@ public class Script_Compiler {
 
                 // need arg size seperate since script object may be NULL
                 statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
-                statement.c = SizeConstant(func.value.getFunctionPtr().parmTotal);
+                statement.c = SizeConstant(func.value.functionPtr[0].parmTotal);
             } else {
                 EmitOpcode(op, func, SizeConstant(size));
             }
@@ -1405,15 +1406,15 @@ public class Script_Compiler {
                 Error("Function '%s' has not been defined yet", funcDef.GlobalName());
             }
 
-            assert (funcDef.value.getFunctionPtr() != null);
+            assert (funcDef.value.functionPtr != null);
             if (callthread) {
-                if ((funcDef.initialized != uninitialized) && funcDef.value.getFunctionPtr().eventdef != null) {
+                if ((funcDef.initialized != uninitialized) && funcDef.value.functionPtr[0].eventdef != null) {
                     Error("Built-in functions cannot be called as threads");
                 }
                 callthread = false;
                 return EmitFunctionParms(OP_THREAD, funcDef, 0, 0, null);
             } else {
-                if ((funcDef.initialized != uninitialized) && funcDef.value.getFunctionPtr().eventdef != null) {
+                if ((funcDef.initialized != uninitialized) && funcDef.value.functionPtr[0].eventdef != null) {
                     if ((scope.Type() != ev_namespace) && (scope.scope.Type() == ev_object)) {
                         // get the local object pointer
                         idVarDef thisdef = gameLocal.program.GetDef(scope.scope.TypeDef(), "self", scope);
@@ -1450,7 +1451,7 @@ public class Script_Compiler {
                 Error("'%s' is not a function", funcDef.Name());
             }
 
-            if (NOT(funcDef.value.getFunctionPtr().eventdef)) {
+            if (NOT(funcDef.value.functionPtr[0].eventdef)) {
                 Error("\"%s\" cannot be called with object notation", funcDef.Name());
             }
 
@@ -1472,7 +1473,7 @@ public class Script_Compiler {
                 Error("'%s' is not a function", funcDef.Name());
             }
 
-            if (NOT(funcDef.value.getFunctionPtr().eventdef)) {
+            if (NOT(funcDef.value.functionPtr[0].eventdef)) {
                 Error("\"%s\" cannot be called with object notation", funcDef.Name());
             }
 
@@ -1695,12 +1696,12 @@ public class Script_Compiler {
             if (NOT(immediateType) && CheckToken("-")) {
                 // constants are directly negated without an instruction
                 if (immediateType == type_float) {
-                    immediate._float(-immediate._float());
+                    immediate = new eval_s(-immediate._float);
                     return ParseImmediate();
                 } else if (immediateType == type_vector) {
-                    immediate.vector(0, -immediate.vector(0));
-                    immediate.vector(1, -immediate.vector(1));
-                    immediate.vector(2, -immediate.vector(2));
+                    immediate.vector[0] = -immediate.vector[0];
+                    immediate.vector[1] = -immediate.vector[1];
+                    immediate.vector[2] = -immediate.vector[2];
                     return ParseImmediate();
                 } else {
                     e = GetExpression(NOT_PRIORITY);
@@ -1888,7 +1889,7 @@ public class Script_Compiler {
 
                     case OP_OBJECTCALL:
                         ExpectToken("(");
-                        if ((e2.initialized != uninitialized) && e2.value.getFunctionPtr().eventdef != null) {
+                        if ((e2.initialized != uninitialized) && e2.value.functionPtr[0].eventdef != null) {
                             e = ParseEventCall(e, e2);
                         } else {
                             e = ParseObjectCall(e, e2);
@@ -1897,7 +1898,7 @@ public class Script_Compiler {
 
                     case OP_EVENTCALL:
                         ExpectToken("(");
-                        if ((e2.initialized != uninitialized) && e2.value.getFunctionPtr().eventdef != null) {
+                        if ((e2.initialized != uninitialized) && e2.value.functionPtr[0].eventdef != null) {
                             e = ParseEventCall(e, e2);
                         } else {
                             e = ParseObjectCall(e, e2);
@@ -2085,8 +2086,7 @@ public class Script_Compiler {
             e = GetExpression(TOP_PRIORITY);
             ExpectToken(")");
 
-            if ((e.initialized == initializedConstant) && (e.value.getIntPtr() != 0)) {
-//                    && (e.value.getIntPtr() != null && e.value.getIntPtr().oGet() != 0)) {
+            if ((e.initialized == initializedConstant) && (e.value.intPtr[0] != 0)) {
                 //FIXME: we can completely skip generation of this code in the opposite case
                 ParseStatement();
                 EmitOpcode(OP_GOTO, JumpTo(patch2), null);
@@ -2456,7 +2456,7 @@ public class Script_Compiler {
                     scope.TypeDef().AddFunction(func);
                 }
             } else {
-                func = def.value.getFunctionPtr();
+                func = def.value.functionPtr[0];
                 assert (func != null);
                 if (func.firstStatement != 0) {
                     Error("%s redeclared", def.GlobalName());
@@ -2637,7 +2637,7 @@ public class Script_Compiler {
                         def.SetString(token.toString(), false);
                     } else {
                         if (negate) {
-                            immediate._float(-immediate._float());
+                            immediate = new eval_s(-immediate._float);
                         }
                         def.SetValue(immediate, false);
                     }
@@ -2714,7 +2714,7 @@ public class Script_Compiler {
 
             type = gameLocal.program.FindType(name);
             if (type != null) {
-                if (!newtype.MatchesType(type) || (type.def.value.getFunctionPtr().eventdef != ev)) {
+                if (!newtype.MatchesType(type) || (type.def.value.functionPtr[0].eventdef != ev)) {
                     Error("Type mismatch on redefinition of '%s'", name);
                 }
             } else {
@@ -2848,7 +2848,6 @@ public class Script_Compiler {
             scope = def_namespace;
 
 //	memset( &immediate, 0, sizeof( immediate ) );
-            immediate = new eval_s();
 //	memset( punctuationValid, 0, sizeof( punctuationValid ) );
             punctuationValid = new boolean[punctuationValid.length];
             for (ptr = 0; punctuation[ptr] != null; ptr++) {
@@ -2883,7 +2882,6 @@ public class Script_Compiler {
             console = toConsole;
 
 //	memset( &immediate, 0, sizeof( immediate ) );
-            immediate = new eval_s();
 
             parser.SetFlags(LEXFL_ALLOWMULTICHARLITERALS);
             parser.LoadMemory(text, text.length(), filename);

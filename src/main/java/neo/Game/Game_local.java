@@ -29,6 +29,7 @@ import static neo.Game.Entity.TH_PHYSICS;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
 import static neo.Game.Game.GAME_API_VERSION;
+import static neo.Game.Game.SCRIPT_DEFAULT;
 import static neo.Game.Game.SCRIPT_DEFAULTFUNC;
 import neo.Game.Game.allowReply_t;
 import static neo.Game.Game.allowReply_t.ALLOW_BADPASS;
@@ -775,9 +776,9 @@ public class Game_local {
             idClass.INIT();
 
             InitConsoleCommands();
-//
-//            // load default scripts
-//            program.Startup(SCRIPT_DEFAULT);
+
+            // load default scripts
+            program.Startup(SCRIPT_DEFAULT);
 
             smokeParticles = new idSmokeParticles();
 
@@ -3341,7 +3342,7 @@ public class Game_local {
             spawnArgs.GetString("spawnclass", null, spawn);
             if (spawn[0] != null) {
                 idEntity obj = null;
-                switch (spawn[0]) {
+                switch (spawn[0]) {//TODO:mayhaps implement some other cases
                     case "idWorldspawn":
                         obj = new idWorldspawn();
                 }
