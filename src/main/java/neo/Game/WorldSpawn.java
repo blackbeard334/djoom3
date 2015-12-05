@@ -2,7 +2,6 @@ package neo.Game;
 
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class.idClass;
-import neo.Game.GameSys.Class.idTypeInfo;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import static neo.Game.GameSys.SysCvar.g_gravity;
 import static neo.Game.GameSys.SysCvar.pm_stamina;

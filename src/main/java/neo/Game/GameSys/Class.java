@@ -1,14 +1,21 @@
 package neo.Game.GameSys;
 
+import java.nio.ByteBuffer;
+import static neo.Game.Entity.EV_Activate;
+import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class.eventCallback_t;
 import static neo.Game.GameSys.Class.idEventArg.toEvent;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
 import static neo.Game.GameSys.Event.D_EVENT_INTEGER;
+import static neo.Game.GameSys.Event.D_EVENT_MAXARGS;
 import neo.Game.GameSys.Event.idEvent;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
+import static neo.Game.GameSys.SysCvar.g_debugTriggers;
 import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Game_local.gameState_t.GAMESTATE_STARTUP;
+import neo.Game.Script.Script_Thread.idThread;
 import neo.TempDump.Deprecation_Exception;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
@@ -221,7 +228,7 @@ public class Class {
             java.lang.Class/*idTypeInfo*/ subclass;
 
             subclass = this.getClass();
-            return subclass.isInstance(superclass);
+            return superclass.isAssignableFrom(subclass);
         }
 
         /*
@@ -389,23 +396,23 @@ public class Class {
         }
 
         public boolean ProcessEventArgPtr(final idEventDef ev, int[] data) {
-            throw new TODO_Exception();
-//            idTypeInfo c;
-//            int num;
-//            eventCallback_t callback;
-//
-//            assert (ev != null);
-//            assert (idEvent.initialized);
-//
-//            if (g_debugTriggers.GetBool() && (ev == EV_Activate) && IsType(idEntity.Type)) {
-//                idEntity ent = new idEntity();
-//                ByteBuffer entityBuffer = ent.AllocBuffer();
-//                entityBuffer.asIntBuffer().put(data);
-//                ent.Read(entityBuffer);
-////                final idEntity ent = reinterpret_cast < idEntity > (data);
-//                gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), ent != null ? ent.GetName() : "NULL");
-//            }
-//
+            idTypeInfo c;
+            int num;
+            eventCallback_t callback;
+
+            assert (ev != null);
+            assert (idEvent.initialized);
+
+            if (g_debugTriggers.GetBool() && (ev == EV_Activate) && IsType(idEntity.class)) {
+                idEntity ent = new idEntity();
+                ByteBuffer entityBuffer = ent.AllocBuffer();
+                entityBuffer.asIntBuffer().put(data);
+                ent.Read(entityBuffer);
+//                final idEntity ent = reinterpret_cast < idEntity > (data);
+                gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), ent != null ? ent.GetName() : "NULL");
+            }
+            
+/////////TODO: this is TEMPORARILY disabled
 //            c = GetType();
 //            num = ev.GetEventNum();
 //            if (NOT(c.eventMap[num])) {
@@ -490,9 +497,9 @@ public class Class {
 //                    gameLocal.Warning("Invalid formatspec on event '%s'", ev.GetName());
 //                    break;
 //            }
-//
-//// #endif
-//            return true;
+
+// #endif
+            return true;
         }
 
         public void CancelEvents(final idEventDef ev) {
@@ -736,63 +743,64 @@ public class Class {
         }
 
         private boolean PostEventArgs(final idEventDef ev, int time, int numargs, idEventArg... args) {
-            throw new TODO_Exception();
-//            idTypeInfo c;
-//            idEvent event;
-////            va_list args;
-//
-//            assert (ev != null);
-//
-//            if (!idEvent.initialized) {
-//                return false;
-//            }
-//
+            idTypeInfo c;
+            idEvent event;
+//            va_list args;
+
+            assert (ev != null);
+
+            if (!idEvent.initialized) {
+                return false;
+            }
+
+            //TODO:disabled for medicinal reasons
 //            c = GetType();
 //            if (NOT(c.eventMap[ev.GetEventNum()])) {
 //                // we don't respond to this event, so ignore it
 //                return false;
 //            }
-//
-//            // we service events on the client to avoid any bad code filling up the event pool
-//            // we don't want them processed usually, unless when the map is (re)loading.
-//            // we allow threads to run fine, though.
-//            if (gameLocal.isClient && (gameLocal.GameState() != GAMESTATE_STARTUP) && !IsType(idThread.Type)) {
-//                return true;
-//            }
-//
-////            va_start(args, numargs);
-//            event = idEvent.Alloc(ev, numargs, args);
-////            va_end(args);
-//
+
+            // we service events on the client to avoid any bad code filling up the event pool
+            // we don't want them processed usually, unless when the map is (re)loading.
+            // we allow threads to run fine, though.
+            if (gameLocal.isClient && (gameLocal.GameState() != GAMESTATE_STARTUP) && !IsType(idThread.class)) {
+                return true;
+            }
+
+//            va_start(args, numargs);
+            event = idEvent.Alloc(ev, numargs, args);
+//            va_end(args);
+
+            //TODO:same as line #755
 //            event.Schedule(this, c, time);
-//
-//            return true;
+
+            return true;
         }
 
         private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg... args) {
-            throw new TODO_Exception();
-//            idTypeInfo c;
-//            int num;
-//            int[] data = new int[D_EVENT_MAXARGS];
-////            va_list args;
-//
-//            assert (ev != null);
-//            assert (idEvent.initialized);
-//
+            idTypeInfo c;
+            int num;
+            int[] data = new int[D_EVENT_MAXARGS];
+//            va_list args;
+
+            assert (ev != null);
+            assert (idEvent.initialized);
+
+            //TODO:same as PostEventArgs
 //            c = GetType();
 //            num = ev.GetEventNum();
 //            if (NOT(c.eventMap[num])) {
 //                // we don't respond to this event, so ignore it
 //                return false;
 //            }
-//
-////            va_start(args, numargs);
-//            idEvent.CopyArgs(ev, numargs, args, data);
-////            va_end(args);
-//
-//            ProcessEventArgPtr(ev, data);
-//
-//            return true;
+
+//            va_start(args, numargs);
+            idEvent.CopyArgs(ev, numargs, args, data);
+//            va_end(args);
+
+            ProcessEventArgPtr(ev, data);
+
+            return true;
         }
 
         private void Event_SafeRemove() {

@@ -271,10 +271,10 @@ public class Mover {
             rot = new rotationState_t();
             move_thread = 0;
             rotate_thread = 0;
-            dest_angles.Zero();
-            angle_delta.Zero();
-            dest_position.Zero();
-            move_delta.Zero();
+            dest_angles = new idAngles();
+            angle_delta = new idAngles();
+            dest_position = new idVec3();
+            move_delta = new idVec3();
             move_speed = 0.0f;
             move_time = 0;
             deceltime = 0;
@@ -285,10 +285,13 @@ public class Mover {
             damage = 0.0f;
             areaPortal = 0;
             fl.networkSync = true;
+            physicsObj = new idPhysics_Parametric();
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             float[] damage = {0};
 
             move_thread = 0;

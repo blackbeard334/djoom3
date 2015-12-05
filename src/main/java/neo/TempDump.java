@@ -108,10 +108,12 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
                 Arrays.copyOf(b, length)));
     }
 
+    @Deprecated
     public static int sizeof(char[] object) {
         throw new UnsupportedOperationException();
     }
 
+    @Deprecated
     public static int sizeof(Object object) {
         throw new UnsupportedOperationException();
     }

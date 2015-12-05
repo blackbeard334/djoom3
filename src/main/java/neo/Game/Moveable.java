@@ -139,6 +139,8 @@ public class Moveable {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idTraceModel trm = new idTraceModel();
             float[] density = {0}, friction = {0}, bouncyness = {0}, mass = {0};
             int clipShrink;

@@ -13,6 +13,7 @@ import static neo.Game.Script.Script_Program.idVarDef.initialized_t.initializedC
 import static neo.Game.Script.Script_Program.idVarDef.initialized_t.initializedVariable;
 import static neo.Game.Script.Script_Program.idVarDef.initialized_t.stackVariable;
 import static neo.Game.Script.Script_Program.idVarDef.initialized_t.uninitialized;
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.SERiAL;
 import neo.framework.File_h.idFile;
@@ -252,6 +253,7 @@ public class Script_Program {
 
      ***********************************************************************/
     public static final class idTypeDef {
+        public static final int BYTES = Integer.BYTES * 8;//TODO:<-
 
         private int/*etype_t*/ type;
         private idStr          name;
@@ -984,6 +986,7 @@ public class Script_Program {
 
      ***********************************************************************/
     static class /*union*/ varEval_s {
+        static final int BYTES = Float.BYTES;
 
 
         final         idScriptObject objectPtrPtr;
@@ -1148,29 +1151,29 @@ public class Script_Program {
             return primitive.get(0);
         }
 
-        public void setVirtualFunction(final int val) {
-            setPrimitive(val);
-        }
-
-        public void setJumpOffset(final int val) {
-            setPrimitive(val);
-        }
-
-        public void setStackOffset(final int val) {
-            setPrimitive(val);
-        }
-
-        public void setArgSize(final int val) {
-            setPrimitive(val);
-        }
-
-        public void setPtrOffset(final int val) {
-            setPrimitive(val);
-        }
-
-        private void setPrimitive(final int val) {
-            primitive.put(0, val);
-        }
+//        public void setVirtualFunction(final int val) {
+//            setPrimitive(val);
+//        }
+//
+//        public void setJumpOffset(final int val) {
+//            setPrimitive(val);
+//        }
+//
+//        public void setStackOffset(final int val) {
+//            setPrimitive(val);
+//        }
+//
+//        public void setArgSize(final int val) {
+//            setPrimitive(val);
+//        }
+//
+//        public void setPtrOffset(final int val) {
+//            setPrimitive(val);
+//        }
+//
+//        private void setPrimitive(final int val) {
+//            primitive.put(0, val);
+//        }
 
 //        void bytePtr(ByteBuffer data, int ptrOffset) {
 //            throw new UnsupportedOperationException("Not supported yet.");
@@ -1189,6 +1192,16 @@ public class Script_Program {
             return bytePtr.getFloat(0);
         }
 
+        float getFlIntPtr() {
+            if (intPtr != null) {
+                return intPtr[0];
+            }
+            if (floatPtr != null) {
+                return floatPtr[0];
+            }
+            throw new UnsupportedOperationException();
+        }
+
         int getEntityNumberPtr() {
             return getIntPtr();
         }
@@ -1200,6 +1213,11 @@ public class Script_Program {
 
     static class idVarDef {
         // friend class idVarDefName;
+        static final int BYTES
+                = Integer.BYTES
+                + varEval_s.BYTES
+                + Integer.BYTES
+                + Integer.BYTES;
 
         public int       num;
         public varEval_s value;

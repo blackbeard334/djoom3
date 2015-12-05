@@ -84,19 +84,26 @@ public class Physics_Parametric {
 
         public idPhysics_Parametric() {
 
+            current = new parametricPState_s();
             current.time = gameLocal.time;
             current.atRest = -1;
             current.useSplineAngles = false;
-            current.origin.Zero();
-            current.angles.Zero();
+            current.origin = new idVec3();
+            current.angles = new idAngles();
+            current.axis = new idMat3();
             current.axis.Identity();
-            current.localOrigin.Zero();
-            current.localAngles.Zero();
+            current.localOrigin = new idVec3();
+            current.localAngles = new idAngles();
+            current.linearExtrapolation = new idExtrapolate<>();
             current.linearExtrapolation.Init(0, 0, vec3_zero, vec3_zero, vec3_zero, EXTRAPOLATION_NONE);
+            current.angularExtrapolation = new idExtrapolate<>();
             current.angularExtrapolation.Init(0, 0, ang_zero, ang_zero, ang_zero, EXTRAPOLATION_NONE);
+            current.linearInterpolation = new idInterpolateAccelDecelLinear<>();
             current.linearInterpolation.Init(0, 0, 0, 0, vec3_zero, vec3_zero);
+            current.angularInterpolation = new idInterpolateAccelDecelLinear<>();
             current.angularInterpolation.Init(0, 0, 0, 0, ang_zero, ang_zero);
             current.spline = null;
+            current.splineInterpolate = new idInterpolateAccelDecelLinear<>();
             current.splineInterpolate.Init(0, 1, 1, 2, 0f, 0f);
 
             saved = current;
@@ -105,8 +112,7 @@ public class Physics_Parametric {
             pushFlags = 0;
             clipModel = null;
             isBlocked = false;
-//            memset( &pushResults, 0, sizeof(pushResults));
-            pushResults = new trace_s();
+            pushResults = new trace_s();//memset( &pushResults, 0, sizeof(pushResults));
 
             hasMaster = false;
             isOrientated = false;

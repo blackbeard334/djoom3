@@ -228,7 +228,8 @@ public class Script_Interpreter {
                 Error("PushString: locals stack overflow\n");
             }
 //            idStr.Copynz(localstack[localstackUsed], string, MAX_STRING_LEN);
-            System.arraycopy(localstack, localstackUsed, string.getBytes(), 0, MAX_STRING_LEN);
+            final int length = Math.min(string.length(), MAX_STRING_LEN);
+            System.arraycopy(string.getBytes(), 0, localstack, localstackUsed, length);
             localstackUsed += MAX_STRING_LEN;
         }
 
@@ -511,8 +512,8 @@ public class Script_Interpreter {
             int pos;
             int start;
             int[] data = new int[D_EVENT_MAXARGS];
-            idEventDef evdef;
-            char[] format;
+            final idEventDef evdef;
+            final String format;
 
             if (NOT(func)) {
                 Error("NULL function");
@@ -523,9 +524,9 @@ public class Script_Interpreter {
 
             start = localstackUsed - argsize;
 
-            format = evdef.GetArgFormat().toCharArray();//TODO:is string output necessary?
-            for (j = 0, i = 0, pos = 0; (pos < argsize) || (format[ i] != 0); i++) {
-                switch (format[ i]) {
+            format = evdef.GetArgFormat();
+            for (j = 0, i = 0, pos = 0; (pos < argsize) || (i < format.length()); i++) {
+                switch (format.charAt(i)) {
                     case D_EVENT_INTEGER:
                         source = new varEval_s(localstack, (start + pos) * Integer.BYTES);
                         data[i] = (int) source.floatPtr[0];
@@ -545,7 +546,7 @@ public class Script_Interpreter {
                         break;
 
                     case D_EVENT_STRING:
-                        data[ i] = localstack[ start + pos];
+                        data[i] = localstack[start + pos];
                         break;
 
                     case D_EVENT_ENTITY:
@@ -557,7 +558,6 @@ public class Script_Interpreter {
                             PopParms(argsize);
                             return;
                         }
-//                        data[ i] = GetEntity(source.entityNumberPtr);
                         int length = entity.Write().capacity();
                         for (int k = 0; k < length; k++) {
                             data[i + k] = entity.Write().getInt(4 * k);
@@ -566,7 +566,6 @@ public class Script_Interpreter {
 
                     case D_EVENT_ENTITY_NULL:
                         source = new varEval_s(localstack, (start + pos) * Integer.BYTES);
-//                        data[ i] = GetEntity(source.entityNumberPtr);
                         entity = GetEntity(source.bytePtr.getInt(0));
                         length = idEntity.BYTES;
                         entity.Write().asIntBuffer().get(data, i, length);
@@ -725,7 +724,7 @@ public class Script_Interpreter {
             }
 
             for (i = top; i >= 0; i--) {
-                f = callStack[ i].f;
+                f = callStack[i].f;
                 if (NOT(f)) {
                     gameLocal.Printf("<NO FUNCTION>\n");
                 } else {
@@ -817,7 +816,7 @@ public class Script_Interpreter {
 
                 for (i = callStackDepth; i > 0; i--) {
                     gameLocal.Printf("              ");
-                    f = callStack[ i].f;
+                    f = callStack[i].f;
                     if (NOT(f)) {
                         gameLocal.Printf("<NO FUNCTION>\n");
                     } else {
@@ -901,7 +900,7 @@ public class Script_Interpreter {
                 Error("call stack overflow");
             }
 
-            stack = callStack[ callStackDepth];
+            stack = callStack[callStackDepth] = new prstack_s();
 
             stack.s = instructionPointer + 1;	// point to the next instruction to execute
             stack.f = currentFunction;
@@ -939,8 +938,8 @@ public class Script_Interpreter {
             }
 
             // initialize local stack variables to zero
-//	memset( &localstack[ localstackUsed ], 0, c );
-            Arrays.fill(localstack, localstackUsed, localstack.length - localstackUsed, (byte) 0);
+            //	memset( &localstack[ localstackUsed ], 0, c );
+            Arrays.fill(localstack, localstackUsed, localstackUsed + c, (byte) 0);
 
             localstackUsed += c;
             localstackBase = localstackUsed - func.locals;
@@ -1916,7 +1915,7 @@ public class Script_Interpreter {
             if (scopeDepth == callStackDepth) {
                 func = currentFunction;
             } else {
-                func = callStack[ scopeDepth].f;
+                func = callStack[scopeDepth].f;
             }
             if (NOT(func)) {
                 return false;

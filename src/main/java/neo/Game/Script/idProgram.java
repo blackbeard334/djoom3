@@ -43,7 +43,6 @@ import neo.Game.Script.Script_Program.varEval_s;
 import neo.Game.Script.Script_Thread.idThread;
 import static neo.TempDump.indexOf;
 import static neo.TempDump.isNotNullOrEmpty;
-import static neo.TempDump.sizeof;
 import static neo.framework.FileSystem_h.fsMode_t.FS_WRITE;
 import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.idLib.fileSystem;
@@ -67,6 +66,7 @@ import neo.idlib.math.Vector.idVec3;
 
  ***********************************************************************/
 public final class idProgram {
+    public static final int BYTES = Integer.BYTES * 20;//TODO:
 
     private idStrList fileList = new idStrList();
     private idStr     filename = new idStr();
@@ -121,8 +121,8 @@ public final class idProgram {
         stringspace += fileList.Size();
 
         numdefs = varDefs.Num();
-        memused = varDefs.Num() * sizeof(idVarDef.class);
-        memused += types.Num() * sizeof(idTypeDef.class);
+        memused = varDefs.Num() * idVarDef.BYTES;
+        memused += types.Num() * idTypeDef.BYTES;
         memused += stringspace;
 
         for (i = 0; i < types.Num(); i++) {
@@ -134,11 +134,11 @@ public final class idProgram {
             funcMem += functions.oGet(i).Allocated();
         }
 
-        memallocated = funcMem + memused + sizeof(idProgram.class);
+        memallocated = funcMem + memused + idProgram.BYTES;
 
         memused += statements.MemoryUsed();
         memused += functions.MemoryUsed();    // name and filename of functions are shared, so no need to include them
-        memused += sizeof(variables);
+        memused += variables.length;
 
         gameLocal.Printf("\nMemory usage:\n");
         gameLocal.Printf("     Strings: %d, %d bytes\n", fileList.Num(), stringspace);
@@ -146,9 +146,9 @@ public final class idProgram {
         gameLocal.Printf("   Functions: %d, %d bytes\n", functions.Num(), funcMem);
         gameLocal.Printf("   Variables: %d bytes\n", numVariables);
         gameLocal.Printf("    Mem used: %d bytes\n", memused);
-        gameLocal.Printf(" Static data: %d bytes\n", sizeof(idProgram.class));
+        gameLocal.Printf(" Static data: %d bytes\n", idProgram.BYTES);
         gameLocal.Printf("   Allocated: %d bytes\n", memallocated);
-        gameLocal.Printf(" Thread size: %d bytes\n\n", sizeof(idThread.class));
+        gameLocal.Printf(" Thread size: %d bytes\n\n", idThread.BYTES);
     }
 
     public idProgram() {
@@ -1017,7 +1017,7 @@ public final class idProgram {
             if (null == ent) {
                 def.value.entityNumberPtr[0] = 0;
             } else {
-                def.value.entityNumberPtr[0] = ent.entityNumber + 1;
+//                def.value.entityNumberPtr[0] = ent.entityNumber + 1;
             }
         }
     }

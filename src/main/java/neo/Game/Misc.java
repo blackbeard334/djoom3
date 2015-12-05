@@ -425,10 +425,6 @@ public class Misc {
     public static class idPathCorner extends idEntity {
 // public 	CLASS_PROTOTYPE( idPathCorner );
 
-        @Override
-        public void Spawn() {
-        }
-
         public static void DrawDebugInfo() {
             idEntity ent;
             idBounds bnds = new idBounds(new idVec3(-4.0f, -4.0f, -8.0f), new idVec3(4.0f, 4.0f, 64.0f));
@@ -1324,8 +1320,8 @@ public class Misc {
         public idStaticEntity() {
             spawnTime = 0;
             active = false;
-            fadeFrom.Set(1, 1, 1, 1);
-            fadeTo.Set(1, 1, 1, 1);
+            fadeFrom = new idVec4(1, 1, 1, 1);
+            fadeTo = new idVec4(1, 1, 1, 1);
             fadeStart = 0;
             fadeEnd = 0;
             runGui = false;
@@ -1364,6 +1360,7 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
             boolean solid;
             boolean hidden;
 

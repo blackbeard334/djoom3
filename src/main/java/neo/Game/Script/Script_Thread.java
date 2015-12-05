@@ -134,8 +134,9 @@ public class Script_Thread {
     static final idEventDef EV_Thread_InfluenceActive     = new idEventDef("influenceActive", null, 'd');
 
     public static class idThread extends idClass {
+        public static final int BYTES = Integer.BYTES * 14;//TODO
 
-        //        // CLASS_PROTOTYPE( idThread );
+//        // CLASS_PROTOTYPE( idThread );
 //        public static final idTypeInfo Type = new idTypeInfo(null, null, eventCallbacks, null, null, null, null);
 //        public idEventFunc<idThread>[] eventcallbacks;
         //

@@ -2086,7 +2086,7 @@ public class Script_Compiler {
             e = GetExpression(TOP_PRIORITY);
             ExpectToken(")");
 
-            if ((e.initialized == initializedConstant) && (e.value.intPtr[0] != 0)) {
+            if ((e.initialized == initializedConstant) && (e.value.getFlIntPtr() != 0)) {
                 //FIXME: we can completely skip generation of this code in the opposite case
                 ParseStatement();
                 EmitOpcode(OP_GOTO, JumpTo(patch2), null);

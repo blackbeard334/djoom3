@@ -62,8 +62,11 @@ public class Trigger {
         //
         //
 
-        //        public static void DrawDebugInfo();
         public idTrigger() {
+            scriptFunction = null;
+        }
+        
+        public static void DrawDebugInfo(){
             idMat3 axis = gameLocal.GetLocalPlayer().viewAngles.ToMat3();
             idVec3 up = axis.oGet(2).oMultiply(5.0f);
             idBounds viewTextBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
@@ -125,6 +128,7 @@ public class Trigger {
 
         @Override
         public void Spawn() {
+            super.Spawn();
             GetPhysics().SetContents(CONTENTS_TRIGGER);
 
             String funcname = spawnArgs.GetString("call", "");
@@ -264,6 +268,8 @@ public class Trigger {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             wait = spawnArgs.GetFloat("wait", "0.5");
             random = spawnArgs.GetFloat("random", "0");
             delay = spawnArgs.GetFloat("delay", "0");

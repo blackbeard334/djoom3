@@ -1365,6 +1365,7 @@ public class Target {
             }
         }
     };
+    
     /*
      ===============================================================================
 
@@ -1372,16 +1373,14 @@ public class Target {
 
      ===============================================================================
      */
-
     public static class idTarget_Tip extends idTarget {
         // CLASS_PROTOTYPE( idTarget_Tip );
+        private idVec3 playerPos;
+        //
+        //
 
         public idTarget_Tip() {
-            playerPos.Zero();
-        }
-
-        @Override
-        public void Spawn() {
+            playerPos = new idVec3();
         }
 
         @Override
@@ -1393,11 +1392,6 @@ public class Target {
         public void Restore(idRestoreGame savefile) {
             savefile.ReadVec3(playerPos);
         }
-//
-//
-        private idVec3 playerPos;
-//
-//
 
         private void Event_Activate(idEntity activator) {
             idPlayer player = gameLocal.GetLocalPlayer();

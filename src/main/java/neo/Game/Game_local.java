@@ -216,6 +216,9 @@ import static neo.Game.Game_network.net_clientShowSnapshotRadius;
 import static neo.Game.Game_network.net_clientSmoothing;
 import neo.Game.Misc.idLocationEntity;
 import neo.Game.Misc.idPathCorner;
+import neo.Game.Misc.idStaticEntity;
+import neo.Game.Moveable.idMoveable;
+import neo.Game.Mover.idMover;
 import neo.Game.MultiplayerGame.gameType_t;
 import static neo.Game.MultiplayerGame.gameType_t.GAME_DM;
 import static neo.Game.MultiplayerGame.gameType_t.GAME_LASTMAN;
@@ -244,6 +247,9 @@ import neo.Game.Script.Script_Program.function_t;
 import neo.Game.Script.Script_Thread.idThread;
 import neo.Game.Script.idProgram;
 import neo.Game.SmokeParticles.idSmokeParticles;
+import neo.Game.Target.idTarget_Remove;
+import neo.Game.Target.idTarget_Tip;
+import neo.Game.Trigger.idTrigger_Multi;
 import neo.Game.WorldSpawn.idWorldspawn;
 import static neo.Renderer.Material.CONTENTS_BODY;
 import static neo.Renderer.Material.CONTENTS_MONSTERCLIP;
@@ -3341,10 +3347,35 @@ public class Game_local {
             // check if we should spawn a class object
             spawnArgs.GetString("spawnclass", null, spawn);
             if (spawn[0] != null) {
-                idEntity obj = null;
+                final idEntity obj;
                 switch (spawn[0]) {//TODO:mayhaps implement some other cases
                     case "idWorldspawn":
                         obj = new idWorldspawn();
+                        break;
+                    case "idStaticEntity":
+                        obj = new idStaticEntity();
+                        break;
+                    case "idPathCorner":
+                        obj = new idPathCorner();
+                        break;
+                    case "idTrigger_Multi":
+                        obj = new idTrigger_Multi();
+                        break;
+                    case "idTarget_Tip":
+                        obj = new idTarget_Tip();
+                        break;
+                    case "idTarget_Remove":
+                        obj = new idTarget_Remove();
+                        break;
+                    case "idMover":
+                        obj = new idMover();
+                        break;
+                    case "idMoveable":
+                        obj = new idMoveable();
+                        break;
+                    default:
+                        obj = null;
+
                 }
 
                 obj.Spawn();
@@ -3363,8 +3394,6 @@ public class Game_local {
 //
 //                obj.CallSpawn();
                 
-                obj.Spawn();
-
                 if (ent != null) {// && obj.IsType(idEntity.class)) {
                     ent[0] = obj;
                 }
