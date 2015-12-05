@@ -7337,7 +7337,7 @@ public class CollisionModel_local {
             numModels++;
             // parse the file
             src.ExpectTokenType(TT_STRING, 0, token);
-            model.name = token;
+            model.name = new idStr(token);
             src.ExpectTokenString("{");
             while (!src.CheckTokenString("}")) {
 
