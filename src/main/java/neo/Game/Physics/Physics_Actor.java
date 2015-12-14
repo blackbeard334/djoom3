@@ -2,7 +2,6 @@ package neo.Game.Physics;
 
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.Game_local.gameLocal;
@@ -12,8 +11,8 @@ import neo.Game.Physics.Physics_Base.idPhysics_Base;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -53,6 +52,7 @@ public class Physics_Actor {
 
         public idPhysics_Actor() {
             clipModel = null;
+            clipModelAxis = new idMat3();
             SetClipModelAxis();
             mass = 100.0f;
             invMass = 1.0f / mass;
@@ -108,7 +108,7 @@ public class Physics_Actor {
         // align the clip model with the gravity direction
         public void SetClipModelAxis() {
             // align clip model to gravity direction
-            if ((gravityNormal.oGet(2) == -1.0f) || (gravityNormal.equals(vec3_zero))) {
+            if ((gravityNormal.oGet(2) == -1.0f) || (gravityNormal.equals(getVec3_zero()))) {
                 clipModelAxis.Identity();
             } else {
                 clipModelAxis.oSet(2, gravityNormal.oNegative());

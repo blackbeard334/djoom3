@@ -35,14 +35,15 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Matrix.idMat3.SkewSymmetric;
 import static neo.idlib.math.Matrix.idMat3.TransposeMultiply;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Ode.deriveFunction_t;
 import neo.idlib.math.Ode.idODE;
 import neo.idlib.math.Ode.idODE_Euler;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -84,13 +85,20 @@ public class Physics_RigidBody {
 
     public static class rigidBodyIState_s {
 
-        private static final int FLOATS = 18;
+        public static final int BYTES
+                = idVec3.BYTES
+                + idMat3.BYTES
+                + idVec3.BYTES
+                + idVec3.BYTES;
 
         idVec3 position;                    // position of trace model
         idMat3 orientation;                 // orientation of trace model
         idVec3 linearMomentum;              // translational momentum relative to center of mass
         idVec3 angularMomentum;             // rotational momentum relative to center of mass
 
+        private rigidBodyIState_s() {
+        }
+        
         private rigidBodyIState_s(float[] state) {//TODO:pad to 18 floats and init classes.
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
@@ -99,8 +107,6 @@ public class Physics_RigidBody {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
-
-    ;
 
     public static class rigidBodyPState_s {
 
@@ -113,8 +119,6 @@ public class Physics_RigidBody {
         idVec3            externalTorque;   // external torque relative to center of mass
         rigidBodyIState_s i;                // state used for integration
     }
-
-    ;
 
     public static class idPhysics_RigidBody extends idPhysics_Base {
         // CLASS_PROTOTYPE( idPhysics_RigidBody );
@@ -162,24 +166,24 @@ public class Physics_RigidBody {
 
             current.atRest = -1;
             current.lastTimeStep = USERCMD_MSEC;
+            current.i = new rigidBodyIState_s();
+            
+            current.i.position = new idVec3();
+            current.i.orientation = getMat3_identity();
 
-            current.i.position.Zero();
-            current.i.orientation.Identity();
-
-            current.i.linearMomentum.Zero();
-            current.i.angularMomentum.Zero();
+            current.i.linearMomentum = new idVec3();
+            current.i.angularMomentum = new idVec3();
 
             saved = current;
 
             mass = 1.0f;
             inverseMass = 1.0f;
-            centerOfMass.Zero();
-            inertiaTensor.Identity();
-            inverseInertiaTensor.Identity();
+            centerOfMass = new idVec3();
+            inertiaTensor = getMat3_identity();
+            inverseInertiaTensor = idMat3.getMat3_identity();
 
             // use the least expensive euler integrator
-//            integrator = new idODE_Euler(sizeof(rigidBodyIState_s) / sizeof(float), RigidBodyDerivatives, this);
-            integrator = new idODE_Euler(rigidBodyIState_s.FLOATS, RigidBodyDerivatives.INSTANCE, this);
+            integrator = new idODE_Euler(rigidBodyIState_s.BYTES / Float.BYTES, RigidBodyDerivatives.INSTANCE, this);
 
             dropToFloor = false;
             noImpact = false;
@@ -1337,7 +1341,7 @@ public class Physics_RigidBody {
         private void DebugDraw() {
 
             if (rb_showBodies.GetBool() || (rb_showActive.GetBool() && current.atRest < 0)) {
-                CollisionModel_local.collisionModelManager.DrawModel(clipModel.Handle(), clipModel.GetOrigin(), clipModel.GetAxis(), vec3_origin, 0.0f);
+                CollisionModel_local.collisionModelManager.DrawModel(clipModel.Handle(), clipModel.GetOrigin(), clipModel.GetAxis(), getVec3_origin(), 0.0f);
             }
 
             if (rb_showMass.GetBool()) {

@@ -36,6 +36,11 @@ public class LinkList {
             next = this;
             prev = this;
         }
+        
+        public idLinkList(final type owner) {
+            this();
+            this.owner = owner;
+        }
 //public						~idLinkList();
 //
 

@@ -16,7 +16,12 @@ import neo.idlib.math.Vector.idVec3;
  */
 public class Angles {
 
-    public static final idAngles ang_zero = new idAngles(0.0f, 0.0f, 0.0f);//TODO:make sure new instances are created everytime.
+    private static final idAngles ang_zero = new idAngles(0.0f, 0.0f, 0.0f);//TODO:make sure new instances are created everytime.
+    
+    public static idAngles getAng_zero() {
+        return new idAngles(ang_zero);
+    }
+    
     /*
      ===============================================================================
 
@@ -29,6 +34,7 @@ public class Angles {
     public static final int PITCH = 0;		// up / down
     public static final int YAW = 1;		// left / right
     public static final int ROLL = 2;		// fall over
+
 
     public static class idAngles implements SERiAL {
 
@@ -380,13 +386,13 @@ public class Angles {
 
             if (pitch == 0.0f) {
                 if (yaw == 0.0f) {
-                    return new idRotation(Vector.vec3_origin, new idVec3(-1.0f, 0.0f, 0.0f), roll);
+                    return new idRotation(Vector.getVec3_origin(), new idVec3(-1.0f, 0.0f, 0.0f), roll);
                 }
                 if (roll == 0.0f) {
-                    return new idRotation(Vector.vec3_origin, new idVec3(0.0f, 0.0f, -1.0f), yaw);
+                    return new idRotation(Vector.getVec3_origin(), new idVec3(0.0f, 0.0f, -1.0f), yaw);
                 }
             } else if (yaw == 0.0f && roll == 0.0f) {
-                return new idRotation(Vector.vec3_origin, new idVec3(0.0f, -1.0f, 0.0f), pitch);
+                return new idRotation(Vector.getVec3_origin(), new idVec3(0.0f, -1.0f, 0.0f), pitch);
             }
 
             idMath.SinCos((float) Math_h.DEG2RAD(yaw) * 0.5f, sz, cz);
@@ -411,7 +417,7 @@ public class Angles {
                 vec.FixDegenerateNormal();
                 angle *= 2.0f * idMath.M_RAD2DEG;
             }
-            return new idRotation(Vector.vec3_origin, vec, angle);
+            return new idRotation(Vector.getVec3_origin(), vec, angle);
         }
 
         public idMat3 ToMat3() {

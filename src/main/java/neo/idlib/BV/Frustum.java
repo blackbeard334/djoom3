@@ -13,14 +13,14 @@ import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
 import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import static neo.idlib.math.Plane.ON_EPSILON;
 import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -772,7 +772,7 @@ public class Frustum {
          */
         // returns true if the projection origin is far enough away from the bounding volume to create a valid frustum
         public boolean FromProjection(final idBounds bounds, final idVec3 projectionOrigin, final float dFar) {
-            return FromProjection(new idBox(bounds, vec3_origin, mat3_identity), projectionOrigin, dFar);
+            return FromProjection(new idBox(bounds, getVec3_origin(), getMat3_identity()), projectionOrigin, dFar);
         }
 
         /*
@@ -1165,7 +1165,7 @@ public class Frustum {
 
         // calculates the bounds for the projection in this frustum
         public boolean ProjectionBounds(final idBounds bounds, idBounds projectionBounds) {
-            return ProjectionBounds(new idBox(bounds, vec3_origin, mat3_identity), projectionBounds);
+            return ProjectionBounds(new idBox(bounds, getVec3_origin(), getMat3_identity()), projectionBounds);
         }
 
         public boolean ProjectionBounds(final idBox box, idBounds projectionBounds) {

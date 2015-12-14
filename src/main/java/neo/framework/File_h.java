@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.logging.Level;
@@ -598,7 +597,7 @@ public class File_h {
         }
 
         public int ReadMat3(idMat3 mat) {
-            ByteBuffer idMat3Buffer = ByteBuffer.allocate(idMat3.SIZE);
+            ByteBuffer idMat3Buffer = ByteBuffer.allocate(idMat3.BYTES);
             int result = Read(idMat3Buffer);
 //            LittleRevBytes(mat.ToFloatPtr(), mat.GetDimension());
             mat.oSet((idMat3) UNWRAP(idMat3Buffer));
@@ -612,7 +611,8 @@ public class File_h {
         }
 
         //serializes an object to a bytebuffer.
-        public static ByteBuffer WRAP(final Serializable object) {
+        @Deprecated
+        public static ByteBuffer WRAP(final Object object) {
             ByteBuffer buffer = null;
 
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -627,6 +627,7 @@ public class File_h {
         }
 
         //deserializes a bytebuffer to the original object
+        @Deprecated
         public static Object UNWRAP(final ByteBuffer buffer) {
             Object object = null;
 

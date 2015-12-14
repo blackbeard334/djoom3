@@ -44,9 +44,9 @@ import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -488,7 +488,7 @@ public class Script_Thread {
         private void Event_Trace(final idVec3 start, final idVec3 end, final idVec3 mins, final idVec3 maxs, int contents_mask, idEntity passEntity) {
             {
                 trace_s[] trace = {this.trace};
-                if (mins.equals(vec3_origin) && maxs.equals(vec3_origin)) {
+                if (mins.equals(getVec3_origin()) && maxs.equals(getVec3_origin())) {
                     gameLocal.clip.TracePoint(trace, start, end, contents_mask, passEntity);
                 } else {
                     gameLocal.clip.TraceBounds(trace, start, end, new idBounds(mins, maxs), contents_mask, passEntity);
@@ -519,7 +519,7 @@ public class Script_Thread {
             if (trace.fraction < 1.0f) {
                 ReturnVector(trace.c.normal);
             } else {
-                ReturnVector(vec3_origin);
+                ReturnVector(getVec3_origin());
             }
         }
 
@@ -737,7 +737,7 @@ public class Script_Thread {
         }
 
         private void Event_DebugBounds(final idVec3 color, final idVec3 mins, final idVec3 maxs, final float lifetime) {
-            gameRenderWorld.DebugBounds(new idVec4(color.x, color.y, color.z, 0.0f), new idBounds(mins, maxs), vec3_origin, (int) SEC2MS(lifetime));
+            gameRenderWorld.DebugBounds(new idVec4(color.x, color.y, color.z, 0.0f), new idBounds(mins, maxs), getVec3_origin(), (int) SEC2MS(lifetime));
         }
 
         private void Event_DrawText(final String text, final idVec3 origin, float scale, final idVec3 color, final int align, final float lifetime) {

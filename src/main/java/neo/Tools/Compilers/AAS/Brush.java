@@ -22,8 +22,8 @@ import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_ON;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 import static neo.sys.win_shared.Sys_Milliseconds;
 
 /**
@@ -301,7 +301,7 @@ public class Brush {
                     bestAxis = i;
                 }
             }
-            axialNormal = vec3_origin;
+            axialNormal = getVec3_origin();
             if (windingPlane.Normal().oGet(bestAxis) > 0.0f) {
                 axialNormal.oSet(bestAxis, 1.0f);
             } else {
@@ -342,7 +342,7 @@ public class Brush {
 
             for (axis = 0; axis < 3; axis++) {
                 for (dir = -1; dir <= 1; dir += 2) {
-                    normal = vec3_origin;
+                    normal = getVec3_origin();
                     normal.oSet(axis, dir);
                     plane.SetNormal(normal);
                     plane.SetDist(dir * bounds.oGet(dir == 1 ? 1 : 0, axis));
@@ -359,11 +359,11 @@ public class Brush {
 
             if (axis.IsRotated()) {
                 for (i = 0; i < sides.Num(); i++) {
-                    sides.oGet(i).plane.RotateSelf(vec3_origin, axis);
+                    sides.oGet(i).plane.RotateSelf(getVec3_origin(), axis);
                 }
                 transformed = true;
             }
-            if (origin != vec3_origin) {
+            if (origin != getVec3_origin()) {
                 for (i = 0; i < sides.Num(); i++) {
                     sides.oGet(i).plane.TranslateSelf(origin);
                 }
@@ -877,7 +877,7 @@ public class Brush {
                     }
 
                     if (i >= sides.Num()) {
-                        normal = vec3_origin;
+                        normal = getVec3_origin();
                         normal.oSet(axis, dir);
                         plane.SetNormal(normal);
                         plane.SetDist(dir * bounds.oGet(((dir == 1) ? 1 : 0), axis));
@@ -922,7 +922,7 @@ public class Brush {
                         for (dir = -1; dir <= 1; dir += 2) {
 
                             // construct a plane
-                            normal = vec3_origin;
+                            normal = getVec3_origin();
                             normal.oSet(axis, dir);
                             normal = vec.Cross(normal);
                             if (normal.Normalize() < 0.5f) {

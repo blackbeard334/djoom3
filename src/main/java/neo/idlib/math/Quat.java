@@ -292,7 +292,7 @@ public class Quat {
                 vec.FixDegenerateNormal();
                 angle *= 2.0f * idMath.M_RAD2DEG;
             }
-            return new idRotation(Vector.vec3_origin, vec, angle);
+            return new idRotation(Vector.getVec3_origin(), vec, angle);
         }
 
         public idMat3 ToMat3() {

@@ -10,7 +10,7 @@ import neo.Game.Physics.Clip.idClipModel;
 import neo.Game.Physics.Physics_Base.idPhysics_Base;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.BitMsg.idBitMsgDelta;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Curve.idCurve_Spline;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_LINEAR;
@@ -21,9 +21,9 @@ import neo.idlib.math.Interpolate.idInterpolateAccelDecelLinear;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.RAD2DEG;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -95,13 +95,13 @@ public class Physics_Parametric {
             current.localOrigin = new idVec3();
             current.localAngles = new idAngles();
             current.linearExtrapolation = new idExtrapolate<>();
-            current.linearExtrapolation.Init(0, 0, vec3_zero, vec3_zero, vec3_zero, EXTRAPOLATION_NONE);
+            current.linearExtrapolation.Init(0, 0, getVec3_zero(), getVec3_zero(), getVec3_zero(), EXTRAPOLATION_NONE);
             current.angularExtrapolation = new idExtrapolate<>();
-            current.angularExtrapolation.Init(0, 0, ang_zero, ang_zero, ang_zero, EXTRAPOLATION_NONE);
+            current.angularExtrapolation.Init(0, 0, getAng_zero(), getAng_zero(), getAng_zero(), EXTRAPOLATION_NONE);
             current.linearInterpolation = new idInterpolateAccelDecelLinear<>();
-            current.linearInterpolation.Init(0, 0, 0, 0, vec3_zero, vec3_zero);
+            current.linearInterpolation.Init(0, 0, 0, 0, getVec3_zero(), getVec3_zero());
             current.angularInterpolation = new idInterpolateAccelDecelLinear<>();
-            current.angularInterpolation.Init(0, 0, 0, 0, ang_zero, ang_zero);
+            current.angularInterpolation.Init(0, 0, 0, 0, getAng_zero(), getAng_zero());
             current.spline = null;
             current.splineInterpolate = new idInterpolateAccelDecelLinear<>();
             current.splineInterpolate.Init(0, 1, 1, 2, 0f, 0f);
@@ -525,8 +525,8 @@ public class Physics_Parametric {
 
         @Override
         public void SetLinearVelocity(final idVec3 newLinearVelocity, int id /*= 0*/) {
-            SetLinearExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, current.origin, newLinearVelocity, vec3_origin);
-            current.linearInterpolation.Init(0, 0, 0, 0, vec3_zero, vec3_zero);
+            SetLinearExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, current.origin, newLinearVelocity, getVec3_origin());
+            current.linearInterpolation.Init(0, 0, 0, 0, getVec3_zero(), getVec3_zero());
             Activate();
         }
 
@@ -538,10 +538,10 @@ public class Physics_Parametric {
 
             vec = newAngularVelocity;
             angle = vec.Normalize();
-            rotation.Set(vec3_origin, vec, (float) RAD2DEG(angle));
+            rotation.Set(getVec3_origin(), vec, (float) RAD2DEG(angle));
 
-            SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, current.angles, rotation.ToAngles(), ang_zero);
-            current.angularInterpolation.Init(0, 0, 0, 0, ang_zero, ang_zero);
+            SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, current.angles, rotation.ToAngles(), getAng_zero());
+            current.angularInterpolation.Init(0, 0, 0, 0, getAng_zero(), getAng_zero());
             Activate();
         }
         private static idVec3 curLinearVelocity;
@@ -617,8 +617,8 @@ public class Physics_Parametric {
                     // transform from master space to world space
                     current.localOrigin = current.origin;
                     current.localAngles = current.angles;
-                    SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, current.origin, vec3_origin, vec3_origin);
-                    SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, current.angles, ang_zero, ang_zero);
+                    SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, current.origin, getVec3_origin(), getVec3_origin());
+                    SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, current.angles, getAng_zero(), getAng_zero());
                     hasMaster = false;
                 }
             }

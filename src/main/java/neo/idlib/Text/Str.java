@@ -449,11 +449,15 @@ public class Str {
             }
 
             if (obj.getClass() == String.class) {//when comparing pointers it's usually only about what they point to.
-                return this.data.startsWith((String) obj);//TODO:should we check first character against first character only?
+                if (!((String) obj).isEmpty()) {
+                    return this.data.startsWith((String) obj);//TODO:should we check first character against first character only?
+                }
             }
 
             if (obj.getClass() == idStr.class) {
-                return this.data.startsWith(((idStr) obj).data);
+                if (!((idStr) obj).IsEmpty()) {
+                    return this.data.startsWith(((idStr) obj).data);
+                }
             }
 
             if (obj.getClass() == Character.class) {

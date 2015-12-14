@@ -47,6 +47,7 @@ public class Plane {
      ===============================================================================
      */
     public static class idPlane {
+        public static final int BYTES = idVec3.BYTES + Float.BYTES;
 
         private final idVec3 abc = new idVec3();
         private float d;

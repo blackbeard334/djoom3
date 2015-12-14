@@ -85,7 +85,7 @@ import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_default;
+import static neo.idlib.math.Matrix.idMat3.getMat3_default;
 import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
@@ -1293,7 +1293,7 @@ public class SysCmds {
 
             float fov = (float) tan(idMath.M_DEG2RAD * rv.fov_x / 2);
 
-            dict.SetMatrix("rotation", mat3_default);
+            dict.SetMatrix("rotation", getMat3_default());
             dict.SetVector("origin", rv.vieworg);
             dict.SetVector("light_target", rv.viewaxis.oGet(0));
             dict.SetVector("light_right", rv.viewaxis.oGet(1).oMultiply(-fov));

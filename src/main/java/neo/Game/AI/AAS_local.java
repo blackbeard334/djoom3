@@ -96,9 +96,9 @@ import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -248,7 +248,7 @@ public class AAS_local {
         @Override
         public idVec3 AreaCenter(int areaNum) {
             if (NOT(file)) {
-                return vec3_origin;
+                return getVec3_origin();
             }
             return file.GetArea(areaNum).center;
         }
@@ -2235,7 +2235,7 @@ public class AAS_local {
             numEdges = face.numEdges;
             firstEdge = face.firstEdge;
 
-            mid = vec3_origin;
+            mid = getVec3_origin();
             for (i = 0; i < numEdges; i++) {
                 DrawEdge(abs(file.GetEdgeIndex(firstEdge + i)), (face.flags & FACE_FLOOR) != 0);
                 j = file.GetEdgeIndex(firstEdge + i);

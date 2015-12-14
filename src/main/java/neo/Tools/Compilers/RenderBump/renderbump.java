@@ -57,8 +57,8 @@ import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorSubtract;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 import static neo.sys.win_glimp.GLimp_SwapBuffers;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import org.lwjgl.BufferUtils;
@@ -260,7 +260,7 @@ public class renderbump {
                     continue;
                 }
 
-                normal = vec3_origin;
+                normal = getVec3_origin();
                 for (k = -1; k < 2; k++) {
                     for (l = -1; l < 2; l++) {
                         int in;
@@ -319,7 +319,7 @@ public class renderbump {
                     continue;
                 }
 
-                normal = vec3_origin;
+                normal = getVec3_origin();
                 int count = 0;
                 for (k = -1; k < 2; k++) {
                     for (l = -1; l < 2; l++) {
@@ -550,7 +550,7 @@ public class renderbump {
         }
 
         // triangularly interpolate the normals to the sample point
-        sampledNormal.oSet(vec3_origin);
+        sampledNormal.oSet(getVec3_origin());
         for (j = 0; j < 3; j++) {
             sampledNormal.oPluSet(highMesh.verts[ highMesh.indexes[ faceNum * 3 + j]].normal.oMultiply(bary[j]));
         }
@@ -601,7 +601,7 @@ public class renderbump {
         bestDist = -rb.traceDist;
         maxDist = rb.traceDist;
 
-        sampledNormal.oSet(vec3_origin);
+        sampledNormal.oSet(getVec3_origin());
 
         c_hits = 0;
 
@@ -821,11 +821,11 @@ public class renderbump {
                 }
 
                 // calculate the interpolated xyz, normal, and tangents of this sample
-                point = vec3_origin;
-                traceNormal = vec3_origin;
-                normal = vec3_origin;
-                tangents[0] = vec3_origin;
-                tangents[1] = vec3_origin;
+                point = getVec3_origin();
+                traceNormal = getVec3_origin();
+                normal = getVec3_origin();
+                tangents[0] = getVec3_origin();
+                tangents[1] = getVec3_origin();
                 for (k = 0; k < 3; k++) {
                     int index;
 

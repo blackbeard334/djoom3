@@ -17,11 +17,11 @@ import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import neo.idlib.Dict_h.idDict;
 import static neo.idlib.Lib.BIT;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -188,7 +188,7 @@ public class Sound {
             soundVol = 0.0f;
             lastSoundVol = 0.0f;
 
-            if ((shakeRotate != ang_zero) || (shakeTranslate != vec3_zero)) {
+            if ((shakeRotate != getAng_zero()) || (shakeTranslate != getVec3_zero())) {
                 BecomeActive(TH_THINK);
             }
 

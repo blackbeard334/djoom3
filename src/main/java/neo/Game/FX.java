@@ -41,8 +41,8 @@ import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -466,7 +466,7 @@ public class FX {
                                 if (ent[0] != null && ent[0].IsType(idProjectile.class)) {
                                     projectile = (idProjectile) ent[0];
                                     projectile.Create(this, GetPhysics().GetOrigin(), GetPhysics().GetAxis().oGet(0));
-                                    projectile.Launch(GetPhysics().GetOrigin(), GetPhysics().GetAxis().oGet(0), vec3_origin);
+                                    projectile.Launch(GetPhysics().GetOrigin(), GetPhysics().GetAxis().oGet(0), getVec3_origin());
                                 }
                             }
                         }
@@ -585,7 +585,7 @@ public class FX {
             idEntityFx nfx = (idEntityFx) gameLocal.SpawnEntityType(idEntityFx.class, args);
             if (nfx.Joint() != null && !nfx.Joint().isEmpty()) {
                 nfx.BindToJoint(ent, nfx.Joint(), true);
-                nfx.SetOrigin(vec3_origin);
+                nfx.SetOrigin(getVec3_origin());
             } else {
                 nfx.SetOrigin((useOrigin != null) ? useOrigin : ent.GetPhysics().GetOrigin());
                 nfx.SetAxis((useAxis != null) ? useAxis : ent.GetPhysics().GetAxis());

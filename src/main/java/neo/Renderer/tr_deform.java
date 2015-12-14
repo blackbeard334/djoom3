@@ -24,11 +24,11 @@ import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.containers.BinSearch.idBinSearch_LessEqual;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idWinding;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -100,7 +100,7 @@ public class tr_deform {
         R_GlobalVectorToLocal(surf.space.modelMatrix, tr.viewDef.renderView.viewaxis.oGet(2), upDir);
 
         if (tr.viewDef.isMirror) {
-            leftDir = vec3_origin.oMinus(leftDir);
+            leftDir = getVec3_origin().oMinus(leftDir);
         }
 
         // this srfTriangles_t and all its indexes and caches are in frame
@@ -617,7 +617,7 @@ public class tr_deform {
             d1.Normalize();
             edgeDir[i][1].Cross(toEye, d1);
             edgeDir[i][1].Normalize();
-            edgeDir[i][1] = vec3_origin.oMinus(edgeDir[i][1]);
+            edgeDir[i][1] = getVec3_origin().oMinus(edgeDir[i][1]);
 
             idVec3 d2 = tri.verts[indexes[(i + 3) % 4]].xyz.oMinus(localViewer);
             d2.Normalize();
@@ -1078,7 +1078,7 @@ public class tr_deform {
         g.renderEnt = renderEntity;
         g.renderView = viewDef.renderView;
         g.origin.Zero();
-        g.axis = mat3_identity;
+        g.axis = getMat3_identity();
 
         for (int currentTri = 0; currentTri < ((useArea) ? 1 : numSourceTris); currentTri++) {
 

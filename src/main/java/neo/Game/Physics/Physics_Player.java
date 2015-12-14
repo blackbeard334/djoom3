@@ -41,10 +41,10 @@ import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -837,7 +837,7 @@ public class Physics_Player {
                 if (numplanes >= MAX_CLIP_PLANES) {
                     // MrElusive: I think we have some relatively high poly LWO models with a lot of slanted tris
                     // where it may hit the max clip planes
-                    current.velocity = vec3_origin;
+                    current.velocity = getVec3_origin();
                     return true;
                 }
 
@@ -915,7 +915,7 @@ public class Physics_Player {
                             }
 
                             // stop dead at a tripple plane interaction
-                            current.velocity = vec3_origin;
+                            current.velocity = getVec3_origin();
                             return true;
                         }
                     }
@@ -1094,7 +1094,7 @@ public class Physics_Player {
             scale = this.CmdScale(command);
 
             if (0 == scale) {
-                wishvel = vec3_origin;
+                wishvel = getVec3_origin();
             } else {
                 wishvel = (viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove))).oMultiply(scale);
                 wishvel.oMinSet(gravityNormal.oMultiply(command.upmove).oMultiply(scale));
@@ -1251,7 +1251,7 @@ public class Physics_Player {
             forward = current.velocity.Length();
             forward -= 20;
             if (forward <= 0) {
-                current.velocity = vec3_origin;
+                current.velocity = getVec3_origin();
             } else {
                 current.velocity.Normalize();
                 current.velocity.oMulSet(forward);
@@ -1266,7 +1266,7 @@ public class Physics_Player {
             // friction
             speed = current.velocity.Length();
             if (speed < 20.0f) {
-                current.velocity = vec3_origin;
+                current.velocity = getVec3_origin();
             } else {
                 stopspeed = playerSpeed * 0.3f;
                 if (speed < stopspeed) {
@@ -1313,7 +1313,7 @@ public class Physics_Player {
             scale = this.CmdScale(command);
 
             if (0 == scale) {
-                wishvel = vec3_origin;
+                wishvel = getVec3_origin();
             } else {
                 wishvel = (viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove))).oMultiply(scale);
             }
@@ -1678,13 +1678,13 @@ public class Physics_Player {
 
             spot = current.origin.oPlus(flatforward.oMultiply(30.0f));
             spot.oMinSet(gravityNormal.oMultiply(4.0f));
-            cont = gameLocal.clip.Contents(spot, null, mat3_identity, -1, self);
+            cont = gameLocal.clip.Contents(spot, null, getMat3_identity(), -1, self);
             if (0 == (cont & CONTENTS_SOLID)) {
                 return false;
             }
 
             spot.oMinSet(gravityNormal.oMultiply(16.0f));
-            cont = gameLocal.clip.Contents(spot, null, mat3_identity, -1, self);
+            cont = gameLocal.clip.Contents(spot, null, getMat3_identity(), -1, self);
             if (cont != 0) {
                 return false;
             }
@@ -1712,7 +1712,7 @@ public class Physics_Player {
 
             // check at feet level
             point = current.origin.oMinus(gravityNormal.oMultiply(bounds.oGet(0, 2) + 1.0f));
-            contents = gameLocal.clip.Contents(point, null, mat3_identity, -1, self);
+            contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, self);
             if ((contents & MASK_WATER) != 0) {
 
                 waterType = contents;
@@ -1720,14 +1720,14 @@ public class Physics_Player {
 
                 // check at waist level
                 point = current.origin.oMinus(gravityNormal.oMultiply((bounds.oGet(1, 2) - bounds.oGet(0, 2)) * 0.5f));
-                contents = gameLocal.clip.Contents(point, null, mat3_identity, -1, self);
+                contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, self);
                 if ((contents & MASK_WATER) != 0) {
 
                     waterLevel = WATERLEVEL_WAIST;
 
                     // check at head level
                     point = current.origin.oMinus(gravityNormal.oMultiply(bounds.oGet(1, 2) - 1.0f));
-                    contents = gameLocal.clip.Contents(point, null, mat3_identity, -1, self);
+                    contents = gameLocal.clip.Contents(point, null, getMat3_identity(), -1, self);
                     if ((contents & MASK_WATER) != 0) {
                         waterLevel = WATERLEVEL_HEAD;
                     }

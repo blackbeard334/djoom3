@@ -230,7 +230,7 @@ import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.geometry.TraceModel.idTraceModel;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Interpolate.idInterpolate;
 import static neo.idlib.math.Math_h.DEG2RAD;
@@ -240,12 +240,12 @@ import static neo.idlib.math.Math_h.SHORT2ANGLE;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import static neo.idlib.math.Vector.RAD2DEG;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.UserInterface.idUserInterface;
 import static neo.ui.UserInterface.uiManager;
@@ -1432,9 +1432,9 @@ public class Player {
             godmode = false;
 
             spawnAnglesSet = false;
-            spawnAngles = ang_zero;
-            viewAngles = ang_zero;
-            cmdAngles = ang_zero;
+            spawnAngles = getAng_zero();
+            viewAngles = getAng_zero();
+            cmdAngles = getAng_zero();
 
             oldButtons = 0;
             buttonMask = 0;
@@ -1469,7 +1469,7 @@ public class Player {
             forceRespawn = false;
             spectating = false;
             spectator = 0;
-            colorBar = vec3_zero;
+            colorBar = getVec3_zero();
             colorBarIndex = 0;
             forcedReady = false;
             wantSpectate = false;
@@ -1479,8 +1479,8 @@ public class Player {
             minRespawnTime = 0;
             maxRespawnTime = 0;
 
-            firstPersonViewOrigin = vec3_zero;
-            firstPersonViewAxis = mat3_identity;
+            firstPersonViewOrigin = getVec3_zero();
+            firstPersonViewAxis = getMat3_identity();
 
             hipJoint = INVALID_JOINT;
             chestJoint = INVALID_JOINT;
@@ -1497,8 +1497,8 @@ public class Player {
             legsYaw = 0;
             legsForward = true;
             oldViewYaw = 0;
-            viewBobAngles = ang_zero;
-            viewBob = vec3_zero;
+            viewBobAngles = getAng_zero();
+            viewBob = getVec3_zero();
             landChange = 0;
             landTime = 0;
 
@@ -1525,7 +1525,7 @@ public class Player {
 
             gibDeath = false;
             gibsLaunched = false;
-            gibsDir = vec3_zero;
+            gibsDir = getVec3_zero();
 
             zoomFov.Init(0, 0, 0f, 0f);
             centerView.Init(0, 0, 0f, 0f);
@@ -1560,12 +1560,12 @@ public class Player {
             pdaVideoWave.oSet("");
 
             lastDamageDef = 0;
-            lastDamageDir = vec3_zero;
+            lastDamageDir = getVec3_zero();
             lastDamageLocation = 0;
             smoothedFrame = 0;
             smoothedOriginUpdated = false;
-            smoothedOrigin = vec3_zero;
-            smoothedAngles = ang_zero;
+            smoothedOrigin = getVec3_zero();
+            smoothedAngles = getAng_zero();
 
             fl.networkSync = true;
 
@@ -2865,7 +2865,7 @@ public class Player {
                 SetCombatContents(true);
             }
 
-            physicsObj.SetLinearVelocity(vec3_origin);
+            physicsObj.SetLinearVelocity(getVec3_origin());
 
             // setup our initial view
             if (!spectating) {
@@ -2879,8 +2879,8 @@ public class Player {
 
             // if this is the first spawn of the map, we don't have a usercmd yet,
             // so the delta angles won't be correct.  This will be fixed on the first think.
-            viewAngles = ang_zero;
-            SetDeltaViewAngles(ang_zero);
+            viewAngles = getAng_zero();
+            SetDeltaViewAngles(getAng_zero());
             SetViewAngles(spawn_angles);
             spawnAngles = spawn_angles;
             spawnAnglesSet = false;
@@ -2943,7 +2943,7 @@ public class Player {
             idBounds bounds = new idBounds();
 
             if (spectating) {
-                bounds = new idBounds(vec3_origin).Expand(pm_spectatebbox.GetFloat() * 0.5f);
+                bounds = new idBounds(getVec3_origin()).Expand(pm_spectatebbox.GetFloat() * 0.5f);
             } else {
                 bounds.oGet(0).Set(-pm_bboxwidth.GetFloat() * 0.5f, -pm_bboxwidth.GetFloat() * 0.5f, 0);
                 bounds.oGet(1).Set(pm_bboxwidth.GetFloat() * 0.5f, pm_bboxwidth.GetFloat() * 0.5f, pm_normalheight.GetFloat());
@@ -3130,7 +3130,7 @@ public class Player {
                 hud.HandleNamedEvent("radioChatterDown");
             }
 
-            physicsObj.SetLinearVelocity(vec3_origin);
+            physicsObj.SetLinearVelocity(getVec3_origin());
 
             SetState("EnterCinematic");
             UpdateScript();
@@ -3619,7 +3619,7 @@ public class Player {
             // clear the ik heights so model doesn't appear in the wrong place
             walkIK.EnableAll();
 
-            GetPhysics().SetLinearVelocity(vec3_origin);
+            GetPhysics().SetLinearVelocity(getVec3_origin());
 
             SetViewAngles(angles);
 
@@ -3655,7 +3655,7 @@ public class Player {
                     ServerSpectate(true);
                     forceRespawn = true;
                 } else {
-                    Damage(this, this, vec3_origin, "damage_suicide", 1.0f, INVALID_JOINT);
+                    Damage(this, this, getVec3_origin(), "damage_suicide", 1.0f, INVALID_JOINT);
                     if (delayRespawn) {
                         forceRespawn = false;
                         float delay = spawnArgs.GetFloat("respawn_delay");
@@ -4883,7 +4883,7 @@ public class Player {
             idEntity item;
             if (died) {
                 // ain't gonna throw you no weapon if I'm dead
-                item = weapon.GetEntity().DropItem(vec3_origin, 0, WEAPON_DROP_TIME, died);
+                item = weapon.GetEntity().DropItem(getVec3_origin(), 0, WEAPON_DROP_TIME, died);
             } else {
                 viewAngles.ToVectors(forward, null, up);
                 item = weapon.GetEntity().DropItem(forward.oMultiply(250).oPlus(up.oMultiply(150)), 500, WEAPON_DROP_TIME, died);
@@ -5224,7 +5224,7 @@ public class Player {
                     final idDict damageDef = gameLocal.FindEntityDefDict("damage_noair", false);
                     int dmgTiming = (int) (1000 * ((damageDef != null) ? damageDef.GetFloat("delay", "3.0") : 3));
                     if (gameLocal.time > lastAirDamage + dmgTiming) {
-                        Damage(null, null, vec3_origin, "damage_noair", 1.0f, 0);
+                        Damage(null, null, getVec3_origin(), "damage_noair", 1.0f, 0);
                         lastAirDamage = gameLocal.time;
                     }
                 }
@@ -5691,7 +5691,7 @@ public class Player {
                         weapon.GetEntity().EnterCinematic();
                     }
                 } else {
-                    physicsObj.SetLinearVelocity(vec3_origin);
+                    physicsObj.SetLinearVelocity(getVec3_origin());
                     if (weaponEnabled && weapon.GetEntity() != null) {
                         weapon.GetEntity().ExitCinematic();
                     }
@@ -6779,7 +6779,7 @@ public class Player {
                         newOrig.oPluSet(2, pm_normalviewheight.GetFloat());
                     }
                     newOrig.oPluSet(2, SPECTATE_RAISE);
-                    idBounds b = new idBounds(vec3_origin).Expand(pm_spectatebbox.GetFloat() * 0.5f);
+                    idBounds b = new idBounds(getVec3_origin()).Expand(pm_spectatebbox.GetFloat() * 0.5f);
                     idVec3 start = player.GetPhysics().GetOrigin();
                     start.oPluSet(2, pm_spectatebbox.GetFloat() * 0.5f);
                     trace_s[] t = {null};
@@ -8377,7 +8377,7 @@ public class Player {
 
             if (teleportKiller != -1) {
                 // we got killed while being teleported
-                Damage(gameLocal.entities[ teleportKiller], gameLocal.entities[ teleportKiller], vec3_origin, "damage_telefrag", 1.0f, INVALID_JOINT);
+                Damage(gameLocal.entities[ teleportKiller], gameLocal.entities[ teleportKiller], getVec3_origin(), "damage_telefrag", 1.0f, INVALID_JOINT);
                 teleportKiller = -1;
             } else {
                 // kill anything that would have waited at teleport exit

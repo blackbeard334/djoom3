@@ -16,7 +16,6 @@ import static neo.Game.Entity.TH_UPDATEPARTICLES;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.Event.idEventDef;
@@ -79,7 +78,7 @@ import neo.idlib.geometry.TraceModel.idTraceModel;
 import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.RAD2DEG;
 import neo.idlib.math.Vector.idVec3;
@@ -246,7 +245,7 @@ public class AFEntity {
                 // add body
                 clip = new idClipModel(trm);
                 clip.SetContents(CONTENTS_SOLID);
-                clip.Link(gameLocal.clip, this, 0, org, mat3_identity);
+                clip.Link(gameLocal.clip, this, 0, org, getMat3_identity());
                 body = new idAFBody(new idStr(name + i), clip, density);
                 physicsObj.AddBody(body);
 
@@ -311,6 +310,8 @@ public class AFEntity {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idleAnim = animator.GetAnim("idle");
         }
 
@@ -500,18 +501,21 @@ public class AFEntity {
         //
 
         public idAFEntity_Base() {
+            af = new idAF();
             combatModel = null;
             combatModelContents = 0;
             nextSoundTime = 0;
-            spawnOrigin.Zero();
-            spawnAxis.Identity();
+            spawnOrigin = new idVec3();
+            spawnAxis = getMat3_identity();
         }
         // virtual					~idAFEntity_Base( void );
 
         @Override
         public void Spawn() {
-            spawnOrigin = GetPhysics().GetOrigin();
-            spawnAxis = GetPhysics().GetAxis();
+            super.Spawn();
+            
+            spawnOrigin.oSet(GetPhysics().GetOrigin());
+            spawnAxis.oSet(GetPhysics().GetAxis());
             nextSoundTime = 0;
         }
 
@@ -816,6 +820,8 @@ public class AFEntity {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             InitSkeletonModel();
 
             gibbed = false;

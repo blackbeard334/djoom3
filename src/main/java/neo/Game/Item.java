@@ -58,9 +58,9 @@ import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -179,7 +179,7 @@ public class Item {
             }
 
             if (spawnArgs.GetFloat("triggersize", "0", tsize)) {
-                GetPhysics().GetClipModel().LoadModel(new idTraceModel(new idBounds(vec3_origin).Expand(tsize[0])));
+                GetPhysics().GetClipModel().LoadModel(new idTraceModel(new idBounds(getVec3_origin()).Expand(tsize[0])));
                 GetPhysics().GetClipModel().Link(gameLocal.clip);
             }
 
@@ -835,7 +835,7 @@ public class Item {
 
             // create a trigger for item pickup
             spawnArgs.GetFloat("triggersize", "16.0", tsize);
-            trigger = new idClipModel(new idTraceModel(new idBounds(vec3_origin).Expand(tsize[0])));
+            trigger = new idClipModel(new idTraceModel(new idBounds(getVec3_origin()).Expand(tsize[0])));
             trigger.Link(gameLocal.clip, this, 0, GetPhysics().GetOrigin(), GetPhysics().GetAxis());
             trigger.SetContents(CONTENTS_TRIGGER);
 
@@ -893,7 +893,7 @@ public class Item {
 
             if ((thinkFlags & TH_PHYSICS) != 0) {
                 // update trigger position
-                trigger.Link(gameLocal.clip, this, 0, GetPhysics().GetOrigin(), mat3_identity);
+                trigger.Link(gameLocal.clip, this, 0, GetPhysics().GetOrigin(), getMat3_identity());
             }
 
             if ((thinkFlags & TH_UPDATEPARTICLES) != 0) {
@@ -979,7 +979,7 @@ public class Item {
 
                     origin.oPluSet(ent.spawnArgs.GetVector(key2, "0 0 0"));
 
-                    item = DropItem(kv.GetValue().toString(), origin, axis, vec3_origin, 0, 0);
+                    item = DropItem(kv.GetValue().toString(), origin, axis, getVec3_origin(), 0, 0);
                     if (list != null && item != null) {
                         list.Append(item);
                     }

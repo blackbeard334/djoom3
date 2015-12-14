@@ -89,16 +89,16 @@ import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.TraceModel.idTraceModel;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -200,10 +200,10 @@ public class Projectile {
             smokeFly = null;
             smokeFlyTime = 0;
             state = SPAWNED;
-            lightOffset = vec3_zero;
+            lightOffset = getVec3_zero();
             lightStartTime = 0;
             lightEndTime = 0;
-            lightColor = vec3_zero;
+            lightColor = getVec3_zero();
             state = SPAWNED;
             damagePower = 1.0f;
             //	memset( &projectileFlags, 0, sizeof( projectileFlags ) );
@@ -1078,12 +1078,12 @@ public class Projectile {
             while (state != newState) {
                 switch (state) {
                     case SPAWNED: {
-                        Create(owner.GetEntity(), vec3_origin, new idVec3(1, 0, 0));
+                        Create(owner.GetEntity(), getVec3_origin(), new idVec3(1, 0, 0));
                         break;
                     }
                     case CREATED: {
                         // the right origin and direction are required if you want bullet traces
-                        Launch(vec3_origin, new idVec3(1, 0, 0), vec3_origin);
+                        Launch(getVec3_origin(), new idVec3(1, 0, 0), getVec3_origin());
                         break;
                     }
                     case LAUNCHED: {
@@ -1291,10 +1291,10 @@ public class Projectile {
             speed = 0.0f;
             turn_max = 0.0f;
             clamp_dist = 0.0f;
-            rndScale = new idAngles(ang_zero);
-            rndAng = new idAngles(ang_zero);
+            rndScale = getAng_zero();
+            rndAng = getAng_zero();
             rndUpdateTime = 0;
-            angles = ang_zero;
+            angles = getAng_zero();
             burstMode = false;
             burstDist = 0;
             burstVelocity = 0.0f;
@@ -1537,7 +1537,7 @@ public class Projectile {
                 if (killPhase) {
                     // orbit the mob, cascading down
                     if (gameLocal.time < orbitTime + 1500) {
-                        if (!gameLocal.smokeParticles.EmitSmoke(smokeKill, smokeKillTime, gameLocal.random.CRandomFloat(), orbitOrg, mat3_identity)) {
+                        if (!gameLocal.smokeParticles.EmitSmoke(smokeKill, smokeKillTime, gameLocal.random.CRandomFloat(), orbitOrg, getMat3_identity())) {
                             smokeKillTime = gameLocal.time;
                         }
                     }
@@ -1608,7 +1608,7 @@ public class Projectile {
                 out.oSet(act.GetEyePosition());
                 return;
             }
-            if (!destOrg.equals(vec3_zero)) {
+            if (!destOrg.equals(getVec3_zero())) {
                 out.oSet(destOrg);
                 return;
             }

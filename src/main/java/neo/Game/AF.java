@@ -1,6 +1,7 @@
 package neo.Game;
 
 import java.util.Scanner;
+import java.util.stream.Stream;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Animation.Anim.AFJointModType_t;
 import static neo.Game.Animation.Anim.AFJointModType_t.AF_JOINTMOD_AXIS;
@@ -60,10 +61,10 @@ import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -79,49 +80,53 @@ public class AF {
      */
     public static class jointConversion_s {
 
-        int bodyId;				// id of the body
-        int/*jointHandle_t*/ jointHandle;		// handle of joint this body modifies
-        AFJointModType_t jointMod;		// modify joint axis, origin or both
-        idVec3 jointBodyOrigin;                 // origin of body relative to joint
-        idMat3 jointBodyAxis;                   // axis of body relative to joint
+        int bodyId;                       // id of the body
+        int/*jointHandle_t*/ jointHandle; // handle of joint this body modifies
+        AFJointModType_t jointMod;        // modify joint axis, origin or both
+        idVec3           jointBodyOrigin; // origin of body relative to joint
+        idMat3           jointBodyAxis;   // axis of body relative to joint
     };
 
     public static class afTouch_s {
 
-        public idEntity touchedEnt;
+        public idEntity    touchedEnt;
         public idClipModel touchedClipModel;
-        public idAFBody touchedByBody;
+        public idAFBody    touchedByBody;
     };
 //    
     public static final String ARTICULATED_FIGURE_ANIM = "af_pose";
-    public static final float POSE_BOUNDS_EXPANSION = 5.0f;
+    public static final float  POSE_BOUNDS_EXPANSION   = 5.0f;
 //
 
     public static class idAF {
 
-        protected idStr name = new idStr();             // name of the loaded .af file
-        protected idPhysics_AF physicsObj;		// articulated figure physics
-        protected idEntity self;			// entity using the animated model
-        protected idAnimator animator;			// animator on entity
-        protected int modifiedAnim;                     // anim to modify
-        protected idVec3 baseOrigin;			// offset of base body relative to skeletal model origin
-        protected idMat3 baseAxis;			// axis of base body relative to skeletal model origin
-        protected idList<jointConversion_s> jointMods;	// list with transforms from skeletal model joints to articulated figure bodies
-        protected idList<Integer> jointBody;		// table to find the nearest articulated figure body for a joint of the skeletal model
-        protected int poseTime;                         // last time the articulated figure was transformed to reflect the current animation pose
-        protected int restStartTime;                    // time the articulated figure came to rest
-        protected boolean isLoaded;			// true when the articulated figure is properly loaded
-        protected boolean isActive;			// true if the articulated figure physics is active
-        protected boolean hasBindConstraints;           // true if the bind constraints have been added
+        protected idStr                     name;                // name of the loaded .af file
+        protected idPhysics_AF              physicsObj;          // articulated figure physics
+        protected idEntity                  self;                // entity using the animated model
+        protected idAnimator                animator;            // animator on entity
+        protected int                       modifiedAnim;        // anim to modify
+        protected idVec3                    baseOrigin;          // offset of base body relative to skeletal model origin
+        protected idMat3                    baseAxis;            // axis of base body relative to skeletal model origin
+        protected idList<jointConversion_s> jointMods;           // list with transforms from skeletal model joints to articulated figure bodies
+        protected idList<Integer>           jointBody;           // table to find the nearest articulated figure body for a joint of the skeletal model
+        protected int                       poseTime;            // last time the articulated figure was transformed to reflect the current animation pose
+        protected int                       restStartTime;       // time the articulated figure came to rest
+        protected boolean                   isLoaded;            // true when the articulated figure is properly loaded
+        protected boolean                   isActive;            // true if the articulated figure physics is active
+        protected boolean                   hasBindConstraints;  // true if the bind constraints have been added
         //
         //
 
         public idAF() {
+            name = new idStr();
+            physicsObj = new idPhysics_AF();
             self = null;
             animator = null;
             modifiedAnim = 0;
-            baseOrigin.Zero();
-            baseAxis.Identity();
+            baseOrigin = new idVec3();
+            baseAxis = getMat3_identity();
+            jointMods = new idList<>();
+            jointBody = new idList<>();
             poseTime = -1;
             restStartTime = -1;
             isLoaded = false;
@@ -242,7 +247,7 @@ public class AF {
 
             // create the animation frame used to setup the articulated figure
             numJoints = animator.NumJoints();
-            joints = new idJointMat[numJoints];
+            joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
             GameEdit.gameEdit.ANIM_CreateAnimFrame(model, animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
 
             // set all vector positions from model joints
@@ -921,9 +926,11 @@ public class AF {
 
             index = jointMods.Num();
             jointMods.SetNum(index + 1, false);
+            jointMods.oSet(index, new jointConversion_s());
             jointMods.oGet(index).bodyId = physicsObj.GetBodyId(body);
             jointMods.oGet(index).jointHandle = handle;
             jointMods.oGet(index).jointMod = mod;
+            
             jointMods.oGet(index).jointBodyOrigin = (body.GetWorldOrigin().oMinus(origin)).oMultiply(axis.Transpose());
             jointMods.oGet(index).jointBodyAxis = body.GetWorldAxis().oMultiply(axis.Transpose());
         }
@@ -1007,7 +1014,7 @@ public class AF {
                 clip.SetContents(fb.contents[0]);
                 clip.Link(gameLocal.clip, self, 0, origin, axis);
                 body = new idAFBody(fb.name, clip, fb.density);
-                if (fb.inertiaScale != mat3_identity) {
+                if (fb.inertiaScale != getMat3_identity()) {
                     body.SetDensity(fb.density, fb.inertiaScale);
                 }
                 id = physicsObj.AddBody(body);
@@ -1034,10 +1041,10 @@ public class AF {
                 AddBody(body, joints, fb.jointName.toString(), mod);
             }
 
-            if (fb.frictionDirection.ToVec3() != vec3_origin) {
+            if (fb.frictionDirection.ToVec3() != getVec3_origin()) {
                 body.SetFrictionDirection(fb.frictionDirection.ToVec3());
             }
-            if (fb.contactMotorDirection.ToVec3() != vec3_origin) {
+            if (fb.contactMotorDirection.ToVec3() != getVec3_origin()) {
                 body.SetContactMotorDirection(fb.contactMotorDirection.ToVec3());
             }
 
@@ -1157,8 +1164,8 @@ public class AF {
                             idVec3 left = new idVec3(), up = new idVec3();
                             idVec3 axis2, shaft;
                             fc.axis.ToVec3().OrthogonalBasis(left, up);
-                            axis2 = left.oMultiply(new idRotation(vec3_origin, fc.axis.ToVec3(), fc.limitAngles[0]));
-                            shaft = left.oMultiply(new idRotation(vec3_origin, fc.axis.ToVec3(), fc.limitAngles[2]));
+                            axis2 = left.oMultiply(new idRotation(getVec3_origin(), fc.axis.ToVec3(), fc.limitAngles[0]));
+                            shaft = left.oMultiply(new idRotation(getVec3_origin(), fc.axis.ToVec3(), fc.limitAngles[2]));
                             c.SetLimit(axis2, fc.limitAngles[1], shaft);
                             break;
                         }

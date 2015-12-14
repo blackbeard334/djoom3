@@ -243,9 +243,9 @@ public class DeclFX {
             FXAction.random1 = 0.0f;
             FXAction.random2 = 0.0f;
 
-            FXAction.lightColor = Vector.vec3_origin;
-            FXAction.offset = Vector.vec3_origin;
-            FXAction.axis = idMat3.mat3_identity;
+            FXAction.lightColor = Vector.getVec3_origin();
+            FXAction.offset = Vector.getVec3_origin();
+            FXAction.axis = idMat3.getMat3_identity();
 
             FXAction.bindParticles = false;
             FXAction.explicitAxis = false;

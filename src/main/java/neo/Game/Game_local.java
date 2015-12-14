@@ -25,6 +25,7 @@ import neo.Game.Animation.Anim_Blend.idDeclModelDef;
 import neo.Game.Animation.Anim_Import.idModelExport;
 import neo.Game.Animation.Anim_Testmodel.idTestModel;
 import neo.Game.Camera.idCamera;
+import neo.Game.Camera.idCameraAnim;
 import static neo.Game.Entity.TH_PHYSICS;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
@@ -214,6 +215,8 @@ import static neo.Game.Game_network.net_clientMaxPrediction;
 import static neo.Game.Game_network.net_clientShowSnapshot;
 import static neo.Game.Game_network.net_clientShowSnapshotRadius;
 import static neo.Game.Game_network.net_clientSmoothing;
+import neo.Game.Light.idLight;
+import neo.Game.Misc.idFuncEmitter;
 import neo.Game.Misc.idLocationEntity;
 import neo.Game.Misc.idPathCorner;
 import neo.Game.Misc.idStaticEntity;
@@ -277,12 +280,10 @@ import neo.Sound.snd_shader.soundShaderParms_t;
 import neo.Sound.snd_system;
 import neo.Sound.sound.idSoundWorld;
 import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.atoi;
 import static neo.TempDump.ctos;
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
-import static neo.TempDump.reflects._Get;
 import neo.TempDump.void_callback;
 import static neo.Tools.Compilers.AAS.AASFileManager.AASFileManager;
 import neo.framework.Async.NetworkSystem;
@@ -375,13 +376,13 @@ import static neo.idlib.math.Math_h.INTSIGNBITSET;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Simd.idSIMD;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
-import static neo.idlib.math.Vector.vec3_origin;
 import neo.sys.sys_public;
 import static neo.sys.sys_public.sys;
 import neo.ui.UserInterface;
@@ -523,7 +524,7 @@ public class Game_local {
     };
 //============================================================================
 
-    public static class idEntityPtr<type> {
+    public static class idEntityPtr<type extends idEntity> {
 
         private int spawnId;
         //
@@ -548,7 +549,7 @@ public class Game_local {
             if (ent == null) {
                 spawnId = 0;
             } else {
-                final int entityNumber = (Integer) _Get(ent, "entityNumber");
+                final int entityNumber = ent.entityNumber;
                 spawnId = (gameLocal.spawnIds[entityNumber] << GENTITYNUM_BITS) | entityNumber;
             }
             return this;
@@ -3295,7 +3296,25 @@ public class Game_local {
         }
 
         public idEntity SpawnEntityType(final Class classdef, final idDict args /*= NULL*/) {
-            throw new TODO_Exception();
+            idEntity obj = null;
+
+            if (!idEntity.class.isAssignableFrom(classdef)) {
+                Error("Attempted to spawn non-entity class '%s'", classdef);
+            }
+
+            if (args != null) {
+                spawnArgs.oSet(args);
+            } else {
+                spawnArgs.Clear();
+            }
+
+            try {
+                obj = (idEntity) classdef.newInstance();
+                obj.Spawn();
+            } catch (InstantiationException | IllegalAccessException ex) {
+            }
+
+            return obj;
         }
 
         @Deprecated
@@ -3373,9 +3392,17 @@ public class Game_local {
                     case "idMoveable":
                         obj = new idMoveable();
                         break;
+                    case "idLight":
+                        obj = new idLight();
+                        break;
+                    case "idCameraAnim":
+                        obj = new idCameraAnim();
+                        break;
+                    case "idAI":
+                        obj = new idAI();
+                        break;
                     default:
                         obj = null;
-
                 }
 
                 obj.Spawn();
@@ -3987,7 +4014,7 @@ public class Game_local {
                 if (hit.IsType(idPlayer.class) && ((idPlayer) hit).IsInTeleport()) {
                     ((idPlayer) hit).TeleportDeath(ent.entityNumber);
                 } else if (!catch_teleport) {
-                    hit.Damage(ent, ent, vec3_origin, "damage_telefrag", 1.0f, INVALID_JOINT);
+                    hit.Damage(ent, ent, getVec3_origin(), "damage_telefrag", 1.0f, INVALID_JOINT);
                 }
 
                 if (!gameLocal.isMultiplayer) {
@@ -4294,7 +4321,7 @@ public class Game_local {
             size = halfSize + random.RandomFloat() * halfSize;
             trm.SetupPolygon(verts, 4);
             mdl.LoadModel(trm);
-            clip.Translation(results, origin, origin.oPlus(dir.oMultiply(64.0f)), mdl, mat3_identity, CONTENTS_SOLID, null);
+            clip.Translation(results, origin, origin.oPlus(dir.oMultiply(64.0f)), mdl, getMat3_identity(), CONTENTS_SOLID, null);
             ProjectDecal(results[0].endpos, dir, 2.0f * size, true, size, material);
         }
 
@@ -5233,7 +5260,7 @@ public class Game_local {
             }
 
             if (g_showCollisionWorld.GetBool()) {
-                CollisionModel_local.collisionModelManager.DrawModel(0, vec3_origin, mat3_identity, origin, 128.0f);
+                CollisionModel_local.collisionModelManager.DrawModel(0, getVec3_origin(), getMat3_identity(), origin, 128.0f);
             }
 
             if (g_showCollisionModels.GetBool()) {
@@ -6025,7 +6052,7 @@ public class Game_local {
     };
     //============================================================================
 
-    public static idAnimManager animationLib;
+    public static final idAnimManager animationLib = new idAnimManager();
 
     //============================================================================
     public static class idGameError extends idException {

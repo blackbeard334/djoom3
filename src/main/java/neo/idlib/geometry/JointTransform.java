@@ -23,6 +23,11 @@ public class JointTransform {
 
         public idQuat q;
         public idVec3 t;
+
+        public idJointQuat() {
+            q = new idQuat();
+            t = new idVec3();
+        }
     };
 
     /*

@@ -1,13 +1,21 @@
 package neo.Renderer;
 
 import neo.Renderer.Material.idMaterial;
+import static neo.Renderer.Model.INVALID_JOINT;
+import static neo.Renderer.Model.MD5_VERSION;
+import static neo.Renderer.Model.MD5_VERSION_STRING;
 import neo.Renderer.Model.dynamicModel_t;
 import static neo.Renderer.Model.dynamicModel_t.DM_CACHED;
 import neo.Renderer.Model.idMD5Joint;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
 import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.ModelOverlay.idRenderModelOverlay;
 import neo.Renderer.Model_local.idRenderModelStatic;
+import static neo.Renderer.RenderSystem_init.r_showSkel;
+import static neo.Renderer.RenderSystem_init.r_skipSuppress;
+import static neo.Renderer.RenderSystem_init.r_useCachedDynamicModels;
+import static neo.Renderer.RenderWorld.R_RemapShaderBySkin;
 import static neo.Renderer.RenderWorld.SHADERPARM_MD5_SKINSCALE;
 import neo.Renderer.RenderWorld.renderEntity_s;
 import neo.Renderer.tr_local.deformInfo_s;
@@ -17,9 +25,11 @@ import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
 import static neo.Renderer.tr_trisurf.R_BuildDeformInfo;
+import static neo.Renderer.tr_trisurf.R_DeformInfoMemoryUsed;
 import static neo.Renderer.tr_trisurf.R_DeriveTangents;
 import static neo.Renderer.tr_trisurf.R_FreeStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_FreeStaticTriSurfVertexCaches;
+import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.Session.session;
 import neo.idlib.BV.Bounds.idBounds;
@@ -29,6 +39,9 @@ import static neo.idlib.Lib.colorGreen;
 import static neo.idlib.Lib.colorMagenta;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorWhite;
+import static neo.idlib.Lib.idLib.fileSystem;
+import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
+import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
@@ -37,10 +50,10 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.JointTransform.idJointQuat;
 import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -65,6 +78,10 @@ public class Model_md5 {
         int joint;
         idVec3 offset;
         float jointWeight;
+
+        public vertexWeight_s() {
+            offset = new idVec3();
+        }
     };
 
     /*
@@ -89,6 +106,7 @@ public class Model_md5 {
         //
 
         public idMD5Mesh() {
+            texCoords = new idList<>();
             scaledWeights = null;
             weightIndex = null;
             shader = null;
@@ -150,7 +168,7 @@ public class Model_md5 {
                 parser.ExpectTokenString("vert");
                 parser.ParseInt();
 
-                parser.Parse1DMatrix(2, texCoords.oGet(i));
+                parser.Parse1DMatrix(2, texCoords.oSet(i, new idVec2()));
 
                 firstWeightForVertex.oSet(i, parser.ParseInt());
                 numWeightsForVertex.oSet(i, parser.ParseInt());
@@ -209,6 +227,7 @@ public class Model_md5 {
                     parser.Error("Joint Index out of range(%d): %d", numJoints, jointnum);
                 }
 
+                tempWeights.oSet(i, new vertexWeight_s());
                 tempWeights.oGet(i).joint = jointnum;
                 tempWeights.oGet(i).jointWeight = parser.ParseFloat();
 
@@ -224,6 +243,7 @@ public class Model_md5 {
             for (i = 0; i < texCoords.Num(); i++) {
                 num = firstWeightForVertex.oGet(i);
                 for (j = 0; j < numWeightsForVertex.oGet(i); j++, num++, count++) {
+                    scaledWeights[count] = new idVec4();
                     scaledWeights[count].ToVec3().oSet(tempWeights.oGet(num).offset.oMultiply(tempWeights.oGet(num).jointWeight));
                     scaledWeights[count].w = tempWeights.oGet(num).jointWeight;
                     weightIndex[count * 2 + 0] = tempWeights.oGet(num).joint /* sizeof( idJointMat )*/;
@@ -251,11 +271,11 @@ public class Model_md5 {
             //
             idDrawVert[] verts = new idDrawVert[texCoords.Num()];
             for (i = 0; i < texCoords.Num(); i++) {
-                verts[i].Clear();
+                verts[i] = new idDrawVert();
                 verts[i].st = texCoords.oGet(i);
             }
             TransformVerts(verts, joints);
-            deformInfo = R_BuildDeformInfo(texCoords.Num(), verts, tris.Num(), tris.Ptr(), shader.UseUnsmoothedTangents());
+            deformInfo = R_BuildDeformInfo(texCoords.Num(), verts, tris.Num(), tris, shader.UseUnsmoothedTangents());
         }
 
         public void UpdateSurface(final renderEntity_s ent, final idJointMat[] entJoints, modelSurface_s surf) {
@@ -408,12 +428,19 @@ public class Model_md5 {
     };
 
     public static class idRenderModelMD5 extends idRenderModelStatic {
+        public static final int BYTES = Integer.BYTES * 3;
 
         private idList<idMD5Joint> joints;
         private idList<idJointQuat> defaultPose;
         private idList<idMD5Mesh> meshes;
         //
         //
+
+        public idRenderModelMD5() {
+            joints = new idList<>();
+            defaultPose = new idList<>();
+            meshes = new idList<>();
+        }
 
         @Override
         public void InitFromFile(String fileName) {
@@ -455,76 +482,345 @@ public class Model_md5 {
 
         @Override
         public void Print() {
-            super.Print();
+            int i = 0;
+
+            common.Printf("%s\n", name.toString());
+            common.Printf("Dynamic model.\n");
+            common.Printf("Generated smooth normals.\n");
+            common.Printf("    verts  tris weights material\n");
+            int totalVerts = 0;
+            int totalTris = 0;
+            int totalWeights = 0;
+            for (final idMD5Mesh mesh : meshes.Ptr()) {
+                totalVerts += mesh.NumVerts();
+                totalTris += mesh.NumTris();
+                totalWeights += mesh.NumWeights();
+                common.Printf("%2d: %5d %5d %7d %s\n", i++, mesh.NumVerts(), mesh.NumTris(), mesh.NumWeights(), mesh.shader.GetName());
+            }
+            common.Printf("-----\n");
+            common.Printf("%4d verts.\n", totalVerts);
+            common.Printf("%4d tris.\n", totalTris);
+            common.Printf("%4d weights.\n", totalWeights);
+            common.Printf("%4d joints.\n", joints.Num());
         }
 
         @Override
         public void List() {
-            super.List();
+            int totalTris = 0;
+            int totalVerts = 0;
+
+            for (final idMD5Mesh mesh : meshes.Ptr()) {
+                totalTris += mesh.numTris;
+                totalVerts += mesh.NumVerts();
+            }
+            common.Printf(" %4dk %3d %4d %4d %s(MD5)", Memory() / 1024, meshes.Num(), totalVerts, totalTris, Name());
+
+            if (defaulted) {
+                common.Printf(" (DEFAULTED)");
+            }
+
+            common.Printf("\n");
         }
 
+        /*
+         ====================
+         idRenderModelMD5::TouchData
+
+         models that are already loaded at level start time
+         will still touch their materials to make sure they
+         are kept loaded
+         ====================
+         */
         @Override
         public void TouchData() {
-            super.TouchData();
+            for (final idMD5Mesh mesh : meshes.Ptr()) {
+                declManager.FindMaterial(mesh.shader.GetName());
+            }
         }
 
+        /*
+         ===================
+         idRenderModelMD5::PurgeModel
+
+         frees all the data, but leaves the class around for dangling references,
+         which can regenerate the data with LoadModel()
+         ===================
+         */
         @Override
         public void PurgeModel() {
-            super.PurgeModel();
+            purged = true;
+            joints.Clear();
+            defaultPose.Clear();
+            meshes.Clear();
         }
 
+        /*
+         ====================
+         idRenderModelMD5::LoadModel
+
+         used for initial loads, reloadModel, and reloading the data of purged models
+         Upon exit, the model will absolutely be valid, but possibly as a default model
+         ====================
+         */
         @Override
         public void LoadModel() {
-            super.LoadModel();
+            int version;
+            int i;
+            int num;
+            int parentNum;
+            idToken token = new idToken();
+            idLexer parser = new idLexer(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS);
+            idJointMat[] poseMat3;
+
+            if (!purged) {
+                PurgeModel();
+            }
+            purged = false;
+
+            if (!parser.LoadFile(name)) {
+                MakeDefaultModel();
+                return;
+            }
+
+            parser.ExpectTokenString(MD5_VERSION_STRING);
+            version = parser.ParseInt();
+
+            if (version != MD5_VERSION) {
+                parser.Error("Invalid version %d.  Should be version %d\n", version, MD5_VERSION);
+            }
+
+            //
+            // skip commandline
+            //
+            parser.ExpectTokenString("commandline");
+            parser.ReadToken(token);
+
+            // parse num joints
+            parser.ExpectTokenString("numJoints");
+            num = parser.ParseInt();
+            joints.SetGranularity(1);
+            joints.SetNum(num);
+            defaultPose.SetGranularity(1);
+            defaultPose.SetNum(num);
+            poseMat3 = new idJointMat[num];
+
+            // parse num meshes
+            parser.ExpectTokenString("numMeshes");
+            num = parser.ParseInt();
+            if (num < 0) {
+                parser.Error("Invalid size: %d", num);
+            }
+            meshes.SetGranularity(1);
+            meshes.SetNum(num);
+
+            //
+            // parse joints
+            //
+            parser.ExpectTokenString("joints");
+            parser.ExpectTokenString("{");
+            for (i = 0; i < joints.Num(); i++) {
+                idJointQuat pose = defaultPose.oSet(i, new idJointQuat());
+                idMD5Joint joint = joints.oSet(i, new idMD5Joint());
+                ParseJoint(parser, joint, pose);
+                poseMat3[i] = new idJointMat();
+                poseMat3[i].SetRotation(pose.q.ToMat3());
+                poseMat3[i].SetTranslation(pose.t);
+                if (joint.parent != null) {
+                    parentNum = joints.Find(joint.parent);
+                    pose.q = (poseMat3[i].ToMat3().oMultiply(poseMat3[parentNum].ToMat3().Transpose())).ToQuat();
+                    pose.t = (poseMat3[i].ToVec3().oMinus(poseMat3[parentNum].ToVec3())).oMultiply(poseMat3[parentNum].ToMat3().Transpose());
+                }
+            }
+            parser.ExpectTokenString("}");
+
+            for( i = 0; i < meshes.Num(); i++ ) {
+                idMD5Mesh mesh = meshes.oSet(i, new idMD5Mesh());
+                parser.ExpectTokenString("mesh");
+                mesh.ParseMesh(parser, defaultPose.Num(), poseMat3);
+            }
+
+            //
+            // calculate the bounds of the model
+            //
+            CalculateBounds(poseMat3);
+
+            // set the timestamp for reloadmodels
+            fileSystem.ReadFile(name, null, timeStamp);
         }
+
 
         @Override
         public int Memory() {
-            return super.Memory();
+            int total;
+
+            total = this.BYTES;
+            total += joints.MemoryUsed() + defaultPose.MemoryUsed() + meshes.MemoryUsed();
+
+            // count up strings
+            for (idMD5Joint joint : joints.Ptr()) {
+                total += joint.name.DynamicMemoryUsed();
+            }
+
+            // count up meshes
+            for (final idMD5Mesh mesh : meshes.Ptr()) {
+
+                total += mesh.texCoords.MemoryUsed() + mesh.numWeights * idVec4.BYTES + Integer.BYTES * 2;
+
+                // sum up deform info
+                total += mesh.deformInfo.BYTES;
+                total += R_DeformInfoMemoryUsed(mesh.deformInfo);
+            }
+            return total;
         }
 
         @Override
-        public idRenderModel InstantiateDynamicModel(renderEntity_s ent, viewDef_s view, idRenderModel cachedModel) {
-            return super.InstantiateDynamicModel(ent, view, cachedModel);
+        public idRenderModel InstantiateDynamicModel(final renderEntity_s ent, final viewDef_s view, idRenderModel cachedModel) {
+            int[] surfaceNum = {0};
+            idRenderModelStatic staticModel;
+
+            if (cachedModel != null && !r_useCachedDynamicModels.GetBool()) {
+                cachedModel = null;
+            }
+
+            if (purged) {
+                common.DWarning("model %s instantiated while purged", Name());
+                LoadModel();
+            }
+
+            if (null == ent.joints) {
+                common.Printf("idRenderModelMD5::InstantiateDynamicModel: NULL joints on renderEntity for '%s'\n", Name());
+                return null;
+            } else if (ent.numJoints != joints.Num()) {
+                common.Printf("idRenderModelMD5::InstantiateDynamicModel: renderEntity has different number of joints than model for '%s'\n", Name());
+                return null;
+            }
+
+            tr.pc.c_generateMd5++;
+
+            if (cachedModel != null) {
+                assert (cachedModel instanceof idRenderModelStatic);
+                assert (idStr.Icmp(cachedModel.Name(), MD5_SnapshotName) == 0);
+                staticModel = (idRenderModelStatic) cachedModel;
+            } else {
+                staticModel = new idRenderModelStatic();
+                staticModel.InitEmpty(MD5_SnapshotName);
+            }
+
+            staticModel.bounds.Clear();
+
+            if (r_showSkel.GetInteger() != 0) {
+                if ((view != null) && (!r_skipSuppress.GetBool() || 0 == ent.suppressSurfaceInViewID || (ent.suppressSurfaceInViewID != view.renderView.viewID))) {
+                    // only draw the skeleton
+                    DrawJoints(ent, view);
+                }
+
+                if (r_showSkel.GetInteger() > 1) {
+                    // turn off the model when showing the skeleton
+                    staticModel.InitEmpty(MD5_SnapshotName);
+                    return staticModel;
+                }
+            }
+
+            // create all the surfaces
+            for (int i = 0; i < meshes.Num(); i++) {
+                idMD5Mesh mesh = meshes.Ptr()[i];
+                        
+		// avoid deforming the surface if it will be a nodraw due to a skin remapping
+                // FIXME: may have to still deform clipping hulls
+                idMaterial shader = mesh.shader;
+
+                shader = R_RemapShaderBySkin(shader, ent.customSkin, ent.customShader);
+
+                if (null == shader || (!shader.IsDrawn() && !shader.SurfaceCastsShadow())) {
+                    staticModel.DeleteSurfaceWithId(i);
+                    mesh.surfaceNum = -1;
+                    continue;
+                }
+
+                modelSurface_s surf;
+
+                if (staticModel.FindSurfaceWithId(i, surfaceNum)) {
+                    mesh.surfaceNum = surfaceNum[0];
+                    surf = staticModel.surfaces.oGet(surfaceNum[0]);
+                } else {
+
+                    // Remove Overlays before adding new surfaces
+                    idRenderModelOverlay.RemoveOverlaySurfacesFromModel(staticModel);
+
+                    mesh.surfaceNum = staticModel.NumSurfaces();
+                    surf = staticModel.surfaces.Alloc();
+                    surf.geometry = null;
+                    surf.shader = null;
+                    surf.id = i;
+                }
+
+                mesh.UpdateSurface(ent, ent.joints, surf);
+
+                staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(0));
+                staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(1));
+            }
+
+            return staticModel;
         }
 
         @Override
         public int NumJoints() {
-            return super.NumJoints();
+            return joints.Num();
         }
 
         @Override
         public idMD5Joint[] GetJoints() {
-            return super.GetJoints();
+            return joints.Ptr(idMD5Joint[].class);
         }
 
         @Override
-        public int GetJointHandle(String name) {
-            return super.GetJointHandle(name);
+        public int GetJointHandle(final String name) {
+            int i = 0;
+
+            for (final idMD5Joint joint : joints.Ptr(idMD5Joint[].class)) {
+                i++;
+                if (idStr.Icmp(joint.name, name) == 0) {
+                    return i;
+                }
+            }
+
+            return INVALID_JOINT;
         }
 
         @Override
-        public String GetJointName(int jointHandle_t) {
-            return super.GetJointName(jointHandle_t);
+        public String GetJointName(int handle) {
+            if ((handle < 0) || (handle >= joints.Num())) {
+                return "<invalid joint>";
+            }
+
+            return joints.oGet(handle).name.toString();
         }
 
         @Override
-        public idJointQuat GetDefaultPose() {
-            return super.GetDefaultPose();
+        public idJointQuat[] GetDefaultPose() {
+            return defaultPose.Ptr(idJointQuat[].class);
         }
 
         @Override
         public int NearestJoint(int surfaceNum, int a, int c, int b) {
-            return super.NearestJoint(surfaceNum, a, c, b);
+            if (surfaceNum > meshes.Num()) {
+                common.Error("idRenderModelMD5::NearestJoint: surfaceNum > meshes.Num()");
+            }
+
+            for (final idMD5Mesh mesh : meshes.Ptr()) {
+                if (mesh.surfaceNum == surfaceNum) {
+                    return mesh.NearestJoint(a, b, c);
+                }
+            }
+            return 0;
         }
 
         private void CalculateBounds(final idJointMat[] entJoints) {
             int i;
-            idMD5Mesh mesh;
-
+            
             bounds.Clear();
-            for (mesh = meshes.oGet(i = 0); i < meshes.Num(); mesh = meshes.oGet(++i)) {
-                bounds.AddBounds(mesh.CalcBounds(entJoints));
+            for (i = 0; i < meshes.Num(); ++i) {
+                bounds.AddBounds(meshes.oGet(i).CalcBounds(entJoints));
             }
         }
 
@@ -555,7 +851,7 @@ public class Model_md5 {
 
             idBounds bounds = new idBounds();
 
-            bounds.FromTransformedBounds(ent.bounds, vec3_zero, ent.axis);
+            bounds.FromTransformedBounds(ent.bounds, getVec3_zero(), ent.axis);
             session.rw.DebugBounds(colorMagenta, bounds, ent.origin);
 
             if ((RenderSystem_init.r_jointNameScale.GetFloat() != 0.0f) && (bounds.Expand(128.0f).ContainsPoint(view.renderView.vieworg.oMinus(ent.origin)))) {

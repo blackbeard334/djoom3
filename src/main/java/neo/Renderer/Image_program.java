@@ -13,8 +13,8 @@ import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -408,7 +408,7 @@ public class Image_program {
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < height; j++) {
-                normal = vec3_origin;
+                normal = getVec3_origin();
                 for (k = -1; k < 2; k++) {
                     for (l = -1; l < 2; l++) {
                         int in;

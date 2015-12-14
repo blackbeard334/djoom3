@@ -48,9 +48,9 @@ import static neo.idlib.math.Plane.ON_EPSILON;
 import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -107,7 +107,7 @@ public class AASFile_local {
             aasEdge_s edge;
             idVec3 center;
 
-            center = vec3_origin;
+            center = getVec3_origin();
 
             face = faces.oGet(faceNum);
             if (face.numEdges > 0) {
@@ -127,7 +127,7 @@ public class AASFile_local {
             final aasArea_s area;
             idVec3 center;
 
-            center = vec3_origin;
+            center = getVec3_origin();
 
             area = areas.oGet(areaNum);
             if (area.numFaces > 0) {
@@ -343,7 +343,7 @@ public class AASFile_local {
                     if (((areas.oGet(-nodeNum).flags & trace.flags) != 0) || ((areas.oGet(-nodeNum).travelFlags & trace.travelFlags) != 0)) {
                         if (NOT(trace.lastAreaNum)) {
                             trace.fraction = 0.0f;
-                            v1 = vec3_origin;
+                            v1 = getVec3_origin();
                         } else {
                             v1 = end.oMinus(start);
                             v2 = tracestack[tstack_p].start.oMinus(start);
@@ -376,7 +376,7 @@ public class AASFile_local {
                 if (0 == nodeNum) {
                     if (0 == trace.lastAreaNum) {
                         trace.fraction = 0.0f;
-                        v1 = vec3_origin;
+                        v1 = getVec3_origin();
                     } else {
                         v1 = end.oMinus(start);
                         v2 = tracestack[tstack_p].start.oMinus(start);
@@ -1261,7 +1261,7 @@ public class AASFile_local {
                 return AreaCenter(areaNum);
             }
 
-            center = vec3_origin;
+            center = getVec3_origin();
 
             numFaces = 0;
             for (i = 0; i < area.numFaces; i++) {

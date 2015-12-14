@@ -32,9 +32,9 @@ import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -866,7 +866,7 @@ public class RenderWorld {
         }
 
         public void DebugBounds(final idVec4 color, final idBounds bounds) {
-            DebugBounds(color, bounds, vec3_origin);
+            DebugBounds(color, bounds, getVec3_origin());
         }
 
         public abstract void DebugBox(final idVec4 color, final idBox box, final int lifetime/* = 0*/);

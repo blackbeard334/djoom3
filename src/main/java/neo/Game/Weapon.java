@@ -99,10 +99,10 @@ import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 import static neo.ui.UserInterface.uiManager;
 
 /**
@@ -340,7 +340,7 @@ public class Weapon {
             nozzleGlow = new renderLight_s();
 
             muzzleFlashEnd = 0;
-            flashColor = vec3_origin;
+            flashColor = getVec3_origin();
             muzzleFlashHandle = -1;
             worldMuzzleFlashHandle = -1;
             guiLightHandle = -1;
@@ -804,7 +804,7 @@ public class Weapon {
             strikeSmoke = null;
             strikeSmokeStartTime = 0;
             strikePos.Zero();
-            strikeAxis = mat3_identity;
+            strikeAxis = getMat3_identity();
             nextStrikeFx = 0;
 
             icon.oSet("");
@@ -941,7 +941,7 @@ public class Weapon {
             }
             strikeSmokeStartTime = 0;
             strikePos.Zero();
-            strikeAxis = mat3_identity;
+            strikeAxis = getMat3_identity();
             nextStrikeFx = 0;
 
             // setup gui light
@@ -2106,8 +2106,8 @@ public class Weapon {
                 ent.GetPhysics().SetContents(0);
                 ent.GetPhysics().SetClipModel(null, 1.0f);
                 ent.BindToJoint(owner, attach, true);
-                ent.GetPhysics().SetOrigin(vec3_origin);
-                ent.GetPhysics().SetAxis(mat3_identity);
+                ent.GetPhysics().SetOrigin(getVec3_origin());
+                ent.GetPhysics().SetAxis(getMat3_identity());
 
                 // supress model in player views, but allow it in mirrors and remote views
                 renderEntity_s worldModelRenderEntity = ent.GetRenderEntity();
@@ -2625,9 +2625,9 @@ public class Weapon {
                         spin = (float) DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
                         dir = playerViewAxis.oGet(0).oPlus(playerViewAxis.oGet(2).oMultiply(ang * idMath.Sin(spin)).oMinus(playerViewAxis.oGet(1).oMultiply(ang * idMath.Cos(spin))));
                         dir.Normalize();
-                        gameLocal.clip.Translation(tr, muzzle_pos, muzzle_pos.oPlus(dir.oMultiply(4096.0f)), null, mat3_identity, MASK_SHOT_RENDERMODEL, owner);
+                        gameLocal.clip.Translation(tr, muzzle_pos, muzzle_pos.oPlus(dir.oMultiply(4096.0f)), null, getMat3_identity(), MASK_SHOT_RENDERMODEL, owner);
                         if (tr[0].fraction < 1.0f) {
-                            idProjectile.ClientPredictionCollide(this, projectileDict, tr[0], vec3_origin, true);
+                            idProjectile.ClientPredictionCollide(this, projectileDict, tr[0], getVec3_origin(), true);
                         }
                     }
                 }

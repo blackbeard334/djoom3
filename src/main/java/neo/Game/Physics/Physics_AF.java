@@ -86,25 +86,26 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Matrix.idMat3.SkewSymmetric;
 import static neo.idlib.math.Matrix.idMat3.TransposeMultiply;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
-import static neo.idlib.math.Matrix.idMat3.mat3_zero;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_zero;
 import neo.idlib.math.Matrix.idMatX;
 import static neo.idlib.math.Matrix.idMatX.MATX_ALLOCA;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Quat.idQuat;
 import neo.idlib.math.Rotation.idRotation;
+import neo.idlib.math.Vector;
 import static neo.idlib.math.Vector.RAD2DEG;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
+import static neo.idlib.math.Vector.getVec6_infinity;
+import static neo.idlib.math.Vector.getVec6_origin;
+import static neo.idlib.math.Vector.getVec6_zero;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Vector.idVecX;
 import static neo.idlib.math.Vector.idVecX.VECX_ALLOCA;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
-import static neo.idlib.math.Vector.vec6_infinity;
-import static neo.idlib.math.Vector.vec6_origin;
-import static neo.idlib.math.Vector.vec6_zero;
 
 /**
  *
@@ -150,30 +151,30 @@ public class Physics_AF {
         }
     };
     //
-    public static final float   ERROR_REDUCTION               = 0.5f;
-    public static final float   ERROR_REDUCTION_MAX           = 256.0f;
-    public static final float   LIMIT_ERROR_REDUCTION         = 0.3f;
-    public static final float   LCP_EPSILON                   = 1e-7f;
-    public static final float   LIMIT_LCP_EPSILON             = 1e-4f;
-    public static final float   CONTACT_LCP_EPSILON           = 1e-6f;
-    public static final float   CENTER_OF_MASS_EPSILON        = 1e-4f;
-    public static final float   NO_MOVE_TIME                  = 1.0f;
-    public static final float   NO_MOVE_TRANSLATION_TOLERANCE = 10.0f;
-    public static final float   NO_MOVE_ROTATION_TOLERANCE    = 10.0f;
-    public static final float   MIN_MOVE_TIME                 = -1.0f;
-    public static final float   MAX_MOVE_TIME                 = -1.0f;
-    public static final float   IMPULSE_THRESHOLD             = 500.0f;
-    public static final float   SUSPEND_LINEAR_VELOCITY       = 10.0f;
-    public static final float   SUSPEND_ANGULAR_VELOCITY      = 15.0f;
-    public static final float   SUSPEND_LINEAR_ACCELERATION   = 20.0f;
-    public static final float   SUSPEND_ANGULAR_ACCELERATION  = 30.0f;
-    public static final idVec6  vec6_lcp_epsilon              = new idVec6(LCP_EPSILON, LCP_EPSILON, LCP_EPSILON, LCP_EPSILON, LCP_EPSILON, LCP_EPSILON);
+    public static final  float   ERROR_REDUCTION               = 0.5f;
+    public static final  float   ERROR_REDUCTION_MAX           = 256.0f;
+    public static final  float   LIMIT_ERROR_REDUCTION         = 0.3f;
+    public static final  float   LCP_EPSILON                   = 1e-7f;
+    public static final  float   LIMIT_LCP_EPSILON             = 1e-4f;
+    public static final  float   CONTACT_LCP_EPSILON           = 1e-6f;
+    public static final  float   CENTER_OF_MASS_EPSILON        = 1e-4f;
+    public static final  float   NO_MOVE_TIME                  = 1.0f;
+    public static final  float   NO_MOVE_TRANSLATION_TOLERANCE = 10.0f;
+    public static final  float   NO_MOVE_ROTATION_TOLERANCE    = 10.0f;
+    public static final  float   MIN_MOVE_TIME                 = -1.0f;
+    public static final  float   MAX_MOVE_TIME                 = -1.0f;
+    public static final  float   IMPULSE_THRESHOLD             = 500.0f;
+    public static final  float   SUSPEND_LINEAR_VELOCITY       = 10.0f;
+    public static final  float   SUSPEND_ANGULAR_VELOCITY      = 15.0f;
+    public static final  float   SUSPEND_LINEAR_ACCELERATION   = 20.0f;
+    public static final  float   SUSPEND_ANGULAR_ACCELERATION  = 30.0f;
+    private static final idVec6  vec6_lcp_epsilon              = new idVec6(LCP_EPSILON, LCP_EPSILON, LCP_EPSILON, LCP_EPSILON, LCP_EPSILON, LCP_EPSILON);
     //
-    public static final boolean AF_TIMINGS                    = true;
-    public static final boolean TEST_COLLISION_DETECTION      = false;
+    public static final  boolean AF_TIMINGS                    = true;
+    public static final  boolean TEST_COLLISION_DETECTION      = false;
     // #ifdef AF_TIMINGS
-    static              int     lastTimerReset                = 0;
-    static              int     numArticulatedFigures         = 0;
+    static               int     lastTimerReset                = 0;
+    static               int     numArticulatedFigures         = 0;
     static idTimer timer_total, timer_pc, timer_ac, timer_collision, timer_lcp;
 // #endif
 
@@ -227,20 +228,15 @@ public class Physics_AF {
             body2 = null;
             physics = null;
 
-            lo.Zero(6);
-            lo.SubVec6(0).oSet(vec6_infinity.oNegative());
-            hi.Zero(6);
-            hi.SubVec6(0).oSet(vec6_infinity);
-            e.SetSize(6);
+            lo = new idVecX(6);
+            lo.SubVec6(0).oSet(getVec6_infinity().oNegative());
+            hi = new idVecX(6);
+            hi.SubVec6(0).oSet(getVec6_infinity());
+            e = new idVecX(6);
             e.SubVec6(0).oSet(vec6_lcp_epsilon);
 
             boxConstraint = null;
-            boxIndex[0] = -1;
-            boxIndex[1] = -1;
-            boxIndex[2] = -1;
-            boxIndex[3] = -1;
-            boxIndex[4] = -1;
-            boxIndex[5] = -1;
+            boxIndex[0] = boxIndex[1] = boxIndex[2] = boxIndex[3] = boxIndex[4] = boxIndex[5] = -1;
 
             firstIndex = 0;
 
@@ -343,12 +339,12 @@ public class Physics_AF {
         }
 
         protected void InitSize(int size) {
-            J1.Zero(size, 6);
-            J2.Zero(size, 6);
-            c1.Zero(size);
-            c2.Zero(size);
-            s.Zero(size);
-            lm.Zero(size);
+            J1 = new idMatX(size, 6);
+            J2 = new idMatX(size, 6);
+            c1 = new idVecX(size);
+            c2 = new idVecX(size);
+            s = new idVecX(size);
+            lm = new idVecX(size);
         }
     };
 
@@ -364,7 +360,7 @@ public class Physics_AF {
         public idAFConstraint_Fixed(final idStr name, idAFBody body1, idAFBody body2) {
             assert (body1 != null);
             type = CONSTRAINT_FIXED;
-            this.name = name;
+            this.name.oSet(name);
             this.body1 = body1;
             this.body2 = body2;
             InitSize(6);
@@ -412,7 +408,7 @@ public class Physics_AF {
             if (master != null) {
                 gameRenderWorld.DebugLine(colorRed, body1.GetWorldOrigin(), master.GetWorldOrigin());
             } else {
-                gameRenderWorld.DebugLine(colorRed, body1.GetWorldOrigin(), vec3_origin);
+                gameRenderWorld.DebugLine(colorRed, body1.GetWorldOrigin(), getVec3_origin());
             }
         }
 
@@ -475,10 +471,10 @@ public class Physics_AF {
                 ax = relAxis;
             }
 
-            J1.Set(mat3_identity, mat3_zero, mat3_zero, mat3_identity);
+            J1.Set(getMat3_identity(), getMat3_zero(), getMat3_zero(), getMat3_identity());
 
             if (body2 != null) {
-                J2.Set(mat3_identity.oNegative(), SkewSymmetric(a2), mat3_zero, mat3_identity.oNegative());
+                J2.Set(getMat3_identity().oNegative(), SkewSymmetric(a2), getMat3_zero(), getMat3_identity().oNegative());
             } else {
                 J2.Zero(6, 6);
             }
@@ -527,7 +523,7 @@ public class Physics_AF {
         public idAFConstraint_BallAndSocketJoint(final idStr name, idAFBody body1, idAFBody body2) {
             assert (body1 != null);
             type = CONSTRAINT_BALLANDSOCKETJOINT;
-            this.name = name;
+            this.name.oSet(name);
             this.body1 = body1;
             this.body2 = body2;
             InitSize(3);
@@ -733,10 +729,10 @@ public class Physics_AF {
 
             c1.Clamp(-ERROR_REDUCTION_MAX, ERROR_REDUCTION_MAX);
 
-            J1.Set(mat3_identity, SkewSymmetric(a1).oNegative());
+            J1.Set(getMat3_identity(), SkewSymmetric(a1).oNegative());
 
             if (body2 != null) {
-                J2.Set(mat3_identity.oNegative(), SkewSymmetric(a2));
+                J2.Set(getMat3_identity().oNegative(), SkewSymmetric(a2));
             } else {
                 J2.Zero(3, 6);
             }
@@ -883,7 +879,7 @@ public class Physics_AF {
         public idAFConstraint_UniversalJoint(final idStr name, idAFBody body1, idAFBody body2) {
             assert (body1 != null);
             type = CONSTRAINT_UNIVERSALJOINT;
-            this.name = name;
+            this.name.oSet(name);
             this.body1 = body1;
             this.body2 = body2;
             InitSize(4);
@@ -1178,14 +1174,14 @@ public class Physics_AF {
                 c1.SubVec3(0).oSet((a2.oMinus(a1.oPlus(body1.GetWorldOrigin()))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
             }
 
-            J1.Set(mat3_identity, SkewSymmetric(a1).oNegative(), mat3_zero,
+            J1.Set(getMat3_identity(), SkewSymmetric(a1).oNegative(), getMat3_zero(),
                     new idMat3(s1.oGet(0), s1.oGet(1), s1.oGet(2),
                             0.0f, 0.0f, 0.0f,
                             0.0f, 0.0f, 0.0f));
             J1.SetSize(4, 6);
 
             if (body2 != null) {
-                J2.Set(mat3_identity.oNegative(), SkewSymmetric(a2), mat3_zero,
+                J2.Set(getMat3_identity().oNegative(), SkewSymmetric(a2), getMat3_zero(),
                         new idMat3(s2.oGet(0), s2.oGet(1), s2.oGet(2),
                                 0.0f, 0.0f, 0.0f,
                                 0.0f, 0.0f, 0.0f));
@@ -1401,7 +1397,7 @@ public class Physics_AF {
         public idAFConstraint_Hinge(final idStr name, idAFBody body1, idAFBody body2) {
             assert (body1 != null);
             type = CONSTRAINT_HINGE;
-            this.name = name;
+            this.name.oSet(name);
             this.body1 = body1;
             this.body2 = body2;
             InitSize(5);
@@ -1681,14 +1677,14 @@ public class Physics_AF {
                 c1.SubVec3(0).oSet(a2.oMinus(a1.oPlus(body1.GetWorldOrigin())).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
             }
 
-            J1.Set(mat3_identity, SkewSymmetric(a1).oNegative(), mat3_zero,
+            J1.Set(getMat3_identity(), SkewSymmetric(a1).oNegative(), getMat3_zero(),
                     new idMat3(vecX.oGet(0), vecX.oGet(1), vecX.oGet(2),
                             vecY.oGet(0), vecY.oGet(1), vecY.oGet(2),
                             0.0f, 0.0f, 0.0f));
             J1.SetSize(5, 6);
 
             if (body2 != null) {
-                J2.Set(mat3_identity.oNegative(), SkewSymmetric(a2), mat3_zero,
+                J2.Set(getMat3_identity().oNegative(), SkewSymmetric(a2), getMat3_zero(),
                         new idMat3(-vecX.oGet(0), -vecX.oGet(1), -vecX.oGet(2),
                                 -vecY.oGet(0), -vecY.oGet(1), -vecY.oGet(2),
                                 0.0f, 0.0f, 0.0f));
@@ -1827,9 +1823,7 @@ public class Physics_AF {
         protected void ApplyFriction(float invTimeStep) {
             // do nothing
         }
-    }
-
-    ;
+    };
 
     //===============================================================
     //
@@ -1973,7 +1967,7 @@ public class Physics_AF {
         public idAFConstraint_Slider(final idStr name, idAFBody body1, idAFBody body2) {
             assert (body1 != null);
             type = CONSTRAINT_SLIDER;
-            this.name = name;
+            this.name.oSet(name);
             this.body1 = body1;
             this.body2 = body2;
             InitSize(5);
@@ -2076,14 +2070,14 @@ public class Physics_AF {
                 r = (body1.GetWorldAxis().Transpose().oMultiply(relAxis)).ToRotation();
             }
 
-            J1.Set(mat3_zero, mat3_identity,
-                    new idMat3(vecX, vecY, vec3_origin), mat3_zero);
+            J1.Set(getMat3_zero(), getMat3_identity(),
+                    new idMat3(vecX, vecY, getVec3_origin()), getMat3_zero());
             J1.SetSize(5, 6);
 
             if (body2 != null) {
 
-                J2.Set(mat3_zero, mat3_identity.oNegative(),
-                        new idMat3(vecX.oNegative(), vecY.oNegative(), vec3_origin), mat3_zero);
+                J2.Set(getMat3_zero(), getMat3_identity().oNegative(),
+                        new idMat3(vecX.oNegative(), vecY.oNegative(), getVec3_origin()), getMat3_zero());
                 J2.SetSize(5, 6);
             } else {
                 J2.Zero(5, 6);
@@ -2101,9 +2095,7 @@ public class Physics_AF {
         protected void ApplyFriction(float invTimeStep) {
             // no friction
         }
-    }
-
-    ;
+    };
 
     //===============================================================
     //
@@ -2142,9 +2134,7 @@ public class Physics_AF {
         protected void ApplyFriction(float invTimeStep) {
             assert (false);    // FIXME: implement
         }
-    }
-
-    ;
+    };
 
     //===============================================================
     //
@@ -2164,7 +2154,7 @@ public class Physics_AF {
         public idAFConstraint_Plane(final idStr name, idAFBody body1, idAFBody body2) {
             assert (body1 != null);
             type = CONSTRAINT_PLANE;
-            this.name = name;
+            this.name.oSet(name);
             this.body1 = body1;
             this.body2 = body2;
             InitSize(1);
@@ -2277,9 +2267,7 @@ public class Physics_AF {
         protected void ApplyFriction(float invTimeStep) {
             // no friction
         }
-    }
-
-    ;
+    };
 
     //===============================================================
     //
@@ -2304,7 +2292,7 @@ public class Physics_AF {
         public idAFConstraint_Spring(final idStr name, idAFBody body1, idAFBody body2) {
             assert (body1 != null);
             type = CONSTRAINT_SPRING;
-            this.name = name;
+            this.name.oSet(name);
             this.body1 = body1;
             this.body2 = body2;
             InitSize(1);
@@ -2686,9 +2674,7 @@ public class Physics_AF {
                 fc.Add(physics, invTimeStep);
             }
         }
-    }
-
-    ;
+    };
 
     //===============================================================
     //
@@ -3077,9 +3063,7 @@ public class Physics_AF {
         @Override
         protected void ApplyFriction(float invTimeStep) {
         }
-    }
-
-    ;
+    };
 
     //===============================================================
     //
@@ -3089,13 +3073,13 @@ public class Physics_AF {
     // constrains an axis attached to body1 to be inside a pyramid relative to body2
     public static class idAFConstraint_PyramidLimit extends idAFConstraint {
 
-        protected idVec3 pyramidAnchor;                // top of the pyramid in body2 space
-        protected idMat3 pyramidBasis;                // pyramid basis in body2 space with base[2] being the pyramid axis
-        protected idVec3 body1Axis;                // axis in body1 space that should stay within the cone
-        protected float[] cosAngle     = new float[2];        // cos( pyramidAngle / 2 )
-        protected float[] sinHalfAngle = new float[2];        // sin( pyramidAngle / 4 )
-        protected float[] cosHalfAngle = new float[2];        // cos( pyramidAngle / 4 )
-        protected float epsilon;                // lcp epsilon
+        protected idVec3 pyramidAnchor;                 // top of the pyramid in body2 space
+        protected idMat3 pyramidBasis;                  // pyramid basis in body2 space with base[2] being the pyramid axis
+        protected idVec3 body1Axis;                     // axis in body1 space that should stay within the cone
+        protected float[] cosAngle     = new float[2];  // cos( pyramidAngle / 2 )
+        protected float[] sinHalfAngle = new float[2];  // sin( pyramidAngle / 4 )
+        protected float[] cosHalfAngle = new float[2];  // cos( pyramidAngle / 4 )
+        protected float epsilon;                        // lcp epsilon
         //
         //
 
@@ -3105,6 +3089,10 @@ public class Physics_AF {
             InitSize(1);
             fl.allowPrimary = false;
             fl.frameConstraint = true;
+            
+            pyramidAnchor = new idVec3();
+            pyramidBasis = new idMat3();
+            body1Axis = new idVec3();
         }
 
         public void Setup(idAFBody b1, idAFBody b2, final idVec3 pyramidAnchor, final idVec3 pyramidAxis,
@@ -3115,12 +3103,11 @@ public class Physics_AF {
             pyramidBasis.oSet(2, pyramidAxis);
             pyramidBasis.oGet(2).Normalize();
             pyramidBasis.oSet(0, baseAxis);
-            ;
             pyramidBasis.oGet(0).oMinSet(pyramidBasis.oGet(2).oMultiply(baseAxis.oMultiply(pyramidBasis.oGet(2))));
             pyramidBasis.oGet(0).Normalize();
             pyramidBasis.oSet(0, pyramidBasis.oGet(0).Cross(pyramidBasis.oGet(2)));
             // pyramid top
-            this.pyramidAnchor = pyramidAnchor;
+            pyramidAnchor.oSet(pyramidAnchor);
             // angles
             cosAngle[0] = (float) cos(DEG2RAD(pyramidAngle1 * 0.5f));
             cosAngle[1] = (float) cos(DEG2RAD(pyramidAngle2 * 0.5f));
@@ -3129,15 +3116,15 @@ public class Physics_AF {
             cosHalfAngle[0] = (float) cos(DEG2RAD(pyramidAngle1 * 0.25f));
             cosHalfAngle[1] = (float) cos(DEG2RAD(pyramidAngle2 * 0.25f));
 
-            this.body1Axis = body1Axis;
+            body1Axis.oSet(body1Axis);
         }
 
         public void SetAnchor(final idVec3 pyramidAxis) {
-            this.pyramidAnchor = pyramidAnchor;
+            this.pyramidAnchor.oSet(pyramidAnchor);
         }
 
         public void SetBody1Axis(final idVec3 body1Axis) {
-            this.body1Axis = body1Axis;
+            this.body1Axis.oSet(body1Axis);
         }
 
         public void SetEpsilon(final float e) {
@@ -3346,9 +3333,7 @@ public class Physics_AF {
         @Override
         protected void ApplyFriction(float invTimeStep) {
         }
-    }
-
-    ;
+    };
 
     //===============================================================
     //
@@ -3601,9 +3586,7 @@ public class Physics_AF {
         protected void ApplyFriction(float invTimeStep) {
             // do nothing
         }
-    }
-
-    ;
+    };
 
     //===============================================================
     //
@@ -3616,9 +3599,7 @@ public class Physics_AF {
         idMat3 worldAxis;                // axis at worldOrigin
         idVec6 spatialVelocity;          // linear and rotational velocity of body
         idVec6 externalForce;            // external force and torque applied to body
-    }
-
-    ;
+    };
 
     public static class idAFBody {
 
@@ -3673,9 +3654,9 @@ public class Physics_AF {
         private final class bodyFlags_s {
 
             boolean clipMaskSet;//: 1;          // true if this body has a clip mask set
-            boolean selfCollision;//: 1;	    // true if this body can collide with other bodies of this AF
+            boolean selfCollision;//: 1;	// true if this body can collide with other bodies of this AF
             boolean spatialInertiaSparse;//: 1;	// true if the spatial inertia matrix is sparse
-            boolean useFrictionDir;//: 1;	    // true if a single friction direction should be used
+            boolean useFrictionDir;//: 1;	// true if a single friction direction should be used
             boolean useContactMotorDir;//: 1;	// true if a contact motor should be used
             boolean isZero;//: 1;               // true if 's' is zero during calculations
         };
@@ -3697,7 +3678,7 @@ public class Physics_AF {
 
             Init();
 
-            this.name = name;
+            this.name.oSet(name);
             this.clipModel = null;
 
             SetClipModel(clipModel);
@@ -3711,7 +3692,7 @@ public class Physics_AF {
 
         // ~idAFBody();
         public void Init() {
-            name.oSet("noname");
+            name = new idStr("noname");
             parent = null;
             clipModel = null;
             primaryConstraint = null;
@@ -3723,32 +3704,32 @@ public class Physics_AF {
             bouncyness = -1.0f;
             clipMask = 0;
 
-            frictionDir = vec3_zero;
-            contactMotorDir = vec3_zero;
+            frictionDir = getVec3_zero();
+            contactMotorDir = getVec3_zero();
             contactMotorVelocity = 0.0f;
             contactMotorForce = 0.0f;
 
             mass = 1.0f;
             invMass = 1.0f;
-            centerOfMass = vec3_zero;
-            inertiaTensor = mat3_identity;
-            inverseInertiaTensor = mat3_identity;
+            centerOfMass = getVec3_zero();
+            inertiaTensor = new idMat3(getMat3_identity());
+            inverseInertiaTensor = new idMat3(getMat3_identity());
 
-            current = state[0];
-            next = state[1];
-            current.worldOrigin = vec3_zero;
-            current.worldAxis = mat3_identity;
-            current.spatialVelocity = vec6_zero;
-            current.externalForce = vec6_zero;
+            current = state[0] = new AFBodyPState_s();
+            next = state[1] = new AFBodyPState_s();
+            current.worldOrigin = getVec3_zero();
+            current.worldAxis = new idMat3(getMat3_identity());
+            current.spatialVelocity = new idVec6(getVec6_zero().p);
+            current.externalForce = new idVec6(getVec6_zero().p);
             next = current;
             saved = current;
-            atRestOrigin = vec3_zero;
-            atRestAxis = mat3_identity;
+            atRestOrigin = getVec3_zero();
+            atRestAxis = new idMat3(getMat3_identity());
 
-            s.Zero(6);
-            totalForce.Zero(6);
-            auxForce.Zero(6);
-            acceleration.Zero(6);
+            s = new idVecX(6);
+            totalForce = new idVecX(6);
+            auxForce = new idVecX(6);
+            acceleration = new idVecX(6);
 
             response = null;
             responseIndex = null;
@@ -3878,14 +3859,14 @@ public class Physics_AF {
             }
 
             // make sure the center of mass is at the body origin
-            if (!centerOfMass.Compare(vec3_origin, CENTER_OF_MASS_EPSILON)) {
+            if (!centerOfMass.Compare(Vector.getVec3_origin(), CENTER_OF_MASS_EPSILON)) {
                 gameLocal.Warning("idAFBody::SetDentity: center of mass not at origin for body '%s'", name);
             }
             centerOfMass.Zero();
 
             // calculate the inverse mass and inverse inertia tensor
             invMass = 1.0f / mass;
-            if (inertiaScale != mat3_identity) {
+            if (inertiaScale != getMat3_identity()) {
                 inertiaTensor.oMulSet(inertiaScale);
             }
             if (inertiaTensor.IsDiagonal(1e-3f)) {
@@ -3902,7 +3883,7 @@ public class Physics_AF {
         }
 
         public void SetDensity(float density) {
-            SetDensity(density, mat3_identity);
+            SetDensity(density, getMat3_identity());
         }
 
         public float GetInverseMass() {
@@ -4426,9 +4407,7 @@ public class Physics_AF {
         float  activateTime;              // time since last activation
         float  lastTimeStep;              // last time step
         idVec6 pushVelocity;              // velocity with which the af is pushed
-    }
-
-    ;
+    };
 
     public static class AFCollision_s {
 
@@ -4502,14 +4481,14 @@ public class Physics_AF {
 
         // CLASS_PROTOTYPE( idPhysics_AF );
         public idPhysics_AF() {
-            trees.Clear();
-            bodies.Clear();
-            constraints.Clear();
-            primaryConstraints.Clear();
-            auxiliaryConstraints.Clear();
-            frameConstraints.Clear();
-            contacts.Clear();
-            collisions.Clear();
+            trees = new idList<>();
+            bodies = new idList<>();
+            constraints = new idList<>();
+            primaryConstraints = new idList<>();
+            auxiliaryConstraints = new idList<>();
+            frameConstraints = new idList<>();
+            contacts = new idList<>();
+            collisions = new idList<>();
             changedAF = true;
             masterBody = null;
 
@@ -4528,8 +4507,8 @@ public class Physics_AF {
             totalMass = 0.0f;
             forceTotalMass = -1.0f;
 
-            suspendVelocity.Set(SUSPEND_LINEAR_VELOCITY, SUSPEND_ANGULAR_VELOCITY);
-            suspendAcceleration.Set(SUSPEND_LINEAR_ACCELERATION, SUSPEND_LINEAR_ACCELERATION);
+            suspendVelocity = new idVec2(SUSPEND_LINEAR_VELOCITY, SUSPEND_ANGULAR_VELOCITY);
+            suspendAcceleration = new idVec2(SUSPEND_LINEAR_ACCELERATION, SUSPEND_LINEAR_ACCELERATION);
             noMoveTime = NO_MOVE_TIME;
             noMoveTranslation = NO_MOVE_TRANSLATION_TOLERANCE;
             noMoveRotation = NO_MOVE_ROTATION_TOLERANCE;
@@ -5644,7 +5623,7 @@ public class Physics_AF {
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
             if (id < 0 || id >= bodies.Num()) {
-                return vec3_origin;
+                return getVec3_origin();
             } else {
                 return bodies.oGet(id).current.worldOrigin;
             }
@@ -5653,7 +5632,7 @@ public class Physics_AF {
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
             if (id < 0 || id >= bodies.Num()) {
-                return mat3_identity;
+                return getMat3_identity();
             } else {
                 return bodies.oGet(id).current.worldAxis;
             }
@@ -5680,7 +5659,7 @@ public class Physics_AF {
         @Override
         public idVec3 GetLinearVelocity(int id /*= 0*/) {
             if (id < 0 || id >= bodies.Num()) {
-                return vec3_origin;
+                return getVec3_origin();
             } else {
                 return bodies.oGet(id).current.spatialVelocity.SubVec3(0);
             }
@@ -5689,7 +5668,7 @@ public class Physics_AF {
         @Override
         public idVec3 GetAngularVelocity(int id /*= 0*/) {
             if (id < 0 || id >= bodies.Num()) {
-                return vec3_origin;
+                return getVec3_origin();
             } else {
                 return bodies.oGet(id).current.spatialVelocity.SubVec3(1);
             }
@@ -6207,22 +6186,20 @@ public class Physics_AF {
                 axis = body.current.worldAxis.Transpose();
 
                 // if the center of mass is at the body point of reference
-                if (body.centerOfMass.Compare(vec3_origin, CENTER_OF_MASS_EPSILON)) {
+                if (body.centerOfMass.Compare(getVec3_origin(), CENTER_OF_MASS_EPSILON)) {
 
                     // spatial inertia in world space
-                    body.I.Set(mat3_identity.oMultiply(body.mass), mat3_zero,
-                            mat3_zero, axis.oMultiply(body.inertiaTensor).oMultiply(axis.Transpose()));
+                    body.I.Set(getMat3_identity().oMultiply(body.mass), getMat3_zero(), getMat3_zero(), axis.oMultiply(body.inertiaTensor).oMultiply(axis.Transpose()));
 
                     // inverse spatial inertia in world space
-                    body.inverseWorldSpatialInertia.Set(mat3_identity.oMultiply(body.invMass), mat3_zero,
-                            mat3_zero, axis.oMultiply(body.inverseInertiaTensor).oMultiply(axis.Transpose()));
+                    body.inverseWorldSpatialInertia.Set(getMat3_identity().oMultiply(body.invMass), getMat3_zero(), getMat3_zero(), axis.oMultiply(body.inverseInertiaTensor).oMultiply(axis.Transpose()));
 
                     body.fl.spatialInertiaSparse = true;
                 } else {
                     idMat3 massMoment = SkewSymmetric(body.centerOfMass).oMultiply(body.mass);
 
                     // spatial inertia in world space
-                    body.I.Set(mat3_identity.oMultiply(body.mass), massMoment,
+                    body.I.Set(getMat3_identity().oMultiply(body.mass), massMoment,
                             massMoment.Transpose(), axis.oMultiply(body.inertiaTensor).oMultiply(axis.Transpose()));
 
                     // inverse spatial inertia in world space
@@ -6707,7 +6684,7 @@ public class Physics_AF {
                 // convert angular velocity to a rotation matrix
                 vec = body.next.spatialVelocity.SubVec3(1);
                 angle = -timeStep * (float) RAD2DEG(vec.Normalize());
-                rotation = new idRotation(vec3_origin, vec, angle);
+                rotation = new idRotation(getVec3_origin(), vec, angle);
                 rotation.Normalize180();
 
                 // rotate world axis
@@ -7050,7 +7027,7 @@ public class Physics_AF {
         private void AddPushVelocity(final idVec6 pushVelocity) {
             int i;
 
-            if (pushVelocity != vec6_origin) {
+            if (pushVelocity != getVec6_origin()) {
                 for (i = 0; i < bodies.Num(); i++) {
                     bodies.oGet(i).current.spatialVelocity.oPluSet(pushVelocity);
                 }
@@ -7076,13 +7053,13 @@ public class Physics_AF {
                         constrainedBody1 = constraint.body1;
                         if (constrainedBody1 != null) {
                             CollisionModel_local.collisionModelManager.DrawModel(constrainedBody1.clipModel.Handle(), constrainedBody1.clipModel.GetOrigin(),
-                                    constrainedBody1.clipModel.GetAxis(), vec3_origin, 0.0f);
+                                    constrainedBody1.clipModel.GetAxis(), getVec3_origin(), 0.0f);
                         }
                         cvarSystem.SetCVarString("cm_drawColor", colorBlue.ToString(0));
                         constrainedBody2 = constraint.body2;
                         if (constrainedBody2 != null) {
                             CollisionModel_local.collisionModelManager.DrawModel(constrainedBody2.clipModel.Handle(), constrainedBody2.clipModel.GetOrigin(),
-                                    constrainedBody2.clipModel.GetAxis(), vec3_origin, 0.0f);
+                                    constrainedBody2.clipModel.GetAxis(), getVec3_origin(), 0.0f);
                         }
                         cvarSystem.SetCVarString("cm_drawColor", colorRed.ToString(0));
                     }
@@ -7094,7 +7071,7 @@ public class Physics_AF {
                 if (highlightBody != null) {
                     cvarSystem.SetCVarString("cm_drawColor", colorYellow.ToString(0));
                     CollisionModel_local.collisionModelManager.DrawModel(highlightBody.clipModel.Handle(), highlightBody.clipModel.GetOrigin(),
-                            highlightBody.clipModel.GetAxis(), vec3_origin, 0.0f);
+                            highlightBody.clipModel.GetAxis(), getVec3_origin(), 0.0f);
                     cvarSystem.SetCVarString("cm_drawColor", colorRed.ToString(0));
                 }
             }
@@ -7109,7 +7086,7 @@ public class Physics_AF {
                         continue;
                     }
                     CollisionModel_local.collisionModelManager.DrawModel(body.clipModel.Handle(), body.clipModel.GetOrigin(),
-                            body.clipModel.GetAxis(), vec3_origin, 0.0f);
+                            body.clipModel.GetAxis(), getVec3_origin(), 0.0f);
                     //DrawTraceModelSilhouette( gameLocal.GetLocalPlayer().GetEyePosition(), body.clipModel );
                 }
             }

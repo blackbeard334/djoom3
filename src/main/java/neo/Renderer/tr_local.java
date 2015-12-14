@@ -160,10 +160,10 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_zero;
 import static neo.sys.win_glimp.GLimp_Shutdown;
 import static org.lwjgl.opengl.GL11.GL_BACK;
 import static org.lwjgl.opengl.GL11.GL_FRONT;
@@ -581,7 +581,7 @@ public class tr_local {
             archived = false;
             lightShader = null;
             falloffImage = null;
-            globalLightOrigin = vec3_zero;
+            globalLightOrigin = getVec3_zero();
             frustumTris = null;
             numShadowFrustums = 0;
             viewCount = 0;
@@ -2667,6 +2667,7 @@ public class tr_local {
     // deformable meshes precalculate as much as possible from a base frame, then generate
     // complete srfTriangles_t from just a new set of vertexes
     public static class deformInfo_s {
+        public static final int BYTES = Integer.BYTES * 11;
 
         int   numSourceVerts;
         // numOutputVerts may be smaller if the input had duplicated or degenerate triangles

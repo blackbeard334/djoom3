@@ -2,7 +2,7 @@ package neo.idlib.geometry;
 
 import java.util.Arrays;
 import java.util.Objects;
-import neo.TempDump;
+import java.util.stream.Stream;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Lib.idLib;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_BONE;
@@ -22,8 +22,8 @@ import static neo.idlib.math.Math_h.INTSIGNBITSET;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -91,15 +91,13 @@ public class TraceModel {
     };
 
     public static class idTraceModel {
-//
-
         public traceModel_t       type;
         public int                numVerts;
-        public traceModelVert_t[] verts = TempDump.allocArray(traceModelVert_t.class, MAX_TRACEMODEL_VERTS);
+        public traceModelVert_t[] verts = Stream.generate(() -> new traceModelVert_t()).limit(MAX_TRACEMODEL_VERTS).toArray(traceModelVert_t[]::new);
         public int                numEdges;
-        public traceModelEdge_t[] edges = TempDump.allocArray(traceModelEdge_t.class, MAX_TRACEMODEL_EDGES + 1);
+        public traceModelEdge_t[] edges = Stream.generate(() -> new traceModelEdge_t()).limit(MAX_TRACEMODEL_EDGES + 1).toArray(traceModelEdge_t[]::new);
         public int                numPolys;
-        public traceModelPoly_t[] polys = TempDump.allocArray(traceModelPoly_t.class, MAX_TRACEMODEL_POLYS);
+        public traceModelPoly_t[] polys = Stream.generate(() -> new traceModelPoly_t()).limit(MAX_TRACEMODEL_POLYS).toArray(traceModelPoly_t[]::new);
         public idVec3             offset;            // offset to center of model
         public idBounds           bounds;            // bounds of model
         public boolean            isConvex;          // true when model is convex
@@ -108,6 +106,7 @@ public class TraceModel {
         public idTraceModel() {
             type = TRM_INVALID;
             numVerts = numEdges = numPolys = 0;
+            offset = new idVec3();
             bounds = new idBounds();
         }
 
@@ -155,7 +154,7 @@ public class TraceModel {
             polys[5].dist = -boxBounds.oGet(0).oGet(0);
             // set polygon bounds
             for (i = 0; i < 6; i++) {
-                polys[i].bounds = boxBounds;
+                polys[i].bounds.oSet(boxBounds);
             }
             polys[0].bounds.oSet(1, 2, boxBounds.oGet(0).oGet(2));
             polys[1].bounds.oSet(0, 2, boxBounds.oGet(1).oGet(2));
@@ -164,7 +163,7 @@ public class TraceModel {
             polys[4].bounds.oSet(0, 1, boxBounds.oGet(1).oGet(1));
             polys[5].bounds.oSet(1, 0, boxBounds.oGet(0).oGet(0));
 
-            bounds = boxBounds;
+            bounds.oSet(boxBounds);
         }
 
         /*
@@ -620,7 +619,7 @@ public class TraceModel {
             polys[1].dist = -polys[0].dist;
             // setup verts, edges and polygons
             polys[0].bounds.Clear();
-            mid = vec3_origin;
+            mid = getVec3_origin();
             for (i = 0, j = 1; i < numVerts; i++, j++) {
                 if (j >= numVerts) {
                     j = 0;
@@ -940,7 +939,7 @@ public class TraceModel {
             // mass of model
             mass[0] = density * integrals.T0;
             // center of mass
-            centerOfMass = integrals.T1.oDivide(integrals.T0);
+            centerOfMass.oSet(integrals.T1.oDivide(integrals.T0));
             // compute inertia tensor
             inertiaTensor.oSet(0, 0, density * (integrals.T2.oGet(1) + integrals.T2.oGet(2)));
             inertiaTensor.oSet(1, 1, density * (integrals.T2.oGet(2) + integrals.T2.oGet(0)));

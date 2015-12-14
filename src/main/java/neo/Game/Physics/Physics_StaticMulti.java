@@ -3,7 +3,6 @@ package neo.Game.Physics;
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -18,11 +17,11 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.BitMsg.idBitMsgDelta;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -497,7 +496,7 @@ public class Physics_StaticMulti {
             if (clipModels.Num() != 0) {
                 return current.oGet(0).origin;
             } else {
-                return vec3_origin;
+                return getVec3_origin();
             }
         }
 
@@ -509,7 +508,7 @@ public class Physics_StaticMulti {
             if (clipModels.Num() != 0) {
                 return current.oGet(0).axis;
             } else {
-                return mat3_identity;
+                return getMat3_identity();
             }
         }
 
@@ -523,12 +522,12 @@ public class Physics_StaticMulti {
 
         @Override
         public idVec3 GetLinearVelocity(int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override
         public idVec3 GetAngularVelocity(int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override
@@ -672,12 +671,12 @@ public class Physics_StaticMulti {
 
         @Override
         public idVec3 GetPushedLinearVelocity(final int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override
         public idVec3 GetPushedAngularVelocity(final int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override

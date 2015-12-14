@@ -43,6 +43,7 @@ import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_OCTAHEDRON;
 import neo.idlib.math.Angles;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
@@ -93,17 +94,21 @@ public class DeclAF {
             VEC_BONECENTER,
             VEC_BONEDIR
         };
-        public type type;
-        public idStr joint1;
-        public idStr joint2;
-//
+        public  type    type;
+        public  idStr   joint1;
+        public  idStr   joint2;
+        private idVec3  vec;
+        private boolean negate;
+        //
+        //
 
         public idAFVector() {
             type = VEC_COORDS;
-            vec.Zero();
+            joint1 = new idStr();
+            joint2 = new idStr();
+            vec = new idVec3();
             negate = false;
         }
-//
 
         public boolean Parse(idLexer src) throws idException {
             idToken token = new idToken();
@@ -133,25 +138,25 @@ public class DeclAF {
                 type = VEC_JOINT;
                 src.ExpectTokenString("(");
                 src.ReadToken(token);
-                joint1 = token;
+                joint1.oSet(token);
                 src.ExpectTokenString(")");
             } else if (token.equals("bonecenter")) {
                 type = VEC_BONECENTER;
                 src.ExpectTokenString("(");
                 src.ReadToken(token);
-                joint1 = token;
+                joint1.oSet(token);
                 src.ExpectTokenString(",");
                 src.ReadToken(token);
-                joint2 = token;
+                joint2.oSet(token);
                 src.ExpectTokenString(")");
             } else if (token.equals("bonedir")) {
                 type = VEC_BONEDIR;
                 src.ExpectTokenString("(");
                 src.ReadToken(token);
-                joint1 = token;
+                joint1.oSet(token);
                 src.ExpectTokenString(",");
                 src.ReadToken(token);
-                joint2 = token;
+                joint2.oSet(token);
                 src.ExpectTokenString(")");
             } else {
                 src.Error("unknown token %s in vector", token.toString());
@@ -185,7 +190,7 @@ public class DeclAF {
                         common.Warning("invalid joint %s in bonecenter() in '%s'", joint2.toString(), fileName);
                         end.Zero();
                     }
-                    vec = (start.oPlus(end)).oMultiply(0.5f);
+                    vec.oSet((start.oPlus(end)).oMultiply(0.5f));
                     break;
                 }
                 case VEC_BONEDIR: {
@@ -197,7 +202,7 @@ public class DeclAF {
                         common.Warning("invalid joint %s in bonedir() in '%s'", joint2.toString(), fileName);
                         end.Zero();
                     }
-                    vec = (end.oMinus(start));
+                    vec.oSet((end.oMinus(start)));
                     break;
                 }
                 default: {
@@ -207,7 +212,7 @@ public class DeclAF {
             }
 
             if (negate) {
-                vec = vec.oNegative();
+                vec.oSet(vec.oNegative());
             }
 
             return true;
@@ -277,109 +282,109 @@ public class DeclAF {
             return vec;
         }
 //public	idVec3 &				ToVec3( void ) { return vec; }
-//
-//
-        private idVec3 vec;
-        private boolean negate;
     };
 
     public static class idDeclAF_Body {
 
-        public idStr name;
-        public idStr jointName;
+        public idStr            name;
+        public idStr            jointName;
         public declAFJointMod_t jointMod;
-        public traceModel_t modelType;
-        public idAFVector v1, v2;
-        public int numSides;
-        public float width;
-        public float density;
+        public traceModel_t     modelType;
+        public idAFVector       v1, v2;
+        public int        numSides;
+        public float      width;
+        public float      density;
         public idAFVector origin;
-        public idAngles angles;
-        public int[] contents = new int[1];
-        public int[] clipMask = new int[1];
-        public boolean selfCollision;
-        public idMat3 inertiaScale;
-        public float linearFriction;
-        public float angularFriction;
-        public float contactFriction;
-        public idStr containedJoints;
+        public idAngles   angles;
+        public int[] contents = {0};
+        public int[] clipMask = {0};
+        public boolean    selfCollision;
+        public idMat3     inertiaScale;
+        public float      linearFriction;
+        public float      angularFriction;
+        public float      contactFriction;
+        public idStr      containedJoints;
         public idAFVector frictionDirection;
         public idAFVector contactMotorDirection;
 //
 
+        public idDeclAF_Body() {
+            this.name = new idStr();
+            this.jointName = new idStr();
+            this.containedJoints = new idStr();
+        }
+
         public void SetDefault(final idDeclAF file) {
-            name = new idStr("noname");
+            name.oSet("noname");
             modelType = TRM_BOX;
-            v1.type = VEC_COORDS;
+            v1 = new idAFVector();
             v1.ToVec3().x = v1.ToVec3().y = v1.ToVec3().z = -10.0f;
-            v2.type = VEC_COORDS;
+            v2 = new idAFVector();
             v2.ToVec3().x = v2.ToVec3().y = v2.ToVec3().z = 10.0f;
             numSides = 3;
-            origin.ToVec3().Zero();
-            angles.Zero();
+            origin = new idAFVector();
+            angles = new idAngles();
             density = 0.2f;
-            inertiaScale.Identity();
+            inertiaScale = getMat3_identity();
             linearFriction = file.defaultLinearFriction;
             angularFriction = file.defaultAngularFriction;
             contactFriction = file.defaultContactFriction;
             contents = file.contents;
             clipMask = file.clipMask;
             selfCollision = file.selfCollision;
-            frictionDirection.ToVec3().Zero();
-            contactMotorDirection.ToVec3().Zero();
-            jointName = new idStr("origin");
+            frictionDirection = new idAFVector();
+            contactMotorDirection = new idAFVector();
+            jointName.oSet("origin");
             jointMod = DECLAF_JOINTMOD_AXIS;
-            containedJoints = new idStr("origin");
+            containedJoints.oSet("origin");
         }
     };
 
     public static class idDeclAF_Constraint {
 
-        public idStr name;
-        public idStr body1;
-        public idStr body2;
+        public idStr                  name = new idStr();
+        public idStr                  body1 = new idStr();
+        public idStr                  body2 = new idStr();
         public declAFConstraintType_t type;
-        public float friction;
-        public float stretch;
-        public float compress;
-        public float damping;
-        public float restLength;
-        public float minLength;
-        public float maxLength;
-        public idAFVector anchor;
-        public idAFVector anchor2;
-        public idAFVector[] shaft = new idAFVector[2];
-        public idAFVector axis;
+        public float                  friction;
+        public float                  stretch;
+        public float                  compress;
+        public float                  damping;
+        public float                  restLength;
+        public float                  minLength;
+        public float                  maxLength;
+        public idAFVector             anchor;
+        public idAFVector             anchor2;
+        public              idAFVector[] shaft         = {new idAFVector(), new idAFVector()};
+        public              idAFVector   axis          = new idAFVector();
         //
-        public static final int LIMIT_NONE = -1;
-        public static final int LIMIT_CONE = 0;
-        public static final int LIMIT_PYRAMID = 1;
+        public static final int          LIMIT_NONE    = -1;
+        public static final int          LIMIT_CONE    = 0;
+        public static final int          LIMIT_PYRAMID = 1;
         //			
         public int limit;
-        public idAFVector limitAxis;
-        public float[] limitAngles = new float[3];
+        public idAFVector limitAxis   = new idAFVector();
+        public float[]    limitAngles = new float[3];
         //
         //
 
         public void SetDefault(final idDeclAF file) {
-            name = new idStr("noname");
+            name.oSet("noname");
             type = DECLAF_CONSTRAINT_UNIVERSALJOINT;
             if (file.bodies.Num() != 0) {
-                body1 = file.bodies.oGet(0).name;
+                body1.oSet(file.bodies.oGet(0).name);
             } else {
-                body1 = new idStr("world");
+                body1.oSet("world");
             }
-            body2 = new idStr("world");
+            body2.oSet("world");
             friction = file.defaultConstraintFriction;
-            anchor.ToVec3().Zero();
-            anchor2.ToVec3().Zero();
+            anchor = new idAFVector();
+            anchor2 = new idAFVector();
             axis.ToVec3().Set(1.0f, 0.0f, 0.0f);
             shaft[0].ToVec3().Set(0.0f, 0.0f, -1.0f);
             shaft[1].ToVec3().Set(0.0f, 0.0f, 1.0f);
             limit = LIMIT_NONE;
-            limitAngles[0]
-                    = limitAngles[1]
-                    = limitAngles[2] = 0.0f;
+            limitAngles[0] = limitAngles[1] = limitAngles[2] = 0.0f;
             limitAxis.ToVec3().Set(0.0f, 0.0f, -1.0f);
         }
     };
@@ -387,14 +392,14 @@ public class DeclAF {
     public static class idDeclAF extends idDecl {
 
         public boolean modified;
-        public idStr model;
-        public idStr skin;
-        public float defaultLinearFriction;
-        public float defaultAngularFriction;
-        public float defaultContactFriction;
-        public float defaultConstraintFriction;
-        public float totalMass;
-        public idVec2 suspendVelocity = new idVec2();
+        public idStr   model;
+        public idStr   skin;
+        public float   defaultLinearFriction;
+        public float   defaultAngularFriction;
+        public float   defaultContactFriction;
+        public float   defaultConstraintFriction;
+        public float   totalMass;
+        public idVec2 suspendVelocity     = new idVec2();
         public idVec2 suspendAcceleration = new idVec2();
         public float noMoveTime;
         public float noMoveTranslation;
@@ -404,7 +409,7 @@ public class DeclAF {
         public int[] contents = new int[1];
         public int[] clipMask = new int[1];
         public boolean selfCollision;
-        public final idList<idDeclAF_Body> bodies = new idList<>(idDeclAF_Body.class);
+        public final idList<idDeclAF_Body>       bodies      = new idList<>(idDeclAF_Body.class);
         public final idList<idDeclAF_Constraint> constraints = new idList<>(idDeclAF_Constraint.class);
         //
         //
@@ -605,7 +610,7 @@ public class DeclAF {
 
             body = new idDeclAF_Body();
             body.SetDefault(this);
-            body.name = new idStr(name);
+            body.name.oSet(name);
             bodies.Append(body);
         }
 
@@ -622,15 +627,15 @@ public class DeclAF {
 
             for (i = 0; i < bodies.Num(); i++) {
                 if (bodies.oGet(i).name.Icmp(oldName) == 0) {
-                    bodies.oGet(i).name = new idStr(newName);
+                    bodies.oGet(i).name.oSet(newName);
                     break;
                 }
             }
             for (i = 0; i < constraints.Num(); i++) {
                 if (constraints.oGet(i).body1.Icmp(oldName) == 0) {
-                    constraints.oGet(i).body1 = new idStr(newName);
+                    constraints.oGet(i).body1.oSet(newName);
                 } else if (constraints.oGet(i).body2.Icmp(oldName) == 0) {
-                    constraints.oGet(i).body2 = new idStr(newName);
+                    constraints.oGet(i).body2.oSet(newName);
                 }
             }
         }
@@ -669,7 +674,7 @@ public class DeclAF {
 
             constraint = new idDeclAF_Constraint();
             constraint.SetDefault(this);
-            constraint.name = new idStr(name);
+            constraint.name.oSet(name);
             constraints.Append(constraint);
         }
 
@@ -678,7 +683,7 @@ public class DeclAF {
 
             for (i = 0; i < constraints.Num(); i++) {
                 if (constraints.oGet(i).name.Icmp(oldName) == 0) {
-                    constraints.oGet(i).name = new idStr(newName);
+                    constraints.oGet(i).name.oSet(newName);
                     return;
                 }
             }
@@ -822,7 +827,7 @@ public class DeclAF {
                 return false;
             }
 
-            body.name = token;
+            body.name.oSet(token);
             if (0 == body.name.Icmp("origin") || 0 == body.name.Icmp("world")) {
                 src.Error("a body may not be named \"origin\" or \"world\"");
                 return false;
@@ -920,7 +925,7 @@ public class DeclAF {
                     if (0 == src.ExpectTokenType(TT_STRING, 0, token)) {
                         return false;
                     }
-                    body.jointName = token;
+                    body.jointName.oSet(token);
                     hasJoint = true;
                 } else if (0 == token.Icmp("mod")) {
                     if (!src.ExpectAnyToken(token)) {
@@ -947,7 +952,7 @@ public class DeclAF {
                     if (0 == src.ExpectTokenType(TT_STRING, 0, token)) {
                         return false;
                     }
-                    body.containedJoints = token;
+                    body.containedJoints.oSet(token);
                 } else if (0 == token.Icmp("frictionDirection")) {
                     if (!body.frictionDirection.Parse(src)) {
                         return false;
@@ -992,16 +997,16 @@ public class DeclAF {
             }
 
             constraint.type = DECLAF_CONSTRAINT_FIXED;
-            constraint.name = token;
+            constraint.name.oSet(token);
 
             while (src.ReadToken(token)) {
 
                 if (0 == token.Icmp("body1")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body1 = token;
+                    constraint.body1.oSet(token);
                 } else if (0 == token.Icmp("body2")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body2 = token;
+                    constraint.body2.oSet(token);
                 } else if (token.equals("}")) {
                     break;
                 } else {
@@ -1027,7 +1032,7 @@ public class DeclAF {
 
             constraint.type = DECLAF_CONSTRAINT_BALLANDSOCKETJOINT;
             constraint.limit = idDeclAF_Constraint.LIMIT_NONE;
-            constraint.name = token;
+            constraint.name.oSet(token);
             constraint.friction = 0.5f;
             constraint.anchor.ToVec3().Zero();
             constraint.shaft[0].ToVec3().Zero();
@@ -1036,10 +1041,10 @@ public class DeclAF {
 
                 if (0 == token.Icmp("body1")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body1 = token;
+                    constraint.body1.oSet(token);
                 } else if (0 == token.Icmp("body2")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body2 = token;
+                    constraint.body2.oSet(token);
                 } else if (0 == token.Icmp("anchor")) {
                     if (!constraint.anchor.Parse(src)) {
                         return false;
@@ -1101,7 +1106,7 @@ public class DeclAF {
 
             constraint.type = DECLAF_CONSTRAINT_UNIVERSALJOINT;
             constraint.limit = idDeclAF_Constraint.LIMIT_NONE;
-            constraint.name = token;
+            constraint.name.oSet(token);
             constraint.friction = 0.5f;
             constraint.anchor.ToVec3().Zero();
             constraint.shaft[0].ToVec3().Zero();
@@ -1111,10 +1116,10 @@ public class DeclAF {
 
                 if (0 == token.Icmp("body1")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body1 = token;
+                    constraint.body1.oSet(token);
                 } else if (0 == token.Icmp("body2")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body2 = token;
+                    constraint.body2.oSet(token);
                 } else if (0 == token.Icmp("anchor")) {
                     if (!constraint.anchor.Parse(src)) {
                         return false;
@@ -1174,7 +1179,7 @@ public class DeclAF {
 
             constraint.type = DECLAF_CONSTRAINT_HINGE;
             constraint.limit = idDeclAF_Constraint.LIMIT_NONE;
-            constraint.name = token;
+            constraint.name.oSet(token);
             constraint.friction = 0.5f;
             constraint.anchor.ToVec3().Zero();
             constraint.axis.ToVec3().Zero();
@@ -1183,10 +1188,10 @@ public class DeclAF {
 
                 if (0 == token.Icmp("body1")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body1 = token;
+                    constraint.body1.oSet(token);
                 } else if (0 == token.Icmp("body2")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body2 = token;
+                    constraint.body2.oSet(token);
                 } else if (0 == token.Icmp("anchor")) {
                     if (!constraint.anchor.Parse(src)) {
                         return false;
@@ -1233,17 +1238,17 @@ public class DeclAF {
 
             constraint.type = DECLAF_CONSTRAINT_SLIDER;
             constraint.limit = idDeclAF_Constraint.LIMIT_NONE;
-            constraint.name = token;
+            constraint.name.oSet(token);
             constraint.friction = 0.5f;
 
             while (src.ReadToken(token)) {
 
                 if (0 == token.Icmp("body1")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body1 = token;
+                    constraint.body1.oSet(token);
                 } else if (0 == token.Icmp("body2")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body2 = token;
+                    constraint.body2.oSet(token);
                 } else if (0 == token.Icmp("axis")) {
                     if (!constraint.axis.Parse(src)) {
                         return false;
@@ -1275,17 +1280,17 @@ public class DeclAF {
 
             constraint.type = DECLAF_CONSTRAINT_SPRING;
             constraint.limit = idDeclAF_Constraint.LIMIT_NONE;
-            constraint.name = token;
+            constraint.name.oSet(token);
             constraint.friction = 0.5f;
 
             while (src.ReadToken(token)) {
 
                 if (0 == token.Icmp("body1")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body1 = token;
+                    constraint.body1.oSet(token);
                 } else if (0 == token.Icmp("body2")) {
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    constraint.body2 = token;
+                    constraint.body2.oSet(token);
                 } else if (0 == token.Icmp("anchor1")) {
                     if (!constraint.anchor.Parse(src)) {
                         return false;
@@ -1467,11 +1472,11 @@ public class DeclAF {
             f.WriteFloatString("\torigin ");
             body.origin.Write(f);
             f.WriteFloatString("\n");
-            if (body.angles != Angles.ang_zero) {
+            if (body.angles != Angles.getAng_zero()) {
                 f.WriteFloatString("\tangles ( %f, %f, %f )\n", body.angles.pitch, body.angles.yaw, body.angles.roll);
             }
             f.WriteFloatString("\tdensity %f\n", body.density);
-            if (body.inertiaScale != idMat3.mat3_identity) {
+            if (body.inertiaScale != idMat3.getMat3_identity()) {
                 final idMat3 ic = body.inertiaScale;
                 f.WriteFloatString("\tinertiaScale (%f %f %f %f %f %f %f %f %f)\n",
                         ic.oGet(0).oGet(0), ic.oGet(0).oGet(1), ic.oGet(0).oGet(2),
@@ -1484,12 +1489,12 @@ public class DeclAF {
             f.WriteFloatString("\tcontents %s\n", ContentsToString(body.contents[0], str));
             f.WriteFloatString("\tclipMask %s\n", ContentsToString(body.clipMask[0], str));
             f.WriteFloatString("\tselfCollision %d\n", body.selfCollision);
-            if (body.frictionDirection.ToVec3() != Vector.vec3_origin) {
+            if (body.frictionDirection.ToVec3() != Vector.getVec3_origin()) {
                 f.WriteFloatString("\tfrictionDirection ");
                 body.frictionDirection.Write(f);
                 f.WriteFloatString("\n");
             }
-            if (body.contactMotorDirection.ToVec3() != Vector.vec3_origin) {
+            if (body.contactMotorDirection.ToVec3() != Vector.getVec3_origin()) {
                 f.WriteFloatString("\tcontactMotorDirection ");
                 body.contactMotorDirection.Write(f);
                 f.WriteFloatString("\n");

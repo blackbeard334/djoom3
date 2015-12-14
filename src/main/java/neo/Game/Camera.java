@@ -49,10 +49,6 @@ public class Camera {
     public static abstract class idCamera extends idEntity {
         //public	ABSTRACT_PROTOTYPE( idCamera );
 
-        @Override
-        public void Spawn() {
-        }
-
         public abstract void GetViewParms(renderView_s view);
 
         @Override
@@ -219,6 +215,11 @@ public class Camera {
         idCQuat q;
         idVec3 t;
         float fov;
+
+        public cameraFrame_t() {
+            q = new idCQuat();
+            t = new idVec3();
+        }
     };
 
     public static class idCameraAnim extends idCamera {
@@ -237,10 +238,12 @@ public class Camera {
 
         public idCameraAnim() {
             threadNum = 0;
-            offset.Zero();
+            offset = new idVec3();
             frameRate = 0;
-            cycle = 1;
             starttime = 0;
+            cycle = 1;
+            cameraCuts = new idList<>();
+            camera = new idList<>();
             activator = null;
 
         }
@@ -271,6 +274,8 @@ public class Camera {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             if (spawnArgs.GetVector("old_origin", "0 0 0", offset)) {
                 offset = GetPhysics().GetOrigin().oMinus(offset);
             } else {
@@ -575,9 +580,11 @@ public class Camera {
             parser.ExpectTokenString("{");
             camera.SetNum(numFrames);
             for (i = 0; i < numFrames; i++) {
-                parser.Parse1DMatrix(3, camera.oGet(i).t);
-                parser.Parse1DMatrix(3, camera.oGet(i).q);
-                camera.oGet(i).fov = parser.ParseFloat();
+                cameraFrame_t cam = new cameraFrame_t();
+                parser.Parse1DMatrix(3, cam.t);
+                parser.Parse1DMatrix(3, cam.q);
+                cam.fov = parser.ParseFloat();
+                camera.oSet(i, cam);
             }
             parser.ExpectTokenString("}");
 

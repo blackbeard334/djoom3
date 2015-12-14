@@ -641,7 +641,7 @@ public class Model_local {
         }
 
         @Override
-        public idJointQuat GetDefaultPose() {
+        public idJointQuat[] GetDefaultPose() {
             return null;
         }
 

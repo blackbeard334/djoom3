@@ -98,7 +98,7 @@ import static neo.idlib.Lib.colorWhite;
 import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_DECELSINE;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_NONE;
@@ -106,9 +106,9 @@ import static neo.idlib.math.Extrapolate.EXTRAPOLATION_NOSTOP;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -301,7 +301,7 @@ public class Misc {
             if (f != 0 && ent != null) {
                 // place in private camera view for some time
                 // the entity needs to teleport to where the camera view is to have the PVS right
-                player.Teleport(ent.GetPhysics().GetOrigin(), ang_zero, this);
+                player.Teleport(ent.GetPhysics().GetOrigin(), getAng_zero(), this);
                 player.StartSound("snd_teleport_enter", SND_CHANNEL_ANY, 0, false, null);
                 player.SetPrivateCameraView((idCamera) ent);
                 // the player entity knows where to spawn from the previous Teleport call
@@ -354,7 +354,7 @@ public class Misc {
             spawnArgs.GetBool("stay_on", "0", stay_on);
             spawnArgs.GetBool("start_off", "0", start_off);
 
-            GetPhysics().SetClipBox(new idBounds(vec3_origin).Expand(4), 1.0f);
+            GetPhysics().SetClipBox(new idBounds(getVec3_origin()).Expand(4), 1.0f);
             GetPhysics().SetContents(0);
 
             if (!start_off[0]) {
@@ -1287,7 +1287,7 @@ public class Misc {
             }
             projectile = (idProjectile) ent[0];
             projectile.Create(this, launchPos, dir);
-            projectile.Launch(launchPos, dir, vec3_origin);
+            projectile.Launch(launchPos, dir, getVec3_origin());
 
             if (numshots > 0) {
                 PostEventMS(EV_LaunchMissilesUpdate, FRAME2MS(framedelay), launchjoint, targetjoint, numshots - 1, framedelay);
@@ -2258,7 +2258,7 @@ public class Misc {
             phase = gameLocal.random.RandomInt(1000);
             shake = spawnArgs.GetAngles("shake", "0.5 0.5 0.5");
             period = (int) (spawnArgs.GetFloat("period", "0.05") * 1000);
-            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), phase, (int) (period * 0.25f), GetPhysics().GetAxis().ToAngles(), shake, ang_zero);
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), phase, (int) (period * 0.25f), GetPhysics().GetAxis().ToAngles(), shake, getAng_zero());
         }
 
         private void Event_Activate(idEntity activator) {
@@ -2266,7 +2266,7 @@ public class Misc {
                 BeginShaking();
             } else {
                 active = false;
-                physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, physicsObj.GetAxis().ToAngles(), ang_zero, ang_zero);
+                physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, physicsObj.GetAxis().ToAngles(), getAng_zero(), getAng_zero());
             }
         }
 

@@ -23,12 +23,13 @@ import static neo.framework.Common.common;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.cmp_t;
+import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -1556,6 +1557,7 @@ public class tr_trisurf {
         indexSort_t[] ind = new indexSort_t[tri.numIndexes];// R_StaticAlloc(tri.numIndexes);
 
         for (i = 0; i < tri.numIndexes; i++) {
+            ind[i] = new indexSort_t();
             ind[i].vertexNum = tri.indexes[i];
             ind[i].faceNum = i / 3;
         }
@@ -1605,6 +1607,7 @@ public class tr_trisurf {
                 }
                 maxArea = area;
 
+                dt[vertNum] = new dominantTri_s();
                 if (i1 == vertNum) {
                     dt[vertNum].v2 = i2;
                     dt[vertNum].v3 = i3;
@@ -2163,7 +2166,7 @@ public class tr_trisurf {
         // If the surface is going to have generated normals, this won't matter,
         // but if it has explicit normals, this will keep it on the correct side
         for (i = 0; i < tri.numVerts; i++) {
-            tri.verts[i].normal = vec3_origin.oMinus(tri.verts[i].normal);
+            tri.verts[i].normal = getVec3_origin().oMinus(tri.verts[i].normal);
         }
 
         // flip the index order to make them back sided
@@ -2303,8 +2306,72 @@ public class tr_trisurf {
         return deform;
     }
 
-    public static deformInfo_s R_BuildDeformInfo(int numVerts, final idDrawVert[] verts, int numIndexes, final Integer[] indexes, boolean useUnsmoothedTangents) {
-        throw new UnsupportedOperationException();
+    public static deformInfo_s R_BuildDeformInfo(int numVerts, final idDrawVert[] verts, int numIndexes, final idList<Integer> indexes, boolean useUnsmoothedTangents) {
+        deformInfo_s deform;
+        srfTriangles_s tri;
+        int i;
+
+        tri = new srfTriangles_s();//memset( &tri, 0, sizeof( tri ) );
+
+        tri.numVerts = numVerts;
+        R_AllocStaticTriSurfVerts(tri, tri.numVerts);
+        SIMDProcessor.Memcpy(tri.verts, verts, tri.numVerts);
+
+        tri.numIndexes = numIndexes;
+        R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
+
+        // don't memcpy, so we can change the index type from int to short without changing the interface
+        for (i = 0; i < tri.numIndexes; i++) {
+            tri.indexes[i] = indexes.oGet(i);
+        }
+
+        R_RangeCheckIndexes(tri);
+        R_CreateSilIndexes(tri);
+
+        // should we order the indexes here?
+//	R_RemoveDuplicatedTriangles( &tri );
+//	R_RemoveDegenerateTriangles( &tri );
+//	R_RemoveUnusedVerts( &tri );
+        R_IdentifySilEdges(tri, false);			// we cannot remove coplanar edges, because
+        //                                              // they can deform to silhouettes
+
+        R_DuplicateMirroredVertexes(tri);		// split mirror points into multiple points
+
+        R_CreateDupVerts(tri);
+
+        if (useUnsmoothedTangents) {
+            R_BuildDominantTris(tri);
+        }
+
+        deform = new deformInfo_s();//deformInfo_t *)R_ClearedStaticAlloc( sizeof( *deform ) );
+
+        deform.numSourceVerts = numVerts;
+        deform.numOutputVerts = tri.numVerts;
+
+        deform.numIndexes = numIndexes;
+        deform.indexes = tri.indexes;
+
+        deform.silIndexes = tri.silIndexes;
+
+        deform.numSilEdges = tri.numSilEdges;
+        deform.silEdges = tri.silEdges;
+
+        deform.dominantTris = tri.dominantTris;
+
+        deform.numMirroredVerts = tri.numMirroredVerts;
+        deform.mirroredVerts = tri.mirroredVerts;
+
+        deform.numDupVerts = tri.numDupVerts;
+        deform.dupVerts = tri.dupVerts;
+
+//	if ( tri.verts ) {
+//		triVertexAllocator.Free( tri.verts );
+//	}
+//
+//	if ( tri.facePlanes ) {
+//		triPlaneAllocator.Free( tri.facePlanes );
+//	}
+        return deform;
     }
 
     /*

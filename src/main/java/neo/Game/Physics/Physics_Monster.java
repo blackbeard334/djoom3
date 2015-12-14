@@ -24,9 +24,9 @@ import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -99,7 +99,7 @@ public class Physics_Monster {
             current.atRest = -1;
             saved = current;
 
-            delta.Zero();
+            delta = new idVec3();
             maxStepHeight = 18.0f;
             minFloorCosine = 0.7f;
             moveResult = MM_OK;
@@ -164,7 +164,7 @@ public class Physics_Monster {
         // set delta for next move
         public void SetDelta(final idVec3 d) {
             delta = d;
-            if (!delta.equals(vec3_origin)) {
+            if (!delta.equals(getVec3_origin())) {
                 Activate();
             }
         }
@@ -250,7 +250,7 @@ public class Physics_Monster {
 
             // if not on the ground or moving upwards
             float upspeed;
-            if (!gravityNormal.equals(vec3_zero)) {
+            if (!gravityNormal.equals(getVec3_zero())) {
                 upspeed = -(current.velocity.oMultiply(gravityNormal));
             } else {
                 upspeed = current.velocity.z;
@@ -263,7 +263,7 @@ public class Physics_Monster {
                     moveResult = MM_OK;
                 }
                 delta = current.velocity.oMultiply(timeStep);
-                if (!delta.equals(vec3_origin)) {
+                if (!delta.equals(getVec3_origin())) {
                     moveResult = this.SlideMove(current.origin, current.velocity, delta);
                     delta.Zero();
                 }
@@ -280,7 +280,7 @@ public class Physics_Monster {
 
                 current.velocity.oMinSet(current.velocity.oMultiply(gravityNormal.oMultiply(gravityNormal)));
 
-                if (delta.equals(vec3_origin)) {
+                if (delta.equals(getVec3_origin())) {
                     Rest();
                 } else {
                     // try moving into the desired direction
@@ -508,7 +508,7 @@ public class Physics_Monster {
             trace_s[] groundTrace = {null};
             idVec3 down;
 
-            if (gravityNormal.equals(vec3_zero)) {
+            if (gravityNormal.equals(getVec3_zero())) {
                 state.onGround = false;
                 groundEntityPtr = null;
                 return;
@@ -555,7 +555,7 @@ public class Physics_Monster {
             for (i = 0; i < 3; i++) {
                 gameLocal.clip.Translation(tr, start, start.oPlus(move), clipModel, clipModel.GetAxis(), clipMask, self);
 
-                start = tr[0].endpos;
+                start.oSet(tr[0].endpos);
 
                 if (tr[0].fraction == 1.0f) {
                     if (i > 0) {
@@ -591,7 +591,7 @@ public class Physics_Monster {
             float stepdist;
             float nostepdist;
 
-            if (delta.equals(vec3_origin)) {
+            if (delta.equals(getVec3_origin())) {
                 return MM_OK;
             }
 
@@ -601,7 +601,7 @@ public class Physics_Monster {
             result1 = SlideMove(noStepPos, noStepVel, delta);
             if (result1 == MM_OK) {
                 velocity.oSet(noStepVel);
-                if (gravityNormal.equals(vec3_zero)) {
+                if (gravityNormal.equals(getVec3_zero())) {
                     start.oSet(noStepPos);
                     return MM_OK;
                 }
@@ -627,7 +627,7 @@ public class Physics_Monster {
                 return MM_BLOCKED;
             }
 
-            if (gravityNormal.equals(vec3_zero)) {
+            if (gravityNormal.equals(getVec3_zero())) {
                 return result1;
             }
 

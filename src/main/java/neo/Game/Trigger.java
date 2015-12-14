@@ -32,9 +32,9 @@ import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Vector.RAD2DEG;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -895,7 +895,7 @@ public class Trigger {
 
             if (on && other != null && gameLocal.time >= nextTime) {
                 damage = spawnArgs.GetString("def_damage", "damage_painTrigger");
-                other.Damage(null, null, vec3_origin, damage, 1.0f, INVALID_JOINT);
+                other.Damage(null, null, getVec3_origin(), damage, 1.0f, INVALID_JOINT);
 
                 ActivateTargets(other);
                 CallScript();

@@ -72,8 +72,8 @@ public class Model {
     // this is used for calculating unsmoothed normals and tangents for deformed models
     public static class dominantTri_s {
 
-        int/*glIndex_t*/ v2, v3;
-        final float[] normalizationScale = new float[3];
+        public int/*glIndex_t*/ v2, v3;
+        public final float[] normalizationScale = new float[3];
     };
 
     static class lightingCache_s {
@@ -422,7 +422,7 @@ public class Model {
         public abstract String GetJointName(int jointHandle_t);
 
         // Returns the default animation pose or NULL if the model is not an MD5.
-        public abstract idJointQuat GetDefaultPose();
+        public abstract idJointQuat[] GetDefaultPose();
 
         // Returns number of the joint nearest to the given triangle.
         public abstract int NearestJoint(int surfaceNum, int a, int c, int b);

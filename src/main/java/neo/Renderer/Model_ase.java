@@ -764,7 +764,6 @@ public class Model_ase {
             idVec3 n = new idVec3();
 
             pMesh.normalsParsed = true;
-            f = pMesh.faces[ase.currentFace];
 
             if ("*MESH_FACENORMAL".equals(token)) {
                 int num;
@@ -775,6 +774,8 @@ public class Model_ase {
                 if (num >= pMesh.numFaces || num < 0) {
                     common.Error("MESH_NORMALS face index out of range: %d", num);
                 }
+                
+                f = pMesh.faces[ase.currentFace];
 
                 if (num != ase.currentFace) {
                     common.Error("MESH_NORMALS face index != currentFace");
@@ -787,6 +788,7 @@ public class Model_ase {
                 ASE_GetToken(false);
                 n.oSet(2, Float.parseFloat(ase.token));
 
+                f.faceNormal = new idVec3();
                 f.faceNormal.oSet(0, n.oGet(0) * pMesh.transform[0].oGet(0) + n.oGet(1) * pMesh.transform[1].oGet(0) + n.oGet(2) * pMesh.transform[2].oGet(0));
                 f.faceNormal.oSet(1, n.oGet(0) * pMesh.transform[0].oGet(1) + n.oGet(1) * pMesh.transform[1].oGet(1) + n.oGet(2) * pMesh.transform[2].oGet(1));
                 f.faceNormal.oSet(2, n.oGet(0) * pMesh.transform[0].oGet(2) + n.oGet(1) * pMesh.transform[1].oGet(2) + n.oGet(2) * pMesh.transform[2].oGet(2));
@@ -805,7 +807,7 @@ public class Model_ase {
                     common.Error("MESH_NORMALS vertex index out of range: %d", num);
                 }
 
-                f = pMesh.faces[ ase.currentFace - 1];
+                f = pMesh.faces[ase.currentFace - 1];
 
                 for (v = 0; v < 3; v++) {
                     if (num == f.vertexNum[ v]) {
@@ -824,9 +826,10 @@ public class Model_ase {
                 ASE_GetToken(false);
                 n.oSet(2, Float.parseFloat(ase.token));
 
-                f.vertexNormals[ v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(0) + n.oGet(1) * pMesh.transform[1].oGet(0) + n.oGet(2) * pMesh.transform[2].oGet(0));
-                f.vertexNormals[ v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(1) + n.oGet(1) * pMesh.transform[1].oGet(1) + n.oGet(2) * pMesh.transform[2].oGet(2));
-                f.vertexNormals[ v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(2) + n.oGet(1) * pMesh.transform[1].oGet(2) + n.oGet(2) * pMesh.transform[2].oGet(1));
+                f.vertexNormals[v] = new idVec3();
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(0) + n.oGet(1) * pMesh.transform[1].oGet(0) + n.oGet(2) * pMesh.transform[2].oGet(0));
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(1) + n.oGet(1) * pMesh.transform[1].oGet(1) + n.oGet(2) * pMesh.transform[2].oGet(2));
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(2) + n.oGet(1) * pMesh.transform[1].oGet(2) + n.oGet(2) * pMesh.transform[2].oGet(1));
 
                 f.vertexNormals[v].Normalize();
             }

@@ -20,10 +20,10 @@ import neo.Game.Projectile.idProjectile;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -82,7 +82,7 @@ public class Push {
             results[0].endAxis = clipModel.GetAxis();
 //	memset( &results.c, 0, sizeof( results.c ) );//TODO:
 
-            if (translation.equals(vec3_origin)) {
+            if (translation.equals(getVec3_origin())) {
                 return totalMass;
             }
 
@@ -196,7 +196,7 @@ public class Push {
 
                 // if blocking entities should be crushed
                 if ((flags & PUSHFL_CRUSH) != 0) {
-                    check.Damage(clipModel.GetEntity(), clipModel.GetEntity(), vec3_origin, "damage_crush", 1.0f, CLIPMODEL_ID_TO_JOINT_HANDLE(pushResults[0].c.id));
+                    check.Damage(clipModel.GetEntity(), clipModel.GetEntity(), getVec3_origin(), "damage_crush", 1.0f, CLIPMODEL_ID_TO_JOINT_HANDLE(pushResults[0].c.id));
                     continue;
                 }
 
@@ -347,7 +347,7 @@ public class Push {
                     clipModel.Link(gameLocal.clip, clipModel.GetEntity(), clipModel.GetId(), clipModel.GetOrigin(), oldAxis);
 
                     // wake up this object
-                    check.ApplyImpulse(clipModel.GetEntity(), clipModel.GetId(), clipModel.GetOrigin(), vec3_origin);
+                    check.ApplyImpulse(clipModel.GetEntity(), clipModel.GetId(), clipModel.GetOrigin(), getVec3_origin());
 
                     // add mass of pushed entity
                     totalMass += physics.GetMass();
@@ -366,7 +366,7 @@ public class Push {
 
                 // if blocking entities should be crushed
                 if ((flags & PUSHFL_CRUSH) != 0) {
-                    check.Damage(clipModel.GetEntity(), clipModel.GetEntity(), vec3_origin, "damage_crush", 1.0f, CLIPMODEL_ID_TO_JOINT_HANDLE(pushResults[0].c.id));
+                    check.Damage(clipModel.GetEntity(), clipModel.GetEntity(), getVec3_origin(), "damage_crush", 1.0f, CLIPMODEL_ID_TO_JOINT_HANDLE(pushResults[0].c.id));
                     continue;
                 }
 
@@ -422,7 +422,7 @@ public class Push {
             translation = newOrigin.oMinus(oldOrigin);
 
             // if the pusher translates
-            if (translation != vec3_origin) {
+            if (translation != getVec3_origin()) {
 
                 mass += ClipTranslationalPush(results, pusher, flags, newOrigin, translation);
                 if (results[0].fraction < 1.0f) {
@@ -431,7 +431,7 @@ public class Push {
                     return mass;
                 }
             } else {
-                newOrigin = oldOrigin;
+                newOrigin.oSet(oldOrigin);
             }
 
             // rotational push
@@ -444,7 +444,7 @@ public class Push {
             if (rotation.GetAngle() != 0.0f) {
 
                 // recalculate new axis to avoid floating point rounding problems
-                newAxis = oldAxis.oMultiply(rotation.ToMat3());
+                newAxis.oSet(oldAxis.oMultiply(rotation.ToMat3()));
                 newAxis.OrthoNormalizeSelf();
                 newAxis.FixDenormals();
                 newAxis.FixDegeneracies();
@@ -570,7 +570,7 @@ public class Push {
                 rotation.SetOrigin(rotationPoint);
                 // tiny float numbers in the clip axis, this can get the entity stuck
                 if (rotation.GetAngle() == 0.0f) {
-                    physics.SetAxis(mat3_identity);
+                    physics.SetAxis(getMat3_identity());
                     return true;
                 }
                 //
@@ -579,7 +579,7 @@ public class Push {
                 if (trace[0].fraction >= 1.0f) {
                     // set bbox in final axial position
                     physics.SetOrigin(trace[0].endpos);
-                    physics.SetAxis(mat3_identity);
+                    physics.SetAxis(getMat3_identity());
                     return true;
                 } // if partial rotation was possible
                 else if (trace[0].fraction > 0.0f) {
@@ -588,7 +588,7 @@ public class Push {
                     physics.SetAxis(trace[0].endAxis);
                 }
                 // next rotate around collision point
-                rotationPoint = trace[0].c.point;
+                rotationPoint.oSet(trace[0].c.point);
             }
             return false;
         }

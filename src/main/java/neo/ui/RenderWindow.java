@@ -18,9 +18,9 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.SimpleWindow.drawWin_t;
 import neo.ui.UserInterfaceLocal.idUserInterfaceLocal;
@@ -189,7 +189,7 @@ public class RenderWindow {
                     if (time > animEndTime) {
                         animEndTime = time + animLength;
                     }
-                    gameEdit.ANIM_CreateAnimFrame(worldEntity.hModel, modelAnim, worldEntity.numJoints, worldEntity.joints, animLength - (animEndTime - time), vec3_origin, false);
+                    gameEdit.ANIM_CreateAnimFrame(worldEntity.hModel, modelAnim, worldEntity.numJoints, worldEntity.joints, animLength - (animEndTime - time), getVec3_origin(), false);
                 }
                 worldEntity.axis = new idAngles(modelRotate.x(), modelRotate.y(), modelRotate.z()).ToMat3();
 //                System.out.printf("x=%f, y=%f, z=%f\n", modelRotate.x(), modelRotate.y(), modelRotate.z());

@@ -170,7 +170,7 @@ import static neo.TempDump.sizeof;
 import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Vector.vec3_zero;
+import static neo.idlib.math.Vector.getVec3_zero;
 
 /**
  *
@@ -408,7 +408,7 @@ public class Script_Interpreter {
                         break;
 
                     case D_EVENT_VECTOR:
-                        gameLocal.program.ReturnVector(vec3_zero);
+                        gameLocal.program.ReturnVector(getVec3_zero());
                         break;
 
                     case D_EVENT_STRING:
@@ -1052,7 +1052,7 @@ public class Script_Interpreter {
                             EnterFunction(func, false);
                         } else {
                             // return a 'safe' value
-                            gameLocal.program.ReturnVector(vec3_zero);
+                            gameLocal.program.ReturnVector(getVec3_zero());
                             gameLocal.program.ReturnString("");
                             PopParms(st.c.value.getArgSize());
                         }
@@ -1304,7 +1304,7 @@ public class Script_Interpreter {
                     case OP_NOT_V:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.floatPtr[0] = btoi(var_a.vectorPtr[0].equals(vec3_zero));
+                        var_c.floatPtr[0] = btoi(var_a.vectorPtr[0].equals(getVec3_zero()));
                         break;
 
                     case OP_NOT_S:

@@ -51,12 +51,12 @@ import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Interpolate.idInterpolateAccelDecelLinear;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 import static neo.idlib.precompiled.MAX_EXPRESSION_OPS;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
 import static neo.sys.sys_public.sysEventType_t.SE_CHAR;
@@ -1903,7 +1903,7 @@ public class Window {
                     && 0 == (flags & WIN_NOCURSOR)
                     && !hideCursor.data
                     && (gui.Active() || ((flags & WIN_MENUGUI) != 0)))) {
-                dc.SetTransformInfo(vec3_origin, mat3_identity);
+                dc.SetTransformInfo(getVec3_origin(), getMat3_identity());
                 gui.DrawCursor();
             }
 

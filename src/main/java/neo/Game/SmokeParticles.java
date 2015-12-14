@@ -22,7 +22,7 @@ import neo.framework.DeclParticle.particleGen_t;
 import static neo.framework.UsercmdGen.USERCMD_MSEC;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
 
@@ -117,7 +117,7 @@ public class SmokeParticles {
             renderEntity = new renderEntity_s();
 
             renderEntity.bounds.Clear();
-            renderEntity.axis = mat3_identity;
+            renderEntity.axis = getMat3_identity();
             renderEntity.shaderParms[ SHADERPARM_RED] = 1;
             renderEntity.shaderParms[ SHADERPARM_GREEN] = 1;
             renderEntity.shaderParms[ SHADERPARM_BLUE] = 1;

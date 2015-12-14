@@ -5,9 +5,9 @@ import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics.impactInfo_s;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -47,10 +47,10 @@ public class Force_Spring {
             restLength = 0.0f;
             physics1 = null;
             id1 = 0;
-            p1 = vec3_zero;
+            p1 = getVec3_zero();
             physics2 = null;
             id2 = 0;
-            p2 = vec3_zero;
+            p2 = getVec3_zero();
         }
 //	virtual				~idForce_Spring( void );
 
@@ -82,7 +82,7 @@ public class Force_Spring {
 
             pos1 = p1;
             pos2 = p2;
-            velocity1 = velocity2 = vec3_origin;
+            velocity1 = velocity2 = getVec3_origin();
 
             if (physics1 != null) {
                 axis = physics1.GetAxis(id1);

@@ -20,19 +20,55 @@ import static neo.idlib.math.Simd.SIMDProcessor;
  */
 public class Vector {
 
-    public static final idVec2 vec2_origin   = new idVec2(0.0f, 0.0f);
-    public static final idVec3 vec3_origin   = new idVec3(0.0f, 0.0f, 0.0f);
-    public static final idVec3 vec3_zero     = vec3_origin;
-    public static final idVec4 vec4_origin   = new idVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    public static final idVec4 vec4_zero     = vec4_origin;
-    public static final idVec5 vec5_origin   = new idVec5(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-    public static final idVec6 vec6_origin   = new idVec6(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-    public static final idVec6 vec6_zero     = vec6_origin;
-    public static final idVec6 vec6_infinity = new idVec6(idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY);
+    private static final idVec2 vec2_origin   = new idVec2(0.0f, 0.0f);
+    private static final idVec3 vec3_origin   = new idVec3(0.0f, 0.0f, 0.0f);
+    private static final idVec3 vec3_zero     = vec3_origin;
+    private static final idVec4 vec4_origin   = new idVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    private static final idVec4 vec4_zero     = vec4_origin;
+    private static final idVec5 vec5_origin   = new idVec5(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    private static final idVec6 vec6_origin   = new idVec6(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    private static final idVec6 vec6_zero     = vec6_origin;
+    private static final idVec6 vec6_infinity = new idVec6(idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY);
 
     @Deprecated
     public static float RAD2DEG(double a) {
         return (float) (a * idMath.M_RAD2DEG);
+    }
+
+    public static idVec2 getVec2_origin() {
+        return new idVec2(vec2_origin);
+    }
+
+    public static idVec3 getVec3_origin() {
+        return new idVec3(vec3_origin);
+    }
+
+    public static idVec3 getVec3_zero() {
+        return new idVec3(vec3_zero);
+    }
+
+    public static idVec4 getVec4_origin() {
+        return new idVec4(vec4_origin);
+    }
+
+    public static idVec4 getVec4_zero() {
+        return new idVec4(vec4_zero);
+    }
+
+    public static idVec5 getVec5_origin() {
+        return new idVec5(vec5_origin);
+    }
+
+    public static idVec6 getVec6_origin() {
+        return new idVec6(vec6_origin.p);
+    }
+
+    public static idVec6 getVec6_zero() {
+        return new idVec6(vec6_zero.p);
+    }
+
+    public static idVec6 getVec6_infinity() {
+        return new idVec6(vec6_infinity.p);
     }
 
     public interface idVec<type> {
@@ -324,7 +360,7 @@ public class Vector {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-        
+
         public static idVec2[] generateArray(final int length) {
             return Stream.
                     generate(() -> new idVec2()).
@@ -1097,7 +1133,7 @@ public class Vector {
 
             return (this.x == other.x) && (this.y == other.y) && (this.z == other.z);
         }
-        
+
         public static idVec3[] generateArray(final int length) {
             return Stream.
                     generate(() -> new idVec3()).
@@ -1421,7 +1457,7 @@ public class Vector {
         public idVec4 oDivide(float a) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-        
+
         public static idVec4[] generateArray(final int length) {
             return Stream.
                     generate(() -> new idVec4()).
@@ -1604,7 +1640,7 @@ public class Vector {
         public idVec5 oDivide(float a) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-        
+
         public static idVec5[] generateArray(final int length) {
             return Stream.
                     generate(() -> new idVec5()).
@@ -1632,7 +1668,7 @@ public class Vector {
 
         public idVec6(final float[] a) {
 //	memcpy( p, a, 6 * sizeof( float ) );
-            p = a;
+            System.arraycopy(a, 0, p, 0, 6);
         }
 
         public idVec6(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {

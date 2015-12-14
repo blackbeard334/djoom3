@@ -38,7 +38,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
@@ -57,15 +57,15 @@ public class DeclParticle {
      ===============================================================================
      */
     static class ParticleParmDesc {
+        final String name;
+        int count;
+        final String desc;
 
         public ParticleParmDesc(String name, int count, String desc) {
             this.name = name;
             this.count = count;
             this.desc = desc;
         }
-        final String name;
-        int count;
-        final String desc;
     };
     static final ParticleParmDesc ParticleDistributionDesc[] = {
         new ParticleParmDesc("rect", 3, ""),
@@ -100,17 +100,17 @@ public class DeclParticle {
 
      ====================================================================================
      */
-    class idParticleParm {
+    static class idParticleParm {
+        public idDeclTable table;
+        public float       from;
+        public float       to;
+        //
+        //
 
         public idParticleParm() {
             table = null;
             from = to = 0.0f;
         }
-//        
-        public idDeclTable table;
-        public float from;
-        public float to;
-//        
 
         public float Eval(float frac, idRandom rand) {
             if (table != null) {
@@ -130,17 +130,17 @@ public class DeclParticle {
 
     enum prtDistribution_t {
 
-        PDIST_RECT, // ( sizeX sizeY sizeZ )
+        PDIST_RECT,     // ( sizeX sizeY sizeZ )
         PDIST_CYLINDER, // ( sizeX sizeY sizeZ )
-        PDIST_SPHERE			// ( sizeX sizeY sizeZ ringFraction )
-        // a ringFraction of zero allows the entire sphere, 0.9 would only
-        // allow the outer 10% of the sphere
+        PDIST_SPHERE	// ( sizeX sizeY sizeZ ringFraction )
+                        // a ringFraction of zero allows the entire sphere, 0.9 would only
+                        // allow the outer 10% of the sphere
     };
 
     enum prtDirection_t {
 
-        PDIR_CONE, // parm0 is the solid cone angle
-        PDIR_OUTWARD			// direction is relative to offset from origin, parm0 is an upward bias
+        PDIR_CONE,      // parm0 is the solid cone angle
+        PDIR_OUTWARD	// direction is relative to offset from origin, parm0 is an upward bias
     };
 
     enum prtCustomPth_t {
@@ -163,18 +163,18 @@ public class DeclParticle {
 
     public static class particleGen_t {
 
-        public renderEntity_s renderEnt;		// for shaderParms, etc
-        public renderView_s renderView;
-        public int index;				// particle number in the system
-        public float frac;				// 0.0 to 1.0
-        public idRandom random;
-        public idVec3 origin;				// dynamic smoke particles can have individual origins and axis
-        public idMat3 axis;
-//
-//
-        public float age;				// in seconds, calculated as fraction * stage->particleLife
-        public idRandom originalRandom;		// needed so aimed particles can reset the random for another origin calculation
-        public float animationFrameFrac;               // set by ParticleTexCoords, used to make the cross faded version
+        public renderEntity_s renderEnt;          // for shaderParms, etc
+        public renderView_s   renderView;
+        public int            index;              // particle number in the system
+        public float          frac;               // 0.0 to 1.0
+        public idRandom       random;
+        public idVec3         origin;             // dynamic smoke particles can have individual origins and axis
+        public idMat3         axis;
+        //
+        //
+        public float          age;                // in seconds, calculated as fraction * stage->particleLife
+        public idRandom       originalRandom;     // needed so aimed particles can reset the random for another origin calculation
+        public float          animationFrameFrac; // set by ParticleTexCoords, used to make the cross faded version
     };
 
     //
@@ -182,66 +182,66 @@ public class DeclParticle {
     //
     public static class idParticleStage {
 
-        public idMaterial material;
-//
-        public int totalParticles;		// total number of particles, although some may be invisible at a given time
-        public float cycles;			// allows things to oneShot ( 1 cycle ) or run for a set number of cycles
+        public idMaterial        material;
+        //
+        public int               totalParticles;  // total number of particles, although some may be invisible at a given time
+        public float             cycles;          // allows things to oneShot ( 1 cycle ) or run for a set number of cycles
         // on a per stage basis
-//
-        public int cycleMsec;			// ( particleLife + deadTime ) in msec
-//
-        public float spawnBunching;		// 0.0 = all come out at first instant, 1.0 = evenly spaced over cycle time
-        public float particleLife;		// total seconds of life for each particle
-        public float timeOffset;		// time offset from system start for the first particle to spawn
-        public float deadTime;			// time after particleLife before respawning
-//	
-        //-------------------------------	// standard path parms
-//		
+        //
+        public int               cycleMsec;       // ( particleLife + deadTime ) in msec
+        //
+        public float             spawnBunching;   // 0.0 = all come out at first instant, 1.0 = evenly spaced over cycle time
+        public float             particleLife;    // total seconds of life for each particle
+        public float             timeOffset;      // time offset from system start for the first particle to spawn
+        public float             deadTime;        // time after particleLife before respawning
+        //
+        //-------------------------------	  // standard path parms
+        //		
         public prtDistribution_t distributionType;
         public float[] distributionParms = new float[4];
-//	
+        //
         public prtDirection_t directionType;
         public float[] directionParms = new float[4];
-//	
+        //
         public idParticleParm speed;
-        public float gravity;			// can be negative to float up
-        public boolean worldGravity;		// apply gravity in world space
-        public boolean randomDistribution;	// randomly orient the quad on emission ( defaults to true ) 
-        public boolean entityColor;		// force color from render entity ( fadeColor is still valid )
-//	
-        //------------------------------	// custom path will completely replace the standard path calculations
-//	
-        public prtCustomPth_t customPathType;	// use custom C code routines for determining the origin
+        public float          gravity;            // can be negative to float up
+        public boolean        worldGravity;       // apply gravity in world space
+        public boolean        randomDistribution; // randomly orient the quad on emission ( defaults to true )
+        public boolean        entityColor;        // force color from render entity ( fadeColor is still valid )
+        //
+        //------------------------------	  // custom path will completely replace the standard path calculations
+        //	
+        public prtCustomPth_t customPathType;     // use custom C code routines for determining the origin
         public float[] customPathParms = new float[8];
-//	
+        //
         //--------------------------------
-//	
-        public idVec3 offset;			// offset from origin to spawn all particles, also applies to customPath
-//	
-        public int animationFrames;             // if > 1, subdivide the texture S axis into frames and crossfade
-        public float animationRate;		// frames per second
-//
-        public float initialAngle;		// in degrees, random angle is used if zero ( default ) 
-        public idParticleParm rotationSpeed;	// half the particles will have negative rotation speeds
-//	
-        public prtOrientation_t orientation;	// view, aimed, or axis fixed
+        //	
+        public idVec3           offset;           // offset from origin to spawn all particles, also applies to customPath
+        //
+        public int              animationFrames;  // if > 1, subdivide the texture S axis into frames and crossfade
+        public float            animationRate;    // frames per second
+        //
+        public float            initialAngle;     // in degrees, random angle is used if zero ( default )
+        public idParticleParm   rotationSpeed;    // half the particles will have negative rotation speeds
+        //
+        public prtOrientation_t orientation;      // view, aimed, or axis fixed
         public float[] orientationParms = new float[4];
-//
+        //
         public idParticleParm size;
-        public idParticleParm aspect;		// greater than 1 makes the T axis longer
-//
-        public idVec4 color;
-        public idVec4 fadeColor;		// either 0 0 0 0 for additive, or 1 1 1 0 for blended materials
-        public float fadeInFraction;		// in 0.0 to 1.0 range
-        public float fadeOutFraction;           // in 0.0 to 1.0 range
-        public float fadeIndexFraction;         // in 0.0 to 1.0 range, causes later index smokes to be more faded 
-//
-        public boolean hidden;			// for editor use
+        public idParticleParm aspect;             // greater than 1 makes the T axis longer
+        //
+        public idVec4         color;
+        public idVec4         fadeColor;          // either 0 0 0 0 for additive, or 1 1 1 0 for blended materials
+        public float          fadeInFraction;     // in 0.0 to 1.0 range
+        public float          fadeOutFraction;    // in 0.0 to 1.0 range
+        public float          fadeIndexFraction;  // in 0.0 to 1.0 range, causes later index smokes to be more faded
+        //
+        public boolean        hidden;             // for editor use
         //-----------------------------------
-//
-        public float boundsExpansion;           // user tweak to fix poorly calculated bounds
-//
-        public idBounds bounds;			// derived
+        //
+        public float          boundsExpansion;    // user tweak to fix poorly calculated bounds
+        //
+        public idBounds       bounds;             // derived
         //
         //
 
@@ -258,30 +258,31 @@ public class DeclParticle {
             distributionParms[0] = distributionParms[1] = distributionParms[2] = distributionParms[3] = 0.0f;
             directionType = PDIR_CONE;
             directionParms[0] = directionParms[1] = directionParms[2] = directionParms[3] = 0.0f;
-            // idParticleParm		speed;
+            speed = new idParticleParm();
             gravity = 0.0f;
             worldGravity = false;
             customPathType = PPATH_STANDARD;
             customPathParms[0] = customPathParms[1] = customPathParms[2] = customPathParms[3] = 0.0f;
             customPathParms[4] = customPathParms[5] = customPathParms[6] = customPathParms[7] = 0.0f;
-            offset.Zero();
+            offset = new idVec3();
             animationFrames = 0;
             animationRate = 0.0f;
             randomDistribution = true;
             entityColor = false;
             initialAngle = 0.0f;
-            // idParticleParm		rotationSpeed;
+            rotationSpeed = new idParticleParm(); 
             orientation = POR_VIEW;
             orientationParms[0] = orientationParms[1] = orientationParms[2] = orientationParms[3] = 0.0f;
-            // idParticleParm		size
-            // idParticleParm		aspect
-            color.Zero();
-            fadeColor.Zero();
+            size = new idParticleParm();
+            aspect = new idParticleParm();
+            color = new idVec4();
+            fadeColor = new idVec4();
             fadeInFraction = 0.0f;
             fadeOutFraction = 0.0f;
             fadeIndexFraction = 0.0f;
             hidden = false;
             boundsExpansion = 0.0f;
+            bounds = new idBounds();
             bounds.Clear();
         }
 //	virtual					~idParticleStage( void ) {}
@@ -963,10 +964,15 @@ public class DeclParticle {
     public static class idDeclParticle extends idDecl {
 
         public idList<idParticleStage> stages;
-        public idBounds bounds;
-        public float depthHack;
+        public idBounds                bounds;
+        public float                   depthHack;
         //
         //
+        
+        public idDeclParticle(){
+            stages = new idList<>();
+            bounds = new idBounds();
+        }
 
         @Override
         public long Size() {
@@ -1036,7 +1042,7 @@ public class DeclParticle {
             }
 
             if (bounds.GetVolume() <= 0.1f) {
-                bounds = new idBounds(Vector.vec3_origin).Expand(8.0f);
+                bounds = new idBounds(Vector.getVec3_origin()).Expand(8.0f);
             }
 
             return true;
@@ -1094,16 +1100,16 @@ public class DeclParticle {
 
             renderEntity_s renderEntity = new renderEntity_s();
 //	memset( &renderEntity, 0, sizeof( renderEntity ) );
-            renderEntity.axis = new idMat3(mat3_identity);
+            renderEntity.axis = new idMat3(getMat3_identity());
 
             renderView_s renderView = new renderView_s();
 //	memset( &renderView, 0, sizeof( renderView ) );
-            renderView.viewaxis = new idMat3(mat3_identity);
+            renderView.viewaxis = new idMat3(getMat3_identity());
 
             g.renderEnt = renderEntity;
             g.renderView = renderView;
-            g.origin.Zero();
-            g.axis = new idMat3(mat3_identity);
+            g.origin = new idVec3();
+            g.axis = new idMat3(getMat3_identity());
 
             idRandom steppingRandom = new idRandom();
             steppingRandom.SetSeed(0);

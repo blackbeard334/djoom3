@@ -3,6 +3,7 @@ package neo.idlib;
 import java.util.Objects;
 import static neo.TempDump.atof;
 import static neo.TempDump.atoi;
+import static neo.TempDump.btoi;
 import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.Common.common;
 import neo.framework.File_h.idFile;
@@ -246,14 +247,14 @@ public class Dict_h {
 
             n = other.args.Num();
             args.SetNum(n);
-            for (i = 0; i < n; i++) {
-                try {
+            try {
+                for (i = 0; i < n; i++) {
                     args.oSet(i, other.args.oGet(i).clone());
-                } catch (CloneNotSupportedException ex) {
-                    throw new idException(ex);
                 }
+            } catch (CloneNotSupportedException ex) {
+                throw new idException(ex);
             }
-            argHash = other.argHash;
+            argHash.oSet(other.argHash);
 
             other.args.Clear();
             other.argHash.Free();
@@ -387,7 +388,7 @@ public class Dict_h {
         }
 
         public void SetBool(final String key, boolean val) throws idException {
-            Set(key, va("%d", val));
+            Set(key, va("%d", btoi(val)));
         }
 
         public void SetVector(final String key, final idVec3 val) throws idException {
@@ -667,7 +668,7 @@ public class Dict_h {
         public idKeyValue FindKey(final String key) throws idException {
             int i, hash;
 
-            if (key == null || key.length() < 1/*[0] == '\0'*/) {
+            if (key == null || key.isEmpty()/*[0] == '\0'*/) {
                 idLib.common.DWarning("idDict::FindKey: empty key");
                 return null;
             }

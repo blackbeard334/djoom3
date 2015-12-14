@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import neo.Renderer.Image.idImage;
 import neo.TempDump.CPP_class;
 import static neo.TempDump.NOT;
 import static neo.TempDump.reflects._Minus;
@@ -30,7 +29,7 @@ public class List {
 
      ===============================================================================
      */
-    public static class idList<type> {
+    public static class idList<type> {//TODO: implement java.util.List
 
         public static final int SIZE = Integer.SIZE
                 + Integer.SIZE
@@ -446,9 +445,7 @@ public class List {
                 for (int i = num; i < newSize; i++) {
                     try {
                         list[i] = /*( * allocator) ()*/ (type) allocator.newInstance();//TODO: check if any of this is necessary?
-                    } catch (InstantiationException ex) {
-                        Logger.getLogger(List.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IllegalAccessException ex) {
+                    } catch (InstantiationException | IllegalAccessException ex) {
                         Logger.getLogger(List.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -469,8 +466,13 @@ public class List {
          FIXME: Create an iterator template for this kind of thing.
          ================
          */
+        @Deprecated
         public type[] Ptr() {										// returns a pointer to the list
             return list;
+        }
+        
+        public <T extends Object> T[] Ptr(final Class<? extends T[]> type) {										// returns a pointer to the list
+            return Arrays.copyOf(this.list, this.num, type);
         }
 //public	const type *	Ptr( ) const;									// returns a pointer to the list
 
