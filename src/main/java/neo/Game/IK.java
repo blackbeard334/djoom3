@@ -1,5 +1,6 @@
 package neo.Game;
 
+import java.util.stream.Stream;
 import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_NONE;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD_OVERRIDE;
@@ -473,7 +474,7 @@ public class IK /*ea*/ {
             }
 
             int numJoints = animator.NumJoints();
-            idJointMat[] joints = new idJointMat[numJoints];
+            idJointMat[] joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
 
             // create the animation frame used to setup the IK
             GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset().oPlus(modelOffset), animator.RemoveOrigin());

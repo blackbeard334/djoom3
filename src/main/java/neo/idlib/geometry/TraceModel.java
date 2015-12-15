@@ -73,6 +73,12 @@ public class TraceModel {
             this.v = new int[2];
             normal = new idVec3();
         }
+        
+        public void oSet(final traceModelEdge_t t){
+            this.v[0] = t.v[0];
+            this.v[1] = t.v[1];
+            this.normal.oSet(t.normal);
+        }
     };
 
     public static class traceModelPoly_t {
@@ -88,6 +94,14 @@ public class TraceModel {
             bounds = new idBounds();
             this.edges = new int[MAX_TRACEMODEL_POLYEDGES];
         }        
+
+        private void oSet(traceModelPoly_t t) {
+            this.normal.oSet(t.normal);
+            this.dist = t.dist;
+            this.bounds.oSet(t.bounds);
+            this.numEdges = t.numEdges;
+            System.arraycopy(t.edges, 0, this.edges, 0, MAX_TRACEMODEL_POLYEDGES);
+        }
     };
 
     public static class idTraceModel {
@@ -624,7 +638,7 @@ public class TraceModel {
                 if (j >= numVerts) {
                     j = 0;
                 }
-                verts[i] = (traceModelVert_t) v[i];
+                verts[i].oSet(v[i]);
                 edges[i + 1].v[0] = i;
                 edges[i + 1].v[1] = j;
                 edges[i + 1].normal = polys[0].normal.Cross(v[i].oMinus(v[j]));
@@ -1346,7 +1360,25 @@ public class TraceModel {
             // convex model
             isConvex = true;
         }
-//
+
+        private void oSet(idTraceModel trm) {
+            this.type = trm.type;
+            this.numVerts = trm.numVerts;
+            for (int i = 0; i < this.numVerts; i++) {
+                this.verts[i].oSet(trm.verts[i]);
+            }
+            this.numEdges = trm.numEdges;
+            for (int i = 0; i < this.numEdges; i++) {
+                this.edges[i].oSet(trm.edges[i]);
+            }
+            this.numPolys = trm.numPolys;
+            for (int i = 0; i < this.numPolys; i++) {
+                this.polys[i].oSet(trm.polys[i]);
+            }
+            this.offset = trm.offset;
+            this.bounds.oSet(trm.bounds);
+            this.isConvex = trm.isConvex;
+        }
 
         class projectionIntegrals_t {
 
@@ -1531,13 +1563,13 @@ public class TraceModel {
         private void VolumeFromPolygon(idTraceModel trm, float thickness) {
             int i;
 
-            trm = this;//TODO:oSet(
+            trm.oSet(this);
             trm.type = TRM_POLYGONVOLUME;
             trm.numVerts = numVerts * 2;
             trm.numEdges = numEdges * 3;
             trm.numPolys = numEdges + 2;
             for (i = 0; i < numEdges; i++) {
-                trm.verts[ numVerts + i] = (traceModelVert_t) verts[i].oMinus(polys[0].normal.oMultiply(thickness));
+                trm.verts[numVerts + i].oSet(verts[i].oMinus(polys[0].normal.oMultiply(thickness)));
                 trm.edges[ numEdges + i + 1].v[0] = numVerts + i;
                 trm.edges[ numEdges + i + 1].v[1] = numVerts + (i + 1) % numVerts;
                 trm.edges[ numEdges * 2 + i + 1].v[0] = i;

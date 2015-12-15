@@ -86,7 +86,6 @@ public class snd_local {
             this.wBitsPerSample = mpwfx.wBitsPerSample;
             this.cbSize = mpwfx.cbSize;
         }
-
     };
 
 
@@ -134,6 +133,7 @@ public class snd_local {
 
         @Override
         public void Read(ByteBuffer buffer) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
             this.wf = new waveformat_s();
             this.wf.wFormatTag = Short.toUnsignedInt(buffer.getShort());
             this.wf.nChannels = Short.toUnsignedInt(buffer.getShort());
@@ -205,7 +205,7 @@ public class snd_local {
 // typedef dword fourcc;
 
     /* RIFF chunk information data structure */
-    static class mminfo_s implements SERiAL{
+    static class mminfo_s implements SERiAL {
         private static final int SIZE
                 = Integer.SIZE
                 + Integer.SIZE
@@ -214,9 +214,9 @@ public class snd_local {
         private static final int BYTES = SIZE / Byte.SIZE;
 
         long/*fourcc*/ ckid;         // chunk ID 
-        int/*dword*/ cksize;       // chunk size 
+        int/*dword*/   cksize;       // chunk size
         long/*fourcc*/ fccType;      // form type or list type 
-        int/*dword*/ dwDataOffset; // offset of data portion of chunk 
+        int/*dword*/   dwDataOffset; // offset of data portion of chunk
 
         @Override
         public ByteBuffer AllocBuffer() {
@@ -225,6 +225,7 @@ public class snd_local {
 
         @Override
         public void Read(ByteBuffer buffer) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
             this.ckid = Integer.toUnsignedLong(buffer.getInt());
             this.cksize = buffer.getInt();
 

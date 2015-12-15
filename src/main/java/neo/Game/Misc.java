@@ -1307,12 +1307,12 @@ public class Misc {
     public static class idStaticEntity extends idEntity {
         // CLASS_PROTOTYPE( idStaticEntity );
 
-        private int spawnTime;
+        private int     spawnTime;
         private boolean active;
-        private idVec4 fadeFrom;
-        private idVec4 fadeTo;
-        private int fadeStart;
-        private int fadeEnd;
+        private idVec4  fadeFrom;
+        private idVec4  fadeTo;
+        private int     fadeStart;
+        private int     fadeEnd;
         private boolean runGui;
         //
         //
@@ -1361,6 +1361,7 @@ public class Misc {
         @Override
         public void Spawn() {
             super.Spawn();
+            
             boolean solid;
             boolean hidden;
 
@@ -1421,7 +1422,7 @@ public class Misc {
 
         public void Fade(final idVec4 to, float fadeTime) {
             GetColor(fadeFrom);
-            fadeTo = to;
+            fadeTo.oSet(to);
             fadeStart = gameLocal.time;
             fadeEnd = (int) (gameLocal.time + SEC2MS(fadeTime));
             BecomeActive(TH_THINK);
@@ -1554,6 +1555,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             if (spawnArgs.GetBool("start_off")) {
                 hidden[0] = true;
                 renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = MS2SEC(1);

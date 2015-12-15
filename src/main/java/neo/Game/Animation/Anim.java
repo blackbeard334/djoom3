@@ -478,8 +478,7 @@ public class Anim {
 //	 Float				[]frame1;
 //	 Float				[]frame2;
             final int f1_ptr, f2_ptr;
-            Float[] jointframe1;
-            Float[] jointframe2;
+            final Float[] jointframe1, jointframe2;
             int jf1_ptr, jf2_ptr;
             jointAnimInfo_t infoPtr;
             int animBits;
@@ -504,19 +503,18 @@ public class Anim {
 //	frame2 = componentFrames.Ptr();
             f1_ptr = frame.frame1 * numAnimatedComponents;
             f2_ptr = frame.frame2 * numAnimatedComponents;
+            jointframe1 = jointframe2 = componentFrames.Ptr(Float[].class);
 
             for (i = 0; i < numIndexes; i++) {
                 int j = index[i];
                 jointPtr = joints[j];
-                blendPtr = blendJoints[j];
+                blendPtr = blendJoints[j] = new idJointQuat();
                 infoPtr = jointInfo.oGet(j);
 
                 animBits = infoPtr.animBits;
                 if (animBits != 0) {
 
                     lerpIndex[numLerpJoints++] = j;
-
-                    jointframe1 = jointframe2 = componentFrames.Ptr();
 
 //			jointframe2 = frame2 ;
                     jf1_ptr = f1_ptr + infoPtr.firstComponent;

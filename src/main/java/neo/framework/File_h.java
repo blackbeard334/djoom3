@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -248,6 +249,7 @@ public class File_h {
         public final int Read(SERiAL object, int len) {
             ByteBuffer buffer = object.AllocBuffer();
             int reads = Read(buffer, len);
+            buffer.position(len).flip();
             object.Read(buffer);
 
             return reads;
@@ -351,7 +353,7 @@ public class File_h {
 
         // Endian portable alternatives to Read(...)
         public int ReadInt(int[] value) {
-            ByteBuffer intBytes = ByteBuffer.allocate(4);
+            ByteBuffer intBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
             int result = Read(intBytes);
             value[0] = LittleLong(intBytes.getInt());
             return result;

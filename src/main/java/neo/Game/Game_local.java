@@ -3401,6 +3401,9 @@ public class Game_local {
                     case "idAI":
                         obj = new idAI();
                         break;
+                    case "idFuncEmitter":
+                        obj = new idFuncEmitter();
+                        break;
                     default:
                         obj = null;
                 }
