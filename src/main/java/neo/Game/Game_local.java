@@ -216,6 +216,7 @@ import static neo.Game.Game_network.net_clientShowSnapshot;
 import static neo.Game.Game_network.net_clientShowSnapshotRadius;
 import static neo.Game.Game_network.net_clientSmoothing;
 import neo.Game.Light.idLight;
+import neo.Game.Misc.idAnimated;
 import neo.Game.Misc.idFuncEmitter;
 import neo.Game.Misc.idLocationEntity;
 import neo.Game.Misc.idPathCorner;
@@ -3403,6 +3404,9 @@ public class Game_local {
                         break;
                     case "idFuncEmitter":
                         obj = new idFuncEmitter();
+                        break;
+                    case "idAnimated":
+                        obj = new idAnimated();
                         break;
                     default:
                         obj = null;

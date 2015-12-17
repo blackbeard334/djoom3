@@ -915,22 +915,22 @@ public class Misc {
 
      ===============================================================================
      */
-    public static final idEventDef EV_Animated_Start = new idEventDef("<start>");
-    public static final idEventDef EV_LaunchMissiles = new idEventDef("launchMissiles", "ssssdf");
+    public static final idEventDef EV_Animated_Start       = new idEventDef("<start>");
+    public static final idEventDef EV_LaunchMissiles       = new idEventDef("launchMissiles", "ssssdf");
     public static final idEventDef EV_LaunchMissilesUpdate = new idEventDef("<launchMissiles>", "dddd");
-    public static final idEventDef EV_AnimDone = new idEventDef("<AnimDone>", "d");
-    public static final idEventDef EV_StartRagdoll = new idEventDef("startRagdoll");
+    public static final idEventDef EV_AnimDone             = new idEventDef("<AnimDone>", "d");
+    public static final idEventDef EV_StartRagdoll         = new idEventDef("startRagdoll");
 
     public static class idAnimated extends idAFEntity_Gibbable {
         // CLASS_PROTOTYPE( idAnimated );
 
-        private int num_anims;
-        private int current_anim_index;
-        private int anim;
-        private int blendFrames;
-        private int/*jointHandle_t*/ soundJoint;
+        private int                   num_anims;
+        private int                   current_anim_index;
+        private int                   anim;
+        private int                   blendFrames;
+        private int/*jointHandle_t*/  soundJoint;
         private idEntityPtr<idEntity> activator;
-        private boolean activated;
+        private boolean               activated;
         //
         //
 
@@ -981,6 +981,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             String[] animname = new String[1];
             int anim2;
             float[] wait = {0};

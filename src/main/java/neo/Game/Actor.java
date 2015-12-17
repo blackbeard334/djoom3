@@ -326,6 +326,10 @@ public class Actor {
 
         public idEntityPtr<idEntity> ent;
         public int channel;
+
+        public idAttachInfo() {
+            this.ent = new idEntityPtr<>();
+        }
     };
 
     public static class copyJoints_t {
@@ -560,7 +564,7 @@ public class Actor {
                         continue;
                     }
 
-                    jointName = kv.GetKey();
+                    jointName.oSet(kv.GetKey());
                     if (jointName.StripLeadingOnce("copy_joint_world ")) {
                         copyJoint.mod = JOINTMOD_WORLD_OVERRIDE;
                     } else {
@@ -574,7 +578,7 @@ public class Actor {
                         continue;
                     }
 
-                    jointName = kv.GetValue();
+                    jointName.oSet(kv.GetValue());
                     copyJoint.to[0] = headAnimator.GetJointHandle(jointName);
                     if (copyJoint.to[0] == INVALID_JOINT) {
                         gameLocal.Warning("Unknown copy_joint '%s' on head of entity %s", jointName, name);

@@ -750,7 +750,7 @@ public class AI {
             projectile_height_to_distance_ratio = 1.0f;
             missileLaunchOffset = new idList<>();
             projectileDef = null;
-            projectile = null;
+            projectile = new idEntityPtr<>();
             projectileClipModel = null;
             projectileRadius = 0.0f;
             projectileVelocity = getVec3_origin();
@@ -1314,7 +1314,7 @@ public class AI {
 
             SetAAS();
 
-            projectile = null;
+            projectile.oSet(null);
             projectileDef = null;
             projectileClipModel = null;
             idStr projectileName = new idStr();
@@ -1326,7 +1326,7 @@ public class AI {
                 projectileGravity = idProjectile.GetGravity(projectileDef);
                 projectileSpeed = projectileVelocity.Length();
 //		delete projectile.GetEntity();
-                projectile = null;
+                projectile.oSet(null);
             }
 
             particles.Clear();
@@ -4577,7 +4577,7 @@ public class AI {
         protected void RemoveProjectile() {
             if (projectile.GetEntity() != null) {
                 projectile.GetEntity().PostEventMS(EV_Remove, 0);
-                projectile = null;
+                projectile.oSet(null);
             }
         }
 
@@ -4691,7 +4691,7 @@ public class AI {
                 }
                 lastProjectile = projectile.GetEntity();
                 lastProjectile.Launch(muzzle, dir, getVec3_origin());
-                projectile = null;
+                projectile.oSet(null);
             }
 
             TriggerWeaponEffects(muzzle);
@@ -5577,7 +5577,7 @@ public class AI {
             // launch the projectile
             idThread.ReturnEntity(projectile.GetEntity());
             projectile.GetEntity().Launch(tr[0].endpos, axis.oGet(0), getVec3_origin());
-            projectile = null;
+            projectile.oSet(null);
 
             TriggerWeaponEffects(tr[0].endpos);
 

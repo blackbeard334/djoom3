@@ -69,7 +69,6 @@ public class Dict_h {
             return value;
         }
 
-//
         @Override
         public long Allocated() {
             return key.Allocated() + value.Allocated();
@@ -362,7 +361,7 @@ public class Dict_h {
             int i;
             idKeyValue kv = new idKeyValue();
 
-            if (key == null || key.length() == 0 || key.charAt(0) == '\0') {
+            if (key == null || key.isEmpty() || key.charAt(0) == '\0') {
                 return;
             }
 

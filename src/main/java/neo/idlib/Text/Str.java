@@ -15,7 +15,6 @@ import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h;
-import static neo.idlib.math.Math_h.INTSIGNBITNOTSET;
 import neo.idlib.math.Vector.idVec4;
 
 /**
@@ -1405,59 +1404,16 @@ public class Str {
         }
 
         public static int Cmp(final String s1, final String s2) {
-            char[] s1Array = s1.toCharArray();
-            char[] s2Array = s2.toCharArray();
-            int c1 = 0, c2 = 0, d;
-
-            if (s1.isEmpty()) {//when s1 is empty.
-                if(s2.isEmpty()){
-                    return 0;
-                }          
-                d = 0 - s2Array[c2];
-                return (INTSIGNBITNOTSET(d) << 1) - 1;
-            }
-
-            do {
-                if (c2 == s2.length()) {//when s1 is longer than s2.
-                    return (INTSIGNBITNOTSET(s1Array[c1]) << 1) - 1;
-                }
-
-                d = s1Array[c1++] - s2Array[c2++];//d = c1 - c2;
-                if (d != 0) {
-                    return (INTSIGNBITNOTSET(d) << 1) - 1;
-                }
-            } while (c1 < s1.length());
-
-            return 0;		// strings are equal
+            return ("" + s1).compareTo("" + s2);
         }
 
         public static int Cmpn(final String s1, final String s2, int n) {//TODO:see if we can return booleans
-            char[] s1Array = s1.toCharArray();
-            char[] s2Array = s2.toCharArray();
-            int c1 = 0, c2 = 0, d;
-
-            assert (n >= 0);
-
-            if (0 == s1.length()) {
-                return (INTSIGNBITNOTSET(-s2Array[c2]) << 1) - 1;
+            if (isNotNullOrEmpty(s1) && isNotNullOrEmpty(s2)) {
+                if (s1.length() >= n && s2.length() >= n) {
+                    return Cmp(s1.substring(0, n), s2.substring(0, n));
+                }
             }
-
-            do {
-                if (0 == n--) {
-                    return 0;		// strings are equal until end point
-                }
-
-                if (c2 == s2.length()) {//when s1 is longer than s2.
-                    return (INTSIGNBITNOTSET(s1Array[c1]) << 1) - 1;
-                }
-
-                d = s1Array[c1++] - s2Array[c2++];//d = c1 - c2;
-                if (d != 0) {
-                    return (INTSIGNBITNOTSET(d) << 1) - 1;
-                }
-            } while (c1 < s1.length());
-
-            return 0;		// strings are equal
+            return 1;//not equal
         }
 
         public static int Icmp(final idToken t1, final String s2) {
@@ -1477,76 +1433,10 @@ public class Str {
         }
 
         public static int Icmp(final String s1, final String s2) {
-//            char[] s1Array = s1.toCharArray();
-//            char[] s2Array = s2.toCharArray();
-//            int c1, c2, d;
-//            int p1 = 0, p2 = 0;
-//
-//            while (p1 < s1.length()) {///for empty s1 strings.
-//                if (p2 == s2.length()) {//when s1 is longer than s2.
-//                    return (INTSIGNBITNOTSET(s1Array[p1]) << 1) - 1;
-//                }
-//
-//                c1 = s1Array[p1++];
-//                c2 = s2Array[p2++];
-//                d = c1 - c2;
-//                while (d != 0) {
-//                    if (c1 <= 'Z' && c1 >= 'A') {
-//                        d += ('a' - 'A');
-//                        if (d == 0) {
-//                            break;
-//                        }
-//                    }
-//                    if (c2 <= 'Z' && c2 >= 'A') {
-//                        d -= ('a' - 'A');
-//                        if (0 == d) {
-//                            break;
-//                        }
-//                    }
-//                    return (INTSIGNBITNOTSET(d) << 1) - 1;
-//                }
-//            }
-//
-//            return 0;		// strings are equal
-//            return btoi(!(("" + s1).toLowerCase().equals(("" + s2).toLowerCase())));
-            return ("" + s1).toLowerCase().compareTo(("" + s2).toLowerCase());
+            return ("" + s1).compareToIgnoreCase("" + s2);
         }
 
         public static int Icmpn(final String s1, final String s2, int n) {
-//            char[] s1Array = s1.toCharArray();
-//            char[] s2Array = s2.toCharArray();
-//            int c1 = 0, c2 = 0, d;
-//
-//            assert (n >= 0);
-//
-//            do {
-//                c1++;
-//                c2++;
-//
-//                if (0 == n--) {
-//                    return 0;		// strings are equal until end point
-//                }
-//
-//                d = s1Array[c1] - s2Array[c2];
-//                while (d != 0) {
-//                    if (c1 <= 'Z' && c1 >= 'A') {
-//                        d += ('a' - 'A');
-//                        if (0 == d) {
-//                            break;
-//                        }
-//                    }
-//                    if (c2 <= 'Z' && c2 >= 'A') {
-//                        d -= ('a' - 'A');
-//                        if (0 == d) {
-//                            break;
-//                        }
-//                    }
-//                    return (Math_h.INTSIGNBITNOTSET(d) << 1) - 1;
-//                }
-//            } while (c1 != 0);
-//
-//            return 0;		// strings are equal
-
             if (isNotNullOrEmpty(s1) && isNotNullOrEmpty(s2)) {
                 if (s1.length() >= n && s2.length() >= n) {
                     return Icmp(s1.substring(0, n), s2.substring(0, n));
