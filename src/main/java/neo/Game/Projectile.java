@@ -180,9 +180,7 @@ public class Projectile {
             LAUNCHED,//= 2,
             FIZZLED,//= 3,
             EXPLODED,//= 4
-        }
-
-        ;
+        };
         //
         protected projectileState_t state;
         //
@@ -193,7 +191,7 @@ public class Projectile {
         // public :
         // CLASS_PROTOTYPE( idProjectile );
         public idProjectile() {
-            owner = null;
+            owner = new idEntityPtr<>();
             lightDefHandle = -1;
             thrust = 0.0f;
             thrust_end = 0;
@@ -206,19 +204,22 @@ public class Projectile {
             lightColor = getVec3_zero();
             state = SPAWNED;
             damagePower = 1.0f;
-            //	memset( &projectileFlags, 0, sizeof( projectileFlags ) );
-            projectileFlags = new projectileFlags_s();
-            //	memset( &renderLight, 0, sizeof( renderLight ) );
-            renderLight = new renderLight_s();
+            projectileFlags = new projectileFlags_s();//memset( &projectileFlags, 0, sizeof( projectileFlags ) );
+            renderLight = new renderLight_s();//memset( &renderLight, 0, sizeof( renderLight ) );
+            
             // note: for net_instanthit projectiles, we will force this back to false at spawn time
             fl.networkSync = true;
 
             netSyncPhysics = false;
+            
+            physicsObj = new idPhysics_RigidBody();
         }
         // virtual					~idProjectile();
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             physicsObj.SetSelf(this);
             physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
             physicsObj.SetContents(0);
@@ -1270,24 +1271,24 @@ public class Projectile {
     public static class idGuidedProjectile extends idProjectile {
         // CLASS_PROTOTYPE( idGuidedProjectile );
 
-        private idAngles rndScale;
-        private idAngles rndAng;
-        private idAngles angles;
-        private int rndUpdateTime;
-        private float turn_max;
-        private float clamp_dist;
-        private boolean burstMode;
-        private boolean unGuided;
-        private float burstDist;
-        private float burstVelocity;
+        private   idAngles              rndScale;
+        private   idAngles              rndAng;
+        private   idAngles              angles;
+        private   int                   rndUpdateTime;
+        private   float                 turn_max;
+        private   float                 clamp_dist;
+        private   boolean               burstMode;
+        private   boolean               unGuided;
+        private   float                 burstDist;
+        private   float                 burstVelocity;
         //
-        protected float speed;
+        protected float                 speed;
         protected idEntityPtr<idEntity> enemy;
         //
         //
 
         public idGuidedProjectile() {
-            enemy = null;
+            enemy = new idEntityPtr<>();
             speed = 0.0f;
             turn_max = 0.0f;
             clamp_dist = 0.0f;
@@ -1668,18 +1669,19 @@ public class Projectile {
         // CLASS_PROTOTYPE( idBFGProjectile );
 
         private idList<beamTarget_t> beamTargets;
-        private renderEntity_s secondModel;
-        private int/*qhandle_t*/ secondModelDefHandle;
-        private int nextDamageTime;
-        private idStr damageFreq;
+        private renderEntity_s       secondModel;
+        private int/*qhandle_t*/     secondModelDefHandle;
+        private int                  nextDamageTime;
+        private idStr                damageFreq;
         //
         //
 
         public idBFGProjectile() {
-//	memset( &secondModel, 0, sizeof( secondModel ) );
+            beamTargets = new idList<>();
             secondModel = new renderEntity_s();
             secondModelDefHandle = -1;
             nextDamageTime = 0;
+            damageFreq = new idStr();
         }
         // ~idBFGProjectile();
 
@@ -1729,9 +1731,10 @@ public class Projectile {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             beamTargets.Clear();
-//	memset( &secondModel, 0, sizeof( secondModel ) );
-            secondModel = new renderEntity_s();
+            secondModel = new renderEntity_s();//memset( &secondModel, 0, sizeof( secondModel ) );
             secondModelDefHandle = -1;
             final String temp = spawnArgs.GetString("model_two");
             if (temp != null && !temp.isEmpty()) {
