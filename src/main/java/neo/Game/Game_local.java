@@ -215,6 +215,7 @@ import static neo.Game.Game_network.net_clientMaxPrediction;
 import static neo.Game.Game_network.net_clientShowSnapshot;
 import static neo.Game.Game_network.net_clientShowSnapshotRadius;
 import static neo.Game.Game_network.net_clientSmoothing;
+import neo.Game.Item.idMoveablePDAItem;
 import neo.Game.Light.idLight;
 import neo.Game.Misc.idAnimated;
 import neo.Game.Misc.idFuncEmitter;
@@ -3415,6 +3416,9 @@ public class Game_local {
                         break;
                     case "idTrigger_Hurt":
                         obj = new idTrigger_Hurt();
+                        break;
+                    case "idMoveablePDAItem":
+                        obj = new idMoveablePDAItem();
                         break;
                     default:
                         obj = null;

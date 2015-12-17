@@ -67,12 +67,12 @@ import neo.idlib.math.Vector.idVec3;
  */
 public class Item {
 
-    static final idEventDef EV_DropToFloor = new idEventDef("<dropToFloor>");
-    static final idEventDef EV_RespawnItem = new idEventDef("respawn");
-    static final idEventDef EV_RespawnFx = new idEventDef("<respawnFx>");
-    static final idEventDef EV_GetPlayerPos = new idEventDef("<getplayerpos>");
+    static final idEventDef EV_DropToFloor   = new idEventDef("<dropToFloor>");
+    static final idEventDef EV_RespawnItem   = new idEventDef("respawn");
+    static final idEventDef EV_RespawnFx     = new idEventDef("<respawnFx>");
+    static final idEventDef EV_GetPlayerPos  = new idEventDef("<getplayerpos>");
     static final idEventDef EV_HideObjective = new idEventDef("<hideobjective>", "e");
-    static final idEventDef EV_CamShot = new idEventDef("<camshot>");
+    static final idEventDef EV_CamShot       = new idEventDef("<camshot>");
 
 
     /*
@@ -86,25 +86,25 @@ public class Item {
 // public	CLASS_PROTOTYPE( idItem );
 
         // enum {
-        public static final int EVENT_PICKUP = idEntity.EVENT_MAXEVENTS;
-        public static final int EVENT_RESPAWN = EVENT_PICKUP + 1;
+        public static final int EVENT_PICKUP    = idEntity.EVENT_MAXEVENTS;
+        public static final int EVENT_RESPAWN   = EVENT_PICKUP + 1;
         public static final int EVENT_RESPAWNFX = EVENT_PICKUP + 2;
         public static final int EVENT_MAXEVENTS = EVENT_PICKUP + 3;
         // };
-        private idVec3 orgOrigin;
-        private boolean spin;
-        private boolean pulse;
-        private boolean canPickUp;
+        private idVec3     orgOrigin;
+        private boolean    spin;
+        private boolean    pulse;
+        private boolean    canPickUp;
         //
         // for item pulse effect
-        private int itemShellHandle;
+        private int        itemShellHandle;
         private idMaterial shellMaterial;
         //
         // used to update the item pulse effect
-        private boolean inView;
-        private int inViewTime;
-        private int lastCycle;
-        private int lastRenderViewTime;
+        private boolean    inView;
+        private int        inViewTime;
+        private int        lastCycle;
+        private int        lastRenderViewTime;
         //
         //
 
@@ -116,7 +116,7 @@ public class Item {
             lastRenderViewTime = -1;
             itemShellHandle = -1;
             shellMaterial = null;
-            orgOrigin.Zero();
+            orgOrigin = new idVec3();
             canPickUp = true;
             fl.networkSync = true;
         }
@@ -140,36 +140,25 @@ public class Item {
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            boolean[] spin = {false}, pulse = {false}, canPickUp = {false}, inView = {false};
-            int[] inViewTime = {0}, lastCycle = {0}, lastRenderViewTime = {0};
-
             savefile.ReadVec3(orgOrigin);
-            savefile.ReadBool(spin);
-            savefile.ReadBool(pulse);
-            savefile.ReadBool(canPickUp);
+            this.spin = savefile.ReadBool();
+            this.spin = savefile.ReadBool();
+            this.canPickUp = savefile.ReadBool();
 
             savefile.ReadMaterial(shellMaterial);
 
-            savefile.ReadBool(inView);
-            savefile.ReadInt(inViewTime);
-            savefile.ReadInt(lastCycle);
-            savefile.ReadInt(lastRenderViewTime);
+            this.inView = savefile.ReadBool();
+            this.inViewTime = savefile.ReadInt();
+            this.lastCycle = savefile.ReadInt();
+            this.lastRenderViewTime = savefile.ReadInt();
 
             itemShellHandle = -1;
-
-            {
-                this.spin = spin[0];
-                this.pulse = pulse[0];
-                this.canPickUp = canPickUp[0];
-
-                this.inViewTime = inViewTime[0];
-                this.lastCycle = lastCycle[0];
-                this.lastRenderViewTime = lastRenderViewTime[0];
-            }
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             String giveTo;
             idEntity ent;
             float[] tsize = {0};
@@ -788,13 +777,14 @@ public class Item {
 // public 	CLASS_PROTOTYPE( idMoveableItem );
 
         private idPhysics_RigidBody physicsObj;
-        private idClipModel trigger;
-        private idDeclParticle smoke;
-        private int smokeTime;
+        private idClipModel         trigger;
+        private idDeclParticle      smoke;
+        private int                 smokeTime;
         //
         //
 
         public idMoveableItem() {
+            physicsObj = new idPhysics_RigidBody();
             trigger = null;
             smoke = null;
             smokeTime = 0;
@@ -813,21 +803,19 @@ public class Item {
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            int[] smokeTime = {0};
-
             savefile.ReadStaticObject(physicsObj);
             RestorePhysics(physicsObj);
 
             savefile.ReadClipModel(trigger);
 
             savefile.ReadParticle(smoke);
-            savefile.ReadInt(smokeTime);
-
-            this.smokeTime = smokeTime[0];
+            this.smokeTime = savefile.ReadInt();
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idTraceModel trm = new idTraceModel();
             float[] density = {0}, friction = {0}, bouncyness = {0}, tsize = {0};
             idStr clipModelName = new idStr();
