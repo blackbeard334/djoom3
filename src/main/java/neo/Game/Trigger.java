@@ -845,7 +845,7 @@ public class Trigger {
 
      ===============================================================================
      */
-    class idTrigger_Hurt extends idTrigger {
+    static class idTrigger_Hurt extends idTrigger {
 //	CLASS_PROTOTYPE(idTrigger_Hurt );
 
         private boolean on;
@@ -884,6 +884,8 @@ public class Trigger {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             on = spawnArgs.GetBool("on", "1");
             delay = spawnArgs.GetFloat("delay", "1.0");
             nextTime = gameLocal.time;

@@ -254,6 +254,7 @@ import neo.Game.Script.idProgram;
 import neo.Game.SmokeParticles.idSmokeParticles;
 import neo.Game.Target.idTarget_Remove;
 import neo.Game.Target.idTarget_Tip;
+import neo.Game.Trigger.idTrigger_Hurt;
 import neo.Game.Trigger.idTrigger_Multi;
 import neo.Game.WorldSpawn.idWorldspawn;
 import static neo.Renderer.Material.CONTENTS_BODY;
@@ -3411,6 +3412,9 @@ public class Game_local {
                         break;
                     case "idBFGProjectile":
                         obj = new idBFGProjectile();
+                        break;
+                    case "idTrigger_Hurt":
+                        obj = new idTrigger_Hurt();
                         break;
                     default:
                         obj = null;
