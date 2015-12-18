@@ -72,7 +72,7 @@ public class Camera {
     public static class idCameraView extends idCamera {
 //    public	CLASS_PROTOTYPE( idCameraView );
 
-        protected float fov;
+        protected float    fov;
         protected idEntity attachedTo;
         protected idEntity attachedView;
         //
@@ -105,6 +105,8 @@ public class Camera {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             // if no target specified use ourself
             final String cam = spawnArgs.GetString("cameraTarget");
             if (cam.isEmpty()) {

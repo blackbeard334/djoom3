@@ -384,13 +384,13 @@ public class Target {
         // CLASS_PROTOTYPE( idTarget_FadeEntity );
 
         private idVec4 fadeFrom;
-        private int fadeStart;
-        private int fadeEnd;
+        private int    fadeStart;
+        private int    fadeEnd;
         //
         //
 
         public idTarget_FadeEntity() {
-            fadeFrom.Zero();
+            fadeFrom = new idVec4();
             fadeStart = 0;
             fadeEnd = 0;
         }
@@ -594,10 +594,6 @@ public class Target {
      */
     public static class idTarget_GiveEmail extends idTarget {
         // CLASS_PROTOTYPE( idTarget_GiveEmail );
-
-        @Override
-        public void Spawn() {
-        }
 
         private void Event_Activate(idEntity activator) {
             idPlayer player = gameLocal.GetLocalPlayer();

@@ -622,7 +622,7 @@ public class Item {
         //
 
         public idObjective() {
-            playerPos.Zero();
+            playerPos = new idVec3();
         }
 
         @Override
@@ -638,6 +638,8 @@ public class Item {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             Hide();
             PostEventMS(EV_CamShot, 250);
         }
@@ -1087,9 +1089,6 @@ public class Item {
     public static class idItemRemover extends idEntity {
 
 //    public 	CLASS_PROTOTYPE( idItemRemover );
-        @Override
-        public void Spawn() {
-        }
 
         public void RemoveItem(idPlayer player) {
             final String remove;
@@ -1125,8 +1124,11 @@ public class Item {
     public static class idObjectiveComplete extends idItemRemover {
 
 // public 	CLASS_PROTOTYPE( idObjectiveComplete );
+        private idVec3 playerPos;
+//
+//
         public idObjectiveComplete() {
-            playerPos.Zero();
+            playerPos = new idVec3();
         }
 
         @Override
@@ -1141,14 +1143,11 @@ public class Item {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             spawnArgs.SetBool("objEnabled", false);
             Hide();
         }
-//
-//
-        private idVec3 playerPos;
-//
-//
 
         private void Event_Trigger(idEntity activator) {
             if (!spawnArgs.GetBool("objEnabled")) {
@@ -1173,7 +1172,7 @@ public class Item {
         private void Event_HideObjective(idEntity e) {
             idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
-                playerPos = player.GetPhysics().GetOrigin();
+                playerPos.oSet(player.GetPhysics().GetOrigin());
                 PostEventMS(EV_HideObjective, 100, player);
             }
         }

@@ -6576,14 +6576,14 @@ public class CollisionModel_local {
             oldVertices = model.vertices;
             if (oldVertices != null) {
                 model.vertices = cm_vertex_s.generateArray(model.numVertices);
-                System.arraycopy(oldVertices, 0, model.vertices, 0, model.numVertices);
+                System.arraycopy(oldVertices, 0, model.vertices, 0, Math.min(oldVertices.length, model.numVertices));
             }
 
             // realloc edges
             oldEdges = model.edges;
             if (oldEdges != null) {
                 model.edges = cm_edge_s.generateArray(model.numEdges);
-                System.arraycopy(oldEdges, 0, model.edges, 0, model.numEdges);
+                System.arraycopy(oldEdges, 0, model.edges, 0, Math.min(oldEdges.length, model.numEdges));
             }
         }
 

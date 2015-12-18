@@ -170,7 +170,7 @@ public class Misc {
 
         // enum {
         public static final int EVENT_TELEPORTPLAYER = idEntity.EVENT_MAXEVENTS;
-        public static final int EVENT_MAXEVENTS = EVENT_TELEPORTPLAYER + 1;
+        public static final int EVENT_MAXEVENTS      = EVENT_TELEPORTPLAYER + 1;
         // };
         private int teleportStage;
         //
@@ -182,6 +182,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             teleportStage = 0;
         }
 
@@ -1823,6 +1825,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             String[] realName = new String[1];
 
             // this just holds dict information

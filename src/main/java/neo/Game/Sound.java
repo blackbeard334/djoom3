@@ -84,14 +84,14 @@ public class Sound {
      */
     public static class idSound extends idEntity {
 
-        private float   lastSoundVol;
-        private float   soundVol;
-        private float   random;
-        private float   wait;
-        private boolean timerOn;
-        private idVec3 shakeTranslate;
+        private float    lastSoundVol;
+        private float    soundVol;
+        private float    random;
+        private float    wait;
+        private boolean  timerOn;
+        private idVec3   shakeTranslate;
         private idAngles shakeRotate;
-        private int playingUntilTime;
+        private int      playingUntilTime;
         //
         //
 
@@ -99,8 +99,8 @@ public class Sound {
         public idSound() {
             lastSoundVol = 0.0f;
             soundVol = 0.0f;
-            shakeTranslate.Zero();
-            shakeRotate.Zero();
+            shakeTranslate = new idVec3();
+            shakeRotate = new idAngles();
             random = 0.0f;
             wait = 0.0f;
             timerOn = false;
@@ -175,6 +175,8 @@ public class Sound {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             spawnArgs.GetVector("move", "0 0 0", shakeTranslate);
             spawnArgs.GetAngles("rotate", "0 0 0", shakeRotate);
             random = spawnArgs.GetFloat("random", "0");
@@ -188,7 +190,7 @@ public class Sound {
             soundVol = 0.0f;
             lastSoundVol = 0.0f;
 
-            if ((shakeRotate != getAng_zero()) || (shakeTranslate != getVec3_zero())) {
+            if (!shakeRotate.equals(getAng_zero()) || !shakeTranslate.equals(getVec3_zero())) {
                 BecomeActive(TH_THINK);
             }
 

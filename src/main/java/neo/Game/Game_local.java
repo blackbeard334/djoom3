@@ -26,6 +26,7 @@ import neo.Game.Animation.Anim_Import.idModelExport;
 import neo.Game.Animation.Anim_Testmodel.idTestModel;
 import neo.Game.Camera.idCamera;
 import neo.Game.Camera.idCameraAnim;
+import neo.Game.Camera.idCameraView;
 import static neo.Game.Entity.TH_PHYSICS;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
@@ -216,11 +217,14 @@ import static neo.Game.Game_network.net_clientShowSnapshot;
 import static neo.Game.Game_network.net_clientShowSnapshotRadius;
 import static neo.Game.Game_network.net_clientSmoothing;
 import neo.Game.Item.idMoveablePDAItem;
+import neo.Game.Item.idObjective;
+import neo.Game.Item.idObjectiveComplete;
 import neo.Game.Light.idLight;
 import neo.Game.Misc.idAnimated;
 import neo.Game.Misc.idFuncEmitter;
 import neo.Game.Misc.idLocationEntity;
 import neo.Game.Misc.idPathCorner;
+import neo.Game.Misc.idPlayerStart;
 import neo.Game.Misc.idStaticEntity;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Mover.idMover;
@@ -253,7 +257,13 @@ import neo.Game.Script.Script_Program.function_t;
 import neo.Game.Script.Script_Thread.idThread;
 import neo.Game.Script.idProgram;
 import neo.Game.SmokeParticles.idSmokeParticles;
+import neo.Game.Sound.idSound;
+import neo.Game.Target.idTarget;
+import neo.Game.Target.idTarget_FadeEntity;
+import neo.Game.Target.idTarget_GiveEmail;
 import neo.Game.Target.idTarget_Remove;
+import neo.Game.Target.idTarget_SetPrimaryObjective;
+import neo.Game.Target.idTarget_SetShaderParm;
 import neo.Game.Target.idTarget_Tip;
 import neo.Game.Trigger.idTrigger_Hurt;
 import neo.Game.Trigger.idTrigger_Multi;
@@ -3419,6 +3429,39 @@ public class Game_local {
                         break;
                     case "idMoveablePDAItem":
                         obj = new idMoveablePDAItem();
+                        break;
+                    case "idLocationEntity":
+                        obj = new idLocationEntity();
+                        break;
+                    case "idPlayerStart":
+                        obj = new idPlayerStart();
+                        break;
+                    case "idSound":
+                        obj = new idSound();
+                        break;
+                    case "idTarget_GiveEmail":
+                        obj = new idTarget_GiveEmail();
+                        break;
+                    case "idTarget_SetPrimaryObjective":
+                        obj = new idTarget_SetPrimaryObjective();
+                        break;
+                    case "idObjectiveComplete":
+                        obj = new idObjectiveComplete();
+                        break;
+                    case "idTarget":
+                        obj = new idTarget();
+                        break;
+                    case "idCameraView":
+                        obj = new idCameraView();
+                        break;
+                    case "idObjective":
+                        obj = new idObjective();
+                        break;
+                    case "idTarget_SetShaderParm":
+                        obj = new idTarget_SetShaderParm();
+                        break;
+                    case "idTarget_FadeEntity":
+                        obj = new idTarget_FadeEntity();
                         break;
                     default:
                         obj = null;

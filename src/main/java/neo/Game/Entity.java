@@ -750,12 +750,12 @@ public class Entity {
          first need copied over to spawnArgs
          ===============
          */
-        public void UpdateChangeableSpawnArgs(final idDict source) {
+        public void UpdateChangeableSpawnArgs(idDict source) {
             int i;
             String target;
 
             if (null == source) {//TODO:null check
-                source.oSet(spawnArgs);
+                source = spawnArgs;
             }
             cameraTarget = null;
             target = source.GetString("cameraTarget");
