@@ -1,13 +1,19 @@
 package neo.Game.GameSys;
 
 import java.nio.ByteBuffer;
+import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Entity.EV_Activate;
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class.eventCallback_t;
 import static neo.Game.GameSys.Class.idEventArg.toEvent;
+import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
 import static neo.Game.GameSys.Event.D_EVENT_INTEGER;
 import static neo.Game.GameSys.Event.D_EVENT_MAXARGS;
+import static neo.Game.GameSys.Event.D_EVENT_STRING;
+import static neo.Game.GameSys.Event.D_EVENT_TRACE;
+import static neo.Game.GameSys.Event.D_EVENT_VECTOR;
+import static neo.Game.GameSys.Event.D_EVENT_VOID;
 import neo.Game.GameSys.Event.idEvent;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
@@ -28,6 +34,7 @@ import neo.idlib.containers.Hierarchy.idHierarchy;
 import neo.idlib.containers.List.idList;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *
@@ -70,57 +77,26 @@ public class Class {
 
     public static class idEventArg {
 
-        public int type;
-        public int value;
+        public final int    type;
+        public final Object value;
 //
 //
-
-        public idEventArg() {
-            type = D_EVENT_INTEGER;
-            value = 0;
-        }
-
-        public idEventArg(int data) {
-            type = D_EVENT_INTEGER;
-            value = data;
-        }
-
-        public idEventArg(float data) {
-            type = D_EVENT_FLOAT;
-            value = Float.floatToIntBits(data);
-        }
 
         public idEventArg(Object data) {
-            throw new TODO_Exception();
+            if(data instanceof Integer)         type = D_EVENT_INTEGER;
+            else if(data instanceof Float)      type = D_EVENT_FLOAT;
+            else if(data instanceof idVec3)     type = D_EVENT_VECTOR;
+            else if(data instanceof idStr)      type = D_EVENT_STRING;
+            else if(data instanceof String)     type = D_EVENT_STRING;
+            else if(data instanceof idEntity)   type = D_EVENT_ENTITY;
+            else if(data instanceof trace_s)    type = D_EVENT_TRACE;
+            else type = D_EVENT_VOID;
+            value = data;
         }
-
+        
         static idEventArg toEvent(Object data) {
             return new idEventArg(data);
         }
-//        public idEventArg(idVec3 data) {
-//            type = D_EVENT_VECTOR;
-//            value = reinterpret_cast < int > (data);
-//        }
-//
-//        public idEventArg(final idStr data) {
-//            type = D_EVENT_STRING;
-//            value = reinterpret_cast < int > (data.c_str());
-//        }
-//
-//        public idEventArg(final String data) {
-//            type = D_EVENT_STRING;
-//            value = reinterpret_cast < int > (data);
-//        }
-//
-//        public idEventArg(final idEntity data) {
-//            type = D_EVENT_ENTITY;
-//            value = reinterpret_cast < int > (data);
-//        }
-//
-//        public idEventArg(final trace_s data) {
-//            type = D_EVENT_TRACE;
-//            value = reinterpret_cast < int > (data);
-//        }
     };
 
     public static class idAllocError extends idException {
@@ -292,11 +268,11 @@ public class Class {
         }
 
         public boolean PostEventMS(final idEventDef ev, float time, Object arg1) {
-            return PostEventMS(ev, (int) time, toEvent(arg1));
+            return PostEventArgs(ev, (int) time, 1, toEvent(arg1));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2) {
-            return PostEventMS(ev, time, toEvent(arg1), toEvent(arg1));
+            return PostEventArgs(ev, time, 2, toEvent(arg1), toEvent(arg1));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3) {

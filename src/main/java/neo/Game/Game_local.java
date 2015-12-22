@@ -216,6 +216,7 @@ import static neo.Game.Game_network.net_clientMaxPrediction;
 import static neo.Game.Game_network.net_clientShowSnapshot;
 import static neo.Game.Game_network.net_clientShowSnapshotRadius;
 import static neo.Game.Game_network.net_clientSmoothing;
+import neo.Game.Item.idItem;
 import neo.Game.Item.idMoveablePDAItem;
 import neo.Game.Item.idObjective;
 import neo.Game.Item.idObjectiveComplete;
@@ -228,6 +229,7 @@ import neo.Game.Misc.idPlayerStart;
 import neo.Game.Misc.idStaticEntity;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Mover.idMover;
+import neo.Game.Mover.idSplinePath;
 import neo.Game.MultiplayerGame.gameType_t;
 import static neo.Game.MultiplayerGame.gameType_t.GAME_DM;
 import static neo.Game.MultiplayerGame.gameType_t.GAME_LASTMAN;
@@ -546,6 +548,10 @@ public class Game_local {
 
         public idEntityPtr() {
             spawnId = 0;
+        }
+        
+        public idEntityPtr(type ent) {
+            this.oSet(ent);
         }
         // save games
 
@@ -3462,6 +3468,15 @@ public class Game_local {
                         break;
                     case "idTarget_FadeEntity":
                         obj = new idTarget_FadeEntity();
+                        break;
+                    case "idEntityFx":
+                        obj = new idEntityFx();
+                        break;
+                    case "idItem":
+                        obj = new idItem();
+                        break;
+                    case "idSplinePath":
+                        obj = new idSplinePath();
                         break;
                     default:
                         obj = null;

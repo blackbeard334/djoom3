@@ -1395,10 +1395,6 @@ public class Mover {
         }
 
         @Override
-        public void Spawn() {
-        }
-
-        @Override
         public idClass CreateInstance() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }

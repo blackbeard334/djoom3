@@ -1349,7 +1349,7 @@ public class Interaction {
 
         newTri.numIndexes = numIndexes;
 
-        newTri.bounds = bounds;
+        newTri.bounds.oSet(bounds);
 
         return newTri;
     }

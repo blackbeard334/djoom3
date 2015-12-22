@@ -61,14 +61,14 @@ public class FX {
         renderLight_s renderLight;          // light presented to the renderer
         int/*qhandle_t*/ lightDefHandle;    // handle to renderer light def
         renderEntity_s renderEntity;        // used to present a model to the renderer
-        int modelDefHandle;                 // handle to static renderer model
-        float delay;
-        int particleSystem;
-        int start;
-        boolean soundStarted;
-        boolean shakeStarted;
-        boolean decalDropped;
-        boolean launched;
+        int            modelDefHandle;      // handle to static renderer model
+        float          delay;
+        int            particleSystem;
+        int            start;
+        boolean        soundStarted;
+        boolean        shakeStarted;
+        boolean        decalDropped;
+        boolean        launched;
     };
     /*
      ===============================================================================
@@ -82,11 +82,11 @@ public class FX {
 
     public static class idEntityFx extends idEntity {
 
-        protected int started;
-        protected int nextTriggerTime;
-        protected idDeclFX fxEffect;				// GetFX() should be called before using fxEffect as a pointer
+        protected int                     started;
+        protected int                     nextTriggerTime;
+        protected idDeclFX                fxEffect;                // GetFX() should be called before using fxEffect as a pointer
         protected idList<idFXLocalAction> actions;
-        protected idStr systemName;
+        protected idStr                   systemName;
         //
         //
 
@@ -96,11 +96,14 @@ public class FX {
             started = -1;
             nextTriggerTime = -1;
             fl.networkSync = true;
+            actions = new idList<>();
+            systemName = new idStr();
         }
 //	virtual					~idEntityFx();
 
         @Override
         public void Spawn() {
+            super.Spawn();
 
             if (g_skipFX.GetBool()) {
                 return;

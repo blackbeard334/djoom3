@@ -48,15 +48,18 @@ public class Model_ase {
         int numFaces;
         int numTVFaces;
         int numCVFaces;
-//
-        final idVec3[] transform;			// applied to normals
-//
-        boolean colorsParsed;
-        boolean normalsParsed;
-        idVec3[] vertexes;
-        idVec2[] tvertexes;
-        idVec3[] cvertexes;
+        //
+        final idVec3[] transform;            // applied to normals
+        //
+        boolean     colorsParsed;
+        boolean     normalsParsed;
+        idVec3[]    vertexes;
+        idVec2[]    tvertexes;
+        idVec3[]    cvertexes;
         aseFace_t[] faces;
+
+        private static int DBG_counter = 1;
+        private final  int DBG_count   = DBG_counter++;
 
         public aseMesh_t() {
             transform = new idVec3[4];
@@ -1015,9 +1018,7 @@ public class Model_ase {
 
                 // ignore regular meshes that aren't part of animation
                 case "*MESH":
-                    ase.currentMesh = ase.currentObject.mesh;
-                    //                memset(ase.currentMesh, 0, sizeof(ase.currentMesh));
-                    ase.currentMesh = new aseMesh_t();
+                    ase.currentMesh = ase.currentObject.mesh = new aseMesh_t();
                     ASE_ParseBracedBlock(ASE_KeyMESH.getInstance());
                     break;
 

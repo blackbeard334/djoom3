@@ -932,8 +932,6 @@ public class tr_deform {
         // memory, and will be automatically disposed of
         // the surface cannot have more indexes or verts than the original
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
-//	memset( newTri, 0, sizeof( *newTri ) );
-        newTri.clear();
         newTri.numVerts = tri.numVerts;
         newTri.numIndexes = tri.numIndexes;
         newTri.indexes = (int[]) R_FrameAlloc(tri.numIndexes);
@@ -1111,7 +1109,7 @@ public class tr_deform {
                 tri.indexes = new int[tri.numIndexes];// R_FrameAlloc(tri.numIndexes);
 
                 // just always draw the particles
-                tri.bounds = new idBounds(stage.bounds);
+                tri.bounds.oSet(stage.bounds);
 
                 tri.numVerts = 0;
 

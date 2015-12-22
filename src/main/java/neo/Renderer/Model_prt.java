@@ -228,7 +228,7 @@ public class Model_prt {
                 surf.geometry.facePlanesCalculated = false;
                 surf.geometry.numVerts = numVerts;
                 surf.geometry.numIndexes = numIndexes;
-                surf.geometry.bounds = new idBounds(stage.bounds);		// just always draw the particles
+                surf.geometry.bounds.oSet(stage.bounds);// just always draw the particles
             }
 
             return staticModel;

@@ -2192,11 +2192,13 @@ public class tr_trisurf {
         R_CreateSilIndexes(tri);
 
 //	R_RemoveDuplicatedTriangles( tri );	// this may remove valid overlapped transparent triangles
+        
         R_RemoveDegenerateTriangles(tri);
 
         R_TestDegenerateTextureSpace(tri);
 
 //	R_RemoveUnusedVerts( tri );
+        
         if (identifySilEdges) {
             R_IdentifySilEdges(tri, true);	// assume it is non-deformable, and omit coplanar edges
         }
@@ -2206,6 +2208,7 @@ public class tr_trisurf {
 
         // optimize the index order (not working?)
 //	R_OrderIndexes( tri.numIndexes, tri.indexes );
+        
         R_CreateDupVerts(tri);
 
         R_BoundTriSurf(tri);
@@ -2239,8 +2242,7 @@ public class tr_trisurf {
         srfTriangles_s tri;
         int i;
 
-//	memset( &tri, 0, sizeof( tri ) );
-        tri = new srfTriangles_s(true);
+        tri = new srfTriangles_s();
 
         tri.numVerts = numVerts;
         R_AllocStaticTriSurfVerts(tri, tri.numVerts);
