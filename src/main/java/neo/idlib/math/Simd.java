@@ -8,6 +8,7 @@ import neo.framework.CmdSystem;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idLib;
+import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.JointTransform.idJointQuat;
@@ -417,7 +418,7 @@ public class Simd {
 
         public abstract void /*VPCALL*/ ConvertJointQuatsToJointMats(idJointMat[] jointMats, final idJointQuat[] jointQuats, final int numJoints);
 
-        public abstract void /*VPCALL*/ ConvertJointMatsToJointQuats(idJointQuat[] jointQuats, final idJointMat[] jointMats, final int numJoints);
+        public abstract void /*VPCALL*/ ConvertJointMatsToJointQuats(idList<idJointQuat> jointQuats, final idJointMat[] jointMats, final int numJoints);
 
         public abstract void /*VPCALL*/ TransformJoints(idJointMat[] jointMats, final int[] parents, final int firstJoint, final int lastJoint);
 

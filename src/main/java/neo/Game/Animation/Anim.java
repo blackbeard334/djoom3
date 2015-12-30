@@ -28,6 +28,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Quat.idQuat;
 import static neo.idlib.math.Simd.SIMDProcessor;
@@ -1017,17 +1018,17 @@ public class Anim {
     };
 
     public static class idAFPoseJointMod {
+        public AFJointModType_t mod;
+        public idMat3           axis;
+        public idVec3           origin;
+        //
+        //
 
         public idAFPoseJointMod() {
             mod = AF_JOINTMOD_AXIS;
-            axis.Identity();
-            origin.Zero();
+            axis = getMat3_identity();
+            origin = new idVec3();
         }
-//
-//
-        public AFJointModType_t mod;
-        public idMat3 axis;
-        public idVec3 origin;
     };
 
     /*

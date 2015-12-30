@@ -171,6 +171,12 @@ public class Plane {
             d = 0;
             return this;
         }
+        
+        public idPlane oSet(final idPlane p) {
+            abc.oSet(p.abc);
+            this.d = p.d;
+            return this;
+        }
 //public	idPlane			operator+( const idPlane &p ) const;	// add plane equations
 
         // add plane equations

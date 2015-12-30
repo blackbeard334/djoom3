@@ -90,8 +90,7 @@ public class Physics_Parametric {
             current.useSplineAngles = false;
             current.origin = new idVec3();
             current.angles = new idAngles();
-            current.axis = new idMat3();
-            current.axis.Identity();
+            current.axis = idMat3.getMat3_identity();
             current.localOrigin = new idVec3();
             current.localAngles = new idAngles();
             current.linearExtrapolation = new idExtrapolate<>();

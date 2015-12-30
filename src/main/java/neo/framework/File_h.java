@@ -1288,19 +1288,11 @@ public class File_h {
         public int Read(ByteBuffer buffer, int len) {
             int l = 0;
             int read = 0;
-//            int skipped = 0;
-
-//                ByteBuffer zippedBuffer = ByteBuffer.allocate(len);
-//                l = z.read(zippedBuffer, 0);
-//                try (ZipInputStream inputStream = new ZipInputStream(new ByteArrayInputStream(zippedBuffer.array()))) {
+            
             try {
                 if (null == inputStream) {
                     inputStream = new ZipFile(fullPath.toString()).getInputStream(z);
                 }
-//                    inputStream.getNextEntry();
-//                while (skipped < bytePos) {//set read position to after our last read.
-//                    skipped += inputStream.skip(bytePos);
-//                }
 
                 while (read > -1 && len != 0) {
                     read = inputStream.read(buffer.array(), l, len);
@@ -1308,7 +1300,6 @@ public class File_h {
                     len -= read;
                 }
             } catch (IOException ex) {
-                Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
                 common.FatalError("idFile_InZip::Read: error whilest reading from %s", name);
             }
 
@@ -1335,13 +1326,6 @@ public class File_h {
 
         @Override
         public int Tell() {
-//            try {
-//                return (int) z.position();
-//            } catch (IOException ex) {
-//                Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//
-//            return -1;
             return byteCounter;
         }
 
@@ -1383,7 +1367,6 @@ public class File_h {
                 }
                 case FS_SEEK_CUR: {//TODO: negative offsets?
                     buf = ByteBuffer.allocate(ZIP_SEEK_BUF_SIZE);
-                    unzOpenCurrentFile();
                     for (i = 0; i < (offset - ZIP_SEEK_BUF_SIZE); i += ZIP_SEEK_BUF_SIZE) {
                         res = Read(buf, ZIP_SEEK_BUF_SIZE);
                         if (res < ZIP_SEEK_BUF_SIZE) {
@@ -1409,7 +1392,7 @@ public class File_h {
                     inputStream.close();
                 }
             } catch (IOException ex) {
-                //then we're in deep shit.
+                common.FatalError("idFile_InZip::unzOpenCurrentFile: we're in deep shit bub \n");
             }
             inputStream = null; //reload inputStream.
         }

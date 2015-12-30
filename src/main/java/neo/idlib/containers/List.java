@@ -43,6 +43,8 @@ public class List {
         private Class<type> type;
         private static final Cloner CLONER = new Cloner();//TODO:
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
         //
 
 //public	typedef int		cmp_t( const type *, const type * );

@@ -224,7 +224,6 @@ public class CollisionModel_local {
          static final int SIZE = Integer.SIZE + Short.SIZE + Short.SIZE + Long.SIZE + Long.SIZE + Integer.SIZE + idVec3.SIZE;
          static final int BYTES = SIZE / Byte.SIZE;
 
-
         int   checkcount;                   // for multi-check avoidance
         short internal;                     // a trace model can never collide with internal edges
         short numUsers;                     // number of polygons using this edge
@@ -270,6 +269,16 @@ public class CollisionModel_local {
             this.bounds = new idBounds();
             this.material = new idMaterial();
             this.plane = new idPlane();
+        }
+
+        public void oSet(final cm_polygon_s p) {
+            this.bounds = new idBounds(p.bounds);
+            this.checkcount = p.checkcount;
+            this.contents = p.contents;
+            this.material = p.material;
+            this.plane = new idPlane(p.plane);
+            this.numEdges = p.numEdges;
+            this.edges[0] = p.edges[0];
         }
     }
 
@@ -405,6 +414,9 @@ public class CollisionModel_local {
         int                  numRemovedPolys;
         int                  numMergedPolys;
         int                  usedMemory;
+        
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
 
         cm_model_s() {
             bounds = new idBounds();
@@ -4785,10 +4797,8 @@ public class CollisionModel_local {
             }
 
             newp = AllocPolygon(model, newNumEdges);
-//	memcpy( newp, p1, sizeof(cm_polygon_t) );
-            p1 = newp;
-//	memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
-            System.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);
+            newp.oSet(p1);//memcpy( newp, p1, sizeof(cm_polygon_t) );
+            System.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);//memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
             newp.numEdges = newNumEdges;
             newp.checkcount = 0;
             // increase usage count for the edges of this polygon
@@ -5506,9 +5516,9 @@ public class CollisionModel_local {
             cm_windingList.bounds.oGet(0).oMinSet(new idVec3(CHOP_EPSILON, CHOP_EPSILON, CHOP_EPSILON));
             cm_windingList.bounds.oGet(1).oPluSet(new idVec3(CHOP_EPSILON, CHOP_EPSILON, CHOP_EPSILON));
 
-            cm_windingList.w[0] = w;
+            cm_windingList.w[0] = new idFixedWinding(w);
             cm_windingList.numWindings = 1;
-            cm_windingList.normal = plane.Normal();
+            cm_windingList.normal = new idVec3(plane.Normal());
             cm_windingList.contents = contents;
             cm_windingList.primitiveNum = patch;
             //
@@ -6157,8 +6167,8 @@ public class CollisionModel_local {
             p.contents = material.GetContentFlags();
             p.material = material;
             p.checkcount = 0;
-            p.plane = plane;
-            p.bounds = bounds;
+            p.plane.oSet(plane);
+            p.bounds.oSet(bounds);
             for (i = 0; i < numPolyEdges; i++) {
                 edgeNum = polyEdges[i];
                 p.edges[i] = edgeNum;

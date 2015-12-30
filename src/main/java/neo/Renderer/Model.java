@@ -287,7 +287,7 @@ public class Model {
     // a reloadModels is issued
     public static abstract class idRenderModel implements SERiAL {
         private static int DBG_counter = 0;
-        private final int DBG_count = DBG_counter++;
+        protected final int DBG_count = DBG_counter++;
 
         // public abstract						~idRenderModel() {};
         // Loads static models only, dynamic models must be loaded by the modelManager

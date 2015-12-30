@@ -41,6 +41,8 @@ public class DrawVert {
 ////#endif
 //public	float			operator[]( const int index ) const;
 //public	float &			operator[]( const int index );
+        private static int DBG_counter = 0;
+        private final int DBG_count = DBG_counter++;
 
         public idDrawVert() {
             this.xyz = new idVec3();

@@ -885,9 +885,11 @@ public class DeclManager {
         protected void Print() {
         }
 
+        private static int DBG_AllocateSelf = 0;
         protected void AllocateSelf() {
             if (null == self) {
                 try {
+                    DBG_AllocateSelf++;
                     self = declManagerLocal.GetDeclType(etoi(type)).allocator.newInstance();
                     self.base = this;
                 } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {

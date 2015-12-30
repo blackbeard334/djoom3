@@ -92,27 +92,27 @@ public class Model_local {
     public static class idRenderModelStatic extends idRenderModel {
 
         public final idList<modelSurface_s> surfaces;
-        public idBounds bounds;
-        public int overlaysAdded;
+        public       idBounds               bounds;
+        public       int                    overlaysAdded;
         //
         //
-        protected int lastModifiedFrame;
-        protected int lastArchivedFrame;
+        protected    int                    lastModifiedFrame;
+        protected    int                    lastArchivedFrame;
         //
-        protected idStr name;
-        protected srfTriangles_s shadowHull;
-        protected boolean isStaticWorldModel;
-        protected boolean defaulted;
-        protected boolean purged;				// eventually we will have dynamic reloading
-        protected boolean fastLoad;				// don't generate tangents and shadow data
-        protected boolean reloadable;				// if not, reloadModels won't check timestamp
-        protected boolean levelLoadReferenced;                  // for determining if it needs to be freed
-        protected final long[]/*ID_TIME_T*/ timeStamp = new long[1];
+        protected    idStr                  name;
+        protected    srfTriangles_s         shadowHull;
+        protected    boolean                isStaticWorldModel;
+        protected    boolean                defaulted;
+        protected    boolean                purged;                // eventually we will have dynamic reloading
+        protected    boolean                fastLoad;              // don't generate tangents and shadow data
+        protected    boolean                reloadable;            // if not, reloadModels won't check timestamp
+        protected    boolean                levelLoadReferenced;   // for determining if it needs to be freed
+        protected final        long[]/*ID_TIME_T*/ timeStamp            = new long[1];
         //
-        protected static final idCVar r_mergeModelSurfaces = new idCVar("r_mergeModelSurfaces", "1", CVAR_BOOL | CVAR_RENDERER, "combine model surfaces with the same material");
-        protected static final idCVar r_slopVertex = new idCVar("r_slopVertex", "0.01", CVAR_RENDERER, "merge xyz coordinates this far apart");
-        protected static final idCVar r_slopTexCoord = new idCVar("r_slopTexCoord", "0.001", CVAR_RENDERER, "merge texture coordinates this far apart");
-        protected static final idCVar r_slopNormal = new idCVar("r_slopNormal", "0.02", CVAR_RENDERER, "merge normals that dot less than this");
+        protected static final idCVar              r_mergeModelSurfaces = new idCVar("r_mergeModelSurfaces", "1", CVAR_BOOL | CVAR_RENDERER, "combine model surfaces with the same material");
+        protected static final idCVar              r_slopVertex         = new idCVar("r_slopVertex", "0.01", CVAR_RENDERER, "merge xyz coordinates this far apart");
+        protected static final idCVar              r_slopTexCoord       = new idCVar("r_slopTexCoord", "0.001", CVAR_RENDERER, "merge texture coordinates this far apart");
+        protected static final idCVar              r_slopNormal         = new idCVar("r_slopNormal", "0.02", CVAR_RENDERER, "merge normals that dot less than this");
         //
         //
 
@@ -285,8 +285,9 @@ public class Model_local {
 
          ================
          */
+        private static int DBG_FinishSurfaces = 0;
         @Override
-        public void FinishSurfaces() {
+        public void FinishSurfaces() {DBG_FinishSurfaces++;
             int i;
             int totalVerts, totalIndexes;
 
@@ -1343,7 +1344,8 @@ public class Model_local {
             return true;
         }
 
-        public boolean ConvertLWOToModelSurfaces(final lwObject lwo) {
+        private static int DBG_ConvertLWOToModelSurfaces = 0;
+        public boolean ConvertLWOToModelSurfaces(final lwObject lwo) {DBG_ConvertLWOToModelSurfaces++;
             idMaterial im1, im2;
             srfTriangles_s tri;
             lwSurface lwoSurf;
@@ -1382,11 +1384,11 @@ public class Model_local {
             // material, but we would like to merge them together where possible
             mergeTo = new int[i];
 //	memset( &surf, 0, sizeof( surf ) );
-            surf = new modelSurface_s();
 
             if (!r_mergeModelSurfaces.GetBool()) {
                 // don't merge any
                 for (lwoSurf = lwo.surf, i = 0; lwoSurf != null; lwoSurf = lwoSurf.next, i++) {
+                    surf = new modelSurface_s();
                     mergeTo[i] = i;
                     surf.shader = declManager.FindMaterial(lwoSurf.name);
                     surf.id = this.NumSurfaces();
@@ -1395,6 +1397,7 @@ public class Model_local {
             } else {
                 // search for material matches
                 for (lwoSurf = lwo.surf, i = 0; lwoSurf != null; lwoSurf = lwoSurf.next, i++) {
+                    surf = new modelSurface_s();
                     im1 = declManager.FindMaterial(lwoSurf.name);
                     if (im1.IsDiscrete()) {
                         // flares, autosprites, etc

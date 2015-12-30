@@ -3,6 +3,7 @@ package neo.idlib.math;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import neo.Renderer.Model.dominantTri_s;
+import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.JointTransform.idJointQuat;
@@ -2548,11 +2549,11 @@ public class Simd_Generic {
         }
 
         @Override
-        public void ConvertJointMatsToJointQuats(idJointQuat[] jointQuats, idJointMat[] jointMats, int numJoints) {
+        public void ConvertJointMatsToJointQuats(idList<idJointQuat> jointQuats, idJointMat[] jointMats, int numJoints) {
             int i;
 
             for (i = 0; i < numJoints; i++) {
-                jointQuats[i] = jointMats[i].ToJointQuat();
+                jointQuats.oSet(i, jointMats[i].ToJointQuat());
             }
         }
 

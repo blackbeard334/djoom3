@@ -2238,7 +2238,7 @@ public class Model_lwo {
         }
 
         flen += len;
-        return bbtocb(s).toString();//TODO:check output(my tests return chinese characters).
+        return bbtocb(s).toString().trim();//TODO:check output(my tests return chinese characters).
     }
 
     @Deprecated//UNUSED
@@ -2541,7 +2541,9 @@ public class Model_lwo {
             }
 
             /* process chunks as they're encountered */
+            int j = 0;
             while (true) {
+                j++;
                 cksize += cksize & 1;
 
                 switch (id) {
@@ -4055,7 +4057,7 @@ public class Model_lwo {
 
         /* count the strings */
         bp = new String(buf.array());
-        tags = bp.split("\0");//TODO:make sure we don't need the \0?
+        tags = bp.split("\0+");//TODO:make sure we don't need the \0?
         nTags = tags.length;
 
         /* expand the string array to hold the new tags */

@@ -3230,7 +3230,7 @@ public class Anim_Blend {
                     // init the joint buffer
                     if (AFPoseJoints.Num() != 0) {
                         // initialize with AF pose anim for the case where there are no other animations and no AF pose joint modifications
-                        defaultPose = AFPoseJointFrame.Ptr();
+                        defaultPose = AFPoseJointFrame.Ptr(idJointQuat[].class);
                     } else {
                         defaultPose = modelDef.GetDefaultPose();
                     }
@@ -3804,6 +3804,7 @@ public class Anim_Blend {
                 }
 
                 public void SetAFPoseJointMod(final int/*jointHandle_t*/ jointNum, final AFJointModType_t mod, final idMat3 axis, final idVec3 origin) {
+                    AFPoseJointMods.oSet(jointNum, new idAFPoseJointMod());
                     AFPoseJointMods.oGet(jointNum).mod = mod;
                     AFPoseJointMods.oGet(jointNum).axis = axis;
                     AFPoseJointMods.oGet(jointNum).origin = origin;
@@ -3855,7 +3856,7 @@ public class Anim_Blend {
                         }
                     }
 
-                    idJointMat[] joints = new idJointMat[numJoints];
+                    idJointMat[] joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
 
                     // convert the joint quaternions to joint matrices
                     SIMDProcessor.ConvertJointQuatsToJointMats(joints, jointFrame, numJoints);
@@ -3921,11 +3922,10 @@ public class Anim_Blend {
                     SIMDProcessor.UntransformJoints(joints, itoi(jointParent), 1, numJoints - 1);
 
                     // convert joint matrices back to joint quaternions
-                    SIMDProcessor.ConvertJointMatsToJointQuats(AFPoseJointFrame.Ptr(), joints, numJoints);
+                    SIMDProcessor.ConvertJointMatsToJointQuats(AFPoseJointFrame, joints, numJoints);
 
                     // find all modified joints and their parents
-                    boolean[] blendJoints = new boolean[numJoints];
-//	memset( blendJoints, 0, numJoints * sizeof( bool ) );
+                    boolean[] blendJoints = new boolean[numJoints];//memset( blendJoints, 0, numJoints * sizeof( bool ) );
 
                     // mark all modified joints and their parents
                     for (i = 0; i < AFPoseJoints.Num(); i++) {
@@ -3942,7 +3942,7 @@ public class Anim_Blend {
                         }
                     }
 
-                    AFPoseBounds = bounds;
+                    AFPoseBounds.oSet(bounds);
                     AFPoseTime = time;
 
                     ForceUpdate();
@@ -3958,7 +3958,7 @@ public class Anim_Blend {
                         return false;
                     }
 
-                    SIMDProcessor.BlendJoints(blendFrame, AFPoseJointFrame.Ptr(), AFPoseBlendWeight, itoi(AFPoseJoints.Ptr()), AFPoseJoints.Num());
+                    SIMDProcessor.BlendJoints(blendFrame, AFPoseJointFrame.Ptr(idJointQuat[].class), AFPoseBlendWeight, itoi(AFPoseJoints.Ptr(Integer[].class)), AFPoseJoints.Num());
 
                     return true;
                 }

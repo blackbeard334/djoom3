@@ -124,6 +124,8 @@ public class Dict_h {
         private static final idStrPool globalValues = new idStrPool();
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
 
         public idDict() {
             args.SetGranularity(16);
@@ -168,8 +170,8 @@ public class Dict_h {
 
             Clear();
 
-            args = other.args;
-            argHash = other.argHash;
+            args.oSet(other.args);
+            argHash.oSet(other.argHash);
 
             for (i = 0; i < args.Num(); i++) {
                 args.oGet(i).key = globalKeys.CopyString(args.oGet(i).key);

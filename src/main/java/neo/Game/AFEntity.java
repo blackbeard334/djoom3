@@ -491,12 +491,12 @@ public class AFEntity {
     public static class idAFEntity_Base extends idAnimatedEntity {
 // public	CLASS_PROTOTYPE( idAFEntity_Base );
 
-        protected idAF af;			// articulated figure
-        protected idClipModel combatModel;	// render model for hit detection
-        protected int combatModelContents;
-        protected idVec3 spawnOrigin;           // spawn origin
-        protected idMat3 spawnAxis;		// rotation axis used when spawned
-        protected int nextSoundTime;            // next time this can make a sound
+        protected idAF        af;                   // articulated figure
+        protected idClipModel combatModel;          // render model for hit detection
+        protected int         combatModelContents;
+        protected idVec3      spawnOrigin;          // spawn origin
+        protected idMat3      spawnAxis;            // rotation axis used when spawned
+        protected int         nextSoundTime;        // next time this can make a sound
         //
         //
 
@@ -806,8 +806,8 @@ public class AFEntity {
         // CLASS_PROTOTYPE( idAFEntity_Gibbable );
 
         protected idRenderModel skeletonModel;
-        protected int skeletonModelDefHandle;
-        protected boolean gibbed;
+        protected int           skeletonModelDefHandle;
+        protected boolean       gibbed;
         //
         //
 
@@ -1044,6 +1044,8 @@ public class AFEntity {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             if (!LoadAF()) {
                 gameLocal.Error("Couldn't load af file on entity '%s'", name);
             }

@@ -1,6 +1,7 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.Actor.idActor;
@@ -296,7 +297,7 @@ public class Entity {
         }
 
         @Override
-        public java.lang.Class/*idTypeInfo*/ GetType() {
+        public java.lang.Class/*idTypeInfo*/ GetType() {//TODO: make method final
             return getClass();
         }
 
@@ -4273,7 +4274,7 @@ public class Entity {
                 return false;
             }
 
-            frame = new idJointMat[numJoints];
+            frame = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
             GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), anim.MD5Anim(0), renderEntity.numJoints, frame, frameTime, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
 
             offset.oSet(frame[jointHandle].ToVec3());

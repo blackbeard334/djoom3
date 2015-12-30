@@ -1860,38 +1860,38 @@ public class Mover {
     public static class idMover_Binary extends idEntity {
         // CLASS_PROTOTYPE( idMover_Binary );
 
-        protected idVec3 pos1;
-        protected idVec3 pos2;
-        protected moverState_t moverState;
-        protected idMover_Binary moveMaster;
-        protected idMover_Binary activateChain;
-        protected int soundPos1;
-        protected int sound1to2;
-        protected int sound2to1;
-        protected int soundPos2;
-        protected int soundLoop;
-        protected float wait;
-        protected float damage;
-        protected int duration;
-        protected int accelTime;
-        protected int decelTime;
-        protected idEntityPtr<idEntity> activatedBy;
-        protected int stateStartTime;
-        protected idStr team;
-        protected boolean enabled;
-        protected int move_thread;
-        protected int updateStatus;		// 1 = lock behaviour, 2 = open close status
-        protected idStrList buddies;
-        protected idPhysics_Parametric physicsObj;
-        protected int/*qhandle_t*/ areaPortal;			// 0 = no portal
-        protected boolean blocked;
-        protected idList< idEntityPtr<idEntity>> guiTargets;
+        protected idVec3                        pos1;
+        protected idVec3                        pos2;
+        protected moverState_t                  moverState;
+        protected idMover_Binary                moveMaster;
+        protected idMover_Binary                activateChain;
+        protected int                           soundPos1;
+        protected int                           sound1to2;
+        protected int                           sound2to1;
+        protected int                           soundPos2;
+        protected int                           soundLoop;
+        protected float                         wait;
+        protected float                         damage;
+        protected int                           duration;
+        protected int                           accelTime;
+        protected int                           decelTime;
+        protected idEntityPtr<idEntity>         activatedBy;
+        protected int                           stateStartTime;
+        protected idStr                         team;
+        protected boolean                       enabled;
+        protected int                           move_thread;
+        protected int                           updateStatus;        // 1 = lock behaviour, 2 = open close status
+        protected idStrList                     buddies;
+        protected idPhysics_Parametric          physicsObj;
+        protected int/*qhandle_t*/              areaPortal;          // 0 = no portal
+        protected boolean                       blocked;
+        protected idList<idEntityPtr<idEntity>> guiTargets;
         //
         //
 
         public idMover_Binary() {
-            pos1.Zero();
-            pos2.Zero();
+            pos1 = new idVec3();
+            pos2 = new idVec3();
             moverState = MOVER_POS1;
             moveMaster = null;
             activateChain = null;
@@ -1905,12 +1905,14 @@ public class Mover {
             duration = 0;
             accelTime = 0;
             decelTime = 0;
-            activatedBy.oSet(this);
+            activatedBy = new idEntityPtr<>(this);
             stateStartTime = 0;
-            team.Clear();
+            team = new idStr();
             enabled = false;
             move_thread = 0;
             updateStatus = 0;
+            buddies = new idStrList();
+            physicsObj = new idPhysics_Parametric();
             areaPortal = 0;
             blocked = false;
             fl.networkSync = true;
@@ -1929,6 +1931,8 @@ public class Mover {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idEntity ent;
             String[] temp = {null};
 
@@ -2758,21 +2762,21 @@ public class Mover {
      */
     public static class idDoor extends idMover_Binary {
 
-        private float triggersize;
-        private boolean crusher;
-        private boolean noTouch;
-        private boolean aas_area_closed;
-        private idStr buddyStr;
+        private float       triggersize;
+        private boolean     crusher;
+        private boolean     noTouch;
+        private boolean     aas_area_closed;
+        private idStr       buddyStr;
         private idClipModel trigger;
         private idClipModel sndTrigger;
-        private int nextSndTriggerTime;
-        private idVec3 localTriggerOrigin;
-        private idMat3 localTriggerAxis;
-        private idStr requires;
-        private int removeItem;
-        private idStr syncLock;
-        private int normalAxisIndex;		// door faces X or Y for spectator teleports
-        private idDoor companionDoor;
+        private int         nextSndTriggerTime;
+        private idVec3      localTriggerOrigin;
+        private idMat3      localTriggerAxis;
+        private idStr       requires;
+        private int         removeItem;
+        private idStr       syncLock;
+        private int         normalAxisIndex;        // door faces X or Y for spectator teleports
+        private idDoor      companionDoor;
         //
         //
 
@@ -2783,15 +2787,15 @@ public class Mover {
             crusher = false;
             noTouch = false;
             aas_area_closed = false;
-            buddyStr.Clear();
+            buddyStr = new idStr();
             trigger = null;
             sndTrigger = null;
             nextSndTriggerTime = 0;
-            localTriggerOrigin.Zero();
-            localTriggerAxis.Identity();
-            requires.Clear();
+            localTriggerOrigin = new idVec3();
+            localTriggerAxis = idMat3.getMat3_identity();
+            requires = new idStr();
             removeItem = 0;
-            syncLock.Clear();
+            syncLock = new idStr();
             companionDoor = null;
             normalAxisIndex = 0;
         }
@@ -2799,6 +2803,8 @@ public class Mover {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idVec3 abs_movedir = new idVec3();
             float distance;
             idVec3 size;

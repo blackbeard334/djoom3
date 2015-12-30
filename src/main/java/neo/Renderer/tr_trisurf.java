@@ -2185,8 +2185,9 @@ public class tr_trisurf {
 
      FIXME: allow createFlat and createSmooth normals, as well as explicit
      =================
-     */
+     */private static int DBG_R_CleanupTriangles = 0;
     public static void R_CleanupTriangles(srfTriangles_s tri, boolean createNormals, boolean identifySilEdges, boolean useUnsmoothedTangents) {
+        DBG_R_CleanupTriangles++;
         R_RangeCheckIndexes(tri);
 
         R_CreateSilIndexes(tri);

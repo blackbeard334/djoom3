@@ -778,10 +778,10 @@ public class Model_md5 {
             int i = 0;
 
             for (final idMD5Joint joint : joints.Ptr(idMD5Joint[].class)) {
-                i++;
                 if (idStr.Icmp(joint.name, name) == 0) {
                     return i;
                 }
+                i++;
             }
 
             return INVALID_JOINT;

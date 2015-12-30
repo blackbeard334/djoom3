@@ -15,11 +15,11 @@ public class Rotation {
     public static class idRotation {
 
         //private:
-        public idVec3 origin;                   // origin of rotation
-        public idVec3 vec;                      // normalized vector to rotate around
-        public float  angle;                    // angle of rotation in degrees
-        public idMat3 axis = new idMat3();      // rotation axis
-        public boolean axisValid;               // true if rotation axis is valid
+        public idVec3  origin;      // origin of rotation
+        public idVec3  vec;         // normalized vector to rotate around
+        public float   angle;       // angle of rotation in degrees
+        public idMat3  axis;        // rotation axis
+        public boolean axisValid;   // true if rotation axis is valid
         //
         //
 
@@ -29,29 +29,33 @@ public class Rotation {
 //
 //public:
         public idRotation() {
+            origin = new idVec3();
+            vec = new idVec3();
+            axis = new idMat3();
         }
 
         public idRotation(final idVec3 rotationOrigin, final idVec3 rotationVec, final float rotationAngle) {
-            origin = rotationOrigin;
-            vec = rotationVec;
+            this();
+            origin.oSet(rotationOrigin);
+            vec.oSet(rotationVec);
             angle = rotationAngle;
             axisValid = false;
         }
 
         public void Set(final idVec3 rotationOrigin, final idVec3 rotationVec, final float rotationAngle) {
-            origin = rotationOrigin;
-            vec = rotationVec;
+            origin.oSet(rotationOrigin);
+            vec.oSet(rotationVec);
             angle = rotationAngle;
             axisValid = false;
         }
 
         public void SetOrigin(final idVec3 rotationOrigin) {
-            origin = rotationOrigin;
+            origin.oSet(rotationOrigin);
         }
 
         // has to be normalized	
         public void SetVec(final idVec3 rotationVec) {
-            vec = rotationVec;
+            vec.oSet(rotationVec);
             axisValid = false;
         }
 

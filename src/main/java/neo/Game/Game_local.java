@@ -228,6 +228,7 @@ import neo.Game.Misc.idPathCorner;
 import neo.Game.Misc.idPlayerStart;
 import neo.Game.Misc.idStaticEntity;
 import neo.Game.Moveable.idMoveable;
+import neo.Game.Mover.idDoor;
 import neo.Game.Mover.idMover;
 import neo.Game.Mover.idSplinePath;
 import neo.Game.MultiplayerGame.gameType_t;
@@ -3296,7 +3297,7 @@ public class Game_local {
 
             try {
                 if (args != null) {
-                    spawnArgs = args;
+                    spawnArgs.oSet(args);
                 } else {
                     spawnArgs.Clear();
                 }
@@ -3366,7 +3367,7 @@ public class Game_local {
                 ent[0] = null;
             }
 
-            spawnArgs = args;
+            spawnArgs.oSet(args);
 
             if (spawnArgs.GetString("name", "", name)) {
                 error = String.format(" on '%s'", name[0]);
@@ -3477,6 +3478,15 @@ public class Game_local {
                         break;
                     case "idSplinePath":
                         obj = new idSplinePath();
+                        break;
+                    case "idAFEntity_Generic":
+                        obj = new idAFEntity_Generic();
+                        break;
+                    case "idDoor":
+                        obj = new idDoor();
+                        break;
+                    case "idProjectile":
+                        obj = new idProjectile();
                         break;
                     default:
                         obj = null;
