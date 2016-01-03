@@ -35,8 +35,9 @@ public class Image_program {
      R_LoadImageProgram
      ===================
      */
-    static void R_LoadImageProgram(final String name, ByteBuffer[] pic, int[] width, int[] height, /*ID_TIME_T */ long[] timestamps, textureDepth_t[] depth) {
+    static ByteBuffer R_LoadImageProgram(final String name, int[] width, int[] height, /*ID_TIME_T */ long[] timestamps, textureDepth_t[] depth) {
         idLexer src = new idLexer();
+        ByteBuffer[] pic = {null};
 
         src.LoadMemory(name, name.length(), name);
         src.SetFlags(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS | LEXFL_ALLOWPATHNAMES);
@@ -49,10 +50,12 @@ public class Image_program {
         R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
         src.FreeSource();
+
+        return pic[-+-0];
     }
 
-    static void R_LoadImageProgram(final String name, ByteBuffer[] pic, int[] width, int[] height, /*ID_TIME_T */ long[] timestamps) {
-        R_LoadImageProgram(name, pic, width, height, timestamps, null);
+    static ByteBuffer R_LoadImageProgram(final String name, int[] width, int[] height, /*ID_TIME_T */ long[] timestamps) {
+        return R_LoadImageProgram(name, width, height, timestamps, null);
     }
 
     /*
@@ -86,7 +89,7 @@ public class Image_program {
             scale = token.GetFloatValue();
 
             // process it
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 R_HeightmapToNormalMap(pic[0], width[0], height[0], scale);
                 if (depth != null) {
                     depth[0] = TD_BUMP;
@@ -98,7 +101,7 @@ public class Image_program {
         }
 
         if (0 == token.Icmp("addnormals")) {
-            ByteBuffer[] pic2 = {null};
+            ByteBuffer[] pic2 = {pic != null ? ByteBuffer.allocate(pic[0].capacity()) : null};
             int[] width2 = {0}, height2 = {0};
 
             MatchAndAppendToken(src, "(");
@@ -109,15 +112,15 @@ public class Image_program {
 
             MatchAndAppendToken(src, ",");
 
-            if (!R_ParseImageProgram_r(src, pic != null ? pic2 : null, width2, height2, timestamps, depth)) {
-                if (pic != null) {
-                    pic[0] = null;//R_StaticFree(pic);
+            if (!R_ParseImageProgram_r(src, pic2, width2, height2, timestamps, depth)) {
+                if (pic != null && pic[0] != null) {
+                    pic[0].clear();//R_StaticFree(pic);
                 }
                 return false;
             }
 
             // process it
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 R_AddNormalMaps(pic[0], width[0], height[0], pic2[0], width2[0], height2[0]);
 //                R_StaticFree(pic2);
                 if (depth != null) {
@@ -136,7 +139,7 @@ public class Image_program {
                 return false;
             }
 
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 R_SmoothNormalMap(pic[0], width[0], height[0]);
                 if (depth != null) {
                     depth[0] = TD_BUMP;
@@ -148,7 +151,7 @@ public class Image_program {
         }
 
         if (0 == token.Icmp("add")) {
-            ByteBuffer[] pic2 = {null};
+            ByteBuffer[] pic2 = {pic != null ? ByteBuffer.allocate(pic[0].capacity()) : null};
             int[] width2 = {0}, height2 = {0};
 
             MatchAndAppendToken(src, "(");
@@ -159,15 +162,15 @@ public class Image_program {
 
             MatchAndAppendToken(src, ",");
 
-            if (!R_ParseImageProgram_r(src, pic[0] != null ? pic2 : null, width2, height2, timestamps, depth)) {
-                if (pic != null) {
-                    pic[0] = null;//R_StaticFree(pic[0]);
+            if (!R_ParseImageProgram_r(src, pic2, width2, height2, timestamps, depth)) {
+                if (pic != null && pic[0] != null) {
+                    pic[0].clear();//R_StaticFree(pic[0]);
                 }
                 return false;
             }
 
             // process it
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 R_ImageAdd(pic[0], width[0], height[0], pic2[0], width2[0], height2[0]);
 //                R_StaticFree(pic2);
             }
@@ -192,7 +195,7 @@ public class Image_program {
             }
 
             // process it
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 R_ImageScale(pic[0], width[0], height[0], scale2);
             }
 
@@ -206,7 +209,7 @@ public class Image_program {
             R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
             // process it
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 R_InvertAlpha(pic[0], width[0], height[0]);
             }
 
@@ -220,7 +223,7 @@ public class Image_program {
             R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
             // process it
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 R_InvertColor(pic[0], width[0], height[0]);
             }
 
@@ -236,7 +239,7 @@ public class Image_program {
             R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
             // copy red to green, blue, and alpha
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 int c;
                 c = width[0] * height[0] * 4;
                 pic[0].position(0);
@@ -259,7 +262,7 @@ public class Image_program {
             R_ParseImageProgram_r(src, pic, width, height, timestamps, depth);
 
             // average RGB into alpha, then set RGB to white
-            if (pic != null) {
+            if (pic != null && pic[0] != null) {
                 int c;
                 pic[0].position(0);
                 c = width[0] * height[0] * 4;
@@ -281,7 +284,7 @@ public class Image_program {
         }
 
         // load it as an image
-        R_LoadImage(token.toString(), pic, width, height, timestamp, true);
+        pic[0] = R_LoadImage(token.toString(), width, height, timestamp, true);
 
         if (timestamp[0] == -1) {
             return false;

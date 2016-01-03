@@ -1,8 +1,10 @@
 package neo.framework;
 
+import java.util.Arrays;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.RenderWorld.renderEntity_s;
 import neo.Renderer.RenderWorld.renderView_s;
+import static neo.TempDump.atof;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.DECL_LEXER_FLAGS;
 import static neo.framework.DeclManager.declManager;
@@ -1098,18 +1100,16 @@ public class DeclParticle {
             // this isn't absolutely guaranteed, but it should be close
             particleGen_t g = new particleGen_t();
 
-            renderEntity_s renderEntity = new renderEntity_s();
-//	memset( &renderEntity, 0, sizeof( renderEntity ) );
-            renderEntity.axis = new idMat3(getMat3_identity());
+            renderEntity_s renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
+            renderEntity.axis = getMat3_identity();
 
-            renderView_s renderView = new renderView_s();
-//	memset( &renderView, 0, sizeof( renderView ) );
-            renderView.viewaxis = new idMat3(getMat3_identity());
+            renderView_s renderView = new renderView_s();//memset( &renderView, 0, sizeof( renderView ) );
+            renderView.viewaxis = getMat3_identity();
 
             g.renderEnt = renderEntity;
             g.renderView = renderView;
             g.origin = new idVec3();
-            g.axis = new idMat3(getMat3_identity());
+            g.axis = getMat3_identity();
 
             idRandom steppingRandom = new idRandom();
             steppingRandom.SetSeed(0);
@@ -1368,7 +1368,7 @@ public class DeclParticle {
         private void ParseParms(idLexer src, float[] parms, int maxParms) throws idException {
             idToken token = new idToken();
 
-//	memset( parms, 0, maxParms * sizeof( *parms ) );
+            Arrays.fill(parms, 0, maxParms, 0);//memset( parms, 0, maxParms * sizeof( *parms ) );
             int count = 0;
             while (true) {
                 if (!src.ReadTokenOnLine(token)) {
@@ -1379,7 +1379,7 @@ public class DeclParticle {
                     return;
                 }
                 token.StripQuotes();
-                parms[count] = Float.parseFloat(token.toString());
+                parms[count] = atof(token.toString());
                 count++;
             }
         }
@@ -1397,14 +1397,14 @@ public class DeclParticle {
 
             if (token.IsNumeric()) {
                 // can have a to + 2nd parm
-                parm.from = parm.to = Float.parseFloat(token.toString());
+                parm.from = parm.to = atof(token.toString());
                 if (src.ReadToken(token)) {
                     if (0 == token.Icmp("to")) {
                         if (!src.ReadToken(token)) {
                             src.Error("missing second parameter");
                             return;
                         }
-                        parm.to = Float.parseFloat(token.toString());
+                        parm.to = atof(token.toString());
                     } else {
                         src.UnreadToken(token);
                     }

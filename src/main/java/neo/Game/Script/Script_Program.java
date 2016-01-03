@@ -19,6 +19,9 @@ import neo.TempDump.SERiAL;
 import neo.framework.File_h.idFile;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
+
+import static neo.TempDump.btoi;
+import static neo.TempDump.itob;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
@@ -814,7 +817,7 @@ public class Script_Program {
                         if (etype != parm.FieldType().Type()) {
                             return null;
                         }
-                        return (ByteBuffer) data.position(pos);
+                        return ((ByteBuffer) data.position(pos)).slice();
                     }
 
                     if (parm.FieldType().Inherits(type_object)) {
@@ -857,7 +860,7 @@ public class Script_Program {
     static class idScriptVariable<type, returnType> {
 
         protected final int/*etype_t*/ etype;
-        private         type           data;
+        private         ByteBuffer     data;
 //
 //
 
@@ -880,7 +883,7 @@ public class Script_Program {
         }
 
         public void LinkTo(idScriptObject obj, final String name) {
-            data = (type) obj.GetVariable(name, etype);//TODO:convert bytes to type
+            data = obj.GetVariable(name, etype);//TODO:convert bytes to type
             if (null == data) {
                 gameError("Missing '%s' field in script object '%s'", name, obj.GetTypeName());
             }
@@ -892,7 +895,16 @@ public class Script_Program {
 
             // make sure we don't crash if we don't have a pointer
             if (data != null) {
-                data = (type) value;
+                final int pos = data.position();
+                switch (etype) {
+                    case ev_boolean:
+                        data.put((byte) btoi((Boolean) value));
+                        break;
+                    case ev_float:
+                        data.putFloat((Float) value);
+                        break;
+                }
+                data.position(pos);
             }
             return this;
         }
@@ -903,7 +915,15 @@ public class Script_Program {
 
             // make sure we don't crash if we don't have a pointer
             if (data != null) {
-                return (returnType) data;
+                final int pos = data.position();
+                switch (etype) {
+                    case ev_boolean:
+                        return (returnType) (Boolean) itob(data.get(pos));
+                    case ev_float:
+                        return (returnType) (Float) data.getFloat(pos);
+                    default:
+                        return null;
+                }
             } else {
                 // reasonably safe value
                 return null;
@@ -911,7 +931,7 @@ public class Script_Program {
         }
 
         public void _(returnType bla) {
-            data = (type) bla;
+            this.oSet(bla);
         }
     };
 
@@ -926,35 +946,30 @@ public class Script_Program {
 
      ***********************************************************************/
     public static class idScriptBool extends idScriptVariable<Boolean, Boolean> {
-
         public idScriptBool() {
             super(ev_boolean);
         }
     };
 
     public static class idScriptFloat extends idScriptVariable<Float, Float> {
-
         public idScriptFloat() {
             super(ev_float);
         }
     };
 
-    public static class idScriptInt extends idScriptVariable<Float, Integer> {
-
+    private static class idScriptInt extends idScriptVariable<Float, Integer> {
         public idScriptInt() {
             super(ev_float);
         }
     };
 
-    public static class idScriptVector extends idScriptVariable<idVec3, idVec3> {
-
+    private static class idScriptVector extends idScriptVariable<idVec3, idVec3> {
         public idScriptVector() {
             super(ev_vector);
         }
     };
 
-    public static class idScriptString extends idScriptVariable<idStr, String> {
-
+    private static class idScriptString extends idScriptVariable<idStr, String> {
         public idScriptString() {
             super(ev_string);
         }

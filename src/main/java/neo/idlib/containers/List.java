@@ -3,6 +3,7 @@ package neo.idlib.containers;
 import com.rits.cloning.Cloner;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import neo.TempDump.CPP_class;
@@ -639,7 +640,7 @@ public class List {
             int i;
 
             for (i = 0; i < num; i++) {
-                if (list[i].equals(obj)) {
+                if (Objects.equals(list[i], obj)) {
                     return i;
                 }
             }

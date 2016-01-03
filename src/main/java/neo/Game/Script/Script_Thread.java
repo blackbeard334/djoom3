@@ -921,9 +921,9 @@ public class Script_Thread {
                         "Paused since %d (%d ms)\n"
                         + "      Reason: ", lastExecuteTime, gameLocal.time - lastExecuteTime);
                 if (waitingForThread != null) {
-                    gameLocal.Printf("Waiting for thread #%3i '%s'\n", waitingForThread.GetThreadNum(), waitingForThread.GetThreadName());
+                    gameLocal.Printf("Waiting for thread #%3d '%s'\n", waitingForThread.GetThreadNum(), waitingForThread.GetThreadName());
                 } else if ((waitingFor != ENTITYNUM_NONE) && (gameLocal.entities[ waitingFor] != null)) {
-                    gameLocal.Printf("Waiting for entity #%3i '%s'\n", waitingFor, gameLocal.entities[ waitingFor].name);
+                    gameLocal.Printf("Waiting for entity #%3d '%s'\n", waitingFor, gameLocal.entities[ waitingFor].name);
                 } else if (waitingUntil != 0) {
                     gameLocal.Printf("Waiting until %d (%d ms total wait time)\n", waitingUntil, waitingUntil - lastExecuteTime);
                 } else {
@@ -993,7 +993,7 @@ public class Script_Thread {
                 n = threadList.Num();
                 for (i = 0; i < n; i++) {
                     //threadList[ i ].DisplayInfo();
-                    gameLocal.Printf("%3i: %-20s : %s(%d)\n", threadList.oGet(i).threadNum, threadList.oGet(i).threadName, threadList.oGet(i).interpreter.CurrentFile(), threadList.oGet(i).interpreter.CurrentLine());
+                    gameLocal.Printf("%3d: %-20s : %s(%d)\n", threadList.oGet(i).threadNum, threadList.oGet(i).threadName, threadList.oGet(i).interpreter.CurrentFile(), threadList.oGet(i).interpreter.CurrentLine());
                 }
                 gameLocal.Printf("%d active threads\n\n", n);
             }
@@ -1085,35 +1085,36 @@ public class Script_Thread {
         }
 
         public boolean Execute() {
-            idThread oldThread;
-            boolean done;
-
-            if (manualControl && (waitingUntil > gameLocal.time)) {
-                return false;
-            }
-
-            oldThread = currentThread;
-            currentThread = this;
-
-            lastExecuteTime = gameLocal.time;
-            ClearWaitFor();
-            done = interpreter.Execute();
-            if (done) {
-                End();
-                if (interpreter.terminateOnExit) {
-                    PostEventMS(EV_Remove, 0);
-                }
-            } else if (!manualControl) {
-                if (waitingUntil > lastExecuteTime) {
-                    PostEventMS(EV_Thread_Execute, waitingUntil - lastExecuteTime);
-                } else if (interpreter.MultiFrameEventInProgress()) {
-                    PostEventMS(EV_Thread_Execute, gameLocal.msec);
-                }
-            }
-
-            currentThread = oldThread;
-
-            return done;
+            return false;//HACKME::6
+//            idThread oldThread;
+//            boolean done;
+//
+//            if (manualControl && (waitingUntil > gameLocal.time)) {
+//                return false;
+//            }
+//
+//            oldThread = currentThread;
+//            currentThread = this;
+//
+//            lastExecuteTime = gameLocal.time;
+//            ClearWaitFor();
+//            done = interpreter.Execute();
+//            if (done) {
+//                End();
+//                if (interpreter.terminateOnExit) {
+//                    PostEventMS(EV_Remove, 0);
+//                }
+//            } else if (!manualControl) {
+//                if (waitingUntil > lastExecuteTime) {
+//                    PostEventMS(EV_Thread_Execute, waitingUntil - lastExecuteTime);
+//                } else if (interpreter.MultiFrameEventInProgress()) {
+//                    PostEventMS(EV_Thread_Execute, gameLocal.msec);
+//                }
+//            }
+//
+//            currentThread = oldThread;
+//
+//            return done;
         }
 
         public void ManualControl() {

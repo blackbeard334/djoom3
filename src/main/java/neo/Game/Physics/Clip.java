@@ -70,9 +70,12 @@ public class Clip {
         clipSector_s[] children = new clipSector_s[2];
         clipLink_s clipLinks;
 
-        private void oSet(clipSector_s clipSector_s) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+//        private void oSet(clipSector_s clip) {
+//            this.axis = clip.axis;
+//            this.dist = clip.dist;
+//            this.children = clip.children;
+//            this.clipLinks = clip.clipLinks;
+//        }
     };
 
     public static class clipLink_s {
@@ -738,8 +741,8 @@ public class Clip {
 //		memset( &results, 0, sizeof( results ) );
                 results[0] = new trace_s();
                 results[0].fraction = 1.0f;
-                results[0].endpos = end;
-                results[0].endAxis = trmAxis;
+                results[0].endpos.oSet(end);
+                results[0].endAxis.oSet(trmAxis);
             }
 
             if (null == trm) {
@@ -803,8 +806,8 @@ public class Clip {
 //		memset( &results, 0, sizeof( results ) );
                 results[0] = new trace_s();
                 results[0].fraction = 1.0f;
-                results[0].endpos = start;
-                results[0].endAxis = trmAxis.oMultiply(rotation.ToMat3());
+                results[0].endpos.oSet(start);
+                results[0].endAxis.oSet(trmAxis.oMultiply(rotation.ToMat3()));
             }
 
             if (null == trm) {
@@ -874,8 +877,8 @@ public class Clip {
             } else {
                 // no motion
                 results[0].fraction = 1.0f;
-                results[0].endpos = start;
-                results[0].endAxis = trmAxis;
+                results[0].endpos.oSet(start);
+                results[0].endAxis.oSet(trmAxis);
                 return false;
             }
 
@@ -892,8 +895,8 @@ public class Clip {
 //		memset( &translationalTrace, 0, sizeof( translationalTrace ) );
                 translationalTrace[0] = new trace_s();
                 translationalTrace[0].fraction = 1.0f;
-                translationalTrace[0].endpos = end;
-                translationalTrace[0].endAxis = trmAxis;
+                translationalTrace[0].endpos.oSet(end);
+                translationalTrace[0].endAxis.oSet(trmAxis);
             }
 
             if (translationalTrace[0].fraction != 0.0f) {
@@ -951,8 +954,8 @@ public class Clip {
 //		memset( &rotationalTrace, 0, sizeof( rotationalTrace ) );
                 rotationalTrace[0] = new trace_s();
                 rotationalTrace[0].fraction = 1.0f;
-                rotationalTrace[0].endpos = endPosition;
-                rotationalTrace[0].endAxis = trmAxis.oMultiply(rotation.ToMat3());
+                rotationalTrace[0].endpos.oSet(endPosition);
+                rotationalTrace[0].endAxis.oSet(trmAxis.oMultiply(rotation.ToMat3()));
             }
 
             if (rotationalTrace[0].fraction != 0.0f) {
@@ -992,7 +995,7 @@ public class Clip {
                 results[0] = rotationalTrace[0];
             } else {
                 results[0] = translationalTrace[0];
-                results[0].endAxis = rotationalTrace[0].endAxis;
+                results[0].endAxis.oSet(rotationalTrace[0].endAxis);
             }
 
             results[0].fraction = (float) Max(translationalTrace[0].fraction, rotationalTrace[0].fraction);
@@ -1189,8 +1192,8 @@ public class Clip {
             trm = TraceModelForClipModel(mdl);
 
             results.fraction = 1.0f;
-            results.endpos = end;
-            results.endAxis = trmAxis;
+            results.endpos.oSet(end);
+            results.endAxis.oSet(trmAxis);
 
             if (null == trm) {
                 traceBounds.FromPointTranslation(start, end.oMinus(start));
@@ -1464,18 +1467,22 @@ public class Clip {
             idClipModel[] list;
             int count;
             int maxCount;
+
+            public listParms_s() {
+                bounds = new idBounds();
+            }
         };
 
-        private void ClipModelsTouchingBounds_r(final clipSector_s node, listParms_s parms) {
+        private void ClipModelsTouchingBounds_r(clipSector_s node, listParms_s parms) {
 
             while (node.axis != -1) {
                 if (parms.bounds.oGet(0, node.axis) > node.dist) {
-                    node.oSet(node.children[0]);
+                    node = node.children[0];
                 } else if (parms.bounds.oGet(1, node.axis) < node.dist) {
-                    node.oSet(node.children[1]);
+                    node = node.children[1];
                 } else {
                     ClipModelsTouchingBounds_r(node.children[0], parms);
-                    node.oSet(node.children[1]);
+                    node = node.children[1];
                 }
             }
 
@@ -1592,11 +1599,11 @@ public class Clip {
                 // test with exact render model and modify trace_t structure accordingly
                 if (gameRenderWorld.ModelTrace(modelTrace, touch.renderModelHandle, start, end, radius)) {
                     trace.fraction = modelTrace.fraction;
-                    trace.endAxis = axis;
-                    trace.endpos = modelTrace.point;
-                    trace.c.normal = modelTrace.normal;
+                    trace.endAxis.oSet(axis);
+                    trace.endpos.oSet(modelTrace.point);
+                    trace.c.normal.oSet(modelTrace.normal);
                     trace.c.dist = modelTrace.point.oMultiply(modelTrace.normal);
-                    trace.c.point = modelTrace.point;
+                    trace.c.point.oSet(modelTrace.point);
                     trace.c.type = CONTACT_TRMVERTEX;
                     trace.c.modelFeature = 0;
                     trace.c.trmFeature = 0;
@@ -1619,11 +1626,10 @@ public class Clip {
             assert (false);
 
             results.fraction = 0.0f;
-            results.endpos = start;
-            results.endAxis = trmAxis;
-//		memset( results.c, 0, sizeof( results.c ) );
-            results.c = new contactInfo_t();
-            results.c.point = start;
+            results.endpos.oSet(start);
+            results.endAxis.oSet(trmAxis);
+            results.c = new contactInfo_t();//memset( results.c, 0, sizeof( results.c ) );
+            results.c.point.oSet(start);
             results.c.entityNum = ENTITYNUM_WORLD;
 
             if (mdl.GetEntity() != null) {

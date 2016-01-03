@@ -1,7 +1,10 @@
 package neo.sys;
 
 import com.sun.management.OperatingSystemMXBean;
+
+import java.io.File;
 import java.lang.management.ManagementFactory;
+
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.isNotNullOrEmpty;
 import neo.idlib.Text.Str.idStr;
@@ -68,8 +71,8 @@ public class win_shared {
      returns in megabytes
      ================
      */
-    public static int Sys_GetDriveFreeSpace(final String path) {
-        throw new TODO_Exception();
+    public static long Sys_GetDriveFreeSpace(final String path) {
+        return new File(path).getFreeSpace() / (1024L * 1024L);
 //	DWORDLONG lpFreeBytesAvailable;
 //	DWORDLONG lpTotalNumberOfBytes;
 //	DWORDLONG lpTotalNumberOfFreeBytes;
@@ -210,7 +213,7 @@ public class win_shared {
      ================
      */
     public static void Sys_SetPhysicalWorkMemory(int minBytes, int maxBytes) {
-        throw new TODO_Exception();
+        throw new UnsupportedOperationException();
 //	::SetProcessWorkingSetSize( GetCurrentProcess(), minBytes, maxBytes );
     }
 

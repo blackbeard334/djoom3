@@ -775,8 +775,8 @@ public class Trigger {
     public static class idTrigger_Count extends idTrigger {
 //	CLASS_PROTOTYPE(idTrigger_Count );
 
-        private int goal;
-        private int count;
+        private int   goal;
+        private int   count;
         private float delay;
         //
         //
@@ -803,6 +803,8 @@ public class Trigger {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             goal = spawnArgs.GetInt("count", "1");
             delay = spawnArgs.GetFloat("delay", "0");
             count = 0;

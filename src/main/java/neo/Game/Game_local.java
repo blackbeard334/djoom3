@@ -7,6 +7,8 @@ import static java.lang.Math.sin;
 import static java.lang.Math.tan;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
+
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import neo.Game.AFEntity.idAFAttachment;
@@ -220,10 +222,13 @@ import neo.Game.Item.idItem;
 import neo.Game.Item.idMoveablePDAItem;
 import neo.Game.Item.idObjective;
 import neo.Game.Item.idObjectiveComplete;
+import neo.Game.Item.idPDAItem;
+import neo.Game.Item.idVideoCDItem;
 import neo.Game.Light.idLight;
 import neo.Game.Misc.idAnimated;
 import neo.Game.Misc.idFuncEmitter;
 import neo.Game.Misc.idLocationEntity;
+import neo.Game.Misc.idLocationSeparatorEntity;
 import neo.Game.Misc.idPathCorner;
 import neo.Game.Misc.idPlayerStart;
 import neo.Game.Misc.idStaticEntity;
@@ -262,12 +267,16 @@ import neo.Game.Script.idProgram;
 import neo.Game.SmokeParticles.idSmokeParticles;
 import neo.Game.Sound.idSound;
 import neo.Game.Target.idTarget;
+import neo.Game.Target.idTarget_CallObjectFunction;
+import neo.Game.Target.idTarget_EndLevel;
 import neo.Game.Target.idTarget_FadeEntity;
 import neo.Game.Target.idTarget_GiveEmail;
 import neo.Game.Target.idTarget_Remove;
 import neo.Game.Target.idTarget_SetPrimaryObjective;
 import neo.Game.Target.idTarget_SetShaderParm;
 import neo.Game.Target.idTarget_Tip;
+import neo.Game.Trigger.idTrigger_Count;
+import neo.Game.Trigger.idTrigger_Fade;
 import neo.Game.Trigger.idTrigger_Hurt;
 import neo.Game.Trigger.idTrigger_Multi;
 import neo.Game.WorldSpawn.idWorldspawn;
@@ -615,127 +624,127 @@ public class Game_local {
     //============================================================================
     public static class idGameLocal extends neo.Game.Game.idGame {
 
-        public idDict serverInfo = new idDict();                        // all the tunable parameters, like numclients, etc
-        public int numClients;                                          // pulled from serverInfo and verified
-        public idDict[] userInfo = new idDict[MAX_CLIENTS];             // client specific settings
-        public usercmd_t[] usercmds = new usercmd_t[MAX_CLIENTS];	// client input commands
-        public idDict[] persistentPlayerInfo = new idDict[MAX_CLIENTS];
-        public idEntity[] entities = new idEntity[MAX_GENTITIES];       // index to entities
-        public int[] spawnIds = new int[MAX_GENTITIES];                 // for use in idEntityPtr
-        public int firstFreeIndex;                                      // first free index in the entities array
-        public int num_entities;                                        // current number <= MAX_GENTITIES
-        public idHashIndex entityHash = new idHashIndex();              // hash table to quickly find entities by name
-        public idWorldspawn world;					// world entity
-        public idLinkList<idEntity> spawnedEntities = new idLinkList<>();// all spawned entities
-        public idLinkList<idEntity> activeEntities = new idLinkList<>(); // all thinking entities (idEntity::thinkFlags != 0)
-        public int numEntitiesToDeactivate;                             // number of entities that became inactive in current frame
-        public boolean sortPushers;                                     // true if active lists needs to be reordered to place pushers at the front
-        public boolean sortTeamMasters;                                 // true if active lists needs to be reordered to place physics team masters before their slaves
-        public idDict persistentLevelInfo = new idDict();               // contains args that are kept around between levels
-//
+        public idDict serverInfo = new idDict();                                // all the tunable parameters, like numclients, etc
+        public int numClients;                                                  // pulled from serverInfo and verified
+        public idDict[]    userInfo             = new idDict[MAX_CLIENTS];      // client specific settings
+        public usercmd_t[] usercmds             = new usercmd_t[MAX_CLIENTS];   // client input commands
+        public idDict[]    persistentPlayerInfo = new idDict[MAX_CLIENTS];
+        public idEntity[]  entities             = new idEntity[MAX_GENTITIES];  // index to entities
+        public int[]       spawnIds             = new int[MAX_GENTITIES];       // for use in idEntityPtr
+        public int firstFreeIndex;                                              // first free index in the entities array
+        public int num_entities;                                                // current number <= MAX_GENTITIES
+        public idHashIndex entityHash = new idHashIndex();                      // hash table to quickly find entities by name
+        public idWorldspawn world;                                              // world entity
+        public idLinkList<idEntity> spawnedEntities = new idLinkList<>();       // all spawned entities
+        public idLinkList<idEntity> activeEntities  = new idLinkList<>();       // all thinking entities (idEntity::thinkFlags != 0)
+        public int     numEntitiesToDeactivate;                                 // number of entities that became inactive in current frame
+        public boolean sortPushers;                                             // true if active lists needs to be reordered to place pushers at the front
+        public boolean sortTeamMasters;                                         // true if active lists needs to be reordered to place physics team masters before their slaves
+        public idDict    persistentLevelInfo = new idDict();                    // contains args that are kept around between levels
+        //
         // can be used to automatically effect every material in the world that references globalParms
-        public float[] globalShaderParms = new float[MAX_GLOBAL_SHADER_PARMS];
-//
-        public idRandom random = new idRandom();                // random number generator used throughout the game
-//
-        public idProgram program = new idProgram();		// currently loaded script and data space
+        public float[]   globalShaderParms   = new float[MAX_GLOBAL_SHADER_PARMS];
+        //
+        public idRandom  random              = new idRandom();         // random number generator used throughout the game
+        //
+        public idProgram program             = new idProgram();        // currently loaded script and data space
         public idThread frameCommandThread;
-//
-        public idClip clip = new idClip();			// collision detection
-        public idPush push;					// geometric pushing
-        public idPVS pvs = new idPVS();				// potential visible set
-//
-        public idTestModel testmodel;				// for development testing of models
-        public idEntityFx testFx;				// for development testing of fx
-//
-        public idStr sessionCommand = new idStr();              // a target_sessionCommand can set this to return something to the session 
-//
-        public idMultiplayerGame mpGame = new idMultiplayerGame();// handles rules for standard dm
-//
-        public idSmokeParticles smokeParticles;			// global smoke trails
-        public idEditEntities editEntities;			// in game editing
-//
-        public int cinematicSkipTime;		// don't allow skipping cinemetics until this time has passed so player doesn't skip out accidently from a firefight
-        public int cinematicStopTime;		// cinematics have several camera changes, so keep track of when we stop them so that we don't reset cinematicSkipTime unnecessarily
-        public int cinematicMaxSkipTime;	// time to end cinematic when skipping.  there's a possibility of an infinite loop if the map isn't set up right.
-        public boolean inCinematic;		// game is playing cinematic (player controls frozen)
-        public boolean skipCinematic;
-//
+        //
+        public idClip clip = new idClip();          // collision detection
+        public idPush push = new idPush();          // geometric pushing
+        public idPVS  pvs  = new idPVS();           // potential visible set
+        //
+        public idTestModel testmodel;               // for development testing of models
+        public idEntityFx  testFx;                  // for development testing of fx
+        //
+        public idStr             sessionCommand = new idStr();              // a target_sessionCommand can set this to return something to the session
+        //
+        public idMultiplayerGame mpGame         = new idMultiplayerGame();  // handles rules for standard dm
+        //
+        public idSmokeParticles smokeParticles;         // global smoke trails
+        public idEditEntities   editEntities;           // in game editing
+        //
+        public int              cinematicSkipTime;      // don't allow skipping cinemetics until this time has passed so player doesn't skip out accidently from a firefight
+        public int              cinematicStopTime;      // cinematics have several camera changes, so keep track of when we stop them so that we don't reset cinematicSkipTime unnecessarily
+        public int              cinematicMaxSkipTime;   // time to end cinematic when skipping.  there's a possibility of an infinite loop if the map isn't set up right.
+        public boolean          inCinematic;            // game is playing cinematic (player controls frozen)
+        public boolean          skipCinematic;
+        //
         // are kept up to date with changes to serverInfo
-        public int framenum;
-        public int previousTime;			// time in msec of last frame
-        public int time;				// in msec
-        public static final int msec = USERCMD_MSEC;	// time since last update in milliseconds
-//
-        public int vacuumAreaNum;			// -1 if level doesn't have any outside areas
-//
-        public gameType_t gameType;
-        public boolean isMultiplayer;			// set if the game is run in multiplayer mode
-        public boolean isServer;			// set if the game is run for a dedicated or listen server
-        public boolean isClient;			// set if the game is run for a client
+        public int              framenum;
+        public int              previousTime;           // time in msec of last frame
+        public int              time;                   // in msec
+        public static final int msec = USERCMD_MSEC;    // time since last update in milliseconds
+        //
+        public int                  vacuumAreaNum;      // -1 if level doesn't have any outside areas
+        //
+        public gameType_t           gameType;
+        public boolean              isMultiplayer;      // set if the game is run in multiplayer mode
+        public boolean              isServer;           // set if the game is run for a dedicated or listen server
+        public boolean              isClient;           // set if the game is run for a client
         // discriminates between the RunFrame path and the ClientPrediction path
         // NOTE: on a listen server, isClient is false
-        public int localClientNum;			// number of the local client. MP: -1 on a dedicated
-        public idLinkList<idEntity> snapshotEntities;	// entities from the last snapshot
-        public int realClientTime;			// real client time
-        public boolean isNewFrame;			// true if this is a new game frame, not a rerun due to prediction
-        public float clientSmoothing;                   // smoothing of other clients in the view
-        public int entityDefBits;			// bits required to store an entity def number
+        public int                  localClientNum;     // number of the local client. MP: -1 on a dedicated
+        public idLinkList<idEntity> snapshotEntities;   // entities from the last snapshot
+        public int                  realClientTime;     // real client time
+        public boolean              isNewFrame;         // true if this is a new game frame, not a rerun due to prediction
+        public float                clientSmoothing;    // smoothing of other clients in the view
+        public int                  entityDefBits;      // bits required to store an entity def number
+        //
+        public String[] sufaceTypeNames = new String[MAX_SURFACE_TYPES];    // text names for surface types
+        public idEntityPtr<idEntity> lastGUIEnt;        // last entity with a GUI, used by Cmd_NextGUI_f
+        public int                   lastGUI;           // last GUI on the lastGUIEnt
+        //
 //
-        public String[] sufaceTypeNames = new String[MAX_SURFACE_TYPES];	// text names for surface types
-        public idEntityPtr<idEntity> lastGUIEnt;		// last entity with a GUI, used by Cmd_NextGUI_f
-        public int lastGUI;                                     // last GUI on the lastGUIEnt
-//
-//
-        private static final int INITIAL_SPAWN_COUNT = 1;
-//
-        private idStr mapFileName = new idStr();	// name of the map, empty string if no map loaded
-        private idMapFile mapFile;			// will be NULL during the game unless in-game editing is used
-        private boolean mapCycleLoaded;
-//
-        private int spawnCount;
-        private int mapSpawnCount;			// it's handy to know which entities are part of the map
-//
-        private idLocationEntity[] locationEntities;	// for location names, etc
-//
-        private idCamera camera;
-        private idMaterial globalMaterial;		// for overriding everything
-//
-        private idList<idAAS> aasList = new idList<>(); // area system
-        private idStrList aasNames = new idStrList();
-//
+        private static final int   INITIAL_SPAWN_COUNT = 1;
+        //
+        private              idStr mapFileName         = new idStr();    // name of the map, empty string if no map loaded
+        private idMapFile          mapFile;            // will be NULL during the game unless in-game editing is used
+        private boolean            mapCycleLoaded;
+        //
+        private int                spawnCount;
+        private int                mapSpawnCount;      // it's handy to know which entities are part of the map
+        //
+        private idLocationEntity[] locationEntities;   // for location names, etc
+        //
+        private idCamera           camera;
+        private idMaterial         globalMaterial;     // for overriding everything
+        //
+        private idList<idAAS> aasList  = new idList<>(); // area system
+        private idStrList     aasNames = new idStrList();
+        //
         private idEntityPtr<idActor> lastAIAlertEntity;
-        private int lastAIAlertTime;
-//
-        private idDict spawnArgs = new idDict();        // spawn args used during entity spawning  FIXME: shouldn't be necessary anymore
-//
-        private pvsHandle_t playerPVS = new pvsHandle_t();// merged pvs of all players
+        private int                  lastAIAlertTime;
+        //
+        private idDict      spawnArgs            = new idDict();        // spawn args used during entity spawning  FIXME: shouldn't be necessary anymore
+        //
+        private pvsHandle_t playerPVS            = new pvsHandle_t();// merged pvs of all players
         private pvsHandle_t playerConnectedAreas = new pvsHandle_t();// all areas connected to any player area
-//
-        private idVec3 gravity = new idVec3();          // global gravity vector
-        private gameState_t gamestate;			// keeps track of whether we're spawning, shutting down, or normal gameplay
-        private boolean influenceActive;		// true when a phantasm is happening
-        private int nextGibTime;
-//
-        private final idList<Integer>[][] clientDeclRemap = new idList[MAX_CLIENTS][etoi(DECL_MAX_TYPES)];
-//
-        private entityState_s[][] clientEntityStates = new entityState_s[MAX_CLIENTS][MAX_GENTITIES];
-        private int[][] clientPVS = new int[MAX_CLIENTS][ENTITY_PVS_SIZE];
-        private snapshot_s[] clientSnapshots = new snapshot_s[MAX_CLIENTS];
-//        private final idBlockAlloc<entityState_s> entityStateAllocator = new idBlockAlloc<>(256);
+        //
+        private idVec3      gravity              = new idVec3();          // global gravity vector
+        private gameState_t gamestate;            // keeps track of whether we're spawning, shutting down, or normal gameplay
+        private boolean     influenceActive;        // true when a phantasm is happening
+        private int         nextGibTime;
+        //
+        private final idList<Integer>[][]       clientDeclRemap    = new idList[MAX_CLIENTS][etoi(DECL_MAX_TYPES)];
+        //
+        private       entityState_s[][]         clientEntityStates = new entityState_s[MAX_CLIENTS][MAX_GENTITIES];
+        private       int[][]                   clientPVS          = new int[MAX_CLIENTS][ENTITY_PVS_SIZE];
+        private       snapshot_s[]              clientSnapshots    = new snapshot_s[MAX_CLIENTS];
+        //        private final idBlockAlloc<entityState_s> entityStateAllocator = new idBlockAlloc<>(256);
 //        private final idBlockAlloc<snapshot_s> snapshotAllocator = new idBlockAlloc<>(64);
 //
-        private idEventQueue eventQueue = new idEventQueue();
-        private idEventQueue savedEventQueue = new idEventQueue();
-//
-        private final idStaticList<spawnSpot_t> spawnSpots = new idStaticList<>(MAX_GENTITIES);
-        private final idStaticList<idEntity> initialSpots = new idStaticList<>(MAX_GENTITIES);
+        private       idEventQueue              eventQueue         = new idEventQueue();
+        private       idEventQueue              savedEventQueue    = new idEventQueue();
+        //
+        private final idStaticList<spawnSpot_t> spawnSpots         = new idStaticList<>(MAX_GENTITIES);
+        private final idStaticList<idEntity>    initialSpots       = new idStaticList<>(MAX_GENTITIES);
         private int currentInitialSpot;
-//
+        //
         private idDict newInfo = new idDict();
-//
+        //
         private idStrList shakeSounds;
-//
+        //
         private byte[][][] lagometer = new byte[LAGO_IMG_HEIGHT][LAGO_IMG_WIDTH][4];
 //
 //
@@ -2763,12 +2772,9 @@ public class Game_local {
             numClients = 0;
 
             // initialize all entities for this game
-//	memset( entities, 0, sizeof( entities ) );
-            entities = new idEntity[entities.length];
-//	memset( usercmds, 0, sizeof( usercmds ) );
-            usercmds = new usercmd_t[usercmds.length];
-//	memset( spawnIds, -1, sizeof( spawnIds ) );
-            spawnIds = new int[spawnIds.length];
+            entities = new idEntity[entities.length];//	memset( entities, 0, sizeof( entities ) );
+            usercmds = Stream.generate(() -> new usercmd_t()).limit(usercmds.length).toArray(usercmd_t[]::new);//memset( usercmds, 0, sizeof( usercmds ) );
+            spawnIds = new int[spawnIds.length];//memset( spawnIds, -1, sizeof( spawnIds ) );
             spawnCount = INITIAL_SPAWN_COUNT;
 
             spawnedEntities.Clear();
@@ -3488,6 +3494,30 @@ public class Game_local {
                     case "idProjectile":
                         obj = new idProjectile();
                         break;
+                    case "idTrigger_Count":
+                        obj = new idTrigger_Count();
+                        break;
+                    case "idTarget_EndLevel":
+                        obj = new idTarget_EndLevel();
+                        break;
+                    case "idTarget_CallObjectFunction":
+                        obj = new idTarget_CallObjectFunction();
+                        break;
+                    case "idTrigger_Fade":
+                        obj = new idTrigger_Fade();
+                        break;
+                    case "idPDAItem":
+                        obj = new idPDAItem();
+                        break;
+                    case "idVideoCDItem":
+                        obj = new idVideoCDItem();
+                        break;
+                    case "idLocationSeparatorEntity":
+                        obj = new idLocationSeparatorEntity();
+                        break;
+                    case "idPlayer":
+                        obj = new idPlayer();
+                        break;
                     default:
                         obj = null;
                 }
@@ -3807,10 +3837,10 @@ public class Game_local {
             float ratio_x;
             float ratio_y;
 
-            if (!sys.FPU_StackIsEmpty()) {
-                Printf(sys.FPU_GetState());
-                Error("idGameLocal::CalcFov: FPU stack not empty");
-            }
+//            if (!sys.FPU_StackIsEmpty()) {
+//                Printf(sys.FPU_GetState());
+//                Error("idGameLocal::CalcFov: FPU stack not empty");
+//            }
 
             // first, calculate the vertical fov based on a 640x480 view
             x = (float) (640.0f / tan(base_fov / 360.0f * idMath.PI));

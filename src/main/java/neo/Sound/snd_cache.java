@@ -656,8 +656,8 @@ public class snd_cache {
             }
 
 //            soundCacheAllocator.FreeEmptyBaseBlocks();
-            common.Printf("%5ik referenced\n", useCount / 1024);
-            common.Printf("%5ik purged\n", purgeCount / 1024);
+            common.Printf("%5dk referenced\n", useCount / 1024);
+            common.Printf("%5dk purged\n", purgeCount / 1024);
             common.Printf("----------------------------------------\n");
         }
 

@@ -104,6 +104,11 @@ public class Anim {
         idVec3              pos;
         jointModTransform_t transform_pos;
         jointModTransform_t transform_axis;
+
+        public jointMod_t() {
+            this.mat = new idMat3();
+            this.pos = new idVec3();
+        }
     };
     public static final int ANIM_TX = (1 << 0);// BIT(0);
     public static final int ANIM_TY = (1 << 1);// BIT(1);

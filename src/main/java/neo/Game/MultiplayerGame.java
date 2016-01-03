@@ -1,6 +1,8 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
+
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.SysCvar.g_balanceTDM;
 import static neo.Game.GameSys.SysCvar.g_voteFlags;
@@ -319,8 +321,7 @@ public class MultiplayerGame {
 
             boolean ingame = playerState[ clientNum].ingame;
 
-//	memset( &playerState[ clientNum ], 0, sizeof( playerState[ clientNum ] ) );
-            playerState = new mpPlayerState_s[playerState.length];
+            playerState = Stream.generate(() -> new mpPlayerState_s()).limit(playerState.length).toArray(mpPlayerState_s[]::new);
             if (!gameLocal.isClient) {
                 idPlayer p = (idPlayer) gameLocal.entities[ clientNum];
                 p.spawnedTime = gameLocal.time;
@@ -3069,7 +3070,7 @@ public class MultiplayerGame {
             currentTourneyPlayer[ 0] = -1;
             currentTourneyPlayer[ 1] = -1;
             one = two = three = false;
-            playerState = TempDump.allocArray(mpPlayerState_s.class, playerState.length);
+            playerState = Stream.generate(() -> new mpPlayerState_s()).limit(playerState.length).toArray(mpPlayerState_s[]::new);
             lastWinner = -1;
             currentMenu = 0;
             bCurrentMenuMsg = false;

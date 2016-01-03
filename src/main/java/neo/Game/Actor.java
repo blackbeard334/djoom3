@@ -1325,7 +1325,7 @@ public class Actor {
                 groupname = arg.GetKey();
                 groupname.Strip("damage_scale ");
                 for (i = 0; i < damageScale.Num(); i++) {
-                    if (damageGroups.oGet(i).equals(groupname)) {
+                    if (groupname.equals(damageGroups.oGet(i))) {
                         damageScale.oSet(i, scale);
                     }
                 }

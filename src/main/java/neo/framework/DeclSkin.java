@@ -160,8 +160,9 @@ public class DeclSkin {
             return "";
         }
 
-        public void oSet(idDeclSkin FindSkin) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        public void oSet(idDeclSkin skin) {
+            this.mappings.oSet(skin.mappings);
+            this.associatedModels.oSet(skin.associatedModels);
         }
 
         @Override

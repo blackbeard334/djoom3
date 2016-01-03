@@ -94,7 +94,7 @@ public class SaveGame {
 
     public static class idSaveGame {
 
-        private idFile file;
+        private idFile          file;
         //
         private idList<idClass> objects;
         //
@@ -105,7 +105,7 @@ public class SaveGame {
             file = savefile;
 
             // Put NULL at the start of the list so we can skip over it.
-            objects.Clear();
+            objects = new idList<>();
             objects.Append((idClass) null);
         }
 
@@ -172,10 +172,10 @@ public class SaveGame {
         }
 
         public void WriteSignedChar(final short/*signed char*/ value) {
-            ByteBuffer buffer = ByteBuffer.allocate(1);
+            ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
             buffer.putShort(value);
 
-            file.Write(buffer, 2);//sizeof(value));
+            file.Write(buffer, Short.BYTES);//sizeof(value));
         }
 
         public void WriteFloat(final float value) {

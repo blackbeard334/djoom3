@@ -413,7 +413,7 @@ public class MsgChannel {
             UpdateOutgoingRate(time, unsentMsg.GetSize());
 
             if (net_channelShowPackets.GetBool()) {
-                common.Printf("%d send %4i : s = %d ack = %d\n", id, unsentMsg.GetSize(), outgoingSequence - 1, incomingSequence);
+                common.Printf("%d send %4d : s = %d ack = %d\n", id, unsentMsg.GetSize(), outgoingSequence - 1, incomingSequence);
             }
 
             outgoingSequence++;
@@ -464,7 +464,7 @@ public class MsgChannel {
             UpdateOutgoingRate(time, msg.GetSize());
 
             if (net_channelShowPackets.GetBool()) {
-                common.Printf("%d send %4i : s = %d fragment = %d,%d\n", id, msg.GetSize(), outgoingSequence - 1, unsentFragmentStart, fragLength);
+                common.Printf("%d send %4d : s = %d fragment = %d,%d\n", id, msg.GetSize(), outgoingSequence - 1, unsentFragmentStart, fragLength);
             }
 
             unsentFragmentStart += fragLength;
@@ -536,9 +536,9 @@ public class MsgChannel {
 
             if (net_channelShowPackets.GetBool()) {
                 if (fragmented) {
-                    common.Printf("%d recv %4i : s = %d fragment = %d,%d\n", id, msg.GetSize(), sequence[0], fragStart, fragLength);
+                    common.Printf("%d recv %4d : s = %d fragment = %d,%d\n", id, msg.GetSize(), sequence[0], fragStart, fragLength);
                 } else {
-                    common.Printf("%d recv %4i : s = %d\n", id, msg.GetSize(), sequence[0]);
+                    common.Printf("%d recv %4d : s = %d\n", id, msg.GetSize(), sequence[0]);
                 }
             }
 

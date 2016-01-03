@@ -1098,7 +1098,7 @@ public class Winding {
 
             if (numPoints < 3) {
                 if (print) {
-                    idLib.common.Printf("idWinding::Check: only %i points.", numPoints);
+                    idLib.common.Printf("idWinding::Check: only %d points.", numPoints);
                 }
                 return false;
             }

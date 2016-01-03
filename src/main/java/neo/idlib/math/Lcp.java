@@ -820,25 +820,40 @@ public class Lcp {
     //===============================================================
     static class idLCP_Symmetric extends idLCP {
 
-        private idMatX m;			// original matrix
-        private idVecX b;			// right hand side
-        private idVecX lo, hi;			// low and high bounds
-        private idVecX f, a;			// force and acceleration
-        private idVecX delta_f, delta_a;	// delta force and delta acceleration
-        private idMatX clamped;			// LDLt factored sub matrix for clamped variables
-        private idVecX diagonal;		// reciprocal of diagonal of LDLt factored sub matrix for clamped variables
-        private idVecX solveCache1;		// intermediate result cached in SolveClamped
-        private idVecX solveCache2;		// "
-        private int numUnbounded;		// number of unbounded variables
-        private int numClamped;			// number of clamped variables
-        private int clampedChangeStart;         // lowest row/column changed in the clamped matrix during an iteration
-        private float[][] rowPtrs;		// pointers to the rows of m
-        private int[] boxIndex;			// box index
-        private int[] side;			// tells if a variable is at the low boundary = -1, high boundary = 1 or inbetween = 0
-        private int[] permuted;			// index to keep track of the permutation
-        private boolean padded;			// set to true if the rows of the initial matrix are 16 byte padded
+        private idMatX    m;                    // original matrix
+        private idVecX    b;                    // right hand side
+        private idVecX    lo, hi;               // low and high bounds
+        private idVecX    f, a;                 // force and acceleration
+        private idVecX    delta_f, delta_a;     // delta force and delta acceleration
+        private idMatX    clamped;              // LDLt factored sub matrix for clamped variables
+        private idVecX    diagonal;             // reciprocal of diagonal of LDLt factored sub matrix for clamped variables
+        private idVecX    solveCache1;          // intermediate result cached in SolveClamped
+        private idVecX    solveCache2;          // "
+        private int       numUnbounded;         // number of unbounded variables
+        private int       numClamped;           // number of clamped variables
+        private int       clampedChangeStart;   // lowest row/column changed in the clamped matrix during an iteration
+        private float[][] rowPtrs;              // pointers to the rows of m
+        private int[]     boxIndex;             // box index
+        private int[]     side;                 // tells if a variable is at the low boundary = -1, high boundary = 1 or inbetween = 0
+        private int[]     permuted;             // index to keep track of the permutation
+        private boolean   padded;               // set to true if the rows of the initial matrix are 16 byte padded
         //
         //
+
+        public idLCP_Symmetric() {
+            m = new idMatX();
+            b = new idVecX();
+            lo = new idVecX();
+            hi = new idVecX();
+            f = new idVecX();
+            a = new idVecX();
+            delta_f = new idVecX();
+            delta_a = new idVecX();
+            clamped = new idMatX();
+            diagonal = new idVecX();
+            solveCache1 = new idVecX();
+            solveCache2 = new idVecX();
+        }
 
         @Override
         public boolean Solve(idMatX o_m, idVecX o_x, idVecX o_b, idVecX o_lo, idVecX o_hi, int[] o_boxIndex) {
@@ -877,9 +892,9 @@ public class Lcp {
             m.SetData(o_m.GetNumRows(), o_m.GetNumColumns(), o_m.oGet(0));
             f.Zero();
             a.Zero();
-            b = o_b;
-            lo = o_lo;
-            hi = o_hi;
+            b.oSet(o_b);
+            lo.oSet(o_lo);
+            hi.oSet(o_hi);
 
             // pointers to the rows of m
 //	rowPtrs = (float **) _alloca16( m.GetNumRows() * sizeof( float * ) );

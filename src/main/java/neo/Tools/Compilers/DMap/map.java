@@ -577,12 +577,12 @@ public class map {
             }
         }
 
-        common.Printf("%5i total world brushes\n", brushes);
-        common.Printf("%5i total world triSurfs\n", triSurfs);
-        common.Printf("%5i patches\n", c_numMapPatches);
-        common.Printf("%5i entities\n", dmapGlobals.num_entities);
-        common.Printf("%5i planes\n", dmapGlobals.mapPlanes.Num());
-        common.Printf("%5i areaportals\n", c_areaportals);
+        common.Printf("%5d total world brushes\n", brushes);
+        common.Printf("%5d total world triSurfs\n", triSurfs);
+        common.Printf("%5d patches\n", c_numMapPatches);
+        common.Printf("%5d entities\n", dmapGlobals.num_entities);
+        common.Printf("%5d planes\n", dmapGlobals.mapPlanes.Num());
+        common.Printf("%5d areaportals\n", c_areaportals);
         common.Printf("size: %5.0f,%5.0f,%5.0f to %5.0f,%5.0f,%5.0f\n",
                 mapBounds.oGet(0, 0), mapBounds.oGet(0, 1), mapBounds.oGet(0, 2),
                 mapBounds.oGet(1, 0), mapBounds.oGet(1, 1), mapBounds.oGet(1, 2));

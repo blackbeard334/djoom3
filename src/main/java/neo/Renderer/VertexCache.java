@@ -743,9 +743,9 @@ public class VertexCache {
 
             common.Printf("%d megs working set\n", r_vertexBufferMegs.GetInteger());
             common.Printf("%d dynamic temp buffers of %dk\n", NUM_VERTEX_FRAMES, frameBytes / 1024);
-            common.Printf("%5i active static headers\n", numActive);
-            common.Printf("%5i free static headers\n", numFreeStaticHeaders);
-            common.Printf("%5i free dynamic headers\n", numFreeDynamicHeaders);
+            common.Printf("%5d active static headers\n", numActive);
+            common.Printf("%5d free static headers\n", numFreeStaticHeaders);
+            common.Printf("%5d free dynamic headers\n", numFreeDynamicHeaders);
 
             if (!virtualMemory) {
                 common.Printf("Vertex cache is in ARB_vertex_buffer_object memory (FAST).\n");

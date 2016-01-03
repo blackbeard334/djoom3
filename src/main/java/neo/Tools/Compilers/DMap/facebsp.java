@@ -387,7 +387,7 @@ public class facebsp {
                 tree.bounds.AddPoint(face.w.oGet(i).ToVec3());
             }
         }
-        common.Printf("%5i faces\n", count);
+        common.Printf("%5d faces\n", count);
 
         tree.headnode = AllocNode();
         tree.headnode.bounds = tree.bounds;
@@ -395,7 +395,7 @@ public class facebsp {
 
         BuildFaceTree_r(tree.headnode, list);
 
-        common.Printf("%5i leafs\n", c_faceLeafs);
+        common.Printf("%5d leafs\n", c_faceLeafs);
 
         end = Sys_Milliseconds();
 

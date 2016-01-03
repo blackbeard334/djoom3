@@ -1426,8 +1426,8 @@ public class Interaction {
 
             common.Printf("%d entities with %d total interactions totalling %dk\n", entities, interactions, total / 1024);
             common.Printf("%d deferred interactions, %d empty interactions\n", deferredInteractions, emptyInteractions);
-            common.Printf("%5i indexes %5i verts in %5i light tris\n", lightTriIndexes, lightTriVerts, lightTris);
-            common.Printf("%5i indexes %5i verts in %5i shadow tris\n", shadowTriIndexes, shadowTriVerts, shadowTris);
+            common.Printf("%5d indexes %5d verts in %5d light tris\n", lightTriIndexes, lightTriVerts, lightTris);
+            common.Printf("%5d indexes %5d verts in %5d shadow tris\n", shadowTriIndexes, shadowTriVerts, shadowTris);
         }
     };
 

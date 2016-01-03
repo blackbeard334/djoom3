@@ -6,6 +6,7 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import static neo.CM.CollisionModel.CM_BOX_EPSILON;
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import neo.CM.CollisionModel.contactInfo_t;
@@ -421,9 +422,20 @@ public class Player {
         public int                        lastGiveTime;
         //
         public idList<idLevelTriggerInfo> levelTriggers;
-//
+        //
+        public int nextItemPickup;
+        public int nextItemNum;
+        public int onePickupTime;
+        public idList<idItemInfo>      pickupItemNames = new idList<>();
+        public idList<idObjectiveInfo> objectiveNames  = new idList<>();
 
         public idInventory() {
+            items = new idList<>();
+            pdas = new idStrList();
+            pdaSecurity = new idStrList();
+            videos = new idStrList();
+            emails = new idStrList();
+            levelTriggers = new idList<>();
             Clear();
         }
         // ~idInventory() { Clear(); }
@@ -963,8 +975,8 @@ public class Player {
                 GivePowerUp(owner, MEGAHEALTH, (int) SEC2MS(Float.parseFloat(value)));
             } else if (0 == idStr.Icmp(statname, "weapon")) {
                 tookWeapon = false;
-                for (pos = 0; pos < value.length(); pos = end) {
-                    end = value.substring(pos).indexOf(',');
+                for (pos = 0; pos != -1; pos = end) {
+                    end = value.indexOf(',', pos);
                     if (end != -1) {
                         len = end - pos;
                         end++;
@@ -973,7 +985,7 @@ public class Player {
                     }
 
 //                        idStr weaponName( pos, 0, len );
-                    final String weaponName = value.substring(pos, len);
+                    final String weaponName = value.substring(pos, pos + len);
 
                     // find the number of the matching weapon name
                     for (i = 0; i < MAX_WEAPONS; i++) {
@@ -1163,12 +1175,6 @@ public class Player {
                 }
             }
         }
-//
-        public int nextItemPickup;
-        public int nextItemNum;
-        public int onePickupTime;
-        public idList<idItemInfo> pickupItemNames = new idList<>(idItemInfo.class);
-        public idList<idObjectiveInfo> objectiveNames;
     };
 
     public static class loggedAccel_t {
@@ -1183,7 +1189,7 @@ public class Player {
         idVec3 pos;
     };
 
-    public static abstract class idPlayer extends idActor {
+    public static class idPlayer extends idActor {
 
         // enum {
         public static final int EVENT_IMPULSE          = idEntity.EVENT_MAXEVENTS;
@@ -1214,25 +1220,25 @@ public class Player {
         public int                       lastSndHitTime;        // MP hit sound - != lastHitTime because we throttle
         public int                       lastSavingThrowTime;   // for the "free miss" effect
         //
-        public idScriptBool              AI_FORWARD;
-        public idScriptBool              AI_BACKWARD;
-        public idScriptBool              AI_STRAFE_LEFT;
-        public idScriptBool              AI_STRAFE_RIGHT;
-        public idScriptBool              AI_ATTACK_HELD;
-        public idScriptBool              AI_WEAPON_FIRED;
-        public idScriptBool              AI_JUMP;
-        public idScriptBool              AI_CROUCH;
-        public idScriptBool              AI_ONGROUND;
-        public idScriptBool              AI_ONLADDER;
-        public idScriptBool              AI_DEAD;
-        public idScriptBool              AI_RUN;
-        public idScriptBool              AI_PAIN;
-        public idScriptBool              AI_HARDLANDING;
-        public idScriptBool              AI_SOFTLANDING;
-        public idScriptBool              AI_RELOAD;
-        public idScriptBool              AI_TELEPORT;
-        public idScriptBool              AI_TURN_LEFT;
-        public idScriptBool              AI_TURN_RIGHT;
+        public idScriptBool AI_FORWARD      = new idScriptBool();
+        public idScriptBool AI_BACKWARD     = new idScriptBool();
+        public idScriptBool AI_STRAFE_LEFT  = new idScriptBool();
+        public idScriptBool AI_STRAFE_RIGHT = new idScriptBool();
+        public idScriptBool AI_ATTACK_HELD  = new idScriptBool();
+        public idScriptBool AI_WEAPON_FIRED = new idScriptBool();
+        public idScriptBool AI_JUMP         = new idScriptBool();
+        public idScriptBool AI_CROUCH       = new idScriptBool();
+        public idScriptBool AI_ONGROUND     = new idScriptBool();
+        public idScriptBool AI_ONLADDER     = new idScriptBool();
+        public idScriptBool AI_DEAD         = new idScriptBool();
+        public idScriptBool AI_RUN          = new idScriptBool();
+        public idScriptBool AI_PAIN         = new idScriptBool();
+        public idScriptBool AI_HARDLANDING  = new idScriptBool();
+        public idScriptBool AI_SOFTLANDING  = new idScriptBool();
+        public idScriptBool AI_RELOAD       = new idScriptBool();
+        public idScriptBool AI_TELEPORT     = new idScriptBool();
+        public idScriptBool AI_TURN_LEFT    = new idScriptBool();
+        public idScriptBool AI_TURN_RIGHT   = new idScriptBool();
         //
         // inventory
         public idInventory               inventory;
@@ -1370,11 +1376,11 @@ public class Player {
         //
         private idCamera              privateCameraView;
         //
-        private static final int             NUM_LOGGED_VIEW_ANGLES = 64;                                   // for weapon turning angle offsets
-        private final        idAngles[]      loggedViewAngles       = new idAngles[NUM_LOGGED_VIEW_ANGLES]; // [gameLocal.framenum&(LOGGED_VIEW_ANGLES-1)]
-        private static final int             NUM_LOGGED_ACCELS      = 16;                                   // for weapon turning angle offsets
-        private final        loggedAccel_t[] loggedAccel            = new loggedAccel_t[NUM_LOGGED_ACCELS]; // [currentLoggedAccel & (NUM_LOGGED_ACCELS-1)]
-        private              int                currentLoggedAccel;
+        private static final int             NUM_LOGGED_VIEW_ANGLES = 64;   // for weapon turning angle offsets
+        private        final idAngles[]      loggedViewAngles;              // [gameLocal.framenum&(LOGGED_VIEW_ANGLES-1)]
+        private static final int             NUM_LOGGED_ACCELS      = 16;   // for weapon turning angle offsets
+        private        final loggedAccel_t[] loggedAccel;                   // [currentLoggedAccel & (NUM_LOGGED_ACCELS-1)]
+        private              int             currentLoggedAccel;
         //
         // if there is a focusGUIent, the attack button will be changed into mouse clicks
         private              idEntity           focusGUIent;
@@ -1426,7 +1432,9 @@ public class Player {
         //
 
         public idPlayer() {
-//	memset( &usercmd, 0, sizeof( usercmd ) );
+            usercmd = new usercmd_t();//memset( &usercmd, 0, sizeof( usercmd ) );
+
+            playerView = new idPlayerView();
 
             noclip = false;
             godmode = false;
@@ -1444,13 +1452,16 @@ public class Player {
             lastSndHitTime = 0;
             lastSavingThrowTime = 0;
 
-            weapon = null;
+            inventory = new idInventory();
+
+            weapon = new idEntityPtr<>(null);
 
             hud = null;
             objectiveSystem = null;
             objectiveSystemOpen = false;
 
             heartRate = BASE_HEARTRATE;
+            heartInfo = new idInterpolate<>();
             heartInfo.Init(0, 0, 0f, 0f);
             lastHeartAdjust = 0;
             lastHeartBeat = 0;
@@ -1481,6 +1492,12 @@ public class Player {
 
             firstPersonViewOrigin = getVec3_zero();
             firstPersonViewAxis = getMat3_identity();
+            
+            dragEntity = new idDragEntity();
+            
+            physicsObj = new idPhysics_Player();
+            
+            aasLocation = new idList<>();
 
             hipJoint = INVALID_JOINT;
             chestJoint = INVALID_JOINT;
@@ -1512,9 +1529,9 @@ public class Player {
             weapon_fists = -1;
             showWeaponViewModel = true;
 
-            skin = null;
-            powerUpSkin = null;
-            baseSkinName.oSet("");
+            skin = new idDeclSkin();
+            powerUpSkin = new idDeclSkin();
+            baseSkinName = new idStr("");
 
             numProjectilesFired = 0;
             numProjectileHits = 0;
@@ -1527,7 +1544,9 @@ public class Player {
             gibsLaunched = false;
             gibsDir = getVec3_zero();
 
+            zoomFov = new idInterpolate<>();
             zoomFov.Init(0, 0, 0f, 0f);
+            centerView = new idInterpolate<>();
             centerView.Init(0, 0, 0f, 0f);
             fxFov = false;
 
@@ -1541,7 +1560,9 @@ public class Player {
             privateCameraView = null;
 
 //	memset( loggedViewAngles, 0, sizeof( loggedViewAngles ) );
+            loggedViewAngles = Stream.generate(() -> new idAngles()).limit(NUM_LOGGED_VIEW_ANGLES).toArray(idAngles[]::new);
 //	memset( loggedAccel, 0, sizeof( loggedAccel ) );
+            loggedAccel = Stream.generate(() -> new loggedAccel_t()).limit(NUM_LOGGED_ACCELS).toArray(loggedAccel_t[]::new);
             currentLoggedAccel = 0;
 
             focusTime = 0;
@@ -1555,9 +1576,9 @@ public class Player {
             oldMouseX = 0;
             oldMouseY = 0;
 
-            pdaAudio.oSet("");
-            pdaVideo.oSet("");
-            pdaVideoWave.oSet("");
+            pdaAudio = new idStr("");
+            pdaVideo = new idStr("");
+            pdaVideoWave = new idStr("");
 
             lastDamageDef = 0;
             lastDamageDir = getVec3_zero();
@@ -1619,6 +1640,8 @@ public class Player {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idStr temp = new idStr();
 //            idBounds bounds;
 
@@ -1644,7 +1667,7 @@ public class Player {
             SetPhysics(physicsObj);
             InitAASLocation();
 
-            skin = renderEntity.customSkin;
+            skin.oSet(renderEntity.customSkin);
 
             // only the local player needs guis
             if (!gameLocal.isMultiplayer || entityNumber == gameLocal.localClientNum) {
@@ -2625,7 +2648,7 @@ public class Player {
                 SetSkin(skin);
                 renderEntity.shaderParms[6] = 0;
             } else if (spawnArgs.GetString("spawn_skin", null, value)) {
-                skin = declManager.FindSkin(value[0]);
+                skin.oSet(declManager.FindSkin(value[0]));
                 SetSkin(skin);
                 renderEntity.shaderParms[6] = 0;
             }
@@ -4556,7 +4579,7 @@ public class Player {
                             StartSoundShader(declManager.FindSound(sound[0]), SND_CHANNEL_DEMONIC, 0, false, null);
                         }
                         if (baseSkinName.Length() != 0) {
-                            powerUpSkin = declManager.FindSkin(baseSkinName + "_berserk");
+                            powerUpSkin.oSet(declManager.FindSkin(baseSkinName + "_berserk"));
                         }
                         if (!gameLocal.isClient) {
                             idealWeapon = 0;
@@ -4565,7 +4588,7 @@ public class Player {
                     }
                     case INVISIBILITY: {
                         spawnArgs.GetString("skin_invisibility", "", skin);
-                        powerUpSkin = declManager.FindSkin(skin[0]);
+                        powerUpSkin.oSet(declManager.FindSkin(skin[0]));
                         // remove any decals from the model
                         if (modelDefHandle != -1) {
                             gameRenderWorld.RemoveDecals(modelDefHandle);
@@ -6421,7 +6444,7 @@ public class Player {
             if (0 == baseSkinName.Length()) {
                 baseSkinName.oSet("skins/characters/player/marine_mp");
             }
-            skin = declManager.FindSkin(baseSkinName, false);
+            skin.oSet(declManager.FindSkin(baseSkinName, false));
             assert (skin != null);
             // match the skin to a color band for scoreboard
             if (baseSkinName.Find("red") != -1) {
@@ -6437,7 +6460,7 @@ public class Player {
             }
             colorBar = colorBarTable[ colorBarIndex];
             if (PowerUpActive(BERSERK)) {
-                powerUpSkin = declManager.FindSkin(baseSkinName + "_berserk");
+                powerUpSkin.oSet(declManager.FindSkin(baseSkinName + "_berserk"));
             }
         }
 
@@ -7417,8 +7440,9 @@ public class Player {
             aasLocation.SetGranularity(1);
             aasLocation.SetNum(num);
             for (i = 0; i < aasLocation.Num(); i++) {
-                aasLocation.oSet(i, 0);
-                aasLocation.oGet(i).pos = origin;
+                aasLocation.oSet(i, new aasLocation_t());
+                aasLocation.oGet(i).areaNum = 0;
+                aasLocation.oGet(i).pos = new idVec3(origin);
                 aas = gameLocal.GetAAS(i);
                 if (aas != null && aas.GetSettings() != null) {
                     size = aas.GetSettings().boundingBoxes[0].oGet(1);

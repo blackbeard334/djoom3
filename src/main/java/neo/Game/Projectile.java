@@ -585,9 +585,9 @@ public class Projectile {
 
 //		memset( &collision, 0, sizeof( collision ) );
                 collision = new trace_s();
-                collision.endAxis = GetPhysics().GetAxis();
-                collision.endpos = GetPhysics().GetOrigin();
-                collision.c.point = GetPhysics().GetOrigin();
+                collision.endAxis.oSet(GetPhysics().GetAxis());
+                collision.endpos.oSet(GetPhysics().GetOrigin());
+                collision.c.point.oSet(GetPhysics().GetOrigin());
                 collision.c.normal.Set(0, 0, 1);
                 Explode(collision, null);
                 physicsObj.ClearContacts();
@@ -1094,9 +1094,9 @@ public class Projectile {
                             trace_s collision;
 //					memset( &collision, 0, sizeof( collision ) );
                             collision = new trace_s();
-                            collision.endAxis = GetPhysics().GetAxis();
-                            collision.endpos = GetPhysics().GetOrigin();
-                            collision.c.point = GetPhysics().GetOrigin();
+                            collision.endAxis.oSet(GetPhysics().GetAxis());
+                            collision.endpos.oSet(GetPhysics().GetOrigin());
+                            collision.c.point.oSet(GetPhysics().GetOrigin());
                             collision.c.normal.Set(0, 0, 1);
                             Explode(collision, null);
                         }
@@ -1157,7 +1157,7 @@ public class Projectile {
                     collision.c.point.oSet(0, msg.ReadFloat());
                     collision.c.point.oSet(1, msg.ReadFloat());
                     collision.c.point.oSet(2, msg.ReadFloat());
-                    collision.c.normal = msg.ReadDir(24);
+                    collision.c.normal.oSet(msg.ReadDir(24));
                     int index = gameLocal.ClientRemapDecl(DECL_MATERIAL, msg.ReadLong());
                     collision.c.material = (index != -1) ? (idMaterial) (declManager.DeclByIndex(DECL_MATERIAL, index)) : null;
                     velocity.oSet(0, msg.ReadFloat(5, 10));
@@ -1207,9 +1207,9 @@ public class Projectile {
 
 //	memset( &collision, 0, sizeof( collision ) );
             collision = new trace_s();
-            collision.endAxis = GetPhysics().GetAxis();
-            collision.endpos = GetPhysics().GetOrigin();
-            collision.c.point = GetPhysics().GetOrigin();
+            collision.endAxis.oSet(GetPhysics().GetAxis());
+            collision.endpos.oSet(GetPhysics().GetOrigin());
+            collision.c.point.oSet(GetPhysics().GetOrigin());
             collision.c.normal.Set(0, 0, 1);
             AddDefaultDamageEffect(collision, collision.c.normal);
             Explode(collision, null);
@@ -1235,11 +1235,10 @@ public class Projectile {
             if (!other.equals(owner.GetEntity())) {
                 trace_s collision;
 
-//		memset( &collision, 0, sizeof( collision ) );
-                collision = new trace_s();
-                collision.endAxis = GetPhysics().GetAxis();
-                collision.endpos = GetPhysics().GetOrigin();
-                collision.c.point = GetPhysics().GetOrigin();
+                collision = new trace_s();//memset( &collision, 0, sizeof( collision ) );
+                collision.endAxis.oSet(GetPhysics().GetAxis());
+                collision.endpos.oSet(GetPhysics().GetOrigin());
+                collision.c.point.oSet(GetPhysics().GetOrigin());
                 collision.c.normal.Set(0, 0, 1);
                 AddDefaultDamageEffect(collision, collision.c.normal);
                 Explode(collision, null);
@@ -1248,16 +1247,6 @@ public class Projectile {
 
         private void Event_GetProjectileState() {
             idThread.ReturnInt(etoi(state));
-        }
-
-        @Override
-        public Class.idClass CreateInstance() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
 

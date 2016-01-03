@@ -1,9 +1,11 @@
 package neo.idlib.math.Matrix;
 
 import java.util.Arrays;
+
 import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
+
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
 
@@ -820,7 +822,7 @@ public class idMat6 {
 //    #else
         // 6*27+2*30 = 222 multiplications
         //		2*1  =	 2 divisions
-        idVec3[] r0 = new idVec3[3], r1 = new idVec3[3], r2 = new idVec3[3], r3 = new idVec3[3];
+        idVec3[] r0 = idMat0.genVec3Array(3), r1 = idMat0.genVec3Array(3), r2 = idMat0.genVec3Array(3), r3 = idMat0.genVec3Array(3);
         float c0, c1, c2, det, invDet;
         float[] mat = this.reinterpret_cast();
 
@@ -933,37 +935,37 @@ public class idMat6 {
         mat[5 * 6 + 2] = r3[2].x * r2[0].z + r3[2].y * r2[1].z + r3[2].z * r2[2].z;
 
         // m0 = r0 - r1 * m2;
-        mat[0 * 6 + 0] = r0[0].x - r1[0].x * mat[3 * 6 + 0] - r1[0].y * mat[4 * 6 + 0] - r1[0].z * mat[5 * 6 + 0];
-        mat[0 * 6 + 1] = r0[0].y - r1[0].x * mat[3 * 6 + 1] - r1[0].y * mat[4 * 6 + 1] - r1[0].z * mat[5 * 6 + 1];
-        mat[0 * 6 + 2] = r0[0].z - r1[0].x * mat[3 * 6 + 2] - r1[0].y * mat[4 * 6 + 2] - r1[0].z * mat[5 * 6 + 2];
-        mat[1 * 6 + 0] = r0[1].x - r1[1].x * mat[3 * 6 + 0] - r1[1].y * mat[4 * 6 + 0] - r1[1].z * mat[5 * 6 + 0];
-        mat[1 * 6 + 1] = r0[1].y - r1[1].x * mat[3 * 6 + 1] - r1[1].y * mat[4 * 6 + 1] - r1[1].z * mat[5 * 6 + 1];
-        mat[1 * 6 + 2] = r0[1].z - r1[1].x * mat[3 * 6 + 2] - r1[1].y * mat[4 * 6 + 2] - r1[1].z * mat[5 * 6 + 2];
-        mat[2 * 6 + 0] = r0[2].x - r1[2].x * mat[3 * 6 + 0] - r1[2].y * mat[4 * 6 + 0] - r1[2].z * mat[5 * 6 + 0];
-        mat[2 * 6 + 1] = r0[2].y - r1[2].x * mat[3 * 6 + 1] - r1[2].y * mat[4 * 6 + 1] - r1[2].z * mat[5 * 6 + 1];
-        mat[2 * 6 + 2] = r0[2].z - r1[2].x * mat[3 * 6 + 2] - r1[2].y * mat[4 * 6 + 2] - r1[2].z * mat[5 * 6 + 2];
+        this.mat[0].p[0] = r0[0].x - r1[0].x * mat[3 * 6 + 0] - r1[0].y * mat[4 * 6 + 0] - r1[0].z * mat[5 * 6 + 0];
+        this.mat[0].p[1] = r0[0].y - r1[0].x * mat[3 * 6 + 1] - r1[0].y * mat[4 * 6 + 1] - r1[0].z * mat[5 * 6 + 1];
+        this.mat[0].p[2] = r0[0].z - r1[0].x * mat[3 * 6 + 2] - r1[0].y * mat[4 * 6 + 2] - r1[0].z * mat[5 * 6 + 2];
+        this.mat[1].p[0] = r0[1].x - r1[1].x * mat[3 * 6 + 0] - r1[1].y * mat[4 * 6 + 0] - r1[1].z * mat[5 * 6 + 0];
+        this.mat[1].p[1] = r0[1].y - r1[1].x * mat[3 * 6 + 1] - r1[1].y * mat[4 * 6 + 1] - r1[1].z * mat[5 * 6 + 1];
+        this.mat[1].p[2] = r0[1].z - r1[1].x * mat[3 * 6 + 2] - r1[1].y * mat[4 * 6 + 2] - r1[1].z * mat[5 * 6 + 2];
+        this.mat[2].p[0] = r0[2].x - r1[2].x * mat[3 * 6 + 0] - r1[2].y * mat[4 * 6 + 0] - r1[2].z * mat[5 * 6 + 0];
+        this.mat[2].p[1] = r0[2].y - r1[2].x * mat[3 * 6 + 1] - r1[2].y * mat[4 * 6 + 1] - r1[2].z * mat[5 * 6 + 1];
+        this.mat[2].p[2] = r0[2].z - r1[2].x * mat[3 * 6 + 2] - r1[2].y * mat[4 * 6 + 2] - r1[2].z * mat[5 * 6 + 2];
 
         // m1 = r1 * r3;
-        mat[0 * 6 + 3] = r1[0].x * r3[0].x + r1[0].y * r3[1].x + r1[0].z * r3[2].x;
-        mat[0 * 6 + 4] = r1[0].x * r3[0].y + r1[0].y * r3[1].y + r1[0].z * r3[2].y;
-        mat[0 * 6 + 5] = r1[0].x * r3[0].z + r1[0].y * r3[1].z + r1[0].z * r3[2].z;
-        mat[1 * 6 + 3] = r1[1].x * r3[0].x + r1[1].y * r3[1].x + r1[1].z * r3[2].x;
-        mat[1 * 6 + 4] = r1[1].x * r3[0].y + r1[1].y * r3[1].y + r1[1].z * r3[2].y;
-        mat[1 * 6 + 5] = r1[1].x * r3[0].z + r1[1].y * r3[1].z + r1[1].z * r3[2].z;
-        mat[2 * 6 + 3] = r1[2].x * r3[0].x + r1[2].y * r3[1].x + r1[2].z * r3[2].x;
-        mat[2 * 6 + 4] = r1[2].x * r3[0].y + r1[2].y * r3[1].y + r1[2].z * r3[2].y;
-        mat[2 * 6 + 5] = r1[2].x * r3[0].z + r1[2].y * r3[1].z + r1[2].z * r3[2].z;
+        this.mat[0].p[3] = r1[0].x * r3[0].x + r1[0].y * r3[1].x + r1[0].z * r3[2].x;
+        this.mat[0].p[4] = r1[0].x * r3[0].y + r1[0].y * r3[1].y + r1[0].z * r3[2].y;
+        this.mat[0].p[5] = r1[0].x * r3[0].z + r1[0].y * r3[1].z + r1[0].z * r3[2].z;
+        this.mat[1].p[3] = r1[1].x * r3[0].x + r1[1].y * r3[1].x + r1[1].z * r3[2].x;
+        this.mat[1].p[4] = r1[1].x * r3[0].y + r1[1].y * r3[1].y + r1[1].z * r3[2].y;
+        this.mat[1].p[5] = r1[1].x * r3[0].z + r1[1].y * r3[1].z + r1[1].z * r3[2].z;
+        this.mat[2].p[3] = r1[2].x * r3[0].x + r1[2].y * r3[1].x + r1[2].z * r3[2].x;
+        this.mat[2].p[4] = r1[2].x * r3[0].y + r1[2].y * r3[1].y + r1[2].z * r3[2].y;
+        this.mat[2].p[5] = r1[2].x * r3[0].z + r1[2].y * r3[1].z + r1[2].z * r3[2].z;
 
         // m3 = -r3;
-        mat[3 * 6 + 3] = -r3[0].x;
-        mat[3 * 6 + 4] = -r3[0].y;
-        mat[3 * 6 + 5] = -r3[0].z;
-        mat[4 * 6 + 3] = -r3[1].x;
-        mat[4 * 6 + 4] = -r3[1].y;
-        mat[4 * 6 + 5] = -r3[1].z;
-        mat[5 * 6 + 3] = -r3[2].x;
-        mat[5 * 6 + 4] = -r3[2].y;
-        mat[5 * 6 + 5] = -r3[2].z;
+        this.mat[3].p[3] = -r3[0].x;
+        this.mat[3].p[4] = -r3[0].y;
+        this.mat[3].p[5] = -r3[0].z;
+        this.mat[4].p[3] = -r3[1].x;
+        this.mat[4].p[4] = -r3[1].y;
+        this.mat[4].p[5] = -r3[1].z;
+        this.mat[5].p[3] = -r3[2].x;
+        this.mat[5].p[4] = -r3[2].y;
+        this.mat[5].p[5] = -r3[2].z;
 
         return true;
 //#endif
@@ -994,4 +996,5 @@ public class idMat6 {
         }
         return temp;
     }
+
 };

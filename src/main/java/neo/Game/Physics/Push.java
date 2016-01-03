@@ -78,9 +78,9 @@ public class Push {
             totalMass = 0.0f;
 
             results[0].fraction = 1.0f;
-            results[0].endpos = newOrigin;
-            results[0].endAxis = clipModel.GetAxis();
-//	memset( &results.c, 0, sizeof( results.c ) );//TODO:
+            results[0].endpos.oSet(newOrigin);
+            results[0].endAxis.oSet(clipModel.GetAxis());
+            results[0].c = new contactInfo_t();//memset( &results.c, 0, sizeof( results.c ) );//TODO:
 
             if (translation.equals(getVec3_origin())) {
                 return totalMass;
@@ -215,8 +215,8 @@ public class Push {
                 // blocked
                 results[0] = pushResults[0];
                 results[0].fraction = 0.0f;
-                results[0].endAxis = clipModel.GetAxis();
-                results[0].endpos = clipModel.GetOrigin();
+                results[0].endAxis.oSet(clipModel.GetAxis());
+                results[0].endpos.oSet(clipModel.GetOrigin());
                 results[0].c.entityNum = check.entityNumber;
                 results[0].c.id = 0;
 
@@ -258,10 +258,9 @@ public class Push {
             totalMass = 0.0f;
 
             results[0].fraction = 1.0f;
-            results[0].endpos = clipModel.GetOrigin();
-            results[0].endAxis = newAxis;
-//	memset( &results.c, 0, sizeof( results.c ) );//TODOS:
-            results[0].c = new contactInfo_t();
+            results[0].endpos.oSet(clipModel.GetOrigin());
+            results[0].endAxis.oSet(newAxis);
+            results[0].c = new contactInfo_t();//memset( &results.c, 0, sizeof( results.c ) );//TODOS:
 
             if (0 == rotation.GetAngle()) {
                 return totalMass;
@@ -380,8 +379,8 @@ public class Push {
                 // blocked
                 results[0] = pushResults[0];
                 results[0].fraction = 0.0f;
-                results[0].endAxis = clipModel.GetAxis();
-                results[0].endpos = clipModel.GetOrigin();
+                results[0].endAxis.oSet(clipModel.GetAxis());
+                results[0].endpos.oSet(clipModel.GetOrigin());
                 results[0].c.entityNum = check.entityNumber;
                 results[0].c.id = 0;
 
@@ -414,9 +413,9 @@ public class Push {
             mass = 0.0f;
 
             results[0].fraction = 1.0f;
-            results[0].endpos = newOrigin;
-            results[0].endAxis = newAxis;
-//	memset( &results.c, 0, sizeof( results.c ) );//TODOS:
+            results[0].endpos.oSet(newOrigin);
+            results[0].endAxis.oSet(newAxis);
+            results[0].c = new contactInfo_t();//memset( &results.c, 0, sizeof( results.c ) );//TODOS:
 
             // translational push
             translation = newOrigin.oMinus(oldOrigin);
@@ -645,9 +644,9 @@ public class Push {
             // }
 // #endif
             results[0].fraction = 1.0f;
-            results[0].endpos = newOrigin;
-            results[0].endAxis = clipModel.GetAxis();
-//	memset( &results.c, 0, sizeof( results.c ) );//TODOS:
+            results[0].endpos.oSet(newOrigin);
+            results[0].endAxis.oSet(clipModel.GetAxis());
+            results[0].c = new contactInfo_t();//memset( &results.c, 0, sizeof( results.c ) );//TODOS:
 
             // always pushed when standing on the pusher
             if (physics.IsGroundClipModel(clipModel.GetEntity().entityNumber, clipModel.GetId())) {
@@ -663,7 +662,7 @@ public class Push {
                     if (results[0].fraction < 1.0f) {
 
                         // FIXME: try to push the blocking entity as well or try to slide along collision plane(s)?
-                        results[0].c.normal = results[0].c.normal.oNegative();
+                        results[0].c.normal.oSet(results[0].c.normal.oNegative());
                         results[0].c.dist = -results[0].c.dist;
 
                         // the entity will be crushed between the pusher and some other entity
@@ -687,7 +686,7 @@ public class Push {
                 // if there is a collisions
                 if (trace[0].fraction < 1.0f) {
 
-                    results[0].c.normal = results[0].c.normal.oNegative();
+                    results[0].c.normal.oSet(results[0].c.normal.oNegative());
                     results[0].c.dist = -results[0].c.dist;
 
                     // FIXME: try to push the blocking entity as well ?
@@ -762,9 +761,9 @@ public class Push {
             // }
 // #endif
             results[0].fraction = 1.0f;
-            results[0].endpos = clipModel.GetOrigin();
-            results[0].endAxis = newAxis;
-//	memset( &results.c, 0, sizeof( results.c ) );//TODOS:
+            results[0].endpos.oSet(clipModel.GetOrigin());
+            results[0].endAxis.oSet(newAxis);
+            results[0].c = new contactInfo_t();//memset( &results.c, 0, sizeof( results.c ) );//TODOS:
 
             // always pushed when standing on the pusher
             if (physics.IsGroundClipModel(clipModel.GetEntity().entityNumber, clipModel.GetId())) {
@@ -782,7 +781,7 @@ public class Push {
                     if (results[0].fraction < 1.0f) {
 
                         // FIXME: try to push the blocking entity as well or try to slide along collision plane(s)?
-                        results[0].c.normal = results[0].c.normal.oNegative();
+                        results[0].c.normal.oSet(results[0].c.normal.oNegative());
                         results[0].c.dist = -results[0].c.dist;
 
                         // the entity will be crushed between the pusher and some other entity
@@ -824,7 +823,7 @@ public class Push {
                 if (trace[0].fraction < 1.0f) {
 
                     // FIXME: try to push the blocking entity as well or try to slide along collision plane(s)?
-                    results[0].c.normal = results[0].c.normal.oNegative();
+                    results[0].c.normal.oSet(results[0].c.normal.oNegative());
                     results[0].c.dist = -results[0].c.dist;
 
                     // the entity will be crushed between the pusher and some other entity

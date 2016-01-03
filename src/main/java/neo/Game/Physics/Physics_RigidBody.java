@@ -1,5 +1,7 @@
 package neo.Game.Physics;
 
+import neo.CM.CollisionModel;
+import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import static neo.Game.Entity.TH_PHYSICS;
@@ -44,6 +46,9 @@ import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
+import org.lwjgl.BufferUtils;
+
+import java.nio.FloatBuffer;
 
 /**
  *
@@ -97,14 +102,44 @@ public class Physics_RigidBody {
         idVec3 angularMomentum;             // rotational momentum relative to center of mass
 
         private rigidBodyIState_s() {
+            position = new idVec3();
+            orientation = new idMat3();
+            linearMomentum = new idVec3();
+            angularMomentum = new idVec3();
         }
         
-        private rigidBodyIState_s(float[] state) {//TODO:pad to 18 floats and init classes.
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        private rigidBodyIState_s(float[] state) {
+            this();
+            this.fromFloats(state);
         }
 
-        private float[] toFloats() {//TODO:
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        private float[] toFloats() {
+            FloatBuffer buffer = FloatBuffer.allocate(BYTES / Float.BYTES);
+            buffer.put(position.ToFloatPtr())
+                    .put(orientation.ToFloatPtr())
+                    .put(linearMomentum.ToFloatPtr())
+                    .put(angularMomentum.ToFloatPtr());
+
+            return buffer.array();
+        }
+
+        private void fromFloats(final float[] state) {
+            FloatBuffer b = FloatBuffer.wrap(state);
+            if (b.hasRemaining()) {
+                position.oSet(new idVec3(b.get(), b.get(), b.get()));
+            }
+            if (b.hasRemaining()) {
+                orientation.oSet(new idMat3(
+                        b.get(), b.get(), b.get(),
+                        b.get(), b.get(), b.get(),
+                        b.get(), b.get(), b.get()));
+            }
+            if (b.hasRemaining()) {
+                linearMomentum.oSet(new idVec3(b.get(), b.get(), b.get()));
+            }
+            if (b.hasRemaining()) {
+                angularMomentum.oSet(new idVec3(b.get(), b.get(), b.get()));
+            }
         }
     }
 
@@ -118,6 +153,14 @@ public class Physics_RigidBody {
         idVec3            externalForce;    // external force relative to center of mass
         idVec3            externalTorque;   // external torque relative to center of mass
         rigidBodyIState_s i;                // state used for integration
+
+        public rigidBodyPState_s() {
+            this.localOrigin = new idVec3();
+            this.localAxis = new idMat3();
+            this.pushVelocity = new idVec6();
+            this.externalForce = new idVec3();
+            this.externalTorque = new idVec3();
+        }
     }
 
     public static class idPhysics_RigidBody extends idPhysics_Base {
@@ -167,12 +210,7 @@ public class Physics_RigidBody {
             current.atRest = -1;
             current.lastTimeStep = USERCMD_MSEC;
             current.i = new rigidBodyIState_s();
-            
-            current.i.position = new idVec3();
-            current.i.orientation = getMat3_identity();
-
-            current.i.linearMomentum = new idVec3();
-            current.i.angularMomentum = new idVec3();
+            current.i.orientation.oSet(getMat3_identity());
 
             saved = current;
 
@@ -407,7 +445,7 @@ public class Physics_RigidBody {
         public boolean Evaluate(int timeStepMSec, int endTimeMSec) {
             rigidBodyPState_s next;
             idAngles angles;
-            trace_s[] collision = {null};
+            trace_s[] collision = {new trace_s()};
             idVec3 impulse = new idVec3();
             idEntity ent;
             idVec3 oldOrigin, masterOrigin = new idVec3();
@@ -422,19 +460,19 @@ public class Physics_RigidBody {
                 oldOrigin = current.i.position;
                 oldAxis = current.i.orientation;
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.i.position = masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis));
+                current.i.position.oSet(masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis)));
                 if (isOrientated) {
-                    current.i.orientation = current.localAxis.oMultiply(masterAxis);
+                    current.i.orientation.oSet(current.localAxis.oMultiply(masterAxis));
                 } else {
-                    current.i.orientation = current.localAxis;
+                    current.i.orientation.oSet(current.localAxis);
                 }
                 clipModel.Link(gameLocal.clip, self, clipModel.GetId(), current.i.position, current.i.orientation);
-                current.i.linearMomentum = ((current.i.position.oMinus(oldOrigin)).oDivide(timeStep)).oMultiply(mass);
-                current.i.angularMomentum = inertiaTensor.oMultiply((current.i.orientation.oMultiply(oldAxis.Transpose())).ToAngularVelocity().oDivide(timeStep));
+                current.i.linearMomentum.oSet(((current.i.position.oMinus(oldOrigin)).oDivide(timeStep)).oMultiply(mass));
+                current.i.angularMomentum.oSet(inertiaTensor.oMultiply((current.i.orientation.oMultiply(oldAxis.Transpose())).ToAngularVelocity().oDivide(timeStep)));
                 current.externalForce.Zero();
                 current.externalTorque.Zero();
 
-                return (current.i.position != oldOrigin || current.i.orientation != oldAxis);
+                return (!current.i.position.equals(oldOrigin) || !current.i.orientation.equals(oldAxis));
             }
 
             // if the body is at rest
@@ -665,12 +703,12 @@ public class Physics_RigidBody {
             idVec3 masterOrigin = new idVec3();
             idMat3 masterAxis = new idMat3();
 
-            current.localOrigin = newOrigin;
+            current.localOrigin.oSet(newOrigin);
             if (hasMaster) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.i.position = masterOrigin.oPlus(newOrigin.oMultiply(masterAxis));
+                current.i.position.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
             } else {
-                current.i.position = newOrigin;
+                current.i.position.oSet(newOrigin);
             }
 
             clipModel.Link(gameLocal.clip, self, clipModel.GetId(), current.i.position, clipModel.GetAxis());
@@ -683,12 +721,12 @@ public class Physics_RigidBody {
             idVec3 masterOrigin = new idVec3();
             idMat3 masterAxis = new idMat3();
 
-            current.localAxis = newAxis;
+            current.localAxis.oSet(newAxis);
             if (hasMaster && isOrientated) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.i.orientation = newAxis.oMultiply(masterAxis);
+                current.i.orientation.oSet(newAxis.oMultiply(masterAxis));
             } else {
-                current.i.orientation = newAxis;
+                current.i.orientation.oSet(newAxis);
             }
 
             clipModel.Link(gameLocal.clip, self, clipModel.GetId(), clipModel.GetOrigin(), current.i.orientation);
@@ -718,10 +756,10 @@ public class Physics_RigidBody {
             if (hasMaster) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
                 current.localAxis.oMulSet(rotation.ToMat3());
-                current.localOrigin = (current.i.position.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                current.localOrigin.oSet((current.i.position.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
             } else {
-                current.localAxis = current.i.orientation;
-                current.localOrigin = current.i.position;
+                current.localAxis.oSet(current.i.orientation);
+                current.localOrigin.oSet(current.i.position);
             }
 
             clipModel.Link(gameLocal.clip, self, clipModel.GetId(), current.i.position, current.i.orientation);
@@ -741,13 +779,13 @@ public class Physics_RigidBody {
 
         @Override
         public void SetLinearVelocity(final idVec3 newLinearVelocity, int id /*= 0*/) {
-            current.i.linearMomentum = newLinearVelocity.oMultiply(mass);
+            current.i.linearMomentum.oSet(newLinearVelocity.oMultiply(mass));
             Activate();
         }
 
         @Override
         public void SetAngularVelocity(final idVec3 newAngularVelocity, int id /*= 0*/) {
-            current.i.angularMomentum = newAngularVelocity.oMultiply(inertiaTensor);
+            current.i.angularMomentum.oSet(newAngularVelocity.oMultiply(inertiaTensor));
             Activate();
         }
         static idVec3 curLinearVelocity;
@@ -833,7 +871,7 @@ public class Physics_RigidBody {
             dir.SubVec3(1).oSet(current.i.angularMomentum);
             dir.SubVec3(0).Normalize();
             dir.SubVec3(1).Normalize();
-            num = gameLocal.clip.Contacts(contacts.Ptr(), 10, clipModel.GetOrigin(),
+            num = gameLocal.clip.Contacts(contacts.Ptr(contactInfo_t[].class), 10, clipModel.GetOrigin(),
                     dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
             contacts.SetNum(num, false);
 
@@ -872,11 +910,11 @@ public class Physics_RigidBody {
                 if (!hasMaster) {
                     // transform from world space to master space
                     self.GetMasterPosition(masterOrigin, masterAxis);
-                    current.localOrigin = (current.i.position.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                    current.localOrigin.oSet((current.i.position.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
                     if (orientated) {
-                        current.localAxis = current.i.orientation.oMultiply(masterAxis.Transpose());
+                        current.localAxis.oSet(current.i.orientation.oMultiply(masterAxis.Transpose()));
                     } else {
-                        current.localAxis = current.i.orientation;
+                        current.localAxis.oSet(current.i.orientation);
                     }
                     hasMaster = true;
                     isOrientated = orientated;
@@ -960,8 +998,8 @@ public class Physics_RigidBody {
             current.externalTorque.oSet(1, msg.ReadDeltaFloat(0.0f, RB_FORCE_EXPONENT_BITS, RB_FORCE_MANTISSA_BITS));
             current.externalTorque.oSet(2, msg.ReadDeltaFloat(0.0f, RB_FORCE_EXPONENT_BITS, RB_FORCE_MANTISSA_BITS));
 
-            current.i.orientation = quat.ToMat3();
-            current.localAxis = localQuat.ToMat3();
+            current.i.orientation.oSet(quat.ToMat3());
+            current.localAxis.oSet(localQuat.ToMat3());
 
             if (clipModel != null) {
                 clipModel.Link(gameLocal.clip, self, clipModel.GetId(), current.i.position, current.i.orientation);
@@ -969,14 +1007,44 @@ public class Physics_RigidBody {
         }
 
         private static class rigidBodyDerivatives_s {
+            public static final int BYTES =
+                            idVec3.BYTES +
+                            idMat3.BYTES +
+                            idVec3.BYTES +
+                            idVec3.BYTES;
 
             idVec3 linearVelocity;
             idMat3 angularMatrix;
             idVec3 force;
             idVec3 torque;
 
-            private rigidBodyDerivatives_s(float[] derivatives) {//TODO:pad to 18 floats and init classes.
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            private rigidBodyDerivatives_s(float[] derivatives) {
+                FloatBuffer b = FloatBuffer.wrap(derivatives);
+                if (b.hasRemaining()) {
+                    linearVelocity = new idVec3(b.get(), b.get(), b.get());
+                }
+                if (b.hasRemaining()) {
+                    angularMatrix = new idMat3(
+                            b.get(), b.get(), b.get(),
+                            b.get(), b.get(), b.get(),
+                            b.get(), b.get(), b.get());
+                }
+                if (b.hasRemaining()) {
+                    force = new idVec3(b.get(), b.get(), b.get());
+                }
+                if (b.hasRemaining()) {
+                    torque = new idVec3(b.get(), b.get(), b.get());
+                }
+            }
+
+            private float[] toFloats() {
+                final FloatBuffer buffer = FloatBuffer.allocate(BYTES / Float.BYTES);
+                buffer.put(linearVelocity.ToFloatPtr())
+                        .put(angularMatrix.ToFloatPtr())
+                        .put(force.ToFloatPtr())
+                        .put(torque.ToFloatPtr());
+
+                return buffer.array();
             }
         };
 
@@ -1003,6 +1071,8 @@ public class Physics_RigidBody {
                 d.angularMatrix = SkewSymmetric(angularVelocity).oMultiply(s.orientation);
                 d.force = s.linearMomentum.oMultiply(-p.linearFriction).oPlus(p.current.externalForce);
                 d.torque = s.angularMomentum.oMultiply(-p.angularFriction).oPlus(p.current.externalTorque);
+
+                System.arraycopy(d.toFloats(), 0, derivatives, 0 ,derivatives.length);
             }
         };
 
@@ -1022,7 +1092,9 @@ public class Physics_RigidBody {
 
             current.i.orientation.TransposeSelf();
 
-            integrator.Evaluate(current.i.toFloats(), next.i.toFloats(), 0, deltaTime);
+            final float[] newState = next.i.toFloats();
+            integrator.Evaluate(current.i.toFloats(), newState, 0, deltaTime);
+            next.i.fromFloats(newState);
             next.i.orientation.OrthoNormalizeSelf();
 
             // apply gravity
@@ -1031,7 +1103,7 @@ public class Physics_RigidBody {
             current.i.orientation.TransposeSelf();
             next.i.orientation.TransposeSelf();
 
-            current.i.position = position;
+            current.i.position.oSet(position);
             next.i.position.oMinSet(centerOfMass.oMultiply(next.i.orientation));
 
             next.atRest = current.atRest;
@@ -1065,10 +1137,10 @@ public class Physics_RigidBody {
             // if there was a collision
             if (gameLocal.clip.Motion(collision, current.i.position, next.i.position, rotation, clipModel, current.i.orientation, clipMask, self)) {
                 // set the next state to the state at the moment of impact
-                next.i.position = collision[0].endpos;
-                next.i.orientation = collision[0].endAxis;
-                next.i.linearMomentum = current.i.linearMomentum;
-                next.i.angularMomentum = current.i.angularMomentum;
+                next.i.position.oSet(collision[0].endpos);
+                next.i.orientation.oSet(collision[0].endAxis);
+                next.i.linearMomentum.oSet(current.i.linearMomentum);
+                next.i.angularMomentum.oSet(current.i.angularMomentum);
                 collided = true;
             }
 
@@ -1223,7 +1295,7 @@ public class Physics_RigidBody {
             // put the body on the floor
             down = current.i.position.oPlus(gravityNormal.oMultiply(128.0f));
             gameLocal.clip.Translation(tr, current.i.position, down, clipModel, current.i.orientation, clipMask, self);
-            current.i.position = tr[0].endpos;
+            current.i.position.oSet(tr[0].endpos);
             clipModel.Link(gameLocal.clip, self, clipModel.GetId(), tr[0].endpos, current.i.orientation);
 
             // if on the floor already

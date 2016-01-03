@@ -1105,12 +1105,16 @@ public class File_h {
          =================
          */
         @Override
-        public int Write(final ByteBuffer buffer/*, int len*/) {
+        public int Write(final ByteBuffer buffer) {
+            return Write(buffer, buffer.limit());
+        }
+
+        @Override
+        public int Write(final ByteBuffer buffer, int len) {
             int block, remaining;
             int written;
 //            byte[] buf;
             int tries;
-            int len;
 
             if (0 == (mode & (1 << FS_WRITE.ordinal()))) {
                 common.FatalError("idFile_Permanent::Write: %s not opened in write mode", name);
@@ -1122,7 +1126,6 @@ public class File_h {
             }
 
 //            buf = (byte[]) buffer;
-            len = buffer.limit();
 
             remaining = len;
             tries = 0;

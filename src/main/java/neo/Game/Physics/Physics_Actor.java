@@ -59,7 +59,7 @@ public class Physics_Actor {
             masterEntity = null;
             masterYaw = 0.0f;
             masterDeltaYaw = 0.0f;
-            groundEntityPtr = null;
+            groundEntityPtr = new idEntityPtr<>(null);
         }
         // ~idPhysics_Actor();
 

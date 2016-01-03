@@ -1117,7 +1117,7 @@ public class RenderSystem_init {
      R_SampleCubeMap
      ==================
      */
-    private static void R_SampleCubeMap(final idVec3 dir, int size, ByteBuffer[][] buffers/*[6]*/, byte[] result/*[4]*/) {
+    private static void R_SampleCubeMap(final idVec3 dir, int size, ByteBuffer[] buffers/*[6]*/, byte[] result/*[4]*/) {
         float[] adir = new float[3];
         int axis, x, y;
 
@@ -1157,10 +1157,10 @@ public class RenderSystem_init {
             y = size - 1;
         }
 
-        result[0] = buffers[axis][0].get((y * size + x) * 4 + 0);
-        result[1] = buffers[axis][0].get((y * size + x) * 4 + 1);
-        result[2] = buffers[axis][0].get((y * size + x) * 4 + 2);
-        result[3] = buffers[axis][0].get((y * size + x) * 4 + 3);
+        result[0] = buffers[axis].get((y * size + x) * 4 + 0);
+        result[1] = buffers[axis].get((y * size + x) * 4 + 1);
+        result[2] = buffers[axis].get((y * size + x) * 4 + 2);
+        result[3] = buffers[axis].get((y * size + x) * 4 + 3);
     }
 
 
@@ -1196,7 +1196,7 @@ public class RenderSystem_init {
             String[] extensions/*[6]*/ = {"_px.tga", "_nx.tga", "_py.tga", "_ny.tga",
                         "_pz.tga", "_nz.tga"};
             int outSize;
-            ByteBuffer[][] buffers = new ByteBuffer[6][1];
+            ByteBuffer[] buffers = new ByteBuffer[6];
             int[] width = {0}, height = {0};
 
             if (args.Argc() != 2 && args.Argc() != 3) {
@@ -1242,7 +1242,7 @@ public class RenderSystem_init {
                 fullname = String.format("env/%s%s", baseName, extensions[i]);
                 common.Printf("loading %s\n", fullname);
                 session.UpdateScreen();
-                R_LoadImage(fullname, buffers[i], width, height, null, true);
+                buffers[i] = R_LoadImage(fullname, width, height, null, true);
                 if (NOT(buffers[i])) {
                     common.Printf("failed.\n");
                     for (i--; i >= 0; i--) {
@@ -1392,7 +1392,7 @@ public class RenderSystem_init {
                 fps = R_RenderingFPS(view);
                 int kpix = (int) (glConfig.vidWidth * glConfig.vidHeight * (size * 0.01) * (size * 0.01) * 0.001);
                 msec = (1000.0f / fps);
-                common.Printf("kpix: %4i  msec:%5.1f fps:%5.1f\n", kpix, msec, fps);
+                common.Printf("kpix: %4d  msec:%5.1f fps:%5.1f\n", kpix, msec, fps);
             }
 
             // enable r_singleTriangle 1 while r_screenFraction is still at 10
@@ -1717,10 +1717,9 @@ public class RenderSystem_init {
                 if (image1.defaulted) {
                     continue;
                 }
-                ByteBuffer[] data1 = {null};
                 int[] w1 = {0}, h1 = {0};
 
-                R_LoadImageProgram(image1.imgName.toString(), data1, w1, h1, null);
+                ByteBuffer data1 = R_LoadImageProgram(image1.imgName.toString(), w1, h1, null);
 
                 for (j = 0; j < i; j++) {
                     idImage image2 = globalImages.images.oGet(j);
@@ -1749,10 +1748,9 @@ public class RenderSystem_init {
                         continue;
                     }
 
-                    ByteBuffer[] data2 = {null};
                     int[] w2 = {0}, h2 = {0};
 
-                    R_LoadImageProgram(image2.imgName.toString(), data2, w2, h2, null);
+                    ByteBuffer data2 = R_LoadImageProgram(image2.imgName.toString(), w2, h2, null);
 
                     if (w2 != w1 || h2 != h1) {
 //                        R_StaticFree(data2);
@@ -1760,7 +1758,7 @@ public class RenderSystem_init {
                     }
 
 //                    if (memcmp(data1, data2, w1 * h1 * 4)) {
-                    if (data1[0].equals(data2[0])) {//TODO: check range?
+                    if (data1.equals(data2)) {//TODO: check range?
 //                        R_StaticFree(data2);
                         continue;
                     }

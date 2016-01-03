@@ -73,12 +73,7 @@ public class win_glimp {
         // first make sure the user is not trying to select a mode that his card/monitor can't handle
         matched = false;
         DisplayMode[] displayModes = Display.getAvailableDisplayModes();
-        Arrays.sort(displayModes, new Comparator<DisplayMode>() {
-            @Override
-            public int compare(DisplayMode o1, DisplayMode o2) {
-                return o1.getWidth() - o2.getWidth();
-            }
-        });
+        Arrays.sort(displayModes, (o1, o2) -> o1.getWidth() - o2.getWidth());
         for (DisplayMode devmode : displayModes) {
 //		if ( !EnumDisplaySettings( NULL, modeNum, &devmode ) ) {
             if (matched) {
@@ -123,7 +118,7 @@ public class win_glimp {
         // the low res modes in EnumDisplaySettings, but still work
         if (dm != null) {
 //            Display.setDisplayModeAndFullscreen(dm);
-            Display.setDisplayMode(dm);//TODO: change this back to setDisplayModeAndFullscreen.
+            Display.setDisplayMode(dm);//HACKME::0 change this back to setDisplayModeAndFullscreen.
             Display.setVSyncEnabled(true);
             Display.setTitle("BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!");
             if (Display.getDisplayMode().equals(dm)) {
@@ -267,7 +262,30 @@ public class win_glimp {
     // The renderer will then reset the glimpParms to "safe mode" of 640x480
     // fullscreen and try again.  If that also fails, the error will be fatal.
     public static boolean GLimp_SetScreenParms(glimpParms_t parms) {
-        throw new TODO_Exception();
+        final DisplayMode dm;
+        final boolean ret;
+
+        dm = new DisplayMode(parms.width, parms.height);
+
+        win32.cdsFullscreen = parms.fullScreen;
+
+//        try {
+//            if (parms.fullScreen) {
+//                Display.setDisplayModeAndFullscreen(dm);
+//                return Display.getDisplayMode().equals(dm) && Display.isFullscreen();
+//            } else {
+//                final int x = Display.getDesktopDisplayMode().getWidth() / 2;
+//                final int y = Display.getDesktopDisplayMode().getHeight() / 2;
+//                Display.setDisplayMode(dm);
+//                Display.setLocation(x, y);
+//                return Display.getDisplayMode().equals(dm);
+//            }
+//        } catch (LWJGLException e) {
+//            e.printStackTrace();
+//        }
+
+        return false;
+
     }
 
     /*
@@ -445,7 +463,7 @@ public class win_glimp {
                 if (r_logFile.GetInteger() != 0) {
                     return;
                 }
-                common.Printf("closing logfile '%s' after %i frames.\n", ospath, initialFrames);
+                common.Printf("closing logfile '%s' after %d frames.\n", ospath, initialFrames);
                 enable = false;
 
                 tr.logFile.close();
@@ -472,7 +490,7 @@ public class win_glimp {
 
                     // scan for an unused filename
                     for (i = 0; i < 9999; i++) {
-                        qpath = String.format("renderlog_%i.txt", i);
+                        qpath = String.format("renderlog_%d.txt", i);
                         if (fileSystem.ReadFile(qpath, null, null) == -1) {
                             break;		// use this name
                         }

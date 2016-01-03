@@ -953,7 +953,7 @@ public class RenderWorld {
             for (i = 0; i < tr.primaryWorld.lightDefs.Num(); i++) {
                 ldef = tr.primaryWorld.lightDefs.oGet(i);
                 if (null == ldef) {
-                    common.Printf("%4i: FREED\n", i);
+                    common.Printf("%4d: FREED\n", i);
                     continue;
                 }
 
@@ -971,7 +971,7 @@ public class RenderWorld {
                 }
                 totalRef += rCount;
 
-                common.Printf("%4i: %3i intr %2i refs %s\n", i, iCount, rCount, ldef.lightShader.GetName());
+                common.Printf("%4d: %3d intr %2d refs %s\n", i, iCount, rCount, ldef.lightShader.GetName());
                 active++;
             }
 
@@ -1010,7 +1010,7 @@ public class RenderWorld {
             for (i = 0; i < tr.primaryWorld.entityDefs.Num(); i++) {
                 mdef = tr.primaryWorld.entityDefs.oGet(i);
                 if (null == mdef) {
-                    common.Printf("%4i: FREED\n", i);
+                    common.Printf("%4d: FREED\n", i);
                     continue;
                 }
 
@@ -1028,7 +1028,7 @@ public class RenderWorld {
                 }
                 totalRef += rCount;
 
-                common.Printf("%4i: %3i intr %2i refs %s\n", i, iCount, rCount, mdef.parms.hModel.Name());
+                common.Printf("%4d: %3d intr %2d refs %s\n", i, iCount, rCount, mdef.parms.hModel.Name());
                 active++;
             }
 

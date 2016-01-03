@@ -838,8 +838,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ================
      */
     public static void Sys_ClearEvents() {
-        throw new TODO_Exception();
-//	eventHead = eventTail = 0;
+        eventHead = eventTail = 0;
     }
 
     /*

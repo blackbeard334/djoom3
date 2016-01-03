@@ -467,7 +467,7 @@ public class Model_local {
                 totalTris += surf.geometry.numIndexes / 3;
                 totalVerts += surf.geometry.numVerts;
             }
-            common.Printf("%c%4ik %3i %4i %4i %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
+            common.Printf("%c%4dk %3d %4d %4d %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
 
             if (IsDynamicModel() == DM_CACHED) {
                 common.Printf(" (DM_CACHED)");
@@ -508,7 +508,7 @@ public class Model_local {
                 totalTris += surf.geometry.numIndexes / 3;
                 totalVerts += surf.geometry.numVerts;
             }
-            common.Printf("%c%4ik %3i %4i %4i %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
+            common.Printf("%c%4dk %3d %4d %4d %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
 
             if (IsDynamicModel() == DM_CACHED) {
                 common.Printf(" (DM_CACHED)");

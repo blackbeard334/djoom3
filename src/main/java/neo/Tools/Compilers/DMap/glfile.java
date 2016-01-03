@@ -132,6 +132,6 @@ public class glfile {
         WriteGLView_r(tree.headnode, glview);
         fileSystem.CloseFile(glview);
 
-        common.Printf("%5i c_glfaces\n", c_glfaces);
+        common.Printf("%5d c_glfaces\n", c_glfaces);
     }
 }

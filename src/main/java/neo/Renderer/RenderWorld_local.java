@@ -2603,7 +2603,7 @@ public class RenderWorld_local {
                 // it, which tends to give epsilon problems that make the area vanish
                 if (d < 1.0f) {
                     // go through this portal
-                    newStack = ps;
+                    newStack = new portalStack_s(ps);
                     newStack.p = p;
                     newStack.next = ps;
                     FloodLightThroughArea_r(light, p.intoArea, newStack);
@@ -2611,7 +2611,7 @@ public class RenderWorld_local {
                 }
 
                 // clip the portal winding to all of the planes
-                w = (idFixedWinding) p.w;
+                w = new idFixedWinding(p.w);
                 for (j = 0; j < ps.numPortalPlanes; j++) {
                     if (!w.ClipInPlace(ps.portalPlanes[j].oNegative(), 0)) {
                         break;

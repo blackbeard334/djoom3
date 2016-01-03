@@ -4,6 +4,8 @@ import java.util.Arrays;
 import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
+import static neo.idlib.math.Matrix.idMat0.genVec3Array;
+
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 
@@ -577,7 +579,7 @@ public class idMat5 {
 //    #else
         // 86+30+6 = 122 multiplications
         //	  2*1  =   2 divisions
-        idVec3[] r0 = new idVec3[3], r1 = new idVec3[3], r2 = new idVec3[3], r3 = new idVec3[3];
+        idVec3[] r0 = genVec3Array(3), r1 = genVec3Array(3), r2 = genVec3Array(3), r3 = genVec3Array(3);
         float c0, c1, c2, det, invDet;
         float[] matt = reinterpret_cast();
 
@@ -648,37 +650,37 @@ public class idMat5 {
         r2[1].z = matt[4 * 5 + 0] * r0[0].z + matt[4 * 5 + 1] * r0[1].z + matt[4 * 5 + 2] * r0[2].z;
 
         // m2 = r3 * r2;		// 2x3 = 2x2 * 2x3
-        matt[3 * 5 + 0] = r3[0].x * r2[0].x + r3[0].y * r2[1].x;
-        matt[3 * 5 + 1] = r3[0].x * r2[0].y + r3[0].y * r2[1].y;
-        matt[3 * 5 + 2] = r3[0].x * r2[0].z + r3[0].y * r2[1].z;
-        matt[4 * 5 + 0] = r3[1].x * r2[0].x + r3[1].y * r2[1].x;
-        matt[4 * 5 + 1] = r3[1].x * r2[0].y + r3[1].y * r2[1].y;
-        matt[4 * 5 + 2] = r3[1].x * r2[0].z + r3[1].y * r2[1].z;
+        this.mat[3].oSet(0, r3[0].x * r2[0].x + r3[0].y * r2[1].x);
+        this.mat[3].oSet(1, r3[0].x * r2[0].y + r3[0].y * r2[1].y);
+        this.mat[3].oSet(2, r3[0].x * r2[0].z + r3[0].y * r2[1].z);
+        this.mat[4].oSet(0, r3[1].x * r2[0].x + r3[1].y * r2[1].x);
+        this.mat[4].oSet(1, r3[1].x * r2[0].y + r3[1].y * r2[1].y);
+        this.mat[4].oSet(2, r3[1].x * r2[0].z + r3[1].y * r2[1].z);
 
         // m0 = r0 - r1 * m2;	// 3x3 = 3x3 - 3x2 * 2x3
-        matt[0 * 5 + 0] = r0[0].x - r1[0].x * matt[3 * 5 + 0] - r1[0].y * matt[4 * 5 + 0];
-        matt[0 * 5 + 1] = r0[0].y - r1[0].x * matt[3 * 5 + 1] - r1[0].y * matt[4 * 5 + 1];
-        matt[0 * 5 + 2] = r0[0].z - r1[0].x * matt[3 * 5 + 2] - r1[0].y * matt[4 * 5 + 2];
-        matt[1 * 5 + 0] = r0[1].x - r1[1].x * matt[3 * 5 + 0] - r1[1].y * matt[4 * 5 + 0];
-        matt[1 * 5 + 1] = r0[1].y - r1[1].x * matt[3 * 5 + 1] - r1[1].y * matt[4 * 5 + 1];
-        matt[1 * 5 + 2] = r0[1].z - r1[1].x * matt[3 * 5 + 2] - r1[1].y * matt[4 * 5 + 2];
-        matt[2 * 5 + 0] = r0[2].x - r1[2].x * matt[3 * 5 + 0] - r1[2].y * matt[4 * 5 + 0];
-        matt[2 * 5 + 1] = r0[2].y - r1[2].x * matt[3 * 5 + 1] - r1[2].y * matt[4 * 5 + 1];
-        matt[2 * 5 + 2] = r0[2].z - r1[2].x * matt[3 * 5 + 2] - r1[2].y * matt[4 * 5 + 2];
+        this.mat[0].oSet(0, r0[0].x - r1[0].x * matt[3 * 5 + 0] - r1[0].y * matt[4 * 5 + 0]);
+        this.mat[0].oSet(1, r0[0].y - r1[0].x * matt[3 * 5 + 1] - r1[0].y * matt[4 * 5 + 1]);
+        this.mat[0].oSet(2, r0[0].z - r1[0].x * matt[3 * 5 + 2] - r1[0].y * matt[4 * 5 + 2]);
+        this.mat[1].oSet(0, r0[1].x - r1[1].x * matt[3 * 5 + 0] - r1[1].y * matt[4 * 5 + 0]);
+        this.mat[1].oSet(1, r0[1].y - r1[1].x * matt[3 * 5 + 1] - r1[1].y * matt[4 * 5 + 1]);
+        this.mat[1].oSet(2, r0[1].z - r1[1].x * matt[3 * 5 + 2] - r1[1].y * matt[4 * 5 + 2]);
+        this.mat[2].oSet(0, r0[2].x - r1[2].x * matt[3 * 5 + 0] - r1[2].y * matt[4 * 5 + 0]);
+        this.mat[2].oSet(1, r0[2].y - r1[2].x * matt[3 * 5 + 1] - r1[2].y * matt[4 * 5 + 1]);
+        this.mat[2].oSet(2, r0[2].z - r1[2].x * matt[3 * 5 + 2] - r1[2].y * matt[4 * 5 + 2]);
 
         // m1 = r1 * r3;		// 3x2 = 3x2 * 2x2
-        matt[0 * 5 + 3] = r1[0].x * r3[0].x + r1[0].y * r3[1].x;
-        matt[0 * 5 + 4] = r1[0].x * r3[0].y + r1[0].y * r3[1].y;
-        matt[1 * 5 + 3] = r1[1].x * r3[0].x + r1[1].y * r3[1].x;
-        matt[1 * 5 + 4] = r1[1].x * r3[0].y + r1[1].y * r3[1].y;
-        matt[2 * 5 + 3] = r1[2].x * r3[0].x + r1[2].y * r3[1].x;
-        matt[2 * 5 + 4] = r1[2].x * r3[0].y + r1[2].y * r3[1].y;
+        this.mat[0].oSet(3, r1[0].x * r3[0].x + r1[0].y * r3[1].x);
+        this.mat[0].oSet(4, r1[0].x * r3[0].y + r1[0].y * r3[1].y);
+        this.mat[1].oSet(3, r1[1].x * r3[0].x + r1[1].y * r3[1].x);
+        this.mat[1].oSet(4, r1[1].x * r3[0].y + r1[1].y * r3[1].y);
+        this.mat[2].oSet(3, r1[2].x * r3[0].x + r1[2].y * r3[1].x);
+        this.mat[2].oSet(4, r1[2].x * r3[0].y + r1[2].y * r3[1].y);
 
         // m3 = -r3;			// 2x2 = - 2x2
-        matt[3 * 5 + 3] = -r3[0].x;
-        matt[3 * 5 + 4] = -r3[0].y;
-        matt[4 * 5 + 3] = -r3[1].x;
-        matt[4 * 5 + 4] = -r3[1].y;
+        this.mat[3].oSet(3, -r3[0].x);
+        this.mat[3].oSet(4, -r3[0].y);
+        this.mat[4].oSet(3, -r3[1].x);
+        this.mat[4].oSet(4, -r3[1].y);
 
         return true;
 //#endif

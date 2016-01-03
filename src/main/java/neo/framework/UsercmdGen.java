@@ -1064,7 +1064,7 @@ public class UsercmdGen {
             my *= sensitivity.GetFloat();
 
             if (m_showMouseRate.GetBool()) {
-                Sys_DebugPrintf("[%3i %3i  = %5.1f %5.1f = %5.1f %5.1f] ", mouseDx, mouseDy, mx, my, strafeMx, strafeMy);
+                Sys_DebugPrintf("[%3d %3d  = %5.1f %5.1f = %5.1f %5.1f] ", mouseDx, mouseDy, mx, my, strafeMx, strafeMy);
             }
 
             mouseDx = 0;

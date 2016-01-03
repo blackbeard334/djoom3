@@ -110,7 +110,7 @@ public class idMatX {
 //public	float *			operator[]( int index );
     @Deprecated
     public float[] oGet(int index) {////TODO:by sub array by reference
-        return Arrays.copyOfRange(mat, index * numColumns, mat.length - index * numColumns);
+        return Arrays.copyOfRange(mat, index * numColumns, mat.length);
     }
 
 //public	idMatX &		operator=( const idMatX &a );
@@ -1491,18 +1491,17 @@ public class idMatX {
 //#ifdef MATX_SIMD
 //	SIMDProcessor->MatX_TransposeMultiplyVecX( dst, *this, vec );
 //#else
-        int i, j, m;
-        final float[] mPtr, vPtr, dstPtr;
+        int i, j, mPtr;
+        final float[] vPtr, dstPtr;
 
         vPtr = vec.ToFloatPtr();
         dstPtr = dst.ToFloatPtr();
-        mPtr = mat;
         for (i = 0; i < numColumns; i++) {
-            m = i;
-            float sum = mPtr[0 + m] * vPtr[0];
+            mPtr = i;
+            float sum = mat[mPtr] * vPtr[0];
             for (j = 1; j < numRows; j++) {
-                m += numColumns;
-                sum += mPtr[0 + m] * vPtr[j];
+                mPtr += numColumns;
+                sum += mat[mPtr] * vPtr[j];
             }
             dstPtr[i] = sum;
         }
@@ -1513,16 +1512,17 @@ public class idMatX {
 //#ifdef MATX_SIMD
 //	SIMDProcessor->MatX_TransposeMultiplyAddVecX( dst, *this, vec );
 //#else
-        int i, j;
-        final float[] mPtr, vPtr, dstPtr;
+        int i, j, mPtr;
+        final float[] vPtr, dstPtr;
 
-        mPtr = mat;
         vPtr = vec.ToFloatPtr();
         dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numRows; i++) {
-            float sum = mPtr[0] * vPtr[0];
-            for (j = 1; j < numColumns; j++) {
-                sum += mPtr[j] * vPtr[j];
+        for (i = 0; i < numColumns; i++) {
+            mPtr = i;
+            float sum = mat[mPtr] * vPtr[0];
+            for (j = 1; j < numRows; j++) {
+                mPtr += numColumns;
+                sum += mat[mPtr] * vPtr[j];
             }
             dstPtr[i] += sum;
         }
@@ -1533,16 +1533,17 @@ public class idMatX {
 //#ifdef MATX_SIMD
 //	SIMDProcessor->MatX_TransposeMultiplySubVecX( dst, *this, vec );
 //#else
-        int i, j;
-        final float[] mPtr, vPtr, dstPtr;
+        int i, j, mPtr;
+        final float[] vPtr, dstPtr;
 
-        mPtr = mat;
         vPtr = vec.ToFloatPtr();
         dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numRows; i++) {
-            float sum = mPtr[0] * vPtr[0];
-            for (j = 1; j < numColumns; j++) {
-                sum += mPtr[j] * vPtr[j];
+        for (i = 0; i < numColumns; i++) {
+            mPtr = i;
+            float sum = mat[mPtr] * vPtr[0];
+            for (j = 1; j < numRows; j++) {
+                mPtr += numColumns;
+                sum += mat[mPtr] * vPtr[j];
             }
             dstPtr[i] -= sum;
         }

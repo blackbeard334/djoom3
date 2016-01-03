@@ -2,7 +2,8 @@ package neo.framework;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
+
 import neo.Game.Game.escReply_t;
 import static neo.Game.Game.escReply_t.ESC_GUI;
 import static neo.Game.Game.escReply_t.ESC_IGNORE;
@@ -1663,7 +1664,6 @@ public class Session_local {
                 return 0;
             }
         }
-//
 
         /*
          ===============
@@ -1684,7 +1684,6 @@ public class Session_local {
 
             SetGUI(null, null);
         }
-//
 
         public void StartNewGame(final String mapName) {
             StartNewGame(mapName, false);
@@ -1863,7 +1862,7 @@ public class Session_local {
             int i;
             idStr inFileName;
 
-            inFileName = saveFileName;
+            inFileName = new idStr(saveFileName);
             inFileName.RemoveColors();
             inFileName.StripFileExtension();
 
@@ -2048,10 +2047,10 @@ public class Session_local {
                 gameFile = new idStr("savegames/" + gameFile);
                 gameFile.SetFileExtension(".save");
 
-                previewFile = gameFile;
+                previewFile = new idStr(gameFile);
                 previewFile.SetFileExtension(".tga");
 
-                descriptionFile = gameFile;
+                descriptionFile = new idStr(gameFile);
                 descriptionFile.SetFileExtension(".txt");
 
                 // Open savegame file
@@ -3126,7 +3125,7 @@ public class Session_local {
             // level to level, but now we can just clear everything
             usercmdGen.InitForNewMap();
 //	memset( mapSpawnData.mapSpawnUsercmd, 0, sizeof( mapSpawnData.mapSpawnUsercmd ) );
-            mapSpawnData.mapSpawnUsercmd = new usercmd_t[MAX_ASYNC_CLIENTS];
+            mapSpawnData.mapSpawnUsercmd = Stream.generate(() -> new usercmd_t()).limit(mapSpawnData.mapSpawnUsercmd.length).toArray(usercmd_t[]::new);
 
             // set the user info
             for (i = 0; i < numClients; i++) {
@@ -3216,7 +3215,7 @@ public class Session_local {
             // stop drawing the laoding screen
             insideExecuteMapChange = false;
 
-            Sys_SetPhysicalWorkMemory(-1, -1);
+//            Sys_SetPhysicalWorkMemory(-1, -1);
 
             // set the game sound world for playback
             soundSystem.SetPlayingSoundWorld(sw);

@@ -1372,27 +1372,18 @@ public class Str {
         }
 
         public static String RemoveColors(String s) {
-//	char *d;
-//	char *s;
-            int c = 0;
+            String string = "";
 
-//	s = s;
-//	d = s;
-//	while( (c = *s) != 0 ) {
             for (int a = 0; a < s.length(); a++) {
                 if (idStr.IsColor(s.substring(a))) {
-                    c++;
                     a++;
+                } else {
+                    string += s.charAt(a);
                 }
             }
-//		else {
-//			*d++ = c;
-//		}
-//		s++;
-//	}
 //	*d = '\0';
 
-            return s.substring(c);
+            return string;
         }
 
         public static int Cmp(final char[] s1, final char[] s2) {
@@ -1685,8 +1676,9 @@ public class Str {
             }
 
 //	strncpy( dest, src, destsize-1 );
-//    dest[destsize-1] = 0;
-            System.arraycopy(src.toCharArray(), 0, dest, offset, Math.min(destsize - 1, src.length()));
+            final int len = Math.min(destsize - 1, src.length());
+            System.arraycopy(src.toCharArray(), 0, dest, offset, len);
+            dest[offset + len] = 0;
 
             return dest;
         }

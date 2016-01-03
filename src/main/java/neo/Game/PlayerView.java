@@ -119,14 +119,14 @@ public class PlayerView {
             bfgVision = false;
             dvFinishTime = 0;
             kickFinishTime = 0;
-            kickAngles.Zero();
+            kickAngles = new idAngles();
             lastDamageTime = 0f;
             fadeTime = 0;
             fadeRate = 0;
-            fadeFromColor.Zero();
-            fadeToColor.Zero();
-            fadeColor.Zero();
-            shakeAng.Zero();
+            fadeFromColor = new idVec4();
+            fadeToColor = new idVec4();
+            fadeColor = new idVec4();
+            shakeAng = new idAngles();
 
             ClearEffects();
         }
@@ -234,6 +234,7 @@ public class PlayerView {
             kickFinishTime = (gameLocal.time - 99999);
 
             for (int i = 0; i < MAX_SCREEN_BLOBS; i++) {
+                screenBlobs[i] = new screenBlob_t();
                 screenBlobs[i].finishTime = gameLocal.time;
             }
 
@@ -342,7 +343,7 @@ public class PlayerView {
             if (recoilTime != 0 && kickFinishTime < gameLocal.time) {
                 idAngles angles = new idAngles();
                 weaponDef.GetAngles("recoilAngles", "5 0 0", angles);
-                kickAngles = angles;
+                kickAngles.oSet(angles);
                 int finish = (int) (gameLocal.time + g_kickTime.GetFloat() * recoilTime);
                 kickFinishTime = finish;
             }
@@ -435,14 +436,14 @@ public class PlayerView {
             if (0 == fadeTime) {
                 fadeFromColor.Set(0.0f, 0.0f, 0.0f, 1.0f - color.oGet(3));
             } else {
-                fadeFromColor = fadeColor;
+                fadeFromColor.oSet(fadeColor);
             }
-            fadeToColor = color;
+            fadeToColor.oSet(color);
 
             if (time <= 0) {
                 fadeRate = 0;
                 time = 0;
-                fadeColor = fadeToColor;
+                fadeColor.oSet(fadeToColor);
             } else {
                 fadeRate = 1.0f / (float) time;
             }
@@ -463,7 +464,7 @@ public class PlayerView {
          */
         public void Flash(idVec4 color, int time) {
             Fade(new idVec4(0, 0, 0, 0), time);
-            fadeFromColor = colorWhite;
+            fadeFromColor.oSet(colorWhite);
         }
 
         /*
@@ -701,13 +702,13 @@ public class PlayerView {
             msec = fadeTime - gameLocal.realClientTime;
 
             if (msec <= 0) {
-                fadeColor = fadeToColor;
+                fadeColor.oSet(fadeToColor);
                 if (fadeColor.oGet(3) == 0.0f) {
                     fadeTime = 0;
                 }
             } else {
                 t = (float) msec * fadeRate;
-                fadeColor = fadeFromColor.oMultiply(t).oPlus(fadeToColor.oMultiply(1.0f - t));
+                fadeColor.oSet(fadeFromColor.oMultiply(t).oPlus(fadeToColor.oMultiply(1.0f - t)));
             }
 
             if (fadeColor.oGet(3) != 0.0f) {

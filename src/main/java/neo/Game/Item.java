@@ -733,9 +733,6 @@ public class Item {
     public static class idVideoCDItem extends idItem {
 
 //            public 	CLASS_PROTOTYPE( idVideoCDItem );
-        @Override
-        public void Spawn() {
-        }
 
         @Override
         public boolean GiveToPlayer(idPlayer player) {

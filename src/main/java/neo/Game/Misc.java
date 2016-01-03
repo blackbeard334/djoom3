@@ -1863,6 +1863,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idBounds b;
 
             b = new idBounds(spawnArgs.GetVector("origin")).Expand(16);

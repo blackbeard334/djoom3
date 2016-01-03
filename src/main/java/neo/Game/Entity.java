@@ -296,7 +296,7 @@ public class Entity {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        @Override
+        @Override//TODO:final this
         public java.lang.Class/*idTypeInfo*/ GetType() {//TODO: make method final
             return getClass();
         }
@@ -2919,11 +2919,10 @@ public class Entity {
             idClipModel cm;
             idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
             idEntity ent;
-            trace_s trace = new trace_s();
+            trace_s trace = new trace_s();//memset( &trace, 0, sizeof( trace ) );
 
-//	memset( &trace, 0, sizeof( trace ) );
-            trace.endpos = GetPhysics().GetOrigin();
-            trace.endAxis = GetPhysics().GetAxis();
+            trace.endpos.oSet(GetPhysics().GetOrigin());
+            trace.endAxis.oSet(GetPhysics().GetAxis());
 
             numClipModels = gameLocal.clip.ClipModelsTouchingBounds(GetPhysics().GetAbsBounds(), CONTENTS_TRIGGER, clipModels, MAX_GENTITIES);
             numEntities = 0;
@@ -4559,16 +4558,6 @@ public class Entity {
             idAngles ang = axis.ToAngles();
             idVec3 vec = new idVec3(ang.oGet(0), ang.oGet(1), ang.oGet(2));
             idThread.ReturnVector(vec);
-        }
-
-        @Override
-        public java.lang.Class/*idTypeInfo*/ GetType() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public Class.idClass CreateInstance() {
-            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         /**

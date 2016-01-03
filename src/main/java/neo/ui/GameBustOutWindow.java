@@ -786,12 +786,11 @@ public class GameBustOutWindow {
             currentBoard = levelBoardData;
 
             for (i = 0; i < numLevels; i++) {
-                ByteBuffer[] pic = {null};
                 String name = "guis/assets/bustout/level";
                 name += (i + 1);
                 name += ".tga";
 
-                R_LoadImage(name, pic, w, h, time, false);
+                ByteBuffer pic = R_LoadImage(name, w, h, time, false);
 
                 if (pic != null) {
                     if (w[0] != 9 || h[0] != 12) {
@@ -799,7 +798,7 @@ public class GameBustOutWindow {
                     }
 
 //			memcpy( currentBoard, pic, boardSize );
-                    System.arraycopy(pic[0].array(), 0, currentBoard, boardIndex, boardSize);
+                    System.arraycopy(pic.array(), 0, currentBoard, boardIndex, boardSize);
                     pic = null;//Mem_Free(pic);
                 }
 

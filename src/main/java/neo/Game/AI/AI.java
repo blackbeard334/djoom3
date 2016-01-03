@@ -750,7 +750,8 @@ public class AI {
             projectile_height_to_distance_ratio = 1.0f;
             missileLaunchOffset = new idList<>();
             projectileDef = null;
-            projectile = new idEntityPtr<>();
+            projectile = new idEntityPtr<>(null);
+            attack = new idStr();
             projectileClipModel = null;
             projectileRadius = 0.0f;
             projectileVelocity = getVec3_origin();
@@ -761,7 +762,7 @@ public class AI {
             chat_max = 0;
             chat_time = 0;
             talk_state = TALK_NEVER;
-            talkTarget = null;
+            talkTarget = new idEntityPtr<>(null);
 
             particles = new idList<>();
             restartParticles = true;
@@ -771,7 +772,7 @@ public class AI {
             worldMuzzleFlash = new renderLight_s();//memset( &worldMuzzleFlash, 0, sizeof ( worldMuzzleFlash ) );
             worldMuzzleFlashHandle = -1;
 
-            enemy = new idEntityPtr<>();
+            enemy = new idEntityPtr<>(null);
             lastVisibleEnemyPos = new idVec3();
             lastVisibleEnemyEyeOffset = new idVec3();
             lastVisibleReachableEnemyPos = new idVec3();
@@ -788,7 +789,7 @@ public class AI {
             allowEyeFocus = true;
             allowPain = true;
             allowJointMod = true;
-            focusEntity = null;
+            focusEntity = new idEntityPtr<>(null);
             focusTime = 0;
             alignHeadTime = 0;
             forceAlignHeadTime = 0;
@@ -1191,7 +1192,7 @@ public class AI {
             LinkScriptVariables();
 
             fl.takedamage = !spawnArgs.GetBool("noDamage");
-            enemy = new idEntityPtr<>();
+            enemy.oSet(null);
             allowMove = true;
             allowHiddenMovement = false;
 
@@ -1472,7 +1473,7 @@ public class AI {
                         statename = "NULL state";
                     }
 
-                    gameLocal.Printf("%4i: %-20s %-20s %s  move: %d\n", e, check.GetEntityDefName(), check.name, statename, check.allowMove);
+                    gameLocal.Printf("%4d: %-20s %-20s %s  move: %d\n", e, check.GetEntityDefName(), check.name, statename, check.allowMove);
                     count++;
                 }
 
@@ -4322,7 +4323,7 @@ public class AI {
             }
 
             enemyNode.Remove();
-            enemy = null;
+            enemy.oSet(null);
             AI_ENEMY_IN_FOV._(false);
             AI_ENEMY_VISIBLE._(false);
             AI_ENEMY_DEAD._(true);

@@ -255,7 +255,8 @@ public class Class {
         }
 
         public boolean RespondsTo(final idEventDef ev) {
-            throw new TODO_Exception();
+            return false;//HACKME::7
+//            throw new TODO_Exception();
 //            final idTypeInfo c;
 //
 //            assert (idEvent.initialized);

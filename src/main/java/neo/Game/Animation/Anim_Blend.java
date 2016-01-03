@@ -3721,7 +3721,7 @@ public class Anim_Blend {
                         jointMods.Insert(jointMod, i);
                     }
 
-                    jointMod.pos = pos;
+                    jointMod.pos.oSet(pos);
                     jointMod.transform_pos = transform_type;
 
                     if (entity != null) {
@@ -3756,7 +3756,7 @@ public class Anim_Blend {
                         jointMods.Insert(jointMod, i);
                     }
 
-                    jointMod.mat = mat;
+                    jointMod.mat.oSet(mat);
                     jointMod.transform_axis = transform_type;
 
                     if (entity != null) {

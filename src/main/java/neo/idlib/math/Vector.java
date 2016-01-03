@@ -1889,12 +1889,13 @@ public class Vector {
 
         static final int VECX_MAX_TEMP = 1024;
 
-        private int size;					// size of the vector
-        private int alloced;                                    // if -1 p points to data set with SetData
-        public float[] p;					// memory the vector is stored
-        private float[] temp = new float[VECX_MAX_TEMP + 4];	// used to store intermediate results
-        private static float[] tempPtr;				// pointer to 16 byte aligned temporary memory
-        private static int tempIndex;				// index into memory pool, wraps around
+        private int     size;                    // size of the vector
+        private int     alloced;                 // if -1 p points to data set with SetData
+        public  float[] p;                       // memory the vector is stored
+
+        private static float[] temp    = new float[VECX_MAX_TEMP + 4];    // used to store intermediate results
+        private static float[] tempPtr = temp;                            // pointer to 16 byte aligned temporary memory
+        private static int tempIndex;                                     // index into memory pool, wraps around
         //
         //
 

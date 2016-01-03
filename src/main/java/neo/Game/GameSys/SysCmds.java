@@ -2,6 +2,8 @@ package neo.Game.GameSys;
 
 import static java.lang.Math.tan;
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
+
 import neo.CM.CollisionModel_local;
 import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.AFEntity.idAFEntity_Generic;
@@ -154,7 +156,7 @@ public class SysCmds {
                     continue;
                 }
 
-                gameLocal.Printf("%4i: %-20s %-20s %s\n", e,
+                gameLocal.Printf("%4d: %-20s %-20s %s\n", e,
                         check.GetEntityDefName(), check.GetClassname(), check.name);
 
                 count++;
@@ -192,7 +194,7 @@ public class SysCmds {
             gameLocal.Printf("--------------------------------------------------------------------\n");
             for (check = gameLocal.activeEntities.Next(); check != null; check = check.activeNode.Next()) {
                 char dormant = check.fl.isDormant ? '-' : ' ';
-                gameLocal.Printf("%4i:%c%-20s %-20s %s\n", check.entityNumber, dormant, check.GetEntityDefName(), check.GetClassname(), check.name);
+                gameLocal.Printf("%4d:%c%-20s %-20s %s\n", check.entityNumber, dormant, check.GetEntityDefName(), check.GetClassname(), check.name);
                 count++;
             }
 
@@ -1548,12 +1550,12 @@ public class SysCmds {
     public static class gameDebugLine_t {
 
         boolean used;
-        idVec3 start, end;
-        int color;
+        idVec3  start = new idVec3(), end = new idVec3();
+        int     color;
         boolean blink;
         boolean arrow;
     };
-    static gameDebugLine_t[] debugLines = new gameDebugLine_t[MAX_DEBUGLINES];
+    static gameDebugLine_t[] debugLines = Stream.generate(gameDebugLine_t::new).limit(MAX_DEBUGLINES).toArray(gameDebugLine_t[]::new);
 
 
     /*

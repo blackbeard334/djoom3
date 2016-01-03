@@ -691,6 +691,7 @@ public class IK /*ea*/ {
                     smallestShift = shift;
                 }
 
+                ankleAxis[i] = new idMat3();
                 animator.GetJointTransform(ankleJoints[i], gameLocal.time, ankleOrigin, ankleAxis[i]);
                 jointOrigins[i] = modelOrigin.oPlus(ankleOrigin.oMultiply(modelAxis));
 

@@ -641,7 +641,7 @@ public class portals {
             }
         }
 
-        common.Printf("%5i flooded leafs\n", c_floodedleafs);
+        common.Printf("%5d flooded leafs\n", c_floodedleafs);
 
         if (!inside) {
             common.Printf("no entities in open -- no filling\n");
@@ -911,7 +911,7 @@ public class portals {
         c_areas = 0;
         FindAreas_r(e.tree.headnode);
 
-        common.Printf("%5i areas\n", c_areas);
+        common.Printf("%5d areas\n", c_areas);
         e.numAreas = c_areas;
 
         // make sure we got all of them
@@ -966,8 +966,8 @@ public class portals {
         c_solid = 0;
         common.Printf("--- FillOutside ---\n");
         FillOutside_r(e.tree.headnode);
-        common.Printf("%5i solid leafs\n", c_solid);
-        common.Printf("%5i leafs filled\n", c_outside);
-        common.Printf("%5i inside leafs\n", c_inside);
+        common.Printf("%5d solid leafs\n", c_solid);
+        common.Printf("%5d leafs filled\n", c_outside);
+        common.Printf("%5d inside leafs\n", c_inside);
     }
 }

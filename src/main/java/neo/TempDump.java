@@ -219,11 +219,19 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     /**
      * Equivalent to <b>!object</b>.
      *
-     * @param object
-     * @return True if object = null.
+     * @param objects
+     * @return True if <b>ALL</b> objects[0...i] = null.
      */
-    public static boolean NOT(final Object object) {
-        return null == object;//TODO: make sure incoming object isn't Integer or Float...etc.
+    public static boolean NOT(final Object... objects) {
+        //TODO: make sure incoming object isn't Integer or Float...etc.
+        if (objects == null) return true;
+
+        for (Object o : objects) {
+            if (o != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -504,10 +512,6 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         return temp;
-    }
-
-    public static int reinterpret_cast_int(final cm_polygon_s p) {
-        throw new TODO_Exception();
     }
 
     public static Object dynamic_cast(Class glass, Object object) {
