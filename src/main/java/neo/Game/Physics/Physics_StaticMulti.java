@@ -293,11 +293,11 @@ public class Physics_StaticMulti {
             if (hasMaster) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
                 for (i = 0; i < clipModels.Num(); i++) {
-                    current.oGet(i).origin = masterOrigin.oPlus(current.oGet(i).localOrigin.oMultiply(masterAxis));
+                    current.oGet(i).origin.oSet(masterOrigin.oPlus(current.oGet(i).localOrigin.oMultiply(masterAxis)));
                     if (isOrientated) {
-                        current.oGet(i).axis = current.oGet(i).localAxis.oMultiply(masterAxis);
+                        current.oGet(i).axis.oSet(current.oGet(i).localAxis.oMultiply(masterAxis));
                     } else {
-                        current.oGet(i).axis = current.oGet(i).localAxis;
+                        current.oGet(i).axis.oSet(current.oGet(i).localAxis);
                     }
                     if (clipModels.oGet(i) != null) {
                         clipModels.oGet(i).Link(gameLocal.clip, self, i, current.oGet(i).origin, current.oGet(i).axis);
@@ -369,12 +369,12 @@ public class Physics_StaticMulti {
             idMat3 masterAxis = new idMat3();
 
             if (id >= 0 && id < clipModels.Num()) {
-                current.oGet(id).localOrigin = newOrigin;
+                current.oGet(id).localOrigin.oSet(newOrigin);
                 if (hasMaster) {
                     self.GetMasterPosition(masterOrigin, masterAxis);
-                    current.oGet(id).origin = masterOrigin.oPlus(newOrigin.oMultiply(masterAxis));
+                    current.oGet(id).origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
                 } else {
-                    current.oGet(id).origin = newOrigin;
+                    current.oGet(id).origin.oSet(newOrigin);
                 }
                 if (clipModels.oGet(id) != null) {
                     clipModels.oGet(id).Link(gameLocal.clip, self, id, current.oGet(id).origin, current.oGet(id).axis);
@@ -395,12 +395,12 @@ public class Physics_StaticMulti {
             idMat3 masterAxis = new idMat3();
 
             if (id >= 0 && id < clipModels.Num()) {
-                current.oGet(id).localAxis = newAxis;
+                current.oGet(id).localAxis.oSet(newAxis);
                 if (hasMaster && isOrientated) {
                     self.GetMasterPosition(masterOrigin, masterAxis);
-                    current.oGet(id).axis = newAxis.oMultiply(masterAxis);
+                    current.oGet(id).axis.oSet(newAxis.oMultiply(masterAxis));
                 } else {
-                    current.oGet(id).axis = newAxis;
+                    current.oGet(id).axis.oSet(newAxis);
                 }
                 if (clipModels.oGet(id) != null) {
                     clipModels.oGet(id).Link(gameLocal.clip, self, id, current.oGet(id).origin, current.oGet(id).axis);
@@ -458,10 +458,10 @@ public class Physics_StaticMulti {
                 if (hasMaster) {
                     self.GetMasterPosition(masterOrigin, masterAxis);
                     current.oGet(id).localAxis.oMulSet(rotation.ToMat3());
-                    current.oGet(id).localOrigin = (current.oGet(id).origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                    current.oGet(id).localOrigin.oSet((current.oGet(id).origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
                 } else {
-                    current.oGet(id).localAxis = current.oGet(id).axis;
-                    current.oGet(id).localOrigin = current.oGet(id).origin;
+                    current.oGet(id).localAxis.oSet(current.oGet(id).axis);
+                    current.oGet(id).localOrigin.oSet(current.oGet(id).origin);
                 }
 
                 if (clipModels.oGet(id) != null) {
@@ -475,10 +475,10 @@ public class Physics_StaticMulti {
                     if (hasMaster) {
                         self.GetMasterPosition(masterOrigin, masterAxis);
                         current.oGet(i).localAxis.oMulSet(rotation.ToMat3());
-                        current.oGet(i).localOrigin = (current.oGet(i).origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                        current.oGet(i).localOrigin.oSet((current.oGet(i).origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
                     } else {
-                        current.oGet(i).localAxis = current.oGet(i).axis;
-                        current.oGet(i).localOrigin = current.oGet(i).origin;
+                        current.oGet(i).localAxis.oSet(current.oGet(i).axis);
+                        current.oGet(i).localOrigin.oSet(current.oGet(i).origin);
                     }
 
                     if (clipModels.oGet(i) != null) {
@@ -690,11 +690,11 @@ public class Physics_StaticMulti {
                     // transform from world space to master space
                     self.GetMasterPosition(masterOrigin, masterAxis);
                     for (i = 0; i < clipModels.Num(); i++) {
-                        current.oGet(i).localOrigin = (current.oGet(i).origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                        current.oGet(i).localOrigin.oSet((current.oGet(i).origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
                         if (orientated) {
-                            current.oGet(i).localAxis = current.oGet(i).axis.oMultiply(masterAxis.Transpose());
+                            current.oGet(i).localAxis.oSet(current.oGet(i).axis.oMultiply(masterAxis.Transpose()));
                         } else {
-                            current.oGet(i).localAxis = current.oGet(i).axis;
+                            current.oGet(i).localAxis.oSet(current.oGet(i).axis);
                         }
                     }
                     hasMaster = true;
@@ -775,8 +775,8 @@ public class Physics_StaticMulti {
                 localQuat.y = msg.ReadDeltaFloat(quat.y);
                 localQuat.z = msg.ReadDeltaFloat(quat.z);
 
-                current.oGet(i).axis = quat.ToMat3();
-                current.oGet(i).localAxis = localQuat.ToMat3();
+                current.oGet(i).axis.oSet(quat.ToMat3());
+                current.oGet(i).localAxis.oSet(localQuat.ToMat3());
             }
         }
 

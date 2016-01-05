@@ -2075,7 +2075,7 @@ public class Common {
                         break;
                 }
 
-            // we update com_ticNumber after all the background tasks
+                // we update com_ticNumber after all the background tasks
                 // have completed their work for this tic
                 com_ticNumber++;
 //                    System.out.println(com_ticNumber);

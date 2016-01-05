@@ -73,7 +73,16 @@ public class Interpolate {
                 } else if (deltaTime >= duration) {
                     currentValue = endValue;
                 } else {
-                    currentValue = (type) _Plus(startValue, _Multiply(_Minus(endValue, startValue), (deltaTime / duration)));
+                    if (currentValue instanceof Integer) {
+                        final int e = (Integer) this.endValue;
+                        final int s = (Integer) this.startValue;
+                        currentValue = (type) (Integer) (int) (s + (e - s) * ((float) deltaTime / duration));
+                    }
+                    if (currentValue instanceof Float) {
+                        final float e = (Float) this.endValue;
+                        final float s = (Float) this.startValue;
+                        currentValue = (type) (Float) (s + (e - s) * ((float) deltaTime / duration));
+                    }
                 }
             }
             return currentValue;

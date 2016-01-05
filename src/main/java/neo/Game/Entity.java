@@ -474,8 +474,8 @@ public class Entity {
             // go dormant within 5 frames so that when the map starts most monsters are dormant
             dormantStart = gameLocal.time - DELAY_DORMANT_TIME + gameLocal.msec * 5;
 
-            origin = renderEntity.origin;
-            axis = renderEntity.axis;
+            origin = new idVec3(renderEntity.origin);
+            axis = new idMat3(renderEntity.axis);
 
             // do the audio parsing the same way dmap and the editor do
             GameEdit.gameEdit.ParseSpawnArgsToRefSound(spawnArgs, refSound);
@@ -993,7 +993,7 @@ public class Entity {
             renderEntity.numJoints = 0;
             renderEntity.joints = null;
             if (renderEntity.hModel != null) {
-                renderEntity.bounds = renderEntity.hModel.Bounds(renderEntity);
+                renderEntity.bounds.oSet(renderEntity.hModel.Bounds(renderEntity));
             } else {
                 renderEntity.bounds.Zero();
             }
@@ -1109,11 +1109,11 @@ public class Entity {
             idMat3 axis = new idMat3();
 
             if (GetPhysicsToVisualTransform(origin, axis)) {
-                renderEntity.axis = axis.oMultiply(GetPhysics().GetAxis());
-                renderEntity.origin = GetPhysics().GetOrigin().oPlus(origin.oMultiply(renderEntity.axis));
+                renderEntity.axis.oSet(axis.oMultiply(GetPhysics().GetAxis()));
+                renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(origin.oMultiply(renderEntity.axis)));
             } else {
-                renderEntity.axis = new idMat3(GetPhysics().GetAxis());
-                renderEntity.origin = new idVec3(GetPhysics().GetOrigin());
+                renderEntity.axis.oSet(GetPhysics().GetAxis());
+                renderEntity.origin.oSet(GetPhysics().GetOrigin());
             }
         }
 

@@ -218,14 +218,14 @@ public class win_main {//TODO: rename to plain "main" or something.
      Sys_EnterCriticalSection
      ==================
      */
-    public static boolean Sys_EnterCriticalSection(int index) {
+    public static void Sys_EnterCriticalSection(int index) {
         assert (index >= 0 && index < MAX_CRITICAL_SECTIONS);
 //		Sys_DebugPrintf( "busy lock '%s' in thread '%s'\n", lock->name, Sys_GetThreadName() );
-        return win32.criticalSections[index].tryLock();
+        win32.criticalSections[index].lock();
     }
 
-    public static boolean Sys_EnterCriticalSection() {
-        return Sys_EnterCriticalSection(CRITICAL_SECTION_ZERO);
+    public static void Sys_EnterCriticalSection() {
+        Sys_EnterCriticalSection(CRITICAL_SECTION_ZERO);
     }
 
     /*

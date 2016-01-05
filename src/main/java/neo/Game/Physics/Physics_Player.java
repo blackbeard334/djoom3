@@ -360,7 +360,7 @@ public class Physics_Player {
 
             waterLevel = WATERLEVEL_NONE;
             waterType = 0;
-            oldOrigin = current.origin;
+            oldOrigin = new idVec3(current.origin);
 
             clipModel.Unlink();
 

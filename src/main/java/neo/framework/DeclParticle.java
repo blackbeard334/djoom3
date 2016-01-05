@@ -1106,10 +1106,10 @@ public class DeclParticle {
             particleGen_t g = new particleGen_t();
 
             renderEntity_s renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
-            renderEntity.axis = getMat3_identity();
+            renderEntity.axis.oSet(getMat3_identity());
 
             renderView_s renderView = new renderView_s();//memset( &renderView, 0, sizeof( renderView ) );
-            renderView.viewaxis = getMat3_identity();
+            renderView.viewaxis.oSet(getMat3_identity());
 
             g.renderEnt = renderEntity;
             g.renderView = renderView;

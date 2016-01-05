@@ -430,7 +430,7 @@ public class Game {
                 }
             }
             if (renderEntity.hModel != null) {
-                renderEntity.bounds = renderEntity.hModel.Bounds(renderEntity);
+                renderEntity.bounds.oSet(renderEntity.hModel.Bounds(renderEntity));
             } else {
                 renderEntity.bounds.Zero();
             }
@@ -453,7 +453,7 @@ public class Game {
             if (!args.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", renderEntity.axis)) {
                 angle = args.GetFloat("angle");
                 if (angle != 0.0f) {
-                    renderEntity.axis = new idAngles(0.0f, angle, 0.0f).ToMat3();
+                    renderEntity.axis.oSet(new idAngles(0.0f, angle, 0.0f).ToMat3());
                 } else {
                     renderEntity.axis.Identity();
                 }

@@ -431,8 +431,8 @@ public class FX {
                         if (useAction.modelDefHandle == -1) {
 //					memset( &useAction.renderEntity, 0, sizeof( renderEntity_t ) );
                             useAction.renderEntity = new renderEntity_s();
-                            useAction.renderEntity.origin = GetPhysics().GetOrigin().oPlus(fxaction.offset);
-                            useAction.renderEntity.axis = (fxaction.explicitAxis) ? fxaction.axis : GetPhysics().GetAxis();
+                            useAction.renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(fxaction.offset));
+                            useAction.renderEntity.axis.oSet((fxaction.explicitAxis) ? fxaction.axis : GetPhysics().GetAxis());
                             useAction.renderEntity.hModel = renderModelManager.FindModel(fxaction.data.toString());
                             useAction.renderEntity.shaderParms[ SHADERPARM_RED] = 1.0f;
                             useAction.renderEntity.shaderParms[ SHADERPARM_GREEN] = 1.0f;
@@ -441,12 +441,12 @@ public class FX {
                             useAction.renderEntity.shaderParms[3] = 1.0f;
                             useAction.renderEntity.shaderParms[5] = 0.0f;
                             if (useAction.renderEntity.hModel != null) {
-                                useAction.renderEntity.bounds = useAction.renderEntity.hModel.Bounds(useAction.renderEntity);
+                                useAction.renderEntity.bounds.oSet(useAction.renderEntity.hModel.Bounds(useAction.renderEntity));
                             }
                             useAction.modelDefHandle = gameRenderWorld.AddEntityDef(useAction.renderEntity);
                         } else if (fxaction.trackOrigin) {
-                            useAction.renderEntity.origin = GetPhysics().GetOrigin().oPlus(fxaction.offset);
-                            useAction.renderEntity.axis = fxaction.explicitAxis ? fxaction.axis : GetPhysics().GetAxis();
+                            useAction.renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(fxaction.offset));
+                            useAction.renderEntity.axis.oSet(fxaction.explicitAxis ? fxaction.axis : GetPhysics().GetAxis());
                         }
                         ApplyFade(fxaction, useAction, time, actualStart);
                         break;

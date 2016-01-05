@@ -825,8 +825,8 @@ public class Moveable {
             }
 
             if (particleModelDefHandle >= 0) {
-                particleRenderEntity.origin = physicsObj.GetAbsBounds().GetCenter();
-                particleRenderEntity.axis = getMat3_identity();
+                particleRenderEntity.origin.oSet(physicsObj.GetAbsBounds().GetCenter());
+                particleRenderEntity.axis.oSet(getMat3_identity());
                 gameRenderWorld.UpdateEntityDef(particleModelDefHandle, particleRenderEntity);
             }
         }
@@ -976,8 +976,8 @@ public class Moveable {
                 particleRenderEntity = new renderEntity_s();//TODO:remove memset0 function from whatever fucking class got it!!!
                 final idDeclModelDef modelDef = (idDeclModelDef) declManager.FindType(DECL_MODELDEF, name);
                 if (modelDef != null) {
-                    particleRenderEntity.origin = physicsObj.GetAbsBounds().GetCenter();
-                    particleRenderEntity.axis = getMat3_identity();
+                    particleRenderEntity.origin.oSet(physicsObj.GetAbsBounds().GetCenter());
+                    particleRenderEntity.axis.oSet(getMat3_identity());
                     particleRenderEntity.hModel = modelDef.ModelHandle();
                     float rgb = (burn) ? 0.0f : 1.0f;
                     particleRenderEntity.shaderParms[ SHADERPARM_RED] = rgb;

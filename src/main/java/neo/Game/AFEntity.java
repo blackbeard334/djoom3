@@ -146,8 +146,8 @@ public class AFEntity {
                     continue;
                 }
 
-                renderEntity.origin = new idVec3(physicsObj.GetOrigin(i));
-                renderEntity.axis = new idMat3(physicsObj.GetAxis(i));
+                renderEntity.origin.oSet(physicsObj.GetOrigin(i));
+                renderEntity.axis.oSet(physicsObj.GetAxis(i));
                 renderEntity.hModel = modelHandles.oGet(i);
                 renderEntity.bodyId = i;
 
@@ -2033,8 +2033,8 @@ public class AFEntity {
             }
 
             if (steamModelDefHandle >= 0) {
-                steamRenderEntity.origin = new idVec3(af.GetPhysics().GetOrigin(steamBody));
-                steamRenderEntity.axis = new idMat3(af.GetPhysics().GetAxis(steamBody));
+                steamRenderEntity.origin.oSet(af.GetPhysics().GetOrigin(steamBody));
+                steamRenderEntity.axis.oSet(af.GetPhysics().GetAxis(steamBody));
                 gameRenderWorld.UpdateEntityDef(steamModelDefHandle, steamRenderEntity);
             }
 
@@ -2066,12 +2066,12 @@ public class AFEntity {
                 }
 
                 if (steamRenderEntity.hModel != null) {
-                    steamRenderEntity.bounds = steamRenderEntity.hModel.Bounds(steamRenderEntity);
+                    steamRenderEntity.bounds.oSet(steamRenderEntity.hModel.Bounds(steamRenderEntity));
                 } else {
                     steamRenderEntity.bounds.Zero();
                 }
-                steamRenderEntity.origin = new idVec3(af.GetPhysics().GetOrigin(steamBody));
-                steamRenderEntity.axis = new idMat3(af.GetPhysics().GetAxis(steamBody));
+                steamRenderEntity.origin.oSet(af.GetPhysics().GetOrigin(steamBody));
+                steamRenderEntity.axis.oSet(af.GetPhysics().GetAxis(steamBody));
                 steamModelDefHandle = gameRenderWorld.AddEntityDef(steamRenderEntity);
             }
         }

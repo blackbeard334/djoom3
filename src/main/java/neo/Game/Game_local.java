@@ -3360,9 +3360,9 @@ public class Game_local {
          Finds the spawn function for the entity and calls it,
          returning false if not found
          ===================
-         */
+         */private static int DBG_SpawnEntityDef = 0;
         public boolean SpawnEntityDef(final idDict args, idEntity[] ent /*= NULL*/, boolean setDefaults /*= true*/) {
-            String[] classname = {null};
+            String[] classname = {null};DBG_SpawnEntityDef++;
             String[] spawn = {null};
             idTypeInfo cls;
 //            idClass obj;

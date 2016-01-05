@@ -191,7 +191,7 @@ public class RenderWindow {
                     }
                     gameEdit.ANIM_CreateAnimFrame(worldEntity.hModel, modelAnim, worldEntity.numJoints, worldEntity.joints, animLength - (animEndTime - time), getVec3_origin(), false);
                 }
-                worldEntity.axis = new idAngles(modelRotate.x(), modelRotate.y(), modelRotate.z()).ToMat3();
+                worldEntity.axis.oSet(new idAngles(modelRotate.x(), modelRotate.y(), modelRotate.z()).ToMat3());
 //                System.out.printf("x=%f, y=%f, z=%f\n", modelRotate.x(), modelRotate.y(), modelRotate.z());
                 world.UpdateEntityDef(modelDef, worldEntity);
             }
@@ -218,7 +218,7 @@ public class RenderWindow {
                 gameEdit.ParseSpawnArgsToRenderEntity(spawnArgs, worldEntity);
                 if (worldEntity.hModel != null) {
                     idVec3 v = modelRotate.ToVec3();
-                    worldEntity.axis = v.ToMat3();
+                    worldEntity.axis.oSet(v.ToMat3());
                     worldEntity.shaderParms[0] = 1;
                     worldEntity.shaderParms[1] = 1;
                     worldEntity.shaderParms[2] = 1;

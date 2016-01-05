@@ -197,11 +197,11 @@ public class Physics_Static {
                 oldAxis = current.axis;
 
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin = masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis));
+                current.origin.oSet(masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis)));
                 if (isOrientated) {
-                    current.axis = current.localAxis.oMultiply(masterAxis);
+                    current.axis.oSet(current.localAxis.oMultiply(masterAxis));
                 } else {
-                    current.axis = current.localAxis;
+                    current.axis.oSet(current.localAxis);
                 }
                 if (clipModel != null) {
                     clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
@@ -270,13 +270,13 @@ public class Physics_Static {
             idVec3 masterOrigin = new idVec3();
             idMat3 masterAxis = new idMat3();
 
-            current.localOrigin = newOrigin;
+            current.localOrigin.oSet(newOrigin);
 
             if (hasMaster) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin = masterOrigin.oPlus(newOrigin.oMultiply(masterAxis));
+                current.origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
             } else {
-                current.origin = newOrigin;
+                current.origin.oSet(newOrigin);
             }
 
             if (clipModel != null) {
@@ -289,13 +289,13 @@ public class Physics_Static {
             idVec3 masterOrigin = new idVec3();
             idMat3 masterAxis = new idMat3();
 
-            current.localAxis = newAxis;
+            current.localAxis.oSet(newAxis);
 
             if (hasMaster && isOrientated) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.axis = newAxis.oMultiply(masterAxis);
+                current.axis.oSet(newAxis.oMultiply(masterAxis));
             } else {
-                current.axis = newAxis;
+                current.axis.oSet(newAxis);
             }
 
             if (clipModel != null) {
@@ -324,10 +324,10 @@ public class Physics_Static {
             if (hasMaster) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
                 current.localAxis.oMulSet(rotation.ToMat3());
-                current.localOrigin = (current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
             } else {
-                current.localAxis = current.axis;
-                current.localOrigin = current.origin;
+                current.localAxis.oSet(current.axis);
+                current.localOrigin.oSet(current.origin);
             }
 
             if (clipModel != null) {
@@ -508,11 +508,11 @@ public class Physics_Static {
                 if (!hasMaster) {
                     // transform from world space to master space
                     self.GetMasterPosition(masterOrigin, masterAxis);
-                    current.localOrigin = (current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                    current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
                     if (orientated) {
-                        current.localAxis = current.axis.oMultiply(masterAxis.Transpose());
+                        current.localAxis.oSet(current.axis.oMultiply(masterAxis.Transpose()));
                     } else {
-                        current.localAxis = current.axis;
+                        current.localAxis.oSet(current.axis);
                     }
                     hasMaster = true;
                     isOrientated = orientated;
@@ -582,8 +582,8 @@ public class Physics_Static {
             localQuat.y = msg.ReadDeltaFloat(quat.y);
             localQuat.z = msg.ReadDeltaFloat(quat.z);
 
-            current.axis = quat.ToMat3();
-            current.localAxis = localQuat.ToMat3();
+            current.axis.oSet(quat.ToMat3());
+            current.localAxis.oSet(localQuat.ToMat3());
         }
 
         @Override

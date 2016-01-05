@@ -113,11 +113,10 @@ public class SmokeParticles {
 
             activeStages.Clear();
 
-//	memset( &renderEntity, 0, sizeof( renderEntity ) );
-            renderEntity = new renderEntity_s();
+            renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
 
             renderEntity.bounds.Clear();
-            renderEntity.axis = getMat3_identity();
+            renderEntity.axis.oSet(getMat3_identity());
             renderEntity.shaderParms[ SHADERPARM_RED] = 1;
             renderEntity.shaderParms[ SHADERPARM_GREEN] = 1;
             renderEntity.shaderParms[ SHADERPARM_BLUE] = 1;

@@ -107,8 +107,8 @@ public class PlayerIcon {
 
 //	memset( &renderEnt, 0, sizeof( renderEnt ) );
             renderEnt = new renderEntity_s();
-            renderEnt.origin = new idVec3(origin);
-            renderEnt.axis = new idMat3(axis);
+            renderEnt.origin.oSet(origin);
+            renderEnt.axis.oSet(axis);
             renderEnt.shaderParms[SHADERPARM_RED] = 1.0f;
             renderEnt.shaderParms[SHADERPARM_GREEN] = 1.0f;
             renderEnt.shaderParms[SHADERPARM_BLUE] = 1.0f;
@@ -124,7 +124,7 @@ public class PlayerIcon {
             renderEnt.noSelfShadow = true;
             renderEnt.customShader = declManager.FindMaterial(mtr);
             renderEnt.referenceShader = null;
-            renderEnt.bounds = renderEnt.hModel.Bounds(renderEnt);
+            renderEnt.bounds.oSet(renderEnt.hModel.Bounds(renderEnt));
 
             iconHandle = gameRenderWorld.AddEntityDef(renderEnt);
             iconType = type;
@@ -141,8 +141,8 @@ public class PlayerIcon {
         public void UpdateIcon(idPlayer player, final idVec3 origin, final idMat3 axis) {
             assert (iconHandle >= 0);
 
-            renderEnt.origin = origin;
-            renderEnt.axis = axis;
+            renderEnt.origin.oSet(origin);
+            renderEnt.axis.oSet(axis);
             gameRenderWorld.UpdateEntityDef(iconHandle, renderEnt);
         }
     };

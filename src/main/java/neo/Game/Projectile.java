@@ -1728,7 +1728,7 @@ public class Projectile {
             final String temp = spawnArgs.GetString("model_two");
             if (temp != null && !temp.isEmpty()) {
                 secondModel.hModel = renderModelManager.FindModel(temp);
-                secondModel.bounds = secondModel.hModel.Bounds(secondModel);
+                secondModel.bounds.oSet(secondModel.hModel.Bounds(secondModel));
                 secondModel.shaderParms[ SHADERPARM_RED]
                         = secondModel.shaderParms[ SHADERPARM_GREEN]
                         = secondModel.shaderParms[ SHADERPARM_BLUE]
@@ -1751,7 +1751,7 @@ public class Projectile {
                     }
                     idPlayer player = (beamTargets.oGet(i).target.GetEntity().IsType(idPlayer.class)) ? (idPlayer) beamTargets.oGet(i).target.GetEntity() : null;
                     idVec3 org = beamTargets.oGet(i).target.GetEntity().GetPhysics().GetAbsBounds().GetCenter();
-                    beamTargets.oGet(i).renderEntity.origin = new idVec3(GetPhysics().GetOrigin());
+                    beamTargets.oGet(i).renderEntity.origin.oSet(GetPhysics().GetOrigin());
                     beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_X] = org.x;
                     beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_Y] = org.y;
                     beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_Z] = org.z;
@@ -1781,7 +1781,7 @@ public class Projectile {
                 }
 
                 if (secondModelDefHandle >= 0) {
-                    secondModel.origin = new idVec3(GetPhysics().GetOrigin());
+                    secondModel.origin.oSet(GetPhysics().GetOrigin());
                     gameRenderWorld.UpdateEntityDef(secondModelDefHandle, secondModel);
                 }
 
@@ -1795,7 +1795,7 @@ public class Projectile {
                 ang.pitch = (gameLocal.time & 2047) * 360.0f / -2048.0f;
                 ang.yaw = ang.pitch;
                 ang.roll = 0.0f;
-                secondModel.axis = ang.ToMat3();
+                secondModel.axis.oSet(ang.ToMat3());
 
                 UpdateVisuals();
             }
@@ -1831,15 +1831,15 @@ public class Projectile {
             final String temp = spawnArgs.GetString("model_two");
             if (temp != null && !temp.isEmpty()) {
                 secondModel.hModel = renderModelManager.FindModel(temp);
-                secondModel.bounds = secondModel.hModel.Bounds(secondModel);
+                secondModel.bounds.oSet(secondModel.hModel.Bounds(secondModel));
                 secondModel.shaderParms[ SHADERPARM_RED]
                         = secondModel.shaderParms[ SHADERPARM_GREEN]
                         = secondModel.shaderParms[ SHADERPARM_BLUE]
                         = secondModel.shaderParms[ SHADERPARM_ALPHA] = 1.0f;
                 secondModel.noSelfShadow = true;
                 secondModel.noShadow = true;
-                secondModel.origin = new idVec3(GetPhysics().GetOrigin());
-                secondModel.axis = new idMat3(GetPhysics().GetAxis());
+                secondModel.origin.oSet(GetPhysics().GetOrigin());
+                secondModel.axis.oSet(GetPhysics().GetAxis());
                 secondModelDefHandle = gameRenderWorld.AddEntityDef(secondModel);
             }
 
@@ -1865,11 +1865,10 @@ public class Projectile {
                     player.playerView.EnableBFGVision(true);
                 }
 
-                beamTarget_t bt = new beamTarget_t();
-//		memset( &bt.renderEntity, 0, sizeof( renderEntity_t ) );
+                beamTarget_t bt = new beamTarget_t();//memset( &bt.renderEntity, 0, sizeof( renderEntity_t ) );
                 renderEntity = new renderEntity_s();
-                bt.renderEntity.origin = new idVec3(GetPhysics().GetOrigin());
-                bt.renderEntity.axis = new idMat3(GetPhysics().GetAxis());
+                bt.renderEntity.origin.oSet(GetPhysics().GetOrigin());
+                bt.renderEntity.axis.oSet(GetPhysics().GetAxis());
                 bt.renderEntity.shaderParms[ SHADERPARM_BEAM_WIDTH] = beamWidth;
                 bt.renderEntity.shaderParms[ SHADERPARM_RED] = 1.0f;
                 bt.renderEntity.shaderParms[ SHADERPARM_GREEN] = 1.0f;

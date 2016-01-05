@@ -1444,8 +1444,8 @@ public class Clip {
 
             anode.dist = 0.5f * (bounds.oGet(1, anode.axis) + bounds.oGet(0, anode.axis));
 
-            front = bounds;
-            back = bounds;
+            front = new idBounds(bounds);
+            back = new idBounds(bounds);
 
             front.oSet(0, anode.axis, back.oSet(1, anode.axis, anode.dist));
 
