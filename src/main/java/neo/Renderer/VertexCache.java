@@ -8,7 +8,6 @@ import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.shadowCache_s;
 import static neo.Renderer.RenderSystem_init.r_useIndexBuffers;
 import static neo.Renderer.RenderSystem_init.r_useVertexBuffers;
-import neo.Renderer.VertexCache.R_ListVertexCache_f;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FIXED;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FREE;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_TEMP;
@@ -383,12 +382,12 @@ public class VertexCache {
             return Alloc(DrawVert.toByteBuffer(data), size, null)[0];
         }
 
-        public void Alloc(lightingCache_s[] data, int size, vertCache_s buffer) {
-            throw new TODO_Exception();
+        public vertCache_s[] Alloc(lightingCache_s[] data, int size) {
+            return Alloc(lightingCache_s.toByteBuffer(data), size, null, false);
         }
 
-        public void Alloc(shadowCache_s[] data, int size, vertCache_s buffer) {
-            throw new TODO_Exception();
+        public vertCache_s[] Alloc(shadowCache_s[] data, int size) {
+            return Alloc(shadowCache_s.toByteBuffer(data), size, null, false);
         }
 
         /*

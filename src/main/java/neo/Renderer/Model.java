@@ -19,6 +19,8 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import org.lwjgl.BufferUtils;
+
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 
 /**
@@ -63,7 +65,7 @@ public class Model {
         
         static silEdge_t[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new silEdge_t()).
+                    generate(silEdge_t::new).
                     limit(length).
                     toArray(silEdge_t[]::new);
         }
@@ -77,6 +79,7 @@ public class Model {
     };
 
     static class lightingCache_s {
+        static final int BYTES = idVec3.BYTES;
 
         idVec3 localLightVector;		// this is the statically computed vector to the light
         // in texture space for cards without vertex programs
@@ -84,9 +87,21 @@ public class Model {
         lightingCache_s(ByteBuffer Position) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        public static ByteBuffer toByteBuffer(lightingCache_s[] cache) {
+            ByteBuffer data = BufferUtils.createByteBuffer(lightingCache_s.BYTES * cache.length);
+
+            for (lightingCache_s c : cache) {
+                data.put(c.localLightVector.Write());
+            }
+
+            return (ByteBuffer) data.flip();
+        }
     };
 
     public static class shadowCache_s {
+
+        private static final int BYTES = idVec4.BYTES;
 
         public idVec4 xyz;			// we use homogenous coordinate tricks
 
@@ -96,6 +111,16 @@ public class Model {
 
         shadowCache_s(ByteBuffer Position) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        public static ByteBuffer toByteBuffer(shadowCache_s[] cache) {
+            ByteBuffer data = BufferUtils.createByteBuffer(shadowCache_s.BYTES * cache.length);
+
+            for (shadowCache_s c : cache) {
+                data.put(c.xyz.Write());
+            }
+
+            return (ByteBuffer) data.flip();
         }
     };
     static final int SHADOW_CAP_INFINITE = 64;
@@ -156,6 +181,9 @@ public class Model {
         vertCache_s    ambientCache;            // idDrawVert
         vertCache_s    lightingCache;           // lightingCache_t
         vertCache_s    shadowCache;             // shadowCache_t
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
         
         public srfTriangles_s() {
             this.bounds = new idBounds();
@@ -188,61 +216,6 @@ public class Model {
             this.ambientCache = null;
             this.lightingCache = null;
             this.shadowCache = null;
-        }
-    };
-
-    /**
-     * a pointer wrapper class for <b>srfTriangles_s</b> that always has a
-     * pointer to the precious element.
-     */
-    public static class srfTriangles_ptr {
-
-        private srfTriangles_ptr previous = null;
-        private srfTriangles_s current = null;
-
-//        private srfTriangles_ptr next = null;
-        public srfTriangles_ptr(srfTriangles_s t) {
-            this.Set(t);
-        }
-
-        public srfTriangles_s Set(final srfTriangles_s t) {
-            if (current != null) {
-                previous = new srfTriangles_ptr(current);
-            }
-            return current = t;
-        }
-
-        public srfTriangles_ptr Get(final int t) {
-            if (LIGHT_TRIS_DEFERRED == t) {
-                return previous;
-            }
-            return this;
-        }
-
-        public srfTriangles_s Get() {
-            return current;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-
-            if (obj instanceof Integer && LIGHT_TRIS_DEFERRED == (Integer) obj) {
-
-                if (current != null && previous != null) {
-                    return current.equals(previous.current);
-                }
-
-                return false;
-            }
-
-            final srfTriangles_ptr other = (srfTriangles_ptr) obj;
-            if (!Objects.equals(this.current, other.current)) {
-                return false;
-            }
-            return true;
         }
     };
 

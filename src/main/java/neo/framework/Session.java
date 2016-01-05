@@ -6,7 +6,11 @@ import static neo.Renderer.ModelManager.renderModelManager;
 import neo.Renderer.RenderWorld.idRenderWorld;
 import static neo.Sound.snd_system.soundSystem;
 import neo.Sound.sound.idSoundWorld;
+
+import static neo.TempDump.*;
 import static neo.TempDump.SERIAL_SIZE;
+
+import neo.TempDump;
 import neo.TempDump.SERiAL;
 import static neo.TempDump.isNotNullOrEmpty;
 import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
@@ -69,17 +73,17 @@ public class Session {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new TODO_Exception();
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new TODO_Exception();
         }
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new TODO_Exception();
         }
     };
     public static final int MAX_LOGGED_STATS = 60 * 120;		// log every half second 

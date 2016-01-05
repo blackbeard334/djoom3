@@ -2,20 +2,17 @@ package neo.Renderer;
 
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
-import neo.Renderer.Interaction.clipTri_t;
-import neo.Renderer.Interaction.idInteraction;
+
 import static neo.Renderer.Interaction.idInteraction.frustumStates.FRUSTUM_INVALID;
 import static neo.Renderer.Interaction.idInteraction.frustumStates.FRUSTUM_UNINITIALIZED;
 import static neo.Renderer.Interaction.idInteraction.frustumStates.FRUSTUM_VALID;
 import static neo.Renderer.Interaction.idInteraction.frustumStates.FRUSTUM_VALIDAREAS;
-import neo.Renderer.Interaction.surfaceInteraction_t;
 import static neo.Renderer.Material.MF_NOSELFSHADOW;
 import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.Material.materialCoverage_t.MC_OPAQUE;
 import static neo.Renderer.Material.materialCoverage_t.MC_TRANSLUCENT;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model.srfTriangles_ptr;
 import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.RenderSystem_init.r_lightAllBackFaces;
 import static neo.Renderer.RenderSystem_init.r_showInteractionFrustums;
@@ -104,10 +101,18 @@ public class Interaction {
      ===============================================================================
      */
 
-    static int/*srfTriangles_s*/ LIGHT_TRIS_DEFERRED = -03146;//((srfTriangles_s *)-1)
+    static final srfTriangles_s LIGHT_TRIS_DEFERRED;// = -03146;//((srfTriangles_s *)-1)
     static byte[] LIGHT_CULL_ALL_FRONT;//((byte *)-1)
     static final float LIGHT_CLIP_EPSILON = 0.1f;
-//    
+
+    static {
+        final srfTriangles_s s = LIGHT_TRIS_DEFERRED = new srfTriangles_s();
+        s.ambientViewCount = s.numDupVerts = s.numVerts =
+                s.numMirroredVerts = s.numIndexes = s.numShadowIndexesNoCaps =
+                        s.numShadowIndexesNoFrontCaps = s.numSilEdges = s.shadowCapPlaneBits =
+                                -03146;
+
+    }
 
     public static class srfCullInfo_t {
 
@@ -128,7 +133,7 @@ public class Interaction {
 
         // if lightTris == LIGHT_TRIS_DEFERRED, then the calculation of the
         // lightTris has been deferred, and must be done if ambientTris is visible
-        srfTriangles_ptr lightTris;
+        srfTriangles_s lightTris;
 //
         // shadow volume triangle surface
         srfTriangles_s shadowTris;
@@ -150,7 +155,7 @@ public class Interaction {
         
         static surfaceInteraction_t[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new surfaceInteraction_t()).
+                    generate(surfaceInteraction_t::new).
                     limit(length).
                     toArray(surfaceInteraction_t[]::new);
         }
@@ -327,8 +332,8 @@ public class Interaction {
                     surfaceInteraction_t sint = this.surfaces[i];
 
                     if (sint.lightTris != null) {
-                        if (!sint.lightTris.equals(LIGHT_TRIS_DEFERRED)) {
-                            R_FreeStaticTriSurf(sint.lightTris.Get());
+                        if (sint.lightTris != LIGHT_TRIS_DEFERRED) {
+                            R_FreeStaticTriSurf(sint.lightTris);
                         }
                         sint.lightTris = null;
                     }
@@ -417,7 +422,7 @@ public class Interaction {
             for (int i = 0; i < numSurfaces; i++) {
                 surfaceInteraction_t inter = surfaces[i];
 
-                total += R_TriSurfMemory(inter.lightTris.Get());
+                total += R_TriSurfMemory(inter.lightTris);
                 total += R_TriSurfMemory(inter.shadowTris);
             }
 
@@ -517,12 +522,12 @@ public class Interaction {
 
                     // make sure we have created this interaction, which may have been deferred
                     // on a previous use that only needed the shadow
-                    if (sint.lightTris.equals(LIGHT_TRIS_DEFERRED)) {
-                        sint.lightTris.Set(R_CreateLightTris(vEntity.entityDef, sint.ambientTris, vLight.lightDef, sint.shader, sint.cullInfo));
+                    if (sint.lightTris == LIGHT_TRIS_DEFERRED) {
+                        sint.lightTris = R_CreateLightTris(vEntity.entityDef, sint.ambientTris, vLight.lightDef, sint.shader, sint.cullInfo);
                         R_FreeInteractionCullInfo(sint.cullInfo);
                     }
 
-                    srfTriangles_s lightTris = sint.lightTris.Get();
+                    srfTriangles_s lightTris = sint.lightTris;
 
                     if (lightTris != null) {
 
@@ -754,10 +759,10 @@ public class Interaction {
                 // generate a lighted surface and add it
                 if (shader.ReceivesLighting()) {
                     if (tri.ambientViewCount == tr.viewCount) {
-                        sint.lightTris = new srfTriangles_ptr(R_CreateLightTris(entityDef, tri, lightDef, shader, sint.cullInfo));
+                        sint.lightTris = R_CreateLightTris(entityDef, tri, lightDef, shader, sint.cullInfo);
                     } else {
                         // this will be calculated when sint.ambientTris is actually in view
-//                        sint.lightTris = sint.lightTris.Get(LIGHT_TRIS_DEFERRED);//HACKME::1:this throws a null pointer after the planet goes out of the screen, hitting you in the head!
+                        sint.lightTris = LIGHT_TRIS_DEFERRED;//HACKME::1:this throws a null pointer after the planet goes out of the screen, hitting you in the head!
                     }
                     interactionGenerated = true;
                 }
@@ -784,9 +789,9 @@ public class Interaction {
                 }
 
                 // free the cull information when it's no longer needed
-//                if (!sint.lightTris.equals(LIGHT_TRIS_DEFERRED)) {//HACKME::2:related to HACKME1
-//                    R_FreeInteractionCullInfo(sint.cullInfo);
-//                }
+                if (sint.lightTris != LIGHT_TRIS_DEFERRED) {//HACKME::2:related to HACKME1
+                    R_FreeInteractionCullInfo(sint.cullInfo);
+                }
             }
 
             // if none of the surfaces generated anything, don't even bother checking?
@@ -1410,10 +1415,10 @@ public class Interaction {
                     for (int j = 0; j < inter.numSurfaces; j++) {
                         surfaceInteraction_t srf = inter.surfaces[j];
 
-                        if (srf.lightTris != null && !srf.lightTris.equals(LIGHT_TRIS_DEFERRED)) {
+                        if (srf.lightTris != null && srf.lightTris != LIGHT_TRIS_DEFERRED) {
                             lightTris++;
-                            lightTriVerts += srf.lightTris.Get().numVerts;
-                            lightTriIndexes += srf.lightTris.Get().numIndexes;
+                            lightTriVerts += srf.lightTris.numVerts;
+                            lightTriIndexes += srf.lightTris.numIndexes;
                         }
                         if (srf.shadowTris != null) {
                             shadowTris++;

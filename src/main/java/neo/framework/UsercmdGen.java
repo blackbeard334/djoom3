@@ -1,9 +1,15 @@
 package neo.framework;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
+
+import static neo.TempDump.*;
 import static neo.TempDump.SERIAL_SIZE;
 import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
+
+import neo.TempDump;
+import neo.TempDump.SERiAL;
 import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
 import static neo.framework.CVarSystem.CVAR_ARCHIVE;
 import static neo.framework.CVarSystem.CVAR_BOOL;
@@ -191,9 +197,9 @@ public class UsercmdGen {
     public static final int UCF_IMPULSE_SEQUENCE = 0x0001;    // toggled every time an impulse command is sent
 //
 
-    public static class usercmd_t {
+    public static class usercmd_t implements SERiAL {
 
-        public static final transient int SIZE = SERIAL_SIZE(new usercmd_t());
+        public static final transient int BYTES = Integer.BYTES * 4 + 6 + 5 * Short.BYTES;
 
         public int  gameFrame;              // frame number
         public int  gameTime;               // game time
@@ -268,6 +274,21 @@ public class UsercmdGen {
                 return false;
             }
             return true;
+        }
+
+        @Override
+        public ByteBuffer AllocBuffer() {
+            throw new TODO_Exception();
+        }
+
+        @Override
+        public void Read(final ByteBuffer buffer) {
+            throw new TODO_Exception();
+        }
+
+        @Override
+        public ByteBuffer Write() {
+            throw new TODO_Exception();
         }
     };
 

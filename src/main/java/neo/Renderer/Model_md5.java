@@ -723,7 +723,7 @@ public class Model_md5 {
 
             // create all the surfaces
             for (int i = 0; i < meshes.Num(); i++) {
-                idMD5Mesh mesh = meshes.Ptr()[i];
+                idMD5Mesh mesh = meshes.Ptr(idMD5Mesh[].class)[i];
                         
 		// avoid deforming the surface if it will be a nodraw due to a skin remapping
                 // FIXME: may have to still deform clipping hulls

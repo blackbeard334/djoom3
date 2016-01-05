@@ -2782,7 +2782,7 @@ public class Game_local {
             numEntitiesToDeactivate = 0;
             sortTeamMasters = false;
             sortPushers = false;
-            lastGUIEnt = null;
+            lastGUIEnt.oSet(null);
             lastGUI = 0;
 
             globalMaterial = null;
@@ -2804,7 +2804,7 @@ public class Game_local {
             testmodel = null;
             testFx = null;
 
-            lastAIAlertEntity = null;
+            lastAIAlertEntity.oSet(null);
             lastAIAlertTime = 0;
 
             previousTime = 0;
@@ -4847,8 +4847,8 @@ public class Game_local {
             for (int e = 0; e < entities.length; e++) {
                 entities[e] = new idEntity();
             }
-//	memset( spawnIds, -1, sizeof( spawnIds ) );
             spawnIds = new int[spawnIds.length];
+            Arrays.fill(spawnIds, -1);//	memset( spawnIds, -1, sizeof( spawnIds ) );
             firstFreeIndex = 0;
             num_entities = 0;
             spawnedEntities.Clear();
@@ -4857,8 +4857,7 @@ public class Game_local {
             sortPushers = false;
             sortTeamMasters = false;
             persistentLevelInfo.Clear();
-//	memset( globalShaderParms, 0, sizeof( globalShaderParms ) );
-            globalShaderParms = new float[globalShaderParms.length];
+            globalShaderParms = new float[globalShaderParms.length];//memset( globalShaderParms, 0, sizeof( globalShaderParms ) );
             random.SetSeed(0);
             world = null;
             frameCommandThread = null;
@@ -4886,7 +4885,7 @@ public class Game_local {
             camera = null;
             aasList.Clear();
             aasNames.Clear();
-            lastAIAlertEntity = null;
+            lastAIAlertEntity = new idEntityPtr<>(null);
             lastAIAlertTime = 0;
             spawnArgs.Clear();
             gravity.Set(0, 0, -1);
@@ -4908,7 +4907,7 @@ public class Game_local {
             nextGibTime = 0;
             globalMaterial = null;
             newInfo.Clear();
-            lastGUIEnt = null;
+            lastGUIEnt = new idEntityPtr<>(null);
             lastGUI = 0;
 
 //	memset( clientEntityStates, 0, sizeof( clientEntityStates ) );
@@ -4917,8 +4916,7 @@ public class Game_local {
                     clientEntityStates[a][b] = new entityState_s();
                 }
             }
-//	memset( clientPVS, 0, sizeof( clientPVS ) );
-            clientPVS = new int[clientPVS.length][clientPVS[0].length];
+            clientPVS = new int[clientPVS.length][clientPVS[0].length];//memset( clientPVS, 0, sizeof( clientPVS ) );
 //	memset( clientSnapshots, 0, sizeof( clientSnapshots ) );
             for (int c = 0; c < clientSnapshots.length; c++) {
                 clientSnapshots[c] = new snapshot_s();
@@ -4927,8 +4925,7 @@ public class Game_local {
             eventQueue.Init();
             savedEventQueue.Init();
 
-//            memset(lagometer, 0, sizeof(lagometer));
-            lagometer = new byte[lagometer.length][lagometer[0].length][lagometer[0][0].length];
+            lagometer = new byte[lagometer.length][lagometer[0].length][lagometer[0][0].length];//memset(lagometer, 0, sizeof(lagometer));
         }
 
         // returns true if the entity shouldn't be spawned at all in this game type or difficulty level

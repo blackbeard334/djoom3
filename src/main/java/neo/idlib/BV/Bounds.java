@@ -731,19 +731,22 @@ public class Bounds {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return ByteBuffer.allocate(idBounds.BYTES);
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            b[0].Read(buffer);
+            b[1].Read(buffer);
         }
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+            ByteBuffer buffer = AllocBuffer();
+            buffer.put(b[0].Write()).put(b[1].Write()).flip();
 
+            return buffer;
+        }
     };
 
     /*

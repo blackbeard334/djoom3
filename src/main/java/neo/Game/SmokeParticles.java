@@ -390,8 +390,8 @@ public class SmokeParticles {
                     g.index = smoke.index;
                     g.random = smoke.random;
 
-                    g.origin = smoke.origin;
-                    g.axis = smoke.axis;
+                    g.origin.oSet(smoke.origin);
+                    g.axis.oSet(smoke.axis);
 
                     g.originalRandom = g.random;
                     g.age = g.frac * stage.particleLife;

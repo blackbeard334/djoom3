@@ -177,6 +177,11 @@ public class DeclParticle {
         public float          age;                // in seconds, calculated as fraction * stage->particleLife
         public idRandom       originalRandom;     // needed so aimed particles can reset the random for another origin calculation
         public float          animationFrameFrac; // set by ParticleTexCoords, used to make the cross faded version
+
+        public particleGen_t(){
+            this.origin = new idVec3();
+            this.axis = new idMat3();
+        }
     };
 
     //
@@ -1108,8 +1113,8 @@ public class DeclParticle {
 
             g.renderEnt = renderEntity;
             g.renderView = renderView;
-            g.origin = new idVec3();
-            g.axis = getMat3_identity();
+            g.origin.oSet(new idVec3());
+            g.axis.oSet(getMat3_identity());
 
             idRandom steppingRandom = new idRandom();
             steppingRandom.SetSeed(0);

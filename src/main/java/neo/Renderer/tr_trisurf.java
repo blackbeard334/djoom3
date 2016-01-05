@@ -326,8 +326,8 @@ public class tr_trisurf {
             return total;
         }
 
-        // used as a flag in interations
-        if (tri.equals(LIGHT_TRIS_DEFERRED)) {
+        // used as a flag in interactions
+        if (tri == LIGHT_TRIS_DEFERRED) {
             return total;
         }
 

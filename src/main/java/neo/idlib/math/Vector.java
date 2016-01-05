@@ -1096,12 +1096,14 @@ public class Vector {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return ByteBuffer.allocate(idVec3.BYTES);
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            x = buffer.getFloat();
+            y = buffer.getFloat();
+            z = buffer.getFloat();
         }
 
         @Override
@@ -1440,17 +1442,24 @@ public class Vector {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return ByteBuffer.allocate(idVec4.BYTES);
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            x = buffer.getFloat();
+            y = buffer.getFloat();
+            z = buffer.getFloat();
+            w = buffer.getFloat();
         }
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            ByteBuffer buffer = AllocBuffer();
+
+            buffer.putFloat(x).putFloat(y).putFloat(z).putFloat(w).flip();
+
+            return buffer;
         }
 
         @Override
@@ -1460,7 +1469,7 @@ public class Vector {
 
         public static idVec4[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new idVec4()).
+                    generate(idVec4::new).
                     limit(length).
                     toArray(idVec4[]::new);
         }

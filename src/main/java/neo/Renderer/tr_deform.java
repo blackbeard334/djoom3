@@ -30,6 +30,8 @@ import neo.idlib.math.Random.idRandom;
 import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 
+import java.util.stream.Stream;
+
 /**
  *
  */
@@ -110,7 +112,7 @@ public class tr_deform {
         newTri.numIndexes = tri.numIndexes;
         newTri.indexes = new int[newTri.numIndexes];// R_FrameAlloc(newTri.numIndexes);
 
-        idDrawVert[] ac = new idDrawVert[newTri.numVerts];
+        idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(newTri.numVerts).toArray(idDrawVert[]::new);
 
         for (i = 0; i < tri.numVerts; i += 4) {
             // find the midpoint
@@ -555,7 +557,7 @@ public class tr_deform {
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = 16;
         newTri.numIndexes = 18 * 3;
-        newTri.indexes = (int[]) R_FrameAlloc(newTri.numIndexes);
+        newTri.indexes = new int[newTri.numIndexes];
 
         idDrawVert[] ac = new idDrawVert[newTri.numVerts];
 
@@ -934,7 +936,7 @@ public class tr_deform {
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = tri.numVerts;
         newTri.numIndexes = tri.numIndexes;
-        newTri.indexes = (int[]) R_FrameAlloc(tri.numIndexes);
+        newTri.indexes = new int[tri.numIndexes];
         idDrawVert[] ac = new idDrawVert[tri.numVerts];
 
         newTri.numIndexes = 0;
@@ -1076,7 +1078,7 @@ public class tr_deform {
         g.renderEnt = renderEntity;
         g.renderView = viewDef.renderView;
         g.origin.Zero();
-        g.axis = getMat3_identity();
+        g.axis.oSet(getMat3_identity());
 
         for (int currentTri = 0; currentTri < ((useArea) ? 1 : numSourceTris); currentTri++) {
 
@@ -1194,7 +1196,7 @@ public class tr_deform {
                     f2 *= ft;
                     f3 *= ft;
 
-                    g.origin = v1.xyz.oMultiply(f1).oPlus(v2.xyz.oMultiply(f2).oPlus(v3.xyz.oMultiply(f3)));
+                    g.origin.oSet(v1.xyz.oMultiply(f1).oPlus(v2.xyz.oMultiply(f2).oPlus(v3.xyz.oMultiply(f3))));
                     g.axis.oSet(0, v1.tangents[0].oMultiply(f1).oPlus(v2.tangents[0].oMultiply(f2).oPlus(v3.tangents[0].oMultiply(f3))));
                     g.axis.oSet(1, v1.tangents[1].oMultiply(f1).oPlus(v2.tangents[1].oMultiply(f2).oPlus(v3.tangents[1].oMultiply(f3))));
                     g.axis.oSet(2, v1.normal.oMultiply(f1).oPlus(v2.normal.oMultiply(f2).oPlus(v3.normal.oMultiply(f3))));
