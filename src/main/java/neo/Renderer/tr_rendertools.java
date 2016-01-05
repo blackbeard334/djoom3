@@ -733,7 +733,7 @@ public class tr_rendertools {
                     final srfTriangles_s tri = surf.geo;
 
                     for (vertCache_s shadow : tri.shadowCache) {
-                        qglVertexPointer(3, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, vertexCache.Position(shadow));
+                        qglVertexPointer(3, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, vertexCache.Position(shadow).getInt());
                     }
                     qglBegin(GL_LINES);
 

@@ -2,6 +2,8 @@ package neo.Renderer;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
+
 import static neo.Renderer.Image.globalImages;
 import static neo.Renderer.Material.MF_POLYGONOFFSET;
 import static neo.Renderer.Material.SS_POST_PROCESS;
@@ -1276,7 +1278,7 @@ public class draw_common {
                 return;
             }
 
-            qglVertexPointer(4, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, vertexCache.Position(tri.shadowCache));
+            qglVertexPointer(4, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, vertexCache.Position(tri.shadowCache).getInt());
 
             // we always draw the sil planes, but we may not need to draw the front or rear caps
             int numIndexes;
@@ -1579,8 +1581,8 @@ public class draw_common {
         qglDisable(GL_TEXTURE_GEN_T);
         qglDisable(GL_TEXTURE_GEN_Q);
     }
-//========================================================================
-    static final idPlane[] fogPlanes = new idPlane[4];
+    //========================================================================
+    private static final idPlane[] fogPlanes = Stream.generate(idPlane::new).limit(4).toArray(idPlane[]::new);
 
     /*
      =====================
@@ -1633,7 +1635,7 @@ public class draw_common {
      */
     public static void RB_FogPass(final drawSurf_s drawSurfs, final drawSurf_s drawSurfs2) {
         srfTriangles_s frustumTris;
-        drawSurf_s ds = new drawSurf_s();
+        drawSurf_s ds = new drawSurf_s();//memset( &ds, 0, sizeof( ds ) );
         idMaterial lightShader;
         shaderStage_t stage;
         final float[] regs;
@@ -1647,7 +1649,6 @@ public class draw_common {
         if (NOT(frustumTris.ambientCache)) {
             return;
         }
-//	memset( &ds, 0, sizeof( ds ) );
         ds.space = backEnd.viewDef.worldSpace;
         ds.geo = frustumTris;
         ds.scissorRect = new idScreenRect(backEnd.viewDef.scissor);

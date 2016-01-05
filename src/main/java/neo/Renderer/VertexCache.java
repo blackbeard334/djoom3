@@ -422,11 +422,11 @@ public class VertexCache {
                 } else {
                     qglBindBufferARB(GL_ARRAY_BUFFER_ARB, buffer.vbo);
                 }
-                return ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(buffer.offset);
+                return (ByteBuffer) ByteBuffer.allocate(Integer.BYTES).putInt(buffer.offset).flip();
             }
 
             // virtual memory is a real pointer
-            return (ByteBuffer) buffer.virtMem.position(buffer.offset);
+            return (ByteBuffer) buffer.virtMem.position(buffer.offset).flip();
         }
 
         // if r_useIndexBuffers is enabled, but you need to draw something without
