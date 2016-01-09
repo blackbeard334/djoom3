@@ -879,9 +879,17 @@ public class Physics_AF {
         protected idAFConstraint_UniversalJointFriction fc;             // friction constraint
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         public idAFConstraint_UniversalJoint(final idStr name, idAFBody body1, idAFBody body2) {
             assert (body1 != null);
+            this.anchor1 = new idVec3();
+            this.anchor2 = new idVec3();
+            this.shaft1 = new idVec3();
+            this.shaft2 = new idVec3();
+            this.axis1 = new idVec3();
+            this.axis2 = new idVec3();
             type = CONSTRAINT_UNIVERSALJOINT;
             this.name.oSet(name);
             this.body1 = body1;
@@ -896,15 +904,16 @@ public class Physics_AF {
         }
         // ~idAFConstraint_UniversalJoint();
 
-        public void SetAnchor(final idVec3 worldPosition) {
+        private static int DBG_SetAnchor = 0;
+        public void SetAnchor(final idVec3 worldPosition) {DBG_SetAnchor++;
 
             // get anchor relative to center of mass of body1
-            anchor1 = (worldPosition.oMinus(body1.GetWorldOrigin())).oMultiply(body1.GetWorldAxis().Transpose());
+            anchor1.oSet((worldPosition.oMinus(body1.GetWorldOrigin())).oMultiply(body1.GetWorldAxis().Transpose()));
             if (body2 != null) {
                 // get anchor relative to center of mass of body2
-                anchor2 = (worldPosition.oMinus(body2.GetWorldOrigin())).oMultiply(body2.GetWorldAxis().Transpose());
+                anchor2.oSet((worldPosition.oMinus(body2.GetWorldOrigin())).oMultiply(body2.GetWorldAxis().Transpose()));
             } else {
-                anchor2 = worldPosition;
+                anchor2.oSet(worldPosition);
             }
 
             if (coneLimit != null) {
@@ -926,10 +935,10 @@ public class Physics_AF {
             idVec3 cardanAxis;
             float l;
 
-            shaft1 = cardanShaft1;
+            shaft1.oSet(cardanShaft1);
             l = shaft1.Normalize();
             assert (l != 0.0f);
-            shaft2 = cardanShaft2;
+            shaft2.oSet(cardanShaft2);
             l = shaft2.Normalize();
             assert (l != 0.0f);
 
@@ -943,12 +952,12 @@ public class Physics_AF {
             }
 
             shaft1.oMulSet(body1.GetWorldAxis().Transpose());
-            axis1 = cardanAxis.oMulSet(body1.GetWorldAxis().Transpose());
+            axis1.oSet(cardanAxis.oMulSet(body1.GetWorldAxis().Transpose()));
             if (body2 != null) {
                 shaft2.oMulSet(body2.GetWorldAxis().Transpose());
-                axis2 = cardanAxis.oMultiply(body2.GetWorldAxis().Transpose());
+                axis2.oSet(cardanAxis.oMultiply(body2.GetWorldAxis().Transpose()));
             } else {
-                axis2 = cardanAxis;
+                axis2.oSet(cardanAxis);
             }
 
             if (coneLimit != null) {
@@ -2860,6 +2869,9 @@ public class Physics_AF {
         //
 
         public idAFConstraint_ConeLimit() {
+            coneAnchor = new idVec3();
+            coneAxis = new idVec3();
+            body1Axis = new idVec3();
             type = CONSTRAINT_CONELIMIT;
             name.oSet("coneLimit");
             InitSize(1);
@@ -2882,10 +2894,10 @@ public class Physics_AF {
                 final float coneAngle, final idVec3 body1Axis) {
             this.body1 = b1;
             this.body2 = b2;
-            this.coneAxis = coneAxis;
+            this.coneAxis.oSet(coneAxis);
             this.coneAxis.Normalize();
-            this.coneAnchor = coneAnchor;
-            this.body1Axis = body1Axis;
+            this.coneAnchor.oSet(coneAnchor);
+            this.body1Axis.oSet(body1Axis);
             this.body1Axis.Normalize();
             this.cosAngle = (float) cos(DEG2RAD(coneAngle * 0.5f));
             this.sinHalfAngle = (float) sin(DEG2RAD(coneAngle * 0.25f));
@@ -2893,11 +2905,11 @@ public class Physics_AF {
         }
 
         public void SetAnchor(final idVec3 coneAnchor) {
-            this.coneAnchor = coneAnchor;
+            this.coneAnchor.oSet(coneAnchor);
         }
 
         public void SetBody1Axis(final idVec3 body1Axis) {
-            this.body1Axis = body1Axis;
+            this.body1Axis.oSet(body1Axis);
         }
 
         public void SetEpsilon(final float e) {
@@ -3603,6 +3615,9 @@ public class Physics_AF {
         idMat3 worldAxis;                // axis at worldOrigin
         idVec6 spatialVelocity;          // linear and rotational velocity of body
         idVec6 externalForce;            // external force and torque applied to body
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
     };
 
     public static class idAFBody {
@@ -3654,6 +3669,8 @@ public class Physics_AF {
         private int     maxAuxiliaryIndex;                  // largest index of an auxiliary constraint constraining this body
         private int     maxSubTreeAuxiliaryIndex;           // largest index of an auxiliary constraint constraining this body or one of it's children
 //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         private final class bodyFlags_s {
 
@@ -3688,8 +3705,8 @@ public class Physics_AF {
             SetClipModel(clipModel);
             SetDensity(density);
 
-            current.worldOrigin = clipModel.GetOrigin();
-            current.worldAxis = clipModel.GetAxis();
+            current.worldOrigin.oSet(clipModel.GetOrigin());
+            current.worldAxis.oSet(clipModel.GetAxis());
             next = current;
 
         }
@@ -3808,11 +3825,11 @@ public class Physics_AF {
         }
 
         public void SetWorldOrigin(final idVec3 origin) {
-            current.worldOrigin = origin;
+            current.worldOrigin.oSet(origin);
         }
 
         public void SetWorldAxis(final idMat3 axis) {
-            current.worldAxis = axis;
+            current.worldAxis.oSet(axis);
         }
 
         public void SetLinearVelocity(final idVec3 linear) {
@@ -3876,7 +3893,7 @@ public class Physics_AF {
 
             // calculate the inverse mass and inverse inertia tensor
             invMass = 1.0f / mass;
-            if (inertiaScale != getMat3_identity()) {
+            if (!inertiaScale.equals(getMat3_identity())) {
                 inertiaTensor.oMulSet(inertiaScale);
             }
             if (inertiaTensor.IsDiagonal(1e-3f)) {
@@ -5279,8 +5296,8 @@ public class Physics_AF {
                 if (current.atRest >= 0 && (masterBody.current.worldOrigin != masterOrigin || masterBody.current.worldAxis != masterAxis)) {
                     Activate();
                 }
-                masterBody.current.worldOrigin = masterOrigin;
-                masterBody.current.worldAxis = masterAxis;
+                masterBody.current.worldOrigin.oSet(masterOrigin);
+                masterBody.current.worldAxis.oSet(masterAxis);
             }
 
             // if the simulation is suspended because the figure is at rest
@@ -5941,8 +5958,8 @@ public class Physics_AF {
                     }
                     Activate();
                 }
-                masterBody.current.worldOrigin = masterOrigin;
-                masterBody.current.worldAxis = masterAxis;
+                masterBody.current.worldOrigin.oSet(masterOrigin);
+                masterBody.current.worldAxis.oSet(masterAxis);
             } else if (masterBody != null) {
                 // translate and rotate all the constraints with body2 == NULL from master space to world space
                 rotation = masterBody.current.worldAxis.ToRotation();
@@ -6050,7 +6067,7 @@ public class Physics_AF {
                  state.externalForce[4] = msg.ReadDeltaFloat( 0.0f, AF_FORCE_EXPONENT_BITS, AF_FORCE_MANTISSA_BITS );
                  state.externalForce[5] = msg.ReadDeltaFloat( 0.0f, AF_FORCE_EXPONENT_BITS, AF_FORCE_MANTISSA_BITS );
                  */
-                state.worldAxis = quat.ToMat3();
+                state.worldAxis.oSet(quat.ToMat3());
             }
 
             UpdateClipModels();
@@ -6669,7 +6686,7 @@ public class Physics_AF {
 
                 // calculate the spatial velocity for the next physics state
                 body.InverseWorldSpatialInertiaMultiply(body.acceleration, body.totalForce.ToFloatPtr());
-                body.next.spatialVelocity = body.current.spatialVelocity.oPlus(body.acceleration.SubVec6(0).oMultiply(timeStep));
+                body.next.spatialVelocity.oSet(body.current.spatialVelocity.oPlus(body.acceleration.SubVec6(0).oMultiply(timeStep)));
 
                 if (maxLinearVelocity > 0.0f) {
                     // cap the linear velocity
@@ -6696,7 +6713,7 @@ public class Physics_AF {
                 body = bodies.oGet(i);
 
                 // translate world origin
-                body.next.worldOrigin = body.current.worldOrigin.oPlus(body.next.spatialVelocity.SubVec3(0).oMultiply(timeStep));
+                body.next.worldOrigin.oSet(body.current.worldOrigin.oPlus(body.next.spatialVelocity.SubVec3(0).oMultiply(timeStep)));
 
                 // convert angular velocity to a rotation matrix
                 vec = body.next.spatialVelocity.SubVec3(1);
@@ -6705,7 +6722,7 @@ public class Physics_AF {
                 rotation.Normalize180();
 
                 // rotate world axis
-                body.next.worldAxis = body.current.worldAxis.oMultiply(rotation.ToMat3());
+                body.next.worldAxis.oSet(body.current.worldAxis.oMultiply(rotation.ToMat3()));
                 body.next.worldAxis.OrthoNormalizeSelf();
 
                 // linear and angular friction
@@ -6888,8 +6905,8 @@ public class Physics_AF {
                             body.clipModel, body.current.worldAxis, body.clipMask, passEntity)) {
 
                         // set the next state to the state at the moment of impact
-                        body.next.worldOrigin = collision[0].endpos;
-                        body.next.worldAxis = collision[0].endAxis;
+                        body.next.worldOrigin.oSet(collision[0].endpos);
+                        body.next.worldAxis.oSet(collision[0].endAxis);
 
                         // add collision to the list
                         index = collisions.Num();

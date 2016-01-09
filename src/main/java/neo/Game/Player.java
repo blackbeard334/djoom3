@@ -1179,8 +1179,12 @@ public class Player {
 
     public static class loggedAccel_t {
 
-        int time;
-        idVec3 dir;		// scaled larger for running
+        int    time;
+        idVec3 dir;        // scaled larger for running
+
+        public loggedAccel_t() {
+            dir = new idVec3();
+        }
     };
 
     public static class aasLocation_t {

@@ -73,7 +73,7 @@ public class TraceModel {
             this.v = new int[2];
             normal = new idVec3();
         }
-        
+
         public void oSet(final traceModelEdge_t t){
             this.v[0] = t.v[0];
             this.v[1] = t.v[1];
@@ -83,17 +83,17 @@ public class TraceModel {
 
     public static class traceModelPoly_t {
 
-        public idVec3 normal;
-        public float dist;
+        public idVec3   normal;
+        public float    dist;
         public idBounds bounds;
-        public int numEdges;
-        public int[] edges;
+        public int      numEdges;
+        public int[]    edges;
 
-        public traceModelPoly_t() {    
+        public traceModelPoly_t() {
             normal = new idVec3();
             bounds = new idBounds();
             this.edges = new int[MAX_TRACEMODEL_POLYEDGES];
-        }        
+        }
 
         private void oSet(traceModelPoly_t t) {
             this.normal.oSet(t.normal);
@@ -107,11 +107,11 @@ public class TraceModel {
     public static class idTraceModel {
         public traceModel_t       type;
         public int                numVerts;
-        public traceModelVert_t[] verts = Stream.generate(() -> new traceModelVert_t()).limit(MAX_TRACEMODEL_VERTS).toArray(traceModelVert_t[]::new);
+        public traceModelVert_t[] verts = Stream.generate(traceModelVert_t::new).limit(MAX_TRACEMODEL_VERTS).toArray(traceModelVert_t[]::new);
         public int                numEdges;
-        public traceModelEdge_t[] edges = Stream.generate(() -> new traceModelEdge_t()).limit(MAX_TRACEMODEL_EDGES + 1).toArray(traceModelEdge_t[]::new);
+        public traceModelEdge_t[] edges = Stream.generate(traceModelEdge_t::new).limit(MAX_TRACEMODEL_EDGES + 1).toArray(traceModelEdge_t[]::new);
         public int                numPolys;
-        public traceModelPoly_t[] polys = Stream.generate(() -> new traceModelPoly_t()).limit(MAX_TRACEMODEL_POLYS).toArray(traceModelPoly_t[]::new);
+        public traceModelPoly_t[] polys = Stream.generate(traceModelPoly_t::new).limit(MAX_TRACEMODEL_POLYS).toArray(traceModelPoly_t[]::new);
         public idVec3             offset;            // offset to center of model
         public idBounds           bounds;            // bounds of model
         public boolean            isConvex;          // true when model is convex
@@ -227,7 +227,7 @@ public class TraceModel {
                 v1 = edges[Math.abs(e0)].v[INTSIGNBITNOTSET(e0)];
                 v2 = edges[Math.abs(e1)].v[INTSIGNBITNOTSET(e1)];
                 // polygon plane
-                polys[i].normal = (verts[v1].oMinus(verts[v0])).Cross(verts[v2].oMinus(verts[v0]));
+                polys[i].normal.oSet((verts[v1].oMinus(verts[v0])).Cross(verts[v2].oMinus(verts[v0])));
                 polys[i].normal.Normalize();
                 polys[i].dist = polys[i].normal.oMultiply(verts[v0]);
                 // polygon bounds
@@ -322,7 +322,7 @@ public class TraceModel {
                 v3 = edges[Math.abs(e2)].v[INTSIGNBITNOTSET(e2)];
                 v4 = edges[Math.abs(e3)].v[INTSIGNBITNOTSET(e3)];
                 // polygon plane
-                polys[i].normal = (verts[v1].oMinus(verts[v0])).Cross(verts[v2].oMinus(verts[v0]));
+                polys[i].normal.oSet((verts[v1].oMinus(verts[v0])).Cross(verts[v2].oMinus(verts[v0])));
                 polys[i].normal.Normalize();
                 polys[i].dist = polys[i].normal.oMultiply(verts[v0]);
                 // polygon bounds
@@ -419,7 +419,7 @@ public class TraceModel {
             // polygons
             for (i = 0; i < n; i++) {
                 // vertical polygon plane
-                polys[i].normal = (verts[(i + 1) % n].oMinus(verts[i])).Cross(verts[n + i].oMinus(verts[i]));
+                polys[i].normal.oSet((verts[(i + 1) % n].oMinus(verts[i])).Cross(verts[n + i].oMinus(verts[i])));
                 polys[i].normal.Normalize();
                 polys[i].dist = polys[i].normal.oMultiply(verts[i]);
                 // vertical polygon bounds
@@ -437,9 +437,9 @@ public class TraceModel {
             // trm bounds
             bounds = cylBounds;
             // bottom and top polygon bounds
-            polys[n].bounds = bounds;
+            polys[n].bounds.oSet(bounds);
             polys[n].bounds.oSet(1, 2, bounds.oGet(0).oGet(2));
-            polys[n + 1].bounds = bounds;
+            polys[n + 1].bounds.oSet(bounds);
             polys[n + 1].bounds.oSet(0, 2, bounds.oGet(1).oGet(2));
             // convex model
             isConvex = true;
@@ -521,7 +521,7 @@ public class TraceModel {
             // polygons
             for (i = 0; i < n; i++) {
                 // polygon plane
-                polys[i].normal = (verts[(i + 1) % n].oMinus(verts[i])).Cross(verts[n].oMinus(verts[i]));
+                polys[i].normal.oSet((verts[(i + 1) % n].oMinus(verts[i])).Cross(verts[n].oMinus(verts[i])));
                 polys[i].normal.Normalize();
                 polys[i].dist = polys[i].normal.oMultiply(verts[i]);
                 // polygon bounds
@@ -536,7 +536,7 @@ public class TraceModel {
             // trm bounds
             bounds = coneBounds;
             // bottom polygon bounds
-            polys[n].bounds = bounds;
+            polys[n].bounds.oSet(bounds);
             polys[n].bounds.oSet(1, 2, bounds.oGet(0).oGet(2));
             // convex model
             isConvex = true;
@@ -570,7 +570,7 @@ public class TraceModel {
          */
         public void SetupBone(final float length, final float width) {// two tetrahedrons attached to each other
             int i, j, edgeNum;
-            float halfLength = length * 0.5f;
+            float halfLength = (float) (length * 0.5);
 
             if (type != TRM_BONE) {
                 InitBone();
@@ -587,12 +587,12 @@ public class TraceModel {
             bounds.oGet(0).Set(width * -0.5f, width * -0.5f, -halfLength);
             bounds.oGet(1).Set(width * 0.5f, width * 0.25f, halfLength);
             // poly plane normals
-            polys[0].normal = (verts[2].oMinus(verts[0])).Cross(verts[1].oMinus(verts[0]));
+            polys[0].normal.oSet((verts[2].oMinus(verts[0])).Cross(verts[1].oMinus(verts[0])));
             polys[0].normal.Normalize();
             polys[2].normal.Set(-polys[0].normal.oGet(0), polys[0].normal.oGet(1), polys[0].normal.oGet(2));
             polys[3].normal.Set(polys[0].normal.oGet(0), polys[0].normal.oGet(1), -polys[0].normal.oGet(2));
             polys[5].normal.Set(-polys[0].normal.oGet(0), polys[0].normal.oGet(1), -polys[0].normal.oGet(2));
-            polys[1].normal = (verts[3].oMinus(verts[0])).Cross(verts[2].oMinus(verts[0]));
+            polys[1].normal.oSet((verts[3].oMinus(verts[0])).Cross(verts[2].oMinus(verts[0])));
             polys[1].normal.Normalize();
             polys[4].normal.Set(polys[1].normal.oGet(0), polys[1].normal.oGet(1), -polys[1].normal.oGet(2));
             // poly plane distances
@@ -625,7 +625,7 @@ public class TraceModel {
             numPolys = 2;
             // set polygon planes
             polys[0].numEdges = numEdges;
-            polys[0].normal = (v[1].oMinus(v[0])).Cross(v[2].oMinus(v[0]));
+            polys[0].normal.oSet((v[1].oMinus(v[0])).Cross(v[2].oMinus(v[0])));
             polys[0].normal.Normalize();
             polys[0].dist = polys[0].normal.oMultiply(v[0]);
             polys[1].numEdges = numEdges;
@@ -648,7 +648,7 @@ public class TraceModel {
                 polys[0].bounds.AddPoint(verts[i]);
                 mid.oPluSet(v[i]);
             }
-            polys[1].bounds = polys[0].bounds;
+            polys[1].bounds.oSet(polys[0].bounds);
             // offset to center
             offset = mid.oMultiply((1.0f / numVerts));
             // total bounds
@@ -927,9 +927,10 @@ public class TraceModel {
             return GetOrderedSilhouetteEdges(edgeIsSilEdge, silEdges);
         }
 
+        private static int DBG_GetMassProperties = 0;
         // calculate mass properties assuming an uniform density
         public void GetMassProperties(final float density, float[] mass, idVec3 centerOfMass, idMat3 inertiaTensor) {
-            volumeIntegrals_t integrals = new volumeIntegrals_t();
+            volumeIntegrals_t integrals = new volumeIntegrals_t();DBG_GetMassProperties++;
 
             // if polygon trace model
             if (type == TRM_POLYGON) {
@@ -1462,10 +1463,10 @@ public class TraceModel {
 
         class polygonIntegrals_t {
 
-            float Fa, Fb, Fc;
-            float Faa, Fbb, Fcc;
-            float Faaa, Fbbb, Fccc;
-            float Faab, Fbbc, Fcca;
+            double Fa,   Fb,   Fc;
+            double Faa,  Fbb,  Fcc;
+            double Faaa, Fbbb, Fccc;
+            double Faab, Fbbc, Fcca;
         };
 
         private void PolygonIntegrals(int polyNum, int a, int b, int c, polygonIntegrals_t integrals) {
@@ -1489,20 +1490,20 @@ public class TraceModel {
 
             integrals.Faa = k1 * pi.Paa;
             integrals.Fbb = k1 * pi.Pbb;
-            integrals.Fcc = (float) (k3 * (Square(n.oGet(a)) * pi.Paa + 2 * n.oGet(a) * n.oGet(b) * pi.Pab + Square(n.oGet(b)) * pi.Pbb
-                    + w * (2 * (n.oGet(a) * pi.Pa + n.oGet(b) * pi.Pb) + w * pi.P1)));
+            integrals.Fcc = k3 * (Square(n.oGet(a)) * pi.Paa + 2 * n.oGet(a) * n.oGet(b) * pi.Pab + Square(n.oGet(b)) * pi.Pbb
+                    + w * (2 * (n.oGet(a) * pi.Pa + n.oGet(b) * pi.Pb) + w * pi.P1));
 
             integrals.Faaa = k1 * pi.Paaa;
             integrals.Fbbb = k1 * pi.Pbbb;
-            integrals.Fccc = (float) (-k4 * (Cube(n.oGet(a)) * pi.Paaa + 3 * Square(n.oGet(a)) * n.oGet(b) * pi.Paab
+            integrals.Fccc = -k4 * (Cube(n.oGet(a)) * pi.Paaa + 3 * Square(n.oGet(a)) * n.oGet(b) * pi.Paab
                     + 3 * n.oGet(a) * Square(n.oGet(b)) * pi.Pabb + Cube(n.oGet(b)) * pi.Pbbb
                     + 3 * w * (Square(n.oGet(a)) * pi.Paa + 2 * n.oGet(a) * n.oGet(b) * pi.Pab + Square(n.oGet(b)) * pi.Pbb)
-                    + w * w * (3 * (n.oGet(a) * pi.Pa + n.oGet(b) * pi.Pb) + w * pi.P1)));
+                    + w * w * (3 * (n.oGet(a) * pi.Pa + n.oGet(b) * pi.Pb) + w * pi.P1));
 
             integrals.Faab = k1 * pi.Paab;
             integrals.Fbbc = -k2 * (n.oGet(a) * pi.Pabb + n.oGet(b) * pi.Pbbb + w * pi.Pbb);
-            integrals.Fcca = (float) (k3 * (Square(n.oGet(a)) * pi.Paaa + 2 * n.oGet(a) * n.oGet(b) * pi.Paab + Square(n.oGet(b)) * pi.Pabb
-                    + w * (2 * (n.oGet(a) * pi.Paa + n.oGet(b) * pi.Pab) + w * pi.Pa)));
+            integrals.Fcca = k3 * (Square(n.oGet(a)) * pi.Paaa + 2 * n.oGet(a) * n.oGet(b) * pi.Paab + Square(n.oGet(b)) * pi.Pabb
+                    + w * (2 * (n.oGet(a) * pi.Paa + n.oGet(b) * pi.Pab) + w * pi.Pa));
         }
 
         class volumeIntegrals_t {
@@ -1580,7 +1581,7 @@ public class TraceModel {
                 trm.polys[2 + i].edges[1] = numEdges * 2 + i + 1;
                 trm.polys[2 + i].edges[2] = numEdges + i + 1;
                 trm.polys[2 + i].edges[3] = -(numEdges * 2 + (i + 1) % numEdges + 1);
-                trm.polys[2 + i].normal = (verts[(i + 1) % numVerts].oMinus(verts[i])).Cross(polys[0].normal);
+                trm.polys[2 + i].normal.oSet((verts[(i + 1) % numVerts].oMinus(verts[i])).Cross(polys[0].normal));
                 trm.polys[2 + i].normal.Normalize();
                 trm.polys[2 + i].dist = trm.polys[2 + i].normal.oMultiply(verts[i]);
             }

@@ -90,10 +90,13 @@ public class Clip {
     public static class trmCache_s {
 
         idTraceModel trm;
-        int refCount;
-        float volume;
-        idVec3 centerOfMass;
-        idMat3 inertiaTensor;
+        int          refCount;
+        float        volume;
+        idVec3       centerOfMass;
+        idMat3       inertiaTensor;
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         public trmCache_s() {
             centerOfMass = new idVec3();
@@ -132,6 +135,8 @@ public class Clip {
         private int               touchCount;
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         // friend class idClip;
         public idClipModel() {
@@ -323,8 +328,8 @@ public class Clip {
 
             this.entity = ent;
             this.id = newId;
-            this.origin = newOrigin;
-            this.axis = newAxis;
+            this.origin.oSet(newOrigin);
+            this.axis.oSet(newAxis);
             if (renderModelHandle != -1) {
                 this.renderModelHandle = renderModelHandle;
                 final renderEntity_s renderEntity = gameRenderWorld.GetRenderEntity(renderModelHandle);
@@ -356,8 +361,8 @@ public class Clip {
             if (clipLinks != null) {
                 Unlink();	// unlink from old position
             }
-            origin = newOrigin;
-            axis = newAxis;
+            origin.oSet(newOrigin);
+            axis.oSet(newAxis);
         }
 
         public void Translate(final idVec3 translation) {							// unlinks the clip model

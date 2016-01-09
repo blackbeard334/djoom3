@@ -2211,8 +2211,8 @@ public class AFEntity {
             if (i >= data.ent.numJoints) {
                 return false;
             }
-            origin = frame[i].ToVec3();
-            axis = frame[i].ToMat3();
+            origin.oSet(frame[i].ToVec3());
+            axis.oSet(frame[i].ToMat3());
             return true;
         }
     };

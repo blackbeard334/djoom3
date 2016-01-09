@@ -951,7 +951,7 @@ public class Lexer {
             boolean result = Parse1DMatrix(x, n);
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    m.oSet(i, j, n[i]);
+                    m.oSet(i, j, n[i * 3 + j]);
                 }
             }
 

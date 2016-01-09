@@ -247,7 +247,7 @@ public class AF {
 
             // create the animation frame used to setup the articulated figure
             numJoints = animator.NumJoints();
-            joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
+            joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
             GameEdit.gameEdit.ANIM_CreateAnimFrame(model, animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
 
             // set all vector positions from model joints
@@ -935,8 +935,9 @@ public class AF {
             jointMods.oGet(index).jointBodyAxis = body.GetWorldAxis().oMultiply(axis.Transpose());
         }
 
+        private static int DBG_LoadBody = 0;
         protected boolean LoadBody(final idDeclAF_Body fb, final idJointMat[] joints) {
-            int id, i;
+            int id, i;DBG_LoadBody++;
             float length;
             float[] candleMass = {0};
             idTraceModel trm = new idTraceModel();
@@ -947,7 +948,7 @@ public class AF {
             idBounds bounds = new idBounds();
             idList<Integer/*jointHandle_t*/> jointList = new idList<>();
 
-            origin = fb.origin.ToVec3();
+            origin = new idVec3(fb.origin.ToVec3());
             axis = fb.angles.ToMat3();
             bounds.oSet(0, fb.v1.ToVec3());
             bounds.oSet(1, fb.v2.ToVec3());
@@ -1014,7 +1015,7 @@ public class AF {
                 clip.SetContents(fb.contents[0]);
                 clip.Link(gameLocal.clip, self, 0, origin, axis);
                 body = new idAFBody(fb.name, clip, fb.density);
-                if (fb.inertiaScale != getMat3_identity()) {
+                if (!fb.inertiaScale.equals(getMat3_identity())) {
                     body.SetDensity(fb.density, fb.inertiaScale);
                 }
                 id = physicsObj.AddBody(body);
@@ -1041,10 +1042,10 @@ public class AF {
                 AddBody(body, joints, fb.jointName.toString(), mod);
             }
 
-            if (fb.frictionDirection.ToVec3() != getVec3_origin()) {
+            if (!fb.frictionDirection.ToVec3().equals(getVec3_origin())) {
                 body.SetFrictionDirection(fb.frictionDirection.ToVec3());
             }
-            if (fb.contactMotorDirection.ToVec3() != getVec3_origin()) {
+            if (!fb.contactMotorDirection.ToVec3().equals(getVec3_origin())) {
                 body.SetContactMotorDirection(fb.contactMotorDirection.ToVec3());
             }
 
@@ -1262,8 +1263,8 @@ public class AF {
             joint = ((idAnimator) model).GetJointHandle(jointName);
 //	if ( ( joint >= 0 ) && ( joint < reinterpret_cast<idAnimator *>(model).NumJoints() ) ) {
             if ((joint >= 0) && (joint < ((idAnimator) model).NumJoints())) {
-                origin = frame[ joint].ToVec3();
-                axis = frame[ joint].ToMat3();
+                origin.oSet(frame[joint].ToVec3());
+                axis.oSet(frame[joint].ToMat3());
                 return true;
             } else {
                 return false;

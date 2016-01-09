@@ -101,6 +101,8 @@ public class DeclAF {
         private boolean negate;
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         public idAFVector() {
             type = VEC_COORDS;
@@ -935,7 +937,7 @@ public class DeclAF {
                 } else if (0 == token.Icmp("density")) {
                     body.density = src.ParseFloat();
                 } else if (0 == token.Icmp("inertiaScale")) {
-                    src.Parse1DMatrix(9, body.inertiaScale.oGet(0));
+                    src.Parse1DMatrix(9, body.inertiaScale);
                 } else if (0 == token.Icmp("friction")) {
                     body.linearFriction = src.ParseFloat();
                     src.ExpectTokenString(",");
@@ -1476,7 +1478,7 @@ public class DeclAF {
                 f.WriteFloatString("\tangles ( %f, %f, %f )\n", body.angles.pitch, body.angles.yaw, body.angles.roll);
             }
             f.WriteFloatString("\tdensity %f\n", body.density);
-            if (body.inertiaScale != idMat3.getMat3_identity()) {
+            if (!body.inertiaScale.equals(idMat3.getMat3_identity())) {
                 final idMat3 ic = body.inertiaScale;
                 f.WriteFloatString("\tinertiaScale (%f %f %f %f %f %f %f %f %f)\n",
                         ic.oGet(0).oGet(0), ic.oGet(0).oGet(1), ic.oGet(0).oGet(2),

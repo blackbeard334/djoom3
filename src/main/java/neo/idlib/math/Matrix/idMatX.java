@@ -1277,17 +1277,17 @@ public class idMatX {
                 return result;
             case 4:
                 idMat4 mat4 = new idMat4(
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3]);
+                        mat[ 0], mat[ 1], mat[ 2], mat[ 3],
+                        mat[ 4], mat[ 5], mat[ 6], mat[ 7],
+                        mat[ 8], mat[ 9], mat[10], mat[11],
+                        mat[12], mat[13], mat[14], mat[15]);
                 result = mat4.InverseFastSelf();
                 this.mat = mat4.reinterpret_cast();
                 return result;
             case 5:
                 idMat5 mat5 = new idMat5(
-                        new idVec5(mat[0], mat[1], mat[2], mat[3], mat[4]),
-                        new idVec5(mat[5], mat[6], mat[2], mat[3], mat[4]),
+                        new idVec5(mat[ 0], mat[ 1], mat[ 2], mat[ 3], mat[ 4]),
+                        new idVec5(mat[ 5], mat[ 6], mat[ 7], mat[ 8], mat[ 9]),
                         new idVec5(mat[10], mat[11], mat[12], mat[13], mat[14]),
                         new idVec5(mat[15], mat[16], mat[17], mat[18], mat[19]),
                         new idVec5(mat[20], mat[21], mat[22], mat[23], mat[24]));
@@ -1296,8 +1296,8 @@ public class idMatX {
                 return result;
             case 6:
                 idMat6 mat6 = new idMat6(
-                        new idVec6(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5]),
-                        new idVec6(mat[6], mat[7], mat[8], mat[9], mat[10], mat[11]),
+                        new idVec6(mat[ 0], mat[ 1], mat[ 2], mat[ 3], mat[ 4], mat[ 5]),
+                        new idVec6(mat[ 6], mat[ 7], mat[ 8], mat[ 9], mat[10], mat[11]),
                         new idVec6(mat[12], mat[13], mat[14], mat[15], mat[16], mat[17]),
                         new idVec6(mat[18], mat[19], mat[20], mat[21], mat[22], mat[23]),
                         new idVec6(mat[24], mat[25], mat[26], mat[27], mat[28], mat[29]),

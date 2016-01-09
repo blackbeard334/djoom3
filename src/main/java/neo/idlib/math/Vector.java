@@ -363,7 +363,7 @@ public class Vector {
 
         public static idVec2[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new idVec2()).
+                    generate(idVec2::new).
                     limit(length).
                     toArray(idVec2[]::new);
         }
@@ -674,14 +674,14 @@ public class Vector {
         }
 
         public float Normalize() {// returns length
-            float sqrLength, invLength;
+            double sqrLength, invLength;
 
             sqrLength = x * x + y * y + z * z;
-            invLength = idMath.InvSqrt(sqrLength);
+            invLength = idMath.InvSqrt((float) sqrLength);
             x *= invLength;
             y *= invLength;
             z *= invLength;
-            return invLength * sqrLength;
+            return (float) (invLength * sqrLength);
         }
 
         public float NormalizeFast() {// returns length
@@ -1064,7 +1064,7 @@ public class Vector {
             return value;
         }
 
-        public void oPluSet(final int i, final float value) {
+        public void oPluSet(final int i, final double value) {
             if (i == 1) {
                 y += value;
             } else if (i == 2) {
@@ -1138,7 +1138,7 @@ public class Vector {
 
         public static idVec3[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new idVec3()).
+                    generate(idVec3::new).
                     limit(length).
                     toArray(idVec3[]::new);
         }
@@ -1652,7 +1652,7 @@ public class Vector {
 
         public static idVec5[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new idVec5()).
+                    generate(idVec5::new).
                     limit(length).
                     toArray(idVec5[]::new);
         }

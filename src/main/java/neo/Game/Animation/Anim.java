@@ -366,9 +366,11 @@ public class Anim {
             parser.ExpectTokenString("baseframe");
             parser.ExpectTokenString("{");
             for (i = 0; i < numJoints; i++) {
+                idCQuat q = new idCQuat();
                 final idJointQuat frame = baseFrame.oSet(i, new idJointQuat());
                 parser.Parse1DMatrix(3, frame.t);
-                parser.Parse1DMatrix(3, frame.q);
+                parser.Parse1DMatrix(3, q);
+                frame.q.oSet(q.ToQuat());
             }
             parser.ExpectTokenString("}");
 

@@ -6959,8 +6959,8 @@ public class CollisionModel_local {
                         return false;
                     }
                     // copy polygon properties
-                    trm.polys[trm.numPolys].bounds = p.bounds;
-                    trm.polys[trm.numPolys].normal = p.plane.Normal();
+                    trm.polys[trm.numPolys].bounds.oSet(p.bounds);
+                    trm.polys[trm.numPolys].normal.oSet(p.plane.Normal());
                     trm.polys[trm.numPolys].dist = p.plane.Dist();
                     trm.polys[trm.numPolys].numEdges = p.numEdges;
                     // copy edge index
