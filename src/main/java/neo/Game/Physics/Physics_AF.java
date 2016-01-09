@@ -1309,18 +1309,18 @@ public class Physics_AF {
             s1.NormalVectors(dir1, dir2);
 
             J1.SetSize(2, 6);
-            J1.SubVec6(0).SubVec3(0).Zero();
-            J1.SubVec6(0).SubVec3(1).oSet(dir1);
-            J1.SubVec6(1).SubVec3(0).Zero();
-            J1.SubVec6(1).SubVec3(1).oSet(dir2);
+            J1.SubVec63_Zero(0, 0);
+            J1.SubVec63_oSet(0, 1, dir1);
+            J1.SubVec63_Zero(1, 0);
+            J1.SubVec63_oSet(1, 1, dir2);
 
             if (body2 != null) {
 
                 J2.SetSize(2, 6);
-                J2.SubVec6(0).SubVec3(0).Zero();
-                J2.SubVec6(0).SubVec3(1).oSet(dir1.oNegative());
-                J2.SubVec6(1).SubVec3(0).Zero();
-                J2.SubVec6(1).SubVec3(1).oSet(dir2.oNegative());
+                J2.SubVec63_Zero(0, 0);
+                J2.SubVec63_oSet(0, 1, dir1.oNegative());
+                J2.SubVec63_Zero(1, 0);
+                J2.SubVec63_oSet(1, 1, dir2.oNegative());
             }
 
             physics.AddFrameConstraint(this);
@@ -1803,15 +1803,15 @@ public class Physics_AF {
             a1.oMulSet(body1.GetWorldAxis());
 
             J1.SetSize(1, 6);
-            J1.SubVec6(0).SubVec3(0).Zero();
-            J1.SubVec6(0).SubVec3(1).oSet(a1);
+            J1.SubVec63_Zero(0, 0);
+            J1.SubVec63_oSet(0, 1, a1);
 
             if (body2 != null) {
                 a2.oMulSet(body2.GetWorldAxis());
 
                 J2.SetSize(1, 6);
-                J2.SubVec6(0).SubVec3(0).Zero();
-                J2.SubVec6(0).SubVec3(1).oSet(a2.oNegative());
+                J2.SubVec63_Zero(0, 0);
+                J2.SubVec63_oSet(0, 1, a2.oNegative());
             }
 
             physics.AddFrameConstraint(this);
@@ -1894,15 +1894,15 @@ public class Physics_AF {
             a1.oMulSet(body1.GetWorldAxis());
 
             J1.SetSize(1, 6);
-            J1.SubVec6(0).SubVec3(0).Zero();
-            J1.SubVec6(0).SubVec3(1).oSet(a1);
+            J1.SubVec63_Zero(0, 0);
+            J1.SubVec63_oSet(0, 1, a1);
 
             if (body2 != null) {
                 a2.oMulSet(body2.GetWorldAxis());
 
                 J2.SetSize(1, 6);
-                J2.SubVec6(0).SubVec3(0).Zero();
-                J2.SubVec6(0).SubVec3(1).oSet(a2.oNegative());
+                J2.SubVec63_Zero(0, 0);
+                J2.SubVec63_oSet(0, 1, a2.oNegative());
             }
 
             speed = steerAngle - angle;
@@ -2260,14 +2260,14 @@ public class Physics_AF {
             }
 
             p = a1.oMinus(body1.GetWorldOrigin());
-            v.SubVec3(0).oSet(normal);
-            v.SubVec3(1).oSet(p.Cross(normal));
+            v.SubVec3_oSet(0, normal);
+            v.SubVec3_oSet(1, p.Cross(normal));
             J1.Set(1, 6, v.ToFloatPtr());
 
             if (body2 != null) {
                 p = a1.oMinus(body2.GetWorldOrigin());
-                v.SubVec3(0).oSet(normal.oNegative());
-                v.SubVec3(1).oSet(p.Cross(normal.oNegative()));
+                v.SubVec3_oSet(0, normal.oNegative());
+                v.SubVec3_oSet(1, p.Cross(normal.oNegative()));
                 J2.Set(1, 6, v.ToFloatPtr());
             }
 
@@ -2513,13 +2513,13 @@ public class Physics_AF {
 
             if (limit) {
                 a1.oMinSet(body1.GetWorldOrigin());
-                v1.SubVec3(0).oSet(force);
-                v1.SubVec3(1).oSet(a1.Cross(force));
+                v1.SubVec3_oSet(0, force);
+                v1.SubVec3_oSet(1, a1.Cross(force));
                 J1.Set(1, 6, v1.ToFloatPtr());
                 if (body2 != null) {
                     a2.oMinSet(body2.GetWorldOrigin());
-                    v2.SubVec3(0).oSet(force.oNegative());
-                    v2.SubVec3(1).oSet(a2.Cross(force.oNegative()));
+                    v2.SubVec3_oSet(0, force.oNegative());
+                    v2.SubVec3_oSet(1, a2.Cross(force.oNegative()));
                     J2.Set(1, 6, v2.ToFloatPtr());
                 }
                 c1.p[0] = -(invTimeStep * ERROR_REDUCTION) * error;
@@ -2569,15 +2569,15 @@ public class Physics_AF {
             contact = c;
 
             p = c.point.oMinus(body1.GetWorldOrigin());
-            v.SubVec3(0).oSet(c.normal);
-            v.SubVec3(1).oSet(p.Cross(c.normal));
+            v.SubVec3_oSet(0, c.normal);
+            v.SubVec3_oSet(1, p.Cross(c.normal));
             J1.Set(1, 6, v.ToFloatPtr());
             vel = v.SubVec3(0).oMultiply(body1.GetLinearVelocity()) + v.SubVec3(1).oMultiply(body1.GetAngularVelocity());
 
             if (body2 != null) {
                 p = c.point.oMinus(body2.GetWorldOrigin());
-                v.SubVec3(0).oSet(c.normal.oNegative());
-                v.SubVec3(1).oSet(p.Cross(c.normal.oNegative()));
+                v.SubVec3_oSet(0, c.normal.oNegative());
+                v.SubVec3_oSet(1, p.Cross(c.normal.oNegative()));
                 J2.Set(1, 6, v.ToFloatPtr());
                 vel += v.SubVec3(0).oMultiply(body2.GetLinearVelocity()) + v.SubVec3(1).oMultiply(body2.GetAngularVelocity());
                 c2.p[0] = 0.0f;
@@ -2730,8 +2730,8 @@ public class Physics_AF {
                 r = cc.GetContact().point.oMinus(body1.GetWorldOrigin());
 
                 J1.SetSize(1, 6);
-                J1.SubVec6(0).SubVec3(0).oSet(dir1);
-                J1.SubVec6(0).SubVec3(1).oSet(r.Cross(dir1));
+                J1.SubVec63_oSet(0, 0, dir1);
+                J1.SubVec63_oSet(0, 1, r.Cross(dir1));
                 c1.SetSize(1);
                 c1.p[0] = 0.0f;
 
@@ -2739,8 +2739,8 @@ public class Physics_AF {
                     r = cc.GetContact().point.oMinus(body2.GetWorldOrigin());
 
                     J2.SetSize(1, 6);
-                    J2.SubVec6(0).SubVec3(0).oSet(dir1.oNegative());
-                    J2.SubVec6(0).SubVec3(1).oSet(r.Cross(dir1.oNegative()));
+                    J2.SubVec63_oSet(0, 0, dir1.oNegative());
+                    J2.SubVec63_oSet(0, 1, r.Cross(dir1.oNegative()));
                     c2.SetSize(1);
                     c2.p[0] = 0.0f;
                 }
@@ -2756,10 +2756,10 @@ public class Physics_AF {
                 r = cc.GetContact().point.oMinus(body1.GetWorldOrigin());
 
                 J1.SetSize(2, 6);
-                J1.SubVec6(0).SubVec3(0).oSet(dir1);
-                J1.SubVec6(0).SubVec3(1).oSet(r.Cross(dir1));
-                J1.SubVec6(1).SubVec3(0).oSet(dir2);
-                J1.SubVec6(1).SubVec3(1).oSet(r.Cross(dir2));
+                J1.SubVec63_oSet(0, 0, dir1);
+                J1.SubVec63_oSet(0, 1, r.Cross(dir1));
+                J1.SubVec63_oSet(1, 0, dir2);
+                J1.SubVec63_oSet(1, 1, r.Cross(dir2));
                 c1.SetSize(2);
                 c1.p[0] = c1.p[1] = 0.0f;
 
@@ -2767,10 +2767,10 @@ public class Physics_AF {
                     r = cc.GetContact().point.oMinus(body2.GetWorldOrigin());
 
                     J2.SetSize(2, 6);
-                    J2.SubVec6(0).SubVec3(0).oSet(dir1.oNegative());
-                    J2.SubVec6(0).SubVec3(1).oSet(r.Cross(dir1.oNegative()));
-                    J2.SubVec6(1).SubVec3(0).oSet(dir2.oNegative());
-                    J2.SubVec6(1).SubVec3(1).oSet(r.Cross(dir2.oNegative()));
+                    J2.SubVec63_oSet(0, 0, dir1.oNegative());
+                    J2.SubVec63_oSet(0, 1, r.Cross(dir1.oNegative()));
+                    J2.SubVec63_oSet(1, 0, dir2.oNegative());
+                    J2.SubVec63_oSet(1, 1, r.Cross(dir2.oNegative()));
                     c2.SetSize(2);
                     c2.p[0] = c2.p[1] = 0.0f;
 
@@ -2797,8 +2797,8 @@ public class Physics_AF {
 
                 newRow = J1.GetNumRows();
                 J1.ChangeSize(newRow + 1, J1.GetNumColumns());
-                J1.SubVec6(newRow).SubVec3(0).oSet(dir1.oNegative());
-                J1.SubVec6(newRow).SubVec3(1).oSet(r.Cross(dir1.oNegative()));
+                J1.SubVec63_oSet(newRow, 0, dir1.oNegative());
+                J1.SubVec63_oSet(newRow, 1, r.Cross(dir1.oNegative()));
                 c1.ChangeSize(newRow + 1);
                 c1.p[newRow] = body1.GetContactMotorVelocity();
 
@@ -2806,8 +2806,8 @@ public class Physics_AF {
                     r = cc.GetContact().point.oMinus(body2.GetWorldOrigin());
 
                     J2.ChangeSize(newRow + 1, J2.GetNumColumns());
-                    J2.SubVec6(newRow).SubVec3(0).oSet(dir1.oNegative());
-                    J2.SubVec6(newRow).SubVec3(1).oSet(r.Cross(dir1.oNegative()));
+                    J2.SubVec63_oSet(newRow, 0, dir1.oNegative());
+                    J2.SubVec63_oSet(newRow, 1, r.Cross(dir1.oNegative()));
                     c2.ChangeSize(newRow + 1);
                     c2.p[newRow] = 0.0f;
                 }
@@ -2963,8 +2963,8 @@ public class Physics_AF {
 
             p1 = anchor.oPlus(coneVector.oMultiply(32.0f).oMinus(body1.GetWorldOrigin()));
 
-            J1row.SubVec3(0).oSet(normal);
-            J1row.SubVec3(1).oSet(p1.Cross(normal));
+            J1row.SubVec3_oSet(0, normal);
+            J1row.SubVec3_oSet(1, p1.Cross(normal));
             J1.Set(1, 6, J1row.ToFloatPtr());
 
             c1.p[0] = (invTimeStep * LIMIT_ERROR_REDUCTION) * (normal.oMultiply(body1ax.oMultiply(32.0f)));
@@ -2973,8 +2973,8 @@ public class Physics_AF {
 
                 p2 = anchor.oPlus(coneVector.oMultiply(32.0f).oMinus(master.GetWorldOrigin()));
 
-                J2row.SubVec3(0).oSet(normal.oNegative());
-                J2row.SubVec3(1).oSet(p2.Cross(normal.oNegative()));
+                J2row.SubVec3_oSet(0, normal.oNegative());
+                J2row.SubVec3_oSet(1, p2.Cross(normal.oNegative()));
                 J2.Set(1, 6, J2row.ToFloatPtr());
 
                 c2.p[0] = 0.0f;
@@ -3208,8 +3208,8 @@ public class Physics_AF {
 
             p1 = anchor.oPlus(pyramidVector.oMultiply(32.0f).oMinus(body1.GetWorldOrigin()));
 
-            J1row.SubVec3(0).oSet(normal);
-            J1row.SubVec3(1).oSet(p1.Cross(normal));
+            J1row.SubVec3_oSet(0, normal);
+            J1row.SubVec3_oSet(1, p1.Cross(normal));
             J1.Set(1, 6, J1row.ToFloatPtr());
 
             c1.p[0] = (invTimeStep * LIMIT_ERROR_REDUCTION) * (normal.oMultiply(body1ax.oMultiply(32.0f)));
@@ -3218,8 +3218,8 @@ public class Physics_AF {
 
                 p2 = anchor.oPlus(pyramidVector.oMultiply(32.0f).oMinus(master.GetWorldOrigin()));
 
-                J2row.SubVec3(0).oSet(normal.oNegative());
-                J2row.SubVec3(1).oSet(p2.Cross(normal.oNegative()));
+                J2row.SubVec3_oSet(0, normal.oNegative());
+                J2row.SubVec3_oSet(1, p2.Cross(normal.oNegative()));
                 J2.Set(1, 6, J2row.ToFloatPtr());
 
                 c2.p[0] = 0.0f;
@@ -3521,8 +3521,8 @@ public class Physics_AF {
 
             r = trace.c.point.oMinus(body1.GetWorldOrigin());
             J1.SetSize(2, 6);
-            J1.SubVec6(0).SubVec3(0).oSet(trace.c.normal);
-            J1.SubVec6(0).SubVec3(1).oSet(r.Cross(trace.c.normal));
+            J1.SubVec63_oSet(0, 0, trace.c.normal);
+            J1.SubVec63_oSet(0, 1, r.Cross(trace.c.normal));
             c1.SetSize(2);
             c1.p[0] = 0.0f;
             velocity = J1.SubVec6(0).SubVec3(0).oMultiply(body1.GetLinearVelocity()) + J1.SubVec6(0).SubVec3(1).oMultiply(body1.GetAngularVelocity());
@@ -3530,8 +3530,8 @@ public class Physics_AF {
             if (body2 != null) {
                 r = trace.c.point.oMinus(body2.GetWorldOrigin());
                 J2.SetSize(2, 6);
-                J2.SubVec6(0).SubVec3(0).oSet(trace.c.normal.oNegative());
-                J2.SubVec6(0).SubVec3(1).oSet(r.Cross(trace.c.normal.oNegative()));
+                J2.SubVec63_oSet(0, 0, trace.c.normal.oNegative());
+                J2.SubVec63_oSet(0, 1, r.Cross(trace.c.normal.oNegative()));
                 c2.SetSize(2);
                 c2.p[0] = 0.0f;
                 velocity += J2.SubVec6(0).SubVec3(0).oMultiply(body2.GetLinearVelocity()) + J2.SubVec6(0).SubVec3(1).oMultiply(body2.GetAngularVelocity());
@@ -3551,15 +3551,15 @@ public class Physics_AF {
 
             r = trace.c.point.oMinus(body1.GetWorldOrigin());
 
-            J1.SubVec6(1).SubVec3(0).oSet(frictionDir);
-            J1.SubVec6(1).SubVec3(1).oSet(r.Cross(frictionDir));
+            J1.SubVec63_oSet(1, 0, frictionDir);
+            J1.SubVec63_oSet(1, 1, r.Cross(frictionDir));
             c1.p[1] = 0.0f;
 
             if (body2 != null) {
                 r = trace.c.point.oMinus(body2.GetWorldOrigin());
 
-                J2.SubVec6(1).SubVec3(0).oSet(frictionDir.oNegative());
-                J2.SubVec6(1).SubVec3(1).oSet(r.Cross(frictionDir.oNegative()));
+                J2.SubVec63_oSet(1, 0, frictionDir.oNegative());
+                J2.SubVec63_oSet(1, 1, r.Cross(frictionDir.oNegative()));
                 c2.p[1] = 0.0f;
             }
 
@@ -3577,8 +3577,8 @@ public class Physics_AF {
                 r = trace.c.point.oMinus(body1.GetWorldOrigin());
 
                 J1.ChangeSize(3, J1.GetNumColumns());
-                J1.SubVec6(2).SubVec3(0).oSet(motorDir.oNegative());
-                J1.SubVec6(2).SubVec3(1).oSet(r.Cross(motorDir.oNegative()));
+                J1.SubVec63_oSet(2, 0, motorDir.oNegative());
+                J1.SubVec63_oSet(2, 1, r.Cross(motorDir.oNegative()));
                 c1.ChangeSize(3);
                 c1.p[2] = motorVelocity;
 
@@ -3586,8 +3586,8 @@ public class Physics_AF {
                     r = trace.c.point.oMinus(body2.GetWorldOrigin());
 
                     J2.ChangeSize(3, J2.GetNumColumns());
-                    J2.SubVec6(2).SubVec3(0).oSet(motorDir.oNegative());
-                    J2.SubVec6(2).SubVec3(1).oSet(r.Cross(motorDir.oNegative()));
+                    J2.SubVec63_oSet(2, 0, motorDir.oNegative());
+                    J2.SubVec63_oSet(2, 1, r.Cross(motorDir.oNegative()));
                     c2.ChangeSize(3);
                     c2.p[2] = 0.0f;
                 }
@@ -3833,11 +3833,11 @@ public class Physics_AF {
         }
 
         public void SetLinearVelocity(final idVec3 linear) {
-            current.spatialVelocity.SubVec3(0).oSet(linear);
+            current.spatialVelocity.SubVec3_oSet(0, linear);
         }
 
         public void SetAngularVelocity(final idVec3 angular) {
-            current.spatialVelocity.SubVec3(1).oSet(angular);
+            current.spatialVelocity.SubVec3_oSet(1, angular);
         }
 
         public void SetFriction(float linear, float angular, float contact) {
@@ -3964,8 +3964,8 @@ public class Physics_AF {
         }
 
         public void AddForce(final idVec3 point, final idVec3 force) {
-            current.externalForce.SubVec3(0).oPluSet(force);
-            current.externalForce.SubVec3(1).oPluSet((point.oMinus(current.worldOrigin)).Cross(force));
+            current.externalForce.SubVec3_oPluSet(0, force);
+            current.externalForce.SubVec3_oPluSet(1, (point.oMinus(current.worldOrigin)).Cross(force));
         }
 
         /*
@@ -5492,8 +5492,8 @@ public class Physics_AF {
                 return;
             }
             idMat3 invWorldInertiaTensor = bodies.oGet(id).current.worldAxis.Transpose().oMultiply(bodies.oGet(id).inverseInertiaTensor.oMultiply(bodies.oGet(id).current.worldAxis));
-            bodies.oGet(id).current.spatialVelocity.SubVec3(0).oPluSet(impulse.oMultiply(bodies.oGet(id).invMass));
-            bodies.oGet(id).current.spatialVelocity.SubVec3(1).oPluSet(invWorldInertiaTensor.oMultiply((point.oMinus(bodies.oGet(id).current.worldOrigin)).Cross(impulse)));
+            bodies.oGet(id).current.spatialVelocity.SubVec3_oPluSet(0, impulse.oMultiply(bodies.oGet(id).invMass));
+            bodies.oGet(id).current.spatialVelocity.SubVec3_oPluSet(1, invWorldInertiaTensor.oMultiply((point.oMinus(bodies.oGet(id).current.worldOrigin)).Cross(impulse)));
             Activate();
         }
 
@@ -5505,8 +5505,8 @@ public class Physics_AF {
             if (id < 0 || id >= bodies.Num()) {
                 return;
             }
-            bodies.oGet(id).current.externalForce.SubVec3(0).oPluSet(force);
-            bodies.oGet(id).current.externalForce.SubVec3(1).oPluSet((point.oMinus(bodies.oGet(id).current.worldOrigin)).Cross(force));
+            bodies.oGet(id).current.externalForce.SubVec3_oPluSet(0, force);
+            bodies.oGet(id).current.externalForce.SubVec3_oPluSet(1, (point.oMinus(bodies.oGet(id).current.worldOrigin)).Cross(force));
             Activate();
         }
 
@@ -5675,7 +5675,7 @@ public class Physics_AF {
             if (id < 0 || id >= bodies.Num()) {
                 return;
             }
-            bodies.oGet(id).current.spatialVelocity.SubVec3(0).oSet(newLinearVelocity);
+            bodies.oGet(id).current.spatialVelocity.SubVec3_oSet(0, newLinearVelocity);
             Activate();
         }
 
@@ -5684,7 +5684,7 @@ public class Physics_AF {
             if (id < 0 || id >= bodies.Num()) {
                 return;
             }
-            bodies.oGet(id).current.spatialVelocity.SubVec3(1).oSet(newAngularVelocity);
+            bodies.oGet(id).current.spatialVelocity.SubVec3_oSet(1, newAngularVelocity);
             Activate();
         }
 
@@ -5915,8 +5915,8 @@ public class Physics_AF {
                 rotation = (body.saved.worldAxis.Transpose().oMultiply(body.current.worldAxis).ToRotation());
 
                 // velocity with which the af is pushed
-                current.pushVelocity.SubVec3(0).oPluSet((body.current.worldOrigin.oMinus(body.saved.worldOrigin)).oDivide(deltaTime * idMath.M_MS2SEC));
-                current.pushVelocity.SubVec3(1).oPluSet(rotation.GetVec().oMultiply((float) -DEG2RAD(rotation.GetAngle())).oDivide(deltaTime * idMath.M_MS2SEC));
+                current.pushVelocity.SubVec3_oPluSet(0, (body.current.worldOrigin.oMinus(body.saved.worldOrigin)).oDivide(deltaTime * idMath.M_MS2SEC));
+                current.pushVelocity.SubVec3_oPluSet(1, rotation.GetVec().oMultiply((float) -DEG2RAD(rotation.GetAngle())).oDivide(deltaTime * idMath.M_MS2SEC));
             }
         }
 
@@ -6614,16 +6614,17 @@ public class Physics_AF {
             for (i = 0; i < contactConstraints.Num(); i++) {
                 body = contactConstraints.oGet(i).body1;
                 normal = contactConstraints.oGet(i).GetContact().normal;
-                if (normal.oMultiply(body.next.spatialVelocity.SubVec3(0)) <= 0.0f) {
-                    body.next.spatialVelocity.SubVec3(0).oMinSet(normal.oMultiply(1.0001f * (normal.oMultiply(body.next.spatialVelocity.SubVec3(0)))));
+                final float v = normal.oMultiply(body.next.spatialVelocity.SubVec3(0));
+                if (v <= 0.0f) {
+                    body.next.spatialVelocity.SubVec3_oMinSet(0, normal.oMultiply(1.0001f * v));
                 }
                 body = contactConstraints.oGet(i).body2;
                 if (null == body) {
                     continue;
                 }
                 normal = normal.oNegative();
-                if (normal.oMultiply(body.next.spatialVelocity.SubVec3(0)) <= 0.0f) {
-                    body.next.spatialVelocity.SubVec3(0).oMinSet(normal.oMultiply(1.0001f * (normal.oMultiply(body.next.spatialVelocity.SubVec3(0)))));
+                if (v <= 0.0f) {
+                    body.next.spatialVelocity.SubVec3_oMinSet(0, normal.oMultiply(1.0001f * v));
                 }
             }
 // }
@@ -6692,7 +6693,7 @@ public class Physics_AF {
                     // cap the linear velocity
                     vSqr = body.next.spatialVelocity.SubVec3(0).LengthSqr();
                     if (vSqr > Square(maxLinearVelocity)) {
-                        body.next.spatialVelocity.SubVec3(0).oMulSet(idMath.InvSqrt(vSqr) * maxLinearVelocity);
+                        body.next.spatialVelocity.SubVec3_oMulSet(0, idMath.InvSqrt(vSqr) * maxLinearVelocity);
                     }
                 }
 
@@ -6700,7 +6701,7 @@ public class Physics_AF {
                     // cap the angular velocity
                     vSqr = body.next.spatialVelocity.SubVec3(1).LengthSqr();
                     if (vSqr > Square(maxAngularVelocity)) {
-                        body.next.spatialVelocity.SubVec3(1).oMulSet(idMath.InvSqrt(vSqr) * maxAngularVelocity);
+                        body.next.spatialVelocity.SubVec3_oMulSet(1, idMath.InvSqrt(vSqr) * maxAngularVelocity);
                     }
                 }
             }
@@ -6726,8 +6727,8 @@ public class Physics_AF {
                 body.next.worldAxis.OrthoNormalizeSelf();
 
                 // linear and angular friction
-                body.next.spatialVelocity.SubVec3(0).oMinSet(body.next.spatialVelocity.SubVec3(0).oMultiply(body.linearFriction));
-                body.next.spatialVelocity.SubVec3(1).oMinSet(body.next.spatialVelocity.SubVec3(1).oMultiply(body.angularFriction));
+                body.next.spatialVelocity.SubVec3_oMinSet(0, body.next.spatialVelocity.SubVec3(0).oMultiply(body.linearFriction));
+                body.next.spatialVelocity.SubVec3_oMinSet(1, body.next.spatialVelocity.SubVec3(1).oMultiply(body.angularFriction));
             }
         }
 
@@ -6823,7 +6824,7 @@ public class Physics_AF {
             // collision point relative to the body center of mass
             r = collision.c.point.oMinus(body.current.worldOrigin.oPlus(body.centerOfMass.oMultiply(body.current.worldAxis)));
             // the velocity at the collision point
-            velocity = body.current.spatialVelocity.SubVec3(0).oPlus(body.current.spatialVelocity.SubVec3(1).Cross(r));
+            velocity = body.current.spatialVelocity.SubVec3_oPluSet(0, body.current.spatialVelocity.SubVec3(1).Cross(r));
             // subtract velocity of other entity
             velocity.oMinSet(info.velocity);
             // never stick
@@ -6949,7 +6950,7 @@ public class Physics_AF {
             for (i = 0; i < bodies.Num(); i++) {
                 body = bodies.oGet(i);
                 // add gravitational force
-                body.current.externalForce.SubVec3(0).oPluSet(gravityVector.oMultiply(body.mass));
+                body.current.externalForce.SubVec3_oPluSet(0, gravityVector.oMultiply(body.mass));
             }
         }
 

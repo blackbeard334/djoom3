@@ -1814,6 +1814,8 @@ public class Vector {
             return 6;
         }
 
+        /** @deprecated returns readonly vector */
+        @Deprecated
         public final idVec3 SubVec3(int index) {
 //	return *reinterpret_cast<const idVec3 *>(p + index * 3);
             return new idVec3(p[index *= 3], p[index + 1], p[index + 2]);
@@ -1882,6 +1884,38 @@ public class Vector {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
+        public void SubVec3_oSet(final int i, final idVec3 v) {
+            System.arraycopy(v.ToFloatPtr(), 0, p, i * 3, 3);
+        }
+
+        public idVec3 SubVec3_oPluSet(final int i, final idVec3 v) {
+            final int off = i * 3;
+            p[off + 0] += v.x;
+            p[off + 1] += v.y;
+            p[off + 2] += v.z;
+
+            return new idVec3(p, off);
+        }
+
+        public idVec3 SubVec3_oMinSet(final int i, final idVec3 v) {
+            return SubVec3_oPluSet(i, v.oNegative());
+        }
+
+        public void SubVec3_oMulSet(final int i, final float v) {
+            final int off = i * 3;
+            p[off + 0] *= v;
+            p[off + 1] *= v;
+            p[off + 2] *= v;
+        }
+
+        public float SubVec3_Normalize(final int i) {
+            idVec3 v = this.SubVec3(i);
+            final float normalize = v.Normalize();
+
+            this.SubVec3_oSet(i, v);
+
+            return normalize;
+        }
     }
 
     //===============================================================

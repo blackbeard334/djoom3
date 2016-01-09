@@ -492,8 +492,8 @@ public class Physics_Base {
 
             contactInfo_t[] contact = {contacts.oGet(index)};
 
-            dir.SubVec3(0).oSet(gravityNormal);
-            dir.SubVec3(1).oSet(getVec3_origin());
+            dir.SubVec3_oSet(0, gravityNormal);
+            dir.SubVec3_oSet(1, getVec3_origin());
             num = gameLocal.clip.Contacts(contact, 10, clipModel.GetOrigin(), dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
             contacts.oSet(index, contact[0]);
             contacts.SetNum(index + num, false);

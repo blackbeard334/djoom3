@@ -10,6 +10,7 @@ import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
 import neo.idlib.math.Random;
 import neo.idlib.math.Random.idRandom;
+import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Vector.idVecX;
@@ -26,17 +27,17 @@ public class idMatX {
 //
 //===============================================================
 
-    static final int MATX_MAX_TEMP = 1024;
+    static final  int     MATX_MAX_TEMP       = 1024;
     //
     public static boolean DISABLE_RANDOM_TEST = false;
     //
-    private int numRows;                                        // number of rows
-    private int numColumns;                                     // number of columns
-    private int alloced;                                        // floats allocated, if -1 then mat points to data set with SetData
-    private float[] mat;					// memory the matrix is stored
-    private static float[] temp = new float[MATX_MAX_TEMP + 4];	// used to store intermediate results
-    private static int tempPtr;                                 // pointer to 16 byte aligned temporary memory
-    private static int tempIndex;				// index into memory pool, wraps around
+    private int     numRows;                // number of rows
+    private int     numColumns;             // number of columns
+    private int     alloced;                // floats allocated, if -1 then mat points to data set with SetData
+    private float[] mat;                    // memory the matrix is stored
+    private static float[] temp = new float[MATX_MAX_TEMP + 4];    // used to store intermediate results
+    private static int tempPtr;             // pointer to 16 byte aligned temporary memory
+    private static int tempIndex;           // index into memory pool, wraps around
     //
     //
 
@@ -1623,6 +1624,8 @@ public class idMatX {
         return numRows * numColumns;
     }
 
+    /** @deprecated returns readonly vector */
+    @Deprecated
     public idVec6 SubVec6(int row) {// interpret beginning of row as a const idVec6
         assert (numColumns >= 6 && row >= 0 && row < numRows);
 //	return *reinterpret_cast<const idVec6 *>(mat + row * numColumns);
@@ -6185,5 +6188,21 @@ public class idMatX {
 
     public void arraycopy(final float[] src, final int destPos, final int length) {
         System.arraycopy(src, 0, mat, destPos * numColumns, length);
+    }
+
+    public void SubVec63_oSet(final int vec6, final int vec3, final idVec3 v) {
+        assert (numColumns >= 6 && vec6 >= 0 && vec6 < numRows);
+
+        final int offset = vec6 * 6 + vec3 * 3;
+        mat[offset + 0] = v.x;
+        mat[offset + 1] = v.y;
+        mat[offset + 2] = v.z;
+    }
+
+    public void SubVec63_Zero(final int vec6, final int vec3) {
+        assert (numColumns >= 6 && vec6 >= 0 && vec6 < numRows);
+
+        final int offset = vec6 * 6 + vec3 * 3;
+        mat[offset + 0] = mat[offset + 1] = mat[offset + 2] = 0;
     }
 };

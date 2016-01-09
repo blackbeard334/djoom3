@@ -867,10 +867,10 @@ public class Physics_RigidBody {
 
             contacts.SetNum(10, false);
 
-            dir.SubVec3(0).oSet(current.i.linearMomentum.oPlus(gravityVector.oMultiply(current.lastTimeStep * mass)));
-            dir.SubVec3(1).oSet(current.i.angularMomentum);
-            dir.SubVec3(0).Normalize();
-            dir.SubVec3(1).Normalize();
+            dir.SubVec3_oSet(0, current.i.linearMomentum.oPlus(gravityVector.oMultiply(current.lastTimeStep * mass)));
+            dir.SubVec3_oSet(1, current.i.angularMomentum);
+            dir.SubVec3_Normalize(0);
+            dir.SubVec3_Normalize(1);
             num = gameLocal.clip.Contacts(contacts.Ptr(contactInfo_t[].class), 10, clipModel.GetOrigin(),
                     dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
             contacts.SetNum(num, false);
@@ -887,8 +887,8 @@ public class Physics_RigidBody {
             rotation = (saved.i.orientation.oMultiply(current.i.orientation)).ToRotation();
 
             // velocity with which the af is pushed
-            current.pushVelocity.SubVec3(0).oPluSet((current.i.position.oMinus(saved.i.position)).oDivide(deltaTime * idMath.M_MS2SEC));
-            current.pushVelocity.SubVec3(1).oPluSet(rotation.GetVec().oMultiply((float) -DEG2RAD(rotation.GetAngle())).oDivide(deltaTime * idMath.M_MS2SEC));
+            current.pushVelocity.SubVec3_oPluSet(0, (current.i.position.oMinus(saved.i.position)).oDivide(deltaTime * idMath.M_MS2SEC));
+            current.pushVelocity.SubVec3_oPluSet(1, rotation.GetVec().oMultiply((float) -DEG2RAD(rotation.GetAngle())).oDivide(deltaTime * idMath.M_MS2SEC));
         }
 
         @Override
