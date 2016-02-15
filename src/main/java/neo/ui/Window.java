@@ -637,7 +637,8 @@ public class Window {
             }
         }
 
-        public void SetupBackground() {
+        private static int DBG_SetupBackground = 0;
+        public void SetupBackground() {    DBG_SetupBackground++;
             if (backGroundName.Length() != 0) {
                 background = declManager.FindMaterial(backGroundName.data);
                 background.SetImageClassifications(1);    // just for resource tracking

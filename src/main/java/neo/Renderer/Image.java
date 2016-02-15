@@ -644,12 +644,15 @@ public class Image {
                 if (tmu.current2DMap != texNum) {
                     tmu.current2DMap = texNum;
                     qglBindTexture(GL_TEXTURE_2D, texNum);
-                }
-            } else if (type == TT_CUBIC) {
-                if (tmu.currentCubeMap != texNum) {
-                    tmu.currentCubeMap = texNum;
-                    qglBindTexture(GL_TEXTURE_CUBE_MAP/*_EXT*/, texNum);
-                }
+                    if (texNum == 25){
+                        System.out.println("Blaaaaaaasphemy!");
+            }
+        }
+    } else if (type == TT_CUBIC) {
+        if (tmu.currentCubeMap != texNum) {
+            tmu.currentCubeMap = texNum;
+            qglBindTexture(GL_TEXTURE_CUBE_MAP/*_EXT*/, texNum);
+        }
             } else if (type == TT_3D) {
                 if (tmu.current3DMap != texNum) {
                     tmu.current3DMap = texNum;
@@ -662,6 +665,7 @@ public class Image {
                 qglPrioritizeTextures(1, texNum, priority);
             }
         }
+        private static int DBG_Bind = 0;
 
 
         /*
@@ -827,6 +831,7 @@ public class Image {
 //            scaledBuffer = null;
             // generate the texture number
             texNum = qglGenTextures();
+            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
             internalFormat = SelectInternalFormat(pic, 1, width, height, depth, isMonochrome);
@@ -1051,6 +1056,7 @@ public class Image {
             // FIXME: allow picmip here
             // generate the texture number
             texNum = qglGenTextures();
+            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
             // this function doesn't need to know it is 3D, so just make it very "tall"
@@ -1184,6 +1190,7 @@ public class Image {
 
             // generate the texture number
             texNum = qglGenTextures();
+            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
             internalFormat = SelectInternalFormat(pics, 6, width, height, depth, isMonochrome);
@@ -2164,7 +2171,7 @@ public class Image {
             // god i love last minute hacks :-)
             // me too.
             if (com_machineSpec.GetInteger() >= 1 && com_videoRam.GetInteger() >= 128 && imgName.Icmpn("lights/", 7) == 0) {
-//                return false;//TODO:enable this by using openCL for the values above.
+                return false;//TODO:enable this by using openCL for the values above.
             }
 
             if (imgName.toString().contains("mars")
@@ -2281,6 +2288,7 @@ public class Image {
 
             // generate the texture number
             texNum = qglGenTextures();
+            System.out.println(imgName + ": " + texNum);
 
 //            if (texNum == 58) {
 //                DBG_UploadPrecompressedImage = data.duplicate();
@@ -2421,10 +2429,15 @@ public class Image {
          Absolutely every image goes through this path
          On exit, the idImage will have a valid OpenGL texture number that can be bound
          ===============
-         */
+         */private static int DBG_ActuallyLoadImage = 0;
         public void ActuallyLoadImage(boolean checkForPrecompressed, boolean fromBackEnd) {
             final int[] width = {0}, height = {0};
             ByteBuffer pic = null;
+
+            if (imgName.equals("guis/assets/splash/launch")) {
+//                return;
+            }
+//            System.out.println((DBG_ActuallyLoadImage++) + " " + imgName);
 
             // this is the ONLY place generatorFunction will ever be called
             if (generatorFunction != null) {
