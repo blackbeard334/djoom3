@@ -2929,14 +2929,9 @@ public class Session_local {
 
         public void LoadLoadingGui(final String mapName) {
             // load / program a gui to stay up on the screen while loading
-            idStr stripped = new idStr(mapName);
-            stripped.StripFileExtension();
-            stripped.StripPath();
+            idStr stripped = new idStr(mapName).StripFileExtension().StripPath();
 
-//            char[] guiMap = new char[MAX_STRING_CHARS];
-            String guiMap;
-            String va = va("guis/map/%s" + MAX_STRING_CHARS + "s.gui", stripped.toString());
-            guiMap = va.substring(0, va.length() >= MAX_STRING_CHARS ? MAX_STRING_CHARS : va.length() - 1);//TODO:check conditions
+            final String guiMap = va("guis/map/%." + MAX_STRING_CHARS + "s.gui", stripped.toString());//char guiMap[ MAX_STRING_CHARS ];
             // give the gamecode a chance to override
             game.GetMapLoadingGUI(guiMap.toCharArray());
 

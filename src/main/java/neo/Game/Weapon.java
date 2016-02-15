@@ -1001,8 +1001,7 @@ public class Weapon {
                     gameLocal.Warning("Unknown projectile '%s' in weapon '%s'", projectileName, objectName);
                 } else {
                     final String spawnclass = projectileDef.dict.GetString("spawnclass");
-                    idTypeInfo cls = idClass.GetClass(spawnclass);
-                    if (null == cls || !cls.IsType(idProjectile.class)) {
+                    if (!idProjectile.class.getSimpleName().equals(spawnclass)) {
                         gameLocal.Warning("Invalid spawnclass '%s' on projectile '%s' (used by weapon '%s')", spawnclass, projectileName, objectName);
                     } else {
                         projectileDict.oSet(projectileDef.dict);

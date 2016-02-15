@@ -377,13 +377,13 @@ public class Material {
                 + (Integer.SIZE * 2)
                 + Integer.SIZE;
 
-        public final idCinematic[] cinematic;
-        public final idImage[] image;
-        public texgen_t texgen = texgen_t.values()[0];
+        public final idCinematic[] cinematic = {null};
+        public final idImage[]     image     = {null};
+        public       texgen_t      texgen    = texgen_t.values()[0];
         public boolean hasMatrix;
-        public final int[][] matrix = new int[2][3];	// we only allow a subset of the full projection matrix
+        public final int[][]          matrix  = new int[2][3];    // we only allow a subset of the full projection matrix
         // dynamic image variables
-        public dynamicidImage_t dynamic = dynamicidImage_t.values()[0];
+        public       dynamicidImage_t dynamic = dynamicidImage_t.values()[0];
         public int width, height;
         public int dynamicFrameCount;
 
@@ -392,13 +392,11 @@ public class Material {
         public textureStage_t() {
 
             blaCounter++;
-            this.cinematic = new idCinematic[1];
-            this.image = new idImage[1];
         }
 
         private textureStage_t(textureStage_t texture) {
-            this.cinematic = texture.cinematic;//pointer
-            this.image = texture.image;//pointer
+            this.cinematic[0] = texture.cinematic[0];//pointer
+            this.image[0] = texture.image[0];//pointer
             this.hasMatrix = texture.hasMatrix;
             System.arraycopy(texture.matrix[0], 0, this.matrix[0], 0, this.matrix[0].length);
             System.arraycopy(texture.matrix[1], 0, this.matrix[1], 0, this.matrix[1].length);
@@ -465,19 +463,22 @@ public class Material {
                 + Float.SIZE
                 + Pointer.SIZE;//newShaderStage_t
 
-        int conditionRegister;          // if registers[conditionRegister] == 0, skip stage
-        stageLighting_t lighting;	// determines which passes interact with lights
-        int drawStateBits;
-        colorStage_t color;
-        boolean hasAlphaTest;
-        int alphaTestRegister;
+        int             conditionRegister;      // if registers[conditionRegister] == 0, skip stage
+        stageLighting_t lighting;               // determines which passes interact with lights
+        int             drawStateBits;
+        colorStage_t    color;
+        boolean         hasAlphaTest;
+        int             alphaTestRegister;
         public final textureStage_t texture;
         stageVertexColor_t vertexColor = stageVertexColor_t.values()[0];
-        boolean ignoreAlphaTest;	// this stage should act as translucent, even if the surface is alpha tested
-//        
-        float privatePolygonOffset;	// a per-stage polygon offset
-//
-        newShaderStage_t newStage;	// vertex / fragment program based stage
+        boolean          ignoreAlphaTest;       // this stage should act as translucent, even if the surface is alpha tested
+        //
+        float            privatePolygonOffset;  // a per-stage polygon offset
+        //
+        newShaderStage_t newStage;              // vertex / fragment program based stage
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
 
         public shaderStage_t() {
             this.lighting = stageLighting_t.values()[0];
@@ -872,7 +873,7 @@ public class Material {
          */        private static int DEBUG_Parse = 0;
 
         @Override
-        public boolean Parse(final String text, final int textLength) {
+        public boolean Parse(final String text, final int textLength) {DEBUG_Parse++;
             idLexer src = new idLexer();
 //	idToken	token;
             mtrParsingData_s parsingData = new mtrParsingData_s();

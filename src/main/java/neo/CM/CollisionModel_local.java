@@ -792,7 +792,7 @@ public class CollisionModel_local {
                 model.node.brushes = trmBrushes[0];
             }
             // model bounds
-            model.bounds = trm.bounds;
+            model.bounds.oSet(trm.bounds);
             // convex
             model.isConvex = trm.isConvex;
 
