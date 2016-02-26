@@ -15,6 +15,7 @@ import static neo.Sound.snd_system.idSoundSystemLocal.s_realTimeDecoding;
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.stobb;
 import static neo.framework.FileSystem_h.fileSystem;
+import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
 import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.LittleLong;
 import static neo.idlib.Lib.LittleRevBytes;
@@ -78,6 +79,7 @@ public class snd_wavefile {
 //	memset( &mpwfx, 0, sizeof( waveformatextensible_t ) );
             mpwfx = new waveformatextensible_s();
             mhmmio = null;
+            mck = new mminfo_s();
             mdwSize = 0;
             mseekBase = 0;
             mbIsReadingFromMemory = false;
@@ -136,13 +138,12 @@ public class snd_wavefile {
             }
 
             // After the reset, the size of the wav file is mck.cksize so store it now
-            mdwSize = mck.cksize / 2;//sizeof(short);
+            mdwSize = mck.cksize / Short.BYTES;
             mMemSize = mck.cksize;
 
             if (mck.cksize != 0xffffffff) {
                 if (pwfx != null) {
-//                    pwfx = mpwfx;//memcpy(pwfx, (waveformatex_t *) & mpwfx, sizeof(waveformatex_t));
-                    throw new TODO_Exception();
+                    pwfx[0] = new waveformatex_s(mpwfx.Format);//memcpy(pwfx, (waveformatex_t *) & mpwfx, sizeof(waveformatex_t));
                 }
                 return 0;
             }
@@ -266,36 +267,35 @@ public class snd_wavefile {
         //       beginning of the file again 
         //-----------------------------------------------------------------------------
         public int ResetFile() {
-            throw new TODO_Exception();
-//            if (mbIsReadingFromMemory) {
-//                mpbDataCur = mpbData;
-//            } else {
-//                if (mhmmio == null) {
-//                    return -1;
-//                }
-//
-//                // Seek to the data
-//                if (-1 == mhmmio.Seek(mckRiff.dwDataOffset + sizeof(fourcc), FS_SEEK_SET)) {
-//                    return -1;
-//                }
-//
-//                // Search the input file for for the 'fmt ' chunk.
-//                mck.ckid = 0;
-//                do {
-//                    byte ioin;
-//                    if (!mhmmio.Read(ioin, 1)) {
-//                        return -1;
-//                    }
-//                    mck.ckid = (mck.ckid >> 8) | (ioin << 24);
-//                } while (mck.ckid != mmioFOURCC('d', 'a', 't', 'a'));
-//
-//                mhmmio.Read(mck.cksize, 4);
-//                assert (!isOgg);
-//                mck.cksize = LittleLong(mck.cksize);
-//                mseekBase = mhmmio.Tell();
-//            }
-//
-//            return 0;
+            if (mbIsReadingFromMemory) {
+                mpbDataCur = mpbData;
+            } else {
+                if (mhmmio == null) {
+                    return -1;
+                }
+
+                // Seek to the data
+                if (!mhmmio.Seek(mckRiff.dwDataOffset + Integer.BYTES, FS_SEEK_SET)) {
+                    return -1;
+                }
+
+                // Search the input file for for the 'fmt ' chunk.
+                mck.ckid = 0;
+                do {
+                    ByteBuffer ioin = ByteBuffer.allocate(1);
+                    if (0 == mhmmio.Read(ioin, 1)) {
+                        return -1;
+                    }
+                    mck.ckid = Integer.toUnsignedLong((int) (mck.ckid >>> 8) | (ioin.get() << 24));
+                } while (mck.ckid != mmioFOURCC('d', 'a', 't', 'a'));
+
+                mck.cksize = mhmmio.ReadInt();
+                assert (!isOgg);
+                mck.cksize = LittleLong(mck.cksize);
+                mseekBase = mhmmio.Tell();
+            }
+
+            return 0;
         }
 
         public int GetOutputSize() {
@@ -344,12 +344,12 @@ public class snd_wavefile {
 
             // Expect the 'fmt' chunk to be at least as large as <PCMWAVEFORMAT>;
             // if there are extra parameters at the end, we'll ignore them
-            if (ckIn.cksize < pcmwaveformat_s.SIZE_B) {
+            if (ckIn.cksize < pcmwaveformat_s.BYTES) {
                 return -1;
             }
 
             // Read the 'fmt ' chunk into <pcmWaveFormat>.
-            if (mhmmio.Read(pcmWaveFormat) != pcmwaveformat_s.SIZE_B) {
+            if (mhmmio.Read(pcmWaveFormat) != pcmwaveformat_s.BYTES) {
                 return -1;
             }
             assert (!isOgg);

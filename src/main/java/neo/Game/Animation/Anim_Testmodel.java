@@ -51,7 +51,7 @@ import static neo.idlib.Lib.idLib.common;
 import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_LINEAR;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_NOSTOP;
@@ -1033,7 +1033,7 @@ public class Anim_Testmodel {
                 RunPhysics();
 
                 physicsObj.GetAngles(ang);
-                physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, ang, new idAngles(0, g_testModelRotate.GetFloat() * 360.0f / 60.0f, 0), ang_zero);
+                physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, ang, new idAngles(0, g_testModelRotate.GetFloat() * 360.0f / 60.0f, 0), getAng_zero());
 
                 idClipModel clip = physicsObj.GetClipModel();
                 if (clip != null && animator.ModelDef() != null) {

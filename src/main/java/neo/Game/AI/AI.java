@@ -85,7 +85,6 @@ import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEPARTICLES;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
-
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
@@ -177,7 +176,7 @@ import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.TraceModel.idTraceModel;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Math_h.MS2SEC;
@@ -185,13 +184,13 @@ import static neo.idlib.math.Math_h.SEC2MS;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Quat.idQuat;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -219,9 +218,9 @@ public class AI {
     static final int   ATTACK_ON_DAMAGE   = 1;
     static final int   ATTACK_ON_ACTIVATE = 2;
     static final int   ATTACK_ON_SIGHT    = 4;
-//
-// defined in script/ai_base.script.  please keep them up to date.
-
+    
+    //
+    // defined in script/ai_base.script.  please keep them up to date.
     public enum moveType_t {
 
         MOVETYPE_DEAD,
@@ -231,7 +230,6 @@ public class AI {
         MOVETYPE_STATIC,
         NUM_MOVETYPES
     };
-//
 
     public enum moveCommand_t {
 
@@ -264,9 +262,10 @@ public class AI {
         NUM_TALK_STATES
     };
 
+    //
     // status results from move commands
-// make sure to change script/doom_defs.script if you add any, or change their order
-//
+    // make sure to change script/doom_defs.script if you add any, or change their order
+    //
     public enum moveStatus_t {
 
         MOVE_STATUS_DONE,
@@ -285,12 +284,12 @@ public class AI {
     // obstacle avoidance
     public static class obstaclePath_s {
 
-        idVec3   seekPos;                // seek position avoiding obstacles
-        idEntity firstObstacle;            // if != NULL the first obstacle along the path
-        idVec3   startPosOutsideObstacles;    // start position outside obstacles
-        idEntity startPosObstacle;        // if != NULL the obstacle containing the start position
-        idVec3   seekPosOutsideObstacles;         // seek position outside obstacles
-        idEntity seekPosObstacle;        // if != NULL the obstacle containing the seek position
+        idVec3   seekPos;                   // seek position avoiding obstacles
+        idEntity firstObstacle;             // if != NULL the first obstacle along the path
+        idVec3   startPosOutsideObstacles;  // start position outside obstacles
+        idEntity startPosObstacle;          // if != NULL the obstacle containing the start position
+        idVec3   seekPosOutsideObstacles;   // seek position outside obstacles
+        idEntity seekPosObstacle;           // if != NULL the obstacle containing the seek position
     };
 
     // path prediction
@@ -304,16 +303,14 @@ public class AI {
 
     public static class predictedPath_s {
 
-        idVec3 endPos;                    // final position
-        idVec3 endVelocity;                // velocity at end position
-        idVec3 endNormal;                // normal of blocking surface
-        int    endTime;                    // time predicted
+        idVec3 endPos;                      // final position
+        idVec3 endVelocity;                 // velocity at end position
+        idVec3 endNormal;                   // normal of blocking surface
+        int    endTime;                     // time predicted
         int    endEvent;                    // event that stopped the prediction
-        static idEntity blockingEntity;        // entity that blocks the movement
+        static idEntity blockingEntity;     // entity that blocks the movement
     };
 
-//
-//    
 
     static class particleEmitter_s {
 
@@ -350,13 +347,13 @@ public class AI {
         public moveCommand_t         moveCommand;
         public moveStatus_t          moveStatus;
         public idVec3                moveDest;
-        public idVec3                moveDir;            // used for wandering and slide moves
+        public idVec3                moveDir;           // used for wandering and slide moves
         public idEntityPtr<idEntity> goalEntity;
-        public idVec3                goalEntityOrigin;         // move to entity uses this to avoid checking the floor position every frame
+        public idVec3                goalEntityOrigin;  // move to entity uses this to avoid checking the floor position every frame
         public int                   toAreaNum;
         public int                   startTime;
         public int                   duration;
-        public float                 speed;            // only used by flying creatures
+        public float                 speed;             // only used by flying creatures
         public float                 range;
         public float                 wanderYaw;
         public int                   nextWanderTime;
@@ -372,10 +369,10 @@ public class AI {
             moveType = MOVETYPE_ANIM;
             moveCommand = MOVE_NONE;
             moveStatus = MOVE_STATUS_DONE;
-            moveDest.Zero();
-            moveDir.Set(1.0f, 0.0f, 0.0f);
+            moveDest = new idVec3();
+            moveDir = new idVec3(1.0f, 0.0f, 0.0f);
             goalEntity = null;
-            goalEntityOrigin.Zero();
+            goalEntityOrigin = new idVec3();
             toAreaNum = 0;
             startTime = 0;
             duration = 0;
@@ -385,7 +382,7 @@ public class AI {
             nextWanderTime = 0;
             blockTime = 0;
             obstacle = null;
-            lastMoveOrigin = vec3_origin;
+            lastMoveOrigin = getVec3_origin();
             lastMoveTime = 0;
             anim = 0;
         }
@@ -574,153 +571,153 @@ public class AI {
         // CLASS_PROTOTYPE( idAI );
 
         // navigation
-        protected idAAS                            aas;
-        protected int                              travelFlags;
+        protected       idAAS                            aas;
+        protected       int                              travelFlags;
         //
-        protected idMoveState                      move;
-        protected idMoveState                      savedMove;
+        protected       idMoveState                      move;
+        protected       idMoveState                      savedMove;
         //
-        protected float                            kickForce;
-        protected boolean                          ignore_obstacles;
-        protected float                            blockedRadius;
-        protected int                              blockedMoveTime;
-        protected int                              blockedAttackTime;
+        protected       float                            kickForce;
+        protected       boolean                          ignore_obstacles;
+        protected       float                            blockedRadius;
+        protected       int                              blockedMoveTime;
+        protected       int                              blockedAttackTime;
         //
         // turning
-        protected float                            ideal_yaw;
-        protected float                            current_yaw;
-        protected float                            turnRate;
-        protected float                            turnVel;
-        protected float                            anim_turn_yaw;
-        protected float                            anim_turn_amount;
-        protected float                            anim_turn_angles;
+        protected       float                            ideal_yaw;
+        protected       float                            current_yaw;
+        protected       float                            turnRate;
+        protected       float                            turnVel;
+        protected       float                            anim_turn_yaw;
+        protected       float                            anim_turn_amount;
+        protected       float                            anim_turn_angles;
         //
         // physics
-        protected idPhysics_Monster                physicsObj;
+        protected       idPhysics_Monster                physicsObj;
         //
         // flying
-        protected int/*jointHandle_t*/             flyTiltJoint;
-        protected float                            fly_speed;
-        protected float                            fly_bob_strength;
-        protected float                            fly_bob_vert;
-        protected float                            fly_bob_horz;
-        protected int                              fly_offset;               // prefered offset from player's view
-        protected float                            fly_seek_scale;
-        protected float                            fly_roll_scale;
-        protected float                            fly_roll_max;
-        protected float                            fly_roll;
-        protected float                            fly_pitch_scale;
-        protected float                            fly_pitch_max;
-        protected float                            fly_pitch;
+        protected       int/*jointHandle_t*/             flyTiltJoint;
+        protected       float                            fly_speed;
+        protected       float                            fly_bob_strength;
+        protected       float                            fly_bob_vert;
+        protected       float                            fly_bob_horz;
+        protected       int                              fly_offset;               // prefered offset from player's view
+        protected       float                            fly_seek_scale;
+        protected       float                            fly_roll_scale;
+        protected       float                            fly_roll_max;
+        protected       float                            fly_roll;
+        protected       float                            fly_pitch_scale;
+        protected       float                            fly_pitch_max;
+        protected       float                            fly_pitch;
         //
-        protected boolean                          allowMove;                // disables any animation movement
-        protected boolean                          allowHiddenMovement;      // allows character to still move around while hidden
-        protected boolean                          disableGravity;           // disables gravity and allows vertical movement by the animation
-        protected boolean                          af_push_moveables;        // allow the articulated figure to push moveable objects
+        protected       boolean                          allowMove;                // disables any animation movement
+        protected       boolean                          allowHiddenMovement;      // allows character to still move around while hidden
+        protected       boolean                          disableGravity;           // disables gravity and allows vertical movement by the animation
+        protected       boolean                          af_push_moveables;        // allow the articulated figure to push moveable objects
         //
         // weapon/attack vars
-        protected boolean                          lastHitCheckResult;
-        protected int                              lastHitCheckTime;
-        protected int                              lastAttackTime;
-        protected float                            melee_range;
-        protected float                            projectile_height_to_distance_ratio;    // calculates the maximum height a projectile can be thrown
-        protected idList<idVec3>                   missileLaunchOffset;
+        protected       boolean                          lastHitCheckResult;
+        protected       int                              lastHitCheckTime;
+        protected       int                              lastAttackTime;
+        protected       float                            melee_range;
+        protected       float                            projectile_height_to_distance_ratio;    // calculates the maximum height a projectile can be thrown
+        protected       idList<idVec3>                   missileLaunchOffset;
         //
-        protected idDict                           projectileDef;
-        protected idClipModel                      projectileClipModel;
-        protected float                            projectileRadius;
-        protected float                            projectileSpeed;
-        protected idVec3                           projectileVelocity;
-        protected idVec3                           projectileGravity;
-        protected idEntityPtr<idProjectile>        projectile;
-        protected idStr                            attack;
+        protected       idDict                           projectileDef;
+        protected       idClipModel                      projectileClipModel;
+        protected       float                            projectileRadius;
+        protected       float                            projectileSpeed;
+        protected       idVec3                           projectileVelocity;
+        protected       idVec3                           projectileGravity;
+        protected       idEntityPtr<idProjectile>        projectile;
+        protected       idStr                            attack;
         //
         // chatter/talking
-        protected idSoundShader                    chat_snd;
-        protected int                              chat_min;
-        protected int                              chat_max;
-        protected int                              chat_time;
-        protected talkState_t                      talk_state;
-        protected idEntityPtr<idActor>             talkTarget;
+        protected       idSoundShader                    chat_snd;
+        protected       int                              chat_min;
+        protected       int                              chat_max;
+        protected       int                              chat_time;
+        protected       talkState_t                      talk_state;
+        protected       idEntityPtr<idActor>             talkTarget;
         //
         // cinematics
-        protected int                              num_cinematics;
-        protected int                              current_cinematic;
+        protected       int                              num_cinematics;
+        protected       int                              current_cinematic;
         //
-        protected boolean                          allowJointMod;
-        protected idEntityPtr<idEntity>            focusEntity;
-        protected idVec3                           currentFocusPos;
-        protected int                              focusTime;
-        protected int                              alignHeadTime;
-        protected int                              forceAlignHeadTime;
-        protected idAngles                         eyeAng;
-        protected idAngles                         lookAng;
-        protected idAngles                         destLookAng;
-        protected idAngles                         lookMin;
-        protected idAngles                         lookMax;
-        protected idList<Integer/*jointHandle_t*/> lookJoints;
-        protected idList<idAngles>                 lookJointAngles;
-        protected float                            eyeVerticalOffset;
-        protected float                            eyeHorizontalOffset;
-        protected float                            eyeFocusRate;
-        protected float                            headFocusRate;
-        protected int                              focusAlignTime;
+        protected       boolean                          allowJointMod;
+        protected       idEntityPtr<idEntity>            focusEntity;
+        protected       idVec3                           currentFocusPos;
+        protected       int                              focusTime;
+        protected       int                              alignHeadTime;
+        protected       int                              forceAlignHeadTime;
+        protected       idAngles                         eyeAng;
+        protected       idAngles                         lookAng;
+        protected       idAngles                         destLookAng;
+        protected       idAngles                         lookMin;
+        protected       idAngles                         lookMax;
+        protected       idList<Integer/*jointHandle_t*/> lookJoints;
+        protected       idList<idAngles>                 lookJointAngles;
+        protected       float                            eyeVerticalOffset;
+        protected       float                            eyeHorizontalOffset;
+        protected       float                            eyeFocusRate;
+        protected       float                            headFocusRate;
+        protected       int                              focusAlignTime;
         //
         // special fx
-        protected float                            shrivel_rate;
-        protected int                              shrivel_start;
+        protected       float                            shrivel_rate;
+        protected       int                              shrivel_start;
         //
-        protected boolean                          restartParticles;         // should smoke emissions restart
-        protected boolean                          useBoneAxis;              // use the bone vs the model axis
-        protected idList<particleEmitter_s>        particles;                // particle data
+        protected       boolean                          restartParticles;         // should smoke emissions restart
+        protected       boolean                          useBoneAxis;              // use the bone vs the model axis
+        protected       idList<particleEmitter_s>        particles;                // particle data
         //
-        protected renderLight_s                    worldMuzzleFlash;         // positioned on world weapon bone
-        protected int                              worldMuzzleFlashHandle;
-        protected int/*jointHandle_t*/             flashJointWorld;
-        protected int                              muzzleFlashEnd;
-        protected int                              flashTime;
+        protected       renderLight_s                    worldMuzzleFlash;         // positioned on world weapon bone
+        protected       int                              worldMuzzleFlashHandle;
+        protected       int/*jointHandle_t*/             flashJointWorld;
+        protected       int                              muzzleFlashEnd;
+        protected       int                              flashTime;
         //
         // joint controllers
-        protected idAngles                         eyeMin;
-        protected idAngles                         eyeMax;
-        protected int/*jointHandle_t*/             focusJoint;
-        protected int/*jointHandle_t*/             orientationJoint;
+        protected       idAngles                         eyeMin;
+        protected       idAngles                         eyeMax;
+        protected       int/*jointHandle_t*/             focusJoint;
+        protected       int/*jointHandle_t*/             orientationJoint;
         //
         // enemy variables
-        protected idEntityPtr<idActor>             enemy;
-        protected idVec3                           lastVisibleEnemyPos;
-        protected idVec3                           lastVisibleEnemyEyeOffset;
-        protected idVec3                           lastVisibleReachableEnemyPos;
-        protected idVec3                           lastReachableEnemyPos;
-        protected boolean                          wakeOnFlashlight;
+        protected       idEntityPtr<idActor>             enemy;
+        protected       idVec3                           lastVisibleEnemyPos;
+        protected       idVec3                           lastVisibleEnemyEyeOffset;
+        protected       idVec3                           lastVisibleReachableEnemyPos;
+        protected       idVec3                           lastReachableEnemyPos;
+        protected       boolean                          wakeOnFlashlight;
         //
         // script variables
-        protected idScriptBool                     AI_TALK;
-        protected idScriptBool                     AI_DAMAGE;
-        protected idScriptBool                     AI_PAIN;
-        protected idScriptFloat                    AI_SPECIAL_DAMAGE;
-        protected idScriptBool                     AI_DEAD;
-        protected idScriptBool                     AI_ENEMY_VISIBLE;
-        protected idScriptBool                     AI_ENEMY_IN_FOV;
-        protected idScriptBool                     AI_ENEMY_DEAD;
-        protected idScriptBool                     AI_MOVE_DONE;
-        protected idScriptBool                     AI_ONGROUND;
-        protected idScriptBool                     AI_ACTIVATED;
-        protected idScriptBool                     AI_FORWARD;
-        protected idScriptBool                     AI_JUMP;
-        protected idScriptBool                     AI_ENEMY_REACHABLE;
-        protected idScriptBool                     AI_BLOCKED;
-        protected idScriptBool                     AI_OBSTACLE_IN_PATH;
-        protected idScriptBool                     AI_DEST_UNREACHABLE;
-        protected idScriptBool                     AI_HIT_ENEMY;
-        protected idScriptBool                     AI_PUSHED;
+        protected final idScriptBool                     AI_TALK;
+        protected final idScriptBool                     AI_DAMAGE;
+        protected final idScriptBool                     AI_PAIN;
+        protected final idScriptFloat                    AI_SPECIAL_DAMAGE;
+        protected final idScriptBool                     AI_DEAD;
+        protected final idScriptBool                     AI_ENEMY_VISIBLE;
+        protected final idScriptBool                     AI_ENEMY_IN_FOV;
+        protected final idScriptBool                     AI_ENEMY_DEAD;
+        protected final idScriptBool                     AI_MOVE_DONE;
+        protected final idScriptBool                     AI_ONGROUND;
+        protected final idScriptBool                     AI_ACTIVATED;
+        protected final idScriptBool                     AI_FORWARD;
+        protected final idScriptBool                     AI_JUMP;
+        protected final idScriptBool                     AI_ENEMY_REACHABLE;
+        protected final idScriptBool                     AI_BLOCKED;
+        protected final idScriptBool                     AI_OBSTACLE_IN_PATH;
+        protected final idScriptBool                     AI_DEST_UNREACHABLE;
+        protected final idScriptBool                     AI_HIT_ENEMY;
+        protected final idScriptBool                     AI_PUSHED;
         //
         //
 
         public idAI() {
             aas = null;
             travelFlags = TFL_WALK | TFL_AIR;
-
+            move = new idMoveState();
             kickForce = 2048.0f;
             ignore_obstacles = false;
             blockedRadius = 0.0f;
@@ -731,6 +728,7 @@ public class AI {
             anim_turn_yaw = 0.0f;
             anim_turn_amount = 0.0f;
             anim_turn_angles = 0.0f;
+            physicsObj = new idPhysics_Monster();
             fly_offset = 0;
             fly_seek_scale = 1.0f;
             fly_roll_scale = 0.0f;
@@ -750,21 +748,23 @@ public class AI {
             lastAttackTime = 0;
             melee_range = 0.0f;
             projectile_height_to_distance_ratio = 1.0f;
+            missileLaunchOffset = new idList<>();
             projectileDef = null;
-            projectile = null;
+            projectile = new idEntityPtr<>(null);
+            attack = new idStr();
             projectileClipModel = null;
             projectileRadius = 0.0f;
-            projectileVelocity = vec3_origin;
-            projectileGravity = vec3_origin;
+            projectileVelocity = getVec3_origin();
+            projectileGravity = getVec3_origin();
             projectileSpeed = 0.0f;
             chat_snd = null;
             chat_min = 0;
             chat_max = 0;
             chat_time = 0;
             talk_state = TALK_NEVER;
-            talkTarget = null;
+            talkTarget = new idEntityPtr<>(null);
 
-            particles.Clear();
+            particles = new idList<>();
             restartParticles = true;
             useBoneAxis = false;
 
@@ -772,11 +772,11 @@ public class AI {
             worldMuzzleFlash = new renderLight_s();//memset( &worldMuzzleFlash, 0, sizeof ( worldMuzzleFlash ) );
             worldMuzzleFlashHandle = -1;
 
-            enemy = null;
-            lastVisibleEnemyPos.Zero();
-            lastVisibleEnemyEyeOffset.Zero();
-            lastVisibleReachableEnemyPos.Zero();
-            lastReachableEnemyPos.Zero();
+            enemy = new idEntityPtr<>(null);
+            lastVisibleEnemyPos = new idVec3();
+            lastVisibleEnemyEyeOffset = new idVec3();
+            lastVisibleReachableEnemyPos = new idVec3();
+            lastReachableEnemyPos = new idVec3();
             shrivel_rate = 0.0f;
             shrivel_start = 0;
             fl.neverDormant = false;        // AI's can go dormant
@@ -789,20 +789,23 @@ public class AI {
             allowEyeFocus = true;
             allowPain = true;
             allowJointMod = true;
-            focusEntity = null;
+            focusEntity = new idEntityPtr<>(null);
             focusTime = 0;
             alignHeadTime = 0;
             forceAlignHeadTime = 0;
 
-            currentFocusPos.Zero();
-            eyeAng.Zero();
-            lookAng.Zero();
-            destLookAng.Zero();
-            lookMin.Zero();
-            lookMax.Zero();
+            currentFocusPos = new idVec3();
+            eyeAng = new idAngles();
+            lookAng = new idAngles();
+            destLookAng = new idAngles();
+            lookMin = new idAngles();
+            lookMax = new idAngles();
+            
+            lookJoints = new idList<>();
+            lookJointAngles = new idList<>();
 
-            eyeMin.Zero();
-            eyeMax.Zero();
+            eyeMin = new idAngles();
+            eyeMax = new idAngles();
             muzzleFlashEnd = 0;
             flashTime = 0;
             flashJointWorld = INVALID_JOINT;
@@ -816,6 +819,26 @@ public class AI {
             eyeFocusRate = 0.0f;
             headFocusRate = 0.0f;
             focusAlignTime = 0;
+
+            AI_TALK = new idScriptBool();
+            AI_DAMAGE = new idScriptBool();
+            AI_PAIN = new idScriptBool();
+            AI_SPECIAL_DAMAGE = new idScriptFloat();
+            AI_DEAD = new idScriptBool();
+            AI_ENEMY_VISIBLE = new idScriptBool();
+            AI_ENEMY_IN_FOV = new idScriptBool();
+            AI_ENEMY_DEAD = new idScriptBool();
+            AI_MOVE_DONE = new idScriptBool();
+            AI_ONGROUND = new idScriptBool();
+            AI_ACTIVATED = new idScriptBool();
+            AI_FORWARD = new idScriptBool();
+            AI_JUMP = new idScriptBool();
+            AI_ENEMY_REACHABLE = new idScriptBool();
+            AI_BLOCKED = new idScriptBool();
+            AI_OBSTACLE_IN_PATH = new idScriptBool();
+            AI_DEST_UNREACHABLE = new idScriptBool();
+            AI_HIT_ENEMY = new idScriptBool();
+            AI_PUSHED = new idScriptBool();
         }
         // ~idAI();
 
@@ -1112,6 +1135,8 @@ public class AI {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idKeyValue kv;
             idStr jointName = new idStr();
             idAngles jointScale;
@@ -1167,7 +1192,7 @@ public class AI {
             LinkScriptVariables();
 
             fl.takedamage = !spawnArgs.GetBool("noDamage");
-            enemy = null;
+            enemy.oSet(null);
             allowMove = true;
             allowHiddenMovement = false;
 
@@ -1194,7 +1219,7 @@ public class AI {
 
                     // if no scale on any component, then don't bother adding it.  this may be done to
                     // zero out rotation from an inherited entitydef.
-                    if (jointScale != ang_zero) {
+                    if (jointScale != getAng_zero()) {
                         lookJoints.Append(joint);
                         lookJointAngles.Append(jointScale);
                     }
@@ -1273,7 +1298,7 @@ public class AI {
             physicsObj.SetOrigin(GetPhysics().GetOrigin().oPlus(new idVec3(0, 0, CM_CLIP_EPSILON)));
 
             if (num_cinematics != 0) {
-                physicsObj.SetGravity(vec3_origin);
+                physicsObj.SetGravity(getVec3_origin());
             } else {
                 idVec3 gravity = spawnArgs.GetVector("gravityDir", "0 0 -1");
                 gravity.oMulSet(g_gravity.GetFloat());
@@ -1290,19 +1315,19 @@ public class AI {
 
             SetAAS();
 
-            projectile = null;
+            projectile.oSet(null);
             projectileDef = null;
             projectileClipModel = null;
             idStr projectileName = new idStr();
             if (spawnArgs.GetString("def_projectile", "", projectileName) && projectileName.Length() != 0) {
                 projectileDef = gameLocal.FindEntityDefDict(projectileName);
-                CreateProjectile(vec3_origin, viewAxis.oGet(0));
+                CreateProjectile(getVec3_origin(), viewAxis.oGet(0));
                 projectileRadius = projectile.GetEntity().GetPhysics().GetClipModel().GetBounds().GetRadius();
                 projectileVelocity = idProjectile.GetVelocity(projectileDef);
                 projectileGravity = idProjectile.GetGravity(projectileDef);
                 projectileSpeed = projectileVelocity.Length();
 //		delete projectile.GetEntity();
-                projectile = null;
+                projectile.oSet(null);
             }
 
             particles.Clear();
@@ -1448,7 +1473,7 @@ public class AI {
                         statename = "NULL state";
                     }
 
-                    gameLocal.Printf("%4i: %-20s %-20s %s  move: %d\n", e, check.GetEntityDefName(), check.name, statename, check.allowMove);
+                    gameLocal.Printf("%4d: %-20s %-20s %s  move: %d\n", e, check.GetEntityDefName(), check.name, statename, check.allowMove);
                     count++;
                 }
 
@@ -1763,7 +1788,7 @@ public class AI {
 
             result = true;
             for (i = 0; i < numSegments; i++) {
-                gameLocal.clip.Translation(trace, points[i], points[i + 1], clip, mat3_identity, clipmask, ignore);
+                gameLocal.clip.Translation(trace, points[i], points[i + 1], clip, getMat3_identity(), clipmask, ignore);
                 if (trace[0].fraction < 1.0f) {
                     result = gameLocal.GetTraceEntity(trace[0]).equals(targetEntity);
                     break;
@@ -1776,7 +1801,7 @@ public class AI {
                 } else {
                     idBounds bnds = new idBounds(trace[0].endpos);
                     bnds.ExpandSelf(1.0f);
-                    gameRenderWorld.DebugBounds(result ? colorGreen : colorYellow, bnds, vec3_zero, drawtime);
+                    gameRenderWorld.DebugBounds(result ? colorGreen : colorYellow, bnds, getVec3_zero(), drawtime);
                 }
             }
 
@@ -1812,18 +1837,18 @@ public class AI {
             }
 
             // if no velocity or the projectile is not affected by gravity
-            if (projectileSpeed <= 0.0f || projGravity == vec3_origin) {
+            if (projectileSpeed <= 0.0f || projGravity == getVec3_origin()) {
 
                 aimDir.oSet(target.oMinus(firePos));
                 aimDir.Normalize();
 
-                gameLocal.clip.Translation(trace, firePos, target, clip, mat3_identity, clipmask, ignore);
+                gameLocal.clip.Translation(trace, firePos, target, clip, getMat3_identity(), clipmask, ignore);
 
                 if (drawtime != 0) {
                     gameRenderWorld.DebugLine(colorRed, firePos, target, drawtime);
                     idBounds bnds = new idBounds(trace[0].endpos);
                     bnds.ExpandSelf(1.0f);
-                    gameRenderWorld.DebugBounds((trace[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(trace[0]) == targetEntity)) ? colorGreen : colorYellow, bnds, vec3_zero, drawtime);
+                    gameRenderWorld.DebugBounds((trace[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(trace[0]) == targetEntity)) ? colorGreen : colorYellow, bnds, getVec3_zero(), drawtime);
                 }
 
                 return (trace[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(trace[0]) == targetEntity));
@@ -2335,10 +2360,10 @@ public class AI {
             // launch offsets so that anim number can be used without subtracting 1.
             missileLaunchOffset.SetGranularity(1);
             missileLaunchOffset.SetNum(num + 1);
-            missileLaunchOffset.oGet(0).Zero();
+            missileLaunchOffset.oSet(0, new idVec3());
 
             for (i = 1; i <= num; i++) {
-                missileLaunchOffset.oGet(i).Zero();
+                missileLaunchOffset.oSet(i, new idVec3());
                 anim = modelDef.GetAnim(i);
                 if (anim != null) {
                     frame = anim.FindFrameForFrameCommand(FC_LAUNCHMISSILE, command);
@@ -2439,9 +2464,9 @@ public class AI {
             idVec3 modelOrigin;
 
             animator.GetDelta(gameLocal.time - gameLocal.msec, gameLocal.time, delta);
-            delta = axis.oMultiply(delta);
+            delta.oSet(axis.oMultiply(delta));
 
-            if (modelOffset != vec3_zero) {
+            if (modelOffset != getVec3_zero()) {
                 // the pivot of the monster's model is around its origin, and not around the bounding
                 // box's origin, so we have to compensate for this when the model is offset so that
                 // the monster still appears to rotate around it's origin.
@@ -2461,7 +2486,7 @@ public class AI {
             boolean foundPath;
 
             if (ignore_obstacles) {
-                newPos = goalPos;
+                newPos.oSet(goalPos);
                 move.obstacle = null;
                 return;
             }
@@ -2847,7 +2872,7 @@ public class AI {
                     end.z = goalPos.z + DEFAULT_FLY_OFFSET + fly_offset;
                 }
 
-                gameLocal.clip.Translation(trace, origin, end, physicsObj.GetClipModel(), mat3_identity, MASK_MONSTERSOLID, this);
+                gameLocal.clip.Translation(trace, origin, end, physicsObj.GetClipModel(), getMat3_identity(), MASK_MONSTERSOLID, this);
                 vel.oPluSet(Seek(vel, origin, trace[0].endpos, AI_SEEK_PREDICTION));
             }
         }
@@ -2938,7 +2963,7 @@ public class AI {
             oldorigin = physicsObj.GetOrigin();
             physicsObj.UseFlyMove(true);
             physicsObj.UseVelocityMove(false);
-            physicsObj.SetDelta(vec3_zero);
+            physicsObj.SetDelta(getVec3_zero());
             physicsObj.ForceDeltaMove(disableGravity);
             RunPhysics();
 
@@ -3106,7 +3131,7 @@ public class AI {
                 StartSound("snd_death", SND_CHANNEL_VOICE, 0, false, null);
                 renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
                 SetModel(modelDeath[0]);
-                physicsObj.SetLinearVelocity(vec3_zero);
+                physicsObj.SetLinearVelocity(getVec3_zero());
                 physicsObj.PutToRest();
                 physicsObj.DisableImpact();
             }
@@ -4298,7 +4323,7 @@ public class AI {
             }
 
             enemyNode.Remove();
-            enemy = null;
+            enemy.oSet(null);
             AI_ENEMY_IN_FOV._(false);
             AI_ENEMY_VISIBLE._(false);
             AI_ENEMY_DEAD._(true);
@@ -4521,7 +4546,7 @@ public class AI {
         // attacks
         protected void CreateProjectileClipModel() {
             if (projectileClipModel == null) {
-                idBounds projectileBounds = new idBounds(vec3_origin);
+                idBounds projectileBounds = new idBounds(getVec3_origin());
                 projectileBounds.ExpandSelf(projectileRadius);
                 projectileClipModel = new idClipModel(new idTraceModel(projectileBounds));
             }
@@ -4553,7 +4578,7 @@ public class AI {
         protected void RemoveProjectile() {
             if (projectile.GetEntity() != null) {
                 projectile.GetEntity().PostEventMS(EV_Remove, 0);
-                projectile = null;
+                projectile.oSet(null);
             }
         }
 
@@ -4666,8 +4691,8 @@ public class AI {
                     CreateProjectile(muzzle, dir);
                 }
                 lastProjectile = projectile.GetEntity();
-                lastProjectile.Launch(muzzle, dir, vec3_origin);
-                projectile = null;
+                lastProjectile.Launch(muzzle, dir, getVec3_origin());
+                projectile.oSet(null);
             }
 
             TriggerWeaponEffects(muzzle);
@@ -4776,7 +4801,7 @@ public class AI {
             enemyBounds.TranslateSelf(enemyOrg);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugBounds(colorYellow, bounds, vec3_zero, gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorYellow, bounds, getVec3_zero(), gameLocal.msec);
             }
 
             if (!bounds.IntersectsBounds(enemyBounds)) {
@@ -5110,7 +5135,7 @@ public class AI {
                 eyeAng = diff;
                 eyeAng.Clamp(eyeMin, eyeMax);
                 idAngles angDelta = diff.oMinus(eyeAng);
-                if (!angDelta.Compare(ang_zero, 0.1f)) {
+                if (!angDelta.Compare(getAng_zero(), 0.1f)) {
                     alignHeadTime = gameLocal.time;
                 } else {
                     alignHeadTime = (int) (gameLocal.time + (0.5f + 0.5f * gameLocal.random.RandomFloat()) * focusAlignTime);
@@ -5197,7 +5222,7 @@ public class AI {
                     if (particles.oGet(i).particle != null && particles.oGet(i).time != 0) {
                         particlesAlive++;
                         if (af.IsActive()) {
-                            realAxis = mat3_identity;
+                            realAxis = getMat3_identity();
                             realVector = GetPhysics().GetOrigin();
                         } else {
                             animator.GetJointTransform(particles.oGet(i).joint, gameLocal.time, realVector, realAxis);
@@ -5552,8 +5577,8 @@ public class AI {
 
             // launch the projectile
             idThread.ReturnEntity(projectile.GetEntity());
-            projectile.GetEntity().Launch(tr[0].endpos, axis.oGet(0), vec3_origin);
-            projectile = null;
+            projectile.GetEntity().Launch(tr[0].endpos, axis.oGet(0), getVec3_origin());
+            projectile.oSet(null);
 
             TriggerWeaponEffects(tr[0].endpos);
 
@@ -5617,7 +5642,7 @@ public class AI {
                 gameRenderWorld.DebugLine(colorYellow, start, end, gameLocal.msec);
             }
 
-            gameLocal.clip.TranslationEntities(trace, start, end, null, mat3_identity, MASK_SHOT_BOUNDINGBOX, this);
+            gameLocal.clip.TranslationEntities(trace, start, end, null, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
             if (trace.fraction < 1.0f) {
                 hitEnt = gameLocal.GetTraceEntity(trace);
                 if (hitEnt != null && hitEnt.IsType(idActor.class)) {
@@ -5927,7 +5952,7 @@ public class AI {
             idEntity enemyEnt = enemy.GetEntity();
 
             if (null == enemyEnt) {
-                idThread.ReturnVector(vec3_zero);
+                idThread.ReturnVector(getVec3_zero());
                 return;
             }
 
@@ -5948,7 +5973,7 @@ public class AI {
             if (result) {
                 idThread.ReturnVector(dir.oMultiply(speed));
             } else {
-                idThread.ReturnVector(vec3_zero);
+                idThread.ReturnVector(getVec3_zero());
             }
         }
 
@@ -6171,7 +6196,7 @@ public class AI {
                 start = ownerBounds.GetCenter();
             }
 
-            gameLocal.clip.Translation(tr, start, fromPos, projectileClipModel, mat3_identity, MASK_SHOT_RENDERMODEL, this);
+            gameLocal.clip.Translation(tr, start, fromPos, projectileClipModel, getMat3_identity(), MASK_SHOT_RENDERMODEL, this);
             fromPos = tr[0].endpos;
 
             if (GetAimDir(fromPos, enemy.GetEntity(), this, dir)) {
@@ -6231,10 +6256,10 @@ public class AI {
                 start = ownerBounds.GetCenter();
             }
 
-            gameLocal.clip.Translation(tr, start, muzzle, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this);
+            gameLocal.clip.Translation(tr, start, muzzle, projectileClipModel, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
             muzzle = tr[0].endpos;
 
-            gameLocal.clip.Translation(tr, muzzle, toPos, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this);
+            gameLocal.clip.Translation(tr, muzzle, toPos, projectileClipModel, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
             if (tr[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(tr[0]).equals(enemyEnt))) {
                 lastHitCheckResult = true;
             } else {
@@ -6813,7 +6838,7 @@ public class AI {
                 BecomeActive(TH_PHYSICS);
             }
 
-            Killed(this, this, 0, vec3_zero, INVALID_JOINT);
+            Killed(this, this, 0, getVec3_zero(), INVALID_JOINT);
         }
 
         protected void Event_Kill() {
@@ -7026,11 +7051,11 @@ public class AI {
                 if (!ent.GetFloorPos(64.0f, pos)) {
 
                     // NOTE: not a good way to return 'false'
-                    /*return*/ idThread.ReturnVector(vec3_zero);
+                    /*return*/ idThread.ReturnVector(getVec3_zero());
                 }
                 if (ent.IsType(idActor.class) && ((idActor) ent).OnLadder()) {
                     /*return*/// NOTE: not a good way to return 'false'
-                    /*return*/ idThread.ReturnVector(vec3_zero);
+                    /*return*/ idThread.ReturnVector(getVec3_zero());
                 }
             } else {
                 pos = ent.GetPhysics().GetOrigin();
@@ -7071,9 +7096,9 @@ public class AI {
             cone_dist = 0.0f;
             min_height = 0.0f;
             max_height = 0.0f;
-            cone_left.Zero();
-            cone_right.Zero();
-            offset.Zero();
+            cone_left = new idVec3();
+            cone_right = new idVec3();
+            offset = new idVec3();
             disabled = false;
         }
 
@@ -7244,7 +7269,7 @@ public class AI {
             if (bounds.oGet(0, i) < settings.boundingBoxes[0].oGet(0, i)) {
                 return false;
             }
-            if (bounds.oGet(1, i) < settings.boundingBoxes[0].oGet(1, i)) {
+            if (bounds.oGet(1, i) > settings.boundingBoxes[0].oGet(1, i)) {
                 return false;
             }
         }

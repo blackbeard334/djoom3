@@ -25,8 +25,8 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -53,7 +53,7 @@ public class tr_subview {
 
         local = in.oMinus(surface.origin);
 
-        transformed = vec3_origin;
+        transformed = getVec3_origin();
         for (i = 0; i < 3; i++) {
             d = local.oMultiply(surface.axis.oGet(i));
             transformed.oPluSet(camera.axis.oGet(i).oMultiply(d));
@@ -71,7 +71,7 @@ public class tr_subview {
         int i;
         float d;
 
-        out.oSet(vec3_origin);
+        out.oSet(getVec3_origin());
         for (i = 0; i < 3; i++) {
             d = in.oMultiply(surface.axis.oGet(i));
             out.oPluSet(camera.axis.oGet(i).oMultiply(d));

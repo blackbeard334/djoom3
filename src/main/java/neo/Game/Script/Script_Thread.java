@@ -44,9 +44,9 @@ import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -134,8 +134,9 @@ public class Script_Thread {
     static final idEventDef EV_Thread_InfluenceActive     = new idEventDef("influenceActive", null, 'd');
 
     public static class idThread extends idClass {
+        public static final int BYTES = Integer.BYTES * 14;//TODO
 
-        //        // CLASS_PROTOTYPE( idThread );
+//        // CLASS_PROTOTYPE( idThread );
 //        public static final idTypeInfo Type = new idTypeInfo(null, null, eventCallbacks, null, null, null, null);
 //        public idEventFunc<idThread>[] eventcallbacks;
         //
@@ -145,12 +146,12 @@ public class Script_Thread {
         private        idThread      waitingForThread;
         private        int           waitingFor;
         private        int           waitingUntil;
-        private        idInterpreter interpreter;
+        private        idInterpreter interpreter = new idInterpreter();
         //
         private        idDict        spawnArgs;
         //
         private        int           threadNum;
-        private        idStr         threadName;
+        private        idStr         threadName = new idStr();
         //
         private        int           lastExecuteTime;
         private        int           creationTime;
@@ -487,7 +488,7 @@ public class Script_Thread {
         private void Event_Trace(final idVec3 start, final idVec3 end, final idVec3 mins, final idVec3 maxs, int contents_mask, idEntity passEntity) {
             {
                 trace_s[] trace = {this.trace};
-                if (mins.equals(vec3_origin) && maxs.equals(vec3_origin)) {
+                if (mins.equals(getVec3_origin()) && maxs.equals(getVec3_origin())) {
                     gameLocal.clip.TracePoint(trace, start, end, contents_mask, passEntity);
                 } else {
                     gameLocal.clip.TraceBounds(trace, start, end, new idBounds(mins, maxs), contents_mask, passEntity);
@@ -518,7 +519,7 @@ public class Script_Thread {
             if (trace.fraction < 1.0f) {
                 ReturnVector(trace.c.normal);
             } else {
-                ReturnVector(vec3_origin);
+                ReturnVector(getVec3_origin());
             }
         }
 
@@ -736,7 +737,7 @@ public class Script_Thread {
         }
 
         private void Event_DebugBounds(final idVec3 color, final idVec3 mins, final idVec3 maxs, final float lifetime) {
-            gameRenderWorld.DebugBounds(new idVec4(color.x, color.y, color.z, 0.0f), new idBounds(mins, maxs), vec3_origin, (int) SEC2MS(lifetime));
+            gameRenderWorld.DebugBounds(new idVec4(color.x, color.y, color.z, 0.0f), new idBounds(mins, maxs), getVec3_origin(), (int) SEC2MS(lifetime));
         }
 
         private void Event_DrawText(final String text, final idVec3 origin, float scale, final idVec3 color, final int align, final float lifetime) {
@@ -920,9 +921,9 @@ public class Script_Thread {
                         "Paused since %d (%d ms)\n"
                         + "      Reason: ", lastExecuteTime, gameLocal.time - lastExecuteTime);
                 if (waitingForThread != null) {
-                    gameLocal.Printf("Waiting for thread #%3i '%s'\n", waitingForThread.GetThreadNum(), waitingForThread.GetThreadName());
+                    gameLocal.Printf("Waiting for thread #%3d '%s'\n", waitingForThread.GetThreadNum(), waitingForThread.GetThreadName());
                 } else if ((waitingFor != ENTITYNUM_NONE) && (gameLocal.entities[ waitingFor] != null)) {
-                    gameLocal.Printf("Waiting for entity #%3i '%s'\n", waitingFor, gameLocal.entities[ waitingFor].name);
+                    gameLocal.Printf("Waiting for entity #%3d '%s'\n", waitingFor, gameLocal.entities[ waitingFor].name);
                 } else if (waitingUntil != 0) {
                     gameLocal.Printf("Waiting until %d (%d ms total wait time)\n", waitingUntil, waitingUntil - lastExecuteTime);
                 } else {
@@ -992,7 +993,7 @@ public class Script_Thread {
                 n = threadList.Num();
                 for (i = 0; i < n; i++) {
                     //threadList[ i ].DisplayInfo();
-                    gameLocal.Printf("%3i: %-20s : %s(%d)\n", threadList.oGet(i).threadNum, threadList.oGet(i).threadName, threadList.oGet(i).interpreter.CurrentFile(), threadList.oGet(i).interpreter.CurrentLine());
+                    gameLocal.Printf("%3d: %-20s : %s(%d)\n", threadList.oGet(i).threadNum, threadList.oGet(i).threadName, threadList.oGet(i).interpreter.CurrentFile(), threadList.oGet(i).interpreter.CurrentLine());
                 }
                 gameLocal.Printf("%d active threads\n\n", n);
             }
@@ -1084,35 +1085,36 @@ public class Script_Thread {
         }
 
         public boolean Execute() {
-            idThread oldThread;
-            boolean done;
-
-            if (manualControl && (waitingUntil > gameLocal.time)) {
-                return false;
-            }
-
-            oldThread = currentThread;
-            currentThread = this;
-
-            lastExecuteTime = gameLocal.time;
-            ClearWaitFor();
-            done = interpreter.Execute();
-            if (done) {
-                End();
-                if (interpreter.terminateOnExit) {
-                    PostEventMS(EV_Remove, 0);
-                }
-            } else if (!manualControl) {
-                if (waitingUntil > lastExecuteTime) {
-                    PostEventMS(EV_Thread_Execute, waitingUntil - lastExecuteTime);
-                } else if (interpreter.MultiFrameEventInProgress()) {
-                    PostEventMS(EV_Thread_Execute, gameLocal.msec);
-                }
-            }
-
-            currentThread = oldThread;
-
-            return done;
+            return false;//HACKME::6
+//            idThread oldThread;
+//            boolean done;
+//
+//            if (manualControl && (waitingUntil > gameLocal.time)) {
+//                return false;
+//            }
+//
+//            oldThread = currentThread;
+//            currentThread = this;
+//
+//            lastExecuteTime = gameLocal.time;
+//            ClearWaitFor();
+//            done = interpreter.Execute();
+//            if (done) {
+//                End();
+//                if (interpreter.terminateOnExit) {
+//                    PostEventMS(EV_Remove, 0);
+//                }
+//            } else if (!manualControl) {
+//                if (waitingUntil > lastExecuteTime) {
+//                    PostEventMS(EV_Thread_Execute, waitingUntil - lastExecuteTime);
+//                } else if (interpreter.MultiFrameEventInProgress()) {
+//                    PostEventMS(EV_Thread_Execute, gameLocal.msec);
+//                }
+//            }
+//
+//            currentThread = oldThread;
+//
+//            return done;
         }
 
         public void ManualControl() {

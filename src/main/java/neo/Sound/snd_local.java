@@ -1,6 +1,7 @@
 package neo.Sound;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import neo.Sound.snd_cache.idSoundSample;
 import neo.Sound.snd_decoder.idSampleDecoderLocal;
@@ -62,7 +63,7 @@ public class snd_local {
                 + Short.SIZE
                 + Short.SIZE
                 + Short.SIZE;
-        private static final int SIZE_B = SIZE / Byte.SIZE;
+        private static final int BYTES = SIZE / Byte.SIZE;
 
         //byte offsets
         public int  wFormatTag;      // format type
@@ -85,7 +86,6 @@ public class snd_local {
             this.wBitsPerSample = mpwfx.wBitsPerSample;
             this.cbSize = mpwfx.cbSize;
         }
-
     };
 
 
@@ -98,7 +98,7 @@ public class snd_local {
                 + Integer.SIZE
                 + Integer.SIZE
                 + Short.SIZE;
-        private static final int SIZE_B = SIZE / Byte.SIZE;
+        private static final int BYTES = SIZE / Byte.SIZE;
 
         //offsets
         public int/*word*/ wFormatTag;      // format type
@@ -121,31 +121,43 @@ public class snd_local {
         private static final int SIZE
                 = waveformat_s.SIZE
                 + Short.SIZE;
-        static final         int SIZE_B = SIZE / Byte.SIZE;
+        static final         int BYTES = SIZE / Byte.SIZE;
 
         public waveformat_s wf;
         public int/*word*/ wBitsPerSample;
 
         @Override
         public ByteBuffer AllocBuffer() {
-            return ByteBuffer.allocate(SIZE_B);
+            return ByteBuffer.allocate(BYTES);
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
             this.wf = new waveformat_s();
-            this.wf.wFormatTag = buffer.getShort();
-            this.wf.nChannels = buffer.getShort();
+            this.wf.wFormatTag = Short.toUnsignedInt(buffer.getShort());
+            this.wf.nChannels = Short.toUnsignedInt(buffer.getShort());
             this.wf.nSamplesPerSec = buffer.getInt();
             this.wf.nAvgBytesPerSec = buffer.getInt();
-            this.wf.nBlockAlign = buffer.getShort();
+            this.wf.nBlockAlign = Short.toUnsignedInt(buffer.getShort());
 
-            this.wBitsPerSample = buffer.getShort();
+            this.wBitsPerSample = Short.toUnsignedInt(buffer.getShort());
         }
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            ByteBuffer data = ByteBuffer.allocate(pcmwaveformat_s.BYTES);
+            data.order(ByteOrder.LITTLE_ENDIAN);//very importante.
+
+            data.putShort((short) wf.wFormatTag);
+            data.putShort((short) wf.nChannels);
+            data.putInt(wf.nSamplesPerSec);
+            data.putInt(wf.nAvgBytesPerSec);
+            data.putShort((short) wf.nBlockAlign);
+
+            data.putShort((short) wBitsPerSample);
+
+            return data;
         }
     };
 
@@ -162,7 +174,7 @@ public class snd_local {
                 + Short.SIZE //union
                 + Integer.SIZE
                 + Integer.SIZE;
-        private static final int SIZE_B = SIZE / Byte.SIZE;
+        private static final int BYTES = SIZE / Byte.SIZE;
 
         public waveformatex_s Format;
 //        union {
@@ -193,31 +205,32 @@ public class snd_local {
 // typedef dword fourcc;
 
     /* RIFF chunk information data structure */
-    static class mminfo_s implements SERiAL{
+    static class mminfo_s implements SERiAL {
         private static final int SIZE
                 = Integer.SIZE
                 + Integer.SIZE
                 + Integer.SIZE
                 + Integer.SIZE;
-        private static final int SIZE_B = SIZE / Byte.SIZE;
+        private static final int BYTES = SIZE / Byte.SIZE;
 
-        int/*fourcc*/ckid;         // chunk ID 
-        int/*dword*/ cksize;       // chunk size 
-        int/*fourcc*/fccType;      // form type or list type 
-        int/*dword*/ dwDataOffset; // offset of data portion of chunk 
+        long/*fourcc*/ ckid;         // chunk ID 
+        int/*dword*/   cksize;       // chunk size
+        long/*fourcc*/ fccType;      // form type or list type 
+        int/*dword*/   dwDataOffset; // offset of data portion of chunk
 
         @Override
         public ByteBuffer AllocBuffer() {
-            return ByteBuffer.allocate(SIZE_B);
+            return ByteBuffer.allocate(BYTES);
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            this.ckid = buffer.getInt();
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            this.ckid = Integer.toUnsignedLong(buffer.getInt());
             this.cksize = buffer.getInt();
 
             if (buffer.hasRemaining()) {
-                this.fccType = buffer.getInt();
+                this.fccType = Integer.toUnsignedLong(buffer.getInt());
             }
 
             if (buffer.hasRemaining()) {
@@ -227,7 +240,15 @@ public class snd_local {
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            ByteBuffer data = ByteBuffer.allocate(mminfo_s.BYTES);
+            data.order(ByteOrder.LITTLE_ENDIAN);//very importante.
+
+            data.putInt((int) ckid);
+            data.putInt(cksize);
+            data.putInt((int) fccType);
+            data.putInt(dwDataOffset);
+
+            return data;
         }
     };
 

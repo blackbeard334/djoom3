@@ -693,6 +693,11 @@ public class Lib {
             super(ctos(text));
             this.error = ctos(text);
         }
+
+        public idException(Throwable cause) {
+            super(cause);
+        }       
+        
     };
 
     // move from Math.h to keep gcc happy

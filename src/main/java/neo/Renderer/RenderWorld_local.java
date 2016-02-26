@@ -2,6 +2,7 @@ package neo.Renderer;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import neo.Renderer.Interaction.areaNumRef_s;
 import neo.Renderer.Interaction.idInteraction;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
@@ -14,6 +15,7 @@ import static neo.Renderer.Model.dynamicModel_t.DM_CACHED;
 import static neo.Renderer.Model.dynamicModel_t.DM_STATIC;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.shadowCache_s;
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.ModelDecal.decalProjectionInfo_s;
 import neo.Renderer.ModelDecal.idRenderModelDecal;
@@ -155,6 +157,7 @@ import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_shared.Sys_Milliseconds;
@@ -178,6 +181,12 @@ public class RenderWorld_local {
         idPlane plane;			// view must be on the positive side of the plane to cross
         portal_s next;			// next portal of the area
         doublePortal_s doublePortal;
+        
+        public portal_s(){
+            intoArea = 0;
+            w = new idWinding();
+            plane = new idPlane();
+        }
     };
 
     public static class doublePortal_s {
@@ -194,6 +203,7 @@ public class RenderWorld_local {
 
     public static class portalArea_s {
 
+
         int areaNum;
         int[] connectedAreaNum;         // if two areas have matching connectedAreaNum, they are
         //                              // not separated by a portal with the apropriate PS_BLOCK_* blockingBits
@@ -206,6 +216,13 @@ public class RenderWorld_local {
             this.connectedAreaNum = new int[NUM_PORTAL_ATTRIBUTES];
             this.entityRefs = new areaReference_s();
             this.lightRefs = new areaReference_s();
+        }
+
+        public static portalArea_s[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new portalArea_s()).
+                    limit(length).
+                    toArray(portalArea_s[]::new);
         }
     };
     static final int CHILDREN_HAVE_MULTIPLE_AREAS = -2;
@@ -1811,10 +1828,12 @@ public class RenderWorld_local {
 
             R_AllocStaticTriSurfShadowVerts(tri, tri.numVerts);
             tri.bounds.Clear();
+            tri.shadowVertexes = new Model.shadowCache_s[tri.numVerts];
             for (j = 0; j < tri.numVerts; j++) {
                 float[] vec = new float[8];
 
                 src.Parse1DMatrix(3, vec);
+                tri.shadowVertexes[j] = new shadowCache_s();
                 tri.shadowVertexes[j].xyz.oSet(0, vec[0]);
                 tri.shadowVertexes[j].xyz.oSet(1, vec[1]);
                 tri.shadowVertexes[j].xyz.oSet(2, vec[2]);
@@ -1863,8 +1882,8 @@ public class RenderWorld_local {
                 src.Error("R_ParseInterAreaPortals: bad numPortalAreas");
                 return;
             }
-            portalAreas = tr_main.R_ClearedStaticAlloc(numPortalAreas, portalArea_s.class);
-            areaScreenRect = tr_main.R_ClearedStaticAlloc(numPortalAreas, idScreenRect.class);
+            portalAreas = portalArea_s.generateArray(numPortalAreas);
+            areaScreenRect = idScreenRect.generateArray(numPortalAreas);
 
             // set the doubly linked lists
             SetupAreaRefs();
@@ -1875,7 +1894,7 @@ public class RenderWorld_local {
                 return;
             }
 
-            doublePortals = new doublePortal_s[numInterAreaPortals];// R_ClearedStaticAlloc(numInterAreaPortals);
+            doublePortals = TempDump.allocArray(doublePortal_s.class, numInterAreaPortals);
 
             for (i = 0; i < numInterAreaPortals; i++) {
                 int numPoints, a1, a2;
@@ -1889,7 +1908,7 @@ public class RenderWorld_local {
                 w = new idWinding(numPoints);
                 w.SetNumPoints(numPoints);
                 for (j = 0; j < numPoints; j++) {
-                    src.Parse1DMatrix(3, w.oGet(j).ToFloatPtr());
+                    src.Parse1DMatrix(3, w.oGet(j));
                     // no texture coordinates
                     w.oGet(j).oSet(3, 0);
                     w.oGet(j).oSet(4, 0);
@@ -1924,7 +1943,6 @@ public class RenderWorld_local {
         }
 
         public void ParseNodes(idLexer src) throws idException {
-            int i;
 
             src.ExpectTokenString("{");
 
@@ -1932,14 +1950,10 @@ public class RenderWorld_local {
             if (numAreaNodes < 0) {
                 src.Error("R_ParseNodes: bad numAreaNodes");
             }
-            areaNodes = new areaNode_t[numAreaNodes];// R_ClearedStaticAlloc(numAreaNodes);
+            areaNodes = TempDump.allocArray(areaNode_t.class, numAreaNodes);
 
-            for (i = 0; i < numAreaNodes; i++) {
-                areaNode_t node;
-
-                node = areaNodes[i];
-
-                src.Parse1DMatrix(4, node.plane.ToFloatPtr());
+            for (areaNode_t node : areaNodes) {
+                src.Parse1DMatrix(4, node.plane);
                 node.children[0] = src.ParseInt();
                 node.children[1] = src.ParseInt();
             }
@@ -2048,8 +2062,8 @@ public class RenderWorld_local {
          */
         public void ClearWorld() {
             numPortalAreas = 1;
-            portalAreas = tr_main.R_ClearedStaticAlloc(1, portalArea_s.class);
-            areaScreenRect = tr_main.R_ClearedStaticAlloc(1, idScreenRect.class);
+            portalAreas = portalArea_s.generateArray(1);
+            areaScreenRect = idScreenRect.generateArray(1);
 
             SetupAreaRefs();
 
@@ -2589,7 +2603,7 @@ public class RenderWorld_local {
                 // it, which tends to give epsilon problems that make the area vanish
                 if (d < 1.0f) {
                     // go through this portal
-                    newStack = ps;
+                    newStack = new portalStack_s(ps);
                     newStack.p = p;
                     newStack.next = ps;
                     FloodLightThroughArea_r(light, p.intoArea, newStack);
@@ -2597,7 +2611,7 @@ public class RenderWorld_local {
                 }
 
                 // clip the portal winding to all of the planes
-                w = (idFixedWinding) p.w;
+                w = new idFixedWinding(p.w);
                 for (j = 0; j < ps.numPortalPlanes; j++) {
                     if (!w.ClipInPlace(ps.portalPlanes[j].oNegative(), 0)) {
                         break;

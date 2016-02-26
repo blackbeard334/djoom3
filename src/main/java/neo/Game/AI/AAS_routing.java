@@ -1,7 +1,7 @@
 package neo.Game.AI;
 
+import java.nio.IntBuffer;
 import neo.Game.AI.AAS_routing.idRoutingCache;
-import neo.TempDump.IntArrPtr;
 import static neo.TempDump.sizeof;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.containers.List.idList;
@@ -65,7 +65,7 @@ public class AAS_routing {
         int             cluster;         // cluster number of this update
         int             areaNum;         // area number of this update
         int             tmpTravelTime;   // temporary travel time
-        IntArrPtr       areaTravelTimes; // travel times within the area
+        IntBuffer       areaTravelTimes; // travel times within the area
         idVec3          start;           // start point into area
         idRoutingUpdate next;            // next in list
         idRoutingUpdate prev;            // prev in list

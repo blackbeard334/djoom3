@@ -10,6 +10,7 @@ import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
 import neo.idlib.math.Random;
 import neo.idlib.math.Random.idRandom;
+import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Vector.idVecX;
@@ -26,17 +27,17 @@ public class idMatX {
 //
 //===============================================================
 
-    static final int MATX_MAX_TEMP = 1024;
+    static final  int     MATX_MAX_TEMP       = 1024;
     //
     public static boolean DISABLE_RANDOM_TEST = false;
     //
-    private int numRows;                                        // number of rows
-    private int numColumns;                                     // number of columns
-    private int alloced;                                        // floats allocated, if -1 then mat points to data set with SetData
-    private float[] mat;					// memory the matrix is stored
-    private static float[] temp = new float[MATX_MAX_TEMP + 4];	// used to store intermediate results
-    private static int tempPtr;                                 // pointer to 16 byte aligned temporary memory
-    private static int tempIndex;				// index into memory pool, wraps around
+    private int     numRows;                // number of rows
+    private int     numColumns;             // number of columns
+    private int     alloced;                // floats allocated, if -1 then mat points to data set with SetData
+    private float[] mat;                    // memory the matrix is stored
+    private static float[] temp = new float[MATX_MAX_TEMP + 4];    // used to store intermediate results
+    private static int tempPtr;             // pointer to 16 byte aligned temporary memory
+    private static int tempIndex;           // index into memory pool, wraps around
     //
     //
 
@@ -110,7 +111,7 @@ public class idMatX {
 //public	float *			operator[]( int index );
     @Deprecated
     public float[] oGet(int index) {////TODO:by sub array by reference
-        return Arrays.copyOfRange(mat, index * numColumns, mat.length - index * numColumns);
+        return Arrays.copyOfRange(mat, index * numColumns, mat.length);
     }
 
 //public	idMatX &		operator=( const idMatX &a );
@@ -1277,17 +1278,17 @@ public class idMatX {
                 return result;
             case 4:
                 idMat4 mat4 = new idMat4(
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3]);
+                        mat[ 0], mat[ 1], mat[ 2], mat[ 3],
+                        mat[ 4], mat[ 5], mat[ 6], mat[ 7],
+                        mat[ 8], mat[ 9], mat[10], mat[11],
+                        mat[12], mat[13], mat[14], mat[15]);
                 result = mat4.InverseFastSelf();
                 this.mat = mat4.reinterpret_cast();
                 return result;
             case 5:
                 idMat5 mat5 = new idMat5(
-                        new idVec5(mat[0], mat[1], mat[2], mat[3], mat[4]),
-                        new idVec5(mat[5], mat[6], mat[2], mat[3], mat[4]),
+                        new idVec5(mat[ 0], mat[ 1], mat[ 2], mat[ 3], mat[ 4]),
+                        new idVec5(mat[ 5], mat[ 6], mat[ 7], mat[ 8], mat[ 9]),
                         new idVec5(mat[10], mat[11], mat[12], mat[13], mat[14]),
                         new idVec5(mat[15], mat[16], mat[17], mat[18], mat[19]),
                         new idVec5(mat[20], mat[21], mat[22], mat[23], mat[24]));
@@ -1296,8 +1297,8 @@ public class idMatX {
                 return result;
             case 6:
                 idMat6 mat6 = new idMat6(
-                        new idVec6(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5]),
-                        new idVec6(mat[6], mat[7], mat[8], mat[9], mat[10], mat[11]),
+                        new idVec6(mat[ 0], mat[ 1], mat[ 2], mat[ 3], mat[ 4], mat[ 5]),
+                        new idVec6(mat[ 6], mat[ 7], mat[ 8], mat[ 9], mat[10], mat[11]),
                         new idVec6(mat[12], mat[13], mat[14], mat[15], mat[16], mat[17]),
                         new idVec6(mat[18], mat[19], mat[20], mat[21], mat[22], mat[23]),
                         new idVec6(mat[24], mat[25], mat[26], mat[27], mat[28], mat[29]),
@@ -1491,18 +1492,17 @@ public class idMatX {
 //#ifdef MATX_SIMD
 //	SIMDProcessor->MatX_TransposeMultiplyVecX( dst, *this, vec );
 //#else
-        int i, j, m;
-        final float[] mPtr, vPtr, dstPtr;
+        int i, j, mPtr;
+        final float[] vPtr, dstPtr;
 
         vPtr = vec.ToFloatPtr();
         dstPtr = dst.ToFloatPtr();
-        mPtr = mat;
         for (i = 0; i < numColumns; i++) {
-            m = i;
-            float sum = mPtr[0 + m] * vPtr[0];
+            mPtr = i;
+            float sum = mat[mPtr] * vPtr[0];
             for (j = 1; j < numRows; j++) {
-                m += numColumns;
-                sum += mPtr[0 + m] * vPtr[j];
+                mPtr += numColumns;
+                sum += mat[mPtr] * vPtr[j];
             }
             dstPtr[i] = sum;
         }
@@ -1513,16 +1513,17 @@ public class idMatX {
 //#ifdef MATX_SIMD
 //	SIMDProcessor->MatX_TransposeMultiplyAddVecX( dst, *this, vec );
 //#else
-        int i, j;
-        final float[] mPtr, vPtr, dstPtr;
+        int i, j, mPtr;
+        final float[] vPtr, dstPtr;
 
-        mPtr = mat;
         vPtr = vec.ToFloatPtr();
         dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numRows; i++) {
-            float sum = mPtr[0] * vPtr[0];
-            for (j = 1; j < numColumns; j++) {
-                sum += mPtr[j] * vPtr[j];
+        for (i = 0; i < numColumns; i++) {
+            mPtr = i;
+            float sum = mat[mPtr] * vPtr[0];
+            for (j = 1; j < numRows; j++) {
+                mPtr += numColumns;
+                sum += mat[mPtr] * vPtr[j];
             }
             dstPtr[i] += sum;
         }
@@ -1533,16 +1534,17 @@ public class idMatX {
 //#ifdef MATX_SIMD
 //	SIMDProcessor->MatX_TransposeMultiplySubVecX( dst, *this, vec );
 //#else
-        int i, j;
-        final float[] mPtr, vPtr, dstPtr;
+        int i, j, mPtr;
+        final float[] vPtr, dstPtr;
 
-        mPtr = mat;
         vPtr = vec.ToFloatPtr();
         dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numRows; i++) {
-            float sum = mPtr[0] * vPtr[0];
-            for (j = 1; j < numColumns; j++) {
-                sum += mPtr[j] * vPtr[j];
+        for (i = 0; i < numColumns; i++) {
+            mPtr = i;
+            float sum = mat[mPtr] * vPtr[0];
+            for (j = 1; j < numRows; j++) {
+                mPtr += numColumns;
+                sum += mat[mPtr] * vPtr[j];
             }
             dstPtr[i] -= sum;
         }
@@ -1622,6 +1624,8 @@ public class idMatX {
         return numRows * numColumns;
     }
 
+    /** @deprecated returns readonly vector */
+    @Deprecated
     public idVec6 SubVec6(int row) {// interpret beginning of row as a const idVec6
         assert (numColumns >= 6 && row >= 0 && row < numRows);
 //	return *reinterpret_cast<const idVec6 *>(mat + row * numColumns);
@@ -6184,5 +6188,21 @@ public class idMatX {
 
     public void arraycopy(final float[] src, final int destPos, final int length) {
         System.arraycopy(src, 0, mat, destPos * numColumns, length);
+    }
+
+    public void SubVec63_oSet(final int vec6, final int vec3, final idVec3 v) {
+        assert (numColumns >= 6 && vec6 >= 0 && vec6 < numRows);
+
+        final int offset = vec6 * 6 + vec3 * 3;
+        mat[offset + 0] = v.x;
+        mat[offset + 1] = v.y;
+        mat[offset + 2] = v.z;
+    }
+
+    public void SubVec63_Zero(final int vec6, final int vec3) {
+        assert (numColumns >= 6 && vec6 >= 0 && vec6 < numRows);
+
+        final int offset = vec6 * 6 + vec3 * 3;
+        mat[offset + 0] = mat[offset + 1] = mat[offset + 2] = 0;
     }
 };

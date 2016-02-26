@@ -34,12 +34,12 @@ import neo.idlib.geometry.Winding.idFixedWinding;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_default;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_default;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -61,7 +61,7 @@ public class Clip {
         return (-1 - id);
     }
     public static final int MAX_SECTOR_DEPTH = 12;
-    public static final int MAX_SECTORS = ((1 << (MAX_SECTOR_DEPTH + 1)) - 1);
+    public static final int MAX_SECTORS      = ((1 << (MAX_SECTOR_DEPTH + 1)) - 1);
 
     public static class clipSector_s {
 
@@ -70,9 +70,12 @@ public class Clip {
         clipSector_s[] children = new clipSector_s[2];
         clipLink_s clipLinks;
 
-        private void oSet(clipSector_s clipSector_s) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+//        private void oSet(clipSector_s clip) {
+//            this.axis = clip.axis;
+//            this.dist = clip.dist;
+//            this.children = clip.children;
+//            this.clipLinks = clip.clipLinks;
+//        }
     };
 
     public static class clipLink_s {
@@ -87,10 +90,18 @@ public class Clip {
     public static class trmCache_s {
 
         idTraceModel trm;
-        int refCount;
-        float volume;
-        idVec3 centerOfMass;
-        idMat3 inertiaTensor;
+        int          refCount;
+        float        volume;
+        idVec3       centerOfMass;
+        idMat3       inertiaTensor;
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
+
+        public trmCache_s() {
+            centerOfMass = new idVec3();
+            inertiaTensor = new idMat3();
+        }
     };
     public static final idVec3 vec3_boxEpsilon = new idVec3(CM_BOX_EPSILON, CM_BOX_EPSILON, CM_BOX_EPSILON);
 //    public static final idBlockAlloc<clipLink_s> clipLinkAllocator = new idBlockAlloc<>(1024);
@@ -102,28 +113,30 @@ public class Clip {
      ===============================================================
      */
     static final idList<trmCache_s> traceModelCache = new idList<>();
-    static final idHashIndex traceModelHash = new idHashIndex();
+    static final idHashIndex        traceModelHash  = new idHashIndex();
 
     public static class idClipModel {
 
-        private boolean enabled;				// true if this clip model is used for clipping
-        private idEntity entity;				// entity using this clip model
-        private int id;						// id for entities that use multiple clip models
-        private idEntity owner;					// owner of the entity that owns this clip model
-        private idVec3 origin = new idVec3();			// origin of clip model
-        private idMat3 axis = new idMat3();			// orientation of clip model
-        private idBounds bounds = new idBounds();		// bounds
-        private idBounds absBounds = new idBounds();		// absolute bounds
-        private idMaterial material;				// material for trace models
-        private int contents;                                   // all contents ored together
-        private int/*cmHandle_t*/ collisionModelHandle;         // handle to collision model
-        private int traceModelIndex;                            // trace model used for collision detection
-        private int renderModelHandle;                          // render model def handle
+        private boolean  enabled;                       // true if this clip model is used for clipping
+        private idEntity entity;                        // entity using this clip model
+        private int      id;                            // id for entities that use multiple clip models
+        private idEntity owner;                         // owner of the entity that owns this clip model
+        private idVec3   origin    = new idVec3();      // origin of clip model
+        private idMat3   axis      = new idMat3();      // orientation of clip model
+        private idBounds bounds    = new idBounds();    // bounds
+        private idBounds absBounds = new idBounds();    // absolute bounds
+        private idMaterial        material;             // material for trace models
+        private int               contents;             // all contents ored together
+        private int/*cmHandle_t*/ collisionModelHandle; // handle to collision model
+        private int               traceModelIndex;      // trace model used for collision detection
+        private int               renderModelHandle;    // render model def handle
         //
-        private clipLink_s clipLinks;				// links into sectors
-        private int touchCount;
+        private clipLink_s        clipLinks;            // links into sectors
+        private int               touchCount;
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         // friend class idClip;
         public idClipModel() {
@@ -151,10 +164,10 @@ public class Clip {
             entity = model.entity;
             id = model.id;
             owner = model.owner;
-            origin = model.origin;
-            axis = model.axis;
-            bounds = model.bounds;
-            absBounds = model.absBounds;
+            origin.oSet(model.origin);
+            axis.oSet(model.axis);
+            bounds.oSet(model.bounds);
+            absBounds.oSet(model.absBounds);
             material = model.material;
             contents = model.contents;
             collisionModelHandle = model.collisionModelHandle;
@@ -168,7 +181,7 @@ public class Clip {
         }
         // ~idClipModel( void );
 
-        public boolean LoadModel(final String name) {
+        public final boolean LoadModel(final String name) {
             renderModelHandle = -1;
             if (traceModelIndex != -1) {
                 FreeTraceModel(traceModelIndex);
@@ -189,23 +202,23 @@ public class Clip {
             }
         }
 
-        public void LoadModel(final idTraceModel trm) {
+        public final void LoadModel(final idTraceModel trm) {
             collisionModelHandle = 0;
             renderModelHandle = -1;
             if (traceModelIndex != -1) {
                 FreeTraceModel(traceModelIndex);
             }
             traceModelIndex = AllocTraceModel(trm);
-            bounds = trm.bounds;
+            bounds.oSet(trm.bounds);
         }
 
-        public void LoadModel(final int renderModelHandle) {
+        public final void LoadModel(final int renderModelHandle) {
             collisionModelHandle = 0;
             this.renderModelHandle = renderModelHandle;
             if (renderModelHandle != -1) {
                 final renderEntity_s renderEntity = gameRenderWorld.GetRenderEntity(renderModelHandle);
                 if (renderEntity != null) {
-                    bounds = renderEntity.bounds;
+                    bounds.oSet(renderEntity.bounds);
                 }
             }
             if (traceModelIndex != -1) {
@@ -315,13 +328,13 @@ public class Clip {
 
             this.entity = ent;
             this.id = newId;
-            this.origin = newOrigin;
-            this.axis = newAxis;
+            this.origin.oSet(newOrigin);
+            this.axis.oSet(newAxis);
             if (renderModelHandle != -1) {
                 this.renderModelHandle = renderModelHandle;
                 final renderEntity_s renderEntity = gameRenderWorld.GetRenderEntity(renderModelHandle);
                 if (renderEntity != null) {
-                    this.bounds = renderEntity.bounds;
+                    this.bounds.oSet(renderEntity.bounds);
                 }
             }
             this.Link(clp);
@@ -348,8 +361,8 @@ public class Clip {
             if (clipLinks != null) {
                 Unlink();	// unlink from old position
             }
-            origin = newOrigin;
-            axis = newAxis;
+            origin.oSet(newOrigin);
+            axis.oSet(newAxis);
         }
 
         public void Translate(final idVec3 translation) {							// unlinks the clip model
@@ -661,7 +674,7 @@ public class Clip {
 
         public void Init() {
             int/*cmHandle_t*/ h;
-            idVec3 size, maxSector = vec3_origin;
+            idVec3 size, maxSector = getVec3_origin();
 
             // clear clip sectors
             clipSectors = new clipSector_s[MAX_SECTORS];
@@ -724,7 +737,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // test world
                 this.numTranslations++;
-                CollisionModel_local.collisionModelManager.Translation(results, start, end, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default);
+                CollisionModel_local.collisionModelManager.Translation(results, start, end, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
                 results[0].c.entityNum = results[0].fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
                 if (results[0].fraction == 0.0f) {
                     return true;		// blocked immediately by the world
@@ -733,8 +746,8 @@ public class Clip {
 //		memset( &results, 0, sizeof( results ) );
                 results[0] = new trace_s();
                 results[0].fraction = 1.0f;
-                results[0].endpos = end;
-                results[0].endAxis = trmAxis;
+                results[0].endpos.oSet(end);
+                results[0].endAxis.oSet(trmAxis);
             }
 
             if (null == trm) {
@@ -789,7 +802,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // test world
                 this.numRotations++;
-                CollisionModel_local.collisionModelManager.Rotation(results, start, rotation, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default);
+                CollisionModel_local.collisionModelManager.Rotation(results, start, rotation, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
                 results[0].c.entityNum = results[0].fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
                 if (results[0].fraction == 0.0f) {
                     return true;		// blocked immediately by the world
@@ -798,8 +811,8 @@ public class Clip {
 //		memset( &results, 0, sizeof( results ) );
                 results[0] = new trace_s();
                 results[0].fraction = 1.0f;
-                results[0].endpos = start;
-                results[0].endAxis = trmAxis.oMultiply(rotation.ToMat3());
+                results[0].endpos.oSet(start);
+                results[0].endAxis.oSet(trmAxis.oMultiply(rotation.ToMat3()));
             }
 
             if (null == trm) {
@@ -857,7 +870,7 @@ public class Clip {
                 return true;
             }
 
-            if (mdl != null && rotation.GetAngle() != 0.0f && rotation.GetVec() != vec3_origin) {
+            if (mdl != null && rotation.GetAngle() != 0.0f && rotation.GetVec() != getVec3_origin()) {
                 // if no translation
                 if (start == end) {
                     // pure rotation
@@ -869,8 +882,8 @@ public class Clip {
             } else {
                 // no motion
                 results[0].fraction = 1.0f;
-                results[0].endpos = start;
-                results[0].endAxis = trmAxis;
+                results[0].endpos.oSet(start);
+                results[0].endAxis.oSet(trmAxis);
                 return false;
             }
 
@@ -881,14 +894,14 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // translational collision with world
                 this.numTranslations++;
-                CollisionModel_local.collisionModelManager.Translation(translationalTrace, start, end, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default);
+                CollisionModel_local.collisionModelManager.Translation(translationalTrace, start, end, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
                 translationalTrace[0].c.entityNum = translationalTrace[0].fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
             } else {
 //		memset( &translationalTrace, 0, sizeof( translationalTrace ) );
                 translationalTrace[0] = new trace_s();
                 translationalTrace[0].fraction = 1.0f;
-                translationalTrace[0].endpos = end;
-                translationalTrace[0].endAxis = trmAxis;
+                translationalTrace[0].endpos.oSet(end);
+                translationalTrace[0].endAxis.oSet(trmAxis);
             }
 
             if (translationalTrace[0].fraction != 0.0f) {
@@ -940,14 +953,14 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // rotational collision with world
                 this.numRotations++;
-                CollisionModel_local.collisionModelManager.Rotation(rotationalTrace, endPosition, endRotation, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default);
+                CollisionModel_local.collisionModelManager.Rotation(rotationalTrace, endPosition, endRotation, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
                 rotationalTrace[0].c.entityNum = rotationalTrace[0].fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
             } else {
 //		memset( &rotationalTrace, 0, sizeof( rotationalTrace ) );
                 rotationalTrace[0] = new trace_s();
                 rotationalTrace[0].fraction = 1.0f;
-                rotationalTrace[0].endpos = endPosition;
-                rotationalTrace[0].endAxis = trmAxis.oMultiply(rotation.ToMat3());
+                rotationalTrace[0].endpos.oSet(endPosition);
+                rotationalTrace[0].endAxis.oSet(trmAxis.oMultiply(rotation.ToMat3()));
             }
 
             if (rotationalTrace[0].fraction != 0.0f) {
@@ -987,7 +1000,7 @@ public class Clip {
                 results[0] = rotationalTrace[0];
             } else {
                 results[0] = translationalTrace[0];
-                results[0].endAxis = rotationalTrace[0].endAxis;
+                results[0].endAxis.oSet(rotationalTrace[0].endAxis);
             }
 
             results[0].fraction = (float) Max(translationalTrace[0].fraction, rotationalTrace[0].fraction);
@@ -1008,7 +1021,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // test world
                 this.numContacts++;
-                numContacts = CollisionModel_local.collisionModelManager.Contacts(contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default);
+                numContacts = CollisionModel_local.collisionModelManager.Contacts(contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
             } else {
                 numContacts = 0;
             }
@@ -1077,7 +1090,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // test world
                 this.numContents++;
-                contents = CollisionModel_local.collisionModelManager.Contents(start, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default);
+                contents = CollisionModel_local.collisionModelManager.Contents(start, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
             } else {
                 contents = 0;
             }
@@ -1127,13 +1140,13 @@ public class Clip {
 
         // special case translations versus the rest of the world
         public boolean TracePoint(trace_s[] results, final idVec3 start, final idVec3 end, int contentMask, final idEntity passEntity) {
-            Translation(results, start, end, null, mat3_identity, contentMask, passEntity);
+            Translation(results, start, end, null, getMat3_identity(), contentMask, passEntity);
             return (results[0].fraction < 1.0f);
         }
 
         public boolean TraceBounds(trace_s[] results, final idVec3 start, final idVec3 end, final idBounds bounds, int contentMask, final idEntity passEntity) {
             temporaryClipModel.LoadModel(new idTraceModel(bounds));
-            Translation(results, start, end, temporaryClipModel, mat3_identity, contentMask, passEntity);
+            Translation(results, start, end, temporaryClipModel, getMat3_identity(), contentMask, passEntity);
             return (results[0].fraction < 1.0f);
         }
 
@@ -1184,8 +1197,8 @@ public class Clip {
             trm = TraceModelForClipModel(mdl);
 
             results.fraction = 1.0f;
-            results.endpos = end;
-            results.endAxis = trmAxis;
+            results.endpos.oSet(end);
+            results.endAxis.oSet(trmAxis);
 
             if (null == trm) {
                 traceBounds.FromPointTranslation(start, end.oMinus(start));
@@ -1411,8 +1424,7 @@ public class Clip {
             idVec3 size;
             idBounds front, back;
 
-            anode = clipSectors[this.numClipSectors];
-            this.numClipSectors++;
+            anode = clipSectors[this.numClipSectors++] = new clipSector_s();
 
             if (depth == MAX_SECTOR_DEPTH) {
                 anode.axis = -1;
@@ -1437,8 +1449,8 @@ public class Clip {
 
             anode.dist = 0.5f * (bounds.oGet(1, anode.axis) + bounds.oGet(0, anode.axis));
 
-            front = bounds;
-            back = bounds;
+            front = new idBounds(bounds);
+            back = new idBounds(bounds);
 
             front.oSet(0, anode.axis, back.oSet(1, anode.axis, anode.dist));
 
@@ -1460,18 +1472,22 @@ public class Clip {
             idClipModel[] list;
             int count;
             int maxCount;
+
+            public listParms_s() {
+                bounds = new idBounds();
+            }
         };
 
-        private void ClipModelsTouchingBounds_r(final clipSector_s node, listParms_s parms) {
+        private void ClipModelsTouchingBounds_r(clipSector_s node, listParms_s parms) {
 
             while (node.axis != -1) {
                 if (parms.bounds.oGet(0, node.axis) > node.dist) {
-                    node.oSet(node.children[0]);
+                    node = node.children[0];
                 } else if (parms.bounds.oGet(1, node.axis) < node.dist) {
-                    node.oSet(node.children[1]);
+                    node = node.children[1];
                 } else {
                     ClipModelsTouchingBounds_r(node.children[0], parms);
-                    node.oSet(node.children[1]);
+                    node = node.children[1];
                 }
             }
 
@@ -1588,11 +1604,11 @@ public class Clip {
                 // test with exact render model and modify trace_t structure accordingly
                 if (gameRenderWorld.ModelTrace(modelTrace, touch.renderModelHandle, start, end, radius)) {
                     trace.fraction = modelTrace.fraction;
-                    trace.endAxis = axis;
-                    trace.endpos = modelTrace.point;
-                    trace.c.normal = modelTrace.normal;
+                    trace.endAxis.oSet(axis);
+                    trace.endpos.oSet(modelTrace.point);
+                    trace.c.normal.oSet(modelTrace.normal);
                     trace.c.dist = modelTrace.point.oMultiply(modelTrace.normal);
-                    trace.c.point = modelTrace.point;
+                    trace.c.point.oSet(modelTrace.point);
                     trace.c.type = CONTACT_TRMVERTEX;
                     trace.c.modelFeature = 0;
                     trace.c.trmFeature = 0;
@@ -1615,11 +1631,10 @@ public class Clip {
             assert (false);
 
             results.fraction = 0.0f;
-            results.endpos = start;
-            results.endAxis = trmAxis;
-//		memset( results.c, 0, sizeof( results.c ) );
-            results.c = new contactInfo_t();
-            results.c.point = start;
+            results.endpos.oSet(start);
+            results.endAxis.oSet(trmAxis);
+            results.c = new contactInfo_t();//memset( results.c, 0, sizeof( results.c ) );
+            results.c.point.oSet(start);
             results.c.entityNum = ENTITYNUM_WORLD;
 
             if (mdl.GetEntity() != null) {

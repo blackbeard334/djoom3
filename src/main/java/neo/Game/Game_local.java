@@ -7,6 +7,8 @@ import static java.lang.Math.sin;
 import static java.lang.Math.tan;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
+
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import neo.Game.AFEntity.idAFAttachment;
@@ -25,6 +27,8 @@ import neo.Game.Animation.Anim_Blend.idDeclModelDef;
 import neo.Game.Animation.Anim_Import.idModelExport;
 import neo.Game.Animation.Anim_Testmodel.idTestModel;
 import neo.Game.Camera.idCamera;
+import neo.Game.Camera.idCameraAnim;
+import neo.Game.Camera.idCameraView;
 import static neo.Game.Entity.TH_PHYSICS;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
@@ -214,8 +218,24 @@ import static neo.Game.Game_network.net_clientMaxPrediction;
 import static neo.Game.Game_network.net_clientShowSnapshot;
 import static neo.Game.Game_network.net_clientShowSnapshotRadius;
 import static neo.Game.Game_network.net_clientSmoothing;
+import neo.Game.Item.idItem;
+import neo.Game.Item.idMoveablePDAItem;
+import neo.Game.Item.idObjective;
+import neo.Game.Item.idObjectiveComplete;
+import neo.Game.Item.idPDAItem;
+import neo.Game.Item.idVideoCDItem;
+import neo.Game.Light.idLight;
+import neo.Game.Misc.idAnimated;
+import neo.Game.Misc.idFuncEmitter;
 import neo.Game.Misc.idLocationEntity;
+import neo.Game.Misc.idLocationSeparatorEntity;
 import neo.Game.Misc.idPathCorner;
+import neo.Game.Misc.idPlayerStart;
+import neo.Game.Misc.idStaticEntity;
+import neo.Game.Moveable.idMoveable;
+import neo.Game.Mover.idDoor;
+import neo.Game.Mover.idMover;
+import neo.Game.Mover.idSplinePath;
 import neo.Game.MultiplayerGame.gameType_t;
 import static neo.Game.MultiplayerGame.gameType_t.GAME_DM;
 import static neo.Game.MultiplayerGame.gameType_t.GAME_LASTMAN;
@@ -233,6 +253,7 @@ import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
 import neo.Game.Physics.Physics_Parametric.idPhysics_Parametric;
 import neo.Game.Physics.Push.idPush;
 import neo.Game.Player.idPlayer;
+import neo.Game.Projectile.idBFGProjectile;
 import neo.Game.Projectile.idProjectile;
 import neo.Game.Pvs.idPVS;
 import neo.Game.Pvs.pvsHandle_t;
@@ -244,6 +265,20 @@ import neo.Game.Script.Script_Program.function_t;
 import neo.Game.Script.Script_Thread.idThread;
 import neo.Game.Script.idProgram;
 import neo.Game.SmokeParticles.idSmokeParticles;
+import neo.Game.Sound.idSound;
+import neo.Game.Target.idTarget;
+import neo.Game.Target.idTarget_CallObjectFunction;
+import neo.Game.Target.idTarget_EndLevel;
+import neo.Game.Target.idTarget_FadeEntity;
+import neo.Game.Target.idTarget_GiveEmail;
+import neo.Game.Target.idTarget_Remove;
+import neo.Game.Target.idTarget_SetPrimaryObjective;
+import neo.Game.Target.idTarget_SetShaderParm;
+import neo.Game.Target.idTarget_Tip;
+import neo.Game.Trigger.idTrigger_Count;
+import neo.Game.Trigger.idTrigger_Fade;
+import neo.Game.Trigger.idTrigger_Hurt;
+import neo.Game.Trigger.idTrigger_Multi;
 import neo.Game.WorldSpawn.idWorldspawn;
 import static neo.Renderer.Material.CONTENTS_BODY;
 import static neo.Renderer.Material.CONTENTS_MONSTERCLIP;
@@ -271,12 +306,10 @@ import neo.Sound.snd_shader.soundShaderParms_t;
 import neo.Sound.snd_system;
 import neo.Sound.sound.idSoundWorld;
 import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.atoi;
 import static neo.TempDump.ctos;
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
-import static neo.TempDump.reflects._Get;
 import neo.TempDump.void_callback;
 import static neo.Tools.Compilers.AAS.AASFileManager.AASFileManager;
 import neo.framework.Async.NetworkSystem;
@@ -369,13 +402,13 @@ import static neo.idlib.math.Math_h.INTSIGNBITSET;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Simd.idSIMD;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
-import static neo.idlib.math.Vector.vec3_origin;
 import neo.sys.sys_public;
 import static neo.sys.sys_public.sys;
 import neo.ui.UserInterface;
@@ -517,7 +550,7 @@ public class Game_local {
     };
 //============================================================================
 
-    public static class idEntityPtr<type> {
+    public static class idEntityPtr<type extends idEntity> {
 
         private int spawnId;
         //
@@ -525,6 +558,10 @@ public class Game_local {
 
         public idEntityPtr() {
             spawnId = 0;
+        }
+        
+        public idEntityPtr(type ent) {
+            this.oSet(ent);
         }
         // save games
 
@@ -542,7 +579,7 @@ public class Game_local {
             if (ent == null) {
                 spawnId = 0;
             } else {
-                final int entityNumber = (Integer) _Get(ent, "entityNumber");
+                final int entityNumber = ent.entityNumber;
                 spawnId = (gameLocal.spawnIds[entityNumber] << GENTITYNUM_BITS) | entityNumber;
             }
             return this;
@@ -587,127 +624,127 @@ public class Game_local {
     //============================================================================
     public static class idGameLocal extends neo.Game.Game.idGame {
 
-        public idDict serverInfo = new idDict();                        // all the tunable parameters, like numclients, etc
-        public int numClients;                                          // pulled from serverInfo and verified
-        public idDict[] userInfo = new idDict[MAX_CLIENTS];             // client specific settings
-        public usercmd_t[] usercmds = new usercmd_t[MAX_CLIENTS];	// client input commands
-        public idDict[] persistentPlayerInfo = new idDict[MAX_CLIENTS];
-        public idEntity[] entities = new idEntity[MAX_GENTITIES];       // index to entities
-        public int[] spawnIds = new int[MAX_GENTITIES];                 // for use in idEntityPtr
-        public int firstFreeIndex;                                      // first free index in the entities array
-        public int num_entities;                                        // current number <= MAX_GENTITIES
-        public idHashIndex entityHash = new idHashIndex();              // hash table to quickly find entities by name
-        public idWorldspawn world;					// world entity
-        public idLinkList<idEntity> spawnedEntities = new idLinkList<>();// all spawned entities
-        public idLinkList<idEntity> activeEntities = new idLinkList<>(); // all thinking entities (idEntity::thinkFlags != 0)
-        public int numEntitiesToDeactivate;                             // number of entities that became inactive in current frame
-        public boolean sortPushers;                                     // true if active lists needs to be reordered to place pushers at the front
-        public boolean sortTeamMasters;                                 // true if active lists needs to be reordered to place physics team masters before their slaves
-        public idDict persistentLevelInfo = new idDict();               // contains args that are kept around between levels
-//
+        public idDict serverInfo = new idDict();                                // all the tunable parameters, like numclients, etc
+        public int numClients;                                                  // pulled from serverInfo and verified
+        public idDict[]    userInfo             = new idDict[MAX_CLIENTS];      // client specific settings
+        public usercmd_t[] usercmds             = new usercmd_t[MAX_CLIENTS];   // client input commands
+        public idDict[]    persistentPlayerInfo = new idDict[MAX_CLIENTS];
+        public idEntity[]  entities             = new idEntity[MAX_GENTITIES];  // index to entities
+        public int[]       spawnIds             = new int[MAX_GENTITIES];       // for use in idEntityPtr
+        public int firstFreeIndex;                                              // first free index in the entities array
+        public int num_entities;                                                // current number <= MAX_GENTITIES
+        public idHashIndex entityHash = new idHashIndex();                      // hash table to quickly find entities by name
+        public idWorldspawn world;                                              // world entity
+        public idLinkList<idEntity> spawnedEntities = new idLinkList<>();       // all spawned entities
+        public idLinkList<idEntity> activeEntities  = new idLinkList<>();       // all thinking entities (idEntity::thinkFlags != 0)
+        public int     numEntitiesToDeactivate;                                 // number of entities that became inactive in current frame
+        public boolean sortPushers;                                             // true if active lists needs to be reordered to place pushers at the front
+        public boolean sortTeamMasters;                                         // true if active lists needs to be reordered to place physics team masters before their slaves
+        public idDict    persistentLevelInfo = new idDict();                    // contains args that are kept around between levels
+        //
         // can be used to automatically effect every material in the world that references globalParms
-        public float[] globalShaderParms = new float[MAX_GLOBAL_SHADER_PARMS];
-//
-        public idRandom random = new idRandom();                // random number generator used throughout the game
-//
-        public idProgram program = new idProgram();		// currently loaded script and data space
+        public float[]   globalShaderParms   = new float[MAX_GLOBAL_SHADER_PARMS];
+        //
+        public idRandom  random              = new idRandom();         // random number generator used throughout the game
+        //
+        public idProgram program             = new idProgram();        // currently loaded script and data space
         public idThread frameCommandThread;
-//
-        public idClip clip = new idClip();			// collision detection
-        public idPush push;					// geometric pushing
-        public idPVS pvs = new idPVS();				// potential visible set
-//
-        public idTestModel testmodel;				// for development testing of models
-        public idEntityFx testFx;				// for development testing of fx
-//
-        public idStr sessionCommand = new idStr();              // a target_sessionCommand can set this to return something to the session 
-//
-        public idMultiplayerGame mpGame;			// handles rules for standard dm
-//
-        public idSmokeParticles smokeParticles;			// global smoke trails
-        public idEditEntities editEntities;			// in game editing
-//
-        public int cinematicSkipTime;		// don't allow skipping cinemetics until this time has passed so player doesn't skip out accidently from a firefight
-        public int cinematicStopTime;		// cinematics have several camera changes, so keep track of when we stop them so that we don't reset cinematicSkipTime unnecessarily
-        public int cinematicMaxSkipTime;	// time to end cinematic when skipping.  there's a possibility of an infinite loop if the map isn't set up right.
-        public boolean inCinematic;		// game is playing cinematic (player controls frozen)
-        public boolean skipCinematic;
-//
+        //
+        public idClip clip = new idClip();          // collision detection
+        public idPush push = new idPush();          // geometric pushing
+        public idPVS  pvs  = new idPVS();           // potential visible set
+        //
+        public idTestModel testmodel;               // for development testing of models
+        public idEntityFx  testFx;                  // for development testing of fx
+        //
+        public idStr             sessionCommand = new idStr();              // a target_sessionCommand can set this to return something to the session
+        //
+        public idMultiplayerGame mpGame         = new idMultiplayerGame();  // handles rules for standard dm
+        //
+        public idSmokeParticles smokeParticles;         // global smoke trails
+        public idEditEntities   editEntities;           // in game editing
+        //
+        public int              cinematicSkipTime;      // don't allow skipping cinemetics until this time has passed so player doesn't skip out accidently from a firefight
+        public int              cinematicStopTime;      // cinematics have several camera changes, so keep track of when we stop them so that we don't reset cinematicSkipTime unnecessarily
+        public int              cinematicMaxSkipTime;   // time to end cinematic when skipping.  there's a possibility of an infinite loop if the map isn't set up right.
+        public boolean          inCinematic;            // game is playing cinematic (player controls frozen)
+        public boolean          skipCinematic;
+        //
         // are kept up to date with changes to serverInfo
-        public int framenum;
-        public int previousTime;			// time in msec of last frame
-        public int time;				// in msec
-        public static final int msec = USERCMD_MSEC;	// time since last update in milliseconds
-//
-        public int vacuumAreaNum;			// -1 if level doesn't have any outside areas
-//
-        public gameType_t gameType;
-        public boolean isMultiplayer;			// set if the game is run in multiplayer mode
-        public boolean isServer;			// set if the game is run for a dedicated or listen server
-        public boolean isClient;			// set if the game is run for a client
+        public int              framenum;
+        public int              previousTime;           // time in msec of last frame
+        public int              time;                   // in msec
+        public static final int msec = USERCMD_MSEC;    // time since last update in milliseconds
+        //
+        public int                  vacuumAreaNum;      // -1 if level doesn't have any outside areas
+        //
+        public gameType_t           gameType;
+        public boolean              isMultiplayer;      // set if the game is run in multiplayer mode
+        public boolean              isServer;           // set if the game is run for a dedicated or listen server
+        public boolean              isClient;           // set if the game is run for a client
         // discriminates between the RunFrame path and the ClientPrediction path
         // NOTE: on a listen server, isClient is false
-        public int localClientNum;			// number of the local client. MP: -1 on a dedicated
-        public idLinkList<idEntity> snapshotEntities;	// entities from the last snapshot
-        public int realClientTime;			// real client time
-        public boolean isNewFrame;			// true if this is a new game frame, not a rerun due to prediction
-        public float clientSmoothing;                   // smoothing of other clients in the view
-        public int entityDefBits;			// bits required to store an entity def number
+        public int                  localClientNum;     // number of the local client. MP: -1 on a dedicated
+        public idLinkList<idEntity> snapshotEntities;   // entities from the last snapshot
+        public int                  realClientTime;     // real client time
+        public boolean              isNewFrame;         // true if this is a new game frame, not a rerun due to prediction
+        public float                clientSmoothing;    // smoothing of other clients in the view
+        public int                  entityDefBits;      // bits required to store an entity def number
+        //
+        public String[] sufaceTypeNames = new String[MAX_SURFACE_TYPES];    // text names for surface types
+        public idEntityPtr<idEntity> lastGUIEnt;        // last entity with a GUI, used by Cmd_NextGUI_f
+        public int                   lastGUI;           // last GUI on the lastGUIEnt
+        //
 //
-        public String[] sufaceTypeNames = new String[MAX_SURFACE_TYPES];	// text names for surface types
-        public idEntityPtr<idEntity> lastGUIEnt;		// last entity with a GUI, used by Cmd_NextGUI_f
-        public int lastGUI;                                     // last GUI on the lastGUIEnt
-//
-//
-        private static final int INITIAL_SPAWN_COUNT = 1;
-//
-        private idStr mapFileName = new idStr();	// name of the map, empty string if no map loaded
-        private idMapFile mapFile;			// will be NULL during the game unless in-game editing is used
-        private boolean mapCycleLoaded;
-//
-        private int spawnCount;
-        private int mapSpawnCount;			// it's handy to know which entities are part of the map
-//
-        private idLocationEntity[] locationEntities;	// for location names, etc
-//
-        private idCamera camera;
-        private idMaterial globalMaterial;		// for overriding everything
-//
-        private idList<idAAS> aasList = new idList<>(); // area system
-        private idStrList aasNames = new idStrList();
-//
+        private static final int   INITIAL_SPAWN_COUNT = 1;
+        //
+        private              idStr mapFileName         = new idStr();    // name of the map, empty string if no map loaded
+        private idMapFile          mapFile;            // will be NULL during the game unless in-game editing is used
+        private boolean            mapCycleLoaded;
+        //
+        private int                spawnCount;
+        private int                mapSpawnCount;      // it's handy to know which entities are part of the map
+        //
+        private idLocationEntity[] locationEntities;   // for location names, etc
+        //
+        private idCamera           camera;
+        private idMaterial         globalMaterial;     // for overriding everything
+        //
+        private idList<idAAS> aasList  = new idList<>(); // area system
+        private idStrList     aasNames = new idStrList();
+        //
         private idEntityPtr<idActor> lastAIAlertEntity;
-        private int lastAIAlertTime;
-//
-        private idDict spawnArgs = new idDict();        // spawn args used during entity spawning  FIXME: shouldn't be necessary anymore
-//
-        private pvsHandle_t playerPVS = new pvsHandle_t();// merged pvs of all players
+        private int                  lastAIAlertTime;
+        //
+        private idDict      spawnArgs            = new idDict();        // spawn args used during entity spawning  FIXME: shouldn't be necessary anymore
+        //
+        private pvsHandle_t playerPVS            = new pvsHandle_t();// merged pvs of all players
         private pvsHandle_t playerConnectedAreas = new pvsHandle_t();// all areas connected to any player area
-//
-        private idVec3 gravity = new idVec3();          // global gravity vector
-        private gameState_t gamestate;			// keeps track of whether we're spawning, shutting down, or normal gameplay
-        private boolean influenceActive;		// true when a phantasm is happening
-        private int nextGibTime;
-//
-        private final idList<Integer>[][] clientDeclRemap = new idList[MAX_CLIENTS][etoi(DECL_MAX_TYPES)];
-//
-        private entityState_s[][] clientEntityStates = new entityState_s[MAX_CLIENTS][MAX_GENTITIES];
-        private int[][] clientPVS = new int[MAX_CLIENTS][ENTITY_PVS_SIZE];
-        private snapshot_s[] clientSnapshots = new snapshot_s[MAX_CLIENTS];
-//        private final idBlockAlloc<entityState_s> entityStateAllocator = new idBlockAlloc<>(256);
+        //
+        private idVec3      gravity              = new idVec3();          // global gravity vector
+        private gameState_t gamestate;            // keeps track of whether we're spawning, shutting down, or normal gameplay
+        private boolean     influenceActive;        // true when a phantasm is happening
+        private int         nextGibTime;
+        //
+        private final idList<Integer>[][]       clientDeclRemap    = new idList[MAX_CLIENTS][etoi(DECL_MAX_TYPES)];
+        //
+        private       entityState_s[][]         clientEntityStates = new entityState_s[MAX_CLIENTS][MAX_GENTITIES];
+        private       int[][]                   clientPVS          = new int[MAX_CLIENTS][ENTITY_PVS_SIZE];
+        private       snapshot_s[]              clientSnapshots    = new snapshot_s[MAX_CLIENTS];
+        //        private final idBlockAlloc<entityState_s> entityStateAllocator = new idBlockAlloc<>(256);
 //        private final idBlockAlloc<snapshot_s> snapshotAllocator = new idBlockAlloc<>(64);
 //
-        private idEventQueue eventQueue = new idEventQueue();
-        private idEventQueue savedEventQueue = new idEventQueue();
-//
-        private final idStaticList<spawnSpot_t> spawnSpots = new idStaticList<>(MAX_GENTITIES);
-        private final idStaticList<idEntity> initialSpots = new idStaticList<>(MAX_GENTITIES);
+        private       idEventQueue              eventQueue         = new idEventQueue();
+        private       idEventQueue              savedEventQueue    = new idEventQueue();
+        //
+        private final idStaticList<spawnSpot_t> spawnSpots         = new idStaticList<>(MAX_GENTITIES);
+        private final idStaticList<idEntity>    initialSpots       = new idStaticList<>(MAX_GENTITIES);
         private int currentInitialSpot;
-//
+        //
         private idDict newInfo = new idDict();
-//
+        //
         private idStrList shakeSounds;
-//
+        //
         private byte[][][] lagometer = new byte[LAGO_IMG_HEIGHT][LAGO_IMG_WIDTH][4];
 //
 //
@@ -776,9 +813,9 @@ public class Game_local {
             idClass.INIT();
 
             InitConsoleCommands();
-//
-//            // load default scripts
-//            program.Startup(SCRIPT_DEFAULT);
+
+            // load default scripts
+            program.Startup(SCRIPT_DEFAULT);
 
             smokeParticles = new idSmokeParticles();
 
@@ -2735,12 +2772,9 @@ public class Game_local {
             numClients = 0;
 
             // initialize all entities for this game
-//	memset( entities, 0, sizeof( entities ) );
-            entities = new idEntity[entities.length];
-//	memset( usercmds, 0, sizeof( usercmds ) );
-            usercmds = new usercmd_t[usercmds.length];
-//	memset( spawnIds, -1, sizeof( spawnIds ) );
-            spawnIds = new int[spawnIds.length];
+            entities = new idEntity[entities.length];//	memset( entities, 0, sizeof( entities ) );
+            usercmds = Stream.generate(() -> new usercmd_t()).limit(usercmds.length).toArray(usercmd_t[]::new);//memset( usercmds, 0, sizeof( usercmds ) );
+            spawnIds = new int[spawnIds.length];//memset( spawnIds, -1, sizeof( spawnIds ) );
             spawnCount = INITIAL_SPAWN_COUNT;
 
             spawnedEntities.Clear();
@@ -2748,7 +2782,7 @@ public class Game_local {
             numEntitiesToDeactivate = 0;
             sortTeamMasters = false;
             sortPushers = false;
-            lastGUIEnt = null;
+            lastGUIEnt.oSet(null);
             lastGUI = 0;
 
             globalMaterial = null;
@@ -2770,7 +2804,7 @@ public class Game_local {
             testmodel = null;
             testFx = null;
 
-            lastAIAlertEntity = null;
+            lastAIAlertEntity.oSet(null);
             lastAIAlertTime = 0;
 
             previousTime = 0;
@@ -3269,7 +3303,7 @@ public class Game_local {
 
             try {
                 if (args != null) {
-                    spawnArgs = args;
+                    spawnArgs.oSet(args);
                 } else {
                     spawnArgs.Clear();
                 }
@@ -3289,7 +3323,25 @@ public class Game_local {
         }
 
         public idEntity SpawnEntityType(final Class classdef, final idDict args /*= NULL*/) {
-            throw new TODO_Exception();
+            idEntity obj = null;
+
+            if (!idEntity.class.isAssignableFrom(classdef)) {
+                Error("Attempted to spawn non-entity class '%s'", classdef);
+            }
+
+            if (args != null) {
+                spawnArgs.oSet(args);
+            } else {
+                spawnArgs.Clear();
+            }
+
+            try {
+                obj = (idEntity) classdef.newInstance();
+                obj.Spawn();
+            } catch (InstantiationException | IllegalAccessException ex) {
+            }
+
+            return obj;
         }
 
         @Deprecated
@@ -3308,12 +3360,12 @@ public class Game_local {
          Finds the spawn function for the entity and calls it,
          returning false if not found
          ===================
-         */
+         */private static int DBG_SpawnEntityDef = 0;
         public boolean SpawnEntityDef(final idDict args, idEntity[] ent /*= NULL*/, boolean setDefaults /*= true*/) {
-            String[] classname = {null};
+            String[] classname = {null};DBG_SpawnEntityDef++;
             String[] spawn = {null};
             idTypeInfo cls;
-            idClass obj;
+//            idClass obj;
             String error = "";
             String[] name = new String[1];
 
@@ -3321,7 +3373,7 @@ public class Game_local {
                 ent[0] = null;
             }
 
-            spawnArgs = args;
+            spawnArgs.oSet(args);
 
             if (spawnArgs.GetString("name", "", name)) {
                 error = String.format(" on '%s'", name[0]);
@@ -3332,7 +3384,7 @@ public class Game_local {
             final idDeclEntityDef def = FindEntityDef(classname[0], false);
 
             if (null == def) {
-                Warning("Unknown classname '%s'%s.", classname, error);
+                Warning("Unknown classname '%s'%s.", classname[0], error);
                 return false;
             }
 
@@ -3341,23 +3393,153 @@ public class Game_local {
             // check if we should spawn a class object
             spawnArgs.GetString("spawnclass", null, spawn);
             if (spawn[0] != null) {
-
-                cls = idClass.GetClass(spawn[0]);
-                if (NOT(cls)) {
-                    Warning("Could not spawn '%s'.  Class '%s' not found%s.", classname, spawn, error);
-                    return false;
+                final idEntity obj;
+                switch (spawn[0]) {//TODO:mayhaps implement some other cases
+                    case "idWorldspawn":
+                        obj = new idWorldspawn();
+                        break;
+                    case "idStaticEntity":
+                        obj = new idStaticEntity();
+                        break;
+                    case "idPathCorner":
+                        obj = new idPathCorner();
+                        break;
+                    case "idTrigger_Multi":
+                        obj = new idTrigger_Multi();
+                        break;
+                    case "idTarget_Tip":
+                        obj = new idTarget_Tip();
+                        break;
+                    case "idTarget_Remove":
+                        obj = new idTarget_Remove();
+                        break;
+                    case "idMover":
+                        obj = new idMover();
+                        break;
+                    case "idMoveable":
+                        obj = new idMoveable();
+                        break;
+                    case "idLight":
+                        obj = new idLight();
+                        break;
+                    case "idCameraAnim":
+                        obj = new idCameraAnim();
+                        break;
+                    case "idAI":
+                        obj = new idAI();
+                        break;
+                    case "idFuncEmitter":
+                        obj = new idFuncEmitter();
+                        break;
+                    case "idAnimated":
+                        obj = new idAnimated();
+                        break;
+                    case "idBFGProjectile":
+                        obj = new idBFGProjectile();
+                        break;
+                    case "idTrigger_Hurt":
+                        obj = new idTrigger_Hurt();
+                        break;
+                    case "idMoveablePDAItem":
+                        obj = new idMoveablePDAItem();
+                        break;
+                    case "idLocationEntity":
+                        obj = new idLocationEntity();
+                        break;
+                    case "idPlayerStart":
+                        obj = new idPlayerStart();
+                        break;
+                    case "idSound":
+                        obj = new idSound();
+                        break;
+                    case "idTarget_GiveEmail":
+                        obj = new idTarget_GiveEmail();
+                        break;
+                    case "idTarget_SetPrimaryObjective":
+                        obj = new idTarget_SetPrimaryObjective();
+                        break;
+                    case "idObjectiveComplete":
+                        obj = new idObjectiveComplete();
+                        break;
+                    case "idTarget":
+                        obj = new idTarget();
+                        break;
+                    case "idCameraView":
+                        obj = new idCameraView();
+                        break;
+                    case "idObjective":
+                        obj = new idObjective();
+                        break;
+                    case "idTarget_SetShaderParm":
+                        obj = new idTarget_SetShaderParm();
+                        break;
+                    case "idTarget_FadeEntity":
+                        obj = new idTarget_FadeEntity();
+                        break;
+                    case "idEntityFx":
+                        obj = new idEntityFx();
+                        break;
+                    case "idItem":
+                        obj = new idItem();
+                        break;
+                    case "idSplinePath":
+                        obj = new idSplinePath();
+                        break;
+                    case "idAFEntity_Generic":
+                        obj = new idAFEntity_Generic();
+                        break;
+                    case "idDoor":
+                        obj = new idDoor();
+                        break;
+                    case "idProjectile":
+                        obj = new idProjectile();
+                        break;
+                    case "idTrigger_Count":
+                        obj = new idTrigger_Count();
+                        break;
+                    case "idTarget_EndLevel":
+                        obj = new idTarget_EndLevel();
+                        break;
+                    case "idTarget_CallObjectFunction":
+                        obj = new idTarget_CallObjectFunction();
+                        break;
+                    case "idTrigger_Fade":
+                        obj = new idTrigger_Fade();
+                        break;
+                    case "idPDAItem":
+                        obj = new idPDAItem();
+                        break;
+                    case "idVideoCDItem":
+                        obj = new idVideoCDItem();
+                        break;
+                    case "idLocationSeparatorEntity":
+                        obj = new idLocationSeparatorEntity();
+                        break;
+                    case "idPlayer":
+                        obj = new idPlayer();
+                        break;
+                    default:
+                        obj = null;
                 }
 
-                obj = (idClass) cls.CreateInstance.run();
-                if (NOT(obj)) {
-                    Warning("Could not spawn '%s'. Instance could not be created%s.", classname, error);
-                    return false;
-                }
+                obj.Spawn();
 
-                obj.CallSpawn();
-
-                if (ent != null && obj.IsType(idEntity.class)) {
-                    ent[0] = ((idEntity) obj);
+//                obj = idClass.GetClass(spawn[0]);
+//                if (NOT(cls)) {
+//                    Warning("Could not spawn '%s'.  Class '%s' not found%s.", classname[0], spawn[0], error);
+//                    return false;
+//                }
+//
+//                obj = (idClass) cls.CreateInstance.run();
+//                if (NOT(obj)) {
+//                    Warning("Could not spawn '%s'. Instance could not be created%s.", classname[0], error);
+//                    return false;
+//                }
+//
+//                obj.CallSpawn();
+                
+                if (ent != null) {// && obj.IsType(idEntity.class)) {
+                    ent[0] = obj;
                 }
 
                 return true;
@@ -3368,7 +3550,7 @@ public class Game_local {
             if (spawn[0] != null) {
                 final function_t func = program.FindFunction(spawn[0]);
                 if (null == func) {
-                    Warning("Could not spawn '%s'.  Script function '%s' not found%s.", classname, spawn, error);
+                    Warning("Could not spawn '%s'.  Script function '%s' not found%s.", classname[0], spawn[0], error);
                     return false;
                 }
                 idThread thread = new idThread(func);
@@ -3376,7 +3558,7 @@ public class Game_local {
                 return true;
             }
 
-            Warning("%s doesn't include a spawnfunc or spawnclass%s.", classname, error);
+            Warning("%s doesn't include a spawnfunc or spawnclass%s.", classname[0], error);
             return false;
         }
 
@@ -3655,10 +3837,10 @@ public class Game_local {
             float ratio_x;
             float ratio_y;
 
-            if (!sys.FPU_StackIsEmpty()) {
-                Printf(sys.FPU_GetState());
-                Error("idGameLocal::CalcFov: FPU stack not empty");
-            }
+//            if (!sys.FPU_StackIsEmpty()) {
+//                Printf(sys.FPU_GetState());
+//                Error("idGameLocal::CalcFov: FPU stack not empty");
+//            }
 
             // first, calculate the vertical fov based on a 640x480 view
             x = (float) (640.0f / tan(base_fov / 360.0f * idMath.PI));
@@ -3949,7 +4131,7 @@ public class Game_local {
                 if (hit.IsType(idPlayer.class) && ((idPlayer) hit).IsInTeleport()) {
                     ((idPlayer) hit).TeleportDeath(ent.entityNumber);
                 } else if (!catch_teleport) {
-                    hit.Damage(ent, ent, vec3_origin, "damage_telefrag", 1.0f, INVALID_JOINT);
+                    hit.Damage(ent, ent, getVec3_origin(), "damage_telefrag", 1.0f, INVALID_JOINT);
                 }
 
                 if (!gameLocal.isMultiplayer) {
@@ -4256,7 +4438,7 @@ public class Game_local {
             size = halfSize + random.RandomFloat() * halfSize;
             trm.SetupPolygon(verts, 4);
             mdl.LoadModel(trm);
-            clip.Translation(results, origin, origin.oPlus(dir.oMultiply(64.0f)), mdl, mat3_identity, CONTENTS_SOLID, null);
+            clip.Translation(results, origin, origin.oPlus(dir.oMultiply(64.0f)), mdl, getMat3_identity(), CONTENTS_SOLID, null);
             ProjectDecal(results[0].endpos, dir, 2.0f * size, true, size, material);
         }
 
@@ -4665,8 +4847,8 @@ public class Game_local {
             for (int e = 0; e < entities.length; e++) {
                 entities[e] = new idEntity();
             }
-//	memset( spawnIds, -1, sizeof( spawnIds ) );
             spawnIds = new int[spawnIds.length];
+            Arrays.fill(spawnIds, -1);//	memset( spawnIds, -1, sizeof( spawnIds ) );
             firstFreeIndex = 0;
             num_entities = 0;
             spawnedEntities.Clear();
@@ -4675,8 +4857,7 @@ public class Game_local {
             sortPushers = false;
             sortTeamMasters = false;
             persistentLevelInfo.Clear();
-//	memset( globalShaderParms, 0, sizeof( globalShaderParms ) );
-            globalShaderParms = new float[globalShaderParms.length];
+            globalShaderParms = new float[globalShaderParms.length];//memset( globalShaderParms, 0, sizeof( globalShaderParms ) );
             random.SetSeed(0);
             world = null;
             frameCommandThread = null;
@@ -4704,7 +4885,7 @@ public class Game_local {
             camera = null;
             aasList.Clear();
             aasNames.Clear();
-            lastAIAlertEntity = null;
+            lastAIAlertEntity = new idEntityPtr<>(null);
             lastAIAlertTime = 0;
             spawnArgs.Clear();
             gravity.Set(0, 0, -1);
@@ -4726,7 +4907,7 @@ public class Game_local {
             nextGibTime = 0;
             globalMaterial = null;
             newInfo.Clear();
-            lastGUIEnt = null;
+            lastGUIEnt = new idEntityPtr<>(null);
             lastGUI = 0;
 
 //	memset( clientEntityStates, 0, sizeof( clientEntityStates ) );
@@ -4735,8 +4916,7 @@ public class Game_local {
                     clientEntityStates[a][b] = new entityState_s();
                 }
             }
-//	memset( clientPVS, 0, sizeof( clientPVS ) );
-            clientPVS = new int[clientPVS.length][clientPVS[0].length];
+            clientPVS = new int[clientPVS.length][clientPVS[0].length];//memset( clientPVS, 0, sizeof( clientPVS ) );
 //	memset( clientSnapshots, 0, sizeof( clientSnapshots ) );
             for (int c = 0; c < clientSnapshots.length; c++) {
                 clientSnapshots[c] = new snapshot_s();
@@ -4745,8 +4925,7 @@ public class Game_local {
             eventQueue.Init();
             savedEventQueue.Init();
 
-//            memset(lagometer, 0, sizeof(lagometer));
-            lagometer = new byte[lagometer.length][lagometer[0].length][lagometer[0][0].length];
+            lagometer = new byte[lagometer.length][lagometer[0].length][lagometer[0][0].length];//memset(lagometer, 0, sizeof(lagometer));
         }
 
         // returns true if the entity shouldn't be spawned at all in this game type or difficulty level
@@ -5195,7 +5374,7 @@ public class Game_local {
             }
 
             if (g_showCollisionWorld.GetBool()) {
-                CollisionModel_local.collisionModelManager.DrawModel(0, vec3_origin, mat3_identity, origin, 128.0f);
+                CollisionModel_local.collisionModelManager.DrawModel(0, getVec3_origin(), getMat3_identity(), origin, 128.0f);
             }
 
             if (g_showCollisionModels.GetBool()) {
@@ -5380,7 +5559,7 @@ public class Game_local {
 
             for (i = 0; i < MAX_CLIENTS; i++) {
                 for (type = 0; type < declManager.GetNumDeclTypes(); type++) {
-                    clientDeclRemap[i][type].Clear();
+                    clientDeclRemap[i][type] = new idList<>();
                 }
             }
 
@@ -5987,7 +6166,7 @@ public class Game_local {
     };
     //============================================================================
 
-    public static idAnimManager animationLib;
+    public static final idAnimManager animationLib = new idAnimManager();
 
     //============================================================================
     public static class idGameError extends idException {

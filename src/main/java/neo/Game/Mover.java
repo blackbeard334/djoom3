@@ -9,7 +9,6 @@ import static neo.Game.Entity.signalNum_t.SIG_MOVER_1TO2;
 import static neo.Game.Entity.signalNum_t.SIG_MOVER_2TO1;
 import static neo.Game.Entity.signalNum_t.SIG_MOVER_POS1;
 import static neo.Game.Entity.signalNum_t.SIG_MOVER_POS2;
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
@@ -69,7 +68,7 @@ import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.geometry.TraceModel.idTraceModel;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Curve.idCurve_Spline;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_ACCELLINEAR;
@@ -81,10 +80,10 @@ import static neo.idlib.math.Extrapolate.EXTRAPOLATION_NOSTOP;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -271,10 +270,10 @@ public class Mover {
             rot = new rotationState_t();
             move_thread = 0;
             rotate_thread = 0;
-            dest_angles.Zero();
-            angle_delta.Zero();
-            dest_position.Zero();
-            move_delta.Zero();
+            dest_angles = new idAngles();
+            angle_delta = new idAngles();
+            dest_position = new idVec3();
+            move_delta = new idVec3();
             move_speed = 0.0f;
             move_time = 0;
             deceltime = 0;
@@ -285,10 +284,13 @@ public class Mover {
             damage = 0.0f;
             areaPortal = 0;
             fl.networkSync = true;
+            physicsObj = new idPhysics_Parametric();
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             float[] damage = {0};
 
             move_thread = 0;
@@ -318,8 +320,8 @@ public class Mover {
             if (null == renderEntity.hModel || !spawnArgs.GetBool("nopush")) {
                 physicsObj.SetPusher(0);
             }
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, vec3_origin, vec3_origin);
-            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, ang_zero, ang_zero);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
+            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());
             SetPhysics(physicsObj);
 
             // see if we are on an areaportal
@@ -563,7 +565,7 @@ public class Mover {
 
         protected void Event_PartBlocked(idEntity blockingEntity) {
             if (damage > 0.0f) {
-                blockingEntity.Damage(this, this, vec3_origin, "damage_moverCrush", damage, INVALID_JOINT);
+                blockingEntity.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
             if (g_debugMover.GetBool()) {
                 gameLocal.Printf("%d: '%s' blocked by '%s'\n", gameLocal.time, name, blockingEntity.name);
@@ -665,7 +667,7 @@ public class Mover {
 
             if (lastCommand != MOVER_SPLINE) {
                 // set our final position so that we get rid of any numerical inaccuracy
-                physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, vec3_origin, vec3_origin);
+                physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
             }
 
             lastCommand = MOVER_NONE;
@@ -698,7 +700,7 @@ public class Mover {
             physicsObj.GetLocalOrigin(org);
 
             move_delta = dest_position.oMinus(org);
-            if (move_delta.Compare(vec3_zero)) {
+            if (move_delta.Compare(getVec3_zero())) {
                 DoneMoving();
                 return;
             }
@@ -778,10 +780,10 @@ public class Mover {
 
             physicsObj.GetLocalAngles(ang);
             angle_delta = dest_angles.oMinus(ang);
-            if (angle_delta == ang_zero) {
+            if (angle_delta == getAng_zero()) {
                 // set our final angles so that we get rid of any numerical inaccuracy
                 dest_angles.Normalize360();
-                physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, ang_zero, ang_zero);
+                physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());
                 stopRotation = false;
                 DoneRotating();
                 return;
@@ -934,7 +936,7 @@ public class Mover {
 
         private void Event_StopRotating() {
             physicsObj.GetLocalAngles(dest_angles);
-            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, ang_zero, ang_zero);
+            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());
             DoneRotating();
         }
 
@@ -947,7 +949,7 @@ public class Mover {
 
             switch (move.stage) {
                 case ACCELERATION_STAGE: {
-                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, move.acceleration, org, move.dir, vec3_origin);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, move.acceleration, org, move.dir, getVec3_origin());
                     if (move.movetime > 0) {
                         move.stage = LINEAR_STAGE;
                     } else if (move.deceleration > 0) {
@@ -958,7 +960,7 @@ public class Mover {
                     break;
                 }
                 case LINEAR_STAGE: {
-                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, move.movetime, org, move.dir, vec3_origin);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, move.movetime, org, move.dir, getVec3_origin());
                     if (move.deceleration != 0) {
                         move.stage = DECELERATION_STAGE;
                     } else {
@@ -967,7 +969,7 @@ public class Mover {
                     break;
                 }
                 case DECELERATION_STAGE: {
-                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, move.deceleration, org, move.dir, vec3_origin);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, move.deceleration, org, move.dir, getVec3_origin());
                     move.stage = FINISHED_STAGE;
                     break;
                 }
@@ -990,7 +992,7 @@ public class Mover {
 
             switch (rot.stage) {
                 case ACCELERATION_STAGE: {
-                    physicsObj.SetAngularExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, rot.acceleration, ang, rot.rot, ang_zero);
+                    physicsObj.SetAngularExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, rot.acceleration, ang, rot.rot, getAng_zero());
                     if (rot.movetime > 0) {
                         rot.stage = LINEAR_STAGE;
                     } else if (rot.deceleration > 0) {
@@ -1002,9 +1004,9 @@ public class Mover {
                 }
                 case LINEAR_STAGE: {
                     if (!stopRotation && 0 == rot.deceleration) {
-                        physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, rot.movetime, ang, rot.rot, ang_zero);
+                        physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, rot.movetime, ang, rot.rot, getAng_zero());
                     } else {
-                        physicsObj.SetAngularExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, rot.movetime, ang, rot.rot, ang_zero);
+                        physicsObj.SetAngularExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, rot.movetime, ang, rot.rot, getAng_zero());
                     }
 
                     if (rot.deceleration != 0) {
@@ -1015,7 +1017,7 @@ public class Mover {
                     break;
                 }
                 case DECELERATION_STAGE: {
-                    physicsObj.SetAngularExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, rot.deceleration, ang, rot.rot, ang_zero);
+                    physicsObj.SetAngularExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, rot.deceleration, ang, rot.rot, getAng_zero());
                     rot.stage = FINISHED_STAGE;
                     break;
                 }
@@ -1024,11 +1026,11 @@ public class Mover {
                     if (stopRotation) {
                         // set our final angles so that we get rid of any numerical inaccuracy
                         dest_angles.Normalize360();
-                        physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, ang_zero, ang_zero);
+                        physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());
                         stopRotation = false;
                     } else if (physicsObj.GetAngularExtrapolationType() == EXTRAPOLATION_ACCELLINEAR) {
                         // keep our angular velocity constant
-                        physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, ang, rot.rot, ang_zero);
+                        physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, ang, rot.rot, getAng_zero());
                     }
 
                     if (g_debugMover.GetBool()) {
@@ -1245,7 +1247,7 @@ public class Mover {
             idVec3 org = new idVec3();
 
             physicsObj.GetLocalOrigin(org);
-            physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (speed * 1000 * phase), (int) (speed * 500), org, depth.oMultiply(2.0f), vec3_origin);
+            physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (speed * 1000 * phase), (int) (speed * 500), org, depth.oMultiply(2.0f), getVec3_origin());
         }
 
         private void Event_Sway(float speed, float phase, idAngles depth) {
@@ -1256,7 +1258,7 @@ public class Mover {
             assert (speed > 0.0f);
             duration = idMath.Sqrt(depth.oGet(0) * depth.oGet(0) + depth.oGet(1) * depth.oGet(1) + depth.oGet(2) * depth.oGet(2)) / speed;
             angSpeed = depth.oDivide(duration * idMath.SQRT_1OVER2);
-            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (duration * 1000.0f * phase), (int) (duration * 1000.0f), ang, angSpeed, ang_zero);
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (duration * 1000.0f * phase), (int) (duration * 1000.0f), ang, angSpeed, getAng_zero());
         }
 
         private void Event_SetAccelSound(final String sound) {
@@ -1296,7 +1298,7 @@ public class Mover {
                 return;
             }
             ang = spline.GetCurrentFirstDerivative(0).ToAngles();
-            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, ang.oNegative(), ang_zero, ang_zero);
+            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, ang.oNegative(), getAng_zero(), getAng_zero());
         }
 
         private void Event_StartSpline(idEntity splineEntity) {
@@ -1330,7 +1332,7 @@ public class Mover {
             spline.ShiftTime(gameLocal.time - spline.GetTime(0));
 
             physicsObj.SetSpline(spline, move.acceleration, move.deceleration, useSplineAngles);
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, vec3_origin, vec3_origin);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
         }
 
         private void Event_StopSpline() {
@@ -1359,7 +1361,7 @@ public class Mover {
             spline.ShiftTime(start - spline.GetTime(0));
 
             physicsObj.SetSpline(spline, accel, decel, (useSplineAng != 0));
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, vec3_origin, vec3_origin);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
         }
 
         private void Event_IsMoving() {
@@ -1390,10 +1392,6 @@ public class Mover {
 //	CLASS_PROTOTYPE( idSplinePath );
 
         public idSplinePath() {//TODO:delete this class?
-        }
-
-        @Override
-        public void Spawn() {
         }
 
         @Override
@@ -1862,38 +1860,38 @@ public class Mover {
     public static class idMover_Binary extends idEntity {
         // CLASS_PROTOTYPE( idMover_Binary );
 
-        protected idVec3 pos1;
-        protected idVec3 pos2;
-        protected moverState_t moverState;
-        protected idMover_Binary moveMaster;
-        protected idMover_Binary activateChain;
-        protected int soundPos1;
-        protected int sound1to2;
-        protected int sound2to1;
-        protected int soundPos2;
-        protected int soundLoop;
-        protected float wait;
-        protected float damage;
-        protected int duration;
-        protected int accelTime;
-        protected int decelTime;
-        protected idEntityPtr<idEntity> activatedBy;
-        protected int stateStartTime;
-        protected idStr team;
-        protected boolean enabled;
-        protected int move_thread;
-        protected int updateStatus;		// 1 = lock behaviour, 2 = open close status
-        protected idStrList buddies;
-        protected idPhysics_Parametric physicsObj;
-        protected int/*qhandle_t*/ areaPortal;			// 0 = no portal
-        protected boolean blocked;
-        protected idList< idEntityPtr<idEntity>> guiTargets;
+        protected idVec3                        pos1;
+        protected idVec3                        pos2;
+        protected moverState_t                  moverState;
+        protected idMover_Binary                moveMaster;
+        protected idMover_Binary                activateChain;
+        protected int                           soundPos1;
+        protected int                           sound1to2;
+        protected int                           sound2to1;
+        protected int                           soundPos2;
+        protected int                           soundLoop;
+        protected float                         wait;
+        protected float                         damage;
+        protected int                           duration;
+        protected int                           accelTime;
+        protected int                           decelTime;
+        protected idEntityPtr<idEntity>         activatedBy;
+        protected int                           stateStartTime;
+        protected idStr                         team;
+        protected boolean                       enabled;
+        protected int                           move_thread;
+        protected int                           updateStatus;        // 1 = lock behaviour, 2 = open close status
+        protected idStrList                     buddies;
+        protected idPhysics_Parametric          physicsObj;
+        protected int/*qhandle_t*/              areaPortal;          // 0 = no portal
+        protected boolean                       blocked;
+        protected idList<idEntityPtr<idEntity>> guiTargets;
         //
         //
 
         public idMover_Binary() {
-            pos1.Zero();
-            pos2.Zero();
+            pos1 = new idVec3();
+            pos2 = new idVec3();
             moverState = MOVER_POS1;
             moveMaster = null;
             activateChain = null;
@@ -1907,12 +1905,14 @@ public class Mover {
             duration = 0;
             accelTime = 0;
             decelTime = 0;
-            activatedBy.oSet(this);
+            activatedBy = new idEntityPtr<>(this);
             stateStartTime = 0;
-            team.Clear();
+            team = new idStr();
             enabled = false;
             move_thread = 0;
             updateStatus = 0;
+            buddies = new idStrList();
+            physicsObj = new idPhysics_Parametric();
             areaPortal = 0;
             blocked = false;
             fl.networkSync = true;
@@ -1931,6 +1931,8 @@ public class Mover {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idEntity ent;
             String[] temp = {null};
 
@@ -1984,8 +1986,8 @@ public class Mover {
             if (!spawnArgs.GetBool("nopush")) {
                 physicsObj.SetPusher(0);
             }
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), vec3_origin, vec3_origin);
-            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetAxis().ToAngles(), ang_zero, ang_zero);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
+            physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetAxis().ToAngles(), getAng_zero(), getAng_zero());
             SetPhysics(physicsObj);
 
             if (moveMaster != this) {
@@ -2169,8 +2171,8 @@ public class Mover {
 
             moverState = MOVER_POS1;
 
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, pos1, vec3_origin, vec3_origin);
-            physicsObj.SetLinearInterpolation(0, 0, 0, 0, vec3_origin, vec3_origin);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, pos1, getVec3_origin(), getVec3_origin());
+            physicsObj.SetLinearInterpolation(0, 0, 0, 0, getVec3_origin(), getVec3_origin());
             SetOrigin(pos1);
 
             PostEventMS(EV_Mover_InitGuiTargets, 0);
@@ -2198,8 +2200,8 @@ public class Mover {
 
             moverState = MOVER_POS1;
 
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, pos1, vec3_origin, vec3_origin);
-            physicsObj.SetLinearInterpolation(0, 0, 0, 0, vec3_origin, vec3_origin);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, pos1, getVec3_origin(), getVec3_origin());
+            physicsObj.SetLinearInterpolation(0, 0, 0, 0, getVec3_origin(), getVec3_origin());
             SetOrigin(pos1);
 
             PostEventMS(EV_Mover_InitGuiTargets, 0);
@@ -2504,17 +2506,17 @@ public class Mover {
             switch (moverState) {
                 case MOVER_POS1: {
                     Signal(SIG_MOVER_POS1);
-                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, time, 0, pos1, vec3_origin, vec3_origin);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, time, 0, pos1, getVec3_origin(), getVec3_origin());
                     break;
                 }
                 case MOVER_POS2: {
                     Signal(SIG_MOVER_POS2);
-                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, time, 0, pos2, vec3_origin, vec3_origin);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, time, 0, pos2, getVec3_origin(), getVec3_origin());
                     break;
                 }
                 case MOVER_1TO2: {
                     Signal(SIG_MOVER_1TO2);
-                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, time, duration, pos1, (pos2.oMinus(pos1)).oMultiply(1000.0f).oDivide(duration), vec3_origin);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, time, duration, pos1, (pos2.oMinus(pos1)).oMultiply(1000.0f).oDivide(duration), getVec3_origin());
                     if (accelTime != 0 || decelTime != 0) {
                         physicsObj.SetLinearInterpolation(time, accelTime, decelTime, duration, pos1, pos2);
                     } else {
@@ -2524,7 +2526,7 @@ public class Mover {
                 }
                 case MOVER_2TO1: {
                     Signal(SIG_MOVER_2TO1);
-                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, time, duration, pos2, (pos1.oMinus(pos2)).oMultiply(1000.0f).oDivide(duration), vec3_origin);
+                    physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, time, duration, pos2, (pos1.oMinus(pos2)).oMultiply(1000.0f).oDivide(duration), getVec3_origin());
                     if (accelTime != 0 || decelTime != 0) {
                         physicsObj.SetLinearInterpolation(time, accelTime, decelTime, duration, pos2, pos1);
                     } else {
@@ -2760,21 +2762,21 @@ public class Mover {
      */
     public static class idDoor extends idMover_Binary {
 
-        private float triggersize;
-        private boolean crusher;
-        private boolean noTouch;
-        private boolean aas_area_closed;
-        private idStr buddyStr;
+        private float       triggersize;
+        private boolean     crusher;
+        private boolean     noTouch;
+        private boolean     aas_area_closed;
+        private idStr       buddyStr;
         private idClipModel trigger;
         private idClipModel sndTrigger;
-        private int nextSndTriggerTime;
-        private idVec3 localTriggerOrigin;
-        private idMat3 localTriggerAxis;
-        private idStr requires;
-        private int removeItem;
-        private idStr syncLock;
-        private int normalAxisIndex;		// door faces X or Y for spectator teleports
-        private idDoor companionDoor;
+        private int         nextSndTriggerTime;
+        private idVec3      localTriggerOrigin;
+        private idMat3      localTriggerAxis;
+        private idStr       requires;
+        private int         removeItem;
+        private idStr       syncLock;
+        private int         normalAxisIndex;        // door faces X or Y for spectator teleports
+        private idDoor      companionDoor;
         //
         //
 
@@ -2785,15 +2787,15 @@ public class Mover {
             crusher = false;
             noTouch = false;
             aas_area_closed = false;
-            buddyStr.Clear();
+            buddyStr = new idStr();
             trigger = null;
             sndTrigger = null;
             nextSndTriggerTime = 0;
-            localTriggerOrigin.Zero();
-            localTriggerAxis.Identity();
-            requires.Clear();
+            localTriggerOrigin = new idVec3();
+            localTriggerAxis = idMat3.getMat3_identity();
+            requires = new idStr();
             removeItem = 0;
-            syncLock.Clear();
+            syncLock = new idStr();
             companionDoor = null;
             normalAxisIndex = 0;
         }
@@ -2801,6 +2803,8 @@ public class Mover {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idVec3 abs_movedir = new idVec3();
             float distance;
             idVec3 size;
@@ -2815,7 +2819,7 @@ public class Mover {
             if (!spawnArgs.GetFloat("movedir", "0", dir)) {
                 // no movedir, so angle defines movement direction and not orientation,
                 // a la oldschool Quake
-                SetAngles(ang_zero);
+                SetAngles(getAng_zero());
                 spawnArgs.GetFloat("angle", "0", dir);
             }
             GetMovedir(dir[0], moveDir);
@@ -3236,7 +3240,7 @@ public class Mover {
 
         private void Event_PartBlocked(idEntity blockingEntity) {
             if (damage > 0.0f) {
-                blockingEntity.Damage(this, this, vec3_origin, "damage_moverCrush", damage, INVALID_JOINT);
+                blockingEntity.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
         }
 
@@ -3371,7 +3375,7 @@ public class Mover {
 
             // create a trigger clip model
             trigger = new idClipModel(new idTraceModel(bounds));
-            trigger.Link(gameLocal.clip, this, 255, GetPhysics().GetOrigin(), mat3_identity);
+            trigger.Link(gameLocal.clip, this, 255, GetPhysics().GetOrigin(), getMat3_identity());
             trigger.SetContents(CONTENTS_TRIGGER);
 
             GetLocalTriggerPosition(trigger);
@@ -3397,7 +3401,7 @@ public class Mover {
 
             // create a trigger clip model
             sndTrigger = new idClipModel(new idTraceModel(bounds));
-            sndTrigger.Link(gameLocal.clip, this, 254, GetPhysics().GetOrigin(), mat3_identity);
+            sndTrigger.Link(gameLocal.clip, this, 254, GetPhysics().GetOrigin(), getMat3_identity());
             sndTrigger.SetContents(CONTENTS_TRIGGER);
 
             GetLocalTriggerPosition(sndTrigger);
@@ -3654,7 +3658,7 @@ public class Mover {
             }
 
             trigger = new idClipModel(new idTraceModel(new idBounds(tmin, tmax)));
-            trigger.Link(gameLocal.clip, this, 255, GetPhysics().GetOrigin(), mat3_identity);
+            trigger.Link(gameLocal.clip, this, 255, GetPhysics().GetOrigin(), getMat3_identity());
             trigger.SetContents(CONTENTS_TRIGGER);
         }
 
@@ -3665,7 +3669,7 @@ public class Mover {
 
         private void Event_PartBlocked(idEntity blockingEntity) {
             if (damage > 0) {
-                blockingEntity.Damage(this, this, vec3_origin, "damage_moverCrush", damage, INVALID_JOINT);
+                blockingEntity.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
         }
 
@@ -3760,7 +3764,7 @@ public class Mover {
 
         protected void Event_PartBlocked(idEntity blockingEntity) {
             if (damage[0] > 0) {
-                blockingEntity.Damage(this, this, vec3_origin, "damage_moverCrush", damage[0], INVALID_JOINT);
+                blockingEntity.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage[0], INVALID_JOINT);
             }
         }
 
@@ -3803,8 +3807,8 @@ public class Mover {
             if (!spawnArgs.GetBool("nopush")) {
                 physicsObj.SetPusher(0);
             }
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, gameLocal.time, 0, GetPhysics().GetOrigin(), vec3_origin, vec3_origin);
-            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, GetPhysics().GetAxis().ToAngles(), ang_zero, ang_zero);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, gameLocal.time, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, GetPhysics().GetAxis().ToAngles(), getAng_zero(), getAng_zero());
             SetPhysics(physicsObj);
 
             if (spawnArgs.GetBool("start_on")) {
@@ -3850,7 +3854,7 @@ public class Mover {
                 spawnArgs.Set("rotate", "0");
             }
 
-            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, physicsObj.GetAxis().ToAngles(), delta, ang_zero);
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, physicsObj.GetAxis().ToAngles(), delta, getAng_zero());
         }
     };
 
@@ -3883,7 +3887,7 @@ public class Mover {
             spawnArgs.GetBool("y_axis", "0", y_axis);
 
             // set the axis of bobbing
-            delta = vec3_origin;
+            delta = getVec3_origin();
             if (x_axis[0]) {
                 delta.oSet(0, height[0]);
             } else if (y_axis[0]) {
@@ -3900,7 +3904,7 @@ public class Mover {
             if (!spawnArgs.GetBool("nopush")) {
                 physicsObj.SetPusher(0);
             }
-            physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (phase[0] * 1000), (int) (speed[0] * 500), GetPhysics().GetOrigin(), delta.oMultiply(2.0f), vec3_origin);
+            physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (phase[0] * 1000), (int) (speed[0] * 500), GetPhysics().GetOrigin(), delta.oMultiply(2.0f), getVec3_origin());
             SetPhysics(physicsObj);
         }
     };
@@ -3949,8 +3953,8 @@ public class Mover {
             if (!spawnArgs.GetBool("nopush")) {
                 physicsObj.SetPusher(0);
             }
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), vec3_origin, vec3_origin);
-            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (phase[0] * 1000), (int) (500 / freq[0]), GetPhysics().GetAxis().ToAngles(), new idAngles(0, 0, speed[0] * 2.0f), ang_zero);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (phase[0] * 1000), (int) (500 / freq[0]), GetPhysics().GetAxis().ToAngles(), new idAngles(0, 0, speed[0] * 2.0f), getAng_zero());
             SetPhysics(physicsObj);
         }
     };
@@ -3981,7 +3985,7 @@ public class Mover {
             if (!spawnArgs.GetBool("nopush")) {
                 physicsObj.SetPusher(0);
             }
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), vec3_origin, vec3_origin);
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, GetPhysics().GetOrigin(), getVec3_origin(), getVec3_origin());
             SetPhysics(physicsObj);
         }
 
@@ -3998,10 +4002,10 @@ public class Mover {
                 spawnArgs.GetFloat("time", "4", time);
                 spawnArgs.GetFloat("height", "32", height);
 
-                delta = vec3_origin;
+                delta = getVec3_origin();
                 delta.oSet(2, height[0]);
 
-                physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, (int) (time[0] * 1000), physicsObj.GetOrigin(), delta, vec3_origin);
+                physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, (int) (time[0] * 1000), physicsObj.GetOrigin(), delta, getVec3_origin());
             }
         }
     };

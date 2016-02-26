@@ -1,5 +1,6 @@
 package neo.idlib.math;
 
+import java.util.stream.Stream;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat2;
 import neo.idlib.math.Matrix.idMat3;
@@ -46,6 +47,7 @@ public class Plane {
      ===============================================================================
      */
     public static class idPlane {
+        public static final int BYTES = idVec3.BYTES + Float.BYTES;
 
         private final idVec3 abc = new idVec3();
         private float d;
@@ -167,6 +169,12 @@ public class Plane {
         public idPlane oSet(final idVec3 v) {
             abc.oSet(v);
             d = 0;
+            return this;
+        }
+        
+        public idPlane oSet(final idPlane p) {
+            abc.oSet(p.abc);
+            this.d = p.d;
             return this;
         }
 //public	idPlane			operator+( const idPlane &p ) const;	// add plane equations
@@ -591,6 +599,13 @@ public class Plane {
             return new float[]{abc.x, abc.y, abc.z, d};
         }
 //public	float *			ToFloatPtr( void );
+        
+        public static idPlane[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new idPlane()).
+                    limit(length).
+                    toArray(idPlane[]::new);
+        }
 
         @Override
         public String toString() {

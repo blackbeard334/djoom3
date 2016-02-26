@@ -61,9 +61,12 @@ public class CollisionModel {
         public int           trmFeature;  // contact feature on trace model
         public int           entityNum;   // entity the contact surface is a part of
         public int           id;          // id of clip model the contact surface is part of
-    }
 
-    ;
+        public contactInfo_t() {
+            point = new idVec3();
+            normal = new idVec3();
+        }
+    };
 
     // trace result
     public static class trace_s implements SERiAL {
@@ -74,6 +77,8 @@ public class CollisionModel {
         public contactInfo_t c;            // contact information, only valid if fraction < 1.0
 
         public trace_s() {
+            endpos = new idVec3();
+            endAxis = new idMat3();
             this.c = new contactInfo_t();
         }
 

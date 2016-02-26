@@ -10,6 +10,9 @@ import static neo.Game.Game_local.ENTITYNUM_NONE;
 import static neo.Game.Game_local.ENTITYNUM_WORLD;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Physics.Physics.CONTACT_EPSILON;
+
+import neo.Game.Game_local;
+import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Physics.Physics.impactInfo_s;
 import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
 import static neo.Game.Physics.Physics_Monster.monsterMoveResult_t.MM_BLOCKED;
@@ -24,9 +27,9 @@ import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -52,7 +55,7 @@ public class Physics_Monster {
         MM_FALLING
     };
 
-    public static class monsterPState_s {
+    private static class monsterPState_s {
 
         int     atRest;
         boolean onGround;
@@ -60,6 +63,13 @@ public class Physics_Monster {
         idVec3  velocity;
         idVec3  localOrigin;
         idVec3  pushVelocity;
+
+        public monsterPState_s(){
+            this.origin = new idVec3();
+            this.velocity = new idVec3();
+            this.localOrigin = new idVec3();
+            this.pushVelocity = new idVec3();
+        }
     };
     static final float OVERCLIP                       = 1.001f;
     //
@@ -99,7 +109,7 @@ public class Physics_Monster {
             current.atRest = -1;
             saved = current;
 
-            delta.Zero();
+            delta = new idVec3();
             maxStepHeight = 18.0f;
             minFloorCosine = 0.7f;
             moveResult = MM_OK;
@@ -163,8 +173,8 @@ public class Physics_Monster {
 
         // set delta for next move
         public void SetDelta(final idVec3 d) {
-            delta = d;
-            if (!delta.equals(vec3_origin)) {
+            delta.oSet(d);
+            if (!delta.equals(getVec3_origin())) {
                 Activate();
             }
         }
@@ -224,9 +234,9 @@ public class Physics_Monster {
             // if bound to a master
             if (masterEntity != null) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin = masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis));
+                current.origin.oSet(masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis)));
                 clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
-                current.velocity = (current.origin.oMinus(oldOrigin)).oDivide(timeStep);
+                current.velocity.oSet((current.origin.oMinus(oldOrigin)).oDivide(timeStep));
                 masterDeltaYaw = masterYaw;
                 masterYaw = masterAxis.oGet(0).ToYaw();
                 masterDeltaYaw = masterYaw - masterDeltaYaw;
@@ -250,7 +260,7 @@ public class Physics_Monster {
 
             // if not on the ground or moving upwards
             float upspeed;
-            if (!gravityNormal.equals(vec3_zero)) {
+            if (!gravityNormal.equals(getVec3_zero())) {
                 upspeed = -(current.velocity.oMultiply(gravityNormal));
             } else {
                 upspeed = current.velocity.z;
@@ -262,8 +272,8 @@ public class Physics_Monster {
                     current.onGround = false;
                     moveResult = MM_OK;
                 }
-                delta = current.velocity.oMultiply(timeStep);
-                if (!delta.equals(vec3_origin)) {
+                delta.oSet(current.velocity.oMultiply(timeStep));
+                if (!delta.equals(getVec3_origin())) {
                     moveResult = this.SlideMove(current.origin, current.velocity, delta);
                     delta.Zero();
                 }
@@ -273,14 +283,14 @@ public class Physics_Monster {
                 }
             } else {
                 if (useVelocityMove) {
-                    delta = current.velocity.oMultiply(timeStep);
+                    delta.oSet(current.velocity.oMultiply(timeStep));
                 } else {
-                    current.velocity = delta.oDivide(timeStep);
+                    current.velocity.oSet(delta.oDivide(timeStep));
                 }
 
                 current.velocity.oMinSet(current.velocity.oMultiply(gravityNormal.oMultiply(gravityNormal)));
 
-                if (delta.equals(vec3_origin)) {
+                if (delta.equals(getVec3_origin())) {
                     Rest();
                 } else {
                     // try moving into the desired direction
@@ -375,12 +385,12 @@ public class Physics_Monster {
             idVec3 masterOrigin = new idVec3();
             idMat3 masterAxis = new idMat3();
 
-            current.localOrigin = newOrigin;
+            current.localOrigin.oSet(newOrigin);
             if (masterEntity != null) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin = masterOrigin.oPlus(newOrigin.oMultiply(masterAxis));
+                current.origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
             } else {
-                current.origin = newOrigin;
+                current.origin.oSet(newOrigin);
             }
             clipModel.Link(gameLocal.clip, self, 0, newOrigin, clipModel.GetAxis());
             Activate();
@@ -409,9 +419,9 @@ public class Physics_Monster {
             current.origin.oMulSet(rotation);
             if (masterEntity != null) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
-                current.localOrigin = (current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
             } else {
-                current.localOrigin = current.origin;
+                current.localOrigin.oSet(current.origin);
             }
             clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis().oMultiply(rotation.ToMat3()));
             Activate();
@@ -419,7 +429,7 @@ public class Physics_Monster {
 
         @Override
         public void SetLinearVelocity(final idVec3 newLinearVelocity, int id /*= 0*/) {
-            current.velocity = newLinearVelocity;
+            current.velocity.oSet(newLinearVelocity);
             Activate();
         }
 
@@ -455,7 +465,7 @@ public class Physics_Monster {
                 if (null == masterEntity) {
                     // transform from world space to master space
                     self.GetMasterPosition(masterOrigin, masterAxis);
-                    current.localOrigin = (current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                    current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
                     masterEntity = master;
                     masterYaw = masterAxis.oGet(0).ToYaw();
                 }
@@ -508,9 +518,9 @@ public class Physics_Monster {
             trace_s[] groundTrace = {null};
             idVec3 down;
 
-            if (gravityNormal.equals(vec3_zero)) {
+            if (gravityNormal.equals(getVec3_zero())) {
                 state.onGround = false;
-                groundEntityPtr = null;
+                groundEntityPtr = new idEntityPtr<>(null);
                 return;
             }
 
@@ -519,7 +529,7 @@ public class Physics_Monster {
 
             if (groundTrace[0].fraction == 1.0f) {
                 state.onGround = false;
-                groundEntityPtr = null;
+                groundEntityPtr = new idEntityPtr<>(null);
                 return;
             }
 
@@ -555,7 +565,7 @@ public class Physics_Monster {
             for (i = 0; i < 3; i++) {
                 gameLocal.clip.Translation(tr, start, start.oPlus(move), clipModel, clipModel.GetAxis(), clipMask, self);
 
-                start = tr[0].endpos;
+                start.oSet(tr[0].endpos);
 
                 if (tr[0].fraction == 1.0f) {
                     if (i > 0) {
@@ -591,7 +601,7 @@ public class Physics_Monster {
             float stepdist;
             float nostepdist;
 
-            if (delta.equals(vec3_origin)) {
+            if (delta.equals(getVec3_origin())) {
                 return MM_OK;
             }
 
@@ -601,7 +611,7 @@ public class Physics_Monster {
             result1 = SlideMove(noStepPos, noStepVel, delta);
             if (result1 == MM_OK) {
                 velocity.oSet(noStepVel);
-                if (gravityNormal.equals(vec3_zero)) {
+                if (gravityNormal.equals(getVec3_zero())) {
                     start.oSet(noStepPos);
                     return MM_OK;
                 }
@@ -627,7 +637,7 @@ public class Physics_Monster {
                 return MM_BLOCKED;
             }
 
-            if (gravityNormal.equals(vec3_zero)) {
+            if (gravityNormal.equals(getVec3_zero())) {
                 return result1;
             }
 

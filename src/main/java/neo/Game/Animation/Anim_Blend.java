@@ -1,7 +1,7 @@
 package neo.Game.Animation;
 
 import static java.lang.Character.isDigit;
-import static java.lang.Character.isWhitespace;
+import java.util.stream.Stream;
 import static neo.Game.AI.AI_Events.AI_AttackMelee;
 import static neo.Game.AI.AI_Events.AI_AttackMissile;
 import static neo.Game.AI.AI_Events.AI_BeginAttack;
@@ -144,7 +144,6 @@ import neo.idlib.Dict_h.idDict;
 import neo.idlib.Lib.idException;
 import static neo.idlib.Lib.idLib.common;
 import neo.idlib.Text.Lexer.idLexer;
-import neo.idlib.Text.Str;
 import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import static neo.idlib.Text.Token.TT_FLOAT;
@@ -158,9 +157,9 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Quat.idQuat;
 import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -185,9 +184,9 @@ public class Anim_Blend {
         private idDeclModelDef modelDef;
         private idMD5Anim[] anims = new idMD5Anim[ANIM_MaxSyncedAnims];
         private int                   numAnims;
-        private Str.idStr             name;
-        private Str.idStr             realname;
-        private idList<frameLookup_t> frameLookup;
+        private idStr                 name = new idStr();
+        private idStr                 realname = new idStr();
+        private idList<frameLookup_t> frameLookup = new idList();
         private idList<frameCommand_t> frameCommands = new idList<>(frameCommand_t.class);
         private animFlags_t flags;
 //
@@ -205,27 +204,27 @@ public class Anim_Blend {
             int i;
 
             this.modelDef = modelDef;
-            numAnims = numAnims;
-            name = name;
-            realname = realname;
-            flags = flags;
+            numAnims = anim.numAnims;
+            name = anim.name;
+            realname = anim.realname;
+            flags = anim.flags;
 
-//	memset( anims, 0, sizeof( anims ) );
             anims = new idMD5Anim[anims.length];
             for (i = 0; i < numAnims; i++) {
-                anims[i] = anims[i];
+                anims[i] = anim.anims[i];
                 anims[i].IncreaseRefs();
             }
 
-            frameLookup.SetNum(frameLookup.Num());
-//            memcpy(frameLookup.Ptr(), frameLookup.Ptr(), frameLookup.MemoryUsed());
-            System.arraycopy(frameLookup.Ptr(), 0, frameLookup.Ptr(), 0, frameLookup.MemoryUsed());
+            frameLookup.SetNum(anim.frameLookup.Num());
+            if (frameLookup.Num() > 0) {
+                System.arraycopy(anim.frameLookup.Ptr(), 0, frameLookup.Ptr(), 0, frameLookup.MemoryUsed());
+            }
 
-            frameCommands.SetNum(frameCommands.Num());
+            frameCommands.SetNum(anim.frameCommands.Num());
             for (i = 0; i < frameCommands.Num(); i++) {
-                frameCommands.oSet(i, frameCommands.oGet(i));
+                frameCommands.oSet(i, anim.frameCommands.oGet(i));
                 if (frameCommands.oGet(i).string != null) {
-                    frameCommands.oGet(i).string = frameCommands.oGet(i).string;
+                    frameCommands.oGet(i).string = new idStr(anim.frameCommands.oGet(i).string);
                 }
             }
         }
@@ -311,7 +310,7 @@ public class Anim_Blend {
 
         public idVec3 TotalMovementDelta() {
             if (null == anims[0]) {
-                return vec3_zero;
+                return getVec3_zero();
             }
 
             return anims[0].TotalMovementDelta();
@@ -698,7 +697,7 @@ public class Anim_Blend {
                 frameLookup.SetGranularity(1);
                 frameLookup.SetNum(anims[ 0].NumFrames());
                 for (i = 0; i < frameLookup.Num(); i++) {
-                    frameLookup.oGet(i).num = 0;
+                    frameLookup.oSet(i, new frameLookup_t()).num = 0;
                     frameLookup.oGet(i).firstCommand = 0;
                 }
             }
@@ -1073,12 +1072,15 @@ public class Anim_Blend {
         //
 
         public idDeclModelDef() {
-            modelHandle = null;
-            skin = null;
-            offset.Zero();
+            offset = new idVec3();
+            joints = new idList<>();
+            jointParents = new idList<>();
             for (int i = 0; i < ANIM_NumAnimChannels; i++) {
-                channelJoints[i].Clear();
+                channelJoints[i] = new idList<>();
             }
+            modelHandle = null;
+            anims = new idList<>();
+            skin = null;
         }
         // ~idDeclModelDef();
 
@@ -1193,7 +1195,7 @@ public class Anim_Blend {
                     md5joints = modelHandle.GetJoints();
                     md5joint = 0;//md5joints;
                     for (i = 0; i < num; i++, md5joint++) {
-                        joints.oGet(i).channel = ANIMCHANNEL_ALL;
+                        joints.oSet(i, new jointInfo_t()).channel = ANIMCHANNEL_ALL;
                         joints.oGet(i).num = i;
                         if (md5joints[md5joint].parent != null) {
                             joints.oGet(i).parentNum = indexOf(md5joints[md5joint].parent, md5joints);
@@ -1242,7 +1244,7 @@ public class Anim_Blend {
                         return false;
                     }
                 } else if (token.equals("offset")) {
-                    if (!src.Parse1DMatrix(3, offset.ToFloatPtr())) {
+                    if (!src.Parse1DMatrix(3, offset)) {
                         src.Warning("Expected vector following 'offset'");
                         MakeDefault();
                         return false;
@@ -1343,13 +1345,13 @@ public class Anim_Blend {
             return skin;
         }
 
-        public idJointQuat GetDefaultPose() {
+        public idJointQuat[] GetDefaultPose() {
             return modelHandle.GetDefaultPose();
         }
 
         public void SetupJoints(int[] numJoints, idJointMat[][] jointList, idBounds frameBounds, boolean removeOriginOffset) {
             int num;
-            idJointQuat[] pose = new idJointQuat[joints.Num()];
+            idJointQuat[] pose;
             idJointMat[] list;
 
             if (null == modelHandle || modelHandle.IsDefaultModel()) {
@@ -1367,8 +1369,8 @@ public class Anim_Blend {
             }
 
             // set up initial pose for model (with no pose, model is just a jumbled mess)
-            list = new idJointMat[num];
-            pose[0] = GetDefaultPose();
+            list = Stream.generate(() -> new idJointMat()).limit(num).toArray(idJointMat[]::new);
+            pose = GetDefaultPose();
 
             // convert the joint quaternions to joint matrices
             SIMDProcessor.ConvertJointQuatsToJointMats(list, pose, joints.Num());
@@ -1385,7 +1387,7 @@ public class Anim_Blend {
             }
 
             // transform the joint hierarchy
-            SIMDProcessor.TransformJoints(list, itoi(jointParents.Ptr()), 1, joints.Num() - 1);
+            SIMDProcessor.TransformJoints(list, itoi(jointParents.Ptr(Integer[].class)), 1, joints.Num() - 1);
 
             numJoints[0] = num;
             jointList[0] = list;
@@ -1399,8 +1401,6 @@ public class Anim_Blend {
         }
 
         public void GetJointList(final String jointnames, idList<Integer/*jointHandle_t*/> jointList) {
-            char pos;
-            int p_ptr;
             String jointname;
             jointInfo_t joint;
             jointInfo_t child;
@@ -1418,39 +1418,23 @@ public class Anim_Blend {
 
             num = modelHandle.NumJoints();
 
-            // scan through list of joints and add each to the joint list
-            pos = jointnames.charAt(p_ptr = 0);
-            while (pos != 0) {
-                // skip over whitespace
-                while ((pos != 0) && isWhitespace(pos)) {
-                    pos = jointnames.charAt(++p_ptr);
-                }
-
-                if (0 == pos) {
-                    // no more names
-                    break;
-                }
-
+            // split on and skip whitespaces
+            for (final String name : jointnames.split("\\s+")) {
                 // copy joint name
-                jointname = "";
+                jointname = name;
 
-                if (pos == '-') {
+                if (jointname.startsWith("-")) {
                     subtract = true;
-                    pos = jointnames.charAt(++p_ptr);
+                    jointname = jointname.substring(1);
                 } else {
                     subtract = false;
                 }
 
-                if (pos == '*') {
+                if (jointname.startsWith("*")) {
                     getChildren = true;
-                    pos = jointnames.charAt(++p_ptr);
+                    jointname = jointname.substring(1);
                 } else {
                     getChildren = false;
-                }
-
-                while ((pos != 0) && !isWhitespace(pos)) {
-                    jointname += pos;
-                    pos = jointnames.charAt(++p_ptr);
                 }
 
                 joint = FindJoint(jointname);
@@ -1606,7 +1590,7 @@ public class Anim_Blend {
         }
 
         public Integer[] JointParents() {
-            return jointParents.Ptr();
+            return jointParents.Ptr(Integer[].class);
         }
 
         public int NumJoints() {
@@ -1646,7 +1630,7 @@ public class Anim_Blend {
             if ((channel < 0) || (channel >= ANIM_NumAnimChannels)) {
                 gameLocal.Error("idDeclModelDef::GetChannelJoints : channel out of range");
             }
-            return channelJoints[ channel].Ptr();
+            return channelJoints[channel].Ptr(Integer[].class);
         }
 
         public idVec3 GetVisualOffset() {
@@ -1880,7 +1864,11 @@ public class Anim_Blend {
         private boolean allowFrameCommands;
         //
         //
-
+        
+        public idAnimBlend() {
+            Reset(null);
+        }
+        
         private void Reset(final idDeclModelDef _modelDef) {
             modelDef = _modelDef;
             cycle = 1;
@@ -2376,10 +2364,6 @@ public class Anim_Blend {
             return true;
         }
 
-        public idAnimBlend() {
-            Reset(null);
-        }
-
         public void Save(idSaveGame savefile) {
             int i;
 
@@ -2707,7 +2691,7 @@ public class Anim_Blend {
                 return 0;
             }
 
-            return NumFrames();
+            return anim.NumFrames();
         }
 
         public int Length() {
@@ -2716,7 +2700,7 @@ public class Anim_Blend {
                 return 0;
             }
 
-            return Length();
+            return anim.Length();
         }
 
         public int PlayLength() {
@@ -2791,6 +2775,7 @@ public class Anim_Blend {
 
             modelDef = null;
             entity = null;
+            jointMods = new idList<>();
             numJoints = 0;
             joints = null;
             lastTransformTime = -1;
@@ -2798,17 +2783,19 @@ public class Anim_Blend {
             removeOriginOffset = false;
             forceUpdate = false;
 
+            frameBounds = new idBounds();
             frameBounds.Clear();
 
-            AFPoseJoints.SetGranularity(1);
-            AFPoseJointMods.SetGranularity(1);
-            AFPoseJointFrame.SetGranularity(1);
+            AFPoseJoints = new idList<>(1);
+            AFPoseJointMods = new idList<>(1);
+            AFPoseJointFrame = new idList<>(1);
+            AFPoseBounds = new idBounds();
 
             ClearAFPose();
 
             for (i = ANIMCHANNEL_ALL; i < ANIM_NumAnimChannels; i++) {
                 for (j = 0; j < ANIM_MaxAnimsPerChannel; j++) {
-                    channels[ i][ j].Reset(null);
+                    channels[i][j] = new idAnimBlend();
                 }
             }
         }
@@ -3243,10 +3230,9 @@ public class Anim_Blend {
                     // init the joint buffer
                     if (AFPoseJoints.Num() != 0) {
                         // initialize with AF pose anim for the case where there are no other animations and no AF pose joint modifications
-                        defaultPose = AFPoseJointFrame.Ptr();
+                        defaultPose = AFPoseJointFrame.Ptr(idJointQuat[].class);
                     } else {
-                        defaultPose = new idJointQuat[numJoints];//TODO:check whether this is equivalent to assigning a pointer.
-                        defaultPose[0] = modelDef.GetDefaultPose();
+                        defaultPose = modelDef.GetDefaultPose();
                     }
 
                     if (null == defaultPose) {
@@ -3735,7 +3721,7 @@ public class Anim_Blend {
                         jointMods.Insert(jointMod, i);
                     }
 
-                    jointMod.pos = pos;
+                    jointMod.pos.oSet(pos);
                     jointMod.transform_pos = transform_type;
 
                     if (entity != null) {
@@ -3770,7 +3756,7 @@ public class Anim_Blend {
                         jointMods.Insert(jointMod, i);
                     }
 
-                    jointMod.mat = mat;
+                    jointMod.mat.oSet(mat);
                     jointMod.transform_axis = transform_type;
 
                     if (entity != null) {
@@ -3818,6 +3804,7 @@ public class Anim_Blend {
                 }
 
                 public void SetAFPoseJointMod(final int/*jointHandle_t*/ jointNum, final AFJointModType_t mod, final idMat3 axis, final idVec3 origin) {
+                    AFPoseJointMods.oSet(jointNum, new idAFPoseJointMod());
                     AFPoseJointMods.oGet(jointNum).mod = mod;
                     AFPoseJointMods.oGet(jointNum).axis = axis;
                     AFPoseJointMods.oGet(jointNum).origin = origin;
@@ -3869,7 +3856,7 @@ public class Anim_Blend {
                         }
                     }
 
-                    idJointMat[] joints = new idJointMat[numJoints];
+                    idJointMat[] joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
 
                     // convert the joint quaternions to joint matrices
                     SIMDProcessor.ConvertJointQuatsToJointMats(joints, jointFrame, numJoints);
@@ -3935,11 +3922,10 @@ public class Anim_Blend {
                     SIMDProcessor.UntransformJoints(joints, itoi(jointParent), 1, numJoints - 1);
 
                     // convert joint matrices back to joint quaternions
-                    SIMDProcessor.ConvertJointMatsToJointQuats(AFPoseJointFrame.Ptr(), joints, numJoints);
+                    SIMDProcessor.ConvertJointMatsToJointQuats(AFPoseJointFrame, joints, numJoints);
 
                     // find all modified joints and their parents
-                    boolean[] blendJoints = new boolean[numJoints];
-//	memset( blendJoints, 0, numJoints * sizeof( bool ) );
+                    boolean[] blendJoints = new boolean[numJoints];//memset( blendJoints, 0, numJoints * sizeof( bool ) );
 
                     // mark all modified joints and their parents
                     for (i = 0; i < AFPoseJoints.Num(); i++) {
@@ -3956,7 +3942,7 @@ public class Anim_Blend {
                         }
                     }
 
-                    AFPoseBounds = bounds;
+                    AFPoseBounds.oSet(bounds);
                     AFPoseTime = time;
 
                     ForceUpdate();
@@ -3972,7 +3958,7 @@ public class Anim_Blend {
                         return false;
                     }
 
-                    SIMDProcessor.BlendJoints(blendFrame, AFPoseJointFrame.Ptr(), AFPoseBlendWeight, itoi(AFPoseJoints.Ptr()), AFPoseJoints.Num());
+                    SIMDProcessor.BlendJoints(blendFrame, AFPoseJointFrame.Ptr(idJointQuat[].class), AFPoseBlendWeight, itoi(AFPoseJoints.Ptr(Integer[].class)), AFPoseJoints.Num());
 
                     return true;
                 }
@@ -4133,7 +4119,7 @@ public class Anim_Blend {
                     if (anim != null) {
                         return anim.TotalMovementDelta();
                     } else {
-                        return vec3_origin;
+                        return getVec3_origin();
                     }
                 }
 

@@ -16,7 +16,6 @@ import static neo.Game.Entity.TH_UPDATEPARTICLES;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.Event.idEventDef;
@@ -79,7 +78,7 @@ import neo.idlib.geometry.TraceModel.idTraceModel;
 import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.RAD2DEG;
 import neo.idlib.math.Vector.idVec3;
@@ -147,8 +146,8 @@ public class AFEntity {
                     continue;
                 }
 
-                renderEntity.origin = new idVec3(physicsObj.GetOrigin(i));
-                renderEntity.axis = new idMat3(physicsObj.GetAxis(i));
+                renderEntity.origin.oSet(physicsObj.GetOrigin(i));
+                renderEntity.axis.oSet(physicsObj.GetAxis(i));
                 renderEntity.hModel = modelHandles.oGet(i);
                 renderEntity.bodyId = i;
 
@@ -246,7 +245,7 @@ public class AFEntity {
                 // add body
                 clip = new idClipModel(trm);
                 clip.SetContents(CONTENTS_SOLID);
-                clip.Link(gameLocal.clip, this, 0, org, mat3_identity);
+                clip.Link(gameLocal.clip, this, 0, org, getMat3_identity());
                 body = new idAFBody(new idStr(name + i), clip, density);
                 physicsObj.AddBody(body);
 
@@ -311,6 +310,8 @@ public class AFEntity {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idleAnim = animator.GetAnim("idle");
         }
 
@@ -490,28 +491,31 @@ public class AFEntity {
     public static class idAFEntity_Base extends idAnimatedEntity {
 // public	CLASS_PROTOTYPE( idAFEntity_Base );
 
-        protected idAF af;			// articulated figure
-        protected idClipModel combatModel;	// render model for hit detection
-        protected int combatModelContents;
-        protected idVec3 spawnOrigin;           // spawn origin
-        protected idMat3 spawnAxis;		// rotation axis used when spawned
-        protected int nextSoundTime;            // next time this can make a sound
+        protected idAF        af;                   // articulated figure
+        protected idClipModel combatModel;          // render model for hit detection
+        protected int         combatModelContents;
+        protected idVec3      spawnOrigin;          // spawn origin
+        protected idMat3      spawnAxis;            // rotation axis used when spawned
+        protected int         nextSoundTime;        // next time this can make a sound
         //
         //
 
         public idAFEntity_Base() {
+            af = new idAF();
             combatModel = null;
             combatModelContents = 0;
             nextSoundTime = 0;
-            spawnOrigin.Zero();
-            spawnAxis.Identity();
+            spawnOrigin = new idVec3();
+            spawnAxis = getMat3_identity();
         }
         // virtual					~idAFEntity_Base( void );
 
         @Override
         public void Spawn() {
-            spawnOrigin = GetPhysics().GetOrigin();
-            spawnAxis = GetPhysics().GetAxis();
+            super.Spawn();
+            
+            spawnOrigin.oSet(GetPhysics().GetOrigin());
+            spawnAxis.oSet(GetPhysics().GetAxis());
             nextSoundTime = 0;
         }
 
@@ -802,8 +806,8 @@ public class AFEntity {
         // CLASS_PROTOTYPE( idAFEntity_Gibbable );
 
         protected idRenderModel skeletonModel;
-        protected int skeletonModelDefHandle;
-        protected boolean gibbed;
+        protected int           skeletonModelDefHandle;
+        protected boolean       gibbed;
         //
         //
 
@@ -816,6 +820,8 @@ public class AFEntity {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             InitSkeletonModel();
 
             gibbed = false;
@@ -1038,6 +1044,8 @@ public class AFEntity {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             if (!LoadAF()) {
                 gameLocal.Error("Couldn't load af file on entity '%s'", name);
             }
@@ -2025,8 +2033,8 @@ public class AFEntity {
             }
 
             if (steamModelDefHandle >= 0) {
-                steamRenderEntity.origin = new idVec3(af.GetPhysics().GetOrigin(steamBody));
-                steamRenderEntity.axis = new idMat3(af.GetPhysics().GetAxis(steamBody));
+                steamRenderEntity.origin.oSet(af.GetPhysics().GetOrigin(steamBody));
+                steamRenderEntity.axis.oSet(af.GetPhysics().GetAxis(steamBody));
                 gameRenderWorld.UpdateEntityDef(steamModelDefHandle, steamRenderEntity);
             }
 
@@ -2058,12 +2066,12 @@ public class AFEntity {
                 }
 
                 if (steamRenderEntity.hModel != null) {
-                    steamRenderEntity.bounds = steamRenderEntity.hModel.Bounds(steamRenderEntity);
+                    steamRenderEntity.bounds.oSet(steamRenderEntity.hModel.Bounds(steamRenderEntity));
                 } else {
                     steamRenderEntity.bounds.Zero();
                 }
-                steamRenderEntity.origin = new idVec3(af.GetPhysics().GetOrigin(steamBody));
-                steamRenderEntity.axis = new idMat3(af.GetPhysics().GetAxis(steamBody));
+                steamRenderEntity.origin.oSet(af.GetPhysics().GetOrigin(steamBody));
+                steamRenderEntity.axis.oSet(af.GetPhysics().GetAxis(steamBody));
                 steamModelDefHandle = gameRenderWorld.AddEntityDef(steamRenderEntity);
             }
         }
@@ -2203,8 +2211,8 @@ public class AFEntity {
             if (i >= data.ent.numJoints) {
                 return false;
             }
-            origin = frame[i].ToVec3();
-            axis = frame[i].ToMat3();
+            origin.oSet(frame[i].ToVec3());
+            axis.oSet(frame[i].ToMat3());
             return true;
         }
     };

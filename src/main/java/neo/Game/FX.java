@@ -41,8 +41,8 @@ import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -61,14 +61,14 @@ public class FX {
         renderLight_s renderLight;          // light presented to the renderer
         int/*qhandle_t*/ lightDefHandle;    // handle to renderer light def
         renderEntity_s renderEntity;        // used to present a model to the renderer
-        int modelDefHandle;                 // handle to static renderer model
-        float delay;
-        int particleSystem;
-        int start;
-        boolean soundStarted;
-        boolean shakeStarted;
-        boolean decalDropped;
-        boolean launched;
+        int            modelDefHandle;      // handle to static renderer model
+        float          delay;
+        int            particleSystem;
+        int            start;
+        boolean        soundStarted;
+        boolean        shakeStarted;
+        boolean        decalDropped;
+        boolean        launched;
     };
     /*
      ===============================================================================
@@ -82,11 +82,11 @@ public class FX {
 
     public static class idEntityFx extends idEntity {
 
-        protected int started;
-        protected int nextTriggerTime;
-        protected idDeclFX fxEffect;				// GetFX() should be called before using fxEffect as a pointer
+        protected int                     started;
+        protected int                     nextTriggerTime;
+        protected idDeclFX                fxEffect;                // GetFX() should be called before using fxEffect as a pointer
         protected idList<idFXLocalAction> actions;
-        protected idStr systemName;
+        protected idStr                   systemName;
         //
         //
 
@@ -96,11 +96,14 @@ public class FX {
             started = -1;
             nextTriggerTime = -1;
             fl.networkSync = true;
+            actions = new idList<>();
+            systemName = new idStr();
         }
 //	virtual					~idEntityFx();
 
         @Override
         public void Spawn() {
+            super.Spawn();
 
             if (g_skipFX.GetBool()) {
                 return;
@@ -428,8 +431,8 @@ public class FX {
                         if (useAction.modelDefHandle == -1) {
 //					memset( &useAction.renderEntity, 0, sizeof( renderEntity_t ) );
                             useAction.renderEntity = new renderEntity_s();
-                            useAction.renderEntity.origin = GetPhysics().GetOrigin().oPlus(fxaction.offset);
-                            useAction.renderEntity.axis = (fxaction.explicitAxis) ? fxaction.axis : GetPhysics().GetAxis();
+                            useAction.renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(fxaction.offset));
+                            useAction.renderEntity.axis.oSet((fxaction.explicitAxis) ? fxaction.axis : GetPhysics().GetAxis());
                             useAction.renderEntity.hModel = renderModelManager.FindModel(fxaction.data.toString());
                             useAction.renderEntity.shaderParms[ SHADERPARM_RED] = 1.0f;
                             useAction.renderEntity.shaderParms[ SHADERPARM_GREEN] = 1.0f;
@@ -438,12 +441,12 @@ public class FX {
                             useAction.renderEntity.shaderParms[3] = 1.0f;
                             useAction.renderEntity.shaderParms[5] = 0.0f;
                             if (useAction.renderEntity.hModel != null) {
-                                useAction.renderEntity.bounds = useAction.renderEntity.hModel.Bounds(useAction.renderEntity);
+                                useAction.renderEntity.bounds.oSet(useAction.renderEntity.hModel.Bounds(useAction.renderEntity));
                             }
                             useAction.modelDefHandle = gameRenderWorld.AddEntityDef(useAction.renderEntity);
                         } else if (fxaction.trackOrigin) {
-                            useAction.renderEntity.origin = GetPhysics().GetOrigin().oPlus(fxaction.offset);
-                            useAction.renderEntity.axis = fxaction.explicitAxis ? fxaction.axis : GetPhysics().GetAxis();
+                            useAction.renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(fxaction.offset));
+                            useAction.renderEntity.axis.oSet(fxaction.explicitAxis ? fxaction.axis : GetPhysics().GetAxis());
                         }
                         ApplyFade(fxaction, useAction, time, actualStart);
                         break;
@@ -466,7 +469,7 @@ public class FX {
                                 if (ent[0] != null && ent[0].IsType(idProjectile.class)) {
                                     projectile = (idProjectile) ent[0];
                                     projectile.Create(this, GetPhysics().GetOrigin(), GetPhysics().GetAxis().oGet(0));
-                                    projectile.Launch(GetPhysics().GetOrigin(), GetPhysics().GetAxis().oGet(0), vec3_origin);
+                                    projectile.Launch(GetPhysics().GetOrigin(), GetPhysics().GetAxis().oGet(0), getVec3_origin());
                                 }
                             }
                         }
@@ -585,7 +588,7 @@ public class FX {
             idEntityFx nfx = (idEntityFx) gameLocal.SpawnEntityType(idEntityFx.class, args);
             if (nfx.Joint() != null && !nfx.Joint().isEmpty()) {
                 nfx.BindToJoint(ent, nfx.Joint(), true);
-                nfx.SetOrigin(vec3_origin);
+                nfx.SetOrigin(getVec3_origin());
             } else {
                 nfx.SetOrigin((useOrigin != null) ? useOrigin : ent.GetPhysics().GetOrigin());
                 nfx.SetAxis((useAxis != null) ? useAxis : ent.GetPhysics().GetAxis());

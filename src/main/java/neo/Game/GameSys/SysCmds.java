@@ -2,6 +2,8 @@ package neo.Game.GameSys;
 
 import static java.lang.Math.tan;
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
+
 import neo.CM.CollisionModel_local;
 import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.AFEntity.idAFEntity_Generic;
@@ -85,7 +87,7 @@ import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_default;
+import static neo.idlib.math.Matrix.idMat3.getMat3_default;
 import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
@@ -154,7 +156,7 @@ public class SysCmds {
                     continue;
                 }
 
-                gameLocal.Printf("%4i: %-20s %-20s %s\n", e,
+                gameLocal.Printf("%4d: %-20s %-20s %s\n", e,
                         check.GetEntityDefName(), check.GetClassname(), check.name);
 
                 count++;
@@ -192,7 +194,7 @@ public class SysCmds {
             gameLocal.Printf("--------------------------------------------------------------------\n");
             for (check = gameLocal.activeEntities.Next(); check != null; check = check.activeNode.Next()) {
                 char dormant = check.fl.isDormant ? '-' : ' ';
-                gameLocal.Printf("%4i:%c%-20s %-20s %s\n", check.entityNumber, dormant, check.GetEntityDefName(), check.GetClassname(), check.name);
+                gameLocal.Printf("%4d:%c%-20s %-20s %s\n", check.entityNumber, dormant, check.GetEntityDefName(), check.GetClassname(), check.name);
                 count++;
             }
 
@@ -1293,7 +1295,7 @@ public class SysCmds {
 
             float fov = (float) tan(idMath.M_DEG2RAD * rv.fov_x / 2);
 
-            dict.SetMatrix("rotation", mat3_default);
+            dict.SetMatrix("rotation", getMat3_default());
             dict.SetVector("origin", rv.vieworg);
             dict.SetVector("light_target", rv.viewaxis.oGet(0));
             dict.SetVector("light_right", rv.viewaxis.oGet(1).oMultiply(-fov));
@@ -1548,12 +1550,12 @@ public class SysCmds {
     public static class gameDebugLine_t {
 
         boolean used;
-        idVec3 start, end;
-        int color;
+        idVec3  start = new idVec3(), end = new idVec3();
+        int     color;
         boolean blink;
         boolean arrow;
     };
-    static gameDebugLine_t[] debugLines = new gameDebugLine_t[MAX_DEBUGLINES];
+    static gameDebugLine_t[] debugLines = Stream.generate(gameDebugLine_t::new).limit(MAX_DEBUGLINES).toArray(gameDebugLine_t[]::new);
 
 
     /*
@@ -2923,8 +2925,8 @@ public class SysCmds {
                 }
             }
 
-            if (parser.ExpectTokenString("view") && parser.Parse1DMatrix(3, origin.ToFloatPtr())
-                    && parser.Parse1DMatrix(9, axis.ToFloatPtr()) && parser.ExpectTokenString("comments") && parser.ReadToken(token)) {
+            if (parser.ExpectTokenString("view") && parser.Parse1DMatrix(3, origin)
+                    && parser.Parse1DMatrix(9, axis) && parser.ExpectTokenString("comments") && parser.ReadToken(token)) {
                 player.hud.SetStateString("viewcomments", token.toString());
                 player.hud.HandleNamedEvent("showViewComments");
                 player.Teleport(origin, axis.ToAngles(), null);

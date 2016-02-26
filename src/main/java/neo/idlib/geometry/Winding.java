@@ -1,6 +1,7 @@
 package neo.idlib.geometry;
 
 import neo.Renderer.tr_main;
+import neo.TempDump;
 import neo.TempDump.NiLLABLE;
 import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.Lib.MAX_WORLD_COORD;
@@ -20,6 +21,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
+import neo.sys.win_main;
 
 /**
  *
@@ -523,7 +525,7 @@ public class Winding {
 
             maxpts = numPoints + 4;		// cant use counts[0]+2 because of fp grouping errors
 
-            newPoints = tr_main.R_ClearedStaticAlloc(maxpts, idVec5.class);
+            newPoints = idVec5.generateArray(maxpts);
             newNumPoints = 0;
 
             for (i = 0; i < numPoints; i++) {
@@ -1096,7 +1098,7 @@ public class Winding {
 
             if (numPoints < 3) {
                 if (print) {
-                    idLib.common.Printf("idWinding::Check: only %i points.", numPoints);
+                    idLib.common.Printf("idWinding::Check: only %d points.", numPoints);
                 }
                 return false;
             }
@@ -1517,13 +1519,10 @@ public class Winding {
 
             oldP = p;
             n = (n + 3) & ~3;	// align up to multiple of four
-            p = new idVec5[n];
-            if (oldP != null) {
-                if (keep) {
+            p = TempDump.allocArray(idVec5.class, n);
+            if (oldP != null && keep) {
 //			memcpy( p, oldP, numPoints * sizeof(p[0]) );
-                    System.arraycopy(oldP, 0, p, 0, numPoints);
-                }
-//		delete[] oldP;
+                System.arraycopy(oldP, 0, p, 0, numPoints);
             }
             allocedSize = n;
 

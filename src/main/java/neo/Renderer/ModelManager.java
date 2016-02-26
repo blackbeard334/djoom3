@@ -369,10 +369,10 @@ public class ModelManager {
 
             // _D3XP added this
             int end = Sys_Milliseconds();
-            common.Printf("%5i models purged from previous level, ", purgeCount);
-            common.Printf("%5i models kept.\n", keepCount);
+            common.Printf("%5d models purged from previous level, ", purgeCount);
+            common.Printf("%5d models kept.\n", keepCount);
             if (loadCount != 0) {
-                common.Printf("%5i new models loaded in %5.1f seconds\n", loadCount, (end - start) * 0.001);
+                common.Printf("%5d new models loaded in %5.1f seconds\n", loadCount, (end - start) * 0.001);
             }
             common.Printf("---------------------------------------------------\n");
         }

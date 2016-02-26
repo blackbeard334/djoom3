@@ -60,7 +60,6 @@ import static neo.Renderer.tr_main.R_TransformModelToClip;
 import static neo.Renderer.tr_main.myGlMultMatrix;
 import static neo.Renderer.tr_subview.R_PreciseCullSurface;
 import static neo.Renderer.tr_trisurf.R_DeriveTangents;
-import neo.TempDump;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
 import neo.idlib.BV.Bounds.idBounds;
@@ -77,6 +76,8 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
 import neo.ui.UserInterface.idUserInterface;
+
+import java.util.stream.Stream;
 
 /**
  *
@@ -108,7 +109,7 @@ public class tr_light {
             R_DeriveTangents(tri);
         }
 
-        tri.ambientCache = vertexCache.Alloc(tri.verts, tri.numVerts * idDrawVert.SIZE_B);
+        tri.ambientCache = vertexCache.Alloc(tri.verts, tri.numVerts * idDrawVert.BYTES);
         if (NOT(tri.ambientCache)) {
             return false;
         }
@@ -170,7 +171,7 @@ public class tr_light {
 //	}
         }
 
-        vertexCache.Alloc(cache, size, tri.lightingCache);
+        tri.lightingCache = vertexCache.Alloc(cache, size)[0];
         if (NOT(tri.lightingCache)) {
             return false;
         }
@@ -189,7 +190,7 @@ public class tr_light {
             return;
         }
 
-        vertexCache.Alloc(tri.shadowVertexes, tri.numVerts /* sizeof( *tri.shadowVertexes )*/, tri.shadowCache);
+        tri.shadowCache = vertexCache.Alloc(tri.shadowVertexes, tri.numVerts)[0];
     }
 
     /*
@@ -205,29 +206,26 @@ public class tr_light {
             return;
         }
 
-        shadowCache_s[] temp = new shadowCache_s[tri.numVerts * 2];
+        shadowCache_s[] temp = Stream.generate(shadowCache_s::new).limit(tri.numVerts * 2).toArray(shadowCache_s[]::new);
 
-        if (true) {
-
-            SIMDProcessor.CreateVertexProgramShadowCache(temp[0].xyz, tri.verts, tri.numVerts);
-
-        } else {
-//	int numVerts = tri.numVerts;
-//	final idDrawVert []verts = tri.verts;
-//	for ( int i = 0; i < numVerts; i++ ) {
-//		final float []v = verts[i].xyz.ToFloatPtr();
-//		temp[i*2+0].xyz[0] = v[0];
-//		temp[i*2+1].xyz[0] = v[0];
-//		temp[i*2+0].xyz[1] = v[1];
-//		temp[i*2+1].xyz[1] = v[1];
-//		temp[i*2+0].xyz[2] = v[2];
-//		temp[i*2+1].xyz[2] = v[2];
-//		temp[i*2+0].xyz[3] = 1.0f;		// on the model surface
-//		temp[i*2+1].xyz[3] = 0.0f;		// will be projected to infinity
-//	}
+//        if (true) {
+//
+//            SIMDProcessor.CreateVertexProgramShadowCache(temp[0].xyz, tri.verts, tri.numVerts);
+//
+//        } else {
+        for (int i = 0; i < tri.numVerts; i++) {
+            final float[] v = tri.verts[i].xyz.ToFloatPtr();
+            temp[i * 2 + 0].xyz.oSet(0, v[0]);
+            temp[i * 2 + 1].xyz.oSet(0, v[0]);
+            temp[i * 2 + 0].xyz.oSet(1, v[1]);
+            temp[i * 2 + 1].xyz.oSet(1, v[1]);
+            temp[i * 2 + 0].xyz.oSet(2, v[2]);
+            temp[i * 2 + 1].xyz.oSet(2, v[2]);
+            temp[i * 2 + 0].xyz.oSet(3, 1.0f);        // on the model surface
+            temp[i * 2 + 1].xyz.oSet(3, 0.0f);        // will be projected to infinity
         }
 
-        vertexCache.Alloc(temp, tri.numVerts * 2, tri.shadowCache);
+        tri.shadowCache = vertexCache.Alloc(temp, tri.numVerts * 2)[0];
     }
 
     /*
@@ -1373,7 +1371,7 @@ public class tr_light {
         for (i = 0; i < tr.primaryWorld.lightDefs.Num(); i++) {
             ldef = tr.primaryWorld.lightDefs.oGet(i);
             if (null == ldef) {
-                common.Printf("%4i: FREED\n", i);
+                common.Printf("%4d: FREED\n", i);
                 continue;
             }
 
@@ -1391,7 +1389,7 @@ public class tr_light {
             }
             totalRef += rCount;
 
-            common.Printf("%4i: %3i intr %2i refs %s\n", i, iCount, rCount, ldef.lightShader.GetName());
+            common.Printf("%4d: %3d intr %2d refs %s\n", i, iCount, rCount, ldef.lightShader.GetName());
             active++;
         }
 
@@ -1417,7 +1415,7 @@ public class tr_light {
         for (i = 0; i < tr.primaryWorld.entityDefs.Num(); i++) {
             mdef = tr.primaryWorld.entityDefs.oGet(i);
             if (null == mdef) {
-                common.Printf("%4i: FREED\n", i);
+                common.Printf("%4d: FREED\n", i);
                 continue;
             }
 
@@ -1435,7 +1433,7 @@ public class tr_light {
             }
             totalRef += rCount;
 
-            common.Printf("%4i: %3i intr %2i refs %s\n", i, iCount, rCount, mdef.parms.hModel.Name());
+            common.Printf("%4d: %3d intr %2d refs %s\n", i, iCount, rCount, mdef.parms.hModel.Name());
             active++;
         }
 

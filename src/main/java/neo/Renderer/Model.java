@@ -2,6 +2,7 @@ package neo.Renderer;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.stream.Stream;
 import static neo.Renderer.Interaction.LIGHT_TRIS_DEFERRED;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.RenderWorld.renderEntity_s;
@@ -18,6 +19,8 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import org.lwjgl.BufferUtils;
+
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 
 /**
@@ -59,16 +62,24 @@ public class Model {
 
         public silEdge_t() {
         }        
+        
+        static silEdge_t[] generateArray(final int length) {
+            return Stream.
+                    generate(silEdge_t::new).
+                    limit(length).
+                    toArray(silEdge_t[]::new);
+        }
     };
 
     // this is used for calculating unsmoothed normals and tangents for deformed models
     public static class dominantTri_s {
 
-        int/*glIndex_t*/ v2, v3;
-        final float[] normalizationScale = new float[3];
+        public int/*glIndex_t*/ v2, v3;
+        public final float[] normalizationScale = new float[3];
     };
 
     static class lightingCache_s {
+        static final int BYTES = idVec3.BYTES;
 
         idVec3 localLightVector;		// this is the statically computed vector to the light
         // in texture space for cards without vertex programs
@@ -76,17 +87,40 @@ public class Model {
         lightingCache_s(ByteBuffer Position) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        public static ByteBuffer toByteBuffer(lightingCache_s[] cache) {
+            ByteBuffer data = BufferUtils.createByteBuffer(lightingCache_s.BYTES * cache.length);
+
+            for (lightingCache_s c : cache) {
+                data.put(c.localLightVector.Write());
+            }
+
+            return (ByteBuffer) data.flip();
+        }
     };
 
     public static class shadowCache_s {
 
+        private static final int BYTES = idVec4.BYTES;
+
         public idVec4 xyz;			// we use homogenous coordinate tricks
 
         public shadowCache_s() {
+            xyz = new idVec4();
         }
 
         shadowCache_s(ByteBuffer Position) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        public static ByteBuffer toByteBuffer(shadowCache_s[] cache) {
+            ByteBuffer data = BufferUtils.createByteBuffer(shadowCache_s.BYTES * cache.length);
+
+            for (shadowCache_s c : cache) {
+                data.put(c.xyz.Write());
+            }
+
+            return (ByteBuffer) data.flip();
         }
     };
     static final int SHADOW_CAP_INFINITE = 64;
@@ -94,69 +128,64 @@ public class Model {
     // our only drawing geometry type
     public static class srfTriangles_s {
 
-        public idBounds bounds = new idBounds();// for culling
-        //
-        int ambientViewCount;                   // if == tr.viewCount, it is visible this view
-        //
-        boolean generateNormals;		// create normals from geometry, instead of using explicit ones
-        public boolean tangentsCalculated;	// set when the vertex tangents have been calculated
+        public idBounds bounds;                 // for culling
+
+        int     ambientViewCount;               // if == tr.viewCount, it is visible this view
+
+        boolean generateNormals;                // create normals from geometry, instead of using explicit ones
+        public boolean tangentsCalculated;      // set when the vertex tangents have been calculated
         boolean facePlanesCalculated;           // set when the face planes have been calculated
-        boolean perfectHull;			// true if there aren't any dangling edges
-        boolean deformedSurface;		// if true, indexes, silIndexes, mirrorVerts, and silEdges are
-        // pointers into the original surface, and should not be freed
-        //
-        public int numVerts;			// number of vertices
-        public idDrawVert[] verts;		// vertices, allocated with special allocator
-        //
-        public int numIndexes;			// for shadows, this has both front and rear end caps and silhouette planes
-        public int /*glIndex_t*/[] indexes;	// indexes, allocated with special allocator
-        //
-        public int/*glIndex_t*/[] silIndexes;	// indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
-        //
-        int numMirroredVerts;                   // this many verts at the end of the vert list are tangent mirrors
-        int[] mirroredVerts;			// tri->mirroredVerts[0] is the mirror of tri->numVerts - tri->numMirroredVerts + 0
-        //
-        int numDupVerts;			// number of duplicate vertexes
-        int[] dupVerts;				// pairs of the number of the first vertex and the number of the duplicate vertex
-        //
-        int numSilEdges;			// number of silhouette edges
-        silEdge_t[] silEdges;			// silhouette edges
-        //
-        public idPlane[] facePlanes;		// [numIndexes/3] plane equations
-        //
-        dominantTri_s[] dominantTris;		// [numVerts] for deformed surface fast tangent calculation
-        //
-        public int numShadowIndexesNoFrontCaps;	// shadow volumes with front caps omitted
-        public int numShadowIndexesNoCaps;	// shadow volumes with the front and rear caps omitted
-        //
-        public int shadowCapPlaneBits;          // bits 0-5 are set when that plane of the interacting light has triangles
-        // projected on it, which means that if the view is on the outside of that
-        // plane, we need to draw the rear caps of the shadow volume
-        // turboShadows will have SHADOW_CAP_INFINITE
-        //
-        public shadowCache_s[] shadowVertexes;	// these will be copied to shadowCache when it is going to be drawn.
-        // these are NULL when vertex programs are available
-        srfTriangles_s ambientSurface;		// for light interactions, point back at the original surface that generated
-        // the interaction, which we will get the ambientCache from
-        //
-        srfTriangles_s nextDeferredFree;	// chain of tris to free next frame
-        //
-        // data in vertex object space, not directly readable by the CPU
-        vertCache_s indexCache;			// int
-        vertCache_s ambientCache;		// idDrawVert
-        vertCache_s lightingCache;		// lightingCache_t
-        vertCache_s shadowCache;		// shadowCache_t
+        boolean perfectHull;                    // true if there aren't any dangling edges
+        boolean deformedSurface;                // if true, indexes, silIndexes, mirrorVerts, and silEdges are
+                                                // pointers into the original surface, and should not be freed
 
+        public int                 numVerts;    // number of vertices
+        public idDrawVert[]        verts;       // vertices, allocated with special allocator
+
+        public int                 numIndexes;  // for shadows, this has both front and rear end caps and silhouette planes
+        public int /*glIndex_t*/[] indexes;     // indexes, allocated with special allocator
+
+        public int/*glIndex_t*/[]  silIndexes;  // indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
+
+        int         numMirroredVerts;           // this many verts at the end of the vert list are tangent mirrors
+        int[]       mirroredVerts;              // tri->mirroredVerts[0] is the mirror of tri->numVerts - tri->numMirroredVerts + 0
+
+        int         numDupVerts;                // number of duplicate vertexes
+        int[]       dupVerts;                   // pairs of the number of the first vertex and the number of the duplicate vertex
+
+        int         numSilEdges;                // number of silhouette edges
+        silEdge_t[] silEdges;                   // silhouette edges
+
+        public idPlane[] facePlanes;            // [numIndexes/3] plane equations
+
+        dominantTri_s[] dominantTris;           // [numVerts] for deformed surface fast tangent calculation
+
+        public int  numShadowIndexesNoFrontCaps;// shadow volumes with front caps omitted
+        public int  numShadowIndexesNoCaps;     // shadow volumes with the front and rear caps omitted
+
+        public int  shadowCapPlaneBits;         // bits 0-5 are set when that plane of the interacting light has triangles
+                                                // projected on it, which means that if the view is on the outside of that
+                                                // plane, we need to draw the rear caps of the shadow volume
+                                                // turboShadows will have SHADOW_CAP_INFINITE
+
+        public shadowCache_s[] shadowVertexes;  // these will be copied to shadowCache when it is going to be drawn.
+                                                // these are NULL when vertex programs are available
+
+        srfTriangles_s ambientSurface;          // for light interactions, point back at the original surface that generated
+                                                // the interaction, which we will get the ambientCache from
+
+        srfTriangles_s nextDeferredFree;        // chain of tris to free next frame
+
+                                                // data in vertex object space, not directly readable by the CPU
+        vertCache_s    indexCache;              // int
+        vertCache_s    ambientCache;            // idDrawVert
+        vertCache_s    lightingCache;           // lightingCache_t
+        vertCache_s    shadowCache;             // shadowCache_t
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
+        
         public srfTriangles_s() {
-        }
-
-        public srfTriangles_s(boolean zero) {
-            if (zero) {
-                clear();
-            }
-        }
-
-        public void clear() {
             this.bounds = new idBounds();
             this.ambientViewCount = 0;
             this.generateNormals = false;
@@ -190,69 +219,21 @@ public class Model {
         }
     };
 
-    /**
-     * a pointer wrapper class for <b>srfTriangles_s</b> that always has a
-     * pointer to the precious element.
-     */
-    public static class srfTriangles_ptr {
-
-        private srfTriangles_ptr previous = null;
-        private srfTriangles_s current = null;
-
-//        private srfTriangles_ptr next = null;
-        public srfTriangles_ptr(srfTriangles_s t) {
-            this.Set(t);
-        }
-
-        public srfTriangles_s Set(final srfTriangles_s t) {
-            if (current != null) {
-                previous = new srfTriangles_ptr(current);
-            }
-            return current = t;
-        }
-
-        public srfTriangles_ptr Get(final int t) {
-            if (LIGHT_TRIS_DEFERRED == t) {
-                return previous;
-            }
-            return this;
-        }
-
-        public srfTriangles_s Get() {
-            return current;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-
-            if (obj instanceof Integer && LIGHT_TRIS_DEFERRED == (Integer) obj) {
-
-                if (current != null && previous != null) {
-                    return current.equals(previous.current);
-                }
-
-                return false;
-            }
-
-            final srfTriangles_ptr other = (srfTriangles_ptr) obj;
-            if (!Objects.equals(this.current, other.current)) {
-                return false;
-            }
-            return true;
-        }
-    };
-
     static class idTriList extends idList<srfTriangles_s> {
     };
 
     public static class modelSurface_s{
 
-        public int id;
-        public idMaterial shader;
+        public int            id;
+        public idMaterial     shader;
         public srfTriangles_s geometry;
+
+        private static int DBG_counter = 0;
+        public final   int DBG_count   = DBG_counter++;
+        
+        public modelSurface_s(){
+            int a = 1;
+        }
     };
 
     public enum dynamicModel_t {
@@ -278,6 +259,8 @@ public class Model {
     // the init methods may be called again on an already created model when
     // a reloadModels is issued
     public static abstract class idRenderModel implements SERiAL {
+        private static int DBG_counter = 0;
+        protected final int DBG_count = DBG_counter++;
 
         // public abstract						~idRenderModel() {};
         // Loads static models only, dynamic models must be loaded by the modelManager
@@ -413,7 +396,7 @@ public class Model {
         public abstract String GetJointName(int jointHandle_t);
 
         // Returns the default animation pose or NULL if the model is not an MD5.
-        public abstract idJointQuat GetDefaultPose();
+        public abstract idJointQuat[] GetDefaultPose();
 
         // Returns number of the joint nearest to the given triangle.
         public abstract int NearestJoint(int surfaceNum, int a, int c, int b);

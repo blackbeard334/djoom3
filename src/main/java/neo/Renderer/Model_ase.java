@@ -48,15 +48,25 @@ public class Model_ase {
         int numFaces;
         int numTVFaces;
         int numCVFaces;
-//
-        final idVec3[] transform = new idVec3[4];			// applied to normals
-//
-        boolean colorsParsed;
-        boolean normalsParsed;
-        idVec3[] vertexes;
-        idVec2[] tvertexes;
-        idVec3[] cvertexes;
+        //
+        final idVec3[] transform;            // applied to normals
+        //
+        boolean     colorsParsed;
+        boolean     normalsParsed;
+        idVec3[]    vertexes;
+        idVec2[]    tvertexes;
+        idVec3[]    cvertexes;
         aseFace_t[] faces;
+
+        private static int DBG_counter = 1;
+        private final  int DBG_count   = DBG_counter++;
+
+        public aseMesh_t() {
+            transform = new idVec3[4];
+            for (int i = 0; i < transform.length; i++) {
+                transform[i] = new idVec3();
+            }
+        }
     };
 
     public static class aseMaterial_t {
@@ -75,17 +85,26 @@ public class Model_ase {
         int materialRef;
 //
         aseMesh_t mesh;
-//
-        // frames are only present with animations
-        idList<aseMesh_t> frames;			// aseMesh_t
+        idList<aseMesh_t> frames;			
+
+        public aseObject_t() {
+            this.name = new char[128];
+            this.mesh = new aseMesh_t();
+            this.frames = new idList<>();
+        }
     };
 
     public static class aseModel_s {
 
 //	ID_TIME_T					timeStamp;
-        final long[] timeStamp = new long[1];
+        final long[] timeStamp = {1};
         idList<aseMaterial_t> materials;
         idList<aseObject_t> objects;
+
+        public aseModel_s() {
+            this.materials = new idList<>();
+            this.objects = new idList<>();
+        }
     };
 
     /*
@@ -232,6 +251,7 @@ public class Model_ase {
 
     public static boolean ASE_GetToken(boolean restOfLine) {
         int i = 0;
+        ase.token = "";
 
         if (ase.buffer == null) {
             return false;
@@ -242,26 +262,24 @@ public class Model_ase {
         }
 
         // skip over crap
-        while ((ase.curpos < ase.len)
-                && (ase.curpos <= 32)) {
+        while ((ase.curpos < ase.len) && (ase.buffer.get(ase.curpos) <= 32)) {
             ase.curpos++;
         }
-
+        
         while (ase.curpos < ase.len) {
-//            ase.token[i] = *ase.curpos;
-            ase.token = replaceByIndex(ase.buffer.get(ase.curpos), i, ase.token);
+            ase.token += ase.buffer.get(ase.curpos);//ase.token[i] = *ase.curpos;
 
             ase.curpos++;
             i++;
-
-            if ((CharIsTokenDelimiter(ase.token.charAt(i - 1)) && !restOfLine)
-                    || ((ase.token.charAt(i - 1) == '\n') || (ase.token.charAt(i - 1) == '\r'))) {
-                ase.token = replaceByIndex((char) 0, i - 1, ase.token);
+            
+            final char c = ase.token.charAt(i - 1);
+            if ((CharIsTokenDelimiter(c) && !restOfLine) || ((c == '\n') || (c == '\r'))) {
+                ase.token = ase.token.substring(0, i - 1);
                 break;
             }
         }
 
-        ase.token = replaceByIndex((char) 0, i, ase.token);
+//        ase.token = replaceByIndex((char) 0, i, ase.token);
 
         return true;
     }
@@ -331,46 +349,51 @@ public class Model_ase {
 
         @Override
         public void run(final String token) {
-            aseMaterial_t material;
+            final aseMaterial_t material;
 
-            if ("*BITMAP".equals(token)) {
-                idStr qpath;
-                idStr matname;
-
-                ASE_GetToken(false);
-
-                // remove the quotes
-                int s = ase.token.substring(1).indexOf("\"");
-                if (s != 0) {
-                    ase.token = replaceByIndex((char) 0, s, ase.token);
-                }
-                matname = new idStr(ase.token.substring(1));
-
-                // convert the 3DSMax material pathname to a qpath
-                matname.BackSlashesToSlashes();
-                qpath = new idStr(fileSystem.OSPathToRelativePath(matname.toString()));
-                idStr.Copynz(ase.currentMaterial.name, qpath.toString(), ase.currentMaterial.name.length);
-            } else if ("*UVW_U_OFFSET".equals(token)) {
-                material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
-                ASE_GetToken(false);
-                material.uOffset = Float.parseFloat(ase.token);
-            } else if ("*UVW_V_OFFSET".equals(token)) {
-                material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
-                ASE_GetToken(false);
-                material.vOffset = Float.parseFloat(ase.token);
-            } else if ("*UVW_U_TILING".equals(token)) {
-                material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
-                ASE_GetToken(false);
-                material.uTiling = Float.parseFloat(ase.token);
-            } else if ("*UVW_V_TILING".equals(token)) {
-                material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
-                ASE_GetToken(false);
-                material.vTiling = Float.parseFloat(ase.token);
-            } else if ("*UVW_ANGLE".equals(token)) {
-                material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
-                ASE_GetToken(false);
-                material.angle = Float.parseFloat(ase.token);
-            } else {
+            switch ("" + token) {
+                case "*BITMAP":
+                    idStr qpath;
+                    idStr matname;
+                    ASE_GetToken(false);
+                    // remove the quotes
+                    int s = ase.token.substring(1).indexOf('\"');
+                    if (s > 0) {
+                        ase.token = ase.token.substring(0, s + 1);
+                    }
+                    matname = new idStr(ase.token.substring(1));
+                    // convert the 3DSMax material pathname to a qpath
+                    matname.BackSlashesToSlashes();
+                    qpath = new idStr(fileSystem.OSPathToRelativePath(matname.toString()));
+                    idStr.Copynz(ase.currentMaterial.name, qpath.toString(), ase.currentMaterial.name.length);
+                    break;
+                case "*UVW_U_OFFSET":
+                    material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
+                    ASE_GetToken(false);
+                    material.uOffset = Float.parseFloat(ase.token);
+                    break;
+                case "*UVW_V_OFFSET":
+                    material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
+                    ASE_GetToken(false);
+                    material.vOffset = Float.parseFloat(ase.token);
+                    break;
+                case "*UVW_U_TILING":
+                    material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
+                    ASE_GetToken(false);
+                    material.uTiling = Float.parseFloat(ase.token);
+                    break;
+                case "*UVW_V_TILING":
+                    material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
+                    ASE_GetToken(false);
+                    material.vTiling = Float.parseFloat(ase.token);
+                    break;
+                case "*UVW_ANGLE":
+                    material = ase.model.materials.oGet(ase.model.materials.Num() - 1);
+                    ASE_GetToken(false);
+                    material.angle = Float.parseFloat(ase.token);
+                    break;
+                default:
+                    break;
             }
         }
     };
@@ -442,27 +465,28 @@ public class Model_ase {
         @Override
         public void run(final String token) {
             int i;
+            final int j;
 
-            if ("*TM_ROW0".equals(token)) {
-                for (i = 0; i < 3; i++) {
-                    ASE_GetToken(false);
-                    ase.currentObject.mesh.transform[0].oSet(i, Float.parseFloat(ase.token));
-                }
-            } else if ("*TM_ROW1".equals(token)) {
-                for (i = 0; i < 3; i++) {
-                    ASE_GetToken(false);
-                    ase.currentObject.mesh.transform[1].oSet(i, Float.parseFloat(ase.token));
-                }
-            } else if ("*TM_ROW2".equals(token)) {
-                for (i = 0; i < 3; i++) {
-                    ASE_GetToken(false);
-                    ase.currentObject.mesh.transform[2].oSet(i, Float.parseFloat(ase.token));
-                }
-            } else if ("*TM_ROW3".equals(token)) {
-                for (i = 0; i < 3; i++) {
-                    ASE_GetToken(false);
-                    ase.currentObject.mesh.transform[3].oSet(i, Float.parseFloat(ase.token));
-                }
+            switch ("" + token) {
+                case "*TM_ROW0":
+                    j = 0;
+                    break;
+                case "*TM_ROW1":
+                    j = 1;
+                    break;
+                case "*TM_ROW2":
+                    j = 2;
+                    break;
+                case "*TM_ROW3":
+                    j = 3;
+                    break;
+                default:
+                    j = -1;
+            }
+            
+            for (i = 0; i < 3 && j != -1; i++) {
+                ASE_GetToken(false);
+                ase.currentObject.mesh.transform[j].oSet(i, Float.parseFloat(ase.token));
             }
         }
     };
@@ -485,6 +509,7 @@ public class Model_ase {
 
                 if ("*MESH_VERTEX".equals(token)) {
                     ASE_GetToken(false);		// skip number
+                    pMesh.vertexes[ase.currentVertex] = new idVec3();
 
                     ASE_GetToken(false);
                     pMesh.vertexes[ase.currentVertex].x = Float.parseFloat(ase.token);
@@ -524,6 +549,7 @@ public class Model_ase {
 
             if ("*MESH_FACE".equals(token)) {
                 ASE_GetToken(false);	// skip face number
+                pMesh.faces[ase.currentFace] = new aseFace_t();
 
                 // we are flipping the order here to change the front/back facing
                 // from 3DS to our standard (clockwise facing out)
@@ -654,6 +680,7 @@ public class Model_ase {
                 final String u, v, w;
 
                 ASE_GetToken(false);
+                pMesh.tvertexes[ase.currentVertex] = new idVec2();
 
                 ASE_GetToken(false);
 //		strcpy( u, ase.token );
@@ -740,7 +767,6 @@ public class Model_ase {
             idVec3 n = new idVec3();
 
             pMesh.normalsParsed = true;
-            f = pMesh.faces[ase.currentFace];
 
             if ("*MESH_FACENORMAL".equals(token)) {
                 int num;
@@ -751,6 +777,8 @@ public class Model_ase {
                 if (num >= pMesh.numFaces || num < 0) {
                     common.Error("MESH_NORMALS face index out of range: %d", num);
                 }
+                
+                f = pMesh.faces[ase.currentFace];
 
                 if (num != ase.currentFace) {
                     common.Error("MESH_NORMALS face index != currentFace");
@@ -763,6 +791,7 @@ public class Model_ase {
                 ASE_GetToken(false);
                 n.oSet(2, Float.parseFloat(ase.token));
 
+                f.faceNormal = new idVec3();
                 f.faceNormal.oSet(0, n.oGet(0) * pMesh.transform[0].oGet(0) + n.oGet(1) * pMesh.transform[1].oGet(0) + n.oGet(2) * pMesh.transform[2].oGet(0));
                 f.faceNormal.oSet(1, n.oGet(0) * pMesh.transform[0].oGet(1) + n.oGet(1) * pMesh.transform[1].oGet(1) + n.oGet(2) * pMesh.transform[2].oGet(1));
                 f.faceNormal.oSet(2, n.oGet(0) * pMesh.transform[0].oGet(2) + n.oGet(1) * pMesh.transform[1].oGet(2) + n.oGet(2) * pMesh.transform[2].oGet(2));
@@ -781,7 +810,7 @@ public class Model_ase {
                     common.Error("MESH_NORMALS vertex index out of range: %d", num);
                 }
 
-                f = pMesh.faces[ ase.currentFace - 1];
+                f = pMesh.faces[ase.currentFace - 1];
 
                 for (v = 0; v < 3; v++) {
                     if (num == f.vertexNum[ v]) {
@@ -800,9 +829,10 @@ public class Model_ase {
                 ASE_GetToken(false);
                 n.oSet(2, Float.parseFloat(ase.token));
 
-                f.vertexNormals[ v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(0) + n.oGet(1) * pMesh.transform[1].oGet(0) + n.oGet(2) * pMesh.transform[2].oGet(0));
-                f.vertexNormals[ v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(1) + n.oGet(1) * pMesh.transform[1].oGet(1) + n.oGet(2) * pMesh.transform[2].oGet(2));
-                f.vertexNormals[ v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(2) + n.oGet(1) * pMesh.transform[1].oGet(2) + n.oGet(2) * pMesh.transform[2].oGet(1));
+                f.vertexNormals[v] = new idVec3();
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(0) + n.oGet(1) * pMesh.transform[1].oGet(0) + n.oGet(2) * pMesh.transform[2].oGet(0));
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(1) + n.oGet(1) * pMesh.transform[1].oGet(1) + n.oGet(2) * pMesh.transform[2].oGet(2));
+                f.vertexNormals[v].oSet(0, n.oGet(0) * pMesh.transform[0].oGet(2) + n.oGet(1) * pMesh.transform[1].oGet(2) + n.oGet(2) * pMesh.transform[2].oGet(1));
 
                 f.vertexNormals[v].Normalize();
             }
@@ -824,90 +854,98 @@ public class Model_ase {
         public void run(final String token) {
             aseMesh_t pMesh = ASE_GetCurrentMesh();
 
-            if ("*TIMEVALUE".equals(token)) {
-                ASE_GetToken(false);
-
-                pMesh.timeValue = Integer.parseInt(ase.token);
-                VERBOSE(".....timevalue: %d\n", pMesh.timeValue);
-            } else if ("*MESH_NUMVERTEX".equals(token)) {
-                ASE_GetToken(false);
-
-                pMesh.numVertexes = Integer.parseInt(ase.token);
-                VERBOSE(".....num vertexes: %d\n", pMesh.numVertexes);
-            } else if ("*MESH_NUMTVERTEX".equals(token)) {
-                ASE_GetToken(false);
-
-                pMesh.numTVertexes = Integer.parseInt(ase.token);
-                VERBOSE(".....num tvertexes: %d\n", pMesh.numTVertexes);
-            } else if ("*MESH_NUMCVERTEX".equals(token)) {
-                ASE_GetToken(false);
-
-                pMesh.numCVertexes = Integer.parseInt(ase.token);
-                VERBOSE(".....num cvertexes: %d\n", pMesh.numCVertexes);
-            } else if ("*MESH_NUMFACES".equals(token)) {
-                ASE_GetToken(false);
-
-                pMesh.numFaces = Integer.parseInt(ase.token);
-                VERBOSE(".....num faces: %d\n", pMesh.numFaces);
-            } else if ("*MESH_NUMTVFACES".equals(token)) {
-                ASE_GetToken(false);
-
-                pMesh.numTVFaces = Integer.parseInt(ase.token);
-                VERBOSE(".....num tvfaces: %d\n", pMesh.numTVFaces);
-
-                if (pMesh.numTVFaces != pMesh.numFaces) {
-                    common.Error("MESH_NUMTVFACES != MESH_NUMFACES");
+            if (null != token) {
+                switch (token) {
+                    case "*TIMEVALUE":
+                        ASE_GetToken(false);
+                        pMesh.timeValue = Integer.parseInt(ase.token);
+                        VERBOSE(".....timevalue: %d\n", pMesh.timeValue);
+                        break;
+                    case "*MESH_NUMVERTEX":
+                        ASE_GetToken(false);
+                        pMesh.numVertexes = Integer.parseInt(ase.token);
+                        VERBOSE(".....num vertexes: %d\n", pMesh.numVertexes);
+                        break;
+                    case "*MESH_NUMTVERTEX":
+                        ASE_GetToken(false);
+                        pMesh.numTVertexes = Integer.parseInt(ase.token);
+                        VERBOSE(".....num tvertexes: %d\n", pMesh.numTVertexes);
+                        break;
+                    case "*MESH_NUMCVERTEX":
+                        ASE_GetToken(false);
+                        pMesh.numCVertexes = Integer.parseInt(ase.token);
+                        VERBOSE(".....num cvertexes: %d\n", pMesh.numCVertexes);
+                        break;
+                    case "*MESH_NUMFACES":
+                        ASE_GetToken(false);
+                        pMesh.numFaces = Integer.parseInt(ase.token);
+                        VERBOSE(".....num faces: %d\n", pMesh.numFaces);
+                        break;
+                    case "*MESH_NUMTVFACES":
+                        ASE_GetToken(false);
+                        pMesh.numTVFaces = Integer.parseInt(ase.token);
+                        VERBOSE(".....num tvfaces: %d\n", pMesh.numTVFaces);
+                        if (pMesh.numTVFaces != pMesh.numFaces) {
+                            common.Error("MESH_NUMTVFACES != MESH_NUMFACES");
+                        }
+                        break;
+                    case "*MESH_NUMCVFACES":
+                        ASE_GetToken(false);
+                        pMesh.numCVFaces = Integer.parseInt(ase.token);
+                        VERBOSE(".....num cvfaces: %d\n", pMesh.numCVFaces);
+                        if (pMesh.numTVFaces != pMesh.numFaces) {
+                            common.Error("MESH_NUMCVFACES != MESH_NUMFACES");
+                        }
+                        break;
+                    case "*MESH_VERTEX_LIST":
+                        pMesh.vertexes = new idVec3[pMesh.numVertexes];// Mem_Alloc(pMesh.numVertexes);
+                        ase.currentVertex = 0;
+                        VERBOSE((".....parsing MESH_VERTEX_LIST\n"));
+                        ASE_ParseBracedBlock(ASE_KeyMESH_VERTEX_LIST.getInstance());
+                        break;
+                    case "*MESH_TVERTLIST":
+                        ase.currentVertex = 0;
+                        pMesh.tvertexes = new idVec2[pMesh.numTVertexes];// Mem_Alloc(pMesh.numTVertexes);
+                        VERBOSE((".....parsing MESH_TVERTLIST\n"));
+                        ASE_ParseBracedBlock(ASE_KeyMESH_TVERTLIST.getInstance());
+                        break;
+                    case "*MESH_CVERTLIST":
+                        ase.currentVertex = 0;
+                        pMesh.cvertexes = new idVec3[pMesh.numCVertexes];// Mem_Alloc(pMesh.numCVertexes);
+                        VERBOSE((".....parsing MESH_CVERTLIST\n"));
+                        ASE_ParseBracedBlock(ASE_KeyMESH_CVERTLIST.getInstance());
+                        break;
+                    case "*MESH_FACE_LIST":
+                        pMesh.faces = new aseFace_t[pMesh.numFaces];// Mem_Alloc(pMesh.numFaces);
+                        ase.currentFace = 0;
+                        VERBOSE((".....parsing MESH_FACE_LIST\n"));
+                        ASE_ParseBracedBlock(ASE_KeyMESH_FACE_LIST.getInstance());
+                        break;
+                    case "*MESH_TFACELIST":
+                        if (null == pMesh.faces) {
+                            common.Error("*MESH_TFACELIST before *MESH_FACE_LIST");
+                        }
+                        ase.currentFace = 0;
+                        VERBOSE((".....parsing MESH_TFACE_LIST\n"));
+                        ASE_ParseBracedBlock(ASE_KeyTFACE_LIST.getInstance());
+                        break;
+                    case "*MESH_CFACELIST":
+                        if (null == pMesh.faces) {//TODO:check pointer position instead of entire array
+                            common.Error("*MESH_CFACELIST before *MESH_FACE_LIST");
+                        }
+                        ase.currentFace = 0;
+                        VERBOSE((".....parsing MESH_CFACE_LIST\n"));
+                        ASE_ParseBracedBlock(ASE_KeyCFACE_LIST.getInstance());
+                        break;
+                    case "*MESH_NORMALS":
+                        if (null == pMesh.faces) {
+                            common.Warning("*MESH_NORMALS before *MESH_FACE_LIST");
+                        }
+                        ase.currentFace = 0;
+                        VERBOSE((".....parsing MESH_NORMALS\n"));
+                        ASE_ParseBracedBlock(ASE_KeyMESH_NORMALS.getInstance());
+                        break;
                 }
-            } else if ("*MESH_NUMCVFACES".equals(token)) {
-                ASE_GetToken(false);
-
-                pMesh.numCVFaces = Integer.parseInt(ase.token);
-                VERBOSE(".....num cvfaces: %d\n", pMesh.numCVFaces);
-
-                if (pMesh.numTVFaces != pMesh.numFaces) {
-                    common.Error("MESH_NUMCVFACES != MESH_NUMFACES");
-                }
-            } else if ("*MESH_VERTEX_LIST".equals(token)) {
-                pMesh.vertexes = new idVec3[pMesh.numVertexes];// Mem_Alloc(pMesh.numVertexes);
-                ase.currentVertex = 0;
-                VERBOSE((".....parsing MESH_VERTEX_LIST\n"));
-                ASE_ParseBracedBlock(ASE_KeyMESH_VERTEX_LIST.getInstance());
-            } else if ("*MESH_TVERTLIST".equals(token)) {
-                ase.currentVertex = 0;
-                pMesh.tvertexes = new idVec2[pMesh.numTVertexes];// Mem_Alloc(pMesh.numTVertexes);
-                VERBOSE((".....parsing MESH_TVERTLIST\n"));
-                ASE_ParseBracedBlock(ASE_KeyMESH_TVERTLIST.getInstance());
-            } else if ("*MESH_CVERTLIST".equals(token)) {
-                ase.currentVertex = 0;
-                pMesh.cvertexes = new idVec3[pMesh.numCVertexes];// Mem_Alloc(pMesh.numCVertexes);
-                VERBOSE((".....parsing MESH_CVERTLIST\n"));
-                ASE_ParseBracedBlock(ASE_KeyMESH_CVERTLIST.getInstance());
-            } else if ("*MESH_FACE_LIST".equals(token)) {
-                pMesh.faces = new aseFace_t[pMesh.numFaces];// Mem_Alloc(pMesh.numFaces);
-                ase.currentFace = 0;
-                VERBOSE((".....parsing MESH_FACE_LIST\n"));
-                ASE_ParseBracedBlock(ASE_KeyMESH_FACE_LIST.getInstance());
-            } else if ("*MESH_TFACELIST".equals(token)) {
-                if (null == pMesh.faces) {
-                    common.Error("*MESH_TFACELIST before *MESH_FACE_LIST");
-                }
-                ase.currentFace = 0;
-                VERBOSE((".....parsing MESH_TFACE_LIST\n"));
-                ASE_ParseBracedBlock(ASE_KeyTFACE_LIST.getInstance());
-            } else if ("*MESH_CFACELIST".equals(token)) {
-                if (null == pMesh.faces) {//TODO:check pointer position instead of entire array
-                    common.Error("*MESH_CFACELIST before *MESH_FACE_LIST");
-                }
-                ase.currentFace = 0;
-                VERBOSE((".....parsing MESH_CFACE_LIST\n"));
-                ASE_ParseBracedBlock(ASE_KeyCFACE_LIST.getInstance());
-            } else if ("*MESH_NORMALS".equals(token)) {
-                if (null == pMesh.faces) {
-                    common.Warning("*MESH_NORMALS before *MESH_FACE_LIST");
-                }
-                ase.currentFace = 0;
-                VERBOSE((".....parsing MESH_NORMALS\n"));
-                ASE_ParseBracedBlock(ASE_KeyMESH_NORMALS.getInstance());
             }
         }
     };
@@ -962,40 +1000,47 @@ public class Model_ase {
 
             object = ase.currentObject;
 
-            if ("*NODE_NAME".equals(token)) {
-                ASE_GetToken(true);
-                VERBOSE(" %s\n", ase.token);
-                idStr.Copynz(object.name, ase.token, object.name.length);
-            } else if ("*NODE_PARENT".equals(token)) {
-                ASE_SkipRestOfLine();
-            } // ignore unused data blocks
-            else if ("*NODE_TM".equals(token)
-                    || "*TM_ANIMATION".equals(token)) {
-                ASE_ParseBracedBlock(ASE_KeyNODE_TM.getInstance());
-            } // ignore regular meshes that aren't part of animation
-            else if ("*MESH".equals(token)) {
-                ase.currentMesh = ase.currentObject.mesh;
-//                memset(ase.currentMesh, 0, sizeof(ase.currentMesh));
-                ase.currentMesh = new aseMesh_t();
+            switch ("" + token) {
+                case "*NODE_NAME":
+                    ASE_GetToken(true);
+                    VERBOSE(" %s\n", ase.token);
+                    idStr.Copynz(object.name, ase.token, object.name.length);
+                    break;
+                case "*NODE_PARENT":
+                    ASE_SkipRestOfLine();
+                    break;
 
-                ASE_ParseBracedBlock(ASE_KeyMESH.getInstance());
-            } // according to spec these are obsolete
-            else if ("*MATERIAL_REF".equals(token)) {
-                ASE_GetToken(false);
+                // ignore unused data blocks
+                case "*NODE_TM":
+                case "*TM_ANIMATION":
+                    ASE_ParseBracedBlock(ASE_KeyNODE_TM.getInstance());
+                    break;
 
-                object.materialRef = Integer.parseInt(ase.token);
-            } // loads a sequence of animation frames
-            else if ("*MESH_ANIMATION".equals(token)) {
-                VERBOSE(("..found MESH_ANIMATION\n"));
+                // ignore regular meshes that aren't part of animation
+                case "*MESH":
+                    ase.currentMesh = ase.currentObject.mesh = new aseMesh_t();
+                    ASE_ParseBracedBlock(ASE_KeyMESH.getInstance());
+                    break;
 
-                ASE_ParseBracedBlock(ASE_KeyMESH_ANIMATION.getInstance());
-            } // skip unused info
-            else if ("*PROP_MOTIONBLUR".equals(token)
-                    || "*PROP_CASTSHADOW".equals(token)
-                    || "*PROP_RECVSHADOW".equals(token)) {
-                ASE_SkipRestOfLine();
+                // according to spec these are obsolete
+                case "*MATERIAL_REF":
+                    ASE_GetToken(false);
+                    object.materialRef = Integer.parseInt(ase.token);
+                    break;
+
+                // loads a sequence of animation frames
+                case "*MESH_ANIMATION":
+                    VERBOSE(("..found MESH_ANIMATION\n"));
+                    ASE_ParseBracedBlock(ASE_KeyMESH_ANIMATION.getInstance());
+                    break;
+
+                // skip unused info
+                case "*PROP_MOTIONBLUR":
+                case "*PROP_CASTSHADOW":
+                case "*PROP_RECVSHADOW":
+                    ASE_SkipRestOfLine();
+                    break;
             }
-
         }
     };
 
@@ -1040,8 +1085,8 @@ public class Model_ase {
      =================
      */
     public static aseModel_s ASE_Parse(final ByteBuffer buffer, boolean verbose) {
-//	memset( &ase, 0, sizeof( ase ) );
 
+        ase = new ase_t();//memset( &ase, 0, sizeof( ase ) );
         ase.verbose = verbose;
 
         ase.buffer = bbtocb(buffer);//.asCharBuffer();
@@ -1050,32 +1095,40 @@ public class Model_ase {
         ase.currentObject = null;
 
         // NOTE: using new operator because aseModel_t contains idList class objects
-        ase.model = new aseModel_s();
-//        memset(ase.model, 0, sizeof(aseModel_t));
+        ase.model = new aseModel_s();//memset(ase.model, 0, sizeof(aseModel_t));
         ase.model.objects.Resize(32, 32);
         ase.model.materials.Resize(32, 32);
 
         while (ASE_GetToken(false)) {
-            if ("*3DSMAX_ASCIIEXPORT".equals(ase.token)
-                    || "*COMMENT".equals(ase.token)) {
-                ASE_SkipRestOfLine();
-            } else if ("*SCENE".equals(ase.token)) {
-                ASE_SkipEnclosingBraces();
-            } else if ("*GROUP".equals(ase.token)) {
-                ASE_GetToken(false);		// group name
-                ASE_ParseBracedBlock(ASE_KeyGROUP.getInstance());
-            } else if ("*SHAPEOBJECT".equals(ase.token)) {
-                ASE_SkipEnclosingBraces();
-            } else if ("*CAMERAOBJECT".equals(ase.token)) {
-                ASE_SkipEnclosingBraces();
-            } else if ("*MATERIAL_LIST".equals(ase.token)) {
-                VERBOSE(("MATERIAL_LIST\n"));
-
-                ASE_ParseBracedBlock(ASE_KeyMATERIAL_LIST.getInstance());
-            } else if ("*GEOMOBJECT".equals(ase.token)) {
-                ASE_ParseGeomObject();
-            } else if (isNotNullOrEmpty(ase.token)) {
-                common.Printf("Unknown token '%s'\n", ase.token);
+            switch (ase.token) {
+                case "*3DSMAX_ASCIIEXPORT":
+                case "*COMMENT":
+                    ASE_SkipRestOfLine();
+                    break;
+                case "*SCENE":
+                    ASE_SkipEnclosingBraces();
+                    break;
+                case "*GROUP":
+                    ASE_GetToken(false);		// group name
+                    ASE_ParseBracedBlock(ASE_KeyGROUP.getInstance());
+                    break;
+                case "*SHAPEOBJECT":
+                    ASE_SkipEnclosingBraces();
+                    break;
+                case "*CAMERAOBJECT":
+                    ASE_SkipEnclosingBraces();
+                    break;
+                case "*MATERIAL_LIST":
+                    VERBOSE(("MATERIAL_LIST\n"));
+                    ASE_ParseBracedBlock(ASE_KeyMATERIAL_LIST.getInstance());
+                    break;
+                case "*GEOMOBJECT":
+                    ASE_ParseGeomObject();
+                    break;
+                default:
+                    if (isNotNullOrEmpty(ase.token)) {
+                        common.Printf("Unknown token '%s'\n", ase.token);
+                    }
             }
         }
 

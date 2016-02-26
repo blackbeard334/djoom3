@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -245,10 +245,11 @@ public class File_h {
 
             return reads;
         }
-        
+
         public final int Read(SERiAL object, int len) {
             ByteBuffer buffer = object.AllocBuffer();
             int reads = Read(buffer, len);
+            buffer.position(len).flip();
             object.Read(buffer);
 
             return reads;
@@ -352,7 +353,7 @@ public class File_h {
 
         // Endian portable alternatives to Read(...)
         public int ReadInt(int[] value) {
-            ByteBuffer intBytes = ByteBuffer.allocate(4);
+            ByteBuffer intBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
             int result = Read(intBytes);
             value[0] = LittleLong(intBytes.getInt());
             return result;
@@ -542,103 +543,102 @@ public class File_h {
         }
 
         public int ReadVec2(idVec2 vec) {
-            ByteBuffer idVec2Buffer = ByteBuffer.allocate(idVec2.SIZE);
-            int result = Read(idVec2Buffer);
+            ByteBuffer buffer = ByteBuffer.allocate(idVec2.SIZE);
+            int result = Read(buffer);
 //            LittleRevBytes(vec.ToFloatPtr(), vec.GetDimension());//TODO:is this necessary?
-            vec.oSet((idVec2) UNWRAP(idVec2Buffer));
+            vec.oSet(new idVec2(buffer.getFloat(), buffer.getFloat()));
             return result;
         }
 
         public int WriteVec2(final idVec2 vec) {
 //            idVec2 v = vec;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            return Write(WRAP(vec));
+            ByteBuffer buffer = ByteBuffer.allocate(idVec2.BYTES);
+            buffer.asFloatBuffer()
+                    .put(vec.ToFloatPtr())
+                    .flip();
+            return Write(buffer);
         }
 
         public int ReadVec3(idVec3 vec) {
-            ByteBuffer idVec3Buffer = ByteBuffer.allocate(idVec3.SIZE);
-            int result = Read(idVec3Buffer);
+            ByteBuffer buffer = ByteBuffer.allocate(idVec3.SIZE);
+            int result = Read(buffer);
 //            LittleRevBytes(vec.ToFloatPtr(), vec.GetDimension());
-            vec.oSet((idVec3) UNWRAP(idVec3Buffer));
+            vec.oSet(new idVec3(buffer.getFloat(), buffer.getFloat(), buffer.getFloat()));
             return result;
         }
 
         public int WriteVec3(final idVec3 vec) {
 //            idVec3 v = vec;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            return Write(WRAP(vec));
+            ByteBuffer buffer = ByteBuffer.allocate(idVec3.BYTES);
+            buffer.asFloatBuffer()
+                    .put(vec.ToFloatPtr())
+                    .flip();
+            return Write(buffer);
         }
 
         public int ReadVec4(idVec4 vec) {
-            ByteBuffer idVec4Buffer = ByteBuffer.allocate(idVec4.SIZE);
-            int result = Read(idVec4Buffer);
+            ByteBuffer buffer = ByteBuffer.allocate(idVec4.SIZE);
+            int result = Read(buffer);
 //            LittleRevBytes(vec.ToFloatPtr(), vec.GetDimension());
-            vec.oSet((idVec4) UNWRAP(idVec4Buffer));
+            vec.oSet(new idVec4(buffer.getFloat(), buffer.getFloat(), buffer.getFloat(), buffer.getFloat()));
             return result;
         }
 
         public int WriteVec4(final idVec4 vec) {
 //            idVec4 v = vec;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            return Write(WRAP(vec));
+            ByteBuffer buffer = ByteBuffer.allocate(idVec4.BYTES);
+            buffer.asFloatBuffer()
+                    .put(vec.ToFloatPtr())
+                    .flip();
+            return Write(buffer);
         }
 
         public int ReadVec6(idVec6 vec) {
-            ByteBuffer idVec6Buffer = ByteBuffer.allocate(idVec6.SIZE);
-            int result = Read(idVec6Buffer);
+            ByteBuffer buffer = ByteBuffer.allocate(idVec6.SIZE);
+            int result = Read(buffer);
 //            LittleRevBytes(vec.ToFloatPtr(), vec.GetDimension());
-            vec.oSet((idVec6) UNWRAP(idVec6Buffer));
+            vec.oSet(new idVec6(
+                    buffer.getFloat(), buffer.getFloat(), buffer.getFloat(),
+                    buffer.getFloat(), buffer.getFloat(), buffer.getFloat()));
             return result;
         }
 
         public int WriteVec6(final idVec6 vec) {
 //            idVec6 v = vec;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            return Write(WRAP(vec));
+            ByteBuffer buffer = ByteBuffer.allocate(idVec6.BYTES);
+            buffer.asFloatBuffer()
+                    .put(vec.ToFloatPtr())
+                    .flip();
+            return Write(buffer);
         }
 
         public int ReadMat3(idMat3 mat) {
-            ByteBuffer idMat3Buffer = ByteBuffer.allocate(idMat3.SIZE);
-            int result = Read(idMat3Buffer);
+            ByteBuffer buffer = ByteBuffer.allocate(idMat3.BYTES);
+            int result = Read(buffer);
 //            LittleRevBytes(mat.ToFloatPtr(), mat.GetDimension());
-            mat.oSet((idMat3) UNWRAP(idMat3Buffer));
+            mat.oSet(new idMat3(
+                    buffer.getFloat(), buffer.getFloat(), buffer.getFloat(),
+                    buffer.getFloat(), buffer.getFloat(), buffer.getFloat(),
+                    buffer.getFloat(), buffer.getFloat(), buffer.getFloat()));
             return result;
         }
 
         public int WriteMat3(final idMat3 mat) {
 //            idMat3 v = mat;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            return Write(WRAP(mat));
+            ByteBuffer buffer = ByteBuffer.allocate(idMat3.BYTES);
+            buffer.asFloatBuffer()
+                    .put(mat.oGet(0).ToFloatPtr())
+                    .put(mat.oGet(1).ToFloatPtr())
+                    .put(mat.oGet(2).ToFloatPtr())
+                    .flip();
+            return Write(buffer);
         }
 
-        //serializes an object to a bytebuffer.
-        public static ByteBuffer WRAP(final Serializable object) {
-            ByteBuffer buffer = null;
-
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-                oos.writeObject(object);
-                buffer = ByteBuffer.wrap(baos.toByteArray());
-            } catch (IOException ex) {
-                Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            return buffer;
-        }
-
-        //deserializes a bytebuffer to the original object
-        public static Object UNWRAP(final ByteBuffer buffer) {
-            Object object = null;
-
-            try {
-                ByteArrayInputStream bais = new ByteArrayInputStream(buffer.array());
-                ObjectInputStream ois = new ObjectInputStream(bais);
-                object = ois.readObject();
-            } catch (IOException | ClassNotFoundException ex) {
-                Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return object;
-        }
     };
 
     /*
@@ -1015,6 +1015,7 @@ public class File_h {
 
         public idFile_Permanent() {
             name = new idStr("invalid");
+            fullPath = new idStr();
             o = null;
             mode = 0;
             fileSize = 0;
@@ -1101,12 +1102,16 @@ public class File_h {
          =================
          */
         @Override
-        public int Write(final ByteBuffer buffer/*, int len*/) {
+        public int Write(final ByteBuffer buffer) {
+            return Write(buffer, buffer.limit());
+        }
+
+        @Override
+        public int Write(final ByteBuffer buffer, int len) {
             int block, remaining;
             int written;
 //            byte[] buf;
             int tries;
-            int len;
 
             if (0 == (mode & (1 << FS_WRITE.ordinal()))) {
                 common.FatalError("idFile_Permanent::Write: %s not opened in write mode", name);
@@ -1118,7 +1123,6 @@ public class File_h {
             }
 
 //            buf = (byte[]) buffer;
-            len = buffer.capacity();
 
             remaining = len;
             tries = 0;
@@ -1284,19 +1288,11 @@ public class File_h {
         public int Read(ByteBuffer buffer, int len) {
             int l = 0;
             int read = 0;
-//            int skipped = 0;
 
-//                ByteBuffer zippedBuffer = ByteBuffer.allocate(len);
-//                l = z.read(zippedBuffer, 0);
-//                try (ZipInputStream inputStream = new ZipInputStream(new ByteArrayInputStream(zippedBuffer.array()))) {
             try {
                 if (null == inputStream) {
                     inputStream = new ZipFile(fullPath.toString()).getInputStream(z);
                 }
-//                    inputStream.getNextEntry();
-//                while (skipped < bytePos) {//set read position to after our last read.
-//                    skipped += inputStream.skip(bytePos);
-//                }
 
                 while (read > -1 && len != 0) {
                     read = inputStream.read(buffer.array(), l, len);
@@ -1304,7 +1300,6 @@ public class File_h {
                     len -= read;
                 }
             } catch (IOException ex) {
-                Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
                 common.FatalError("idFile_InZip::Read: error whilest reading from %s", name);
             }
 
@@ -1331,13 +1326,6 @@ public class File_h {
 
         @Override
         public int Tell() {
-//            try {
-//                return (int) z.position();
-//            } catch (IOException ex) {
-//                Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//
-//            return -1;
             return byteCounter;
         }
 
@@ -1379,7 +1367,6 @@ public class File_h {
                 }
                 case FS_SEEK_CUR: {//TODO: negative offsets?
                     buf = ByteBuffer.allocate(ZIP_SEEK_BUF_SIZE);
-                    unzOpenCurrentFile();
                     for (i = 0; i < (offset - ZIP_SEEK_BUF_SIZE); i += ZIP_SEEK_BUF_SIZE) {
                         res = Read(buf, ZIP_SEEK_BUF_SIZE);
                         if (res < ZIP_SEEK_BUF_SIZE) {
@@ -1405,7 +1392,7 @@ public class File_h {
                     inputStream.close();
                 }
             } catch (IOException ex) {
-                //then we're in deep shit.
+                common.FatalError("idFile_InZip::unzOpenCurrentFile: we're in deep shit bub \n");
             }
             inputStream = null; //reload inputStream.
         }

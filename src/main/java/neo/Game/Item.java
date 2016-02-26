@@ -58,21 +58,21 @@ import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
  */
 public class Item {
 
-    static final idEventDef EV_DropToFloor = new idEventDef("<dropToFloor>");
-    static final idEventDef EV_RespawnItem = new idEventDef("respawn");
-    static final idEventDef EV_RespawnFx = new idEventDef("<respawnFx>");
-    static final idEventDef EV_GetPlayerPos = new idEventDef("<getplayerpos>");
+    static final idEventDef EV_DropToFloor   = new idEventDef("<dropToFloor>");
+    static final idEventDef EV_RespawnItem   = new idEventDef("respawn");
+    static final idEventDef EV_RespawnFx     = new idEventDef("<respawnFx>");
+    static final idEventDef EV_GetPlayerPos  = new idEventDef("<getplayerpos>");
     static final idEventDef EV_HideObjective = new idEventDef("<hideobjective>", "e");
-    static final idEventDef EV_CamShot = new idEventDef("<camshot>");
+    static final idEventDef EV_CamShot       = new idEventDef("<camshot>");
 
 
     /*
@@ -86,25 +86,25 @@ public class Item {
 // public	CLASS_PROTOTYPE( idItem );
 
         // enum {
-        public static final int EVENT_PICKUP = idEntity.EVENT_MAXEVENTS;
-        public static final int EVENT_RESPAWN = EVENT_PICKUP + 1;
+        public static final int EVENT_PICKUP    = idEntity.EVENT_MAXEVENTS;
+        public static final int EVENT_RESPAWN   = EVENT_PICKUP + 1;
         public static final int EVENT_RESPAWNFX = EVENT_PICKUP + 2;
         public static final int EVENT_MAXEVENTS = EVENT_PICKUP + 3;
         // };
-        private idVec3 orgOrigin;
-        private boolean spin;
-        private boolean pulse;
-        private boolean canPickUp;
+        private idVec3     orgOrigin;
+        private boolean    spin;
+        private boolean    pulse;
+        private boolean    canPickUp;
         //
         // for item pulse effect
-        private int itemShellHandle;
+        private int        itemShellHandle;
         private idMaterial shellMaterial;
         //
         // used to update the item pulse effect
-        private boolean inView;
-        private int inViewTime;
-        private int lastCycle;
-        private int lastRenderViewTime;
+        private boolean    inView;
+        private int        inViewTime;
+        private int        lastCycle;
+        private int        lastRenderViewTime;
         //
         //
 
@@ -116,7 +116,7 @@ public class Item {
             lastRenderViewTime = -1;
             itemShellHandle = -1;
             shellMaterial = null;
-            orgOrigin.Zero();
+            orgOrigin = new idVec3();
             canPickUp = true;
             fl.networkSync = true;
         }
@@ -140,36 +140,25 @@ public class Item {
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            boolean[] spin = {false}, pulse = {false}, canPickUp = {false}, inView = {false};
-            int[] inViewTime = {0}, lastCycle = {0}, lastRenderViewTime = {0};
-
             savefile.ReadVec3(orgOrigin);
-            savefile.ReadBool(spin);
-            savefile.ReadBool(pulse);
-            savefile.ReadBool(canPickUp);
+            this.spin = savefile.ReadBool();
+            this.spin = savefile.ReadBool();
+            this.canPickUp = savefile.ReadBool();
 
             savefile.ReadMaterial(shellMaterial);
 
-            savefile.ReadBool(inView);
-            savefile.ReadInt(inViewTime);
-            savefile.ReadInt(lastCycle);
-            savefile.ReadInt(lastRenderViewTime);
+            this.inView = savefile.ReadBool();
+            this.inViewTime = savefile.ReadInt();
+            this.lastCycle = savefile.ReadInt();
+            this.lastRenderViewTime = savefile.ReadInt();
 
             itemShellHandle = -1;
-
-            {
-                this.spin = spin[0];
-                this.pulse = pulse[0];
-                this.canPickUp = canPickUp[0];
-
-                this.inViewTime = inViewTime[0];
-                this.lastCycle = lastCycle[0];
-                this.lastRenderViewTime = lastRenderViewTime[0];
-            }
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             String giveTo;
             idEntity ent;
             float[] tsize = {0};
@@ -179,7 +168,7 @@ public class Item {
             }
 
             if (spawnArgs.GetFloat("triggersize", "0", tsize)) {
-                GetPhysics().GetClipModel().LoadModel(new idTraceModel(new idBounds(vec3_origin).Expand(tsize[0])));
+                GetPhysics().GetClipModel().LoadModel(new idTraceModel(new idBounds(getVec3_origin()).Expand(tsize[0])));
                 GetPhysics().GetClipModel().Link(gameLocal.clip);
             }
 
@@ -633,7 +622,7 @@ public class Item {
         //
 
         public idObjective() {
-            playerPos.Zero();
+            playerPos = new idVec3();
         }
 
         @Override
@@ -649,6 +638,8 @@ public class Item {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             Hide();
             PostEventMS(EV_CamShot, 250);
         }
@@ -742,9 +733,6 @@ public class Item {
     public static class idVideoCDItem extends idItem {
 
 //            public 	CLASS_PROTOTYPE( idVideoCDItem );
-        @Override
-        public void Spawn() {
-        }
 
         @Override
         public boolean GiveToPlayer(idPlayer player) {
@@ -788,13 +776,14 @@ public class Item {
 // public 	CLASS_PROTOTYPE( idMoveableItem );
 
         private idPhysics_RigidBody physicsObj;
-        private idClipModel trigger;
-        private idDeclParticle smoke;
-        private int smokeTime;
+        private idClipModel         trigger;
+        private idDeclParticle      smoke;
+        private int                 smokeTime;
         //
         //
 
         public idMoveableItem() {
+            physicsObj = new idPhysics_RigidBody();
             trigger = null;
             smoke = null;
             smokeTime = 0;
@@ -813,21 +802,19 @@ public class Item {
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            int[] smokeTime = {0};
-
             savefile.ReadStaticObject(physicsObj);
             RestorePhysics(physicsObj);
 
             savefile.ReadClipModel(trigger);
 
             savefile.ReadParticle(smoke);
-            savefile.ReadInt(smokeTime);
-
-            this.smokeTime = smokeTime[0];
+            this.smokeTime = savefile.ReadInt();
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idTraceModel trm = new idTraceModel();
             float[] density = {0}, friction = {0}, bouncyness = {0}, tsize = {0};
             idStr clipModelName = new idStr();
@@ -835,7 +822,7 @@ public class Item {
 
             // create a trigger for item pickup
             spawnArgs.GetFloat("triggersize", "16.0", tsize);
-            trigger = new idClipModel(new idTraceModel(new idBounds(vec3_origin).Expand(tsize[0])));
+            trigger = new idClipModel(new idTraceModel(new idBounds(getVec3_origin()).Expand(tsize[0])));
             trigger.Link(gameLocal.clip, this, 0, GetPhysics().GetOrigin(), GetPhysics().GetAxis());
             trigger.SetContents(CONTENTS_TRIGGER);
 
@@ -893,7 +880,7 @@ public class Item {
 
             if ((thinkFlags & TH_PHYSICS) != 0) {
                 // update trigger position
-                trigger.Link(gameLocal.clip, this, 0, GetPhysics().GetOrigin(), mat3_identity);
+                trigger.Link(gameLocal.clip, this, 0, GetPhysics().GetOrigin(), getMat3_identity());
             }
 
             if ((thinkFlags & TH_UPDATEPARTICLES) != 0) {
@@ -979,7 +966,7 @@ public class Item {
 
                     origin.oPluSet(ent.spawnArgs.GetVector(key2, "0 0 0"));
 
-                    item = DropItem(kv.GetValue().toString(), origin, axis, vec3_origin, 0, 0);
+                    item = DropItem(kv.GetValue().toString(), origin, axis, getVec3_origin(), 0, 0);
                     if (list != null && item != null) {
                         list.Append(item);
                     }
@@ -1099,9 +1086,6 @@ public class Item {
     public static class idItemRemover extends idEntity {
 
 //    public 	CLASS_PROTOTYPE( idItemRemover );
-        @Override
-        public void Spawn() {
-        }
 
         public void RemoveItem(idPlayer player) {
             final String remove;
@@ -1137,8 +1121,11 @@ public class Item {
     public static class idObjectiveComplete extends idItemRemover {
 
 // public 	CLASS_PROTOTYPE( idObjectiveComplete );
+        private idVec3 playerPos;
+//
+//
         public idObjectiveComplete() {
-            playerPos.Zero();
+            playerPos = new idVec3();
         }
 
         @Override
@@ -1153,14 +1140,11 @@ public class Item {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             spawnArgs.SetBool("objEnabled", false);
             Hide();
         }
-//
-//
-        private idVec3 playerPos;
-//
-//
 
         private void Event_Trigger(idEntity activator) {
             if (!spawnArgs.GetBool("objEnabled")) {
@@ -1185,7 +1169,7 @@ public class Item {
         private void Event_HideObjective(idEntity e) {
             idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
-                playerPos = player.GetPhysics().GetOrigin();
+                playerPos.oSet(player.GetPhysics().GetOrigin());
                 PostEventMS(EV_HideObjective, 100, player);
             }
         }

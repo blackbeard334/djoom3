@@ -271,7 +271,7 @@ public class DemoFile {
             int read = compressor.Read(buffer, len);
             if (read == 0 && len >= 4) {
 //                *(demoSystem_t *)buffer = DS_FINISHED;
-                buffer.put(WRAP(DS_FINISHED));
+                buffer.putInt(DS_FINISHED.ordinal());
             }
             return read;
         }

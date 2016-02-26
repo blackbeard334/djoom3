@@ -10,15 +10,24 @@ import neo.idlib.math.Vector.idVec2;
 /**
  * 1x1 is too complex, so we'll skip to 2x2.
  */
+//===============================================================
+//
+//	idMat2 - 2x2 matrix
+//
+//===============================================================
 public class idMat2 {
-    //===============================================================
-    //
-    //	idMat2 - 2x2 matrix
-    //
-    //===============================================================
 
-    public static final idMat2 mat2_zero = new idMat2(new idVec2(0, 0), new idVec2(0, 0));
-    public static final idMat2 mat2_identity = new idMat2(new idVec2(1, 0), new idVec2(0, 1));
+    private static final idMat2 mat2_zero = new idMat2(new idVec2(0, 0), new idVec2(0, 0));
+    private static final idMat2 mat2_identity = new idMat2(new idVec2(1, 0), new idVec2(0, 1));
+
+    public static idMat2 getMat2_zero() {
+        return new idMat2(mat2_zero);
+    }
+
+    public static idMat2 getMat2_identity() {
+        return new idMat2(mat2_identity);
+    }   
+    
 
     private final idVec2[] mat = {new idVec2(), new idVec2()};
 
@@ -43,6 +52,10 @@ public class idMat2 {
 //	memcpy( mat, src, 2 * 2 * sizeof( float ) );
         mat[0] = new idVec2(src[0][0], src[0][1]);
         mat[1] = new idVec2(src[1][0], src[1][1]);
+    }
+
+    public idMat2(final idMat2 m){
+        this(m.mat[0], m.mat[1]);
     }
 
 //public	const idVec2 &	operator[]( int index ) const;
@@ -188,8 +201,8 @@ public class idMat2 {
     }
 
     public void Identity() {
-        this.mat[0] = mat2_identity.mat[0];
-        this.mat[1] = mat2_identity.mat[1];
+        this.mat[0] = getMat2_identity().mat[0];
+        this.mat[1] = getMat2_identity().mat[1];
     }
 
     public boolean IsIdentity() {
@@ -197,7 +210,7 @@ public class idMat2 {
     }
 
     public boolean IsIdentity(final float epsilon) {
-        return Compare(mat2_identity, epsilon);
+        return Compare(getMat2_identity(), epsilon);
     }
 
     public boolean IsSymmetric() {

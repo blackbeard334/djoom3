@@ -3,6 +3,7 @@ package neo.Game.AI;
 import static java.lang.Math.abs;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import java.nio.IntBuffer;
 import static neo.Game.AI.AAS.PATHTYPE_BARRIERJUMP;
 import static neo.Game.AI.AAS.PATHTYPE_JUMP;
 import static neo.Game.AI.AAS.PATHTYPE_WALK;
@@ -42,7 +43,6 @@ import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
 import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Player.idPlayer;
-import neo.TempDump.IntArrPtr;
 import static neo.TempDump.NOT;
 import static neo.Tools.Compilers.AAS.AASFile.AREACONTENTS_CLUSTERPORTAL;
 import static neo.Tools.Compilers.AAS.AASFile.AREACONTENTS_OBSTACLE;
@@ -96,9 +96,9 @@ import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -248,7 +248,7 @@ public class AAS_local {
         @Override
         public idVec3 AreaCenter(int areaNum) {
             if (NOT(file)) {
-                return vec3_origin;
+                return getVec3_origin();
             }
             return file.GetArea(areaNum).center;
         }
@@ -1415,10 +1415,10 @@ public class AAS_local {
                     }
                     reach.number = (byte) i;
                     reach.disableCount = 0;
-                    reach.areaTravelTimes = new IntArrPtr(areaTravelTimes, bytePtr);
+                    reach.areaTravelTimes = ((IntBuffer) IntBuffer.wrap(areaTravelTimes).position(bytePtr)).slice();
                     for (j = 0, rev_reach = file.GetArea(n).rev_reach; rev_reach != null; rev_reach = rev_reach.rev_next, j++) {
                         t = AreaTravelTime(n, reach.start, rev_reach.end);
-                        reach.areaTravelTimes.oSet(j, t);
+                        reach.areaTravelTimes.put(j, t);
                         if (t > maxt) {
                             maxt = t;
                         }
@@ -1454,7 +1454,7 @@ public class AAS_local {
 //	bytePtr = ((byte *)areaCacheIndex) + file.GetNumClusters() * sizeof( idRoutingCache ** );
             bytePtr = file.GetNumClusters();
             for (i = 0; i < file.GetNumClusters(); i++) {
-                areaCacheIndex[i] = areaCacheIndex[bytePtr];
+                areaCacheIndex[i] = new idRoutingCache[bytePtr];
                 bytePtr += file.GetCluster(i).numReachableAreas /* sizeof( idRoutingCache * )*/;
             }
 
@@ -1665,7 +1665,7 @@ public class AAS_local {
             // initialize first update
             curUpdate = areaUpdate[clusterAreaNum];
             curUpdate.areaNum = areaCache.areaNum;
-            curUpdate.areaTravelTimes = new IntArrPtr(startAreaTravelTimes, 0);
+            curUpdate.areaTravelTimes = IntBuffer.wrap(startAreaTravelTimes);
             curUpdate.tmpTravelTime = areaCache.startTravelTime;
             curUpdate.next = null;
             curUpdate.prev = null;
@@ -1718,7 +1718,7 @@ public class AAS_local {
 
                     // time already travelled plus the traveltime through the current area
                     // plus the travel time of the reachability towards the next area
-                    t = curUpdate.tmpTravelTime + curUpdate.areaTravelTimes.oGet(i) + reach.travelTime;
+                    t = curUpdate.tmpTravelTime + curUpdate.areaTravelTimes.get(i) + reach.travelTime;
 
                     if (0 == areaCache.travelTimes[clusterAreaNum] || t < areaCache.travelTimes[clusterAreaNum]) {
 
@@ -2235,7 +2235,7 @@ public class AAS_local {
             numEdges = face.numEdges;
             firstEdge = face.firstEdge;
 
-            mid = vec3_origin;
+            mid = getVec3_origin();
             for (i = 0; i < numEdges; i++) {
                 DrawEdge(abs(file.GetEdgeIndex(firstEdge + i)), (face.flags & FACE_FLOOR) != 0);
                 j = file.GetEdgeIndex(firstEdge + i);
@@ -2300,7 +2300,7 @@ public class AAS_local {
                 idReachability[] reach = {null};
 
                 RouteToGoalArea(areaNum, org, aas_goalArea.GetInteger(), TFL_WALK | TFL_AIR, travelTime, reach);
-                gameLocal.Printf("\rtt = %4d", travelTime);
+                gameLocal.Printf("\rtt = %4d", travelTime[0]);
                 if (reach[0] != null) {
                     gameLocal.Printf(" to area %4d", reach[0].toAreaNum);
                     DrawArea(reach[0].toAreaNum);

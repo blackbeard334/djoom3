@@ -43,8 +43,8 @@ import static neo.idlib.math.Plane.SIDE_CROSS;
 import static neo.idlib.math.Plane.SIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_ON;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -348,7 +348,7 @@ public class BrushBSP {
             idPlane plane;
 
             n = 0;
-            center = vec3_origin;
+            center = getVec3_origin();
             for (p = portals; p != null; p = p.next[s]) {
                 s = (p.nodes[1] == this) ? 1 : 0;
                 center.oPluSet(p.winding.GetCenter());
@@ -1215,7 +1215,7 @@ public class BrushBSP {
 
             numSplits++;
 
-            normal = vec3_origin;
+            normal = getVec3_origin();
             normal.oSet(axis, 1.0f);
             node.plane.SetNormal(normal);
             node.plane.SetDist(dist);
@@ -1310,7 +1310,7 @@ public class BrushBSP {
                 for (j = 0; j < 2; j++) {
 
                     p = new idBrushBSPPortal();
-                    normal = vec3_origin;
+                    normal = getVec3_origin();
                     normal.oSet(i, j != 0 ? -1 : 1);
                     p.plane.SetNormal(normal);
                     p.plane.SetDist(j != 0 ? -bounds.oGet(j, i) : bounds.oGet(j, i));

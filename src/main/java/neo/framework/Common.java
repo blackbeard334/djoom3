@@ -683,7 +683,7 @@ public class Common {
                     int nowTime = Sys_Milliseconds();
                     int com_frameMsec = nowTime - lastTime;
                     lastTime = nowTime;
-                    Printf("frame:%d all:%3i gfr:%3i rf:%3i bk:%3i\n", com_frameNumber, com_frameMsec, time_gameFrame, time_frontend, time_backend);
+                    Printf("frame:%d all:%3d gfr:%3d rf:%3d bk:%3d\n", com_frameNumber, com_frameMsec, time_gameFrame, time_frontend, time_backend);
                     time_gameFrame = 0;
                     time_gameDraw = 0;
                 }
@@ -2075,7 +2075,7 @@ public class Common {
                         break;
                 }
 
-            // we update com_ticNumber after all the background tasks
+                // we update com_ticNumber after all the background tasks
                 // have completed their work for this tic
                 com_ticNumber++;
 //                    System.out.println(com_ticNumber);

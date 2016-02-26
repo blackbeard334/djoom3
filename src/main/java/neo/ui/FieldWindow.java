@@ -95,50 +95,5 @@ public class FieldWindow {
                 paintOffset++;
             }
         }
-
-        @Override
-        public void GainFocus() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void LoseFocus() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void GainCapture() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void Sized() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void Moved() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void SetBuddy(idWindow buddy) {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void HandleBuddyUpdate(idWindow buddy) {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void HasAction() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void HasScripts() {
-            throw new UnsupportedOperationException("Not supported.");
-        }
     };
 }

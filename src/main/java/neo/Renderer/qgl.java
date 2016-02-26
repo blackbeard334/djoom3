@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBImaging;
 import org.lwjgl.opengl.ARBProgram;
 import org.lwjgl.opengl.ARBTextureCompression;
+import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.EXTDepthBoundsTest;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -182,7 +183,7 @@ public class qgl {
     }
 
     public static void qglVertexAttribPointerARB(int index, int size, int type, boolean normalized, int stride, long pointer) {DEBUG_printName("glVertexAttribPointerARB");
-        GL20.glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+        ARBVertexShader.glVertexAttribPointerARB(index, size, type, normalized, stride, pointer);
     }
 
     public static /*PFNGLENABLEVERTEXATTRIBARRAYARBPROC*/    void qglEnableVertexAttribArrayARB(int index) {DEBUG_printName("glEnableVertexAttribArrayARB");
@@ -1596,7 +1597,7 @@ public class qgl {
     }
 
     public static void qglTexGenfv(int coord, int pName, float[] params) {DEBUG_printName("glTexGenfv");
-        throw new UnsupportedOperationException("Not supported yet.");
+        GL11.glTexGen(coord, pName, wrap(params));
     }
 
     public static void qglTexGeni(int coord, int pName, int param) {DEBUG_printName("glTexGeni");

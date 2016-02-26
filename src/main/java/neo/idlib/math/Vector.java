@@ -2,6 +2,7 @@ package neo.idlib.math;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import neo.TempDump.SERiAL;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Angles.idAngles;
@@ -19,19 +20,55 @@ import static neo.idlib.math.Simd.SIMDProcessor;
  */
 public class Vector {
 
-    public static final idVec2 vec2_origin   = new idVec2(0.0f, 0.0f);
-    public static final idVec3 vec3_origin   = new idVec3(0.0f, 0.0f, 0.0f);
-    public static final idVec3 vec3_zero     = vec3_origin;
-    public static final idVec4 vec4_origin   = new idVec4(0.0f, 0.0f, 0.0f, 0.0f);
-    public static final idVec4 vec4_zero     = vec4_origin;
-    public static final idVec5 vec5_origin   = new idVec5(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-    public static final idVec6 vec6_origin   = new idVec6(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-    public static final idVec6 vec6_zero     = vec6_origin;
-    public static final idVec6 vec6_infinity = new idVec6(idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY);
+    private static final idVec2 vec2_origin   = new idVec2(0.0f, 0.0f);
+    private static final idVec3 vec3_origin   = new idVec3(0.0f, 0.0f, 0.0f);
+    private static final idVec3 vec3_zero     = vec3_origin;
+    private static final idVec4 vec4_origin   = new idVec4(0.0f, 0.0f, 0.0f, 0.0f);
+    private static final idVec4 vec4_zero     = vec4_origin;
+    private static final idVec5 vec5_origin   = new idVec5(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    private static final idVec6 vec6_origin   = new idVec6(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    private static final idVec6 vec6_zero     = vec6_origin;
+    private static final idVec6 vec6_infinity = new idVec6(idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY, idMath.INFINITY);
 
     @Deprecated
     public static float RAD2DEG(double a) {
         return (float) (a * idMath.M_RAD2DEG);
+    }
+
+    public static idVec2 getVec2_origin() {
+        return new idVec2(vec2_origin);
+    }
+
+    public static idVec3 getVec3_origin() {
+        return new idVec3(vec3_origin);
+    }
+
+    public static idVec3 getVec3_zero() {
+        return new idVec3(vec3_zero);
+    }
+
+    public static idVec4 getVec4_origin() {
+        return new idVec4(vec4_origin);
+    }
+
+    public static idVec4 getVec4_zero() {
+        return new idVec4(vec4_zero);
+    }
+
+    public static idVec5 getVec5_origin() {
+        return new idVec5(vec5_origin);
+    }
+
+    public static idVec6 getVec6_origin() {
+        return new idVec6(vec6_origin.p);
+    }
+
+    public static idVec6 getVec6_zero() {
+        return new idVec6(vec6_zero.p);
+    }
+
+    public static idVec6 getVec6_infinity() {
+        return new idVec6(vec6_infinity.p);
     }
 
     public interface idVec<type> {
@@ -60,7 +97,7 @@ public class Vector {
     public static class idVec2 implements idVec<idVec2>, SERiAL {
 
         public static final transient int SIZE = 2 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
         public float y;
@@ -323,6 +360,13 @@ public class Vector {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        public static idVec2[] generateArray(final int length) {
+            return Stream.
+                    generate(idVec2::new).
+                    limit(length).
+                    toArray(idVec2[]::new);
+        }
     }
 
     //===============================================================
@@ -333,7 +377,7 @@ public class Vector {
     public static class idVec3 implements idVec<idVec3>, SERiAL {
 
         public static final transient int SIZE = 3 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
         public float y;
@@ -630,14 +674,14 @@ public class Vector {
         }
 
         public float Normalize() {// returns length
-            float sqrLength, invLength;
+            double sqrLength, invLength;
 
             sqrLength = x * x + y * y + z * z;
-            invLength = idMath.InvSqrt(sqrLength);
+            invLength = idMath.InvSqrt((float) sqrLength);
             x *= invLength;
             y *= invLength;
             z *= invLength;
-            return invLength * sqrLength;
+            return (float) (invLength * sqrLength);
         }
 
         public float NormalizeFast() {// returns length
@@ -1020,7 +1064,7 @@ public class Vector {
             return value;
         }
 
-        public void oPluSet(final int i, final float value) {
+        public void oPluSet(final int i, final double value) {
             if (i == 1) {
                 y += value;
             } else if (i == 2) {
@@ -1052,17 +1096,19 @@ public class Vector {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return ByteBuffer.allocate(idVec3.BYTES);
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            x = buffer.getFloat();
+            y = buffer.getFloat();
+            z = buffer.getFloat();
         }
 
         @Override
         public ByteBuffer Write() {
-            ByteBuffer buffer = ByteBuffer.allocate(SIZE_B);
+            ByteBuffer buffer = ByteBuffer.allocate(BYTES);
 
             buffer.putFloat(x).putFloat(y).putFloat(z).flip();
 
@@ -1089,6 +1135,13 @@ public class Vector {
 
             return (this.x == other.x) && (this.y == other.y) && (this.z == other.z);
         }
+
+        public static idVec3[] generateArray(final int length) {
+            return Stream.
+                    generate(idVec3::new).
+                    limit(length).
+                    toArray(idVec3[]::new);
+        }
     }
 
     //===============================================================
@@ -1099,7 +1152,7 @@ public class Vector {
     public static class idVec4 implements idVec<idVec4>, SERiAL {
 
         public static final transient int SIZE = 4 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
         public float y;
@@ -1389,22 +1442,36 @@ public class Vector {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return ByteBuffer.allocate(idVec4.BYTES);
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            x = buffer.getFloat();
+            y = buffer.getFloat();
+            z = buffer.getFloat();
+            w = buffer.getFloat();
         }
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            ByteBuffer buffer = AllocBuffer();
+
+            buffer.putFloat(x).putFloat(y).putFloat(z).putFloat(w).flip();
+
+            return buffer;
         }
 
         @Override
         public idVec4 oDivide(float a) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        public static idVec4[] generateArray(final int length) {
+            return Stream.
+                    generate(idVec4::new).
+                    limit(length).
+                    toArray(idVec4[]::new);
         }
     }
 
@@ -1416,7 +1483,7 @@ public class Vector {
     public static class idVec5 implements idVec<idVec5>, SERiAL {
 
         public static final transient int SIZE = 5 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
         public float y;
@@ -1582,6 +1649,13 @@ public class Vector {
         public idVec5 oDivide(float a) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        public static idVec5[] generateArray(final int length) {
+            return Stream.
+                    generate(idVec5::new).
+                    limit(length).
+                    toArray(idVec5[]::new);
+        }
     }
 
     //===============================================================
@@ -1592,7 +1666,7 @@ public class Vector {
     public static class idVec6 implements idVec<idVec6>, SERiAL {
 
         public static final transient int SIZE = 6 * Float.SIZE;
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float p[] = new float[6];
         //
@@ -1603,7 +1677,7 @@ public class Vector {
 
         public idVec6(final float[] a) {
 //	memcpy( p, a, 6 * sizeof( float ) );
-            p = a;
+            System.arraycopy(a, 0, p, 0, 6);
         }
 
         public idVec6(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {
@@ -1740,6 +1814,8 @@ public class Vector {
             return 6;
         }
 
+        /** @deprecated returns readonly vector */
+        @Deprecated
         public final idVec3 SubVec3(int index) {
 //	return *reinterpret_cast<const idVec3 *>(p + index * 3);
             return new idVec3(p[index *= 3], p[index + 1], p[index + 2]);
@@ -1808,6 +1884,38 @@ public class Vector {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
+        public void SubVec3_oSet(final int i, final idVec3 v) {
+            System.arraycopy(v.ToFloatPtr(), 0, p, i * 3, 3);
+        }
+
+        public idVec3 SubVec3_oPluSet(final int i, final idVec3 v) {
+            final int off = i * 3;
+            p[off + 0] += v.x;
+            p[off + 1] += v.y;
+            p[off + 2] += v.z;
+
+            return new idVec3(p, off);
+        }
+
+        public idVec3 SubVec3_oMinSet(final int i, final idVec3 v) {
+            return SubVec3_oPluSet(i, v.oNegative());
+        }
+
+        public void SubVec3_oMulSet(final int i, final float v) {
+            final int off = i * 3;
+            p[off + 0] *= v;
+            p[off + 1] *= v;
+            p[off + 2] *= v;
+        }
+
+        public float SubVec3_Normalize(final int i) {
+            idVec3 v = this.SubVec3(i);
+            final float normalize = v.Normalize();
+
+            this.SubVec3_oSet(i, v);
+
+            return normalize;
+        }
     }
 
     //===============================================================
@@ -1824,12 +1932,13 @@ public class Vector {
 
         static final int VECX_MAX_TEMP = 1024;
 
-        private int size;					// size of the vector
-        private int alloced;                                    // if -1 p points to data set with SetData
-        public float[] p;					// memory the vector is stored
-        private float[] temp = new float[VECX_MAX_TEMP + 4];	// used to store intermediate results
-        private static float[] tempPtr;				// pointer to 16 byte aligned temporary memory
-        private static int tempIndex;				// index into memory pool, wraps around
+        private int     size;                    // size of the vector
+        private int     alloced;                 // if -1 p points to data set with SetData
+        public  float[] p;                       // memory the vector is stored
+
+        private static float[] temp    = new float[VECX_MAX_TEMP + 4];    // used to store intermediate results
+        private static float[] tempPtr = temp;                            // pointer to 16 byte aligned temporary memory
+        private static int tempIndex;                                     // index into memory pool, wraps around
         //
         //
 

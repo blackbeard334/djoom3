@@ -67,11 +67,11 @@ import neo.idlib.math.Curve.idCurve_Spline;
 import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -123,13 +123,15 @@ public class Moveable {
         //
 
         public idMoveable() {
+            physicsObj = new idPhysics_RigidBody();
+            brokenModel = new idStr();
             minDamageVelocity = 100.0f;
             maxDamageVelocity = 200.0f;
             nextCollideFxTime = 0;
             nextDamageTime = 0;
             nextSoundTime = 0;
             initialSpline = null;
-            initialSplineDir = vec3_zero;
+            initialSplineDir = getVec3_zero();
             explode = false;
             unbindOnDeath = false;
             allowStep = false;
@@ -139,6 +141,8 @@ public class Moveable {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             idTraceModel trm = new idTraceModel();
             float[] density = {0}, friction = {0}, bouncyness = {0}, mass = {0};
             int clipShrink;
@@ -497,11 +501,6 @@ public class Moveable {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-        @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
         /**
          *
          */
@@ -636,9 +635,9 @@ public class Moveable {
                             } else {
                                 additionalRotation -= angle;
                             }
-                            dir = vec3_origin;
+                            dir = getVec3_origin();
                             dir.oSet(barrelAxis, 1.0f);
-                            additionalAxis = new idRotation(vec3_origin, dir, additionalRotation).ToMat3();
+                            additionalAxis = new idRotation(getVec3_origin(), dir, additionalRotation).ToMat3();
                         }
                     }
                 }
@@ -664,7 +663,7 @@ public class Moveable {
 
         @Override
         public boolean GetPhysicsToVisualTransform(idVec3 origin, idMat3 axis) {
-            origin.oSet(vec3_origin);
+            origin.oSet(getVec3_origin());
             axis.oSet(additionalAxis);
             return true;
         }
@@ -805,7 +804,7 @@ public class Moveable {
                         pct = 1.0f;
                     }
                     light.origin = physicsObj.GetAbsBounds().GetCenter();
-                    light.axis = mat3_identity;
+                    light.axis = getMat3_identity();
                     light.shaderParms[ SHADERPARM_RED] = pct;
                     light.shaderParms[ SHADERPARM_GREEN] = pct;
                     light.shaderParms[ SHADERPARM_BLUE] = pct;
@@ -826,8 +825,8 @@ public class Moveable {
             }
 
             if (particleModelDefHandle >= 0) {
-                particleRenderEntity.origin = physicsObj.GetAbsBounds().GetCenter();
-                particleRenderEntity.axis = mat3_identity;
+                particleRenderEntity.origin.oSet(physicsObj.GetAbsBounds().GetCenter());
+                particleRenderEntity.axis.oSet(getMat3_identity());
                 gameRenderWorld.UpdateEntityDef(particleModelDefHandle, particleRenderEntity);
             }
         }
@@ -977,8 +976,8 @@ public class Moveable {
                 particleRenderEntity = new renderEntity_s();//TODO:remove memset0 function from whatever fucking class got it!!!
                 final idDeclModelDef modelDef = (idDeclModelDef) declManager.FindType(DECL_MODELDEF, name);
                 if (modelDef != null) {
-                    particleRenderEntity.origin = physicsObj.GetAbsBounds().GetCenter();
-                    particleRenderEntity.axis = mat3_identity;
+                    particleRenderEntity.origin.oSet(physicsObj.GetAbsBounds().GetCenter());
+                    particleRenderEntity.axis.oSet(getMat3_identity());
                     particleRenderEntity.hModel = modelDef.ModelHandle();
                     float rgb = (burn) ? 0.0f : 1.0f;
                     particleRenderEntity.shaderParms[ SHADERPARM_RED] = rgb;
@@ -1005,7 +1004,7 @@ public class Moveable {
             }
 //	memset( &light, 0, sizeof ( light ) );
             light = new renderLight_s();
-            light.axis = mat3_identity;
+            light.axis = getMat3_identity();
             light.lightRadius.x = spawnArgs.GetFloat("light_radius");
             light.lightRadius.y = light.lightRadius.z = light.lightRadius.x;
             light.origin = physicsObj.GetOrigin();
@@ -1050,7 +1049,7 @@ public class Moveable {
 
         @Override
         public void Event_Activate(idEntity activator) {
-            Killed(activator, activator, 0, vec3_origin, 0);
+            Killed(activator, activator, 0, getVec3_origin(), 0);
         }
 
         private void Event_Respawn() {
@@ -1091,7 +1090,7 @@ public class Moveable {
         private void Event_Explode() {
             if (state == NORMAL || state == BURNING) {
                 state = BURNEXPIRED;
-                Killed(null, null, 0, vec3_zero, 0);
+                Killed(null, null, 0, getVec3_zero(), 0);
             }
         }
 

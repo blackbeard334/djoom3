@@ -14,8 +14,8 @@ import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Simd;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -30,13 +30,13 @@ public class Bounds {
      ===============================================================================
      */
     public static class idBounds implements SERiAL {
+        public static final int BYTES = idVec3.BYTES * 2;
 
-        private idVec3[] b = new idVec3[2];
+        private idVec3[] b = {new idVec3(), new idVec3()};
         //
         //
 
         public idBounds() {
-            this.b = new idVec3[]{new idVec3(), new idVec3()};
         }
 
         public idBounds(final idVec3 mins, final idVec3 maxs) {
@@ -49,8 +49,8 @@ public class Bounds {
         }
 
         public idBounds(final idVec3 point) {
-            b[0] = point;
-            b[1] = point;
+            b[0].oSet(point);
+            b[1].oSet(point);
         }
 
         public void set(final float v0, final float v1, final float v2, final float v3, final float v4, final float v5) {
@@ -59,8 +59,8 @@ public class Bounds {
         }
 
         public final void oSet(final idBounds bounds) {
-            this.b[0] = bounds.b[0];
-            this.b[1] = bounds.b[1];
+            this.b[0].oSet(bounds.b[0]);
+            this.b[1].oSet(bounds.b[1]);
         }
 //
 //public	final idVec3 	operator[]( final int index ) ;
@@ -100,13 +100,13 @@ public class Bounds {
         // returns rotated bounds
         public idBounds oMultiply(final idMat3 r) {
             idBounds bounds = new idBounds();
-            bounds.FromTransformedBounds(this, vec3_origin, r);
+            bounds.FromTransformedBounds(this, getVec3_origin(), r);
             return bounds;
         }
 
         // rotate the bounds
         public idBounds oMulSet(final idMat3 r) {
-            this.FromTransformedBounds(this, vec3_origin, r);
+            this.FromTransformedBounds(this, getVec3_origin(), r);
             return this;
         }
 
@@ -376,13 +376,13 @@ public class Bounds {
         // return rotated bounds
         public idBounds Rotate(final idMat3 rotation) {
             idBounds bounds = new idBounds();
-            bounds.FromTransformedBounds(this, vec3_origin, rotation);
+            bounds.FromTransformedBounds(this, getVec3_origin(), rotation);
             return bounds;
         }
 
         // rotate this bounds
         public idBounds RotateSelf(final idMat3 rotation) {
-            FromTransformedBounds(this, vec3_origin, rotation);
+            FromTransformedBounds(this, getVec3_origin(), rotation);
             return this;
         }
 
@@ -731,19 +731,22 @@ public class Bounds {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            return ByteBuffer.allocate(idBounds.BYTES);
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            b[0].Read(buffer);
+            b[1].Read(buffer);
         }
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
+            ByteBuffer buffer = AllocBuffer();
+            buffer.put(b[0].Write()).put(b[1].Write()).flip();
 
+            return buffer;
+        }
     };
 
     /*

@@ -2,7 +2,8 @@ package neo.framework;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
+
 import neo.Game.Game.escReply_t;
 import static neo.Game.Game.escReply_t.ESC_GUI;
 import static neo.Game.Game.escReply_t.ESC_IGNORE;
@@ -16,8 +17,12 @@ import static neo.Renderer.RenderSystem_init.R_ScreenshotFilename;
 import neo.Renderer.RenderWorld.renderView_s;
 import static neo.Sound.snd_system.soundSystem;
 import neo.Sound.sound.idSoundWorld;
+
+import static neo.TempDump.*;
 import static neo.TempDump.NOT;
 import static neo.TempDump.SERIAL_SIZE;
+
+import neo.TempDump;
 import neo.TempDump.SERiAL;
 import static neo.TempDump.atobb;
 import static neo.TempDump.ctos;
@@ -87,8 +92,7 @@ import static neo.framework.FileSystem_h.fileSystem;
 import neo.framework.FileSystem_h.idFileList;
 import neo.framework.FileSystem_h.idModList;
 import neo.framework.File_h.idFile;
-import static neo.framework.File_h.idFile.UNWRAP;
-import static neo.framework.File_h.idFile.WRAP;
+
 import static neo.framework.KeyInput.K_ESCAPE;
 import static neo.framework.KeyInput.K_F1;
 import static neo.framework.KeyInput.K_F12;
@@ -189,7 +193,7 @@ import static neo.sys.win_main.Sys_Sleep;
 import static neo.sys.win_main.Sys_WaitForEvent;
 import static neo.sys.win_shared.Sys_GetDriveFreeSpace;
 import static neo.sys.win_shared.Sys_Milliseconds;
-import static neo.sys.win_shared.Sys_SetPhysicalWorkMemory;
+
 import neo.ui.ListGUI.idListGUI;
 import neo.ui.UserInterface.idUserInterface;
 import static neo.ui.UserInterface.uiManager;
@@ -201,26 +205,24 @@ public class Session_local {
 
     static class logCmd_t implements SERiAL {
 
-        private static final transient int SIZE = SERIAL_SIZE(new logCmd_t());
+        private static final transient int BYTES = usercmd_t.BYTES + Integer.BYTES;
 
         usercmd_t cmd;
         int consistencyHash;
 
         @Override
         public ByteBuffer AllocBuffer() {
-            return ByteBuffer.allocate(SIZE);
+            return ByteBuffer.allocate(BYTES);
         }
 
         @Override
         public void Read(final ByteBuffer buffer) {
-            logCmd_t c = (logCmd_t) UNWRAP(buffer);
-            this.cmd = c.cmd;
-            this.consistencyHash = c.consistencyHash;
+            throw new TODO_Exception();
         }
 
         @Override
         public ByteBuffer Write() {
-            return WRAP(this);
+            throw new TODO_Exception();
         }
     };
 
@@ -307,9 +309,9 @@ public class Session_local {
         public int     numClients;                      // from serverInfo
         //
         public int     logIndex;
-        public logCmd_t[] loggedUsercmds = new logCmd_t[MAX_LOGGED_USERCMDS];
+        public logCmd_t[] loggedUsercmds;
         public int statIndex;
-        public logStats_t[] loggedStats = new logStats_t[MAX_LOGGED_STATS];
+        public logStats_t[] loggedStats;
         public int     lastSaveIndex;
         // each game tic, numClients usercmds will be added, until full
         //
@@ -404,6 +406,8 @@ public class Session_local {
                     = guiTest = guiMsg = guiMsgRestore = guiTakeNotes = null;
 
             menuSoundWorld = null;
+            loggedUsercmds = Stream.generate(logCmd_t::new).limit(MAX_LOGGED_USERCMDS).toArray(logCmd_t[]::new);
+            loggedStats = Stream.generate(logStats_t::new).limit(MAX_LOGGED_STATS).toArray(logStats_t[]::new);
 
             Clear();
         }
@@ -1663,7 +1667,6 @@ public class Session_local {
                 return 0;
             }
         }
-//
 
         /*
          ===============
@@ -1684,7 +1687,6 @@ public class Session_local {
 
             SetGUI(null, null);
         }
-//
 
         public void StartNewGame(final String mapName) {
             StartNewGame(mapName, false);
@@ -1863,7 +1865,7 @@ public class Session_local {
             int i;
             idStr inFileName;
 
-            inFileName = saveFileName;
+            inFileName = new idStr(saveFileName);
             inFileName.RemoveColors();
             inFileName.StripFileExtension();
 
@@ -2005,143 +2007,144 @@ public class Session_local {
         }
 
         public boolean SaveGame(final String saveName, boolean autosave /*= false*/) throws idException {
-            if (ID_DEDICATED) {
-                common.Printf("Dedicated servers cannot save games.\n");
-                return false;
-            } else {
-                int i;
-                idStr gameFile, previewFile, descriptionFile;
-                String mapName;
-
-                if (!mapSpawned) {
-                    common.Printf("Not playing a game.\n");
-                    return false;
-                }
-
-                if (IsMultiplayer()) {
-                    common.Printf("Can't save during net play.\n");
-                    return false;
-                }
-
-                if (game.GetPersistentPlayerInfo(0).GetInt("health") <= 0) {
-                    MessageBox(MSG_OK, common.GetLanguageDict().GetString("#str_04311"), common.GetLanguageDict().GetString("#str_04312"), true);
-                    common.Printf("You must be alive to save the game\n");
-                    return false;
-                }
-
-                if (Sys_GetDriveFreeSpace(cvarSystem.GetCVarString("fs_savepath")) < 25) {
-                    MessageBox(MSG_OK, common.GetLanguageDict().GetString("#str_04313"), common.GetLanguageDict().GetString("#str_04314"), true);
-                    common.Printf("Not enough drive space to save the game\n");
-                    return false;
-                }
-
-                idSoundWorld pauseWorld = soundSystem.GetPlayingSoundWorld();
-                if (pauseWorld != null) {
-                    pauseWorld.Pause();
-                    soundSystem.SetPlayingSoundWorld(null);
-                }
-
-                // setup up filenames and paths
-                gameFile = new idStr(saveName);
-                ScrubSaveGameFileName(gameFile);
-
-                gameFile = new idStr("savegames/" + gameFile);
-                gameFile.SetFileExtension(".save");
-
-                previewFile = gameFile;
-                previewFile.SetFileExtension(".tga");
-
-                descriptionFile = gameFile;
-                descriptionFile.SetFileExtension(".txt");
-
-                // Open savegame file
-                idFile fileOut = fileSystem.OpenFileWrite(gameFile.toString());
-                if (fileOut == null) {
-                    common.Warning("Failed to open save file '%s'\n", gameFile.toString());
-                    if (pauseWorld != null) {
-                        soundSystem.SetPlayingSoundWorld(pauseWorld);
-                        pauseWorld.UnPause();
-                    }
-                    return false;
-                }
-
-                // Write SaveGame Header: 
-                // Game Name / Version / Map Name / Persistant Player Info
-                // game
-                final String gamename = GAME_NAME;
-                fileOut.WriteString(gamename);
-
-                // version
-                fileOut.WriteInt(SAVEGAME_VERSION);
-
-                // map
-                mapName = mapSpawnData.serverInfo.GetString("si_map");
-                fileOut.WriteString(mapName);
-
-                // persistent player info
-                for (i = 0; i < MAX_ASYNC_CLIENTS; i++) {
-                    mapSpawnData.persistentPlayerInfo[i] = game.GetPersistentPlayerInfo(i);
-                    mapSpawnData.persistentPlayerInfo[i].WriteToFileHandle(fileOut);
-                }
-
-                // let the game save its state
-                game.SaveGame(fileOut);
-
-                // close the sava game file
-                fileSystem.CloseFile(fileOut);
-
-                // Write screenshot
-                if (!autosave) {
-                    renderSystem.CropRenderSize(320, 240, false);
-                    game.Draw(0);
-                    renderSystem.CaptureRenderToFile(previewFile.toString(), true);
-                    renderSystem.UnCrop();
-                }
-
-                // Write description, which is just a text file with
-                // the unclean save name on line 1, map name on line 2, screenshot on line 3
-                idFile fileDesc = fileSystem.OpenFileWrite(descriptionFile.toString());
-                if (fileDesc == null) {
-                    common.Warning("Failed to open description file '%s'\n", descriptionFile);
-                    if (pauseWorld != null) {
-                        soundSystem.SetPlayingSoundWorld(pauseWorld);
-                        pauseWorld.UnPause();
-                    }
-                    return false;
-                }
-
-                idStr description = new idStr(saveName);
-                description.Replace("\\", "\\\\");
-                description.Replace("\"", "\\\"");
-
-                final idDeclEntityDef mapDef = (idDeclEntityDef) declManager.FindType(DECL_MAPDEF, mapName, false);
-                if (mapDef != null) {
-                    mapName = common.GetLanguageDict().GetString(mapDef.dict.GetString("name", mapName));
-                }
-
-                fileDesc.Printf("\"%s\"\n", description);
-                fileDesc.Printf("\"%s\"\n", mapName);
-
-                if (autosave) {
-                    idStr sshot = new idStr(mapSpawnData.serverInfo.GetString("si_map"));
-                    sshot.StripPath();
-                    sshot.StripFileExtension();
-                    fileDesc.Printf("\"guis/assets/autosave/%s\"\n", sshot.toString());
-                } else {
-                    fileDesc.Printf("\"\"\n");
-                }
-
-                fileSystem.CloseFile(fileDesc);
-
-                if (pauseWorld != null) {
-                    soundSystem.SetPlayingSoundWorld(pauseWorld);
-                    pauseWorld.UnPause();
-                }
-
-                syncNextGameFrame = true;
-
-                return true;
-            }
+            return false;//HACKME::8
+//            if (ID_DEDICATED) {
+//                common.Printf("Dedicated servers cannot save games.\n");
+//                return false;
+//            } else {
+//                int i;
+//                idStr gameFile, previewFile, descriptionFile;
+//                String mapName;
+//
+//                if (!mapSpawned) {
+//                    common.Printf("Not playing a game.\n");
+//                    return false;
+//                }
+//
+//                if (IsMultiplayer()) {
+//                    common.Printf("Can't save during net play.\n");
+//                    return false;
+//                }
+//
+//                if (game.GetPersistentPlayerInfo(0).GetInt("health") <= 0) {
+//                    MessageBox(MSG_OK, common.GetLanguageDict().GetString("#str_04311"), common.GetLanguageDict().GetString("#str_04312"), true);
+//                    common.Printf("You must be alive to save the game\n");
+//                    return false;
+//                }
+//
+//                if (Sys_GetDriveFreeSpace(cvarSystem.GetCVarString("fs_savepath")) < 25) {
+//                    MessageBox(MSG_OK, common.GetLanguageDict().GetString("#str_04313"), common.GetLanguageDict().GetString("#str_04314"), true);
+//                    common.Printf("Not enough drive space to save the game\n");
+//                    return false;
+//                }
+//
+//                idSoundWorld pauseWorld = soundSystem.GetPlayingSoundWorld();
+//                if (pauseWorld != null) {
+//                    pauseWorld.Pause();
+//                    soundSystem.SetPlayingSoundWorld(null);
+//                }
+//
+//                // setup up filenames and paths
+//                gameFile = new idStr(saveName);
+//                ScrubSaveGameFileName(gameFile);
+//
+//                gameFile = new idStr("savegames/" + gameFile);
+//                gameFile.SetFileExtension(".save");
+//
+//                previewFile = new idStr(gameFile);
+//                previewFile.SetFileExtension(".tga");
+//
+//                descriptionFile = new idStr(gameFile);
+//                descriptionFile.SetFileExtension(".txt");
+//
+//                // Open savegame file
+//                idFile fileOut = fileSystem.OpenFileWrite(gameFile.toString());
+//                if (fileOut == null) {
+//                    common.Warning("Failed to open save file '%s'\n", gameFile.toString());
+//                    if (pauseWorld != null) {
+//                        soundSystem.SetPlayingSoundWorld(pauseWorld);
+//                        pauseWorld.UnPause();
+//                    }
+//                    return false;
+//                }
+//
+//                // Write SaveGame Header:
+//                // Game Name / Version / Map Name / Persistant Player Info
+//                // game
+//                final String gamename = GAME_NAME;
+//                fileOut.WriteString(gamename);
+//
+//                // version
+//                fileOut.WriteInt(SAVEGAME_VERSION);
+//
+//                // map
+//                mapName = mapSpawnData.serverInfo.GetString("si_map");
+//                fileOut.WriteString(mapName);
+//
+//                // persistent player info
+//                for (i = 0; i < MAX_ASYNC_CLIENTS; i++) {
+//                    mapSpawnData.persistentPlayerInfo[i] = game.GetPersistentPlayerInfo(i);
+//                    mapSpawnData.persistentPlayerInfo[i].WriteToFileHandle(fileOut);
+//                }
+//
+//                // let the game save its state
+//                game.SaveGame(fileOut);
+//
+//                // close the sava game file
+//                fileSystem.CloseFile(fileOut);
+//
+//                // Write screenshot
+//                if (!autosave) {
+//                    renderSystem.CropRenderSize(320, 240, false);
+//                    game.Draw(0);
+//                    renderSystem.CaptureRenderToFile(previewFile.toString(), true);
+//                    renderSystem.UnCrop();
+//                }
+//
+//                // Write description, which is just a text file with
+//                // the unclean save name on line 1, map name on line 2, screenshot on line 3
+//                idFile fileDesc = fileSystem.OpenFileWrite(descriptionFile.toString());
+//                if (fileDesc == null) {
+//                    common.Warning("Failed to open description file '%s'\n", descriptionFile);
+//                    if (pauseWorld != null) {
+//                        soundSystem.SetPlayingSoundWorld(pauseWorld);
+//                        pauseWorld.UnPause();
+//                    }
+//                    return false;
+//                }
+//
+//                idStr description = new idStr(saveName);
+//                description.Replace("\\", "\\\\");
+//                description.Replace("\"", "\\\"");
+//
+//                final idDeclEntityDef mapDef = (idDeclEntityDef) declManager.FindType(DECL_MAPDEF, mapName, false);
+//                if (mapDef != null) {
+//                    mapName = common.GetLanguageDict().GetString(mapDef.dict.GetString("name", mapName));
+//                }
+//
+//                fileDesc.Printf("\"%s\"\n", description);
+//                fileDesc.Printf("\"%s\"\n", mapName);
+//
+//                if (autosave) {
+//                    idStr sshot = new idStr(mapSpawnData.serverInfo.GetString("si_map"));
+//                    sshot.StripPath();
+//                    sshot.StripFileExtension();
+//                    fileDesc.Printf("\"guis/assets/autosave/%s\"\n", sshot.toString());
+//                } else {
+//                    fileDesc.Printf("\"\"\n");
+//                }
+//
+//                fileSystem.CloseFile(fileDesc);
+//
+//                if (pauseWorld != null) {
+//                    soundSystem.SetPlayingSoundWorld(pauseWorld);
+//                    pauseWorld.UnPause();
+//                }
+//
+//                syncNextGameFrame = true;
+//
+//                return true;
+//            }
         }
 
         public boolean SaveGame(final String saveName) throws idException {
@@ -2370,7 +2373,9 @@ public class Session_local {
                 idFile statsFile = fileSystem.OpenFileWrite(statsName.toString());
                 if (statsFile != null) {
                     statsFile.WriteInt(statIndex);//statsFile->Write( &statIndex, sizeof( statIndex ) );//TODO
-                    statsFile.Write(idFile.WRAP(Arrays.copyOfRange(loggedStats, 0, numClients * statIndex)) /* sizeof(loggedStats[0])*/);
+                    for (int i = 0; i < numClients * statIndex; i++) {
+                        statsFile.Write(loggedStats[i].Write());
+                    }
                     fileSystem.CloseFile(statsFile);
                 }
             }
@@ -2453,12 +2458,16 @@ public class Session_local {
                 mapSpawnData.persistentPlayerInfo[i].WriteToFileHandle(file);
             }
 
-            file.Write(idFile.WRAP(mapSpawnData.mapSpawnUsercmd)/*, sizeof( mapSpawnData.mapSpawnUsercmd )*/);
+            for (usercmd_t t : mapSpawnData.mapSpawnUsercmd) {
+                file.Write(t.Write()/*, sizeof( mapSpawnData.mapSpawnUsercmd )*/);
+            }
 
             if (numClients < 1) {
                 numClients = 1;
             }
-            file.Write(idFile.WRAP(Arrays.copyOfRange(loggedUsercmds, 0, numClients * logIndex)) /* sizeof(loggedUsercmds[0])*/);
+            for (int i = 0; i < numClients * logIndex; i++) {
+                file.Write(loggedUsercmds[i].Write() /* sizeof(loggedUsercmds[0])*/);
+            }
         }
 
         public void LoadCmdDemoFromFile(idFile file) throws idException {
@@ -2469,7 +2478,9 @@ public class Session_local {
                 mapSpawnData.userInfo[i].ReadFromFileHandle(file);
                 mapSpawnData.persistentPlayerInfo[i].ReadFromFileHandle(file);
             }
-            file.Read(idFile.WRAP(mapSpawnData.mapSpawnUsercmd)/*, sizeof( mapSpawnData.mapSpawnUsercmd )*/);
+            for (usercmd_t t : mapSpawnData.mapSpawnUsercmd) {
+                file.Read(t.Write()/*, sizeof( mapSpawnData.mapSpawnUsercmd )*/);
+            }
         }
 
         public void StartRecordingRenderDemo(final String demoName) {
@@ -2918,14 +2929,9 @@ public class Session_local {
 
         public void LoadLoadingGui(final String mapName) {
             // load / program a gui to stay up on the screen while loading
-            idStr stripped = new idStr(mapName);
-            stripped.StripFileExtension();
-            stripped.StripPath();
+            idStr stripped = new idStr(mapName).StripFileExtension().StripPath();
 
-//            char[] guiMap = new char[MAX_STRING_CHARS];
-            String guiMap;
-            String va = va("guis/map/%0" + MAX_STRING_CHARS + "s.gui", stripped.toString());
-            guiMap = va.substring(0, va.length() >= MAX_STRING_CHARS ? MAX_STRING_CHARS : va.length() - 1);//TODO:check conditions
+            final String guiMap = va("guis/map/%." + MAX_STRING_CHARS + "s.gui", stripped.toString());//char guiMap[ MAX_STRING_CHARS ];
             // give the gamecode a chance to override
             game.GetMapLoadingGUI(guiMap.toCharArray());
 
@@ -3126,7 +3132,7 @@ public class Session_local {
             // level to level, but now we can just clear everything
             usercmdGen.InitForNewMap();
 //	memset( mapSpawnData.mapSpawnUsercmd, 0, sizeof( mapSpawnData.mapSpawnUsercmd ) );
-            mapSpawnData.mapSpawnUsercmd = new usercmd_t[MAX_ASYNC_CLIENTS];
+            mapSpawnData.mapSpawnUsercmd = Stream.generate(usercmd_t::new).limit(mapSpawnData.mapSpawnUsercmd.length).toArray(usercmd_t[]::new);
 
             // set the user info
             for (i = 0; i < numClients; i++) {
@@ -3216,7 +3222,7 @@ public class Session_local {
             // stop drawing the laoding screen
             insideExecuteMapChange = false;
 
-            Sys_SetPhysicalWorkMemory(-1, -1);
+//            Sys_SetPhysicalWorkMemory(-1, -1);
 
             // set the game sound world for playback
             soundSystem.SetPlayingSoundWorld(sw);

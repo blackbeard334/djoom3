@@ -1,6 +1,8 @@
 package neo.Game.Script;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
@@ -156,7 +158,6 @@ import neo.Game.Script.Script_Program.statement_s;
 import static neo.Game.Script.Script_Program.type_object;
 import neo.Game.Script.Script_Program.varEval_s;
 import neo.Game.Script.Script_Thread.idThread;
-import neo.TempDump.IntBuffPtr;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.btoi;
@@ -169,7 +170,7 @@ import static neo.TempDump.sizeof;
 import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Vector.vec3_zero;
+import static neo.idlib.math.Vector.getVec3_zero;
 
 /**
  *
@@ -227,7 +228,8 @@ public class Script_Interpreter {
                 Error("PushString: locals stack overflow\n");
             }
 //            idStr.Copynz(localstack[localstackUsed], string, MAX_STRING_LEN);
-            System.arraycopy(localstack, localstackUsed, string.getBytes(), 0, MAX_STRING_LEN);
+            final int length = Math.min(string.length(), MAX_STRING_LEN);
+            System.arraycopy(string.getBytes(), 0, localstack, localstackUsed, length);
             localstackUsed += MAX_STRING_LEN;
         }
 
@@ -256,7 +258,7 @@ public class Script_Interpreter {
 //                idStr.Append(localstack[localstackBase + def.value.stackOffset], MAX_STRING_LEN, from);
                 System.arraycopy(from.getBytes(), 0, localstack, localstackBase + def.value.getStackOffset(), MAX_STRING_LEN);
             } else {
-                def.value.setStringPtr(idStr.Append(def.value.getStringPtr(), MAX_STRING_LEN, from));
+                def.value.stringPtr[0] = idStr.Append(def.value.stringPtr[0], MAX_STRING_LEN, from);
             }
         }
 
@@ -265,7 +267,7 @@ public class Script_Interpreter {
 //                idStr.Copynz(localstack[localstackBase + def.value.stackOffset], from, MAX_STRING_LEN);
                 System.arraycopy(from.getBytes(), 0, localstack, localstackBase + def.value.getStackOffset(), MAX_STRING_LEN);
             } else {
-                def.value.setStringPtr(from);//idStr.Copynz(def.value.stringPtr, from, MAX_STRING_LEN);
+                def.value.stringPtr[0] = from;//idStr.Copynz(def.value.stringPtr, from, MAX_STRING_LEN);
             }
         }
 
@@ -273,15 +275,14 @@ public class Script_Interpreter {
             if (def.initialized == stackVariable) {
                 return btos(localstack, localstackBase + def.value.getStackOffset());
             } else {
-                return def.value.getStringPtr();
+                return def.value.stringPtr[0];
             }
         }
 
         private varEval_s GetVariable(idVarDef def) {
             if (def.initialized == stackVariable) {
-                varEval_s val = new varEval_s();
 //                val.intPtr = ( int * )&localstack[ localstackBase + def->value.stackOffset ];
-                val.setIntPtr(localstackBase + def.value.getStackOffset());
+                varEval_s val = new varEval_s(localstack, (localstackBase + def.value.getStackOffset()) * Integer.BYTES);
                 return val;
             } else {
                 return def.value;
@@ -332,12 +333,12 @@ public class Script_Interpreter {
 
                     case ev_vector:
                         ret = GetVariable(returnDef);
-                        gameLocal.program.ReturnVector(ret.getVectorPtr());
+                        gameLocal.program.ReturnVector(ret.vectorPtr[0]);
                         break;
 
                     default:
                         ret = GetVariable(returnDef);
-                        gameLocal.program.ReturnInteger(ret.getIntPtr());
+                        gameLocal.program.ReturnInteger(ret.intPtr[0]);
                 }
             }
 
@@ -373,11 +374,10 @@ public class Script_Interpreter {
         private void CallEvent(final function_t func, int argsize) {
             int i;
             int j;
-//            varEval_s var = new varEval_s();//replace with IntBuffPtr.
-            IntBuffPtr var;//replace with IntBuffPtr.
+            varEval_s var;
             int pos;
             int start;
-            ByteBuffer data = ByteBuffer.allocate(D_EVENT_MAXARGS * 4);
+            ByteBuffer data = ByteBuffer.allocate(D_EVENT_MAXARGS * Integer.BYTES);
             idEventDef evdef;
             char[] format;
 
@@ -389,9 +389,8 @@ public class Script_Interpreter {
             evdef = func.eventdef;
 
             start = localstackUsed - argsize;
-            var = new IntBuffPtr(localstack, start);
-//            eventEntity = GetEntity(var.getEntityNumberPtr());
-            eventEntity = GetEntity(var.oGet());
+            var = new varEval_s(localstack, start);
+            eventEntity = GetEntity(var.entityNumberPtr[0]);
 
             if (null == eventEntity || !eventEntity.RespondsTo(evdef)) {
                 if (eventEntity != null && developer.GetBool()) {
@@ -409,7 +408,7 @@ public class Script_Interpreter {
                         break;
 
                     case D_EVENT_VECTOR:
-                        gameLocal.program.ReturnVector(vec3_zero);
+                        gameLocal.program.ReturnVector(getVec3_zero());
                         break;
 
                     case D_EVENT_STRING:
@@ -436,26 +435,21 @@ public class Script_Interpreter {
             for (j = 0, i = 0, pos = type_object.Size(); (pos < argsize) || (format[i] != 0); i++) {
                 switch (format[i]) {
                     case D_EVENT_INTEGER:
-                        var = new IntBuffPtr(localstack, start + pos);
-//                        data.putInt(i, var.getFloatPtr().oGetI());
-                        data.putInt(i, var.oGet());
+                        var = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        data.asIntBuffer().put(i, (int) var.bytePtr.getFloat(0));
                         break;
 
                     case D_EVENT_FLOAT:
-                        var = new IntBuffPtr(localstack, start + pos);
-//                        data.putFloat(i, var.getFloatPtr().oGet());
-                        data.putFloat(i, var.oGetF());
+                        var = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        data.asFloatBuffer().put(i, var.bytePtr.getFloat(0));
                         break;
 
                     case D_EVENT_VECTOR:
-                        var = new IntBuffPtr(localstack, start + pos);
-//                        ( *( idVec3 ** )&data[ i ] ) = var.vectorPtr;
-//                        data.putFloat(i, var.getVectorPtr().oGet(0));
-//                        data.putFloat(i + 4, var.getVectorPtr().oGet(1));
-//                        data.putFloat(i + 8, var.getVectorPtr().oGet(2));
-                        data.putFloat(i + 0, var.oGetF(0));
-                        data.putFloat(i + 4, var.oGetF(1));
-                        data.putFloat(i + 8, var.oGetF(2));
+                        var = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        FloatBuffer fb = data.asFloatBuffer();//( *( idVec3 ** )&data[ i ] ) = var.vectorPtr;
+                        fb.put(i + 0, var.vectorPtr[0].x);
+                        fb.put(i + 1, var.vectorPtr[0].y);
+                        fb.put(i + 2, var.vectorPtr[0].z);
                         break;
 
                     case D_EVENT_STRING:
@@ -464,9 +458,8 @@ public class Script_Interpreter {
                         break;
 
                     case D_EVENT_ENTITY:
-                        var = new IntBuffPtr(localstack, start + pos);
-//                        idEntity entity = GetEntity(var.getEntityNumberPtr());
-                        idEntity entity = GetEntity(var.oGet());
+                        var = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        idEntity entity = GetEntity(var.entityNumberPtr[0]);
                         if (null == entity) {
                             Warning("Entity not found for event '%s'. Terminating thread.", evdef.GetName());
                             threadDying = true;
@@ -474,14 +467,13 @@ public class Script_Interpreter {
                             return;
                         }
                         int length = entity.Write().capacity();
-//                        data[ i] = entity.Write();
                         System.arraycopy(entity.Write().array(), 0, data.array(), i, length);
                         break;
 
                     case D_EVENT_ENTITY_NULL:
-                        var = new IntBuffPtr(localstack, start + pos);
-//                        entity = GetEntity(var.getEntityNumberPtr());
-                        entity = GetEntity(var.oGet());
+                        var = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+//                        entity = GetEntity(var.entityNumberPtr);
+                        entity = GetEntity(var.entityNumberPtr[0]);
 //                        ((idEntity) data[ i]) = GetEntity(var.entityNumberPtr);
                         length = entity.Write().capacity();
                         System.arraycopy(entity.Write().array(), 0, data.array(), i, length);
@@ -516,13 +508,12 @@ public class Script_Interpreter {
         private void CallSysEvent(final function_t func, int argsize) {
             int i;
             int j;
-//            varEval_s source = new varEval_s();
-            IntBuffPtr source;
+            varEval_s source;
             int pos;
             int start;
             int[] data = new int[D_EVENT_MAXARGS];
-            idEventDef evdef;
-            char[] format;
+            final idEventDef evdef;
+            final String format;
 
             if (NOT(func)) {
                 Error("NULL function");
@@ -533,46 +524,40 @@ public class Script_Interpreter {
 
             start = localstackUsed - argsize;
 
-            format = evdef.GetArgFormat().toCharArray();//TODO:is string output necessary?
-            for (j = 0, i = 0, pos = 0; (pos < argsize) || (format[ i] != 0); i++) {
-                switch (format[ i]) {
+            format = evdef.GetArgFormat();
+            for (j = 0, i = 0, pos = 0; (pos < argsize) || (i < format.length()); i++) {
+                switch (format.charAt(i)) {
                     case D_EVENT_INTEGER:
-                        source = new IntBuffPtr(localstack, start + pos);
-//                        data[ i] = source.getFloatPtr().oGetI();
-                        data[ i] = source.oGet();
+                        source = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        data[i] = (int) source.floatPtr[0];
                         break;
 
                     case D_EVENT_FLOAT:
-                        source = new IntBuffPtr(localstack, start + pos);
-//                        data[ i] = source.getFloatPtr().oGetI();
-                        data[ i] = source.oGet();//TODO:what's the difference between D_EVENT_FLOAT and D_EVENT_INTEGER.
+                        source = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        data[i] = Float.floatToIntBits(source.floatPtr[0]);
                         break;
 
                     case D_EVENT_VECTOR:
-                        source = new IntBuffPtr(localstack, start + pos);
-//                        data[i + 0] = ftoi(source.getVectorPtr().oGet(0));
-//                        data[i + 1] = ftoi(source.getVectorPtr().oGet(1));
-//                        data[i + 2] = ftoi(source.getVectorPtr().oGet(2));
-                        data[i + 0] = source.oGet(0);
-                        data[i + 1] = source.oGet(1);
-                        data[i + 2] = source.oGet(2);
+                        source = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        final IntBuffer fb = source.bytePtr.asIntBuffer();
+                        data[i + 0] = fb.get(0);
+                        data[i + 1] = fb.get(1);
+                        data[i + 2] = fb.get(2);
                         break;
 
                     case D_EVENT_STRING:
-                        data[ i] = localstack[ start + pos];
+                        data[i] = localstack[start + pos];
                         break;
 
                     case D_EVENT_ENTITY:
-                        source = new IntBuffPtr(localstack, start + pos);
-//                        idEntity entity = GetEntity(source.getEntityNumberPtr());
-                        idEntity entity = GetEntity(source.oGet());
+                        source = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        idEntity entity = GetEntity(source.entityNumberPtr[0]);
                         if (null == entity) {
                             Warning("Entity not found for event '%s'. Terminating thread.", evdef.GetName());
                             threadDying = true;
                             PopParms(argsize);
                             return;
                         }
-//                        data[ i] = GetEntity(source.entityNumberPtr);
                         int length = entity.Write().capacity();
                         for (int k = 0; k < length; k++) {
                             data[i + k] = entity.Write().getInt(4 * k);
@@ -580,11 +565,9 @@ public class Script_Interpreter {
                         break;
 
                     case D_EVENT_ENTITY_NULL:
-                        source = new IntBuffPtr(localstack, start + pos);
-//                        data[ i] = GetEntity(source.entityNumberPtr);
-//                        entity = GetEntity(source.getEntityNumberPtr());
-                        entity = GetEntity(source.oGet());
-                        length = idEntity.SIZE_B;
+                        source = new varEval_s(localstack, (start + pos) * Integer.BYTES);
+                        entity = GetEntity(source.bytePtr.getInt(0));
+                        length = idEntity.BYTES;
                         entity.Write().asIntBuffer().get(data, i, length);
                         break;
 
@@ -741,7 +724,7 @@ public class Script_Interpreter {
             }
 
             for (i = top; i >= 0; i--) {
-                f = callStack[ i].f;
+                f = callStack[i].f;
                 if (NOT(f)) {
                     gameLocal.Printf("<NO FUNCTION>\n");
                 } else {
@@ -833,7 +816,7 @@ public class Script_Interpreter {
 
                 for (i = callStackDepth; i > 0; i--) {
                     gameLocal.Printf("              ");
-                    f = callStack[ i].f;
+                    f = callStack[i].f;
                     if (NOT(f)) {
                         gameLocal.Printf("<NO FUNCTION>\n");
                     } else {
@@ -917,7 +900,7 @@ public class Script_Interpreter {
                 Error("call stack overflow");
             }
 
-            stack = callStack[ callStackDepth];
+            stack = callStack[callStackDepth] = new prstack_s();
 
             stack.s = instructionPointer + 1;	// point to the next instruction to execute
             stack.f = currentFunction;
@@ -955,8 +938,8 @@ public class Script_Interpreter {
             }
 
             // initialize local stack variables to zero
-//	memset( &localstack[ localstackUsed ], 0, c );
-            Arrays.fill(localstack, localstackUsed, localstack.length - localstackUsed, (byte) 0);
+            //	memset( &localstack[ localstackUsed ], 0, c );
+            Arrays.fill(localstack, localstackUsed, localstackUsed + c, (byte) 0);
 
             localstackUsed += c;
             localstackBase = localstackUsed - func.locals;
@@ -991,7 +974,7 @@ public class Script_Interpreter {
             varEval_s var_a;
             varEval_s var_b;
             varEval_s var_c;
-            varEval_s var = new varEval_s();
+            varEval_s var;
             statement_s st;
             int runaway;
             idThread newThread;
@@ -1027,7 +1010,7 @@ public class Script_Interpreter {
                         break;
 
                     case OP_THREAD:
-                        newThread = new idThread(this, st.a.value.getFunctionPtr(), st.b.value.getArgSize());
+                        newThread = new idThread(this, st.a.value.functionPtr[0], st.b.value.getArgSize());
                         newThread.Start();
 
                         // return the thread number to the script
@@ -1037,11 +1020,11 @@ public class Script_Interpreter {
 
                     case OP_OBJTHREAD:
                         var_a = GetVariable(st.a);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
                             func = obj.GetTypeDef().GetFunction(st.b.value.getVirtualFunction());
                             assert (st.c.value.getArgSize() == func.parmTotal);
-                            newThread = new idThread(this, GetEntity(var_a.getEntityNumberPtr()), func, func.parmTotal);
+                            newThread = new idThread(this, GetEntity(var_a.entityNumberPtr[0]), func, func.parmTotal);
                             newThread.Start();
 
                             // return the thread number to the script
@@ -1054,41 +1037,41 @@ public class Script_Interpreter {
                         break;
 
                     case OP_CALL:
-                        EnterFunction(st.a.value.getFunctionPtr(), false);
+                        EnterFunction(st.a.value.functionPtr[0], false);
                         break;
 
                     case OP_EVENTCALL:
-                        CallEvent(st.a.value.getFunctionPtr(), st.b.value.getArgSize());
+                        CallEvent(st.a.value.functionPtr[0], st.b.value.getArgSize());
                         break;
 
                     case OP_OBJECTCALL:
                         var_a = GetVariable(st.a);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
                             func = obj.GetTypeDef().GetFunction(st.b.value.getVirtualFunction());
                             EnterFunction(func, false);
                         } else {
                             // return a 'safe' value
-                            gameLocal.program.ReturnVector(vec3_zero);
+                            gameLocal.program.ReturnVector(getVec3_zero());
                             gameLocal.program.ReturnString("");
                             PopParms(st.c.value.getArgSize());
                         }
                         break;
 
                     case OP_SYSCALL:
-                        CallSysEvent(st.a.value.getFunctionPtr(), st.b.value.getArgSize());
+                        CallSysEvent(st.a.value.functionPtr[0], st.b.value.getArgSize());
                         break;
 
                     case OP_IFNOT:
                         var_a = GetVariable(st.a);
-                        if (var_a.getIntPtr() == 0) {
+                        if (var_a.intPtr[0] != 0) {
                             NextInstruction(instructionPointer + st.b.value.getJumpOffset());
                         }
                         break;
 
                     case OP_IF:
                         var_a = GetVariable(st.a);
-                        if (var_a.getIntPtr() != 0) {
+                        if (var_a.intPtr[0] != 0) {
                             NextInstruction(instructionPointer + st.b.value.getJumpOffset());
                         }
                         break;
@@ -1101,14 +1084,14 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(var_a.getFloatPtr() + var_b.getFloatPtr());
+                        var_c.floatPtr[0] = var_a.floatPtr[0] + var_b.floatPtr[0];
                         break;
 
                     case OP_ADD_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setVectorPtr(var_a.getVectorPtr().oPlus(var_b.getVectorPtr()));
+                        var_c.vectorPtr[0] = var_a.vectorPtr[0].oPlus(var_b.vectorPtr[0]);
                         break;
 
                     case OP_ADD_S:
@@ -1118,68 +1101,68 @@ public class Script_Interpreter {
 
                     case OP_ADD_FS:
                         var_a = GetVariable(st.a);
-                        SetString(st.c, FloatToString(var_a.getFloatPtr()));
+                        SetString(st.c, FloatToString(var_a.floatPtr[0]));
                         AppendString(st.c, GetString(st.b));
                         break;
 
                     case OP_ADD_SF:
                         var_b = GetVariable(st.b);
                         SetString(st.c, GetString(st.a));
-                        AppendString(st.c, FloatToString(var_b.getFloatPtr()));
+                        AppendString(st.c, FloatToString(var_b.floatPtr[0]));
                         break;
 
                     case OP_ADD_VS:
                         var_a = GetVariable(st.a);
-                        SetString(st.c, var_a.getVectorPtr().ToString());
+                        SetString(st.c, var_a.vectorPtr[0].ToString());
                         AppendString(st.c, GetString(st.b));
                         break;
 
                     case OP_ADD_SV:
                         var_b = GetVariable(st.b);
                         SetString(st.c, GetString(st.a));
-                        AppendString(st.c, var_b.getVectorPtr().ToString());
+                        AppendString(st.c, var_b.vectorPtr[0].ToString());
                         break;
 
                     case OP_SUB_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(var_a.getFloatPtr() - var_b.getFloatPtr());
+                        var_c.floatPtr[0] = var_a.floatPtr[0] - var_b.floatPtr[0];
                         break;
 
                     case OP_SUB_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setVectorPtr(var_a.getVectorPtr().oMinus(var_b.getVectorPtr()));
+                        var_c.vectorPtr[0] = var_a.vectorPtr[0].oMinus(var_b.vectorPtr[0]);
                         break;
 
                     case OP_MUL_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(var_a.getFloatPtr() * var_b.getFloatPtr());
+                        var_c.floatPtr[0] = var_a.floatPtr[0] * var_b.floatPtr[0];
                         break;
 
                     case OP_MUL_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(var_a.getVectorPtr().oMultiply(var_b.getVectorPtr()));
+                        var_c.floatPtr[0] = var_a.vectorPtr[0].oMultiply(var_b.vectorPtr[0]);
                         break;
 
                     case OP_MUL_FV:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setVectorPtr(var_b.getVectorPtr().oMultiply(var_a.getFloatPtr()));
+                        var_c.vectorPtr[0] = var_b.vectorPtr[0].oMultiply(var_a.floatPtr[0]);
                         break;
 
                     case OP_MUL_VF:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setVectorPtr(var_a.getVectorPtr().oMultiply(var_b.getFloatPtr()));
+                        var_c.vectorPtr[0] = var_a.vectorPtr[0].oMultiply(var_b.floatPtr[0]);
                         break;
 
                     case OP_DIV_F:
@@ -1187,11 +1170,11 @@ public class Script_Interpreter {
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
 
-                        if (var_b.getFloatPtr() == 0.0f) {
+                        if (var_b.floatPtr[0] == 0.0f) {
                             Warning("Divide by zero");
-                            var_c.setFloatPtr(idMath.INFINITY);
+                            var_c.floatPtr[0] = idMath.INFINITY;
                         } else {
-                            var_c.setFloatPtr(var_a.getFloatPtr() / var_b.getFloatPtr());
+                            var_c.floatPtr[0] = var_a.floatPtr[0] / var_b.floatPtr[0];
                         }
                         break;
 
@@ -1200,11 +1183,11 @@ public class Script_Interpreter {
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
 
-                        if (var_b.getFloatPtr() == 0.0f) {
+                        if (var_b.floatPtr[0] == 0.0f) {
                             Warning("Divide by zero");
-                            var_c.setFloatPtr(var_a.getFloatPtr());
+                            var_c.floatPtr[0] = var_a.floatPtr[0];
                         } else {
-                            var_c.setFloatPtr(var_a.getFloatPtr() % var_b.getFloatPtr());//TODO:casts!
+                            var_c.floatPtr[0] = ((int) var_a.floatPtr[0]) % ((int) var_b.floatPtr[0]);//TODO:casts!
                         }
                         break;
 
@@ -1212,166 +1195,166 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(((int) var_a.getFloatPtr()) & ((int) var_b.getFloatPtr()));
+                        var_c.floatPtr[0] = ((int) var_a.floatPtr[0]) & ((int) var_b.floatPtr[0]);
                         break;
 
                     case OP_BITOR:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(((int) var_a.getFloatPtr()) | ((int) var_b.getFloatPtr()));
+                        var_c.floatPtr[0] = ((int) var_a.floatPtr[0]) | ((int) var_b.floatPtr[0]);
                         break;
 
                     case OP_GE:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getFloatPtr() >= var_b.getFloatPtr()));
+                        var_c.floatPtr[0] = btoi(var_a.floatPtr[0] >= var_b.floatPtr[0]);
                         break;
 
                     case OP_LE:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getFloatPtr() <= var_b.getFloatPtr()));
+                        var_c.floatPtr[0] = btoi(var_a.floatPtr[0] <= var_b.floatPtr[0]);
                         break;
 
                     case OP_GT:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getFloatPtr() > var_b.getFloatPtr()));
+                        var_c.floatPtr[0] = btoi(var_a.floatPtr[0] > var_b.floatPtr[0]);
                         break;
 
                     case OP_LT:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getFloatPtr() < var_b.getFloatPtr()));
+                        var_c.floatPtr[0] = btoi(var_a.floatPtr[0] < var_b.floatPtr[0]);
                         break;
 
                     case OP_AND:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi((var_a.getFloatPtr() != 0.0f) && (var_b.getFloatPtr() != 0.0f)));
+                        var_c.floatPtr[0] = btoi((var_a.floatPtr[0] != 0.0f) && (var_b.floatPtr[0] != 0.0f));
                         break;
 
                     case OP_AND_BOOLF:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi((var_a.getIntPtr() != 0) && (var_b.getFloatPtr() != 0.0f)));
+                        var_c.floatPtr[0] = btoi((var_a.intPtr[0] != 0) && (var_b.floatPtr[0] != 0.0f));
                         break;
 
                     case OP_AND_FBOOL:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi((var_a.getFloatPtr() != 0.0f) && (var_b.getIntPtr() != 0)));
+                        var_c.floatPtr[0] = btoi((var_a.floatPtr[0] != 0.0f) && (var_b.intPtr[0] != 0));
                         break;
 
                     case OP_AND_BOOLBOOL:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi((var_a.getIntPtr() != 0) && (var_b.getIntPtr() != 0)));
+                        var_c.floatPtr[0] = btoi((var_a.intPtr[0] != 0) && (var_b.intPtr[0] != 0));
                         break;
 
                     case OP_OR:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi((var_a.getFloatPtr() != 0.0f) || (var_b.getFloatPtr() != 0.0f)));
+                        var_c.floatPtr[0] = btoi((var_a.floatPtr[0] != 0.0f) || (var_b.floatPtr[0] != 0.0f));
                         break;
 
                     case OP_OR_BOOLF:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi((var_a.getIntPtr() != 0) || (var_b.getFloatPtr() != 0.0f)));
+                        var_c.floatPtr[0] = btoi((var_a.intPtr[0] != 0) || (var_b.floatPtr[0] != 0.0f));
                         break;
 
                     case OP_OR_FBOOL:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi((var_a.getFloatPtr() != 0.0f) || (var_b.getIntPtr() != 0)));
+                        var_c.floatPtr[0] = btoi((var_a.floatPtr[0] != 0.0f) || (var_b.intPtr[0] != 0));
                         break;
 
                     case OP_OR_BOOLBOOL:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi((var_a.getIntPtr() != 0) || (var_b.getIntPtr() != 0)));
+                        var_c.floatPtr[0] = btoi((var_a.intPtr[0] != 0) || (var_b.intPtr[0] != 0));
                         break;
 
                     case OP_NOT_BOOL:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getIntPtr() == 0));
+                        var_c.floatPtr[0] = btoi(var_a.intPtr[0] == 0);
                         break;
 
                     case OP_NOT_F:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getFloatPtr() == 0.0f));
+                        var_c.floatPtr[0] = btoi(var_a.floatPtr[0] == 0.0f);
                         break;
 
                     case OP_NOT_V:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getVectorPtr().equals(vec3_zero)));
+                        var_c.floatPtr[0] = btoi(var_a.vectorPtr[0].equals(getVec3_zero()));
                         break;
 
                     case OP_NOT_S:
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(!isNotNullOrEmpty(GetString(st.a))));
+                        var_c.floatPtr[0] = btoi(!isNotNullOrEmpty(GetString(st.a)));
                         break;
 
                     case OP_NOT_ENT:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(GetEntity(var_a.getEntityNumberPtr()) == null));
+                        var_c.floatPtr[0] = btoi(GetEntity(var_a.entityNumberPtr[0]) == null);
                         break;
 
                     case OP_NEG_F:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(-var_a.getFloatPtr());
+                        var_c.floatPtr[0] = -var_a.floatPtr[0];
                         break;
 
                     case OP_NEG_V:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.getVectorPtr().oSet(var_a.getVectorPtr().oNegative());
+                        var_c.vectorPtr[0] = var_a.vectorPtr[0].oNegative();
                         break;
 
                     case OP_INT_F:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(var_a.getFloatPtr());
+                        var_c.floatPtr[0] = var_a.floatPtr[0];
                         break;
 
                     case OP_EQ_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getFloatPtr() == var_b.getFloatPtr()));
+                        var_c.floatPtr[0] = btoi(var_a.floatPtr[0] == var_b.floatPtr[0]);
                         break;
 
                     case OP_EQ_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getVectorPtr().equals(var_b.getVectorPtr())));
+                        var_c.floatPtr[0] = btoi(var_a.vectorPtr[0].equals(var_b.vectorPtr));
                         break;
 
                     case OP_EQ_S:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(idStr.Cmp(GetString(st.a), GetString(st.b)) == 0));
+                        var_c.floatPtr[0] = btoi(idStr.Cmp(GetString(st.a), GetString(st.b)) == 0);
                         break;
 
                     case OP_EQ_E:
@@ -1381,26 +1364,26 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getEntityNumberPtr() == var_b.getEntityNumberPtr()));
+                        var_c.floatPtr[0] = btoi(var_a.entityNumberPtr == var_b.entityNumberPtr);
                         break;
 
                     case OP_NE_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getFloatPtr() != var_b.getFloatPtr()));
+                        var_c.floatPtr[0] = btoi(var_a.floatPtr[0] != var_b.floatPtr[0]);
                         break;
 
                     case OP_NE_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(!var_a.getVectorPtr().equals(var_b.getVectorPtr())));
+                        var_c.floatPtr[0] = btoi(!var_a.vectorPtr[0].equals(var_b.vectorPtr));
                         break;
 
                     case OP_NE_S:
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(idStr.Cmp(GetString(st.a), GetString(st.b)) != 0));
+                        var_c.floatPtr[0] = btoi(idStr.Cmp(GetString(st.a), GetString(st.b)) != 0);
                         break;
 
                     case OP_NE_E:
@@ -1410,54 +1393,54 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(var_a.getEntityNumberPtr() != var_b.getEntityNumberPtr()));
+                        var_c.floatPtr[0] = btoi(var_a.entityNumberPtr != var_b.entityNumberPtr);
                         break;
 
                     case OP_UADD_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.getFloatPtr_oPluSet(var_a.getFloatPtr());
+                        var_b.floatPtr[0] += var_a.floatPtr[0];
                         break;
 
                     case OP_UADD_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.getVectorPtr().oPluSet(var_a.getVectorPtr());
+                        var_b.vectorPtr[0].oPluSet(var_a.vectorPtr[0]);
                         break;
 
                     case OP_USUB_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.getFloatPtr_oMinSet(var_a.getFloatPtr());
+                        var_b.floatPtr[0] -= var_a.floatPtr[0];
                         break;
 
                     case OP_USUB_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.getVectorPtr().oMinSet(var_a.getVectorPtr());
+                        var_b.vectorPtr[0].oMinSet(var_a.vectorPtr[0]);
                         break;
 
                     case OP_UMUL_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.getFloatPtr_oMulSet(var_a.getFloatPtr());
+                        var_b.floatPtr[0] *= var_a.floatPtr[0];
                         break;
 
                     case OP_UMUL_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.getVectorPtr().oMulSet(var_a.getFloatPtr());
+                        var_b.vectorPtr[0].oMulSet(var_a.floatPtr[0]);
                         break;
 
                     case OP_UDIV_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
 
-                        if (var_a.getFloatPtr() == 0.0f) {
+                        if (var_a.floatPtr[0] == 0.0f) {
                             Warning("Divide by zero");
-                            var_b.setFloatPtr(idMath.INFINITY);
+                            var_b.floatPtr[0] = idMath.INFINITY;
                         } else {
-                            var_b.setFloatPtr(var_b.getFloatPtr() / var_a.getFloatPtr());
+                            var_b.floatPtr[0] /= var_a.floatPtr[0];
                         }
                         break;
 
@@ -1465,11 +1448,11 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
 
-                        if (var_a.getFloatPtr() == 0.0f) {
+                        if (var_a.floatPtr[0] == 0.0f) {
                             Warning("Divide by zero");
-                            var_b.getVectorPtr().Set(idMath.INFINITY, idMath.INFINITY, idMath.INFINITY);
+                            var_b.vectorPtr[0].Set(idMath.INFINITY, idMath.INFINITY, idMath.INFINITY);
                         } else {
-                            var_b.setVectorPtr(var_b.getVectorPtr().oDivide(var_a.getFloatPtr()));
+                            var_b.vectorPtr[0] = var_b.vectorPtr[0].oDivide(var_a.floatPtr[0]);
                         }
                         break;
 
@@ -1477,38 +1460,35 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
 
-                        if (var_a.getFloatPtr() == 0.0f) {
+                        if (var_a.floatPtr[0] == 0.0f) {
                             Warning("Divide by zero");
-                            var_b.setFloatPtr(var_a.getFloatPtr());
+                            var_b.floatPtr[0] = var_a.floatPtr[0];
                         } else {
-                            var_b.setFloatPtr(((int) var_b.getFloatPtr()) % ((int) var_a.getFloatPtr()));
+                            var_b.floatPtr[0] = ((int) var_b.floatPtr[0]) % ((int) var_a.floatPtr[0]);
                         }
                         break;
 
                     case OP_UOR_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setFloatPtr(((int) var_b.getFloatPtr()) | ((int) var_a.getFloatPtr()));
+                        var_b.floatPtr[0] = ((int) var_b.floatPtr[0]) | ((int) var_a.floatPtr[0]);
                         break;
 
                     case OP_UAND_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setFloatPtr(((int) var_b.getFloatPtr()) & ((int) var_a.getFloatPtr()));
+                        var_b.floatPtr[0] = ((int) var_b.floatPtr[0]) & ((int) var_a.floatPtr[0]);
                         break;
 
                     case OP_UINC_F:
                         var_a = GetVariable(st.a);
-                        var_a.getFloatPtr_increment();
+                        var_a.floatPtr[0]++;
                         break;
 
                     case OP_UINCP_F:
                         var_a = GetVariable(st.a);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
-//                            var.setBytePtr(obj.data);
-//                            var.getBytePtr().position(st.b.value.getPtrOffset());
-//                            var.getFloatPtr().incPos();
                             final int pos = st.b.value.getPtrOffset();
                             obj.data.putFloat(pos, obj.data.getFloat(pos) + 1);
                         }
@@ -1516,16 +1496,13 @@ public class Script_Interpreter {
 
                     case OP_UDEC_F:
                         var_a = GetVariable(st.a);
-                        var_a.getFloatPtr_decrement();
+                        var_a.floatPtr[0]--;
                         break;
 
                     case OP_UDECP_F:
                         var_a = GetVariable(st.a);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
-//                            var.setBytePtr(obj.data);
-//                            var.getBytePtr().position(st.b.value.getPtrOffset());
-//                            var.getFloatPtr().decPos();
                             final int pos = st.b.value.getPtrOffset();
                             obj.data.putFloat(pos, obj.data.getFloat(pos) - 1);
                         }
@@ -1534,38 +1511,38 @@ public class Script_Interpreter {
                     case OP_COMP_F:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(~((int) var_a.getFloatPtr()));
+                        var_c.floatPtr[0] = ~((int) var_a.floatPtr[0]);
                         break;
 
                     case OP_STORE_F:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setFloatPtr(var_a.getFloatPtr());
+                        var_b.floatPtr[0] = var_a.floatPtr[0];
                         break;
 
                     case OP_STORE_ENT:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setEntityNumberPtr(var_a.getEntityNumberPtr());
+                        var_b.entityNumberPtr[0] = var_a.entityNumberPtr[0];
                         break;
 
                     case OP_STORE_BOOL:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setIntPtr(var_a.getIntPtr());
+                        var_b.intPtr[0] = var_a.intPtr[0];
                         break;
 
                     case OP_STORE_OBJENT:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (NOT(obj)) {
-                            var_b.setEntityNumberPtr(0);
+                            var_b.entityNumberPtr[0] = 0;
                         } else if (!obj.GetTypeDef().Inherits(st.b.TypeDef())) {
                             //Warning( "object '%s' cannot be converted to '%s'", obj.GetTypeName(), st.b.TypeDef().Name() );
-                            var_b.setEntityNumberPtr(0);
+                            var_b.entityNumberPtr[0] = 0;
                         } else {
-                            var_b.setEntityNumberPtr(var_a.getEntityNumberPtr());
+                            var_b.entityNumberPtr[0] = var_a.entityNumberPtr[0];
                         }
                         break;
 
@@ -1573,7 +1550,7 @@ public class Script_Interpreter {
                     case OP_STORE_ENTOBJ:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setEntityNumberPtr(var_a.getEntityNumberPtr());
+                        var_b.entityNumberPtr[0] = var_a.entityNumberPtr[0];
                         break;
 
                     case OP_STORE_S:
@@ -1583,174 +1560,152 @@ public class Script_Interpreter {
                     case OP_STORE_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setVectorPtr(var_a.getVectorPtr());
+                        var_b.vectorPtr[0] = var_a.vectorPtr[0];
                         break;
 
                     case OP_STORE_FTOS:
                         var_a = GetVariable(st.a);
-                        SetString(st.b, FloatToString(var_a.getFloatPtr()));
+                        SetString(st.b, FloatToString(var_a.floatPtr[0]));
                         break;
 
                     case OP_STORE_BTOS:
                         var_a = GetVariable(st.a);
-                        SetString(st.b, itob(var_a.getIntPtr()) ? "true" : "false");
+                        SetString(st.b, itob(var_a.intPtr[0]) ? "true" : "false");
                         break;
 
                     case OP_STORE_VTOS:
                         var_a = GetVariable(st.a);
-                        SetString(st.b, var_a.getVectorPtr().ToString());
+                        SetString(st.b, var_a.vectorPtr[0].ToString());
                         break;
 
                     case OP_STORE_FTOBOOL:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        if (var_a.getFloatPtr() != 0.0f) {
-                            var_b.setIntPtr(1);
+                        if (var_a.floatPtr[0] != 0.0f) {
+                            var_b.intPtr[0] = 1;
                         } else {
-                            var_b.setIntPtr(0);
+                            var_b.intPtr[0] = 0;
                         }
                         break;
 
                     case OP_STORE_BOOLTOF:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setFloatPtr((float) var_a.getIntPtr());
+                        var_b.floatPtr[0] = Float.intBitsToFloat(var_a.intPtr[0]);
                         break;
 
                     case OP_STOREP_F:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getFloatPtr().oGet() != 0.0f) {
-                        if (var_b.getEvalPtr_getFloatPtr() != 0.0f) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].floatPtr != null) {
                             var_a = GetVariable(st.a);
-//                            var_b.getEvalPtr().setFloatPtr(var_a.getFloatPtr());
-                            var_b.getEvalPtr_setFloatPtr(var_a.getFloatPtr());
+                            var_b.evalPtr[0].floatPtr[0] = var_a.floatPtr[0];
                         }
                         break;
 
                     case OP_STOREP_ENT:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getEntityNumberPtr() != 0) {
-                        if (var_b.getEvalPtr_getEntityNumberPtr() != 0.0f) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].entityNumberPtr != null) {
                             var_a = GetVariable(st.a);
-//                            var_b.getEvalPtr().setEntityNumberPtr(var_a.getEntityNumberPtr());
-                            var_b.getEvalPtr_setEntityNumberPtr(var_a.getEntityNumberPtr());
+                            var_b.evalPtr[0].floatPtr[0] = var_a.entityNumberPtr[0];
                         }
                         break;
 
                     case OP_STOREP_FLD:
                     case OP_STOREP_BOOL:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getIntPtr().oGet() != 0) {
-                        if (var_b.getEvalPtr_getIntPtr() != 0) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].intPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.getEvalPtr_setIntPtr(var_a.getIntPtr());
+                            var_b.evalPtr[0].intPtr[0] = var_a.intPtr[0];
                         }
                         break;
-
-//                    case OP_STOREP_BOOL:
-//                        var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getIntPtr().oGet() != 0) {
-//                            var_a = GetVariable(st.a);
-//                            var_b.getEvalPtr().setIntPtr(var_a.getIntPtr());
-//                        }
-//                        break;
-//                        
+                        
                     case OP_STOREP_S:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && isNotNullOrEmpty(var_b.getEvalPtr().getStringPtr())) {
-                        if (isNotNullOrEmpty(var_b.getEvalPtr_getStringPtr())) {
-                            var_b.getEvalPtr_setStringPtr(GetString(st.a));//idStr.Copynz(var_b.evalPtr.stringPtr, GetString(st.a), MAX_STRING_LEN);
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].stringPtr != null) {
+                            var_b.evalPtr[0].stringPtr[0] = GetString(st.a);//idStr.Copynz(var_b.evalPtr.stringPtr, GetString(st.a), MAX_STRING_LEN);
                         }
                         break;
 
                     case OP_STOREP_V:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getVectorPtr() != null) {
-                        if (var_b.getEvalPtr_getVectorPtr() != null) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].vectorPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.getEvalPtr_setVectorPtr(var_a.getVectorPtr());
+                            var_b.evalPtr[0].vectorPtr[0] = var_a.vectorPtr[0];
                         }
                         break;
 
                     case OP_STOREP_FTOS:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && isNotNullOrEmpty(var_b.getEvalPtr().getStringPtr())) {
-                        if (isNotNullOrEmpty(var_b.getEvalPtr_getStringPtr())) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].stringPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.getEvalPtr_setStringPtr(FloatToString(var_a.getFloatPtr()));//idStr.Copynz(var_b.evalPtr.stringPtr, FloatToString(var_a.floatPtr.oGet()), MAX_STRING_LEN);
+                            var_b.evalPtr[0].stringPtr[0] = FloatToString(var_a.floatPtr[0]);//idStr.Copynz(var_b.evalPtr.stringPtr, FloatToString(var_a.floatPtr.oGet()), MAX_STRING_LEN);
                         }
                         break;
 
                     case OP_STOREP_BTOS:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && isNotNullOrEmpty(var_b.getEvalPtr().getStringPtr())) {
-                        if (isNotNullOrEmpty(var_b.getEvalPtr_getStringPtr())) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].stringPtr != null) {
                             var_a = GetVariable(st.a);
-                            if (var_a.getFloatPtr() != 0.0f) {
-                                var_b.getEvalPtr_setStringPtr("true");//idStr.Copynz(var_b.evalPtr.stringPtr, "true", MAX_STRING_LEN);
+                            if (var_a.floatPtr[0] != 0.0f) {
+                                var_b.evalPtr[0].stringPtr[0] = "true";//idStr.Copynz(var_b.evalPtr.stringPtr, "true", MAX_STRING_LEN);
                             } else {
-                                var_b.getEvalPtr_setStringPtr("false");//idStr.Copynz(var_b.evalPtr.stringPtr, "false", MAX_STRING_LEN);
+                                var_b.evalPtr[0].stringPtr[0] = "false";//idStr.Copynz(var_b.evalPtr.stringPtr, "false", MAX_STRING_LEN);
                             }
                         }
                         break;
 
                     case OP_STOREP_VTOS:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && isNotNullOrEmpty(var_b.getEvalPtr().getStringPtr())) {
-                        if (isNotNullOrEmpty(var_b.getEvalPtr_getStringPtr())) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].stringPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.getEvalPtr_setStringPtr(var_a.getVectorPtr().ToString());//idStr.Copynz(var_b.evalPtr.stringPtr, var_a.vectorPtr.ToString(), MAX_STRING_LEN);
+                            var_b.evalPtr[0].stringPtr[0] = var_a.vectorPtr[0].ToString();//idStr.Copynz(var_b.evalPtr.stringPtr, var_a.vectorPtr[0].ToString(), MAX_STRING_LEN);
                         }
                         break;
 
                     case OP_STOREP_FTOBOOL:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getIntPtr().oGet() != 0) {
-                        if (var_b.getEvalPtr_getIntPtr() != 0) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].intPtr != null) {
                             var_a = GetVariable(st.a);
-                            if (var_a.getFloatPtr() != 0.0f) {
-                                var_b.getEvalPtr_setIntPtr(1);
+                            if (var_a.floatPtr[0] != 0.0f) {
+                                var_b.evalPtr[0].intPtr[0] = 1;
                             } else {
-                                var_b.getEvalPtr_setIntPtr(0);
+                                var_b.evalPtr[0].intPtr[0] = 0;
                             }
                         }
                         break;
 
                     case OP_STOREP_BOOLTOF:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getFloatPtr().oGet() != 0.0f) {
-                        if (var_b.getEvalPtr_getFloatPtr() != 0.0f) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].floatPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.getEvalPtr_setFloatPtr((float) var_a.getIntPtr());
+                            var_b.evalPtr[0].floatPtr[0] = Float.intBitsToFloat(var_a.intPtr[0]);
                         }
                         break;
 
                     case OP_STOREP_OBJ:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getEntityNumberPtr() != 0) {
-                        if (var_b.getEvalPtr_getEntityNumberPtr() != 0) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].entityNumberPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.getEvalPtr_setEntityNumberPtr(var_a.getEntityNumberPtr());
+                            var_b.evalPtr[0].entityNumberPtr[0] = var_a.entityNumberPtr[0];
                         }
                         break;
 
                     case OP_STOREP_OBJENT:
                         var_b = GetVariable(st.b);
-//                        if (var_b.getEvalPtr() != null && var_b.getEvalPtr().getEntityNumberPtr() != 0) {
-                        if (var_b.getEvalPtr_getEntityNumberPtr() != 0) {
+                        if (var_b.evalPtr != null && var_b.evalPtr[0].entityNumberPtr != null) {
                             var_a = GetVariable(st.a);
-                            obj = GetScriptObject(var_a.getEntityNumberPtr());
+                            obj = GetScriptObject(var_a.entityNumberPtr[0]);
                             if (NOT(obj)) {
-                                var_b.getEvalPtr_setEntityNumberPtr(0);
+                                var_b.evalPtr[0].entityNumberPtr[0] = 0;
 
                                 // st.b points to type_pointer, which is just a temporary that gets its type reassigned, so we store the real type in st.c
                                 // so that we can do a type check during run time since we don't know what type the script object is at compile time because it
                                 // comes from an entity
                             } else if (!obj.GetTypeDef().Inherits(st.c.TypeDef())) {
                                 //Warning( "object '%s' cannot be converted to '%s'", obj.GetTypeName(), st.c.TypeDef().Name() );
-                                var_b.getEvalPtr_setEntityNumberPtr(0);
+                                var_b.evalPtr[0].entityNumberPtr[0] = 0;
                             } else {
-                                var_b.getEvalPtr_setEntityNumberPtr(var_a.getEntityNumberPtr());
+                                var_b.evalPtr[0].entityNumberPtr[0] = var_a.entityNumberPtr[0];
                             }
                         }
                         break;
@@ -1758,62 +1713,56 @@ public class Script_Interpreter {
                     case OP_ADDRESS:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
-//                            var_c.getEvalPtr().setBytePtr(obj.data);
-//                            var_c.getEvalPtr().getBytePtr().position(st.b.value.getPtrOffset());
-                            var_c.getEvalPtr_setBytePtr(st.b.value.getPtrOffset());
+                            final varEval_s temp = new varEval_s(obj.data, st.b.value.getPtrOffset());
+                            var_c = new varEval_s(temp);
                         } else {
-//                            var_c.getEvalPtr().setBytePtr(null);
-                            var_c.getEvalPtr_setBytePtr(0);
+                            var_c = null;
                         }
                         break;
 
                     case OP_INDIRECT_F:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
-//                            var.bytePtr = &obj->data[ st->b->value.ptrOffset ];
-                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
-                            var_c.setFloatPtr(var.getFloatPtr());
+                            var = new varEval_s(obj.data, st.b.value.getPtrOffset());
+                            var_c.floatPtr[0] = var.getFloatPtr();
                         } else {
-                            var_c.setFloatPtr(0.0f);
+                            var_c.floatPtr[0] = 0.0f;
                         }
                         break;
 
                     case OP_INDIRECT_ENT:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
-//                            var.bytePtr = &obj->data[ st->b->value.ptrOffset ];
-                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
-                            var_c.setEntityNumberPtr(var.getEntityNumberPtr());
+                            var = new varEval_s(obj.data, st.b.value.getPtrOffset());
+                            var_c.entityNumberPtr[0] = var.getEntityNumberPtr();
                         } else {
-                            var_c.setEntityNumberPtr(0);
+                            var_c.entityNumberPtr[0] = 0;
                         }
                         break;
 
                     case OP_INDIRECT_BOOL:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
-//                            var.bytePtr = &obj->data[ st->b->value.ptrOffset ];
-                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
-                            var_c.setIntPtr(var.getIntPtr());
+                            var = new varEval_s(obj.data, st.b.value.getPtrOffset());
+                            var_c.intPtr[0] = var.getIntPtr();
                         } else {
-                            var_c.setIntPtr(0);
+                            var_c.intPtr[0] = 0;
                         }
                         break;
 
                     case OP_INDIRECT_S:
                         var_a = GetVariable(st.a);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
-//                            var.bytePtr = &obj->data[ st->b->value.ptrOffset ];
-                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
+                            var = new varEval_s(obj.data, st.b.value.getPtrOffset());
                             SetString(st.c, var.getStringPtr());
                         } else {
                             SetString(st.c, "");
@@ -1823,48 +1772,46 @@ public class Script_Interpreter {
                     case OP_INDIRECT_V:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (obj != null) {
-//                            var.bytePtr = &obj->data[ st->b->value.ptrOffset ];                            
-                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
-                            var_c.setVectorPtr(var.getVectorPtr());
+                            var = new varEval_s(obj.data, st.b.value.getPtrOffset());
+                            var_c.vectorPtr[0] = var.getVectorPtr();
                         } else {
-                            var_c.getVectorPtr().Zero();
+                            var_c.vectorPtr[0].Zero();
                         }
                         break;
 
                     case OP_INDIRECT_OBJ:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        obj = GetScriptObject(var_a.getEntityNumberPtr());
+                        obj = GetScriptObject(var_a.entityNumberPtr[0]);
                         if (NOT(obj)) {
-                            var_c.setEntityNumberPtr(0);
+                            var_c.entityNumberPtr[0] = 0;
                         } else {
-//                            var.bytePtr = &obj->data[ st->b->value.ptrOffset ];                            
-                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
-                            var_c.setEntityNumberPtr(var.getEntityNumberPtr());
+                            var = new varEval_s(obj.data, st.b.value.getPtrOffset());
+                            var_c.entityNumberPtr[0] = var.getEntityNumberPtr();
                         }
                         break;
 
                     case OP_PUSH_F:
                         var_a = GetVariable(st.a);
-                        Push(var_a.getIntPtr());
+                        Push(var_a.intPtr[0]);
                         break;
 
                     case OP_PUSH_FTOS:
                         var_a = GetVariable(st.a);
-                        PushString(FloatToString(var_a.getFloatPtr()));
+                        PushString(FloatToString(var_a.floatPtr[0]));
                         break;
 
                     case OP_PUSH_BTOF:
                         var_a = GetVariable(st.a);
-                        floatVal = var_a.getIntPtr();
+                        floatVal = var_a.intPtr[0];
                         Push(Float.floatToIntBits(floatVal));
                         break;
 
                     case OP_PUSH_FTOB:
                         var_a = GetVariable(st.a);
-                        if (var_a.getFloatPtr() != 0.0f) {
+                        if (var_a.floatPtr[0] != 0.0f) {
                             Push(1);
                         } else {
                             Push(0);
@@ -1873,17 +1820,17 @@ public class Script_Interpreter {
 
                     case OP_PUSH_VTOS:
                         var_a = GetVariable(st.a);
-                        PushString(var_a.getVectorPtr().ToString());
+                        PushString(var_a.vectorPtr[0].ToString());
                         break;
 
                     case OP_PUSH_BTOS:
                         var_a = GetVariable(st.a);
-                        PushString(itob(var_a.getIntPtr()) ? "true" : "false");
+                        PushString(itob(var_a.intPtr[0]) ? "true" : "false");
                         break;
 
                     case OP_PUSH_ENT:
                         var_a = GetVariable(st.a);
-                        Push(var_a.getEntityNumberPtr());
+                        Push(var_a.entityNumberPtr[0]);
                         break;
 
                     case OP_PUSH_S:
@@ -1892,19 +1839,19 @@ public class Script_Interpreter {
 
                     case OP_PUSH_V:
                         var_a = GetVariable(st.a);
-                        Push(Float.floatToIntBits(var_a.getVectorPtr().x));
-                        Push(Float.floatToIntBits(var_a.getVectorPtr().y));
-                        Push(Float.floatToIntBits(var_a.getVectorPtr().z));
+                        Push(Float.floatToIntBits(var_a.vectorPtr[0].x));
+                        Push(Float.floatToIntBits(var_a.vectorPtr[0].y));
+                        Push(Float.floatToIntBits(var_a.vectorPtr[0].z));
                         break;
 
                     case OP_PUSH_OBJ:
                         var_a = GetVariable(st.a);
-                        Push(var_a.getEntityNumberPtr());
+                        Push(var_a.entityNumberPtr[0]);
                         break;
 
                     case OP_PUSH_OBJENT:
                         var_a = GetVariable(st.a);
-                        Push(var_a.getEntityNumberPtr());
+                        Push(var_a.entityNumberPtr[0]);
                         break;
 
                     case OP_BREAK:
@@ -1968,7 +1915,7 @@ public class Script_Interpreter {
             if (scopeDepth == callStackDepth) {
                 func = currentFunction;
             } else {
-                func = callStack[ scopeDepth].f;
+                func = callStack[scopeDepth].f;
             }
             if (NOT(func)) {
                 return false;
@@ -2010,8 +1957,8 @@ public class Script_Interpreter {
             reg = GetVariable(d);
             switch (d.Type()) {
                 case ev_float:
-                    if (reg.getFloatPtr() != 0.0f) {
-                        out.oSet(va("%g", reg.getFloatPtr()));
+                    if (reg.floatPtr[0] != 0.0f) {
+                        out.oSet(va("%g", reg.floatPtr[0]));
                     } else {
                         out.oSet("0");
                     }
@@ -2019,8 +1966,8 @@ public class Script_Interpreter {
 //                    break;
 
                 case ev_vector:
-                    if (reg.getVectorPtr() != null) {
-                        out.oSet(va("%g,%g,%g", reg.getVectorPtr().x, reg.getVectorPtr().y, reg.getVectorPtr().z));
+                    if (reg.vectorPtr != null) {
+                        out.oSet(va("%g,%g,%g", reg.vectorPtr[0].x, reg.vectorPtr[0].y, reg.vectorPtr[0].z));
                     } else {
                         out.oSet("0,0,0");
                     }
@@ -2028,8 +1975,8 @@ public class Script_Interpreter {
 //                    break;
 
                 case ev_boolean:
-                    if (reg.getIntPtr() != 0) {
-                        out.oSet(va("%d", reg.getIntPtr()));
+                    if (reg.intPtr[0] != 0) {
+                        out.oSet(va("%d", reg.intPtr[0]));
                     } else {
                         out.oSet("0");
                     }
@@ -2064,9 +2011,9 @@ public class Script_Interpreter {
 //                    break;
 
                 case ev_string:
-                    if (reg.getStringPtr() != null) {
+                    if (reg.stringPtr != null) {
                         out.oSet("\"");
-                        out.oPluSet(reg.getStringPtr());
+                        out.oPluSet(reg.stringPtr[0]);
                         out.oPluSet("\"");
                     } else {
                         out.oSet("\"\"");

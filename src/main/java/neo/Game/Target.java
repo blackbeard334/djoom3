@@ -58,10 +58,10 @@ import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Interpolate.idInterpolate;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec4_zero;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec4_zero;
 import static neo.ui.UserInterface.uiManager;
 
 /**
@@ -174,7 +174,7 @@ public class Target {
             for (i = 0; i < targets.Num(); i++) {
                 ent = targets.oGet(i).GetEntity();
                 if (ent != null) {
-                    ent.Damage(this, this, vec3_origin, damage, 1.0f, INVALID_JOINT);
+                    ent.Damage(this, this, getVec3_origin(), damage, 1.0f, INVALID_JOINT);
                 }
             }
         }
@@ -384,13 +384,13 @@ public class Target {
         // CLASS_PROTOTYPE( idTarget_FadeEntity );
 
         private idVec4 fadeFrom;
-        private int fadeStart;
-        private int fadeEnd;
+        private int    fadeStart;
+        private int    fadeEnd;
         //
         //
 
         public idTarget_FadeEntity() {
-            fadeFrom.Zero();
+            fadeFrom = new idVec4();
             fadeStart = 0;
             fadeEnd = 0;
         }
@@ -594,10 +594,6 @@ public class Target {
      */
     public static class idTarget_GiveEmail extends idTarget {
         // CLASS_PROTOTYPE( idTarget_GiveEmail );
-
-        @Override
-        public void Spawn() {
-        }
 
         private void Event_Activate(idEntity activator) {
             idPlayer player = gameLocal.GetLocalPlayer();
@@ -1099,7 +1095,7 @@ public class Target {
 
         private void Event_ClearFlash(float flash) {
             idPlayer player = gameLocal.GetLocalPlayer();
-            player.playerView.Fade(vec4_zero, (int) flash);
+            player.playerView.Fade(getVec4_zero(), (int) flash);
         }
 
         @Override
@@ -1365,6 +1361,7 @@ public class Target {
             }
         }
     };
+    
     /*
      ===============================================================================
 
@@ -1372,16 +1369,14 @@ public class Target {
 
      ===============================================================================
      */
-
     public static class idTarget_Tip extends idTarget {
         // CLASS_PROTOTYPE( idTarget_Tip );
+        private idVec3 playerPos;
+        //
+        //
 
         public idTarget_Tip() {
-            playerPos.Zero();
-        }
-
-        @Override
-        public void Spawn() {
+            playerPos = new idVec3();
         }
 
         @Override
@@ -1393,11 +1388,6 @@ public class Target {
         public void Restore(idRestoreGame savefile) {
             savefile.ReadVec3(playerPos);
         }
-//
-//
-        private idVec3 playerPos;
-//
-//
 
         private void Event_Activate(idEntity activator) {
             idPlayer player = gameLocal.GetLocalPlayer();

@@ -146,7 +146,7 @@ public class sys_public {
                 + Integer.SIZE
                 + Integer.SIZE
                 + CPP_class.Pointer.SIZE;
-        public static final transient int SIZE_B = SIZE / 8;
+        public static final transient int BYTES = SIZE / 8;
 
         public sysEventType_t evType = sysEventType_t.values()[0];
         public int evValue;
@@ -164,7 +164,7 @@ public class sys_public {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            return ByteBuffer.allocate(SIZE_B);
+            return ByteBuffer.allocate(BYTES);
         }
 
         @Override

@@ -1,6 +1,7 @@
 package neo.Tools.Compilers.AAS;
 
-import neo.TempDump.IntArrPtr;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
 import neo.framework.DeclEntityDef.idDeclEntityDef;
@@ -103,10 +104,15 @@ public class AASFile {
         public byte disableCount;                           // number of times this reachability has been disabled
         public idReachability next;                         // next reachability in list
         public idReachability rev_next;                     // next reachability in reversed list
-        public IntArrPtr areaTravelTimes;                   // travel times within the fromAreaNum from reachabilities that lead towards this area
+        public IntBuffer areaTravelTimes;                 // travel times within the fromAreaNum from reachabilities that lead towards this area
         //
         //
 
+        public idReachability() {
+            start = new idVec3();
+            end = new idVec3();
+        }
+        
         public void CopyBase(idReachability reach) {
             travelType = reach.travelType;
             toAreaNum = reach.toAreaNum;
@@ -599,7 +605,7 @@ public class AASFile {
             if (!src.ExpectTokenString("=")) {
                 return false;
             }
-            return (src.Parse1DMatrix(3, vec.ToFloatPtr()));
+            return src.Parse1DMatrix(3, vec);
         }
 
         private boolean ParseBBoxes(idLexer src) {
@@ -616,11 +622,11 @@ public class AASFile {
                     return true;
                 }
                 src.UnreadToken(token);
-                src.Parse1DMatrix(3, bounds.oGet(0).ToFloatPtr());
+                src.Parse1DMatrix(3, bounds.oGet(0));
                 if (!src.ExpectTokenString("-")) {
                     return false;
                 }
-                src.Parse1DMatrix(3, bounds.oGet(1).ToFloatPtr());
+                src.Parse1DMatrix(3, bounds.oGet(1));
 
                 boundingBoxes[numBoundingBoxes++] = bounds;
             }
@@ -669,6 +675,23 @@ public class AASFile {
         protected idAASSettings                 settings;
         //
         //
+
+        protected idAASFile() {
+            name = new idStr();
+
+            planeList = new idPlaneSet();
+            vertices = new idList();
+            edges = new idList();
+            edgeIndex = new idList();
+            faces = new idList();
+            faceIndex = new idList();
+            areas = new idList();
+            nodes = new idList();
+            portals = new idList();
+            portalIndex = new idList();
+            clusters = new idList();
+            settings = new idAASSettings();
+        }
 
         // virtual 					~idAASFile() {}
         public String GetName() {
@@ -830,8 +853,8 @@ public class AASFile {
     static boolean Reachability_Read(idLexer src, idReachability reach) {
         reach.travelType = src.ParseInt();
         reach.toAreaNum = (short) src.ParseInt();
-        src.Parse1DMatrix(3, reach.start.ToFloatPtr());
-        src.Parse1DMatrix(3, reach.end.ToFloatPtr());
+        src.Parse1DMatrix(3, reach.start);
+        src.Parse1DMatrix(3, reach.end);
         reach.edgeNum = src.ParseInt();
         reach.travelTime = src.ParseInt();
         return true;

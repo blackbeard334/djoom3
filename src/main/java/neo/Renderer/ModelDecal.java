@@ -423,7 +423,7 @@ public class ModelDecal {
             newTri = tri;
 
             // copy the current vertexes to temp vertex cache
-            newTri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.SIZE_B);
+            newTri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.BYTES);
 
             // create the drawsurf
             R_AddDrawSurf(newTri, space, space.entityDef.parms, material, space.scissorRect);

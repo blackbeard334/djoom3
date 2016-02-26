@@ -17,11 +17,11 @@ import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import neo.idlib.Dict_h.idDict;
 import static neo.idlib.Lib.BIT;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -84,14 +84,14 @@ public class Sound {
      */
     public static class idSound extends idEntity {
 
-        private float   lastSoundVol;
-        private float   soundVol;
-        private float   random;
-        private float   wait;
-        private boolean timerOn;
-        private idVec3 shakeTranslate;
+        private float    lastSoundVol;
+        private float    soundVol;
+        private float    random;
+        private float    wait;
+        private boolean  timerOn;
+        private idVec3   shakeTranslate;
         private idAngles shakeRotate;
-        private int playingUntilTime;
+        private int      playingUntilTime;
         //
         //
 
@@ -99,8 +99,8 @@ public class Sound {
         public idSound() {
             lastSoundVol = 0.0f;
             soundVol = 0.0f;
-            shakeTranslate.Zero();
-            shakeRotate.Zero();
+            shakeTranslate = new idVec3();
+            shakeRotate = new idAngles();
             random = 0.0f;
             wait = 0.0f;
             timerOn = false;
@@ -175,6 +175,8 @@ public class Sound {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             spawnArgs.GetVector("move", "0 0 0", shakeTranslate);
             spawnArgs.GetAngles("rotate", "0 0 0", shakeRotate);
             random = spawnArgs.GetFloat("random", "0");
@@ -188,7 +190,7 @@ public class Sound {
             soundVol = 0.0f;
             lastSoundVol = 0.0f;
 
-            if ((shakeRotate != ang_zero) || (shakeTranslate != vec3_zero)) {
+            if (!shakeRotate.equals(getAng_zero()) || !shakeTranslate.equals(getVec3_zero())) {
                 BecomeActive(TH_THINK);
             }
 

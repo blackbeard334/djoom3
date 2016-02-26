@@ -97,7 +97,7 @@ public class StaticList {
 
         // returns size of the used elements in the list
         public int/*size_t*/ MemoryUsed() {
-            return num * sizeof(list[0]);
+            return num * Integer.BYTES;//TODO: * sizeof(list[0]);
         }
 //
 

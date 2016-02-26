@@ -94,7 +94,7 @@ public class leakfile {
 
             fprintf = String.format("%f %f %f\n", mid.oGet(0), mid.oGet(1), mid.oGet(2)).getBytes();
             linefile.write(ByteBuffer.wrap(fprintf));
-            common.Printf("%5i point linefile\n", count + 1);
+            common.Printf("%5d point linefile\n", count + 1);
 
 //             fclose(linefile);
         } catch (IOException ex) {

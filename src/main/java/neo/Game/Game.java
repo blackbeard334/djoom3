@@ -68,7 +68,6 @@ import neo.framework.DeclAF.idDeclAF_Body;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_AF;
 import static neo.framework.DeclManager.declType_t.DECL_MODELDEF;
-import neo.framework.DeclManager.idDecl;
 import neo.framework.DeclManager.idDeclManager;
 import neo.framework.FileSystem_h.idFileSystem;
 import neo.framework.File_h.idFile;
@@ -88,10 +87,10 @@ import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 import neo.sys.sys_public.idSys;
 import neo.ui.UserInterface.idUserInterface;
 import neo.ui.UserInterface.idUserInterface.idUserInterfaceManager;
@@ -286,6 +285,13 @@ public class Game {
                                                     // samples in a multi-sample list from the shader are used
         public boolean            waitfortrigger;   // don't start it at spawn time
         public soundShaderParms_t parms;            // override volume, flags, etc
+
+        public refSound_t() {
+            this.referenceSound = null;
+            this.origin = new idVec3();
+            this.shader = new idSoundShader();
+            this.parms = new soundShaderParms_t();
+        }
     };
 
     //enum {
@@ -424,7 +430,7 @@ public class Game {
                 }
             }
             if (renderEntity.hModel != null) {
-                renderEntity.bounds = renderEntity.hModel.Bounds(renderEntity);
+                renderEntity.bounds.oSet(renderEntity.hModel.Bounds(renderEntity));
             } else {
                 renderEntity.bounds.Zero();
             }
@@ -447,7 +453,7 @@ public class Game {
             if (!args.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", renderEntity.axis)) {
                 angle = args.GetFloat("angle");
                 if (angle != 0.0f) {
-                    renderEntity.axis = new idAngles(0.0f, angle, 0.0f).ToMat3();
+                    renderEntity.axis.oSet(new idAngles(0.0f, angle, 0.0f).ToMat3());
                 } else {
                     renderEntity.axis.Identity();
                 }
@@ -483,7 +489,7 @@ public class Game {
             for (i = 0; i < MAX_RENDERENTITY_GUI; i++) {
                 temp = args.GetString(i == 0 ? "gui" : va("gui%d", i + 1));
                 if (isNotNullOrEmpty(temp)) {
-                    AddRenderGui(temp, renderEntity.gui[i], args);
+                    renderEntity.gui[i] = AddRenderGui(temp, args);
                 }
             }
         }
@@ -557,12 +563,12 @@ public class Game {
 
             args = gameLocal.FindEntityDefDict(classname, false);
             if (null == args) {
-                return vec3_origin;
+                return getVec3_origin();
             }
 
             modelDef = ANIM_GetModelDefFromEntityDef(args);
             if (null == modelDef) {
-                return vec3_origin;
+                return getVec3_origin();
             }
 
             return modelDef.GetVisualOffset();
@@ -705,7 +711,7 @@ public class Game {
             if (numJoints != anim.NumJoints()) {
                 gameLocal.Warning("Model '%s' has different # of joints than anim '%s'", model.Name(), anim.Name());
                 for (i = 0; i < numJoints; i++) {
-                    joints[i].SetRotation(mat3_identity);
+                    joints[i].SetRotation(getMat3_identity());
                     joints[i].SetTranslation(offset);
                 }
                 return;
@@ -1371,7 +1377,7 @@ public class Game {
             idMapFile mapFile = gameLocal.GetLevelMap();
             if (mapFile != null) {
                 idMapEntity ent = new idMapEntity();
-                ent.epairs = dict;
+                ent.epairs.oSet(dict);
                 mapFile.AddEntity(ent);
             }
         }

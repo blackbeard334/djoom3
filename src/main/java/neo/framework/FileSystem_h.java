@@ -1592,7 +1592,7 @@ public class FileSystem_h {
                     pakFile = pak.hashTable[(int) hash];
                     do {
                         // case and separator insensitive comparisons
-                        if (!FilenameCompare(pakFile.name.toString(), relativePath)) {
+                        if (FilenameCompare(pakFile.name.toString(), relativePath)) {
                             return true;
                         }
                         pakFile = (fileInPack_s) pakFile.next;
@@ -1655,7 +1655,7 @@ public class FileSystem_h {
                 }
                 search.pack.binary = BINARY_NO;
                 for (pakFile = search.pack.hashTable[confHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
-                    if (!FilenameCompare(pakFile.name.toString(), BINARY_CONFIG)) {
+                    if (FilenameCompare(pakFile.name.toString(), BINARY_CONFIG)) {
                         search.pack.binary = BINARY_YES;
                         confFile = ReadFileFromZip(search.pack, pakFile, BINARY_CONFIG);
 //				buf = new char[ confFile.Length() + 1 ];
@@ -1836,7 +1836,7 @@ public class FileSystem_h {
                 // make sure there is a valid DLL for us
                 if (pack.hashTable[dllHash] != null) {
                     for (pakFile = pack.hashTable[dllHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
-                        if (!FilenameCompare(pakFile.name.toString(), dllName[0])) {
+                        if (FilenameCompare(pakFile.name.toString(), dllName[0])) {
                             gamePakChecksum = _gamePakChecksum;        // this will be used to extract the DLL in pure mode FindDLL
                             return PURE_RESTART;
                         }
@@ -2246,28 +2246,12 @@ public class FileSystem_h {
                                 } else if (isFromSavePath || isFromBasePath) {
                                     idStr sourcepath;
                                     sourcepath = new idStr(BuildOSPath(fs_cdpath.GetString(), dir.gamedir.toString(), relativePath));
-//                                    FileChannel f1 = OpenOSFile(sourcepath.toString(), "r");
-//                                    if (f1 != null) {
                                     long t1 = Sys_FileTimeStamp(sourcepath.toString());
-//                                        try {
-//                                            f1.close();
-//                                        } catch (IOException ex) {
-//                                            Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
-//                                        }
-//                                        FileChannel f2 = OpenOSFile(copypath.toString(), "r");
-//                                        if (f2 != null) {
                                     long t2 = Sys_FileTimeStamp(copypath.toString());
-//                                            try {
-//                                                f2.close();
-//                                            } catch (IOException ex) {
-//                                                Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
-//                                            }
                                     if (t1 > t2) {
                                         CopyFile(sourcepath.toString(), copypath.toString());
                                     }
                                 }
-//                                    }
-//                                }
                                 break;
                             case 3:
                                 if (isFromCDPath || isFromBasePath) {
@@ -2308,7 +2292,7 @@ public class FileSystem_h {
                             confHash = (int) HashFileName(BINARY_CONFIG);
                             pak.binary = BINARY_NO;
                             for (pakFile = search.pack.hashTable[confHash]; pakFile != null; pakFile = pakFile.next) {
-                                if (!FilenameCompare(pakFile.name.toString(), BINARY_CONFIG)) {
+                                if (FilenameCompare(pakFile.name.toString(), BINARY_CONFIG)) {
                                     pak.binary = BINARY_YES;
                                     break;
                                 }
@@ -2321,7 +2305,7 @@ public class FileSystem_h {
 
                     for (pakFile = pak.hashTable[(int) hash]; pakFile != null; pakFile = pakFile.next) {
                         // case and separator insensitive comparisons
-                        if (!FilenameCompare(pakFile.name.toString(), relativePath)) {
+                        if (FilenameCompare(pakFile.name.toString(), relativePath)) {
                             idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
 
                             if (foundInPak != null) {
@@ -2346,12 +2330,12 @@ public class FileSystem_h {
             }
 
             if ((searchFlags & FSFLAG_SEARCH_ADDONS) != 0) {
-                for (search = addonPaks; search != null; search = (searchpath_s) search.next) {
+                for (search = addonPaks; search != null; search = search.next) {
                     assert (search.pack != null);
 //			fileInPack_s	pakFile;
                     pak = search.pack;
                     for (pakFile = pak.hashTable[(int) hash]; pakFile != null; pakFile = pakFile.next) {
-                        if (!FilenameCompare(pakFile.name.toString(), relativePath)) {
+                        if (FilenameCompare(pakFile.name.toString(), relativePath)) {
                             idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
                             if (foundInPak != null) {
                                 foundInPak[0] = pak;
@@ -2672,7 +2656,7 @@ public class FileSystem_h {
                     } else {
                         // extract and copy
                         for (pakFile = pak.hashTable[(int) dllHash]; pakFile != null; pakFile = pakFile.next) {
-                            if (!FilenameCompare(pakFile.name.toString(), dllName)) {
+                            if (FilenameCompare(pakFile.name.toString(), dllName)) {
                                 dllFile = ReadFileFromZip(pak, pakFile, dllName);
                                 common.Printf("found DLL in game pak file: %s\n", pak.pakFilename.toString());
                                 dllPath = new idStr(RelativePathToOSPath(dllName, "fs_savepath"));
@@ -3086,35 +3070,7 @@ public class FileSystem_h {
          */
         @Override
         public boolean FilenameCompare(String s1, String s2) {
-            int c1, c2;
-            int p1, p2;
-
-            p1 = p2 = 0;
-
-            do {
-                c1 = s1.charAt(p1++);
-                c2 = s2.charAt(p2++);
-
-                if (c1 >= 'a' && c1 <= 'z') {
-                    c1 -= ('a' - 'A');
-                }
-                if (c2 >= 'a' && c2 <= 'z') {
-                    c2 -= ('a' - 'A');
-                }
-
-                if (c1 == '\\' || c1 == ':') {
-                    c1 = '/';
-                }
-                if (c2 == '\\' || c2 == ':') {
-                    c2 = '/';
-                }
-
-                if (c1 != c2) {
-                    return true;		// strings not equal
-                }
-            } while (p1 < s1.length());
-
-            return false;		// strings are equal
+            return Paths.get(s1).equals(Paths.get(s2));
         }
 
         public static class Dir_f extends cmdFunction_t {
@@ -4307,7 +4263,7 @@ public class FileSystem_h {
                 if (search.pack != null && search.pack.hashTable[hash] != null) {
                     pak = search.pack;
                     for (pakFile = pak.hashTable[hash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
-                        if (!FilenameCompare(pakFile.name.toString(), relativePath)) {
+                        if (FilenameCompare(pakFile.name.toString(), relativePath)) {
                             idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
                             if (findChecksum[0] == GetFileChecksum(file)) {
                                 if (fs_debug.GetBool()) {
@@ -4428,7 +4384,7 @@ public class FileSystem_h {
                 pack.addon = false;
                 confHash = (int) HashFileName(ADDON_CONFIG);
                 for (pakFile = pack.hashTable[confHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
-                    if (!FilenameCompare(pakFile.name.toString(), ADDON_CONFIG)) {
+                    if (FilenameCompare(pakFile.name.toString(), ADDON_CONFIG)) {
                         pack.addon = true;
                         idFile_InZip file = ReadFileFromZip(pack, pakFile, ADDON_CONFIG);
                         // may be just an empty file if you don't bother about the mapDef
@@ -4461,32 +4417,17 @@ public class FileSystem_h {
         }
 
         private idFile_InZip ReadFileFromZip(pack_t pak, fileInPack_s pakFile, final String relativePath) {
-//            unz_s zfi;
             File fp;
             idFile_InZip file = new idFile_InZip();
 
             // open a new file on the pakfile
-//            file.z = unzReOpen(pak.pakFilename, pak.handle);
             fp = new File(pak.pakFilename.toString());//TODO: check this shit
-//            if (file.z == null) {
             if (!fp.exists()) {
                 common.FatalError("Couldn't reopen %s", pak.pakFilename.toString());
             }
             file.z = pakFile.entry;
             file.name.oSet(relativePath);
-            file.fullPath.oSet(pak.pakFilename);//+ "/" + relativePath);
-//            file.relativePath = '/' + relativePath;
-//            zfi = /*(unz_s[])*/ file.z;
-//            // in case the file was new
-//            fp = zfi.file;
-//            // set the file position in the zip file (also sets the current file info)
-//            unzSetCurrentFileInfoPosition(pak.handle, pakFile.pos);
-//            // copy the file info into the unzip structure
-//            memcpy(zfi, pak.handle, sizeof(unz_s));
-//            // we copy this back into the structure
-//            zfi.file = fp;
-//            // open the file in the zip
-//            unzOpenCurrentFile(file.z);
+            file.fullPath.oSet(pak.pakFilename);
             file.zipFilePos = pakFile.pos;
             file.fileSize = (int) pakFile.entry.getSize();
             return file;

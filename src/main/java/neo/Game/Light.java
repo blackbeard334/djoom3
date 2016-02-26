@@ -4,7 +4,6 @@ import static neo.Game.Entity.EV_PostSpawn;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
@@ -47,10 +46,10 @@ import static neo.idlib.Text.Str.va;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -101,12 +100,13 @@ public class Light {
         public idLight() {
 //	memset( &renderLight, 0, sizeof( renderLight ) );
             renderLight = new renderLight_s();
-            localLightOrigin = vec3_zero;
-            localLightAxis = mat3_identity;
+            localLightOrigin = getVec3_zero();
+            localLightAxis = getMat3_identity();
             lightDefHandle = -1;
+            brokenModel = new idStr();
             levels[0] = 0;
             currentLevel = 0;
-            baseColor = vec3_zero;
+            baseColor = getVec3_zero();
             breakOnTrigger = false;
             count = 0;
             triggercount = 0;
@@ -121,6 +121,8 @@ public class Light {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             boolean[] start_off = {false};
             boolean needBroken;
             String[] demonic_shader = {null};

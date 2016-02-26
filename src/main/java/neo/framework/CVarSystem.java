@@ -1,7 +1,10 @@
 package neo.framework;
 
+import neo.CM.CollisionModel_debug;
 import neo.CM.CollisionModel_local.idCollisionModelManagerLocal;
+import neo.Game.GameSys.SysCvar;
 import neo.Game.Game_local;
+import neo.Game.Game_network;
 import neo.Renderer.Image;
 import neo.Renderer.MegaTexture.idMegaTexture;
 import neo.Renderer.Model_local.idRenderModelStatic;
@@ -24,7 +27,9 @@ import neo.framework.CmdSystem.argCompletion_t;
 import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.CmdSystem.cmdSystem;
 import neo.framework.CmdSystem.idCmdSystem;
+import neo.framework.DemoFile.idDemoFile;
 import neo.framework.EventLoop.idEventLoop;
+import neo.framework.FileSystem_h.idFileSystemLocal;
 import neo.framework.File_h.idFile;
 import static neo.framework.Session.session;
 import neo.framework.Session_local.idSessionLocal;
@@ -44,8 +49,12 @@ import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
+import neo.idlib.math.Lcp;
+import neo.sys.sys_local;
+import neo.sys.win_local;
 import neo.sys.win_net;
 import neo.ui.DeviceContext;
+import neo.ui.GameBearShootWindow;
 import neo.ui.Window.idWindow;
 
 //	CVar Registration
@@ -55,36 +64,7 @@ import neo.ui.Window.idWindow;
 public class CVarSystem {
 
     private static idCVarSystemLocal localCVarSystem = new idCVarSystemLocal();
-    public static idCVarSystem cvarSystem = localCVarSystem;
-
-    static {
-        /**
-         * CVARS eager init: </br>
-         * jvm's don't generally preload static fields until a class is
-         * referenced, so this little trick is for all the scattered cvars.
-         * could as well move them all to a single class, but we want to retain
-         * a hint of...
-         */
-        ServerScan scan = new ServerScan();
-        snd_system snd = new snd_system();
-        win_net net = new win_net();
-        Console con = new Console();
-        idSessionLocal session = new idSessionLocal();
-        idAsyncNetwork async = new idAsyncNetwork();
-        EventLoop event = new EventLoop();
-        idEventLoop loop = new idEventLoop();
-        DeclManager decl = new DeclManager();
-        RenderSystem_init render = new RenderSystem_init();
-        Image image = new Image();
-        idMegaTexture texture = new idMegaTexture();
-        idRenderModelStatic model = new idRenderModelStatic();
-        idUsercmdGenLocal usr = new idUsercmdGenLocal();
-        idVertexCache vertex = new idVertexCache();
-        Game_local game = new Game_local();
-        idCollisionModelManagerLocal collision = new idCollisionModelManagerLocal();
-        idWindow window = new idWindow(null);
-        DeviceContext context = new DeviceContext();
-    }
+    public static  idCVarSystem      cvarSystem      = localCVarSystem;
 
     /*
      ===============================================================================
@@ -135,26 +115,66 @@ public class CVarSystem {
 
      ===============================================================================
      */
-    public static final int CVAR_ALL = -1;		// all flags
-    public static final int CVAR_BOOL = BIT(0);     	// variable is a boolean
-    public static final int CVAR_INTEGER = BIT(1);	// variable is an longeger
-    public static final int CVAR_FLOAT = BIT(2);	// variable is a float
-    public static final int CVAR_SYSTEM = BIT(3);	// system variable
-    public static final int CVAR_RENDERER = BIT(4); 	// renderer variable
-    public static final int CVAR_SOUND = BIT(5);        // sound variable
-    public static final int CVAR_GUI = BIT(6);          // gui variable
-    public static final int CVAR_GAME = BIT(7);         // game variable
-    public static final int CVAR_TOOL = BIT(8);         // tool variable
-    public static final int CVAR_USERINFO = BIT(9);	// sent to servers; available to menu
-    public static final int CVAR_SERVERINFO = BIT(10);	// sent from servers; available to menu
-    public static final int CVAR_NETWORKSYNC = BIT(11);	// cvar is synced from the server to clients
-    public static final int CVAR_STATIC = BIT(12);	// statically declared; not user created
-    public static final int CVAR_CHEAT = BIT(13);	// variable is considered a cheat
-    public static final int CVAR_NOCHEAT = BIT(14);	// variable is not considered a cheat
-    public static final int CVAR_INIT = BIT(15);	// can only be set from the command-line
-    public static final int CVAR_ROM = BIT(16);		// display only; cannot be set by user at all
-    public static final int CVAR_ARCHIVE = BIT(17);	// set to cause it to be saved to a config file
-    public static final int CVAR_MODIFIED = BIT(18);	// set when the variable is modified
+    public static final int CVAR_ALL         = -1;        // all flags
+    public static final int CVAR_BOOL        = BIT(0);    // variable is a boolean
+    public static final int CVAR_INTEGER     = BIT(1);    // variable is an longeger
+    public static final int CVAR_FLOAT       = BIT(2);    // variable is a float
+    public static final int CVAR_SYSTEM      = BIT(3);    // system variable
+    public static final int CVAR_RENDERER    = BIT(4);    // renderer variable
+    public static final int CVAR_SOUND       = BIT(5);    // sound variable
+    public static final int CVAR_GUI         = BIT(6);    // gui variable
+    public static final int CVAR_GAME        = BIT(7);    // game variable
+    public static final int CVAR_TOOL        = BIT(8);    // tool variable
+    public static final int CVAR_USERINFO    = BIT(9);    // sent to servers; available to menu
+    public static final int CVAR_SERVERINFO  = BIT(10);   // sent from servers; available to menu
+    public static final int CVAR_NETWORKSYNC = BIT(11);   // cvar is synced from the server to clients
+    public static final int CVAR_STATIC      = BIT(12);   // statically declared; not user created
+    public static final int CVAR_CHEAT       = BIT(13);   // variable is considered a cheat
+    public static final int CVAR_NOCHEAT     = BIT(14);   // variable is not considered a cheat
+    public static final int CVAR_INIT        = BIT(15);   // can only be set from the command-line
+    public static final int CVAR_ROM         = BIT(16);   // display only; cannot be set by user at all
+    public static final int CVAR_ARCHIVE     = BIT(17);   // set to cause it to be saved to a config file
+    public static final int CVAR_MODIFIED    = BIT(18);   // set when the variable is modified
+    
+    static {
+        /**
+         * CVARS eager init: </br>
+         * jvm's don't generally preload static fields until a class is
+         * referenced, so this little trick is for all the scattered cvars.
+         * could as well move them all to a single class, but we want to retain
+         * a hint of...
+         */
+        final CollisionModel_debug cm = new CollisionModel_debug();
+        final idCollisionModelManagerLocal collision = new idCollisionModelManagerLocal();
+        final Common common = new Common();
+        final Console con = new Console();
+        final idDemoFile demoFile = new idDemoFile();
+        final idFileSystemLocal fileSystem = new idFileSystemLocal();
+        final idSessionLocal session = new idSessionLocal();
+        final idUsercmdGenLocal usr = new idUsercmdGenLocal();
+        final idAsyncNetwork async = new idAsyncNetwork();
+        final ServerScan scan = new ServerScan();
+        final Image image = new Image();
+        final idMegaTexture texture = new idMegaTexture();
+        final idRenderModelStatic model = new idRenderModelStatic();
+        final RenderSystem_init render = new RenderSystem_init();
+        final idVertexCache vertex = new idVertexCache();
+        final snd_system snd = new snd_system();
+        final sys_local sys = new sys_local();
+        final win_local wub = new win_local(){};
+        final win_net net = new win_net();
+        final DeviceContext context = new DeviceContext();
+        final GameBearShootWindow bear = new GameBearShootWindow();
+        final idWindow window = new idWindow(null);
+        final SysCvar sysCvar = new SysCvar();
+        final Game_local game = new Game_local();
+        final Game_network network = new Game_network();
+        final Lcp lcp = new Lcp();
+        
+        final EventLoop event = new EventLoop();
+        final idEventLoop loop = new idEventLoop();
+        final DeclManager decl = new DeclManager();
+    }
 
     /*
      ===============================================================================
@@ -165,20 +185,20 @@ public class CVarSystem {
      */
     public static class idCVar {
 
-        protected String name;				// name
-        protected String value;				// value
-        protected String description;			// description
-        protected int flags;				// CVAR_? flags
-        protected float valueMin;			// minimum value
-        protected float valueMax;			// maximum value
-        protected String[] valueStrings;		// valid value strings
-        protected argCompletion_t valueCompletion;	// value auto-completion function
-        protected int integerValue;			// atoi( string )
-        protected float floatValue;			// atof( value )
-        protected idCVar internalVar;			// internal cvar
-        protected idCVar next;				// next statically declared cvar
+        protected String          name;               // name
+        protected String          value;              // value
+        protected String          description;        // description
+        protected int             flags;              // CVAR_? flags
+        protected float           valueMin;           // minimum value
+        protected float           valueMax;           // maximum value
+        protected String[]        valueStrings;       // valid value strings
+        protected argCompletion_t valueCompletion;    // value auto-completion function
+        protected int             integerValue;       // atoi( string )
+        protected float           floatValue;         // atof( value )
+        protected idCVar          internalVar;        // internal cvar
+        protected idCVar          next;               // next statically declared cvar
         //
-        private static idCVar staticVars = null;
+        private static       idCVar staticVars         = null;
         private static final idCVar ID_CVAR_0xFFFFFFFF = new idCVar();
         //
         //
@@ -337,7 +357,7 @@ public class CVarSystem {
             this.value = value;
             this.flags = flags;
             this.description = description;
-            this.flags = (int) (flags | CVAR_STATIC);
+            this.flags = flags | CVAR_STATIC;
             this.valueMin = valueMin;
             this.valueMax = valueMax;
             this.valueStrings = valueStrings;
@@ -454,7 +474,7 @@ public class CVarSystem {
         private idStr nameString;			// name
         private idStr resetString;			// resetting will change to this value
         private idStr valueString;			// value
-        private idStr descriptionString;		// description
+        private idStr descriptionString;	// description
         //
         //
 
@@ -469,7 +489,7 @@ public class CVarSystem {
             resetString = new idStr(newValue);
             descriptionString = new idStr();
             description = "";
-            flags = (int) ((newFlags & ~CVAR_STATIC) | CVAR_MODIFIED);
+            flags = (newFlags & ~CVAR_STATIC) | CVAR_MODIFIED;
             valueMin = 1;
             valueMax = -1;
             valueStrings = null;
@@ -487,7 +507,7 @@ public class CVarSystem {
             resetString = new idStr(cvar.GetString());
             descriptionString = new idStr(cvar.GetDescription());
             description = cvar.GetDescription();
-            flags = (int) (cvar.GetFlags() | CVAR_MODIFIED);
+            flags = cvar.GetFlags() | CVAR_MODIFIED;
             valueMin = cvar.GetMinValue();
             valueMax = cvar.GetMaxValue();
             valueStrings = CopyValueStrings(cvar.GetValueStrings());
@@ -737,10 +757,10 @@ public class CVarSystem {
      */
     static class idCVarSystemLocal extends idCVarSystem {
 
-        private boolean initialized;
+        private boolean                initialized;
         private idList<idInternalCVar> cvars;
-        private idHashIndex cvarHash;
-        private int modifiedFlags;
+        private idHashIndex            cvarHash;
+        private int                    modifiedFlags;
         // use a static dictionary to MoveCVarsToDict can be used from game
         private static idDict moveCVarsToDict = new idDict();
         //
@@ -1453,10 +1473,10 @@ public class CVarSystem {
     };
     //    
     //
-    static final int NUM_COLUMNS = 77;		// 78 - 1, or (80 x 2 - 2) / 2 - 2
-    static final int NUM_NAME_CHARS = 33;
-    static final int NUM_DESCRIPTION_CHARS = (NUM_COLUMNS - NUM_NAME_CHARS);
-    static final String FORMAT_STRING = "%-32s ";
+    private static final int    NUM_COLUMNS           = 77;        // 78 - 1, or (80 x 2 - 2) / 2 - 2
+    private static final int    NUM_NAME_CHARS        = 33;
+    private static final int    NUM_DESCRIPTION_CHARS = (NUM_COLUMNS - NUM_NAME_CHARS);
+    private static final String FORMAT_STRING         = "%-32s ";
 
     static String CreateColumn(final String textString, int columnWidth, final String indent, idStr string) {
         int i, lastLine;

@@ -1,12 +1,15 @@
 package neo.framework;
 
-import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static neo.TempDump.*;
 import static neo.TempDump.SERIAL_SIZE;
 import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
+
+import neo.TempDump;
+import neo.TempDump.SERiAL;
 import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
 import static neo.framework.CVarSystem.CVAR_ARCHIVE;
 import static neo.framework.CVarSystem.CVAR_BOOL;
@@ -194,9 +197,9 @@ public class UsercmdGen {
     public static final int UCF_IMPULSE_SEQUENCE = 0x0001;    // toggled every time an impulse command is sent
 //
 
-    public static class usercmd_t {
+    public static class usercmd_t implements SERiAL {
 
-        public static final transient int SIZE = SERIAL_SIZE(new usercmd_t());
+        public static final transient int BYTES = Integer.BYTES * 4 + 6 + 5 * Short.BYTES;
 
         public int  gameFrame;              // frame number
         public int  gameTime;               // game time
@@ -271,6 +274,21 @@ public class UsercmdGen {
                 return false;
             }
             return true;
+        }
+
+        @Override
+        public ByteBuffer AllocBuffer() {
+            throw new TODO_Exception();
+        }
+
+        @Override
+        public void Read(final ByteBuffer buffer) {
+            throw new TODO_Exception();
+        }
+
+        @Override
+        public ByteBuffer Write() {
+            throw new TODO_Exception();
         }
     };
 
@@ -1067,7 +1085,7 @@ public class UsercmdGen {
             my *= sensitivity.GetFloat();
 
             if (m_showMouseRate.GetBool()) {
-                Sys_DebugPrintf("[%3i %3i  = %5.1f %5.1f = %5.1f %5.1f] ", mouseDx, mouseDy, mx, my, strafeMx, strafeMy);
+                Sys_DebugPrintf("[%3d %3d  = %5.1f %5.1f = %5.1f %5.1f] ", mouseDx, mouseDy, mx, my, strafeMx, strafeMy);
             }
 
             mouseDx = 0;

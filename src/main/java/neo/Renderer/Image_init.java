@@ -259,7 +259,7 @@ public class Image_init {
                     sortedArray[count].image = image;
                     sortedArray[count].size = image.StorageSize();
                 } else {
-                    common.Printf("%4i:", i);
+                    common.Printf("%4d:", i);
                     image.Print();
                 }
                 totalSize += image.StorageSize();
@@ -270,7 +270,7 @@ public class Image_init {
                 Arrays.sort(sortedArray, 0, count, new R_QsortImageSizes());//qsort(sortedArray, count, sizeof(sortedImage_t), R_QsortImageSizes);
                 partialSize = 0;
                 for (i = 0; i < count; i++) {
-                    common.Printf("%4i:", i);
+                    common.Printf("%4d:", i);
                     sortedArray[i].image.Print();
                     partialSize += sortedArray[i].image.StorageSize();
                     if (((i + 1) % 10) == 0) {
@@ -353,7 +353,7 @@ public class Image_init {
             for (int frameNum = 1; frameNum < 10000; frameNum++) {
 //		final char	[]filename=new char[MAX_IMAGE_NAME];
                 String filename;
-                ByteBuffer[][] pics = new ByteBuffer[6][1];//Good God!
+                ByteBuffer[] pics = new ByteBuffer[6];//Good God!
                 int[] width = {0}, height = {0};
                 int side;
                 final int[] orderRemap = {1, 3, 4, 2, 5, 6};
@@ -361,9 +361,9 @@ public class Image_init {
                     filename = String.format("%s%d%04i.tga", baseName.toString(), orderRemap[side], frameNum);
 
                     common.Printf("reading %s\n", filename);
-                    R_LoadImage(filename, pics[side], width, height, null, true);
+                    pics[side] = R_LoadImage(filename, width, height, null, true);
 
-                    if (NOT(pics[side][0])) {
+                    if (NOT(pics[side])) {
                         common.Printf("not found.\n");
                         break;
                     }
@@ -371,24 +371,24 @@ public class Image_init {
                     // convert from "camera" images to native cube map images
                     switch (side) {
                         case 0:	// forward
-                            R_RotatePic(pics[side][0], width[0]);
+                            R_RotatePic(pics[side], width[0]);
                             break;
                         case 1:	// back
-                            R_RotatePic(pics[side][0], width[0]);
-                            R_HorizontalFlip(pics[side][0], width[0], height[0]);
-                            R_VerticalFlip(pics[side][0], width[0], height[0]);
+                            R_RotatePic(pics[side], width[0]);
+                            R_HorizontalFlip(pics[side], width[0], height[0]);
+                            R_VerticalFlip(pics[side], width[0], height[0]);
                             break;
                         case 2:	// left
-                            R_VerticalFlip(pics[side][0], width[0], height[0]);
+                            R_VerticalFlip(pics[side], width[0], height[0]);
                             break;
                         case 3:	// right
-                            R_HorizontalFlip(pics[side][0], width[0], height[0]);
+                            R_HorizontalFlip(pics[side], width[0], height[0]);
                             break;
                         case 4:	// up
-                            R_RotatePic(pics[side][0], width[0]);
+                            R_RotatePic(pics[side], width[0]);
                             break;
                         case 5: // down
-                            R_RotatePic(pics[side][0], width[0]);
+                            R_RotatePic(pics[side], width[0]);
                             break;
                     }
                 }
@@ -406,7 +406,7 @@ public class Image_init {
                 for (side = 0; side < 6; side++) {
 //			memcpy( combined+width*height*4*side, pics[side], width*height*4 );
                     combined.position(length * side);
-                    combined.put(pics[side][0].array(), 0, length);
+                    combined.put(pics[side].array(), 0, length);
                     pics[side] = null;//Mem_Free(pics[side]);
 
                 }

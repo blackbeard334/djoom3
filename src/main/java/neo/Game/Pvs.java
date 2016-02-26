@@ -84,6 +84,11 @@ public class Pvs {
         boolean        done;     // true if pvs is calculated for this portal
         byte[]         vis;      // PVS for this portal
         byte[]         mightSee; // used during construction
+        
+        public pvsPortal_t(){
+            bounds = new idBounds();
+            plane = new idPlane();
+        }
     }
 
     ;
@@ -93,17 +98,17 @@ public class Pvs {
         int           numPortals;// number of portals in this area
         idBounds      bounds;    // bounds of the whole area
         pvsPortal_t[] portals;   // array with pointers to the portals of this area
-    }
 
-    ;
+        public pvsArea_t() {
+            bounds = new idBounds();
+        }
+    };
 
     public static class pvsStack_t {
 
         pvsStack_t next;        // next stack entry
         byte[]     mightSee;    // bit set for all portals that might be visible through this passage/portal stack
-    }
-
-    ;
+    };
 
     public static class idPVS {
 
@@ -673,7 +678,7 @@ public class Pvs {
 
             for (i = 0; i < numAreas; i++) {
 
-                area = pvsAreas[i];
+                area = pvsAreas[i] = new pvsArea_t();
                 area.bounds.Clear();
 //                area.portals = portalPtrs + cp;
 
@@ -683,17 +688,13 @@ public class Pvs {
 
                     portal = gameRenderWorld.GetPortal(i, j);
 
-                    p = pvsPortals[cp++];
+                    p = pvsPortals[cp++] = new pvsPortal_t();
                     // the winding goes counter clockwise seen from this area
                     p.w = portal.w.Copy();
                     p.areaNum = portal.areas[1];	// area[1] is always the area the portal leads to
 
                     p.vis = new byte[portalVisBytes];
-//                    memset(p.vis, 0, portalVisBytes);
-                    Arrays.fill(p.vis, 0, portalVisBytes, (byte) 0);
                     p.mightSee = new byte[portalVisBytes];
-//                    memset(p.mightSee, 0, portalVisBytes);
-                    Arrays.fill(p.mightSee, 0, portalVisBytes, (byte) 0);
                     p.w.GetBounds(p.bounds);
                     p.w.GetPlane(p.plane);
                     // plane normal points to outside the area
@@ -701,8 +702,7 @@ public class Pvs {
                     // no PVS calculated for this portal yet
                     p.done = false;
 
-                    portalPtrs[cp + area.numPortals] = p;
-                    area.numPortals++;
+                    portalPtrs[area.numPortals++] = p;
 
                     area.bounds.oPluSet(p.bounds);
                 }
@@ -1103,7 +1103,7 @@ public class Pvs {
                     target = area.portals[j];
                     n = indexOf(target, pvsPortals);
 
-                    passage = source.passages[j];
+                    passage = source.passages[j] = new pvsPassage_t();
 
                     // if the source portal cannot see this portal
                     if (0 == (source.mightSee[ n >> 3] & (1 << (n & 7)))) {

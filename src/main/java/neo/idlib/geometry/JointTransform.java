@@ -23,6 +23,11 @@ public class JointTransform {
 
         public idQuat q;
         public idVec3 t;
+
+        public idJointQuat() {
+            q = new idQuat();
+            t = new idVec3();
+        }
     };
 
     /*
@@ -44,6 +49,12 @@ public class JointTransform {
         private final float[] mat = new float[3 * 4];
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
+
+        public idJointMat() {
+            int a = 0;
+        }
 
         public void SetRotation(final idMat3 m) {
             // NOTE: idMat3 is transposed because it is column-major

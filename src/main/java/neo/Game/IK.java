@@ -1,5 +1,6 @@
 package neo.Game;
 
+import java.util.stream.Stream;
 import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_NONE;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD_OVERRIDE;
@@ -30,9 +31,9 @@ import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -57,12 +58,12 @@ public class IK /*ea*/ {
      */
     public static class idIK {
 
-        protected boolean initialized;
-        protected boolean ik_activate;
-        protected idEntity self;		// entity using the animated model
-        protected idAnimator animator;		// animator on entity
-        protected int modifiedAnim;		// animation modified by the IK
-        protected idVec3 modelOffset;
+        protected boolean    initialized;
+        protected boolean    ik_activate;
+        protected idEntity   self;        // entity using the animated model
+        protected idAnimator animator;        // animator on entity
+        protected int        modifiedAnim;        // animation modified by the IK
+        protected idVec3     modelOffset;
         //
         //
 
@@ -72,7 +73,7 @@ public class IK /*ea*/ {
             self = null;
             animator = null;
             modifiedAnim = 0;
-            modelOffset.Zero();
+            modelOffset = new idVec3();
         }
         // virtual					~idIK( void );
 
@@ -219,41 +220,41 @@ public class IK /*ea*/ {
         //
         private idClipModel footModel;
         //
-        private int numLegs;
-        private int enabledLegs;
-        private final int/*jointHandle_t*/[] footJoints = new int[MAX_LEGS];
+        private int         numLegs;
+        private int         enabledLegs;
+        private final int/*jointHandle_t*/[] footJoints  = new int[MAX_LEGS];
         private final int/*jointHandle_t*/[] ankleJoints = new int[MAX_LEGS];
-        private final int/*jointHandle_t*/[] kneeJoints = new int[MAX_LEGS];
-        private final int/*jointHandle_t*/[] hipJoints = new int[MAX_LEGS];
-        private final int/*jointHandle_t*/[] dirJoints = new int[MAX_LEGS];
+        private final int/*jointHandle_t*/[] kneeJoints  = new int[MAX_LEGS];
+        private final int/*jointHandle_t*/[] hipJoints   = new int[MAX_LEGS];
+        private final int/*jointHandle_t*/[] dirJoints   = new int[MAX_LEGS];
         private int/*jointHandle_t*/ waistJoint;
         //
-        private final idVec3[] hipForward = new idVec3[MAX_LEGS];
-        private final idVec3[] kneeForward = new idVec3[MAX_LEGS];
+        private final idVec3[] hipForward          = new idVec3[MAX_LEGS];
+        private final idVec3[] kneeForward         = new idVec3[MAX_LEGS];
         //
-        private final float[] upperLegLength = new float[MAX_LEGS];
-        private final float[] lowerLegLength = new float[MAX_LEGS];
+        private final float[]  upperLegLength      = new float[MAX_LEGS];
+        private final float[]  lowerLegLength      = new float[MAX_LEGS];
         //
-        private final idMat3[] upperLegToHipJoint = new idMat3[MAX_LEGS];
+        private final idMat3[] upperLegToHipJoint  = new idMat3[MAX_LEGS];
         private final idMat3[] lowerLegToKneeJoint = new idMat3[MAX_LEGS];
         //
-        private float smoothing;
-        private float waistSmoothing;
-        private float footShift;
-        private float waistShift;
-        private float minWaistFloorDist;
-        private float minWaistAnkleDist;
-        private float footUpTrace;
-        private float footDownTrace;
+        private float   smoothing;
+        private float   waistSmoothing;
+        private float   footShift;
+        private float   waistShift;
+        private float   minWaistFloorDist;
+        private float   minWaistAnkleDist;
+        private float   footUpTrace;
+        private float   footDownTrace;
         private boolean tiltWaist;
         private boolean usePivot;
         //
         // state
-        private int pivotFoot;
-        private float pivotYaw;
-        private idVec3 pivotPos;
+        private int     pivotFoot;
+        private float   pivotYaw;
+        private idVec3  pivotPos;
         private boolean oldHeightsValid;
-        private float oldWaistHeight;
+        private float   oldWaistHeight;
         private final float[] oldAnkleHeights = new float[MAX_LEGS];
         private idVec3 waistOffset;
         //
@@ -272,12 +273,12 @@ public class IK /*ea*/ {
                 kneeJoints[i] = INVALID_JOINT;
                 hipJoints[i] = INVALID_JOINT;
                 dirJoints[i] = INVALID_JOINT;
-                hipForward[i].Zero();
-                kneeForward[i].Zero();
+                hipForward[i] = new idVec3();
+                kneeForward[i] = new idVec3();
                 upperLegLength[i] = 0;
                 lowerLegLength[i] = 0;
-                upperLegToHipJoint[i].Identity();
-                lowerLegToKneeJoint[i].Identity();
+                upperLegToHipJoint[i] = getMat3_identity();
+                lowerLegToKneeJoint[i] = getMat3_identity();
                 oldAnkleHeights[i] = 0;
             }
             waistJoint = INVALID_JOINT;
@@ -295,11 +296,11 @@ public class IK /*ea*/ {
 
             pivotFoot = -1;
             pivotYaw = 0;
-            pivotPos.Zero();
+            pivotPos = new idVec3();
 
             oldHeightsValid = false;
             oldWaistHeight = 0;
-            waistOffset.Zero();
+            waistOffset = new idVec3();
         }
         // virtual					~idIK_Walk( void );
 
@@ -473,7 +474,7 @@ public class IK /*ea*/ {
             }
 
             int numJoints = animator.NumJoints();
-            idJointMat[] joints = new idJointMat[numJoints];
+            idJointMat[] joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
 
             // create the animation frame used to setup the IK
             GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset().oPlus(modelOffset), animator.RemoveOrigin());
@@ -648,7 +649,7 @@ public class IK /*ea*/ {
 
                 start = jointOrigins[i].oPlus(normal.oMultiply(footUpTrace));
                 end = jointOrigins[i].oMinus(normal.oMultiply(footDownTrace));
-                gameLocal.clip.Translation(results, start, end, footModel, mat3_identity, CONTENTS_SOLID | CONTENTS_IKCLIP, self);
+                gameLocal.clip.Translation(results, start, end, footModel, getMat3_identity(), CONTENTS_SOLID | CONTENTS_IKCLIP, self);
                 floorHeights[i] = results[0].endpos.oMultiply(normal);
 
                 if (ik_debug.GetBool() && footModel != null) {
@@ -690,6 +691,7 @@ public class IK /*ea*/ {
                     smallestShift = shift;
                 }
 
+                ankleAxis[i] = new idMat3();
                 animator.GetJointTransform(ankleJoints[i], gameLocal.time, ankleOrigin, ankleAxis[i]);
                 jointOrigins[i] = modelOrigin.oPlus(ankleOrigin.oMultiply(modelAxis));
 
@@ -801,12 +803,12 @@ public class IK /*ea*/ {
                 return;
             }
 
-            animator.SetJointAxis(waistJoint, JOINTMOD_NONE, mat3_identity);
-            animator.SetJointPos(waistJoint, JOINTMOD_NONE, vec3_origin);
+            animator.SetJointAxis(waistJoint, JOINTMOD_NONE, getMat3_identity());
+            animator.SetJointPos(waistJoint, JOINTMOD_NONE, getVec3_origin());
             for (i = 0; i < numLegs; i++) {
-                animator.SetJointAxis(hipJoints[i], JOINTMOD_NONE, mat3_identity);
-                animator.SetJointAxis(kneeJoints[i], JOINTMOD_NONE, mat3_identity);
-                animator.SetJointAxis(ankleJoints[i], JOINTMOD_NONE, mat3_identity);
+                animator.SetJointAxis(hipJoints[i], JOINTMOD_NONE, getMat3_identity());
+                animator.SetJointAxis(kneeJoints[i], JOINTMOD_NONE, getMat3_identity());
+                animator.SetJointAxis(ankleJoints[i], JOINTMOD_NONE, getMat3_identity());
             }
 
             ik_activate = false;
@@ -1132,9 +1134,9 @@ public class IK /*ea*/ {
             }
 
             for (i = 0; i < numArms; i++) {
-                animator.SetJointAxis(shoulderJoints[i], JOINTMOD_NONE, mat3_identity);
-                animator.SetJointAxis(elbowJoints[i], JOINTMOD_NONE, mat3_identity);
-                animator.SetJointAxis(handJoints[i], JOINTMOD_NONE, mat3_identity);
+                animator.SetJointAxis(shoulderJoints[i], JOINTMOD_NONE, getMat3_identity());
+                animator.SetJointAxis(elbowJoints[i], JOINTMOD_NONE, getMat3_identity());
+                animator.SetJointAxis(handJoints[i], JOINTMOD_NONE, getMat3_identity());
             }
 
             ik_activate = false;

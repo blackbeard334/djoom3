@@ -885,9 +885,11 @@ public class DeclManager {
         protected void Print() {
         }
 
+        private static int DBG_AllocateSelf = 0;
         protected void AllocateSelf() {
             if (null == self) {
                 try {
+                    DBG_AllocateSelf++;
                     self = declManagerLocal.GetDeclType(etoi(type)).allocator.newInstance();
                     self.base = this;
                 } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -1697,7 +1699,7 @@ public class DeclManager {
                 } else {
                     common.Printf(" ");
                 }
-                common.Printf("%4i: ", decl.index);
+                common.Printf("%4d: ", decl.index);
                 printed++;
                 if (decl.declState == DS_UNPARSED) {
                     // doesn't have any type specific data yet
@@ -2113,7 +2115,7 @@ public class DeclManager {
                     }
                     totalStructs += size;
 
-                    common.Printf("%4ik %4i %s\n", size >> 10, num, declManagerLocal.declTypes.oGet(i).typeName.toString());
+                    common.Printf("%4dk %4d %s\n", size >> 10, num, declManagerLocal.declTypes.oGet(i).typeName.toString());
                 }
 
                 for (i = 0; i < declManagerLocal.loadedFiles.Num(); i++) {

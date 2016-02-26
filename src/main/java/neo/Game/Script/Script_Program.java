@@ -2,6 +2,8 @@ package neo.Game.Script;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -11,11 +13,15 @@ import static neo.Game.Script.Script_Program.idVarDef.initialized_t.initializedC
 import static neo.Game.Script.Script_Program.idVarDef.initialized_t.initializedVariable;
 import static neo.Game.Script.Script_Program.idVarDef.initialized_t.stackVariable;
 import static neo.Game.Script.Script_Program.idVarDef.initialized_t.uninitialized;
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.SERiAL;
 import neo.framework.File_h.idFile;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
+
+import static neo.TempDump.btoi;
+import static neo.TempDump.itob;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
@@ -27,7 +33,7 @@ import neo.idlib.math.Vector.idVec3;
 public class Script_Program {
 
     public static final int MAX_STRING_LEN = 128;
-    static final        int MAX_GLOBALS    = 196608;        // in bytes
+    static final        int MAX_GLOBALS    = 196608;       // in bytes
     static final        int MAX_STRINGS    = 1024;
     static final        int MAX_FUNCS      = 3072;
     static final        int MAX_STATEMENTS = 81920;        // statement_s - 18 bytes last I checked
@@ -67,27 +73,44 @@ public class Script_Program {
     static final idTypeDef type_function        = new idTypeDef(ev_function, "function", -0, type_void);
     static final idTypeDef type_virtualfunction = new idTypeDef(ev_virtualfunction, "virtual function", 4, null);
     static final idTypeDef type_pointer         = new idTypeDef(ev_pointer, "pointer", -0, null);
-    static final idTypeDef type_object          = new idTypeDef(ev_object, "object", 4, null);                                   // stored as entity number pointer
-    static final idTypeDef type_jumpoffset      = new idTypeDef(ev_jumpoffset, "<jump>", 4, null);                         // only used for jump opcodes
+    static final idTypeDef type_object          = new idTypeDef(ev_object, "object", 4, null);                    // stored as entity number pointer
+    static final idTypeDef type_jumpoffset      = new idTypeDef(ev_jumpoffset, "<jump>", 4, null);                // only used for jump opcodes
     static final idTypeDef type_argsize         = new idTypeDef(ev_argsize, "<argsize>", 4, null);                // only used for function call and thread opcodes
     static final idTypeDef type_boolean         = new idTypeDef(ev_boolean, "boolean", 4, null);
     //
-    static final idVarDef  def_void             = type_void.def;
-    static final idVarDef  def_scriptevent      = type_scriptevent.def;
-    static final idVarDef  def_namespace        = type_namespace.def;
-    static final idVarDef  def_string           = type_string.def;
-    static final idVarDef  def_float            = type_float.def;
-    static final idVarDef  def_vector           = type_vector.def;
-    static final idVarDef  def_entity           = type_entity.def;
-    static final idVarDef  def_field            = type_field.def;
-    static final idVarDef  def_function         = type_function.def;
-    static final idVarDef  def_virtualfunction  = type_virtualfunction.def;
-    static final idVarDef  def_pointer          = type_pointer.def;
-    static final idVarDef  def_object           = type_object.def;
-    static final idVarDef  def_jumpoffset       = type_jumpoffset.def;        // only used for jump opcodes
-    static final idVarDef  def_argsize          = type_argsize.def;
-    static final idVarDef  def_boolean          = type_boolean.def;
+    static final idVarDef  def_void             = new idVarDef(type_void);
+    static final idVarDef  def_scriptevent      = new idVarDef(type_scriptevent);
+    static final idVarDef  def_namespace        = new idVarDef(type_namespace);
+    static final idVarDef  def_string           = new idVarDef(type_string);
+    static final idVarDef  def_float            = new idVarDef(type_float);
+    static final idVarDef  def_vector           = new idVarDef(type_vector);
+    static final idVarDef  def_entity           = new idVarDef(type_entity);
+    static final idVarDef  def_field            = new idVarDef(type_field);
+    static final idVarDef  def_function         = new idVarDef(type_function);
+    static final idVarDef  def_virtualfunction  = new idVarDef(type_virtualfunction);
+    static final idVarDef  def_pointer          = new idVarDef(type_pointer);
+    static final idVarDef  def_object           = new idVarDef(type_object);
+    static final idVarDef  def_jumpoffset       = new idVarDef(type_jumpoffset);        // only used for jump opcodes
+    static final idVarDef  def_argsize          = new idVarDef(type_argsize);
+    static final idVarDef  def_boolean          = new idVarDef(type_boolean);
 
+    static {
+        type_void.def = def_void;
+        type_scriptevent.def = def_scriptevent;
+        type_namespace.def = def_namespace;
+        type_string.def = def_string;
+        type_float.def = def_float;
+        type_vector.def = def_vector;
+        type_entity.def = def_entity;
+        type_field.def = def_field;
+        type_function.def = def_function;
+        type_virtualfunction.def = def_virtualfunction;
+        type_pointer.def = def_pointer;
+        type_object.def = def_object;
+        type_jumpoffset.def = def_jumpoffset;
+        type_argsize.def = def_argsize;
+        type_boolean.def = def_boolean;
+    }
 
     /* **********************************************************************
 
@@ -97,7 +120,7 @@ public class Script_Program {
     public static class function_t implements SERiAL {
 
         static final int SIZE
-                = idStr.SIZE
+                               = idStr.SIZE
                 + CPP_class.Pointer.SIZE//eventdef
                 + CPP_class.Pointer.SIZE//def
                 + CPP_class.Pointer.SIZE//type
@@ -107,7 +130,7 @@ public class Script_Program {
                 + Integer.SIZE
                 + Integer.SIZE
                 + idList.SIZE;
-        static final int SIZE_B = SIZE / Byte.SIZE;
+        static final int BYTES = SIZE / Byte.SIZE;
 
         private idStr name = new idStr();
         //
@@ -177,50 +200,53 @@ public class Script_Program {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 
     static class /*union*/ eval_s {//TODO:unionize?
 
-//////        String stringPtr;//not used
-//        float _float;
-//        float[] vector = new float[3];
-////        function_t function;//not used
-//        int _int;
-//        int entity;
-        private final ByteBuffer buffer = ByteBuffer.allocate(3 * 4);
-
-        public float _float() {
-            return buffer.getFloat(0);
+        final String[]     stringPtr;
+        final float        _float;
+        final float[]      vector;
+        final function_t[] function;
+        final int          _int;
+        final int          entity;
+        
+        eval_s(final String string) {
+            this.stringPtr = new String[]{string};
+            _float = Float.NaN;
+            vector = null;
+            function = null;
+            _int = entity = Integer.MIN_VALUE;
         }
-
-        public float _float(final float f) {
-            return buffer.putFloat(0, f).getFloat(0);
+        eval_s(final float _float) {
+            stringPtr = null;
+            this._float = _float;
+            vector = null;
+            function = null;
+            _int = entity = Integer.MIN_VALUE;
         }
-
-        public float vector(final int index) {
-            return buffer.getFloat(index * 4);
+        eval_s(final float[] vector) {
+            stringPtr = null;
+            _float = Float.NaN;
+            this.vector = vector;
+            function = null;
+            _int = entity = Integer.MIN_VALUE;
         }
-
-        public float vector(final int index, final float f) {
-            return buffer.putFloat(index * 4, f).getFloat(index * 4);
+        eval_s(final function_t func) {
+            stringPtr = null;
+            _float = Float.NaN;
+            vector = null;
+            this.function = new function_t[]{func};
+            _int = entity = Integer.MIN_VALUE;
         }
-
-        public int _int() {
-            return buffer.getInt(0);
+        eval_s(final int val) {
+            stringPtr = null;
+            _float = Float.NaN;
+            vector = null;
+            function = null;
+            this._int = this.entity = val;
         }
-
-        public int _int(final int i) {
-            return buffer.putInt(0, i).getInt(0);
-        }
-
-        public int entity() {
-            return _int();
-        }
-
-        public int entity(final int i) {
-            return _int(i);
-        }
-    };
+    }
 
     /* **********************************************************************
 
@@ -230,6 +256,7 @@ public class Script_Program {
 
      ***********************************************************************/
     public static final class idTypeDef {
+        public static final int BYTES = Integer.BYTES * 8;//TODO:<-
 
         private int/*etype_t*/ type;
         private idStr          name;
@@ -601,7 +628,7 @@ public class Script_Program {
             }
             functions.Append(func);
         }
-    };
+    }
 
     /* **********************************************************************
 
@@ -613,9 +640,9 @@ public class Script_Program {
      ***********************************************************************/
     public static class idScriptObject implements SERiAL {
 
-        private idTypeDef type;
-//	
-        public ByteBuffer data;
+        private idTypeDef  type;
+        //
+        public  ByteBuffer data;
 //
 //
 
@@ -625,7 +652,7 @@ public class Script_Program {
         }
         // ~idScriptObject();
 
-        public void Save(idSaveGame savefile) {			// archives object for save game file
+        public void Save(idSaveGame savefile) {            // archives object for save game file
             int/*size_t*/ size;
 
             if (type.equals(type_object) && data == null) {
@@ -639,7 +666,7 @@ public class Script_Program {
             }
         }
 
-        public void Restore(idRestoreGame savefile) {			// unarchives object from save game file
+        public void Restore(idRestoreGame savefile) {            // unarchives object from save game file
             idStr typeName = new idStr();
             int/*size_t*/[] size = {0};
 
@@ -790,7 +817,7 @@ public class Script_Program {
                         if (etype != parm.FieldType().Type()) {
                             return null;
                         }
-                        return (ByteBuffer) data.position(pos);
+                        return ((ByteBuffer) data.position(pos)).slice();
                     }
 
                     if (parm.FieldType().Inherits(type_object)) {
@@ -819,7 +846,7 @@ public class Script_Program {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 
     /* **********************************************************************
 
@@ -833,7 +860,7 @@ public class Script_Program {
     static class idScriptVariable<type, returnType> {
 
         protected final int/*etype_t*/ etype;
-        private type data;
+        private         ByteBuffer     data;
 //
 //
 
@@ -856,7 +883,7 @@ public class Script_Program {
         }
 
         public void LinkTo(idScriptObject obj, final String name) {
-            data = (type) obj.GetVariable(name, etype);//TODO:convert bytes to type
+            data = obj.GetVariable(name, etype);//TODO:convert bytes to type
             if (null == data) {
                 gameError("Missing '%s' field in script object '%s'", name, obj.GetTypeName());
             }
@@ -868,7 +895,16 @@ public class Script_Program {
 
             // make sure we don't crash if we don't have a pointer
             if (data != null) {
-                data = (type) value;
+                final int pos = data.position();
+                switch (etype) {
+                    case ev_boolean:
+                        data.put((byte) btoi((Boolean) value));
+                        break;
+                    case ev_float:
+                        data.putFloat((Float) value);
+                        break;
+                }
+                data.position(pos);
             }
             return this;
         }
@@ -879,7 +915,15 @@ public class Script_Program {
 
             // make sure we don't crash if we don't have a pointer
             if (data != null) {
-                return (returnType) data;
+                final int pos = data.position();
+                switch (etype) {
+                    case ev_boolean:
+                        return (returnType) (Boolean) itob(data.get(pos));
+                    case ev_float:
+                        return (returnType) (Float) data.getFloat(pos);
+                    default:
+                        return null;
+                }
             } else {
                 // reasonably safe value
                 return null;
@@ -887,7 +931,7 @@ public class Script_Program {
         }
 
         public void _(returnType bla) {
-            data = (type) bla;
+            this.oSet(bla);
         }
     };
 
@@ -902,35 +946,30 @@ public class Script_Program {
 
      ***********************************************************************/
     public static class idScriptBool extends idScriptVariable<Boolean, Boolean> {
-
         public idScriptBool() {
             super(ev_boolean);
         }
     };
 
     public static class idScriptFloat extends idScriptVariable<Float, Float> {
-
         public idScriptFloat() {
             super(ev_float);
         }
     };
 
-    public static class idScriptInt extends idScriptVariable<Float, Integer> {
-
+    private static class idScriptInt extends idScriptVariable<Float, Integer> {
         public idScriptInt() {
             super(ev_float);
         }
     };
 
-    public static class idScriptVector extends idScriptVariable<idVec3, idVec3> {
-
+    private static class idScriptVector extends idScriptVariable<idVec3, idVec3> {
         public idScriptVector() {
             super(ev_vector);
         }
     };
 
-    public static class idScriptString extends idScriptVariable<idStr, String> {
-
+    private static class idScriptString extends idScriptVariable<idStr, String> {
         public idScriptString() {
             super(ev_string);
         }
@@ -949,7 +988,9 @@ public class Script_Program {
         public idCompileError(final String text) {
             super(text);
         }
-    };
+    }
+
+    ;
 
     /* **********************************************************************
 
@@ -960,329 +1001,255 @@ public class Script_Program {
 
      ***********************************************************************/
     static class /*union*/ varEval_s {
+        static final int BYTES = Float.BYTES;
 
-//          -unused     :duh.
-//          -safe       :the getters are readonly.
-//          -unconfirmed:needs to be double checked.
-//        private idScriptObject objectPtrPtr;
-//        private String stringPtr;
-//        private FloatBuffPtr floatPtr;
-//        private idVec3 vectorPtr;
-        private function_t functionPtr = new function_t();
-//        private IntBuffPtr intPtr;
-//        private ByteBuffer bytePtr;
-//        private int entityNumberPtr;
+
+        final         idScriptObject objectPtrPtr;
+        final         String[]       stringPtr;
+        final         float[]        floatPtr;
+        final         idVec3[]       vectorPtr;
+        final         function_t[]   functionPtr;
+        final         int[]          intPtr;
+        final         ByteBuffer     bytePtr;
+        final         int[]          entityNumberPtr;
 //        private int virtualFunction;
 //        private int jumpOffset;
 //        private int stackOffset;		// offset in stack for local variables
 //        private int argSize;
-//        private varEval_s evalPtr;
+        final         varEval_s[]    evalPtr;
 //        private int ptrOffset;
-        private ByteBuffer buffer;
+        private final IntBuffer      primitive;
 
-        @Deprecated//unused
-        public void setObjectPtrPtr(idScriptObject objectPtrPtr) {
-//            this.objectPtrPtr = objectPtrPtr;
+        varEval_s(final idScriptObject objectPtrPtr) {
+            this.objectPtrPtr = objectPtrPtr;
+            stringPtr = null;
+            floatPtr = null;
+            vectorPtr = null;
+            functionPtr = null;
+            intPtr = null;
+            bytePtr = null;
+            entityNumberPtr = null;
+            evalPtr = null;
+            primitive = null;
         }
 
-        //safe
-        public String getStringPtr() {
-            return functionPtr.Name();
+        varEval_s(final String stringPtr) {
+            objectPtrPtr = null;
+            this.stringPtr = new String[]{stringPtr};
+            floatPtr = null;
+            vectorPtr = null;
+            functionPtr = null;
+            intPtr = null;
+            bytePtr = null;
+            entityNumberPtr = null;
+            evalPtr = null;
+            primitive = null;
         }
 
-        //safe
-        public void setStringPtr(String stringPtr) {
-            this.functionPtr.name.oSet(stringPtr);
+        varEval_s(final float floatPtr) {
+            objectPtrPtr = null;
+            stringPtr = null;
+            this.floatPtr = new float[]{floatPtr};
+            vectorPtr = null;
+            functionPtr = null;
+            intPtr = null;
+            bytePtr = null;
+            entityNumberPtr = null;
+            evalPtr = null;
+            primitive = null;
         }
 
-        //safe(unconfirmed).
-        public float getFloatPtr() {
-            //getFloatPtr().Set() is problematic.
-            return getFloat();
+        varEval_s(final idVec3 vectorPtr) {
+            objectPtrPtr = null;
+            stringPtr = null;
+            floatPtr = null;
+            this.vectorPtr = new idVec3[]{vectorPtr};
+            functionPtr = null;
+            intPtr = null;
+            bytePtr = null;
+            entityNumberPtr = null;
+            evalPtr = null;
+            primitive = null;
         }
 
-        public void setFloatPtr(float floatPtr) {
-            setFloat(floatPtr);
+        varEval_s(final function_t functionPtr) {
+            objectPtrPtr = null;
+            stringPtr = null;
+            floatPtr = null;
+            vectorPtr = null;
+            this.functionPtr = new function_t[]{functionPtr};
+            intPtr = null;
+            bytePtr = null;
+            evalPtr = null;
+            entityNumberPtr = null;
+            primitive = null;
         }
 
-        //safe
-        public idVec3 getVectorPtr() {
-            refreshBuffer();
-            return new idVec3(buffer.getFloat(0), buffer.getFloat(4), buffer.getFloat(8));
+        varEval_s(final int[] intPtr) {
+            objectPtrPtr = null;
+            stringPtr = null;
+            floatPtr = null;
+            vectorPtr = null;
+            functionPtr = null;
+            this.intPtr = intPtr;
+            bytePtr = null;
+            entityNumberPtr = intPtr;
+            evalPtr = null;
+            primitive = null;
         }
 
-        public void setVectorPtr(float x, float y, float z) {
-            this.setVectorPtr(new idVec3(x, y, z));
+        varEval_s(final byte[] bytes, final int offset) {
+            objectPtrPtr = null;
+            stringPtr = null;
+            floatPtr = null;
+            vectorPtr = null;
+            functionPtr = null;
+            intPtr = null;
+            this.bytePtr = ((ByteBuffer) ByteBuffer.wrap(bytes).position(offset)).slice();
+            entityNumberPtr = null;
+            evalPtr = null;
+            primitive = null;
         }
 
-        public void setVectorPtr(idVec3 v) {
-            this.refreshFunction(v.Write());
+        varEval_s(final ByteBuffer bytes, final int offset) {
+            this(bytes.array(), bytes.position() + offset);
         }
 
-        //UNsafe!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        public function_t getFunctionPtr() {
-            //TODO:list unsafe functions.
-            //idActor::GetScriptFunction->GetFunction.
-            //idActor::ConstructScriptObject->GetConstructor.
-            //idActor::SetState->GetConstructor readOnly assignment(const *).
-            //idActor::SetAnimState->GetFunction.
-            //idAnim::AddFrameCommand->FindFunction.
-            //idEntity::Restore->FindFunction.
-            //idEntity::ConstructScriptObject->GetConstructor.
-            //idEntity::SetSignal readOnly assignment.
-            //idEntity::HandleGuiCommands->FindFunction.
-            //idEntity::Event_HasFunction->GetFunction.
-            //Cmd_Script_f::run->FindFunction.
-            //idGameLocal::NextMap->FindFunction.
-            //idGameLocal::SpawnEntityDef->FindFunction.
-            //idGameLocal::CallObjectFrameCommand->GetFunction.
-            //idPlayer::Weapon_Combat->GetScriptFunction.
-            //idCompiler::ParseObjectDef->GetFunction.
-            //idCompiler::ParseFunctionDef->AllocFunction.
-            //idCompiler::ParseFunctionDef->getFunctionPtr.
-            //idCompiler::ParseFunctionDef->FindFunction.
-            //idCompiler::ParseEventDef->AllocFunction.
-            //idInterpreter::Restore->GetFunction.
-            //idInterpreter::CallEvent readOnly.
-            //idInterpreter::CallSysEvent readOnly.
-            //
-            return functionPtr;
+        varEval_s(final varEval_s evalPtr) {
+            objectPtrPtr = null;
+            stringPtr = null;
+            floatPtr = null;
+            vectorPtr = null;
+            functionPtr = null;
+            intPtr = null;
+            this.bytePtr = null;
+            entityNumberPtr = null;
+            this.evalPtr = new varEval_s[]{evalPtr};
+            primitive = null;
         }
 
-        public void setFunctionPtr(function_t functionPtr) {
-            this.functionPtr = functionPtr;
+        varEval_s(final int val) {
+            objectPtrPtr = null;
+            stringPtr = null;
+            floatPtr = null;
+            vectorPtr = null;
+            functionPtr = null;
+            intPtr = null;
+            bytePtr = null;
+            entityNumberPtr = null;
+            evalPtr = null;
+            this.primitive = IntBuffer.allocate(1);
+            this.primitive.put(0, val);
         }
 
-        //safe
-        public int getIntPtr() {
-            return getInt();
-        }
-
-        public void setIntPtr(int intPtr) {
-            setInt(intPtr);
-        }
-//
-//        //safe;unused
-//        public byte getBytePtr() {
-//            return getInt();
-//        }
-
-        public void setBytePtr(byte[] bytePtr) {
-            setBytePtr(bytePtr, 0);
-        }
-
-        public void setBytePtr(byte[] bytePtr, int offset) {
-            this.setBytePtr(ByteBuffer.wrap(bytePtr), offset);
-        }
-
-        public void setBytePtr(ByteBuffer bytePtr, int offset) {
-            refreshFunction((ByteBuffer) bytePtr.position(offset));
-        }
-
-        //safe
-        public int getEntityNumberPtr() {
-            return getInt();
-        }
-
-        public void setEntityNumberPtr(int entityNumberPtr) {
-            setInt(ev_void);
-        }
-
-        //safe
-        //x4
         public int getVirtualFunction() {
-            return getInt();
+            return getPrimitive();
         }
 
-        //x1
-        public void setVirtualFunction(int virtualFunction) {
-            setInt(virtualFunction);
-        }
-
-        //safe
-        //x5
         public int getJumpOffset() {
-            return getInt();
+            return getPrimitive();
         }
 
-        //x1
-        public void setJumpOffset(int jumpOffset) {
-            setInt(jumpOffset);
-        }
-
-        //safe
-        //x5
         public int getStackOffset() {
-            return getInt();
+            return getPrimitive();
         }
 
-        //x2
-        public void setStackOffset(int stackOffset) {
-            setInt(stackOffset);
-        }
-
-        //safe
-        //x9
         public int getArgSize() {
-            return getInt();
+            return getPrimitive();
         }
 
-        //x1
-        public void setArgSize(int argSize) {
-            setInt(argSize);
+        public int getPtrOffset() {
+            return getPrimitive();
         }
 
-//        //safe, but, members used.
-//        public varEval_s getEvalPtr() {
-//            return evalPtr;
+        private int getPrimitive() {
+            return primitive.get(0);
+        }
+
+//        public void setVirtualFunction(final int val) {
+//            setPrimitive(val);
 //        }
 //
-//        public void setEvalPtr(varEval_s evalPtr) {
-//            this.evalPtr = evalPtr;
+//        public void setJumpOffset(final int val) {
+//            setPrimitive(val);
 //        }
-//        
-        //safe
-        public int getPtrOffset() {
-            return getInt();
+//
+//        public void setStackOffset(final int val) {
+//            setPrimitive(val);
+//        }
+//
+//        public void setArgSize(final int val) {
+//            setPrimitive(val);
+//        }
+//
+//        public void setPtrOffset(final int val) {
+//            setPrimitive(val);
+//        }
+//
+//        private void setPrimitive(final int val) {
+//            primitive.put(0, val);
+//        }
+
+//        void bytePtr(ByteBuffer data, int ptrOffset) {
+//            throw new UnsupportedOperationException("Not supported yet.");
+//        }
+        
+        idVec3 getVectorPtr() {
+            final FloatBuffer fb = bytePtr.asFloatBuffer();
+            return new idVec3(fb.get(0), fb.get(1), fb.get(2));
         }
 
-        public void setPtrOffset(int ptrOffset) {
-            setInt(ptrOffset);
+        int getIntPtr() {
+            return bytePtr.getInt(0);
         }
 
-        float getEvalPtr_getFloatPtr() {
-            return getFloat();
+        float getFloatPtr() {
+            return bytePtr.getFloat(0);
         }
 
-        float getEvalPtr_getEntityNumberPtr() {
-            return getFloat();
+        float getFlIntPtr() {
+            if (intPtr != null) {
+                return intPtr[0];
+            }
+            if (floatPtr != null) {
+                return floatPtr[0];
+            }
+            throw new UnsupportedOperationException();
         }
 
-        void getEvalPtr_setEntityNumberPtr(int entityNumberPtr) {
-            setInt(entityNumberPtr);
+        int getEntityNumberPtr() {
+            return getIntPtr();
         }
 
-        void getEvalPtr_setFloatPtr(float oGet) {
-            setFloat(oGet);
+        String getStringPtr() {
+            return bytePtr.asCharBuffer().toString();
         }
-
-        int getEvalPtr_getIntPtr() {
-            return getInt();
-        }
-
-        void getEvalPtr_setIntPtr(int oGet) {
-            setInt(oGet);
-        }
-
-        String getEvalPtr_getStringPtr() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        void getEvalPtr_setStringPtr(String GetString) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        idVec3 getEvalPtr_getVectorPtr() {//TODO: return ؟null? if our dear vector is empty?
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        void getEvalPtr_setVectorPtr(idVec3 vectorPtr) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        void getEvalPtr_setBytePtr(int ptrOffset) {
-            setInt(ptrOffset);
-        }
-
-        void getFloatPtr_oPluSet(float floatPtr) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        void getFloatPtr_oMinSet(float floatPtr) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        void getFloatPtr_oMulSet(float floatPtr) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        void getFloatPtr_increment() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        void getFloatPtr_decrement() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        /*
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         * 
-         */
-        private int getInt() {
-            refreshBuffer();
-            return buffer.getInt(0);
-        }
-
-        private float getFloat() {
-            refreshBuffer();
-            return buffer.getFloat(0);
-        }
-
-        private void refreshBuffer() {
-            this.buffer = this.functionPtr.Write();
-        }
-
-        private void setInt(int mint) {
-            refreshFunction((ByteBuffer) ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(mint).flip());
-        }
-
-        private void setFloat(float moat) {
-            refreshFunction((ByteBuffer) ByteBuffer.allocate(Float.SIZE / Byte.SIZE).putFloat(moat).flip());
-        }
-
-        private void refreshFunction(ByteBuffer bites) {
-            this.functionPtr.Read(bites);
-        }
-    };
+    }
 
     static class idVarDef {
         // friend class idVarDefName;
+        static final int BYTES
+                = Integer.BYTES
+                + varEval_s.BYTES
+                + Integer.BYTES
+                + Integer.BYTES;
 
-        public int num;
+        public int       num;
         public varEval_s value;
-        public idVarDef scope; 		// function, namespace, or object the var was defined in
-        public int numUsers;		// number of users if this is a constant
+        public idVarDef  scope;        // function, namespace, or object the var was defined in
+        public int       numUsers;        // number of users if this is a constant
 //
 
         public enum initialized_t {
 
             uninitialized, initializedVariable, initializedConstant, stackVariable
-        };
-//
-        public initialized_t initialized;
-//
-        private idTypeDef typeDef;
-        private idVarDefName name;	// name of this var
-        private idVarDef next;		// next var with the same name
+        }
+        //
+        public  initialized_t initialized;
+        //
+        private idTypeDef     typeDef;
+        private idVarDefName  name;    // name of this var
+        private idVarDef      next;        // next var with the same name
 //
 //
 
@@ -1297,7 +1264,6 @@ public class Script_Program {
             numUsers = 0;
             initialized = uninitialized;
 //	memset( &value, 0, sizeof( value ) );
-            value = new varEval_s();
             name = null;
             next = null;
         }
@@ -1346,15 +1312,14 @@ public class Script_Program {
             assert (typeDef != null);
             initialized = initializedConstant;
             assert (typeDef.Type() == ev_function);
-            value.setFunctionPtr(func);
+            value = new varEval_s(func);
         }
 
-        @Deprecated
         public void SetObject(idScriptObject object) {
             assert (typeDef != null);
-//	initialized = initialized;
+            initialized = initialized;
             assert (typeDef.Inherits(type_object));
-            value.setObjectPtrPtr(object);
+            value = new varEval_s(object);
         }
 
         public void SetValue(final eval_s _value, boolean constant) {
@@ -1369,48 +1334,38 @@ public class Script_Program {
                 case ev_pointer:
                 case ev_boolean:
                 case ev_field:
-                    value.setIntPtr(_value._int());
-                    break;
-
+                case ev_virtualfunction:
                 case ev_jumpoffset:
-                    value.setJumpOffset(_value._int());
-                    break;
-
                 case ev_argsize:
-                    value.setArgSize(_value._int());
+                    value = new varEval_s(_value._int);
                     break;
 
                 case ev_entity:
-                    value.setEntityNumberPtr(_value.entity());
+                    value = new varEval_s(_value.entity);
                     break;
 
                 case ev_string:
-//                    value.stringPtr = _value.stringPtr;//idStr.Copynz(value.stringPtr, _value.stringPtr, MAX_STRING_LEN);
+                    value = new varEval_s(_value.stringPtr[0]);//idStr.Copynz(value.stringPtr, _value.stringPtr, MAX_STRING_LEN);
                     break;
 
                 case ev_float:
-                    value.setFloatPtr(_value._float());
+                    value = new varEval_s(_value._float);
                     break;
 
                 case ev_vector:
-                    value.setVectorPtr(_value.vector(0), _value.vector(1), _value.vector(2));
+                    value = new varEval_s(new idVec3(_value.vector));
                     break;
 
                 case ev_function:
-//                    value.functionPtr = _value.function;
-                    break;
-
-                case ev_virtualfunction:
-                    value.setVirtualFunction(_value._int());
+                    value = new varEval_s(_value.function[0]);
                     break;
 
                 case ev_object:
-                    value.setEntityNumberPtr(_value.entity());
+                    value = new varEval_s(_value.entity);
                     break;
 
                 default:
                     throw new idCompileError(va("weird type on '%s'", Name()));
-//                    break;
             }
         }
 
@@ -1422,20 +1377,17 @@ public class Script_Program {
             }
 
             assert (typeDef != null && (typeDef.Type() == ev_string));
-            value.setStringPtr(string);//idStr.Copynz(value.stringPtr, string, MAX_STRING_LEN);
+            value = new varEval_s(string);
         }
 
         public idVarDef Next() {
             return next;
-        }		// next var def with same name
+        }        // next var def with same name
 
         public void PrintInfo(idFile file, int instructionPointer) {
             statement_s jumpst;
             int jumpto;
             int/*etype_t*/ etype;
-            int i;
-            int len;
-            char ch;
 
             if (initialized == initializedConstant) {
                 file.Printf("const ");
@@ -1450,7 +1402,7 @@ public class Script_Program {
                     break;
 
                 case ev_function:
-                    if (value.getFunctionPtr().eventdef != null) {
+                    if (value.functionPtr[0].eventdef != null) {
                         file.Printf("event %s", GlobalName());
                     } else {
                         file.Printf("function %s", GlobalName());
@@ -1471,9 +1423,7 @@ public class Script_Program {
                         switch (etype) {
                             case ev_string:
                                 file.Printf("\"");
-                                len = value.getStringPtr().length();
-                                ch = value.getStringPtr().charAt(0);
-                                for (i = 0; i < len; ch = value.getStringPtr().charAt(++i)) {
+                                for (char ch : value.stringPtr[0].toCharArray()) {
                                     if (idStr.CharIsPrintable(ch)) {
                                         file.Printf("%c", ch);
                                     } else if (ch == '\n') {
@@ -1486,11 +1436,11 @@ public class Script_Program {
                                 break;
 
                             case ev_vector:
-                                file.Printf("'%s'", value.getVectorPtr().ToString());
+                                file.Printf("'%s'", value.vectorPtr[0].ToString());
                                 break;
 
                             case ev_float:
-                                file.Printf("%f", value.getFloatPtr());
+                                file.Printf("%f", value.floatPtr[0]);
                                 break;
 
                             case ev_virtualfunction:
@@ -1498,7 +1448,7 @@ public class Script_Program {
                                 break;
 
                             default:
-                                file.Printf("%d", value.getIntPtr());
+                                file.Printf("%d", value.intPtr[0]);
                                 break;
                         }
                     } else if (initialized == stackVariable) {
@@ -1509,7 +1459,7 @@ public class Script_Program {
                     break;
             }
         }
-    };
+    }
 
     /* **********************************************************************
 
@@ -1561,18 +1511,18 @@ public class Script_Program {
             def.next = null;
             def.name = null;
         }
-    };
+    }
 
     public static class statement_s {
 
         int /*unsigned short*/ op;
-        idVarDef a;
-        idVarDef b;
-        idVarDef c;
-        int linenumber;
-        int file;
+        idVarDef               a;
+        idVarDef               b;
+        idVarDef               c;
+        int                    linenumber;
+        int                    file;
 
         public statement_s() {
         }
-    };
+    }
 }

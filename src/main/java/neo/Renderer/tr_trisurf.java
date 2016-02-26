@@ -1,6 +1,7 @@
 package neo.Renderer;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 import static neo.Renderer.Interaction.LIGHT_TRIS_DEFERRED;
 import neo.Renderer.Model.dominantTri_s;
 import neo.Renderer.Model.shadowCache_s;
@@ -22,12 +23,13 @@ import static neo.framework.Common.common;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.cmp_t;
+import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -171,7 +173,7 @@ public class tr_trisurf {
      ===============
      */
     public static void R_InitTriSurfData() {
-        silEdges = tr_main.R_ClearedStaticAlloc(MAX_SIL_EDGES, silEdge_t.class);
+        silEdges = silEdge_t.generateArray(MAX_SIL_EDGES);
 
 //
 //        // initialize allocators for triangle surfaces
@@ -324,8 +326,8 @@ public class tr_trisurf {
             return total;
         }
 
-        // used as a flag in interations
-        if (tri.equals(LIGHT_TRIS_DEFERRED)) {
+        // used as a flag in interactions
+        if (tri == LIGHT_TRIS_DEFERRED) {
             return total;
         }
 
@@ -1172,7 +1174,7 @@ public class tr_trisurf {
         tri.silEdges = new silEdge_t[numSilEdges];//triSilEdgeAllocator.Alloc(numSilEdges);
 //	memcpy( tri.silEdges, silEdges, numSilEdges * sizeof( tri.silEdges[0] ) );
         System.arraycopy(silEdges, 0, tri.silEdges, 0, numSilEdges);
-        silEdges = tr_main.R_ClearedStaticAlloc(silEdges.length, silEdge_t.class);
+        silEdges = silEdge_t.generateArray(silEdges.length);
     }
 
     /*
@@ -1214,6 +1216,13 @@ public class tr_trisurf {
         idVec3[] tangents = new idVec3[2];
         boolean negativePolarity;
         boolean degenerate;
+        
+        static faceTangents_t[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new faceTangents_t()).
+                    limit(length).
+                    toArray(faceTangents_t[]::new);
+        }
     };
 
     public static void R_DeriveFaceTangents(final srfTriangles_s tri, faceTangents_t[] faceTangents) {
@@ -1256,8 +1265,8 @@ public class tr_trisurf {
             if (Math.abs(area) < 1e-20f) {
                 ft.negativePolarity = false;
                 ft.degenerate = true;
-                ft.tangents[0].Zero();
-                ft.tangents[1].Zero();
+                ft.tangents[0] = new idVec3();
+                ft.tangents[1] = new idVec3();
                 c_textureDegenerateFaces++;
                 continue;
             }
@@ -1446,7 +1455,7 @@ public class tr_trisurf {
         faceTangents_t ft;
         idDrawVert vert;
 
-        faceTangents = tr_main.R_ClearedStaticAlloc(tri.numIndexes / 3, faceTangents_t.class);
+        faceTangents = faceTangents_t.generateArray(tri.numIndexes / 3);
         R_DeriveFaceTangents(tri, faceTangents);
 
         // clear the tangents
@@ -1548,6 +1557,7 @@ public class tr_trisurf {
         indexSort_t[] ind = new indexSort_t[tri.numIndexes];// R_StaticAlloc(tri.numIndexes);
 
         for (i = 0; i < tri.numIndexes; i++) {
+            ind[i] = new indexSort_t();
             ind[i].vertexNum = tri.indexes[i];
             ind[i].faceNum = i / 3;
         }
@@ -1597,6 +1607,7 @@ public class tr_trisurf {
                 }
                 maxArea = area;
 
+                dt[vertNum] = new dominantTri_s();
                 if (i1 == vertNum) {
                     dt[vertNum].v2 = i2;
                     dt[vertNum].v3 = i3;
@@ -2155,7 +2166,7 @@ public class tr_trisurf {
         // If the surface is going to have generated normals, this won't matter,
         // but if it has explicit normals, this will keep it on the correct side
         for (i = 0; i < tri.numVerts; i++) {
-            tri.verts[i].normal = vec3_origin.oMinus(tri.verts[i].normal);
+            tri.verts[i].normal = getVec3_origin().oMinus(tri.verts[i].normal);
         }
 
         // flip the index order to make them back sided
@@ -2174,18 +2185,21 @@ public class tr_trisurf {
 
      FIXME: allow createFlat and createSmooth normals, as well as explicit
      =================
-     */
+     */private static int DBG_R_CleanupTriangles = 0;
     public static void R_CleanupTriangles(srfTriangles_s tri, boolean createNormals, boolean identifySilEdges, boolean useUnsmoothedTangents) {
+        DBG_R_CleanupTriangles++;
         R_RangeCheckIndexes(tri);
 
         R_CreateSilIndexes(tri);
 
 //	R_RemoveDuplicatedTriangles( tri );	// this may remove valid overlapped transparent triangles
+        
         R_RemoveDegenerateTriangles(tri);
 
         R_TestDegenerateTextureSpace(tri);
 
 //	R_RemoveUnusedVerts( tri );
+        
         if (identifySilEdges) {
             R_IdentifySilEdges(tri, true);	// assume it is non-deformable, and omit coplanar edges
         }
@@ -2195,6 +2209,7 @@ public class tr_trisurf {
 
         // optimize the index order (not working?)
 //	R_OrderIndexes( tri.numIndexes, tri.indexes );
+        
         R_CreateDupVerts(tri);
 
         R_BoundTriSurf(tri);
@@ -2228,8 +2243,7 @@ public class tr_trisurf {
         srfTriangles_s tri;
         int i;
 
-//	memset( &tri, 0, sizeof( tri ) );
-        tri = new srfTriangles_s(true);
+        tri = new srfTriangles_s();
 
         tri.numVerts = numVerts;
         R_AllocStaticTriSurfVerts(tri, tri.numVerts);
@@ -2295,8 +2309,72 @@ public class tr_trisurf {
         return deform;
     }
 
-    public static deformInfo_s R_BuildDeformInfo(int numVerts, final idDrawVert[] verts, int numIndexes, final Integer[] indexes, boolean useUnsmoothedTangents) {
-        throw new UnsupportedOperationException();
+    public static deformInfo_s R_BuildDeformInfo(int numVerts, final idDrawVert[] verts, int numIndexes, final idList<Integer> indexes, boolean useUnsmoothedTangents) {
+        deformInfo_s deform;
+        srfTriangles_s tri;
+        int i;
+
+        tri = new srfTriangles_s();//memset( &tri, 0, sizeof( tri ) );
+
+        tri.numVerts = numVerts;
+        R_AllocStaticTriSurfVerts(tri, tri.numVerts);
+        SIMDProcessor.Memcpy(tri.verts, verts, tri.numVerts);
+
+        tri.numIndexes = numIndexes;
+        R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
+
+        // don't memcpy, so we can change the index type from int to short without changing the interface
+        for (i = 0; i < tri.numIndexes; i++) {
+            tri.indexes[i] = indexes.oGet(i);
+        }
+
+        R_RangeCheckIndexes(tri);
+        R_CreateSilIndexes(tri);
+
+        // should we order the indexes here?
+//	R_RemoveDuplicatedTriangles( &tri );
+//	R_RemoveDegenerateTriangles( &tri );
+//	R_RemoveUnusedVerts( &tri );
+        R_IdentifySilEdges(tri, false);			// we cannot remove coplanar edges, because
+        //                                              // they can deform to silhouettes
+
+        R_DuplicateMirroredVertexes(tri);		// split mirror points into multiple points
+
+        R_CreateDupVerts(tri);
+
+        if (useUnsmoothedTangents) {
+            R_BuildDominantTris(tri);
+        }
+
+        deform = new deformInfo_s();//deformInfo_t *)R_ClearedStaticAlloc( sizeof( *deform ) );
+
+        deform.numSourceVerts = numVerts;
+        deform.numOutputVerts = tri.numVerts;
+
+        deform.numIndexes = numIndexes;
+        deform.indexes = tri.indexes;
+
+        deform.silIndexes = tri.silIndexes;
+
+        deform.numSilEdges = tri.numSilEdges;
+        deform.silEdges = tri.silEdges;
+
+        deform.dominantTris = tri.dominantTris;
+
+        deform.numMirroredVerts = tri.numMirroredVerts;
+        deform.mirroredVerts = tri.mirroredVerts;
+
+        deform.numDupVerts = tri.numDupVerts;
+        deform.dupVerts = tri.dupVerts;
+
+//	if ( tri.verts ) {
+//		triVertexAllocator.Free( tri.verts );
+//	}
+//
+//	if ( tri.facePlanes ) {
+//		triPlaneAllocator.Free( tri.facePlanes );
+//	}
+        return deform;
     }
 
     /*

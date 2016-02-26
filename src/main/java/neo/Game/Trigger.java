@@ -32,9 +32,9 @@ import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Vector.RAD2DEG;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -62,8 +62,11 @@ public class Trigger {
         //
         //
 
-        //        public static void DrawDebugInfo();
         public idTrigger() {
+            scriptFunction = null;
+        }
+        
+        public static void DrawDebugInfo(){
             idMat3 axis = gameLocal.GetLocalPlayer().viewAngles.ToMat3();
             idVec3 up = axis.oGet(2).oMultiply(5.0f);
             idBounds viewTextBounds = new idBounds(gameLocal.GetLocalPlayer().GetPhysics().GetOrigin());
@@ -125,6 +128,7 @@ public class Trigger {
 
         @Override
         public void Spawn() {
+            super.Spawn();
             GetPhysics().SetContents(CONTENTS_TRIGGER);
 
             String funcname = spawnArgs.GetString("call", "");
@@ -264,6 +268,8 @@ public class Trigger {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             wait = spawnArgs.GetFloat("wait", "0.5");
             random = spawnArgs.GetFloat("random", "0");
             delay = spawnArgs.GetFloat("delay", "0");
@@ -769,8 +775,8 @@ public class Trigger {
     public static class idTrigger_Count extends idTrigger {
 //	CLASS_PROTOTYPE(idTrigger_Count );
 
-        private int goal;
-        private int count;
+        private int   goal;
+        private int   count;
         private float delay;
         //
         //
@@ -797,6 +803,8 @@ public class Trigger {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             goal = spawnArgs.GetInt("count", "1");
             delay = spawnArgs.GetFloat("delay", "0");
             count = 0;
@@ -839,7 +847,7 @@ public class Trigger {
 
      ===============================================================================
      */
-    class idTrigger_Hurt extends idTrigger {
+    static class idTrigger_Hurt extends idTrigger {
 //	CLASS_PROTOTYPE(idTrigger_Hurt );
 
         private boolean on;
@@ -878,6 +886,8 @@ public class Trigger {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             on = spawnArgs.GetBool("on", "1");
             delay = spawnArgs.GetFloat("delay", "1.0");
             nextTime = gameLocal.time;
@@ -889,7 +899,7 @@ public class Trigger {
 
             if (on && other != null && gameLocal.time >= nextTime) {
                 damage = spawnArgs.GetString("def_damage", "damage_painTrigger");
-                other.Damage(null, null, vec3_origin, damage, 1.0f, INVALID_JOINT);
+                other.Damage(null, null, getVec3_origin(), damage, 1.0f, INVALID_JOINT);
 
                 ActivateTargets(other);
                 CallScript();

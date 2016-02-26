@@ -312,7 +312,7 @@ public class Image {
                 + CPP_class.Long.SIZE
                 + CPP_class.Long.SIZE
                 + (CPP_class.Long.SIZE * 3);
-        public static final transient  int SIZE_B = SIZE / 8;
+        public static final transient  int BYTES = SIZE / 8;
 
         int /*long*/ dwSize;
         int /*long*/ dwFlags;
@@ -644,12 +644,15 @@ public class Image {
                 if (tmu.current2DMap != texNum) {
                     tmu.current2DMap = texNum;
                     qglBindTexture(GL_TEXTURE_2D, texNum);
-                }
-            } else if (type == TT_CUBIC) {
-                if (tmu.currentCubeMap != texNum) {
-                    tmu.currentCubeMap = texNum;
-                    qglBindTexture(GL_TEXTURE_CUBE_MAP/*_EXT*/, texNum);
-                }
+                    if (texNum == 25){
+                        System.out.println("Blaaaaaaasphemy!");
+            }
+        }
+    } else if (type == TT_CUBIC) {
+        if (tmu.currentCubeMap != texNum) {
+            tmu.currentCubeMap = texNum;
+            qglBindTexture(GL_TEXTURE_CUBE_MAP/*_EXT*/, texNum);
+        }
             } else if (type == TT_3D) {
                 if (tmu.current3DMap != texNum) {
                     tmu.current3DMap = texNum;
@@ -662,6 +665,7 @@ public class Image {
                 qglPrioritizeTextures(1, texNum, priority);
             }
         }
+        private static int DBG_Bind = 0;
 
 
         /*
@@ -827,6 +831,7 @@ public class Image {
 //            scaledBuffer = null;
             // generate the texture number
             texNum = qglGenTextures();
+            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
             internalFormat = SelectInternalFormat(pic, 1, width, height, depth, isMonochrome);
@@ -1051,6 +1056,7 @@ public class Image {
             // FIXME: allow picmip here
             // generate the texture number
             texNum = qglGenTextures();
+            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
             // this function doesn't need to know it is 3D, so just make it very "tall"
@@ -1153,7 +1159,7 @@ public class Image {
          Non-square cube sides are not allowed
          ====================
          */
-        public void GenerateCubeImage(final ByteBuffer[] pic/*[6]*/, int size,
+        public void GenerateCubeImage(final ByteBuffer[] pics/*[6]*/, int size,
                 textureFilter_t filterParm, boolean allowDownSizeParm,
                 textureDepth_t depthParm) {
             int scaled_width, scaled_height;
@@ -1184,9 +1190,10 @@ public class Image {
 
             // generate the texture number
             texNum = qglGenTextures();
+            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
-            internalFormat = SelectInternalFormat(pic, 6, width, height, depth, isMonochrome);
+            internalFormat = SelectInternalFormat(pics, 6, width, height, depth, isMonochrome);
 
             // don't bother with downsample for now
             scaled_width = width;
@@ -1222,9 +1229,9 @@ public class Image {
             // upload the base level
             // FIXME: support GL_COLOR_INDEX8_EXT?
             for (i = 0; i < 6; i++) {
-                pic[i].rewind();
+                pics[i].rewind();
                 qglTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X/*_EXT*/ + i, 0, internalFormat, scaled_width, scaled_height, 0,
-                        GL_RGBA, GL_UNSIGNED_BYTE, pic[i]);
+                        GL_RGBA, GL_UNSIGNED_BYTE, pics[i]);
             }
 
             // create and upload the mip map levels
@@ -1232,7 +1239,7 @@ public class Image {
             final ByteBuffer[] shrunk = new ByteBuffer[6];
 
             for (i = 0; i < 6; i++) {
-                shrunk[i] = R_MipMap(pic[i], scaled_width, scaled_height, false);
+                shrunk[i] = R_MipMap(pics[i], scaled_width, scaled_height, false);
             }
 
             miplevel = 1;
@@ -1520,7 +1527,7 @@ public class Image {
                     break;
             }
 
-            common.Printf("%4i %4i ", uploadWidth, uploadHeight);
+            common.Printf("%4d %4d ", uploadWidth, uploadHeight);
 
             switch (filter) {
                 case TF_DEFAULT:
@@ -1620,7 +1627,7 @@ public class Image {
                     break;
             }
 
-            common.Printf("%4ik ", StorageSize() / 1024);
+            common.Printf("%4dk ", StorageSize() / 1024);
 
             common.Printf(" %s\n", imgName.toString());
         }
@@ -1643,7 +1650,7 @@ public class Image {
                     R_LoadCubeImages(imgName.toString(), cubeFiles, null, null, current);
                 } else {
                     // get the current values
-                    R_LoadImageProgram(imgName.toString(), null, null, null, current);
+                    R_LoadImageProgram(imgName.toString(), null, null, current);
                 }
                 if (current[0] <= timestamp[0]) {
                     return;
@@ -2164,7 +2171,7 @@ public class Image {
             // god i love last minute hacks :-)
             // me too.
             if (com_machineSpec.GetInteger() >= 1 && com_videoRam.GetInteger() >= 128 && imgName.Icmpn("lights/", 7) == 0) {
-//                return false;//TODO:enable this by using openCL for the values above.
+                return false;//TODO:enable this by using openCL for the values above.
             }
 
             if (imgName.toString().contains("mars")
@@ -2205,7 +2212,7 @@ public class Image {
             }
 
             int len = f.Length();
-            if (len < ddsFileHeader_t.SIZE_B) {
+            if (len < ddsFileHeader_t.BYTES) {
                 fileSystem.CloseFile(f);
                 return false;
             }
@@ -2281,6 +2288,7 @@ public class Image {
 
             // generate the texture number
             texNum = qglGenTextures();
+            System.out.println(imgName + ": " + texNum);
 
 //            if (texNum == 58) {
 //                DBG_UploadPrecompressedImage = data.duplicate();
@@ -2375,7 +2383,7 @@ public class Image {
             uploadWidth = uploadWidth2[0];
             uploadHeight = uploadHeight2[0];
 
-            int offset = ddsFileHeader_t.SIZE_B + 4;// + sizeof(ddsFileHeader_t) + 4;
+            int offset = ddsFileHeader_t.BYTES + 4;// + sizeof(ddsFileHeader_t) + 4;
             for (int i = 0; i < numMipmaps; i++) {
                 final int size;
                 if (FormatIsDXT(internalFormat)) {
@@ -2421,10 +2429,15 @@ public class Image {
          Absolutely every image goes through this path
          On exit, the idImage will have a valid OpenGL texture number that can be bound
          ===============
-         */
+         */private static int DBG_ActuallyLoadImage = 0;
         public void ActuallyLoadImage(boolean checkForPrecompressed, boolean fromBackEnd) {
             final int[] width = {0}, height = {0};
-            ByteBuffer[] pic = {null};
+            ByteBuffer pic = null;
+
+            if (imgName.equals("guis/assets/splash/launch")) {
+//                return;
+            }
+//            System.out.println((DBG_ActuallyLoadImage++) + " " + imgName);
 
             // this is the ONLY place generatorFunction will ever be called
             if (generatorFunction != null) {
@@ -2478,11 +2491,11 @@ public class Image {
 
                 {
                     textureDepth_t[] depth = {this.depth};
-                    R_LoadImageProgram(imgName.toString(), pic, width, height, timestamp, depth);
+                    pic = R_LoadImageProgram(imgName.toString(), width, height, timestamp, depth);
                     this.depth = depth[0];
                 }
 
-                if (pic[0] == null) {
+                if (pic == null) {
                     common.Warning("Couldn't load image: %s", imgName);
                     MakeDefault();
                     return;
@@ -2503,9 +2516,9 @@ public class Image {
                 // build a hash for checking duplicate image files
                 // NOTE: takes about 10% of image load times (SD)
                 // may not be strictly necessary, but some code uses it, so let's leave it in
-                imageHash = MD4_BlockChecksum(pic[0], width[0] * height[0] * 4);
+                imageHash = MD4_BlockChecksum(pic, width[0] * height[0] * 4);
 
-                GenerateImage(pic[0], width[0], height[0], filter, allowDownSize, repeat, depth);
+                GenerateImage(pic, width[0], height[0], filter, allowDownSize, repeat, depth);
                 timestamp = timestamp;//why, because we rock!
                 precompressedFile = false;
 
@@ -2543,7 +2556,7 @@ public class Image {
             }
             bgl.file.position = 0;
             bgl.file.length = bgl.f.Length();
-            if (bgl.file.length < ddsFileHeader_t.SIZE_B) {
+            if (bgl.file.length < ddsFileHeader_t.BYTES) {
                 common.Warning("idImageManager::StartBackgroundImageLoad: %s had a bad file length", imgName.toString());
                 return;
             }
@@ -2737,8 +2750,7 @@ public class Image {
 
             for (int side = 0; side < numDataPtrs; side++) {
                 scan = dataPtrs[side];
-                pos = scan.position();
-                for (i = 0; i < c; i++, pos += 4) {
+                for (i = 0, pos = 0; i < c; i++, pos += 4) {
                     int cOr, cAnd;
 
                     aOr |= scan.get(pos + 3);
@@ -3140,7 +3152,7 @@ public class Image {
                 // we don't bother hooking this into the hash table for lookup, but we do add it to the manager
                 // list for listImages
                 globalImages.images.Append(image.partialImage);
-                image.partialImage.imgName = image.imgName;
+                image.partialImage.imgName.oSet(image.imgName);
                 image.partialImage.isPartialImage = true;
 
                 // let the background file loader know that we can load
@@ -3476,9 +3488,9 @@ public class Image {
             }
 
             int end = Sys_Milliseconds();
-            common.Printf("%5i purged from previous\n", purgeCount);
-            common.Printf("%5i kept from previous\n", keepCount);
-            common.Printf("%5i new loaded\n", loadCount);
+            common.Printf("%5d purged from previous\n", purgeCount);
+            common.Printf("%5d kept from previous\n", keepCount);
+            common.Printf("%5d new loaded\n", loadCount);
             common.Printf("all images loaded in %5.1f seconds\n", (end - start) * 0.001);
             common.Printf("----------------------------------------\n");
         }
@@ -3584,7 +3596,7 @@ public class Image {
                 size = im.StorageSize();
                 total += size;
 
-                f.Printf("%s %3i %s\n", idStr.FormatNumber(size), im.refCount, im.imgName);
+                f.Printf("%s %3d %s\n", idStr.FormatNumber(size), im.refCount, im.imgName);
             }
 
 //	delete sortIndex;
@@ -3676,7 +3688,7 @@ public class Image {
             image.hashNext = imageHashTable[hash];
             imageHashTable[hash] = image;
 
-            image.imgName = new idStr(name);
+            image.imgName.oSet(name);
 
             return image;
         }

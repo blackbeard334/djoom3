@@ -282,12 +282,12 @@ public class draw_arb2 {
 //            qglVertexAttribPointerARB(8, 2, GL_FLOAT, false, 0/*sizeof(idDrawVert)*/, ac.stOffset());
 //            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyzOffset());
             
-            qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.SIZE_B, ac.colorOffset());
-            qglVertexAttribPointerARB(11, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.normalOffset());
-            qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.tangentsOffset_1());
-            qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, idDrawVert.SIZE_B, ac.tangentsOffset_0());
-            qglVertexAttribPointerARB(8, 2, GL_FLOAT, false, idDrawVert.SIZE_B, ac.stOffset());
-            qglVertexPointer(3, GL_FLOAT, idDrawVert.SIZE_B, ac.xyzOffset());
+            qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.BYTES, ac.colorOffset());
+            qglVertexAttribPointerARB(11, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.normalOffset());
+            qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_1());
+            qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_0());
+            qglVertexAttribPointerARB(8, 2, GL_FLOAT, false, idDrawVert.BYTES, ac.stOffset());
+            qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
 
             // this may cause RB_ARB2_DrawInteraction to be exacuted multiple
             // times with different colors and images if the surface or light have multiple layers
@@ -567,7 +567,7 @@ public class draw_arb2 {
         stripped.StripFileExtension();
 
         // see if it is already loaded
-        for (i = 0; isNotNullOrEmpty(progs[i].name); i++) {
+        for (i = 0; progs[i] != null && isNotNullOrEmpty(progs[i].name); i++) {
             if (progs[i].target != target) {
                 continue;
             }
@@ -585,10 +585,7 @@ public class draw_arb2 {
         }
 
         // add it to the list and load it
-        progs[i].ident = program_t.PROG_INVALID;// 0;	// will be gen'd by R_LoadARBProgram
-        progs[i].target = target;
-//        strncpy(progs[i].name, program, sizeof(progs[i].name) - 1);
-        progs[i].name = program;
+        progs[i] = new progDef_t(target, FPROG_TEST, program);// will be gen'd by R_LoadARBProgram
 
         R_LoadARBProgram(i);
 

@@ -34,12 +34,16 @@ public class HashIndex {
         private static final int[] INVALID_INDEX = {-1};
         //
         //
+        private static int DBG_counter = 0;
+        private final int DBG_count;
 
         public idHashIndex() {
+            DBG_count = DBG_counter++;
             Init(DEFAULT_HASH_SIZE, DEFAULT_HASH_SIZE);
         }
 
         public idHashIndex(final int initialHashSize, final int initialIndexSize) {
+            DBG_count = DBG_counter++;
             Init(initialHashSize, initialIndexSize);
         }
 //	public				~idHashIndex( void );
@@ -231,6 +235,7 @@ public class HashIndex {
             indexChain = INVALID_INDEX;
 //            }
             lookupMask = 0;
+//            TempDump.printCallStack("----" + DBG_count);
         }
 
         // get size of hash table

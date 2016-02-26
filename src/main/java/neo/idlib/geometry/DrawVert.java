@@ -27,7 +27,7 @@ public class DrawVert {
                 + idVec3.SIZE
                 + (2 * idVec3.SIZE)
                 + (4 * Byte.SIZE);//color
-        public static final transient int SIZE_B = SIZE / Byte.SIZE;
+        public static final transient int BYTES = SIZE / Byte.SIZE;
 
         private transient int VBO_OFFSET;
 
@@ -41,6 +41,8 @@ public class DrawVert {
 ////#endif
 //public	float			operator[]( const int index ) const;
 //public	float &			operator[]( const int index );
+        private static int DBG_counter = 0;
+        private final int DBG_count = DBG_counter++;
 
         public idDrawVert() {
             this.xyz = new idVec3();
@@ -208,7 +210,7 @@ public class DrawVert {
 
         @Override
         public ByteBuffer Write() {
-            ByteBuffer data = ByteBuffer.allocate(idDrawVert.SIZE_B);
+            ByteBuffer data = ByteBuffer.allocate(idDrawVert.BYTES);
             data.order(ByteOrder.LITTLE_ENDIAN);//very importante.
 
             data.putFloat(xyz.oGet(0));
@@ -240,28 +242,28 @@ public class DrawVert {
         }
 
         public int stOffset() {
-            return xyzOffset() + idVec3.SIZE_B;//+xyz
+            return xyzOffset() + idVec3.BYTES;//+xyz
         }
 
         public int normalOffset() {
-            return stOffset() + idVec2.SIZE_B;//+xyz+st
+            return stOffset() + idVec2.BYTES;//+xyz+st
         }
 
         public int tangentsOffset_0() {
-            return normalOffset() + idVec3.SIZE_B;//+xyz+st+normal
+            return normalOffset() + idVec3.BYTES;//+xyz+st+normal
         }
 
         public int tangentsOffset_1() {
-            return tangentsOffset_0() + idVec3.SIZE_B;//+xyz+st+normal
+            return tangentsOffset_0() + idVec3.BYTES;//+xyz+st+normal
         }
 
         public int colorOffset() {
-            return tangentsOffset_1() + idVec3.SIZE_B;//+xyz+st+normal+tangents
+            return tangentsOffset_1() + idVec3.BYTES;//+xyz+st+normal+tangents
         }
     };
 
     public static ByteBuffer toByteBuffer(idDrawVert[] verts) {
-        ByteBuffer data = BufferUtils.createByteBuffer(idDrawVert.SIZE_B * verts.length);
+        ByteBuffer data = BufferUtils.createByteBuffer(idDrawVert.BYTES * verts.length);
 
         for (idDrawVert vert : verts) {
             data.put((ByteBuffer) vert.Write().rewind());

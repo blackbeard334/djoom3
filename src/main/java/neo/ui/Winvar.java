@@ -3,6 +3,7 @@ package neo.ui;
 import java.util.Objects;
 import java.util.Scanner;
 import neo.Renderer.Material.idMaterial;
+import static neo.TempDump.atoi;
 import static neo.TempDump.itob;
 import static neo.framework.DeclManager.declManager;
 import neo.framework.File_h.idFile;
@@ -209,7 +210,7 @@ public class Winvar {
 
         @Override
         public void Set(final String val) {
-            data = (Integer.parseInt(val) != 0);
+            data = (atoi(val) != 0);
             if (guiDict != null) {
                 guiDict.SetBool(GetName(), data);
             }

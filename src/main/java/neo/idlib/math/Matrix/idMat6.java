@@ -1,53 +1,66 @@
 package neo.idlib.math.Matrix;
 
 import java.util.Arrays;
+
 import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
+
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
 
-public class idMat6 {
 //===============================================================
 //
 //	idMat6 - 6x6 matrix
 //
 //===============================================================
+public class idMat6 {
+    private static final idMat6 mat6_zero = new idMat6(new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0));
+    private static final idMat6 mat6_identity = new idMat6(new idVec6(1, 0, 0, 0, 0, 0), new idVec6(0, 1, 0, 0, 0, 0), new idVec6(0, 0, 1, 0, 0, 0), new idVec6(0, 0, 0, 1, 0, 0), new idVec6(0, 0, 0, 0, 1, 0), new idVec6(0, 0, 0, 0, 0, 1));
 
-    public static final idMat6 mat6_zero = new idMat6(new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0), new idVec6(0, 0, 0, 0, 0, 0));
-    public static final idMat6 mat6_identity = new idMat6(new idVec6(1, 0, 0, 0, 0, 0), new idVec6(0, 1, 0, 0, 0, 0), new idVec6(0, 0, 1, 0, 0, 0), new idVec6(0, 0, 0, 1, 0, 0), new idVec6(0, 0, 0, 0, 1, 0), new idVec6(0, 0, 0, 0, 0, 1));
+    public static idMat6 getMat6_zero() {
+        return new idMat6(mat6_zero);
+    }
 
+    public static idMat6 getMat6_identity() {
+        return new idMat6(mat6_identity);
+    }
+    
     private final idVec6[] mat = {new idVec6(), new idVec6(), new idVec6(), new idVec6(), new idVec6(), new idVec6()};
 
     public idMat6() {
     }
 
     public idMat6(final idVec6 v0, final idVec6 v1, final idVec6 v2, final idVec6 v3, final idVec6 v4, final idVec6 v5) {
-        mat[0] = v0;
-        mat[1] = v1;
-        mat[2] = v2;
-        mat[3] = v3;
-        mat[4] = v4;
-        mat[5] = v5;
+        mat[0].oSet(v0);
+        mat[1].oSet(v1);
+        mat[2].oSet(v2);
+        mat[3].oSet(v3);
+        mat[4].oSet(v4);
+        mat[5].oSet(v5);
     }
 
     public idMat6(final idMat3 m0, final idMat3 m1, final idMat3 m2, final idMat3 m3) {
-        mat[0] = new idVec6(m0.mat[0].x, m0.mat[0].y, m0.mat[0].z, m1.mat[0].x, m1.mat[0].y, m1.mat[0].z);
-        mat[1] = new idVec6(m0.mat[1].x, m0.mat[1].y, m0.mat[1].z, m1.mat[1].x, m1.mat[1].y, m1.mat[1].z);
-        mat[2] = new idVec6(m0.mat[2].x, m0.mat[2].y, m0.mat[2].z, m1.mat[2].x, m1.mat[2].y, m1.mat[2].z);
-        mat[3] = new idVec6(m2.mat[0].x, m2.mat[0].y, m2.mat[0].z, m3.mat[0].x, m3.mat[0].y, m3.mat[0].z);
-        mat[4] = new idVec6(m2.mat[1].x, m2.mat[1].y, m2.mat[1].z, m3.mat[1].x, m3.mat[1].y, m3.mat[1].z);
-        mat[5] = new idVec6(m2.mat[2].x, m2.mat[2].y, m2.mat[2].z, m3.mat[2].x, m3.mat[2].y, m3.mat[2].z);
+        mat[0].oSet(new idVec6(m0.mat[0].x, m0.mat[0].y, m0.mat[0].z, m1.mat[0].x, m1.mat[0].y, m1.mat[0].z));
+        mat[1].oSet(new idVec6(m0.mat[1].x, m0.mat[1].y, m0.mat[1].z, m1.mat[1].x, m1.mat[1].y, m1.mat[1].z));
+        mat[2].oSet(new idVec6(m0.mat[2].x, m0.mat[2].y, m0.mat[2].z, m1.mat[2].x, m1.mat[2].y, m1.mat[2].z));
+        mat[3].oSet(new idVec6(m2.mat[0].x, m2.mat[0].y, m2.mat[0].z, m3.mat[0].x, m3.mat[0].y, m3.mat[0].z));
+        mat[4].oSet(new idVec6(m2.mat[1].x, m2.mat[1].y, m2.mat[1].z, m3.mat[1].x, m3.mat[1].y, m3.mat[1].z));
+        mat[5].oSet(new idVec6(m2.mat[2].x, m2.mat[2].y, m2.mat[2].z, m3.mat[2].x, m3.mat[2].y, m3.mat[2].z));
     }
 
     public idMat6(final float src[][]) {
 //	memcpy( mat, src, 6 * 6 * sizeof( float ) );
-        mat[0] = new idVec6(src[0][0], src[0][1], src[0][2], src[0][3], src[0][4], src[0][5]);
-        mat[1] = new idVec6(src[1][0], src[1][1], src[1][2], src[1][3], src[1][4], src[1][5]);
-        mat[2] = new idVec6(src[2][0], src[2][1], src[2][2], src[2][3], src[2][4], src[2][5]);
-        mat[3] = new idVec6(src[3][0], src[3][1], src[3][2], src[3][3], src[3][4], src[3][5]);
-        mat[4] = new idVec6(src[4][0], src[4][1], src[4][2], src[4][3], src[4][4], src[4][5]);
-        mat[5] = new idVec6(src[5][0], src[5][1], src[5][2], src[5][3], src[5][4], src[5][5]);
+        mat[0].oSet(new idVec6(src[0][0], src[0][1], src[0][2], src[0][3], src[0][4], src[0][5]));
+        mat[1].oSet(new idVec6(src[1][0], src[1][1], src[1][2], src[1][3], src[1][4], src[1][5]));
+        mat[2].oSet(new idVec6(src[2][0], src[2][1], src[2][2], src[2][3], src[2][4], src[2][5]));
+        mat[3].oSet(new idVec6(src[3][0], src[3][1], src[3][2], src[3][3], src[3][4], src[3][5]));
+        mat[4].oSet(new idVec6(src[4][0], src[4][1], src[4][2], src[4][3], src[4][4], src[4][5]));
+        mat[5].oSet(new idVec6(src[5][0], src[5][1], src[5][2], src[5][3], src[5][4], src[5][5]));
+    }
+
+    public idMat6(final idMat6 m) {
+        this.oSet(m);
     }
 
 //public	const idVec6 &	operator[]( int index ) const;
@@ -320,11 +333,11 @@ public class idMat6 {
     }
 
     public void Zero() {
-        this.oSet(mat6_zero);
+        this.oSet(getMat6_zero());
     }
 
     public void Identity() {
-        this.oSet(mat6_zero);
+        this.oSet(getMat6_zero());
     }
 
     public boolean IsIdentity() {
@@ -332,7 +345,7 @@ public class idMat6 {
     }
 
     public boolean IsIdentity(final float epsilon) {
-        return Compare(mat6_identity, epsilon);
+        return Compare(getMat6_identity(), epsilon);
     }
 
     public boolean IsSymmetric() {
@@ -809,7 +822,7 @@ public class idMat6 {
 //    #else
         // 6*27+2*30 = 222 multiplications
         //		2*1  =	 2 divisions
-        idVec3[] r0 = new idVec3[3], r1 = new idVec3[3], r2 = new idVec3[3], r3 = new idVec3[3];
+        idVec3[] r0 = idMat0.genVec3Array(3), r1 = idMat0.genVec3Array(3), r2 = idMat0.genVec3Array(3), r3 = idMat0.genVec3Array(3);
         float c0, c1, c2, det, invDet;
         float[] mat = this.reinterpret_cast();
 
@@ -922,37 +935,37 @@ public class idMat6 {
         mat[5 * 6 + 2] = r3[2].x * r2[0].z + r3[2].y * r2[1].z + r3[2].z * r2[2].z;
 
         // m0 = r0 - r1 * m2;
-        mat[0 * 6 + 0] = r0[0].x - r1[0].x * mat[3 * 6 + 0] - r1[0].y * mat[4 * 6 + 0] - r1[0].z * mat[5 * 6 + 0];
-        mat[0 * 6 + 1] = r0[0].y - r1[0].x * mat[3 * 6 + 1] - r1[0].y * mat[4 * 6 + 1] - r1[0].z * mat[5 * 6 + 1];
-        mat[0 * 6 + 2] = r0[0].z - r1[0].x * mat[3 * 6 + 2] - r1[0].y * mat[4 * 6 + 2] - r1[0].z * mat[5 * 6 + 2];
-        mat[1 * 6 + 0] = r0[1].x - r1[1].x * mat[3 * 6 + 0] - r1[1].y * mat[4 * 6 + 0] - r1[1].z * mat[5 * 6 + 0];
-        mat[1 * 6 + 1] = r0[1].y - r1[1].x * mat[3 * 6 + 1] - r1[1].y * mat[4 * 6 + 1] - r1[1].z * mat[5 * 6 + 1];
-        mat[1 * 6 + 2] = r0[1].z - r1[1].x * mat[3 * 6 + 2] - r1[1].y * mat[4 * 6 + 2] - r1[1].z * mat[5 * 6 + 2];
-        mat[2 * 6 + 0] = r0[2].x - r1[2].x * mat[3 * 6 + 0] - r1[2].y * mat[4 * 6 + 0] - r1[2].z * mat[5 * 6 + 0];
-        mat[2 * 6 + 1] = r0[2].y - r1[2].x * mat[3 * 6 + 1] - r1[2].y * mat[4 * 6 + 1] - r1[2].z * mat[5 * 6 + 1];
-        mat[2 * 6 + 2] = r0[2].z - r1[2].x * mat[3 * 6 + 2] - r1[2].y * mat[4 * 6 + 2] - r1[2].z * mat[5 * 6 + 2];
+        this.mat[0].p[0] = r0[0].x - r1[0].x * mat[3 * 6 + 0] - r1[0].y * mat[4 * 6 + 0] - r1[0].z * mat[5 * 6 + 0];
+        this.mat[0].p[1] = r0[0].y - r1[0].x * mat[3 * 6 + 1] - r1[0].y * mat[4 * 6 + 1] - r1[0].z * mat[5 * 6 + 1];
+        this.mat[0].p[2] = r0[0].z - r1[0].x * mat[3 * 6 + 2] - r1[0].y * mat[4 * 6 + 2] - r1[0].z * mat[5 * 6 + 2];
+        this.mat[1].p[0] = r0[1].x - r1[1].x * mat[3 * 6 + 0] - r1[1].y * mat[4 * 6 + 0] - r1[1].z * mat[5 * 6 + 0];
+        this.mat[1].p[1] = r0[1].y - r1[1].x * mat[3 * 6 + 1] - r1[1].y * mat[4 * 6 + 1] - r1[1].z * mat[5 * 6 + 1];
+        this.mat[1].p[2] = r0[1].z - r1[1].x * mat[3 * 6 + 2] - r1[1].y * mat[4 * 6 + 2] - r1[1].z * mat[5 * 6 + 2];
+        this.mat[2].p[0] = r0[2].x - r1[2].x * mat[3 * 6 + 0] - r1[2].y * mat[4 * 6 + 0] - r1[2].z * mat[5 * 6 + 0];
+        this.mat[2].p[1] = r0[2].y - r1[2].x * mat[3 * 6 + 1] - r1[2].y * mat[4 * 6 + 1] - r1[2].z * mat[5 * 6 + 1];
+        this.mat[2].p[2] = r0[2].z - r1[2].x * mat[3 * 6 + 2] - r1[2].y * mat[4 * 6 + 2] - r1[2].z * mat[5 * 6 + 2];
 
         // m1 = r1 * r3;
-        mat[0 * 6 + 3] = r1[0].x * r3[0].x + r1[0].y * r3[1].x + r1[0].z * r3[2].x;
-        mat[0 * 6 + 4] = r1[0].x * r3[0].y + r1[0].y * r3[1].y + r1[0].z * r3[2].y;
-        mat[0 * 6 + 5] = r1[0].x * r3[0].z + r1[0].y * r3[1].z + r1[0].z * r3[2].z;
-        mat[1 * 6 + 3] = r1[1].x * r3[0].x + r1[1].y * r3[1].x + r1[1].z * r3[2].x;
-        mat[1 * 6 + 4] = r1[1].x * r3[0].y + r1[1].y * r3[1].y + r1[1].z * r3[2].y;
-        mat[1 * 6 + 5] = r1[1].x * r3[0].z + r1[1].y * r3[1].z + r1[1].z * r3[2].z;
-        mat[2 * 6 + 3] = r1[2].x * r3[0].x + r1[2].y * r3[1].x + r1[2].z * r3[2].x;
-        mat[2 * 6 + 4] = r1[2].x * r3[0].y + r1[2].y * r3[1].y + r1[2].z * r3[2].y;
-        mat[2 * 6 + 5] = r1[2].x * r3[0].z + r1[2].y * r3[1].z + r1[2].z * r3[2].z;
+        this.mat[0].p[3] = r1[0].x * r3[0].x + r1[0].y * r3[1].x + r1[0].z * r3[2].x;
+        this.mat[0].p[4] = r1[0].x * r3[0].y + r1[0].y * r3[1].y + r1[0].z * r3[2].y;
+        this.mat[0].p[5] = r1[0].x * r3[0].z + r1[0].y * r3[1].z + r1[0].z * r3[2].z;
+        this.mat[1].p[3] = r1[1].x * r3[0].x + r1[1].y * r3[1].x + r1[1].z * r3[2].x;
+        this.mat[1].p[4] = r1[1].x * r3[0].y + r1[1].y * r3[1].y + r1[1].z * r3[2].y;
+        this.mat[1].p[5] = r1[1].x * r3[0].z + r1[1].y * r3[1].z + r1[1].z * r3[2].z;
+        this.mat[2].p[3] = r1[2].x * r3[0].x + r1[2].y * r3[1].x + r1[2].z * r3[2].x;
+        this.mat[2].p[4] = r1[2].x * r3[0].y + r1[2].y * r3[1].y + r1[2].z * r3[2].y;
+        this.mat[2].p[5] = r1[2].x * r3[0].z + r1[2].y * r3[1].z + r1[2].z * r3[2].z;
 
         // m3 = -r3;
-        mat[3 * 6 + 3] = -r3[0].x;
-        mat[3 * 6 + 4] = -r3[0].y;
-        mat[3 * 6 + 5] = -r3[0].z;
-        mat[4 * 6 + 3] = -r3[1].x;
-        mat[4 * 6 + 4] = -r3[1].y;
-        mat[4 * 6 + 5] = -r3[1].z;
-        mat[5 * 6 + 3] = -r3[2].x;
-        mat[5 * 6 + 4] = -r3[2].y;
-        mat[5 * 6 + 5] = -r3[2].z;
+        this.mat[3].p[3] = -r3[0].x;
+        this.mat[3].p[4] = -r3[0].y;
+        this.mat[3].p[5] = -r3[0].z;
+        this.mat[4].p[3] = -r3[1].x;
+        this.mat[4].p[4] = -r3[1].y;
+        this.mat[4].p[5] = -r3[1].z;
+        this.mat[5].p[3] = -r3[2].x;
+        this.mat[5].p[4] = -r3[2].y;
+        this.mat[5].p[5] = -r3[2].z;
 
         return true;
 //#endif
@@ -983,4 +996,5 @@ public class idMat6 {
         }
         return temp;
     }
+
 };

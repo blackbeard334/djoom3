@@ -51,12 +51,12 @@ import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Interpolate.idInterpolateAccelDecelLinear;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 import static neo.idlib.precompiled.MAX_EXPRESSION_OPS;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
 import static neo.sys.sys_public.sysEventType_t.SE_CHAR;
@@ -302,116 +302,113 @@ public class Window {
 
     public static class idWindow {
 
-        protected              float actualX;            // physical coords
-        protected              float actualY;            // ''
-        protected              int   childID;            // this childs id
-        protected /*unsigned*/ int   flags;              // visible, focus, mouseover, cursor, border, etc..
-        protected              int   lastTimeRun;        //
-        protected idRectangle drawRect   = new idRectangle();// overall rect
-        protected idRectangle clientRect = new idRectangle();// client area
-        protected idVec2      origin     = new idVec2();
+        protected              float       actualX;            // physical coords
+        protected              float       actualY;            // ''
+        protected              int         childID;            // this childs id
+        protected /*unsigned*/ int         flags;              // visible, focus, mouseover, cursor, border, etc..
+        protected              int         lastTimeRun;        //
+        protected              idRectangle drawRect     = new idRectangle();// overall rect
+        protected              idRectangle clientRect   = new idRectangle();// client area
+        protected              idVec2      origin       = new idVec2();
         //
-        protected int   timeLine;                        // time stamp used for various fx
-        protected float xOffset;
-        protected float yOffset;
-        protected float forceAspectWidth;
-        protected float forceAspectHeight;
-        protected float matScalex;
-        protected float matScaley;
-        protected float borderSize;
-        protected float textAlignx;
-        protected float textAligny;
-        protected idStr name;
-        protected idStr comment;
+        protected int    timeLine; // time stamp used for various fx
+        protected float  xOffset;
+        protected float  yOffset;
+        protected float  forceAspectWidth;
+        protected float  forceAspectHeight;
+        protected float  matScalex;
+        protected float  matScaley;
+        protected float  borderSize;
+        protected float  textAlignx;
+        protected float  textAligny;
+        protected idStr  name;
+        protected idStr  comment = new idStr();
         protected idVec2 shear = new idVec2();
         //
         protected /*signed*/   char textShadow;
         protected /*unsigned*/ char fontNum;
-        protected /*unsigned*/ char cursor;        //
+        protected /*unsigned*/ char cursor;
         protected /*signed*/   char textAlign;
         //
-        protected idWinBool        noTime         = new idWinBool();            //
-        protected idWinBool        visible        = new idWinBool();            //
-        protected idWinBool        noEvents       = new idWinBool();
-        protected idWinRectangle   rect           = new idWinRectangle();// overall rect
-        protected idWinVec4        backColor      = new idWinVec4();
-        protected idWinVec4        matColor       = new idWinVec4();
-        protected idWinVec4        foreColor      = new idWinVec4();
-        protected idWinVec4        hoverColor     = new idWinVec4();
-        protected idWinVec4        borderColor    = new idWinVec4();
-        protected idWinFloat       textScale      = new idWinFloat();
-        protected idWinFloat       rotate         = new idWinFloat();
-        protected idWinStr         text           = new idWinStr();
-        protected idWinBackground  backGroundName = new idWinBackground();    //
+        protected idWinBool       noTime            = new idWinBool();
+        protected idWinBool       visible           = new idWinBool();
+        protected idWinBool       noEvents          = new idWinBool();
+        protected idWinRectangle  rect              = new idWinRectangle();// overall rect
+        protected idWinVec4       backColor         = new idWinVec4();
+        protected idWinVec4       matColor          = new idWinVec4();
+        protected idWinVec4       foreColor         = new idWinVec4();
+        protected idWinVec4       hoverColor        = new idWinVec4();
+        protected idWinVec4       borderColor       = new idWinVec4();
+        protected idWinFloat      textScale         = new idWinFloat();
+        protected idWinFloat      rotate            = new idWinFloat();
+        protected idWinStr        text              = new idWinStr();
+        protected idWinBackground backGroundName    = new idWinBackground();
         //
-        protected idList<idWinVar> definedVars    = new idList<>();
-        protected idList<idWinVar> updateVars     = new idList<>();
+        protected idList<idWinVar>  definedVars = new idList<>();
+        protected idList<idWinVar>  updateVars  = new idList<>();
         //
-        protected idRectangle      textRect       = new idRectangle();// text extented rect
-        protected idMaterial background;                              // background asset
+        protected idRectangle       textRect  = new idRectangle();// text extented rect
+        protected idMaterial        background;                   // background asset
         //
-        protected idWindow   parent;                                  // parent window
-        protected idList<idWindow>  children    = new idList<>();     // child windows
+        protected idWindow          parent;                       // parent window
+        protected idList<idWindow>  children = new idList<>();    // child windows
         protected idList<drawWin_t> drawWindows = new idList<>();
         //
-        protected idWindow             focusedChild;        // if a child window has the focus
-        protected idWindow             captureChild;        // if a child window has mouse capture
-        protected idWindow             overChild;           // if a child window has mouse capture
-        protected boolean              hover;
+        protected idWindow          focusedChild;        // if a child window has the focus
+        protected idWindow          captureChild;        // if a child window has mouse capture
+        protected idWindow          overChild;           // if a child window has mouse capture
+        protected boolean           hover;
         //
         protected idDeviceContext      dc;
         //
         protected idUserInterfaceLocal gui;
         //
-        protected static final idCVar            gui_debug = new idCVar("gui_debug", "0", CVAR_GUI | CVAR_BOOL, "");
-        protected static final idCVar            gui_edit  = new idCVar("gui_edit", "0", CVAR_GUI | CVAR_BOOL, "");
+        protected static final idCVar gui_debug = new idCVar("gui_debug", "0", CVAR_GUI | CVAR_BOOL, "");
+        protected static final idCVar gui_edit  = new idCVar("gui_edit", "0", CVAR_GUI | CVAR_BOOL, "");
         //
-        protected              idGuiScriptList[] scripts   = new idGuiScriptList[etoi(SCRIPT_COUNT)];
-        protected boolean[] saveTemps;
+        protected idGuiScriptList[] scripts = new idGuiScriptList[etoi(SCRIPT_COUNT)];
+        protected boolean[]         saveTemps;
         //
-        protected        idList<idTimeLineEvent>  timeLineEvents      = new idList<>();
-        protected        idList<idTransitionData> transitions         = new idList<>();
+        protected idList<idTimeLineEvent>  timeLineEvents = new idList<>();
+        protected idList<idTransitionData> transitions = new idList<>();
         //
-        protected static boolean[]                registerIsTemporary = new boolean[MAX_EXPRESSION_REGISTERS]; // statics to assist during parsing
+        protected static boolean[] registerIsTemporary = new boolean[MAX_EXPRESSION_REGISTERS]; // statics to assist during parsing
         //
-        protected        idList<wexpOp_t>         ops                 = new idList<>();                        // evaluate to make expressionRegisters
-        protected        idList<Float>            expressionRegisters = new idList<>();
-        protected idList<wexpOp_t>[] saveOps;                       // evaluate to make expressionRegisters
-        protected idList<rvNamedEvent> namedEvents = new idList<>();//  added named events
-        protected idList<Float>[] saveRegs;
+        protected idList<wexpOp_t>     ops                 = new idList<>();// evaluate to make expressionRegisters
+        protected idList<Float>        expressionRegisters = new idList<>();
+        protected idList<wexpOp_t>[]   saveOps;                             // evaluate to make expressionRegisters
+        protected idList<rvNamedEvent> namedEvents         = new idList<>();//  added named events
+        protected idList<Float>[]      saveRegs;
         //
-        protected      idRegisterList regList    = new idRegisterList();
+        protected idRegisterList regList = new idRegisterList();
         //
-        protected      idWinBool      hideCursor = new idWinBool();
+        protected idWinBool hideCursor = new idWinBool();
         //
-        private static idMat3         trans      = new idMat3();
-        private static idVec3         org        = new idVec3();
-        private static idRotation rot;
-        private static final idVec3 vec         = new idVec3(0, 0, 1);
-        private static       idMat3 smat        = new idMat3();
+        private static       idMat3     trans   = new idMat3();
+        private static       idVec3     org     = new idVec3();
+        private static       idRotation rot;
+        private static final idVec3     vec     = new idVec3(0, 0, 1);
+        private static       idMat3     smat    = new idMat3();
         //
         //
-        private static       int    DBG_COUNTER = 0;
-        private final int DBG_COUNT;
+        private static int DBG_COUNTER = 0;
+        private final  int DBG_COUNT= DBG_COUNTER++;
 
         protected idWindow() {
-            DBG_COUNT = DBG_COUNTER++;
         }
 
         public idWindow(idUserInterfaceLocal gui) {
-            DBG_COUNT = DBG_COUNTER++;
             dc = null;
             this.gui = gui;
             CommonInit();
         }
 
         public idWindow(idDeviceContext d, idUserInterfaceLocal ui) {
-            DBG_COUNT = DBG_COUNTER++;
             dc = d;
             gui = ui;
             CommonInit();
         }
-        
+
         /** ~idWindow() */
         public void close() {
             CleanUp();
@@ -640,7 +637,8 @@ public class Window {
             }
         }
 
-        public void SetupBackground() {
+        private static int DBG_SetupBackground = 0;
+        public void SetupBackground() {    DBG_SetupBackground++;
             if (backGroundName.Length() != 0) {
                 background = declManager.FindMaterial(backGroundName.data);
                 background.SetImageClassifications(1);    // just for resource tracking
@@ -1903,7 +1901,7 @@ public class Window {
                     && 0 == (flags & WIN_NOCURSOR)
                     && !hideCursor.data
                     && (gui.Active() || ((flags & WIN_MENUGUI) != 0)))) {
-                dc.SetTransformInfo(vec3_origin, mat3_identity);
+                dc.SetTransformInfo(getVec3_origin(), getMat3_identity());
                 gui.DrawCursor();
             }
 
@@ -1959,7 +1957,7 @@ public class Window {
 
             RunScript(n);
             int c = children.Num();
-            for (int i = 0; i < c; i++) {                
+            for (int i = 0; i < c; i++) {
                 children.oGet(i).Activate(activate, act);
             }
 

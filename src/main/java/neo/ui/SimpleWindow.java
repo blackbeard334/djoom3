@@ -9,11 +9,11 @@ import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.colorBlack;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.UserInterfaceLocal.idUserInterfaceLocal;
@@ -216,7 +216,7 @@ public class SimpleWindow {
                 dc.DrawText(shadowText, textScale.data, textAlign, colorBlack, shadowRect, !itob(flags & WIN_NOWRAP), -1);
             }
             dc.DrawText(text.data, textScale.data, textAlign, foreColor.data, textRect, !itob(flags & WIN_NOWRAP), -1);
-            dc.SetTransformInfo(vec3_origin, mat3_identity);
+            dc.SetTransformInfo(getVec3_origin(), getMat3_identity());
             if ((flags & WIN_NOCLIP) != 0) {
                 dc.EnableClipping(true);
             }

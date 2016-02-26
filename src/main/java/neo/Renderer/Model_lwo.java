@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 import neo.Renderer.Model_lwo.lwClip;
 import neo.Renderer.Model_lwo.lwEnvelope;
 import neo.Renderer.Model_lwo.lwGradKey;
@@ -23,7 +24,6 @@ import neo.Renderer.Model_lwo.lwTagList;
 import neo.Renderer.Model_lwo.lwTexture;
 import neo.Renderer.Model_lwo.lwVMap;
 import neo.Renderer.Model_lwo.lwVMapPt;
-import static neo.Renderer.tr_main.R_ClearedStaticAlloc;
 import static neo.TempDump.NOT;
 import neo.TempDump.NiLLABLE;
 import neo.TempDump.TODO_Exception;
@@ -805,6 +805,13 @@ public class Model_lwo {
 
         public lwVMapPt() {
         }
+
+        static lwVMapPt[] generateArray(final int length) {
+            return Stream.
+                    generate(() -> new lwVMapPt()).
+                    limit(length).
+                    toArray(lwVMapPt[]::new);
+        }
     };
 
 
@@ -1350,11 +1357,11 @@ public class Model_lwo {
                         break;
 
                     case ID_PRE:
-                        env.behavior[ 0] = getU2(fp);
+                        env.behavior[0] = getU2(fp);
                         break;
 
                     case ID_POST:
-                        env.behavior[ 1] = getU2(fp);
+                        env.behavior[1] = getU2(fp);
                         break;
 
                     case ID_KEY:
@@ -1380,21 +1387,21 @@ public class Model_lwo {
                             nparams = 4;
                         }
                         for (i = 0; i < nparams; i++) {
-                            f[ i] = getF4(fp);
+                            f[i] = getF4(fp);
                         }
 
                         switch ((int) key.shape) {
                             case ID_TCB:
-                                key.tension = f[ 0];
-                                key.continuity = f[ 1];
-                                key.bias = f[ 2];
+                                key.tension = f[0];
+                                key.continuity = f[1];
+                                key.bias = f[2];
                                 break;
 
                             case ID_BEZI:
                             case ID_HERM:
                             case ID_BEZ2:
                                 for (i = 0; i < nparams; i++) {
-                                    key.param[ i] = f[ i];
+                                    key.param[i] = f[i];
                                 }
                                 break;
                         }
@@ -1584,20 +1591,20 @@ public class Model_lwo {
         float[] t0 = {0.0f}, t1 = {1.0f};
 
         if (key0.shape == ID_BEZ2) {
-            x = key0.time + key0.param[ 2];
+            x = key0.time + key0.param[2];
         } else {
             x = key0.time + (key1.time - key0.time) / 3.0f;
         }
 
-        t = bez2_time(key0.time, x, key1.time + key1.param[ 0], key1.time, time, t0, t1);
+        t = bez2_time(key0.time, x, key1.time + key1.param[0], key1.time, time, t0, t1);
 
         if (key0.shape == ID_BEZ2) {
-            y = key0.value + key0.param[ 3];
+            y = key0.value + key0.param[3];
         } else {
-            y = key0.value + key0.param[ 1] / 3.0f;
+            y = key0.value + key0.param[1] / 3.0f;
         }
 
-        return bezier(key0.value, y, key1.param[ 1] + key1.value, key1.value, t);
+        return bezier(key0.value, y, key1.param[1] + key1.value, key1.value, t);
     }
 
 
@@ -1642,16 +1649,16 @@ public class Model_lwo {
 
             case ID_BEZI:
             case ID_HERM:
-                out = key0.param[ 1];
+                out = key0.param[1];
                 if (key0.prev != null) {
                     out *= (key1.time - key0.time) / (key1.time - key0.prev.time);
                 }
                 break;
 
             case ID_BEZ2:
-                out = key0.param[ 3] * (key1.time - key0.time);
-                if (idMath.Fabs(key0.param[ 2]) > 1e-5f) {
-                    out /= key0.param[ 2];
+                out = key0.param[3] * (key1.time - key0.time);
+                if (idMath.Fabs(key0.param[2]) > 1e-5f) {
+                    out /= key0.param[2];
                 } else {
                     out *= 1e5f;
                 }
@@ -1707,7 +1714,7 @@ public class Model_lwo {
 
             case ID_BEZI:
             case ID_HERM:
-                in = key1.param[ 0];
+                in = key1.param[0];
                 if (key1.next != null) {
                     in *= (key1.time - key0.time) / (key1.next.time - key0.time);
                 }
@@ -1715,9 +1722,9 @@ public class Model_lwo {
                 return in;
 
             case ID_BEZ2:
-                in = key1.param[ 1] * (key1.time - key0.time);
-                if (idMath.Fabs(key1.param[ 0]) > 1e-5f) {
-                    in /= key1.param[ 0];
+                in = key1.param[1] * (key1.time - key0.time);
+                if (idMath.Fabs(key1.param[0]) > 1e-5f) {
+                    in /= key1.param[0];
                 } else {
                     in *= 1e5f;
                 }
@@ -1765,7 +1772,7 @@ public class Model_lwo {
 
         /* use pre-behavior if time is before first key time */
         if (time < skey.time) {
-            switch (env.behavior[ 0]) {
+            switch (env.behavior[0]) {
                 case BEH_RESET:
                     return 0.0f;
 
@@ -1794,7 +1801,7 @@ public class Model_lwo {
                     return out * (time - skey.time) + skey.value;
             }
         } /* use post-behavior if time is after last key time */ else if (time > ekey.time) {
-            switch (env.behavior[ 1]) {
+            switch (env.behavior[1]) {
                 case BEH_RESET:
                     return 0.0f;
 
@@ -2231,7 +2238,7 @@ public class Model_lwo {
         }
 
         flen += len;
-        return bbtocb(s).toString();//TODO:check output(my tests return chinese characters).
+        return bbtocb(s).toString().trim();//TODO:check output(my tests return chinese characters).
     }
 
     @Deprecated//UNUSED
@@ -2534,7 +2541,9 @@ public class Model_lwo {
             }
 
             /* process chunks as they're encountered */
+            int j = 0;
             while (true) {
+                j++;
                 cksize += cksize & 1;
 
                 switch (id) {
@@ -2832,10 +2841,10 @@ public class Model_lwo {
             }
 
             key0.next = key1;
-            key0.value = pos[ i];
+            key0.value = pos[i];
             key0.time = 0.0f;
             key1.prev = key0;
-            key1.value = pos[ i] + vel[ i] * 30.0f;
+            key1.value = pos[i] + vel[i] * 30.0f;
             key1.time = 1.0f;
             key0.shape = key1.shape = ID_LINE;
 
@@ -2849,8 +2858,8 @@ public class Model_lwo {
             }
             env.key = key0;
             env.nkeys = 2;
-            env.behavior[ 0] = BEH_LINEAR;
-            env.behavior[ 1] = BEH_LINEAR;
+            env.behavior[0] = BEH_LINEAR;
+            env.behavior[1] = BEH_LINEAR;
 
             elist = lwListAdd(elist, env);
         }
@@ -2874,9 +2883,9 @@ public class Model_lwo {
             return null;
         }
 
-        tex.tmap.size.val[ 0]
-                = tex.tmap.size.val[ 1]
-                = tex.tmap.size.val[ 2] = 1.0f;
+        tex.tmap.size.val[0]
+                = tex.tmap.size.val[1]
+                = tex.tmap.size.val[2] = 1.0f;
         tex.opacity.val = 1.0f;
         tex.enabled = 1;
 
@@ -2931,9 +2940,9 @@ public class Model_lwo {
             }
 
             /* non-zero defaults */
-            surf.color.rgb[ 0] = 0.78431f;
-            surf.color.rgb[ 1] = 0.78431f;
-            surf.color.rgb[ 2] = 0.78431f;
+            surf.color.rgb[0] = 0.78431f;
+            surf.color.rgb[1] = 0.78431f;
+            surf.color.rgb[2] = 0.78431f;
             surf.diffuse.val = 1.0f;
             surf.glossiness.val = 0.4f;
             surf.bump.val = 1.0f;
@@ -2961,9 +2970,9 @@ public class Model_lwo {
 
                 switch (id) {
                     case ID_COLR:
-                        surf.color.rgb[ 0] = getU1(fp) / 255.0f;
-                        surf.color.rgb[ 1] = getU1(fp) / 255.0f;
-                        surf.color.rgb[ 2] = getU1(fp) / 255.0f;
+                        surf.color.rgb[0] = getU1(fp) / 255.0f;
+                        surf.color.rgb[1] = getU1(fp) / 255.0f;
+                        surf.color.rgb[2] = getU1(fp) / 255.0f;
                         break;
 
                     case ID_FLAG:
@@ -3128,25 +3137,25 @@ public class Model_lwo {
 
                     case ID_TSIZ:
                         for (i = 0; i < 3; i++) {
-                            tex.tmap.size.val[ i] = getF4(fp);
+                            tex.tmap.size.val[i] = getF4(fp);
                         }
                         break;
 
                     case ID_TCTR:
                         for (i = 0; i < 3; i++) {
-                            tex.tmap.center.val[ i] = getF4(fp);
+                            tex.tmap.center.val[i] = getF4(fp);
                         }
                         break;
 
                     case ID_TFAL:
                         for (i = 0; i < 3; i++) {
-                            tex.tmap.falloff.val[ i] = getF4(fp);
+                            tex.tmap.falloff.val[i] = getF4(fp);
                         }
                         break;
 
                     case ID_TVEL:
                         for (i = 0; i < 3; i++) {
-                            v[ i] = getF4(fp);
+                            v[i] = getF4(fp);
                         }
                          {
                             int[] nenvs = {obj.nenvs};
@@ -3158,13 +3167,13 @@ public class Model_lwo {
                     case ID_TCLR:
                         if (tex.type == ID_PROC) {
                             for (i = 0; i < 3; i++) {
-                                tex.param.proc.value[ i] = getU1(fp) / 255.0f;
+                                tex.param.proc.value[i] = getU1(fp) / 255.0f;
                             }
                         }
                         break;
 
                     case ID_TVAL:
-                        tex.param.proc.value[ 0] = getI2(fp) / 256.0f;
+                        tex.param.proc.value[0] = getI2(fp) / 256.0f;
                         break;
 
                     case ID_TAMP:
@@ -3613,9 +3622,9 @@ public class Model_lwo {
 
         /* assign position values */
         for (i = 0, j = 0; i < np; i++, j += 3) {
-            point.pt[ i].pos[ 0] = f.getFloat();//f[ j ];
-            point.pt[ i].pos[ 1] = f.getFloat();//f[ j + 1 ];
-            point.pt[ i].pos[ 2] = f.getFloat();//f[ j + 2 ];
+            point.pt[i].pos[0] = f.getFloat();//f[ j ];
+            point.pt[i].pos[1] = f.getFloat();//f[ j + 1 ];
+            point.pt[i].pos[2] = f.getFloat();//f[ j + 2 ];
         }
 
 //        Mem_Free(f);
@@ -3638,20 +3647,20 @@ public class Model_lwo {
         }
 
         for (i = 0; i < 6; i++) {
-            if (bbox[ i] != 0.0f) {
+            if (bbox[i] != 0.0f) {
                 return;
             }
         }
 
-        bbox[ 0] = bbox[ 1] = bbox[ 2] = 1e20f;
-        bbox[ 3] = bbox[ 4] = bbox[ 5] = -1e20f;
+        bbox[0] = bbox[1] = bbox[2] = 1e20f;
+        bbox[3] = bbox[4] = bbox[5] = -1e20f;
         for (i = 0; i < point.count; i++) {
             for (j = 0; j < 3; j++) {
-                if (bbox[ j] > point.pt[ i].pos[ j]) {
-                    bbox[ j] = point.pt[ i].pos[ j];
+                if (bbox[j] > point.pt[i].pos[j]) {
+                    bbox[j] = point.pt[i].pos[j];
                 }
-                if (bbox[ j + 3] < point.pt[ i].pos[ j]) {
-                    bbox[ j + 3] = point.pt[ i].pos[ j];
+                if (bbox[j + 3] < point.pt[i].pos[j]) {
+                    bbox[j + 3] = point.pt[i].pos[j];
                 }
             }
         }
@@ -3817,24 +3826,24 @@ public class Model_lwo {
                 v1 = new float[3], v2 = new float[3];
 
         for (i = 0; i < polygon.count; i++) {
-            if (polygon.pol[ i].nverts < 3) {
+            if (polygon.pol[i].nverts < 3) {
                 continue;
             }
             for (j = 0; j < 3; j++) {
 
                 // FIXME: track down why indexes are way out of range
-                p1[ j] = point.pt[ polygon.pol[ i].getV(0).index].pos[ j];
-                p2[ j] = point.pt[ polygon.pol[ i].getV(1).index].pos[ j];
-                pn[ j] = point.pt[ polygon.pol[ i].getV(polygon.pol[ i].nverts - 1).index].pos[ j];
+                p1[j] = point.pt[polygon.pol[i].getV(0).index].pos[j];
+                p2[j] = point.pt[polygon.pol[i].getV(1).index].pos[j];
+                pn[j] = point.pt[polygon.pol[i].getV(polygon.pol[i].nverts - 1).index].pos[j];
             }
 
             for (j = 0; j < 3; j++) {
-                v1[ j] = p2[ j] - p1[ j];
-                v2[ j] = pn[ j] - p1[ j];
+                v1[j] = p2[j] - p1[j];
+                v2[j] = pn[j] - p1[j];
             }
 
-            cross(v1, v2, polygon.pol[ i].norm);
-            normalize(polygon.pol[ i].norm);
+            cross(v1, v2, polygon.pol[i].norm);
+            normalize(polygon.pol[i].norm);
         }
     }
 
@@ -3852,18 +3861,18 @@ public class Model_lwo {
 
         /* count the number of polygons per point */
         for (i = 0; i < polygon.count; i++) {
-            for (j = 0; j < polygon.pol[ i].nverts; j++) {
-                ++point.pt[ polygon.pol[ i].getV(j).index].npols;
+            for (j = 0; j < polygon.pol[i].nverts; j++) {
+                ++point.pt[polygon.pol[i].getV(j).index].npols;
             }
         }
 
         /* alloc per-point polygon arrays */
         for (i = 0; i < point.count; i++) {
-            if (point.pt[ i].npols == 0) {
+            if (point.pt[i].npols == 0) {
                 continue;
             }
             point.pt[i].pol = new int[point.pt[i].npols];// Mem_ClearedAlloc(point.pt[ i].npols);
-            if (null == point.pt[ i].pol) {
+            if (null == point.pt[i].pol) {
                 return false;
             }
             point.pt[i].npols = 0;
@@ -3871,10 +3880,10 @@ public class Model_lwo {
 
         /* fill in polygon array for each point */
         for (i = 0; i < polygon.count; i++) {
-            for (j = 0; j < polygon.pol[ i].nverts; j++) {
-                k = polygon.pol[ i].getV(j).index;
-                point.pt[ k].pol[ point.pt[ k].npols] = i;
-                ++point.pt[ k].npols;
+            for (j = 0; j < polygon.pol[i].nverts; j++) {
+                k = polygon.pol[i].getV(j).index;
+                point.pt[k].pol[point.pt[k].npols] = i;
+                ++point.pt[k].npols;
             }
         }
 
@@ -3909,7 +3918,7 @@ public class Model_lwo {
         for (i = 0; i < tlist.count; i++) {
             st = surf;
             while (st != null) {
-                if (st.name != null && st.name.equals(tlist.tag[ i])) {
+                if (st.name != null && st.name.equals(tlist.tag[i])) {
                     s[i] = st;
                     break;
                 }
@@ -3922,21 +3931,21 @@ public class Model_lwo {
             if (index < 0 || index > tlist.count) {
                 return false;
             }
-            if (null == s[ index]) {
-                s[ index] = lwDefaultSurface();
-                if (null == s[ index]) {
+            if (null == s[index]) {
+                s[index] = lwDefaultSurface();
+                if (null == s[index]) {
                     return false;
                 }
-                s[ index].name = "";//(String) Mem_ClearedAlloc(tlist.tag[ index].length() + 1);
-                if (null == s[ index].name) {
+                s[index].name = "";//(String) Mem_ClearedAlloc(tlist.tag[ index].length() + 1);
+                if (null == s[index].name) {
                     return false;
                 }
-                s[ index].name = tlist.tag[ index];
-                surf = lwListAdd(surf, s[ index]);
+                s[index].name = tlist.tag[index];
+                surf = lwListAdd(surf, s[index]);
                 object.nsurfs++;
             }
 //            polygon.pol[ i].surf.oSet(s[ index]);
-            polygon.pol[i].surf = s[ index];//TODO:should this be an oSet() to preserve the refs?
+            polygon.pol[i].surf = s[index];//TODO:should this be an oSet() to preserve the refs?
         }
 
         s = null;
@@ -3963,37 +3972,37 @@ public class Model_lwo {
         float a;
 
         for (j = 0; j < polygon.count; j++) {
-            for (n = 0; n < polygon.pol[ j].nverts; n++) {
+            for (n = 0; n < polygon.pol[j].nverts; n++) {
                 for (k = 0; k < 3; k++) {
-                    polygon.pol[ j].getV(n).norm[ k] = polygon.pol[ j].norm[ k];
+                    polygon.pol[j].getV(n).norm[k] = polygon.pol[j].norm[k];
                 }
 
-                if (polygon.pol[ j].surf.smooth <= 0) {
+                if (polygon.pol[j].surf.smooth <= 0) {
                     continue;
                 }
 
-                p = polygon.pol[ j].getV(n).index;
+                p = polygon.pol[j].getV(n).index;
 
-                for (g = 0; g < point.pt[ p].npols; g++) {
-                    h = point.pt[ p].pol[ g];
+                for (g = 0; g < point.pt[p].npols; g++) {
+                    h = point.pt[p].pol[g];
                     if (h == j) {
                         continue;
                     }
 
-                    if (polygon.pol[ j].smoothgrp != polygon.pol[ h].smoothgrp) {
+                    if (polygon.pol[j].smoothgrp != polygon.pol[h].smoothgrp) {
                         continue;
                     }
-                    a = idMath.ACos(dot(polygon.pol[ j].norm, polygon.pol[ h].norm));
-                    if (a > polygon.pol[ j].surf.smooth) {
+                    a = idMath.ACos(dot(polygon.pol[j].norm, polygon.pol[h].norm));
+                    if (a > polygon.pol[j].surf.smooth) {
                         continue;
                     }
 
                     for (k = 0; k < 3; k++) {
-                        polygon.pol[j].getV(n).norm[ k] += polygon.pol[ h].norm[ k];
+                        polygon.pol[j].getV(n).norm[k] += polygon.pol[h].norm[k];
                     }
                 }
 
-                normalize(polygon.pol[ j].getV(n).norm);
+                normalize(polygon.pol[j].getV(n).norm);
             }
         }
     }
@@ -4030,9 +4039,10 @@ public class Model_lwo {
      added to the lwTagList array.
      ====================================================================== */
     public static boolean lwGetTags(idFile fp, int ckSize, lwTagList tList) {
-        ByteBuffer buf;
-        int i, len, nTags;
-        String bp;
+        final ByteBuffer buf;
+        final int nTags;
+        final String bp;
+        final String[] tags;
 
         if (ckSize == 0) {
             return true;
@@ -4046,46 +4056,26 @@ public class Model_lwo {
         }
 
         /* count the strings */
-        nTags = 0;
         bp = new String(buf.array());
-//        while ( bp < buf + cksize ) {
-//		len = strlen( bp ) + 1;
-//		len += len & 1;
-//		bp += len;
-//		++ntags;
-//	}
-        nTags = bp.split("\0").length;
+        tags = bp.split("\0+");//TODO:make sure we don't need the \0?
+        nTags = tags.length;
 
         /* expand the string array to hold the new tags */
         tList.offset = tList.count;
         tList.count += nTags;
-        String[] oldtag = tList.tag;
-        tList.tag = new String[tList.count];// Mem_Alloc(tlist.count);
-        if (null == tList.tag) {
-//        gotoFail;
+        final String[] oldtag = tList.tag;
+        tList.tag = new String[tList.count];
+        if (tList.count == 0) {
             return false;
         }
         if (oldtag != null) {
-//            memcpy(tlist.tag, oldtag, tlist.offset);
             System.arraycopy(oldtag, 0, tList.tag, 0, tList.offset);
-//            Mem_Free(oldtag);
         }
-//        memset(tlist.tag[ tlist.offset], 0, ntags);
 
         /* copy the new tags to the tag array */
-//        buf = buf;
-        for (i = 0; i < nTags; i++) {
-            tList.tag[ i + tList.offset] = sgetS0(buf);
-        }
+        System.arraycopy(tags, 0, tList.tag, tList.offset, nTags);
 
-        buf = null;
         return true;
-
-//        Fail:
-//        if (buf != null) {
-//            buf=null
-//        }
-//        return false;
     }
 
 
@@ -4404,21 +4394,21 @@ public class Model_lwo {
             switch (id) {
                 case ID_SIZE:
                     for (i = 0; i < 3; i++) {
-                        tmap.size.val[ i] = getF4(fp);
+                        tmap.size.val[i] = getF4(fp);
                     }
                     tmap.size.eindex = getVX(fp);
                     break;
 
                 case ID_CNTR:
                     for (i = 0; i < 3; i++) {
-                        tmap.center.val[ i] = getF4(fp);
+                        tmap.center.val[i] = getF4(fp);
                     }
                     tmap.center.eindex = getVX(fp);
                     break;
 
                 case ID_ROTA:
                     for (i = 0; i < 3; i++) {
-                        tmap.rotate.val[ i] = getF4(fp);
+                        tmap.rotate.val[i] = getF4(fp);
                     }
                     tmap.rotate.eindex = getVX(fp);
                     break;
@@ -4426,7 +4416,7 @@ public class Model_lwo {
                 case ID_FALL:
                     tmap.fall_type = getU2(fp);
                     for (i = 0; i < 3; i++) {
-                        tmap.falloff.val[ i] = getF4(fp);
+                        tmap.falloff.val[i] = getF4(fp);
                     }
                     tmap.falloff.eindex = getVX(fp);
                     break;
@@ -4620,12 +4610,12 @@ public class Model_lwo {
                     break;
 
                 case ID_VALU:
-                    tex.param.proc.value[ 0] = getF4(fp);
+                    tex.param.proc.value[0] = getF4(fp);
                     if (sz >= 8) {
-                        tex.param.proc.value[ 1] = getF4(fp);
+                        tex.param.proc.value[1] = getF4(fp);
                     }
                     if (sz >= 12) {
-                        tex.param.proc.value[ 2] = getF4(fp);
+                        tex.param.proc.value[2] = getF4(fp);
                     }
                     break;
 
@@ -4725,9 +4715,9 @@ public class Model_lwo {
                         return 0;
                     }
                     for (i = 0; i < nkeys; i++) {
-                        tex.param.grad.key[ i].value = getF4(fp);
+                        tex.param.grad.key[i].value = getF4(fp);
                         for (j = 0; j < 4; j++) {
-                            tex.param.grad.key[ i].rgba[ j] = getF4(fp);
+                            tex.param.grad.key[i].rgba[j] = getF4(fp);
                         }
                     }
                     break;
@@ -4739,7 +4729,7 @@ public class Model_lwo {
                         return 0;
                     }
                     for (i = 0; i < nkeys; i++) {
-                        tex.param.grad.ikey[ i] = getU2(fp);
+                        tex.param.grad.ikey[i] = getU2(fp);
                     }
                     break;
 
@@ -4794,9 +4784,9 @@ public class Model_lwo {
         }
 
         tex.type = type;
-        tex.tmap.size.val[ 0]
-                = tex.tmap.size.val[ 1]
-                = tex.tmap.size.val[ 2] = 1.0f;
+        tex.tmap.size.val[0]
+                = tex.tmap.size.val[1]
+                = tex.tmap.size.val[2] = 1.0f;
         tex.opacity.val = 1.0f;
         tex.enabled = 1;
 
@@ -5018,9 +5008,9 @@ public class Model_lwo {
             return null;
         }
 
-        surf.color.rgb[ 0] = 0.78431f;
-        surf.color.rgb[ 1] = 0.78431f;
-        surf.color.rgb[ 2] = 0.78431f;
+        surf.color.rgb[0] = 0.78431f;
+        surf.color.rgb[1] = 0.78431f;
+        surf.color.rgb[2] = 0.78431f;
         surf.diffuse.val = 1.0f;
         surf.glossiness.val = 0.4f;
         surf.bump.val = 1.0f;
@@ -5056,9 +5046,9 @@ public class Model_lwo {
 //            }
 
             /* non-zero defaults */
-            surf.color.rgb[ 0] = 0.78431f;
-            surf.color.rgb[ 1] = 0.78431f;
-            surf.color.rgb[ 2] = 0.78431f;
+            surf.color.rgb[0] = 0.78431f;
+            surf.color.rgb[1] = 0.78431f;
+            surf.color.rgb[2] = 0.78431f;
             surf.diffuse.val = 1.0f;
             surf.glossiness.val = 0.4f;
             surf.bump.val = 1.0f;
@@ -5087,9 +5077,9 @@ public class Model_lwo {
 
                 switch (id) {
                     case ID_COLR:
-                        surf.color.rgb[ 0] = getF4(fp);
-                        surf.color.rgb[ 1] = getF4(fp);
-                        surf.color.rgb[ 2] = getF4(fp);
+                        surf.color.rgb[0] = getF4(fp);
+                        surf.color.rgb[1] = getF4(fp);
+                        surf.color.rgb[2] = getF4(fp);
                         surf.color.eindex = getVX(fp);
                         break;
 
@@ -5281,13 +5271,13 @@ public class Model_lwo {
     }
 
     public static float dot(float a[], float b[]) {
-        return a[ 0] * b[ 0] + a[ 1] * b[ 1] + a[ 2] * b[ 2];
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
     }
 
     public static void cross(float a[], float b[], float c[]) {
-        c[ 0] = a[ 1] * b[ 2] - a[ 2] * b[ 1];
-        c[ 1] = a[ 2] * b[ 0] - a[ 0] * b[ 2];
-        c[ 2] = a[ 0] * b[ 1] - a[ 1] * b[ 0];
+        c[0] = a[1] * b[2] - a[2] * b[1];
+        c[1] = a[2] * b[0] - a[0] * b[2];
+        c[2] = a[0] * b[1] - a[1] * b[0];
     }
 
     public static void normalize(float v[]) {
@@ -5295,9 +5285,9 @@ public class Model_lwo {
 
         r = (float) idMath.Sqrt(dot(v, v));
         if (r > 0) {
-            v[ 0] /= r;
-            v[ 1] /= r;
-            v[ 2] /= r;
+            v[0] /= r;
+            v[1] /= r;
+            v[2] /= r;
         }
     }
 
@@ -5462,7 +5452,7 @@ public class Model_lwo {
         while (vm != null) {
             if (0 == vm.perpoly) {
                 for (i = 0; i < vm.nverts; i++) {
-                    ++point.pt[ vm.vindex[ i]].nvmaps;
+                    ++point.pt[vm.vindex[i]].nvmaps;
                 }
             }
             vm = vm.next;
@@ -5470,12 +5460,14 @@ public class Model_lwo {
 
         /* allocate vmap references for each mapped point */
         for (i = 0; i < point.count; i++) {
-            if (point.pt[ i].nvmaps != 0) {
-                point.pt[ i].vm = new lwVMapPt[point.pt[i].nvmaps];// Mem_ClearedAlloc(point.pt[ i].nvmaps);
-                if (null == point.pt[ i].vm) {
+            if (point.pt[i].nvmaps != 0) {
+                point.pt[i].vm = Stream.generate(() -> new lwVMapPt()).
+                        limit(point.pt[i].nvmaps).
+                        toArray(lwVMapPt[]::new);// Mem_ClearedAlloc(point.pt[ i].nvmaps);
+                if (null == point.pt[i].vm) {
                     return false;
                 }
-                point.pt[ i].nvmaps = 0;
+                point.pt[i].nvmaps = 0;
             }
         }
 
@@ -5484,11 +5476,11 @@ public class Model_lwo {
         while (vm != null) {
             if (0 == vm.perpoly) {
                 for (i = 0; i < vm.nverts; i++) {
-                    j = vm.vindex[ i];
-                    n = point.pt[ j].nvmaps;
-                    point.pt[ j].vm[ n].vmap = vm;
-                    point.pt[ j].vm[ n].index = i;
-                    ++point.pt[ j].nvmaps;
+                    j = vm.vindex[i];
+                    n = point.pt[j].nvmaps;
+                    point.pt[j].vm[n].vmap = vm;
+                    point.pt[j].vm[n].index = i;
+                    ++point.pt[j].nvmaps;
                 }
             }
             vm = vm.next;
@@ -5514,9 +5506,9 @@ public class Model_lwo {
         while (vm != null) {
             if (vm.perpoly != 0) {
                 for (i = 0; i < vm.nverts; i++) {
-                    for (j = 0; j < polygon.pol[ vm.pindex[ i]].nverts; j++) {
-                        pv = polygon.pol[ vm.pindex[ i]].getV(j);
-                        if (vm.vindex[ i] == pv.index) {
+                    for (j = 0; j < polygon.pol[vm.pindex[i]].nverts; j++) {
+                        pv = polygon.pol[vm.pindex[i]].getV(j);
+                        if (vm.vindex[i] == pv.index) {
                             ++pv.nvmaps;
                             break;
                         }
@@ -5528,10 +5520,10 @@ public class Model_lwo {
 
         /* allocate vmap references for each mapped vertex */
         for (i = 0; i < polygon.count; i++) {
-            for (j = 0; j < polygon.pol[ i].nverts; j++) {
-                pv = polygon.pol[ i].getV(j);
+            for (j = 0; j < polygon.pol[i].nverts; j++) {
+                pv = polygon.pol[i].getV(j);
                 if (pv.nvmaps != 0) {
-                    pv.vm = R_ClearedStaticAlloc(pv.nvmaps, lwVMapPt.class);// Mem_ClearedAlloc(pv.nvmaps);
+                    pv.vm = lwVMapPt.generateArray(pv.nvmaps);
                     if (null == pv.vm) {
                         return false;
                     }

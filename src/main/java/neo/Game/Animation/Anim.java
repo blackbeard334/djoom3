@@ -15,7 +15,6 @@ import static neo.TempDump.indexOf;
 import static neo.TempDump.sizeof;
 import neo.framework.DeclSkin.idDeclSkin;
 import neo.idlib.BV.Bounds.idBounds;
-import static neo.idlib.Lib.BIT;
 import neo.idlib.Lib.idException;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
@@ -29,6 +28,7 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Matrix.idMat3;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Quat.idQuat;
 import static neo.idlib.math.Simd.SIMDProcessor;
@@ -104,6 +104,11 @@ public class Anim {
         idVec3              pos;
         jointModTransform_t transform_pos;
         jointModTransform_t transform_axis;
+
+        public jointMod_t() {
+            this.mat = new idMat3();
+            this.pos = new idVec3();
+        }
     };
     public static final int ANIM_TX = (1 << 0);// BIT(0);
     public static final int ANIM_TY = (1 << 1);// BIT(1);
@@ -214,7 +219,12 @@ public class Anim {
             numJoints = 0;
             frameRate = 24;
             animLength = 0;
-            totaldelta.Zero();
+            bounds = new idList<>();
+            jointInfo = new idList<>();
+            baseFrame = new idList<>();
+            componentFrames = new idList<>();
+            name = new idStr();
+            totaldelta = new idVec3();
         }
         // ~idMD5Anim();
 
@@ -310,28 +320,29 @@ public class Anim {
             parser.ExpectTokenString("{");
             for (i = 0; i < numJoints; i++) {
                 parser.ReadToken(token);
-                jointInfo.oGet(i).nameIndex = animationLib.JointIndex(token.toString());
+                final jointAnimInfo_t joint = jointInfo.oSet(i, new jointAnimInfo_t());
+                joint.nameIndex = animationLib.JointIndex(token.toString());
 
                 // parse parent num
-                jointInfo.oGet(i).parentNum = parser.ParseInt();
-                if (jointInfo.oGet(i).parentNum >= i) {
-                    parser.Error("Invalid parent num: %d", jointInfo.oGet(i).parentNum);
+                joint.parentNum = parser.ParseInt();
+                if (joint.parentNum >= i) {
+                    parser.Error("Invalid parent num: %d", joint.parentNum);
                 }
 
-                if ((i != 0) && (jointInfo.oGet(i).parentNum < 0)) {
+                if ((i != 0) && (joint.parentNum < 0)) {
                     parser.Error("Animations may have only one root joint");
                 }
 
                 // parse anim bits
-                jointInfo.oGet(i).animBits = parser.ParseInt();
-                if ((jointInfo.oGet(i).animBits & ~63) != 0) {
-                    parser.Error("Invalid anim bits: %d", jointInfo.oGet(i).animBits);
+                joint.animBits = parser.ParseInt();
+                if ((joint.animBits & ~63) != 0) {
+                    parser.Error("Invalid anim bits: %d", joint.animBits);
                 }
 
                 // parse first component
-                jointInfo.oGet(i).firstComponent = parser.ParseInt();
-                if ((numAnimatedComponents > 0) && ((jointInfo.oGet(i).firstComponent < 0) || (jointInfo.oGet(i).firstComponent >= numAnimatedComponents))) {
-                    parser.Error("Invalid first component: %d", jointInfo.oGet(i).firstComponent);
+                joint.firstComponent = parser.ParseInt();
+                if ((numAnimatedComponents > 0) && ((joint.firstComponent < 0) || (joint.firstComponent >= numAnimatedComponents))) {
+                    parser.Error("Invalid first component: %d", joint.firstComponent);
                 }
             }
 
@@ -343,8 +354,9 @@ public class Anim {
             bounds.SetGranularity(1);
             bounds.SetNum(numFrames);
             for (i = 0; i < numFrames; i++) {
-                parser.Parse1DMatrix(3, bounds.oGet(i).oGet(0).ToFloatPtr());
-                parser.Parse1DMatrix(3, bounds.oGet(i).oGet(1).ToFloatPtr());
+                final idBounds bound = bounds.oSet(i, new idBounds());
+                parser.Parse1DMatrix(3, bound.oGet(0));
+                parser.Parse1DMatrix(3, bound.oGet(1));
             }
             parser.ExpectTokenString("}");
 
@@ -355,9 +367,10 @@ public class Anim {
             parser.ExpectTokenString("{");
             for (i = 0; i < numJoints; i++) {
                 idCQuat q = new idCQuat();
-                parser.Parse1DMatrix(3, baseFrame.oGet(i).t.ToFloatPtr());
-                parser.Parse1DMatrix(3, q.ToFloatPtr());//baseFrame[ i ].q.ToFloatPtr() );
-                baseFrame.oGet(i).q = q.ToQuat();//.w = baseFrame[ i ].q.CalcW();
+                final idJointQuat frame = baseFrame.oSet(i, new idJointQuat());
+                parser.Parse1DMatrix(3, frame.t);
+                parser.Parse1DMatrix(3, q);
+                frame.q.oSet(q.ToQuat());
             }
             parser.ExpectTokenString("}");
 
@@ -365,7 +378,6 @@ public class Anim {
             componentFrames.SetGranularity(1);
             componentFrames.SetNum(numAnimatedComponents * numFrames);
 
-            Float[] componentPtr = componentFrames.Ptr();
             int c_ptr = 0;
             for (i = 0; i < numFrames; i++) {
                 parser.ExpectTokenString("frame");
@@ -376,40 +388,44 @@ public class Anim {
                 parser.ExpectTokenString("{");
 
                 for (j = 0; j < numAnimatedComponents; j++, c_ptr++) {
-                    componentPtr[c_ptr] = parser.ParseFloat();
+                    componentFrames.oSet(c_ptr, parser.ParseFloat());
                 }
 
                 parser.ExpectTokenString("}");
             }
+            
 
             // get total move delta
             if (0 == numAnimatedComponents) {
                 totaldelta.Zero();
             } else {
-                componentPtr[c_ptr] = componentFrames.oGet(jointInfo.oGet(0).firstComponent);
+                c_ptr = jointInfo.oGet(0).firstComponent;
                 if ((jointInfo.oGet(0).animBits & ANIM_TX) != 0) {
                     for (i = 0; i < numFrames; i++) {
-                        componentPtr[c_ptr + numAnimatedComponents * i] -= baseFrame.oGet(0).t.x;
+                        final int index = c_ptr + numAnimatedComponents * i;
+                        componentFrames.oSet(index, componentFrames.oGet(index) - baseFrame.oGet(0).t.x);
                     }
-                    totaldelta.x = componentPtr[ numAnimatedComponents * (numFrames - 1)];
+                    totaldelta.x = componentFrames.oGet(numAnimatedComponents * (numFrames - 1));
                     c_ptr++;
                 } else {
                     totaldelta.x = 0.0f;
                 }
                 if ((jointInfo.oGet(0).animBits & ANIM_TY) != 0) {
                     for (i = 0; i < numFrames; i++) {
-                        componentPtr[c_ptr + numAnimatedComponents * i] -= baseFrame.oGet(0).t.y;
+                        final int index = c_ptr + numAnimatedComponents * i;
+                        componentFrames.oSet(index, componentFrames.oGet(index) - baseFrame.oGet(0).t.y);
                     }
-                    totaldelta.y = componentPtr[ c_ptr + numAnimatedComponents * (numFrames - 1)];
+                    totaldelta.y = componentFrames.oGet(c_ptr + numAnimatedComponents * (numFrames - 1));
                     c_ptr++;
                 } else {
                     totaldelta.y = 0.0f;
                 }
                 if ((jointInfo.oGet(0).animBits & ANIM_TZ) != 0) {
                     for (i = 0; i < numFrames; i++) {
-                        componentPtr[c_ptr + numAnimatedComponents * i] -= baseFrame.oGet(0).t.z;
+                        final int index = c_ptr + numAnimatedComponents * i;
+                        componentFrames.oSet(index, componentFrames.oGet(index) - baseFrame.oGet(0).t.z);
                     }
-                    totaldelta.z = componentPtr[c_ptr + numAnimatedComponents * (numFrames - 1)];
+                    totaldelta.z = componentFrames.oGet(c_ptr + numAnimatedComponents * (numFrames - 1));
                 } else {
                     totaldelta.z = 0.0f;
                 }
@@ -470,8 +486,7 @@ public class Anim {
 //	 Float				[]frame1;
 //	 Float				[]frame2;
             final int f1_ptr, f2_ptr;
-            Float[] jointframe1;
-            Float[] jointframe2;
+            final Float[] jointframe1, jointframe2;
             int jf1_ptr, jf2_ptr;
             jointAnimInfo_t infoPtr;
             int animBits;
@@ -496,19 +511,18 @@ public class Anim {
 //	frame2 = componentFrames.Ptr();
             f1_ptr = frame.frame1 * numAnimatedComponents;
             f2_ptr = frame.frame2 * numAnimatedComponents;
+            jointframe1 = jointframe2 = componentFrames.Ptr(Float[].class);
 
             for (i = 0; i < numIndexes; i++) {
                 int j = index[i];
                 jointPtr = joints[j];
-                blendPtr = blendJoints[j];
+                blendPtr = blendJoints[j] = new idJointQuat();
                 infoPtr = jointInfo.oGet(j);
 
                 animBits = infoPtr.animBits;
                 if (animBits != 0) {
 
                     lerpIndex[numLerpJoints++] = j;
-
-                    jointframe1 = jointframe2 = componentFrames.Ptr();
 
 //			jointframe2 = frame2 ;
                     jf1_ptr = f1_ptr + infoPtr.firstComponent;
@@ -1011,17 +1025,17 @@ public class Anim {
     };
 
     public static class idAFPoseJointMod {
+        public AFJointModType_t mod;
+        public idMat3           axis;
+        public idVec3           origin;
+        //
+        //
 
         public idAFPoseJointMod() {
             mod = AF_JOINTMOD_AXIS;
-            axis.Identity();
-            origin.Zero();
+            axis = getMat3_identity();
+            origin = new idVec3();
         }
-//
-//
-        public AFJointModType_t mod;
-        public idMat3 axis;
-        public idVec3 origin;
     };
 
     /*
@@ -1040,6 +1054,9 @@ public class Anim {
         //
 
         public idAnimManager() {
+            animations = new idHashTable<>();
+            jointnames = new idStrList();
+            jointnamesHash = new idHashIndex();
         }
         // ~idAnimManager();
         public static boolean forceExport = false;

@@ -357,7 +357,7 @@ public class BrittleFracture {
             }
             BecomeInactive(TH_UPDATEVISUALS);
 
-            renderEntity.bounds = new idBounds(bounds);
+            renderEntity.bounds.oSet(bounds);
             renderEntity.origin.Zero();
             renderEntity.axis.Identity();
 

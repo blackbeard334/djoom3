@@ -1,17 +1,28 @@
 package neo.Game.GameSys;
 
+import java.nio.ByteBuffer;
+import neo.CM.CollisionModel.trace_s;
+import static neo.Game.Entity.EV_Activate;
+import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class.eventCallback_t;
 import static neo.Game.GameSys.Class.idEventArg.toEvent;
+import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
 import static neo.Game.GameSys.Event.D_EVENT_INTEGER;
 import static neo.Game.GameSys.Event.D_EVENT_MAXARGS;
+import static neo.Game.GameSys.Event.D_EVENT_STRING;
+import static neo.Game.GameSys.Event.D_EVENT_TRACE;
+import static neo.Game.GameSys.Event.D_EVENT_VECTOR;
+import static neo.Game.GameSys.Event.D_EVENT_VOID;
 import neo.Game.GameSys.Event.idEvent;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
+import static neo.Game.GameSys.SysCvar.g_debugTriggers;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameState_t.GAMESTATE_STARTUP;
 import neo.Game.Script.Script_Thread.idThread;
+import neo.TempDump.Deprecation_Exception;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
 import static neo.TempDump.sizeof;
@@ -23,6 +34,7 @@ import neo.idlib.containers.Hierarchy.idHierarchy;
 import neo.idlib.containers.List.idList;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *
@@ -65,57 +77,26 @@ public class Class {
 
     public static class idEventArg {
 
-        public int type;
-        public int value;
+        public final int    type;
+        public final Object value;
 //
 //
-
-        public idEventArg() {
-            type = D_EVENT_INTEGER;
-            value = 0;
-        }
-
-        public idEventArg(int data) {
-            type = D_EVENT_INTEGER;
-            value = data;
-        }
-
-        public idEventArg(float data) {
-            type = D_EVENT_FLOAT;
-            value = Float.floatToIntBits(data);
-        }
 
         public idEventArg(Object data) {
-            throw new TODO_Exception();
+            if(data instanceof Integer)         type = D_EVENT_INTEGER;
+            else if(data instanceof Float)      type = D_EVENT_FLOAT;
+            else if(data instanceof idVec3)     type = D_EVENT_VECTOR;
+            else if(data instanceof idStr)      type = D_EVENT_STRING;
+            else if(data instanceof String)     type = D_EVENT_STRING;
+            else if(data instanceof idEntity)   type = D_EVENT_ENTITY;
+            else if(data instanceof trace_s)    type = D_EVENT_TRACE;
+            else type = D_EVENT_VOID;
+            value = data;
         }
-
+        
         static idEventArg toEvent(Object data) {
             return new idEventArg(data);
         }
-//        public idEventArg(idVec3 data) {
-//            type = D_EVENT_VECTOR;
-//            value = reinterpret_cast < int > (data);
-//        }
-//
-//        public idEventArg(final idStr data) {
-//            type = D_EVENT_STRING;
-//            value = reinterpret_cast < int > (data.c_str());
-//        }
-//
-//        public idEventArg(final String data) {
-//            type = D_EVENT_STRING;
-//            value = reinterpret_cast < int > (data);
-//        }
-//
-//        public idEventArg(final idEntity data) {
-//            type = D_EVENT_ENTITY;
-//            value = reinterpret_cast < int > (data);
-//        }
-//
-//        public idEventArg(final trace_s data) {
-//            type = D_EVENT_TRACE;
-//            value = reinterpret_cast < int > (data);
-//        }
     };
 
     public static class idAllocError extends idException {
@@ -222,8 +203,8 @@ public class Class {
         public boolean IsType(final java.lang.Class/*idTypeInfo*/ superclass) {
             java.lang.Class/*idTypeInfo*/ subclass;
 
-            subclass = GetType();
-            return subclass.isInstance(superclass);
+            subclass = this.getClass();
+            return superclass.isAssignableFrom(subclass);
         }
 
         /*
@@ -234,11 +215,7 @@ public class Class {
          ================
          */
         public String GetClassname() {
-            throw new TODO_Exception();
-//            java.lang.Class/*idTypeInfo*/ type;
-//
-//            type = GetType();
-//            return type.classname;
+            return this.getClass().getSimpleName();
         }
 
         /*
@@ -278,7 +255,8 @@ public class Class {
         }
 
         public boolean RespondsTo(final idEventDef ev) {
-            throw new TODO_Exception();
+            return false;//HACKME::7
+//            throw new TODO_Exception();
 //            final idTypeInfo c;
 //
 //            assert (idEvent.initialized);
@@ -291,11 +269,11 @@ public class Class {
         }
 
         public boolean PostEventMS(final idEventDef ev, float time, Object arg1) {
-            return PostEventMS(ev, (int) time, toEvent(arg1));
+            return PostEventArgs(ev, (int) time, 1, toEvent(arg1));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2) {
-            return PostEventMS(ev, time, toEvent(arg1), toEvent(arg1));
+            return PostEventArgs(ev, time, 2, toEvent(arg1), toEvent(arg1));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3) {
@@ -395,23 +373,23 @@ public class Class {
         }
 
         public boolean ProcessEventArgPtr(final idEventDef ev, int[] data) {
-            throw new TODO_Exception();
-//            idTypeInfo c;
-//            int num;
-//            eventCallback_t callback;
-//
-//            assert (ev != null);
-//            assert (idEvent.initialized);
-//
-//            if (g_debugTriggers.GetBool() && (ev == EV_Activate) && IsType(idEntity.Type)) {
-//                idEntity ent = new idEntity();
-//                ByteBuffer entityBuffer = ent.AllocBuffer();
-//                entityBuffer.asIntBuffer().put(data);
-//                ent.Read(entityBuffer);
-////                final idEntity ent = reinterpret_cast < idEntity > (data);
-//                gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), ent != null ? ent.GetName() : "NULL");
-//            }
-//
+            idTypeInfo c;
+            int num;
+            eventCallback_t callback;
+
+            assert (ev != null);
+            assert (idEvent.initialized);
+
+            if (g_debugTriggers.GetBool() && (ev == EV_Activate) && IsType(idEntity.class)) {
+                idEntity ent = new idEntity();
+                ByteBuffer entityBuffer = ent.AllocBuffer();
+                entityBuffer.asIntBuffer().put(data);
+                ent.Read(entityBuffer);
+//                final idEntity ent = reinterpret_cast < idEntity > (data);
+                gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), ent != null ? ent.GetName() : "NULL");
+            }
+            
+/////////TODO: this is TEMPORARILY disabled
 //            c = GetType();
 //            num = ev.GetEventNum();
 //            if (NOT(c.eventMap[num])) {
@@ -496,9 +474,9 @@ public class Class {
 //                    gameLocal.Warning("Invalid formatspec on event '%s'", ev.GetName());
 //                    break;
 //            }
-//
-//// #endif
-//            return true;
+
+// #endif
+            return true;
         }
 
         public void CancelEvents(final idEventDef ev) {
@@ -587,40 +565,44 @@ public class Class {
          Returns the idTypeInfo for the name of the class passed in.  This is a static function
          so it must be called as idClass::GetClass( classname )
          ================
-         */
+         */@Deprecated
         public static idTypeInfo GetClass(final String name) {
-            idTypeInfo c;
-            int order;
-            int mid;
-            int min;
-            int max;
-
-            if (!initialized) {
-                // idClass::Init hasn't been called yet, so do a slow lookup
-                for (c = typelist; c != null; c = c.next) {
-                    if (NOT(idStr.Cmp(c.classname, name))) {
-                        return c;
-                    }
+            switch (name) {
+                    case "idWorldspawn":
                 }
-            } else {
-                // do a binary search through the list of types
-                min = 0;
-                max = types.Num() - 1;
-                while (min <= max) {
-                    mid = (min + max) / 2;
-                    c = types.oGet(mid);
-                    order = idStr.Cmp(c.classname, name);
-                    if (0 == order) {
-                        return c;
-                    } else if (order > 0) {
-                        max = mid - 1;
-                    } else {
-                        min = mid + 1;
-                    }
-                }
-            }
-
-            return null;
+            throw new Deprecation_Exception();
+//            idTypeInfo c;
+//            int order;
+//            int mid;
+//            int min;
+//            int max;
+//
+//            if (!initialized) {
+//                // idClass::Init hasn't been called yet, so do a slow lookup
+//                for (c = typelist; c != null; c = c.next) {
+//                    if (NOT(idStr.Cmp(c.classname, name))) {
+//                        return c;
+//                    }
+//                }
+//            } else {
+//                // do a binary search through the list of types
+//                min = 0;
+//                max = types.Num() - 1;
+//                while (min <= max) {
+//                    mid = (min + max) / 2;
+//                    c = types.oGet(mid);
+//                    order = idStr.Cmp(c.classname, name);
+//                    if (0 == order) {
+//                        return c;
+//                    } else if (order > 0) {
+//                        max = mid - 1;
+//                    } else {
+//                        min = mid + 1;
+//                    }
+//                }
+//            }
+//
+//            return null;
         }
 
         public abstract void oSet(idClass oGet);
@@ -738,63 +720,64 @@ public class Class {
         }
 
         private boolean PostEventArgs(final idEventDef ev, int time, int numargs, idEventArg... args) {
-            throw new TODO_Exception();
-//            idTypeInfo c;
-//            idEvent event;
-////            va_list args;
-//
-//            assert (ev != null);
-//
-//            if (!idEvent.initialized) {
-//                return false;
-//            }
-//
+            idTypeInfo c;
+            idEvent event;
+//            va_list args;
+
+            assert (ev != null);
+
+            if (!idEvent.initialized) {
+                return false;
+            }
+
+            //TODO:disabled for medicinal reasons
 //            c = GetType();
 //            if (NOT(c.eventMap[ev.GetEventNum()])) {
 //                // we don't respond to this event, so ignore it
 //                return false;
 //            }
-//
-//            // we service events on the client to avoid any bad code filling up the event pool
-//            // we don't want them processed usually, unless when the map is (re)loading.
-//            // we allow threads to run fine, though.
-//            if (gameLocal.isClient && (gameLocal.GameState() != GAMESTATE_STARTUP) && !IsType(idThread.Type)) {
-//                return true;
-//            }
-//
-////            va_start(args, numargs);
-//            event = idEvent.Alloc(ev, numargs, args);
-////            va_end(args);
-//
+
+            // we service events on the client to avoid any bad code filling up the event pool
+            // we don't want them processed usually, unless when the map is (re)loading.
+            // we allow threads to run fine, though.
+            if (gameLocal.isClient && (gameLocal.GameState() != GAMESTATE_STARTUP) && !IsType(idThread.class)) {
+                return true;
+            }
+
+//            va_start(args, numargs);
+            event = idEvent.Alloc(ev, numargs, args);
+//            va_end(args);
+
+            //TODO:same as line #755
 //            event.Schedule(this, c, time);
-//
-//            return true;
+
+            return true;
         }
 
         private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg... args) {
-            throw new TODO_Exception();
-//            idTypeInfo c;
-//            int num;
-//            int[] data = new int[D_EVENT_MAXARGS];
-////            va_list args;
-//
-//            assert (ev != null);
-//            assert (idEvent.initialized);
-//
+            idTypeInfo c;
+            int num;
+            int[] data = new int[D_EVENT_MAXARGS];
+//            va_list args;
+
+            assert (ev != null);
+            assert (idEvent.initialized);
+
+            //TODO:same as PostEventArgs
 //            c = GetType();
 //            num = ev.GetEventNum();
 //            if (NOT(c.eventMap[num])) {
 //                // we don't respond to this event, so ignore it
 //                return false;
 //            }
-//
-////            va_start(args, numargs);
-//            idEvent.CopyArgs(ev, numargs, args, data);
-////            va_end(args);
-//
-//            ProcessEventArgPtr(ev, data);
-//
-//            return true;
+
+//            va_start(args, numargs);
+            idEvent.CopyArgs(ev, numargs, args, data);
+//            va_end(args);
+
+            ProcessEventArgPtr(ev, data);
+
+            return true;
         }
 
         private void Event_SafeRemove() {

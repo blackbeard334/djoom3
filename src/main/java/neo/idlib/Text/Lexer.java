@@ -34,6 +34,12 @@ import static neo.idlib.Text.Token.TT_SINGLE_PRECISION;
 import static neo.idlib.Text.Token.TT_STRING;
 import static neo.idlib.Text.Token.TT_UNSIGNED;
 import neo.idlib.Text.Token.idToken;
+import neo.idlib.math.Matrix.idMat3;
+import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Quat.idCQuat;
+import neo.idlib.math.Quat.idQuat;
+import neo.idlib.math.Vector.idVec;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *
@@ -677,7 +683,7 @@ public class Lexer {
                 return false;
             }
             // if the given string is available
-            if (tok.Cmp(string) != 0) {
+            if (tok.Cmp(string) == 0) {
                 return true;
             }
             // unread token
@@ -920,20 +926,84 @@ public class Lexer {
             return token.GetFloatValue();
         }
 
+        public boolean Parse1DMatrix(int x, idVec v) throws idException {
+            float[] m = new float[x];
+            boolean result = Parse1DMatrix(x, m);
+            for (int i = 0; i < x; i++) {
+                v.oSet(i, m[i]);
+            }
+
+            return result;
+        }
+        
+        public boolean Parse1DMatrix(int x, idPlane p) throws idException {
+            float[] m = new float[x];
+            boolean result = Parse1DMatrix(x, m);
+            for (int i = 0; i < x; i++) {
+                p.oSet(i, m[i]);
+            }
+
+            return result;
+        }
+        
+        public boolean Parse1DMatrix(int x, idMat3 m) throws idException {
+            float[] n = new float[x];
+            boolean result = Parse1DMatrix(x, n);
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    m.oSet(i, j, n[i * 3 + j]);
+                }
+            }
+
+            return result;
+        }
+        
+        public boolean Parse1DMatrix(int x, idQuat q) throws idException {
+            float[] m = new float[x];
+            boolean result = Parse1DMatrix(x, m);
+            for (int i = 0; i < x; i++) {
+                q.oSet(i, m[i]);
+            }
+
+            return result;
+        }
+        
+        public boolean Parse1DMatrix(int x, idCQuat q) throws idException {
+            float[] m = new float[x];
+            boolean result = Parse1DMatrix(x, m);
+            for (int i = 0; i < x; i++) {
+                q.oSet(i, m[i]);
+            }
+
+            return result;
+        }
+
         public boolean Parse1DMatrix(int x, float[] m) throws idException {
             return this.Parse1DMatrix(x, m, 0);
         }
 
         // parse matrices with floats
         private boolean Parse1DMatrix(int x, float[] m, final int offset) throws idException {
-            int i;
-
             if (!this.ExpectTokenString("(")) {
                 return false;
             }
 
-            for (i = 0; i < x; i++) {
+            for (int i = 0; i < x; i++) {
                 m[offset + i] = this.ParseFloat();
+            }
+
+            return (this.ExpectTokenString(")"));
+        }
+
+        public boolean Parse2DMatrix(int y, int x, idVec3[] m) throws idException {
+            if (!this.ExpectTokenString("(")) {
+                return false;
+            }
+            
+            for (int i = 0; i < y; i++) {
+                if (!Parse1DMatrix(x, m[i])) {
+                    return false;
+                }
             }
 
             return (this.ExpectTokenString(")"));
@@ -944,13 +1014,11 @@ public class Lexer {
         }
 
         private boolean Parse2DMatrix(int y, int x, float[] m, final int offset) throws idException {
-            int i;
-
             if (!this.ExpectTokenString("(")) {
                 return false;
             }
 
-            for (i = 0; i < y; i++) {
+            for (int i = 0; i < y; i++) {
                 if (!this.Parse1DMatrix(x, m, offset + (i * x))) {
                     return false;
                 }
@@ -960,13 +1028,11 @@ public class Lexer {
         }
 
         public boolean Parse3DMatrix(int z, int y, int x, float[] m) throws idException {
-            int i;
-
             if (!this.ExpectTokenString("(")) {
                 return false;
             }
 
-            for (i = 0; i < z; i++) {
+            for (int i = 0; i < z; i++) {
                 if (!this.Parse2DMatrix(y, x, m, i * x * y)) {
                     return false;
                 }

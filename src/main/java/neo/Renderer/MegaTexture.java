@@ -11,9 +11,6 @@ import static neo.Renderer.Image.textureDepth_t.TD_HIGH_QUALITY;
 import static neo.Renderer.Image_files.R_WriteTGA;
 import static neo.Renderer.Material.textureFilter_t.TF_DEFAULT;
 import static neo.Renderer.Material.textureRepeat_t.TR_REPEAT;
-import neo.Renderer.MegaTexture.R_EmptyLevelImage;
-import neo.Renderer.MegaTexture.idMegaTexture;
-import neo.Renderer.MegaTexture.idTextureLevel;
 import static neo.Renderer.MegaTexture.megaTextureHeader_t.ReadDdsFileHeader_t;
 import static neo.Renderer.MegaTexture.megaTextureHeader_t.WriteDdsFileHeader_t;
 import neo.Renderer.Model.srfTriangles_s;
@@ -21,7 +18,7 @@ import static neo.Renderer.qgl.qglProgramLocalParameter4fvARB;
 import static neo.Renderer.qgl.qglTexSubImage2D;
 import static neo.Renderer.tr_backend.GL_SelectTexture;
 import neo.TempDump.CPP_class.Pointer;
-import static neo.TempDump.SERIAL_SIZE;
+
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
 import static neo.framework.CVarSystem.CVAR_RENDERER;
@@ -32,8 +29,7 @@ import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_CUR;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
 import neo.framework.File_h.idFile;
-import static neo.framework.File_h.idFile.UNWRAP;
-import static neo.framework.File_h.idFile.WRAP;
+
 import static neo.framework.Session.session;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
@@ -240,26 +236,29 @@ public class MegaTexture {
 
     static class megaTextureHeader_t implements Serializable {
 
-        public static final transient int SIZE = SERIAL_SIZE(new megaTextureHeader_t());
+        public static final transient int BYTES = Integer.BYTES * 3;
 
         int tileSize;
         int tilesWide;
         int tilesHigh;
 
         public static ByteBuffer ReadDdsFileHeader_t() {
-            return ByteBuffer.allocate(SIZE);
+            return ByteBuffer.allocate(BYTES);
         }
 
         public static megaTextureHeader_t ReadDdsFileHeader_t(ByteBuffer buffer) {
-            if (null != buffer && buffer.capacity() == SIZE) {
-                return (megaTextureHeader_t) UNWRAP(buffer);
-            }
-
-            return null;
+            megaTextureHeader_t t = new megaTextureHeader_t();
+            t.tileSize = buffer.getInt();
+            t.tilesWide = buffer.getInt();
+            t.tilesHigh = buffer.getInt();
+            return t;
         }
 
         public static ByteBuffer WriteDdsFileHeader_t(final megaTextureHeader_t ev) {
-            return WRAP(ev);
+            final ByteBuffer buffer = ReadDdsFileHeader_t();
+            buffer.putInt(ev.tileSize).putInt(ev.tilesWide).putInt(ev.tilesHigh).flip();
+
+            return buffer;
         }
     };
 
@@ -272,7 +271,7 @@ public class MegaTexture {
                 + (Float.SIZE * 2 * 4)
                 + Integer.SIZE
                 + (idTextureLevel.SIZE * MAX_LEVELS)
-                + megaTextureHeader_t.SIZE;
+                + megaTextureHeader_t.BYTES;
 
         private idFile fileHandle;
         //

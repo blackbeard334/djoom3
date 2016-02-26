@@ -8,7 +8,6 @@ import neo.Renderer.Model.lightingCache_s;
 import neo.Renderer.Model.shadowCache_s;
 import static neo.Renderer.RenderSystem_init.r_useIndexBuffers;
 import static neo.Renderer.RenderSystem_init.r_useVertexBuffers;
-import neo.Renderer.VertexCache.R_ListVertexCache_f;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FIXED;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FREE;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_TEMP;
@@ -383,12 +382,12 @@ public class VertexCache {
             return Alloc(DrawVert.toByteBuffer(data), size, null)[0];
         }
 
-        public void Alloc(lightingCache_s[] data, int size, vertCache_s buffer) {
-            throw new TODO_Exception();
+        public vertCache_s[] Alloc(lightingCache_s[] data, int size) {
+            return Alloc(lightingCache_s.toByteBuffer(data), size, null, false);
         }
 
-        public void Alloc(shadowCache_s[] data, int size, vertCache_s buffer) {
-            throw new TODO_Exception();
+        public vertCache_s[] Alloc(shadowCache_s[] data, int size) {
+            return Alloc(shadowCache_s.toByteBuffer(data), size, null, false);
         }
 
         /*
@@ -423,11 +422,11 @@ public class VertexCache {
                 } else {
                     qglBindBufferARB(GL_ARRAY_BUFFER_ARB, buffer.vbo);
                 }
-                return ByteBuffer.allocate(Integer.SIZE / Byte.SIZE).putInt(buffer.offset);
+                return (ByteBuffer) ByteBuffer.allocate(Integer.BYTES).putInt(buffer.offset).flip();
             }
 
             // virtual memory is a real pointer
-            return (ByteBuffer) buffer.virtMem.position(buffer.offset);
+            return (ByteBuffer) buffer.virtMem.position(buffer.offset).flip();
         }
 
         // if r_useIndexBuffers is enabled, but you need to draw something without
@@ -743,9 +742,9 @@ public class VertexCache {
 
             common.Printf("%d megs working set\n", r_vertexBufferMegs.GetInteger());
             common.Printf("%d dynamic temp buffers of %dk\n", NUM_VERTEX_FRAMES, frameBytes / 1024);
-            common.Printf("%5i active static headers\n", numActive);
-            common.Printf("%5i free static headers\n", numFreeStaticHeaders);
-            common.Printf("%5i free dynamic headers\n", numFreeDynamicHeaders);
+            common.Printf("%5d active static headers\n", numActive);
+            common.Printf("%5d free static headers\n", numFreeStaticHeaders);
+            common.Printf("%5d free dynamic headers\n", numFreeDynamicHeaders);
 
             if (!virtualMemory) {
                 common.Printf("Vertex cache is in ARB_vertex_buffer_object memory (FAST).\n");

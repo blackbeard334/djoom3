@@ -1,22 +1,21 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.Actor.idActor;
 import neo.Game.Animation.Anim.jointModTransform_t;
 import neo.Game.Animation.Anim_Blend.idAnim;
 import neo.Game.Animation.Anim_Blend.idAnimator;
-import neo.Game.Entity.idEntity;
 import static neo.Game.Entity.signalNum_t.NUM_SIGNALS;
 import static neo.Game.Entity.signalNum_t.SIG_BLOCKED;
 import static neo.Game.Entity.signalNum_t.SIG_TOUCH;
 import static neo.Game.Entity.signalNum_t.SIG_TRIGGER;
 import neo.Game.FX.idEntityFx;
 import neo.Game.Game.refSound_t;
+import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
-import neo.Game.GameSys.Class.idClass;
-import neo.Game.GameSys.Class.idTypeInfo;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -73,8 +72,8 @@ import neo.Renderer.RenderWorld.renderEntity_s;
 import neo.Renderer.RenderWorld.renderView_s;
 import neo.Sound.snd_shader.idSoundShader;
 import neo.Sound.sound.idSoundEmitter;
+import neo.TempDump;
 import static neo.TempDump.NOT;
-import neo.TempDump.SERiAL;
 import static neo.TempDump.atoi;
 import static neo.TempDump.etoi;
 import static neo.framework.Async.NetworkSystem.networkSystem;
@@ -115,11 +114,11 @@ import neo.idlib.math.Curve.idCurve_Spline;
 import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 import neo.ui.UserInterface.idUserInterface;
 import static neo.ui.UserInterface.uiManager;
 
@@ -136,104 +135,106 @@ public class Entity {
      ===============================================================================
      */
     public static final int DELAY_DORMANT_TIME = 3000;
-//
-// overridable events
-    public static final idEventDef EV_PostSpawn = new idEventDef("<postspawn>", null);
-    public static final idEventDef EV_FindTargets = new idEventDef("<findTargets>", null);
-    public static final idEventDef EV_Touch = new idEventDef("<touch>", "et");
-    public static final idEventDef EV_GetName = new idEventDef("getName", null, 's');
-    public static final idEventDef EV_SetName = new idEventDef("setName", "s");
-    public static final idEventDef EV_Activate = new idEventDef("activate", "e");
-    public static final idEventDef EV_ActivateTargets = new idEventDef("activateTargets", "e");
-    public static final idEventDef EV_NumTargets = new idEventDef("numTargets", null, 'f');
-    public static final idEventDef EV_GetTarget = new idEventDef("getTarget", "f", 'e');
-    public static final idEventDef EV_RandomTarget = new idEventDef("randomTarget", "s", 'e');
-    public static final idEventDef EV_Bind = new idEventDef("bind", "e");
-    public static final idEventDef EV_BindPosition = new idEventDef("bindPosition", "e");
-    public static final idEventDef EV_BindToJoint = new idEventDef("bindToJoint", "esf");
-    public static final idEventDef EV_Unbind = new idEventDef("unbind", null);
-    public static final idEventDef EV_RemoveBinds = new idEventDef("removeBinds");
-    public static final idEventDef EV_SpawnBind = new idEventDef("<spawnbind>", null);
-    public static final idEventDef EV_SetOwner = new idEventDef("setOwner", "e");
-    public static final idEventDef EV_SetModel = new idEventDef("setModel", "s");
-    public static final idEventDef EV_SetSkin = new idEventDef("setSkin", "s");
-    public static final idEventDef EV_GetWorldOrigin = new idEventDef("getWorldOrigin", null, 'v');
-    public static final idEventDef EV_SetWorldOrigin = new idEventDef("setWorldOrigin", "v");
-    public static final idEventDef EV_GetOrigin = new idEventDef("getOrigin", null, 'v');
-    public static final idEventDef EV_SetOrigin = new idEventDef("setOrigin", "v");
-    public static final idEventDef EV_GetAngles = new idEventDef("getAngles", null, 'v');
-    public static final idEventDef EV_SetAngles = new idEventDef("setAngles", "v");
-    public static final idEventDef EV_GetLinearVelocity = new idEventDef("getLinearVelocity", null, 'v');
-    public static final idEventDef EV_SetLinearVelocity = new idEventDef("setLinearVelocity", "v");
+    //
+
+    // overridable events
+    public static final idEventDef EV_PostSpawn          = new idEventDef("<postspawn>", null);
+    public static final idEventDef EV_FindTargets        = new idEventDef("<findTargets>", null);
+    public static final idEventDef EV_Touch              = new idEventDef("<touch>", "et");
+    public static final idEventDef EV_GetName            = new idEventDef("getName", null, 's');
+    public static final idEventDef EV_SetName            = new idEventDef("setName", "s");
+    public static final idEventDef EV_Activate           = new idEventDef("activate", "e");
+    public static final idEventDef EV_ActivateTargets    = new idEventDef("activateTargets", "e");
+    public static final idEventDef EV_NumTargets         = new idEventDef("numTargets", null, 'f');
+    public static final idEventDef EV_GetTarget          = new idEventDef("getTarget", "f", 'e');
+    public static final idEventDef EV_RandomTarget       = new idEventDef("randomTarget", "s", 'e');
+    public static final idEventDef EV_Bind               = new idEventDef("bind", "e");
+    public static final idEventDef EV_BindPosition       = new idEventDef("bindPosition", "e");
+    public static final idEventDef EV_BindToJoint        = new idEventDef("bindToJoint", "esf");
+    public static final idEventDef EV_Unbind             = new idEventDef("unbind", null);
+    public static final idEventDef EV_RemoveBinds        = new idEventDef("removeBinds");
+    public static final idEventDef EV_SpawnBind          = new idEventDef("<spawnbind>", null);
+    public static final idEventDef EV_SetOwner           = new idEventDef("setOwner", "e");
+    public static final idEventDef EV_SetModel           = new idEventDef("setModel", "s");
+    public static final idEventDef EV_SetSkin            = new idEventDef("setSkin", "s");
+    public static final idEventDef EV_GetWorldOrigin     = new idEventDef("getWorldOrigin", null, 'v');
+    public static final idEventDef EV_SetWorldOrigin     = new idEventDef("setWorldOrigin", "v");
+    public static final idEventDef EV_GetOrigin          = new idEventDef("getOrigin", null, 'v');
+    public static final idEventDef EV_SetOrigin          = new idEventDef("setOrigin", "v");
+    public static final idEventDef EV_GetAngles          = new idEventDef("getAngles", null, 'v');
+    public static final idEventDef EV_SetAngles          = new idEventDef("setAngles", "v");
+    public static final idEventDef EV_GetLinearVelocity  = new idEventDef("getLinearVelocity", null, 'v');
+    public static final idEventDef EV_SetLinearVelocity  = new idEventDef("setLinearVelocity", "v");
     public static final idEventDef EV_GetAngularVelocity = new idEventDef("getAngularVelocity", null, 'v');
     public static final idEventDef EV_SetAngularVelocity = new idEventDef("setAngularVelocity", "v");
-    public static final idEventDef EV_GetSize = new idEventDef("getSize", null, 'v');
-    public static final idEventDef EV_SetSize = new idEventDef("setSize", "vv");
-    public static final idEventDef EV_GetMins = new idEventDef("getMins", null, 'v');
-    public static final idEventDef EV_GetMaxs = new idEventDef("getMaxs", null, 'v');
-    public static final idEventDef EV_IsHidden = new idEventDef("isHidden", null, 'd');
-    public static final idEventDef EV_Hide = new idEventDef("hide", null);
-    public static final idEventDef EV_Show = new idEventDef("show", null);
-    public static final idEventDef EV_Touches = new idEventDef("touches", "E", 'd');
-    public static final idEventDef EV_ClearSignal = new idEventDef("clearSignal", "d");
-    public static final idEventDef EV_GetShaderParm = new idEventDef("getShaderParm", "d", 'f');
-    public static final idEventDef EV_SetShaderParm = new idEventDef("setShaderParm", "df");
-    public static final idEventDef EV_SetShaderParms = new idEventDef("setShaderParms", "ffff");
-    public static final idEventDef EV_SetColor = new idEventDef("setColor", "fff");
-    public static final idEventDef EV_GetColor = new idEventDef("getColor", null, 'v');
-    public static final idEventDef EV_CacheSoundShader = new idEventDef("cacheSoundShader", "s");
-    public static final idEventDef EV_StartSoundShader = new idEventDef("startSoundShader", "sd", 'f');
-    public static final idEventDef EV_StartSound = new idEventDef("startSound", "sdd", 'f');
-    public static final idEventDef EV_StopSound = new idEventDef("stopSound", "dd");
-    public static final idEventDef EV_FadeSound = new idEventDef("fadeSound", "dff");
-    public static final idEventDef EV_SetGuiParm = new idEventDef("setGuiParm", "ss");
-    public static final idEventDef EV_SetGuiFloat = new idEventDef("setGuiFloat", "sf");
-    public static final idEventDef EV_GetNextKey = new idEventDef("getNextKey", "ss", 's');
-    public static final idEventDef EV_SetKey = new idEventDef("setKey", "ss");
-    public static final idEventDef EV_GetKey = new idEventDef("getKey", "s", 's');
-    public static final idEventDef EV_GetIntKey = new idEventDef("getIntKey", "s", 'f');
-    public static final idEventDef EV_GetFloatKey = new idEventDef("getFloatKey", "s", 'f');
-    public static final idEventDef EV_GetVectorKey = new idEventDef("getVectorKey", "s", 'v');
-    public static final idEventDef EV_GetEntityKey = new idEventDef("getEntityKey", "s", 'e');
-    public static final idEventDef EV_RestorePosition = new idEventDef("restorePosition");
+    public static final idEventDef EV_GetSize            = new idEventDef("getSize", null, 'v');
+    public static final idEventDef EV_SetSize            = new idEventDef("setSize", "vv");
+    public static final idEventDef EV_GetMins            = new idEventDef("getMins", null, 'v');
+    public static final idEventDef EV_GetMaxs            = new idEventDef("getMaxs", null, 'v');
+    public static final idEventDef EV_IsHidden           = new idEventDef("isHidden", null, 'd');
+    public static final idEventDef EV_Hide               = new idEventDef("hide", null);
+    public static final idEventDef EV_Show               = new idEventDef("show", null);
+    public static final idEventDef EV_Touches            = new idEventDef("touches", "E", 'd');
+    public static final idEventDef EV_ClearSignal        = new idEventDef("clearSignal", "d");
+    public static final idEventDef EV_GetShaderParm      = new idEventDef("getShaderParm", "d", 'f');
+    public static final idEventDef EV_SetShaderParm      = new idEventDef("setShaderParm", "df");
+    public static final idEventDef EV_SetShaderParms     = new idEventDef("setShaderParms", "ffff");
+    public static final idEventDef EV_SetColor           = new idEventDef("setColor", "fff");
+    public static final idEventDef EV_GetColor           = new idEventDef("getColor", null, 'v');
+    public static final idEventDef EV_CacheSoundShader   = new idEventDef("cacheSoundShader", "s");
+    public static final idEventDef EV_StartSoundShader   = new idEventDef("startSoundShader", "sd", 'f');
+    public static final idEventDef EV_StartSound         = new idEventDef("startSound", "sdd", 'f');
+    public static final idEventDef EV_StopSound          = new idEventDef("stopSound", "dd");
+    public static final idEventDef EV_FadeSound          = new idEventDef("fadeSound", "dff");
+    public static final idEventDef EV_SetGuiParm         = new idEventDef("setGuiParm", "ss");
+    public static final idEventDef EV_SetGuiFloat        = new idEventDef("setGuiFloat", "sf");
+    public static final idEventDef EV_GetNextKey         = new idEventDef("getNextKey", "ss", 's');
+    public static final idEventDef EV_SetKey             = new idEventDef("setKey", "ss");
+    public static final idEventDef EV_GetKey             = new idEventDef("getKey", "s", 's');
+    public static final idEventDef EV_GetIntKey          = new idEventDef("getIntKey", "s", 'f');
+    public static final idEventDef EV_GetFloatKey        = new idEventDef("getFloatKey", "s", 'f');
+    public static final idEventDef EV_GetVectorKey       = new idEventDef("getVectorKey", "s", 'v');
+    public static final idEventDef EV_GetEntityKey       = new idEventDef("getEntityKey", "s", 'e');
+    public static final idEventDef EV_RestorePosition    = new idEventDef("restorePosition");
     public static final idEventDef EV_UpdateCameraTarget = new idEventDef("<updateCameraTarget>", null);
-    public static final idEventDef EV_DistanceTo = new idEventDef("distanceTo", "E", 'f');
-    public static final idEventDef EV_DistanceToPoint = new idEventDef("distanceToPoint", "v", 'f');
-    public static final idEventDef EV_StartFx = new idEventDef("startFx", "s");
-    public static final idEventDef EV_HasFunction = new idEventDef("hasFunction", "s", 'd');
-    public static final idEventDef EV_CallFunction = new idEventDef("callFunction", "s");
-    public static final idEventDef EV_SetNeverDormant = new idEventDef("setNeverDormant", "d");
+    public static final idEventDef EV_DistanceTo         = new idEventDef("distanceTo", "E", 'f');
+    public static final idEventDef EV_DistanceToPoint    = new idEventDef("distanceToPoint", "v", 'f');
+    public static final idEventDef EV_StartFx            = new idEventDef("startFx", "s");
+    public static final idEventDef EV_HasFunction        = new idEventDef("hasFunction", "s", 'd');
+    public static final idEventDef EV_CallFunction       = new idEventDef("callFunction", "s");
+    public static final idEventDef EV_SetNeverDormant    = new idEventDef("setNeverDormant", "d");
     //
-    public static final idEventDef EV_GetJointHandle = new idEventDef("getJointHandle", "s", 'd');
-    public static final idEventDef EV_ClearAllJoints = new idEventDef("clearAllJoints");
-    public static final idEventDef EV_ClearJoint = new idEventDef("clearJoint", "d");
-    public static final idEventDef EV_SetJointPos = new idEventDef("setJointPos", "ddv");
-    public static final idEventDef EV_SetJointAngle = new idEventDef("setJointAngle", "ddv");
-    public static final idEventDef EV_GetJointPos = new idEventDef("getJointPos", "d", 'v');
-    public static final idEventDef EV_GetJointAngle = new idEventDef("getJointAngle", "d", 'v');
-//
-// Think flags
+    public static final idEventDef EV_GetJointHandle     = new idEventDef("getJointHandle", "s", 'd');
+    public static final idEventDef EV_ClearAllJoints     = new idEventDef("clearAllJoints");
+    public static final idEventDef EV_ClearJoint         = new idEventDef("clearJoint", "d");
+    public static final idEventDef EV_SetJointPos        = new idEventDef("setJointPos", "ddv");
+    public static final idEventDef EV_SetJointAngle      = new idEventDef("setJointAngle", "ddv");
+    public static final idEventDef EV_GetJointPos        = new idEventDef("getJointPos", "d", 'v');
+    public static final idEventDef EV_GetJointAngle      = new idEventDef("getJointAngle", "d", 'v');
+    //
+
+    // Think flags
 //enum {
-    public static final int TH_ALL = -1;
-    public static final int TH_THINK = 1;		// run think function each frame
-    public static final int TH_PHYSICS = 2;		// run physics each frame
-    public static final int TH_ANIMATE = 4;		// update animation each frame
-    public static final int TH_UPDATEVISUALS = 8;	// update renderEntity
+    public static final int TH_ALL             = -1;
+    public static final int TH_THINK           = 1;        // run think function each frame
+    public static final int TH_PHYSICS         = 2;        // run physics each frame
+    public static final int TH_ANIMATE         = 4;        // update animation each frame
+    public static final int TH_UPDATEVISUALS   = 8;        // update renderEntity
     public static final int TH_UPDATEPARTICLES = 16;
 //};
 
-//
-// Signals
-// make sure to change script/doom_defs.script if you add any, or change their order
-//
+    //
+    // Signals
+    // make sure to change script/doom_defs.script if you add any, or change their order
+    //
     public enum signalNum_t {
 
-        SIG_TOUCH, // object was touched
-        SIG_USE, // object was used
-        SIG_TRIGGER, // object was activated
-        SIG_REMOVED, // object was removed from the game
+        SIG_TOUCH,  // object was touched
+        SIG_USE,    // object was used
+        SIG_TRIGGER,// object was activated
+        SIG_REMOVED,// object was removed from the game
         SIG_DAMAGE, // object was damaged
-        SIG_BLOCKED, // object was blocked
+        SIG_BLOCKED,// object was blocked
         //
         SIG_MOVER_POS1, // mover at position 1 (door closed)
         SIG_MOVER_POS2, // mover at position 2 (door open)
@@ -241,151 +242,153 @@ public class Entity {
         SIG_MOVER_2TO1, // mover changing from position 2 to 1
         //
         NUM_SIGNALS
-    };
-// FIXME: At some point we may want to just limit it to one thread per signal, but
-// for now, I'm allowing multiple threads.  We should reevaluate this later in the project
-    public static final int MAX_SIGNAL_THREADS = 16;	// probably overkill, but idList uses a granularity of 16
-//
+    }
+
+    // FIXME: At some point we may want to just limit it to one thread per signal, but
+    // for now, I'm allowing multiple threads.  We should reevaluate this later in the project
+    public static final int MAX_SIGNAL_THREADS = 16;    // probably overkill, but idList uses a granularity of 16
+    //
 
     public static class signal_t {
 
-        int threadnum;
+        int        threadnum;
         function_t function;
-    };
+    }
 
     public static class signalList_t {
 
         public idList<signal_t>[] signal = new idList[etoi(NUM_SIGNALS)];
-    };
+    }
 
     public static class idEntity extends neo.Game.GameSys.Class.idClass implements neo.TempDump.NiLLABLE<idEntity>, neo.TempDump.SERiAL {
 //	ABSTRACT_PROTOTYPE( idEntity );
 
         public static final int MAX_PVS_AREAS = 4;
-//
-        public int entityNumber;			// index into the entity list
-        public int entityDefNumber;                     // index into the entity def list
-//
-        public idLinkList<idEntity> spawnNode;		// for being linked into spawnedEntities list
-        public idLinkList<idEntity> activeNode;		// for being linked into activeEntities list
-//
-        public idLinkList<idEntity> snapshotNode;	// for being linked into snapshotEntities list
-        public int snapshotSequence;                    // last snapshot this entity was in
-        public int snapshotBits;			// number of bits this entity occupied in the last snapshot
-//
-        public idStr name;				// name of entity
-        public idDict spawnArgs;			// key/value pairs used to spawn and initialize entity
-        public idScriptObject scriptObject;		// contains all script defined data for this entity
-//
-        public int thinkFlags;				// TH_? flags
-        public int dormantStart;			// time that the entity was first closed off from player
-        public boolean cinematic;			// during cinematics, entity will only think if cinematic is set
-//
-        public renderView_s renderView;			// for camera views from this entity
-        public idEntity cameraTarget;			// any remoteRenderMap shaders will use this
-//
-        public final idList<idEntityPtr<idEntity>> targets;	// when this entity is activated these entities entity are activated
-//
-        public int health;				// FIXME: do all objects really need health?
+        //
+        public       int                           entityNumber;      // index into the entity list
+        public       int                           entityDefNumber;   // index into the entity def list
+        //
+        public       idLinkList<idEntity>          spawnNode;         // for being linked into spawnedEntities list
+        public       idLinkList<idEntity>          activeNode;        // for being linked into activeEntities list
+        //
+        public       idLinkList<idEntity>          snapshotNode;      // for being linked into snapshotEntities list
+        public       int                           snapshotSequence;  // last snapshot this entity was in
+        public       int                           snapshotBits;      // number of bits this entity occupied in the last snapshot
+        //
+        public       idStr                         name;              // name of entity
+        public       idDict                        spawnArgs;         // key/value pairs used to spawn and initialize entity
+        public       idScriptObject                scriptObject;      // contains all script defined data for this entity
+        //
+        public       int                           thinkFlags;        // TH_? flags
+        public       int                           dormantStart;      // time that the entity was first closed off from player
+        public       boolean                       cinematic;         // during cinematics, entity will only think if cinematic is set
+        //
+        public       renderView_s                  renderView;        // for camera views from this entity
+        public       idEntity                      cameraTarget;      // any remoteRenderMap shaders will use this
+        //
+        public final idList<idEntityPtr<idEntity>> targets;           // when this entity is activated these entities entity are activated
+        //
+        public       int                           health;            // FIXME: do all objects really need health?
 //
 
         @Override
-        public idClass CreateInstance() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public Class.idClass CreateInstance() {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        @Override
-        public java.lang.Class/*idTypeInfo*/ GetType() {
+        @Override//TODO:final this
+        public java.lang.Class/*idTypeInfo*/ GetType() {//TODO: make method final
             return getClass();
         }
 
         @Override
         public idEntity oSet(idEntity node) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public boolean isNULL() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public void oSet(idClass oGet) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public void oSet(Class.idClass oGet) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
 
-        public static class entityFlags_s implements SERiAL {
+        public static class entityFlags_s implements TempDump.SERiAL {
 
             public boolean notarget;            // if true never attack or target this entity
             public boolean noknockback;         // if true no knockback from hits
             public boolean takedamage;          // if true this entity can be damaged
             public boolean hidden;              // if true this entity is not visible
-            public boolean bindOrientated;	// if true both the master orientation is used for binding
-            public boolean solidForTeam;	// if true this entity is considered solid when a physics team mate pushes entities
-            public boolean forcePhysicsUpdate;	// if true always update from the physics whether the object moved or not
+            public boolean bindOrientated;      // if true both the master orientation is used for binding
+            public boolean solidForTeam;        // if true this entity is considered solid when a physics team mate pushes entities
+            public boolean forcePhysicsUpdate;  // if true always update from the physics whether the object moved or not
             public boolean selected;            // if true the entity is selected for editing
-            public boolean neverDormant;	// if true the entity never goes dormant
+            public boolean neverDormant;        // if true the entity never goes dormant
             public boolean isDormant;           // if true the entity is dormant
             public boolean hasAwakened;         // before a monster has been awakened the first time, use full PVS for dormant instead of area-connected
             public boolean networkSync;         // if true the entity is synchronized over the network
 
             @Override
             public ByteBuffer AllocBuffer() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void Read(ByteBuffer buffer) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public ByteBuffer Write() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
-        };
-        public entityFlags_s fl;
+        }
+
+        public    entityFlags_s        fl;
         //
         //
-        protected renderEntity_s renderEntity;					// used to present a model to the renderer
-        protected int modelDefHandle;						// handle to static renderer model
-        protected refSound_t refSound;						// used to present sound to the audio engine
+        protected renderEntity_s       renderEntity;                    // used to present a model to the renderer
+        protected int                  modelDefHandle;                  // handle to static renderer model
+        protected refSound_t           refSound;                        // used to present sound to the audio engine
         //
-        private idPhysics_Static defaultPhysicsObj;				// default physics object
-        private idPhysics physics;						// physics used for this entity
-        private idEntity bindMaster;						// entity bound to if unequal NULL
-        private int/*jointHandle_t*/ bindJoint;					// joint bound to if unequal INVALID_JOINT
-        private int bindBody;							// body bound to if unequal -1
-        private idEntity teamMaster;						// master of the physics team
-        private idEntity teamChain;						// next entity in physics team
+        private   idPhysics_Static     defaultPhysicsObj;               // default physics object
+        private   idPhysics            physics;                         // physics used for this entity
+        private   idEntity             bindMaster;                      // entity bound to if unequal NULL
+        private   int/*jointHandle_t*/ bindJoint;                       // joint bound to if unequal INVALID_JOINT
+        private   int                  bindBody;                        // body bound to if unequal -1
+        private   idEntity             teamMaster;                      // master of the physics team
+        private   idEntity             teamChain;                       // next entity in physics team
         //
-        private int numPVSAreas;						// number of renderer areas the entity covers
-        private final int[] PVSAreas = new int[MAX_PVS_AREAS];			// numbers of the renderer areas the entity covers
+        private   int                  numPVSAreas;                     // number of renderer areas the entity covers
+        private final int[] PVSAreas = new int[MAX_PVS_AREAS];          // numbers of the renderer areas the entity covers
         //
         private signalList_t signals;
         //
-        private int mpGUIState;							// local cache to avoid systematic SetStateInt
+        private int          mpGUIState;                                // local cache to avoid systematic SetStateInt
         //
         //     
         //
 //
 
-//        public static final idTypeInfo Type;
+        //        public static final idTypeInfo Type;
 //        
 //        public static idClass CreateInstance();
 //
@@ -393,20 +396,24 @@ public class Entity {
 //        public static idEventFunc<idEntity>[] eventCallbacks;
 //
         public idEntity() {
-            this.targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<idEntity>().getClass());
+            targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<idEntity>().getClass());
 
             entityNumber = ENTITYNUM_NONE;
             entityDefNumber = -1;
 
-            this.spawnNode = new idLinkList<>();
+            spawnNode = new idLinkList<>();
             spawnNode.SetOwner(this);
-            this.activeNode = new idLinkList<>();
+            activeNode = new idLinkList<>();
             activeNode.SetOwner(this);
 
-            this.snapshotNode = new idLinkList<>();
+            snapshotNode = new idLinkList<>();
             snapshotNode.SetOwner(this);
             snapshotSequence = -1;
             snapshotBits = 0;
+            
+            name = new idStr();
+            spawnArgs = new idDict();
+            scriptObject = new idScriptObject();
 
             thinkFlags = 0;
             dormantStart = 0;
@@ -432,6 +439,7 @@ public class Entity {
             renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
             modelDefHandle = -1;
             refSound = new refSound_t();//memset( &refSound, 0, sizeof( refSound ) );
+            defaultPhysicsObj = new idPhysics_Static();
 
             mpGUIState = -1;
 
@@ -466,8 +474,8 @@ public class Entity {
             // go dormant within 5 frames so that when the map starts most monsters are dormant
             dormantStart = gameLocal.time - DELAY_DORMANT_TIME + gameLocal.msec * 5;
 
-            origin = renderEntity.origin;
-            axis = renderEntity.axis;
+            origin = new idVec3(renderEntity.origin);
+            axis = new idMat3(renderEntity.axis);
 
             // do the audio parsing the same way dmap and the editor do
             GameEdit.gameEdit.ParseSpawnArgsToRefSound(spawnArgs, refSound);
@@ -743,12 +751,12 @@ public class Entity {
          first need copied over to spawnArgs
          ===============
          */
-        public void UpdateChangeableSpawnArgs(final idDict source) {
+        public void UpdateChangeableSpawnArgs(idDict source) {
             int i;
             String target;
 
             if (null == source) {//TODO:null check
-                source.oSet(spawnArgs);
+                source = spawnArgs;
             }
             cameraTarget = null;
             target = source.GetString("cameraTarget");
@@ -814,7 +822,7 @@ public class Entity {
          off from the player can skip all of their work
          ================
          */
-        public boolean CheckDormant() {	// dormant == on the active list, but out of PVS
+        public boolean CheckDormant() {    // dormant == on the active list, but out of PVS
             boolean dormant;
 
             dormant = DoDormantTests();
@@ -985,7 +993,7 @@ public class Entity {
             renderEntity.numJoints = 0;
             renderEntity.joints = null;
             if (renderEntity.hModel != null) {
-                renderEntity.bounds = renderEntity.hModel.Bounds(renderEntity);
+                renderEntity.bounds.oSet(renderEntity.hModel.Bounds(renderEntity));
             } else {
                 renderEntity.bounds.Zero();
             }
@@ -1101,11 +1109,11 @@ public class Entity {
             idMat3 axis = new idMat3();
 
             if (GetPhysicsToVisualTransform(origin, axis)) {
-                renderEntity.axis = axis.oMultiply(GetPhysics().GetAxis());
-                renderEntity.origin = GetPhysics().GetOrigin().oPlus(origin.oMultiply(renderEntity.axis));
+                renderEntity.axis.oSet(axis.oMultiply(GetPhysics().GetAxis()));
+                renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(origin.oMultiply(renderEntity.axis)));
             } else {
-                renderEntity.axis = new idMat3(GetPhysics().GetAxis());
-                renderEntity.origin = new idVec3(GetPhysics().GetOrigin());
+                renderEntity.axis.oSet(GetPhysics().GetAxis());
+                renderEntity.origin.oSet(GetPhysics().GetOrigin());
             }
         }
 
@@ -1247,19 +1255,19 @@ public class Entity {
 
             @Override
             public ByteBuffer AllocBuffer() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void Read(ByteBuffer buffer) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public ByteBuffer Write() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
-        };
+        }
 
         /*
          ================
@@ -1268,7 +1276,7 @@ public class Entity {
          Subclasses will be responsible for allocating animator.
          ================
          */
-        public idAnimator GetAnimator() {	// returns animator object used by this entity
+        public idAnimator GetAnimator() {    // returns animator object used by this entity
             return null;
         }
 
@@ -1379,7 +1387,7 @@ public class Entity {
             return StartSoundShader(shader, channel.ordinal(), soundShaderFlags, broadcast, length);
         }
 
-        public void StopSound(final int/*s_channelType*/ channel, boolean broadcast) {	// pass SND_CHANNEL_ANY to stop all sounds
+        public void StopSound(final int/*s_channelType*/ channel, boolean broadcast) {    // pass SND_CHANNEL_ANY to stop all sounds
             if (!gameLocal.isNewFrame) {
                 return;
             }
@@ -1890,8 +1898,8 @@ public class Entity {
                 if (bindJoint != INVALID_JOINT) {
                     masterAnimator = bindMaster.GetAnimator();
                     if (null == masterAnimator) {
-                        masterOrigin.oSet(vec3_origin);
-                        masterAxis.oSet(mat3_identity);
+                        masterOrigin.oSet(getVec3_origin());
+                        masterAxis.oSet(getMat3_identity());
                         return false;
                     } else {
                         masterAnimator.GetJointTransform(bindJoint, gameLocal.time, masterOrigin, masterAxis);
@@ -1907,8 +1915,8 @@ public class Entity {
                 }
                 return true;
             } else {
-                masterOrigin.oSet(vec3_origin);
-                masterAxis.oSet(mat3_identity);
+                masterOrigin.oSet(getVec3_origin());
+                masterAxis.oSet(getMat3_identity());
                 return false;
             }
         }
@@ -2583,7 +2591,7 @@ public class Entity {
 
             threadnum = thread.GetThreadNum();
 
-            num = signals.signal[ signalnum].Num();
+            num = signals.signal[signalnum].Num();
             for (i = 0; i < num; i++) {
                 if (signals.signal[signalnum].oGet(i).threadnum == threadnum) {
                     signals.signal[signalnum].RemoveIndex(i);
@@ -2618,13 +2626,13 @@ public class Entity {
             // to end any of the threads in the list.  By copying the list
             // we don't have to worry about the list changing as we're
             // processing it.
-            num = signals.signal[ signalnum].Num();
+            num = signals.signal[signalnum].Num();
             for (i = 0; i < num; i++) {
                 sigs[i] = signals.signal[signalnum].oGet(i);
             }
 
             // clear out the signal list so that we don't get into an infinite loop
-            signals.signal[ signalnum].Clear();
+            signals.signal[signalnum].Clear();
 
             for (i = 0; i < num; i++) {
                 thread = idThread.GetThread(sigs[i].threadnum);
@@ -2879,8 +2887,8 @@ public class Entity {
                     ent.ProcessEvent(EV_Activate, activator);
                 }
                 for (j = 0; j < MAX_RENDERENTITY_GUI; j++) {
-                    if (ent.renderEntity.gui[ j] != null) {
-                        ent.renderEntity.gui[ j].Trigger(gameLocal.time);
+                    if (ent.renderEntity.gui[j] != null) {
+                        ent.renderEntity.gui[j].Trigger(gameLocal.time);
                     }
                 }
             }
@@ -2911,17 +2919,16 @@ public class Entity {
             idClipModel cm;
             idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
             idEntity ent;
-            trace_s trace = new trace_s();
+            trace_s trace = new trace_s();//memset( &trace, 0, sizeof( trace ) );
 
-//	memset( &trace, 0, sizeof( trace ) );
-            trace.endpos = GetPhysics().GetOrigin();
-            trace.endAxis = GetPhysics().GetAxis();
+            trace.endpos.oSet(GetPhysics().GetOrigin());
+            trace.endAxis.oSet(GetPhysics().GetAxis());
 
             numClipModels = gameLocal.clip.ClipModelsTouchingBounds(GetPhysics().GetAbsBounds(), CONTENTS_TRIGGER, clipModels, MAX_GENTITIES);
             numEntities = 0;
 
             for (i = 0; i < numClipModels; i++) {
-                cm = clipModels[ i];
+                cm = clipModels[i];
 
                 // don't touch it if we're the owner
                 if (cm.GetOwner() == this) {
@@ -2998,11 +3005,12 @@ public class Entity {
 
         public void ShowEditingDialog() {
         }
-//
+
+        //
         // enum {
         public static final int EVENT_STARTSOUNDSHADER = 0;
-        public static final int EVENT_STOPSOUNDSHADER = 1;
-        public static final int EVENT_MAXEVENTS = 2;
+        public static final int EVENT_STOPSOUNDSHADER  = 1;
+        public static final int EVENT_MAXEVENTS        = 2;
         // };
 //
 
@@ -3248,7 +3256,7 @@ public class Entity {
          off from the player can skip all of their work
          ================
          */
-        private boolean DoDormantTests() {				// dormant == on the active list, but out of PVS
+        private boolean DoDormantTests() {                // dormant == on the active list, but out of PVS
 
             if (fl.neverDormant) {
                 return false;
@@ -3269,13 +3277,13 @@ public class Entity {
                 // the monster hasn't been woken up before, do the more precise PVS check
                 if (!fl.hasAwakened) {
                     if (!gameLocal.InPlayerPVS(this)) {
-                        return true;		// stay dormant
+                        return true;        // stay dormant
                     }
                 }
 
                 // wake up
                 dormantStart = 0;
-                fl.hasAwakened = true;		// only go dormant when area closed off now, not just out of PVS
+                fl.hasAwakened = true;        // only go dormant when area closed off now, not just out of PVS
                 return false;
             }
 
@@ -3290,9 +3298,10 @@ public class Entity {
          ***********************************************************************/
         // physics
         // initialize the default physics
+        private static int DBG_InitDefaultPhysics = 0;
         private void InitDefaultPhysics(final idVec3 origin, final idMat3 axis) {
             String[] temp = new String[1];
-            idClipModel clipModel = null;
+            idClipModel clipModel = null;DBG_InitDefaultPhysics++;
 
             // check if a clipmodel key/value pair is set
             if (spawnArgs.GetString("clipmodel", "", temp)) {
@@ -3380,7 +3389,7 @@ public class Entity {
         }
 
         // entity binding
-        private boolean InitBind(idEntity master) {		// initialize an entity binding
+        private boolean InitBind(idEntity master) {        // initialize an entity binding
 
             if (null == master || master.equals(gameLocal.world)) {
                 // this can happen in scripts, so safely exit out.
@@ -3408,7 +3417,7 @@ public class Entity {
             return true;
         }
 
-        private void FinishBind() {				// finish an entity binding
+        private void FinishBind() {                // finish an entity binding
 
             // set the master on the physics object
             physics.SetMaster(bindMaster, fl.bindOrientated);
@@ -3427,7 +3436,7 @@ public class Entity {
             teamMaster.BecomeActive(TH_PHYSICS);
         }
 
-        private void RemoveBinds() {				// deletes any entities bound to this object
+        private void RemoveBinds() {                // deletes any entities bound to this object
             idEntity ent;
             idEntity next;
 
@@ -3441,7 +3450,7 @@ public class Entity {
             }
         }
 
-        private void QuitTeam() {					// leave the current team
+        private void QuitTeam() {                    // leave the current team
             idEntity ent;
 
             if (null == teamMaster) {
@@ -3504,7 +3513,7 @@ public class Entity {
             }
 
             for (i = numPVSAreas; i < MAX_PVS_AREAS; i++) {
-                PVSAreas[ i] = 0;
+                PVSAreas[i] = 0;
             }
         }
 
@@ -3695,7 +3704,7 @@ public class Entity {
                 gameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
-            idThread.ReturnFloat(renderEntity.shaderParms[ parmnum]);
+            idThread.ReturnFloat(renderEntity.shaderParms[parmnum]);
         }
 
         private void Event_SetShaderParm(int parmnum, float value) {
@@ -4061,7 +4070,7 @@ public class Entity {
             fl.neverDormant = (enable != 0);
             dormantStart = 0;
         }
-    };
+    }
 
     /*
      ===============================================================================
@@ -4073,12 +4082,12 @@ public class Entity {
     public static class damageEffect_s {
 
         int/*jointHandle_t*/ jointNum;
-        idVec3 localOrigin;
-        idVec3 localNormal;
-        int time;
+        idVec3         localOrigin;
+        idVec3         localNormal;
+        int            time;
         idDeclParticle type;
         damageEffect_s next;
-    };
+    }
 
     /*
      ===============================================================================
@@ -4091,15 +4100,15 @@ public class Entity {
 
         // enum {
         public static final int EVENT_ADD_DAMAGE_EFFECT = idEntity.EVENT_MAXEVENTS;
-        public static final int EVENT_MAXEVENTS = EVENT_ADD_DAMAGE_EFFECT + 1;
+        public static final int EVENT_MAXEVENTS         = EVENT_ADD_DAMAGE_EFFECT + 1;
         // };
         //
-        protected idAnimator animator;
+        protected idAnimator     animator;
         protected damageEffect_s damageEffects;
         //
         //
 
-//public	CLASS_PROTOTYPE( idAnimatedEntity );
+        //public	CLASS_PROTOTYPE( idAnimatedEntity );
 //        public static idTypeInfo Type;
 //        public static idClass CreateInstance();
 //
@@ -4107,6 +4116,7 @@ public class Entity {
 //        public static idEventFunc<idAnimatedEntity>[] eventCallbacks;
 //
         public idAnimatedEntity() {
+            animator = new idAnimator();
             animator.SetEntity(this);
             damageEffects = null;
         }
@@ -4263,11 +4273,11 @@ public class Entity {
                 return false;
             }
 
-            frame = new idJointMat[numJoints];
+            frame = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
             GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), anim.MD5Anim(0), renderEntity.numJoints, frame, frameTime, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
 
-            offset.oSet(frame[ jointHandle].ToVec3());
-            axis.oSet(frame[ jointHandle].ToMat3());
+            offset.oSet(frame[jointHandle].ToVec3());
+            axis.oSet(frame[jointHandle].ToMat3());
 
             return true;
         }
@@ -4391,7 +4401,7 @@ public class Entity {
             prev = this.damageEffects;
             while (prev != null) {
                 de = prev;
-                if (de.time == 0) {	// FIXME:SMOKE
+                if (de.time == 0) {    // FIXME:SMOKE
                     this.damageEffects = de.next;
 //			*prev = de.next;
 //			delete de;
@@ -4550,22 +4560,8 @@ public class Entity {
             idThread.ReturnVector(vec);
         }
 
-        @Override
-        public java.lang.Class/*idTypeInfo*/ GetType() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public idClass CreateInstance() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
         /**
-         *
-         *
          * inherited grandfather functions.
-         *
-         *
          */
         public final void idEntity_Hide() {
             super.Hide();
@@ -4606,7 +4602,7 @@ public class Entity {
         public final boolean idEntity_ServerReceiveEvent(int event, int time, final idBitMsg msg) {
             return super.ServerReceiveEvent(event, time, msg);
         }
-    };
+    }
 
     /*
      ================
@@ -4631,10 +4627,14 @@ public class Entity {
      AddRenderGui
      ================
      */
-    public static void AddRenderGui(final String name, idUserInterface gui, final idDict args) {
+    public static idUserInterface AddRenderGui(final String name, final idDict args) {
+        idUserInterface gui;
+        
         final idKeyValue kv = args.MatchPrefix("gui_parm", null);
-        gui.oSet(uiManager.FindGui(name, true, (kv != null)));
+        gui = uiManager.FindGui(name, true, (kv != null));
         UpdateGuiParms(gui, args);
+        
+        return gui;
     }
 
 }

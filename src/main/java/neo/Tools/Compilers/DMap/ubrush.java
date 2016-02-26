@@ -461,8 +461,8 @@ public class ubrush {
             c_clusters += r;
         }
 
-        common.Printf("%5i total brushes\n", c_unique);
-        common.Printf("%5i cluster references\n", c_clusters);
+        common.Printf("%5d total brushes\n", c_unique);
+        common.Printf("%5d cluster references\n", c_clusters);
     }
 
     /*

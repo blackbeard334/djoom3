@@ -1,22 +1,22 @@
 package neo.idlib.math;
 
-import static neo.TempDump.reflects._Minus;
-import static neo.TempDump.reflects._Multiply;
-import static neo.TempDump.reflects._Plus;
+import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Vector.idVec4;
 
 /**
  *
  */
 public class Extrapolate {
 
-    public static final int EXTRAPOLATION_NONE = 0x01;	// no extrapolation, covered distance = duration * 0.001 * ( baseSpeed )
-    public static final int EXTRAPOLATION_LINEAR = 0x02;	// linear extrapolation, covered distance = duration * 0.001 * ( baseSpeed + speed )
-    public static final int EXTRAPOLATION_ACCELLINEAR = 0x04;	// linear acceleration, covered distance = duration * 0.001 * ( baseSpeed + 0.5 * speed )
-    public static final int EXTRAPOLATION_DECELLINEAR = 0x08;	// linear deceleration, covered distance = duration * 0.001 * ( baseSpeed + 0.5 * speed )
-    public static final int EXTRAPOLATION_ACCELSINE = 0x10;	// sinusoidal acceleration, covered distance = duration * 0.001 * ( baseSpeed + sqrt( 0.5 ) * speed )
-    public static final int EXTRAPOLATION_DECELSINE = 0x20;	// sinusoidal deceleration, covered distance = duration * 0.001 * ( baseSpeed + sqrt( 0.5 ) * speed )
-    public static final int EXTRAPOLATION_NOSTOP = 0x40;	// do not stop at startTime + duration
+    public static final int EXTRAPOLATION_NONE        = 0x01;    // no extrapolation, covered distance = duration * 0.001 * ( baseSpeed )
+    public static final int EXTRAPOLATION_LINEAR      = 0x02;    // linear extrapolation, covered distance = duration * 0.001 * ( baseSpeed + speed )
+    public static final int EXTRAPOLATION_ACCELLINEAR = 0x04;    // linear acceleration, covered distance = duration * 0.001 * ( baseSpeed + 0.5 * speed )
+    public static final int EXTRAPOLATION_DECELLINEAR = 0x08;    // linear deceleration, covered distance = duration * 0.001 * ( baseSpeed + 0.5 * speed )
+    public static final int EXTRAPOLATION_ACCELSINE   = 0x10;    // sinusoidal acceleration, covered distance = duration * 0.001 * ( baseSpeed + sqrt( 0.5 ) * speed )
+    public static final int EXTRAPOLATION_DECELSINE   = 0x20;    // sinusoidal deceleration, covered distance = duration * 0.001 * ( baseSpeed + sqrt( 0.5 ) * speed )
+    public static final int EXTRAPOLATION_NOSTOP      = 0x40;    // do not stop at startTime + duration
 
     /*
      ==============================================================================================
@@ -26,6 +26,17 @@ public class Extrapolate {
      ==============================================================================================
      */
     public static class idExtrapolate<type> {
+
+        private /*extrapolation_t*/ int   extrapolationType;
+        private                     float startTime;
+        private                     float duration;
+        private                     type  startValue;
+        private                     type  baseSpeed;
+        private                     type  speed;
+        private                     float currentTime;
+        private                     type  currentValue;
+        //
+        //
 
         public idExtrapolate() {
             extrapolationType = EXTRAPOLATION_NONE;
@@ -68,12 +79,12 @@ public class Extrapolate {
             switch (extrapolationType & ~EXTRAPOLATION_NOSTOP) {
                 case EXTRAPOLATION_NONE: {
                     deltaTime = (time - startTime) * 0.001f;
-                    currentValue = (type) _Plus(startValue, _Multiply(deltaTime, baseSpeed));
+                    currentValue = _Plus(startValue, _Multiply(deltaTime, baseSpeed));
                     break;
                 }
                 case EXTRAPOLATION_LINEAR: {
                     deltaTime = (time - startTime) * 0.001f;
-                    currentValue = (type) _Plus(startValue, _Multiply(deltaTime, _Plus(baseSpeed, speed)));
+                    currentValue = _Plus(startValue, _Multiply(deltaTime, _Plus(baseSpeed, speed)));
                     break;
                 }
                 case EXTRAPOLATION_ACCELLINEAR: {
@@ -82,7 +93,7 @@ public class Extrapolate {
                     } else {
                         deltaTime = (time - startTime) / duration;
                         s = (0.5f * deltaTime * deltaTime) * (duration * 0.001f);
-                        currentValue = (type) _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
+                        currentValue = _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
                     }
                     break;
                 }
@@ -92,7 +103,7 @@ public class Extrapolate {
                     } else {
                         deltaTime = (time - startTime) / duration;
                         s = (deltaTime - (0.5f * deltaTime * deltaTime)) * (duration * 0.001f);
-                        currentValue = (type) _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
+                        currentValue = _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
                     }
                     break;
                 }
@@ -102,7 +113,7 @@ public class Extrapolate {
                     } else {
                         deltaTime = (time - startTime) / duration;
                         s = (1.0f - idMath.Cos(deltaTime * idMath.HALF_PI)) * duration * 0.001f * idMath.SQRT_1OVER2;
-                        currentValue = (type) _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
+                        currentValue = _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
                     }
                     break;
                 }
@@ -112,7 +123,7 @@ public class Extrapolate {
                     } else {
                         deltaTime = (time - startTime) / duration;
                         s = idMath.Sin(deltaTime * idMath.HALF_PI) * duration * 0.001f * idMath.SQRT_1OVER2;
-                        currentValue = (type) _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
+                        currentValue = _Plus(startValue, _Plus(_Multiply(deltaTime, baseSpeed), _Multiply(s, speed)));
                     }
                     break;
                 }
@@ -124,11 +135,11 @@ public class Extrapolate {
             float deltaTime, s;
 
             if (time < startTime || 0 == duration) {
-                return (type) _Minus(startValue, startValue);
+                return _Minus(startValue, startValue);
             }
 
             if (0 == (extrapolationType & EXTRAPOLATION_NOSTOP) && (time > startTime + duration)) {
-                return (type) _Minus(startValue, startValue);
+                return _Minus(startValue, startValue);
             }
 
             switch (extrapolationType & ~EXTRAPOLATION_NOSTOP) {
@@ -136,27 +147,27 @@ public class Extrapolate {
                     return baseSpeed;
                 }
                 case EXTRAPOLATION_LINEAR: {
-                    return (type) _Plus(baseSpeed, speed);
+                    return _Plus(baseSpeed, speed);
                 }
                 case EXTRAPOLATION_ACCELLINEAR: {
                     deltaTime = (time - startTime) / duration;
                     s = deltaTime;
-                    return (type) _Plus(baseSpeed, _Multiply(s, speed));
+                    return _Plus(baseSpeed, _Multiply(s, speed));
                 }
                 case EXTRAPOLATION_DECELLINEAR: {
                     deltaTime = (time - startTime) / duration;
                     s = 1.0f - deltaTime;
-                    return (type) _Plus(baseSpeed, _Multiply(s, speed));
+                    return _Plus(baseSpeed, _Multiply(s, speed));
                 }
                 case EXTRAPOLATION_ACCELSINE: {
                     deltaTime = (time - startTime) / duration;
                     s = idMath.Sin(deltaTime * idMath.HALF_PI);
-                    return (type) _Plus(baseSpeed, _Multiply(s, speed));
+                    return _Plus(baseSpeed, _Multiply(s, speed));
                 }
                 case EXTRAPOLATION_DECELSINE: {
                     deltaTime = (time - startTime) / duration;
                     s = idMath.Cos(deltaTime * idMath.HALF_PI);
-                    return (type) _Plus(baseSpeed, _Multiply(s, speed));
+                    return _Plus(baseSpeed, _Multiply(s, speed));
                 }
                 default: {
                     return baseSpeed;
@@ -205,14 +216,41 @@ public class Extrapolate {
         public /*extrapolation_t*/ int GetExtrapolationType() {
             return extrapolationType;
         }
-//
-        private /*extrapolation_t*/ int extrapolationType;
-        private float startTime;
-        private float duration;
-        private type startValue;
-        private type baseSpeed;
-        private type speed;
-        private float currentTime;
-        private type currentValue;
+
+        private type _Multiply(final float f, final type t) {
+            if (t instanceof idVec3) {
+                return (type) ((idVec3) t).oMultiply(f);
+            } else if (t instanceof idVec4) {
+                return (type) ((idVec4) t).oMultiply(f);
+            } else if (t instanceof idAngles) {
+                return (type) ((idAngles) t).oMultiply(f);
+            }
+
+            return (type) Float.valueOf(f*((Float)t));
+        }
+
+        private type _Plus(final type t1, final type t2) {
+            if (t1 instanceof idVec3) {
+                return (type) ((idVec3) t1).oPlus((idVec3) t2);
+            } else if (t1 instanceof idVec4) {
+                return (type) ((idVec4) t1).oPlus((idVec4) t2);
+            } else if (t1 instanceof idAngles) {
+                return (type) ((idAngles) t1).oPlus((idAngles) t2);
+            }
+
+            return (type) Float.valueOf((Float) t1 + (Float) t2);
+        }
+
+        private type _Minus(final type t1, final type t2) {
+            if (t1 instanceof idVec3) {
+                return (type) ((idVec3) t1).oMinus((idVec3) t2);
+            } else if (t1 instanceof idVec4) {
+                return (type) ((idVec4) t1).oMinus((idVec4) t2);
+            } else if (t1 instanceof idAngles) {
+                return (type) ((idAngles) t1).oMinus((idAngles) t2);
+            }
+
+            return (type) Float.valueOf((Float) t1 - (Float) t2);
+        }
     };
 }

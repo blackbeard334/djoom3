@@ -1,7 +1,5 @@
 package neo.idlib.math.Matrix;
 
-import java.io.Serializable;
-import static neo.TempDump.SERIAL_SIZE;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.DEG2RAD;
@@ -21,13 +19,24 @@ import neo.idlib.math.Vector.idVec3;
 //	NOTE:	matrix is column-major
 //
 //===============================================================
-public class idMat3 implements Serializable {
+public class idMat3 {
+    public static final int    BYTES         = idVec3.BYTES * 3;
 
-    public static final transient int SIZE = SERIAL_SIZE(new idMat3());
+    private static final idMat3 mat3_zero     = new idMat3(new idVec3(0, 0, 0), new idVec3(0, 0, 0), new idVec3(0, 0, 0));
+    private static final idMat3 mat3_identity = new idMat3(new idVec3(1, 0, 0), new idVec3(0, 1, 0), new idVec3(0, 0, 1));
+    private static final idMat3 mat3_default  = mat3_identity;
 
-    public static final idMat3 mat3_zero = new idMat3(new idVec3(0, 0, 0), new idVec3(0, 0, 0), new idVec3(0, 0, 0));
-    public static final idMat3 mat3_identity = new idMat3(new idVec3(1, 0, 0), new idVec3(0, 1, 0), new idVec3(0, 0, 1));
-    public static final idMat3 mat3_default = mat3_identity;
+    public static idMat3 getMat3_zero() {
+        return new idMat3(mat3_zero);
+    }
+
+    public static idMat3 getMat3_identity() {
+        return new idMat3(mat3_identity);
+    }
+
+    public static idMat3 getMat3_default() {
+        return new idMat3(mat3_default);
+    }
 
     final idVec3[] mat = {new idVec3(), new idVec3(), new idVec3()};
 
@@ -183,9 +192,10 @@ public class idMat3 implements Serializable {
 
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                float value = mat[0].oMultiply(a.mat[0 * 3 + j])
-                        + mat[1].oMultiply(a.mat[1 * 3 + j])
-                        + mat[2].oMultiply(a.mat[2 * 3 + j]);
+                float value 
+                        = mat[i].x * a.mat[0].oGet(j)
+                        + mat[i].y * a.mat[1].oGet(j)
+                        + mat[i].z * a.mat[2].oGet(j);
                 this.oSet(i, j, value);
             }
         }
@@ -297,7 +307,7 @@ public class idMat3 implements Serializable {
     }
 
     public void Identity() {
-        this.oSet(mat3_identity);
+        this.oSet(getMat3_identity());
     }
 
     public boolean IsIdentity() {
@@ -305,7 +315,7 @@ public class idMat3 implements Serializable {
     }
 
     public boolean IsIdentity(final float epsilon) {
-        return Compare(mat3_identity, epsilon);
+        return Compare(getMat3_identity(), epsilon);
     }
 
     public boolean IsSymmetric() {
@@ -723,9 +733,9 @@ public class idMat3 implements Serializable {
      */
     public float[] ToFloatPtr() {
         return new float[]{
-            mat[0].x, mat[0].y, mat[0].z,
-            mat[1].x, mat[1].y, mat[1].z,
-            mat[2].x, mat[2].y, mat[2].z
+                mat[0].x, mat[0].y, mat[0].z,
+                mat[1].x, mat[1].y, mat[1].z,
+                mat[2].x, mat[2].y, mat[2].z
         };
     }
     //	public	float *			ToFloatPtr( void );
@@ -781,11 +791,10 @@ public class idMat3 implements Serializable {
         }
     }
 
-    public idMat3 oSet(final idMat3 mat3) {
-        System.arraycopy(mat3.mat, 0, this.mat, 0, 3);//TODO:check which is faster?
-//            this.mat[0] = mat.mat[0];
-//            this.mat[1] = mat.mat[1];
-//            this.mat[2] = mat.mat[2];
+    public idMat3 oSet(final idMat3 m) {
+        this.mat[0].oSet(m.mat[0]);
+        this.mat[1].oSet(m.mat[1]);
+        this.mat[2].oSet(m.mat[2]);
         return this;
     }
 

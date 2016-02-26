@@ -2,6 +2,7 @@ package neo.CM;
 
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Stream;
 import static neo.CM.CollisionModel.CM_BOX_EPSILON;
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import static neo.CM.CollisionModel.CM_MAX_TRACE_DIST;
@@ -49,9 +50,8 @@ import neo.Renderer.Model.modelSurface_s;
 import static neo.Renderer.ModelManager.renderModelManager;
 import static neo.Renderer.RenderWorld.PROC_FILE_EXT;
 import static neo.Renderer.RenderWorld.PROC_FILE_ID;
+import neo.TempDump;
 import static neo.TempDump.ctos;
-import static neo.TempDump.reinterpret_cast_int;
-import static neo.TempDump.sizeof;
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_FLOAT;
 import static neo.framework.CVarSystem.CVAR_GAME;
@@ -112,7 +112,7 @@ import static neo.idlib.math.Math_h.INTSIGNBITSET;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import static neo.idlib.math.Plane.DEGENERATE_DIST_EPSILON;
 import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
@@ -125,9 +125,9 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -150,16 +150,16 @@ public class CollisionModel_local {
     //
     static final   int                          MAX_SUBMODELS               = 2048;
     static final   int                          TRACE_MODEL_HANDLE          = MAX_SUBMODELS;
-    //                                            
+    //
     static final   int                          VERTEX_HASH_BOXSIZE         = (1 << 6);    // must be power of 2
     static final   int                          VERTEX_HASH_SIZE            = (VERTEX_HASH_BOXSIZE * VERTEX_HASH_BOXSIZE);
     static final   int                          EDGE_HASH_SIZE              = (1 << 14);
-    //                                               
+    //
     static final   int                          NODE_BLOCK_SIZE_SMALL       = 8;
     static final   int                          NODE_BLOCK_SIZE_LARGE       = 256;
     static final   int                          REFERENCE_BLOCK_SIZE_SMALL  = 8;
     static final   int                          REFERENCE_BLOCK_SIZE_LARGE  = 256;
-    //                                               
+    //
     static final   int                          MAX_WINDING_LIST            = 128;        // quite a few are generated at times
     static final   float                        INTEGRAL_EPSILON            = 0.01f;
     static final   float                        VERTEX_EPSILON              = 0.1f;
@@ -184,7 +184,7 @@ public class CollisionModel_local {
         int numWindings;                                              // number of windings
         idFixedWinding[] w = new idFixedWinding[MAX_WINDING_LIST];    // windings
         idVec3   normal;                                              // normal for all windings
-        idBounds bounds;                                              // bounds of all windings in list
+        idBounds bounds = new idBounds();                             // bounds of all windings in list
         idVec3   origin;                                              // origin for radius
         float    radius;                                              // radius relative to origin for all windings
         int      contents;                                            // winding surface contents
@@ -199,16 +199,29 @@ public class CollisionModel_local {
 
      ===============================================================================
      */
-    class cm_vertex_s {
+    static class cm_vertex_s {
+        static final int SIZE = idVec3.SIZE + Integer.SIZE + Long.SIZE + Long.SIZE;
+        static final int BYTES = SIZE / Byte.SIZE;
 
         idVec3 p;                           // vertex point
         int    checkcount;                  // for multi-check avoidance
         long   side;                        // each bit tells at which side this vertex passes one of the trace model edges
         long   sideSet;                     // each bit tells if sidedness for the trace model edge has been calculated yet
+
+        public cm_vertex_s() {
+            this.p = new idVec3();
+        }
+
+        static cm_vertex_s[]generateArray(final int length){
+            return Stream.generate(() -> new cm_vertex_s()).
+                    limit(length).
+                    toArray(cm_vertex_s[]::new);
+        }
     }
 
-
     static class cm_edge_s {
+         static final int SIZE = Integer.SIZE + Short.SIZE + Short.SIZE + Long.SIZE + Long.SIZE + Integer.SIZE + idVec3.SIZE;
+         static final int BYTES = SIZE / Byte.SIZE;
 
         int   checkcount;                   // for multi-check avoidance
         short internal;                     // a trace model can never collide with internal edges
@@ -216,34 +229,32 @@ public class CollisionModel_local {
         long  side;                         // each bit tells at which side of this edge one of the trace model vertices passes
         long  sideSet;                      // each bit tells if sidedness for the trace model vertex has been calculated yet
         int[] vertexNum = new int[2];       // start and end point of edge
-        idVec3 normal;                      // edge normal
+        idVec3 normal = new idVec3();       // edge normal
+
+        static cm_edge_s[] generateArray(final int length) {
+            return Stream.generate(() -> new cm_edge_s()).
+                    limit(length).
+                    toArray(cm_edge_s[]::new);
+        }
     }
 
 
     static class cm_polygonBlock_s {
 
         int bytesRemaining;
-        //        byte[] next;
-        private int            index;
-        private cm_polygon_s[] polygons;
-
-        public cm_polygon_s current() {
-            return polygons[index];
-        }
-
-        public cm_polygon_s next() {
-            bytesRemaining--;
-            return polygons[index++];
-        }
-
-        public cm_polygon_s next(final Object value) {
-            --bytesRemaining;
-            return polygons[++index] = (cm_polygon_s) value;
-        }
+        cm_polygonBlock_s next;
     }
 
 
     public static class cm_polygon_s {
+        public static final int BYTES
+                = idBounds.BYTES
+                + Integer.BYTES
+                + Integer.BYTES
+                + Integer.BYTES
+                + idPlane.BYTES
+                + Integer.BYTES
+                + Integer.BYTES;
 
         idBounds   bounds;                  // polygon bounds
         int        checkcount;              // for multi-check avoidance
@@ -253,16 +264,33 @@ public class CollisionModel_local {
         int        numEdges;                // number of edges
         int[] edges = new int[1];           // variable sized, indexes into cm_edge_t list
 
-        private void clear() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public cm_polygon_s() {
+            this.bounds = new idBounds();
+            this.material = new idMaterial();
+            this.plane = new idPlane();
+        }
+
+        public void oSet(final cm_polygon_s p) {
+            this.bounds = new idBounds(p.bounds);
+            this.checkcount = p.checkcount;
+            this.contents = p.contents;
+            this.material = p.material;
+            this.plane = new idPlane(p.plane);
+            this.numEdges = p.numEdges;
+            this.edges[0] = p.edges[0];
         }
     }
 
 
-    static class cm_polygonRef_s {
+    public static class cm_polygonRef_s {
+        public static final int BYTES = cm_polygon_s.BYTES + Integer.BYTES;
 
         cm_polygon_s    p;                  // pointer to polygon
         cm_polygonRef_s next;               // next polygon in chain
+
+        public cm_polygonRef_s() {
+            this.p = new cm_polygon_s();
+        }
     }
 
 
@@ -276,27 +304,18 @@ public class CollisionModel_local {
     static class cm_brushBlock_s {
 
         int bytesRemaining;
-        int index;
-        //        byte[] next;
-        private cm_brush_s[] brushes;
-
-        public cm_brush_s current() {
-            return brushes[index];
-        }
-
-        public cm_brush_s next() {
-            bytesRemaining--;
-            return brushes[index++];
-        }
-
-        public cm_brush_s next(final Object value) {
-            --bytesRemaining;
-            return brushes[++index] = (cm_brush_s) value;
-        }
+        cm_brushBlock_s next;
     }
 
-
     static class cm_brush_s {
+        public static final int BYTES
+                = Integer.BYTES
+                + idBounds.BYTES
+                + Integer.BYTES
+                + Integer.BYTES
+                + Integer.BYTES
+                + Integer.BYTES
+                + idPlane.BYTES;
 
         int        checkcount;              // for multi-check avoidance
         idBounds   bounds;                  // brush bounds
@@ -306,6 +325,10 @@ public class CollisionModel_local {
         int        numPlanes;               // number of bounding planes
         idPlane[] planes = new idPlane[1];  // variable sized
 
+        public cm_brush_s() {
+            this.bounds = new idBounds();
+        }
+
         private void clear() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
@@ -314,6 +337,7 @@ public class CollisionModel_local {
     ;
 
     static class cm_brushRef_s {
+        public static final int BYTES = cm_brush_s.BYTES + Integer.BYTES;
 
         cm_brush_s    b;                    // pointer to brush
         cm_brushRef_s next;                 // next brush in chain
@@ -330,6 +354,13 @@ public class CollisionModel_local {
     ;
 
     static class cm_node_s {
+        public static final int BYTES
+                = Integer.BYTES
+                + Float.BYTES
+                + cm_polygonRef_s.BYTES
+                + cm_brushRef_s.BYTES
+                + Integer.BYTES
+                + Integer.BYTES;
 
         int             planeType;          // node axial plane type
         float           planeDist;          // node plane distance
@@ -345,7 +376,7 @@ public class CollisionModel_local {
 
         cm_node_s      nextNode;            // next node in block
         cm_nodeBlock_s next;                // next block with nodes
-    }
+        }
 
     ;
 
@@ -382,9 +413,18 @@ public class CollisionModel_local {
         int                  numRemovedPolys;
         int                  numMergedPolys;
         int                  usedMemory;
-    }
 
-    ;
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
+
+        cm_model_s() {
+            bounds = new idBounds();
+        }
+
+        private static cm_model_s[] generateArray(final int length) {
+            return Stream.generate(() -> new cm_model_s()).limit(length).toArray(cm_model_s[]::new);
+        }
+    }
 
     /*
      ===============================================================================
@@ -395,13 +435,21 @@ public class CollisionModel_local {
      */
     static class cm_trmVertex_s {
 
-        int        used;                    // true if this vertex is used for collision detection
-        idVec3     p;                       // vertex position
-        idVec3     endp;                    // end point of vertex after movement
-        int        polygonSide;             // side of polygon this vertex is on (rotational collision)
-        idPluecker pl;                      // pluecker coordinate for vertex movement
-        idVec3     rotationOrigin;          // rotation origin for this vertex
-        idBounds   rotationBounds;          // rotation bounds for this vertex
+      int        used;                    // true if this vertex is used for collision detection
+      idVec3     p;                       // vertex position
+      idVec3     endp;                    // end point of vertex after movement
+      int        polygonSide;             // side of polygon this vertex is on (rotational collision)
+      idPluecker pl;                      // pluecker coordinate for vertex movement
+      idVec3     rotationOrigin;          // rotation origin for this vertex
+      idBounds   rotationBounds;          // rotation bounds for this vertex
+
+        public cm_trmVertex_s() {
+            p = new idVec3();
+            endp = new idVec3();
+            pl = new idPluecker();
+            rotationOrigin = new idVec3();
+            rotationBounds = new idBounds();
+        }
     }
 
 
@@ -416,9 +464,16 @@ public class CollisionModel_local {
         idBounds   rotationBounds;          // rotation bounds for this edge
         idPluecker plzaxis;                 // pluecker coordinate for rotation about the z-axis
         short      bitNum;                  // vertex bit number
-    }
 
-    ;
+        public cm_trmEdge_s() {
+            this.start = new idVec3();
+            this.end = new idVec3();
+            this.pl = new idPluecker();
+            this.cross = new idVec3();
+            this.rotationBounds = new idBounds();
+            this.plzaxis =new idPluecker();
+        }
+    };
 
     static class cm_trmPolygon_s {
 
@@ -427,9 +482,12 @@ public class CollisionModel_local {
         int     numEdges;                   // number of edges
         int[] edges = new int[MAX_TRACEMODEL_POLYEDGES];// index into cm_sraceWork_s->edges
         idBounds rotationBounds;            // rotation bounds for this polygon
-    }
 
-    ;
+        public cm_trmPolygon_s() {
+            this.plane = new idPlane();
+            this.rotationBounds = new idBounds();
+        }
+    };
 
     static class cm_traceWork_s {
 
@@ -473,11 +531,31 @@ public class CollisionModel_local {
         float           maxDistFromHeartPlane1;
         idPlane         heartPlane2;
         float           maxDistFromHeartPlane2;
-        idPluecker[] polygonEdgePlueckerCache   = new idPluecker[CM_MAX_POLYGON_EDGES];
-        idPluecker[] polygonVertexPlueckerCache = new idPluecker[CM_MAX_POLYGON_EDGES];
-        idVec3[]     polygonRotationOriginCache = new idVec3[CM_MAX_POLYGON_EDGES];
-    }
+        idPluecker[]    polygonEdgePlueckerCache;
+        idPluecker[]    polygonVertexPlueckerCache;
+        idVec3[]        polygonRotationOriginCache;
 
+        public cm_traceWork_s() {
+            trace = new trace_s();
+            start = new idVec3();
+            end = new idVec3();
+            dir = new idVec3();
+            bounds = new idBounds();
+            size = new idBounds();
+            extents = new idVec3();
+
+            origin = new idVec3();
+            axis = new idVec3();
+            matrix = new idMat3();
+            modelVertexRotation = new idRotation();
+
+            heartPlane1 = new idPlane();
+            heartPlane2 = new idPlane();
+            this.polygonEdgePlueckerCache = Stream.generate(() -> new idPluecker()).limit(CM_MAX_POLYGON_EDGES).toArray(idPluecker[]::new);
+            this.polygonVertexPlueckerCache = Stream.generate(() -> new idPluecker()).limit(CM_MAX_POLYGON_EDGES).toArray(idPluecker[]::new);
+            this.polygonRotationOriginCache = Stream.generate(() -> new idVec3()).limit(CM_MAX_POLYGON_EDGES).toArray(idVec3[]::new);
+        }
+    }
 
     /*
      ===============================================================================
@@ -495,8 +573,6 @@ public class CollisionModel_local {
     ;
 
     public static class idCollisionModelManagerLocal extends idCollisionModelManager {
-
-        // collision map data
         private idStr        mapName;
         private long         mapFileTime;
         private boolean      loaded;
@@ -520,6 +596,10 @@ public class CollisionModel_local {
         private int             numContacts;
         //
         //
+
+        public idCollisionModelManagerLocal() {
+            this.mapName = new idStr();
+        }
 
         @Override// load collision models from a map file
         public void LoadMap(final idMapFile mapFile) {
@@ -546,7 +626,7 @@ public class CollisionModel_local {
             // models
             maxModels = MAX_SUBMODELS;
             numModels = 0;
-            models = new cm_model_s[maxModels + 1];// Mem_ClearedAlloc(maxModels + 1);
+            models = cm_model_s.generateArray(maxModels + 1);
 
             // setup hash to speed up finding shared vertices and edges
             SetupHash();
@@ -640,7 +720,7 @@ public class CollisionModel_local {
          ================
          */
         @Override// sets up a trace model for collision with other trace models
-        public int SetupTrmModel(final idTraceModel trm, final idMaterial material) {
+        public int SetupTrmModel(final idTraceModel trm, idMaterial material) {
             int i, j;
             cm_vertex_s vertex;
             cm_edge_s edge;
@@ -649,12 +729,11 @@ public class CollisionModel_local {
             traceModelVert_t trmVert;
             traceModelEdge_t trmEdge;
             traceModelPoly_t trmPoly;
-            int v_index = 0, e_index, p_index = 0;
 
             assert (models != null);
 
             if (material == null) {
-                material.oSet(trmMaterial);
+                material = trmMaterial;
             }
 
             model = models[MAX_SUBMODELS];
@@ -666,17 +745,17 @@ public class CollisionModel_local {
             }
             // vertices
             model.numVertices = trm.numVerts;
-            vertex = model.vertices[v_index];
-            trmVert = trm.verts[v_index];
-            for (i = 0; i < trm.numVerts; i++, vertex = model.vertices[++v_index], trmVert = trm.verts[v_index]) {
+            for (i = 0; i < trm.numVerts; i++) {
+                trmVert = trm.verts[i];
+                vertex = model.vertices[i];
                 vertex.p = trmVert;
                 vertex.sideSet = 0;
             }
             // edges
             model.numEdges = trm.numEdges;
-            edge = model.edges[e_index = 1];
-            trmEdge = trm.edges[e_index];
-            for (i = 0; i < trm.numEdges; i++, edge = model.edges[++e_index], trmEdge = trm.edges[e_index]) {
+            for (i = 0; i < trm.numEdges; i++) {
+                trmEdge = trm.edges[i + 1];
+                edge = model.edges[i + 1];
                 edge.vertexNum[0] = trmEdge.v[0];
                 edge.vertexNum[1] = trmEdge.v[1];
                 edge.normal = trmEdge.normal;
@@ -685,8 +764,8 @@ public class CollisionModel_local {
             }
             // polygons
             model.numPolygons = trm.numPolys;
-            trmPoly = trm.polys[p_index];
-            for (i = 0; i < trm.numPolys; i++, trmPoly = trm.polys[++p_index]) {
+            for (i = 0; i < trm.numPolys; i++) {
+                trmPoly = trm.polys[i];
                 poly = trmPolygons[i].p;
                 poly.numEdges = trmPoly.numEdges;
                 for (j = 0; j < trmPoly.numEdges; j++) {
@@ -713,7 +792,7 @@ public class CollisionModel_local {
                 model.node.brushes = trmBrushes[0];
             }
             // model bounds
-            model.bounds = trm.bounds;
+            model.bounds.oSet(trm.bounds);
             // convex
             model.isConvex = trm.isConvex;
 
@@ -824,7 +903,7 @@ public class CollisionModel_local {
         }
 
         private static int entered = 0;
-        private static cm_traceWork_s tw;
+        private static cm_traceWork_s tw = new cm_traceWork_s();
 
         @Override// translates a trm and reports the first collision if any
         public void Translation(trace_s[] results, final idVec3 start, final idVec3 end, final idTraceModel trm,
@@ -838,7 +917,6 @@ public class CollisionModel_local {
             cm_trmPolygon_s poly;
             cm_trmEdge_s edge;
             cm_trmVertex_s vert;
-            int p_index = 0, v_index, e_index;
 //	ALIGN16( static cm_traceWork_t tw );
 
 //	assert( ((byte *)&start) < ((byte *)results) || ((byte *)&start) >= (((byte *)results) + sizeof( trace_t )) );
@@ -892,9 +970,9 @@ public class CollisionModel_local {
             tw.maxContacts = this.maxContacts;
             tw.numContacts = 0;
             tw.model = this.models[model];
-            tw.start = start.oMinus(modelOrigin);
-            tw.end = end.oMinus(modelOrigin);
-            tw.dir = end.oMinus(start);
+            tw.start.oSet(start.oMinus(modelOrigin));
+            tw.end.oSet(end.oMinus(modelOrigin));
+            tw.dir.oSet(end.oMinus(start));
 
             model_rotated = modelAxis.IsRotated();
             if (model_rotated) {
@@ -933,8 +1011,8 @@ public class CollisionModel_local {
                 tw.maxDistFromHeartPlane2 = CM_BOX_EPSILON;
                 // collision with single point
                 tw.numVerts = 1;
-                tw.vertices[0].p = tw.start;
-                tw.vertices[0].endp = tw.vertices[0].p.oPlus(tw.dir);
+                tw.vertices[0].p.oSet(tw.start);
+                tw.vertices[0].endp.oSet(tw.vertices[0].p.oPlus(tw.dir));
                 tw.vertices[0].pl.FromRay(tw.vertices[0].p, tw.dir);
                 tw.numEdges = tw.numPolys = 0;
                 tw.pointTrace = true;
@@ -942,8 +1020,8 @@ public class CollisionModel_local {
                 this.TraceThroughModel(tw);
                 // store results
                 results[0] = tw.trace;
-                results[0].endpos = start.oPlus(end.oMinus(start).oMultiply(results[0].fraction));
-                results[0].endAxis = mat3_identity;
+                results[0].endpos.oSet(start.oPlus(end.oMinus(start).oMultiply(results[0].fraction)));
+                results[0].endAxis.oSet(getMat3_identity());
 
                 if (results[0].fraction < 1.0f) {
                     // rotate trace plane normal if there was a collision with a rotated model
@@ -961,11 +1039,11 @@ public class CollisionModel_local {
             // the trace fraction is too inaccurate to describe translations over huge distances
             if (tw.dir.LengthSqr() > Square(CM_MAX_TRACE_DIST)) {
                 results[0].fraction = 0.0f;
-                results[0].endpos = start;
-                results[0].endAxis = trmAxis;
-                results[0].c.normal = vec3_origin;
+                results[0].endpos.oSet(start);
+                results[0].endAxis.oSet(trmAxis);
+                results[0].c.normal.oSet(getVec3_origin());
                 results[0].c.material = null;
-                results[0].c.point = start;
+                results[0].c.point.oSet(start);
                 if (session.rw != null) {
                     session.rw.DebugArrow(colorRed, start, end, 1);
                 }
@@ -1018,22 +1096,26 @@ public class CollisionModel_local {
             // rotate trm polygon planes
             if (trm_rotated & model_rotated) {
                 tmpAxis = trmAxis.oMultiply(invModelAxis);
-                for (i = 0, poly = tw.polys[p_index = 0]; i < tw.numPolys; i++, poly = tw.polys[++p_index]) {
+                for (i = 0; i < tw.numPolys; i++) {
 //		for ( poly = tw.polys, i = 0; i < tw.numPolys; i++, poly++ ) {
+                    poly = tw.polys[i];
                     poly.plane.oMulSet(tmpAxis);
                 }
             } else if (trm_rotated) {
-                for (i = 0, poly = tw.polys[p_index = 0]; i < tw.numPolys; i++, poly = tw.polys[++p_index]) {
+                for (i = 0; i < tw.numPolys; i++) {
+                    poly = tw.polys[i];
                     poly.plane.oMulSet(trmAxis);
                 }
             } else if (model_rotated) {
-                for (i = 0, poly = tw.polys[p_index = 0]; i < tw.numPolys; i++, poly = tw.polys[++p_index]) {
+                for (i = 0; i < tw.numPolys; i++) {
+                    poly = tw.polys[i];
                     poly.plane.oMulSet(invModelAxis);
                 }
             }
 
             // setup trm polygons
-            for (i = 0, poly = tw.polys[p_index]; i < tw.numPolys; i++, poly = tw.polys[++p_index]) {
+            for (i = 0; i < tw.numPolys; i++) {
+                poly = tw.polys[i];
                 // if the trm poly plane is facing in the movement direction
                 dist = poly.plane.Normal().oMultiply(tw.dir);
                 if (dist > 0.0f || (!trm.isConvex && dist == 0.0f)) {
@@ -1049,26 +1131,28 @@ public class CollisionModel_local {
             }
 
             // setup trm vertices
-            for (vert = tw.vertices[v_index = 0], i = 0; i < tw.numVerts; i++, vert = tw.vertices[v_index++]) {
+            for (i = 0; i < tw.numVerts; i++) {
+                vert = tw.vertices[i];
                 if (0 == vert.used) {
                     continue;
                 }
                 // get axial trm size after rotations
                 tw.size.AddPoint(vert.p.oMinus(tw.start));
                 // calculate the end position of each vertex for a full trace
-                vert.endp = vert.p.oPlus(tw.dir);
+                vert.endp.oSet(vert.p.oPlus(tw.dir));
                 // pluecker coordinate for vertex movement line
                 vert.pl.FromRay(vert.p, tw.dir);
             }
 
             // setup trm edges
-            for (edge = tw.edges[e_index = 1], i = 1; i <= tw.numEdges; i++, edge = tw.edges[e_index++]) {
+            for (i = 1; i < tw.numEdges; i++) {
+                edge = tw.edges[i];
                 if (0 == edge.used) {
                     continue;
                 }
                 // edge start, end and pluecker coordinate
-                edge.start = tw.vertices[edge.vertexNum[0]].p;
-                edge.end = tw.vertices[edge.vertexNum[1]].p;
+                edge.start.oSet(tw.vertices[edge.vertexNum[0]].p);
+                edge.end.oSet(tw.vertices[edge.vertexNum[1]].p);
                 edge.pl.FromLine(edge.start, edge.end);
                 // calculate normal of plane through movement plane created by the edge
                 dir = edge.start.oMinus(edge.end);
@@ -1080,7 +1164,8 @@ public class CollisionModel_local {
             }
 
             // set trm plane distances
-            for (poly = tw.polys[p_index], i = 0; i < tw.numPolys; i++, poly = tw.polys[p_index++]) {
+            for (i = 0; i < tw.numPolys; i++) {
+                poly = tw.polys[i];
                 if (poly.used != 0) {
                     poly.plane.FitThroughPoint(tw.edges[Math.abs(poly.edges[0])].start);
                 }
@@ -1108,7 +1193,8 @@ public class CollisionModel_local {
             tw.maxDistFromHeartPlane2 = 0;
             // calculate maximum trm vertex distance from both heart planes
 //	for ( vert = tw.vertices, i = 0; i < tw.numVerts; i++, vert++ ) {
-            for (vert = tw.vertices[v_index], i = 0; i < tw.numVerts; i++, vert = tw.vertices[v_index++]) {
+            for (i = 0; i < tw.numVerts; i++) {
+                vert = tw.vertices[i];
                 if (0 == vert.used) {
                     continue;
                 }
@@ -1137,7 +1223,7 @@ public class CollisionModel_local {
                         tw.contacts[i].point.oMulSet(modelAxis);
                     }
                 }
-                if (modelOrigin != vec3_origin) {
+                if (modelOrigin != getVec3_origin()) {
                     for (i = 0; i < tw.numContacts; i++) {
                         tw.contacts[i].point.oPluSet(modelOrigin);
                         tw.contacts[i].dist += modelOrigin.oMultiply(tw.contacts[i].normal);
@@ -1147,8 +1233,8 @@ public class CollisionModel_local {
             } else {
                 // store results
                 results[0] = tw.trace;
-                results[0].endpos = start.oPlus(end.oMinus(start)).oMultiply(results[0].fraction);
-                results[0].endAxis = trmAxis;
+                results[0].endpos.oSet(start.oPlus(end.oMinus(start)).oMultiply(results[0].fraction));
+                results[0].endAxis.oSet(trmAxis);
 
                 if (results[0].fraction < 1.0f) {
                     // if the fraction is tiny the actual movement could end up zero
@@ -1193,8 +1279,7 @@ public class CollisionModel_local {
 
 //	assert( ((byte *)&start) < ((byte *)results) || ((byte *)&start) > (((byte *)results) + sizeof( trace_t )) );
 //	assert( ((byte *)&trmAxis) < ((byte *)results) || ((byte *)&trmAxis) > (((byte *)results) + sizeof( trace_t )) );
-//	memset( results, 0, sizeof( *results ) );
-            Arrays.fill(results, 0);
+            results[0] = new trace_s();//memset( results, 0, sizeof( *results ) );
 
             // if special position test
             if (rotation.GetAngle() == 0.0f) {
@@ -1267,7 +1352,7 @@ public class CollisionModel_local {
         @Override// returns the contents the trm is stuck in or 0 if the trm is in free space
         public int Contents(final idVec3 start, final idTraceModel trm, final idMat3 trmAxis,
                 int contentMask, int model, final idVec3 modelOrigin, final idMat3 modelAxis) {
-            trace_s[] results = new trace_s[1];
+            trace_s[] results = {new trace_s()};
 
             if (model < 0 || model > this.maxModels || model > MAX_SUBMODELS) {
                 common.Printf("idCollisionModelManagerLocal::Contents: invalid model handle\n");
@@ -1413,7 +1498,7 @@ public class CollisionModel_local {
             timer.Clear();
             timer.Start();
             for (i = 0; i < cm_testTimes.GetInteger(); i++) {
-                Translation(trace, start, testend[i], itm, boxAxis, CONTENTS_SOLID | CONTENTS_PLAYERCLIP, cm_testModel.GetInteger(), vec3_origin, modelAxis);
+                Translation(trace, start, testend[i], itm, boxAxis, CONTENTS_SOLID | CONTENTS_PLAYERCLIP, cm_testModel.GetInteger(), getVec3_origin(), modelAxis);
             }
             timer.Stop();
             t = (int) timer.Milliseconds();
@@ -1453,13 +1538,13 @@ public class CollisionModel_local {
                 // rotational collision detection
                 idVec3 vec = new idVec3(random.CRandomFloat(), random.CRandomFloat(), random.RandomFloat());
                 vec.Normalize();
-                idRotation rotation = new idRotation(vec3_origin, vec, cm_testAngle.GetFloat());
+                idRotation rotation = new idRotation(getVec3_origin(), vec, cm_testAngle.GetFloat());
 
                 timer.Clear();
                 timer.Start();
                 for (i = 0; i < cm_testTimes.GetInteger(); i++) {
                     rotation.SetOrigin(testend[i]);
-                    Rotation(trace, start, rotation, itm, boxAxis, CONTENTS_SOLID | CONTENTS_PLAYERCLIP, cm_testModel.GetInteger(), vec3_origin, modelAxis);
+                    Rotation(trace, start, rotation, itm, boxAxis, CONTENTS_SOLID | CONTENTS_PLAYERCLIP, cm_testModel.GetInteger(), getVec3_origin(), modelAxis);
                 }
                 timer.Stop();
                 t = (int) timer.Milliseconds();
@@ -1799,20 +1884,20 @@ public class CollisionModel_local {
                     // create plane with normal vector orthogonal to both the polygon edge and the trm edge
                     start = tw.model.vertices[edge.vertexNum[0]].p;
                     end = tw.model.vertices[edge.vertexNum[1]].p;
-                    tw.trace.c.normal = (end.oMinus(start)).Cross(trmEdge.end.oMinus(trmEdge.start));
+                    tw.trace.c.normal.oSet((end.oMinus(start)).Cross(trmEdge.end.oMinus(trmEdge.start)));
                     // FIXME: do this normalize when we know the first collision
                     tw.trace.c.normal.Normalize();
                     tw.trace.c.dist = tw.trace.c.normal.oMultiply(start);
                     // make sure the collision plane faces the trace model
                     if (tw.trace.c.normal.oMultiply(trmEdge.start) - tw.trace.c.dist < 0.0f) {
-                        tw.trace.c.normal = tw.trace.c.normal.oNegative();
+                        tw.trace.c.normal.oSet(tw.trace.c.normal.oNegative());
                         tw.trace.c.dist = -tw.trace.c.dist;
                     }
                     tw.trace.c.contents = poly.contents;
                     tw.trace.c.material = poly.material;
                     tw.trace.c.type = CONTACT_EDGE;
                     tw.trace.c.modelFeature = edgeNum;
-                    tw.trace.c.trmFeature = Arrays.binarySearch(tw.edges, trmEdge);
+                    tw.trace.c.trmFeature = Arrays.asList(tw.edges).indexOf(trmEdge);
                     // calculate collision point
                     normal.oSet(0, trmEdge.cross.oGet(2));
                     normal.oSet(1, -trmEdge.cross.oGet(1));
@@ -1822,7 +1907,7 @@ public class CollisionModel_local {
                     d2 = normal.oMultiply(end) - dist;
                     f1[0] = d1 / (d1 - d2);
                     //assert( f1 >= 0.0f && f1 <= 1.0f );
-                    tw.trace.c.point = start.oPlus(end.oMinus(start).oMultiply(f1[0]));
+                    tw.trace.c.point.oSet(start.oPlus(end.oMinus(start).oMultiply(f1[0])));
                     // if retrieving contacts
                     if (tw.getContacts) {
                         CM_AddContact(tw);
@@ -1852,14 +1937,14 @@ public class CollisionModel_local {
                 }
                 tw.trace.fraction = f;
                 // collision plane is the polygon plane
-                tw.trace.c.normal = poly.plane.Normal();
+                tw.trace.c.normal.oSet(poly.plane.Normal());
                 tw.trace.c.dist = poly.plane.Dist();
                 tw.trace.c.contents = poly.contents;
                 tw.trace.c.material = poly.material;
                 tw.trace.c.type = CONTACT_TRMVERTEX;
                 //tw.trace.c.modelFeature =  * reinterpret_cast < int * > ( & poly);
-                tw.trace.c.trmFeature = Arrays.binarySearch(tw.vertices, v);
-                tw.trace.c.point = v.p.oPlus((v.endp.oMinus(v.p)).oMultiply(tw.trace.fraction));
+                tw.trace.c.trmFeature = Arrays.asList(tw.vertices).indexOf(v);
+                tw.trace.c.point.oSet(v.p.oPlus((v.endp.oMinus(v.p)).oMultiply(tw.trace.fraction)));
                 // if retrieving contacts
                 if (tw.getContacts) {
                     CM_AddContact(tw);
@@ -1900,14 +1985,14 @@ public class CollisionModel_local {
                 }
                 tw.trace.fraction = f;
                 // collision plane is the polygon plane
-                tw.trace.c.normal = poly.plane.Normal();
+                tw.trace.c.normal.oSet(poly.plane.Normal());
                 tw.trace.c.dist = poly.plane.Dist();
                 tw.trace.c.contents = poly.contents;
                 tw.trace.c.material = poly.material;
                 tw.trace.c.type = CONTACT_TRMVERTEX;
                 //                tw.trace.c.modelFeature =  * reinterpret_cast < int * > ( & poly);
-                tw.trace.c.trmFeature = Arrays.binarySearch(tw.vertices, v);
-                tw.trace.c.point = v.p.oPlus((v.endp.oMinus(v.p)).oMultiply(tw.trace.fraction));
+                tw.trace.c.trmFeature = Arrays.asList(tw.vertices).indexOf(v);
+                tw.trace.c.point.oSet(v.p.oPlus((v.endp.oMinus(v.p)).oMultiply(tw.trace.fraction)));
                 // if retrieving contacts
                 if (tw.getContacts) {
                     CM_AddContact(tw);
@@ -1939,14 +2024,14 @@ public class CollisionModel_local {
                 }
                 tw.trace.fraction = f;
                 // collision plane is the inverse trm polygon plane
-                tw.trace.c.normal = trmpoly.plane.Normal().oNegative();
+                tw.trace.c.normal.oSet(trmpoly.plane.Normal().oNegative());
                 tw.trace.c.dist = -trmpoly.plane.Dist();
                 tw.trace.c.contents = poly.contents;
                 tw.trace.c.material = poly.material;
                 tw.trace.c.type = CONTACT_MODELVERTEX;
                 //                tw.trace.c.modelFeature =  * reinterpret_cast < int * > ( & poly);
-                tw.trace.c.trmFeature = Arrays.binarySearch(tw.vertices, v);
-                tw.trace.c.point = v.p.oPlus((endp.oMinus(v.p)).oMultiply(tw.trace.fraction));
+                tw.trace.c.trmFeature = Arrays.asList(tw.vertices).indexOf(v);
+                tw.trace.c.point.oSet(v.p.oPlus((endp.oMinus(v.p)).oMultiply(tw.trace.fraction)));
                 // if retrieving contacts
                 if (tw.getContacts) {
                     CM_AddContact(tw);
@@ -2131,7 +2216,7 @@ public class CollisionModel_local {
             idVec3 dir, normal1 = new idVec3(), normal2 = new idVec3();
 
             // calculate trace heart planes
-            dir = tw.dir;
+            dir = new idVec3(tw.dir);
             dir.Normalize();
             dir.NormalVectors(normal1, normal2);
             tw.heartPlane1.SetNormal(normal1);
@@ -2146,12 +2231,14 @@ public class CollisionModel_local {
             // vertices
             tw.numVerts = trm.numVerts;
             for (i = 0; i < trm.numVerts; i++) {
-                tw.vertices[i].p = trm.verts[i];
+                tw.vertices[i] = new cm_trmVertex_s();
+                tw.vertices[i].p.oSet(trm.verts[i]);
                 tw.vertices[i].used = 0;//false;
             }
             // edges
             tw.numEdges = trm.numEdges;
             for (i = 1; i <= trm.numEdges; i++) {
+                tw.edges[i] = new cm_trmEdge_s();
                 tw.edges[i].vertexNum[0] = trm.edges[i].v[0];
                 tw.edges[i].vertexNum[1] = trm.edges[i].v[1];
                 tw.edges[i].used = 0;//false;
@@ -2159,6 +2246,7 @@ public class CollisionModel_local {
             // polygons
             tw.numPolys = trm.numPolys;
             for (i = 0; i < trm.numPolys; i++) {
+                tw.polys[i] = new cm_trmPolygon_s();
                 tw.polys[i].numEdges = trm.polys[i].numEdges;
                 for (j = 0; j < trm.polys[i].numEdges; j++) {
                     tw.polys[i].edges[j] = trm.polys[i].edges[j];
@@ -2642,20 +2730,20 @@ public class CollisionModel_local {
 
                 // fill in trace structure
                 tw.maxTan = idMath.Fabs(tanHalfAngle[0]);
-                tw.trace.c.normal = collisionNormal;
+                tw.trace.c.normal.oSet(collisionNormal);
                 tw.trace.c.normal.Normalize();
                 tw.trace.c.dist = tw.trace.c.normal.oMultiply(v1.p);
                 // make sure the collision plane faces the trace model
                 if ((tw.trace.c.normal.oMultiply(trmEdge.start)) - tw.trace.c.dist < 0) {
-                    tw.trace.c.normal = tw.trace.c.normal.oNegative();
+                    tw.trace.c.normal.oSet(tw.trace.c.normal.oNegative());
                     tw.trace.c.dist = -tw.trace.c.dist;
                 }
                 tw.trace.c.contents = poly.contents;
                 tw.trace.c.material = poly.material;
                 tw.trace.c.type = CONTACT_EDGE;
                 tw.trace.c.modelFeature = edgeNum;
-                tw.trace.c.trmFeature = Arrays.binarySearch(tw.edges, trmEdge);
-                tw.trace.c.point = collisionPoint;
+                tw.trace.c.trmFeature = Arrays.asList(tw.edges).indexOf(trmEdge);
+                tw.trace.c.point.oSet(collisionPoint);
                 // if no collision can be closer
                 if (tw.maxTan == 0.0f) {
                     break;
@@ -2992,14 +3080,14 @@ public class CollisionModel_local {
                 }
                 tw.maxTan = idMath.Fabs(tanHalfAngle[0]);
                 // collision plane is the polygon plane
-                tw.trace.c.normal = poly.plane.Normal();
+                tw.trace.c.normal.oSet(poly.plane.Normal());
                 tw.trace.c.dist = poly.plane.Dist();
                 tw.trace.c.contents = poly.contents;
                 tw.trace.c.material = poly.material;
                 tw.trace.c.type = CONTACT_TRMVERTEX;
-                tw.trace.c.modelFeature = reinterpret_cast_int(poly);
-                tw.trace.c.trmFeature = Arrays.binarySearch(tw.vertices, v);//TODO:pointer subtraction
-                tw.trace.c.point = collisionPoint;
+                tw.trace.c.modelFeature = vertexNum;
+                tw.trace.c.trmFeature = Arrays.asList(tw.vertices).indexOf(v);
+                tw.trace.c.point.oSet(collisionPoint);
             }
         }
 
@@ -3054,14 +3142,14 @@ public class CollisionModel_local {
                 }
                 tw.maxTan = idMath.Fabs(tanHalfAngle[0]);
                 // collision plane is the flipped trm polygon plane
-                tw.trace.c.normal = trmpoly.plane.Normal().oNegative();
+                tw.trace.c.normal.oSet(trmpoly.plane.Normal().oNegative());
                 tw.trace.c.dist = tw.trace.c.normal.oMultiply(v.p);
                 tw.trace.c.contents = poly.contents;
                 tw.trace.c.material = poly.material;
                 tw.trace.c.type = CONTACT_MODELVERTEX;
-                tw.trace.c.modelFeature = Arrays.binarySearch(tw.model.vertices, v);
-                tw.trace.c.trmFeature = Arrays.binarySearch(tw.polys, trmpoly);
-                tw.trace.c.point = v.p;
+                tw.trace.c.modelFeature = Arrays.asList(tw.model.vertices).indexOf(v);
+                tw.trace.c.trmFeature = Arrays.asList(tw.polys).indexOf(trmpoly);
+                tw.trace.c.point.oSet(v.p);
             }
         }
 
@@ -3259,8 +3347,8 @@ public class CollisionModel_local {
                 bounds.oGet(1).oPluSet(i, CM_BOX_EPSILON);
             }
         }
-        static cm_traceWork_s tw1;
 
+        private static cm_traceWork_s tw1 = new cm_traceWork_s();
         private void Rotation180(trace_s[] results, final idVec3 rorg, final idVec3 axis,
                 final float startAngle, final float endAngle, final idVec3 start,
                 final idTraceModel trm, final idMat3 trmAxis, int contentMask,
@@ -3302,14 +3390,14 @@ public class CollisionModel_local {
             assert (tw1.angle > -180.0f && tw1.angle < 180.0f);
             tw1.maxTan = initialTan = idMath.Fabs((float) Math.tan((idMath.PI / 360.0f) * tw1.angle));
             tw1.model = this.models[model];
-            tw1.start = start.oMinus(modelOrigin);
+            tw1.start.oSet(start.oMinus(modelOrigin));
             // rotation axis, axis is assumed to be normalized
-            tw1.axis = axis;
+            tw1.axis.oSet(axis);
             assert (tw1.axis.oGet(0) * tw1.axis.oGet(0) + tw1.axis.oGet(1) * tw1.axis.oGet(1) + tw1.axis.oGet(2) * tw1.axis.oGet(2) > 0.99f);
             // rotation origin projected into rotation plane through tw.start
-            tw1.origin = rorg.oMinus(modelOrigin);
+            tw1.origin.oSet(rorg.oMinus(modelOrigin));
             d = (tw1.axis.oMultiply(tw1.origin)) - (tw1.axis.oMultiply(tw1.start));
-            tw1.origin = tw1.origin.oMinus(tw1.axis.oMultiply(d));
+            tw1.origin.oSet(tw1.origin.oMinus(tw1.axis.oMultiply(d)));
             // radius of rotation
             tw1.radius = (tw1.start.oMinus(tw1.origin)).Length();
             // maximum error of the circle approximation traced through the axial BSP tree
@@ -3352,7 +3440,7 @@ public class CollisionModel_local {
                     // rotate trace instead of model
                     tw1.start.oMulSet(invModelAxis);
                 }
-                tw1.end = tw1.start;
+                tw1.end.oSet(tw1.start);
                 // if we start at a specific angle
                 if (startAngle != 0.0f) {
                     startRotation.RotatePoint(tw1.start);
@@ -3362,13 +3450,13 @@ public class CollisionModel_local {
 
                 // calculate rotation origin projected into rotation plane through the vertex
                 tw1.numVerts = 1;
-                tw1.vertices[0].p = tw1.start;
-                tw1.vertices[0].endp = tw1.end;
+                tw1.vertices[0].p.oSet(tw1.start);
+                tw1.vertices[0].endp.oSet(tw1.end);
                 tw1.vertices[0].used = 1;//true;
-                tw1.vertices[0].rotationOrigin = tw1.origin.oPlus(tw1.axis.oMultiply(tw1.axis.oMultiply(tw1.vertices[0].p.oMinus(tw1.origin))));
+                tw1.vertices[0].rotationOrigin.oSet(tw1.origin.oPlus(tw1.axis.oMultiply(tw1.axis.oMultiply(tw1.vertices[0].p.oMinus(tw1.origin)))));
                 BoundsForRotation(tw1.vertices[0].rotationOrigin, tw1.axis, tw1.start, tw1.end, tw1.vertices[0].rotationBounds);
                 // rotation bounds
-                tw1.bounds = tw1.vertices[0].rotationBounds;
+                tw1.bounds.oSet(tw1.vertices[0].rotationBounds);
                 tw1.numEdges = tw1.numPolys = 0;
 
                 // collision with single point
@@ -3387,7 +3475,7 @@ public class CollisionModel_local {
 
                 // store results
                 results[0] = tw1.trace;
-                results[0].endpos = start;
+                results[0].endpos.oSet(start);
                 if (tw1.maxTan == initialTan) {
                     results[0].fraction = 1.0f;
                 } else {
@@ -3434,7 +3522,7 @@ public class CollisionModel_local {
                 }
             }
             for (i = 0; i < tw1.numVerts; i++) {
-                tw1.vertices[i].endp = tw1.vertices[i].p;
+                tw1.vertices[i].endp.oSet(tw1.vertices[i].p);
             }
             // if we start at a specific angle
             if (startAngle != 0.0f) {
@@ -3458,7 +3546,7 @@ public class CollisionModel_local {
                 // rotate trace instead of model
                 tw1.start.oMulSet(invModelAxis);
             }
-            tw1.end = tw1.start;
+            tw1.end.oSet(tw1.start);
             // if we start at a specific angle
             if (startAngle != 0.0f) {
                 startRotation.RotatePoint(tw1.start);
@@ -3467,9 +3555,10 @@ public class CollisionModel_local {
             endRotation.RotatePoint(tw1.end);
 
             // setup trm vertices
-            for (vert = tw1.vertices[v_index = 0], i = 0; i < tw1.numVerts; i++, vert = tw1.vertices[++v_index]) {
+            for (i = 0; i < tw1.numVerts; i++) {
+                vert = tw1.vertices[i];
                 // calculate rotation origin projected into rotation plane through the vertex
-                vert.rotationOrigin = tw1.origin.oPlus(tw1.axis.oMultiply(tw1.axis.oMultiply(vert.p.oMinus(tw1.origin))));
+                vert.rotationOrigin.oSet(tw1.origin.oPlus(tw1.axis.oMultiply(tw1.axis.oMultiply(vert.p.oMinus(tw1.origin)))));
                 // calculate rotation bounds for this vertex
                 BoundsForRotation(vert.rotationOrigin, tw1.axis, vert.p, vert.endp, vert.rotationBounds);
                 // if the rotation axis goes through the vertex then the vertex is not used
@@ -3480,21 +3569,22 @@ public class CollisionModel_local {
             }
 
             // setup trm edges
-            for (edge = tw1.edges[e_index = 1], i = 1; i <= tw1.numEdges; i++, edge = tw1.edges[++e_index]) {
+            for (i = 1; i <= tw1.numEdges; i++) {
+                edge = tw1.edges[i];
                 // if the rotation axis goes through both the edge vertices then the edge is not used
                 if ((tw1.vertices[edge.vertexNum[0]].used | tw1.vertices[edge.vertexNum[1]].used) != 0) {
                     edge.used = 1;//true;
                 }
                 // edge start, end and pluecker coordinate
-                edge.start = tw1.vertices[edge.vertexNum[0]].p;
-                edge.end = tw1.vertices[edge.vertexNum[1]].p;
+                edge.start.oSet(tw1.vertices[edge.vertexNum[0]].p);
+                edge.end.oSet(tw1.vertices[edge.vertexNum[1]].p);
                 edge.pl.FromLine(edge.start, edge.end);
                 // pluecker coordinate for edge being rotated about the z-axis
                 at = (edge.start.oMinus(tw1.origin)).oMultiply(tw1.matrix);
                 bt = (edge.end.oMinus(tw1.origin)).oMultiply(tw1.matrix);
                 edge.plzaxis.FromLine(at, bt);
                 // get edge rotation bounds from the rotation bounds of both vertices
-                edge.rotationBounds = tw1.vertices[edge.vertexNum[0]].rotationBounds;
+                edge.rotationBounds.oSet(tw1.vertices[edge.vertexNum[0]].rotationBounds);
                 edge.rotationBounds.AddBounds(tw1.vertices[edge.vertexNum[1]].rotationBounds);
                 // used to calculate if the rotation axis intersects the trm
                 edge.bitNum = 0;
@@ -3505,21 +3595,22 @@ public class CollisionModel_local {
             // rotate trm polygon planes
             if (trm_rotated & model_rotated) {
                 tmpAxis = trmAxis.oMultiply(invModelAxis);
-                for (poly = tw1.polys[p_index], i = 0; i < tw1.numPolys; i++, poly = tw1.polys[++p_index]) {
-                    poly.plane.oMulSet(tmpAxis);
+                for ( i = 0; i < tw1.numPolys; i++) {
+                    tw1.polys[i].plane.oMulSet(tmpAxis);
                 }
             } else if (trm_rotated) {
-                for (poly = tw1.polys[p_index], i = 0; i < tw1.numPolys; i++, poly = tw1.polys[++p_index]) {
-                    poly.plane.oMulSet(trmAxis);
+                for (i = 0; i < tw1.numPolys; i++) {
+                    tw1.polys[i].plane.oMulSet(trmAxis);
                 }
             } else if (model_rotated) {
-                for (poly = tw1.polys[p_index], i = 0; i < tw1.numPolys; i++, poly = tw1.polys[++p_index]) {
-                    poly.plane.oMulSet(invModelAxis);
+                for (i = 0; i < tw1.numPolys; i++) {
+                    tw1.polys[i].plane.oMulSet(invModelAxis);
                 }
             }
 
             // setup trm polygons
-            for (poly = tw1.polys[p_index], i = 0; i < tw1.numPolys; i++, poly = tw1.polys[++p_index]) {
+            for (i = 0; i < tw1.numPolys; i++) {
+                poly = tw1.polys[i];
                 poly.used = 1;//true;
                 // set trm polygon plane distance
                 poly.plane.FitThroughPoint(tw1.edges[Math.abs(poly.edges[0])].start);
@@ -3597,7 +3688,7 @@ public class CollisionModel_local {
 
             // store results
             results[0] = tw1.trace;
-            results[0].endpos = start;
+            results[0].endpos.oSet(start);
             if (tw1.maxTan == initialTan) {
                 results[0].fraction = 1.0f;
             } else {
@@ -3606,7 +3697,7 @@ public class CollisionModel_local {
             assert (results[0].fraction <= 1.0f);
             endRotation.Set(rorg, axis, startAngle + (endAngle - startAngle) * results[0].fraction);
             endRotation.RotatePoint(results[0].endpos);
-            results[0].endAxis = trmAxis.oMultiply(endRotation.ToMat3());
+            results[0].endAxis.oSet(trmAxis.oMultiply(endRotation.ToMat3()));
 
             if (results[0].fraction < 1.0f) {
                 // rotate trace plane normal if there was a collision with a rotated model
@@ -3679,11 +3770,11 @@ public class CollisionModel_local {
                 if (i >= b.numPlanes) {
                     tw.trace.fraction = 0.0f;
                     tw.trace.c.type = CONTACT_TRMVERTEX;
-                    tw.trace.c.normal = b.planes[bestPlane].Normal();
+                    tw.trace.c.normal.oSet(b.planes[bestPlane].Normal());
                     tw.trace.c.dist = b.planes[bestPlane].Dist();
                     tw.trace.c.contents = b.contents;
                     tw.trace.c.material = b.material;
-                    tw.trace.c.point = p;
+                    tw.trace.c.point.oSet(p);
                     tw.trace.c.modelFeature = 0;
                     tw.trace.c.trmFeature = j;
                     return true;
@@ -3699,7 +3790,7 @@ public class CollisionModel_local {
          returns true if the trm intersects the polygon
          ================
          */
-        private boolean TestTrmInPolygon(cm_traceWork_s tw, cm_polygon_s p) {
+        private boolean TestTrmInPolygon(cm_traceWork_s tw, cm_polygon_s p, final int modelFeature) {
             int i, j, k, edgeNum, flip, trmEdgeNum, bitNum, bestPlane;
             int[] sides = new int[MAX_TRACEMODEL_VERTS];
             float d, bestd;
@@ -3769,11 +3860,11 @@ public class CollisionModel_local {
                         if (k >= tw.numPolys) {
                             tw.trace.fraction = 0.0f;
                             tw.trace.c.type = CONTACT_MODELVERTEX;
-                            tw.trace.c.normal = tw.polys[bestPlane].plane.Normal().oNegative();
+                            tw.trace.c.normal.oSet(tw.polys[bestPlane].plane.Normal().oNegative());
                             tw.trace.c.dist = -tw.polys[bestPlane].plane.Dist();
                             tw.trace.c.contents = p.contents;
                             tw.trace.c.material = p.material;
-                            tw.trace.c.point = v.p;
+                            tw.trace.c.point.oSet(v.p);
                             tw.trace.c.modelFeature = edge.vertexNum[j];
                             tw.trace.c.trmFeature = 0;
                             return true;
@@ -3843,12 +3934,12 @@ public class CollisionModel_local {
                 if (j >= p.numEdges) {
                     tw.trace.fraction = 0.0f;
                     tw.trace.c.type = CONTACT_EDGE;
-                    tw.trace.c.normal = p.plane.Normal();
+                    tw.trace.c.normal.oSet(p.plane.Normal());
                     tw.trace.c.dist = p.plane.Dist();
                     tw.trace.c.contents = p.contents;
                     tw.trace.c.material = p.material;
-                    tw.trace.c.point = tw.vertices[tw.edges[i].vertexNum[/*!flip*/0 == flip ? 1 : 0]].p;
-                    tw.trace.c.modelFeature = reinterpret_cast_int(p);
+                    tw.trace.c.point.oSet(tw.vertices[tw.edges[i].vertexNum[0 == flip ? 1 : 0]].p);
+                    tw.trace.c.modelFeature = modelFeature;
                     tw.trace.c.trmFeature = i;
                     return true;
                 }
@@ -3920,11 +4011,11 @@ public class CollisionModel_local {
                     if (k >= tw.polys[j].numEdges) {
                         tw.trace.fraction = 0.0f;
                         tw.trace.c.type = CONTACT_EDGE;
-                        tw.trace.c.normal = tw.polys[j].plane.Normal().oNegative();
+                        tw.trace.c.normal.oSet(tw.polys[j].plane.Normal().oNegative());
                         tw.trace.c.dist = -tw.polys[j].plane.Dist();
                         tw.trace.c.contents = p.contents;
                         tw.trace.c.material = p.material;
-                        tw.trace.c.point = tw.model.vertices[edge.vertexNum[0 == flip ? 1 : 0]].p;
+                        tw.trace.c.point.oSet(tw.model.vertices[edge.vertexNum[0 == flip ? 1 : 0]].p);
                         tw.trace.c.modelFeature = edgeNum;
                         tw.trace.c.trmFeature = j;
                         return true;
@@ -3956,7 +4047,6 @@ public class CollisionModel_local {
             cm_node_s node;
             cm_brushRef_s bref;
             cm_brush_s b;
-            idPlane plane;
 
             node = this.PointNode(p, this.models[model]);
             for (bref = node.brushes; bref != null; bref = bref.next) {
@@ -3974,8 +4064,8 @@ public class CollisionModel_local {
                     continue;
                 }
                 // test if the point is inside the brush
-                for (plane = b.planes[i = 0]; i < b.numPlanes; plane = b.planes[++i]) {
-                    d = plane.Distance(p);
+                for (i = 0; i < b.numPlanes; i++) {
+                    d = b.planes[i].Distance(p);
                     if (d >= 0) {
                         break;
                     }
@@ -4014,9 +4104,9 @@ public class CollisionModel_local {
                     && trm.bounds.oGet(1).oGet(2) - trm.bounds.oGet(0).oGet(2) <= 0.0f)) {
 
                 results[0].c.contents = this.TransformedPointContents(start, model, modelOrigin, modelAxis);
-                results[0].fraction = (results[0].c.contents /*== 0*/ & 1);
-                results[0].endpos = start;
-                results[0].endAxis = trmAxis;
+                results[0].fraction = (results[0].c.contents == 0 ? 1 : 0);
+                results[0].endpos.oSet(start);
+                results[0].endAxis.oSet(trmAxis);
 
                 return results[0].c.contents;
             }
@@ -4034,8 +4124,8 @@ public class CollisionModel_local {
             tw.quickExit = false;
             tw.numContacts = 0;
             tw.model = this.models[model];
-            tw.start = start.oMinus(modelOrigin);
-            tw.end = tw.start;
+            tw.start.oSet(start.oMinus(modelOrigin));
+            tw.end.oSet(tw.start);
 
             model_rotated = modelAxis.IsRotated();
             if (model_rotated) {
@@ -4090,8 +4180,8 @@ public class CollisionModel_local {
             // setup trm edges
             for (i = 1; i <= tw.numEdges; i++) {
                 // edge start, end and pluecker coordinate
-                tw.edges[i].start = tw.vertices[tw.edges[i].vertexNum[0]].p;
-                tw.edges[i].end = tw.vertices[tw.edges[i].vertexNum[1]].p;
+                tw.edges[i].start.oSet(tw.vertices[tw.edges[i].vertexNum[0]].p);
+                tw.edges[i].end.oSet(tw.vertices[tw.edges[i].vertexNum[1]].p);
                 tw.edges[i].pl.FromLine(tw.edges[i].start, tw.edges[i].end);
             }
 
@@ -4134,9 +4224,9 @@ public class CollisionModel_local {
             this.TraceThroughModel(tw);
 
             results[0] = tw.trace;
-            results[0].fraction = (results[0].c.contents /*== 0*/ & 1);
-            results[0].endpos = start;
-            results[0].endAxis = trmAxis;
+            results[0].fraction = (results[0].c.contents == 0 ? 1 : 0);
+            results[0].endpos.oSet(start);
+            results[0].endAxis.oSet(trmAxis);
 
             return results[0].c.contents;
         }
@@ -4169,9 +4259,10 @@ public class CollisionModel_local {
                 if (tw.pointTrace) {
                     return;
                 }
+                int modelFeature = 0;
                 // test if the trm is stuck in any polygons
                 for (pref = node.polygons; pref != null; pref = pref.next) {//TODO:check next pointers
-                    if (this.TestTrmInPolygon(tw, pref.p)) {
+                    if (this.TestTrmInPolygon(tw, pref.p, modelFeature++)) {
                         return;
                     }
                 }
@@ -4352,7 +4443,7 @@ public class CollisionModel_local {
             numModels = 0;
             models = null;
 //	memset( trmPolygons, 0, sizeof( trmPolygons ) );
-            Arrays.fill(trmPolygons, 0);
+            trmPolygons = TempDump.allocArray(cm_polygonRef_s.class ,trmPolygons.length);
             trmBrushes[0] = null;
             trmMaterial = null;
             numProcNodes = 0;
@@ -4450,18 +4541,14 @@ public class CollisionModel_local {
 
         private void FreePolygon(cm_model_s model, cm_polygon_s poly) {
             model.numPolygons--;
-            model.polygonMemory -= /*sizeof( cm_polygon_t ) +*/ (poly.numEdges - 1) /* sizeof( poly.edges[0] )*/;
-            if (model.polygonBlock == null) {
-                poly.clear();//Mem_Free(poly);
-            }
+            model.polygonMemory -= cm_polygon_s.BYTES + (poly.numEdges - 1) * Integer.BYTES;
+            model.polygonBlock = null;
         }
 
         private void FreeBrush(cm_model_s model, cm_brush_s brush) {
             model.numBrushes--;
-            model.brushMemory -= /*sizeof( cm_brush_t ) +*/ (brush.numPlanes - 1)/* sizeof( brush.planes[0] )*/;
-            if (model.brushBlock == null) {
-                brush.clear();//Mem_Free(brush);
-            }
+            model.brushMemory -= cm_brush_s.BYTES + (brush.numPlanes - 1) * idPlane.BYTES;
+            model.brushBlock = null;
         }
 
         private void FreeTree_r(cm_model_s model, cm_node_s headNode, cm_node_s node) {
@@ -4758,10 +4845,8 @@ public class CollisionModel_local {
             }
 
             newp = AllocPolygon(model, newNumEdges);
-//	memcpy( newp, p1, sizeof(cm_polygon_t) );
-            p1 = newp;
-//	memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
-            System.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);
+            newp.oSet(p1);//memcpy( newp, p1, sizeof(cm_polygon_t) );
+            System.arraycopy(newEdges, 0, newp.edges, 0, newNumEdges);//memcpy( newp.edges, newEdges, newNumEdges * sizeof(int) );
             newp.numEdges = newNumEdges;
             newp.checkcount = 0;
             // increase usage count for the edges of this polygon
@@ -5115,9 +5200,9 @@ public class CollisionModel_local {
             for (i = 0; i < numProcNodes; i++) {
                 cm_procNode_s node;
 
-                node = procNodes[i];
+                node = procNodes[i] = new cm_procNode_s();
 
-                src.Parse1DMatrix(4, node.plane.ToFloatPtr());
+                src.Parse1DMatrix(4, node.plane);
                 node.children[0] = src.ParseInt();
                 node.children[1] = src.ParseInt();
             }
@@ -5479,9 +5564,9 @@ public class CollisionModel_local {
             cm_windingList.bounds.oGet(0).oMinSet(new idVec3(CHOP_EPSILON, CHOP_EPSILON, CHOP_EPSILON));
             cm_windingList.bounds.oGet(1).oPluSet(new idVec3(CHOP_EPSILON, CHOP_EPSILON, CHOP_EPSILON));
 
-            cm_windingList.w[0] = w;
+            cm_windingList.w[0] = new idFixedWinding(w);
             cm_windingList.numWindings = 1;
-            cm_windingList.normal = plane.Normal();
+            cm_windingList.normal = new idVec3(plane.Normal());
             cm_windingList.contents = contents;
             cm_windingList.primitiveNum = patch;
             //
@@ -5553,16 +5638,16 @@ public class CollisionModel_local {
         private cm_node_s AllocNode(cm_model_s model, int blockSize) {
             int i;
             cm_node_s node;
-            /*cm_nodeBlock_s*/ Object[] nodeBlock;
+            cm_nodeBlock_s  nodeBlock;
 
             if (null == model.nodeBlocks || null == model.nodeBlocks.nextNode) {
-                nodeBlock = new cm_nodeBlock_s[blockSize];// Mem_ClearedAlloc( /*sizeof( cm_nodeBlock_t ) +*/blockSize /*sizeof(cm_node_t)*/);
-                ((cm_nodeBlock_s) nodeBlock[0]).nextNode = (cm_node_s) nodeBlock[1];//(cm_node_s []) ( ( (byte *) nodeBlock ) + sizeof( cm_nodeBlock_t ) );
-                ((cm_nodeBlock_s) nodeBlock[0]).next = model.nodeBlocks;
-                model.nodeBlocks = (cm_nodeBlock_s) nodeBlock[0];
-                node = ((cm_nodeBlock_s) nodeBlock[0]).nextNode;//TODO:check this debacle!!
+                nodeBlock = new cm_nodeBlock_s();
+                nodeBlock.nextNode = new cm_node_s();
+                nodeBlock.next = model.nodeBlocks;
+                model.nodeBlocks = nodeBlock;
+                node = nodeBlock.nextNode;//TODO:check this debacle!!
                 for (i = 0; i < blockSize - 1; i++) {
-                    node.parent = (cm_node_s) nodeBlock[2 + i];//node + 1;
+                    node.parent = new cm_node_s();
                     node = node.parent;
                 }
                 node.parent = null;
@@ -5579,17 +5664,15 @@ public class CollisionModel_local {
             int i;
             cm_polygonRef_s pref;
             cm_polygonRefBlock_s prefBlock;
-            Object[] cm_polygonRefBlock_t;
 
             if (null == model.polygonRefBlocks || null == model.polygonRefBlocks.nextRef) {
-                cm_polygonRefBlock_t = new cm_polygonRefBlock_s[blockSize];// /*(cm_polygonRefBlock_s [])*/ Mem_Alloc( /*sizeof( cm_polygonRefBlock_t ) + */blockSize/* * sizeof(cm_polygonRef_t) */);
-                prefBlock = (cm_polygonRefBlock_s) cm_polygonRefBlock_t[0];
-                prefBlock.nextRef = (cm_polygonRef_s) cm_polygonRefBlock_t[1];//(cm_polygonRef_t *) ( ( (byte *) prefBlock ) + sizeof( cm_polygonRefBlock_t ) );
+                prefBlock = new cm_polygonRefBlock_s();
+                prefBlock.nextRef = new cm_polygonRef_s();
                 prefBlock.next = model.polygonRefBlocks;
                 model.polygonRefBlocks = prefBlock;
                 pref = prefBlock.nextRef;
                 for (i = 0; i < blockSize - 1; i++) {
-                    pref.next = (cm_polygonRef_s) cm_polygonRefBlock_t[2 + i];
+                    pref.next = new cm_polygonRef_s();
                     pref = pref.next;
                 }
                 pref.next = null;
@@ -5605,17 +5688,15 @@ public class CollisionModel_local {
             int i;
             cm_brushRef_s bref;
             cm_brushRefBlock_s brefBlock;
-            Object[] cm_brushRefBlock_t;
 
             if (null == model.brushRefBlocks || null == model.brushRefBlocks.nextRef) {
-                cm_brushRefBlock_t = new Object[blockSize];// Mem_Alloc( /*sizeof(cm_brushRefBlock_t) + blockSize * sizeof(cm_brushRef_t) */);
-                brefBlock = (cm_brushRefBlock_s) cm_brushRefBlock_t[0];//(cm_brushRefBlock_t *) Mem_Alloc( sizeof(cm_brushRefBlock_t) + blockSize * sizeof(cm_brushRef_t) );
-                brefBlock.nextRef = (cm_brushRef_s) cm_brushRefBlock_t[1];//(cm_brushRef_t *) ( ( (byte *) brefBlock ) + sizeof(cm_brushRefBlock_t) );
+                brefBlock = new cm_brushRefBlock_s();
+                brefBlock.nextRef = new cm_brushRef_s();
                 brefBlock.next = model.brushRefBlocks;
                 model.brushRefBlocks = brefBlock;
                 bref = brefBlock.nextRef;
                 for (i = 0; i < blockSize - 1; i++) {
-                    bref.next = (cm_brushRef_s) cm_brushRefBlock_t[2 + i];
+                    bref.next = new cm_brushRef_s();
                     bref = bref.next;
                 }
                 bref.next = null;
@@ -5634,13 +5715,14 @@ public class CollisionModel_local {
             size = numEdges - 1;//sizeof( cm_polygon_t ) + ( numEdges - 1 ) * sizeof( poly.edges[0] );
             model.numPolygons++;
             model.polygonMemory += size;
-            if (model.polygonBlock != null && model.polygonBlock.bytesRemaining >= size) {
-                poly = model.polygonBlock.current();//next;
-                model.polygonBlock.next();// += size;
-//                model.polygonBlock.bytesRemaining -= size;
-            } else {
-                poly = new cm_polygon_s();// Mem_Alloc(size);
-            }
+//            if (model.polygonBlock != null && model.polygonBlock.bytesRemaining >= size) {
+//                poly = model.polygonBlock.current();//next;
+//                model.polygonBlock.next();// += size;
+////                model.polygonBlock.bytesRemaining -= size;
+//            } else {
+            poly = new cm_polygon_s();// Mem_Alloc(size);
+            poly.edges = new int[numEdges];
+//            }
             return poly;
         }
 
@@ -5651,13 +5733,12 @@ public class CollisionModel_local {
             size = numPlanes - 1;//sizeof( cm_brush_t ) + ( numPlanes - 1 ) * sizeof( brush.planes[0] );
             model.numBrushes++;
             model.brushMemory += size;
-            if (model.brushBlock != null && model.brushBlock.bytesRemaining >= size) {
-                brush = model.brushBlock.next();
-//                model.brushBlock.next += size;
-//                model.brushBlock.bytesRemaining -= size;
-            } else {
+//            if (model.brushBlock != null && model.brushBlock.bytesRemaining >= size) {
+//                brush = model.brushBlock.next;
+//            } else {
                 brush = new cm_brush_s();// Mem_Alloc(size);
-            }
+                brush.planes = new idPlane[numPlanes];
+//            }
             return brush;
         }
 
@@ -5698,10 +5779,10 @@ public class CollisionModel_local {
             // allocate vertex and edge arrays
             model.numVertices = 0;
             model.maxVertices = MAX_TRACEMODEL_VERTS;
-            model.vertices = new cm_vertex_s[model.maxVertices];//) Mem_ClearedAlloc(model.maxVertices/*sizeof(cm_vertex_t)*/);
+            model.vertices = cm_vertex_s.generateArray(model.maxVertices);
             model.numEdges = 0;
             model.maxEdges = MAX_TRACEMODEL_EDGES + 1;
-            model.edges = new cm_edge_s[model.maxEdges];// Mem_ClearedAlloc(model.maxEdges /* * sizeof(cm_edge_t)*/);
+            model.edges = cm_edge_s.generateArray(model.maxEdges);
             // create a material for the trace model polygons
             trmMaterial = declManager.FindMaterial("_tracemodel", false);
             if (null == trmMaterial) {
@@ -5986,10 +6067,8 @@ public class CollisionModel_local {
                 // resize vertex array
                 model.maxVertices = (int) (model.maxVertices * 1.5f + 1);
                 oldVertices = model.vertices;
-                model.vertices = new cm_vertex_s[model.maxVertices];// Mem_ClearedAlloc(model.maxVertices/*sizeof(cm_vertex_t)*/);
-//		memcpy( model.vertices, oldVertices, model.numVertices * sizeof(cm_vertex_t) );
+                model.vertices = cm_vertex_s.generateArray(model.maxVertices);
                 System.arraycopy(oldVertices, 0, model.vertices, 0, model.numVertices);
-                oldVertices = null;//Mem_Free(oldVertices);
 
                 cm_vertexHash.ResizeIndex(model.maxVertices);
             }
@@ -6066,9 +6145,8 @@ public class CollisionModel_local {
                 // resize edge array
                 model.maxEdges = (int) (model.maxEdges * 1.5f + 1);//TODO:float precision cast???
                 oldEdges = model.edges;
-                model.edges = new cm_edge_s[model.maxEdges];// Mem_ClearedAlloc(model.maxEdges);
-//		memcpy( model.edges, oldEdges, model.numEdges * sizeof(cm_edge_t) );
-                oldEdges = null;//Mem_Free(oldEdges);
+                model.edges = cm_edge_s.generateArray(model.maxEdges);
+                System.arraycopy(oldEdges, 0, model.edges, 0, model.numEdges);
 
                 cm_edgeHash.ResizeIndex(model.maxEdges);
             }
@@ -6137,8 +6215,8 @@ public class CollisionModel_local {
             p.contents = material.GetContentFlags();
             p.material = material;
             p.checkcount = 0;
-            p.plane = plane;
-            p.bounds = bounds;
+            p.plane.oSet(plane);
+            p.bounds.oSet(bounds);
             for (i = 0; i < numPolyEdges; i++) {
                 edgeNum = polyEdges[i];
                 p.edges[i] = edgeNum;
@@ -6430,18 +6508,18 @@ public class CollisionModel_local {
         }
 
         private void PrintModelInfo(final cm_model_s model) {
-            common.Printf("%6i vertices (%d KB)\n", model.numVertices, (model.numVertices /* sizeof(cm_vertex_t)*/) >> 10);
-            common.Printf("%6i edges (%d KB)\n", model.numEdges, (model.numEdges /* sizeof(cm_edge_t)*/) >> 10);
-            common.Printf("%6i polygons (%d KB)\n", model.numPolygons, model.polygonMemory >> 10);
-            common.Printf("%6i brushes (%d KB)\n", model.numBrushes, model.brushMemory >> 10);
-            common.Printf("%6i nodes (%d KB)\n", model.numNodes, (model.numNodes /* sizeof(cm_node_t)*/) >> 10);
-            common.Printf("%6i polygon refs (%d KB)\n", model.numPolygonRefs, (model.numPolygonRefs /* sizeof(cm_polygonRef_t)*/) >> 10);
-            common.Printf("%6i brush refs (%d KB)\n", model.numBrushRefs, (model.numBrushRefs /* sizeof(cm_brushRef_t)*/) >> 10);
-            common.Printf("%6i internal edges\n", model.numInternalEdges);
-            common.Printf("%6i sharp edges\n", model.numSharpEdges);
-            common.Printf("%6i contained polygons removed\n", model.numRemovedPolys);
-            common.Printf("%6i polygons merged\n", model.numMergedPolys);
-            common.Printf("%6i KB total memory used\n", model.usedMemory >> 10);
+            common.Printf("%6d vertices (%d KB)\n", model.numVertices, (model.numVertices /* sizeof(cm_vertex_t)*/) >> 10);
+            common.Printf("%6d edges (%d KB)\n", model.numEdges, (model.numEdges /* sizeof(cm_edge_t)*/) >> 10);
+            common.Printf("%6d polygons (%d KB)\n", model.numPolygons, model.polygonMemory >> 10);
+            common.Printf("%6d brushes (%d KB)\n", model.numBrushes, model.brushMemory >> 10);
+            common.Printf("%6d nodes (%d KB)\n", model.numNodes, (model.numNodes /* sizeof(cm_node_t)*/) >> 10);
+            common.Printf("%6d polygon refs (%d KB)\n", model.numPolygonRefs, (model.numPolygonRefs /* sizeof(cm_polygonRef_t)*/) >> 10);
+            common.Printf("%6d brush refs (%d KB)\n", model.numBrushRefs, (model.numBrushRefs /* sizeof(cm_brushRef_t)*/) >> 10);
+            common.Printf("%6d internal edges\n", model.numInternalEdges);
+            common.Printf("%6d sharp edges\n", model.numSharpEdges);
+            common.Printf("%6d contained polygons removed\n", model.numRemovedPolys);
+            common.Printf("%6d polygons merged\n", model.numMergedPolys);
+            common.Printf("%6d KB total memory used\n", model.usedMemory >> 10);
         }
 
         private void AccumulateModelInfo(cm_model_s model) {
@@ -6555,19 +6633,15 @@ public class CollisionModel_local {
             // realloc vertices
             oldVertices = model.vertices;
             if (oldVertices != null) {
-                model.vertices = new cm_vertex_s[model.numVertices];// Mem_ClearedAlloc(model.numVertices /* sizeof(cm_vertex_t)*/);//TODO:init normally instead.
-//		memcpy( model.vertices, oldVertices, model.numVertices * sizeof(cm_vertex_t) );
-                System.arraycopy(oldVertices, 0, model.vertices, 0, model.numVertices);
-                oldVertices = null;//Mem_Free(oldVertices);
+                model.vertices = cm_vertex_s.generateArray(model.numVertices);
+                System.arraycopy(oldVertices, 0, model.vertices, 0, Math.min(oldVertices.length, model.numVertices));
             }
 
             // realloc edges
             oldEdges = model.edges;
             if (oldEdges != null) {
-                model.edges = new cm_edge_s[model.numEdges];// Mem_ClearedAlloc(model.numEdges /* sizeof(cm_edge_t)*/);
-//		memcpy( model.edges, oldEdges, model.numEdges * sizeof(cm_edge_t) );
-                System.arraycopy(oldEdges, 0, model.edges, 0, model.numEdges);
-                oldEdges = null;//Mem_Free(oldEdges);
+                model.edges = cm_edge_s.generateArray(model.numEdges);
+                System.arraycopy(oldEdges, 0, model.edges, 0, Math.min(oldEdges.length, model.numEdges));
             }
         }
 
@@ -6591,13 +6665,13 @@ public class CollisionModel_local {
             // get model contents
             model.contents = CM_GetNodeContents(model.node);
             // total memory used by this model
-            model.usedMemory = model.numVertices * sizeof(cm_vertex_s.class)
-                    + model.numEdges * sizeof(cm_edge_s.class)
+            model.usedMemory = model.numVertices * cm_vertex_s.BYTES
+                    + model.numEdges * cm_edge_s.BYTES
                     + model.polygonMemory
                     + model.brushMemory
-                    + model.numNodes * sizeof(cm_node_s.class)
-                    + model.numPolygonRefs * sizeof(cm_polygonRef_s.class)
-                    + model.numBrushRefs * sizeof(cm_brushRef_s.class);
+                    + model.numNodes * cm_node_s.BYTES
+                    + model.numPolygonRefs * cm_polygonRef_s.BYTES
+                    + model.numBrushRefs * cm_brushRef_s.BYTES;
         }
 
         private void BuildModels(final idMapFile mapFile) {
@@ -6644,7 +6718,7 @@ public class CollisionModel_local {
             cm_model_s model = new cm_model_s();
             AccumulateModelInfo(model);
             common.Printf("collision data:\n");
-            common.Printf("%6i models\n", numModels);
+            common.Printf("%6d models\n", numModels);
             PrintModelInfo(model);
             common.Printf("%.0f msec to load collision data.\n", timer.Milliseconds());
         }
@@ -6699,8 +6773,8 @@ public class CollisionModel_local {
             model.maxEdges = maxEdges[0];
             model.numVertices = 0;
             model.numEdges = 0;
-            model.vertices = new cm_vertex_s[model.maxVertices];// Mem_ClearedAlloc(model.maxVertices);
-            model.edges = new cm_edge_s[model.maxEdges];// Mem_ClearedAlloc(model.maxEdges);
+            model.vertices = cm_vertex_s.generateArray(model.maxVertices);
+            model.edges = cm_edge_s.generateArray(model.maxEdges);
 
             cm_vertexHash.ResizeIndex(model.maxVertices);
             cm_edgeHash.ResizeIndex(model.maxEdges);
@@ -6818,8 +6892,8 @@ public class CollisionModel_local {
                 model.maxEdges += surf.geometry.numIndexes;
             }
 
-            model.vertices = new cm_vertex_s[model.maxVertices];// Mem_ClearedAlloc(model.maxVertices);
-            model.edges = new cm_edge_s[model.maxEdges];// Mem_ClearedAlloc(model.maxEdges);
+            model.vertices = cm_vertex_s.generateArray(model.maxVertices);
+            model.edges = cm_edge_s.generateArray(model.maxEdges);
 
             // setup hash to speed up finding shared vertices and edges
             SetupHash();
@@ -6885,8 +6959,8 @@ public class CollisionModel_local {
                         return false;
                     }
                     // copy polygon properties
-                    trm.polys[trm.numPolys].bounds = p.bounds;
-                    trm.polys[trm.numPolys].normal = p.plane.Normal();
+                    trm.polys[trm.numPolys].bounds.oSet(p.bounds);
+                    trm.polys[trm.numPolys].normal.oSet(p.plane.Normal());
                     trm.polys[trm.numPolys].dist = p.plane.Dist();
                     trm.polys[trm.numPolys].numEdges = p.numEdges;
                     // copy edge index
@@ -6947,7 +7021,7 @@ public class CollisionModel_local {
 
             // copy vertices
             for (i = 0; i < model.numVertices; i++) {
-                trm.verts[i] = (traceModelVert_t) model.vertices[i].p;
+                trm.verts[i].oSet(model.vertices[i].p);
                 trm.bounds.AddPoint(trm.verts[i]);
             }
             trm.numVerts = model.numVertices;
@@ -7030,7 +7104,7 @@ public class CollisionModel_local {
                 }
                 p.checkcount = checkCount;
 
-                memory += sizeof(cm_polygon_s.class) + (p.numEdges - 1) * sizeof(p.edges[0]);
+                memory += cm_polygon_s.BYTES + (p.numEdges - 1) * Integer.BYTES;
             }
             if (node.planeType != -1) {
                 memory += CountPolygonMemory(node.children[0]);
@@ -7078,7 +7152,7 @@ public class CollisionModel_local {
                 }
                 b.checkcount = checkCount;
 
-                memory += sizeof(cm_brush_s.class) + (b.numPlanes - 1) * sizeof(b.planes[0]);
+                memory += cm_brush_s.BYTES + (b.numPlanes - 1) * idPlane.BYTES;
             }
             if (node.planeType != -1) {
                 memory += CountBrushMemory(node.children[0]);
@@ -7213,7 +7287,8 @@ public class CollisionModel_local {
             model.maxVertices = model.numVertices;
             model.vertices = new cm_vertex_s[model.maxVertices];// Mem_Alloc(model.maxVertices);
             for (i = 0; i < model.numVertices; i++) {
-                src.Parse1DMatrix(3, model.vertices[i].p.ToFloatPtr());
+                model.vertices[i] = new cm_vertex_s();
+                src.Parse1DMatrix(3, model.vertices[i].p);
                 model.vertices[i].side = 0;
                 model.vertices[i].sideSet = 0;
                 model.vertices[i].checkcount = 0;
@@ -7230,6 +7305,7 @@ public class CollisionModel_local {
             model.edges = new cm_edge_s[model.maxEdges];// Mem_Alloc(model.maxEdges);
             for (i = 0; i < model.numEdges; i++) {
                 src.ExpectTokenString("(");
+                model.edges[i] = new cm_edge_s();
                 model.edges[i].vertexNum[0] = src.ParseInt();
                 model.edges[i].vertexNum[1] = src.ParseInt();
                 src.ExpectTokenString(")");
@@ -7237,7 +7313,7 @@ public class CollisionModel_local {
                 model.edges[i].sideSet = 0;
                 model.edges[i].internal = (short) src.ParseInt();
                 model.edges[i].numUsers = (short) src.ParseInt();
-                model.edges[i].normal = vec3_origin;
+                model.edges[i].normal = getVec3_origin();
                 model.edges[i].checkcount = 0;
                 model.numInternalEdges += model.edges[i].internal;
             }
@@ -7249,13 +7325,11 @@ public class CollisionModel_local {
             int i, numEdges;
             idVec3 normal = new idVec3();
             idToken token = new idToken();
-            Object[] cm_polygonBlock_t;
 
             if (src.CheckTokenType(TT_NUMBER, 0, token) != 0) {
-                cm_polygonBlock_t = new cm_polygonBlock_s[token.GetIntValue()];// Mem_Alloc(token.GetIntValue());
-                model.polygonBlock = (cm_polygonBlock_s) cm_polygonBlock_t[0];
+                model.polygonBlock = new cm_polygonBlock_s();
                 model.polygonBlock.bytesRemaining = token.GetIntValue();
-                model.polygonBlock.next((cm_polygonBlock_s) cm_polygonBlock_t[1]);
+                model.polygonBlock.next = new cm_polygonBlock_s();
             }
 
             src.ExpectTokenString("{");
@@ -7269,11 +7343,11 @@ public class CollisionModel_local {
                     p.edges[i] = src.ParseInt();
                 }
                 src.ExpectTokenString(")");
-                src.Parse1DMatrix(3, normal.ToFloatPtr());
+                src.Parse1DMatrix(3, normal);
                 p.plane.SetNormal(normal);
                 p.plane.SetDist(src.ParseFloat());
-                src.Parse1DMatrix(3, p.bounds.oGet(0).ToFloatPtr());
-                src.Parse1DMatrix(3, p.bounds.oGet(1).ToFloatPtr());
+                src.Parse1DMatrix(3, p.bounds.oGet(0));
+                src.Parse1DMatrix(3, p.bounds.oGet(1));
                 src.ExpectTokenType(TT_STRING, 0, token);
                 // get material
                 p.material = declManager.FindMaterial(token);
@@ -7289,13 +7363,11 @@ public class CollisionModel_local {
             int i, numPlanes;
             idVec3 normal = new idVec3();
             idToken token = new idToken();
-            Object[] cm_brushBlock_t;
 
             if (src.CheckTokenType(TT_NUMBER, 0, token) != 0) {
-                cm_brushBlock_t = new cm_brushBlock_s[token.GetIntValue()];// Mem_Alloc(token.GetIntValue());
-                model.brushBlock = (cm_brushBlock_s) cm_brushBlock_t[0];
+                model.brushBlock = new cm_brushBlock_s();
                 model.brushBlock.bytesRemaining = token.GetIntValue();
-                model.brushBlock.next((cm_brushBlock_s) cm_brushBlock_t[1]);
+                model.brushBlock.next = new cm_brushBlock_s();
             }
 
             src.ExpectTokenString("{");
@@ -7306,13 +7378,14 @@ public class CollisionModel_local {
                 b.numPlanes = numPlanes;
                 src.ExpectTokenString("{");
                 for (i = 0; i < b.numPlanes; i++) {
-                    src.Parse1DMatrix(3, normal.ToFloatPtr());
+                    src.Parse1DMatrix(3, normal);
+                    b.planes[i] = new idPlane();
                     b.planes[i].SetNormal(normal);
                     b.planes[i].SetDist(src.ParseFloat());
                 }
                 src.ExpectTokenString("}");
-                src.Parse1DMatrix(3, b.bounds.oGet(0).ToFloatPtr());
-                src.Parse1DMatrix(3, b.bounds.oGet(1).ToFloatPtr());
+                src.Parse1DMatrix(3, b.bounds.oGet(0));
+                src.Parse1DMatrix(3, b.bounds.oGet(1));
                 src.ReadToken(token);
                 if (token.type == TT_NUMBER) {
                     b.contents = token.GetIntValue();		// old .cm files use a single integer
@@ -7339,7 +7412,7 @@ public class CollisionModel_local {
             numModels++;
             // parse the file
             src.ExpectTokenType(TT_STRING, 0, token);
-            model.name = token;
+            model.name = new idStr(token);
             src.ExpectTokenString("{");
             while (!src.CheckTokenString("}")) {
 
@@ -7382,55 +7455,50 @@ public class CollisionModel_local {
             // get model contents
             model.contents = CM_GetNodeContents(model.node);
             // total memory used by this model
-            model.usedMemory = model.numVertices * sizeof(cm_vertex_s.class)
-                    + model.numEdges * sizeof(cm_edge_s.class)
+            model.usedMemory = model.numVertices * cm_vertex_s.BYTES
+                    + model.numEdges * cm_edge_s.BYTES
                     + model.polygonMemory
                     + model.brushMemory
-                    + model.numNodes * sizeof(cm_node_s.class)
-                    + model.numPolygonRefs * sizeof(cm_polygonRef_s.class)
-                    + model.numBrushRefs * sizeof(cm_brushRef_s.class);
+                    + model.numNodes       //* cm_node_s.Bytes
+                    + model.numPolygonRefs //* cm_polygonRef_s.Bytes
+                    + model.numBrushRefs;  //* cm_brushRef_s.Bytes;
 
             return true;
         }
 
-        private boolean LoadCollisionModelFile(final idStr fileName, long mapFileCRC) {
-//	idStr fileName;
+        private boolean LoadCollisionModelFile(final idStr name, int mapFileCRC) {
+            idStr fileName;
             idToken token = new idToken();
             idLexer src;
-            long crc;
+            int crc;
 
             // load it
-//	fileName = name;
+            fileName = new idStr(name);
             fileName.SetFileExtension(CM_FILE_EXT);
             src = new idLexer(fileName.toString());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
             if (!src.IsLoaded()) {
-//		delete src;
                 return false;
             }
 
             if (!src.ExpectTokenString(CM_FILEID)) {
                 common.Warning("%s is not an CM file.", fileName);
-//		delete src;
                 return false;
             }
 
             if (!src.ReadToken(token) || !token.equals(CM_FILEVERSION)) {
                 common.Warning("%s has version %s instead of %s", fileName, token, CM_FILEVERSION);
-//		delete src;
                 return false;
             }
 
             if (0 == src.ExpectTokenType(TT_NUMBER, TT_INTEGER, token)) {
                 common.Warning("%s has no map file CRC", fileName);
-//		delete src;
                 return false;
             }
 
-            crc = token.GetUnsignedLongValue();
+            crc = (int) token.GetUnsignedLongValue();
             if (mapFileCRC != 0 && crc != mapFileCRC) {
                 common.Printf("%s is out of date\n", fileName);
-//		delete src;
                 return false;
             }
 
@@ -7553,7 +7621,7 @@ public class CollisionModel_local {
             }
 
             if (cm_drawNormals.GetBool()) {
-                center = vec3_origin;
+                center = getVec3_origin();
                 for (i = 0; i < p.numEdges; i++) {
                     edgeNum = p.edges[i];
                     edge = model.edges[Math.abs(edgeNum)];

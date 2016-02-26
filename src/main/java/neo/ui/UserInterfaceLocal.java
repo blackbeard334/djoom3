@@ -722,7 +722,7 @@ public class UserInterfaceLocal {
                 } else {
                     copies++;
                 }
-                common.Printf("%6.1fk %4i (%s) %s ( %d transitions )\n", sz / 1024.0f, guis.oGet(i).GetRefs(), isUnique ? "unique" : "copy", guis.oGet(i).GetSourceFile(), guis.oGet(i).desktop.NumTransitions());
+                common.Printf("%6.1fk %4d (%s) %s ( %d transitions )\n", sz / 1024.0f, guis.oGet(i).GetRefs(), isUnique ? "unique" : "copy", guis.oGet(i).GetSourceFile(), guis.oGet(i).desktop.NumTransitions());
                 total += sz;
             }
             common.Printf("===========\n  %d total Guis ( %d copies, %d unique ), %.2f total Mbytes", c, copies, unique, total / (1024.0f * 1024.0f));

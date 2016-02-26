@@ -123,19 +123,22 @@ public class GameEdit {
 
     public static class idDragEntity {
 
-        private idEntityPtr<idEntity> dragEnt;	// entity being dragged
-        private int/*jointHandle_t*/ joint;	// joint being dragged
-        private int id;				// id of body being dragged
-        private idVec3 localEntityPoint;	// dragged point in entity space
-        private idVec3 localPlayerPoint;	// dragged point in player space
-        private idStr bodyName;			// name of the body being dragged
-        private idCursor3D cursor;		// cursor entity
-        private idEntityPtr<idEntity> selected;	// last dragged entity
+        private idEntityPtr<idEntity> dragEnt;          // entity being dragged
+        private int/*jointHandle_t*/  joint;            // joint being dragged
+        private int                   id;               // id of body being dragged
+        private idVec3                localEntityPoint; // dragged point in entity space
+        private idVec3                localPlayerPoint; // dragged point in player space
+        private idStr                 bodyName;         // name of the body being dragged
+        private idCursor3D            cursor;           // cursor entity
+        private idEntityPtr<idEntity> selected;         // last dragged entity
         //
         //
 
         public idDragEntity() {
             cursor = null;
+            localEntityPoint = new idVec3();
+            localPlayerPoint = new idVec3();
+            bodyName = new idStr();
             Clear();
         }
         // ~idDragEntity( void );
@@ -218,10 +221,10 @@ public class GameEdit {
                             }
 
                             idPhysics phys = dragEnt.GetEntity().GetPhysics();
-                            localPlayerPoint = (trace[0].c.point.oMinus(viewPoint)).oMultiply(viewAxis.Transpose());
+                            localPlayerPoint.oSet((trace[0].c.point.oMinus(viewPoint)).oMultiply(viewAxis.Transpose()));
                             origin = phys.GetOrigin(id);
                             axis = phys.GetAxis(id);
-                            localEntityPoint = (trace[0].c.point.oMinus(origin)).oMultiply(axis.Transpose());
+                            localEntityPoint.oSet((trace[0].c.point.oMinus(origin)).oMultiply(axis.Transpose()));
 
                             cursor.drag.Init(g_dragDamping.GetFloat());
                             cursor.drag.SetPhysics(phys, id, localEntityPoint);
@@ -398,7 +401,7 @@ public class GameEdit {
         //
 
         public idEditEntities() {
-            selectableEntityClasses.Clear();
+            selectableEntityClasses = new idList<>();
             nextSelectTime = 0;
         }
 

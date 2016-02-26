@@ -1,9 +1,9 @@
 package neo.idlib;
 
-import java.util.Arrays;
 import java.util.Objects;
 import static neo.TempDump.atof;
 import static neo.TempDump.atoi;
+import static neo.TempDump.btoi;
 import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.Common.common;
 import neo.framework.File_h.idFile;
@@ -53,7 +53,7 @@ public class Dict_h {
      *
      * ===============================================================================
      */
-    public static class idKeyValue extends idDict {
+    public static class idKeyValue extends idDict implements Cloneable {
 //	friend class idDict;
 
         private idPoolStr key;
@@ -69,7 +69,6 @@ public class Dict_h {
             return value;
         }
 
-//
         @Override
         public long Allocated() {
             return key.Allocated() + value.Allocated();
@@ -108,7 +107,12 @@ public class Dict_h {
         @Override
         public String toString() {
             return "idKeyValue{" + "key=" + key + ", value=" + value + '}';
-        }        
+        }       
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
     }
 
     public static class idDict {
@@ -120,6 +124,8 @@ public class Dict_h {
         private static final idStrPool globalValues = new idStrPool();
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
 
         public idDict() {
             args.SetGranularity(16);
@@ -164,8 +170,8 @@ public class Dict_h {
 
             Clear();
 
-            args = other.args;
-            argHash = other.argHash;
+            args.oSet(other.args);
+            argHash.oSet(other.argHash);
 
             for (i = 0; i < args.Num(); i++) {
                 args.oGet(i).key = globalKeys.CopyString(args.oGet(i).key);
@@ -242,11 +248,14 @@ public class Dict_h {
 
             n = other.args.Num();
             args.SetNum(n);
-            for (i = 0; i < n; i++) {
-                args.oGet(i).key = other.args.oGet(i).key;
-                args.oGet(i).value = other.args.oGet(i).value;
+            try {
+                for (i = 0; i < n; i++) {
+                    args.oSet(i, other.args.oGet(i).clone());
+                }
+            } catch (CloneNotSupportedException ex) {
+                throw new idException(ex);
             }
-            argHash = other.argHash;
+            argHash.oSet(other.argHash);
 
             other.args.Clear();
             other.argHash.Free();
@@ -287,14 +296,12 @@ public class Dict_h {
 
         // copy key/value pairs from other dict not present in this dict
         public void SetDefaults(final idDict dict) throws idException {
-            int i, n;
-            idKeyValue kv, def;
-            idKeyValue newkv = new idKeyValue();
+            final int n = dict.args.Num();
 
-            n = dict.args.Num();
-            for (i = 0; i < n; i++) {
-                def = dict.args.oGet(i);
-                kv = FindKey(def.GetKey() + "");//TODO:override toString?
+            for (int i = 0; i < n; i++) {
+                idKeyValue def = dict.args.oGet(i);
+                idKeyValue kv = FindKey(def.GetKey() + "");//TODO:override toString?
+                idKeyValue newkv = new idKeyValue();
                 if (null == kv) {
                     newkv.key = globalKeys.CopyString(def.key);
                     newkv.value = globalValues.CopyString(def.value);
@@ -356,7 +363,7 @@ public class Dict_h {
             int i;
             idKeyValue kv = new idKeyValue();
 
-            if (key == null || key.length() == 0 || key.charAt(0) == '\0') {
+            if (key == null || key.isEmpty() || key.charAt(0) == '\0') {
                 return;
             }
 
@@ -382,7 +389,7 @@ public class Dict_h {
         }
 
         public void SetBool(final String key, boolean val) throws idException {
-            Set(key, va("%d", val));
+            Set(key, va("%d", btoi(val)));
         }
 
         public void SetVector(final String key, final idVec3 val) throws idException {
@@ -662,7 +669,7 @@ public class Dict_h {
         public idKeyValue FindKey(final String key) throws idException {
             int i, hash;
 
-            if (key == null || key.length() < 1/*[0] == '\0'*/) {
+            if (key == null || key.isEmpty()/*[0] == '\0'*/) {
                 idLib.common.DWarning("idDict::FindKey: empty key");
                 return null;
             }

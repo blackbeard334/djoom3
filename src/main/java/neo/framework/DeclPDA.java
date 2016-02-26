@@ -415,19 +415,29 @@ public class DeclPDA {
         private idStrList videos;
         private idStrList audios;
         private idStrList emails;
-        private idStr pdaName;
-        private idStr fullName;
-        private idStr icon;
-        private idStr id;
-        private idStr post;
-        private idStr title;
-        private idStr security;
-        private int originalEmails;
-        private int originalVideos;
+        private idStr     pdaName;
+        private idStr     fullName;
+        private idStr     icon;
+        private idStr     id;
+        private idStr     post;
+        private idStr     title;
+        private idStr     security;
+        private int       originalEmails;
+        private int       originalVideos;
         //
         //
 
         public idDeclPDA() {
+            videos = new idStrList();
+            audios = new idStrList();
+            emails = new idStrList();
+            pdaName = new idStr();
+            fullName = new idStr();
+            icon = new idStr();
+            id = new idStr();
+            post = new idStr();
+            title = new idStr();
+            security = new idStr();
             originalEmails = originalVideos = 0;
         }
 
@@ -466,43 +476,43 @@ public class DeclPDA {
 
                 if (0 == token.Icmp("name")) {
                     src.ReadToken(token);
-                    pdaName = token;
+                    pdaName.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("fullname")) {
                     src.ReadToken(token);
-                    fullName = token;
+                    fullName.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("icon")) {
                     src.ReadToken(token);
-                    icon = token;
+                    icon.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("id")) {
                     src.ReadToken(token);
-                    id = token;
+                    id.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("post")) {
                     src.ReadToken(token);
-                    post = token;
+                    post.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("title")) {
                     src.ReadToken(token);
-                    title = token;
+                    title.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("security")) {
                     src.ReadToken(token);
-                    security = token;
+                    security.oSet(token);
                     continue;
                 }
 

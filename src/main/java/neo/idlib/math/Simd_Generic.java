@@ -3,6 +3,7 @@ package neo.idlib.math;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import neo.Renderer.Model.dominantTri_s;
+import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.JointTransform.idJointQuat;
@@ -36,7 +37,8 @@ public class Simd_Generic {
 //        }
 //    }
 //#define UNROLL8(Y) { int _IX, _NM = count&0xfffffff8; for (_IX=0;_IX<_NM;_IX+=8){Y(_IX+0);Y(_IX+1);Y(_IX+2);Y(_IX+3);Y(_IX+4);Y(_IX+5);Y(_IX+6);Y(_IX+7);} _NM = count&0xfffffffe; for(;_IX<_NM;_IX+=2){Y_IX; Y(_IX+1);} if (_IX < count) {Y_IX;} }
-    final static int MIXBUFFER_SAMPLES = 4096;
+    static final int MIXBUFFER_SAMPLES = 4096;
+    static final boolean DERIVE_UNSMOOTHED_BITANGENT = true;
     /*
      ===============================================================================
 
@@ -2547,11 +2549,11 @@ public class Simd_Generic {
         }
 
         @Override
-        public void ConvertJointMatsToJointQuats(idJointQuat[] jointQuats, idJointMat[] jointMats, int numJoints) {
+        public void ConvertJointMatsToJointQuats(idList<idJointQuat> jointQuats, idJointMat[] jointMats, int numJoints) {
             int i;
 
             for (i = 0; i < numJoints; i++) {
-                jointQuats[i] = jointMats[i].ToJointQuat();
+                jointQuats.oSet(i, jointMats[i].ToJointQuat());
             }
         }
 
@@ -2590,6 +2592,7 @@ public class Simd_Generic {
                 }
                 j++;
 
+                verts[i] = (verts[i] == null ? new idDrawVert() : verts[i]);
                 verts[i].xyz = v;
             }
         }
@@ -2857,9 +2860,77 @@ public class Simd_Generic {
             }
         }
 
+        /*
+         ============
+         idSIMD_Generic::DeriveUnsmoothedTangents
+
+         Derives the normal and orthogonal tangent vectors for the triangle vertices.
+         For each vertex the normal and tangent vectors are derived from a single dominant triangle.
+         ============
+         */
         @Override
         public void DeriveUnsmoothedTangents(idDrawVert[] verts, dominantTri_s[] dominantTris, int numVerts) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            for (int i = 0; i < numVerts; i++) {
+                final idDrawVert a, b, c;
+                final float d0, d1, d2, d3, d4;
+                final float d5, d6, d7, d8, d9;
+                final float s0, s1, s2;
+                final float n0, n1, n2;
+                final float t0, t1, t2;
+                final float t3, t4, t5;
+
+                final dominantTri_s dt = dominantTris[i];
+
+                a = verts[i];
+                b = verts[dt.v2];
+                c = verts[dt.v3];
+
+                d0 = b.xyz.oGet(0) - a.xyz.oGet(0);
+                d1 = b.xyz.oGet(1) - a.xyz.oGet(1);
+                d2 = b.xyz.oGet(2) - a.xyz.oGet(2);
+                d3 = b.st.oGet(0) - a.st.oGet(0);
+                d4 = b.st.oGet(1) - a.st.oGet(1);
+
+                d5 = c.xyz.oGet(0) - a.xyz.oGet(0);
+                d6 = c.xyz.oGet(1) - a.xyz.oGet(1);
+                d7 = c.xyz.oGet(2) - a.xyz.oGet(2);
+                d8 = c.st.oGet(0) - a.st.oGet(0);
+                d9 = c.st.oGet(1) - a.st.oGet(1);
+
+                s0 = dt.normalizationScale[0];
+                s1 = dt.normalizationScale[1];
+                s2 = dt.normalizationScale[2];
+
+                n0 = s2 * (d6 * d2 - d7 * d1);
+                n1 = s2 * (d7 * d0 - d5 * d2);
+                n2 = s2 * (d5 * d1 - d6 * d0);
+
+                t0 = s0 * (d0 * d9 - d4 * d5);
+                t1 = s0 * (d1 * d9 - d4 * d6);
+                t2 = s0 * (d2 * d9 - d4 * d7);
+
+                if (DERIVE_UNSMOOTHED_BITANGENT) {
+                    t3 = s1 * (n2 * t1 - n1 * t2);
+                    t4 = s1 * (n0 * t2 - n2 * t0);
+                    t5 = s1 * (n1 * t0 - n0 * t1);
+                } else {
+                    t3 = s1 * (d3 * d5 - d0 * d8);
+                    t4 = s1 * (d3 * d6 - d1 * d8);
+                    t5 = s1 * (d3 * d7 - d2 * d8);
+                }
+
+                a.normal.oSet(0, n0);
+                a.normal.oSet(1, n1);
+                a.normal.oSet(2, n2);
+
+                a.tangents[0].oSet(0, t0);
+                a.tangents[0].oSet(1, t1);
+                a.tangents[0].oSet(2, t2);
+
+                a.tangents[1].oSet(0, t3);
+                a.tangents[1].oSet(1, t4);
+                a.tangents[1].oSet(2, t5);
+            }
         }
 
         /*

@@ -8,8 +8,8 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Surface.idSurface;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -526,7 +526,7 @@ public class Surface_Patch {
                     count = 0;
                     base = verts.oGet(j * width + i).xyz;
                     for (k = 0; k < 8; k++) {
-                        around[k].oSet(vec3_origin);
+                        around[k].oSet(getVec3_origin());
                         good[k] = false;
 
                         for (dist = 1; dist <= 3; dist++) {
@@ -561,7 +561,7 @@ public class Surface_Patch {
                         }
                     }
 
-                    sum.oSet(vec3_origin);
+                    sum.oSet(getVec3_origin());
                     for (k = 0; k < 8; k++) {
                         if (!good[k] || !good[(k + 1) & 7]) {
                             continue;	// didn't get two points

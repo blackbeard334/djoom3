@@ -4,6 +4,8 @@ import neo.Renderer.RenderWorld_local.portal_s;
 import neo.Renderer.tr_local.idScreenRect;
 import neo.idlib.math.Plane.idPlane;
 
+import java.util.stream.Stream;
+
 /**
  *
  */
@@ -31,8 +33,21 @@ public class RenderWorld_portals {
         idScreenRect rect;
         //
         int numPortalPlanes;
-        idPlane[] portalPlanes = new idPlane[MAX_PORTAL_PLANES + 1];
+        idPlane[] portalPlanes = Stream.generate(idPlane::new).limit(MAX_PORTAL_PLANES + 1).toArray(idPlane[]::new);
         // positive side is outside the visible frustum
+
+        public portalStack_s() {
+            rect = new idScreenRect();
+        }
+
+        public portalStack_s(final portalStack_s p) {
+            this.p = p.p;
+            this.next = p.next;
+            this.rect = new idScreenRect(p.rect);
+            for (int i = 0; i < portalPlanes.length; i++) {
+                this.portalPlanes[i].oSet(p.portalPlanes[i]);
+            }
+        }
     };
 
 }

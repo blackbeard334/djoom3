@@ -219,8 +219,10 @@ public class snd_cache {
             objectSize = fh.GetOutputSize();
             objectMemSize = fh.GetMemorySize();
 
-            nonCacheData = ByteBuffer.allocate(objectMemSize);//soundCacheAllocator.Alloc( objectMemSize );
-            fh.Read(nonCacheData, objectMemSize, null);
+            nonCacheData = BufferUtils.createByteBuffer(objectMemSize);//soundCacheAllocator.Alloc( objectMemSize );
+            ByteBuffer temp = ByteBuffer.allocate(objectMemSize);
+            fh.Read(temp, objectMemSize, null);
+            nonCacheData.put(temp).rewind();
 
             // optionally convert it to 22kHz to save memory
             CheckForDownSample();
@@ -250,6 +252,7 @@ public class snd_cache {
                             amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
 
                             // Creating array of min/max amplitude pairs per blockSize samples
+                            final ShortBuffer ncd = nonCacheData.asShortBuffer();
                             int i;
                             for (i = 0; i < objectSize; i += blockSize) {
                                 short min = 32767;
@@ -257,8 +260,8 @@ public class snd_cache {
 
                                 int j;
                                 for (j = 0; j < Min(objectSize - i, blockSize); j++) {
-                                    min = amplitudeData.getShort(i + j) < min ? amplitudeData.getShort(i + j) : min;
-                                    max = amplitudeData.getShort(i + j) > max ? amplitudeData.getShort(i + j) : max;
+                                    min = (short) Math.min(ncd.get(i + j), min);
+                                    max = (short) Math.max(ncd.get(i + j), max);
                                 }
 
                                 amplitudeData.putShort((i / blockSize) * 2, min);
@@ -656,8 +659,8 @@ public class snd_cache {
             }
 
 //            soundCacheAllocator.FreeEmptyBaseBlocks();
-            common.Printf("%5ik referenced\n", useCount / 1024);
-            common.Printf("%5ik purged\n", purgeCount / 1024);
+            common.Printf("%5dk referenced\n", useCount / 1024);
+            common.Printf("%5dk purged\n", purgeCount / 1024);
             common.Printf("----------------------------------------\n");
         }
 

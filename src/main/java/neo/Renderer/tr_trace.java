@@ -49,7 +49,7 @@ public class tr_trace {
     public static localTrace_t R_LocalTrace(final idVec3 start, final idVec3 end, final float radius, final srfTriangles_s tri) {
         int i, j;
         byte[] cullBits;
-        idPlane[] planes = tr_main.R_ClearedStaticAlloc(4, idPlane.class);
+        idPlane[] planes = idPlane.generateArray(4);
         localTrace_t hit = new localTrace_t();
         int c_testEdges, c_testPlanes, c_intersect;
         idVec3 startDir;

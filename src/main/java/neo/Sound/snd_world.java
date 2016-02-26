@@ -2,16 +2,10 @@ package neo.Sound;
 
 import static java.lang.Math.atan;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 import neo.Renderer.Cinematic.idSndWindow;
 import neo.Renderer.Material.idMaterial;
@@ -34,8 +28,11 @@ import neo.Sound.snd_emitter.idSoundFade;
 
 import static neo.Sound.snd_local.SND_EPSILON;
 import static neo.Sound.snd_local.SOUND_MAX_CHANNELS;
+import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 
 import neo.Sound.snd_local.idSampleDecoder;
+import neo.Sound.snd_local.mminfo_s;
+import neo.Sound.snd_local.pcmwaveformat_s;
 import neo.Sound.snd_local.soundDemoCommand_t;
 
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_ALLOC_EMITTER;
@@ -64,6 +61,8 @@ import neo.Sound.snd_system.idSoundSystemLocal;
 
 import static neo.Sound.snd_system.idSoundSystemLocal.s_showLevelMeter;
 import static neo.Sound.snd_system.soundSystemLocal;
+import static neo.Sound.snd_wavefile.fourcc_riff;
+import static neo.Sound.snd_wavefile.mmioFOURCC;
 import static neo.Sound.sound.SCHANNEL_ANY;
 import static neo.Sound.sound.SCHANNEL_ONE;
 
@@ -116,7 +115,6 @@ import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
 
 import static org.lwjgl.openal.AL10.AL_BUFFER;
 import static org.lwjgl.openal.AL10.AL_BUFFERS_PROCESSED;
@@ -124,7 +122,6 @@ import static org.lwjgl.openal.AL10.AL_FALSE;
 import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
 import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
 import static org.lwjgl.openal.AL10.AL_GAIN;
-import static org.lwjgl.openal.AL10.AL_INVALID_NAME;
 import static org.lwjgl.openal.AL10.AL_LOOPING;
 import static org.lwjgl.openal.AL10.AL_MAX_DISTANCE;
 import static org.lwjgl.openal.AL10.AL_ORIENTATION;
@@ -718,94 +715,93 @@ public class snd_world {
 
         @Override
         public void AVIClose() {
-            throw new TODO_Exception();
-//            int i;
-//
-//            if (null == fpa[0]) {
-//                return;
-//            }
-//
-//            // make sure the final block is written
-//            game44kHz += MIXBUFFER_SAMPLES;
-//            AVIUpdate();
-//            game44kHz -= MIXBUFFER_SAMPLES;
-//
-//            for (i = 0; i < 6; i++) {
-//                if (fpa[i] != null) {
-//                    fileSystem.CloseFile(fpa[i]);
-//                    fpa[i] = null;
-//                }
-//            }
-//            if (soundSystemLocal.snd_audio_hw.GetNumberOfSpeakers() == 2) {
-//                // convert it to a wave file
-//                idFile rL, lL, wO;
-//                idStr name;
-//
-//                name = new idStr(aviDemoPath.toString() + aviDemoName + ".wav");
-//                wO = fileSystem.OpenFileWrite(name.toString());
-//                if (null == wO) {
-//                    common.Error("Couldn't write %s", name.c_str());
-//                }
-//
-//                name.oSet(aviDemoPath + "channel_right.raw");
-//                rL = fileSystem.OpenFileRead(name.toString());
-//                if (null == rL) {
-//                    common.Error("Couldn't open %s", name.c_str());
-//                }
-//
-//                name.oSet(aviDemoPath + "channel_left.raw");
-//                lL = fileSystem.OpenFileRead(name.toString());
-//                if (null == lL) {
-//                    common.Error("Couldn't open %s", name.c_str());
-//                }
-//
-//                int numSamples = rL.Length() / 2;
-//                mminfo_s info = new mminfo_s();
-//                pcmwaveformat_s format = new pcmwaveformat_s();
-//
-//                info.ckid = fourcc_riff;
-//                info.fccType = mmioFOURCC('W', 'A', 'V', 'E');
-//                info.cksize = (rL.Length() * 2) - 8 + 4 + 16 + 8 + 8;
-//                info.dwDataOffset = 12;
-//
-//                wO.Write(info, 12);
-//
-//                info.ckid = mmioFOURCC('f', 'm', 't', ' ');
-//                info.cksize = 16;
-//
-//                wO.Write(info, 8);
-//
-//                format.wBitsPerSample = 16;
-//                format.wf.nAvgBytesPerSec = 44100 * 4;		// sample rate * block align
-//                format.wf.nChannels = 2;
-//                format.wf.nSamplesPerSec = 44100;
-//                format.wf.wFormatTag = WAVE_FORMAT_TAG_PCM;
-//                format.wf.nBlockAlign = 4;					// channels * bits/sample / 8
-//
-//                wO.Write(format, 16);
-//
-//                info.ckid = mmioFOURCC('d', 'a', 't', 'a');
-//                info.cksize = rL.Length() * 2;
-//
-//                wO.Write(info, 8);
-//
-//                short s0, s1;
-//                for (i = 0; i < numSamples; i++) {
-//                    s0 = lL.ReadShort();
-//                    s1 = rL.ReadShort();
-//                    wO.WriteShort(s0);
-//                    wO.WriteShort(s1);
-//                }
-//
-//                fileSystem.CloseFile(wO);
-//                fileSystem.CloseFile(lL);
-//                fileSystem.CloseFile(rL);
-//
-//                fileSystem.RemoveFile(aviDemoPath + "channel_right.raw");
-//                fileSystem.RemoveFile(aviDemoPath + "channel_left.raw");
-//            }
-//
-//            soundSystemLocal.SetMute(false);
+            int i;
+
+            if (null == fpa[0]) {
+                return;
+            }
+
+            // make sure the final block is written
+            game44kHz += MIXBUFFER_SAMPLES;
+            AVIUpdate();
+            game44kHz -= MIXBUFFER_SAMPLES;
+
+            for (i = 0; i < 6; i++) {
+                if (fpa[i] != null) {
+                    fileSystem.CloseFile(fpa[i]);
+                    fpa[i] = null;
+                }
+            }
+            if (soundSystemLocal.snd_audio_hw.GetNumberOfSpeakers() == 2) {
+                // convert it to a wave file
+                idFile rL, lL, wO;
+                idStr name;
+
+                name = new idStr(aviDemoPath.toString() + aviDemoName + ".wav");
+                wO = fileSystem.OpenFileWrite(name.toString());
+                if (null == wO) {
+                    common.Error("Couldn't write %s", name.c_str());
+                }
+
+                name.oSet(aviDemoPath + "channel_right.raw");
+                rL = fileSystem.OpenFileRead(name.toString());
+                if (null == rL) {
+                    common.Error("Couldn't open %s", name.c_str());
+                }
+
+                name.oSet(aviDemoPath + "channel_left.raw");
+                lL = fileSystem.OpenFileRead(name.toString());
+                if (null == lL) {
+                    common.Error("Couldn't open %s", name.c_str());
+                }
+
+                int numSamples = rL.Length() / 2;
+                mminfo_s info = new mminfo_s();
+                pcmwaveformat_s format = new pcmwaveformat_s();
+
+                info.ckid = fourcc_riff;
+                info.fccType = mmioFOURCC('W', 'A', 'V', 'E');
+                info.cksize = (rL.Length() * 2) - 8 + 4 + 16 + 8 + 8;
+                info.dwDataOffset = 12;
+
+                wO.Write(info.Write(), 12);
+
+                info.ckid = mmioFOURCC('f', 'm', 't', ' ');
+                info.cksize = 16;
+
+                wO.Write(info.Write(), 8);
+
+                format.wBitsPerSample = 16;
+                format.wf.nAvgBytesPerSec = 44100 * 4;		// sample rate * block align
+                format.wf.nChannels = 2;
+                format.wf.nSamplesPerSec = 44100;
+                format.wf.wFormatTag = WAVE_FORMAT_TAG_PCM;
+                format.wf.nBlockAlign = 4;			// channels * bits/sample / 8
+
+                wO.Write(format.Write(), 16);
+
+                info.ckid = mmioFOURCC('d', 'a', 't', 'a');
+                info.cksize = rL.Length() * 2;
+
+                wO.Write(info.Write(), 8);
+
+                short s0, s1;
+                for (i = 0; i < numSamples; i++) {
+                    s0 = lL.ReadShort();
+                    s1 = rL.ReadShort();
+                    wO.WriteShort(s0);
+                    wO.WriteShort(s1);
+                }
+
+                fileSystem.CloseFile(wO);
+                fileSystem.CloseFile(lL);
+                fileSystem.CloseFile(rL);
+
+                fileSystem.RemoveFile(aviDemoPath + "channel_right.raw");
+                fileSystem.RemoveFile(aviDemoPath + "channel_left.raw");
+            }
+
+            soundSystemLocal.SetMute(false);
         }
 
         // SaveGame Support

@@ -9,8 +9,8 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.RAD2DEG;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -40,11 +40,11 @@ public class Force_Drag {
 
         public idForce_Drag() {
             damping = 0.5f;
-            dragPosition = vec3_zero;
+            dragPosition = getVec3_zero();
             physics = null;
             id = 0;
-            p = vec3_zero;
-            dragPosition = vec3_zero;
+            p = getVec3_zero();
+            dragPosition = getVec3_zero();
         }
         // virtual				~idForce_Drag( void );
 

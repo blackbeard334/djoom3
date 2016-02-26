@@ -32,9 +32,9 @@ import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.idlib.math.Vector.vec3_origin;
 import neo.ui.UserInterface.idUserInterface;
 
 /**
@@ -93,10 +93,10 @@ public class RenderWorld {
 
     public static class renderEntity_s {
 
-        public idRenderModel hModel;			// this can only be null if callback is set
+        public idRenderModel            hModel;            // this can only be null if callback is set
         //
-        public int entityNum;
-        public int bodyId;
+        public int                      entityNum;
+        public int                      bodyId;
         //
         // Entities that are expensive to generate, like skeletal models, can be
         // deferred until their bounds are found to be in view, in the frustum
@@ -107,66 +107,73 @@ public class RenderWorld {
         // The callback function should clear renderEntity->callback if it doesn't
         // want to be called again next time the entity is referenced (ie, if the
         // callback has now made the entity valid until the next updateEntity)
-        public idBounds bounds;			// only needs to be set for deferred models and md5s
+        public idBounds                 bounds;            // only needs to be set for deferred models and md5s
         public deferredEntityCallback_t callback;
         //
-        public ByteBuffer callbackData;			// used for whatever the callback wants
+        public ByteBuffer               callbackData;      // used for whatever the callback wants
         //
         // player bodies and possibly player shadows should be suppressed in views from
         // that player's eyes, but will show up in mirrors and other subviews
         // security cameras could suppress their model in their subviews if we add a way
         // of specifying a view number for a remoteRenderMap view
-        public int suppressSurfaceInViewID;
-        public int suppressShadowInViewID;
+        public int                      suppressSurfaceInViewID;
+        public int                      suppressShadowInViewID;
         //
         // world models for the player and weapons will not cast shadows from view weapon
         // muzzle flashes
-        public int suppressShadowInLightID;
+        public int                      suppressShadowInLightID;
         //
         // if non-zero, the surface and shadow (if it casts one)
         // will only show up in the specific view, ie: player weapons
-        public int allowSurfaceInViewID;
+        public int                      allowSurfaceInViewID;
         //
         // positioning
         // axis rotation vectors must be unit length for many
         // R_LocalToGlobal functions to work, so don't scale models!
         // axis vectors are [0] = forward, [1] = left, [2] = up
-        public idVec3 origin = new idVec3();
-        public idMat3 axis = new idMat3();
+        public idVec3                   origin;
+        public idMat3                   axis;
         //
         // texturing
-        public idMaterial customShader;		// if non-0, all surfaces will use this
-        public idMaterial referenceShader;		// used so flares can reference the proper light shader
-        public idDeclSkin customSkin;			// 0 for no remappings
-        public idSoundEmitter referenceSound;		// for shader sound tables, allowing effects to vary with sounds
-        public final float[] shaderParms = new float[MAX_ENTITY_SHADER_PARMS];	// can be used in any way by shader or model generation
+        public idMaterial               customShader;      // if non-0, all surfaces will use this
+        public idMaterial               referenceShader;   // used so flares can reference the proper light shader
+        public idDeclSkin               customSkin;        // 0 for no remappings
+        public idSoundEmitter           referenceSound;    // for shader sound tables, allowing effects to vary with sounds
+        public final float[]           shaderParms = new float[MAX_ENTITY_SHADER_PARMS];    // can be used in any way by shader or model generation
+
         // networking: see WriteGUIToSnapshot / ReadGUIFromSnapshot
-        public idUserInterface[] gui = new idUserInterface[MAX_RENDERENTITY_GUI];
+        public       idUserInterface[] gui         = new idUserInterface[MAX_RENDERENTITY_GUI];
         //
-        public renderView_s remoteRenderView;		// any remote camera surfaces will use this
+        public renderView_s remoteRenderView;              // any remote camera surfaces will use this
         //
-        public int numJoints;
-        public idJointMat[] joints;			// array of joints that will modify vertices.
-        // NULL if non-deformable model.  NOT freed by renderer
+        public int          numJoints;
+        public idJointMat[] joints;                        // array of joints that will modify vertices.
+                                                           // NULL if non-deformable model.  NOT freed by renderer
         //
-        public float modelDepthHack;			// squash depth range so particle effects don't clip into walls
+        public float        modelDepthHack;                // squash depth range so particle effects don't clip into walls
         //
         // options to override surface shader flags (replace with material parameters?)
-        public boolean noSelfShadow;			// cast shadows onto other objects,but not self
-        public boolean noShadow;			// no shadow at all
+        public boolean      noSelfShadow;                  // cast shadows onto other objects,but not self
+        public boolean      noShadow;                      // no shadow at all
         //
-        public boolean noDynamicInteractions;	// don't create any light / shadow interactions after
-        // the level load is completed.  This is a performance hack
-        // for the gigantic outdoor meshes in the monorail map, so
-        // all the lights in the moving monorail don't touch the meshes
+        public boolean      noDynamicInteractions;         // don't create any light / shadow interactions after
+                                                           // the level load is completed.  This is a performance hack
+                                                           // for the gigantic outdoor meshes in the monorail map, so
+                                                           // all the lights in the moving monorail don't touch the meshes
         //
-        public boolean weaponDepthHack;		// squash depth range so view weapons don't poke into walls
-        // this automatically implies noShadow
-        public int forceUpdate;			// force an update (NOTE: not a bool to keep this struct a multiple of 4 bytes)//TODO:
-        public int timeGroup;
-        public int xrayIndex;
+        public boolean      weaponDepthHack;               // squash depth range so view weapons don't poke into walls
+                                                           // this automatically implies noShadow
+        public int          forceUpdate;                   // force an update (NOTE: not a bool to keep this struct a multiple of 4 bytes)//TODO:
+        public int          timeGroup;
+        public int          xrayIndex;
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         public renderEntity_s() {
+            this.origin = new idVec3();
+            this.axis = new idMat3();
+            this.bounds = new idBounds();
         }
 
         public renderEntity_s(renderEntity_s newEntity) {
@@ -863,7 +870,7 @@ public class RenderWorld {
         }
 
         public void DebugBounds(final idVec4 color, final idBounds bounds) {
-            DebugBounds(color, bounds, vec3_origin);
+            DebugBounds(color, bounds, getVec3_origin());
         }
 
         public abstract void DebugBox(final idVec4 color, final idBox box, final int lifetime/* = 0*/);
@@ -950,7 +957,7 @@ public class RenderWorld {
             for (i = 0; i < tr.primaryWorld.lightDefs.Num(); i++) {
                 ldef = tr.primaryWorld.lightDefs.oGet(i);
                 if (null == ldef) {
-                    common.Printf("%4i: FREED\n", i);
+                    common.Printf("%4d: FREED\n", i);
                     continue;
                 }
 
@@ -968,7 +975,7 @@ public class RenderWorld {
                 }
                 totalRef += rCount;
 
-                common.Printf("%4i: %3i intr %2i refs %s\n", i, iCount, rCount, ldef.lightShader.GetName());
+                common.Printf("%4d: %3d intr %2d refs %s\n", i, iCount, rCount, ldef.lightShader.GetName());
                 active++;
             }
 
@@ -1007,7 +1014,7 @@ public class RenderWorld {
             for (i = 0; i < tr.primaryWorld.entityDefs.Num(); i++) {
                 mdef = tr.primaryWorld.entityDefs.oGet(i);
                 if (null == mdef) {
-                    common.Printf("%4i: FREED\n", i);
+                    common.Printf("%4d: FREED\n", i);
                     continue;
                 }
 
@@ -1025,7 +1032,7 @@ public class RenderWorld {
                 }
                 totalRef += rCount;
 
-                common.Printf("%4i: %3i intr %2i refs %s\n", i, iCount, rCount, mdef.parms.hModel.Name());
+                common.Printf("%4d: %3d intr %2d refs %s\n", i, iCount, rCount, mdef.parms.hModel.Name());
                 active++;
             }
 

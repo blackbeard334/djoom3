@@ -6,8 +6,8 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Plane.ON_EPSILON;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -89,7 +89,7 @@ public class AASBuild_ledge {
             planes[0].FitThroughPoint(start);
             // axial bevels at start and end point
             i = size.oGet(1) > size.oGet(0) ? 1 : 0;
-            normal = vec3_origin;
+            normal = getVec3_origin();
             normal.oSet(i, 1.0f);
             j = end.oGet(i) > start.oGet(i) ? 1 : 0;
             planes[1 + j].SetNormal(normal);
@@ -99,7 +99,7 @@ public class AASBuild_ledge {
             numExpandedPlanes = 3;
             // if additional bevels are required
             if (idMath.Fabs(size.oGet(/*!i*/1 ^ i)) > 0.01f) {
-                normal = vec3_origin;
+                normal = getVec3_origin();
                 normal.oSet(/*!i]*/1 ^ i, 1.0f);
                 j = end.oGet(/*!i]*/1 ^ i) > start.oGet(/*!i]*/1 ^ i) ? 1 : 0;
                 planes[3 + j].SetNormal(normal);

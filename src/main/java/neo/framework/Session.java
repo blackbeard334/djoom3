@@ -6,7 +6,11 @@ import static neo.Renderer.ModelManager.renderModelManager;
 import neo.Renderer.RenderWorld.idRenderWorld;
 import static neo.Sound.snd_system.soundSystem;
 import neo.Sound.sound.idSoundWorld;
+
+import static neo.TempDump.*;
 import static neo.TempDump.SERIAL_SIZE;
+
+import neo.TempDump;
 import neo.TempDump.SERiAL;
 import static neo.TempDump.isNotNullOrEmpty;
 import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
@@ -69,17 +73,17 @@ public class Session {
 
         @Override
         public ByteBuffer AllocBuffer() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new TODO_Exception();
         }
 
         @Override
         public void Read(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new TODO_Exception();
         }
 
         @Override
         public ByteBuffer Write() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new TODO_Exception();
         }
     };
     public static final int MAX_LOGGED_STATS = 60 * 120;		// log every half second 
@@ -475,58 +479,58 @@ public class Session {
                 return;
             }
             recursed = true;
-
-            do {
-                // in case we're already waiting for an auth to come back to us ( may happen exceptionally )
-                if (sessLocal.MaybeWaitOnCDKey()) {
-                    if (sessLocal.CDKeysAreValid(true)) {
-                        recursed = false;
-                        return;
-                    }
-                }
-                // the auth server may have replied and set an error message, otherwise use a default
-                String prompt_msg = sessLocal.GetAuthMsg();
-                if (prompt_msg.isEmpty()/*[ 0 ] == '\0'*/) {
-                    prompt_msg = common.GetLanguageDict().GetString("#str_04308");
-                }
-//                for (int d = 0; d < common.GetLanguageDict().args.Size(); d++) {
-//                    LangDict.idLangKeyValue bla = common.GetLanguageDict().args.oGet(d);
-//                    System.out.println(bla.key + " >>> " + bla.value);
+            //HACKME::5:disable the serial messageBox
+//            do {
+//                // in case we're already waiting for an auth to come back to us ( may happen exceptionally )
+//                if (sessLocal.MaybeWaitOnCDKey()) {
+//                    if (sessLocal.CDKeysAreValid(true)) {
+//                        recursed = false;
+//                        return;
+//                    }
 //                }
-                retkey = sessLocal.MessageBox(MSG_CDKEY, prompt_msg, common.GetLanguageDict().GetString("#str_04305"), true, null, null, true);
-                if (retkey != null) {
-                    if (sessLocal.CheckKey(retkey, false, valid)) {
-                        // if all went right, then we may have sent an auth request to the master ( unless the prompt is used during a net connect )
-                        boolean canExit = true;
-                        if (sessLocal.MaybeWaitOnCDKey()) {
-                            // wait on auth reply, and got denied, prompt again
-                            if (!sessLocal.CDKeysAreValid(true)) {
-                                // server says key is invalid - MaybeWaitOnCDKey was interrupted by a CDKeysAuthReply call, which has set the right error message
-                                // the invalid keys have also been cleared in the process
-                                sessLocal.MessageBox(MSG_OK, sessLocal.GetAuthMsg(), common.GetLanguageDict().GetString("#str_04310"), true, null, null, true);
-                                canExit = false;
-                            }
-                        }
-                        if (canExit) {
-                            // make sure that's saved on file
-                            sessLocal.WriteCDKey();
-                            sessLocal.MessageBox(MSG_OK, common.GetLanguageDict().GetString("#str_04307"), common.GetLanguageDict().GetString("#str_04305"), true, null, null, true);
-                            break;
-                        }
-                    } else {
-                        // offline check sees key invalid
-                        // build a message about keys being wrong. do not attempt to change the current key state though
-                        // ( the keys may be valid, but user would have clicked on the dialog anyway, that kind of thing )
-                        idStr msg = new idStr();
-                        idAsyncNetwork.BuildInvalidKeyMsg(msg, valid);
-                        sessLocal.MessageBox(MSG_OK, msg.toString(), common.GetLanguageDict().GetString("#str_04310"), true, null, null, true);
-                    }
-                } else if (args.Argc() == 2 && idStr.Icmp(args.Argv(1), "force") == 0) {
-                    // cancelled in force mode
-                    cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "quit\n");
-                    cmdSystem.ExecuteCommandBuffer();
-                }
-            } while (retkey != null);
+//                // the auth server may have replied and set an error message, otherwise use a default
+//                String prompt_msg = sessLocal.GetAuthMsg();
+//                if (prompt_msg.isEmpty()/*[ 0 ] == '\0'*/) {
+//                    prompt_msg = common.GetLanguageDict().GetString("#str_04308");
+//                }
+////                for (int d = 0; d < common.GetLanguageDict().args.Size(); d++) {
+////                    LangDict.idLangKeyValue bla = common.GetLanguageDict().args.oGet(d);
+////                    System.out.println(bla.key + " >>> " + bla.value);
+////                }
+//                retkey = sessLocal.MessageBox(MSG_CDKEY, prompt_msg, common.GetLanguageDict().GetString("#str_04305"), true, null, null, true);
+//                if (retkey != null) {
+//                    if (sessLocal.CheckKey(retkey, false, valid)) {
+//                        // if all went right, then we may have sent an auth request to the master ( unless the prompt is used during a net connect )
+//                        boolean canExit = true;
+//                        if (sessLocal.MaybeWaitOnCDKey()) {
+//                            // wait on auth reply, and got denied, prompt again
+//                            if (!sessLocal.CDKeysAreValid(true)) {
+//                                // server says key is invalid - MaybeWaitOnCDKey was interrupted by a CDKeysAuthReply call, which has set the right error message
+//                                // the invalid keys have also been cleared in the process
+//                                sessLocal.MessageBox(MSG_OK, sessLocal.GetAuthMsg(), common.GetLanguageDict().GetString("#str_04310"), true, null, null, true);
+//                                canExit = false;
+//                            }
+//                        }
+//                        if (canExit) {
+//                            // make sure that's saved on file
+//                            sessLocal.WriteCDKey();
+//                            sessLocal.MessageBox(MSG_OK, common.GetLanguageDict().GetString("#str_04307"), common.GetLanguageDict().GetString("#str_04305"), true, null, null, true);
+//                            break;
+//                        }
+//                    } else {
+//                        // offline check sees key invalid
+//                        // build a message about keys being wrong. do not attempt to change the current key state though
+//                        // ( the keys may be valid, but user would have clicked on the dialog anyway, that kind of thing )
+//                        idStr msg = new idStr();
+//                        idAsyncNetwork.BuildInvalidKeyMsg(msg, valid);
+//                        sessLocal.MessageBox(MSG_OK, msg.toString(), common.GetLanguageDict().GetString("#str_04310"), true, null, null, true);
+//                    }
+//                } else if (args.Argc() == 2 && idStr.Icmp(args.Argv(1), "force") == 0) {
+//                    // cancelled in force mode
+//                    cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "quit\n");
+//                    cmdSystem.ExecuteCommandBuffer();
+//                }
+//            } while (retkey != null);
             recursed = false;
         }
     };

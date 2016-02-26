@@ -853,8 +853,7 @@ public class BitMsg {
             CheckOverflow(length << 3);
 
             ptr = new byte[writeData.capacity() - curSize];
-//	ptr = writeData + curSize;
-            writeData.get(ptr, curSize, ptr.length);
+            ((ByteBuffer) writeData.mark().position(curSize)).get(ptr).rewind();
             curSize += length;
             return ptr;
         }

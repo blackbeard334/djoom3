@@ -24,11 +24,13 @@ import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.containers.BinSearch.idBinSearch_LessEqual;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idWinding;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
+
+import java.util.stream.Stream;
 
 /**
  *
@@ -60,7 +62,7 @@ public class tr_deform {
             newTri.verts = null;
         }
 
-        newTri.ambientCache = vertexCache.AllocFrameTemp(ac, newTri.numVerts * idDrawVert.SIZE_B);
+        newTri.ambientCache = vertexCache.AllocFrameTemp(ac, newTri.numVerts * idDrawVert.BYTES);
         // if we are out of vertex cache, leave it the way it is
         if (newTri.ambientCache != null) {
             drawSurf.geo = newTri;
@@ -100,7 +102,7 @@ public class tr_deform {
         R_GlobalVectorToLocal(surf.space.modelMatrix, tr.viewDef.renderView.viewaxis.oGet(2), upDir);
 
         if (tr.viewDef.isMirror) {
-            leftDir = vec3_origin.oMinus(leftDir);
+            leftDir = getVec3_origin().oMinus(leftDir);
         }
 
         // this srfTriangles_t and all its indexes and caches are in frame
@@ -110,7 +112,7 @@ public class tr_deform {
         newTri.numIndexes = tri.numIndexes;
         newTri.indexes = new int[newTri.numIndexes];// R_FrameAlloc(newTri.numIndexes);
 
-        idDrawVert[] ac = new idDrawVert[newTri.numVerts];
+        idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(newTri.numVerts).toArray(idDrawVert[]::new);
 
         for (i = 0; i < tri.numVerts; i += 4) {
             // find the midpoint
@@ -555,7 +557,7 @@ public class tr_deform {
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
         newTri.numVerts = 16;
         newTri.numIndexes = 18 * 3;
-        newTri.indexes = (int[]) R_FrameAlloc(newTri.numIndexes);
+        newTri.indexes = new int[newTri.numIndexes];
 
         idDrawVert[] ac = new idDrawVert[newTri.numVerts];
 
@@ -617,7 +619,7 @@ public class tr_deform {
             d1.Normalize();
             edgeDir[i][1].Cross(toEye, d1);
             edgeDir[i][1].Normalize();
-            edgeDir[i][1] = vec3_origin.oMinus(edgeDir[i][1]);
+            edgeDir[i][1] = getVec3_origin().oMinus(edgeDir[i][1]);
 
             idVec3 d2 = tri.verts[indexes[(i + 3) % 4]].xyz.oMinus(localViewer);
             d2.Normalize();
@@ -932,11 +934,9 @@ public class tr_deform {
         // memory, and will be automatically disposed of
         // the surface cannot have more indexes or verts than the original
         newTri = new srfTriangles_s();// R_ClearedFrameAlloc(sizeof(newTri));
-//	memset( newTri, 0, sizeof( *newTri ) );
-        newTri.clear();
         newTri.numVerts = tri.numVerts;
         newTri.numIndexes = tri.numIndexes;
-        newTri.indexes = (int[]) R_FrameAlloc(tri.numIndexes);
+        newTri.indexes = new int[tri.numIndexes];
         idDrawVert[] ac = new idDrawVert[tri.numVerts];
 
         newTri.numIndexes = 0;
@@ -1078,7 +1078,7 @@ public class tr_deform {
         g.renderEnt = renderEntity;
         g.renderView = viewDef.renderView;
         g.origin.Zero();
-        g.axis = mat3_identity;
+        g.axis.oSet(getMat3_identity());
 
         for (int currentTri = 0; currentTri < ((useArea) ? 1 : numSourceTris); currentTri++) {
 
@@ -1111,7 +1111,7 @@ public class tr_deform {
                 tri.indexes = new int[tri.numIndexes];// R_FrameAlloc(tri.numIndexes);
 
                 // just always draw the particles
-                tri.bounds = new idBounds(stage.bounds);
+                tri.bounds.oSet(stage.bounds);
 
                 tri.numVerts = 0;
 
@@ -1196,7 +1196,7 @@ public class tr_deform {
                     f2 *= ft;
                     f3 *= ft;
 
-                    g.origin = v1.xyz.oMultiply(f1).oPlus(v2.xyz.oMultiply(f2).oPlus(v3.xyz.oMultiply(f3)));
+                    g.origin.oSet(v1.xyz.oMultiply(f1).oPlus(v2.xyz.oMultiply(f2).oPlus(v3.xyz.oMultiply(f3))));
                     g.axis.oSet(0, v1.tangents[0].oMultiply(f1).oPlus(v2.tangents[0].oMultiply(f2).oPlus(v3.tangents[0].oMultiply(f3))));
                     g.axis.oSet(1, v1.tangents[1].oMultiply(f1).oPlus(v2.tangents[1].oMultiply(f2).oPlus(v3.tangents[1].oMultiply(f3))));
                     g.axis.oSet(2, v1.normal.oMultiply(f1).oPlus(v2.normal.oMultiply(f2).oPlus(v3.normal.oMultiply(f3))));
@@ -1225,7 +1225,7 @@ public class tr_deform {
                         indexes += 6;
                     }
                     tri.numIndexes = indexes;
-                    tri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.SIZE_B);
+                    tri.ambientCache = vertexCache.AllocFrameTemp(tri.verts, tri.numVerts * idDrawVert.BYTES);
                     if (tri.ambientCache != null) {
                         // add the drawsurf
                         R_AddDrawSurf(tri, surf.space, renderEntity, stage.material, surf.scissorRect);

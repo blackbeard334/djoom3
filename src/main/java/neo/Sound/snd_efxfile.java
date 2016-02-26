@@ -7,6 +7,8 @@ import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
+import org.lwjgl.openal.EFX10;
+import org.lwjgl.openal.EFXUtil;
 
 /**
  *
@@ -51,114 +53,139 @@ public class snd_efxfile {
             return false;
         }
 
-        public boolean ReadEffect(idLexer lexer, idSoundEffect effect) {
-            throw new TODO_Exception();
-//	idToken name, token;
-//	
-//	if ( !src.ReadToken( &token ) )
-//		return false;
+        public boolean ReadEffect(idLexer src, idSoundEffect effect) {
+            return false;
+//            idToken name, token;
 //
-//	// reverb effect
-//	if ( token == "reverb" ) {
-//		EAXREVERBPROPERTIES *reverb = ( EAXREVERBPROPERTIES * )Mem_Alloc( sizeof( EAXREVERBPROPERTIES ) );
-//		if ( reverb ) {
-//			src.ReadTokenOnLine( &token );
-//			name = token;
-//				
-//			if ( !src.ReadToken( &token ) ) {
-//				Mem_Free( reverb );
-//				return false;
-//			}
-//			
-//			if ( token != "{" ) {
-//				src.Error( "idEFXFile::ReadEffect: { not found, found %s", token.c_str() );
-//				Mem_Free( reverb );
-//				return false;
-//			}
-//			
-//			do {
-//				if ( !src.ReadToken( &token ) ) {
-//					src.Error( "idEFXFile::ReadEffect: EOF without closing brace" );
-//					Mem_Free( reverb );
-//					return false;
-//				}
+//            if (!src.ReadToken(token))
+//                return false;
 //
-//				if ( token == "}" ) {
-//					effect.name = name;
-//					effect.data = ( void * )reverb;
-//					effect.datasize = sizeof( EAXREVERBPROPERTIES );
-//					break;
-//				}
+//            // reverb effect
+//            if (token.equals("reverb")) {
+//                EAXREVERBPROPERTIES reverb = (EAXREVERBPROPERTIES *) Mem_Alloc(sizeof(EAXREVERBPROPERTIES));
+//                if (EFXUtil.isEffectSupported(EFX10.AL_EFFECT_REVERB)) {
+//                    src.ReadTokenOnLine(token);
+//                    name = token;
 //
-//				if ( token == "environment" ) {
-//					src.ReadTokenOnLine( &token );
-//					reverb.ulEnvironment = token.GetUnsignedLongValue();
-//				} else if ( token == "environment size" ) {
-//					reverb.flEnvironmentSize = src.ParseFloat();
-//				} else if ( token == "environment diffusion" ) {
-//					reverb.flEnvironmentDiffusion = src.ParseFloat();
-//				} else if ( token == "room" ) {
-//					reverb.lRoom = src.ParseInt();
-//				} else if ( token == "room hf" ) {
-//					reverb.lRoomHF = src.ParseInt();
-//				} else if ( token == "room lf" ) {
-//					reverb.lRoomLF = src.ParseInt();
-//				} else if ( token == "decay time" ) {
-//					reverb.flDecayTime = src.ParseFloat();
-//				} else if ( token == "decay hf ratio" ) {
-//					reverb.flDecayHFRatio = src.ParseFloat();
-//				} else if ( token == "decay lf ratio" ) {
-//					reverb.flDecayLFRatio = src.ParseFloat();
-//				} else if ( token == "reflections" ) {
-//					reverb.lReflections = src.ParseInt();
-//				} else if ( token == "reflections delay" ) {
-//					reverb.flReflectionsDelay = src.ParseFloat();
-//				} else if ( token == "reflections pan" ) {
-//					reverb.vReflectionsPan.x = src.ParseFloat();
-//					reverb.vReflectionsPan.y = src.ParseFloat();
-//					reverb.vReflectionsPan.z = src.ParseFloat();
-//				} else if ( token == "reverb" ) {
-//					reverb.lReverb = src.ParseInt();
-//				} else if ( token == "reverb delay" ) {
-//					reverb.flReverbDelay = src.ParseFloat();
-//				} else if ( token == "reverb pan" ) {
-//					reverb.vReverbPan.x = src.ParseFloat();
-//					reverb.vReverbPan.y = src.ParseFloat();
-//					reverb.vReverbPan.z = src.ParseFloat();
-//				} else if ( token == "echo time" ) {
-//					reverb.flEchoTime = src.ParseFloat();
-//				} else if ( token == "echo depth" ) {
-//					reverb.flEchoDepth = src.ParseFloat();
-//				} else if ( token == "modulation time" ) {
-//					reverb.flModulationTime = src.ParseFloat();
-//				} else if ( token == "modulation depth" ) {
-//					reverb.flModulationDepth = src.ParseFloat();
-//				} else if ( token == "air absorption hf" ) {
-//					reverb.flAirAbsorptionHF = src.ParseFloat();
-//				} else if ( token == "hf reference" ) {
-//					reverb.flHFReference = src.ParseFloat();
-//				} else if ( token == "lf reference" ) {
-//					reverb.flLFReference = src.ParseFloat();
-//				} else if ( token == "room rolloff factor" ) {
-//					reverb.flRoomRolloffFactor = src.ParseFloat();
-//				} else if ( token == "flags" ) {
-//					src.ReadTokenOnLine( &token );
-//					reverb.ulFlags = token.GetUnsignedLongValue();
-//				} else {
-//					src.ReadTokenOnLine( &token );
-//					src.Error( "idEFXFile::ReadEffect: Invalid parameter in reverb definition" );
-//					Mem_Free( reverb );
-//				}
-//			} while ( 1 );
+//                    if (!src.ReadToken(token)) {
+////				Mem_Free( reverb );
+//                        return false;
+//                    }
 //
-//			return true;
-//		}
-//	} else {
-//		// other effect (not supported at the moment)
-//		src.Error( "idEFXFile::ReadEffect: Unknown effect definition" );
-//	}
+//                    if (!token.equals("{")) {
+//                        src.Error("idEFXFile::ReadEffect: { not found, found %s", token.c_str());
+////				Mem_Free( reverb );
+//                        return false;
+//                    }
 //
-//	return false;
+//                    do {
+//                        if (!src.ReadToken(token)) {
+//                            src.Error("idEFXFile::ReadEffect: EOF without closing brace");
+////					Mem_Free( reverb );
+//                            return false;
+//                        }
+//
+//                        if (token.equals("}")) {
+//                            effect.name = name;
+//                            effect.data = reverb;
+//                            effect.datasize = sizeof(EAXREVERBPROPERTIES);
+//                            break;
+//                        }
+//
+//                        switch (token.toString()) {
+//                            case "environment":
+//                                src.ReadTokenOnLine(token);
+//                                reverb.ulEnvironment = token.GetUnsignedLongValue();
+//                                break;
+//                            case "environment size":
+//                                reverb.flEnvironmentSize = src.ParseFloat();
+//                                break;
+//                            case "environment diffusion":
+//                                reverb.flEnvironmentDiffusion = src.ParseFloat();
+//                                break;
+//                            case "room":
+//                                reverb.lRoom = src.ParseInt();
+//                                break;
+//                            case "room hf":
+//                                reverb.lRoomHF = src.ParseInt();
+//                                break;
+//                            case "room lf":
+//                                reverb.lRoomLF = src.ParseInt();
+//                                break;
+//                            case "decay time":
+//                                reverb.flDecayTime = src.ParseFloat();
+//                                break;
+//                            case "decay hf ratio":
+//                                reverb.flDecayHFRatio = src.ParseFloat();
+//                                break;
+//                            case "decay lf ratio":
+//                                reverb.flDecayLFRatio = src.ParseFloat();
+//                                break;
+//                            case "reflections":
+//                                reverb.lReflections = src.ParseInt();
+//                                break;
+//                            case "reflections delay":
+//                                reverb.flReflectionsDelay = src.ParseFloat();
+//                                break;
+//                            case "reflections pan":
+//                                reverb.vReflectionsPan.x = src.ParseFloat();
+//                                reverb.vReflectionsPan.y = src.ParseFloat();
+//                                reverb.vReflectionsPan.z = src.ParseFloat();
+//                                break;
+//                            case "reverb":
+//                                reverb.lReverb = src.ParseInt();
+//                                break;
+//                            case "reverb delay":
+//                                reverb.flReverbDelay = src.ParseFloat();
+//                                break;
+//                            case "reverb pan":
+//                                reverb.vReverbPan.x = src.ParseFloat();
+//                                reverb.vReverbPan.y = src.ParseFloat();
+//                                reverb.vReverbPan.z = src.ParseFloat();
+//                                break;
+//                            case "echo time":
+//                                reverb.flEchoTime = src.ParseFloat();
+//                                break;
+//                            case "echo depth":
+//                                reverb.flEchoDepth = src.ParseFloat();
+//                                break;
+//                            case "modulation time":
+//                                reverb.flModulationTime = src.ParseFloat();
+//                                break;
+//                            case "modulation depth":
+//                                reverb.flModulationDepth = src.ParseFloat();
+//                                break;
+//                            case "air absorption hf":
+//                                reverb.flAirAbsorptionHF = src.ParseFloat();
+//                                break;
+//                            case "hf reference":
+//                                reverb.flHFReference = src.ParseFloat();
+//                                break;
+//                            case "l`f reference":
+//                                reverb.flLFReference = src.ParseFloat();
+//                                break;
+//                            case "room rolloff factor":
+//                                reverb.flRoomRolloffFactor = src.ParseFloat();
+//                                break;
+//                            case "flags":
+//                                src.ReadTokenOnLine(token);
+//                                reverb.ulFlags = token.GetUnsignedLongValue();
+//                                break;
+//                            default:
+//                                src.ReadTokenOnLine(token);
+//                                src.Error("idEFXFile::ReadEffect: Invalid parameter in reverb definition");
+////					Mem_Free( reverb );
+//                        }
+//                    } while (true);
+//
+//                    return true;
+//                }
+//            } else {
+//                // other effect (not supported at the moment)
+//                src.Error("idEFXFile::ReadEffect: Unknown effect definition");
+//            }
+//
+//            return false;
         }
 
         public boolean LoadFile(final String filename, boolean OSPath /*= false*/) {
@@ -179,12 +206,12 @@ public class snd_efxfile {
                 return false;
             }
 
-            while (!src.EndOfFile()) {
-                idSoundEffect effect = new idSoundEffect();
-                if (ReadEffect(src, effect)) {
-                    effects.Append(effect);
-                }
-            };
+//            while (!src.EndOfFile()) {//TODO: would be nice to have some reverb
+//                idSoundEffect effect = new idSoundEffect();
+//                if (ReadEffect(src, effect)) {
+//                    effects.Append(effect);
+//                }
+//            };
 
             return true;
         }

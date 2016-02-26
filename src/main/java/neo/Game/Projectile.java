@@ -89,16 +89,16 @@ import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.TraceModel.idTraceModel;
-import static neo.idlib.math.Angles.ang_zero;
+import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
-import static neo.idlib.math.Vector.vec3_zero;
 
 /**
  *
@@ -180,9 +180,7 @@ public class Projectile {
             LAUNCHED,//= 2,
             FIZZLED,//= 3,
             EXPLODED,//= 4
-        }
-
-        ;
+        };
         //
         protected projectileState_t state;
         //
@@ -193,32 +191,35 @@ public class Projectile {
         // public :
         // CLASS_PROTOTYPE( idProjectile );
         public idProjectile() {
-            owner = null;
+            owner = new idEntityPtr<>();
             lightDefHandle = -1;
             thrust = 0.0f;
             thrust_end = 0;
             smokeFly = null;
             smokeFlyTime = 0;
             state = SPAWNED;
-            lightOffset = vec3_zero;
+            lightOffset = getVec3_zero();
             lightStartTime = 0;
             lightEndTime = 0;
-            lightColor = vec3_zero;
+            lightColor = getVec3_zero();
             state = SPAWNED;
             damagePower = 1.0f;
-            //	memset( &projectileFlags, 0, sizeof( projectileFlags ) );
-            projectileFlags = new projectileFlags_s();
-            //	memset( &renderLight, 0, sizeof( renderLight ) );
-            renderLight = new renderLight_s();
+            projectileFlags = new projectileFlags_s();//memset( &projectileFlags, 0, sizeof( projectileFlags ) );
+            renderLight = new renderLight_s();//memset( &renderLight, 0, sizeof( renderLight ) );
+            
             // note: for net_instanthit projectiles, we will force this back to false at spawn time
             fl.networkSync = true;
 
             netSyncPhysics = false;
+            
+            physicsObj = new idPhysics_RigidBody();
         }
         // virtual					~idProjectile();
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             physicsObj.SetSelf(this);
             physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
             physicsObj.SetContents(0);
@@ -584,9 +585,9 @@ public class Projectile {
 
 //		memset( &collision, 0, sizeof( collision ) );
                 collision = new trace_s();
-                collision.endAxis = GetPhysics().GetAxis();
-                collision.endpos = GetPhysics().GetOrigin();
-                collision.c.point = GetPhysics().GetOrigin();
+                collision.endAxis.oSet(GetPhysics().GetAxis());
+                collision.endpos.oSet(GetPhysics().GetOrigin());
+                collision.c.point.oSet(GetPhysics().GetOrigin());
                 collision.c.normal.Set(0, 0, 1);
                 Explode(collision, null);
                 physicsObj.ClearContacts();
@@ -1078,12 +1079,12 @@ public class Projectile {
             while (state != newState) {
                 switch (state) {
                     case SPAWNED: {
-                        Create(owner.GetEntity(), vec3_origin, new idVec3(1, 0, 0));
+                        Create(owner.GetEntity(), getVec3_origin(), new idVec3(1, 0, 0));
                         break;
                     }
                     case CREATED: {
                         // the right origin and direction are required if you want bullet traces
-                        Launch(vec3_origin, new idVec3(1, 0, 0), vec3_origin);
+                        Launch(getVec3_origin(), new idVec3(1, 0, 0), getVec3_origin());
                         break;
                     }
                     case LAUNCHED: {
@@ -1093,9 +1094,9 @@ public class Projectile {
                             trace_s collision;
 //					memset( &collision, 0, sizeof( collision ) );
                             collision = new trace_s();
-                            collision.endAxis = GetPhysics().GetAxis();
-                            collision.endpos = GetPhysics().GetOrigin();
-                            collision.c.point = GetPhysics().GetOrigin();
+                            collision.endAxis.oSet(GetPhysics().GetAxis());
+                            collision.endpos.oSet(GetPhysics().GetOrigin());
+                            collision.c.point.oSet(GetPhysics().GetOrigin());
                             collision.c.normal.Set(0, 0, 1);
                             Explode(collision, null);
                         }
@@ -1156,7 +1157,7 @@ public class Projectile {
                     collision.c.point.oSet(0, msg.ReadFloat());
                     collision.c.point.oSet(1, msg.ReadFloat());
                     collision.c.point.oSet(2, msg.ReadFloat());
-                    collision.c.normal = msg.ReadDir(24);
+                    collision.c.normal.oSet(msg.ReadDir(24));
                     int index = gameLocal.ClientRemapDecl(DECL_MATERIAL, msg.ReadLong());
                     collision.c.material = (index != -1) ? (idMaterial) (declManager.DeclByIndex(DECL_MATERIAL, index)) : null;
                     velocity.oSet(0, msg.ReadFloat(5, 10));
@@ -1206,9 +1207,9 @@ public class Projectile {
 
 //	memset( &collision, 0, sizeof( collision ) );
             collision = new trace_s();
-            collision.endAxis = GetPhysics().GetAxis();
-            collision.endpos = GetPhysics().GetOrigin();
-            collision.c.point = GetPhysics().GetOrigin();
+            collision.endAxis.oSet(GetPhysics().GetAxis());
+            collision.endpos.oSet(GetPhysics().GetOrigin());
+            collision.c.point.oSet(GetPhysics().GetOrigin());
             collision.c.normal.Set(0, 0, 1);
             AddDefaultDamageEffect(collision, collision.c.normal);
             Explode(collision, null);
@@ -1234,11 +1235,10 @@ public class Projectile {
             if (!other.equals(owner.GetEntity())) {
                 trace_s collision;
 
-//		memset( &collision, 0, sizeof( collision ) );
-                collision = new trace_s();
-                collision.endAxis = GetPhysics().GetAxis();
-                collision.endpos = GetPhysics().GetOrigin();
-                collision.c.point = GetPhysics().GetOrigin();
+                collision = new trace_s();//memset( &collision, 0, sizeof( collision ) );
+                collision.endAxis.oSet(GetPhysics().GetAxis());
+                collision.endpos.oSet(GetPhysics().GetOrigin());
+                collision.c.point.oSet(GetPhysics().GetOrigin());
                 collision.c.normal.Set(0, 0, 1);
                 AddDefaultDamageEffect(collision, collision.c.normal);
                 Explode(collision, null);
@@ -1247,16 +1247,6 @@ public class Projectile {
 
         private void Event_GetProjectileState() {
             idThread.ReturnInt(etoi(state));
-        }
-
-        @Override
-        public Class.idClass CreateInstance() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-        @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
 
@@ -1270,31 +1260,31 @@ public class Projectile {
     public static class idGuidedProjectile extends idProjectile {
         // CLASS_PROTOTYPE( idGuidedProjectile );
 
-        private idAngles rndScale;
-        private idAngles rndAng;
-        private idAngles angles;
-        private int rndUpdateTime;
-        private float turn_max;
-        private float clamp_dist;
-        private boolean burstMode;
-        private boolean unGuided;
-        private float burstDist;
-        private float burstVelocity;
+        private   idAngles              rndScale;
+        private   idAngles              rndAng;
+        private   idAngles              angles;
+        private   int                   rndUpdateTime;
+        private   float                 turn_max;
+        private   float                 clamp_dist;
+        private   boolean               burstMode;
+        private   boolean               unGuided;
+        private   float                 burstDist;
+        private   float                 burstVelocity;
         //
-        protected float speed;
+        protected float                 speed;
         protected idEntityPtr<idEntity> enemy;
         //
         //
 
         public idGuidedProjectile() {
-            enemy = null;
+            enemy = new idEntityPtr<>();
             speed = 0.0f;
             turn_max = 0.0f;
             clamp_dist = 0.0f;
-            rndScale = new idAngles(ang_zero);
-            rndAng = new idAngles(ang_zero);
+            rndScale = getAng_zero();
+            rndAng = getAng_zero();
             rndUpdateTime = 0;
-            angles = ang_zero;
+            angles = getAng_zero();
             burstMode = false;
             burstDist = 0;
             burstVelocity = 0.0f;
@@ -1537,7 +1527,7 @@ public class Projectile {
                 if (killPhase) {
                     // orbit the mob, cascading down
                     if (gameLocal.time < orbitTime + 1500) {
-                        if (!gameLocal.smokeParticles.EmitSmoke(smokeKill, smokeKillTime, gameLocal.random.CRandomFloat(), orbitOrg, mat3_identity)) {
+                        if (!gameLocal.smokeParticles.EmitSmoke(smokeKill, smokeKillTime, gameLocal.random.CRandomFloat(), orbitOrg, getMat3_identity())) {
                             smokeKillTime = gameLocal.time;
                         }
                     }
@@ -1608,7 +1598,7 @@ public class Projectile {
                 out.oSet(act.GetEyePosition());
                 return;
             }
-            if (!destOrg.equals(vec3_zero)) {
+            if (!destOrg.equals(getVec3_zero())) {
                 out.oSet(destOrg);
                 return;
             }
@@ -1668,18 +1658,19 @@ public class Projectile {
         // CLASS_PROTOTYPE( idBFGProjectile );
 
         private idList<beamTarget_t> beamTargets;
-        private renderEntity_s secondModel;
-        private int/*qhandle_t*/ secondModelDefHandle;
-        private int nextDamageTime;
-        private idStr damageFreq;
+        private renderEntity_s       secondModel;
+        private int/*qhandle_t*/     secondModelDefHandle;
+        private int                  nextDamageTime;
+        private idStr                damageFreq;
         //
         //
 
         public idBFGProjectile() {
-//	memset( &secondModel, 0, sizeof( secondModel ) );
+            beamTargets = new idList<>();
             secondModel = new renderEntity_s();
             secondModelDefHandle = -1;
             nextDamageTime = 0;
+            damageFreq = new idStr();
         }
         // ~idBFGProjectile();
 
@@ -1729,14 +1720,15 @@ public class Projectile {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             beamTargets.Clear();
-//	memset( &secondModel, 0, sizeof( secondModel ) );
-            secondModel = new renderEntity_s();
+            secondModel = new renderEntity_s();//memset( &secondModel, 0, sizeof( secondModel ) );
             secondModelDefHandle = -1;
             final String temp = spawnArgs.GetString("model_two");
             if (temp != null && !temp.isEmpty()) {
                 secondModel.hModel = renderModelManager.FindModel(temp);
-                secondModel.bounds = secondModel.hModel.Bounds(secondModel);
+                secondModel.bounds.oSet(secondModel.hModel.Bounds(secondModel));
                 secondModel.shaderParms[ SHADERPARM_RED]
                         = secondModel.shaderParms[ SHADERPARM_GREEN]
                         = secondModel.shaderParms[ SHADERPARM_BLUE]
@@ -1759,7 +1751,7 @@ public class Projectile {
                     }
                     idPlayer player = (beamTargets.oGet(i).target.GetEntity().IsType(idPlayer.class)) ? (idPlayer) beamTargets.oGet(i).target.GetEntity() : null;
                     idVec3 org = beamTargets.oGet(i).target.GetEntity().GetPhysics().GetAbsBounds().GetCenter();
-                    beamTargets.oGet(i).renderEntity.origin = new idVec3(GetPhysics().GetOrigin());
+                    beamTargets.oGet(i).renderEntity.origin.oSet(GetPhysics().GetOrigin());
                     beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_X] = org.x;
                     beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_Y] = org.y;
                     beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_Z] = org.z;
@@ -1789,7 +1781,7 @@ public class Projectile {
                 }
 
                 if (secondModelDefHandle >= 0) {
-                    secondModel.origin = new idVec3(GetPhysics().GetOrigin());
+                    secondModel.origin.oSet(GetPhysics().GetOrigin());
                     gameRenderWorld.UpdateEntityDef(secondModelDefHandle, secondModel);
                 }
 
@@ -1803,7 +1795,7 @@ public class Projectile {
                 ang.pitch = (gameLocal.time & 2047) * 360.0f / -2048.0f;
                 ang.yaw = ang.pitch;
                 ang.roll = 0.0f;
-                secondModel.axis = ang.ToMat3();
+                secondModel.axis.oSet(ang.ToMat3());
 
                 UpdateVisuals();
             }
@@ -1839,15 +1831,15 @@ public class Projectile {
             final String temp = spawnArgs.GetString("model_two");
             if (temp != null && !temp.isEmpty()) {
                 secondModel.hModel = renderModelManager.FindModel(temp);
-                secondModel.bounds = secondModel.hModel.Bounds(secondModel);
+                secondModel.bounds.oSet(secondModel.hModel.Bounds(secondModel));
                 secondModel.shaderParms[ SHADERPARM_RED]
                         = secondModel.shaderParms[ SHADERPARM_GREEN]
                         = secondModel.shaderParms[ SHADERPARM_BLUE]
                         = secondModel.shaderParms[ SHADERPARM_ALPHA] = 1.0f;
                 secondModel.noSelfShadow = true;
                 secondModel.noShadow = true;
-                secondModel.origin = new idVec3(GetPhysics().GetOrigin());
-                secondModel.axis = new idMat3(GetPhysics().GetAxis());
+                secondModel.origin.oSet(GetPhysics().GetOrigin());
+                secondModel.axis.oSet(GetPhysics().GetAxis());
                 secondModelDefHandle = gameRenderWorld.AddEntityDef(secondModel);
             }
 
@@ -1873,11 +1865,10 @@ public class Projectile {
                     player.playerView.EnableBFGVision(true);
                 }
 
-                beamTarget_t bt = new beamTarget_t();
-//		memset( &bt.renderEntity, 0, sizeof( renderEntity_t ) );
+                beamTarget_t bt = new beamTarget_t();//memset( &bt.renderEntity, 0, sizeof( renderEntity_t ) );
                 renderEntity = new renderEntity_s();
-                bt.renderEntity.origin = new idVec3(GetPhysics().GetOrigin());
-                bt.renderEntity.axis = new idMat3(GetPhysics().GetAxis());
+                bt.renderEntity.origin.oSet(GetPhysics().GetOrigin());
+                bt.renderEntity.axis.oSet(GetPhysics().GetAxis());
                 bt.renderEntity.shaderParms[ SHADERPARM_BEAM_WIDTH] = beamWidth;
                 bt.renderEntity.shaderParms[ SHADERPARM_RED] = 1.0f;
                 bt.renderEntity.shaderParms[ SHADERPARM_GREEN] = 1.0f;

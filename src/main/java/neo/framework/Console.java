@@ -354,11 +354,12 @@ public class Console {
 
             while (txt_p < txt.length()
                     && (c = txt.charAt(txt_p)) != 0) {
-                if (idStr.IsColor(ctos(txt.charAt(txt_p)))) {
-                    if (txt.charAt(txt_p + 1) == C_COLOR_DEFAULT) {
+                if (idStr.IsColor(txt.substring(txt_p))) {
+                    final char colorChar = txt.charAt(txt_p + 1);
+                    if (colorChar == C_COLOR_DEFAULT) {
                         color = idStr.ColorIndex(C_COLOR_CYAN);
                     } else {
-                        color = idStr.ColorIndex(txt.charAt(txt_p + 1));
+                        color = idStr.ColorIndex(colorChar);
                     }
                     txt_p += 2;
                     continue;

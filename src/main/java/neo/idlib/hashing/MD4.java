@@ -1,10 +1,11 @@
 package neo.idlib.hashing;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import static neo.idlib.Lib.idException;
 
 /**
  *
@@ -52,7 +53,7 @@ public class MD4 {
     }
 
     static String BlockChecksum(final ByteBuffer data, final int length, final boolean MD4) {
-        final StringBuffer hash = new StringBuffer(16);
+        int hash = 0;
 
         try {
             final int currentPosition = data.position();
@@ -62,13 +63,14 @@ public class MD4 {
 
             data.position(currentPosition);
 
-            for (byte b : messageDigest.digest()) {
-                hash.append(String.format("%02d", 0xff & b));
-            }
+            ByteBuffer digest = ByteBuffer.wrap(messageDigest.digest());
+            digest.order(ByteOrder.LITTLE_ENDIAN);
+            hash = digest.getInt() ^ digest.getInt() ^ digest.getInt() ^ digest.getInt();
+
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(MD4.class.getName()).log(Level.SEVERE, null, ex);
+            throw new idException(ex);
         }
 
-        return hash.toString();
+        return Integer.toUnsignedString(hash);
     }
 }

@@ -99,10 +99,10 @@ import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Plane.idPlane;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.idlib.math.Vector.vec3_origin;
 import static neo.ui.UserInterface.uiManager;
 
 /**
@@ -172,13 +172,13 @@ public class Weapon {
         // CLASS_PROTOTYPE( idWeapon );
 
         // script control
-        private idScriptBool                  WEAPON_ATTACK;
-        private idScriptBool                  WEAPON_RELOAD;
-        private idScriptBool                  WEAPON_NETRELOAD;
-        private idScriptBool                  WEAPON_NETENDRELOAD;
-        private idScriptBool                  WEAPON_NETFIRING;
-        private idScriptBool                  WEAPON_RAISEWEAPON;
-        private idScriptBool                  WEAPON_LOWERWEAPON;
+        private idScriptBool WEAPON_ATTACK       = new idScriptBool();
+        private idScriptBool WEAPON_RELOAD       = new idScriptBool();
+        private idScriptBool WEAPON_NETRELOAD    = new idScriptBool();
+        private idScriptBool WEAPON_NETENDRELOAD = new idScriptBool();
+        private idScriptBool WEAPON_NETFIRING    = new idScriptBool();
+        private idScriptBool WEAPON_RAISEWEAPON  = new idScriptBool();
+        private idScriptBool WEAPON_LOWERWEAPON  = new idScriptBool();
         private weaponStatus_t                status;
         private idThread                      thread;
         private idStr                         state;
@@ -237,10 +237,10 @@ public class Weapon {
         private int                           guiLightHandle;
         //
         // muzzle flash
-        private renderLight_s                 muzzleFlash;    // positioned on view weapon bone
+        private renderLight_s                 muzzleFlash;          // positioned on view weapon bone
         private int                           muzzleFlashHandle;
         //
-        private renderLight_s                 worldMuzzleFlash; // positioned on world weapon bone
+        private renderLight_s                 worldMuzzleFlash;     // positioned on world weapon bone
         private int                           worldMuzzleFlashHandle;
         //
         private idVec3                        flashColor;
@@ -262,17 +262,17 @@ public class Weapon {
         //
         // ammo management
         private int /*ammo_t*/                ammoType;
-        private int                           ammoRequired;        // amount of ammo to use each shot.  0 means weapon doesn't need ammo.
-        private int                           clipSize;            // 0 means no reload
+        private int                           ammoRequired;         // amount of ammo to use each shot.  0 means weapon doesn't need ammo.
+        private int                           clipSize;             // 0 means no reload
         private int                           ammoClip;
-        private int                           lowAmmo;            // if ammo in clip hits this threshold, snd_
-        private boolean                       powerAmmo;        // true if the clip reduction is a factor of the power setting when
+        private int                           lowAmmo;              // if ammo in clip hits this threshold, snd_
+        private boolean                       powerAmmo;            // true if the clip reduction is a factor of the power setting when
         // a projectile is launched
         // mp client
         private boolean                       isFiring;
         //
         // zoom
-        private int                           zoomFov;            // variable zoom fov per weapon
+        private int                           zoomFov;              // variable zoom fov per weapon
         //
         // joints from models
         private int /*jointHandle_t*/         barrelJointView;
@@ -289,33 +289,33 @@ public class Weapon {
         private idSoundShader                 sndHum;
         //
         // new style muzzle smokes
-        private idDeclParticle                weaponSmoke;    // null if it doesn't smoke
-        private int                           weaponSmokeStartTime;    // set to gameLocal.time every weapon fire
-        private boolean                       continuousSmoke;    // if smoke is continuous ( chainsaw )
-        private idDeclParticle                strikeSmoke;    // striking something in melee
-        private int                           strikeSmokeStartTime;    // timing
-        private idVec3                        strikePos;        // position of last melee strike
-        private idMat3                        strikeAxis;        // axis of last melee strike
-        private int                           nextStrikeFx;        // used for sound and decal ( may use for strike smoke too )
+        private idDeclParticle                weaponSmoke;          // null if it doesn't smoke
+        private int                           weaponSmokeStartTime; // set to gameLocal.time every weapon fire
+        private boolean                       continuousSmoke;      // if smoke is continuous ( chainsaw )
+        private idDeclParticle                strikeSmoke;          // striking something in melee
+        private int                           strikeSmokeStartTime; // timing
+        private idVec3                        strikePos;            // position of last melee strike
+        private idMat3                        strikeAxis;           // axis of last melee strike
+        private int                           nextStrikeFx;         // used for sound and decal ( may use for strike smoke too )
         //
         // nozzle effects
-        private boolean                       nozzleFx;        // does this use nozzle effects ( parm5 at rest, parm6 firing )
+        private boolean                       nozzleFx;             // does this use nozzle effects ( parm5 at rest, parm6 firing )
         // this also assumes a nozzle light atm
-        private int                           nozzleFxFade;        // time it takes to fade between the effects
-        private int                           lastAttack;            // last time an attack occured
-        private renderLight_s                 nozzleGlow;    // nozzle light
-        private int nozzleGlowHandle;           // handle for nozzle light
-//
-        private idVec3 nozzleGlowColor;         // color of the nozzle glow
-        private idMaterial nozzleGlowShader;	// shader for glow light
-        private float nozzleGlowRadius;         // radius of glow light
-//
+        private int                           nozzleFxFade;         // time it takes to fade between the effects
+        private int                           lastAttack;           // last time an attack occured
+        private renderLight_s                 nozzleGlow;           // nozzle light
+        private int                           nozzleGlowHandle;     // handle for nozzle light
+        //
+        private idVec3                        nozzleGlowColor;      // color of the nozzle glow
+        private idMaterial                    nozzleGlowShader;     // shader for glow light
+        private float                         nozzleGlowRadius;     // radius of glow light
+        //
         // weighting for viewmodel angles
-        private int weaponAngleOffsetAverages;
-        private float weaponAngleOffsetScale;
-        private float weaponAngleOffsetMax;
-        private float weaponOffsetTime;
-        private float weaponOffsetScale;
+        private int                           weaponAngleOffsetAverages;
+        private float                         weaponAngleOffsetScale;
+        private float                         weaponAngleOffsetMax;
+        private float                         weaponOffsetTime;
+        private float                         weaponOffsetScale;
 //
 //
 
@@ -326,21 +326,17 @@ public class Weapon {
          ***********************************************************************/
         public idWeapon() {
             owner = null;
-            worldModel = null;
+            worldModel = new idEntityPtr<>(null);
             weaponDef = null;
             thread = null;
 
-//	memset( &guiLight, 0, sizeof( guiLight ) );
-            guiLight = new renderLight_s();
-//	memset( &muzzleFlash, 0, sizeof( muzzleFlash ) );
-            muzzleFlash = new renderLight_s();
-//	memset( &worldMuzzleFlash, 0, sizeof( worldMuzzleFlash ) );
-            worldMuzzleFlash = new renderLight_s();
-//	memset( &nozzleGlow, 0, sizeof( nozzleGlow ) );
-            nozzleGlow = new renderLight_s();
+            guiLight = new renderLight_s();//memset( &guiLight, 0, sizeof( guiLight ) );
+            muzzleFlash = new renderLight_s();//memset( &muzzleFlash, 0, sizeof( muzzleFlash ) );
+            worldMuzzleFlash = new renderLight_s();//memset( &worldMuzzleFlash, 0, sizeof( worldMuzzleFlash ) );
+            nozzleGlow = new renderLight_s();//memset( &nozzleGlow, 0, sizeof( nozzleGlow ) );
 
             muzzleFlashEnd = 0;
-            flashColor = vec3_origin;
+            flashColor = getVec3_origin();
             muzzleFlashHandle = -1;
             worldMuzzleFlashHandle = -1;
             guiLightHandle = -1;
@@ -352,6 +348,24 @@ public class Weapon {
 
             allowDrop = true;
 
+            state = new idStr();
+            idealState = new idStr();
+            playerViewOrigin = new idVec3();
+            playerViewAxis = new idMat3();
+            viewWeaponOrigin = new idVec3();
+            viewWeaponAxis = new idMat3();
+            muzzleOrigin = new idVec3();
+            muzzleAxis = new idMat3();
+            pushVelocity = new idVec3();
+            projectileDict = new idDict();
+            meleeDefName = new idStr();
+            brassDict = new idDict();
+            icon = new idStr();
+            muzzle_kick_angles = new idAngles();
+            muzzle_kick_offset = new idVec3();
+            strikePos = new idVec3();
+            nozzleGlowColor = new idVec3();
+
             Clear();
 
             fl.networkSync = true;
@@ -361,6 +375,8 @@ public class Weapon {
         // Init
         @Override
         public void Spawn() {
+            super.Spawn();
+
             if (!gameLocal.isClient) {
                 // setup the world model
                 worldModel.oSet((idAnimatedEntity) gameLocal.SpawnEntityType(idAnimatedEntity.class, null));
@@ -613,14 +629,14 @@ public class Weapon {
 
             final idDeclEntityDef projectileDef = gameLocal.FindEntityDef(weaponDef.dict.GetString("def_projectile"), false);
             if (projectileDef != null) {
-                projectileDict = projectileDef.dict;
+                projectileDict.oSet(projectileDef.dict);
             } else {
                 projectileDict.Clear();
             }
 
             final idDeclEntityDef brassDef = gameLocal.FindEntityDef(weaponDef.dict.GetString("def_ejectBrass"), false);
             if (brassDef != null) {
-                brassDict = brassDef.dict;
+                brassDict.oSet(brassDef.dict);
             } else {
                 brassDict.Clear();
             }
@@ -804,7 +820,7 @@ public class Weapon {
             strikeSmoke = null;
             strikeSmokeStartTime = 0;
             strikePos.Zero();
-            strikeAxis = mat3_identity;
+            strikeAxis = getMat3_identity();
             nextStrikeFx = 0;
 
             icon.oSet("");
@@ -917,8 +933,8 @@ public class Weapon {
 
             muzzle_kick_time = (int) SEC2MS(weaponDef.dict.GetFloat("muzzle_kick_time"));
             muzzle_kick_maxtime = (int) SEC2MS(weaponDef.dict.GetFloat("muzzle_kick_maxtime"));
-            muzzle_kick_angles = weaponDef.dict.GetAngles("muzzle_kick_angles");
-            muzzle_kick_offset = weaponDef.dict.GetVector("muzzle_kick_offset");
+            muzzle_kick_angles.oSet(weaponDef.dict.GetAngles("muzzle_kick_angles"));
+            muzzle_kick_offset.oSet(weaponDef.dict.GetVector("muzzle_kick_offset"));
 
             hideTime = (int) SEC2MS(weaponDef.dict.GetFloat("hide_time", "0.3"));
             hideDistance = weaponDef.dict.GetFloat("hide_distance", "-15");
@@ -941,7 +957,7 @@ public class Weapon {
             }
             strikeSmokeStartTime = 0;
             strikePos.Zero();
-            strikeAxis = mat3_identity;
+            strikeAxis = getMat3_identity();
             nextStrikeFx = 0;
 
             // setup gui light
@@ -985,11 +1001,10 @@ public class Weapon {
                     gameLocal.Warning("Unknown projectile '%s' in weapon '%s'", projectileName, objectName);
                 } else {
                     final String spawnclass = projectileDef.dict.GetString("spawnclass");
-                    idTypeInfo cls = idClass.GetClass(spawnclass);
-                    if (null == cls || !cls.IsType(idProjectile.class)) {
+                    if (!idProjectile.class.getSimpleName().equals(spawnclass)) {
                         gameLocal.Warning("Invalid spawnclass '%s' on projectile '%s' (used by weapon '%s')", spawnclass, projectileName, objectName);
                     } else {
-                        projectileDict = projectileDef.dict;
+                        projectileDict.oSet(projectileDef.dict);
                     }
                 }
             }
@@ -1048,7 +1063,7 @@ public class Weapon {
             //-----------------------------------
             nozzleFx = weaponDef.dict.GetBool("nozzleFx");
             nozzleFxFade = weaponDef.dict.GetInt("nozzleFxFade", "1500");
-            nozzleGlowColor = weaponDef.dict.GetVector("nozzleGlowColor", "1 1 1");
+            nozzleGlowColor.oSet(weaponDef.dict.GetVector("nozzleGlowColor", "1 1 1"));
             nozzleGlowRadius = weaponDef.dict.GetFloat("nozzleGlowRadius", "10");
             weaponDef.dict.GetString("mtr_nozzleGlowShader", "", shader);
             nozzleGlowShader = declManager.FindMaterial(shader[0], false);
@@ -1073,7 +1088,7 @@ public class Weapon {
                 if (null == brassDef) {
                     gameLocal.Warning("Unknown brass '%s'", brassDefName);
                 } else {
-                    brassDict = brassDef.dict;
+                    brassDict.oSet(brassDef.dict);
                 }
             }
 
@@ -1258,7 +1273,7 @@ public class Weapon {
         }
 
         public void SetPushVelocity(final idVec3 pushVelocity) {
-            this.pushVelocity = pushVelocity;
+            this.pushVelocity.oSet(pushVelocity);
         }
 
         public boolean UpdateSkin() {
@@ -1645,8 +1660,8 @@ public class Weapon {
 
          ***********************************************************************/
         public void PresentWeapon(boolean showViewModel) {
-            playerViewOrigin = owner.firstPersonViewOrigin;
-            playerViewAxis = owner.firstPersonViewAxis;
+            playerViewOrigin.oSet(owner.firstPersonViewOrigin);
+            playerViewAxis.oSet(owner.firstPersonViewAxis);
 
             // calculate weapon position based on player movement bobbing
             owner.CalculateViewWeaponPos(viewWeaponOrigin, viewWeaponAxis);
@@ -1721,8 +1736,8 @@ public class Weapon {
                     GetGlobalJointTransform(true, barrelJointView, muzzleOrigin, muzzleAxis);
                 } else {
                     // default to going straight out the view
-                    muzzleOrigin = playerViewOrigin;
-                    muzzleAxis = playerViewAxis;
+                    muzzleOrigin.oSet(playerViewOrigin);
+                    muzzleAxis.oSet(playerViewAxis);
                 }
                 // spit out a particle
                 if (!gameLocal.smokeParticles.EmitSmoke(weaponSmoke, weaponSmokeStartTime, gameLocal.random.RandomFloat(), muzzleOrigin, muzzleAxis)) {
@@ -2106,8 +2121,8 @@ public class Weapon {
                 ent.GetPhysics().SetContents(0);
                 ent.GetPhysics().SetClipModel(null, 1.0f);
                 ent.BindToJoint(owner, attach, true);
-                ent.GetPhysics().SetOrigin(vec3_origin);
-                ent.GetPhysics().SetAxis(mat3_identity);
+                ent.GetPhysics().SetOrigin(getVec3_origin());
+                ent.GetPhysics().SetAxis(getMat3_identity());
 
                 // supress model in player views, but allow it in mirrors and remote views
                 renderEntity_s worldModelRenderEntity = ent.GetRenderEntity();
@@ -2601,8 +2616,8 @@ public class Weapon {
                 GetGlobalJointTransform(true, barrelJointView, muzzleOrigin, muzzleAxis);
             } else {
                 // go straight out of the view
-                muzzleOrigin = playerViewOrigin;
-                muzzleAxis = playerViewAxis;
+                muzzleOrigin.oSet(playerViewOrigin);
+                muzzleAxis.oSet(playerViewAxis);
             }
 
             // add some to the kick time, incrementally moving repeat firing weapons back
@@ -2625,9 +2640,9 @@ public class Weapon {
                         spin = (float) DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
                         dir = playerViewAxis.oGet(0).oPlus(playerViewAxis.oGet(2).oMultiply(ang * idMath.Sin(spin)).oMinus(playerViewAxis.oGet(1).oMultiply(ang * idMath.Cos(spin))));
                         dir.Normalize();
-                        gameLocal.clip.Translation(tr, muzzle_pos, muzzle_pos.oPlus(dir.oMultiply(4096.0f)), null, mat3_identity, MASK_SHOT_RENDERMODEL, owner);
+                        gameLocal.clip.Translation(tr, muzzle_pos, muzzle_pos.oPlus(dir.oMultiply(4096.0f)), null, getMat3_identity(), MASK_SHOT_RENDERMODEL, owner);
                         if (tr[0].fraction < 1.0f) {
-                            idProjectile.ClientPredictionCollide(this, projectileDict, tr[0], vec3_origin, true);
+                            idProjectile.ClientPredictionCollide(this, projectileDict, tr[0], getVec3_origin(), true);
                         }
                     }
                 }
@@ -2852,8 +2867,8 @@ public class Weapon {
                             }
 
                             strikeSmokeStartTime = gameLocal.time;
-                            strikePos = tr[0].c.point;
-                            strikeAxis = tr[0].endAxis.oNegative();
+                            strikePos.oSet(tr[0].c.point);
+                            strikeAxis.oSet(tr[0].endAxis.oNegative());
                         }
                     }
                 }

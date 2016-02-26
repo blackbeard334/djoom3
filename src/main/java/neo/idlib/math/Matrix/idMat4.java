@@ -7,15 +7,24 @@ import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 
-public class idMat4 {
 //===============================================================
 //
 //	idMat4 - 4x4 matrix
 //
 //===============================================================
+public class idMat4 {
+    private static final idMat4 mat4_zero = new idMat4(new idVec4(0, 0, 0, 0), new idVec4(0, 0, 0, 0), new idVec4(0, 0, 0, 0), new idVec4(0, 0, 0, 0));
+    private static final idMat4 mat4_identity = new idMat4(new idVec4(1, 0, 0, 0), new idVec4(0, 1, 0, 0), new idVec4(0, 0, 1, 0), new idVec4(0, 0, 0, 1));
 
-    public static final idMat4 mat4_zero = new idMat4(new idVec4(0, 0, 0, 0), new idVec4(0, 0, 0, 0), new idVec4(0, 0, 0, 0), new idVec4(0, 0, 0, 0));
-    public static final idMat4 mat4_identity = new idMat4(new idVec4(1, 0, 0, 0), new idVec4(0, 1, 0, 0), new idVec4(0, 0, 1, 0), new idVec4(0, 0, 0, 1));
+    public static idMat4 getMat4_zero() {
+        return new idMat4(mat4_zero);
+    }
+
+    public static idMat4 getMat4_identity() {
+        return new idMat4(mat4_identity);
+    }
+    
+    
 
     private final idVec4[] mat = {new idVec4(), new idVec4(), new idVec4(), new idVec4()};
 
@@ -23,10 +32,10 @@ public class idMat4 {
     }
 
     public idMat4(final idVec4 x, final idVec4 y, final idVec4 z, final idVec4 w) {
-        mat[0] = x;
-        mat[1] = y;
-        mat[2] = z;
-        mat[3] = w;
+        mat[0].oSet(x);
+        mat[1].oSet(y);
+        mat[2].oSet(z);
+        mat[3].oSet(w);
     }
 
     public idMat4(final float xx, final float xy, final float xz, final float xw,
@@ -95,6 +104,10 @@ public class idMat4 {
         mat[3].y = src[3][1];
         mat[3].z = src[3][2];
         mat[3].w = src[3][3];
+    }
+
+    public idMat4(final idMat4 m) {
+        this.oSet(m);
     }
 
 //public	const idVec4 &	operator[]( int index ) const;
@@ -354,11 +367,11 @@ public class idMat4 {
     }
 
     public void Zero() {
-        this.oSet(mat4_zero);
+        this.oSet(getMat4_zero());
     }
 
     public void Identity() {
-        this.oSet(mat4_identity);
+        this.oSet(getMat4_identity());
     }
 
     public boolean IsIdentity() {
@@ -366,7 +379,7 @@ public class idMat4 {
     }
 
     public boolean IsIdentity(final float epsilon) {
-        return Compare(mat4_identity, epsilon);
+        return Compare(getMat4_identity(), epsilon);
     }
 
     public boolean IsSymmetric() {

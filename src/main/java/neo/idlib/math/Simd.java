@@ -8,6 +8,7 @@ import neo.framework.CmdSystem;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idLib;
+import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.JointTransform.idJointQuat;
@@ -18,6 +19,8 @@ import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVecX;
+
+import static neo.TempDump.btoi;
 import static neo.sys.sys_public.CPUID_GENERIC;
 import static neo.sys.sys_public.CPUID_NONE;
 
@@ -26,8 +29,8 @@ import static neo.sys.sys_public.CPUID_NONE;
  */
 public class Simd {
 
-    static idSIMDProcessor processor = null;			// pointer to SIMD processor
-    static idSIMDProcessor generic = null;			// pointer to generic SIMD implementation
+    static idSIMDProcessor processor = null;            // pointer to SIMD processor
+    static idSIMDProcessor generic   = null;            // pointer to generic SIMD implementation
     public static idSIMDProcessor SIMDProcessor;
 
     /*
@@ -417,7 +420,7 @@ public class Simd {
 
         public abstract void /*VPCALL*/ ConvertJointQuatsToJointMats(idJointMat[] jointMats, final idJointQuat[] jointQuats, final int numJoints);
 
-        public abstract void /*VPCALL*/ ConvertJointMatsToJointQuats(idJointQuat[] jointQuats, final idJointMat[] jointMats, final int numJoints);
+        public abstract void /*VPCALL*/ ConvertJointMatsToJointQuats(idList<idJointQuat> jointQuats, final idJointMat[] jointMats, final int numJoints);
 
         public abstract void /*VPCALL*/ TransformJoints(idJointMat[] jointMats, final int[] parents, final int firstJoint, final int lastJoint);
 
@@ -490,7 +493,16 @@ public class Simd {
         }
 
         public void CmpGE(byte[] facing, float[] planeSide, float f, int numFaces) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            int i, nm = numFaces & 0xfffffffc;
+            for (i = 0; i < nm; i += 4) {
+                facing[i + 0] = (byte) btoi(planeSide[i + 0] > f);
+                facing[i + 1] = (byte) btoi(planeSide[i + 1] > f);
+                facing[i + 2] = (byte) btoi(planeSide[i + 2] > f);
+                facing[i + 3] = (byte) btoi(planeSide[i + 3] > f);
+            }
+            for (; i < numFaces; i++) {
+                facing[i + 0] = (byte) btoi(planeSide[i + 0] > f);
+            }
         }
 
         public void Memcpy(int[] indexes, int[] tempIndexes, int numShadowIndexes) {

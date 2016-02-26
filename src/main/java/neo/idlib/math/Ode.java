@@ -24,10 +24,11 @@ public class Ode {
     public static abstract class idODE {
 
 //public					~idODE( void ) {}
+        protected int              dimension;   // dimension in floats allocated for
+        protected deriveFunction_t derive;      // derive function
+        protected Object           userData;    // client data
+
         public abstract float Evaluate(final float[] state, float[] newState, float t0, float t1);
-        protected int dimension;		// dimension in floats allocated for
-        protected deriveFunction_t derive;			// derive function
-        protected Object userData;		// client data
     };
 
     //===============================================================

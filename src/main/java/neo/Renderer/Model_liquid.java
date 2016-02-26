@@ -210,7 +210,7 @@ public class Model_liquid {
 
             // build the information that will be common to all animations of this mesh:
             // sil edge connectivity and normal / tangent generation information
-            deformInfo = R_BuildDeformInfo(verts.Num(), verts.Ptr(), tris.Num(), tris.Ptr(), true);
+            deformInfo = R_BuildDeformInfo(verts.Num(), verts.Ptr(), tris.Num(), tris, true);
 
             bounds.Clear();
             bounds.AddPoint(new idVec3(0.0f, 0.0f, drop_height * -10.0f));

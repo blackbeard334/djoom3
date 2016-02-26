@@ -3,6 +3,7 @@ package neo.Renderer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import static neo.Renderer.Image_files.R_WriteTGA;
 import static neo.Renderer.Material.deform_t.DFRM_NONE;
 import neo.Renderer.Material.idMaterial;
@@ -42,7 +43,6 @@ import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.tr_local.demoCommand_t.DC_DEFINE_MODEL;
 import static neo.Renderer.tr_local.tr;
 import neo.Renderer.tr_local.viewDef_s;
-import static neo.Renderer.tr_main.R_ClearedStaticAlloc;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
@@ -92,27 +92,27 @@ public class Model_local {
     public static class idRenderModelStatic extends idRenderModel {
 
         public final idList<modelSurface_s> surfaces;
-        public idBounds bounds;
-        public int overlaysAdded;
+        public       idBounds               bounds;
+        public       int                    overlaysAdded;
         //
         //
-        protected int lastModifiedFrame;
-        protected int lastArchivedFrame;
+        protected    int                    lastModifiedFrame;
+        protected    int                    lastArchivedFrame;
         //
-        protected idStr name;
-        protected srfTriangles_s shadowHull;
-        protected boolean isStaticWorldModel;
-        protected boolean defaulted;
-        protected boolean purged;				// eventually we will have dynamic reloading
-        protected boolean fastLoad;				// don't generate tangents and shadow data
-        protected boolean reloadable;				// if not, reloadModels won't check timestamp
-        protected boolean levelLoadReferenced;                  // for determining if it needs to be freed
-        protected final long[]/*ID_TIME_T*/ timeStamp = new long[1];
+        protected    idStr                  name;
+        protected    srfTriangles_s         shadowHull;
+        protected    boolean                isStaticWorldModel;
+        protected    boolean                defaulted;
+        protected    boolean                purged;                // eventually we will have dynamic reloading
+        protected    boolean                fastLoad;              // don't generate tangents and shadow data
+        protected    boolean                reloadable;            // if not, reloadModels won't check timestamp
+        protected    boolean                levelLoadReferenced;   // for determining if it needs to be freed
+        protected final        long[]/*ID_TIME_T*/ timeStamp            = new long[1];
         //
-        protected static final idCVar r_mergeModelSurfaces = new idCVar("r_mergeModelSurfaces", "1", CVAR_BOOL | CVAR_RENDERER, "combine model surfaces with the same material");
-        protected static final idCVar r_slopVertex = new idCVar("r_slopVertex", "0.01", CVAR_RENDERER, "merge xyz coordinates this far apart");
-        protected static final idCVar r_slopTexCoord = new idCVar("r_slopTexCoord", "0.001", CVAR_RENDERER, "merge texture coordinates this far apart");
-        protected static final idCVar r_slopNormal = new idCVar("r_slopNormal", "0.02", CVAR_RENDERER, "merge normals that dot less than this");
+        protected static final idCVar              r_mergeModelSurfaces = new idCVar("r_mergeModelSurfaces", "1", CVAR_BOOL | CVAR_RENDERER, "combine model surfaces with the same material");
+        protected static final idCVar              r_slopVertex         = new idCVar("r_slopVertex", "0.01", CVAR_RENDERER, "merge xyz coordinates this far apart");
+        protected static final idCVar              r_slopTexCoord       = new idCVar("r_slopTexCoord", "0.001", CVAR_RENDERER, "merge texture coordinates this far apart");
+        protected static final idCVar              r_slopNormal         = new idCVar("r_slopNormal", "0.02", CVAR_RENDERER, "merge normals that dot less than this");
         //
         //
 
@@ -285,8 +285,9 @@ public class Model_local {
 
          ================
          */
+        private static int DBG_FinishSurfaces = 0;
         @Override
-        public void FinishSurfaces() {
+        public void FinishSurfaces() {DBG_FinishSurfaces++;
             int i;
             int totalVerts, totalIndexes;
 
@@ -466,7 +467,7 @@ public class Model_local {
                 totalTris += surf.geometry.numIndexes / 3;
                 totalVerts += surf.geometry.numVerts;
             }
-            common.Printf("%c%4ik %3i %4i %4i %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
+            common.Printf("%c%4dk %3d %4d %4d %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
 
             if (IsDynamicModel() == DM_CACHED) {
                 common.Printf(" (DM_CACHED)");
@@ -507,7 +508,7 @@ public class Model_local {
                 totalTris += surf.geometry.numIndexes / 3;
                 totalVerts += surf.geometry.numVerts;
             }
-            common.Printf("%c%4ik %3i %4i %4i %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
+            common.Printf("%c%4dk %3d %4d %4d %s", closed, totalBytes / 1024, NumSurfaces(), totalVerts, totalTris, Name());
 
             if (IsDynamicModel() == DM_CACHED) {
                 common.Printf(" (DM_CACHED)");
@@ -641,7 +642,7 @@ public class Model_local {
         }
 
         @Override
-        public idJointQuat GetDefaultPose() {
+        public idJointQuat[] GetDefaultPose() {
             return null;
         }
 
@@ -1028,6 +1029,13 @@ public class Model_local {
 //
 //                return i;
 //            }
+            
+            static matchVert_s[] generateArray(final int length) {
+                return Stream.
+                        generate(() -> new matchVert_s()).
+                        limit(length).
+                        toArray(matchVert_s[]::new);
+            }
         };
         static final short[] identityColor/*[4]*/ = {255, 255, 255, 255};
 
@@ -1184,10 +1192,10 @@ public class Model_local {
                 // we need to find out how many unique vertex / texcoord combinations
                 // there are, because ASE tracks them separately but we need them unified
                 // the maximum possible number of combined vertexes is the number of indexes
-                mvTable = R_ClearedStaticAlloc(mesh.numFaces * 3, matchVert_s.class /* sizeof( mvTable[0] )*/);
+                mvTable = matchVert_s.generateArray(mesh.numFaces * 3);
 
                 // we will have a hash chain based on the xyz values
-                mvHash = R_ClearedStaticAlloc(mesh.numVertexes, matchVert_s.class /* sizeof( mvHash[0] )*/);
+                mvHash = matchVert_s.generateArray(mesh.numVertexes);
 
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
@@ -1336,7 +1344,8 @@ public class Model_local {
             return true;
         }
 
-        public boolean ConvertLWOToModelSurfaces(final lwObject lwo) {
+        private static int DBG_ConvertLWOToModelSurfaces = 0;
+        public boolean ConvertLWOToModelSurfaces(final lwObject lwo) {DBG_ConvertLWOToModelSurfaces++;
             idMaterial im1, im2;
             srfTriangles_s tri;
             lwSurface lwoSurf;
@@ -1375,11 +1384,11 @@ public class Model_local {
             // material, but we would like to merge them together where possible
             mergeTo = new int[i];
 //	memset( &surf, 0, sizeof( surf ) );
-            surf = new modelSurface_s();
 
             if (!r_mergeModelSurfaces.GetBool()) {
                 // don't merge any
                 for (lwoSurf = lwo.surf, i = 0; lwoSurf != null; lwoSurf = lwoSurf.next, i++) {
+                    surf = new modelSurface_s();
                     mergeTo[i] = i;
                     surf.shader = declManager.FindMaterial(lwoSurf.name);
                     surf.id = this.NumSurfaces();
@@ -1388,6 +1397,7 @@ public class Model_local {
             } else {
                 // search for material matches
                 for (lwoSurf = lwo.surf, i = 0; lwoSurf != null; lwoSurf = lwoSurf.next, i++) {
+                    surf = new modelSurface_s();
                     im1 = declManager.FindMaterial(lwoSurf.name);
                     if (im1.IsDiscrete()) {
                         // flares, autosprites, etc
@@ -1445,7 +1455,7 @@ public class Model_local {
             }
 
             if (numTVertexes != 0) {
-                tvList = R_ClearedStaticAlloc(numTVertexes, idVec2.class);// Mem_Alloc(numTVertexes /* sizeof( tvList[0] ) */);
+                tvList = idVec2.generateArray(numTVertexes);
                 int offset = 0;
                 for (lwVMap vm = layer.vmap; vm != null; vm = vm.next) {
                     if (vm.type == LWID_('T', 'X', 'U', 'V')) {
@@ -1526,7 +1536,7 @@ public class Model_local {
 
                 // we need to find out how many unique vertex / texcoord combinations there are
                 // the maximum possible number of combined vertexes is the number of indexes
-                mvTable = R_ClearedStaticAlloc(layer.polygon.count * 3, matchVert_s.class/* sizeof( mvTable[0] )*/);
+                mvTable = matchVert_s.generateArray(layer.polygon.count * 3);
 
                 // we will have a hash chain based on the xyz values
                 mvHash = new matchVert_s[layer.point.count];// R_ClearedStaticAlloc(layer.point.count, matchVert_s.class/* sizeof( mvHash[0] ) */);

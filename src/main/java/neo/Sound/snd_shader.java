@@ -180,7 +180,7 @@ public class snd_shader {
         public void List() {
             idStrList shaders;
 
-            common.Printf("%4i: %s\n", Index(), GetName());
+            common.Printf("%4d: %s\n", Index(), GetName());
             if (idStr.Icmp(GetDescription(), "<no description>") != 0) {
                 common.Printf("      description: %s\n", GetDescription());
             }

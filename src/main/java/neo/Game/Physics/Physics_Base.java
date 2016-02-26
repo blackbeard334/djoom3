@@ -22,11 +22,11 @@ import neo.idlib.containers.List.idList;
 import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
+import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
-import static neo.idlib.math.Vector.vec3_origin;
 
 /**
  *
@@ -57,10 +57,14 @@ public class Physics_Base {
         //
 
         public idPhysics_Base() {
-            this.contactEntities = new idList<>(contactEntity_t.class);
             self = null;
             clipMask = 0;
-            SetGravity(gameLocal.GetGravity());
+            this.contacts = new idList<>(contactInfo_t.class);
+            this.contactEntities = new idList<>(contactEntity_t.class);
+//            SetGravity(gameLocal.GetGravity());
+            gravityVector = new idVec3(gameLocal.GetGravity());
+            gravityNormal = new idVec3(gameLocal.GetGravity());
+            gravityNormal.Normalize();
             ClearContacts();
         }
         // ~idPhysics_Base( void );
@@ -253,12 +257,12 @@ public class Physics_Base {
 
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
-            return mat3_identity;
+            return getMat3_identity();
         }
 
         @Override
@@ -271,18 +275,18 @@ public class Physics_Base {
 
         @Override
         public idVec3 GetLinearVelocity(int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override
         public idVec3 GetAngularVelocity(int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override
         public void SetGravity(final idVec3 newGravity) {
-            gravityVector = newGravity;
-            gravityNormal = newGravity;
+            gravityVector.oSet(newGravity);
+            gravityNormal.oSet(newGravity);
             gravityNormal.Normalize();
         }
 
@@ -438,12 +442,12 @@ public class Physics_Base {
 
         @Override
         public idVec3 GetPushedLinearVelocity(final int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override
         public idVec3 GetPushedAngularVelocity(final int id /*= 0*/) {
-            return vec3_origin;
+            return getVec3_origin();
         }
 
         @Override
@@ -488,8 +492,8 @@ public class Physics_Base {
 
             contactInfo_t[] contact = {contacts.oGet(index)};
 
-            dir.SubVec3(0).oSet(gravityNormal);
-            dir.SubVec3(1).oSet(vec3_origin);
+            dir.SubVec3_oSet(0, gravityNormal);
+            dir.SubVec3_oSet(1, getVec3_origin());
             num = gameLocal.clip.Contacts(contact, 10, clipModel.GetOrigin(), dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
             contacts.oSet(index, contact[0]);
             contacts.SetNum(index + num, false);
@@ -564,11 +568,11 @@ public class Physics_Base {
                 vec.oMulSet(4.0f);
                 start = org.oPlus(vec);
                 for (a = 20.0f; a < length; a += 20.0f) {
-                    end = org.oPlus(new idRotation(vec3_origin, dir, -a).ToMat3().oMultiply(vec));
+                    end = org.oPlus(new idRotation(getVec3_origin(), dir, -a).ToMat3().oMultiply(vec));
                     gameRenderWorld.DebugLine(colorBlue, start, end, 1);
                     start = end;
                 }
-                end = org.oPlus(new idRotation(vec3_origin, dir, -length).ToMat3().oMultiply(vec));
+                end = org.oPlus(new idRotation(getVec3_origin(), dir, -length).ToMat3().oMultiply(vec));
                 gameRenderWorld.DebugArrow(colorBlue, start, end, 1);
             }
         }

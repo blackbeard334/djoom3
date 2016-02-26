@@ -1,6 +1,7 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.stream.Stream;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
 import neo.Game.SmokeParticles.activeSmokeStage_t;
@@ -21,7 +22,7 @@ import neo.framework.DeclParticle.particleGen_t;
 import static neo.framework.UsercmdGen.USERCMD_MSEC;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.mat3_identity;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
 
@@ -76,7 +77,7 @@ public class SmokeParticles {
         private int            renderEntityHandle;        // handle to static renderer model
         //
         private static final int             MAX_SMOKE_PARTICLES = 10000;
-        private              singleSmoke_t[] smokes              = new singleSmoke_t[MAX_SMOKE_PARTICLES];
+        private              singleSmoke_t[] smokes;
         //
         private idList<activeSmokeStage_t> activeStages;
         private singleSmoke_t              freeSmokes;
@@ -87,10 +88,10 @@ public class SmokeParticles {
 
         public idSmokeParticles() {
             initialized = false;
-//	memset( &renderEntity, 0, sizeof( renderEntity ) );
-            renderEntity = new renderEntity_s();
+            renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
             renderEntityHandle = -1;
-//	memset( smokes, 0, sizeof( smokes ) );
+            smokes = Stream.generate(()->new singleSmoke_t()).limit(MAX_SMOKE_PARTICLES).toArray(singleSmoke_t[]::new);
+            activeStages = new idList<>();
             freeSmokes = null;
             numActiveSmokes = 0;
             currentParticleTime = -1;
@@ -112,11 +113,10 @@ public class SmokeParticles {
 
             activeStages.Clear();
 
-//	memset( &renderEntity, 0, sizeof( renderEntity ) );
-            renderEntity = new renderEntity_s();
+            renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
 
             renderEntity.bounds.Clear();
-            renderEntity.axis = mat3_identity;
+            renderEntity.axis.oSet(getMat3_identity());
             renderEntity.shaderParms[ SHADERPARM_RED] = 1;
             renderEntity.shaderParms[ SHADERPARM_GREEN] = 1;
             renderEntity.shaderParms[ SHADERPARM_BLUE] = 1;
@@ -389,8 +389,8 @@ public class SmokeParticles {
                     g.index = smoke.index;
                     g.random = smoke.random;
 
-                    g.origin = smoke.origin;
-                    g.axis = smoke.axis;
+                    g.origin.oSet(smoke.origin);
+                    g.axis.oSet(smoke.axis);
 
                     g.originalRandom = g.random;
                     g.age = g.frac * stage.particleLife;

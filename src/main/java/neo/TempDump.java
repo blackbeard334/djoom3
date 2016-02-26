@@ -2,21 +2,18 @@ package neo;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -111,10 +108,12 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
                 Arrays.copyOf(b, length)));
     }
 
+    @Deprecated
     public static int sizeof(char[] object) {
         throw new UnsupportedOperationException();
     }
 
+    @Deprecated
     public static int sizeof(Object object) {
         throw new UnsupportedOperationException();
     }
@@ -220,11 +219,19 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     /**
      * Equivalent to <b>!object</b>.
      *
-     * @param object
-     * @return True if object = null.
+     * @param objects
+     * @return True if <b>ALL</b> objects[0...i] = null.
      */
-    public static boolean NOT(final Object object) {
-        return null == object;//TODO: make sure incoming object isn't Integer or Float...etc.
+    public static boolean NOT(final Object... objects) {
+        //TODO: make sure incoming object isn't Integer or Float...etc.
+        if (objects == null) return true;
+
+        for (Object o : objects) {
+            if (o != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -458,21 +465,29 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         //it's all binary here.
-        mode = mode.replace("b", "");
-        mode = mode.replace("t", "");
+        mode = mode.replace("b", "").replace("t", "");
 
-        if (mode.contains("r+")
-                || mode.contains("w+")
-                || mode.contains("w")) {
-            temp.add(StandardOpenOption.WRITE);
-        } else if (mode.contains("r")) {
+        if (mode.contains("r")) {
             temp.add(StandardOpenOption.READ);
+            if (mode.contains("r+")) {
+                temp.add(StandardOpenOption.WRITE);
+            }
         }
-
-        if (mode.contains("a+")) {
+        if (mode.contains("w")) {
+            temp.add(StandardOpenOption.CREATE);
+            temp.add(StandardOpenOption.TRUNCATE_EXISTING);
             temp.add(StandardOpenOption.WRITE);
-        } else if (mode.contains("a")) {
+            if (mode.contains("w+")) {
+                temp.add(StandardOpenOption.READ);
+            }
+        }
+        if (mode.contains("a")) {
             temp.add(StandardOpenOption.APPEND);
+            temp.add(StandardOpenOption.CREATE);
+            temp.add(StandardOpenOption.WRITE);
+            if (mode.contains("a+")) {
+                temp.add(StandardOpenOption.READ);
+            }
         }
 
         return temp;
@@ -483,7 +498,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static long[] reinterpret_cast_long_array(final byte[] array) {
-        final long[] temp = new long[array.length / 8];
+        final long[] temp = new long[array.length];
 
         for (int b = 0, l = 0; b < array.length; l++) {
             temp[l] |= (array[b++] & 0xFFL) << 56;
@@ -497,10 +512,6 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
 
         return temp;
-    }
-
-    public static int reinterpret_cast_int(final cm_polygon_s p) {
-        throw new TODO_Exception();
     }
 
     public static Object dynamic_cast(Class glass, Object object) {
@@ -556,6 +567,22 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         System.out.println(Arrays.toString(CALL_STACK_MAP.entrySet().toArray()));
     }
 
+    @Deprecated
+    public static <T> T[] allocArray(Class<T> clazz, int length) {
+        
+        T[] array = (T[]) Array.newInstance(clazz, length);
+
+        for (int a = 0; a < length; a++) {
+            try {
+                array[a] = (T) clazz.getConstructor().newInstance();
+            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                throw new TODO_Exception();//missing default constructor
+            }
+        }
+
+        return array;
+    }
+    
     /**
      *
      *
@@ -582,7 +609,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static interface SERiAL extends Serializable {//TODO:remove Serializable
 
         public static final int SIZE = Integer.MIN_VALUE;
-        public static final int SIZE_B = SIZE / Byte.SIZE;
+        public static final int BYTES = SIZE / Byte.SIZE;
 
         /**
          * Prepares an <b>empty</b> ByteBuffer representation of the class for
@@ -659,138 +686,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      *
      *
      *
-     */
-    public static class IntArrPtr {
-
-        private final int[] array;
-        private final int ptr;
-
-        public IntArrPtr(int[] array, int ptr) {
-            this.array = array;
-            this.ptr = ptr;
-        }
-
-        public int oGet(final int index) {
-            return array[ptr + index];
-        }
-
-        public int oSet(final int index, final int value) {
-            return array[ptr + index] = value;
-        }
-    };
-
-    public static class IntBuffPtr {
-
-        private final ByteBuffer buffer;
-        private final int ptr;
-
-        public IntBuffPtr(ByteBuffer buffer) {
-            this.buffer = buffer;
-            this.ptr = buffer.position();
-        }
-
-        public IntBuffPtr(byte[] array, int ptr) {
-            this.buffer = ByteBuffer.wrap(array);
-            this.ptr = ptr;
-        }
-
-        public int oGet(final int index) {
-            return buffer.getInt((ptr + index) * 4);
-        }
-
-        public int oGet() {
-            final int index = buffer.position();
-            return buffer.getInt((ptr + index) * 4);
-        }
-
-        public float oGetF(final int index) {
-            return buffer.getFloat((ptr + index) * 4);
-        }
-
-        public float oGetF() {
-            final int index = buffer.position();
-            return buffer.getFloat((ptr + index) * 4);
-        }
-
-        public int oSet(final int index, final int value) {
-            buffer.putInt((ptr + index) * 4, value);
-            return value;
-        }
-
-        public int oSet(final int value) {
-            final int index = buffer.position();
-            buffer.putInt((ptr + index) * 4, value);
-            return value;
-        }
-
-    };
-
-    public static class FloatBuffPtr {
-
-        private final ByteBuffer buffer;
-        private final int initialOffset;
-        private int ptr;
-
-        public FloatBuffPtr(ByteBuffer buffer) {
-            this.buffer = buffer;
-            this.initialOffset = this.ptr = buffer.position();
-        }
-
-        public FloatBuffPtr(byte[] array, int ptr) {
-            this.buffer = ByteBuffer.wrap(array);
-            this.initialOffset = this.ptr = ptr;
-        }
-
-        public float oGet(final int index) {
-            return buffer.getFloat((ptr + index) * 4);
-        }
-
-        public float oGet() {
-            final int index = buffer.position();
-            return buffer.getFloat((ptr + index) * 4);
-        }
-
-        public int oGetI(final int index) {
-            return buffer.getInt((ptr + index) * 4);
-        }
-
-        public int oGetI() {
-            final int index = buffer.position();
-            return buffer.getInt((ptr + index) * 4);
-        }
-
-        public float oSet(final int index, final float value) {
-            buffer.putFloat((ptr + index) * 4, value);
-            return value;
-        }
-
-        public float oSet(final float value) {
-            final int index = buffer.position();
-            buffer.putFloat((ptr + index) * 4, value);
-            return value;
-        }
-
-        public void oPluSet(float value) {
-            this.oSet(this.oGet() + value);
-        }
-
-        public void oMinSet(float value) {
-            this.oSet(this.oGet() - value);
-        }
-
-        public void oMulSet(float value) {
-            this.oSet(this.oGet() * value);
-        }
-
-        public void incPos() {
-            ptr++;
-        }
-
-        public void decPos() {
-            ptr--;
-        }
-
-    };
+     */    
 
     public static final class reflects {
 
@@ -1146,6 +1042,22 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
                     + "Let him who hath understanding reckon the number of the beast,\n"
                     + "for it is a human number,\n"
                     + "its numbers, is");
+            System.exit(666);
+        }
+    }
+    
+    public static final class Deprecation_Exception extends UnsupportedOperationException {
+
+        public Deprecation_Exception() {
+            printStackTrace();
+            System.err.println(
+                    "DARKNESS!!\n"
+                    + "Imprisoning me\n"
+                    + "All that I see\n"
+                    + "Absolute horror\n"
+                    + "I cannot live..."
+                    + "I cannot die..."
+                    + "body my holding cell!");
             System.exit(666);
         }
     }
