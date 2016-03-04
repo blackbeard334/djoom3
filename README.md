@@ -1,5 +1,14 @@
 #djoom3 - a Doom 3 Java port.
 
+####05-03-16
+Version 0.0.4
+
+[http://www.youtube.com/watch?v=TuR7x7iYVJU](http://www.youtube.com/watch?v=TuR7x7iYVJU)  
+[![Screenshot](http://img.youtube.com/vi/TuR7x7iYVJU/0.jpg)](http://www.youtube.com/watch?v=TuR7x7iYVJU"djoom3 0.0.4")
+
+
+
+
 ####05-02-15:
 -Initial non playable release.
 
