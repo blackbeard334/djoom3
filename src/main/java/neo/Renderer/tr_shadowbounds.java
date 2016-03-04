@@ -300,14 +300,14 @@ public class tr_shadowbounds {
 //
         if (p.e.size() == 0) {
 
-            p.v.push_back(new idVec4(-1, -1, 1, 1));
-            p.v.push_back(new idVec4(1, -1, 1, 1));
-            p.v.push_back(new idVec4(1, 1, 1, 1));
-            p.v.push_back(new idVec4(-1, 1, 1, 1));
+            p.v.push_back(new idVec4(-1, -1,  1, 1));
+            p.v.push_back(new idVec4( 1, -1,  1, 1));
+            p.v.push_back(new idVec4( 1,  1,  1, 1));
+            p.v.push_back(new idVec4(-1,  1,  1, 1));
             p.v.push_back(new idVec4(-1, -1, -1, 1));
-            p.v.push_back(new idVec4(1, -1, -1, 1));
-            p.v.push_back(new idVec4(1, 1, -1, 1));
-            p.v.push_back(new idVec4(-1, 1, -1, 1));
+            p.v.push_back(new idVec4( 1, -1, -1, 1));
+            p.v.push_back(new idVec4( 1,  1, -1, 1));
+            p.v.push_back(new idVec4(-1,  1, -1, 1));
 
             p.add_quad(0, 1, 2, 3);
             p.add_quad(7, 6, 5, 4);

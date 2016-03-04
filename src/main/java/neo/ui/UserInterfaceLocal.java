@@ -7,6 +7,8 @@ import static neo.TempDump.sizeof;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_MATERIAL;
+
+import neo.framework.Common;
 import neo.framework.DemoFile.idDemoFile;
 import static neo.framework.FileSystem_h.fileSystem;
 import neo.framework.File_h.idFile;
@@ -181,6 +183,7 @@ public class UserInterfaceLocal {
         public String HandleEvent(final sysEvent_s event, int _time, boolean[] updateVisuals) {
 
             time = _time;
+//            System.out.println(System.nanoTime()+"HandleEvent time="+_time+" "+Common.com_ticNumber);
 
             if (bindHandler != null && event.evType == SE_KEY && event.evValue2 == 1) {
                 final String ret = bindHandler.HandleEvent(event, updateVisuals);

@@ -3,9 +3,11 @@ package neo.ui;
 import java.util.Objects;
 import java.util.Scanner;
 import neo.Renderer.Material.idMaterial;
+
 import static neo.TempDump.atoi;
 import static neo.TempDump.itob;
 import static neo.framework.DeclManager.declManager;
+
 import neo.framework.File_h.idFile;
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.Text.Str.idStr;
@@ -16,8 +18,6 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.Window.idWindow;
-import neo.ui.Winvar.idWinStr;
-import neo.ui.Winvar.idWinVar;
 
 /**
  *
@@ -38,11 +38,10 @@ public class Winvar {
         protected boolean eval;
         //
         //
-        public static int DBG_counter = 0;
-        public final int DBG_id;
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         public idWinVar() {
-            DBG_id = DBG_counter++;
             guiDict = null;
             name = null;
             eval = true;
@@ -131,6 +130,42 @@ public class Winvar {
 
         public boolean GetEval() {
             return eval;
+        }
+
+        public static idWinVar clone(final idWinVar var) {
+            if (var == null) return null;
+
+            if (var.name != null && var.name.isEmpty()) {
+                final int a = 1;
+            }
+            if (var instanceof idWinBool) {
+                return new idWinBool((idWinBool) var);
+            }
+            if (var instanceof idWinBackground) {
+                return new idWinBackground((idWinBackground) var);
+            }
+            if (var instanceof idWinFloat) {
+                return new idWinFloat((idWinFloat) var);
+            }
+            if (var instanceof idWinInt) {
+                return new idWinInt(((idWinInt) var).data);
+            }
+            if (var instanceof idWinRectangle) {
+                return new idWinRectangle((idWinRectangle) var);
+            }
+            if (var instanceof idWinStr) {
+                return new idWinStr((idWinStr) var);
+            }
+            if (var instanceof idWinVec2) {
+                return new idWinVec2(((idWinVec2) var).data);
+            }
+            if (var instanceof idWinVec3) {
+                return new idWinVec3((idWinVec3) var);
+            }
+            if (var instanceof idWinVec4) {
+                return new idWinVec4((idWinVec4) var);
+            }
+            throw new UnsupportedOperationException();
         }
 
         @Override
@@ -409,7 +444,7 @@ public class Winvar {
         // return wether string is emtpy
         @Override
         public float x() {
-            return data.oGet(0) != 0 ? 1.0f : 0.0f;
+            return data.IsEmpty() ? 0.0f : 1.0f;
         }
     };
 
@@ -1074,7 +1109,7 @@ public class Winvar {
         }
     };
 
-    class idWinVec3 extends idWinVar {
+    static class idWinVec3 extends idWinVar {
 
         protected idVec3 data;
         //
@@ -1082,6 +1117,12 @@ public class Winvar {
 
         public idWinVec3() {
             super();
+        }
+
+        //copy constructor
+        idWinVec3(idWinVec3 winVec3) {
+            super.oSet(winVec3);
+            this.data = new idVec3(winVec3.data);
         }
 
 //	~idWinVec3() {};

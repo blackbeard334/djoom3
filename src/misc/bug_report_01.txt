@@ -1,0 +1,205 @@
+-scour all the files for image loading functions
+-begin disabling them at random to see which one disables the image
+-ActuallyLoadImage seems to do stuff
+-print out the imgName of each load
+-introduce a counter
+-return on counter > x, till we find our 'x'
+-the culprit is guis/assets/splash/launch
+-the loaded texture names are the same as the cpp version
+-maybe find the openGL texture numbers(texNum) and backtrack from there?
+-is the md4 has used as texNum?
+	-no, openGL
+-R_ReloadImages_f -> ActuallyLoadImage
+-the cpp version generates one extra texBum
+	-false alarm
+-ok, let's look at qglBindTexture() next...the hypothesis is that somewhere the texture is bound twice, due to some idStr/idToken bad reference or some shit
+-disabling qglBindTexture(GL_TEXTURE_2D, texNum) in idImage::Bind() yields some interesting results...
+	-even so, the loading screen in blank in our j++ version, while it shows some shit in the cpp version.
+-it seems as if no textures are loaded for the load screen, and the previously loaded one is just reused. have to rid of these pesky openAL exceptions first though..
+	-funny thing is, what brought said openAL exceptions to our attention was our MD4 fix!
+-thought maybe the textureStage_t copy constructor was copying the pointers too literally, but it seems our problem is on a higher level.
+shaderStage_t=40620->40364
+guis/assets/splash/launch.tga
+-the idMaterial::Parse order seems out of wack
+SetupBackground=4015
+-...there's an actual funtion called "LoadLoadingGui()".
+
+0 _default
+1 _white
+2 _black
+3 _borderClamp
+4 _flat
+5 _ambient
+6 _specularTable
+7 _specular2DTable
+8 _ramp
+9 _alphaRamp
+10 _alphaNotch
+11 _fog
+12 _fogEnter
+13 _normalCubeMap
+14 _noFalloff
+15 _quadratic
+16 _cinematic
+17 _scratch
+18 _scratch2
+19 _accum
+20 _scratchCubeMap
+21 _currentRender
+22 makeintensity( lights/squarelight1a)
+23 lights/squarelight1
+24 guis/assets/splash/launch
+25 textures/bigchars
+26 textures/black
+27 makeintensity( lights/squarelight1a)
+28 lights/squarelight1
+29 guis/assets/splash/launch
+30 textures/bigchars
+31 textures/black
+32 guis/assets/white
+33 fonts/english/fontimage_0_12
+34 fonts/english/fontimage_0_24
+35 fonts/english/fontimage_1_24
+36 fonts/english/fontimage_2_24
+37 fonts/english/fontimage_0_48
+38 fonts/english/fontimage_1_48
+39 fonts/english/fontimage_2_48
+40 fonts/english/fontimage_3_48
+41 fonts/english/fontimage_4_48
+42 fonts/english/fontimage_5_48
+43 fonts/english/fontimage_6_48
+44 ui/assets/guicursor_arrow
+45 ui/assets/guicursor_hand
+46 ui/assets/scrollbarh
+47 ui/assets/scrollbarv
+48 ui/assets/scrollbar_thumb
+49 ui/assets/scrollbar_right
+50 ui/assets/scrollbar_left
+51 ui/assets/scrollbar_up
+52 ui/assets/scrollbar_down
+53 guis/assets/mainmenu/stars
+54 guis/assets/mainmenu/wink
+55 guis/assets/mainmenu/winkmask
+56 guis/assets/mainmenu/winktest
+57 guis/assets/pda/highlight_256
+58 guis/assets/mainmenu/marshighlight
+59 guis/assets/test/gui_scanline4a
+60 guis/assets/common/pulseline
+61 guis/assets/mainmenu/doom3
+62 guis/assets/mainmenu/doom3
+63 guis/assets/caverns/testmat2
+64 fonts/english/micro/fontimage_0_12
+65 fonts/english/micro/fontimage_0_24
+66 fonts/english/micro/fontimage_1_24
+67 fonts/english/micro/fontimage_2_24
+68 fonts/english/micro/fontimage_0_48
+69 fonts/english/micro/fontimage_1_48
+70 fonts/english/micro/fontimage_2_48
+71 fonts/english/micro/fontimage_3_48
+72 fonts/english/micro/fontimage_4_48
+73 fonts/english/micro/fontimage_5_48
+74 fonts/english/micro/fontimage_6_48
+75 fonts/english/micro/fontimage_7_48
+76 fonts/english/micro/fontimage_8_48
+77 guis/assets/mainmenu/textflare
+78 guis/assets/mainmenu/border_small
+79 guis/assets/mainmenu/border_corner
+80 guis/assets/mainmenu/borderb_corner2
+81 guis/assets/mainmenu/borderb_angle
+82 guis/assets/mainmenu/button_largeangle1
+83 guis/assets/mainmenu/borderb_angle2
+84 guis/assets/mainmenu/button_largeangle0
+85 guis/assets/mainmenu/button_smallangle1
+86 guis/assets/mainmenu/button_smallangle0
+87 guis/assets/mainmenu/button_cornerangle
+88 guis/assets/mainmenu/buttong_cornersquare
+89 guis/assets/mainmenu/buttong_middlesm
+90 guis/assets/mainmenu/buttong_cornerangle
+91 guis/assets/mainmenu/button_edge
+92 guis/assets/mainmenu/buttong_edge
+93 guis/assets/mainmenu/button_middle
+94 guis/assets/mainmenu/buttong_middle
+95 guis/assets/mainmenu/cframe_large
+96 guis/assets/mainmenu/cframe_medium
+97 guis/assets/mainmenu/cframe_small
+98 guis/assets/mainmenu/cframe_small2
+99 guis/assets/mainmenu/content_smallcorner
+100 guis/assets/mainmenu/content_corner
+101 guis/assets/mainmenu/content_angle
+102 guis/assets/mainmenu/content_glow
+103 fonts/english/bank/fontimage_0_12
+104 fonts/english/bank/fontimage_0_24
+105 fonts/english/bank/fontimage_1_24
+106 fonts/english/bank/fontimage_2_24
+107 fonts/english/bank/fontimage_0_48
+108 fonts/english/bank/fontimage_1_48
+109 fonts/english/bank/fontimage_2_48
+110 fonts/english/bank/fontimage_3_48
+111 fonts/english/bank/fontimage_4_48
+112 fonts/english/bank/fontimage_5_48
+113 fonts/english/bank/fontimage_6_48
+114 fonts/english/bank/fontimage_7_48
+115 guis/assets/mainmenu/select_edge
+116 guis/assets/mainmenu/select_border
+117 guis/assets/mainmenu/select_angle
+118 guis/assets/scrollbarv
+119 guis/assets/scrollbar_thumb
+120 guis/assets/mainmenu/slider_bg
+121 guis/assets/mainmenu/slider_bar
+122 guis/assets/mainmenu/buttong_cornersquare2
+123 guis/assets/mainmenu/buttong_middlesm2
+124 guis/assets/mainmenu/buttong_cornerangle2
+125 guis/assets/mainmenu/select_boxborderh
+126 guis/assets/mainmenu/select_boxangle
+127 guis/assets/mainmenu/select_boxborderv
+128 guis/assets/mainmenu/select_boxcorner
+129 guis/assets/mainmenu/select_boxcorner2
+130 fonts/english/an/fontimage_0_12
+131 fonts/english/an/fontimage_0_24
+132 fonts/english/an/fontimage_1_24
+133 fonts/english/an/fontimage_0_48
+134 fonts/english/an/fontimage_1_48
+135 fonts/english/an/fontimage_2_48
+136 fonts/english/an/fontimage_3_48
+137 fonts/english/an/fontimage_4_48
+138 guis/assets/mainmenu/cframe_large2
+139 guis/assets/mainmenu/skin_default
+140 guis/assets/mainmenu/skin_green
+141 guis/assets/mainmenu/skin_blue
+142 guis/assets/mainmenu/skin_red
+143 guis/assets/mainmenu/skin_yellow
+144 guis/assets/mainmenu/bg3
+145 guis/assets/mainmenu/bg2
+146 guis/assets/mainmenu/bg1
+147 guis/assets/mainmenu/buttong_edge2
+148 guis/assets/mainmenu/doom3icon
+149 guis/assets/mainmenu/doom3xpicon
+150 guis/assets/mainmenu/mars_icon
+151 guis/assets/mainmenu/pb_icon
+152 guis/assets/mainmenu/button_corneranglesm
+153 guis/assets/mainmenu/content_glow2
+154 guis/assets/mainmenu/boxframe
+155 guis/assets/common/outerglowbar
+156 guis/assets/test/faces
+157 guis/assets/common/blood
+158 guis/assets/test/facesov3
+159 guis/assets/common/pentagramfx
+160 guis/assets/test/gui_scanline4
+161 guis/assets/common/addhighlight2
+162 textures/sfx/monitor_glass2
+163 guis/assets/common/addhighlight
+164 guis/assets/test/mask
+165 guis/assets/common/outershadow
+166 guis/assets/common/dirt3
+167 guis/assets/mainmenu/doom3_3
+168 guis/assets/mainmenu/doom3_2
+169 guis/assets/mainmenu/doom3_1
+170 guis/assets/common/mlogo
+171 guis/assets/marscity/textblur
+172 guis/assets/marscity/cursor
+173 guis/assets/marscity/bar
+174 guis/assets/blanklevelshot
+175 guis/assets/splash/pdtempa
+176 models/wipes/dust
+177 models/wipes/hst_mars
+178 heightmap( models/wipes/hst_mars_h, 6)

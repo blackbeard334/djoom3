@@ -13,12 +13,15 @@ import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import neo.Sound.snd_decoder;
+
 import static neo.TempDump.NOT;
+
 import neo.TempDump.TODO_Exception;
+
 import static neo.TempDump.atobb;
 import static neo.TempDump.ctos;
 import static neo.TempDump.fopenOptions;
@@ -32,13 +35,19 @@ import static neo.Tools.edit_public.ParticleEditorRun;
 import static neo.Tools.edit_public.RadiantRun;
 import static neo.Tools.edit_public.ScriptEditorRun;
 import static neo.Tools.edit_public.SoundEditorRun;
+
 import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
+
 import static neo.framework.BuildDefines.ID_ALLOW_TOOLS;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
+
 import neo.framework.CVarSystem.idCVar;
+
 import static neo.framework.CmdSystem.CMD_FL_SYSTEM;
 import static neo.framework.CmdSystem.CMD_FL_TOOL;
+
 import neo.framework.CmdSystem.cmdFunction_t;
+
 import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.EDITOR_AF;
 import static neo.framework.Common.EDITOR_DECL;
@@ -54,15 +63,21 @@ import static neo.framework.Common.com_editors;
 import static neo.framework.Common.com_skipRenderer;
 import static neo.framework.Common.common;
 import static neo.framework.UsercmdGen.USERCMD_MSEC;
+
 import neo.idlib.CmdArgs.idCmdArgs;
+
 import static neo.idlib.Lib.MAX_STRING_CHARS;
+
 import neo.idlib.Lib.idException;
+
 import static neo.idlib.Lib.idLib.cvarSystem;
+
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.StrList.idStrList;
 import neo.sys.RC.CreateResourceIDs_f;
+
 import static neo.sys.sys_public.CPUID_3DNOW;
 import static neo.sys.sys_public.CPUID_AMD;
 import static neo.sys.sys_public.CPUID_GENERIC;
@@ -78,21 +93,29 @@ import static neo.sys.sys_public.CRITICAL_SECTION_ZERO;
 import static neo.sys.sys_public.MAX_CRITICAL_SECTIONS;
 import static neo.sys.sys_public.MAX_THREADS;
 import static neo.sys.sys_public.TRIGGER_EVENT_ZERO;
+
 import neo.sys.sys_public.sysEventType_t;
+
 import static neo.sys.sys_public.sysEventType_t.SE_CONSOLE;
+
 import neo.sys.sys_public.sysEvent_s;
 import neo.sys.sys_public.sysMemoryStats_s;
 import neo.sys.sys_public.xthreadInfo;
 import neo.sys.sys_public.xthreadPriority;
+
 import static neo.sys.sys_public.xthreadPriority.THREAD_ABOVE_NORMAL;
 import static neo.sys.sys_public.xthreadPriority.THREAD_HIGHEST;
+
 import neo.sys.sys_public.xthread_t;
+
 import static neo.sys.win_cpu.Sys_ClockTicksPerSecond;
 import static neo.sys.win_cpu.Sys_GetCPUId;
 import static neo.sys.win_glimp.GLimp_Shutdown;
 import static neo.sys.win_input.Sys_InitInput;
 import static neo.sys.win_input.Sys_ShutdownInput;
+
 import neo.sys.win_local.Win32Vars_t;
+
 import static neo.sys.win_local.Win32Vars_t.win_viewlog;
 import static neo.sys.win_local.win32;
 import static neo.sys.win_shared.Sys_GetCurrentUser;
@@ -123,7 +146,7 @@ public class win_main {//TODO: rename to plain "main" or something.
 
     static final StringBuilder sys_cmdline = new StringBuilder(MAX_STRING_CHARS);
 
-    static xthreadInfo                         threadInfo;
+    static        xthreadInfo                         threadInfo;
     public static ScheduledExecutorService /*HANDLE*/ hTimer;
 
     static /*unsigned*/ int debug_total_alloc         = 0;
@@ -425,12 +448,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ==============
      */
     public static void Sys_Sleep(int msec) {
-
-        try {
-            TimeUnit.MILLISECONDS.sleep(msec);
-        } catch (InterruptedException ex) {
-//            Logger.getLogger(win_main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(msec));
     }
 
     /*
@@ -723,9 +741,9 @@ public class win_main {//TODO: rename to plain "main" or something.
 
      ========================================================================
      */
-    static sysEvent_s[] eventQue = new sysEvent_s[MAX_QUED_EVENTS];
-    static int eventHead = 0;
-    static int eventTail = 0;
+    static sysEvent_s[] eventQue  = new sysEvent_s[MAX_QUED_EVENTS];
+    static int          eventHead = 0;
+    static int          eventTail = 0;
 
     /*
      ================
@@ -765,6 +783,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      This allows windows to be moved during renderbump
      =============
      */
+
     /**
      * @deprecated not needed for java
      */
@@ -927,7 +946,9 @@ public class win_main {//TODO: rename to plain "main" or something.
             common.Async();
 //            }
         }
-    };
+    }
+
+    ;
 
     /*
      ==============
@@ -935,11 +956,16 @@ public class win_main {//TODO: rename to plain "main" or something.
 
      Start the thread that will call idCommon::Async()
      ==============
-     */
+     */private static int count = 0;
     public static void Sys_StartAsyncThread() {
 
         // create an auto-reset event that happens 60 times a second
-        hTimer = Executors.newSingleThreadScheduledExecutor();
+//        hTimer = Executors.newSingleThreadScheduledExecutor(r -> new Thread("bla" + (thread++)));
+        hTimer = Executors.newSingleThreadScheduledExecutor(r -> {
+            final Thread thread = new Thread(r, "bla-" + (count++));
+            thread.setPriority(Thread.MAX_PRIORITY);
+            return thread;
+        });
 //        hTimer = Executors.newScheduledThreadPool(1);
         threadInfo = new xthreadInfo();
         if (null == hTimer) {
@@ -952,21 +978,11 @@ public class win_main {//TODO: rename to plain "main" or something.
 //        }
 
 //        hTimer.scheduleAtFixedRate(threadInfo.threadHandle, 0, USERCMD_MSEC, TimeUnit.MILLISECONDS);
-        hTimer.scheduleAtFixedRate(new Runnable() {//TODO:debug the line above.(info.threadHandle.start();??)
-
-            @Override
-            public void run() {
+        hTimer.scheduleAtFixedRate((Runnable) () -> {//TODO:debug the line above.(info.threadHandle.start();??)
 //                if (!DEBUG) {//TODO:Session_local.java::742
-                try {
-                    common.Async();
-                } catch (Exception e) {
-                    Logger.getLogger(win_main.class.getName()).log(Level.SEVERE, null, e);
-                    System.err.println("AsyncThread terminated.");
-                }
+            common.Async();
 //                }
-            }
-        }, 0, USERCMD_MSEC, TimeUnit.MILLISECONDS);
-
+        }, 0, 1000000000L / 60, TimeUnit.NANOSECONDS);
 //        if (SET_THREAD_AFFINITY) {
 //            // give the async thread an affinity for the second cpu
 //            SetThreadAffinityMask(threadInfo.threadHandle, 2);
@@ -1191,7 +1207,7 @@ public class win_main {//TODO: rename to plain "main" or something.
 //	return win32.sys_cpustring.GetString();
     }
 
-//=======================================================================
+    //=======================================================================
 //#define SET_THREAD_AFFINITY
     /*
      ====================

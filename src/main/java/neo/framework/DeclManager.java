@@ -42,11 +42,7 @@ import static neo.framework.DeclManager.declType_t.DECL_SKIN;
 import static neo.framework.DeclManager.declType_t.DECL_SOUND;
 import static neo.framework.DeclManager.declType_t.DECL_TABLE;
 import static neo.framework.DeclManager.declType_t.DECL_VIDEO;
-import neo.framework.DeclManager.huffmanNode_s;
-import neo.framework.DeclManager.idDecl;
-import neo.framework.DeclManager.idDeclFile;
-import neo.framework.DeclManager.idDeclLocal;
-import neo.framework.DeclManager.idDeclType;
+
 import neo.framework.DeclPDA.idDeclAudio;
 import neo.framework.DeclPDA.idDeclEmail;
 import neo.framework.DeclPDA.idDeclPDA;
@@ -419,18 +415,16 @@ public class DeclManager {
         // If makeDefault is true, a default decl of appropriate type will be created
         // if an explicit one isn't found. If makeDefault is false, NULL will be returned
         // if the decl wasn't explcitly defined.
-        public abstract idDecl FindType(declType_t type, idStr name, boolean makeDefault /*= true*/) throws idException;
+        public abstract idDecl FindType(declType_t type, String name, boolean makeDefault /*= true*/) throws idException;
 
         public idDecl FindType(declType_t type, idStr name) throws idException {
             return FindType(type, name, true);
         }
 
-        @Deprecated//name could have a back reference.
-        public idDecl FindType(declType_t type, String name, boolean makeDefault) {
-            return FindType(type, new idStr(name), makeDefault);
+        public idDecl FindType(declType_t type, idStr name, boolean makeDefault) {
+            return FindType(type, name.toString(), makeDefault);
         }
 
-        @Deprecated//name could have a back reference.
         public idDecl FindType(declType_t type, String name) {
             return FindType(type, new idStr(name));
         }
@@ -1548,17 +1542,17 @@ public class DeclManager {
          =================
          */static int DEBUG_FindType=0;
         @Override 
-        public idDecl FindType(declType_t type, idStr name, boolean makeDefault) throws idException {
+        public idDecl FindType(declType_t type, String name, boolean makeDefault) throws idException {
             idDeclLocal decl;
 
 //            TempDump.printCallStack("--------------"+ DEBUG_FindType);
             DEBUG_FindType++;
-            if (name.IsEmpty()) {
-                name.oSet("_emptyName");
+            if (name == null || name.isEmpty()) {
+                name = "_emptyName";
                 //common.Warning( "idDeclManager::FindType: empty %s name", GetDeclType( (int)type ).typeName.c_str() );
             }
 
-            decl = FindTypeWithoutParsing(type, name.toString(), makeDefault);
+            decl = FindTypeWithoutParsing(type, name, makeDefault);
             if (null == decl) {
                 return null;
             }

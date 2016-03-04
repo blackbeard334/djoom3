@@ -1059,6 +1059,7 @@ public class Session_local {
 //	memset( &ev, 0, sizeof( ev ) );
             ev = new sysEvent_s();
             ev.evType = SE_NONE;
+//            System.out.println(System.nanoTime()+"com_frameTime="+com_frameTime+" "+Common.com_ticNumber);
             cmd = gui.HandleEvent(ev, com_frameTime);
             if (isNotNullOrEmpty(cmd)) {
                 DispatchCommand(guiActive, cmd, false);

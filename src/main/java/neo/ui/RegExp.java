@@ -134,7 +134,8 @@ public class RegExp {
             }
         }
 
-        public void GetFromRegs(float[] registers) {
+        private static int DBG_GetFromRegs = 0;
+        public void GetFromRegs(float[] registers) {DBG_GetFromRegs++;
             idVec4 v = new idVec4();
             idRectangle rect = new idRectangle();
 

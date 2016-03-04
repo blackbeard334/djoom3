@@ -40,6 +40,9 @@ public class idMat3 {
 
     final idVec3[] mat = {new idVec3(), new idVec3(), new idVec3()};
 
+    private static int DBG_counter = 0;
+    private final  int DBG_count = DBG_counter++;
+
     public idMat3() {
     }
 

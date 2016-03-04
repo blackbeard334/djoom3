@@ -2790,10 +2790,11 @@ public class Window {
             for (i = 0; i < c; i++) {
                 if (ops.oGet(i).b == -2) {
                     // need to fix this up
-                    final String p = ops.oGet(i).a.GetName();//TODO:reference value to pointer
+                    final String p = ops.oGet(i).a.c_str();
                     idWinVar var = GetWinVarByName(p, true);
+//                    System.out.println("=="+p);
 //			delete []p;
-                    ops.oGet(i).a = /*(int)*/ var;
+                    ops.oGet(i).a = /*(int)*/ idWinVar.clone(var);
                     ops.oGet(i).b = -1;
                 }
             }
@@ -3668,7 +3669,7 @@ public class Window {
             op = ExpressionOp();
 
             op.opType = opType;
-            op.a = a;
+            op.a = idWinVar.clone(a);
             op.b = b;
             op.c = ExpressionTemporary();
 
@@ -3881,8 +3882,8 @@ public class Window {
          then all expressions are evaluated, leaving the shader registers
          set to their apropriate values.
          ===============
-         */
-        protected void EvaluateRegisters(float[] registers) {
+         */private static int DBG_EvaluateRegisters = 0;
+        protected void EvaluateRegisters(float[] registers) {DBG_EvaluateRegisters++;
 
             int i, b;
             wexpOp_t op;
@@ -4006,6 +4007,7 @@ public class Window {
                     default:
                         common.FatalError("R_EvaluateExpression: bad opcode");
                 }
+//                System.out.println("===" + registers[op.c]);
             }
 
         }

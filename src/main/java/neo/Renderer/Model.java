@@ -183,7 +183,7 @@ public class Model {
         vertCache_s    shadowCache;             // shadowCache_t
 
         private static int DBG_counter = 0;
-        private final  int DBG_count = DBG_counter++;
+        public  final  int DBG_count = DBG_counter++;
         
         public srfTriangles_s() {
             this.bounds = new idBounds();

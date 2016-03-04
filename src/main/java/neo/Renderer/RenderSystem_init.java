@@ -463,8 +463,8 @@ public class RenderSystem_init {
         r_showInteractionFrustums = new idCVar("r_showInteractionFrustums", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = show a frustum for each interaction, 2 = also draw lines to light origin, 3 = also draw entity bbox", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showInteractionScissors = new idCVar("r_showInteractionScissors", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = show screen rectangle which contains the interaction frustum, 2 = also draw construction lines", 0, 2, new idCmdSystem.ArgCompletion_Integer(0, 2));
         r_showLightCount = new idCVar("r_showLightCount", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = colors surfaces based on light count, 2 = also count everything through walls, 3 = also print overdraw", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
-        r_showViewEntitys = new idCVar("r_showViewEntitys", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = displays the bounding boxes of all view models, 2 = print index numbers");
-        r_showTris = new idCVar("r_showTris", "0", CVAR_RENDERER | CVAR_INTEGER, "enables wireframe rendering of the world, 1 = only draw visible ones, 2 = draw all front facing, 3 = draw all", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
+        r_showViewEntitys = new idCVar("r_showViewEntitys", "1", CVAR_RENDERER | CVAR_INTEGER, "1 = displays the bounding boxes of all view models, 2 = print index numbers");
+        r_showTris = new idCVar("r_showTris", "1", CVAR_RENDERER | CVAR_INTEGER, "enables wireframe rendering of the world, 1 = only draw visible ones, 2 = draw all front facing, 3 = draw all", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showSurfaceInfo = new idCVar("r_showSurfaceInfo", "0", CVAR_RENDERER | CVAR_BOOL, "show surface material name under crosshair");
         r_showNormals = new idCVar("r_showNormals", "0", CVAR_RENDERER | CVAR_FLOAT, "draws wireframe normals");
         r_showMemory = new idCVar("r_showMemory", "0", CVAR_RENDERER | CVAR_BOOL, "print frame memory utilization");
