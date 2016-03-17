@@ -2794,7 +2794,7 @@ public class Window {
                     idWinVar var = GetWinVarByName(p, true);
 //                    System.out.println("=="+p);
 //			delete []p;
-                    ops.oGet(i).a = /*(int)*/ idWinVar.clone(var);
+                    ops.oGet(i).a = /*(int)*/ var;
                     ops.oGet(i).b = -1;
                 }
             }
@@ -3669,7 +3669,7 @@ public class Window {
             op = ExpressionOp();
 
             op.opType = opType;
-            op.a = idWinVar.clone(a);
+            op.a = a;
             op.b = b;
             op.c = ExpressionTemporary();
 

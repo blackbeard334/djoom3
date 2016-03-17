@@ -132,6 +132,8 @@ public class Winvar {
             return eval;
         }
 
+        /** @deprecated calling this function in idWindow::EmitOp hides the loading bar progress. */
+        @Deprecated
         public static idWinVar clone(final idWinVar var) {
             if (var == null) return null;
 
