@@ -77,3 +77,4 @@
 								-go wild and print out all the in registers[op.c] values being set EvaluateRegisters()
 									-heisenbug?
 							-let's try clamping the *************************
+							-see bug_report03.txt

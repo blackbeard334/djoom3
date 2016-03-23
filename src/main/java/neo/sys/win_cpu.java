@@ -7,6 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
+import org.lwjgl.Sys;
+
 import static neo.TempDump.atoi;
 import static neo.framework.BuildDefines._WIN32;
 import static neo.sys.sys_public.CPUID_3DNOW;
@@ -60,7 +62,7 @@ public class win_cpu {
      Sys_GetClockTicks
      ================
      */
-    public static double Sys_GetClockTicks() {
+    public static long Sys_GetClockTicks() {
 
         return System.nanoTime();
 //#if 0

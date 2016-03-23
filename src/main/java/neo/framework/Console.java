@@ -458,9 +458,9 @@ public class Console {
                 }
             }
 
-            if (com_showFPS.GetBool()) {
+//            if (com_showFPS.GetBool()) {
                 y = SCR_DrawFPS(0);
-            }
+//            }
 
             if (com_showMemoryUsage.GetBool()) {
                 y = SCR_DrawMemoryUsage(y);

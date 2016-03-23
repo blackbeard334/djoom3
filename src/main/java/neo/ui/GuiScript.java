@@ -22,8 +22,6 @@ import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
-import neo.ui.GuiScript.Script_Set;
-import neo.ui.GuiScript.Script_Transition;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.SimpleWindow.drawWin_t;
 import static neo.ui.Window.WIN_NOCURSOR;

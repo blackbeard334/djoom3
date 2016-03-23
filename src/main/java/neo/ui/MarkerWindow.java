@@ -150,7 +150,7 @@ public class MarkerWindow {
         @Override
         public void Draw(int time, float x, float y) {
             float pct;
-            idRectangle r = clientRect;
+            idRectangle r = new idRectangle(clientRect);
             int len = gui.State().GetInt("loadLength");
             if (len == 0) {
                 len = 1;
@@ -183,7 +183,7 @@ public class MarkerWindow {
             }
 
             if (stopTime >= 0 && markerStop != null) {
-                r = clientRect;
+                r = new idRectangle(clientRect);
                 r.y += (r.h - 32) / 2;
                 pct = (float) stopTime / len;
                 r.x += (r.w * pct) - 16;

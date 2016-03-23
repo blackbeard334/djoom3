@@ -689,7 +689,7 @@ public class Window {
         }
 
         public boolean Contains(float x, float y) {
-            idRectangle r = drawRect;
+            idRectangle r = new idRectangle(drawRect);
             r.x = actualX;
             r.y = actualY;
             return r.Contains(x, y);
@@ -974,6 +974,9 @@ public class Window {
 
         public void CalcClientRect(float xofs, float yofs) {
             drawRect.oSet(rect.data);
+//            if(rect.DBG_count==289425){
+//                int a = 1;
+//            }
 
             if ((flags & WIN_INVERTRECT) != 0) {
                 drawRect.x = rect.x() - rect.w();
@@ -994,6 +997,7 @@ public class Window {
             drawRect.y += yofs;
 
             clientRect.oSet(drawRect);
+//            System.out.println(drawRect);
             if (rect.h() > 0.0 && rect.w() > 0.0) {
 
                 if (((flags & WIN_BORDER) != 0) && borderSize != 0.0) {
@@ -1120,7 +1124,7 @@ public class Window {
         }
 
         public boolean Contains(final idRectangle sr, float x, float y) {
-            idRectangle r = sr;
+            idRectangle r = new idRectangle(sr);
             r.x += actualX - drawRect.x;
             r.y += actualY - drawRect.y;
             return r.Contains(x, y);
@@ -3296,20 +3300,6 @@ public class Window {
 
             rect.x += x;
             rect.y += y;
-        }
-
-        {
-            int x;
-            int y;
-            idWindow p;
-
-            for (p = this, x = 0, y = 0; p != null; p = p.parent) {
-                x += p.rect.x();
-                y += p.rect.y();
-            }
-
-            rect.data.x -= x;
-            rect.data.y -= y;
         }
 
         public boolean UpdateFromDictionary(idDict dict) {

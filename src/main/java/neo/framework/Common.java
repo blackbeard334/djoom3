@@ -353,10 +353,10 @@ public class Common {
                     : new idCVar("com_asyncSound", "1", CVAR_INTEGER | CVAR_SYSTEM, ASYNCSOUND_INFO, 0, 1)));
 //
     public static final idCVar com_forceGenericSIMD = new idCVar("com_forceGenericSIMD", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "force generic platform independent SIMD");
-    public static final idCVar com_developer = new idCVar("developer", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "developer mode");
+    public static final idCVar com_developer = new idCVar("developer", "1", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "developer mode");
     public static final idCVar com_allowConsole = new idCVar("com_allowConsole", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "allow toggling console with the tilde key");
     public static final idCVar com_speeds = new idCVar("com_speeds", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show engine timings");
-    public static final idCVar com_showFPS = new idCVar("com_showFPS", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_NOCHEAT, "show frames rendered per second");
+    public static final idCVar com_showFPS = new idCVar("com_showFPS", "1", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_NOCHEAT, "show frames rendered per second");
     public static final idCVar com_showMemoryUsage = new idCVar("com_showMemoryUsage", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show total and per frame memory usage");
     public static final idCVar com_showAsyncStats = new idCVar("com_showAsyncStats", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show async network stats");
     public static final idCVar com_showSoundDecoders = new idCVar("com_showSoundDecoders", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show sound decoders");
@@ -2175,7 +2175,7 @@ public class Common {
         }
 
         private void PrintLoadingMessage(final String msg) {
-            if (!(msg != null && !msg.isEmpty())) {
+            if (msg == null || msg.isEmpty()) {
                 return;
             }
             renderSystem.BeginFrame(renderSystem.GetScreenWidth(), renderSystem.GetScreenHeight());

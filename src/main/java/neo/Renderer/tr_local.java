@@ -1,5 +1,44 @@
 package neo.Renderer;
 
+import neo.Renderer.Cinematic.idCinematic;
+import neo.Renderer.GuiModel.idGuiModel;
+import neo.Renderer.Image.idImage;
+import neo.Renderer.Image.textureType_t;
+import neo.Renderer.Interaction.idInteraction;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Material.stageVertexColor_t;
+import neo.Renderer.Model.dominantTri_s;
+import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.silEdge_t;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.ModelDecal.idRenderModelDecal;
+import neo.Renderer.ModelOverlay.idRenderModelOverlay;
+import neo.Renderer.RenderSystem.fontInfoEx_t;
+import neo.Renderer.RenderSystem.fontInfo_t;
+import neo.Renderer.RenderSystem.glconfig_s;
+import neo.Renderer.RenderSystem.glyphInfo_t;
+import neo.Renderer.RenderSystem.idRenderSystem;
+import neo.Renderer.RenderWorld.idRenderWorld;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.Renderer.RenderWorld.renderLight_s;
+import neo.Renderer.RenderWorld.renderView_s;
+import neo.Renderer.RenderWorld_local.doublePortal_s;
+import neo.Renderer.RenderWorld_local.idRenderWorldLocal;
+import neo.Renderer.RenderWorld_local.portalArea_s;
+import neo.Renderer.VertexCache.vertCache_s;
+import neo.framework.Common.MemInfo_t;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.BV.Frustum.idFrustum;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.List.idList;
+import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.idlib.geometry.Winding.idWinding;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Vector.idVec2;
+import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Vector.idVec4;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -7,27 +46,15 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-import neo.Renderer.Cinematic.idCinematic;
-import neo.Renderer.GuiModel.idGuiModel;
+
 import static neo.Renderer.Image.globalImages;
-import neo.Renderer.Image.idImage;
 import static neo.Renderer.Image.textureDepth_t.TD_DEFAULT;
-import neo.Renderer.Image.textureType_t;
 import static neo.Renderer.Image_files.R_WriteTGA;
-import neo.Renderer.Interaction.idInteraction;
 import static neo.Renderer.Material.SS_GUI;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Material.stageVertexColor_t;
 import static neo.Renderer.Material.textureFilter_t.TF_DEFAULT;
 import static neo.Renderer.Material.textureRepeat_t.TR_REPEAT;
 import static neo.Renderer.MegaTexture.RoundDownToPowerOfTwo;
-import neo.Renderer.Model.dominantTri_s;
-import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.silEdge_t;
-import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.ModelDecal.idRenderModelDecal;
 import static neo.Renderer.ModelManager.renderModelManager;
-import neo.Renderer.ModelOverlay.idRenderModelOverlay;
 import static neo.Renderer.RenderSystem.BIGCHAR_HEIGHT;
 import static neo.Renderer.RenderSystem.BIGCHAR_WIDTH;
 import static neo.Renderer.RenderSystem.GLYPHS_PER_FONT;
@@ -41,11 +68,6 @@ import static neo.Renderer.RenderSystem.SCREEN_HEIGHT;
 import static neo.Renderer.RenderSystem.SCREEN_WIDTH;
 import static neo.Renderer.RenderSystem.SMALLCHAR_HEIGHT;
 import static neo.Renderer.RenderSystem.SMALLCHAR_WIDTH;
-import neo.Renderer.RenderSystem.fontInfoEx_t;
-import neo.Renderer.RenderSystem.fontInfo_t;
-import neo.Renderer.RenderSystem.glconfig_s;
-import neo.Renderer.RenderSystem.glyphInfo_t;
-import neo.Renderer.RenderSystem.idRenderSystem;
 import static neo.Renderer.RenderSystem_init.GL_CheckErrors;
 import static neo.Renderer.RenderSystem_init.R_InitCommands;
 import static neo.Renderer.RenderSystem_init.R_InitCvars;
@@ -57,14 +79,6 @@ import static neo.Renderer.RenderSystem_init.r_frontBuffer;
 import static neo.Renderer.RenderSystem_init.r_renderer;
 import static neo.Renderer.RenderSystem_init.r_screenFraction;
 import static neo.Renderer.RenderSystem_init.r_showDemo;
-import neo.Renderer.RenderWorld.idRenderWorld;
-import neo.Renderer.RenderWorld.renderEntity_s;
-import neo.Renderer.RenderWorld.renderLight_s;
-import neo.Renderer.RenderWorld.renderView_s;
-import neo.Renderer.RenderWorld_local.doublePortal_s;
-import neo.Renderer.RenderWorld_local.idRenderWorldLocal;
-import neo.Renderer.RenderWorld_local.portalArea_s;
-import neo.Renderer.VertexCache.vertCache_s;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.qgl.qglGetError;
 import static neo.Renderer.qgl.qglReadBuffer;
@@ -76,56 +90,20 @@ import static neo.Renderer.tr_font.fdFile;
 import static neo.Renderer.tr_font.fdOffset;
 import static neo.Renderer.tr_font.readFloat;
 import static neo.Renderer.tr_font.readInt;
-import static neo.Renderer.tr_local.FOG_ENTER_SIZE;
-import static neo.Renderer.tr_local.GLS_BLUEMASK;
-import static neo.Renderer.tr_local.GLS_DEPTHFUNC_ALWAYS;
-import static neo.Renderer.tr_local.GLS_GREENMASK;
-import static neo.Renderer.tr_local.GLS_REDMASK;
-import static neo.Renderer.tr_local.MAX_CLIP_PLANES;
-import static neo.Renderer.tr_local.MAX_MULTITEXTURE_UNITS;
-import static neo.Renderer.tr_local.MAX_RENDER_CROPS;
-import neo.Renderer.tr_local.areaReference_s;
-import static neo.Renderer.tr_local.backEnd;
-import neo.Renderer.tr_local.backEndCounters_t;
-import neo.Renderer.tr_local.backEndName_t;
 import static neo.Renderer.tr_local.backEndName_t.BE_ARB;
 import static neo.Renderer.tr_local.backEndName_t.BE_ARB2;
 import static neo.Renderer.tr_local.backEndName_t.BE_BAD;
 import static neo.Renderer.tr_local.backEndName_t.BE_NV10;
 import static neo.Renderer.tr_local.backEndName_t.BE_NV20;
 import static neo.Renderer.tr_local.backEndName_t.BE_R200;
-import neo.Renderer.tr_local.backEndState_t;
-import static neo.Renderer.tr_local.colors;
-import neo.Renderer.tr_local.copyRenderCommand_t;
 import static neo.Renderer.tr_local.demoCommand_t.DC_CAPTURE_RENDER;
 import static neo.Renderer.tr_local.demoCommand_t.DC_CROP_RENDER;
 import static neo.Renderer.tr_local.demoCommand_t.DC_END_FRAME;
 import static neo.Renderer.tr_local.demoCommand_t.DC_GUI_MODEL;
 import static neo.Renderer.tr_local.demoCommand_t.DC_UNCROP_RENDER;
-import neo.Renderer.tr_local.drawSurf_s;
-import neo.Renderer.tr_local.drawSurfsCommand_t;
-import neo.Renderer.tr_local.emptyCommand_t;
-import neo.Renderer.tr_local.frameData_t;
-import neo.Renderer.tr_local.frameMemoryBlock_s;
-import static neo.Renderer.tr_local.glConfig;
-import neo.Renderer.tr_local.glstate_t;
-import neo.Renderer.tr_local.idRenderEntityLocal;
-import neo.Renderer.tr_local.idRenderLightLocal;
-import neo.Renderer.tr_local.idRenderSystemLocal;
-import neo.Renderer.tr_local.idScreenRect;
-import neo.Renderer.tr_local.performanceCounters_t;
-import neo.Renderer.tr_local.renderCommand_t;
 import static neo.Renderer.tr_local.renderCommand_t.RC_COPY_RENDER;
 import static neo.Renderer.tr_local.renderCommand_t.RC_SET_BUFFER;
 import static neo.Renderer.tr_local.renderCommand_t.RC_SWAP_BUFFERS;
-import neo.Renderer.tr_local.renderCrop_t;
-import neo.Renderer.tr_local.setBufferCommand_t;
-import neo.Renderer.tr_local.shadowFrustum_t;
-import neo.Renderer.tr_local.tmu_t;
-import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_local.viewDef_s;
-import neo.Renderer.tr_local.viewEntity_s;
-import neo.Renderer.tr_local.viewLight_s;
 import static neo.Renderer.tr_main.R_GlobalToNormalizedDeviceCoordinates;
 import static neo.Renderer.tr_main.R_ShutdownFrameData;
 import static neo.Renderer.tr_main.R_ToggleSmpFrame;
@@ -136,15 +114,12 @@ import static neo.Renderer.tr_trisurf.R_ShutdownTriSurfData;
 import static neo.TempDump.btoi;
 import static neo.TempDump.ctos;
 import static neo.TempDump.fprintf;
-import neo.framework.Common.MemInfo_t;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DemoFile.demoSystem_t.DS_RENDER;
 import static neo.framework.EventLoop.eventLoop;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.Session.session;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.BV.Frustum.idFrustum;
 import static neo.idlib.Lib.colorBlue;
 import static neo.idlib.Lib.colorCyan;
 import static neo.idlib.Lib.colorGreen;
@@ -154,16 +129,7 @@ import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Lib.colorYellow;
 import static neo.idlib.Text.Str.C_COLOR_DEFAULT;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.containers.List.idList;
-import neo.idlib.geometry.DrawVert.idDrawVert;
-import neo.idlib.geometry.Winding.idWinding;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Vector.getVec3_zero;
-import neo.idlib.math.Vector.idVec2;
-import neo.idlib.math.Vector.idVec3;
-import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_glimp.GLimp_Shutdown;
 import static org.lwjgl.opengl.GL11.GL_BACK;
 import static org.lwjgl.opengl.GL11.GL_FRONT;
@@ -1993,14 +1959,15 @@ public class tr_local {
             SetColor(colorWhite);
         }
 
-        public void DrawBigChar(int x, int y, int[] ch, idMaterial material) {
+        @Override
+        public void DrawBigChar(int x, int y, int ch, idMaterial material) {
             int row, col;
             float frow, fcol;
             float size;
 
-            ch[0] &= 255;
+            ch &= 255;
 
-            if (ch[0] == ' ') {
+            if (ch == ' ') {
                 return;
             }
 
@@ -2008,15 +1975,14 @@ public class tr_local {
                 return;
             }
 
-            row = ch[0] >> 4;
-            col = ch[0] & 15;
+            row = ch >> 4;
+            col = ch & 15;
 
             frow = row * 0.0625f;
             fcol = col * 0.0625f;
             size = 0.0625f;
 
-            DrawStretchPic(x, y, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, fcol, frow,
-                    fcol + size, frow + size, material);
+            DrawStretchPic(x, y, BIGCHAR_WIDTH, BIGCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, material);
         }
 
         /*
@@ -2029,7 +1995,8 @@ public class tr_local {
          Coordinates are at 640 by 480 virtual resolution
          ==================
          */
-        public void DrawBigStringExt(int x, int y, final char[] string, idVec4 setColor, boolean forceColor, idMaterial material) {
+        @Override
+        public void DrawBigStringExt(int x, int y, final String string, idVec4 setColor, boolean forceColor, idMaterial material) {
             idVec4 color;
             int s;
             int xx;
@@ -2038,13 +2005,13 @@ public class tr_local {
             s = 0;//string;
             xx = x;
             SetColor(setColor);
-            while (string[s] != '\0') {
-                if (idStr.IsColor(ctos(string).substring(s))) {
+            while (s < string.length()) {
+                if (idStr.IsColor(string.substring(s))) {
                     if (!forceColor) {
-                        if ((string[s + 1]) == C_COLOR_DEFAULT) {
+                        if ((string.charAt(s + 1) == C_COLOR_DEFAULT)) {
                             SetColor(setColor);
                         } else {
-                            color = idStr.ColorForIndex(string[s + 1]);
+                            color = idStr.ColorForIndex(string.charAt(s + 1));
                             color.oSet(3, setColor.oGet(3));
                             SetColor(color);
                         }
@@ -2052,9 +2019,7 @@ public class tr_local {
                     s += 2;
                     continue;
                 }
-                int[] ch = {string[s]};
-                DrawBigChar(xx, y, ch, material);
-                string[s] = (char) ch[0];
+                DrawBigChar(xx, y, string.charAt(s), material);
                 xx += BIGCHAR_WIDTH;
                 s++;
             }
@@ -2475,17 +2440,6 @@ public class tr_local {
             image.SetImageFilterAndRepeat();
             return true;
         }
-
-        @Override
-        public void DrawBigStringExt(int x, int y, String string, idVec4 setColor, boolean forceColor, idMaterial material) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void DrawBigChar(int x, int y, int ch, idMaterial material) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
     };
     public static backEndState_t backEnd;
     public static idRenderSystemLocal tr       = new idRenderSystemLocal();

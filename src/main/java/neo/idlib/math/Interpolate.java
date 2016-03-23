@@ -161,11 +161,11 @@ public class Interpolate {
             speed = (type) _Multiply(_Minus(endValue, startValue), (1000.0f / (this.linearTime + (this.accelTime + this.decelTime) * 0.5f)));
 
             if (0.0f != this.accelTime) {
-                extrapolate.Init(startTime, this.accelTime, startValue, (type) _Minus(endValue, startValue), speed, Extrapolate.EXTRAPOLATION_ACCELLINEAR);
+                extrapolate.Init(startTime, this.accelTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_ACCELLINEAR);
             } else if (0.0f != this.linearTime) {
-                extrapolate.Init(startTime, this.linearTime, startValue, (type) _Minus(endValue, startValue), speed, Extrapolate.EXTRAPOLATION_LINEAR);
+                extrapolate.Init(startTime, this.linearTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_LINEAR);
             } else {
-                extrapolate.Init(startTime, this.decelTime, startValue, (type) _Minus(endValue, startValue), speed, Extrapolate.EXTRAPOLATION_DECELLINEAR);
+                extrapolate.Init(startTime, this.decelTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_DECELLINEAR);
             }
         }
 
@@ -312,11 +312,11 @@ public class Interpolate {
             speed = (type) _Multiply(_Minus(endValue, startValue), (1000.0f / (this.linearTime + (this.accelTime + this.decelTime) * idMath.SQRT_1OVER2)));
 
             if (0 != this.accelTime) {
-                extrapolate.Init(startTime, this.accelTime, startValue, (type) _Minus(endValue, startValue), speed, Extrapolate.EXTRAPOLATION_ACCELSINE);
+                extrapolate.Init(startTime, this.accelTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_ACCELSINE);
             } else if (0 != this.linearTime) {
-                extrapolate.Init(startTime, this.linearTime, startValue, (type) _Minus(endValue, startValue), speed, Extrapolate.EXTRAPOLATION_LINEAR);
+                extrapolate.Init(startTime, this.linearTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_LINEAR);
             } else {
-                extrapolate.Init(startTime, this.decelTime, startValue, (type) _Minus(endValue, startValue), speed, Extrapolate.EXTRAPOLATION_DECELSINE);
+                extrapolate.Init(startTime, this.decelTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_DECELSINE);
             }
         }
 
