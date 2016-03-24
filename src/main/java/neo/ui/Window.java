@@ -689,7 +689,7 @@ public class Window {
         }
 
         public boolean Contains(float x, float y) {
-            idRectangle r = drawRect;
+            idRectangle r = new idRectangle(drawRect);
             r.x = actualX;
             r.y = actualY;
             return r.Contains(x, y);
@@ -974,6 +974,9 @@ public class Window {
 
         public void CalcClientRect(float xofs, float yofs) {
             drawRect.oSet(rect.data);
+//            if(rect.DBG_count==289425){
+//                int a = 1;
+//            }
 
             if ((flags & WIN_INVERTRECT) != 0) {
                 drawRect.x = rect.x() - rect.w();
@@ -994,6 +997,7 @@ public class Window {
             drawRect.y += yofs;
 
             clientRect.oSet(drawRect);
+//            System.out.println(drawRect);
             if (rect.h() > 0.0 && rect.w() > 0.0) {
 
                 if (((flags & WIN_BORDER) != 0) && borderSize != 0.0) {
@@ -1120,7 +1124,7 @@ public class Window {
         }
 
         public boolean Contains(final idRectangle sr, float x, float y) {
-            idRectangle r = sr;
+            idRectangle r = new idRectangle(sr);
             r.x += actualX - drawRect.x;
             r.y += actualY - drawRect.y;
             return r.Contains(x, y);
@@ -2790,8 +2794,9 @@ public class Window {
             for (i = 0; i < c; i++) {
                 if (ops.oGet(i).b == -2) {
                     // need to fix this up
-                    final String p = ops.oGet(i).a.GetName();//TODO:reference value to pointer
+                    final String p = ops.oGet(i).a.c_str();
                     idWinVar var = GetWinVarByName(p, true);
+//                    System.out.println("=="+p);
 //			delete []p;
                     ops.oGet(i).a = /*(int)*/ var;
                     ops.oGet(i).b = -1;
@@ -3295,20 +3300,6 @@ public class Window {
 
             rect.x += x;
             rect.y += y;
-        }
-
-        {
-            int x;
-            int y;
-            idWindow p;
-
-            for (p = this, x = 0, y = 0; p != null; p = p.parent) {
-                x += p.rect.x();
-                y += p.rect.y();
-            }
-
-            rect.data.x -= x;
-            rect.data.y -= y;
         }
 
         public boolean UpdateFromDictionary(idDict dict) {
@@ -3881,8 +3872,8 @@ public class Window {
          then all expressions are evaluated, leaving the shader registers
          set to their apropriate values.
          ===============
-         */
-        protected void EvaluateRegisters(float[] registers) {
+         */private static int DBG_EvaluateRegisters = 0;
+        protected void EvaluateRegisters(float[] registers) {DBG_EvaluateRegisters++;
 
             int i, b;
             wexpOp_t op;
@@ -4006,6 +3997,7 @@ public class Window {
                     default:
                         common.FatalError("R_EvaluateExpression: bad opcode");
                 }
+//                System.out.println("===" + registers[op.c]);
             }
 
         }

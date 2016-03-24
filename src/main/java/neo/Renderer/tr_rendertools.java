@@ -247,7 +247,7 @@ public class tr_rendertools {
         qglEnd();
         qglBegin(GL_LINE_LOOP);
         qglVertex3f(bounds.oGet(0, 0), bounds.oGet(0, 1), bounds.oGet(1, 2));
-        qglVertex3f(bounds.oGet(0, 0), bounds.oGet(1, 2), bounds.oGet(1, 2));
+        qglVertex3f(bounds.oGet(0, 0), bounds.oGet(1, 1), bounds.oGet(1, 2));
         qglVertex3f(bounds.oGet(1, 0), bounds.oGet(1, 1), bounds.oGet(1, 2));
         qglVertex3f(bounds.oGet(1, 0), bounds.oGet(0, 1), bounds.oGet(1, 2));
         qglEnd();
@@ -1014,6 +1014,7 @@ public class tr_rendertools {
             idBounds b;
 
             qglLoadMatrixf(vModels.modelViewMatrix);
+//            System.out.println("vModels.modelViewMatrix="+vModels.modelViewMatrix[0]);
 
             if (null == vModels.entityDef) {
                 continue;

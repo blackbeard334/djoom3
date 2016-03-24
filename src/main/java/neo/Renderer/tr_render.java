@@ -68,6 +68,8 @@ import static neo.Renderer.tr_main.R_TransposeGLMatrix;
 import static neo.Renderer.tr_rendertools.RB_ShowOverdraw;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
+
+import neo.TempDump;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec4;
@@ -155,13 +157,13 @@ public class tr_render {
      RB_DrawElementsWithCounters
      ================
      */    static int DEBUG_RB_DrawElementsWithCounters = 0;
-
     public static void RB_DrawElementsWithCounters(final srfTriangles_s tri) {
 
         backEnd.pc.c_drawElements++;
         backEnd.pc.c_drawIndexes += tri.numIndexes;
         backEnd.pc.c_drawVertexes += tri.numVerts;
         DEBUG_RB_DrawElementsWithCounters++;
+//        TempDump.printCallStack("" + DEBUG_RB_DrawElementsWithCounters);
 
         if (tri.ambientSurface != null) {
             if (tri.indexes == tri.ambientSurface.indexes) {
@@ -172,30 +174,16 @@ public class tr_render {
             }
         }
 
+        final int count = r_singleTriangle.GetBool() ? 3 : tri.numIndexes;
         if (tri.indexCache != null && r_useIndexBuffers.GetBool()) {
-            qglDrawElements(GL_TRIANGLES,
-                    r_singleTriangle.GetBool() ? 3 : tri.numIndexes,
-                    GL_INDEX_TYPE,
-                    vertexCache.Position(tri.indexCache));
+            qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE, vertexCache.Position(tri.indexCache));
             backEnd.pc.c_vboIndexes += tri.numIndexes;
         } else {
             if (r_useIndexBuffers.GetBool()) {
                 vertexCache.UnbindIndex();
             }
-//            GL30.glBindVertexArray(tri.ambientCache.vao);
-//            GL20.glEnableVertexAttribArray(0);
-            final int count = r_singleTriangle.GetBool() ? 3 : tri.numIndexes;
-//            GL20.glVertexAttribPointer(0, size, GL11.GL_FLOAT, false, 0, 0);
+//            if(tri.DBG_count!=11)
             qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE/*GL_UNSIGNED_INT*/, tri.indexes);
-//            GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, tri.ambientCache.vbo);
-//
-//            GL11.glDrawElements(GL_TRIANGLES,
-//                    r_singleTriangle.GetBool() ? 3 : tri.numIndexes,
-//                    GL11.GL_UNSIGNED_BYTE, 0);
-//
-//            GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
-//            GL20.glDisableVertexAttribArray(0);
-//            GL30.glBindVertexArray(0);
         }
     }
 

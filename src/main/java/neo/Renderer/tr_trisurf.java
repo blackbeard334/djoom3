@@ -560,9 +560,9 @@ public class tr_trisurf {
      ==============
      R_AllocStaticTriSurf
      ==============
-     */
+     */private static int DBG_R_AllocStaticTriSurf = 0;
     @Deprecated
-    public static srfTriangles_s R_AllocStaticTriSurf() {
+    public static srfTriangles_s R_AllocStaticTriSurf() {DBG_R_AllocStaticTriSurf++;
 //        srfTriangles_s tris = srfTrianglesAllocator.Alloc();
 //        memset(tris, 0, sizeof(srfTriangles_t));
         return new srfTriangles_s();

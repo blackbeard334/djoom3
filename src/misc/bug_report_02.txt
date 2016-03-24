@@ -1,0 +1,80 @@
+-first pinpoint the function/instance that displays ares.
+-qglDrawElements
+	-RB_DrawElementsWithCounters(srfTriangles_s)
+-now we find the culpable srfTriangles_s instance.
+-first we print out all srfTriangles_s.DBG_count to see if there's a pattern(doubt it).
+	-DBG_count just keeps increasing, but every couple of instances, #11 seems to repeat...curious.
+	-so disabling #11 makes our moving planet black, but the spinning one is still red though.
+	-is RB_STD_DrawView the root of our troubles?
+	-after looking at the usages of backEnd.viewDef.drawSurfs in RB_STD_DrawView, R_AddDrawSurf seems a likely candidate to fuck things up for up.
+		-let's look at the anatomy of drawSurf_s.
+		-which brings us back to srfTriangles_s, and idDrawVert. and finally idGuiModel.verts
+	-fuck fuck fuck! back to RB_DrawElementsWithCounters(). how to pinpoint the ares vertices?
+		-maybe we can use #11 to our advantage? I mean, even colors need to be drawn somewhere.
+		-let's dig deeper into ConvertLWOToModelSurfaces().
+			-the first half of layer.polygon.pol[].surf is equal to lwoSurf, whilest in cpp it's the other way around. does this mean anything?
+				-false alarm! we were comparing wrong instances.
+			-so we compared all the tri.verts[j].xyz.x, and they seem to match.
+				-our next step will be to check if the tri.verts[j].xyz values still match at execution time.
+				-breakthrough?: the RB_DrawElementsWithCounters() within RB_STD_T_RenderShaderPasses() isn't getting hit when it's supposed to.
+					-false alarm, a few call stacks confirmed that atleast the first 500 calls are identical.
+				-the qglVertexPointer() and qglTexCoordPointer() parts of RB_STD_T_RenderShaderPasses() look suspect
+					-another dead end?
+-let's go back to pinpointing where the coordinates are loaded.
+	-disabling RB_RenderDrawSurfListWithFunction() in RB_STD_FillDepthBuffer() makes ares black all the time.
+		-disabling RB_STD_FillDepthBuffer() in RB_STD_DrawView() has the same effect.
+	-let's fiddle with RB_ARB2_DrawInteractions()
+		-so disabling RB_ARB2_DrawInteractions() or RB_ARB2_CreateDrawInteractions() makes the planet disappear, but if you look close enough, there's still a shadow where the planet should be.
+-fuck this! let's enable r_showTris and r_showViewEntitys.
+	-in RB_ShowViewEntitys() the values of vModels.modelViewMatrix[0] and the first couple of floats are different(these values are initialized in EmitFullScreen()).
+		-find th elocation where vModels.modelViewMatrix is set. should be easy with a DBG_count.
+			-let's follow the reverse breadcrumb from R_SetEntityDefViewEntity()
+				-vModel.modelMatrix seems to have the(same) wrong values.
+					-vModel.modelMatrix is assigned 2 lines earlier in R_AxisToModelMatrix().
+					-seems def.parms.axis has the wrong values.
+					-def.parms.axis.DBG_count==41551.
+						-which is copied from 41544.
+						-GetMatrix() for 41544 returns false!!!!!!!!!!!!!!111one
+						-which leads us to UpdateEntityDef(). axis has wrong values on entry.
+						-idVec3 v = modelRotate.ToVec3() in PreRender()
+						-so modelRotate is all zeroes. tut tut tut!
+						-which is set in GetFromRegs()
+							-winVar.DBG_count == #721
+							-GetFromRegs() #7075
+							-EvalRegs() #2021
+							-RunTimeEvents(time) 	lastTimeRun == 0, should be 16
+								-the time parameter is updated in idUserInterfaceLocal::HandleEvent(event, _time, updateVisuals), hit #2
+								- _time is 0, which leads us to "com_frameTime"
+								-com_ticNumber == 0
+								-so Sys_StartAsyncThread() is instantiated at the correct moment, yet com_ticNumber is incremented at the wrong time.
+								-com_ticNumber is 0 in Frame(). This is not good.
+									-should we set thread prio like in the cpp version? (a human readable name would also be useful...)
+									-let's try setting the schedule interval to something miniscule, and see if it triggers before the com_frameTime update.
+										-setting it to 1 nanosecond didn't help either
+										-not even executing a new thread with the scheduler
+										-a new standalone thread neither(regardless of prio)
+										-calling Common.Async() directly from our current thread did work though!!!!!11one
+											-Experiment: create ScheduledExecutorService with 0 delay high prio threads, make it println's every 1 nanosecond, and immediately exit the application to see how many println it produces.
+												-Result: zero. so even though the threads have 0 delay, they still get delayed by context switching?
+								-we will probably go in circles for a while now, but is com_frameTime updated at the correct moment i nour java code? or is it being called prematurely?
+	-can't imagine a tic sync issue could cause all this, let's see what happens afterwards. so let's ignore the com_ticNumber issue for now.
+		-let's try backtracking the vModels.entityDef.referenceBounds in RB_ShowViewEntitys() instead.
+			-8231
+		-inject it with a poison!
+			-ok, so the bounds were looking fucked up because RB_DrawBounds() had a typo.
+			-R_SetViewMatrix() is sweating!
+				-origin looks guilty like a motherf@$#^&!
+					-which comes from idRenderWindow.viewOffset
+					-which in return is parsed in GetFromRegs() in the form of an oSet() at case VEC4:...
+						-idVec4 #749, is indeed oSet() here
+						-GetFromRegs() #29, which leads to regs[] in idWindow
+							-mutated in EvaluateRegisters()
+							-should we find the/a specific value being set?
+								-let's work on this weird idWinVar empty name cloning issue first though
+								-idWinVar #50654
+								-let's print all the p values in FixupParms() out, and compare to see where it goes awry.
+									-bummer, the order matches
+								-go wild and print out all the in registers[op.c] values being set EvaluateRegisters()
+									-heisenbug?
+							-let's try clamping the *************************
+							-see bug_report03.txt

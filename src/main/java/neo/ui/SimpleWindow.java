@@ -189,7 +189,6 @@ public class SimpleWindow {
 //	virtual			~idSimpleWindow();
 
         public void Redraw(float x, float y) {
-
             if (!visible.data) {
                 return;
             }
@@ -207,7 +206,7 @@ public class SimpleWindow {
             DrawBorderAndCaption(drawRect);
             if (textShadow != 0) {
                 idStr shadowText = text.data;
-                idRectangle shadowRect = textRect;
+                idRectangle shadowRect = new idRectangle(textRect);
 
                 shadowText.RemoveColors();
                 shadowRect.x += textShadow;

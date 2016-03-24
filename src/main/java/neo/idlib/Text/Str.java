@@ -1887,37 +1887,14 @@ public class Str {
         }
 
         public static int FindText(final String str, final String text, boolean casesensitive, int start, int end) {
-            char[] strArray = str.toUpperCase().toCharArray();
-            char[] textArray = text.toUpperCase().toCharArray();
-
-            int l, i, j;
-
             if (end == -1) {
-//		end = strlen( str );
                 end = str.length();
             }
-//	l = end - strlen( text );
-            l = end - text.length();
-            for (i = start; i <= l; i++) {
-                if (casesensitive) {
-                    for (j = 0; j < textArray.length && textArray[j] != 0; j++) {
-                        if (strArray[i + j] != textArray[j]) {
-                            break;
-                        }
-                    }
-                } else {
-                    for (j = 0; j < textArray.length && textArray[j] != 0; j++) {
-                        if ((strArray[i + j]) != (textArray[j])) {
-                            break;
-                        }
-                    }
-                }
-                if (j == textArray.length
-                        || 0 == textArray[j]) {
-                    return i;
-                }
+            if (casesensitive) {
+                return str.substring(start, end).indexOf(text);
+            } else {
+                return str.substring(start, end).toLowerCase().indexOf(text.toLowerCase());
             }
-            return -1;
         }
 
         /*

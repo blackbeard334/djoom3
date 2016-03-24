@@ -3,6 +3,7 @@ package neo.framework;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static neo.Game.GameSys.SysCvar.__DATE__;
@@ -159,6 +160,7 @@ import static neo.sys.win_main.Sys_Printf;
 import static neo.sys.win_main.Sys_Quit;
 import static neo.sys.win_main.Sys_SetClipboardData;
 import static neo.sys.win_main.Sys_SetFatalError;
+import static neo.sys.win_main.Sys_Sleep;
 import static neo.sys.win_net.Sys_InitNetworking;
 import static neo.sys.win_shared.Sys_GetSystemRam;
 import static neo.sys.win_shared.Sys_GetVideoRam;
@@ -334,7 +336,7 @@ public class Common {
         }
     };
     static final version_s version = new version_s();
-//    
+//
 //    
 //    
     public static final idCVar com_version = new idCVar("si_version", version.string, CVAR_SYSTEM | CVAR_ROM | CVAR_SERVERINFO, "engine version");
@@ -351,10 +353,10 @@ public class Common {
                     : new idCVar("com_asyncSound", "1", CVAR_INTEGER | CVAR_SYSTEM, ASYNCSOUND_INFO, 0, 1)));
 //
     public static final idCVar com_forceGenericSIMD = new idCVar("com_forceGenericSIMD", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "force generic platform independent SIMD");
-    public static final idCVar com_developer = new idCVar("developer", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "developer mode");
+    public static final idCVar com_developer = new idCVar("developer", "1", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "developer mode");
     public static final idCVar com_allowConsole = new idCVar("com_allowConsole", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "allow toggling console with the tilde key");
     public static final idCVar com_speeds = new idCVar("com_speeds", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show engine timings");
-    public static final idCVar com_showFPS = new idCVar("com_showFPS", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_NOCHEAT, "show frames rendered per second");
+    public static final idCVar com_showFPS = new idCVar("com_showFPS", "1", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_NOCHEAT, "show frames rendered per second");
     public static final idCVar com_showMemoryUsage = new idCVar("com_showMemoryUsage", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show total and per frame memory usage");
     public static final idCVar com_showAsyncStats = new idCVar("com_showAsyncStats", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show async network stats");
     public static final idCVar com_showSoundDecoders = new idCVar("com_showSoundDecoders", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show sound decoders");
@@ -370,22 +372,22 @@ public class Common {
 //
 //
     // com_speeds times
-    public static int time_gameFrame;
-    public static int time_gameDraw;
-    public static int time_frontend;			// renderSystem frontend time
-    public static int time_backend;			// renderSystem backend time
-    public static int com_frameTime;			// time for the current frame in milliseconds
-    public static int com_frameNumber;                  // variable frame number
-    public static volatile int com_ticNumber;		// 60 hz tics
-    public static int com_editors;			// currently opened editor(s)
-    public static boolean com_editorActive;		// true if an editor has focus
+    public static          int     time_gameFrame;
+    public static          int     time_gameDraw;
+    public static          int     time_frontend;        // renderSystem frontend time
+    public static          int     time_backend;         // renderSystem backend time
+    public static volatile int     com_frameTime;        // time for the current frame in milliseconds
+    public static          int     com_frameNumber;      // variable frame number
+    public static volatile int     com_ticNumber;        // 60 hz tics
+    public static          int     com_editors;          // currently opened editor(s)
+    public static          boolean com_editorActive;     // true if an editor has focus
 //    
 //#ifdef _WIN32
-    public static final String DMAP_MSGID = "DMAPOutput";
-    public static final String DMAP_DONE = "DMAPDone";
-    public static long/*HWND*/ com_hwndMsg = 0;
-    public static boolean com_outputMsg = false;
-    static long com_msgID = -1;
+    public static final String       DMAP_MSGID    = "DMAPOutput";
+    public static final String       DMAP_DONE     = "DMAPDone";
+    public static       long/*HWND*/ com_hwndMsg   = 0;
+    public static       boolean      com_outputMsg = false;
+           static       long         com_msgID     = -1;
 //#endif
 
     public static class idCommonLocal extends idCommon {
@@ -657,6 +659,7 @@ public class Common {
                 eventLoop.RunEventLoop();
 
                 com_frameTime = com_ticNumber * USERCMD_MSEC;
+//                System.out.println(System.nanoTime()+"com_frameTime=>"+com_frameTime);
 
                 idAsyncNetwork.RunFrame();
 
@@ -734,6 +737,7 @@ public class Common {
          */
         @Override
         public void Async() {
+//            System.out.println(">>>>>>"+System.nanoTime());
             if (com_shuttingDown) {
                 return;
             }
@@ -771,6 +775,7 @@ public class Common {
                 SingleAsyncTic();
                 lastTicMsec += ticMsec;
             }
+//            System.out.println("<<<<<<<"+System.nanoTime());
         }
         /*
          ============================================================================
@@ -2078,7 +2083,7 @@ public class Common {
                 // we update com_ticNumber after all the background tasks
                 // have completed their work for this tic
                 com_ticNumber++;
-//                    System.out.println(com_ticNumber);
+//                System.out.println(System.nanoTime()+"com_ticNumber=" + com_ticNumber);
                 stat.timeConsumed = Sys_Milliseconds() - stat.milliseconds;
             } finally {
                 Sys_LeaveCriticalSection();
@@ -2170,7 +2175,7 @@ public class Common {
         }
 
         private void PrintLoadingMessage(final String msg) {
-            if (!(msg != null && !msg.isEmpty())) {
+            if (msg == null || msg.isEmpty()) {
                 return;
             }
             renderSystem.BeginFrame(renderSystem.GetScreenWidth(), renderSystem.GetScreenHeight());
