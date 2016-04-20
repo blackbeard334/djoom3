@@ -1100,6 +1100,7 @@ static char[] keyScanTable = s_scantokey;
 //	return dwElements;
     }
 
+    @Deprecated
     public static void Sys_ReturnMouseInputEvent(int[] action, int[] value) {
 
         final long dwTimeStamp = Mouse.getEventNanoseconds();

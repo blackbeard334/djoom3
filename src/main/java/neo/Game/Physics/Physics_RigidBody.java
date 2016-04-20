@@ -101,6 +101,9 @@ public class Physics_RigidBody {
         idVec3 linearMomentum;              // translational momentum relative to center of mass
         idVec3 angularMomentum;             // rotational momentum relative to center of mass
 
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
+
         private rigidBodyIState_s() {
             position = new idVec3();
             orientation = new idMat3();
@@ -457,8 +460,8 @@ public class Physics_RigidBody {
             current.lastTimeStep = timeStep;
 
             if (hasMaster) {
-                oldOrigin = current.i.position;
-                oldAxis = current.i.orientation;
+                oldOrigin = new idVec3(current.i.position);
+                oldAxis = new idMat3(current.i.orientation);
                 self.GetMasterPosition(masterOrigin, masterAxis);
                 current.i.position.oSet(masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis)));
                 if (isOrientated) {

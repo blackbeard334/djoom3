@@ -996,14 +996,14 @@ public class tr_main {
         public int compare(drawSurf_s a, drawSurf_s b) {
 
             //this check assumes that the array contains nothing but nulls from this point.
-            if (null == a || null == b) {
+            if (null == a && null == b) {
                 return 0;
             }
 
-            if (a.sort < b.sort) {
+            if (null == b || (null != a && a.sort < b.sort)) {
                 return -1;
             }
-            if (a.sort > b.sort) {
+            if (null == a || (null != b && a.sort > b.sort)) {
                 return 1;
             }
             return 0;

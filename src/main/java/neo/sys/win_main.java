@@ -415,16 +415,7 @@ public class win_main {//TODO: rename to plain "main" or something.
      ==============
      */
     public static void Sys_DebugPrintf(final String fmt, Object... arg) {
-        throw new TODO_Exception();
-//	char msg[MAXPRINTMSG];
-//
-//	va_list argptr;
-//	va_start( argptr, fmt );
-//	idStr::vsnPrintf( msg, MAXPRINTMSG-1, fmt, argptr );
-//	msg[ sizeof(msg)-1 ] = '\0';
-//	va_end( argptr );
-//
-//	OutputDebugString( msg );
+        System.out.printf(fmt + '\n', arg);
     }
 
     /*
