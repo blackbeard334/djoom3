@@ -10,6 +10,7 @@ import neo.Game.Animation.Anim_Blend.idAnim;
 import neo.Game.Animation.Anim_Blend.idAnimator;
 import static neo.Game.Entity.signalNum_t.NUM_SIGNALS;
 import static neo.Game.Entity.signalNum_t.SIG_BLOCKED;
+import static neo.Game.Entity.signalNum_t.SIG_REMOVED;
 import static neo.Game.Entity.signalNum_t.SIG_TOUCH;
 import static neo.Game.Entity.signalNum_t.SIG_TRIGGER;
 import neo.Game.FX.idEntityFx;
@@ -22,9 +23,11 @@ import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.g_bloodEffects;
 import static neo.Game.GameSys.SysCvar.g_decals;
 import static neo.Game.Game_local.ENTITYNUM_NONE;
+import static neo.Game.Game_local.GAME_RELIABLE_MESSAGE_DELETE_ENT;
 import static neo.Game.Game_local.GAME_RELIABLE_MESSAGE_EVENT;
 import static neo.Game.Game_local.GENTITYNUM_BITS;
 import static neo.Game.Game_local.MASK_SOLID;
+import static neo.Game.Game_local.MAX_CLIENTS;
 import static neo.Game.Game_local.MAX_EVENT_PARAM_SIZE;
 import static neo.Game.Game_local.MAX_GAME_MESSAGE_SIZE;
 import static neo.Game.Game_local.MAX_GENTITIES;
@@ -384,12 +387,14 @@ public class Entity {
         //
         private int          mpGUIState;                                // local cache to avoid systematic SetStateInt
         //
-        //     
         //
+        //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 //
 
         //        public static final idTypeInfo Type;
-//        
+//
 //        public static idClass CreateInstance();
 //
 //        public abstract idTypeInfo GetType();
@@ -410,7 +415,7 @@ public class Entity {
             snapshotNode.SetOwner(this);
             snapshotSequence = -1;
             snapshotBits = 0;
-            
+
             name = new idStr();
             spawnArgs = new idDict();
             scriptObject = new idScriptObject();
@@ -444,7 +449,52 @@ public class Entity {
             mpGUIState = -1;
 
         }
-//							// ~idEntity();
+
+        protected void _deconstructor() {
+            if (gameLocal.GameState() != GAMESTATE_SHUTDOWN && !gameLocal.isClient && fl.networkSync && entityNumber >= MAX_CLIENTS) {
+                idBitMsg msg = new idBitMsg();
+                byte[] msgBuf = new byte[MAX_GAME_MESSAGE_SIZE];
+
+                msg.Init(msgBuf);
+                msg.WriteByte(GAME_RELIABLE_MESSAGE_DELETE_ENT);
+                msg.WriteBits(gameLocal.GetSpawnId(this), 32);
+                networkSystem.ServerSendReliableMessage(-1, msg);
+            }
+
+            DeconstructScriptObject();
+            scriptObject.Free();
+
+            if (thinkFlags != 0) {
+                BecomeInactive(thinkFlags);
+            }
+            activeNode.Remove();
+
+            Signal(SIG_REMOVED);
+
+            // we have to set back the default physics object before unbinding because the entity
+            // specific physics object might be an entity variable and as such could already be destroyed.
+            SetPhysics(null);
+
+            // remove any entities that are bound to me
+            RemoveBinds();
+
+            // unbind from master
+            Unbind();
+            QuitTeam();
+
+            gameLocal.RemoveEntityFromHash(name.toString(), this);
+
+//            delete renderView;
+            renderView = null;
+
+//            delete signals;
+            signals = null;
+
+            FreeModelDef();
+            FreeSoundEmitter(false);
+
+            gameLocal.UnregisterEntity(this);
+        }
 
         @Override
         public void Spawn() {
@@ -806,7 +856,7 @@ public class Entity {
         /* **********************************************************************
 
          Thinking
-	
+
          ***********************************************************************/
         // thinking
         public void Think() {
@@ -930,7 +980,7 @@ public class Entity {
         /* **********************************************************************
 
          Visuals
-	
+
          ***********************************************************************/
         // visuals
         /*
@@ -1283,7 +1333,7 @@ public class Entity {
         /* **********************************************************************
 
          Sound
-	
+
          ***********************************************************************/
         // sound
         /*
@@ -1451,7 +1501,7 @@ public class Entity {
         /* **********************************************************************
 
          entity binding
-	
+
          ***********************************************************************/
         // entity binding
         public void PreBind() {
@@ -1527,7 +1577,7 @@ public class Entity {
 
             teamMaster = master;
 
-            // reorder the active entity list 
+            // reorder the active entity list
             gameLocal.sortTeamMasters = true;
         }
 
@@ -4069,6 +4119,10 @@ public class Entity {
         private void Event_SetNeverDormant(int enable) {
             fl.neverDormant = (enable != 0);
             dormantStart = 0;
+        }
+
+        public static void delete(final idEntity entity){
+            entity._deconstructor();
         }
     }
 

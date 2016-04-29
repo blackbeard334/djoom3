@@ -835,13 +835,14 @@ public class SaveGame {
         }
 
         public void ReadObject(idClass obj) {
-            int[] index = {0};
-
-            ReadInt(index);
-            if ((index[0] < 0) || (index[0] >= objects.Num())) {
-                Error("idRestoreGame::ReadObject: invalid object index");
-            }
-            obj.oSet(objects.oGet(index[0]));
+            throw new TODO_Exception();//TODO:remove the parameter, and return obj instead
+//            int[] index = {0};
+//
+//            ReadInt(index);
+//            if ((index[0] < 0) || (index[0] >= objects.Num())) {
+//                Error("idRestoreGame::ReadObject: invalid object index");
+//            }
+//            obj.oSet(objects.oGet(index[0]));
         }
 
         public void ReadStaticObject(idClass obj) {

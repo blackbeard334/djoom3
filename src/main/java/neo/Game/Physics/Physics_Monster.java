@@ -218,9 +218,10 @@ public class Physics_Monster {
             noImpact = true;
         }
 
+        private static int DBG_Evaluate = 0;
         // common physics interface
         @Override
-        public boolean Evaluate(int timeStepMSec, int endTimeMSec) {
+        public boolean Evaluate(int timeStepMSec, int endTimeMSec) {   DBG_Evaluate++;
             idVec3 masterOrigin = new idVec3(), oldOrigin;
             idMat3 masterAxis = new idMat3();
             float timeStep;

@@ -1,0 +1,40 @@
+blanco ingame, go:
+-when enabling r_showViewEntitys & r_showTris we see some wireframes. are we missing light?
+
+-or, let's start by backtracking r_showViewEntitys & r_showTris.
+-also look at the warnings like "rigid body moved outside world bounds for entity..." & "clip model outside world bounds for entity..."
+	-DBG_DropToFloorAndRest = 966
+	-idPhysics_RigidBody::DropToFloorAndRest() is only called 110 times in the original and 591 in our fake version
+		-idClip::Contents() returns no nzero
+			-collisionModelManager.Contents()
+		-ok, so the japanese version is printing more values, which means somewhere a conditional is misfiring
+			-will this help us, no idea, just roll with it
+			-printing the values of current.i.position in Evaluate() is already yielding more results
+				-so the correct value is set in SetOrigin(), which means that this object shouldn't be in the linked list.
+	-idPhysics_Monster::DBG_Evaluate == 1278
+		-self.name.equals("marscity_cinematic_betruger_1")
+			-this one is triggered during idSessionLocal::StartNewGame() in the translation, but not the original
+		-idGameLocal::RunFrame() --> activeEntities.Next() returns wrong value after Next().Next()
+			-idGameLocal::SortActiveEntityList() --> activeEntities.next.owner is the same,
+			 but activeEntities.prev.owner is different. 
+				-good 2087, bad 2093
+				-2093 is added to the linkedlist twice..the second being in BecomeActive() originating at SetupWeaponEntity()
+					-which is added in idEntity::BecomeActive()
+					-2087 is the max loaded by the original, anything afterwards isn't supposed to be
+						-the same idGameLocal::RegisterEntity() call scores 2081 in the original, 2087 in the imitation.
+							-idGameLocal.entities[] seems to have nulls and values at different locations
+							-some entities are being spawned with the same spawn_entnum
+								-idGameLocal::SpawnMapEntities() 67, 68
+								-firstFreeIndex++
+								-105 is unregistered in the original. idGameLocal::UnregisterEntity()
+									-in da ~idEntity() deconstructor...who would have thought deconstructors would serve this much purpose.
+				
+
+-let's centering all the debug drawrings
+-is our input working properly?
+	-let's assume it isn't...are movement commands being sent properly?
+		-idPlayer::Move()::oldOrigin == -3632.0 -3416.0 195.89555
+			-idClipModel.SetPosition()
+	-are we moving?
+		-if we are, is everything on screen moving with us?
+		-if we aren't, then why not?

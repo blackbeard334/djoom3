@@ -1326,7 +1326,7 @@ public class AI {
                 projectileVelocity = idProjectile.GetVelocity(projectileDef);
                 projectileGravity = idProjectile.GetGravity(projectileDef);
                 projectileSpeed = projectileVelocity.Length();
-//		delete projectile.GetEntity();
+		        idEntity.delete(projectile.GetEntity());
                 projectile.oSet(null);
             }
 

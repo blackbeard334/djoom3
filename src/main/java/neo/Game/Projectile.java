@@ -214,7 +214,14 @@ public class Projectile {
             
             physicsObj = new idPhysics_RigidBody();
         }
-        // virtual					~idProjectile();
+
+        @Override
+        protected void _deconstructor() {
+            super._deconstructor();
+
+            StopSound(SND_CHANNEL_ANY.ordinal(), false);
+            FreeLightDef();
+        }
 
         @Override
         public void Spawn() {
@@ -1672,7 +1679,18 @@ public class Projectile {
             nextDamageTime = 0;
             damageFreq = new idStr();
         }
-        // ~idBFGProjectile();
+
+        @Override
+        protected void _deconstructor() {
+            super._deconstructor();
+
+            FreeBeams();
+
+            if (secondModelDefHandle >= 0) {
+                gameRenderWorld.FreeEntityDef(secondModelDefHandle);
+                secondModelDefHandle = -1;
+            }
+        }
 
         @Override
         public void Save(idSaveGame savefile) {
