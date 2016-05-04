@@ -1,6 +1,11 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFEntity_Base;
@@ -17,6 +22,14 @@ import neo.Game.FX.idEntityFx;
 import neo.Game.Game.refSound_t;
 import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.eventCallback_t3;
+import neo.Game.GameSys.Class.eventCallback_t4;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -215,6 +228,74 @@ public class Entity {
     public static final idEventDef EV_GetJointPos        = new idEventDef("getJointPos", "d", 'v');
     public static final idEventDef EV_GetJointAngle      = new idEventDef("getJointAngle", "d", 'v');
     //
+
+    static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+    static {
+        final eventCallback_t event_setName = (eventCallback_t1) idEntity::Event_SetName;
+        eventCallbacks.put(EV_GetName, (eventCallback_t0) idEntity::Event_GetName);
+        eventCallbacks.put(EV_SetName, (eventCallback_t1) idEntity::Event_SetName);
+        eventCallbacks.put(EV_FindTargets, (eventCallback_t0) idEntity::Event_FindTargets);
+        eventCallbacks.put(EV_ActivateTargets, (eventCallback_t1) idEntity::Event_ActivateTargets);
+        eventCallbacks.put(EV_NumTargets, (eventCallback_t0) idEntity::Event_NumTargets);
+        eventCallbacks.put(EV_GetTarget, (eventCallback_t1) idEntity::Event_GetTarget);
+        eventCallbacks.put(EV_RandomTarget, (eventCallback_t1) idEntity::Event_RandomTarget);
+        eventCallbacks.put(EV_BindToJoint, (eventCallback_t3) idEntity::Event_BindToJoint);
+        eventCallbacks.put(EV_RemoveBinds, (eventCallback_t0) idEntity::Event_RemoveBinds);
+        eventCallbacks.put(EV_Bind, (eventCallback_t1) idEntity::Event_Bind);
+        eventCallbacks.put(EV_BindPosition, (eventCallback_t1) idEntity::Event_BindPosition);
+        eventCallbacks.put(EV_Unbind, (eventCallback_t0) idEntity::Event_Unbind);
+        eventCallbacks.put(EV_SpawnBind, (eventCallback_t0) idEntity::Event_SpawnBind);
+        eventCallbacks.put(EV_SetOwner, (eventCallback_t1) idEntity::Event_SetOwner);
+        eventCallbacks.put(EV_SetModel, (eventCallback_t1) idEntity::Event_SetModel);
+        eventCallbacks.put(EV_SetSkin, (eventCallback_t1) idEntity::Event_SetSkin);
+        eventCallbacks.put(EV_GetShaderParm, (eventCallback_t1) idEntity::Event_GetShaderParm);
+        eventCallbacks.put(EV_SetShaderParm, (eventCallback_t2) idEntity::Event_SetShaderParm);
+        eventCallbacks.put(EV_SetShaderParms, (eventCallback_t4) idEntity::Event_SetShaderParms);
+        eventCallbacks.put(EV_SetColor, (eventCallback_t3) idEntity::Event_SetColor);
+        eventCallbacks.put(EV_GetColor, (eventCallback_t0) idEntity::Event_GetColor);
+        eventCallbacks.put(EV_IsHidden, (eventCallback_t0) idEntity::Event_IsHidden);
+        eventCallbacks.put(EV_Hide, (eventCallback_t0) idEntity::Event_Hide);
+        eventCallbacks.put(EV_Show, (eventCallback_t0) idEntity::Event_Show);
+        eventCallbacks.put(EV_CacheSoundShader, (eventCallback_t1) idEntity::Event_CacheSoundShader);
+        eventCallbacks.put(EV_StartSoundShader, (eventCallback_t2) idEntity::Event_StartSoundShader);
+        eventCallbacks.put(EV_StartSound, (eventCallback_t3) idEntity::Event_StartSound);
+        eventCallbacks.put(EV_StopSound, (eventCallback_t2) idEntity::Event_StopSound);
+        eventCallbacks.put(EV_FadeSound, (eventCallback_t3) idEntity::Event_FadeSound);
+        eventCallbacks.put(EV_GetWorldOrigin, (eventCallback_t0) idEntity::Event_GetWorldOrigin);
+        eventCallbacks.put(EV_SetWorldOrigin, (eventCallback_t1) idEntity::Event_SetWorldOrigin);
+        eventCallbacks.put(EV_GetOrigin, (eventCallback_t0) idEntity::Event_GetOrigin);
+        eventCallbacks.put(EV_SetOrigin, (eventCallback_t1) idEntity::Event_SetOrigin);
+        eventCallbacks.put(EV_GetAngles, (eventCallback_t0) idEntity::Event_GetAngles);
+        eventCallbacks.put(EV_SetAngles, (eventCallback_t1) idEntity::Event_SetAngles);
+        eventCallbacks.put(EV_GetLinearVelocity, (eventCallback_t0) idEntity::Event_GetLinearVelocity);
+        eventCallbacks.put(EV_SetLinearVelocity, (eventCallback_t1) idEntity::Event_SetLinearVelocity);
+        eventCallbacks.put(EV_GetAngularVelocity, (eventCallback_t0) idEntity::Event_GetAngularVelocity);
+        eventCallbacks.put(EV_SetAngularVelocity, (eventCallback_t1) idEntity::Event_SetAngularVelocity);
+        eventCallbacks.put(EV_GetSize, (eventCallback_t0) idEntity::Event_GetSize);
+        eventCallbacks.put(EV_SetSize, (eventCallback_t2) idEntity::Event_SetSize);
+        eventCallbacks.put(EV_GetMins, (eventCallback_t0) idEntity::Event_GetMins);
+        eventCallbacks.put(EV_GetMaxs, (eventCallback_t0) idEntity::Event_GetMaxs);
+        eventCallbacks.put(EV_Touches, (eventCallback_t1) idEntity::Event_Touches);
+        eventCallbacks.put(EV_SetGuiParm, (eventCallback_t2) idEntity::Event_SetGuiParm);
+        eventCallbacks.put(EV_SetGuiFloat, (eventCallback_t2) idEntity::Event_SetGuiFloat);
+        eventCallbacks.put(EV_GetNextKey, (eventCallback_t2) idEntity::Event_GetNextKey);
+        eventCallbacks.put(EV_SetKey, (eventCallback_t2) idEntity::Event_SetKey);
+        eventCallbacks.put(EV_GetKey, (eventCallback_t1) idEntity::Event_GetKey);
+        eventCallbacks.put(EV_GetIntKey, (eventCallback_t1) idEntity::Event_GetIntKey);
+        eventCallbacks.put(EV_GetFloatKey, (eventCallback_t1) idEntity::Event_GetFloatKey);
+        eventCallbacks.put(EV_GetVectorKey, (eventCallback_t1) idEntity::Event_GetVectorKey);
+        eventCallbacks.put(EV_GetEntityKey, (eventCallback_t1) idEntity::Event_GetEntityKey);
+        eventCallbacks.put(EV_RestorePosition, (eventCallback_t0) idEntity::Event_RestorePosition);
+        eventCallbacks.put(EV_UpdateCameraTarget, (eventCallback_t0) idEntity::Event_UpdateCameraTarget);
+        eventCallbacks.put(EV_DistanceTo, (eventCallback_t1) idEntity::Event_DistanceTo);
+        eventCallbacks.put(EV_DistanceToPoint, (eventCallback_t1) idEntity::Event_DistanceToPoint);
+        eventCallbacks.put(EV_StartFx, (eventCallback_t1) idEntity::Event_StartFx);
+//        eventCallbacks.put(EV_Thread_WaitFrame, (eventCallback_t0) idEntity::Event_WaitFrame);
+//        eventCallbacks.put(EV_Thread_Wait, (eventCallback_t0) idEntity::Event_Wait);
+//        eventCallbacks.put(EV_HasFunction, (eventCallback_t0) idEntity::Event_HasFunction);
+//        eventCallbacks.put(EV_CallFunction, (eventCallback_t0) idEntity::Event_CallFunction);
+//        eventCallbacks.put(EV_SetNeverDormant, (eventCallback_t0) idEntity::Event_SetNeverDormant);
+    }
 
     // Think flags
 //enum {
@@ -3573,16 +3654,16 @@ public class Entity {
 	
          ***********************************************************************/
         // events
-        private void Event_GetName() {
-            idThread.ReturnString(name.toString());
+        private static void Event_GetName(idEntity e) {
+            idThread.ReturnString(e.name.toString());
         }
 
-        private void Event_SetName(final String newName) {
-            SetName(newName);
+        private static void Event_SetName(idEntity e, final idEventArg<String> newName) {
+            e.SetName(newName.value);
         }
 
-        private void Event_FindTargets() {
-            FindTargets();
+        private static void Event_FindTargets(idEntity e) {
+            e.FindTargets();
         }
 
         /*
@@ -3593,41 +3674,42 @@ public class Entity {
          event to delay activating targets.
          ============
          */
-        private void Event_ActivateTargets(idEntity activator) {
-            ActivateTargets(activator);
+        private static void Event_ActivateTargets(idEntity e, idEventArg<idEntity> activator) {
+            e.ActivateTargets(activator.value);
         }
 
-        private void Event_NumTargets() {
-            idThread.ReturnFloat(targets.Num());
+        private static void Event_NumTargets(idEntity e) {
+            idThread.ReturnFloat(e.targets.Num());
         }
 
-        private void Event_GetTarget(float index) {
+        private static void Event_GetTarget(idEntity e, idEventArg<Float> index) {
             int i;
 
-            i = (int) index;
-            if ((i < 0) || i >= targets.Num()) {
+            i = index.value.intValue();
+            if ((i < 0) || i >= e.targets.Num()) {
                 idThread.ReturnEntity(null);
             } else {
-                idThread.ReturnEntity(targets.oGet(i).GetEntity());
+                idThread.ReturnEntity(e.targets.oGet(i).GetEntity());
             }
         }
 
-        private void Event_RandomTarget(final String ignore) {
+        private static void Event_RandomTarget(idEntity e, final idEventArg<String> ignor) {
             int num;
             idEntity ent;
             int i;
             int ignoreNum;
+            final String ignore = ignor.value;
 
-            RemoveNullTargets();
-            if (0 == targets.Num()) {
+            e.RemoveNullTargets();
+            if (0 == e.targets.Num()) {
                 idThread.ReturnEntity(null);
                 return;
             }
 
             ignoreNum = -1;
-            if (ignore != null && (!ignore.isEmpty()) && (targets.Num() > 1)) {
-                for (i = 0; i < targets.Num(); i++) {
-                    ent = targets.oGet(i).GetEntity();
+            if (ignore != null && (!ignore.isEmpty()) && (e.targets.Num() > 1)) {
+                for (i = 0; i < e.targets.Num(); i++) {
+                    ent = e.targets.oGet(i).GetEntity();
                     if (ent != null && (ent.name.equals(ignore))) {
                         ignoreNum = i;
                         break;
@@ -3636,39 +3718,39 @@ public class Entity {
             }
 
             if (ignoreNum >= 0) {
-                num = gameLocal.random.RandomInt(targets.Num() - 1);
+                num = gameLocal.random.RandomInt(e.targets.Num() - 1);
                 if (num >= ignoreNum) {
                     num++;
                 }
             } else {
-                num = gameLocal.random.RandomInt(targets.Num());
+                num = gameLocal.random.RandomInt(e.targets.Num());
             }
 
-            ent = targets.oGet(num).GetEntity();
+            ent = e.targets.oGet(num).GetEntity();
             idThread.ReturnEntity(ent);
         }
 
-        private void Event_Bind(idEntity master) {
-            Bind(master, true);
+        private static void Event_Bind(idEntity e, idEventArg<idEntity> master) {
+            e.Bind(master.value, true);
         }
 
-        private void Event_BindPosition(idEntity master) {
-            Bind(master, false);
+        private static void Event_BindPosition(idEntity e, idEventArg<idEntity> master) {
+            e.Bind(master.value, false);
         }
 
-        private void Event_BindToJoint(idEntity master, final String jointname, float orientated) {
-            BindToJoint(master, jointname, (orientated != 0));
+        private static void Event_BindToJoint(idEntity e, idEventArg<idEntity> master, final idEventArg<String> jointname, idEventArg<Float> orientated) {
+            e.BindToJoint(master.value, jointname.value, (orientated.value != 0));
         }
 
-        private void Event_Unbind() {
-            Unbind();
+        private static void Event_Unbind(idEntity e) {
+            e.Unbind();
         }
 
-        private void Event_RemoveBinds() {
-            RemoveBinds();
+        private static void Event_RemoveBinds(idEntity e) {
+            e.RemoveBinds();
         }
 
-        private void Event_SpawnBind() {
+        private static void Event_SpawnBind(idEntity e) {
             idEntity parent;
             String[] bind = new String[1], joint = new String[1], bindanim = new String[1];
             int/*jointHandle_t*/ bindJoint;
@@ -3678,35 +3760,35 @@ public class Entity {
             int animNum;
             idAnimator parentAnimator;
 
-            if (spawnArgs.GetString("bind", "", bind)) {
+            if (e.spawnArgs.GetString("bind", "", bind)) {
                 if (idStr.Icmp(bind[0], "worldspawn") == 0) {
                     //FIXME: Completely unneccessary since the worldspawn is called "world"
                     parent = gameLocal.world;
                 } else {
                     parent = gameLocal.FindEntity(bind[0]);
                 }
-                bindOrientated = spawnArgs.GetBool("bindOrientated", "1");
+                bindOrientated = e.spawnArgs.GetBool("bindOrientated", "1");
                 if (parent != null) {
                     // bind to a joint of the skeletal model of the parent
-                    if (spawnArgs.GetString("bindToJoint", "", joint) && joint[0] != null) {//TODO:check if java actually compiles them in the right order.
+                    if (e.spawnArgs.GetString("bindToJoint", "", joint) && joint[0] != null) {//TODO:check if java actually compiles them in the right order.
                         parentAnimator = parent.GetAnimator();
                         if (NOT(parentAnimator)) {
-                            gameLocal.Error("Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint[0], name);
+                            gameLocal.Error("Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint[0], e.name);
                         }
                         bindJoint = parentAnimator.GetJointHandle(joint[0]);
                         if (bindJoint == INVALID_JOINT) {
-                            gameLocal.Error("Joint '%s' not found for bind on '%s'", joint[0], name);
+                            gameLocal.Error("Joint '%s' not found for bind on '%s'", joint[0], e.name);
                         }
 
                         // bind it relative to a specific anim
                         if ((parent.spawnArgs.GetString("bindanim", "", bindanim) || parent.spawnArgs.GetString("anim", "", bindanim)) && bindanim[0] != null) {
                             animNum = parentAnimator.GetAnim(bindanim[0]);
                             if (0 == animNum) {
-                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], name);
+                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], e.name);
                             }
                             anim = parentAnimator.GetAnim(animNum);
                             if (NOT(anim)) {
-                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], name);
+                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], e.name);
                             }
 
                             // make sure parent's render origin has been set
@@ -3716,215 +3798,218 @@ public class Entity {
                             parentAnimator.CreateFrame(gameLocal.time, true);
                             idJointMat[] frame = parent.renderEntity.joints;
                             GameEdit.gameEdit.ANIM_CreateAnimFrame(parentAnimator.ModelHandle(), anim.MD5Anim(0), parent.renderEntity.numJoints, frame, 0, parentAnimator.ModelDef().GetVisualOffset(), parentAnimator.RemoveOrigin());
-                            BindToJoint(parent, joint[0], bindOrientated);
+                            e.BindToJoint(parent, joint[0], bindOrientated);
                             parentAnimator.ForceUpdate();
                         } else {
-                            BindToJoint(parent, joint[0], bindOrientated);
+                            e.BindToJoint(parent, joint[0], bindOrientated);
                         }
                     } // bind to a body of the physics object of the parent
-                    else if (spawnArgs.GetInt("bindToBody", "0", id)) {
-                        BindToBody(parent, id[0], bindOrientated);
+                    else if (e.spawnArgs.GetInt("bindToBody", "0", id)) {
+                        e.BindToBody(parent, id[0], bindOrientated);
                     } // bind to the parent
                     else {
-                        Bind(parent, bindOrientated);
+                        e.Bind(parent, bindOrientated);
                     }
                 }
             }
         }
 
-        private void Event_SetOwner(idEntity owner) {
+        private static void Event_SetOwner(idEntity e, idEventArg<idEntity> owner) {
             int i;
 
-            for (i = 0; i < GetPhysics().GetNumClipModels(); i++) {
-                GetPhysics().GetClipModel(i).SetOwner(owner);
+            for (i = 0; i < e.GetPhysics().GetNumClipModels(); i++) {
+                e.GetPhysics().GetClipModel(i).SetOwner(owner.value);
             }
         }
 
-        private void Event_SetModel(final String modelname) {
-            SetModel(modelname);
+        private static void Event_SetModel(idEntity e, final idEventArg<String> modelname) {
+            e.SetModel(modelname.value);
         }
 
-        private void Event_SetSkin(final String skinname) {
-            renderEntity.customSkin = declManager.FindSkin(skinname);
-            UpdateVisuals();
+        private static void Event_SetSkin(idEntity e, final idEventArg<String> skinname) {
+            e.renderEntity.customSkin = declManager.FindSkin(skinname.value);
+            e.UpdateVisuals();
         }
 
-        private void Event_GetShaderParm(int parmnum) {
+        private static void Event_GetShaderParm(idEntity e, idEventArg<Integer> parm) {
+            final int parmnum = parm.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
                 gameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
-            idThread.ReturnFloat(renderEntity.shaderParms[parmnum]);
+            idThread.ReturnFloat(e.renderEntity.shaderParms[parmnum]);
         }
 
-        private void Event_SetShaderParm(int parmnum, float value) {
-            SetShaderParm(parmnum, value);
+        private static void Event_SetShaderParm(idEntity e, idEventArg<Integer> parmnum, idEventArg<Float> value) {
+            e.SetShaderParm(parmnum.value, value.value);
         }
 
-        private void Event_SetShaderParms(float parm0, float parm1, float parm2, float parm3) {
-            renderEntity.shaderParms[SHADERPARM_RED] = parm0;
-            renderEntity.shaderParms[SHADERPARM_GREEN] = parm1;
-            renderEntity.shaderParms[SHADERPARM_BLUE] = parm2;
-            renderEntity.shaderParms[SHADERPARM_ALPHA] = parm3;
-            UpdateVisuals();
+        private static void Event_SetShaderParms(idEntity e, idEventArg<Float> parm0, idEventArg<Float> parm1, idEventArg<Float> parm2, idEventArg<Float> parm3) {
+            e.renderEntity.shaderParms[SHADERPARM_RED] = parm0.value;
+            e.renderEntity.shaderParms[SHADERPARM_GREEN] = parm1.value;
+            e.renderEntity.shaderParms[SHADERPARM_BLUE] = parm2.value;
+            e.renderEntity.shaderParms[SHADERPARM_ALPHA] = parm3.value;
+            e.UpdateVisuals();
         }
 
-        private void Event_SetColor(float red, float green, float blue) {
-            SetColor(red, green, blue);
+        private static void Event_SetColor(idEntity e, idEventArg<Float> red, idEventArg<Float> green, idEventArg<Float> blue) {
+            e.SetColor(red.value, green.value, blue.value);
         }
 
-        private void Event_GetColor() {
+        private static void Event_GetColor(idEntity e) {
             idVec3 out = new idVec3();
 
-            GetColor(out);
+            e.GetColor(out);
             idThread.ReturnVector(out);
         }
 
-        private void Event_IsHidden() {
-            idThread.ReturnInt(fl.hidden);
+        private static void Event_IsHidden(idEntity e) {
+            idThread.ReturnInt(e.fl.hidden);
         }
 
-        private void Event_Hide() {
-            Hide();
+        private static void Event_Hide(idEntity e) {
+            e.Hide();
         }
 
-        private void Event_Show() {
-            Show();
+        private static void Event_Show(idEntity e) {
+            e.Show();
         }
 
-        private void Event_CacheSoundShader(final String soundName) {
-            declManager.FindSound(soundName);
+        private static void Event_CacheSoundShader(idEntity e, final idEventArg<String> soundName) {
+            declManager.FindSound(soundName.value);
         }
 
-        private void Event_StartSoundShader(final String soundName, int channel) {
+        private static void Event_StartSoundShader(idEntity e, final idEventArg<String> soundName, idEventArg<Integer> channel) {
             int[] length = new int[1];
 
-            StartSoundShader(declManager.FindSound(soundName), /*(s_channelType)*/ channel, 0, false, length);
+            e.StartSoundShader(declManager.FindSound(soundName.value), /*(s_channelType)*/ channel.value, 0, false, length);
             idThread.ReturnFloat(MS2SEC(length[0]));
         }
 
-        private void Event_StopSound(int channel, int netSync) {
-            StopSound(channel, (netSync != 0));
+        private static void Event_StopSound(idEntity e, idEventArg<Integer> channel, idEventArg<Integer> netSync) {
+            e.StopSound(channel.value, (netSync.value != 0));
         }
 
-        private void Event_StartSound(final String soundName, int channel, int netSync) {
+        private static void Event_StartSound(idEntity e, final idEventArg<String> soundName, idEventArg<Integer> channel, idEventArg<Integer> netSync) {
             int[] time = new int[1];
 
-            StartSound(soundName, /*(s_channelType)*/ channel, 0, (netSync != 0), time);
+            e.StartSound(soundName.value, /*(s_channelType)*/ channel.value, 0, (netSync.value != 0), time);
             idThread.ReturnFloat(MS2SEC(time[0]));
         }
 
-        private void Event_FadeSound(int channel, float to, float over) {
-            if (refSound.referenceSound != null) {
-                refSound.referenceSound.FadeSound(channel, to, over);
+        private static void Event_FadeSound(idEntity e, idEventArg<Integer> channel, idEventArg<Float> to, idEventArg<Float> over) {
+            if (e.refSound.referenceSound != null) {
+                e.refSound.referenceSound.FadeSound(channel.value, to.value, over.value);
             }
         }
 
-        private void Event_GetWorldOrigin() {
-            idThread.ReturnVector(GetPhysics().GetOrigin());
+        private static void Event_GetWorldOrigin(idEntity e) {
+            idThread.ReturnVector(e.GetPhysics().GetOrigin());
         }
 
-        private void Event_SetWorldOrigin(final idVec3 org) {
-            idVec3 neworg = GetLocalCoordinates(org);
-            SetOrigin(neworg);
+        private static void Event_SetWorldOrigin(idEntity e, final idEventArg<idVec3> org) {
+            idVec3 neworg = e.GetLocalCoordinates(org.value);
+            e.SetOrigin(neworg);
         }
 
-        private void Event_GetOrigin() {
-            idThread.ReturnVector(GetLocalCoordinates(GetPhysics().GetOrigin()));
+        private static void Event_GetOrigin(idEntity e) {
+            idThread.ReturnVector(e.GetLocalCoordinates(e.GetPhysics().GetOrigin()));
         }
 
-        private void Event_SetOrigin(final idVec3 org) {
-            SetOrigin(org);
+        private static void Event_SetOrigin(idEntity e, final idEventArg<idVec3> org) {
+            e.SetOrigin(org.value);
         }
 
-        private void Event_GetAngles() {
-            idAngles ang = GetPhysics().GetAxis().ToAngles();
+        private static void Event_GetAngles(idEntity e) {
+            idAngles ang = e.GetPhysics().GetAxis().ToAngles();
             idThread.ReturnVector(new idVec3(ang.oGet(0), ang.oGet(1), ang.oGet(2)));
         }
 
-        private void Event_SetAngles(final idAngles ang) {
-            SetAngles(ang);
+        private static void Event_SetAngles(idEntity e, final idEventArg<idAngles> ang) {
+            e.SetAngles(ang.value);
         }
 
-        private void Event_SetLinearVelocity(final idVec3 velocity) {
-            GetPhysics().SetLinearVelocity(velocity);
+        private static void Event_SetLinearVelocity(idEntity e, final idEventArg<idVec3> velocity) {
+            e.GetPhysics().SetLinearVelocity(velocity.value);
         }
 
-        private void Event_GetLinearVelocity() {
-            idThread.ReturnVector(GetPhysics().GetLinearVelocity());
+        private static void Event_GetLinearVelocity(idEntity e) {
+            idThread.ReturnVector(e.GetPhysics().GetLinearVelocity());
         }
 
-        private void Event_SetAngularVelocity(final idVec3 velocity) {
-            GetPhysics().SetAngularVelocity(velocity);
+        private static void Event_SetAngularVelocity(idEntity e, final idEventArg<idVec3> velocity) {
+            e.GetPhysics().SetAngularVelocity(velocity.value);
         }
 
-        private void Event_GetAngularVelocity() {
-            idThread.ReturnVector(GetPhysics().GetAngularVelocity());
+        private static void Event_GetAngularVelocity(idEntity e) {
+            idThread.ReturnVector(e.GetPhysics().GetAngularVelocity());
         }
 
-        private void Event_SetSize(final idVec3 mins, final idVec3 maxs) {
-            GetPhysics().SetClipBox(new idBounds(mins, maxs), 1.0f);
+        private static void Event_SetSize(idEntity e, final idEventArg<idVec3> mins, final idEventArg<idVec3> maxs) {
+            e.GetPhysics().SetClipBox(new idBounds(mins.value, maxs.value), 1.0f);
         }
 
-        private void Event_GetSize() {
+        private static void Event_GetSize(idEntity e) {
             idBounds bounds;
 
-            bounds = GetPhysics().GetBounds();
+            bounds = e.GetPhysics().GetBounds();
             idThread.ReturnVector(bounds.oGet(1).oMinus(bounds.oGet(0)));
         }
 
-        private void Event_GetMins() {
-            idThread.ReturnVector(GetPhysics().GetBounds().oGet(0));
+        private static void Event_GetMins(idEntity e) {
+            idThread.ReturnVector(e.GetPhysics().GetBounds().oGet(0));
         }
 
-        private void Event_GetMaxs() {
-            idThread.ReturnVector(GetPhysics().GetBounds().oGet(1));
+        private static void Event_GetMaxs(idEntity e) {
+            idThread.ReturnVector(e.GetPhysics().GetBounds().oGet(1));
         }
 
-        private void Event_Touches(idEntity ent) {
-            if (NOT(ent)) {
+        private static void Event_Touches(idEntity e, idEventArg<idEntity> ent) {
+            if (NOT(ent.value)) {
                 idThread.ReturnInt(false);
                 return;
             }
 
-            final idBounds myBounds = GetPhysics().GetAbsBounds();
-            final idBounds entBounds = ent.GetPhysics().GetAbsBounds();
+            final idBounds myBounds = e.GetPhysics().GetAbsBounds();
+            final idBounds entBounds = ent.value.GetPhysics().GetAbsBounds();
 
             idThread.ReturnInt(myBounds.IntersectsBounds(entBounds));
         }
 
-        private void Event_SetGuiParm(final String key, final String val) {
+        private static void Event_SetGuiParm(idEntity e, final idEventArg<String> k, final idEventArg<String> v) {
+            final String key = k.value;
+            final String val = v.value;
             for (int i = 0; i < MAX_RENDERENTITY_GUI; i++) {
-                if (renderEntity.gui[i] != null) {
+                if (e.renderEntity.gui[i] != null) {
                     if (idStr.Icmpn(key, "gui_", 4) == 0) {
-                        spawnArgs.Set(key, val);
+                        e.spawnArgs.Set(key, val);
                     }
-                    renderEntity.gui[i].SetStateString(key, val);
-                    renderEntity.gui[i].StateChanged(gameLocal.time);
+                    e.renderEntity.gui[i].SetStateString(key, val);
+                    e.renderEntity.gui[i].StateChanged(gameLocal.time);
                 }
             }
         }
 
-        private void Event_SetGuiFloat(final String key, float f) {
+        private static void Event_SetGuiFloat(idEntity e, final idEventArg<String> key, idEventArg<Float> f) {
             for (int i = 0; i < MAX_RENDERENTITY_GUI; i++) {
-                if (renderEntity.gui[i] != null) {
-                    renderEntity.gui[i].SetStateString(key, va("%f", f));
-                    renderEntity.gui[i].StateChanged(gameLocal.time);
+                if (e.renderEntity.gui[i] != null) {
+                    e.renderEntity.gui[i].SetStateString(key.value, va("%f", f.value));
+                    e.renderEntity.gui[i].StateChanged(gameLocal.time);
                 }
             }
         }
 
-        private void Event_GetNextKey(final String prefix, final String lastMatch) {
+        private static void Event_GetNextKey(idEntity e, final idEventArg<String> prefix, final idEventArg<String> lastMatch) {
             final idKeyValue kv;
             final idKeyValue previous;
 
-            if (!lastMatch.isEmpty()) {
-                previous = spawnArgs.FindKey(lastMatch);
+            if (!lastMatch.value.isEmpty()) {
+                previous = e.spawnArgs.FindKey(lastMatch.value);
             } else {
                 previous = null;
             }
 
-            kv = spawnArgs.MatchPrefix(prefix, previous);
+            kv = e.spawnArgs.MatchPrefix(prefix.value, previous);
             if (null == kv) {
                 idThread.ReturnString("");
             } else {
@@ -3932,136 +4017,136 @@ public class Entity {
             }
         }
 
-        private void Event_SetKey(final String key, final String value) {
-            spawnArgs.Set(key, value);
+        private static void Event_SetKey(idEntity e, final idEventArg<String> key, final idEventArg<String> value) {
+            e.spawnArgs.Set(key.value, value.value);
         }
 
-        private void Event_GetKey(final String key) {
+        private static void Event_GetKey(idEntity e, final idEventArg<String> key) {
             String[] value = new String[1];
 
-            spawnArgs.GetString(key, "", value);
+            e.spawnArgs.GetString(key.value, "", value);
             idThread.ReturnString(value[0]);
         }
 
-        private void Event_GetIntKey(final String key) {
+        private static void Event_GetIntKey(idEntity e, final idEventArg<String> key) {
             int[] value = new int[1];
 
-            spawnArgs.GetInt(key, "0", value);
+            e.spawnArgs.GetInt(key.value, "0", value);
 
             // scripts only support floats
             idThread.ReturnFloat(value[0]);
         }
 
-        private void Event_GetFloatKey(final String key) {
+        private static void Event_GetFloatKey(idEntity e, final idEventArg<String> key) {
             float[] value = new float[1];
 
-            spawnArgs.GetFloat(key, "0", value);
+            e.spawnArgs.GetFloat(key.value, "0", value);
             idThread.ReturnFloat(value[0]);
         }
 
-        private void Event_GetVectorKey(final String key) {
+        private static void Event_GetVectorKey(idEntity e, final idEventArg<String> key) {
             idVec3 value = new idVec3();
 
-            spawnArgs.GetVector(key, "0 0 0", value);
+            e.spawnArgs.GetVector(key.value, "0 0 0", value);
             idThread.ReturnVector(value);
         }
 
-        private void Event_GetEntityKey(final String key) {
+        private static void Event_GetEntityKey(idEntity e, final idEventArg<String> key) {
             idEntity ent;
             String[] entName = new String[1];
 
-            if (!spawnArgs.GetString(key, null, entName)) {
+            if (!e.spawnArgs.GetString(key.value, null, entName)) {
                 idThread.ReturnEntity(null);
                 return;
             }
 
             ent = gameLocal.FindEntity(entName[0]);
             if (null == ent) {
-                gameLocal.Warning("Couldn't find entity '%s' specified in '%s' key in entity '%s'", entName, key, name);
+                gameLocal.Warning("Couldn't find entity '%s' specified in '%s' key in entity '%s'", entName, key, e.name);
             }
 
             idThread.ReturnEntity(ent);
         }
 
-        private void Event_RestorePosition() {
+        private static void Event_RestorePosition(idEntity e) {
             idVec3 org = new idVec3();
             idAngles angles = new idAngles();
             idMat3 axis = new idMat3();
             idEntity part;
 
-            spawnArgs.GetVector("origin", "0 0 0", org);
+            e.spawnArgs.GetVector("origin", "0 0 0", org);
 
             // get the rotation matrix in either full form, or single angle form
-            if (spawnArgs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
+            if (e.spawnArgs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
                 angles = axis.ToAngles();
             } else {
                 angles.oSet(0, 0);
-                angles.oSet(1, spawnArgs.GetFloat("angle"));
+                angles.oSet(1, e.spawnArgs.GetFloat("angle"));
                 angles.oSet(2, 0);
             }
 
-            Teleport(org, angles, null);
+            e.Teleport(org, angles, null);
 
-            for (part = teamChain; part != null; part = part.teamChain) {
-                if (part.bindMaster != this) {
+            for (part = e.teamChain; part != null; part = part.teamChain) {
+                if (part.bindMaster != e) {
                     continue;
                 }
                 if (part.GetPhysics().IsType(idPhysics_Parametric.class)) {
                     if (((idPhysics_Parametric) part.GetPhysics()).IsPusher()) {
-                        gameLocal.Warning("teleported '%s' which has the pushing mover '%s' bound to it\n", GetName(), part.GetName());
+                        gameLocal.Warning("teleported '%s' which has the pushing mover '%s' bound to it\n", e.GetName(), part.GetName());
                     }
                 } else if (part.GetPhysics().IsType(idPhysics_AF.class)) {
-                    gameLocal.Warning("teleported '%s' which has the articulated figure '%s' bound to it\n", GetName(), part.GetName());
+                    gameLocal.Warning("teleported '%s' which has the articulated figure '%s' bound to it\n", e.GetName(), part.GetName());
                 }
             }
         }
 
-        private void Event_UpdateCameraTarget() {
+        private static void Event_UpdateCameraTarget(idEntity e) {
             final String target;
             idKeyValue kv;
             idVec3 dir;
 
-            target = spawnArgs.GetString("cameraTarget");
+            target = e.spawnArgs.GetString("cameraTarget");
 
-            cameraTarget = gameLocal.FindEntity(target);
+            e.cameraTarget = gameLocal.FindEntity(target);
 
-            if (cameraTarget != null) {
-                kv = cameraTarget.spawnArgs.MatchPrefix("target", null);
+            if (e.cameraTarget != null) {
+                kv = e.cameraTarget.spawnArgs.MatchPrefix("target", null);
                 while (kv != null) {
                     idEntity ent = gameLocal.FindEntity(kv.GetValue());
                     if (ent != null && idStr.Icmp(ent.GetEntityDefName(), "target_null") == 0) {
-                        dir = ent.GetPhysics().GetOrigin().oMinus(cameraTarget.GetPhysics().GetOrigin());
+                        dir = ent.GetPhysics().GetOrigin().oMinus(e.cameraTarget.GetPhysics().GetOrigin());
                         dir.Normalize();
-                        cameraTarget.SetAxis(dir.ToMat3());
-                        SetAxis(dir.ToMat3());
+                        e.cameraTarget.SetAxis(dir.ToMat3());
+                        e.SetAxis(dir.ToMat3());
                         break;
                     }
-                    kv = cameraTarget.spawnArgs.MatchPrefix("target", kv);
+                    kv = e.cameraTarget.spawnArgs.MatchPrefix("target", kv);
                 }
             }
-            UpdateVisuals();
+            e.UpdateVisuals();
         }
 
-        private void Event_DistanceTo(idEntity ent) {
-            if (null == ent) {
+        private static void Event_DistanceTo(idEntity e, idEventArg<idEntity> ent) {
+            if (null == ent.value) {
                 // just say it's really far away
                 idThread.ReturnFloat(MAX_WORLD_SIZE);
             } else {
-                float dist = GetPhysics().GetOrigin().oMinus(ent.GetPhysics().GetOrigin()).LengthFast();
+                float dist = e.GetPhysics().GetOrigin().oMinus(ent.value.GetPhysics().GetOrigin()).LengthFast();
                 idThread.ReturnFloat(dist);
             }
         }
 
-        private void Event_DistanceToPoint(final idVec3 point) {
-            float dist = GetPhysics().GetOrigin().oMinus(point).LengthFast();
+        private static void Event_DistanceToPoint(idEntity e, final idEventArg<idVec3> point) {
+            float dist = e.GetPhysics().GetOrigin().oMinus(point.value).LengthFast();
             idThread.ReturnFloat(dist);
         }
 
-        private void Event_StartFx(final String fx) {
-            idEntityFx.StartFx(fx, null, null, this, true);
+        private static void Event_StartFx(idEntity e, final idEventArg<String> fx) {
+            idEntityFx.StartFx(fx.value, null, null, e, true);
         }
 
-        private void Event_WaitFrame() {
+        private static void Event_WaitFrame() {
             idThread thread;
 
             thread = idThread.CurrentThread();
@@ -4070,7 +4155,7 @@ public class Entity {
             }
         }
 
-        private void Event_Wait(float time) {
+        private static void Event_Wait(float time) {
             idThread thread = idThread.CurrentThread();
 
             if (null == thread) {
@@ -4080,10 +4165,10 @@ public class Entity {
             thread.WaitSec(time);
         }
 
-        private void Event_HasFunction(final String name) {
+        private static void Event_HasFunction(idEntity e, final String name) {
             function_t func;
 
-            func = scriptObject.GetFunction(name);
+            func = e.scriptObject.GetFunction(name);
             if (func != null) {
                 idThread.ReturnInt(true);
             } else {
@@ -4091,7 +4176,7 @@ public class Entity {
             }
         }
 
-        private void Event_CallFunction(final String funcName) {
+        private static void Event_CallFunction(idEntity e, final String funcName) {
             function_t func;
             idThread thread;
 
@@ -4100,25 +4185,25 @@ public class Entity {
                 gameLocal.Error("Event 'callFunction' called from outside thread");
             }
 
-            func = scriptObject.GetFunction(funcName);
+            func = e.scriptObject.GetFunction(funcName);
             if (NOT(func)) {
-                gameLocal.Error("Unknown function '%s' in '%s'", funcName, scriptObject.GetTypeName());
+                gameLocal.Error("Unknown function '%s' in '%s'", funcName, e.scriptObject.GetTypeName());
             }
 
             if (func.type.NumParameters() != 1) {
                 gameLocal.Error("Function '%s' has the wrong number of parameters for 'callFunction'", funcName);
             }
-            if (!scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
+            if (!e.scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
                 gameLocal.Error("Function '%s' is the wrong type for 'callFunction'", funcName);
             }
 
             // function args will be invalid after this call
-            thread.CallFunction(this, func, false);
+            thread.CallFunction(e, func, false);
         }
 
-        private void Event_SetNeverDormant(int enable) {
-            fl.neverDormant = (enable != 0);
-            dormantStart = 0;
+        private static void Event_SetNeverDormant(idEntity e, int enable) {
+            e.fl.neverDormant = (enable != 0);
+            e.dormantStart = 0;
         }
 
         public static void delete(final idEntity entity){
@@ -4151,6 +4236,16 @@ public class Entity {
      ===============================================================================
      */
     public static class idAnimatedEntity extends idEntity {
+
+        static {
+            eventCallbacks.put(EV_GetJointHandle, (eventCallback_t1) idAnimatedEntity::Event_GetJointHandle);
+            eventCallbacks.put(EV_ClearAllJoints, (eventCallback_t0) idAnimatedEntity::Event_ClearAllJoints);
+            eventCallbacks.put(EV_ClearJoint, (eventCallback_t1) idAnimatedEntity::Event_ClearJoint);
+            eventCallbacks.put(EV_SetJointPos, (eventCallback_t3) idAnimatedEntity::Event_SetJointPos);
+            eventCallbacks.put(EV_SetJointAngle, (eventCallback_t3) idAnimatedEntity::Event_SetJointAngle);
+            eventCallbacks.put(EV_GetJointPos, (eventCallback_t1) idAnimatedEntity::Event_GetJointPos);
+            eventCallbacks.put(EV_GetJointAngle, (eventCallback_t1) idAnimatedEntity::Event_GetJointAngle);
+        }
 
         // enum {
         public static final int EVENT_ADD_DAMAGE_EFFECT = idEntity.EVENT_MAXEVENTS;
@@ -4520,11 +4615,11 @@ public class Entity {
          looks up the number of the specified joint.  returns INVALID_JOINT if the joint is not found.
          ================
          */
-        private void Event_GetJointHandle(final String jointname) {
+        private static void Event_GetJointHandle(idEntity e, final idEventArg<String> jointname) {
 //            jointHandle_t joint = new jointHandle_t();
             int joint;
 
-            joint = animator.GetJointHandle(jointname);
+            joint = ((idAnimatedEntity) e).animator.GetJointHandle(jointname.value);
             idThread.ReturnInt(joint);
         }
 
@@ -4535,8 +4630,8 @@ public class Entity {
          removes any custom transforms on all joints
          ================
          */
-        private void Event_ClearAllJoints() {
-            animator.ClearAllJoints();
+        private static void Event_ClearAllJoints(idEntity e) {
+            ((idAnimatedEntity) e).animator.ClearAllJoints();
         }
 
         /*
@@ -4546,8 +4641,8 @@ public class Entity {
          removes any custom transforms on the specified joint
          ================
          */
-        private void Event_ClearJoint(int/*jointHandle_t*/ jointnum) {
-            animator.ClearJoint(jointnum);
+        private static void Event_ClearJoint(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
+            ((idAnimatedEntity) e).animator.ClearJoint(jointnum.value);
         }
 
         /*
@@ -4557,8 +4652,8 @@ public class Entity {
          modifies the position of the joint based on the transform type
          ================
          */
-        private void Event_SetJointPos(int/*jointHandle_t*/ jointnum, jointModTransform_t transform_type, final idVec3 pos) {
-            animator.SetJointPos(jointnum, transform_type, pos);
+        private static void Event_SetJointPos(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<jointModTransform_t> transform_type, final idEventArg<idVec3> pos) {
+            ((idAnimatedEntity) e).animator.SetJointPos(jointnum.value, transform_type.value, pos.value);
         }
 
         /*
@@ -4568,11 +4663,11 @@ public class Entity {
          modifies the orientation of the joint based on the transform type
          ================
          */
-        private void Event_SetJointAngle(int/*jointHandle_t*/ jointnum, jointModTransform_t transform_type, final idAngles angles) {
+        private static void Event_SetJointAngle(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<jointModTransform_t> transform_type, final idEventArg<idAngles> angles) {
             idMat3 mat;
 
-            mat = angles.ToMat3();
-            animator.SetJointAxis(jointnum, transform_type, mat);
+            mat = angles.value.ToMat3();
+            ((idAnimatedEntity) e).animator.SetJointAxis(jointnum.value, transform_type.value, mat);
         }
 
         /*
@@ -4582,12 +4677,12 @@ public class Entity {
          returns the position of the joint in worldspace
          ================
          */
-        private void Event_GetJointPos(int/*jointHandle_t*/ jointnum) {
+        private static void Event_GetJointPos(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
             idVec3 offset = new idVec3();
             idMat3 axis = new idMat3();
 
-            if (!GetJointWorldTransform(jointnum, gameLocal.time, offset, axis)) {
-                gameLocal.Warning("Joint # %d out of range on entity '%s'", jointnum, name);
+            if (!((idAnimatedEntity) e).GetJointWorldTransform(jointnum.value, gameLocal.time, offset, axis)) {
+                gameLocal.Warning("Joint # %d out of range on entity '%s'", jointnum, e.name);
             }
 
             idThread.ReturnVector(offset);
@@ -4601,12 +4696,12 @@ public class Entity {
          returns the orientation of the joint in worldspace
          ================
          */
-        private void Event_GetJointAngle(int/*jointHandle_t*/ jointnum) {
+        private static void Event_GetJointAngle(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
             idVec3 offset = new idVec3();
             idMat3 axis = new idMat3();
 
-            if (!GetJointWorldTransform(jointnum, gameLocal.time, offset, axis)) {
-                gameLocal.Warning("Joint # %d out of range on entity '%s'", jointnum, name);
+            if (!((idAnimatedEntity) e).GetJointWorldTransform(jointnum.value, gameLocal.time, offset, axis)) {
+                gameLocal.Warning("Joint # %d out of range on entity '%s'", jointnum, e.name);
             }
 
             idAngles ang = axis.ToAngles();

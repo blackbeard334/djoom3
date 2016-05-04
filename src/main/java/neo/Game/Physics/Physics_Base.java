@@ -527,8 +527,9 @@ public class Physics_Base {
             }
         }
 
+        private static int DBG_IsOutsideWorld = 0;
         // returns true if the whole physics object is outside the world bounds
-        protected boolean IsOutsideWorld() {
+        protected boolean IsOutsideWorld() {       DBG_IsOutsideWorld++;
             if (!gameLocal.clip.GetWorldBounds().Expand(128.0f).IntersectsBounds(GetAbsBounds())) {
                 return true;
             }

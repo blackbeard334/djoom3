@@ -28,7 +28,35 @@ blanco ingame, go:
 								-firstFreeIndex++
 								-105 is unregistered in the original. idGameLocal::UnregisterEntity()
 									-in da ~idEntity() deconstructor...who would have thought deconstructors would serve this much purpose.
-				
+					-fixed, but still no ingame shit. . .
+	-back to backtracking from the warnings.
+		-so the idClipModel.origin values are out of whack, especially the Z.
+			-printed out all 2064 origins.
+			-they seem to match at first glance
+		-idPhysics_Base::IsOutsideWorld()->GetAbsBounds() returns zeroes in the original, but weird arzse values in the jafa.
+			-feels like we're going in circles, but we should've been checking idClipModel.absBounds instead of origin.
+			-let's start by printing out the classnames
+				-the jafa version prints out 880 names vs 254 in the cpp.
+					-a total of 4 instances in the cpp version though.
+						-wrong moron!
+					-is the teamChain part in idEntity::RunPhysics() fucked up?
+						-						cpp jj
+						 idEntity::QuitTeam()  	  7	 6
+						 idEntity::JoinTeam()	205	97
+						 idEntity::Unbind()		207	98
+						-func_door_17 is the last common idEntity(), then there's a gap, and then player1_head
+							-idEvent::ServiceEvents()
+							-idEntity::Event_SpawnBind(), we're missing callbacks(missing being the understatement of the year)
+								-idEvent::Schedule()
+									-idClass::PostEventArgs()
+										idTypeInfo::Init() for c.eventMap[]
+										-idClass::ProcessEventArgPtr()
+										-plan:
+											static methods
+											give object as param	- ServiceEvents
+											varargs object			- ProcessEventArgPtr
+											varargs[0] is object 	- ProcessEventArgPtr
+						
 
 -let's centering all the debug drawrings
 -is our input working properly?

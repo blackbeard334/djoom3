@@ -59,8 +59,8 @@ public class Script_Thread {
     // script callable events
     static final idEventDef EV_Thread_TerminateThread     = new idEventDef("terminate", "d");
     static final idEventDef EV_Thread_Pause               = new idEventDef("pause", null);
-    static final idEventDef EV_Thread_Wait                = new idEventDef("wait", "f");
-    static final idEventDef EV_Thread_WaitFrame           = new idEventDef("waitFrame");
+    public static final idEventDef EV_Thread_Wait                = new idEventDef("wait", "f");
+    public static final idEventDef EV_Thread_WaitFrame           = new idEventDef("waitFrame");
     static final idEventDef EV_Thread_WaitFor             = new idEventDef("waitFor", "e");
     static final idEventDef EV_Thread_WaitForThread       = new idEventDef("waitForThread", "d");
     static final idEventDef EV_Thread_Print               = new idEventDef("print", "s");

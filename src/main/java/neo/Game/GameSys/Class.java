@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Entity.EV_Activate;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class.eventCallback_t;
 import static neo.Game.GameSys.Class.idEventArg.toEvent;
 import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
@@ -49,9 +48,60 @@ public class Class {
     static idHierarchy<idTypeInfo> classHierarchy      = new idHierarchy<>();
     static int                     eventCallbackMemory = 0;
 
-    public static abstract class eventCallback_t {
+    @FunctionalInterface
+    public interface eventCallback_t {
+        void accept(idEntity e, idEventArg...args);
+    }
 
-        public abstract void run(final int... data);
+    @FunctionalInterface
+    public interface eventCallback_t0 extends eventCallback_t {
+        @Override
+        default void accept(idEntity e, idEventArg... args) {
+            accept(e);
+        }
+
+        void accept(idEntity e);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t1 extends eventCallback_t {
+        @Override
+        default void accept(idEntity e, idEventArg... args) {
+            accept(e, args[0]);
+        }
+
+        void accept(idEntity e, idEventArg a);
+    }
+
+
+    @FunctionalInterface
+    public interface eventCallback_t2 extends eventCallback_t {
+        @Override
+        default void accept(idEntity e, idEventArg... args) {
+            accept(e, args[0], args[1]);
+        }
+
+        void accept(idEntity e, idEventArg a, idEventArg b);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t3 extends eventCallback_t {
+        @Override
+        default void accept(idEntity e, idEventArg... args) {
+            accept(e, args[0], args[1], args[2]);
+        }
+
+        void accept(idEntity e, idEventArg a, idEventArg b, idEventArg c);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t4 extends eventCallback_t {
+        @Override
+        default void accept(idEntity e, idEventArg... args) {
+            accept(e, args[0], args[1], args[2], args[3]);
+        }
+
+        void accept(idEntity e, idEventArg a, idEventArg b, idEventArg c, idEventArg d);
     }
 
     public static abstract class classSpawnFunc_t<type> {
@@ -75,14 +125,14 @@ public class Class {
         eventCallback_t function;
     };
 
-    public static class idEventArg {
+    public static class idEventArg<T> {
 
-        public final int    type;
-        public final Object value;
+        public final int type;
+        public final T   value;
 //
 //
 
-        public idEventArg(Object data) {
+        public idEventArg(T data) {
             if(data instanceof Integer)         type = D_EVENT_INTEGER;
             else if(data instanceof Float)      type = D_EVENT_FLOAT;
             else if(data instanceof idVec3)     type = D_EVENT_VECTOR;

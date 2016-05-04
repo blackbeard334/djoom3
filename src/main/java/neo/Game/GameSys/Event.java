@@ -525,6 +525,7 @@ public class Event {
             String formatspec;
             trace_s[] tracePtr;
             idEventDef ev;
+            Object[] data;
             String materialName;
 
             num = 0;
@@ -542,12 +543,13 @@ public class Event {
                 numargs = ev.GetNumArgs();
                 for (i = 0; i < numargs; i++) {
                     offset = ev.GetArgOffset(i);
-//			switch( formatspec[ i ] ) {
-//			case D_EVENT_FLOAT :
-//			case D_EVENT_INTEGER :
-//				args[ i ] = *reinterpret_cast<int *>( &data[ offset ] );
-//				break;
-//
+                    data = event.data;
+                    switch (formatspec.charAt(i)) {
+                        case D_EVENT_FLOAT:
+                        case D_EVENT_INTEGER:
+                            args[i] = (int) data[offset];
+                            break;
+
 //			case D_EVENT_VECTOR :
 //				*reinterpret_cast<idVec3 **>( &args[ i ] ) = reinterpret_cast<idVec3 *>( &data[ offset ] );
 //				break;
@@ -575,10 +577,10 @@ public class Event {
 //					*tracePtr = NULL;
 //				}
 //				break;
-//
-//			default:
-//				gameLocal.Error( "idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev.GetName() );
-//			}//TODO:S ^^^^^^^^^^^^^^^^^^^^^
+
+                        default:
+                            gameLocal.Error("idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev.GetName());
+                    }//TODO:S ^^^^^^^^^^^^^^^^^^^^^
                 }
 
                 // the event is removed from its list so that if then object

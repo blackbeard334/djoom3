@@ -332,6 +332,9 @@ public class Clip {
             this.id = newId;
             this.origin.oSet(newOrigin);
             this.axis.oSet(newAxis);
+            if (origin.z < -1111) {
+                int a = 0;
+            }
             if (renderModelHandle != -1) {
                 this.renderModelHandle = renderModelHandle;
                 final renderEntity_s renderEntity = gameRenderWorld.GetRenderEntity(renderModelHandle);
@@ -364,17 +367,26 @@ public class Clip {
                 Unlink();	// unlink from old position
             }
             origin.oSet(newOrigin);
+            if (origin.z < -1111) {
+                int a = 0;
+            }
             axis.oSet(newAxis);
         }
 
         public void Translate(final idVec3 translation) {							// unlinks the clip model
             Unlink();
             origin.oPluSet(translation);
+            if (origin.z < -1111) {
+                int a = 0;
+            }
         }
 
         public void Rotate(final idRotation rotation) {							// unlinks the clip model
             Unlink();
             origin.oMulSet(rotation);
+            if (origin.z < -1111) {
+                int a = 0;
+            }
             axis.oMulSet(rotation.ToMat3());
         }
 
