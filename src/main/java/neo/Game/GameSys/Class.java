@@ -49,59 +49,79 @@ public class Class {
     static int                     eventCallbackMemory = 0;
 
     @FunctionalInterface
-    public interface eventCallback_t {
-        void accept(idEntity e, idEventArg...args);
+    public interface eventCallback_t<T extends idClass> {
+        void accept(T t, idEventArg...args);
     }
 
     @FunctionalInterface
-    public interface eventCallback_t0 extends eventCallback_t {
+    public interface eventCallback_t0<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(idEntity e, idEventArg... args) {
-            accept(e);
+        default void accept(T t, idEventArg... args) {
+            accept(t);
         }
 
-        void accept(idEntity e);
+        void accept(T e);
     }
 
     @FunctionalInterface
-    public interface eventCallback_t1 extends eventCallback_t {
+    public interface eventCallback_t1<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(idEntity e, idEventArg... args) {
-            accept(e, args[0]);
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0]);
         }
 
-        void accept(idEntity e, idEventArg a);
+        void accept(T t, idEventArg a);
     }
 
 
     @FunctionalInterface
-    public interface eventCallback_t2 extends eventCallback_t {
+    public interface eventCallback_t2<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(idEntity e, idEventArg... args) {
-            accept(e, args[0], args[1]);
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1]);
         }
 
-        void accept(idEntity e, idEventArg a, idEventArg b);
+        void accept(T t, idEventArg a, idEventArg b);
     }
 
     @FunctionalInterface
-    public interface eventCallback_t3 extends eventCallback_t {
+    public interface eventCallback_t3<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(idEntity e, idEventArg... args) {
-            accept(e, args[0], args[1], args[2]);
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1], args[2]);
         }
 
-        void accept(idEntity e, idEventArg a, idEventArg b, idEventArg c);
+        void accept(T t, idEventArg a, idEventArg b, idEventArg c);
     }
 
     @FunctionalInterface
-    public interface eventCallback_t4 extends eventCallback_t {
+    public interface eventCallback_t4<T extends idClass> extends eventCallback_t<T> {
         @Override
-        default void accept(idEntity e, idEventArg... args) {
-            accept(e, args[0], args[1], args[2], args[3]);
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1], args[2], args[3]);
         }
 
-        void accept(idEntity e, idEventArg a, idEventArg b, idEventArg c, idEventArg d);
+        void accept(T t, idEventArg a, idEventArg b, idEventArg c, idEventArg d);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t5<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1], args[2], args[3], args[4]);
+        }
+
+        void accept(T t, idEventArg a, idEventArg b, idEventArg c, idEventArg d, idEventArg e);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t6<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1], args[2], args[3], args[4], args[5]);
+        }
+
+        void accept(T t, idEventArg a, idEventArg b, idEventArg c, idEventArg d, idEventArg e, idEventArg f);
     }
 
     public static abstract class classSpawnFunc_t<type> {
@@ -219,6 +239,8 @@ public class Class {
         public abstract idClass CreateInstance();
 
         public abstract java.lang.Class/*idTypeInfo*/ GetType();
+
+        public abstract eventCallback_t getEventCallBack(idEventDef event);
 
 // #ifdef ID_REDIRECT_NEWDELETE
 // #undef new
@@ -770,7 +792,7 @@ public class Class {
         }
 
         private boolean PostEventArgs(final idEventDef ev, int time, int numargs, idEventArg... args) {
-            idTypeInfo c;
+            java.lang.Class c;
             idEvent event;
 //            va_list args;
 
@@ -781,11 +803,11 @@ public class Class {
             }
 
             //TODO:disabled for medicinal reasons
-//            c = GetType();
-//            if (NOT(c.eventMap[ev.GetEventNum()])) {
-//                // we don't respond to this event, so ignore it
-//                return false;
-//            }
+            c = this.getClass();
+            if (NOT(this.getEventCallBack(ev))) {
+                // we don't respond to this event, so ignore it
+                return false;
+            }
 
             // we service events on the client to avoid any bad code filling up the event pool
             // we don't want them processed usually, unless when the map is (re)loading.
@@ -799,7 +821,7 @@ public class Class {
 //            va_end(args);
 
             //TODO:same as line #755
-//            event.Schedule(this, c, time);
+            event.Schedule(this, c, time);
 
             return true;
         }

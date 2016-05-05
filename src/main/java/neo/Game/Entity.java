@@ -3,9 +3,6 @@ package neo.Game;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFEntity_Base;
@@ -30,6 +27,7 @@ import neo.Game.GameSys.Class.eventCallback_t2;
 import neo.Game.GameSys.Class.eventCallback_t3;
 import neo.Game.GameSys.Class.eventCallback_t4;
 import neo.Game.GameSys.Class.idEventArg;
+import neo.Game.GameSys.Event;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -229,74 +227,6 @@ public class Entity {
     public static final idEventDef EV_GetJointAngle      = new idEventDef("getJointAngle", "d", 'v');
     //
 
-    static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
-    static {
-        final eventCallback_t event_setName = (eventCallback_t1) idEntity::Event_SetName;
-        eventCallbacks.put(EV_GetName, (eventCallback_t0) idEntity::Event_GetName);
-        eventCallbacks.put(EV_SetName, (eventCallback_t1) idEntity::Event_SetName);
-        eventCallbacks.put(EV_FindTargets, (eventCallback_t0) idEntity::Event_FindTargets);
-        eventCallbacks.put(EV_ActivateTargets, (eventCallback_t1) idEntity::Event_ActivateTargets);
-        eventCallbacks.put(EV_NumTargets, (eventCallback_t0) idEntity::Event_NumTargets);
-        eventCallbacks.put(EV_GetTarget, (eventCallback_t1) idEntity::Event_GetTarget);
-        eventCallbacks.put(EV_RandomTarget, (eventCallback_t1) idEntity::Event_RandomTarget);
-        eventCallbacks.put(EV_BindToJoint, (eventCallback_t3) idEntity::Event_BindToJoint);
-        eventCallbacks.put(EV_RemoveBinds, (eventCallback_t0) idEntity::Event_RemoveBinds);
-        eventCallbacks.put(EV_Bind, (eventCallback_t1) idEntity::Event_Bind);
-        eventCallbacks.put(EV_BindPosition, (eventCallback_t1) idEntity::Event_BindPosition);
-        eventCallbacks.put(EV_Unbind, (eventCallback_t0) idEntity::Event_Unbind);
-        eventCallbacks.put(EV_SpawnBind, (eventCallback_t0) idEntity::Event_SpawnBind);
-        eventCallbacks.put(EV_SetOwner, (eventCallback_t1) idEntity::Event_SetOwner);
-        eventCallbacks.put(EV_SetModel, (eventCallback_t1) idEntity::Event_SetModel);
-        eventCallbacks.put(EV_SetSkin, (eventCallback_t1) idEntity::Event_SetSkin);
-        eventCallbacks.put(EV_GetShaderParm, (eventCallback_t1) idEntity::Event_GetShaderParm);
-        eventCallbacks.put(EV_SetShaderParm, (eventCallback_t2) idEntity::Event_SetShaderParm);
-        eventCallbacks.put(EV_SetShaderParms, (eventCallback_t4) idEntity::Event_SetShaderParms);
-        eventCallbacks.put(EV_SetColor, (eventCallback_t3) idEntity::Event_SetColor);
-        eventCallbacks.put(EV_GetColor, (eventCallback_t0) idEntity::Event_GetColor);
-        eventCallbacks.put(EV_IsHidden, (eventCallback_t0) idEntity::Event_IsHidden);
-        eventCallbacks.put(EV_Hide, (eventCallback_t0) idEntity::Event_Hide);
-        eventCallbacks.put(EV_Show, (eventCallback_t0) idEntity::Event_Show);
-        eventCallbacks.put(EV_CacheSoundShader, (eventCallback_t1) idEntity::Event_CacheSoundShader);
-        eventCallbacks.put(EV_StartSoundShader, (eventCallback_t2) idEntity::Event_StartSoundShader);
-        eventCallbacks.put(EV_StartSound, (eventCallback_t3) idEntity::Event_StartSound);
-        eventCallbacks.put(EV_StopSound, (eventCallback_t2) idEntity::Event_StopSound);
-        eventCallbacks.put(EV_FadeSound, (eventCallback_t3) idEntity::Event_FadeSound);
-        eventCallbacks.put(EV_GetWorldOrigin, (eventCallback_t0) idEntity::Event_GetWorldOrigin);
-        eventCallbacks.put(EV_SetWorldOrigin, (eventCallback_t1) idEntity::Event_SetWorldOrigin);
-        eventCallbacks.put(EV_GetOrigin, (eventCallback_t0) idEntity::Event_GetOrigin);
-        eventCallbacks.put(EV_SetOrigin, (eventCallback_t1) idEntity::Event_SetOrigin);
-        eventCallbacks.put(EV_GetAngles, (eventCallback_t0) idEntity::Event_GetAngles);
-        eventCallbacks.put(EV_SetAngles, (eventCallback_t1) idEntity::Event_SetAngles);
-        eventCallbacks.put(EV_GetLinearVelocity, (eventCallback_t0) idEntity::Event_GetLinearVelocity);
-        eventCallbacks.put(EV_SetLinearVelocity, (eventCallback_t1) idEntity::Event_SetLinearVelocity);
-        eventCallbacks.put(EV_GetAngularVelocity, (eventCallback_t0) idEntity::Event_GetAngularVelocity);
-        eventCallbacks.put(EV_SetAngularVelocity, (eventCallback_t1) idEntity::Event_SetAngularVelocity);
-        eventCallbacks.put(EV_GetSize, (eventCallback_t0) idEntity::Event_GetSize);
-        eventCallbacks.put(EV_SetSize, (eventCallback_t2) idEntity::Event_SetSize);
-        eventCallbacks.put(EV_GetMins, (eventCallback_t0) idEntity::Event_GetMins);
-        eventCallbacks.put(EV_GetMaxs, (eventCallback_t0) idEntity::Event_GetMaxs);
-        eventCallbacks.put(EV_Touches, (eventCallback_t1) idEntity::Event_Touches);
-        eventCallbacks.put(EV_SetGuiParm, (eventCallback_t2) idEntity::Event_SetGuiParm);
-        eventCallbacks.put(EV_SetGuiFloat, (eventCallback_t2) idEntity::Event_SetGuiFloat);
-        eventCallbacks.put(EV_GetNextKey, (eventCallback_t2) idEntity::Event_GetNextKey);
-        eventCallbacks.put(EV_SetKey, (eventCallback_t2) idEntity::Event_SetKey);
-        eventCallbacks.put(EV_GetKey, (eventCallback_t1) idEntity::Event_GetKey);
-        eventCallbacks.put(EV_GetIntKey, (eventCallback_t1) idEntity::Event_GetIntKey);
-        eventCallbacks.put(EV_GetFloatKey, (eventCallback_t1) idEntity::Event_GetFloatKey);
-        eventCallbacks.put(EV_GetVectorKey, (eventCallback_t1) idEntity::Event_GetVectorKey);
-        eventCallbacks.put(EV_GetEntityKey, (eventCallback_t1) idEntity::Event_GetEntityKey);
-        eventCallbacks.put(EV_RestorePosition, (eventCallback_t0) idEntity::Event_RestorePosition);
-        eventCallbacks.put(EV_UpdateCameraTarget, (eventCallback_t0) idEntity::Event_UpdateCameraTarget);
-        eventCallbacks.put(EV_DistanceTo, (eventCallback_t1) idEntity::Event_DistanceTo);
-        eventCallbacks.put(EV_DistanceToPoint, (eventCallback_t1) idEntity::Event_DistanceToPoint);
-        eventCallbacks.put(EV_StartFx, (eventCallback_t1) idEntity::Event_StartFx);
-//        eventCallbacks.put(EV_Thread_WaitFrame, (eventCallback_t0) idEntity::Event_WaitFrame);
-//        eventCallbacks.put(EV_Thread_Wait, (eventCallback_t0) idEntity::Event_Wait);
-//        eventCallbacks.put(EV_HasFunction, (eventCallback_t0) idEntity::Event_HasFunction);
-//        eventCallbacks.put(EV_CallFunction, (eventCallback_t0) idEntity::Event_CallFunction);
-//        eventCallbacks.put(EV_SetNeverDormant, (eventCallback_t0) idEntity::Event_SetNeverDormant);
-    }
-
     // Think flags
 //enum {
     public static final int TH_ALL             = -1;
@@ -345,7 +275,73 @@ public class Entity {
     }
 
     public static class idEntity extends neo.Game.GameSys.Class.idClass implements neo.TempDump.NiLLABLE<idEntity>, neo.TempDump.SERiAL {
-//	ABSTRACT_PROTOTYPE( idEntity );
+        //	ABSTRACT_PROTOTYPE( idEntity );
+        protected static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_GetName, (eventCallback_t0<idEntity>) idEntity::Event_GetName);
+            eventCallbacks.put(EV_SetName, (eventCallback_t1<idEntity>) idEntity::Event_SetName);
+            eventCallbacks.put(EV_FindTargets, (eventCallback_t0<idEntity>) idEntity::Event_FindTargets);
+            eventCallbacks.put(EV_ActivateTargets, (eventCallback_t1<idEntity>) idEntity::Event_ActivateTargets);
+            eventCallbacks.put(EV_NumTargets, (eventCallback_t0<idEntity>) idEntity::Event_NumTargets);
+            eventCallbacks.put(EV_GetTarget, (eventCallback_t1<idEntity>) idEntity::Event_GetTarget);
+            eventCallbacks.put(EV_RandomTarget, (eventCallback_t1<idEntity>) idEntity::Event_RandomTarget);
+            eventCallbacks.put(EV_BindToJoint, (eventCallback_t3<idEntity>) idEntity::Event_BindToJoint);
+            eventCallbacks.put(EV_RemoveBinds, (eventCallback_t0<idEntity>) idEntity::Event_RemoveBinds);
+            eventCallbacks.put(EV_Bind, (eventCallback_t1<idEntity>) idEntity::Event_Bind);
+            eventCallbacks.put(EV_BindPosition, (eventCallback_t1<idEntity>) idEntity::Event_BindPosition);
+            eventCallbacks.put(EV_Unbind, (eventCallback_t0<idEntity>) idEntity::Event_Unbind);
+            eventCallbacks.put(EV_SpawnBind, (eventCallback_t0<idEntity>) idEntity::Event_SpawnBind);
+            eventCallbacks.put(EV_SetOwner, (eventCallback_t1<idEntity>) idEntity::Event_SetOwner);
+            eventCallbacks.put(EV_SetModel, (eventCallback_t1<idEntity>) idEntity::Event_SetModel);
+            eventCallbacks.put(EV_SetSkin, (eventCallback_t1<idEntity>) idEntity::Event_SetSkin);
+            eventCallbacks.put(EV_GetShaderParm, (eventCallback_t1<idEntity>) idEntity::Event_GetShaderParm);
+            eventCallbacks.put(EV_SetShaderParm, (eventCallback_t2<idEntity>) idEntity::Event_SetShaderParm);
+            eventCallbacks.put(EV_SetShaderParms, (eventCallback_t4<idEntity>) idEntity::Event_SetShaderParms);
+            eventCallbacks.put(EV_SetColor, (eventCallback_t3<idEntity>) idEntity::Event_SetColor);
+            eventCallbacks.put(EV_GetColor, (eventCallback_t0<idEntity>) idEntity::Event_GetColor);
+            eventCallbacks.put(EV_IsHidden, (eventCallback_t0<idEntity>) idEntity::Event_IsHidden);
+            eventCallbacks.put(EV_Hide, (eventCallback_t0<idEntity>) idEntity::Event_Hide);
+            eventCallbacks.put(EV_Show, (eventCallback_t0<idEntity>) idEntity::Event_Show);
+            eventCallbacks.put(EV_CacheSoundShader, (eventCallback_t1<idEntity>) idEntity::Event_CacheSoundShader);
+            eventCallbacks.put(EV_StartSoundShader, (eventCallback_t2<idEntity>) idEntity::Event_StartSoundShader);
+            eventCallbacks.put(EV_StartSound, (eventCallback_t3<idEntity>) idEntity::Event_StartSound);
+            eventCallbacks.put(EV_StopSound, (eventCallback_t2<idEntity>) idEntity::Event_StopSound);
+            eventCallbacks.put(EV_FadeSound, (eventCallback_t3<idEntity>) idEntity::Event_FadeSound);
+            eventCallbacks.put(EV_GetWorldOrigin, (eventCallback_t0<idEntity>) idEntity::Event_GetWorldOrigin);
+            eventCallbacks.put(EV_SetWorldOrigin, (eventCallback_t1<idEntity>) idEntity::Event_SetWorldOrigin);
+            eventCallbacks.put(EV_GetOrigin, (eventCallback_t0<idEntity>) idEntity::Event_GetOrigin);
+            eventCallbacks.put(EV_SetOrigin, (eventCallback_t1<idEntity>) idEntity::Event_SetOrigin);
+            eventCallbacks.put(EV_GetAngles, (eventCallback_t0<idEntity>) idEntity::Event_GetAngles);
+            eventCallbacks.put(EV_SetAngles, (eventCallback_t1<idEntity>) idEntity::Event_SetAngles);
+            eventCallbacks.put(EV_GetLinearVelocity, (eventCallback_t0<idEntity>) idEntity::Event_GetLinearVelocity);
+            eventCallbacks.put(EV_SetLinearVelocity, (eventCallback_t1<idEntity>) idEntity::Event_SetLinearVelocity);
+            eventCallbacks.put(EV_GetAngularVelocity, (eventCallback_t0<idEntity>) idEntity::Event_GetAngularVelocity);
+            eventCallbacks.put(EV_SetAngularVelocity, (eventCallback_t1<idEntity>) idEntity::Event_SetAngularVelocity);
+            eventCallbacks.put(EV_GetSize, (eventCallback_t0<idEntity>) idEntity::Event_GetSize);
+            eventCallbacks.put(EV_SetSize, (eventCallback_t2<idEntity>) idEntity::Event_SetSize);
+            eventCallbacks.put(EV_GetMins, (eventCallback_t0<idEntity>) idEntity::Event_GetMins);
+            eventCallbacks.put(EV_GetMaxs, (eventCallback_t0<idEntity>) idEntity::Event_GetMaxs);
+            eventCallbacks.put(EV_Touches, (eventCallback_t1<idEntity>) idEntity::Event_Touches);
+            eventCallbacks.put(EV_SetGuiParm, (eventCallback_t2<idEntity>) idEntity::Event_SetGuiParm);
+            eventCallbacks.put(EV_SetGuiFloat, (eventCallback_t2<idEntity>) idEntity::Event_SetGuiFloat);
+            eventCallbacks.put(EV_GetNextKey, (eventCallback_t2<idEntity>) idEntity::Event_GetNextKey);
+            eventCallbacks.put(EV_SetKey, (eventCallback_t2<idEntity>) idEntity::Event_SetKey);
+            eventCallbacks.put(EV_GetKey, (eventCallback_t1<idEntity>) idEntity::Event_GetKey);
+            eventCallbacks.put(EV_GetIntKey, (eventCallback_t1<idEntity>) idEntity::Event_GetIntKey);
+            eventCallbacks.put(EV_GetFloatKey, (eventCallback_t1<idEntity>) idEntity::Event_GetFloatKey);
+            eventCallbacks.put(EV_GetVectorKey, (eventCallback_t1<idEntity>) idEntity::Event_GetVectorKey);
+            eventCallbacks.put(EV_GetEntityKey, (eventCallback_t1<idEntity>) idEntity::Event_GetEntityKey);
+            eventCallbacks.put(EV_RestorePosition, (eventCallback_t0<idEntity>) idEntity::Event_RestorePosition);
+            eventCallbacks.put(EV_UpdateCameraTarget, (eventCallback_t0<idEntity>) idEntity::Event_UpdateCameraTarget);
+            eventCallbacks.put(EV_DistanceTo, (eventCallback_t1<idEntity>) idEntity::Event_DistanceTo);
+            eventCallbacks.put(EV_DistanceToPoint, (eventCallback_t1<idEntity>) idEntity::Event_DistanceToPoint);
+            eventCallbacks.put(EV_StartFx, (eventCallback_t1<idEntity>) idEntity::Event_StartFx);
+//        eventCallbacks.put(EV_Thread_WaitFrame, (eventCallback_t0) idEntity::Event_WaitFrame);
+//        eventCallbacks.put(EV_Thread_Wait, (eventCallback_t0) idEntity::Event_Wait);
+//        eventCallbacks.put(EV_HasFunction, (eventCallback_t0) idEntity::Event_HasFunction);
+//        eventCallbacks.put(EV_CallFunction, (eventCallback_t0) idEntity::Event_CallFunction);
+//        eventCallbacks.put(EV_SetNeverDormant, (eventCallback_t0) idEntity::Event_SetNeverDormant);
+        }
 
         public static final int MAX_PVS_AREAS = 4;
         //
@@ -383,6 +379,11 @@ public class Entity {
         @Override//TODO:final this
         public java.lang.Class/*idTypeInfo*/ GetType() {//TODO: make method final
             return getClass();
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
 
         @Override
@@ -4238,13 +4239,13 @@ public class Entity {
     public static class idAnimatedEntity extends idEntity {
 
         static {
-            eventCallbacks.put(EV_GetJointHandle, (eventCallback_t1) idAnimatedEntity::Event_GetJointHandle);
-            eventCallbacks.put(EV_ClearAllJoints, (eventCallback_t0) idAnimatedEntity::Event_ClearAllJoints);
-            eventCallbacks.put(EV_ClearJoint, (eventCallback_t1) idAnimatedEntity::Event_ClearJoint);
-            eventCallbacks.put(EV_SetJointPos, (eventCallback_t3) idAnimatedEntity::Event_SetJointPos);
-            eventCallbacks.put(EV_SetJointAngle, (eventCallback_t3) idAnimatedEntity::Event_SetJointAngle);
-            eventCallbacks.put(EV_GetJointPos, (eventCallback_t1) idAnimatedEntity::Event_GetJointPos);
-            eventCallbacks.put(EV_GetJointAngle, (eventCallback_t1) idAnimatedEntity::Event_GetJointAngle);
+            eventCallbacks.put(EV_GetJointHandle, (eventCallback_t1<idAnimatedEntity>) idAnimatedEntity::Event_GetJointHandle);
+            eventCallbacks.put(EV_ClearAllJoints, (eventCallback_t0<idAnimatedEntity>) idAnimatedEntity::Event_ClearAllJoints);
+            eventCallbacks.put(EV_ClearJoint, (eventCallback_t1<idAnimatedEntity>) idAnimatedEntity::Event_ClearJoint);
+            eventCallbacks.put(EV_SetJointPos, (eventCallback_t3<idAnimatedEntity>) idAnimatedEntity::Event_SetJointPos);
+            eventCallbacks.put(EV_SetJointAngle, (eventCallback_t3<idAnimatedEntity>) idAnimatedEntity::Event_SetJointAngle);
+            eventCallbacks.put(EV_GetJointPos, (eventCallback_t1<idAnimatedEntity>) idAnimatedEntity::Event_GetJointPos);
+            eventCallbacks.put(EV_GetJointAngle, (eventCallback_t1<idAnimatedEntity>) idAnimatedEntity::Event_GetJointAngle);
         }
 
         // enum {
@@ -4615,11 +4616,11 @@ public class Entity {
          looks up the number of the specified joint.  returns INVALID_JOINT if the joint is not found.
          ================
          */
-        private static void Event_GetJointHandle(idEntity e, final idEventArg<String> jointname) {
+        private static void Event_GetJointHandle(idAnimatedEntity e, final idEventArg<String> jointname) {
 //            jointHandle_t joint = new jointHandle_t();
             int joint;
 
-            joint = ((idAnimatedEntity) e).animator.GetJointHandle(jointname.value);
+            joint = e.animator.GetJointHandle(jointname.value);
             idThread.ReturnInt(joint);
         }
 
@@ -4630,8 +4631,8 @@ public class Entity {
          removes any custom transforms on all joints
          ================
          */
-        private static void Event_ClearAllJoints(idEntity e) {
-            ((idAnimatedEntity) e).animator.ClearAllJoints();
+        private static void Event_ClearAllJoints(idAnimatedEntity e) {
+            e.animator.ClearAllJoints();
         }
 
         /*
@@ -4641,8 +4642,8 @@ public class Entity {
          removes any custom transforms on the specified joint
          ================
          */
-        private static void Event_ClearJoint(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
-            ((idAnimatedEntity) e).animator.ClearJoint(jointnum.value);
+        private static void Event_ClearJoint(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
+            e.animator.ClearJoint(jointnum.value);
         }
 
         /*
@@ -4652,8 +4653,8 @@ public class Entity {
          modifies the position of the joint based on the transform type
          ================
          */
-        private static void Event_SetJointPos(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<jointModTransform_t> transform_type, final idEventArg<idVec3> pos) {
-            ((idAnimatedEntity) e).animator.SetJointPos(jointnum.value, transform_type.value, pos.value);
+        private static void Event_SetJointPos(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<jointModTransform_t> transform_type, final idEventArg<idVec3> pos) {
+            e.animator.SetJointPos(jointnum.value, transform_type.value, pos.value);
         }
 
         /*
@@ -4663,11 +4664,11 @@ public class Entity {
          modifies the orientation of the joint based on the transform type
          ================
          */
-        private static void Event_SetJointAngle(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<jointModTransform_t> transform_type, final idEventArg<idAngles> angles) {
+        private static void Event_SetJointAngle(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<jointModTransform_t> transform_type, final idEventArg<idAngles> angles) {
             idMat3 mat;
 
             mat = angles.value.ToMat3();
-            ((idAnimatedEntity) e).animator.SetJointAxis(jointnum.value, transform_type.value, mat);
+            e.animator.SetJointAxis(jointnum.value, transform_type.value, mat);
         }
 
         /*
@@ -4677,11 +4678,11 @@ public class Entity {
          returns the position of the joint in worldspace
          ================
          */
-        private static void Event_GetJointPos(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
+        private static void Event_GetJointPos(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
             idVec3 offset = new idVec3();
             idMat3 axis = new idMat3();
 
-            if (!((idAnimatedEntity) e).GetJointWorldTransform(jointnum.value, gameLocal.time, offset, axis)) {
+            if (!e.GetJointWorldTransform(jointnum.value, gameLocal.time, offset, axis)) {
                 gameLocal.Warning("Joint # %d out of range on entity '%s'", jointnum, e.name);
             }
 
@@ -4696,11 +4697,11 @@ public class Entity {
          returns the orientation of the joint in worldspace
          ================
          */
-        private static void Event_GetJointAngle(idEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
+        private static void Event_GetJointAngle(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
             idVec3 offset = new idVec3();
             idMat3 axis = new idMat3();
 
-            if (!((idAnimatedEntity) e).GetJointWorldTransform(jointnum.value, gameLocal.time, offset, axis)) {
+            if (!e.GetJointWorldTransform(jointnum.value, gameLocal.time, offset, axis)) {
                 gameLocal.Warning("Joint # %d out of range on entity '%s'", jointnum, e.name);
             }
 

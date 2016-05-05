@@ -1,6 +1,5 @@
 package neo.Game.GameSys;
 
-import java.nio.ByteBuffer;
 import neo.CM.CollisionModel.contactType_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity;
@@ -10,15 +9,11 @@ import neo.Game.AI.AI_Vagary;
 import neo.Game.Actor;
 import neo.Game.Camera;
 import neo.Game.Entity;
-import neo.Game.Entity.idEntity;
 import neo.Game.FX;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.Class.idEventArg;
-import neo.Game.GameSys.Class.idTypeInfo;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
-import static neo.Game.Game_local.gameLocal;
-import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Item;
 import neo.Game.Light;
 import neo.Game.Misc;
@@ -26,21 +21,23 @@ import neo.Game.Moveable;
 import neo.Game.Mover;
 import neo.Game.Player;
 import neo.Game.Projectile;
-import static neo.Game.Script.Script_Program.MAX_STRING_LEN;
 import neo.Game.Script.Script_Thread;
 import neo.Game.SecurityCamera;
 import neo.Game.Sound;
 import neo.Game.Target;
 import neo.Game.Trigger;
 import neo.Game.Weapon;
-import neo.Renderer.Material.idMaterial;
 import neo.TempDump.CPP_class;
-import static neo.TempDump.btoi;
-import static neo.TempDump.etoi;
-import static neo.TempDump.sizeof;
+import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.LinkList.idLinkList;
 import neo.idlib.math.Vector.idVec3;
+
+import java.nio.ByteBuffer;
+
+import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Script.Script_Program.MAX_STRING_LEN;
+import static neo.TempDump.etoi;
 
 /**
  *
@@ -298,6 +295,22 @@ public class Event {
 
             return null;
         }
+
+        @Override
+        public int hashCode() {
+            return eventnum;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            idEventDef that = (idEventDef) o;
+
+            return eventnum == that.eventnum;
+
+        }
     };
 
     /* **********************************************************************
@@ -307,11 +320,11 @@ public class Event {
      ***********************************************************************/
     public static class idEvent {
 
-        private idEventDef eventdef;
-        private Object[]   data;
-        private int        time;
-        private idClass    object;
-        private idTypeInfo typeinfo;
+        private idEventDef      eventdef;
+        private idEventArg[]    data;
+        private int             time;
+        private idClass         object;
+        private java.lang.Class typeinfo;
         //
         private       idLinkList<idEvent> eventNode   = new idLinkList<>();
         //
@@ -347,42 +360,42 @@ public class Event {
             if (size != 0) {
 //		ev.data = eventDataAllocator.Alloc( size );
 //		memset( ev.data, 0, size );
-                ev.data = new Object[size];
+                ev.data = args.clone();
             } else {
                 ev.data = null;
             }
 
             format = evdef.GetArgFormat();
-            for (i = 0; i < numargs; i++) {
-                for (idEventArg arg : args) {
-//                arg = va_arg(args, idEventArg);
-                    if (format.charAt(i) != arg.type) {
-                        // when NULL is passed in for an entity, it gets cast as an integer 0, so don't give an error when it happens
-                        if (!(((format.charAt(i) == D_EVENT_TRACE) || (format.charAt(i) == D_EVENT_ENTITY)) && (arg.type == 'd') && (arg.value == Integer.valueOf(0)))) {
-                            gameLocal.Error("idEvent::Alloc : Wrong type passed in for arg # %d on '%s' event.", i, evdef.GetName());
-                        }
-                    }
-
-                    switch (format.charAt(i)) {//TODO:S
-                        case D_EVENT_FLOAT:
-                        case D_EVENT_INTEGER:
-                            ev.data[i] = arg.value;
-                            break;
-                        case D_EVENT_VECTOR:
-                            if (arg.value != null) {
-                                ev.data[i] = arg.value;
-                            }
-                            break;
-                        case D_EVENT_STRING:
-                            if (arg.value != null) {
-                                ev.data[i] = (String) arg.value;
-                            }
-                            break;
-                        case D_EVENT_ENTITY:
-                        case D_EVENT_ENTITY_NULL:
-                            ev.data[i] = new idEntityPtr<idEntity>((idEntity) arg.value);
-                            break;
-                        case D_EVENT_TRACE:
+//            for (i = 0; i < numargs; i++) {
+//                for (idEventArg arg : args) {
+////                arg = va_arg(args, idEventArg);
+//                    if (format.charAt(i) != arg.type) {
+//                        // when NULL is passed in for an entity, it gets cast as an integer 0, so don't give an error when it happens
+//                        if (!(((format.charAt(i) == D_EVENT_TRACE) || (format.charAt(i) == D_EVENT_ENTITY)) && (arg.type == 'd') && (arg.value == Integer.valueOf(0)))) {
+//                            gameLocal.Error("idEvent::Alloc : Wrong type passed in for arg # %d on '%s' event.", i, evdef.GetName());
+//                        }
+//                    }
+//
+//                    switch (format.charAt(i)) {//TODO:S
+//                        case D_EVENT_FLOAT:
+//                        case D_EVENT_INTEGER:
+//                            ev.data[i] = arg.value;
+//                            break;
+//                        case D_EVENT_VECTOR:
+//                            if (arg.value != null) {
+//                                ev.data[i] = arg.value;
+//                            }
+//                            break;
+//                        case D_EVENT_STRING:
+//                            if (arg.value != null) {
+//                                ev.data[i] = (String) arg.value;
+//                            }
+//                            break;
+//                        case D_EVENT_ENTITY:
+//                        case D_EVENT_ENTITY_NULL:
+//                            ev.data[i] = new idEntityPtr<idEntity>((idEntity) arg.value);
+//                            break;
+//                        case D_EVENT_TRACE:
 //			if ( arg.value!=null ) {
 //				*reinterpret_cast<bool *>( ev.data[i] ) = true;
 //				*reinterpret_cast<trace_t *>( ev.data[i] + sizeof( bool ) ) = *reinterpret_cast<const trace_t *>( arg.value );
@@ -398,13 +411,13 @@ public class Event {
 //			} else {
 //				*reinterpret_cast<bool *>( ev.data[i] ) = false;
 //			}
-                            break;
-                        default:
-                            gameLocal.Error("idEvent::Alloc : Invalid arg format '%s' string for '%s' event.", format, evdef.GetName());
-                            break;
-                    }
-                }
-            }
+//                            break;
+//                        default:
+//                            gameLocal.Error("idEvent::Alloc : Invalid arg format '%s' string for '%s' event.", format, evdef.GetName());
+//                            break;
+//                    }
+//                }
+//            }
 
             return ev;
         }
@@ -448,7 +461,7 @@ public class Event {
             eventNode.AddToEnd(FreeEvents);
         }
 
-        public void Schedule(idClass obj, final idTypeInfo type, int time) {
+        public void Schedule(idClass obj, final java.lang.Class type, int time) {
             idEvent event;
 
             assert (initialized);
@@ -667,7 +680,7 @@ public class Event {
             while (event != null) {
                 savefile.WriteInt(event.time);
                 savefile.WriteString(event.eventdef.GetName());
-                savefile.WriteString(event.typeinfo.classname);
+                savefile.WriteString(event.typeinfo.getSimpleName());
                 savefile.WriteObject(event.object);
                 savefile.WriteInt(event.eventdef.GetArgSize());
                 format = event.eventdef.GetArgFormat();
@@ -742,8 +755,9 @@ public class Event {
 
                 // read the classtype
                 savefile.ReadString(name);
-                event.typeinfo = idClass.GetClass(name.toString());
-                if (null == event.typeinfo) {
+                try {
+                    event.typeinfo = java.lang.Class.forName(name.toString());
+                } catch (ClassNotFoundException e) {
                     savefile.Error("idEvent::Restore: unknown class '%s' on event '%s'", name.toString(), event.eventdef.GetName());
                 }
 
@@ -754,56 +768,58 @@ public class Event {
                 if (argsize[0] != event.eventdef.GetArgSize()) {
                     savefile.Error("idEvent::Restore: arg size (%d) doesn't match saved arg size(%d) on event '%s'", event.eventdef.GetArgSize(), argsize[0], event.eventdef.GetName());
                 }
-                if (argsize[0] != 0) {
-                    event.data = new Object[argsize[0]];//eventDataAllocator.Alloc(argsize[0]);
-                    format = event.eventdef.GetArgFormat();
-                    assert (format != null);
-                    for (j = 0, size = 0; j < event.eventdef.GetNumArgs(); ++j) {
-                        switch (format.charAt(j)) {//TODOS:reint
-                            case D_EVENT_FLOAT:
-                                event.data[j] = savefile.ReadFloat( /*reinterpret_cast<float *>( dataPtr )*/);
-                                size += Float.BYTES;
-                                break;
-                            case D_EVENT_INTEGER:
-                            case D_EVENT_ENTITY:
-                            case D_EVENT_ENTITY_NULL:
-                                event.data[j] = savefile.ReadInt( /*reinterpret_cast<int *>( dataPtr )*/);
-                                size += Integer.BYTES;
-                                break;
-                            case D_EVENT_VECTOR:
-                                idVec3 buffer = new idVec3();
-//						savefile.ReadVec3( *reinterpret_cast<idVec3 *>( dataPtr ) );
-                                savefile.ReadVec3(buffer);
-                                event.data[j] = buffer.Write();
-                                size += idVec3.BYTES;
-                                break;
-                            case D_EVENT_TRACE:
-                                boolean bOOl = savefile.ReadBool( /*reinterpret_cast<bool *>( dataPtr )*/);
-                                event.data[j] = ((byte) btoi(bOOl));
-                                size++;
-//						if ( *reinterpret_cast<bool *>( dataPtr ) ) {
-                                if (bOOl) {
-                                    size += sizeof(trace_s.class);
-//							trace_s t = *reinterpret_cast<trace_t *>( dataPtr + sizeof( bool ) );
-                                    trace_s t = new trace_s();
-                                    RestoreTrace(savefile, t);
-                                    event.data[j] = t.Write();
-                                    if (t.c.material != null) {
-                                        size += MAX_STRING_LEN;
-//								str = reinterpret_cast<char *>( dataPtr + sizeof( bool ) + sizeof( trace_t ) );
-                                        savefile.Read(str, MAX_STRING_LEN);
-                                        event.data[j] = str;
-                                    }
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    assert (size == event.eventdef.GetArgSize());
-                } else {
-                    event.data = null;
-                }
+
+                throw new TODO_Exception();
+//                if (argsize[0] != 0) {
+//                    event.data = new Object[argsize[0]];//eventDataAllocator.Alloc(argsize[0]);
+//                    format = event.eventdef.GetArgFormat();
+//                    assert (format != null);
+//                    for (j = 0, size = 0; j < event.eventdef.GetNumArgs(); ++j) {
+//                        switch (format.charAt(j)) {//TODOS:reint
+//                            case D_EVENT_FLOAT:
+//                                event.data[j] = savefile.ReadFloat( /*reinterpret_cast<float *>( dataPtr )*/);
+//                                size += Float.BYTES;
+//                                break;
+//                            case D_EVENT_INTEGER:
+//                            case D_EVENT_ENTITY:
+//                            case D_EVENT_ENTITY_NULL:
+//                                event.data[j] = savefile.ReadInt( /*reinterpret_cast<int *>( dataPtr )*/);
+//                                size += Integer.BYTES;
+//                                break;
+//                            case D_EVENT_VECTOR:
+//                                idVec3 buffer = new idVec3();
+////						savefile.ReadVec3( *reinterpret_cast<idVec3 *>( dataPtr ) );
+//                                savefile.ReadVec3(buffer);
+//                                event.data[j] = buffer.Write();
+//                                size += idVec3.BYTES;
+//                                break;
+//                            case D_EVENT_TRACE:
+//                                boolean bOOl = savefile.ReadBool( /*reinterpret_cast<bool *>( dataPtr )*/);
+//                                event.data[j] = ((byte) btoi(bOOl));
+//                                size++;
+////						if ( *reinterpret_cast<bool *>( dataPtr ) ) {
+//                                if (bOOl) {
+//                                    size += sizeof(trace_s.class);
+////							trace_s t = *reinterpret_cast<trace_t *>( dataPtr + sizeof( bool ) );
+//                                    trace_s t = new trace_s();
+//                                    RestoreTrace(savefile, t);
+//                                    event.data[j] = t.Write();
+//                                    if (t.c.material != null) {
+//                                        size += MAX_STRING_LEN;
+////								str = reinterpret_cast<char *>( dataPtr + sizeof( bool ) + sizeof( trace_t ) );
+//                                        savefile.Read(str, MAX_STRING_LEN);
+//                                        event.data[j] = str;
+//                                    }
+//                                }
+//                                break;
+//                            default:
+//                                break;
+//                        }
+//                    }
+//                    assert (size == event.eventdef.GetArgSize());
+//                } else {
+//                    event.data = null;
+//                }
             }
         }
 
