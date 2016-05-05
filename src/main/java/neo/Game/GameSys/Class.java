@@ -444,8 +444,7 @@ public class Class {
             return ProcessEventArgs(ev, 8, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7), toEvent(arg8));
         }
 
-        public boolean ProcessEventArgPtr(final idEventDef ev, int[] data) {
-            idTypeInfo c;
+        public boolean ProcessEventArgPtr(final idEventDef ev, idEventArg[] data) {
             int num;
             eventCallback_t callback;
 
@@ -453,24 +452,22 @@ public class Class {
             assert (idEvent.initialized);
 
             if (g_debugTriggers.GetBool() && (ev == EV_Activate) && IsType(idEntity.class)) {
-                idEntity ent = new idEntity();
-                ByteBuffer entityBuffer = ent.AllocBuffer();
-                entityBuffer.asIntBuffer().put(data);
-                ent.Read(entityBuffer);
-//                final idEntity ent = reinterpret_cast < idEntity > (data);
-                gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), ent != null ? ent.GetName() : "NULL");
+                final String name;
+                if (data[0] != null && ((idClass) data[0].value).IsType(idEntity.class))
+                    name = ((idEntity) data[0].value).GetName();
+                else
+                    name = "NULL";
+                gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), name);
             }
             
-/////////TODO: this is TEMPORARILY disabled
-//            c = GetType();
-//            num = ev.GetEventNum();
-//            if (NOT(c.eventMap[num])) {
-//                // we don't respond to this event, so ignore it
-//                return false;
-//            }
-//
-//            callback = c.eventMap[num];
-//
+            num = ev.GetEventNum();
+            callback = this.getEventCallBack(ev);//callback = c.eventMap[num];
+            if (callback == null) {
+                // we don't respond to this event, so ignore it
+                return false;
+            }
+
+////
 //// #if !CPU_EASYARGS
 //// /*
 //// on ppc architecture, floats are passed in a seperate set of registers
@@ -488,64 +485,65 @@ public class Class {
 //            // break;
 //            // }
 //// #else
-//            assert (D_EVENT_MAXARGS == 8);
-//
-//            switch (ev.GetNumArgs()) {
-//                case 0:
+            assert (D_EVENT_MAXARGS == 8);
+
+            switch (ev.GetNumArgs()) {
+                case 0:
 //                    callback.run();
 //                    break;
 //
-//                case 1:
+                case 1:
 ////		typedef void ( idClass.*eventCallback_1_t )( const int );
 ////		( this.*( eventCallback_1_t )callback )( data[ 0 ] );
 //                    callback.run(data[0]);
 //                    break;
 //
-//                case 2:
+                case 2:
 ////		typedef void ( idClass.*eventCallback_2_t )( const int, const int );
 ////		( this.*( eventCallback_2_t )callback )( data[ 0 ], data[ 1 ] );
 //                    callback.run(data[0], data[1]);
 //                    break;
 //
-//                case 3:
+                case 3:
 ////		typedef void ( idClass.*eventCallback_3_t )( const int, const int, const int );
 ////		( this.*( eventCallback_3_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ] );
 //                    callback.run(data[0], data[1], data[2]);
 //                    break;
 //
-//                case 4:
+                case 4:
 ////		typedef void ( idClass.*eventCallback_4_t )( const int, const int, const int, const int );
 ////		( this.*( eventCallback_4_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ] );
 //                    callback.run(data[0], data[1], data[2], data[3]);
 //                    break;
 //
-//                case 5:
+                case 5:
 ////		typedef void ( idClass.*eventCallback_5_t )( const int, const int, const int, const int, const int );
 ////		( this.*( eventCallback_5_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] );
 //                    callback.run(data[0], data[1], data[2], data[3], data[4]);
 //                    break;
 //
-//                case 6:
+                case 6:
 ////		typedef void ( idClass.*eventCallback_6_t )( const int, const int, const int, const int, const int, const int );
 ////		( this.*( eventCallback_6_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ], data[ 5 ] );
 //                    break;
 //
-//                case 7:
+                case 7:
 ////		typedef void ( idClass.*eventCallback_7_t )( const int, const int, const int, const int, const int, const int, const int );
 ////		( this.*( eventCallback_7_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ], data[ 5 ], data[ 6 ] );
 //                    callback.run(data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
 //                    break;
 //
-//                case 8:
+                case 8:
 ////		typedef void ( idClass.*eventCallback_8_t )( const int, const int, const int, const int, const int, const int, const int, const int );
 ////		( this.*( eventCallback_8_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ], data[ 5 ], data[ 6 ], data[ 7 ] );
 //                    callback.run(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
-//                    break;
+                    callback.accept(this, data);
+                    break;
 //
-//                default:
-//                    gameLocal.Warning("Invalid formatspec on event '%s'", ev.GetName());
-//                    break;
-//            }
+                default:
+                    gameLocal.Warning("Invalid formatspec on event '%s'", ev.GetName());
+                    break;
+            }
 
 // #endif
             return true;
@@ -829,7 +827,7 @@ public class Class {
         private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg... args) {
             idTypeInfo c;
             int num;
-            int[] data = new int[D_EVENT_MAXARGS];
+            idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
 //            va_list args;
 
             assert (ev != null);

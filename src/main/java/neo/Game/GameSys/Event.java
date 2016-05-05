@@ -422,10 +422,9 @@ public class Event {
             return ev;
         }
 
-        public static void CopyArgs(final idEventDef evdef, int numargs, idEventArg[] args, int[] data/*[ D_EVENT_MAXARGS ]*/) {
+        public static void CopyArgs(final idEventDef evdef, int numargs, idEventArg[] args, idEventArg[] data/*[ D_EVENT_MAXARGS ]*/) {
             int i;
             String format;
-//            idEventArg arg;
 
             format = evdef.GetArgFormat();
             if (numargs != evdef.GetNumArgs()) {
@@ -441,7 +440,7 @@ public class Event {
                         }
                     }
 
-                    data[i] = (int) arg.value;
+                    data[i] = arg;
                 }
             }
         }
@@ -531,7 +530,7 @@ public class Event {
         public static void ServiceEvents() {
             idEvent event;
             int num;
-            int[] args = new int[D_EVENT_MAXARGS];
+            idEventArg[] args = new idEventArg[D_EVENT_MAXARGS];
             int offset;
             int i;
             int numargs;
@@ -555,46 +554,21 @@ public class Event {
                 formatspec = ev.GetArgFormat();
                 numargs = ev.GetNumArgs();
                 for (i = 0; i < numargs; i++) {
-                    offset = ev.GetArgOffset(i);
-                    data = event.data;
                     switch (formatspec.charAt(i)) {
-                        case D_EVENT_FLOAT:
                         case D_EVENT_INTEGER:
-                            args[i] = (int) data[offset];
+                        case D_EVENT_FLOAT:
+                        case D_EVENT_VECTOR:
+                        case D_EVENT_STRING:
+                        case D_EVENT_ENTITY:
+                        case D_EVENT_ENTITY_NULL:
+                        case D_EVENT_TRACE:
+                            args[i] = event.data[i];
                             break;
-
-//			case D_EVENT_VECTOR :
-//				*reinterpret_cast<idVec3 **>( &args[ i ] ) = reinterpret_cast<idVec3 *>( &data[ offset ] );
-//				break;
-//
-//			case D_EVENT_STRING :
-//				*reinterpret_cast<const char **>( &args[ i ] ) = reinterpret_cast<const char *>( &data[ offset ] );
-//				break;
-//
-//			case D_EVENT_ENTITY :
-//			case D_EVENT_ENTITY_NULL :
-//				*reinterpret_cast<idEntity **>( &args[ i ] ) = reinterpret_cast< idEntityPtr<idEntity> * >( &data[ offset ] ).GetEntity();
-//				break;
-//
-//			case D_EVENT_TRACE :
-//				tracePtr = reinterpret_cast<trace_t **>( &args[ i ] );
-//				if ( *reinterpret_cast<bool *>( &data[ offset ] ) ) {
-//					*tracePtr = reinterpret_cast<trace_t *>( &data[ offset + sizeof( bool ) ] );
-//
-//					if ( ( *tracePtr ).c.material != NULL ) {
-//						// look up the material name to get the material pointer
-//						materialName = reinterpret_cast<const char *>( &data[ offset + sizeof( bool ) + sizeof( trace_t ) ] );
-//						( *tracePtr ).c.material = declManager.FindMaterial( materialName, true );
-//					}
-//				} else {
-//					*tracePtr = NULL;
-//				}
-//				break;
-
                         default:
                             gameLocal.Error("idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev.GetName());
                     }//TODO:S ^^^^^^^^^^^^^^^^^^^^^
                 }
+
 
                 // the event is removed from its list so that if then object
                 // is deleted, the event won't be freed twice
