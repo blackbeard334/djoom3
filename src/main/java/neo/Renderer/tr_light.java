@@ -638,7 +638,7 @@ public class tr_light {
                 continue;
             }
 
-            w = (idFixedWinding) ow;
+            w = new idFixedWinding(ow);
 
             // now check the winding against each of the frustum planes
             for (j = 0; j < 5; j++) {

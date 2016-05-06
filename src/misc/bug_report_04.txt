@@ -57,6 +57,20 @@ blanco ingame, go:
 											varargs object			- ProcessEventArgPtr
 											varargs[0] is object 	- ProcessEventArgPtr
 							-took some effort to fix this(417 from 419 now), moving on
+			-back to checking idClipModel.absBounds
+				-clipmodel.DBG_count==11
+				-which is set in idClipModel::Link() #44
+					-which is set in idPhysics_RigidBody::DropToFloorAndRest()...didn't see that one coming
+						-neither tr.endpos or current.i.orientation match
+							-we should begin with current.i.position though
+								-idPhysics_RigidBody::SetOrigin()
+									-seems like we're comparing oranges and potatoes
+									-we were comparing #97 & #98 in idGameLocal::RunFrame()
+										-it seems #97 moveable_fireext_1, has one too many flags
+											-idEntity::BecomeInactive() isn't hit in our version
+											-plus our version is setting more flags, albe they the same
+
+
 					
 						
 

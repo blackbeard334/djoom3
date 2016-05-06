@@ -289,8 +289,9 @@ public class Clip {
             }
         }
 
+        private static int DBG_Link = 0;
         public void Link(idClip clp) {				// must have been linked with an entity and id before
-
+            DBG_Link++;
             assert (this.entity != null);
             if (null == this.entity) {
                 return;

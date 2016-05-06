@@ -296,6 +296,10 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         }
     }
 
+    public static boolean atob(String ascii) {
+        return itob(atoi(ascii));
+    }
+
     public static int atoi(idStr ascii) {
         return atoi(ascii.toString());
     }

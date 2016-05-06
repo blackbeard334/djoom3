@@ -69,6 +69,8 @@ public class Physics {
 
     public static abstract class idPhysics extends idClass {
         // ABSTRACT_PROTOTYPE( idPhysics );
+        private static  int DBG_counter = 0;
+        protected final int DBG_count   = DBG_counter++;
 
         // virtual						~idPhysics();
         public static int SnapTimeToPhysicsFrame(int t) {

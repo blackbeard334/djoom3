@@ -248,7 +248,7 @@ public class Push {
             idBounds bounds, pushBounds = new idBounds();
             idRotation clipRotation;
             idMat3 clipAxis, oldAxis;
-            trace_s[] pushResults = {null};
+            trace_s[] pushResults = {new trace_s()};
             boolean wasEnabled;
             float totalMass;
             idClipModel clipModel;

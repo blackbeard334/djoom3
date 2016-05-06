@@ -1277,10 +1277,14 @@ public class Physics_RigidBody {
 
          Drops the object straight down to the floor and verifies if the object is at rest on the floor.
          ================
-         */
-        private void DropToFloorAndRest() {
+         */                   private static int DBG_DropToFloorAndRest = 0;
+        private void DropToFloorAndRest() {                DBG_DropToFloorAndRest++;
             idVec3 down;
             trace_s[] tr = {null};
+
+            if(this.DBG_count==8209){
+                int bla = 1;
+            }
 
             if (testSolid) {
 
@@ -1294,6 +1298,7 @@ public class Physics_RigidBody {
                     return;
                 }
             }
+
 
             // put the body on the floor
             down = current.i.position.oPlus(gravityNormal.oMultiply(128.0f));
