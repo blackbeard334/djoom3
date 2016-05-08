@@ -69,6 +69,24 @@ blanco ingame, go:
 										-it seems #97 moveable_fireext_1, has one too many flags
 											-idEntity::BecomeInactive() isn't hit in our version
 											-plus our version is setting more flags, albe they the same
+                                                -same flags
+                                            -idMoveable::Spawn(), physicsObj.centerOfMass has different values
+                                                -idClipModel::GetMassProperties()
+                                                    -idTraceModel::GetMassProperties()
+                                                        -idTraceModel::VolumeIntegrals()
+                                                        -we've been down this road before, and concluded that the doubel precision isn't the cause of our problem here, so let's ignore it for now
+            -idRenderModelManagerLocal::GetModel()
+                -idRenderModelStatic::ConvertASEToModelSurfaces()
+                    -"models/mapobjects/filler/binder1.ase"
+                    -tri.numVerts don't match   348!=212
+                        -mesh->faces[j].vertexNormals[k].x 1!=0
+                                -((*(((ase)->objects).list))->mesh).faces.vertexNormals
+                            -mesh->faces[j].faceNormal too 
+                                -((*(((ase)->objects).list))->mesh).faces.faceNormal
+                            -mesh->faces[j].vertexColors as well
+                            -((*(((ase)->objects).list))->mesh).transform
+                                            
+                                                    
 
 
 					

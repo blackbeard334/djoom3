@@ -7016,7 +7016,7 @@ public class CollisionModel_local {
             if (!TrmFromModel_r(trm, model.node)) {
                 common.Printf("idCollisionModelManagerLocal::TrmFromModel: model %s has too many polygons.\n", model.name);
                 PrintModelInfo(model);
-                return false;
+                return false;//HACKME::9
             }
 
             // copy vertices
@@ -7045,7 +7045,7 @@ public class CollisionModel_local {
                 if (numEdgeUsers[i] != 2) {
                     common.Printf("idCollisionModelManagerLocal::TrmFromModel: model %s has dangling edges, the model has to be an enclosed hull.\n", model.name);
                     PrintModelInfo(model);
-                    return false;
+                    return false;//HACKME::9
                 }
             }
 
