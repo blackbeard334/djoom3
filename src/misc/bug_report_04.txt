@@ -85,7 +85,33 @@ blanco ingame, go:
                                 -((*(((ase)->objects).list))->mesh).faces.faceNormal
                             -mesh->faces[j].vertexColors as well
                             -((*(((ase)->objects).list))->mesh).transform
-                                            
+									-ASE_KeyMESH()
+										-ASE_KeyMESH_NORMALS()
+											-ASE_KeyNODE_TM()
+												-GEOMOBJECT()
+						-::DeriveUnsmoothedTangents(), verts match, but dominantTris don't
+					-our version is printing out a shitload more xyz, almost tenfold
+						-we were printing the wrong function, it's still 25% more though.
+							-just had an idea to disable ConvertLWOToModelSurfaces(), and naturally the planet disappears, but also some of the ingame wireframes. 
+							 Most surprising, is the fact that some of the wireframes seem to be moving now.
+							 but we STILL can't move, meaning something is wrong with our input.
+							 -however, the cpp version is crashing...why isn't ours crashing?
+							 -let's try isolating the spinning wireframe, and see if we can move it
+							 -qglVertexPointer()
+								-RB_STD_T_RenderShaderPasses()
+	!@#$WE^Y%*&(^)&%^$E&URKYGF<DYWTEHJFKTREI%(R^*W%&W^$@#%^@$%&*#$^(&*)$%#$^&%^!%~#%@^!$%&*^#%(&)^&(@$&!!%#*&%*!#^^$!#$^$^#%^%^)FUUUCCCK!!!111One$#%^&*()
+-R_AddModelSurfaces()
+	-151 origins
+		*moving the origin does stuff
+		-index
+		-referenceBounds/parms.bounds
+			[-1173.6427 -171.00572 -7965.874, -419.85785 461.26834 -7050.817]
+		-let's see if bounds match for the planet vEntity
+			-they do's
+										
+neo.Renderer.VertexCache$vertCache_s@29876704
+neo.Renderer.VertexCache$vertCache_s@4816c290
+	
                                                     
 
 
@@ -100,3 +126,10 @@ blanco ingame, go:
 	-are we moving?
 		-if we are, is everything on screen moving with us?
 		-if we aren't, then why not?
+	-idUsercmdGenLocal::MouseMove()
+		-idUsercmdGenLocal::MakeCurrent()
+			-idGameLocal::RunFrame()
+				-idPlayer::UpdateDeltaViewAngles()	:fucked up the view
+				-idPlayer::UpdateViewAngles()		:disables our mouse powers
+					-idPlayer::GetViewPos()			:screen almost looks identical to ours
+						-idPlayerStart::Event_TeleportPlayer()

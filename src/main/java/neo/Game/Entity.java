@@ -27,7 +27,6 @@ import neo.Game.GameSys.Class.eventCallback_t2;
 import neo.Game.GameSys.Class.eventCallback_t3;
 import neo.Game.GameSys.Class.eventCallback_t4;
 import neo.Game.GameSys.Class.idEventArg;
-import neo.Game.GameSys.Event;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -382,7 +381,7 @@ public class Entity {
         }
 
         @Override
-        public eventCallback_t getEventCallBack(idEventDef event) {
+        public final eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -3655,16 +3654,16 @@ public class Entity {
 	
          ***********************************************************************/
         // events
-        private static void Event_GetName(idEntity e) {
-            idThread.ReturnString(e.name.toString());
+        private void Event_GetName() {
+            idThread.ReturnString(name.toString());
         }
 
         private static void Event_SetName(idEntity e, final idEventArg<String> newName) {
             e.SetName(newName.value);
         }
 
-        private static void Event_FindTargets(idEntity e) {
-            e.FindTargets();
+        private void Event_FindTargets() {
+            FindTargets();
         }
 
         /*
@@ -3679,8 +3678,8 @@ public class Entity {
             e.ActivateTargets(activator.value);
         }
 
-        private static void Event_NumTargets(idEntity e) {
-            idThread.ReturnFloat(e.targets.Num());
+        private void Event_NumTargets() {
+            idThread.ReturnFloat(targets.Num());
         }
 
         private static void Event_GetTarget(idEntity e, idEventArg<Float> index) {
@@ -3743,15 +3742,15 @@ public class Entity {
             e.BindToJoint(master.value, jointname.value, (orientated.value != 0));
         }
 
-        private static void Event_Unbind(idEntity e) {
-            e.Unbind();
+        private void Event_Unbind() {
+            Unbind();
         }
 
-        private static void Event_RemoveBinds(idEntity e) {
-            e.RemoveBinds();
+        private void Event_RemoveBinds() {
+            RemoveBinds();
         }
 
-        private static void Event_SpawnBind(idEntity e) {
+        private void Event_SpawnBind() {
             idEntity parent;
             String[] bind = new String[1], joint = new String[1], bindanim = new String[1];
             int/*jointHandle_t*/ bindJoint;
@@ -3761,35 +3760,35 @@ public class Entity {
             int animNum;
             idAnimator parentAnimator;
 
-            if (e.spawnArgs.GetString("bind", "", bind)) {
+            if (spawnArgs.GetString("bind", "", bind)) {
                 if (idStr.Icmp(bind[0], "worldspawn") == 0) {
                     //FIXME: Completely unneccessary since the worldspawn is called "world"
                     parent = gameLocal.world;
                 } else {
                     parent = gameLocal.FindEntity(bind[0]);
                 }
-                bindOrientated = e.spawnArgs.GetBool("bindOrientated", "1");
+                bindOrientated = spawnArgs.GetBool("bindOrientated", "1");
                 if (parent != null) {
                     // bind to a joint of the skeletal model of the parent
-                    if (e.spawnArgs.GetString("bindToJoint", "", joint) && joint[0] != null) {//TODO:check if java actually compiles them in the right order.
+                    if (spawnArgs.GetString("bindToJoint", "", joint) && joint[0] != null) {//TODO:check if java actually compiles them in the right order.
                         parentAnimator = parent.GetAnimator();
                         if (NOT(parentAnimator)) {
-                            gameLocal.Error("Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint[0], e.name);
+                            gameLocal.Error("Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint[0], name);
                         }
                         bindJoint = parentAnimator.GetJointHandle(joint[0]);
                         if (bindJoint == INVALID_JOINT) {
-                            gameLocal.Error("Joint '%s' not found for bind on '%s'", joint[0], e.name);
+                            gameLocal.Error("Joint '%s' not found for bind on '%s'", joint[0], name);
                         }
 
                         // bind it relative to a specific anim
                         if ((parent.spawnArgs.GetString("bindanim", "", bindanim) || parent.spawnArgs.GetString("anim", "", bindanim)) && bindanim[0] != null) {
                             animNum = parentAnimator.GetAnim(bindanim[0]);
                             if (0 == animNum) {
-                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], e.name);
+                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], name);
                             }
                             anim = parentAnimator.GetAnim(animNum);
                             if (NOT(anim)) {
-                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], e.name);
+                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], name);
                             }
 
                             // make sure parent's render origin has been set
@@ -3799,17 +3798,17 @@ public class Entity {
                             parentAnimator.CreateFrame(gameLocal.time, true);
                             idJointMat[] frame = parent.renderEntity.joints;
                             GameEdit.gameEdit.ANIM_CreateAnimFrame(parentAnimator.ModelHandle(), anim.MD5Anim(0), parent.renderEntity.numJoints, frame, 0, parentAnimator.ModelDef().GetVisualOffset(), parentAnimator.RemoveOrigin());
-                            e.BindToJoint(parent, joint[0], bindOrientated);
+                            BindToJoint(parent, joint[0], bindOrientated);
                             parentAnimator.ForceUpdate();
                         } else {
-                            e.BindToJoint(parent, joint[0], bindOrientated);
+                            BindToJoint(parent, joint[0], bindOrientated);
                         }
                     } // bind to a body of the physics object of the parent
-                    else if (e.spawnArgs.GetInt("bindToBody", "0", id)) {
-                        e.BindToBody(parent, id[0], bindOrientated);
+                    else if (spawnArgs.GetInt("bindToBody", "0", id)) {
+                        BindToBody(parent, id[0], bindOrientated);
                     } // bind to the parent
                     else {
-                        e.Bind(parent, bindOrientated);
+                        Bind(parent, bindOrientated);
                     }
                 }
             }
@@ -3857,23 +3856,23 @@ public class Entity {
             e.SetColor(red.value, green.value, blue.value);
         }
 
-        private static void Event_GetColor(idEntity e) {
+        private void Event_GetColor() {
             idVec3 out = new idVec3();
 
-            e.GetColor(out);
+            GetColor(out);
             idThread.ReturnVector(out);
         }
 
-        private static void Event_IsHidden(idEntity e) {
-            idThread.ReturnInt(e.fl.hidden);
+        private void Event_IsHidden() {
+            idThread.ReturnInt(fl.hidden);
         }
 
-        private static void Event_Hide(idEntity e) {
-            e.Hide();
+        private void Event_Hide() {
+            Hide();
         }
 
-        private static void Event_Show(idEntity e) {
-            e.Show();
+        private void Event_Show() {
+            Show();
         }
 
         private static void Event_CacheSoundShader(idEntity e, final idEventArg<String> soundName) {
@@ -3904,8 +3903,8 @@ public class Entity {
             }
         }
 
-        private static void Event_GetWorldOrigin(idEntity e) {
-            idThread.ReturnVector(e.GetPhysics().GetOrigin());
+        private void Event_GetWorldOrigin() {
+            idThread.ReturnVector(GetPhysics().GetOrigin());
         }
 
         private static void Event_SetWorldOrigin(idEntity e, final idEventArg<idVec3> org) {
@@ -3913,16 +3912,16 @@ public class Entity {
             e.SetOrigin(neworg);
         }
 
-        private static void Event_GetOrigin(idEntity e) {
-            idThread.ReturnVector(e.GetLocalCoordinates(e.GetPhysics().GetOrigin()));
+        private void Event_GetOrigin() {
+            idThread.ReturnVector(GetLocalCoordinates(GetPhysics().GetOrigin()));
         }
 
         private static void Event_SetOrigin(idEntity e, final idEventArg<idVec3> org) {
             e.SetOrigin(org.value);
         }
 
-        private static void Event_GetAngles(idEntity e) {
-            idAngles ang = e.GetPhysics().GetAxis().ToAngles();
+        private void Event_GetAngles() {
+            idAngles ang = GetPhysics().GetAxis().ToAngles();
             idThread.ReturnVector(new idVec3(ang.oGet(0), ang.oGet(1), ang.oGet(2)));
         }
 
@@ -3934,35 +3933,35 @@ public class Entity {
             e.GetPhysics().SetLinearVelocity(velocity.value);
         }
 
-        private static void Event_GetLinearVelocity(idEntity e) {
-            idThread.ReturnVector(e.GetPhysics().GetLinearVelocity());
+        private void Event_GetLinearVelocity() {
+            idThread.ReturnVector(GetPhysics().GetLinearVelocity());
         }
 
         private static void Event_SetAngularVelocity(idEntity e, final idEventArg<idVec3> velocity) {
             e.GetPhysics().SetAngularVelocity(velocity.value);
         }
 
-        private static void Event_GetAngularVelocity(idEntity e) {
-            idThread.ReturnVector(e.GetPhysics().GetAngularVelocity());
+        private void Event_GetAngularVelocity() {
+            idThread.ReturnVector(GetPhysics().GetAngularVelocity());
         }
 
         private static void Event_SetSize(idEntity e, final idEventArg<idVec3> mins, final idEventArg<idVec3> maxs) {
             e.GetPhysics().SetClipBox(new idBounds(mins.value, maxs.value), 1.0f);
         }
 
-        private static void Event_GetSize(idEntity e) {
+        private void Event_GetSize() {
             idBounds bounds;
 
-            bounds = e.GetPhysics().GetBounds();
+            bounds = GetPhysics().GetBounds();
             idThread.ReturnVector(bounds.oGet(1).oMinus(bounds.oGet(0)));
         }
 
-        private static void Event_GetMins(idEntity e) {
-            idThread.ReturnVector(e.GetPhysics().GetBounds().oGet(0));
+        private void Event_GetMins() {
+            idThread.ReturnVector(GetPhysics().GetBounds().oGet(0));
         }
 
-        private static void Event_GetMaxs(idEntity e) {
-            idThread.ReturnVector(e.GetPhysics().GetBounds().oGet(1));
+        private void Event_GetMaxs() {
+            idThread.ReturnVector(GetPhysics().GetBounds().oGet(1));
         }
 
         private static void Event_Touches(idEntity e, idEventArg<idEntity> ent) {
@@ -4069,63 +4068,63 @@ public class Entity {
             idThread.ReturnEntity(ent);
         }
 
-        private static void Event_RestorePosition(idEntity e) {
+        private void Event_RestorePosition() {
             idVec3 org = new idVec3();
             idAngles angles = new idAngles();
             idMat3 axis = new idMat3();
             idEntity part;
 
-            e.spawnArgs.GetVector("origin", "0 0 0", org);
+            spawnArgs.GetVector("origin", "0 0 0", org);
 
             // get the rotation matrix in either full form, or single angle form
-            if (e.spawnArgs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
+            if (spawnArgs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
                 angles = axis.ToAngles();
             } else {
                 angles.oSet(0, 0);
-                angles.oSet(1, e.spawnArgs.GetFloat("angle"));
+                angles.oSet(1, spawnArgs.GetFloat("angle"));
                 angles.oSet(2, 0);
             }
 
-            e.Teleport(org, angles, null);
+            Teleport(org, angles, null);
 
-            for (part = e.teamChain; part != null; part = part.teamChain) {
-                if (part.bindMaster != e) {
+            for (part = teamChain; part != null; part = part.teamChain) {
+                if (part.bindMaster != this) {
                     continue;
                 }
                 if (part.GetPhysics().IsType(idPhysics_Parametric.class)) {
                     if (((idPhysics_Parametric) part.GetPhysics()).IsPusher()) {
-                        gameLocal.Warning("teleported '%s' which has the pushing mover '%s' bound to it\n", e.GetName(), part.GetName());
+                        gameLocal.Warning("teleported '%s' which has the pushing mover '%s' bound to it\n", GetName(), part.GetName());
                     }
                 } else if (part.GetPhysics().IsType(idPhysics_AF.class)) {
-                    gameLocal.Warning("teleported '%s' which has the articulated figure '%s' bound to it\n", e.GetName(), part.GetName());
+                    gameLocal.Warning("teleported '%s' which has the articulated figure '%s' bound to it\n", GetName(), part.GetName());
                 }
             }
         }
 
-        private static void Event_UpdateCameraTarget(idEntity e) {
+        private void Event_UpdateCameraTarget() {
             final String target;
             idKeyValue kv;
             idVec3 dir;
 
-            target = e.spawnArgs.GetString("cameraTarget");
+            target = spawnArgs.GetString("cameraTarget");
 
-            e.cameraTarget = gameLocal.FindEntity(target);
+            cameraTarget = gameLocal.FindEntity(target);
 
-            if (e.cameraTarget != null) {
-                kv = e.cameraTarget.spawnArgs.MatchPrefix("target", null);
+            if (cameraTarget != null) {
+                kv = cameraTarget.spawnArgs.MatchPrefix("target", null);
                 while (kv != null) {
                     idEntity ent = gameLocal.FindEntity(kv.GetValue());
                     if (ent != null && idStr.Icmp(ent.GetEntityDefName(), "target_null") == 0) {
-                        dir = ent.GetPhysics().GetOrigin().oMinus(e.cameraTarget.GetPhysics().GetOrigin());
+                        dir = ent.GetPhysics().GetOrigin().oMinus(cameraTarget.GetPhysics().GetOrigin());
                         dir.Normalize();
-                        e.cameraTarget.SetAxis(dir.ToMat3());
-                        e.SetAxis(dir.ToMat3());
+                        cameraTarget.SetAxis(dir.ToMat3());
+                        SetAxis(dir.ToMat3());
                         break;
                     }
-                    kv = e.cameraTarget.spawnArgs.MatchPrefix("target", kv);
+                    kv = cameraTarget.spawnArgs.MatchPrefix("target", kv);
                 }
             }
-            e.UpdateVisuals();
+            UpdateVisuals();
         }
 
         private static void Event_DistanceTo(idEntity e, idEventArg<idEntity> ent) {
@@ -4631,8 +4630,8 @@ public class Entity {
          removes any custom transforms on all joints
          ================
          */
-        private static void Event_ClearAllJoints(idAnimatedEntity e) {
-            e.animator.ClearAllJoints();
+        private void Event_ClearAllJoints() {
+            animator.ClearAllJoints();
         }
 
         /*

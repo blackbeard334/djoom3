@@ -55,7 +55,6 @@ import static neo.Renderer.tr_trisurf.R_ReverseTriangles;
 import static neo.Renderer.tr_trisurf.R_TriSurfMemory;
 import static neo.TempDump.NOT;
 import static neo.TempDump.ctos;
-import static neo.TempDump.indexOf;
 import static neo.TempDump.sizeof;
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_RENDERER;
@@ -1015,7 +1014,10 @@ public class Model_local {
             short[] color = new short[4];
             idVec3 normal = new idVec3();
 
-            public matchVert_s() {
+            final int index;
+
+            public matchVert_s(int numVerts) {
+                this.index = numVerts;
             }
 
 //            static int getPosition(matchVert_s v1, matchVert_s[] vList) {
@@ -1050,15 +1052,15 @@ public class Model_local {
 
             }
 
-            static matchVert_s[] generateArray(final int length) {
-                return Stream.
-                        generate(matchVert_s::new).
-                        limit(length).
-                        toArray(matchVert_s[]::new);
-            }
+//            static matchVert_s[] generateArray(final int length) {
+//                return Stream.
+//                        generate(matchVert_s::new).
+//                        limit(length).
+//                        toArray(matchVert_s[]::new);
+//            }
         };
         static final short[] identityColor/*[4]*/ = {255, 255, 255, 255};
-
+                              private static int DBG_ConvertASEToModelSurfaces = 0;
         public boolean ConvertASEToModelSurfaces(final aseModel_s ase) {
             aseObject_t object;
             aseMesh_t mesh;
@@ -1284,7 +1286,7 @@ public class Model_local {
                         }
                         if (null == mv) {
                             // allocate a new match vert and link to hash chain
-                            mv = mvTable[tri.numVerts] = new matchVert_s();
+                            mv = mvTable[tri.numVerts] = new matchVert_s(tri.numVerts);
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
@@ -1298,7 +1300,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = indexOf(mv, mvTable);
+                        tri.indexes[tri.numIndexes] = mv.index;
                         tri.numIndexes++;
                     }
                 }
@@ -1332,9 +1334,9 @@ public class Model_local {
                 for (j = 0; j < tri.numVerts; j++) {
                     mv = mvTable[j];
                     tri.verts[ j].Clear();
-                    tri.verts[ j].xyz = mesh.vertexes[ mv.v];
-                    tri.verts[ j].normal = mv.normal;
-                    tri.verts[j].color = mv.color;
+                    tri.verts[ j].xyz.oSet(mesh.vertexes[ mv.v]);
+                    tri.verts[ j].normal.oSet(mv.normal);
+                    System.arraycopy(mv.color, 0, tri.verts[j].color = mv.color, 0, mv.color.length);
                     if (mesh.numTVFaces == mesh.numFaces && mesh.numTVertexes != 0) {
                         final idVec2 tv2 = mesh.tvertexes[ mv.tv];
                         float u = tv2.x * uTiling + uOffset;
@@ -1640,7 +1642,7 @@ public class Model_local {
                             if (mv.tv != tv) {
                                 continue;
                             }
-                            if (mv.color != color) {
+                            if (!Arrays.equals(mv.color, color)) {
                                 continue;
                             }
                             if (!normalsParsed) {
@@ -1654,7 +1656,7 @@ public class Model_local {
                         }
                         if (null == mv) {
                             // allocate a new match vert and link to hash chain
-                            mv = mvTable[tri.numVerts] = new matchVert_s();
+                            mv = mvTable[tri.numVerts] = new matchVert_s(tri.numVerts);
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
@@ -1668,7 +1670,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = indexOf(mv, mvTable);
+                        tri.indexes[tri.numIndexes] = mv.index;
                         tri.numIndexes++;
                     }
                 }
@@ -1941,7 +1943,7 @@ public class Model_local {
                             if (mv.tv != tv) {
                                 continue;
                             }
-                            if (mv.color != color) {
+                            if (!Arrays.equals(mv.color, color)) {
                                 continue;
                             }
                             if (!normalsParsed) {
@@ -1955,7 +1957,7 @@ public class Model_local {
                         }
                         if (null == mv) {
                             // allocate a new match vert and link to hash chain
-                            mv = mvTable[tri.numVerts] = new matchVert_s();
+                            mv = mvTable[tri.numVerts] = new matchVert_s(tri.numVerts);
                             mv.v = v;
                             mv.tv = tv;
                             mv.normal.oSet(normal);
@@ -1969,7 +1971,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = indexOf(mv, mvTable);
+                        tri.indexes[tri.numIndexes] = mv.index;
                         tri.numIndexes++;
                     }
                 }

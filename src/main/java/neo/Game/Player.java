@@ -15,6 +15,7 @@ import neo.Game.AFEntity.idAFAttachment;
 import neo.Game.AFEntity.idAFEntity_Vehicle;
 import neo.Game.AI.AAS.idAAS;
 import neo.Game.AI.AI.idAI;
+import static neo.Game.AFEntity.EV_Gibbed;
 import static neo.Game.AI.AI.talkState_t.TALK_OK;
 import neo.Game.Actor.idActor;
 import static neo.Game.Animation.Anim.ANIMCHANNEL_LEGS;
@@ -26,12 +27,14 @@ import static neo.Game.Entity.EV_ActivateTargets;
 import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_PHYSICS;
 import static neo.Game.Entity.TH_THINK;
-import static neo.Game.Entity.idAnimatedEntity.EVENT_ADD_DAMAGE_EFFECT;
 import neo.Game.Entity.idEntity;
 import static neo.Game.Entity.signalNum_t.SIG_TOUCH;
 import neo.Game.FX.idEntityFx;
 import neo.Game.GameEdit.idDragEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -139,7 +142,6 @@ import neo.Game.Physics.Physics_Player.waterLevel_t;
 import static neo.Game.Physics.Physics_Player.waterLevel_t.WATERLEVEL_FEET;
 import static neo.Game.Physics.Physics_Player.waterLevel_t.WATERLEVEL_HEAD;
 import static neo.Game.Physics.Physics_Player.waterLevel_t.WATERLEVEL_WAIST;
-import neo.Game.Player.idPlayer;
 import neo.Game.PlayerIcon.idPlayerIcon;
 import neo.Game.PlayerView.idPlayerView;
 import neo.Game.Projectile.idProjectile;
@@ -1194,6 +1196,28 @@ public class Player {
     };
 
     public static class idPlayer extends idActor {
+//        protected static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Player_GetButtons, (eventCallback_t0<idPlayer>) idPlayer::Event_GetButtons);
+            eventCallbacks.put(EV_Player_GetMove, (eventCallback_t0<idPlayer>) idPlayer::Event_GetMove);
+            eventCallbacks.put(EV_Player_GetViewAngles, (eventCallback_t0<idPlayer>) idPlayer::Event_GetViewAngles);
+            eventCallbacks.put(EV_Player_StopFxFov, (eventCallback_t0<idPlayer>) idPlayer::Event_StopFxFov);
+            eventCallbacks.put(EV_Player_EnableWeapon, (eventCallback_t0<idPlayer>) idPlayer::Event_EnableWeapon);
+            eventCallbacks.put(EV_Player_DisableWeapon, (eventCallback_t0<idPlayer>) idPlayer::Event_DisableWeapon);
+            eventCallbacks.put(EV_Player_GetCurrentWeapon, (eventCallback_t0<idPlayer>) idPlayer::Event_GetCurrentWeapon);
+            eventCallbacks.put(EV_Player_GetPreviousWeapon, (eventCallback_t0<idPlayer>) idPlayer::Event_GetPreviousWeapon);
+            eventCallbacks.put(EV_Player_SelectWeapon, (eventCallback_t1<idPlayer>) idPlayer::Event_SelectWeapon);
+            eventCallbacks.put(EV_Player_GetWeaponEntity, (eventCallback_t0<idPlayer>) idPlayer::Event_GetWeaponEntity);
+            eventCallbacks.put(EV_Player_OpenPDA, (eventCallback_t0<idPlayer>) idPlayer::Event_OpenPDA);
+            eventCallbacks.put(EV_Player_InPDA, (eventCallback_t0<idPlayer>) idPlayer::Event_InPDA);
+            eventCallbacks.put(EV_Player_ExitTeleporter, (eventCallback_t0<idPlayer>) idPlayer::Event_ExitTeleporter);
+            eventCallbacks.put(EV_Player_StopAudioLog, (eventCallback_t0<idPlayer>) idPlayer::Event_StopAudioLog);
+            eventCallbacks.put(EV_Player_HideTip, (eventCallback_t0<idPlayer>) idPlayer::Event_HideTip);
+            eventCallbacks.put(EV_Player_LevelTrigger, (eventCallback_t0<idPlayer>) idPlayer::Event_LevelTrigger);
+            eventCallbacks.put(EV_Gibbed, (eventCallback_t0<idPlayer>) idPlayer::Event_Gibbed);
+            eventCallbacks.put(EV_Player_GetIdealWeapon, (eventCallback_t0<idPlayer>) idPlayer::Event_GetIdealWeapon);
+        }
 
         // enum {
         public static final int EVENT_IMPULSE          = idEntity.EVENT_MAXEVENTS;
@@ -3888,84 +3912,32 @@ public class Player {
         }
 
         /*
-         ==================
-         idPlayer::CalculateRenderView
-
-         create the renderView for the current tic
-         ==================
-         */
+        ===============
+        idPlayer::CalculateFirstPersonView
+        ===============
+        */
         public void CalculateFirstPersonView() {
-            int i;
-            float range;
+            if ((pm_modelView.GetInteger() == 1) || ((pm_modelView.GetInteger() == 2) && (health <= 0))) {
+                //	Displays the view from the point of view of the "camera" joint in the player model
 
-            if (NOT(renderView)) {
-                renderView = new renderView_s();
-            }
-            renderView = new renderView_s();
-//	memset( renderView, 0, sizeof( *renderView ) );
+                idMat3 axis = new idMat3();
+                idVec3 origin = new idVec3();
+                idAngles ang;
 
-            // copy global shader parms
-            for (i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++) {
-                renderView.shaderParms[i] = gameLocal.globalShaderParms[i];
-            }
-            renderView.globalMaterial = gameLocal.GetGlobalMaterial();
-            renderView.time = gameLocal.time;
+                ang = viewBobAngles.oPlus(playerView.AngleOffset());
+                ang.yaw += viewAxis.oGet(0).ToYaw();
 
-            // calculate size of 3D view
-            renderView.x = 0;
-            renderView.y = 0;
-            renderView.width = SCREEN_WIDTH;
-            renderView.height = SCREEN_HEIGHT;
-            renderView.viewID = 0;
-
-            // check if we should be drawing from a camera's POV
-            if (!noclip && (gameLocal.GetCamera() != null || privateCameraView != null)) {
-                // get origin, axis, and fov
-                if (privateCameraView != null) {
-                    privateCameraView.GetViewParms(renderView);
-                } else {
-                    gameLocal.GetCamera().GetViewParms(renderView);
-                }
+                int joint = animator.GetJointHandle("camera");
+                animator.GetJointTransform(joint, gameLocal.time, origin, axis);
+                firstPersonViewOrigin = (origin.oPlus(modelOffset)).oMultiply(viewAxis.oMultiply(physicsObj.GetGravityAxis())).oPlus(physicsObj.GetOrigin()).oPlus(viewBob);
+                firstPersonViewAxis = axis.oMultiply(ang.ToMat3()).oMultiply(physicsObj.GetGravityAxis());
             } else {
-                if (g_stopTime.GetBool()) {
-                    renderView.vieworg = new idVec3(firstPersonViewOrigin);
-                    renderView.viewaxis = new idMat3(firstPersonViewAxis);
-
-                    if (!pm_thirdPerson.GetBool()) {
-                        // set the viewID to the clientNum + 1, so we can suppress the right player bodies and
-                        // allow the right player view weapons
-                        renderView.viewID = entityNumber + 1;
-                    }
-                } else if (pm_thirdPerson.GetBool()) {
-                    OffsetThirdPersonView(pm_thirdPersonAngle.GetFloat(), pm_thirdPersonRange.GetFloat(), pm_thirdPersonHeight.GetFloat(), pm_thirdPersonClip.GetBool());
-                } else if (pm_thirdPersonDeath.GetBool()) {
-                    range = gameLocal.time < minRespawnTime ? (gameLocal.time + RAGDOLL_DEATH_TIME - minRespawnTime) * (120 / RAGDOLL_DEATH_TIME) : 120;
-                    OffsetThirdPersonView(0, 20 + range, 0, false);
-                } else {
-                   renderView.vieworg = new idVec3(firstPersonViewOrigin);
-                    renderView.viewaxis = new idMat3(firstPersonViewAxis);
-
-                    // set the viewID to the clientNum + 1, so we can suppress the right player bodies and
-                    // allow the right player view weapons
-                    renderView.viewID = entityNumber + 1;
+                // offset for local bobbing and kicks
+                GetViewPos(firstPersonViewOrigin, firstPersonViewAxis);
+                if (false) {
+                    // shakefrom sound stuff only happens in first person
+                    firstPersonViewAxis = firstPersonViewAxis.oMultiply(playerView.ShakeAxis());
                 }
-
-                // field of view
-                {
-                    float[] fov_x = {renderView.fov_x};
-                    float[] fov_y = {renderView.fov_y};
-                    gameLocal.CalcFov(CalcFov(true), fov_x, fov_y);
-                    renderView.fov_x = fov_x[0];
-                    renderView.fov_y = fov_y[0];
-                }
-            }
-
-            if (renderView.fov_y == 0) {
-                common.Error("renderView.fov_y == 0");
-            }
-
-            if (g_showviewpos.GetBool()) {
-                gameLocal.Printf("%s : %s\n", renderView.vieworg.ToString(), renderView.viewaxis.ToAngles().ToString());
             }
         }
 
@@ -8316,7 +8288,7 @@ public class Player {
             }
         }
 
-        private void Event_SelectWeapon(final String weaponName) {
+        private static void Event_SelectWeapon(idPlayer p, final idEventArg<String> weaponName) {
             int i;
             int weaponNum;
 
@@ -8325,17 +8297,17 @@ public class Player {
                 return;
             }
 
-            if (hiddenWeapon && gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
-                idealWeapon = weapon_fists;
-                weapon.GetEntity().HideWeapon();
+            if (p.hiddenWeapon && gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
+                p.idealWeapon = p.weapon_fists;
+                p.weapon.GetEntity().HideWeapon();
                 return;
             }
 
             weaponNum = -1;
             for (i = 0; i < MAX_WEAPONS; i++) {
-                if ((inventory.weapons & (1 << i)) != 0) {
-                    final String weap = spawnArgs.GetString(va("def_weapon%d", i));
-                    if (NOT(idStr.Cmp(weap, weaponName))) {
+                if ((p.inventory.weapons & (1 << i)) != 0) {
+                    final String weap = p.spawnArgs.GetString(va("def_weapon%d", i));
+                    if (NOT(idStr.Cmp(weap, weaponName.value))) {
                         weaponNum = i;
                         break;
                     }
@@ -8343,14 +8315,14 @@ public class Player {
             }
 
             if (weaponNum < 0) {
-                gameLocal.Warning("%s is not carrying weapon '%s'", name, weaponName);
+                gameLocal.Warning("%s is not carrying weapon '%s'", p.name, weaponName.value);
                 return;
             }
 
-            hiddenWeapon = false;
-            idealWeapon = weaponNum;
+            p.hiddenWeapon = false;
+            p.idealWeapon = weaponNum;
 
-            UpdateHudWeapon();
+            p.UpdateHudWeapon();
         }
 
         private void Event_GetWeaponEntity() {

@@ -469,10 +469,11 @@ public class ModelManager {
                 model.InitFromFile(modelName);
 
                 //HACKME::9
-                idRenderModelStatic m = (idRenderModelStatic) model;
+//                idRenderModelStatic m = (idRenderModelStatic) model;
 //                for (modelSurface_s mimi : m.surfaces.Ptr(modelSurface_s[].class)) {
 //                    for (int i = 0; i < mimi.geometry.numVerts; i++) {
-//                        mimi.geometry.verts[i].xyz.oMinSet(0, 999);
+//                        final Vector.idVec3 xyz = mimi.geometry.verts[i].xyz;
+//                        xyz.oSet(xyz.oPlus(-50));
 //                    }
 //                }
             } else if (extension.Icmp("ma") == 0) {

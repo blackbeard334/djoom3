@@ -351,7 +351,7 @@ public class Actor {
 //
 //        public static idClass CreateInstance();
         //        public idTypeInfo GetType();
-        public static idEventFunc<idActor>[]      eventCallbacks;
+//        public static idEventFunc<idActor>[]      eventCallbacks;
         //
         public        int                         team;
         public        int                         rank;                 // monsters don't fight back if the attacker's rank is higher

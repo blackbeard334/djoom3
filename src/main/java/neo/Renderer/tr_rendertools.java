@@ -668,7 +668,7 @@ public class tr_rendertools {
                     }
 
                     final idDrawVert ac = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
-                    qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyzOffset());
+                    qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
                     RB_DrawElementsWithCounters(surf.geo);
                 }
             }
@@ -733,7 +733,7 @@ public class tr_rendertools {
                     final srfTriangles_s tri = surf.geo;
 
                     for (vertCache_s shadow : tri.shadowCache) {
-                        qglVertexPointer(3, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, vertexCache.Position(shadow).getInt());
+                        qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, vertexCache.Position(shadow).getInt());
                     }
                     qglBegin(GL_LINES);
 

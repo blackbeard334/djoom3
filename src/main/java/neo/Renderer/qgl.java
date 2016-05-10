@@ -6,6 +6,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import neo.TempDump;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.ARBImaging;
 import org.lwjgl.opengl.ARBProgram;
 import org.lwjgl.opengl.ARBTextureCompression;
@@ -55,7 +56,8 @@ public class qgl {
 
     //extern PFNGLISBUFFERARBPROC qglIsBufferARB;
     public static void qglBufferDataARB(int target, int size, ByteBuffer data, int usage) {DEBUG_printName("glBufferDataARB");
-        GL15.glBufferData(target, data, usage);//TODO:!!!!!!!!!!!!!!!!!!!!!!!!!
+//        GL15.glBufferData(target, data, usage);//TODO:!!!!!!!!!!!!!!!!!!!!!!!!!
+        ARBBufferObject.glBufferDataARB(target, data, usage);
     }
 
     public static  /*PFNGLBUFFERSUBDATAARBPROC*/void qglBufferSubDataARB(int target, long offset, long size, ByteBuffer data) {DEBUG_printName("glBufferSubDataARB");

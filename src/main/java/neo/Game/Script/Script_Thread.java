@@ -286,8 +286,8 @@ public class Script_Thread {
             interpreter.doneProcessing = true;
         }
 
-        private static void Event_Execute(idThread t) {
-            t.Execute();
+        private void Event_Execute() {
+            Execute();
         }
 
         private static void Event_SetThreadName(idThread t, final idEventArg<String> name) {
@@ -304,16 +304,16 @@ public class Script_Thread {
             t.KillThread(num.value);
         }
 
-        private static void Event_Pause(idThread t) {
-            t.Pause();
+        private void Event_Pause() {
+            Pause();
         }
 
         private static void Event_Wait(idThread t, idEventArg<Float> time) {
             t.WaitSec(time.value);
         }
 
-        private static void Event_WaitFrame(idThread t) {
-            t.WaitFrame();
+        private void Event_WaitFrame() {
+            WaitFrame();
         }
 
         private static void Event_WaitFor(idThread t, idEventArg<idEntity> e) {
@@ -382,7 +382,7 @@ public class Script_Thread {
             ReturnFloat(range.value * result);
         }
 
-        private static void Event_GetTime(idThread t) {
+        private void Event_GetTime() {
             ReturnFloat(MS2SEC(gameLocal.realClientTime));
         }
 
@@ -448,7 +448,7 @@ public class Script_Thread {
             ReturnVector(result);
         }
 
-        private static void Event_ClearPersistantArgs(idThread t) {
+        private void Event_ClearPersistantArgs() {
             gameLocal.persistentLevelInfo.Clear();
         }
 
@@ -587,7 +587,7 @@ public class Script_Thread {
             gameLocal.SetCamera((idCamera) ent);
         }
 
-        private static void Event_FirstPerson(idThread t) {
+        private void Event_FirstPerson() {
             gameLocal.SetCamera(null);
         }
 
@@ -625,15 +625,15 @@ public class Script_Thread {
             ReturnFloat(trace.fraction);
         }
 
-        private static void Event_GetTraceFraction(idThread t) {
+        private void Event_GetTraceFraction() {
             ReturnFloat(trace.fraction);
         }
 
-        private static void Event_GetTraceEndPos(idThread t) {
+        private void Event_GetTraceEndPos() {
             ReturnVector(trace.endpos);
         }
 
-        private static void Event_GetTraceNormal(idThread t) {
+        private void Event_GetTraceNormal() {
             if (trace.fraction < 1.0f) {
                 ReturnVector(trace.c.normal);
             } else {
@@ -641,7 +641,7 @@ public class Script_Thread {
             }
         }
 
-        private static void Event_GetTraceEntity(idThread t) {
+        private void Event_GetTraceEntity() {
             if (trace.fraction < 1.0f) {
                 ReturnEntity(gameLocal.entities[ trace.c.entityNum]);
             } else {
@@ -649,7 +649,7 @@ public class Script_Thread {
             }
         }
 
-        private static void Event_GetTraceJoint(idThread t) {
+        private void Event_GetTraceJoint() {
             if (trace.fraction < 1.0f && trace.c.id < 0) {
                 idAFEntity_Base af = (idAFEntity_Base) gameLocal.entities[trace.c.entityNum];
                 if (af != null && af.IsType(idAFEntity_Base.class) && af.IsActiveAF()) {
@@ -660,7 +660,7 @@ public class Script_Thread {
             ReturnString("");
         }
 
-        private static void Event_GetTraceBody(idThread t) {
+        private void Event_GetTraceBody() {
             if (trace.fraction < 1.0f && trace.c.id < 0) {
                 idAFEntity_Base af = (idAFEntity_Base) gameLocal.entities[ trace.c.entityNum];
                 if (af != null && af.IsType(idAFEntity_Base.class) && af.IsActiveAF()) {
@@ -837,19 +837,19 @@ public class Script_Thread {
             gameLocal.RadiusDamage(origin.value, inflictor.value, attacker.value, ignore.value, ignore.value, damageDefName.value, dmgPower.value);
         }
 
-        private static void Event_IsClient(idThread t) {
+        private void Event_IsClient() {
             idThread.ReturnFloat(btoi(gameLocal.isClient));
         }
 
-        private static void Event_IsMultiplayer(idThread t) {
+        private void Event_IsMultiplayer() {
             idThread.ReturnFloat(btoi(gameLocal.isMultiplayer));
         }
 
-        private static void Event_GetFrameTime(idThread t) {
+        private void Event_GetFrameTime() {
             idThread.ReturnFloat(MS2SEC(gameLocal.msec));
         }
 
-        private static void Event_GetTicsPerSecond(idThread t) {
+        private void Event_GetTicsPerSecond() {
             idThread.ReturnFloat(USERCMD_HZ);
         }
 
@@ -882,7 +882,7 @@ public class Script_Thread {
             gameRenderWorld.DrawText(text.value, origin.value, scale.value, new idVec4(color.x, color.y, color.z, 0.0f), gameLocal.GetLocalPlayer().viewAngles.ToMat3(), align.value, (int) SEC2MS(lifetime.value));
         }
 
-        private static void Event_InfluenceActive(idThread t) {
+        private void Event_InfluenceActive() {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();

@@ -574,7 +574,7 @@ public class SysCmds {
                 return;
             }
 
-            ang = player.viewAngles;
+            ang = new idAngles(player.viewAngles);
             ang.pitch = 0.0f;
             player.SetViewAngles(ang);
         }
@@ -786,7 +786,7 @@ public class SysCmds {
             player.spawnArgs.Set("model", name);
 
             pos = player.GetPhysics().GetOrigin();
-            ang = player.viewAngles;
+            ang = new idAngles(player.viewAngles);
             player.SpawnToPoint(pos, ang);
         }
     };

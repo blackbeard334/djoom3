@@ -883,7 +883,7 @@ public class UsercmdGen {
             idVec3 oldAngles;
             int i;
 
-            oldAngles = viewangles;
+            oldAngles = new idVec3(viewangles);
 
             if (!Inhibited()) {
                 // update toggled key states

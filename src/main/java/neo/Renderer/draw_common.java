@@ -1278,7 +1278,7 @@ public class draw_common {
                 return;
             }
 
-            qglVertexPointer(4, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, vertexCache.Position(tri.shadowCache).getInt());
+            qglVertexPointer(4, GL_FLOAT, shadowCache_s.BYTES, vertexCache.Position(tri.shadowCache).getInt());
 
             // we always draw the sil planes, but we may not need to draw the front or rear caps
             int numIndexes;
