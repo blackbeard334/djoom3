@@ -275,7 +275,7 @@ public class Entity {
 
     public static class idEntity extends neo.Game.GameSys.Class.idClass implements neo.TempDump.NiLLABLE<idEntity>, neo.TempDump.SERiAL {
         //	ABSTRACT_PROTOTYPE( idEntity );
-        protected static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.put(EV_GetName, (eventCallback_t0<idEntity>) idEntity::Event_GetName);
             eventCallbacks.put(EV_SetName, (eventCallback_t1<idEntity>) idEntity::Event_SetName);
@@ -381,7 +381,7 @@ public class Entity {
         }
 
         @Override
-        public final eventCallback_t getEventCallBack(idEventDef event) {
+        public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
 
@@ -4236,7 +4236,7 @@ public class Entity {
      ===============================================================================
      */
     public static class idAnimatedEntity extends idEntity {
-
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.put(EV_GetJointHandle, (eventCallback_t1<idAnimatedEntity>) idAnimatedEntity::Event_GetJointHandle);
             eventCallbacks.put(EV_ClearAllJoints, (eventCallback_t0<idAnimatedEntity>) idAnimatedEntity::Event_ClearAllJoints);
@@ -4750,6 +4750,11 @@ public class Entity {
 
         public final boolean idEntity_ServerReceiveEvent(int event, int time, final idBitMsg msg) {
             return super.ServerReceiveEvent(event, time, msg);
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     }
 

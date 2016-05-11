@@ -1,16 +1,26 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity.idAFEntity_Gibbable;
 import neo.Game.AI.AI.idAI;
 import neo.Game.Actor.idActor;
+
+import static neo.Game.AI.AI_Events.AI_RandomPath;
+import static neo.Game.Actor.EV_Footstep;
+import static neo.Game.Actor.EV_FootstepLeft;
+import static neo.Game.Actor.EV_FootstepRight;
 import static neo.Game.Animation.Anim.ANIMCHANNEL_ALL;
 import static neo.Game.Animation.Anim.FRAME2MS;
 import neo.Game.Animation.Anim_Blend.idAnim;
 import neo.Game.Camera.idCamera;
 import static neo.Game.Entity.EV_Activate;
+import static neo.Game.Entity.EV_FindTargets;
 import static neo.Game.Entity.EV_PostSpawn;
+import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_ALL;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEPARTICLES;
@@ -18,6 +28,15 @@ import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.eventCallback_t4;
+import neo.Game.GameSys.Class.eventCallback_t6;
+import neo.Game.GameSys.Class.idEventArg;
+import neo.Game.GameSys.Event;
 import neo.Game.GameSys.Event.idEventDef;
 import static neo.Game.GameSys.SaveGame.INITIAL_RELEASE_BUILD_NUMBER;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
@@ -40,7 +59,6 @@ import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_RADIO;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_WEAPON;
 import static neo.Game.Game_local.gameSoundWorld;
 import neo.Game.Game_local.idEntityPtr;
-import neo.Game.Misc.idPathCorner;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Physics.Clip.idClipModel;
 import static neo.Game.Physics.Force_Field.forceFieldApplyType.FORCEFIELD_APPLY_FORCE;
@@ -167,6 +185,12 @@ public class Misc {
      */
     public static class idPlayerStart extends idEntity {
 // public 	CLASS_PROTOTYPE( idPlayerStart );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idPlayerStart>) idPlayerStart::Event_TeleportPlayer);
+            eventCallbacks.put(EV_TeleportStage, (eventCallback_t1<idPlayerStart>) idPlayerStart::Event_TeleportStage);
+        }
 
         // enum {
         public static final int EVENT_TELEPORTPLAYER = idEntity.EVENT_MAXEVENTS;
@@ -222,18 +246,22 @@ public class Misc {
         }
 
         private void Event_TeleportPlayer(idEntity activator) {
+            Event_TeleportPlayer(this, idEventArg.toArg(activator));
+        }
+
+        private static void Event_TeleportPlayer(idPlayerStart p, idEventArg<idEntity> activator) {
             idPlayer player;
 
-            if (activator.IsType(idPlayer.class)) {
-                player = (idPlayer) activator;
+            if (activator.value.IsType(idPlayer.class)) {
+                player = (idPlayer) activator.value;
             } else {
                 player = gameLocal.GetLocalPlayer();
             }
             if (player != null) {
-                if (spawnArgs.GetBool("visualFx")) {
+                if (p.spawnArgs.GetBool("visualFx")) {
 
-                    teleportStage = 0;
-                    Event_TeleportStage(player);
+                    p.teleportStage = 0;
+                    p.Event_TeleportStage(player);
 
                 } else {
 
@@ -244,12 +272,16 @@ public class Misc {
                         msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                         msg.BeginWriting();
                         msg.WriteBits(player.entityNumber, GENTITYNUM_BITS);
-                        ServerSendEvent(EVENT_TELEPORTPLAYER, msg, false, -1);
+                        p.ServerSendEvent(EVENT_TELEPORTPLAYER, msg, false, -1);
                     }
 
-                    TeleportPlayer(player);
+                    p.TeleportPlayer(player);
                 }
             }
+        }
+
+        private void Event_TeleportStage(idEntity _player) {
+            Event_TeleportStage(this, idEventArg.toArg(_player));
         }
 
         /*
@@ -259,35 +291,35 @@ public class Misc {
          FIXME: add functionality to fx system ( could be done with player scripting too )
          ================
          */
-        private void Event_TeleportStage(idEntity _player) {
+        private static void Event_TeleportStage(idPlayerStart p, idEventArg<idEntity> _player) {
             idPlayer player;
-            if (!_player.IsType(idPlayer.class)) {
+            if (!_player.value.IsType(idPlayer.class)) {
                 common.Warning("idPlayerStart::Event_TeleportStage: entity is not an idPlayer\n");
                 return;
             }
-            player = (idPlayer) _player;
-            float teleportDelay = spawnArgs.GetFloat("teleportDelay");
-            switch (teleportStage) {
+            player = (idPlayer) _player.value;
+            float teleportDelay = p.spawnArgs.GetFloat("teleportDelay");
+            switch (p.teleportStage) {
                 case 0:
                     player.playerView.Flash(colorWhite, 125);
                     player.SetInfluenceLevel(INFLUENCE_LEVEL3);
-                    player.SetInfluenceView(spawnArgs.GetString("mtr_teleportFx"), null, 0.0f, null);
+                    player.SetInfluenceView(p.spawnArgs.GetString("mtr_teleportFx"), null, 0.0f, null);
                     gameSoundWorld.FadeSoundClasses(0, -20.0f, teleportDelay);
                     player.StartSound("snd_teleport_start", SND_CHANNEL_BODY2, 0, false, null);
-                    teleportStage++;
-                    PostEventSec(EV_TeleportStage, teleportDelay, player);
+                    p.teleportStage++;
+                    p.PostEventSec(EV_TeleportStage, teleportDelay, player);
                     break;
                 case 1:
                     gameSoundWorld.FadeSoundClasses(0, 0.0f, 0.25f);
-                    teleportStage++;
-                    PostEventSec(EV_TeleportStage, 0.25f, player);
+                    p.teleportStage++;
+                    p.PostEventSec(EV_TeleportStage, 0.25f, player);
                     break;
                 case 2:
                     player.SetInfluenceView(null, null, 0.0f, null);
-                    TeleportPlayer(player);
+                    p.TeleportPlayer(player);
                     player.StopSound(etoi(SND_CHANNEL_BODY2), false);
                     player.SetInfluenceLevel(INFLUENCE_NONE);
-                    teleportStage = 0;
+                    p.teleportStage = 0;
                     break;
                 default:
                     break;
@@ -330,6 +362,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -344,6 +381,11 @@ public class Misc {
      */
     public static class idActivator extends idEntity {
 // public 	CLASS_PROTOTYPE( idActivator );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idActivator>) idActivator::Event_Activate);
+        }
 
         private final boolean[] stay_on = new boolean[1];
         //
@@ -391,11 +433,11 @@ public class Misc {
             Present();
         }
 
-        private void Event_Activate(idEntity activator) {
-            if ((thinkFlags & TH_THINK) != 0) {
-                BecomeInactive(TH_THINK);
+        private static void Event_Activate(idActivator a, idEventArg<idEntity> activator) {
+            if ((a.thinkFlags & TH_THINK) != 0) {
+                a.BecomeInactive(TH_THINK);
             } else {
-                BecomeActive(TH_THINK);
+                a.BecomeActive(TH_THINK);
             }
         }
 
@@ -407,6 +449,11 @@ public class Misc {
         @Override
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -426,6 +473,10 @@ public class Misc {
      */
     public static class idPathCorner extends idEntity {
 // public 	CLASS_PROTOTYPE( idPathCorner );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static{
+            eventCallbacks.put(AI_RandomPath, (eventCallback_t0<idPathCorner>) idPathCorner::Event_RandomPath);
+        }
 
         public static void DrawDebugInfo() {
             idEntity ent;
@@ -483,6 +534,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -503,6 +559,12 @@ public class Misc {
 
     public static class idDamagable extends idEntity {
         // CLASS_PROTOTYPE( idDamagable );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idDamagable>) idDamagable::Event_BecomeBroken);
+            eventCallbacks.put(EV_RestoreDamagable, (eventCallback_t0<idDamagable>) idDamagable::Event_RestoreDamagable);
+        }
 
         private final int[] count = {0};
         private final int[] nextTriggerTime = {0};
@@ -612,8 +674,8 @@ public class Misc {
             }
         }
 
-        private void Event_BecomeBroken(idEntity activator) {
-            BecomeBroken(activator);
+        private static void Event_BecomeBroken(idDamagable d, idEventArg<idEntity> activator) {
+            d.BecomeBroken(activator.value);
         }
 
         private void Event_RestoreDamagable() {
@@ -629,6 +691,11 @@ public class Misc {
         @Override
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -648,33 +715,37 @@ public class Misc {
      */
     public static class idExplodable extends idEntity {
 //	CLASS_PROTOTYPE( idExplodable );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static{
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idExplodable>) idExplodable::Event_Explode);
+        }
 
         @Override
         public void Spawn() {
             Hide();
         }
 
-        private void Event_Explode(idEntity activator) {
+        private static void Event_Explode(idExplodable e, idEventArg<idEntity> activator) {
             String[] temp = {null};
 
-            if (spawnArgs.GetString("def_damage", "damage_explosion", temp)) {
-                gameLocal.RadiusDamage(GetPhysics().GetOrigin(), activator, activator, this, this, temp[0]);
+            if (e.spawnArgs.GetString("def_damage", "damage_explosion", temp)) {
+                gameLocal.RadiusDamage(e.GetPhysics().GetOrigin(), activator.value, activator.value, e, e, temp[0]);
             }
 
-            StartSound("snd_explode", SND_CHANNEL_ANY, 0, false, null);
+            e.StartSound("snd_explode", SND_CHANNEL_ANY, 0, false, null);
 
             // Show() calls UpdateVisuals, so we don't need to call it ourselves after setting the shaderParms
-            renderEntity.shaderParms[SHADERPARM_RED] = 1.0f;
-            renderEntity.shaderParms[SHADERPARM_GREEN] = 1.0f;
-            renderEntity.shaderParms[SHADERPARM_BLUE] = 1.0f;
-            renderEntity.shaderParms[SHADERPARM_ALPHA] = 1.0f;
-            renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
-            renderEntity.shaderParms[SHADERPARM_DIVERSITY] = 0.0f;
-            Show();
+            e.renderEntity.shaderParms[SHADERPARM_RED] = 1.0f;
+            e.renderEntity.shaderParms[SHADERPARM_GREEN] = 1.0f;
+            e.renderEntity.shaderParms[SHADERPARM_BLUE] = 1.0f;
+            e.renderEntity.shaderParms[SHADERPARM_ALPHA] = 1.0f;
+            e.renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+            e.renderEntity.shaderParms[SHADERPARM_DIVERSITY] = 0.0f;
+            e.Show();
 
-            PostEventMS(EV_Remove, 2000);
+            e.PostEventMS(EV_Remove, 2000);
 
-            ActivateTargets(activator);
+            e.ActivateTargets(activator.value);
         }
 
         @Override
@@ -685,6 +756,11 @@ public class Misc {
         @Override
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -697,6 +773,11 @@ public class Misc {
      */
     public static class idSpring extends idEntity {
 //	CLASS_PROTOTYPE( idSpring );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_PostSpawn, (eventCallback_t0<idSpring>) idSpring::Event_LinkSpring);
+        }
 
         private idEntity ent1;
         private idEntity ent2;
@@ -795,6 +876,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -808,6 +894,13 @@ public class Misc {
 
     public static class idForceField extends idEntity {
         // CLASS_PROTOTYPE( idForceField );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idForceField>) idForceField::Event_Activate);
+            eventCallbacks.put(EV_Toggle, (eventCallback_t0<idForceField>) idForceField::Event_Toggle);
+            eventCallbacks.put(EV_FindTargets, (eventCallback_t0<idForceField>) idForceField::Event_FindTargets );
+        }
 
         private idForce_Field forceField;
         //
@@ -879,7 +972,7 @@ public class Misc {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             float[] wait = new float[1];
 
             Toggle();
@@ -909,6 +1002,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
     /*
      ===============================================================================
@@ -925,6 +1023,19 @@ public class Misc {
 
     public static class idAnimated extends idAFEntity_Gibbable {
         // CLASS_PROTOTYPE( idAnimated );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idAnimated>) idAnimated::Event_Activate);
+            eventCallbacks.put(EV_Animated_Start, (eventCallback_t0<idAnimated>) idAnimated::Event_Start);
+            eventCallbacks.put(EV_StartRagdoll, (eventCallback_t0<idAnimated>) idAnimated::Event_StartRagdoll);
+            eventCallbacks.put(EV_AnimDone, (eventCallback_t1<idAnimated>) idAnimated::Event_AnimDone);
+            eventCallbacks.put(EV_Footstep, (eventCallback_t0<idAnimated>) idAnimated::Event_Footstep);
+            eventCallbacks.put(EV_FootstepLeft, (eventCallback_t0<idAnimated>) idAnimated::Event_Footstep);
+            eventCallbacks.put(EV_FootstepRight, (eventCallback_t0<idAnimated>) idAnimated::Event_Footstep);
+            eventCallbacks.put(EV_LaunchMissiles, (eventCallback_t6<idAnimated>) idAnimated::Event_LaunchMissiles);
+            eventCallbacks.put(EV_LaunchMissilesUpdate, (eventCallback_t4<idAnimated>) idAnimated::Event_LaunchMissilesUpdate);
+        }
 
         private int                   num_anims;
         private int                   current_anim_index;
@@ -1150,10 +1261,10 @@ public class Misc {
             Present();
         }
 
-        private void Event_Activate(idEntity _activator) {
+        private void Event_Activate(idEventArg<idEntity> _activator) {
             if (num_anims != 0) {
                 PlayNextAnim();
-                activator.oSet(_activator);
+                activator.oSet(_activator.value);
                 return;
             }
 
@@ -1163,7 +1274,7 @@ public class Misc {
             }
 
             activated = true;
-            activator.oSet(_activator);
+            activator.oSet(_activator.value);
             ProcessEvent(EV_Animated_Start);
         }
 
@@ -1206,13 +1317,13 @@ public class Misc {
             StartRagdoll();
         }
 
-        private void Event_AnimDone(int animIndex) {
+        private void Event_AnimDone(idEventArg<Integer> animIndex) {
             if (g_debugCinematic.GetBool()) {
                 final idAnim animPtr = animator.GetAnim(anim);
                 gameLocal.Printf("%d: '%s' end anim '%s'\n", gameLocal.framenum, GetName(), animPtr != null ? animPtr.Name() : "");
             }
 
-            if ((animIndex >= num_anims) && spawnArgs.GetBool("remove")) {
+            if ((animIndex.value >= num_anims) && spawnArgs.GetBool("remove")) {
                 Hide();
                 PostEventMS(EV_Remove, 0);
             } else if (spawnArgs.GetBool("auto_advance")) {
@@ -1228,36 +1339,37 @@ public class Misc {
             StartSound("snd_footstep", SND_CHANNEL_BODY, 0, false, null);
         }
 
-        private void Event_LaunchMissiles(final String projectilename, final String sound, final String launchjoint, final String targetjoint, int numshots, int framedelay) {
+        private void Event_LaunchMissiles(final idEventArg<String> projectilename, final idEventArg<String> sound, final idEventArg<String> launchjoint,
+                                          final idEventArg<String> targetjoint, idEventArg<Integer> numshots, idEventArg<Integer> framedelay) {
             idDict projectileDef;
             int/*jointHandle_t*/ launch;
             int/*jointHandle_t*/ target;
 
-            projectileDef = gameLocal.FindEntityDefDict(projectilename, false);
+            projectileDef = gameLocal.FindEntityDefDict(projectilename.value, false);
             if (null == projectileDef) {
-                gameLocal.Warning("idAnimated '%s' at (%s): unknown projectile '%s'", name, GetPhysics().GetOrigin().ToString(0), projectilename);
+                gameLocal.Warning("idAnimated '%s' at (%s): unknown projectile '%s'", name, GetPhysics().GetOrigin().ToString(0), projectilename.value);
                 return;
             }
 
-            launch = animator.GetJointHandle(launchjoint);
+            launch = animator.GetJointHandle(launchjoint.value);
             if (launch == INVALID_JOINT) {
-                gameLocal.Warning("idAnimated '%s' at (%s): unknown launch joint '%s'", name, GetPhysics().GetOrigin().ToString(0), launchjoint);
-                gameLocal.Error("Unknown joint '%s'", launchjoint);
+                gameLocal.Warning("idAnimated '%s' at (%s): unknown launch joint '%s'", name, GetPhysics().GetOrigin().ToString(0), launchjoint.value);
+                gameLocal.Error("Unknown joint '%s'", launchjoint.value);
             }
 
-            target = animator.GetJointHandle(targetjoint);
+            target = animator.GetJointHandle(targetjoint.value);
             if (target == INVALID_JOINT) {
-                gameLocal.Warning("idAnimated '%s' at (%s): unknown target joint '%s'", name, GetPhysics().GetOrigin().ToString(0), targetjoint);
+                gameLocal.Warning("idAnimated '%s' at (%s): unknown target joint '%s'", name, GetPhysics().GetOrigin().ToString(0), targetjoint.value);
             }
 
-            spawnArgs.Set("projectilename", projectilename);
-            spawnArgs.Set("missilesound", sound);
+            spawnArgs.Set("projectilename", projectilename.value);
+            spawnArgs.Set("missilesound", sound.value);
 
             CancelEvents(EV_LaunchMissilesUpdate);
-            ProcessEvent(EV_LaunchMissilesUpdate, launch, target, numshots - 1, framedelay);
+            ProcessEvent(EV_LaunchMissilesUpdate, launch, target, numshots.value - 1, framedelay.value);
         }
 
-        private void Event_LaunchMissilesUpdate(int launchjoint, int targetjoint, int numshots, int framedelay) {
+        private void Event_LaunchMissilesUpdate(idEventArg<Integer> launchjoint, idEventArg<Integer> targetjoint, idEventArg<Integer> numshots, idEventArg<Integer> framedelay) {
             idVec3 launchPos = new idVec3();
             idVec3 targetPos = new idVec3();
             idMat3 axis = new idMat3();
@@ -1276,10 +1388,10 @@ public class Misc {
 
             StartSound("snd_missile", SND_CHANNEL_WEAPON, 0, false, null);
 
-            animator.GetJointTransform(launchjoint, gameLocal.time, launchPos, axis);
+            animator.GetJointTransform(launchjoint.value, gameLocal.time, launchPos, axis);
             launchPos = renderEntity.origin.oPlus(launchPos.oMultiply(renderEntity.axis));
 
-            animator.GetJointTransform(targetjoint, gameLocal.time, targetPos, axis);
+            animator.GetJointTransform(targetjoint.value, gameLocal.time, targetPos, axis);
             targetPos = renderEntity.origin.oPlus(targetPos.oMultiply(renderEntity.axis));
 
             dir = targetPos.oMinus(launchPos);
@@ -1293,9 +1405,14 @@ public class Misc {
             projectile.Create(this, launchPos, dir);
             projectile.Launch(launchPos, dir, getVec3_origin());
 
-            if (numshots > 0) {
-                PostEventMS(EV_LaunchMissilesUpdate, FRAME2MS(framedelay), launchjoint, targetjoint, numshots - 1, framedelay);
+            if (numshots.value > 0) {
+                PostEventMS(EV_LaunchMissilesUpdate, FRAME2MS(framedelay.value), launchjoint.value, targetjoint.value, numshots.value - 1, framedelay.value);
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -1310,6 +1427,11 @@ public class Misc {
      */
     public static class idStaticEntity extends idEntity {
         // CLASS_PROTOTYPE( idStaticEntity );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idStaticEntity>) idStaticEntity::Event_Activate);
+        }
 
         private int     spawnTime;
         private boolean active;
@@ -1494,7 +1616,7 @@ public class Misc {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idStr activateGui;
 
             spawnTime = gameLocal.time;
@@ -1527,6 +1649,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -1538,6 +1665,11 @@ public class Misc {
      */
     public static class idFuncEmitter extends idStaticEntity {
         // CLASS_PROTOTYPE( idFuncEmitter );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncEmitter>) idFuncEmitter::Event_Activate);
+        }
 
         private final boolean[] hidden = {false};
         //
@@ -1570,7 +1702,7 @@ public class Misc {
             }
         }
 
-        public void Event_Activate(idEntity activator) {
+        public void Event_Activate(idEventArg<idEntity> activator) {
             if (hidden[0] || spawnArgs.GetBool("cycleTrigger")) {
                 renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = 0;
                 renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
@@ -1598,6 +1730,11 @@ public class Misc {
                 UpdateVisuals();
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -1609,6 +1746,11 @@ public class Misc {
      */
     public static class idFuncSmoke extends idEntity {
         // CLASS_PROTOTYPE( idFuncSmoke );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncSmoke>) idFuncSmoke::Event_Activate);
+        }
 
         private int smokeTime;
         private idDeclParticle smoke;
@@ -1682,7 +1824,7 @@ public class Misc {
 
         }
 
-        public void Event_Activate(idEntity activator) {
+        public void Event_Activate(idEventArg<idEntity> activator) {
             if ((thinkFlags & TH_UPDATEPARTICLES) != 0) {
                 restart = false;
 //                return;
@@ -1702,6 +1844,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -1715,6 +1862,12 @@ public class Misc {
 
     public static class idFuncSplat extends idFuncEmitter {
         // CLASS_PROTOTYPE( idFuncSplat );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncSplat>) idFuncSplat::Event_Activate);
+            eventCallbacks.put(EV_Splat, (eventCallback_t0<idFuncSplat>) idFuncSplat::Event_Splat);
+        }
 
         public idFuncSplat() {
         }
@@ -1724,7 +1877,7 @@ public class Misc {
         }
 
         @Override
-        public void Event_Activate(idEntity activator) {
+        public void Event_Activate(idEventArg<idEntity> activator) {
             super.Event_Activate(activator);
             PostEventSec(EV_Splat, spawnArgs.GetFloat("splatDelay", "0.25"));
             StartSound("snd_spurt", SND_CHANNEL_ANY, 0, false, null);
@@ -1743,6 +1896,11 @@ public class Misc {
                 }
             }
             StartSound("snd_splat", SND_CHANNEL_ANY, 0, false, null);
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -1897,6 +2055,11 @@ public class Misc {
      */
     public static class idVacuumSeparatorEntity extends idEntity {
         // CLASS_PROTOTYPE( idVacuumSeparatorEntity );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idVacuumSeparatorEntity>) idVacuumSeparatorEntity::Event_Activate);
+        }
 
         public idVacuumSeparatorEntity() {
             portal = 0;
@@ -1932,7 +2095,7 @@ public class Misc {
             gameLocal.SetPortalState(portal[0], state[0]);
         }
 
-        public void Event_Activate(idEntity activator) {
+        public void Event_Activate(idEventArg<idEntity> activator) {
             if (0 == portal) {
                 return;
             }
@@ -1950,6 +2113,11 @@ public class Misc {
         @Override
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -1998,6 +2166,12 @@ public class Misc {
      */
     public static class idBeam extends idEntity {
         // CLASS_PROTOTYPE( idBeam );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_PostSpawn, (eventCallback_t0<idBeam>) idBeam::Event_MatchTarget);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idBeam>) idBeam::Event_Activate);
+        }
 
         private idEntityPtr<idBeam> target;
         private idEntityPtr<idBeam> master;
@@ -2131,7 +2305,7 @@ public class Misc {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             if (IsHidden()) {
                 Show();
             } else {
@@ -2160,6 +2334,11 @@ public class Misc {
     @Deprecated
     public static class idLiquid extends idEntity {
         // CLASS_PROTOTYPE( idLiquid );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idLiquid>) idLiquid::Event_Touch);
+        }
 
         private idRenderModelLiquid model;
         //
@@ -2188,7 +2367,7 @@ public class Misc {
             Spawn();
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> other, idEventArg<trace_s> trace) {
             // FIXME: for QuakeCon
 /*
              idVec3 pos;
@@ -2207,6 +2386,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -2218,6 +2402,11 @@ public class Misc {
      */
     public static class idShaking extends idEntity {
         // CLASS_PROTOTYPE( idShaking );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idShaking>) idShaking::Event_Activate);
+        }
 
         private idPhysics_Parametric physicsObj;
         private boolean active;
@@ -2272,7 +2461,7 @@ public class Misc {
             physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), phase, (int) (period * 0.25f), GetPhysics().GetAxis().ToAngles(), shake, getAng_zero());
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             if (!active) {
                 BeginShaking();
             } else {
@@ -2290,6 +2479,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -2301,6 +2495,11 @@ public class Misc {
      */
     public static class idEarthQuake extends idEntity {
         // CLASS_PROTOTYPE( idEarthQuake );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idEarthQuake>) idEarthQuake::Event_Activate);
+        }
 
         private int nextTriggerTime;
         private int shakeStopTime;
@@ -2386,7 +2585,8 @@ public class Misc {
         public void Think() {
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> _activator) {
+            idEntity activator = _activator.value;
 
             if (nextTriggerTime > gameLocal.time) {
                 return;
@@ -2447,6 +2647,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -2459,6 +2664,11 @@ public class Misc {
      */
     public static class idFuncPortal extends idEntity {
         // CLASS_PROTOTYPE( idFuncPortal );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncPortal>) idFuncPortal::Event_Activate);
+        }
 
         private final int[]/*qhandle_t*/ portal = {0};
         private final boolean[] state = {false};
@@ -2492,7 +2702,7 @@ public class Misc {
             gameLocal.SetPortalState(portal[0], (state[0] ? PS_BLOCK_ALL : PS_BLOCK_NONE).ordinal());
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             if (portal[0] > 0) {
                 state[0] = !state[0];
                 gameLocal.SetPortalState(portal[0], (state[0] ? PS_BLOCK_ALL : PS_BLOCK_NONE).ordinal());
@@ -2508,6 +2718,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -2519,6 +2734,11 @@ public class Misc {
      */
     public static class idFuncAASPortal extends idEntity {
         // CLASS_PROTOTYPE( idFuncAASPortal );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncAASPortal>) idFuncAASPortal::Event_Activate);
+        }
 
         private boolean state;
         //
@@ -2546,7 +2766,7 @@ public class Misc {
             gameLocal.SetAASAreaState(GetPhysics().GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, this.state = state[0]);
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             state ^= true;//1;
             gameLocal.SetAASAreaState(GetPhysics().GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state);
         }
@@ -2560,6 +2780,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -2571,6 +2796,11 @@ public class Misc {
      */
     public static class idFuncAASObstacle extends idEntity {
         // CLASS_PROTOTYPE( idFuncAASObstacle );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncAASObstacle>) idFuncAASObstacle::Event_Activate);
+        }
 
         private boolean[] state = {false};
         //
@@ -2597,7 +2827,7 @@ public class Misc {
             gameLocal.SetAASAreaState(GetPhysics().GetAbsBounds(), AREACONTENTS_OBSTACLE, state[0]);
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             state[0] ^= true;//1;
             gameLocal.SetAASAreaState(GetPhysics().GetAbsBounds(), AREACONTENTS_OBSTACLE, state[0]);
         }
@@ -2611,6 +2841,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
     /*
      ===============================================================================
@@ -2623,6 +2858,12 @@ public class Misc {
 
     public static class idFuncRadioChatter extends idEntity {
         // CLASS_PROTOTYPE( idFuncRadioChatter );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncRadioChatter>) idFuncRadioChatter::Event_Activate);
+            eventCallbacks.put(EV_ResetRadioHud, (eventCallback_t1<idFuncRadioChatter>) idFuncRadioChatter::Event_ResetRadioHud);
+        }
 
         private int end_time;
         private float throw_time;
@@ -2662,14 +2903,14 @@ public class Misc {
             this.time = time[0];
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idPlayer player;
             final String sound;
             idSoundShader shader;
             int[] length = {0};
 
-            if (activator.IsType(idPlayer.class)) {
-                player = (idPlayer) activator;
+            if (activator.value.IsType(idPlayer.class)) {
+                player = (idPlayer) activator.value;
             } else {
                 player = gameLocal.GetLocalPlayer();
             }
@@ -2688,7 +2929,8 @@ public class Misc {
 
         }
 
-        private void Event_ResetRadioHud(idEntity activator) {
+        private void Event_ResetRadioHud(idEventArg<idEntity> _activator) {
+            idEntity activator = _activator.value;
             idPlayer player = (activator.IsType(idPlayer.class)) ? (idPlayer) activator : gameLocal.GetLocalPlayer();
             player.hud.HandleNamedEvent("radioChatterDown");
             ActivateTargets(activator);
@@ -2703,6 +2945,11 @@ public class Misc {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -2715,17 +2962,22 @@ public class Misc {
      */
     public static class idPhantomObjects extends idEntity {
         // CLASS_PROTOTYPE( idPhantomObjects );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
-        private int end_time;
-        private float throw_time;
-        private float shake_time;
-        private idVec3 shake_ang;
-        private float speed;
-        private int min_wait;
-        private int max_wait;
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idPhantomObjects>) idPhantomObjects::Event_Activate);
+        }
+
+        private int                  end_time;
+        private float                throw_time;
+        private float                shake_time;
+        private idVec3               shake_ang;
+        private float                speed;
+        private int                  min_wait;
+        private int                  max_wait;
         private idEntityPtr<idActor> target;
-        private idList<Integer> targetTime;
-        private idList<idVec3> lastTargetPos;
+        private idList<Integer>      targetTime;
+        private idList<idVec3>       lastTargetPos;
         //
         //
 
@@ -2904,7 +3156,8 @@ public class Misc {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> _activator) {
+            idEntity activator = _activator.value;
             int i;
             float time;
             float frac;
@@ -2966,5 +3219,9 @@ public class Misc {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 }

@@ -6,6 +6,8 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 import static neo.CM.CollisionModel.CM_BOX_EPSILON;
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
@@ -32,6 +34,8 @@ import static neo.Game.Entity.signalNum_t.SIG_TOUCH;
 import neo.Game.FX.idEntityFx;
 import neo.Game.GameEdit.idDragEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
 import neo.Game.GameSys.Class.idEventArg;
@@ -1196,7 +1200,7 @@ public class Player {
     };
 
     public static class idPlayer extends idActor {
-//        protected static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
             eventCallbacks.put(EV_Player_GetButtons, (eventCallback_t0<idPlayer>) idPlayer::Event_GetButtons);
@@ -8288,7 +8292,7 @@ public class Player {
             }
         }
 
-        private static void Event_SelectWeapon(idPlayer p, final idEventArg<String> weaponName) {
+        private void Event_SelectWeapon(final idEventArg<String> weaponName) {
             int i;
             int weaponNum;
 
@@ -8297,16 +8301,16 @@ public class Player {
                 return;
             }
 
-            if (p.hiddenWeapon && gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
-                p.idealWeapon = p.weapon_fists;
-                p.weapon.GetEntity().HideWeapon();
+            if (hiddenWeapon && gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
+                idealWeapon = weapon_fists;
+                weapon.GetEntity().HideWeapon();
                 return;
             }
 
             weaponNum = -1;
             for (i = 0; i < MAX_WEAPONS; i++) {
-                if ((p.inventory.weapons & (1 << i)) != 0) {
-                    final String weap = p.spawnArgs.GetString(va("def_weapon%d", i));
+                if ((inventory.weapons & (1 << i)) != 0) {
+                    final String weap = spawnArgs.GetString(va("def_weapon%d", i));
                     if (NOT(idStr.Cmp(weap, weaponName.value))) {
                         weaponNum = i;
                         break;
@@ -8315,14 +8319,14 @@ public class Player {
             }
 
             if (weaponNum < 0) {
-                gameLocal.Warning("%s is not carrying weapon '%s'", p.name, weaponName.value);
+                gameLocal.Warning("%s is not carrying weapon '%s'", name, weaponName.value);
                 return;
             }
 
-            p.hiddenWeapon = false;
-            p.idealWeapon = weaponNum;
+            hiddenWeapon = false;
+            idealWeapon = weaponNum;
 
-            p.UpdateHudWeapon();
+            UpdateHudWeapon();
         }
 
         private void Event_GetWeaponEntity() {
@@ -8416,6 +8420,11 @@ public class Player {
             } else {
                 idThread.ReturnString("");
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }

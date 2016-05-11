@@ -1,10 +1,9 @@
 package neo.Game.GameSys;
 
-import java.nio.ByteBuffer;
 import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Entity.EV_Activate;
 import neo.Game.Entity.idEntity;
-import static neo.Game.GameSys.Class.idEventArg.toEvent;
+import static neo.Game.GameSys.Class.idEventArg.toArg;
 import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
 import static neo.Game.GameSys.Event.D_EVENT_INTEGER;
@@ -163,8 +162,8 @@ public class Class {
             else type = D_EVENT_VOID;
             value = data;
         }
-        
-        static idEventArg toEvent(Object data) {
+
+        public static <T> idEventArg<T> toArg(T data) {
             return new idEventArg(data);
         }
     };
@@ -341,35 +340,35 @@ public class Class {
         }
 
         public boolean PostEventMS(final idEventDef ev, float time, Object arg1) {
-            return PostEventArgs(ev, (int) time, 1, toEvent(arg1));
+            return PostEventArgs(ev, (int) time, 1, toArg(arg1));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2) {
-            return PostEventArgs(ev, time, 2, toEvent(arg1), toEvent(arg1));
+            return PostEventArgs(ev, time, 2, toArg(arg1), toArg(arg1));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3) {
-            return PostEventArgs(ev, time, 3, toEvent(arg1), toEvent(arg2), toEvent(arg3));
+            return PostEventArgs(ev, time, 3, toArg(arg1), toArg(arg2), toArg(arg3));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4) {
-            return PostEventArgs(ev, time, 4, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4));
+            return PostEventArgs(ev, time, 4, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-            return PostEventArgs(ev, time, 5, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5));
+            return PostEventArgs(ev, time, 5, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-            return PostEventArgs(ev, time, 6, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6));
+            return PostEventArgs(ev, time, 6, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-            return PostEventArgs(ev, time, 7, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7));
+            return PostEventArgs(ev, time, 7, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8) {
-            return PostEventArgs(ev, time, 8, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7), toEvent(arg8));
+            return PostEventArgs(ev, time, 8, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7), toArg(arg8));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time) {
@@ -377,35 +376,35 @@ public class Class {
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 1, toEvent(arg1));
+            return PostEventArgs(ev, (int) SEC2MS(time), 1, toArg(arg1));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 2, toEvent(arg1), toEvent(arg2));
+            return PostEventArgs(ev, (int) SEC2MS(time), 2, toArg(arg1), toArg(arg2));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 3, toEvent(arg1), toEvent(arg2), toEvent(arg3));
+            return PostEventArgs(ev, (int) SEC2MS(time), 3, toArg(arg1), toArg(arg2), toArg(arg3));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 4, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4));
+            return PostEventArgs(ev, (int) SEC2MS(time), 4, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 5, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5));
+            return PostEventArgs(ev, (int) SEC2MS(time), 5, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 6, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6));
+            return PostEventArgs(ev, (int) SEC2MS(time), 6, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 7, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7));
+            return PostEventArgs(ev, (int) SEC2MS(time), 7, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 8, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7), toEvent(arg8));
+            return PostEventArgs(ev, (int) SEC2MS(time), 8, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7), toArg(arg8));
         }
 
         public boolean ProcessEvent(final idEventDef ev) {
@@ -413,35 +412,35 @@ public class Class {
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1) {
-            return ProcessEventArgs(ev, 1, toEvent(arg1));
+            return ProcessEventArgs(ev, 1, toArg(arg1));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2) {
-            return ProcessEventArgs(ev, 2, toEvent(arg1), toEvent(arg2));
+            return ProcessEventArgs(ev, 2, toArg(arg1), toArg(arg2));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3) {
-            return ProcessEventArgs(ev, 3, toEvent(arg1), toEvent(arg2), toEvent(arg3));
+            return ProcessEventArgs(ev, 3, toArg(arg1), toArg(arg2), toArg(arg3));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4) {
-            return ProcessEventArgs(ev, 4, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4));
+            return ProcessEventArgs(ev, 4, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-            return ProcessEventArgs(ev, 5, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5));
+            return ProcessEventArgs(ev, 5, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-            return ProcessEventArgs(ev, 6, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6));
+            return ProcessEventArgs(ev, 6, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-            return ProcessEventArgs(ev, 7, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7));
+            return ProcessEventArgs(ev, 7, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8) {
-            return ProcessEventArgs(ev, 8, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7), toEvent(arg8));
+            return ProcessEventArgs(ev, 8, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7), toArg(arg8));
         }
 
         public boolean ProcessEventArgPtr(final idEventDef ev, idEventArg[] data) {
