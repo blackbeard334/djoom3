@@ -424,24 +424,23 @@ public class Event {
 
         public static void CopyArgs(final idEventDef evdef, int numargs, idEventArg[] args, idEventArg[] data/*[ D_EVENT_MAXARGS ]*/) {
             int i;
-            String format;
+            char[] format;
 
-            format = evdef.GetArgFormat();
+            format = evdef.GetArgFormat().toCharArray();
             if (numargs != evdef.GetNumArgs()) {
                 gameLocal.Error("idEvent::CopyArgs : Wrong number of args for '%s' event.", evdef.GetName());
             }
 
             for (i = 0; i < numargs; i++) {
-                for (idEventArg arg : args) {
-                    if (format.charAt(i) != arg.type) {
-                        // when NULL is passed in for an entity, it gets cast as an integer 0, so don't give an error when it happens
-                        if (!(((format.charAt(i) == D_EVENT_TRACE) || (format.charAt(i) == D_EVENT_ENTITY)) && (arg.type == 'd') && (arg.value == Integer.valueOf(0)))) {
-                            gameLocal.Error("idEvent::CopyArgs : Wrong type passed in for arg # %d on '%s' event.", i, evdef.GetName());
-                        }
+                idEventArg arg = args[i];
+                if (format[i] != arg.type) {
+                    // when NULL is passed in for an entity, it gets cast as an integer 0, so don't give an error when it happens
+                    if (!(((format[i] == D_EVENT_TRACE) || (format[i] == D_EVENT_ENTITY)) && (arg.type == 'd') && (arg.value == Integer.valueOf(0)))) {
+                        gameLocal.Error("idEvent::CopyArgs : Wrong type passed in for arg # %d on '%s' event.", i, evdef.GetName());
                     }
-
-                    data[i] = arg;
                 }
+
+                data[i] = arg;
             }
         }
 

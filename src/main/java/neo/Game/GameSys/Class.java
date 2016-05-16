@@ -326,7 +326,7 @@ public class Class {
         }
 
         public boolean RespondsTo(final idEventDef ev) {
-            return false;//HACKME::7
+            return getEventCallBack(ev) != null;//HACKME::7
 //            throw new TODO_Exception();
 //            final idTypeInfo c;
 //

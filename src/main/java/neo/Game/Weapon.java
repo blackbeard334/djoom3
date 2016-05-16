@@ -1,18 +1,36 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import neo.Game.AFEntity.idAFAttachment;
 import neo.Game.AI.AI.idAI;
 import neo.Game.Actor.idActor;
+
+import static neo.Game.Actor.AI_AnimDone;
+import static neo.Game.Actor.AI_GetBlendFrames;
+import static neo.Game.Actor.AI_PlayAnim;
+import static neo.Game.Actor.AI_PlayCycle;
+import static neo.Game.Actor.AI_SetBlendFrames;
 import static neo.Game.Animation.Anim.FRAME2MS;
+import static neo.Game.Entity.EV_SetSkin;
 import static neo.Game.Entity.EV_Touch;
 import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
 import static neo.Game.Entity.signalNum_t.SIG_TOUCH;
 import neo.Game.Game.refSound_t;
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.eventCallback_t4;
+import neo.Game.GameSys.Class.eventCallback_t5;
 import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Class.idTypeInfo;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
@@ -33,6 +51,10 @@ import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_BODY3;
 import static neo.Game.Game_local.gameState_t.GAMESTATE_SHUTDOWN;
 import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Item.idMoveableItem;
+
+import static neo.Game.Light.EV_Light_GetLightParm;
+import static neo.Game.Light.EV_Light_SetLightParm;
+import static neo.Game.Light.EV_Light_SetLightParms;
 import static neo.Game.MultiplayerGame.gameType_t.GAME_TDM;
 import static neo.Game.Player.ASYNC_PLAYER_INV_CLIP_BITS;
 import static neo.Game.Player.BERSERK;
@@ -170,6 +192,46 @@ public class Weapon {
      ***********************************************************************/
     public static class idWeapon extends idAnimatedEntity {
         // CLASS_PROTOTYPE( idWeapon );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Weapon_Clear, (eventCallback_t0<idWeapon>) idWeapon::Event_Clear);
+            eventCallbacks.put(EV_Weapon_GetOwner, (eventCallback_t0<idWeapon>) idWeapon::Event_GetOwner);
+            eventCallbacks.put(EV_Weapon_State, (eventCallback_t2<idWeapon>) idWeapon::Event_WeaponState);
+            eventCallbacks.put(EV_Weapon_WeaponReady, (eventCallback_t0<idWeapon>) idWeapon::Event_WeaponReady);
+            eventCallbacks.put(EV_Weapon_WeaponOutOfAmmo, (eventCallback_t0<idWeapon>) idWeapon::Event_WeaponOutOfAmmo);
+            eventCallbacks.put(EV_Weapon_WeaponReloading, (eventCallback_t0<idWeapon>) idWeapon::Event_WeaponReloading);
+            eventCallbacks.put(EV_Weapon_WeaponHolstered, (eventCallback_t0<idWeapon>) idWeapon::Event_WeaponHolstered);
+            eventCallbacks.put(EV_Weapon_WeaponRising, (eventCallback_t0<idWeapon>) idWeapon::Event_WeaponRising);
+            eventCallbacks.put(EV_Weapon_WeaponLowering, (eventCallback_t0<idWeapon>) idWeapon::Event_WeaponLowering);
+            eventCallbacks.put(EV_Weapon_UseAmmo, (eventCallback_t1<idWeapon>) idWeapon::Event_UseAmmo);
+            eventCallbacks.put(EV_Weapon_AddToClip, (eventCallback_t1<idWeapon>) idWeapon::Event_AddToClip);
+            eventCallbacks.put(EV_Weapon_AmmoInClip, (eventCallback_t0<idWeapon>) idWeapon::Event_AmmoInClip);
+            eventCallbacks.put(EV_Weapon_AmmoAvailable, (eventCallback_t0<idWeapon>) idWeapon::Event_AmmoAvailable);
+            eventCallbacks.put(EV_Weapon_TotalAmmoCount, (eventCallback_t0<idWeapon>) idWeapon::Event_TotalAmmoCount);
+            eventCallbacks.put(EV_Weapon_ClipSize, (eventCallback_t0<idWeapon>) idWeapon::Event_ClipSize);
+            eventCallbacks.put(AI_PlayAnim, (eventCallback_t2<idWeapon>) idWeapon::Event_PlayAnim);
+            eventCallbacks.put(AI_PlayCycle, (eventCallback_t2<idWeapon>) idWeapon::Event_PlayCycle);
+            eventCallbacks.put(AI_SetBlendFrames, (eventCallback_t2<idWeapon>) idWeapon::Event_SetBlendFrames);
+            eventCallbacks.put(AI_GetBlendFrames, (eventCallback_t1<idWeapon>) idWeapon::Event_GetBlendFrames);
+            eventCallbacks.put(AI_AnimDone, (eventCallback_t2<idWeapon>) idWeapon::Event_AnimDone);
+            eventCallbacks.put(EV_Weapon_Next, (eventCallback_t0<idWeapon>) idWeapon::Event_Next);
+            eventCallbacks.put(EV_SetSkin, (eventCallback_t1<idWeapon>) idWeapon::Event_SetSkin);
+            eventCallbacks.put(EV_Weapon_Flashlight, (eventCallback_t1<idWeapon>) idWeapon::Event_Flashlight);
+            eventCallbacks.put(EV_Light_GetLightParm, (eventCallback_t1<idWeapon>) idWeapon::Event_GetLightParm);
+            eventCallbacks.put(EV_Light_SetLightParm, (eventCallback_t2<idWeapon>) idWeapon::Event_SetLightParm);
+            eventCallbacks.put(EV_Light_SetLightParms, (eventCallback_t4<idWeapon>) idWeapon::Event_SetLightParms);
+            eventCallbacks.put(EV_Weapon_LaunchProjectiles, (eventCallback_t5<idWeapon>) idWeapon::Event_LaunchProjectiles);
+            eventCallbacks.put(EV_Weapon_CreateProjectile, (eventCallback_t0<idWeapon>) idWeapon::Event_CreateProjectile);
+            eventCallbacks.put(EV_Weapon_EjectBrass, (eventCallback_t0<idWeapon>) idWeapon::Event_EjectBrass);
+            eventCallbacks.put(EV_Weapon_Melee, (eventCallback_t0<idWeapon>) idWeapon::Event_Melee);
+            eventCallbacks.put(EV_Weapon_GetWorldModel, (eventCallback_t0<idWeapon>) idWeapon::Event_GetWorldModel);
+            eventCallbacks.put(EV_Weapon_AllowDrop, (eventCallback_t1<idWeapon>) idWeapon::Event_AllowDrop);
+            eventCallbacks.put(EV_Weapon_AutoReload, (eventCallback_t0<idWeapon>) idWeapon::Event_AutoReload);
+            eventCallbacks.put(EV_Weapon_NetReload, (eventCallback_t0<idWeapon>) idWeapon::Event_NetReload);
+            eventCallbacks.put(EV_Weapon_IsInvisible, (eventCallback_t0<idWeapon>) idWeapon::Event_IsInvisible);
+            eventCallbacks.put(EV_Weapon_NetEndReload, (eventCallback_t0<idWeapon>) idWeapon::Event_NetEndReload);
+        }
+
 
         // script control
         private idScriptBool WEAPON_ATTACK       = new idScriptBool();
@@ -2286,7 +2348,8 @@ public class Weapon {
             idThread.ReturnEntity(owner);
         }
 
-        private void Event_WeaponState(final String statename, int blendFrames) {
+        private void Event_WeaponState(final idEventArg<String> _statename, idEventArg<Integer> blendFrames) {
+            String statename = _statename.value;
             function_t func;
 
             func = scriptObject.GetFunction(statename);
@@ -2303,7 +2366,7 @@ public class Weapon {
                 isFiring = false;
             }
 
-            animBlendFrames = blendFrames;
+            animBlendFrames = blendFrames.value;
             thread.DoneProcessing();
         }
 //
@@ -2355,7 +2418,8 @@ public class Weapon {
             owner.WeaponLoweringCallback();
         }
 
-        private void Event_UseAmmo(int amount) {
+        private void Event_UseAmmo(idEventArg<Integer> _amount) {
+            int amount = _amount.value;
             if (gameLocal.isClient) {
                 return;
             }
@@ -2369,14 +2433,14 @@ public class Weapon {
             }
         }
 
-        private void Event_AddToClip(int amount) {
+        private void Event_AddToClip(idEventArg<Integer> amount) {
             int ammoAvail;
 
             if (gameLocal.isClient) {
                 return;
             }
 
-            ammoClip += amount;
+            ammoClip += amount.value;
             if (ammoClip > clipSize) {
                 ammoClip = clipSize;
             }
@@ -2406,7 +2470,9 @@ public class Weapon {
             idThread.ReturnFloat(clipSize);
         }
 
-        private void Event_PlayAnim(int channel, final String animname) {
+        private void Event_PlayAnim(idEventArg<Integer> _channel, final idEventArg<String> _animname) {
+            int channel = _channel.value;
+            String animname = _animname.value;
             int anim;
 
             anim = animator.GetAnim(animname);
@@ -2431,7 +2497,9 @@ public class Weapon {
             idThread.ReturnInt(0);
         }
 
-        private void Event_PlayCycle(int channel, final String animname) {
+        private void Event_PlayCycle(idEventArg<Integer> _channel, final idEventArg<String> _animname) {
+            int channel = _channel.value;
+            String animname = _animname.value;
             int anim;
 
             anim = animator.GetAnim(animname);
@@ -2454,19 +2522,19 @@ public class Weapon {
             idThread.ReturnInt(0);
         }
 
-        private void Event_AnimDone(int channel, int blendFrames) {
-            if (animDoneTime - FRAME2MS(blendFrames) <= gameLocal.time) {
+        private void Event_AnimDone(idEventArg<Integer> channel, idEventArg<Integer> blendFrames) {
+            if (animDoneTime - FRAME2MS(blendFrames.value) <= gameLocal.time) {
                 idThread.ReturnInt(true);
             } else {
                 idThread.ReturnInt(false);
             }
         }
 
-        private void Event_SetBlendFrames(int channel, int blendFrames) {
-            animBlendFrames = blendFrames;
+        private void Event_SetBlendFrames(idEventArg<Integer> channel, idEventArg<Integer> blendFrames) {
+            animBlendFrames = blendFrames.value;
         }
 
-        private void Event_GetBlendFrames(int channel) {
+        private void Event_GetBlendFrames(idEventArg<Integer> channel) {
             idThread.ReturnInt(animBlendFrames);
         }
 
@@ -2475,7 +2543,8 @@ public class Weapon {
             owner.NextBestWeapon();
         }
 
-        private void Event_SetSkin(final String skinname) {
+        private void Event_SetSkin(final idEventArg<String> _skinname) {
+            String skinname = _skinname.value;
             idDeclSkin skinDecl;
 
             if (!isNotNullOrEmpty(skinname)) {
@@ -2501,8 +2570,8 @@ public class Weapon {
             }
         }
 
-        private void Event_Flashlight(int enable) {
-            if (enable != 0) {
+        private void Event_Flashlight(idEventArg<Integer> enable) {
+            if (enable.value != 0) {
                 lightOn = true;
                 MuzzleFlashLight();
             } else {
@@ -2511,7 +2580,8 @@ public class Weapon {
             }
         }
 
-        private void Event_GetLightParm(int parmnum) {
+        private void Event_GetLightParm(idEventArg<Integer> _parmnum) {
+            int parmnum = _parmnum.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
                 gameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
@@ -2519,7 +2589,9 @@ public class Weapon {
             idThread.ReturnFloat(muzzleFlash.shaderParms[ parmnum]);
         }
 
-        private void Event_SetLightParm(int parmnum, float value) {
+        private void Event_SetLightParm(idEventArg<Integer> _parmnum, idEventArg<Float> _value) {
+            int parmnum = _parmnum.value;
+            float value = _value.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
                 gameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
@@ -2529,21 +2601,24 @@ public class Weapon {
             UpdateVisuals();
         }
 
-        private void Event_SetLightParms(float parm0, float parm1, float parm2, float parm3) {
-            muzzleFlash.shaderParms[ SHADERPARM_RED] = parm0;
-            muzzleFlash.shaderParms[ SHADERPARM_GREEN] = parm1;
-            muzzleFlash.shaderParms[ SHADERPARM_BLUE] = parm2;
-            muzzleFlash.shaderParms[ SHADERPARM_ALPHA] = parm3;
+        private void Event_SetLightParms(idEventArg<Float> parm0, idEventArg<Float> parm1, idEventArg<Float> parm2, idEventArg<Float> parm3) {
+            muzzleFlash.shaderParms[SHADERPARM_RED] = parm0.value;
+            muzzleFlash.shaderParms[SHADERPARM_GREEN] = parm1.value;
+            muzzleFlash.shaderParms[SHADERPARM_BLUE] = parm2.value;
+            muzzleFlash.shaderParms[SHADERPARM_ALPHA] = parm3.value;
 
-            worldMuzzleFlash.shaderParms[ SHADERPARM_RED] = parm0;
-            worldMuzzleFlash.shaderParms[ SHADERPARM_GREEN] = parm1;
-            worldMuzzleFlash.shaderParms[ SHADERPARM_BLUE] = parm2;
-            worldMuzzleFlash.shaderParms[ SHADERPARM_ALPHA] = parm3;
+            worldMuzzleFlash.shaderParms[SHADERPARM_RED] = parm0.value;
+            worldMuzzleFlash.shaderParms[SHADERPARM_GREEN] = parm1.value;
+            worldMuzzleFlash.shaderParms[SHADERPARM_BLUE] = parm2.value;
+            worldMuzzleFlash.shaderParms[SHADERPARM_ALPHA] = parm3.value;
 
             UpdateVisuals();
         }
 
-        private void Event_LaunchProjectiles(int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower) {
+        private void Event_LaunchProjectiles(idEventArg<Integer> _num_projectiles, idEventArg<Float> _spread, idEventArg<Float> fuseOffset, idEventArg<Float> launchPower, idEventArg<Float> _dmgPower) {
+            int num_projectiles = _num_projectiles.value;
+            float spread = _spread.value;
+            float dmgPower = _dmgPower.value;
             idProjectile proj;
             idEntity[] ent = {null};
             int i;
@@ -2697,7 +2772,7 @@ public class Weapon {
                         muzzle_pos = tr[0].endpos;
                     }
 
-                    proj.Launch(muzzle_pos, dir, pushVelocity, fuseOffset, launchPower, dmgPower);
+                    proj.Launch(muzzle_pos, dir, pushVelocity, fuseOffset.value, launchPower.value, dmgPower);
                 }
 
                 // toss the brass
@@ -2891,8 +2966,8 @@ public class Weapon {
             idThread.ReturnEntity(worldModel.GetEntity());
         }
 
-        private void Event_AllowDrop(int allow) {
-            allowDrop = (allow != 0);
+        private void Event_AllowDrop(idEventArg<Integer> allow) {
+            allowDrop = (allow.value != 0);
         }
 
         private void Event_AutoReload() {
@@ -2929,6 +3004,11 @@ public class Weapon {
         @Override
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }

@@ -1,9 +1,14 @@
 package neo.Game;
 
+import static neo.Game.Entity.EV_Activate;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -22,6 +27,9 @@ import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -83,6 +91,14 @@ public class Sound {
      ===============================================================================
      */
     public static class idSound extends idEntity {
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idSound>) idSound::Event_Trigger);
+            eventCallbacks.put(EV_Speaker_On, (eventCallback_t0<idSound>) idSound::Event_On);
+            eventCallbacks.put(EV_Speaker_Off, (eventCallback_t0<idSound>) idSound::Event_Off);
+            eventCallbacks.put(EV_Speaker_Timer, (eventCallback_t0<idSound>) idSound::Event_Timer);
+        }
+
 
         private float    lastSoundVol;
         private float    soundVol;
@@ -244,7 +260,7 @@ public class Sound {
          this will toggle the idle idSound on and off
          ================
          */
-        private void Event_Trigger(idEntity activator) {
+        private void Event_Trigger(idEventArg<idEntity> activator) {
             if (wait > 0.0f) {
                 if (timerOn) {
                     timerOn = false;
@@ -311,6 +327,11 @@ public class Sound {
         @Override
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }

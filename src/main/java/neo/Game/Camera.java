@@ -1,8 +1,13 @@
 package neo.Game;
 
+import static neo.Game.Entity.EV_Activate;
 import static neo.Game.Entity.TH_THINK;
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -11,6 +16,8 @@ import static neo.Game.GameSys.SysCvar.g_showcamerainfo;
 import static neo.Game.Game_local.gameLocal;
 import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Script.Script_Thread.idThread;
+
+import static neo.Game.Script.Script_Thread.EV_Thread_SetCallback;
 import static neo.Renderer.Model.MD5_CAMERA_EXT;
 import static neo.Renderer.Model.MD5_VERSION;
 import static neo.Renderer.Model.MD5_VERSION_STRING;
@@ -28,6 +35,9 @@ import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Quat.idQuat;
 import neo.idlib.math.Vector.idVec3;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -71,6 +81,11 @@ public class Camera {
      */
     public static class idCameraView extends idCamera {
 //    public	CLASS_PROTOTYPE( idCameraView );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idCameraView>) idCameraView::Event_Activate);
+            eventCallbacks.put(EV_Camera_SetAttachments, (eventCallback_t0<idCameraView>) idCameraView::Event_SetAttachments);
+        }
 
         protected float    fov;
         protected idEntity attachedTo;
@@ -162,7 +177,7 @@ public class Camera {
             ActivateTargets(gameLocal.GetLocalPlayer());
         }
 
-        protected void Event_Activate(idEntity activator) {
+        protected void Event_Activate(idEventArg<idEntity> activator) {
             if (spawnArgs.GetBool("trigger")) {
                 if (gameLocal.GetCamera() != this) {
                     if (g_debugCinematic.GetBool()) {
@@ -203,6 +218,11 @@ public class Camera {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -226,6 +246,14 @@ public class Camera {
 
     public static class idCameraAnim extends idCamera {
 //        public 	CLASS_PROTOTYPE( idCameraAnim );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Thread_SetCallback, (eventCallback_t0<idCameraAnim>) idCameraAnim::Event_SetCallback);
+            eventCallbacks.put(EV_Camera_Stop, (eventCallback_t0<idCameraAnim>) idCameraAnim::Event_Stop);
+            eventCallbacks.put(EV_Camera_Start, (eventCallback_t0<idCameraAnim>) idCameraAnim::Event_Start);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idCameraAnim>) idCameraAnim::Event_Activate);
+        }
+
 
         private int threadNum;
         private idVec3 offset;
@@ -652,8 +680,8 @@ public class Camera {
             }
         }
 
-        private void Event_Activate(idEntity _activator) {
-            activator.oSet(_activator);
+        private void Event_Activate(idEventArg<idEntity> _activator) {
+            activator.oSet(_activator.value);
             if ((thinkFlags & TH_THINK) != 0) {
                 Stop();
             } else {
@@ -669,6 +697,11 @@ public class Camera {
         @Override
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }

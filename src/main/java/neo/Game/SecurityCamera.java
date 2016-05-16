@@ -6,6 +6,9 @@ import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -40,6 +43,9 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  */
@@ -59,6 +65,14 @@ public class SecurityCamera {
     public static final idEventDef EV_SecurityCam_AddLight      = new idEventDef("<addLight>");
 
     public static class idSecurityCamera extends idEntity {
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_SecurityCam_ReverseSweep, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_ReverseSweep);
+            eventCallbacks.put(EV_SecurityCam_ContinueSweep, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_ContinueSweep);
+            eventCallbacks.put(EV_SecurityCam_Pause, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_Pause);
+            eventCallbacks.put(EV_SecurityCam_Alert, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_Alert);
+            eventCallbacks.put(EV_SecurityCam_AddLight, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_AddLight);
+        }
 
         private static final int SCANNING       = 0;
         private static final int LOSINGINTEREST = 1;
@@ -531,6 +545,11 @@ public class SecurityCamera {
             spotLight = (idLight) gameLocal.SpawnEntityType(idLight.class, args);
             spotLight.Bind(this, true);
             spotLight.UpdateVisuals();
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }

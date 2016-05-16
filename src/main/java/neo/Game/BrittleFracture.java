@@ -3,14 +3,29 @@ package neo.Game;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import neo.CM.CollisionModel.trace_s;
+
+import static neo.Game.Entity.EV_Activate;
+import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_PHYSICS;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.idEventArg;
+import neo.Game.GameSys.Event;
+import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.Game_local.MASK_SOLID;
@@ -97,6 +112,12 @@ public class BrittleFracture {
 
     public static class idBrittleFracture extends idEntity {
         // public CLASS_PROTOTYPE( idBrittleFracture );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idBrittleFracture>) idBrittleFracture::Event_Activate);
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idBrittleFracture>) idBrittleFracture::Event_Touch);
+        }
+
 
         //        
         // enum {
@@ -1248,14 +1269,16 @@ public class BrittleFracture {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             disableFracture = false;
             if (health <= 0) {
                 Break();
             }
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> _trace) {
+            idEntity other = _other.value;
+            trace_s trace = _trace.value;
             idVec3 point, impulse;
 
             if (!IsBroken()) {
@@ -1270,6 +1293,11 @@ public class BrittleFracture {
             impulse = other.GetPhysics().GetLinearVelocity().oMultiply(other.GetPhysics().GetMass());
 
             Shatter(point, impulse, gameLocal.time);
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }

@@ -65,6 +65,9 @@ import neo.Game.Pvs.pvsHandle_t;
 import neo.Game.Script.Script_Program.function_t;
 import neo.Game.Script.Script_Program.idScriptObject;
 import neo.Game.Script.Script_Thread.idThread;
+
+import static neo.Game.Script.Script_Thread.EV_Thread_Wait;
+import static neo.Game.Script.Script_Thread.EV_Thread_WaitFrame;
 import static neo.Renderer.Material.CONTENTS_TRIGGER;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
 import neo.Renderer.Material.idMaterial;
@@ -335,11 +338,11 @@ public class Entity {
             eventCallbacks.put(EV_DistanceTo, (eventCallback_t1<idEntity>) idEntity::Event_DistanceTo);
             eventCallbacks.put(EV_DistanceToPoint, (eventCallback_t1<idEntity>) idEntity::Event_DistanceToPoint);
             eventCallbacks.put(EV_StartFx, (eventCallback_t1<idEntity>) idEntity::Event_StartFx);
-//        eventCallbacks.put(EV_Thread_WaitFrame, (eventCallback_t0) idEntity::Event_WaitFrame);
-//        eventCallbacks.put(EV_Thread_Wait, (eventCallback_t0) idEntity::Event_Wait);
-//        eventCallbacks.put(EV_HasFunction, (eventCallback_t0) idEntity::Event_HasFunction);
-//        eventCallbacks.put(EV_CallFunction, (eventCallback_t0) idEntity::Event_CallFunction);
-//        eventCallbacks.put(EV_SetNeverDormant, (eventCallback_t0) idEntity::Event_SetNeverDormant);
+            eventCallbacks.put(EV_Thread_WaitFrame, (eventCallback_t0<idEntity>) idEntity::Event_WaitFrame);
+            eventCallbacks.put(EV_Thread_Wait, (eventCallback_t1<idEntity>) idEntity::Event_Wait);
+            eventCallbacks.put(EV_HasFunction, (eventCallback_t1<idEntity>) idEntity::Event_HasFunction);
+            eventCallbacks.put(EV_CallFunction, (eventCallback_t1<idEntity>) idEntity::Event_CallFunction);
+            eventCallbacks.put(EV_SetNeverDormant, (eventCallback_t1<idEntity>) idEntity::Event_SetNeverDormant);
         }
 
         public static final int MAX_PVS_AREAS = 4;
@@ -4146,7 +4149,7 @@ public class Entity {
             idEntityFx.StartFx(fx.value, null, null, e, true);
         }
 
-        private static void Event_WaitFrame() {
+        private void Event_WaitFrame() {
             idThread thread;
 
             thread = idThread.CurrentThread();
@@ -4155,20 +4158,20 @@ public class Entity {
             }
         }
 
-        private static void Event_Wait(float time) {
+        private void Event_Wait(idEventArg<Float> time) {
             idThread thread = idThread.CurrentThread();
 
             if (null == thread) {
                 gameLocal.Error("Event 'wait' called from outside thread");
             }
 
-            thread.WaitSec(time);
+            thread.WaitSec(time.value);
         }
 
-        private static void Event_HasFunction(idEntity e, final String name) {
+        private void Event_HasFunction(final idEventArg<String> name) {
             function_t func;
 
-            func = e.scriptObject.GetFunction(name);
+            func = scriptObject.GetFunction(name.value);
             if (func != null) {
                 idThread.ReturnInt(true);
             } else {
@@ -4176,7 +4179,8 @@ public class Entity {
             }
         }
 
-        private static void Event_CallFunction(idEntity e, final String funcName) {
+        private void Event_CallFunction(final idEventArg<String> _funcName) {
+            final String funcName = _funcName.value;
             function_t func;
             idThread thread;
 
@@ -4185,25 +4189,25 @@ public class Entity {
                 gameLocal.Error("Event 'callFunction' called from outside thread");
             }
 
-            func = e.scriptObject.GetFunction(funcName);
+            func = scriptObject.GetFunction(funcName);
             if (NOT(func)) {
-                gameLocal.Error("Unknown function '%s' in '%s'", funcName, e.scriptObject.GetTypeName());
+                gameLocal.Error("Unknown function '%s' in '%s'", funcName, scriptObject.GetTypeName());
             }
 
             if (func.type.NumParameters() != 1) {
                 gameLocal.Error("Function '%s' has the wrong number of parameters for 'callFunction'", funcName);
             }
-            if (!e.scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
+            if (!scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
                 gameLocal.Error("Function '%s' is the wrong type for 'callFunction'", funcName);
             }
 
             // function args will be invalid after this call
-            thread.CallFunction(e, func, false);
+            thread.CallFunction(this, func, false);
         }
 
-        private static void Event_SetNeverDormant(idEntity e, int enable) {
-            e.fl.neverDormant = (enable != 0);
-            e.dormantStart = 0;
+        private void Event_SetNeverDormant(idEventArg<Integer> enable) {
+            fl.neverDormant = (enable.value != 0);
+            dormantStart = 0;
         }
 
         public static void delete(final idEntity entity){

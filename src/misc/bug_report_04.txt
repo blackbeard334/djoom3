@@ -133,3 +133,7 @@ neo.Renderer.VertexCache$vertCache_s@4816c290
 				-idPlayer::UpdateViewAngles()		:disables our mouse powers
 					-idPlayer::GetViewPos()			:screen almost looks identical to ours
 						-idPlayerStart::Event_TeleportPlayer()
+							-idCameraAnim::Start()
+								-idEntity::TouchTriggers()
+									-idEntity::ActivateTargets() empty targets?
+										-idEntity::Event_FindTargets()

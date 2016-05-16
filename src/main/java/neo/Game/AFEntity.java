@@ -1,6 +1,9 @@
 package neo.Game;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AF.idAF;
 import neo.Game.AFEntity.jointTransformData_t;
@@ -8,6 +11,8 @@ import static neo.Game.Animation.Anim.ANIMCHANNEL_ALL;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD_OVERRIDE;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
+
+import static neo.Game.Entity.EV_Activate;
 import static neo.Game.Entity.EV_SetAngularVelocity;
 import static neo.Game.Entity.EV_SetLinearVelocity;
 import static neo.Game.Entity.TH_PHYSICS;
@@ -17,7 +22,14 @@ import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
 import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -490,6 +502,11 @@ public class AFEntity {
 
     public static class idAFEntity_Base extends idAnimatedEntity {
 // public	CLASS_PROTOTYPE( idAFEntity_Base );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_SetConstraintPosition, (eventCallback_t2<idAFEntity_Base>) idAFEntity_Base::Event_SetConstraintPosition);
+        }
 
         protected idAF        af;                   // articulated figure
         protected idClipModel combatModel;          // render model for hit detection
@@ -790,8 +807,13 @@ public class AFEntity {
             }
         }
 
-        protected void Event_SetConstraintPosition(final String name, final idVec3 pos) {
-            af.SetConstraintPosition(name, pos);
+        protected void Event_SetConstraintPosition(final idEventArg<String> name, final idEventArg<idVec3> pos) {
+            af.SetConstraintPosition(name.value, pos.value);
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
     /*
@@ -804,6 +826,12 @@ public class AFEntity {
 
     public static class idAFEntity_Gibbable extends idAFEntity_Base {
         // CLASS_PROTOTYPE( idAFEntity_Gibbable );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Gib, (eventCallback_t1<idAFEntity_Gibbable>) idAFEntity_Gibbable::Event_Gib);
+            eventCallbacks.put(EV_Gibbed, (eventCallback_t0<idAFEntity_Gibbable>) idAFEntity_Base::Event_Remove);
+        }
 
         protected idRenderModel skeletonModel;
         protected int           skeletonModelDefHandle;
@@ -995,8 +1023,8 @@ public class AFEntity {
             }
         }
 
-        protected void Event_Gib(final String damageDefName) {
-            Gib(new idVec3(0, 0, 1), damageDefName);
+        protected void Event_Gib(final idEventArg<String> damageDefName) {
+            Gib(new idVec3(0, 0, 1), damageDefName.value);
         }
 
         /**
@@ -1021,6 +1049,11 @@ public class AFEntity {
         public final boolean idAFEntity_Base_UpdateAnimationControllers() {
             return super.UpdateAnimationControllers();
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -1032,6 +1065,11 @@ public class AFEntity {
      */
     public static class idAFEntity_Generic extends idAFEntity_Gibbable {
         // CLASS_PROTOTYPE( idAFEntity_Generic );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idAFEntity_Generic>) idAFEntity_Generic::Event_Activate);
+        }
 
         private final boolean[] keepRunningPhysics = {false};
         //
@@ -1085,7 +1123,7 @@ public class AFEntity {
             keepRunningPhysics[0] = true;
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             float delay;
             idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
 
@@ -1111,6 +1149,11 @@ public class AFEntity {
                 PostEventSec(EV_SetAngularVelocity, delay, init_avelocity);
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -1122,6 +1165,12 @@ public class AFEntity {
      */
     public static class idAFEntity_WithAttachedHead extends idAFEntity_Gibbable {
         // CLASS_PROTOTYPE( idAFEntity_WithAttachedHead );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_Gib, (eventCallback_t1<idAFEntity_WithAttachedHead>) idAFEntity_WithAttachedHead::Event_Gib);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idAFEntity_WithAttachedHead>) idAFEntity_WithAttachedHead::Event_Activate);
+        }
 
         private idEntityPtr<idAFAttachment> head;
         //
@@ -1274,11 +1323,11 @@ public class AFEntity {
         }
 
         @Override
-        protected void Event_Gib(final String damageDefName) {
-            Gib(new idVec3(0, 0, 1), damageDefName);
+        protected void Event_Gib(final idEventArg<String> damageDefName) {
+            Gib(new idVec3(0, 0, 1), damageDefName.value);
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             float delay;
             idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
 
@@ -1303,6 +1352,11 @@ public class AFEntity {
             } else {
                 PostEventSec(EV_SetAngularVelocity, delay, init_avelocity);
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -2090,6 +2144,12 @@ public class AFEntity {
     public static class idAFEntity_ClawFourFingers extends idAFEntity_Base {
         // public:
         // CLASS_PROTOTYPE( idAFEntity_ClawFourFingers );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.put(EV_SetFingerAngle, (eventCallback_t1<idAFEntity_ClawFourFingers>) idAFEntity_ClawFourFingers::Event_SetFingerAngle);
+            eventCallbacks.put(EV_StopFingers, (eventCallback_t0<idAFEntity_ClawFourFingers>) idAFEntity_ClawFourFingers::Event_StopFingers);
+        }
 
         public idAFEntity_ClawFourFingers() {
             fingers[0] = null;
@@ -2147,11 +2207,11 @@ public class AFEntity {
         //
         //
 
-        private void Event_SetFingerAngle(float angle) {
+        private void Event_SetFingerAngle(idEventArg<Float> angle) {
             int i;
 
             for (i = 0; i < 4; i++) {
-                fingers[i].SetSteerAngle(angle);
+                fingers[i].SetSteerAngle(angle.value);
                 fingers[i].SetSteerSpeed(0.5f);
             }
             af.GetPhysics().Activate();
@@ -2163,6 +2223,11 @@ public class AFEntity {
             for (i = 0; i < 4; i++) {
                 fingers[i].SetSteerAngle(fingers[i].GetAngle());
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 

@@ -1,6 +1,9 @@
 package neo.Game.Animation;
 
 import neo.Game.Actor.copyJoints_t;
+
+import static neo.Game.Actor.EV_FootstepLeft;
+import static neo.Game.Actor.EV_FootstepRight;
 import static neo.Game.Animation.Anim.ANIMCHANNEL_ALL;
 import static neo.Game.Animation.Anim.FRAME2MS;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_LOCAL_OVERRIDE;
@@ -14,6 +17,11 @@ import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Event;
+import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.g_showTestModelFrame;
@@ -59,6 +67,9 @@ import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /*
  =============================================================================
 
@@ -92,6 +103,12 @@ public class Anim_Testmodel {
      */
     public static class idTestModel extends idAnimatedEntity {
         // CLASS_PROTOTYPE( idTestModel );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_FootstepLeft, (eventCallback_t0<idTestModel>) idTestModel::Event_Footstep);
+            eventCallbacks.put(EV_FootstepRight, (eventCallback_t0<idTestModel>) idTestModel::Event_Footstep);
+        }
+
 
         private idEntityPtr<idEntity> head;
         private idAnimator            headAnimator;
@@ -1072,6 +1089,11 @@ public class Anim_Testmodel {
         @Override
         public void oSet(Class.idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }

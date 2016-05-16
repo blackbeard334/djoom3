@@ -68,7 +68,7 @@ import java.util.Map;
 public class Script_Thread {
 
     static final idEventDef EV_Thread_Execute             = new idEventDef("<execute>", null);
-    static final idEventDef EV_Thread_SetCallback         = new idEventDef("<script_setcallback>", null);
+    public static final idEventDef EV_Thread_SetCallback         = new idEventDef("<script_setcallback>", null);
     //
     // script callable events
     static final idEventDef EV_Thread_TerminateThread     = new idEventDef("terminate", "d");

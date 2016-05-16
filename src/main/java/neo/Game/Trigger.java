@@ -1,11 +1,21 @@
 package neo.Game;
 
 import neo.CM.CollisionModel.trace_s;
+
+import static neo.Game.Entity.EV_Activate;
 import static neo.Game.Entity.EV_ActivateTargets;
+import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_THINK;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
 import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -36,6 +46,9 @@ import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  */
@@ -57,6 +70,13 @@ public class Trigger {
 
     public static class idTrigger extends idEntity {
         // CLASS_PROTOTYPE( idTrigger );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Enable, (eventCallback_t0<idTrigger>) idTrigger::Event_Enable);
+            eventCallbacks.put(EV_Disable, (eventCallback_t0<idTrigger>) idTrigger::Event_Disable);
+
+        }
+
 
         protected function_t scriptFunction;
         //
@@ -215,6 +235,11 @@ public class Trigger {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -226,13 +251,20 @@ public class Trigger {
      */
     public static class idTrigger_Multi extends idTrigger {
         // CLASS_PROTOTYPE( idTrigger_Multi );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idTrigger_Multi>) idTrigger_Multi::Event_Touch);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Multi>) idTrigger_Multi::Event_Trigger);
+            eventCallbacks.put(EV_TriggerAction, (eventCallback_t1<idTrigger_Multi>) idTrigger_Multi::Event_TriggerAction);
+        }
 
-        private float wait;
-        private float random;
-        private float delay;
-        private float random_delay;
-        private int   nextTriggerTime;
-        private idStr requires = new idStr();
+
+        private float   wait;
+        private float   random;
+        private float   delay;
+        private float   random_delay;
+        private int     nextTriggerTime;
+        private idStr   requires = new idStr();
         private int     removeItem;
         private boolean touchClient;
         private boolean touchOther;
@@ -372,8 +404,8 @@ public class Trigger {
             }
         }
 
-        private void Event_TriggerAction(idEntity activator) {
-            TriggerAction(activator);
+        private void Event_TriggerAction(idEventArg<idEntity> activator) {
+            TriggerAction(activator.value);
         }
 
         /*
@@ -386,7 +418,8 @@ public class Trigger {
          so wait for the delay time before firing
          ================
          */
-        private void Event_Trigger(idEntity activator) {
+        private void Event_Trigger(idEventArg<idEntity> _activator) {
+            idEntity activator = _activator.value;
             if (nextTriggerTime > gameLocal.time) {
                 // can't retrigger until the wait is over
                 return;
@@ -418,7 +451,8 @@ public class Trigger {
             }
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
+            idEntity other = _other.value;
             if (triggerFirst) {
                 return;
             }
@@ -467,9 +501,12 @@ public class Trigger {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    }
 
-    ;
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+    };
 
 
     /*
@@ -480,7 +517,14 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_EntityName extends idTrigger {
-//	CLASS_PROTOTYPE(idTrigger_EntityName );
+        //CLASS_PROTOTYPE(idTrigger_EntityName );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idTrigger_EntityName>) idTrigger_EntityName::Event_Touch);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_EntityName>) idTrigger_EntityName::Event_Trigger);
+            eventCallbacks.put(EV_TriggerAction, (eventCallback_t1<idTrigger_EntityName>) idTrigger_EntityName::Event_TriggerAction);
+        }
+
 
         private float   wait;
         private float   random;
@@ -488,7 +532,7 @@ public class Trigger {
         private float   random_delay;
         private int     nextTriggerTime;
         private boolean triggerFirst;
-        private idStr entityName = new idStr();
+        private idStr   entityName = new idStr();
         //
         //
 
@@ -568,8 +612,8 @@ public class Trigger {
             }
         }
 
-        private void Event_TriggerAction(idEntity activator) {
-            TriggerAction(activator);
+        private void Event_TriggerAction(idEventArg<idEntity> activator) {
+            TriggerAction(activator.value);
         }
 
 
@@ -582,7 +626,8 @@ public class Trigger {
          activator should be set to the activator so it can be held through a delay
          so wait for the delay time before firing
          ================
-         */ private void Event_Trigger(idEntity activator) {
+         */ private void Event_Trigger(idEventArg<idEntity> _activator) {
+            idEntity activator = _activator.value;
             if (nextTriggerTime > gameLocal.time) {
                 // can't retrigger until the wait is over
                 return;
@@ -609,7 +654,8 @@ public class Trigger {
             }
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
+            idEntity other = _other.value;
             if (triggerFirst) {
                 return;
             }
@@ -637,6 +683,11 @@ public class Trigger {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -648,14 +699,20 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Timer extends idTrigger {
-//	CLASS_PROTOTYPE(idTrigger_Timer );
+        //	CLASS_PROTOTYPE(idTrigger_Timer );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Timer, (eventCallback_t0<idTrigger_Timer>) idTrigger_Timer::Event_Timer);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Timer>) idTrigger_Timer::Event_Use);
+        }
 
-        private float random;
-        private float wait;
+
+        private float   random;
+        private float   wait;
         private boolean on;
-        private float delay;
-        private idStr onName = new idStr();
-        private idStr offName = new idStr();
+        private float   delay;
+        private idStr   onName  = new idStr();
+        private idStr   offName = new idStr();
         //
         //
 
@@ -740,7 +797,8 @@ public class Trigger {
             }
         }
 
-        private void Event_Use(idEntity activator) {
+        private void Event_Use(idEventArg<idEntity> _activator) {
+            idEntity activator = _activator.value;
             // if on, turn it off
             if (on) {
                 if (offName.Length() != 0 && offName.Icmp(activator.GetName()) != 0) {
@@ -762,6 +820,11 @@ public class Trigger {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -773,7 +836,13 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Count extends idTrigger {
-//	CLASS_PROTOTYPE(idTrigger_Count );
+        //	CLASS_PROTOTYPE(idTrigger_Count );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Count>) idTrigger_Count::Event_Trigger);
+            eventCallbacks.put(EV_TriggerAction, (eventCallback_t1<idTrigger_Count>) idTrigger_Count::Event_TriggerAction);
+        }
+
 
         private int   goal;
         private int   count;
@@ -810,7 +879,7 @@ public class Trigger {
             count = 0;
         }
 
-        private void Event_Trigger(idEntity activator) {
+        private void Event_Trigger(idEventArg<idEntity> activator) {
             // goal of -1 means trigger has been exhausted
             if (goal >= 0) {
                 count++;
@@ -820,13 +889,13 @@ public class Trigger {
                     } else {
                         goal = -1;
                     }
-                    PostEventSec(EV_TriggerAction, delay, activator);
+                    PostEventSec(EV_TriggerAction, delay, activator.value);
                 }
             }
         }
 
-        private void Event_TriggerAction(idEntity activator) {
-            ActivateTargets(activator);
+        private void Event_TriggerAction(idEventArg<idEntity> activator) {
+            ActivateTargets(activator.value);
             CallScript();
             if (goal == -1) {
                 PostEventMS(EV_Remove, 0);
@@ -836,6 +905,11 @@ public class Trigger {
         @Override
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -848,11 +922,17 @@ public class Trigger {
      ===============================================================================
      */
     static class idTrigger_Hurt extends idTrigger {
-//	CLASS_PROTOTYPE(idTrigger_Hurt );
+        //	CLASS_PROTOTYPE(idTrigger_Hurt );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idTrigger_Hurt>) idTrigger_Hurt::Event_Touch);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Hurt>) idTrigger_Hurt::Event_Toggle);
+        }
+
 
         private boolean on;
-        private float delay;
-        private int nextTime;
+        private float   delay;
+        private int     nextTime;
         //
         //
 
@@ -894,7 +974,8 @@ public class Trigger {
             Enable();
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
+            idEntity other = _other.value;
             final String damage;
 
             if (on && other != null && gameLocal.time >= nextTime) {
@@ -908,13 +989,18 @@ public class Trigger {
             }
         }
 
-        private void Event_Toggle(idEntity activator) {
+        private void Event_Toggle(idEventArg<idEntity> activator) {
             on = !on;
         }
 
         @Override
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -928,8 +1014,13 @@ public class Trigger {
      */
     public static class idTrigger_Fade extends idTrigger {
         // CLASS_PROTOTYPE( idTrigger_Fade );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Fade>) idTrigger_Fade::Event_Trigger);
+        }
 
-        private void Event_Trigger(idEntity activator) {
+
+        private void Event_Trigger(idEventArg<idEntity> activator) {
             idVec4 fadeColor;
             int fadeTime;
             idPlayer player;
@@ -939,13 +1030,18 @@ public class Trigger {
                 fadeColor = spawnArgs.GetVec4("fadeColor", "0, 0, 0, 1");
                 fadeTime = (int) SEC2MS(spawnArgs.GetFloat("fadeTime", "0.5"));
                 player.playerView.Fade(fadeColor, fadeTime);
-                PostEventMS(EV_ActivateTargets, fadeTime, activator);
+                PostEventMS(EV_ActivateTargets, fadeTime, activator.value);
             }
         }
 
         @Override
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -959,6 +1055,11 @@ public class Trigger {
      */
     public static class idTrigger_Touch extends idTrigger {
         // CLASS_PROTOTYPE( idTrigger_Touch );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Touch>) idTrigger_Touch::Event_Trigger);
+        }
+
 
         private idClipModel clipModel;
         //
@@ -1048,7 +1149,7 @@ public class Trigger {
             }
         }
 
-        private void Event_Trigger(idEntity activator) {
+        private void Event_Trigger(idEventArg<idEntity> activator) {
             if ((thinkFlags & TH_THINK) != 0) {
                 BecomeInactive(TH_THINK);
             } else {
@@ -1059,6 +1160,11 @@ public class Trigger {
         @Override
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }

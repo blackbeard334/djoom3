@@ -7,7 +7,14 @@ import static neo.Game.Entity.TH_ALL;
 import static neo.Game.Entity.TH_THINK;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
 import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -62,6 +69,10 @@ import static neo.idlib.math.Vector.getVec3_origin;
 import static neo.idlib.math.Vector.getVec4_zero;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static neo.ui.UserInterface.uiManager;
 
 /**
@@ -109,8 +120,13 @@ public class Target {
      */
     public static class idTarget_Remove extends idTarget {
         // CLASS_PROTOTYPE( idTarget_Remove );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_Remove>) idTarget_Remove::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             idEntity ent;
 
@@ -125,6 +141,10 @@ public class Target {
             PostEventMS(EV_Remove, 0);
         }
 
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -137,8 +157,13 @@ public class Target {
      */
     public static class idTarget_Show extends idTarget {
         // CLASS_PROTOTYPE( idTarget_Show );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_Show>) idTarget_Show::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             idEntity ent;
 
@@ -152,6 +177,11 @@ public class Target {
             // delete our self when done
             PostEventMS(EV_Remove, 0);
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -164,8 +194,13 @@ public class Target {
      */
     public static class idTarget_Damage extends idTarget {
         // CLASS_PROTOTYPE( idTarget_Damage );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_Damage>) idTarget_Damage::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             String damage;
             idEntity ent;
@@ -178,6 +213,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -189,10 +229,19 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SessionCommand extends idTarget {
-//	CLASS_PROTOTYPE(idTarget_SessionCommand );
+        //	CLASS_PROTOTYPE(idTarget_SessionCommand );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SessionCommand>) idTarget_SessionCommand::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             gameLocal.sessionCommand.oSet(spawnArgs.GetString("command"));
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -207,8 +256,13 @@ public class Target {
      */
     public static class idTarget_EndLevel extends idTarget {
         // CLASS_PROTOTYPE( idTarget_EndLevel );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_EndLevel>) idTarget_EndLevel::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             String[] nextMap = {null};
 
             if (ID_DEMO_BUILD) {
@@ -237,6 +291,11 @@ public class Target {
 
             gameLocal.sessionCommand.oPluSet(nextMap[0]);
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -249,6 +308,11 @@ public class Target {
      */
     public static class idTarget_WaitForButton extends idTarget {
         // CLASS_PROTOTYPE( idTarget_WaitForButton );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_WaitForButton>) idTarget_WaitForButton::Event_Activate);
+        }
+
 
         @Override
         public void Think() {
@@ -266,7 +330,7 @@ public class Target {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             if ((thinkFlags & TH_THINK) != 0) {
                 BecomeInactive(TH_THINK);
             } else {
@@ -274,6 +338,11 @@ public class Target {
                 cinematic = true;
                 BecomeActive(TH_THINK);
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -286,13 +355,23 @@ public class Target {
      */
     public static class idTarget_SetGlobalShaderTime extends idTarget {
         // CLASS_PROTOTYPE( idTarget_SetGlobalShaderTime );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SetGlobalShaderTime>) idTarget_SetGlobalShaderTime::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int parm = spawnArgs.GetInt("globalParm");
             float time = -MS2SEC(gameLocal.time);
             if (parm >= 0 && parm < MAX_GLOBAL_SHADER_PARMS) {
                 gameLocal.globalShaderParms[parm] = time;
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -306,8 +385,13 @@ public class Target {
      */
     public static class idTarget_SetShaderParm extends idTarget {
         // CLASS_PROTOTYPE( idTarget_SetShaderParm );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SetShaderParm>) idTarget_SetShaderParm::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             idEntity ent;
             float[] value = {0};
@@ -342,6 +426,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -354,8 +443,13 @@ public class Target {
      */
     public static class idTarget_SetShaderTime extends idTarget {
         // CLASS_PROTOTYPE( idTarget_SetShaderTime );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SetShaderTime>) idTarget_SetShaderTime::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             idEntity ent;
             float time;
@@ -371,6 +465,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -382,6 +481,10 @@ public class Target {
      */
     public static class idTarget_FadeEntity extends idTarget {
         // CLASS_PROTOTYPE( idTarget_FadeEntity );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_FadeEntity>) idTarget_FadeEntity::Event_Activate);
+        }
 
         private idVec4 fadeFrom;
         private int    fadeStart;
@@ -439,7 +542,7 @@ public class Target {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idEntity ent;
             int i;
 
@@ -463,6 +566,11 @@ public class Target {
             fadeStart = gameLocal.time;
             fadeEnd = (int) (gameLocal.time + SEC2MS(spawnArgs.GetFloat("fadetime")));
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -474,8 +582,13 @@ public class Target {
      */
     public static class idTarget_LightFadeIn extends idTarget {
         // CLASS_PROTOTYPE( idTarget_LightFadeIn );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_LightFadeIn>) idTarget_LightFadeIn::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idEntity ent;
             idLight light;
             int i;
@@ -500,6 +613,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -511,8 +629,13 @@ public class Target {
      */
     public static class idTarget_LightFadeOut extends idTarget {
         // CLASS_PROTOTYPE( idTarget_LightFadeOut );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_LightFadeOut>) idTarget_LightFadeOut::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idEntity ent;
             idLight light;
             int i;
@@ -537,6 +660,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -548,6 +676,11 @@ public class Target {
      */
     public static class idTarget_Give extends idTarget {
         // CLASS_PROTOTYPE( idTarget_Give );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_Give>) idTarget_Give::Event_Activate);
+        }
+
 
         @Override
         public void Spawn() {
@@ -557,7 +690,7 @@ public class Target {
         }
         private static int giveNum = 0;
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
 
             if (spawnArgs.GetBool("development") && developer.GetInteger() == 0) {
                 return;
@@ -582,6 +715,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -594,8 +732,13 @@ public class Target {
      */
     public static class idTarget_GiveEmail extends idTarget {
         // CLASS_PROTOTYPE( idTarget_GiveEmail );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_GiveEmail>) idTarget_GiveEmail::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idPlayer player = gameLocal.GetLocalPlayer();
             idDeclPDA pda = player.GetPDA();
             if (pda != null) {
@@ -603,6 +746,11 @@ public class Target {
             } else {
                 player.ShowTip(spawnArgs.GetString("text_infoTitle"), spawnArgs.GetString("text_PDANeeded"), true);
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -615,6 +763,11 @@ public class Target {
      */
     public static class idTarget_SetModel extends idTarget {
         // CLASS_PROTOTYPE( idTarget_SetModel );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SetModel>) idTarget_SetModel::Event_Activate);
+        }
+
 
         @Override
         public void Spawn() {
@@ -629,13 +782,18 @@ public class Target {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             for (int i = 0; i < targets.Num(); i++) {
                 idEntity ent = targets.oGet(i).GetEntity();
                 if (ent != null) {
                     ent.SetModel(spawnArgs.GetString("newmodel"));
                 }
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -648,6 +806,15 @@ public class Target {
      */
     public static class idTarget_SetInfluence extends idTarget {
         // CLASS_PROTOTYPE( idTarget_SetInfluence );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SetInfluence>) idTarget_SetInfluence::Event_Activate);
+            eventCallbacks.put(EV_RestoreInfluence, (eventCallback_t0<idTarget_SetInfluence>) idTarget_SetInfluence::Event_RestoreInfluence);
+            eventCallbacks.put(EV_GatherEntities, (eventCallback_t0<idTarget_SetInfluence>) idTarget_SetInfluence::Event_GatherEntities);
+            eventCallbacks.put(EV_Flash, (eventCallback_t2<idTarget_SetInfluence>) idTarget_SetInfluence::Event_Flash);
+            eventCallbacks.put(EV_ClearFlash, (eventCallback_t1<idTarget_SetInfluence>) idTarget_SetInfluence::Event_ClearFlash);
+        }
+
 
         private idList<Integer>      lightList;
         private idList<Integer>      guiList;
@@ -786,7 +953,7 @@ public class Target {
             cinematic = true;
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i, j;
             idEntity ent;
             idLight light;
@@ -813,7 +980,7 @@ public class Target {
             float fadeTime = spawnArgs.GetFloat("fadeWorldSounds");
 
             if (delay > 0.0f) {
-                PostEventSec(EV_Activate, delay, activator);
+                PostEventSec(EV_Activate, delay, activator.value);
                 delay = 0.0f;
                 // start any sound fading now
                 if (fadeTime != 0) {
@@ -827,7 +994,7 @@ public class Target {
             }
 
             if (spawnArgs.GetBool("triggerTargets")) {
-                ActivateTargets(activator);
+                ActivateTargets(activator.value);
             }
 
             if (flashIn != 0) {
@@ -1079,7 +1246,9 @@ public class Target {
 
         }
 
-        private void Event_Flash(float flash, int out) {
+        private void Event_Flash(idEventArg<Float> _flash, idEventArg<Integer> _out) {
+            float flash = _flash.value;
+            int out = _out.value;
             idPlayer player = gameLocal.GetLocalPlayer();
             player.playerView.Fade(new idVec4(1, 1, 1, 1), (int) flash);
             idSoundShader shader;
@@ -1093,9 +1262,9 @@ public class Target {
             PostEventSec(EV_ClearFlash, flash, flash);
         }
 
-        private void Event_ClearFlash(float flash) {
+        private void Event_ClearFlash(idEventArg<Float> flash) {
             idPlayer player = gameLocal.GetLocalPlayer();
-            player.playerView.Fade(getVec4_zero(), (int) flash);
+            player.playerView.Fade(getVec4_zero(), flash.value.intValue());
         }
 
         @Override
@@ -1113,9 +1282,12 @@ public class Target {
                 BecomeInactive(TH_ALL);
             }
         }
-    }
 
-    ;
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+    };
 
 
     /*
@@ -1127,8 +1299,13 @@ public class Target {
      */
     public static class idTarget_SetKeyVal extends idTarget {
         // CLASS_PROTOTYPE( idTarget_SetKeyVal );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SetKeyVal>) idTarget_SetKeyVal::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             String key, val;
             idEntity ent;
@@ -1162,9 +1339,12 @@ public class Target {
                 }
             }
         }
-    }
 
-    ;
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+    };
 
 
     /*
@@ -1176,6 +1356,11 @@ public class Target {
      */
     public static class idTarget_SetFov extends idTarget {
         // CLASS_PROTOTYPE( idTarget_SetFov );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SetFov>) idTarget_SetFov::Event_Activate);
+        }
+
 
         private idInterpolate<Integer> fovSetting;
         //
@@ -1220,7 +1405,7 @@ public class Target {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             // always allow during cinematics
             cinematic = true;
 
@@ -1228,9 +1413,12 @@ public class Target {
             fovSetting.Init(gameLocal.time, (float) SEC2MS(spawnArgs.GetFloat("time")), (int) (player != null ? player.DefaultFov() : g_fov.GetFloat()), (int) spawnArgs.GetFloat("fov"));
             BecomeActive(TH_THINK);
         }
-    }
 
-    ;
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+    };
 
 
     /*
@@ -1241,18 +1429,25 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetPrimaryObjective extends idTarget {
-// public:
         // CLASS_PROTOTYPE( idTarget_SetPrimaryObjective );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_SetPrimaryObjective>) idTarget_SetPrimaryObjective::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null && player.objectiveSystem != null) {
                 player.objectiveSystem.SetStateString("missionobjective", spawnArgs.GetString("text", common.GetLanguageDict().GetString("#str_04253")));
             }
         }
-    }
 
-    ;
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+    };
 
     /*
      ===============================================================================
@@ -1262,10 +1457,14 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_LockDoor extends idTarget {
-// public:
         // CLASS_PROTOTYPE( idTarget_LockDoor );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_LockDoor>) idTarget_LockDoor::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             idEntity ent;
             int lock;
@@ -1282,6 +1481,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -1292,10 +1496,14 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_CallObjectFunction extends idTarget {
-// public:
         // CLASS_PROTOTYPE( idTarget_CallObjectFunction );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_CallObjectFunction>) idTarget_CallObjectFunction::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             idEntity ent;
             function_t func;
@@ -1323,6 +1531,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
 
@@ -1335,8 +1548,13 @@ public class Target {
      */
     public static class idTarget_EnableLevelWeapons extends idTarget {
         // CLASS_PROTOTYPE( idTarget_EnableLevelWeapons );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_EnableLevelWeapons>) idTarget_EnableLevelWeapons::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             String weap;
 
@@ -1360,6 +1578,11 @@ public class Target {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
     
     /*
@@ -1371,6 +1594,14 @@ public class Target {
      */
     public static class idTarget_Tip extends idTarget {
         // CLASS_PROTOTYPE( idTarget_Tip );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_Tip>) idTarget_Tip::Event_Activate);
+            eventCallbacks.put(EV_TipOff, (eventCallback_t0<idTarget_Tip>) idTarget_Tip::Event_TipOff);
+            eventCallbacks.put(EV_GetPlayerPos, (eventCallback_t0<idTarget_Tip>) idTarget_Tip::Event_GetPlayerPos);
+        }
+
+
         private idVec3 playerPos;
         //
         //
@@ -1389,11 +1620,11 @@ public class Target {
             savefile.ReadVec3(playerPos);
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
                 if (player.IsTipVisible()) {
-                    PostEventSec(EV_Activate, 5.1f, activator);
+                    PostEventSec(EV_Activate, 5.1f, activator.value);
                     return;
                 }
                 player.ShowTip(spawnArgs.GetString("text_title"), spawnArgs.GetString("text_tip"), false);
@@ -1420,6 +1651,11 @@ public class Target {
                 PostEventMS(EV_TipOff, 100);
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
     };
 
     /*
@@ -1431,12 +1667,22 @@ public class Target {
      */
     public static class idTarget_GiveSecurity extends idTarget {
         // CLASS_PROTOTYPE( idTarget_GiveSecurity );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_GiveSecurity>) idTarget_GiveSecurity::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
                 player.GiveSecurity(spawnArgs.GetString("text_security"));
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -1450,8 +1696,13 @@ public class Target {
      */
     public static class idTarget_RemoveWeapons extends idTarget {
         // CLASS_PROTOTYPE( idTarget_RemoveWeapons );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_RemoveWeapons>) idTarget_RemoveWeapons::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             for (int i = 0; i < gameLocal.numClients; i++) {
                 if (gameLocal.entities[ i] != null) {
                     idPlayer player = (idPlayer) gameLocal.entities[i];
@@ -1463,6 +1714,11 @@ public class Target {
                     player.SelectWeapon(player.weapon_fists, true);
                 }
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -1476,14 +1732,24 @@ public class Target {
      */
     public static class idTarget_LevelTrigger extends idTarget {
         // CLASS_PROTOTYPE( idTarget_LevelTrigger );//TODO:understand this fucking macro
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_LevelTrigger>) idTarget_LevelTrigger::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             for (int i = 0; i < gameLocal.numClients; i++) {
                 if (gameLocal.entities[ i] != null) {
                     idPlayer player = (idPlayer) gameLocal.entities[i];
                     player.SetLevelTrigger(spawnArgs.GetString("levelName"), spawnArgs.GetString("triggerName"));
                 }
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -1496,8 +1762,13 @@ public class Target {
      */
     public static class idTarget_EnableStamina extends idTarget {
         // CLASS_PROTOTYPE( idTarget_EnableStamina );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_EnableStamina>) idTarget_EnableStamina::Event_Activate);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             for (int i = 0; i < gameLocal.numClients; i++) {
                 if (gameLocal.entities[ i] != null) {
                     idPlayer player = (idPlayer) gameLocal.entities[i];
@@ -1508,6 +1779,11 @@ public class Target {
                     }
                 }
             }
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 
@@ -1520,8 +1796,14 @@ public class Target {
      */
     public static class idTarget_FadeSoundClass extends idTarget {
         // CLASS_PROTOTYPE( idTarget_FadeSoundClass );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_FadeSoundClass>) idTarget_FadeSoundClass::Event_Activate);
+            eventCallbacks.put(EV_RestoreVolume, (eventCallback_t0<idTarget_FadeSoundClass>) idTarget_FadeSoundClass::Event_RestoreVolume);
+        }
 
-        private void Event_Activate(idEntity activator) {
+
+        private void Event_Activate(idEventArg<idEntity> activator) {
             float fadeTime = spawnArgs.GetFloat("fadeTime");
             float fadeDB = spawnArgs.GetFloat("fadeDB");
             float fadeDuration = spawnArgs.GetFloat("fadeDuration");
@@ -1541,6 +1823,11 @@ public class Target {
             int fadeClass = spawnArgs.GetInt("fadeClass");
             // restore volume
             gameSoundWorld.FadeSoundClasses(0, fadeDB, fadeTime);
+        }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
         }
     };
 }
