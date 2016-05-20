@@ -1203,6 +1203,7 @@ public class Player {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idActor.getEventCallBacks());
             eventCallbacks.put(EV_Player_GetButtons, (eventCallback_t0<idPlayer>) idPlayer::Event_GetButtons);
             eventCallbacks.put(EV_Player_GetMove, (eventCallback_t0<idPlayer>) idPlayer::Event_GetMove);
             eventCallbacks.put(EV_Player_GetViewAngles, (eventCallback_t0<idPlayer>) idPlayer::Event_GetViewAngles);
@@ -8426,5 +8427,10 @@ public class Player {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

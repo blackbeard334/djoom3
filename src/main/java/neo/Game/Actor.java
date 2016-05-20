@@ -367,6 +367,7 @@ public class Actor {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idAFEntity_Gibbable.getEventCallBacks());
             eventCallbacks.put(AI_EnableEyeFocus, (eventCallback_t0<idActor>) idActor::Event_EnableEyeFocus);
             eventCallbacks.put(AI_DisableEyeFocus, (eventCallback_t0<idActor>) idActor::Event_DisableEyeFocus);
             eventCallbacks.put(EV_Footstep, (eventCallback_t0<idActor>) idActor::Event_Footstep);
@@ -2891,5 +2892,10 @@ public class Actor {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

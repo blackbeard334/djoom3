@@ -44,6 +44,7 @@ public class WorldSpawn {
         //	CLASS_PROTOTYPE( idWorldspawn );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Remove, (eventCallback_t0<idWorldspawn>) idWorldspawn::Event_Remove);
             eventCallbacks.put(EV_SafeRemove, (eventCallback_t0<idWorldspawn>) idWorldspawn::Event_Remove);
         }
@@ -137,5 +138,10 @@ public class WorldSpawn {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

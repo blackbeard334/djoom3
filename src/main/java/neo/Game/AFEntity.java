@@ -505,6 +505,7 @@ public class AFEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idAnimatedEntity.getEventCallBacks());
             eventCallbacks.put(EV_SetConstraintPosition, (eventCallback_t2<idAFEntity_Base>) idAFEntity_Base::Event_SetConstraintPosition);
         }
 
@@ -815,6 +816,10 @@ public class AFEntity {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
     };
     /*
      ===============================================================================
@@ -829,6 +834,7 @@ public class AFEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idAFEntity_Base.getEventCallBacks());
             eventCallbacks.put(EV_Gib, (eventCallback_t1<idAFEntity_Gibbable>) idAFEntity_Gibbable::Event_Gib);
             eventCallbacks.put(EV_Gibbed, (eventCallback_t0<idAFEntity_Gibbable>) idAFEntity_Base::Event_Remove);
         }
@@ -1054,6 +1060,11 @@ public class AFEntity {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1068,6 +1079,7 @@ public class AFEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idAFEntity_Gibbable.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idAFEntity_Generic>) idAFEntity_Generic::Event_Activate);
         }
 
@@ -1154,6 +1166,11 @@ public class AFEntity {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1168,6 +1185,7 @@ public class AFEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idAFEntity_Gibbable.getEventCallBacks());
             eventCallbacks.put(EV_Gib, (eventCallback_t1<idAFEntity_WithAttachedHead>) idAFEntity_WithAttachedHead::Event_Gib);
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idAFEntity_WithAttachedHead>) idAFEntity_WithAttachedHead::Event_Activate);
         }
@@ -1358,6 +1376,11 @@ public class AFEntity {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2147,6 +2170,7 @@ public class AFEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idAFEntity_Base.getEventCallBacks());
             eventCallbacks.put(EV_SetFingerAngle, (eventCallback_t1<idAFEntity_ClawFourFingers>) idAFEntity_ClawFourFingers::Event_SetFingerAngle);
             eventCallbacks.put(EV_StopFingers, (eventCallback_t0<idAFEntity_ClawFourFingers>) idAFEntity_ClawFourFingers::Event_StopFingers);
         }
@@ -2229,6 +2253,11 @@ public class AFEntity {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*

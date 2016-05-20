@@ -67,6 +67,7 @@ public class SecurityCamera {
     public static class idSecurityCamera extends idEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_SecurityCam_ReverseSweep, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_ReverseSweep);
             eventCallbacks.put(EV_SecurityCam_ContinueSweep, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_ContinueSweep);
             eventCallbacks.put(EV_SecurityCam_Pause, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_Pause);
@@ -551,5 +552,10 @@ public class SecurityCamera {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

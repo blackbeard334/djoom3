@@ -188,6 +188,7 @@ public class Mover {
         // CLASS_PROTOTYPE( idMover );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_FindGuiTargets, (eventCallback_t0<idMover>) idMover::Event_FindGuiTargets);
             eventCallbacks.put(EV_Thread_SetCallback, (eventCallback_t0<idMover>) idMover::Event_SetCallback);
             eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idMover>) idMover::Event_TeamBlocked);
@@ -1448,6 +1449,11 @@ public class Mover {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1492,6 +1498,7 @@ public class Mover {
         // CLASS_PROTOTYPE( idElevator );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idMover.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idElevator>) idElevator::Event_Activate);
             eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idElevator>) idElevator::Event_TeamBlocked);
             eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idElevator>) idElevator::Event_PartBlocked);
@@ -1912,6 +1919,11 @@ public class Mover {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1944,6 +1956,7 @@ public class Mover {
         // CLASS_PROTOTYPE( idMover_Binary );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_FindGuiTargets, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_FindGuiTargets);
             eventCallbacks.put(EV_Thread_SetCallback, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_SetCallback);
             eventCallbacks.put(EV_Mover_ReturnToPos1, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_ReturnToPos1);
@@ -2851,6 +2864,11 @@ public class Mover {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2866,6 +2884,7 @@ public class Mover {
     public static class idDoor extends idMover_Binary {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idMover_Binary.getEventCallBacks());
             eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idDoor>) idDoor::Event_TeamBlocked);
             eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idDoor>) idDoor::Event_PartBlocked);
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idDoor>) idDoor::Event_Touch);
@@ -3636,6 +3655,11 @@ public class Mover {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -3649,6 +3673,7 @@ public class Mover {
         // CLASS_PROTOTYPE( idPlat );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idMover_Binary.getEventCallBacks());
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idPlat>) idPlat::Event_Touch);
             eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idPlat>) idPlat::Event_TeamBlocked);
             eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idPlat>) idPlat::Event_PartBlocked);
@@ -3824,6 +3849,11 @@ public class Mover {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -3844,6 +3874,7 @@ public class Mover {
         // CLASS_PROTOTYPE( idMover_Periodic );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idMover_Periodic>) idMover_Periodic::Event_TeamBlocked);
             eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idMover_Periodic>) idMover_Periodic::Event_PartBlocked);
         }
@@ -3929,6 +3960,11 @@ public class Mover {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -3942,6 +3978,7 @@ public class Mover {
         // CLASS_PROTOTYPE( idRotater );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idMover_Periodic.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idRotater>) idRotater::Event_Activate);
         }
 
@@ -4017,6 +4054,11 @@ public class Mover {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -4132,6 +4174,7 @@ public class Mover {
         // CLASS_PROTOTYPE( idRiser );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idMover_Periodic.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idRiser>) idRiser::Event_Activate);
         }
 
@@ -4178,5 +4221,10 @@ public class Mover {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

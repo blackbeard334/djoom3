@@ -43,6 +43,7 @@ public class AI_Vagary {
         //CLASS_PROTOTYPE( idAI_Vagary );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idAI.getEventCallBacks());
             eventCallbacks.put(AI_Vagary_ChooseObjectToThrow, (eventCallback_t5<idAI_Vagary>) idAI_Vagary::Event_ChooseObjectToThrow);
             eventCallbacks.put(AI_Vagary_ThrowObjectAtEnemy, (eventCallback_t2<idAI_Vagary>) idAI_Vagary::Event_ThrowObjectAtEnemy);
         }
@@ -136,5 +137,10 @@ public class AI_Vagary {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

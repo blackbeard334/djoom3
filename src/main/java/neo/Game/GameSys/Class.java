@@ -26,13 +26,14 @@ import neo.TempDump.TODO_Exception;
 import static neo.TempDump.sizeof;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.Hierarchy.idHierarchy;
 import neo.idlib.containers.List.idList;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+
+import java.util.Map;
 
 /**
  *
@@ -168,7 +169,7 @@ public class Class {
         }
     };
 
-    public static class idAllocError extends idException {
+    public static class idAllocError extends neo.idlib.Lib.idException {
 
         public idAllocError(final String text /*= ""*/) {
             super(text);
@@ -240,6 +241,10 @@ public class Class {
         public abstract java.lang.Class/*idTypeInfo*/ GetType();
 
         public abstract eventCallback_t getEventCallBack(idEventDef event);
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            throw new UnsupportedOperationException("Never call this function on idClass!");
+        }
 
 // #ifdef ID_REDIRECT_NEWDELETE
 // #undef new
@@ -344,7 +349,7 @@ public class Class {
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2) {
-            return PostEventArgs(ev, time, 2, toArg(arg1), toArg(arg1));
+            return PostEventArgs(ev, time, 2, toArg(arg1), toArg(arg2));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3) {

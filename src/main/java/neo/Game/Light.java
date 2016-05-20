@@ -92,6 +92,7 @@ public class Light {
         // public 	CLASS_PROTOTYPE( idLight );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Light_SetShader, (eventCallback_t1<idLight>) idLight::Event_SetShader);
             eventCallbacks.put(EV_Light_GetLightParm, (eventCallback_t1<idLight>) idLight::Event_GetLightParm);
             eventCallbacks.put(EV_Light_SetLightParm, (eventCallback_t2<idLight>) idLight::Event_SetLightParm);
@@ -925,5 +926,10 @@ public class Light {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

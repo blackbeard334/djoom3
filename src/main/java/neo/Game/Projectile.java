@@ -136,6 +136,7 @@ public class Projectile {
     public static class idProjectile extends idEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Explode, (eventCallback_t0<idProjectile>) idProjectile::Event_Explode);
             eventCallbacks.put(EV_Fizzle, (eventCallback_t0<idProjectile>) idProjectile::Event_Fizzle);
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idProjectile>) idProjectile::Event_Touch);
@@ -1279,6 +1280,11 @@ public class Projectile {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1689,6 +1695,7 @@ public class Projectile {
         // CLASS_PROTOTYPE( idBFGProjectile );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idProjectile.getEventCallBacks());
             eventCallbacks.put(EV_RemoveBeams, (eventCallback_t0<idBFGProjectile>) idBFGProjectile::Event_RemoveBeams);
         }
 
@@ -2039,6 +2046,11 @@ public class Projectile {
             return eventCallbacks.get(event);
         }
 
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
+
 //        private void ApplyDamage();
     };
 
@@ -2053,6 +2065,7 @@ public class Projectile {
         // CLASS_PROTOTYPE( idDebris );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Explode, (eventCallback_t0<idDebris>) idDebris::Event_Explode);
             eventCallbacks.put(EV_Fizzle, (eventCallback_t0<idDebris>) idDebris::Event_Fizzle);
         }
@@ -2351,5 +2364,10 @@ public class Projectile {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

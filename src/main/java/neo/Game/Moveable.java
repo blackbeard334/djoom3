@@ -113,6 +113,7 @@ public class Moveable {
         // CLASS_PROTOTYPE( idMoveable );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idMoveable>) idMoveable::Event_Activate);
             eventCallbacks.put(EV_BecomeNonSolid, (eventCallback_t0<idMoveable>) idMoveable::Event_BecomeNonSolid);
             eventCallbacks.put(EV_SetOwnerFromSpawnArgs, (eventCallback_t0<idMoveable>) idMoveable::Event_SetOwnerFromSpawnArgs);
@@ -529,6 +530,11 @@ public class Moveable {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -549,12 +555,12 @@ public class Moveable {
     public static class idBarrel extends idMoveable {
         // CLASS_PROTOTYPE( idBarrel );
 
-        private float radius;				// radius of barrel
-        private int barrelAxis;				// one of the coordinate axes the barrel cylinder is parallel to
-        private idVec3 lastOrigin;			// origin of the barrel the last think frame
-        private idMat3 lastAxis;			// axis of the barrel the last think frame
-        private float additionalRotation;		// additional rotation of the barrel about it's axis
-        private idMat3 additionalAxis;			// additional rotation axis
+        private float  radius;              // radius of barrel
+        private int    barrelAxis;          // one of the coordinate axes the barrel cylinder is parallel to
+        private idVec3 lastOrigin;          // origin of the barrel the last think frame
+        private idMat3 lastAxis;            // axis of the barrel the last think frame
+        private float  additionalRotation;  // additional rotation of the barrel about it's axis
+        private idMat3 additionalAxis;      // additional rotation axis
         //
         //
 
@@ -720,6 +726,7 @@ public class Moveable {
         // CLASS_PROTOTYPE( idExplodingBarrel );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idBarrel.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idExplodingBarrel>) idExplodingBarrel::Event_Activate);
             eventCallbacks.put(EV_Respawn, (eventCallback_t0<idExplodingBarrel>) idExplodingBarrel::Event_Respawn);
             eventCallbacks.put(EV_Explode, (eventCallback_t0<idExplodingBarrel>) idExplodingBarrel::Event_Explode);
@@ -740,16 +747,16 @@ public class Moveable {
             BURNEXPIRED,
             EXPLODING
         };
-        private explode_state_t state;
-        private idVec3 spawnOrigin;
-        private idMat3 spawnAxis;
+        private explode_state_t  state;
+        private idVec3           spawnOrigin;
+        private idMat3           spawnAxis;
         private int/*qhandle_t*/ particleModelDefHandle;
         private int/*qhandle_t*/ lightDefHandle;
-        private renderEntity_s particleRenderEntity;
-        private renderLight_s light;
-        private int particleTime;
-        private int lightTime;
-        private float time;
+        private renderEntity_s   particleRenderEntity;
+        private renderLight_s    light;
+        private int              particleTime;
+        private int              lightTime;
+        private float            time;
         //
         //
 
@@ -1131,5 +1138,10 @@ public class Moveable {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

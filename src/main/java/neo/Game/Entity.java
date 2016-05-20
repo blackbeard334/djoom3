@@ -388,6 +388,11 @@ public class Entity {
             return eventCallbacks.get(event);
         }
 
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
+
         @Override
         public idEntity oSet(idEntity node) {
             throw new UnsupportedOperationException("Not supported yet.");
@@ -4242,6 +4247,7 @@ public class Entity {
     public static class idAnimatedEntity extends idEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_GetJointHandle, (eventCallback_t1<idAnimatedEntity>) idAnimatedEntity::Event_GetJointHandle);
             eventCallbacks.put(EV_ClearAllJoints, (eventCallback_t0<idAnimatedEntity>) idAnimatedEntity::Event_ClearAllJoints);
             eventCallbacks.put(EV_ClearJoint, (eventCallback_t1<idAnimatedEntity>) idAnimatedEntity::Event_ClearJoint);
@@ -4760,6 +4766,11 @@ public class Entity {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     }
 
     /*

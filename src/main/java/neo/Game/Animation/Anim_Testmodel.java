@@ -105,6 +105,7 @@ public class Anim_Testmodel {
         // CLASS_PROTOTYPE( idTestModel );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idAnimatedEntity.getEventCallBacks());
             eventCallbacks.put(EV_FootstepLeft, (eventCallback_t0<idTestModel>) idTestModel::Event_Footstep);
             eventCallbacks.put(EV_FootstepRight, (eventCallback_t0<idTestModel>) idTestModel::Event_Footstep);
         }
@@ -1095,5 +1096,10 @@ public class Anim_Testmodel {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

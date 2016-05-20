@@ -96,6 +96,7 @@ public class Item {
         // public	CLASS_PROTOTYPE( idItem );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_DropToFloor, (eventCallback_t0<idItem>) idItem::Event_DropToFloor);
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idItem>) idItem::Event_Touch);
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idItem>) idItem::Event_Trigger);
@@ -581,6 +582,11 @@ public class Item {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -643,6 +649,7 @@ public class Item {
         //public 	CLASS_PROTOTYPE( idObjective );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idItem.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idObjective>) idObjective::Event_Trigger);
             eventCallbacks.put(EV_HideObjective, (eventCallback_t1<idObjective>) idObjective::Event_HideObjective);
             eventCallbacks.put(EV_GetPlayerPos, (eventCallback_t0<idObjective>) idObjective::Event_GetPlayerPos);
@@ -758,6 +765,11 @@ public class Item {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -813,6 +825,7 @@ public class Item {
         // public 	CLASS_PROTOTYPE( idMoveableItem );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idItem.getEventCallBacks());
             eventCallbacks.put(EV_DropToFloor, (eventCallback_t0<idMoveableItem>) idMoveableItem::Event_DropToFloor);
             eventCallbacks.put(EV_Gib, (eventCallback_t1<idMoveableItem>) idMoveableItem::Event_Gib);
         }
@@ -1094,6 +1107,11 @@ public class Item {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1134,6 +1152,7 @@ public class Item {
         //public 	CLASS_PROTOTYPE( idItemRemover );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idItemRemover>) idItemRemover::Event_Trigger);
         }
 
@@ -1165,6 +1184,11 @@ public class Item {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1178,6 +1202,7 @@ public class Item {
         // public 	CLASS_PROTOTYPE( idObjectiveComplete );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idItemRemover.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idObjectiveComplete>) idObjectiveComplete::Event_Trigger);
             eventCallbacks.put(EV_HideObjective, (eventCallback_t1<idObjectiveComplete>) idObjectiveComplete::Event_HideObjective);
             eventCallbacks.put(EV_GetPlayerPos, (eventCallback_t0<idObjectiveComplete>) idObjectiveComplete::Event_GetPlayerPos);
@@ -1254,5 +1279,10 @@ public class Item {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

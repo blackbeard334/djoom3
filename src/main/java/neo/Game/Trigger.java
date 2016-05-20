@@ -72,6 +72,7 @@ public class Trigger {
         // CLASS_PROTOTYPE( idTrigger );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Enable, (eventCallback_t0<idTrigger>) idTrigger::Event_Enable);
             eventCallbacks.put(EV_Disable, (eventCallback_t0<idTrigger>) idTrigger::Event_Disable);
 
@@ -240,6 +241,11 @@ public class Trigger {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -253,6 +259,7 @@ public class Trigger {
         // CLASS_PROTOTYPE( idTrigger_Multi );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idTrigger.getEventCallBacks());
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idTrigger_Multi>) idTrigger_Multi::Event_Touch);
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Multi>) idTrigger_Multi::Event_Trigger);
             eventCallbacks.put(EV_TriggerAction, (eventCallback_t1<idTrigger_Multi>) idTrigger_Multi::Event_TriggerAction);
@@ -506,6 +513,11 @@ public class Trigger {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
 
@@ -520,6 +532,7 @@ public class Trigger {
         //CLASS_PROTOTYPE(idTrigger_EntityName );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idTrigger.getEventCallBacks());
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idTrigger_EntityName>) idTrigger_EntityName::Event_Touch);
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_EntityName>) idTrigger_EntityName::Event_Trigger);
             eventCallbacks.put(EV_TriggerAction, (eventCallback_t1<idTrigger_EntityName>) idTrigger_EntityName::Event_TriggerAction);
@@ -688,6 +701,11 @@ public class Trigger {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
 
@@ -702,6 +720,7 @@ public class Trigger {
         //	CLASS_PROTOTYPE(idTrigger_Timer );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idTrigger.getEventCallBacks());
             eventCallbacks.put(EV_Timer, (eventCallback_t0<idTrigger_Timer>) idTrigger_Timer::Event_Timer);
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Timer>) idTrigger_Timer::Event_Use);
         }
@@ -825,6 +844,11 @@ public class Trigger {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
 
@@ -839,6 +863,7 @@ public class Trigger {
         //	CLASS_PROTOTYPE(idTrigger_Count );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idTrigger.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Count>) idTrigger_Count::Event_Trigger);
             eventCallbacks.put(EV_TriggerAction, (eventCallback_t1<idTrigger_Count>) idTrigger_Count::Event_TriggerAction);
         }
@@ -911,6 +936,11 @@ public class Trigger {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
 
@@ -925,6 +955,7 @@ public class Trigger {
         //	CLASS_PROTOTYPE(idTrigger_Hurt );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idTrigger.getEventCallBacks());
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idTrigger_Hurt>) idTrigger_Hurt::Event_Touch);
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Hurt>) idTrigger_Hurt::Event_Toggle);
         }
@@ -1002,6 +1033,11 @@ public class Trigger {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
 
@@ -1016,6 +1052,7 @@ public class Trigger {
         // CLASS_PROTOTYPE( idTrigger_Fade );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idTrigger.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Fade>) idTrigger_Fade::Event_Trigger);
         }
 
@@ -1043,6 +1080,11 @@ public class Trigger {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
 
@@ -1057,6 +1099,7 @@ public class Trigger {
         // CLASS_PROTOTYPE( idTrigger_Touch );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idTrigger.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTrigger_Touch>) idTrigger_Touch::Event_Trigger);
         }
 
@@ -1166,5 +1209,10 @@ public class Trigger {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

@@ -114,6 +114,7 @@ public class BrittleFracture {
         // public CLASS_PROTOTYPE( idBrittleFracture );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idBrittleFracture>) idBrittleFracture::Event_Activate);
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idBrittleFracture>) idBrittleFracture::Event_Touch);
         }
@@ -1299,5 +1300,10 @@ public class BrittleFracture {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

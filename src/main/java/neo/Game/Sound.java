@@ -93,6 +93,7 @@ public class Sound {
     public static class idSound extends idEntity {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idSound>) idSound::Event_Trigger);
             eventCallbacks.put(EV_Speaker_On, (eventCallback_t0<idSound>) idSound::Event_On);
             eventCallbacks.put(EV_Speaker_Off, (eventCallback_t0<idSound>) idSound::Event_Off);
@@ -333,5 +334,10 @@ public class Sound {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

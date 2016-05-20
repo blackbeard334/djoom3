@@ -83,6 +83,7 @@ public class Camera {
 //    public	CLASS_PROTOTYPE( idCameraView );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idCamera.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idCameraView>) idCameraView::Event_Activate);
             eventCallbacks.put(EV_Camera_SetAttachments, (eventCallback_t0<idCameraView>) idCameraView::Event_SetAttachments);
         }
@@ -223,6 +224,11 @@ public class Camera {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -248,6 +254,7 @@ public class Camera {
 //        public 	CLASS_PROTOTYPE( idCameraAnim );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idCamera.getEventCallBacks());
             eventCallbacks.put(EV_Thread_SetCallback, (eventCallback_t0<idCameraAnim>) idCameraAnim::Event_SetCallback);
             eventCallbacks.put(EV_Camera_Stop, (eventCallback_t0<idCameraAnim>) idCameraAnim::Event_Stop);
             eventCallbacks.put(EV_Camera_Start, (eventCallback_t0<idCameraAnim>) idCameraAnim::Event_Start);
@@ -703,5 +710,10 @@ public class Camera {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

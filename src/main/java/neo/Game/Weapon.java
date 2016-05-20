@@ -194,6 +194,7 @@ public class Weapon {
         // CLASS_PROTOTYPE( idWeapon );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(idAnimatedEntity.getEventCallBacks());
             eventCallbacks.put(EV_Weapon_Clear, (eventCallback_t0<idWeapon>) idWeapon::Event_Clear);
             eventCallbacks.put(EV_Weapon_GetOwner, (eventCallback_t0<idWeapon>) idWeapon::Event_GetOwner);
             eventCallbacks.put(EV_Weapon_State, (eventCallback_t2<idWeapon>) idWeapon::Event_WeaponState);
@@ -3010,5 +3011,10 @@ public class Weapon {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

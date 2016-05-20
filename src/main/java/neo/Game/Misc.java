@@ -188,6 +188,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idPlayerStart>) idPlayerStart::Event_TeleportPlayer);
             eventCallbacks.put(EV_TeleportStage, (eventCallback_t1<idPlayerStart>) idPlayerStart::Event_TeleportStage);
         }
@@ -367,6 +368,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -384,6 +390,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idActivator>) idActivator::Event_Activate);
         }
 
@@ -455,6 +462,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -475,6 +487,7 @@ public class Misc {
 // public 	CLASS_PROTOTYPE( idPathCorner );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(AI_RandomPath, (eventCallback_t0<idPathCorner>) idPathCorner::Event_RandomPath);
         }
 
@@ -539,6 +552,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -562,6 +580,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idDamagable>) idDamagable::Event_BecomeBroken);
             eventCallbacks.put(EV_RestoreDamagable, (eventCallback_t0<idDamagable>) idDamagable::Event_RestoreDamagable);
         }
@@ -697,6 +716,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -717,6 +741,7 @@ public class Misc {
 //	CLASS_PROTOTYPE( idExplodable );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idExplodable>) idExplodable::Event_Explode);
         }
 
@@ -762,6 +787,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -776,6 +806,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_PostSpawn, (eventCallback_t0<idSpring>) idSpring::Event_LinkSpring);
         }
 
@@ -881,6 +912,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -897,6 +933,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idForceField>) idForceField::Event_Activate);
             eventCallbacks.put(EV_Toggle, (eventCallback_t0<idForceField>) idForceField::Event_Toggle);
             eventCallbacks.put(EV_FindTargets, (eventCallback_t0<idForceField>) idForceField::Event_FindTargets );
@@ -1007,6 +1044,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
     /*
      ===============================================================================
@@ -1026,6 +1068,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idAFEntity_Gibbable.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idAnimated>) idAnimated::Event_Activate);
             eventCallbacks.put(EV_Animated_Start, (eventCallback_t0<idAnimated>) idAnimated::Event_Start);
             eventCallbacks.put(EV_StartRagdoll, (eventCallback_t0<idAnimated>) idAnimated::Event_StartRagdoll);
@@ -1414,6 +1457,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1430,6 +1478,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idStaticEntity>) idStaticEntity::Event_Activate);
         }
 
@@ -1654,6 +1703,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1668,6 +1722,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idStaticEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncEmitter>) idFuncEmitter::Event_Activate);
         }
 
@@ -1735,6 +1790,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1749,6 +1809,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncSmoke>) idFuncSmoke::Event_Activate);
         }
 
@@ -1849,6 +1910,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1865,6 +1931,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idFuncEmitter.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncSplat>) idFuncSplat::Event_Activate);
             eventCallbacks.put(EV_Splat, (eventCallback_t0<idFuncSplat>) idFuncSplat::Event_Splat);
         }
@@ -1902,6 +1969,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2058,6 +2130,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idVacuumSeparatorEntity>) idVacuumSeparatorEntity::Event_Activate);
         }
 
@@ -2119,6 +2192,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2169,6 +2247,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_PostSpawn, (eventCallback_t0<idBeam>) idBeam::Event_MatchTarget);
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idBeam>) idBeam::Event_Activate);
         }
@@ -2337,6 +2416,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Touch, (eventCallback_t2<idLiquid>) idLiquid::Event_Touch);
         }
 
@@ -2391,6 +2471,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2405,6 +2490,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idShaking>) idShaking::Event_Activate);
         }
 
@@ -2484,6 +2570,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2498,6 +2589,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idEarthQuake>) idEarthQuake::Event_Activate);
         }
 
@@ -2652,6 +2744,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
 
@@ -2667,6 +2764,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncPortal>) idFuncPortal::Event_Activate);
         }
 
@@ -2723,6 +2821,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2737,6 +2840,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncAASPortal>) idFuncAASPortal::Event_Activate);
         }
 
@@ -2785,6 +2889,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2799,6 +2908,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncAASObstacle>) idFuncAASObstacle::Event_Activate);
         }
 
@@ -2846,6 +2956,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
     /*
      ===============================================================================
@@ -2861,6 +2976,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idFuncRadioChatter>) idFuncRadioChatter::Event_Activate);
             eventCallbacks.put(EV_ResetRadioHud, (eventCallback_t1<idFuncRadioChatter>) idFuncRadioChatter::Event_ResetRadioHud);
         }
@@ -2950,6 +3066,11 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
 
@@ -2965,6 +3086,7 @@ public class Misc {
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idPhantomObjects>) idPhantomObjects::Event_Activate);
         }
 
@@ -3223,5 +3345,10 @@ public class Misc {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return eventCallbacks.get(event);
         }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }
