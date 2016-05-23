@@ -2688,7 +2688,7 @@ public class AI {
 
             torsoAnim.animBlendFrames = 0;
             torsoAnim.lastAnimBlendFrames = 0;
-            ProcessEvent(AI_PlayAnim, ANIMCHANNEL_TORSO, animName);
+            ProcessEvent(AI_PlayAnim, ANIMCHANNEL_TORSO, animName[0]);
 
             // make sure our model gets updated
             animator.ForceUpdate();

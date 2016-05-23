@@ -153,14 +153,14 @@ public class usurface {
         temp.oSet(1, (d0.oGet(1) * d1.oGet(4) - d0.oGet(4) * d1.oGet(1)) * inva);
         temp.oSet(2, (d0.oGet(2) * d1.oGet(4) - d0.oGet(4) * d1.oGet(2)) * inva);
         temp.Normalize();
-        texVec.v[0].ToVec3().oSet(temp);
+        texVec.v[0].oSet(temp);
         texVec.v[0].oSet(3, tri.v[0].xyz.oMultiply(texVec.v[0].ToVec3()) - tri.v[0].st.oGet(0));
 
         temp.oSet(0, (d0.oGet(3) * d1.oGet(0) - d0.oGet(0) * d1.oGet(3)) * inva);
         temp.oSet(1, (d0.oGet(3) * d1.oGet(1) - d0.oGet(1) * d1.oGet(3)) * inva);
         temp.oSet(2, (d0.oGet(3) * d1.oGet(2) - d0.oGet(2) * d1.oGet(3)) * inva);
         temp.Normalize();
-        texVec.v[1].ToVec3().oSet(temp);
+        texVec.v[1].oSet(temp);
         texVec.v[1].oSet(3, tri.v[0].xyz.oMultiply(texVec.v[0].ToVec3()) - tri.v[0].st.oGet(1));
     }
 

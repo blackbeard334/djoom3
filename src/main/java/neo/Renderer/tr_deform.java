@@ -202,11 +202,9 @@ public class tr_deform {
         newTri.numVerts = tri.numVerts;
         newTri.numIndexes = tri.numIndexes;
         newTri.indexes = new int[newTri.numIndexes];// R_FrameAlloc(newTri.numIndexes);
-//	memcpy( newTri.indexes, tri.indexes, newTri.numIndexes * sizeof( newTri.indexes[0] ) );
-        System.arraycopy(tri.indexes, 0, newTri.indexes, 0, newTri.numIndexes);
+        System.arraycopy(tri.indexes, 0, newTri.indexes, 0, newTri.numIndexes);//memcpy( newTri.indexes, tri.indexes, newTri.numIndexes * sizeof( newTri.indexes[0] ) );
 
-        idDrawVert[] ac = new idDrawVert[newTri.numVerts];
-//	memset( ac, 0, sizeof( idDrawVert ) * newTri.numVerts );
+        idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(newTri.numVerts).toArray(idDrawVert[]::new);//memset( ac, 0, sizeof( idDrawVert ) * newTri.numVerts );
 
         // this is a lot of work for two triangles...
         // we could precalculate a lot if it is an issue, but it would mess up
@@ -246,9 +244,10 @@ public class tr_deform {
                 v1 = tri.verts[tri.indexes[i + edgeVerts[nums[j]][0]]];
                 v2 = tri.verts[tri.indexes[i + edgeVerts[nums[j]][1]]];
 
-                mid[j].oSet(0, 0.5f * (v1.xyz.oGet(0) + v2.xyz.oGet(0)));
-                mid[j].oSet(1, 0.5f * (v1.xyz.oGet(1) + v2.xyz.oGet(1)));
-                mid[j].oSet(2, 0.5f * (v1.xyz.oGet(2) + v2.xyz.oGet(2)));
+                mid[j] = new idVec3(
+                        0.5f * (v1.xyz.oGet(0) + v2.xyz.oGet(0)),
+                        0.5f * (v1.xyz.oGet(1) + v2.xyz.oGet(1)),
+                        0.5f * (v1.xyz.oGet(2) + v2.xyz.oGet(2)));
             }
 
             // find the vector of the major axis
@@ -591,9 +590,8 @@ public class tr_deform {
             color = 255;
         }
         for (j = 0; j < newTri.numVerts; j++) {
-            ac[j].color[0]
-                    = ac[j].color[1]
-                    = ac[j].color[2] = (short) color;
+            ac[j] = new idDrawVert();
+            ac[j].color[0] = ac[j].color[1] = ac[j].color[2] = (short) color;
             ac[j].color[3] = 255;
         }
 
@@ -617,15 +615,18 @@ public class tr_deform {
 
             idVec3 d1 = tri.verts[indexes[(i + 1) % 4]].xyz.oMinus(localViewer);
             d1.Normalize();
+            edgeDir[i][1] = new idVec3();
             edgeDir[i][1].Cross(toEye, d1);
             edgeDir[i][1].Normalize();
             edgeDir[i][1] = getVec3_origin().oMinus(edgeDir[i][1]);
 
             idVec3 d2 = tri.verts[indexes[(i + 3) % 4]].xyz.oMinus(localViewer);
             d2.Normalize();
+            edgeDir[i][0] = new idVec3();
             edgeDir[i][0].Cross(toEye, d2);
             edgeDir[i][0].Normalize();
 
+            edgeDir[i][2] = new idVec3();
             edgeDir[i][2] = edgeDir[i][0].oPlus(edgeDir[i][1]);
             edgeDir[i][2].Normalize();
         }
@@ -838,10 +839,15 @@ public class tr_deform {
 
     static class eyeIsland_t {
 
-        int[] tris = new int[MAX_EYEBALL_TRIS];
-        int numTris;
+        int[]    tris = new int[MAX_EYEBALL_TRIS];
+        int      numTris;
         idBounds bounds;
-        idVec3 mid;
+        idVec3   mid;
+
+        public eyeIsland_t() {
+            bounds = new idBounds();
+            mid = new idVec3();
+        }
     };
 
     public static void AddTriangleToIsland_r(final srfTriangles_s tri, int triangleNum, boolean[] usedList, eyeIsland_t island) {
@@ -911,6 +917,7 @@ public class tr_deform {
 //	memset( triUsed, 0, sizeof( triUsed ) );
 
         for (numIslands = 0; numIslands < MAX_EYEBALL_ISLANDS; numIslands++) {
+            islands[numIslands] = new eyeIsland_t();
             islands[numIslands].numTris = 0;
             islands[numIslands].bounds.Clear();
             for (i = 0; i < numTri; i++) {
@@ -937,13 +944,13 @@ public class tr_deform {
         newTri.numVerts = tri.numVerts;
         newTri.numIndexes = tri.numIndexes;
         newTri.indexes = new int[tri.numIndexes];
-        idDrawVert[] ac = new idDrawVert[tri.numVerts];
+        idDrawVert[] ac = Stream.generate(idDrawVert::new).limit(tri.numVerts).toArray(idDrawVert[]::new);
 
         newTri.numIndexes = 0;
 
         // decide which islands are the eyes and points
         for (i = 0; i < numIslands; i++) {
-            islands[i].mid = islands[i].bounds.GetCenter();
+            islands[i].mid.oSet(islands[i].bounds.GetCenter());
         }
 
         for (i = 0; i < numIslands; i++) {
@@ -995,7 +1002,7 @@ public class tr_deform {
             v2.Normalize();
 
             // texVec[0] will be the normal to the origin triangle
-            idVec3[] texVec = new idVec3[2];
+            idVec3[] texVec = {new idVec3(), new idVec3()};
 
             texVec[0].Cross(v1, v2);
 
@@ -1014,7 +1021,7 @@ public class tr_deform {
                     index = tri.indexes[index + k];
                     newTri.indexes[newTri.numIndexes++] = index;
 
-                    ac[index].xyz = tri.verts[index].xyz;
+                    ac[index].xyz.oSet(tri.verts[index].xyz);
 
                     idVec3 local = tri.verts[index].xyz.oMinus(origin);
 

@@ -2,7 +2,10 @@ package neo.idlib.math;
 
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+
+import neo.Renderer.Model;
 import neo.Renderer.Model.dominantTri_s;
+import neo.Renderer.Model.shadowCache_s;
 import neo.TempDump.TODO_Exception;
 import neo.framework.CmdSystem;
 import neo.framework.CmdSystem.cmdFunction_t;
@@ -361,6 +364,12 @@ public class Simd {
 
         public abstract void /*VPCALL*/ Memcpy(Object[] dst, final Object[] src, final int count);
 
+        public void /*VPCALL*/ Memcpy(shadowCache_s[] dst, final idVec4[] src, final int count) {
+            for (int i = 0; i < count; i++) {
+                dst[i].xyz.oSet(src[i]);
+            }
+        }
+
         public void /*VPCALL*/ Memcpy(Object dst, final Object src, final int count) {
             throw new TODO_Exception();
         }
@@ -489,7 +498,7 @@ public class Simd {
         }
 
         public void Memset(int[] cullBits, int i, int numVerts) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            Arrays.fill(cullBits, 0, numVerts, i);
         }
 
         public void CmpGE(byte[] facing, float[] planeSide, float f, int numFaces) {
@@ -505,12 +514,12 @@ public class Simd {
             }
         }
 
-        public void Memcpy(int[] indexes, int[] tempIndexes, int numShadowIndexes) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public void Memcpy(int[] dst, int[] src, int count) {
+            Memcpy(dst, 0, src, 0, count);
         }
 
-        public void Memcpy(int[] indexes, int indexOffset, int[] tempIndexes, int tempOffset, int numShadowIndexes) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public void Memcpy(int[] dst, int dstOffset, int[] src, int srcOffset, int count) {
+            System.arraycopy(src, srcOffset, dst, dstOffset, count);
         }
 
     };

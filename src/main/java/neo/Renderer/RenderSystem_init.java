@@ -452,8 +452,8 @@ public class RenderSystem_init {
         r_showTrace = new idCVar("r_showTrace", "0", CVAR_RENDERER | CVAR_INTEGER, "show the intersection of an eye trace with the world", new idCmdSystem.ArgCompletion_Integer(0, 2));
         r_showIntensity = new idCVar("r_showIntensity", "0", CVAR_RENDERER | CVAR_BOOL, "draw the screen colors based on intensity, red = 0, green = 128, blue = 255");
         r_showImages = new idCVar("r_showImages", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = show all images instead of rendering, 2 = show in proportional size", 0, 2, new idCmdSystem.ArgCompletion_Integer(0, 2));
-        r_showSmp = new idCVar("r_showSmp", "0", CVAR_RENDERER | CVAR_BOOL, "show which end =new idCVar(front or back) is blocking");
-        r_showLights = new idCVar("r_showLights", "2", CVAR_RENDERER | CVAR_INTEGER, "1 = just print volumes numbers, highlighting ones covering the view, 2 = also draw planes of each volume, 3 = also draw edges of each volume", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
+        r_showSmp = new idCVar("r_showSmp", "0", CVAR_RENDERER | CVAR_BOOL, "show which end (front or back) is blocking");
+        r_showLights = new idCVar("r_showLights", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = just print volumes numbers, highlighting ones covering the view, 2 = also draw planes of each volume, 3 = also draw edges of each volume", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showShadows = new idCVar("r_showShadows", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = visualize the stencil shadow volumes, 2 = draw filled in", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showShadowCount = new idCVar("r_showShadowCount", "0", CVAR_RENDERER | CVAR_INTEGER, "colors screen based on shadow volume depth complexity, >= 2 = print overdraw count based on stencil index values, 3 = only show turboshadows, 4 = only show static shadows", 0, 4, new idCmdSystem.ArgCompletion_Integer(0, 4));
         r_showLightScissors = new idCVar("r_showLightScissors", "0", CVAR_RENDERER | CVAR_BOOL, "show light scissor rectangles");

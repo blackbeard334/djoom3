@@ -262,12 +262,12 @@ public class Camera {
         }
 
 
-        private int threadNum;
-        private idVec3 offset;
-        private int frameRate;
-        private int starttime;
-        private int cycle;
-        private idList<Integer> cameraCuts;
+        private int                   threadNum;
+        private idVec3                offset;
+        private int                   frameRate;
+        private int                   starttime;
+        private int                   cycle;
+        private idList<Integer>       cameraCuts;
         private idList<cameraFrame_t> camera;
         private idEntityPtr<idEntity> activator;
         //
@@ -281,7 +281,7 @@ public class Camera {
             cycle = 1;
             cameraCuts = new idList<>();
             camera = new idList<>();
-            activator = null;
+            activator = new idEntityPtr<>(null);
 
         }
         //~idCameraAnim();

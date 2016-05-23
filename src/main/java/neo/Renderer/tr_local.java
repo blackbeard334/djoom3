@@ -38,6 +38,7 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import org.lwjgl.BufferUtils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -2379,7 +2380,7 @@ public class tr_local {
 
             // include extra space for OpenGL padding to word boundaries
             int c = (rc.width + 3) * rc.height;
-            ByteBuffer data = ByteBuffer.allocate(c * 3);// R_StaticAlloc(c * 3);
+            ByteBuffer data = BufferUtils.createByteBuffer(c * 3);// R_StaticAlloc(c * 3);
 
             qglReadPixels(rc.x, rc.y, rc.width, rc.height, GL_RGB, GL_UNSIGNED_BYTE, data);
 

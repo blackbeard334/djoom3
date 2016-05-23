@@ -1402,6 +1402,13 @@ public class Vector {
             return this;
         }
 
+        public idVec4 oSet(final idVec3 a) {
+            this.x = a.x;
+            this.y = a.y;
+            this.z = a.z;
+            return this;
+        }
+
         @Override
         public float oGet(final int i) {//TODO:rename you lazy ass          
             switch (i) {

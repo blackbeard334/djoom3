@@ -1176,7 +1176,7 @@ public class shadowopt3 {
         }
         tri.numVerts = numUniqued;
         for (i = 0; i < tri.numVerts; i++) {
-            tri.shadowVertexes[i].xyz.ToVec3().oSet(uniqued[i]);
+            tri.shadowVertexes[i].xyz.oSet(uniqued[i]);
             tri.shadowVertexes[i].xyz.oSet(3, 1);
         }
 

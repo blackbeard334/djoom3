@@ -154,6 +154,7 @@ public class Class {
 
         public idEventArg(T data) {
             if(data instanceof Integer)         type = D_EVENT_INTEGER;
+            else if(data instanceof Enum)       type = D_EVENT_INTEGER;
             else if(data instanceof Float)      type = D_EVENT_FLOAT;
             else if(data instanceof idVec3)     type = D_EVENT_VECTOR;
             else if(data instanceof idStr)      type = D_EVENT_STRING;

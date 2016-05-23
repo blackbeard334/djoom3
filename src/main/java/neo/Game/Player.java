@@ -1633,7 +1633,7 @@ public class Player {
             hiddenWeapon = false;
             tipUp = false;
             objectiveUp = false;
-            teleportEntity = null;
+            teleportEntity = new idEntityPtr<>(null);
             teleportKiller = -1;
             respawning = false;
             ready = false;
@@ -2742,7 +2742,7 @@ public class Player {
             hiddenWeapon = false;
             tipUp = false;
             objectiveUp = false;
-            teleportEntity = null;
+            teleportEntity.oSet(null);
             teleportKiller = -1;
             leader = false;
 
@@ -8388,7 +8388,7 @@ public class Player {
                 // kill anything that would have waited at teleport exit
                 gameLocal.KillBox(this);
             }
-            teleportEntity = null;
+            teleportEntity.oSet(null);
         }
 
         private void Event_HideTip() {
