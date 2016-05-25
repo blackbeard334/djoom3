@@ -4138,10 +4138,10 @@ public class Player {
                 axis.oSet(angles.ToMat3());//TODO:null check
                 origin.oSet(GetEyePosition());
             } else {
-                origin = GetEyePosition().oPlus(viewBob);
+                origin.oSet(GetEyePosition().oPlus(viewBob));
                 angles = viewAngles.oPlus(viewBobAngles).oPlus(playerView.AngleOffset());
 
-                axis = angles.ToMat3().oMultiply(physicsObj.GetGravityAxis());
+                axis.oSet(angles.ToMat3().oMultiply(physicsObj.GetGravityAxis()));
 
                 // adjust the origin based on the camera nodal distance (eye distance from neck)
                 origin.oPluSet(physicsObj.GetGravityNormal().oMultiply(g_viewNodalZ.GetFloat()));

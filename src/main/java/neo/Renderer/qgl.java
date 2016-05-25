@@ -18,6 +18,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.NVRegisterCombiners;
+import org.lwjgl.opengl.Util;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
@@ -1805,6 +1806,7 @@ public class qgl {
     private static void DEBUG_printName(final String functionName) {
         if (GL_DEBUG) {
             System.out.println(functionName);
+            Util.checkGLError();
         }
     }
 
