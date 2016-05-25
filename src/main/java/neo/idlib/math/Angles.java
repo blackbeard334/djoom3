@@ -458,6 +458,15 @@ public class Angles {
         }
 
         @Override
+        public String toString() {
+            return "idAngles{" +
+                    "pitch=" + pitch +
+                    ", yaw=" + yaw +
+                    ", roll=" + roll +
+                    '}';
+        }
+
+        @Override
         public ByteBuffer AllocBuffer() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
