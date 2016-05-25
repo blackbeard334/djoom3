@@ -26,9 +26,10 @@ import org.lwjgl.opengl.Util;
  */
 public class qgl {
 
-    static final         boolean qGL_FALSE = false;
-    static final         boolean qGL_TRUE  = true;
-    private static final boolean GL_DEBUG  = false;
+    private static final boolean GL_DEBUG = true;
+
+    static final boolean qGL_FALSE = false;
+    static final boolean qGL_TRUE  = true;
 
     //
 //    // multitexture
@@ -794,7 +795,7 @@ public class qgl {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public static int qglGetError() {DEBUG_printName("glGetError");
+    public static int qglGetError() {//DEBUG_printName("glGetError");
         return GL11.glGetError();
     }
 
@@ -1805,6 +1806,7 @@ public class qgl {
 
     private static void DEBUG_printName(final String functionName) {
         if (GL_DEBUG) {
+            Util.checkGLError();
             System.out.println(functionName);
             Util.checkGLError();
         }
