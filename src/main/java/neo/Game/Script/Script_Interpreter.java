@@ -492,17 +492,18 @@ public class Script_Interpreter {
             }
 
             popParms = argsize;
-            eventEntity.ProcessEventArgPtr(evdef, btoia(data));
-
-            if (null == multiFrameEvent) {
-                if (popParms != 0) {
-                    PopParms(popParms);
-                }
-                eventEntity = null;
-            } else {
-                doneProcessing = true;
-            }
-            popParms = 0;
+            throw new TODO_Exception();
+//            eventEntity.ProcessEventArgPtr(evdef, btoia(data));
+//
+//            if (null == multiFrameEvent) {
+//                if (popParms != 0) {
+//                    PopParms(popParms);
+//                }
+//                eventEntity = null;
+//            } else {
+//                doneProcessing = true;
+//            }
+//            popParms = 0;
         }
 
         private void CallSysEvent(final function_t func, int argsize) {
@@ -583,23 +584,24 @@ public class Script_Interpreter {
                 pos += func.parmSize.oGet(j++);
             }
 
-            popParms = argsize;
-            thread.ProcessEventArgPtr(evdef, data);
-            if (popParms != 0) {
-                PopParms(popParms);
-            }
-            popParms = 0;
-        }
-
-        public idInterpreter() {
-            localstackUsed = 0;
-            terminateOnExit = true;
-            debug = false;
-//	memset( localstack, 0, sizeof( localstack ) );
-//            Arrays.fill(localstack, 0);
-//	memset( callStack, 0, sizeof( callStack ) );
-//            Arrays.fill(callStack, 0);
-            Reset();
+            throw new TODO_Exception();
+//            popParms = argsize;
+//            thread.ProcessEventArgPtr(evdef, data);
+//            if (popParms != 0) {
+//                PopParms(popParms);
+//            }
+//            popParms = 0;
+//        }
+//
+//        public idInterpreter() {
+//            localstackUsed = 0;
+//            terminateOnExit = true;
+//            debug = false;
+////	memset( localstack, 0, sizeof( localstack ) );
+////            Arrays.fill(localstack, 0);
+////	memset( callStack, 0, sizeof( callStack ) );
+////            Arrays.fill(callStack, 0);
+//            Reset();
         }
 
         // save games

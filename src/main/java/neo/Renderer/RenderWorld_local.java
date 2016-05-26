@@ -176,10 +176,10 @@ public class RenderWorld_local {
 
     public static class portal_s {
 
-        int intoArea;                   // area this portal leads to
-        idWinding w;			// winding points have counter clockwise ordering seen this area
-        idPlane plane;			// view must be on the positive side of the plane to cross
-        portal_s next;			// next portal of the area
+        int            intoArea;     // area this portal leads to
+        idWinding      w;            // winding points have counter clockwise ordering seen this area
+        idPlane        plane;        // view must be on the positive side of the plane to cross
+        portal_s       next;         // next portal of the area
         doublePortal_s doublePortal;
         
         public portal_s(){
@@ -2435,7 +2435,7 @@ public class RenderWorld_local {
                 // make sure the portal isn't in our stack trace,
                 // which would cause an infinite loop
                 for (check = ps; check != null; check = check.next) {
-                    if (check.p.equals(p)) {
+                    if (p.equals(check.p)) {
                         break;		// don't recursively enter a stack
                     }
                 }
@@ -2456,7 +2456,7 @@ public class RenderWorld_local {
                 }
 
                 // clip the portal winding to all of the planes
-                w = (idFixedWinding) p.w;
+                w = new idFixedWinding(p.w);
                 for (j = 0; j < ps.numPortalPlanes; j++) {
                     if (!w.ClipInPlace(ps.portalPlanes[j].oNegative(), 0)) {
                         break;

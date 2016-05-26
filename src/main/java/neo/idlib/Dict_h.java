@@ -1,6 +1,8 @@
 package neo.idlib;
 
 import java.util.Objects;
+
+import static neo.TempDump.atob;
 import static neo.TempDump.atof;
 import static neo.TempDump.atoi;
 import static neo.TempDump.btoi;
@@ -446,7 +448,7 @@ public class Dict_h {
         }
 
         public boolean GetBool(final String key, final String defaultString) throws idException {
-            return Boolean.parseBoolean(GetString(key, defaultString));
+            return atob(GetString(key, defaultString));
         }
 
         public idVec3 GetVector(final String key, final String defaultString) throws idException {
@@ -546,7 +548,7 @@ public class Dict_h {
             boolean found;
 
             found = GetString(key, defaultString, s);
-            out[0] = Boolean.parseBoolean(s[0]);
+            out[0] = atob(s[0]);
             return found;
         }
 

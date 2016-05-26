@@ -2,6 +2,7 @@ package neo.Renderer;
 
 import static neo.Renderer.Model.MD5_MESH_EXT;
 import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.modelSurface_s;
 import neo.Renderer.Model_beam.idRenderModelBeam;
 import neo.Renderer.Model_liquid.idRenderModelLiquid;
 import neo.Renderer.Model_local.idRenderModelStatic;
@@ -466,6 +467,15 @@ public class ModelManager {
             if ((extension.Icmp("ase") == 0) || (extension.Icmp("lwo") == 0) || (extension.Icmp("flt") == 0)) {
                 model = new idRenderModelStatic();
                 model.InitFromFile(modelName);
+
+                //HACKME::9
+//                idRenderModelStatic m = (idRenderModelStatic) model;
+//                for (modelSurface_s mimi : m.surfaces.Ptr(modelSurface_s[].class)) {
+//                    for (int i = 0; i < mimi.geometry.numVerts; i++) {
+//                        final Vector.idVec3 xyz = mimi.geometry.verts[i].xyz;
+//                        xyz.oSet(xyz.oPlus(-50));
+//                    }
+//                }
             } else if (extension.Icmp("ma") == 0) {
                 model = new idRenderModelStatic();
                 model.InitFromFile(modelName);

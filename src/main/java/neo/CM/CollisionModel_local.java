@@ -6632,14 +6632,14 @@ public class CollisionModel_local {
 
             // realloc vertices
             oldVertices = model.vertices;
-            if (oldVertices != null) {
+            if (oldVertices != null && oldVertices.length != 0) {
                 model.vertices = cm_vertex_s.generateArray(model.numVertices);
                 System.arraycopy(oldVertices, 0, model.vertices, 0, Math.min(oldVertices.length, model.numVertices));
             }
 
             // realloc edges
             oldEdges = model.edges;
-            if (oldEdges != null) {
+            if (oldEdges != null && oldEdges.length != 0) {
                 model.edges = cm_edge_s.generateArray(model.numEdges);
                 System.arraycopy(oldEdges, 0, model.edges, 0, Math.min(oldEdges.length, model.numEdges));
             }
@@ -7016,7 +7016,7 @@ public class CollisionModel_local {
             if (!TrmFromModel_r(trm, model.node)) {
                 common.Printf("idCollisionModelManagerLocal::TrmFromModel: model %s has too many polygons.\n", model.name);
                 PrintModelInfo(model);
-                return false;
+//                return false;//HACKME::9
             }
 
             // copy vertices
@@ -7045,7 +7045,7 @@ public class CollisionModel_local {
                 if (numEdgeUsers[i] != 2) {
                     common.Printf("idCollisionModelManagerLocal::TrmFromModel: model %s has dangling edges, the model has to be an enclosed hull.\n", model.name);
                     PrintModelInfo(model);
-                    return false;
+//                    return false;//HACKME::9
                 }
             }
 

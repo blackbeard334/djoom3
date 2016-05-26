@@ -1,27 +1,33 @@
 package neo.framework;
 
+import neo.TempDump.SERiAL;
+import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.CmdSystem.idCmdSystem;
+import neo.framework.KeyInput.idKeyInput;
+import neo.idlib.Lib.idException;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVec3;
+import org.lwjgl.input.Mouse;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import static neo.TempDump.*;
-import static neo.TempDump.SERIAL_SIZE;
+import static neo.TempDump.TODO_Exception;
 import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
-
-import neo.TempDump;
-import neo.TempDump.SERiAL;
-import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
 import static neo.framework.CVarSystem.CVAR_ARCHIVE;
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_FLOAT;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
-import neo.framework.CVarSystem.idCVar;
-import neo.framework.CmdSystem.idCmdSystem;
 import static neo.framework.Common.com_ticNumber;
 import static neo.framework.Common.common;
 import static neo.framework.KeyInput.K_LAST_KEY;
-import neo.framework.KeyInput.idKeyInput;
+import static neo.framework.KeyInput.K_MOUSE1;
+import static neo.framework.KeyInput.K_MWHEELDOWN;
+import static neo.framework.KeyInput.K_MWHEELUP;
 import static neo.framework.UsercmdGen.usercmdButton_t.UB_ATTACK;
 import static neo.framework.UsercmdGen.usercmdButton_t.UB_BACK;
 import static neo.framework.UsercmdGen.usercmdButton_t.UB_BUTTON0;
@@ -115,22 +121,20 @@ import static neo.framework.UsercmdGen.usercmdButton_t.UB_ZOOM;
 import static neo.idlib.Lib.BIT;
 import static neo.idlib.Lib.LittleLong;
 import static neo.idlib.Lib.LittleShort;
-import neo.idlib.Lib.idException;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.math.Angles.PITCH;
 import static neo.idlib.math.Angles.YAW;
 import static neo.idlib.math.Math_h.ANGLE2SHORT;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Vector.idVec3;
 import static neo.sys.sys_public.joystickAxis_t.AXIS_FORWARD;
 import static neo.sys.sys_public.joystickAxis_t.AXIS_SIDE;
 import static neo.sys.sys_public.joystickAxis_t.AXIS_UP;
 import static neo.sys.sys_public.joystickAxis_t.MAX_JOYSTICK_AXIS;
+import static neo.sys.sys_public.sysEventType_t.SE_KEY;
+import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
 import static neo.sys.win_input.Sys_EndKeyboardInputEvents;
 import static neo.sys.win_input.Sys_PollKeyboardInputEvents;
 import static neo.sys.win_input.Sys_ReturnKeyboardInputEvent;
-import static neo.sys.win_input.Sys_ReturnMouseInputEvent;
 import static neo.sys.win_main.Sys_DebugPrintf;
+import static neo.sys.win_main.Sys_QueEvent;
 
 /**
  *
@@ -879,7 +883,7 @@ public class UsercmdGen {
             idVec3 oldAngles;
             int i;
 
-            oldAngles = viewangles;
+            oldAngles = new idVec3(viewangles);
 
             if (!Inhibited()) {
                 // update toggled key states
@@ -1160,52 +1164,56 @@ public class UsercmdGen {
         }
 
         private void Mouse() {
-            int i, numEvents;
-//
 //            numEvents = Sys_PollMouseInputEvents();
 
-//            if (numEvents != 0) {
             //
             // Study each of the buffer elements and process them.
             //
-//            if (Mouse.next()) {
-//                    sys_mEvents[] action = new sys_mEvents[1];;
-            int[] action = {0};
-            int[] value = {0};
-            Sys_ReturnMouseInputEvent(action, value);
-//                if (Sys_ReturnMouseInputEvent(action, value)) {
-//                    if (action[0] >= etoi(M_ACTION1) && action[0] <= etoi(M_ACTION8)) {
-//                        mouseButton = K_MOUSE1 + (action[0] - etoi(M_ACTION1));
-//                        mouseDown = (value[0] != 0);
-//                        Key(mouseButton, mouseDown);
-//                    } else {
-//                        switch (sys_mEvents.values()[action[0]]) {
-//                            case M_DELTAX:
-//                                mouseDx += value[0];
-//                                continuousMouseX += value[0];
-//                                break;
-//                            case M_DELTAY:
-//                                mouseDy += value[0];
-//                                continuousMouseY += value[0];
-//                                break;
-//                            case M_DELTAZ:
-//                                int key = value[0] < 0 ? K_MWHEELDOWN : K_MWHEELUP;
-//                                value[0] = Math.abs(value[0]);
-//                                while (value[0]-- > 0) {
-//                                    Key(key, true);
-//                                    Key(key, false);
-//                                    mouseButton = key;
-//                                    mouseDown = true;
-//                                }
-//                                break;
-//                        }
-//                    }
-//                }
-//        }
+            final long dwTimeStamp = Mouse.getEventNanoseconds();
+            while (Mouse.next()) {
+                final int x, y, w;
+                if ((x = Mouse.getDX()) != 0) {
+                    mouseDx += x;
+                    continuousMouseX += x;
+                    Sys_QueEvent(dwTimeStamp, SE_MOUSE, x, 0, 0, null);
+                }
+                if ((y = -Mouse.getDY()) != 0) {//TODO:negative a la ogl?
+                    mouseDy += y;
+                    continuousMouseY += y;
+                    Sys_QueEvent(dwTimeStamp, SE_MOUSE, 0, y, 0, null);
+                }
+                if ((w = Mouse.getDWheel()) != 0) {
+                    // mouse wheel actions are impulses, without a specific up / down
+                    int wheelValue = w;//(int) polled_didod[n].dwData ) / WHEEL_DELTA;
+                    final int key = w < 0 ? K_MWHEELDOWN : K_MWHEELUP;
+
+                    while (wheelValue-- > 0) {
+                        Key(key, true);
+                        Key(key, false);
+                        mouseButton = key;
+                        mouseDown = true;
+                        Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(true), 0, null);
+                        Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(false), 0, null);
+                    }
+                }
+                if (Mouse.getEventButtonState()) {//TODO:find out what Mouse.next() does exactly.
+                    final int diaction = Mouse.getEventButton();
+                    final int button = Mouse.isButtonDown(diaction) ? 0x80 : 0;// (polled_didod[n].dwData & 0x80) == 0x80;
+                    mouseButton = K_MOUSE1 + diaction;
+                    mouseDown = (button != 0);
+                    Key(mouseButton, mouseDown);
+                    B1 = true;
+                    Sys_QueEvent(dwTimeStamp, SE_KEY, mouseButton, button, 0, null);
+                } else if (B1) {
+                    Sys_QueEvent(dwTimeStamp, SE_KEY, mouseButton, 0, 0, null);
+                    B1 = false;
+                }
+            }
 //            }
 
 //            Sys_EndMouseInputEvents();
         }
+        private static boolean B1 = false;
 
         private void Keyboard() {
 

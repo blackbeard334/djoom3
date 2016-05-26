@@ -9,7 +9,6 @@ import static neo.Renderer.RenderSystem_init.r_testARBProgram;
 import static neo.Renderer.RenderSystem_init.r_useScissor;
 import static neo.Renderer.RenderSystem_init.r_useShadowVertexProgram;
 import static neo.Renderer.VertexCache.vertexCache;
-import neo.Renderer.draw_arb2.R_ReloadARBPrograms_f;
 import static neo.Renderer.draw_common.RB_StencilShadowPass;
 import static neo.Renderer.qgl.qglActiveTextureARB;
 import static neo.Renderer.qgl.qglBindProgramARB;
@@ -63,6 +62,8 @@ import static neo.Renderer.tr_local.program_t.FPROG_ENVIRONMENT;
 import static neo.Renderer.tr_local.program_t.FPROG_GLASSWARP;
 import static neo.Renderer.tr_local.program_t.FPROG_INTERACTION;
 import static neo.Renderer.tr_local.program_t.FPROG_TEST;
+import static neo.Renderer.tr_local.program_t.PROG_INVALID;
+import static neo.Renderer.tr_local.program_t.PROG_USER;
 import static neo.Renderer.tr_local.program_t.VPROG_AMBIENT;
 import static neo.Renderer.tr_local.program_t.VPROG_BUMPY_ENVIRONMENT;
 import static neo.Renderer.tr_local.program_t.VPROG_ENVIRONMENT;
@@ -81,7 +82,6 @@ import static neo.Renderer.tr_render.RB_CreateSingleDrawInteractions;
 import static neo.Renderer.tr_render.RB_DrawElementsWithCounters;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
-import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
 import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.Common.common;
@@ -417,19 +417,22 @@ public class draw_arb2 {
 //===================================================================================
     static class progDef_t {
 
-        int target;
-        program_t ident;
-        // char			name[64];
-        String name;
+    int    target;
+    int    ident;
+    String name;// char			name[64];
 
-        public progDef_t(int target, program_t ident, String name) {
+        progDef_t(int target, program_t ident, String name) {
+            this(target, ident.ordinal(), name);
+        }
+
+        progDef_t(int target, int ident, String name) {
             this.target = target;
             this.ident = ident;
             this.name = name;
         }
     };
     static final int MAX_GLPROGS = 200;
-// a single file can have both a vertex program and a fragment program
+    // a single file can have both a vertex program and a fragment program
     static progDef_t[] progs = new progDef_t[MAX_GLPROGS];
 
     static {
@@ -491,10 +494,9 @@ public class draw_arb2 {
         //
         // submit the program string at start to GL
         //
-        if (etoi(progs[progIndex].ident) == 0) {
+        if (progs[progIndex].ident == PROG_INVALID.ordinal()) {
             // allocate a new identifier for this program
-            throw new TODO_Exception();
-//            progs[progIndex].ident = PROG_USER + progIndex;
+            progs[progIndex].ident = PROG_USER.ordinal() + progIndex;
         }
 
         // vertex and fragment programs can both be present in a single file, so
@@ -576,7 +578,7 @@ public class draw_arb2 {
             compare.StripFileExtension();
 
             if (NOT(idStr.Icmp(stripped, compare))) {
-                return etoi(progs[i].ident);
+                return progs[i].ident;
             }
         }
 
@@ -585,11 +587,11 @@ public class draw_arb2 {
         }
 
         // add it to the list and load it
-        progs[i] = new progDef_t(target, FPROG_TEST, program);// will be gen'd by R_LoadARBProgram
+        progs[i] = new progDef_t(target, PROG_INVALID, program);// will be gen'd by R_LoadARBProgram
 
         R_LoadARBProgram(i);
 
-        return etoi(progs[i].ident);
+        return progs[i].ident;
     }
 
     /*

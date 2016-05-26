@@ -244,7 +244,7 @@ public class Model_md5 {
                 num = firstWeightForVertex.oGet(i);
                 for (j = 0; j < numWeightsForVertex.oGet(i); j++, num++, count++) {
                     scaledWeights[count] = new idVec4();
-                    scaledWeights[count].ToVec3().oSet(tempWeights.oGet(num).offset.oMultiply(tempWeights.oGet(num).jointWeight));
+                    scaledWeights[count].oSet(tempWeights.oGet(num).offset.oMultiply(tempWeights.oGet(num).jointWeight));
                     scaledWeights[count].w = tempWeights.oGet(num).jointWeight;
                     weightIndex[count * 2 + 0] = tempWeights.oGet(num).joint /* sizeof( idJointMat )*/;
                 }

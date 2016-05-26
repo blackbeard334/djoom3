@@ -6,6 +6,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import neo.TempDump;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.ARBImaging;
 import org.lwjgl.opengl.ARBProgram;
 import org.lwjgl.opengl.ARBTextureCompression;
@@ -17,6 +18,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.NVRegisterCombiners;
+import org.lwjgl.opengl.Util;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
@@ -24,9 +26,10 @@ import org.lwjgl.opengl.NVRegisterCombiners;
  */
 public class qgl {
 
-    static final         boolean qGL_FALSE = false;
-    static final         boolean qGL_TRUE  = true;
-    private static final boolean GL_DEBUG  = false;
+    private static final boolean GL_DEBUG = false;
+
+    static final boolean qGL_FALSE = false;
+    static final boolean qGL_TRUE  = true;
 
     //
 //    // multitexture
@@ -55,7 +58,8 @@ public class qgl {
 
     //extern PFNGLISBUFFERARBPROC qglIsBufferARB;
     public static void qglBufferDataARB(int target, int size, ByteBuffer data, int usage) {DEBUG_printName("glBufferDataARB");
-        GL15.glBufferData(target, data, usage);//TODO:!!!!!!!!!!!!!!!!!!!!!!!!!
+//        GL15.glBufferData(target, data, usage);//TODO:!!!!!!!!!!!!!!!!!!!!!!!!!
+        ARBBufferObject.glBufferDataARB(target, data, usage);
     }
 
     public static  /*PFNGLBUFFERSUBDATAARBPROC*/void qglBufferSubDataARB(int target, long offset, long size, ByteBuffer data) {DEBUG_printName("glBufferSubDataARB");
@@ -791,7 +795,7 @@ public class qgl {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public static int qglGetError() {DEBUG_printName("glGetError");
+    public static int qglGetError() {//DEBUG_printName("glGetError");
         return GL11.glGetError();
     }
 
@@ -1802,6 +1806,7 @@ public class qgl {
 
     private static void DEBUG_printName(final String functionName) {
         if (GL_DEBUG) {
+            Util.checkGLError();
             System.out.println(functionName);
         }
     }

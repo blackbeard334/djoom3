@@ -3,10 +3,14 @@ package neo.Game;
 import static java.lang.Math.ceil;
 import static java.lang.Math.cos;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
+
+import static neo.Game.AFEntity.EV_Gib;
 import static neo.Game.Entity.EV_Activate;
 import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_PHYSICS;
@@ -17,6 +21,12 @@ import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
 import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -83,7 +93,17 @@ public class Item {
      ===============================================================================
      */
     public static class idItem extends idEntity {
-// public	CLASS_PROTOTYPE( idItem );
+        // public	CLASS_PROTOTYPE( idItem );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_DropToFloor, (eventCallback_t0<idItem>) idItem::Event_DropToFloor);
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idItem>) idItem::Event_Touch);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idItem>) idItem::Event_Trigger);
+            eventCallbacks.put(EV_RespawnItem, (eventCallback_t0<idItem>) idItem::Event_Respawn);
+            eventCallbacks.put(EV_RespawnFx, (eventCallback_t0<idItem>) idItem::Event_RespawnFx);
+        }
+
 
         // enum {
         public static final int EVENT_PICKUP    = idEntity.EVENT_MAXEVENTS;
@@ -509,7 +529,8 @@ public class Item {
             SetOrigin(trace[0].endpos);
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
+            idEntity other = _other.value;
             if (!other.IsType(idPlayer.class)) {
                 return;
             }
@@ -521,8 +542,8 @@ public class Item {
             Pickup((idPlayer) other);
         }
 
-        private void Event_Trigger(idEntity activator) {
-
+        private void Event_Trigger(idEventArg<idEntity> _activator) {
+            idEntity activator = _activator.value;
             if (!canPickUp && spawnArgs.GetBool("triggerFirst")) {
                 canPickUp = true;
                 return;
@@ -556,6 +577,16 @@ public class Item {
                 idEntityFx.StartFx(sfx, null, null, this, true);
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -615,7 +646,15 @@ public class Item {
      ===============================================================================
      */
     public static class idObjective extends idItem {
-//       public 	CLASS_PROTOTYPE( idObjective );
+        //public 	CLASS_PROTOTYPE( idObjective );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idItem.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idObjective>) idObjective::Event_Trigger);
+            eventCallbacks.put(EV_HideObjective, (eventCallback_t1<idObjective>) idObjective::Event_HideObjective);
+            eventCallbacks.put(EV_GetPlayerPos, (eventCallback_t0<idObjective>) idObjective::Event_GetPlayerPos);
+            eventCallbacks.put(EV_CamShot, (eventCallback_t0<idObjective>) idObjective::Event_CamShot);
+        }
 
         private idVec3 playerPos;
         //
@@ -644,7 +683,7 @@ public class Item {
             PostEventMS(EV_CamShot, 250);
         }
 
-        private void Event_Trigger(idEntity activator) {
+        private void Event_Trigger(idEventArg<idEntity> activator) {
             idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
 
@@ -678,7 +717,7 @@ public class Item {
             }
         }
 
-        private void Event_HideObjective(idEntity e) {
+        private void Event_HideObjective(idEventArg<idEntity> e) {
             idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
                 idVec3 v = player.GetPhysics().GetOrigin().oMinus(playerPos);
@@ -721,6 +760,16 @@ public class Item {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -773,7 +822,13 @@ public class Item {
      ===============================================================================
      */
     public static class idMoveableItem extends idItem {
-// public 	CLASS_PROTOTYPE( idMoveableItem );
+        // public 	CLASS_PROTOTYPE( idMoveableItem );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idItem.getEventCallBacks());
+            eventCallbacks.put(EV_DropToFloor, (eventCallback_t0<idMoveableItem>) idMoveableItem::Event_DropToFloor);
+            eventCallbacks.put(EV_Gib, (eventCallback_t1<idMoveableItem>) idMoveableItem::Event_Gib);
+        }
 
         private idPhysics_RigidBody physicsObj;
         private idClipModel         trigger;
@@ -1044,9 +1099,19 @@ public class Item {
             // the physics will drop the moveable to the floor
         }
 
-        private void Event_Gib(final String damageDefName) {
-            Gib(new idVec3(0, 0, 1), damageDefName);
+        private void Event_Gib(final idEventArg<String> damageDefName) {
+            Gib(new idVec3(0, 0, 1), damageDefName.value);
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1084,8 +1149,12 @@ public class Item {
      ===============================================================================
      */
     public static class idItemRemover extends idEntity {
-
-//    public 	CLASS_PROTOTYPE( idItemRemover );
+        //public 	CLASS_PROTOTYPE( idItemRemover );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idItemRemover>) idItemRemover::Event_Trigger);
+        }
 
         public void RemoveItem(idPlayer player) {
             final String remove;
@@ -1094,7 +1163,8 @@ public class Item {
             player.RemoveInventoryItem(remove);
         }
 
-        private void Event_Trigger(idEntity activator) {
+        private void Event_Trigger(idEventArg<idEntity> _activator) {
+            idEntity activator = _activator.value;
             if (activator.IsType(idPlayer.class)) {
                 RemoveItem((idPlayer) activator);
             }
@@ -1109,6 +1179,16 @@ public class Item {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1119,8 +1199,15 @@ public class Item {
      ===============================================================================
      */
     public static class idObjectiveComplete extends idItemRemover {
+        // public 	CLASS_PROTOTYPE( idObjectiveComplete );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idItemRemover.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idObjectiveComplete>) idObjectiveComplete::Event_Trigger);
+            eventCallbacks.put(EV_HideObjective, (eventCallback_t1<idObjectiveComplete>) idObjectiveComplete::Event_HideObjective);
+            eventCallbacks.put(EV_GetPlayerPos, (eventCallback_t0<idObjectiveComplete>) idObjectiveComplete::Event_GetPlayerPos);
+        }
 
-// public 	CLASS_PROTOTYPE( idObjectiveComplete );
         private idVec3 playerPos;
 //
 //
@@ -1146,7 +1233,7 @@ public class Item {
             Hide();
         }
 
-        private void Event_Trigger(idEntity activator) {
+        private void Event_Trigger(idEventArg<idEntity> activator) {
             if (!spawnArgs.GetBool("objEnabled")) {
                 return;
             }
@@ -1166,7 +1253,7 @@ public class Item {
             }
         }
 
-        private void Event_HideObjective(idEntity e) {
+        private void Event_HideObjective(idEventArg<idEntity> e) {
             idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
                 playerPos.oSet(player.GetPhysics().GetOrigin());
@@ -1187,5 +1274,15 @@ public class Item {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

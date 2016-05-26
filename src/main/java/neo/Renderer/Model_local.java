@@ -55,7 +55,6 @@ import static neo.Renderer.tr_trisurf.R_ReverseTriangles;
 import static neo.Renderer.tr_trisurf.R_TriSurfMemory;
 import static neo.TempDump.NOT;
 import static neo.TempDump.ctos;
-import static neo.TempDump.indexOf;
 import static neo.TempDump.sizeof;
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_RENDERER;
@@ -1013,9 +1012,12 @@ public class Model_local {
             matchVert_s next;
             int v, tv;
             short[] color = new short[4];
-            idVec3 normal;
+            idVec3 normal = new idVec3();
 
-            public matchVert_s() {
+            final int index;
+
+            public matchVert_s(int numVerts) {
+                this.index = numVerts;
             }
 
 //            static int getPosition(matchVert_s v1, matchVert_s[] vList) {
@@ -1029,16 +1031,36 @@ public class Model_local {
 //
 //                return i;
 //            }
-            
-            static matchVert_s[] generateArray(final int length) {
-                return Stream.
-                        generate(() -> new matchVert_s()).
-                        limit(length).
-                        toArray(matchVert_s[]::new);
+
+
+            @Override
+            public int hashCode() {
+                int result = v;
+                result = 31 * result + tv;
+                return result;
             }
+
+            @Override
+            public boolean equals(final Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+
+                final matchVert_s that = (matchVert_s) o;
+
+                if (v != that.v) return false;
+                return tv == that.tv;
+
+            }
+
+//            static matchVert_s[] generateArray(final int length) {
+//                return Stream.
+//                        generate(matchVert_s::new).
+//                        limit(length).
+//                        toArray(matchVert_s[]::new);
+//            }
         };
         static final short[] identityColor/*[4]*/ = {255, 255, 255, 255};
-
+                              private static int DBG_ConvertASEToModelSurfaces = 0;
         public boolean ConvertASEToModelSurfaces(final aseModel_s ase) {
             aseObject_t object;
             aseMesh_t mesh;
@@ -1192,10 +1214,10 @@ public class Model_local {
                 // we need to find out how many unique vertex / texcoord combinations
                 // there are, because ASE tracks them separately but we need them unified
                 // the maximum possible number of combined vertexes is the number of indexes
-                mvTable = matchVert_s.generateArray(mesh.numFaces * 3);
+                mvTable = new matchVert_s[mesh.numFaces * 3];
 
                 // we will have a hash chain based on the xyz values
-                mvHash = matchVert_s.generateArray(mesh.numVertexes);
+                mvHash = new matchVert_s[mesh.numVertexes];
 
                 // allocate triangle surface
                 tri = R_AllocStaticTriSurf();
@@ -1250,7 +1272,7 @@ public class Model_local {
                             if (mv.tv != tv) {
                                 continue;
                             }
-                            if (mv.color != color) {
+                            if (!Arrays.equals(mv.color, color)) {
                                 continue;
                             }
                             if (!normalsParsed) {
@@ -1264,11 +1286,11 @@ public class Model_local {
                         }
                         if (null == mv) {
                             // allocate a new match vert and link to hash chain
-                            mv = mvTable[ tri.numVerts];
+                            mv = mvTable[tri.numVerts] = new matchVert_s(tri.numVerts);
                             mv.v = v;
                             mv.tv = tv;
-                            mv.normal = normal;
-                            mv.color = color;
+                            mv.normal.oSet(normal);
+                            System.arraycopy(color, 0, mv.color, 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1278,7 +1300,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = indexOf(mv, mvTable);
+                        tri.indexes[tri.numIndexes] = mv.index;
                         tri.numIndexes++;
                     }
                 }
@@ -1312,15 +1334,15 @@ public class Model_local {
                 for (j = 0; j < tri.numVerts; j++) {
                     mv = mvTable[j];
                     tri.verts[ j].Clear();
-                    tri.verts[ j].xyz = mesh.vertexes[ mv.v];
-                    tri.verts[ j].normal = mv.normal;
-                    tri.verts[j].color = mv.color;
+                    tri.verts[ j].xyz.oSet(mesh.vertexes[ mv.v]);
+                    tri.verts[ j].normal.oSet(mv.normal);
+                    System.arraycopy(mv.color, 0, tri.verts[j].color = mv.color, 0, mv.color.length);
                     if (mesh.numTVFaces == mesh.numFaces && mesh.numTVertexes != 0) {
                         final idVec2 tv2 = mesh.tvertexes[ mv.tv];
                         float u = tv2.x * uTiling + uOffset;
                         float V = tv2.y * vTiling + vOffset;
                         tri.verts[ j].st.oSet(0, u * textureCos + V * textureSin);
-                        tri.verts[ j].st.oSet(1, u * -textureCos + V * textureCos);
+                        tri.verts[ j].st.oSet(1, u * -textureSin + V * textureCos);
                     }
                 }
 //
@@ -1536,7 +1558,7 @@ public class Model_local {
 
                 // we need to find out how many unique vertex / texcoord combinations there are
                 // the maximum possible number of combined vertexes is the number of indexes
-                mvTable = matchVert_s.generateArray(layer.polygon.count * 3);
+                mvTable = new matchVert_s[layer.polygon.count * 3];
 
                 // we will have a hash chain based on the xyz values
                 mvHash = new matchVert_s[layer.point.count];// R_ClearedStaticAlloc(layer.point.count, matchVert_s.class/* sizeof( mvHash[0] ) */);
@@ -1620,7 +1642,7 @@ public class Model_local {
                             if (mv.tv != tv) {
                                 continue;
                             }
-                            if (mv.color != color) {
+                            if (!Arrays.equals(mv.color, color)) {
                                 continue;
                             }
                             if (!normalsParsed) {
@@ -1634,11 +1656,11 @@ public class Model_local {
                         }
                         if (null == mv) {
                             // allocate a new match vert and link to hash chain
-                            mv = mvTable[ tri.numVerts];
+                            mv = mvTable[tri.numVerts] = new matchVert_s(tri.numVerts);
                             mv.v = v;
                             mv.tv = tv;
-                            mv.normal = new idVec3(normal);
-                            mv.color = color;
+                            mv.normal.oSet(normal);
+                            System.arraycopy(color, 0, mv.color, 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1648,7 +1670,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = indexOf(mv, mvTable);
+                        tri.indexes[tri.numIndexes] = mv.index;
                         tri.numIndexes++;
                     }
                 }
@@ -1921,7 +1943,7 @@ public class Model_local {
                             if (mv.tv != tv) {
                                 continue;
                             }
-                            if (mv.color != color) {
+                            if (!Arrays.equals(mv.color, color)) {
                                 continue;
                             }
                             if (!normalsParsed) {
@@ -1935,11 +1957,11 @@ public class Model_local {
                         }
                         if (null == mv) {
                             // allocate a new match vert and link to hash chain
-                            mv = mvTable[ tri.numVerts];
+                            mv = mvTable[tri.numVerts] = new matchVert_s(tri.numVerts);
                             mv.v = v;
                             mv.tv = tv;
-                            mv.normal = normal;
-                            mv.color = color;
+                            mv.normal.oSet(normal);
+                            System.arraycopy(color, 0, mv.color, 0, color.length);
                             mv.next = null;
                             if (lastmv != null) {
                                 lastmv.next = mv;
@@ -1949,7 +1971,7 @@ public class Model_local {
                             tri.numVerts++;
                         }
 
-                        tri.indexes[tri.numIndexes] = indexOf(mv, mvTable);
+                        tri.indexes[tri.numIndexes] = mv.index;
                         tri.numIndexes++;
                     }
                 }

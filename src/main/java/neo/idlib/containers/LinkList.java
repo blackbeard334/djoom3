@@ -101,7 +101,6 @@ public class LinkList {
                 Remove();
             }
         }
-//
 
         /*
          ================
@@ -160,7 +159,6 @@ public class LinkList {
         public void AddToFront(idLinkList node) {
             InsertAfter(node.head);
         }
-//
 
         /*
          ================
@@ -177,7 +175,6 @@ public class LinkList {
             prev = this;
             head = this;
         }
-//
 
         /*
          ================

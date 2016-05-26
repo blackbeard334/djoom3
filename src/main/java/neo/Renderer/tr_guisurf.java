@@ -2,6 +2,8 @@ package neo.Renderer;
 
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.tr_local.drawSurf_s;
+
+import static neo.Renderer.RenderSystem_init.r_skipGuiShaders;
 import static neo.Renderer.tr_local.tr;
 import static neo.Renderer.tr_main.myGlMultMatrix;
 import neo.framework.CmdSystem.cmdFunction_t;
@@ -117,10 +119,10 @@ public class tr_guisurf {
      */
     public static void R_RenderGuiSurf(idUserInterface gui, drawSurf_s drawSurf) {
         idVec3 origin = new idVec3();
-        idVec3[] axis = new idVec3[3];
+        idVec3[] axis = {new idVec3(), new idVec3(), new idVec3()};
 
         // for testing the performance hit
-        if (RenderSystem_init.r_skipGuiShaders.GetInteger() == 1) {
+        if (r_skipGuiShaders.GetInteger() == 1) {
             return;
         }
 

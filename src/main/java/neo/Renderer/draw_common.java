@@ -155,7 +155,6 @@ import static neo.framework.Common.common;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import org.lwjgl.BufferUtils;
@@ -1264,11 +1263,11 @@ public class draw_common {
             // set the light position if we are using a vertex program to project the rear surfaces
             if (tr.backEndRendererHasVertexPrograms && r_useShadowVertexProgram.GetBool()
                     && surf.space != backEnd.currentSpace) {
-                idVec4 localLight = new Vector.idVec4();
-                FloatBuffer lightBuffer = (FloatBuffer) BufferUtils.createFloatBuffer(4).put(localLight.ToFloatPtr()).rewind();
+                idVec4 localLight = new idVec4();
+                FloatBuffer lightBuffer = BufferUtils.createFloatBuffer(4);
 
-                R_GlobalPointToLocal(surf.space.modelMatrix, backEnd.vLight.globalLightOrigin, localLight.ToVec3());
-                localLight.w = 0.0f;
+                R_GlobalPointToLocal(surf.space.modelMatrix, backEnd.vLight.globalLightOrigin, localLight);
+                lightBuffer.put(localLight.ToFloatPtr()).rewind();//localLight.w = 0.0f;
                 qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, lightBuffer);
             }
 
@@ -1278,7 +1277,7 @@ public class draw_common {
                 return;
             }
 
-            qglVertexPointer(4, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, vertexCache.Position(tri.shadowCache).getInt());
+            qglVertexPointer(4, GL_FLOAT, shadowCache_s.BYTES, vertexCache.Position(tri.shadowCache).getInt());
 
             // we always draw the sil planes, but we may not need to draw the front or rear caps
             int numIndexes;

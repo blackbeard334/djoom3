@@ -1,8 +1,13 @@
 package neo.Game;
 
 import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Event;
+import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
+
+import static neo.Game.GameSys.Class.*;
 import static neo.Game.GameSys.SysCvar.g_gravity;
 import static neo.Game.GameSys.SysCvar.pm_stamina;
 import static neo.Game.Game_local.DEFAULT_GRAVITY;
@@ -12,6 +17,10 @@ import neo.Game.Script.Script_Thread.idThread;
 import static neo.framework.FileSystem_h.fileSystem;
 import neo.idlib.Dict_h.idKeyValue;
 import neo.idlib.Text.Str.idStr;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static neo.idlib.Text.Str.va;
 
 /*
@@ -32,9 +41,17 @@ public class WorldSpawn {
      ===============================================================================
      */
     public static class idWorldspawn extends idEntity {
-//	CLASS_PROTOTYPE( idWorldspawn );
+        //	CLASS_PROTOTYPE( idWorldspawn );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_Remove, (eventCallback_t0<idWorldspawn>) idWorldspawn::Event_Remove);
+            eventCallbacks.put(EV_SafeRemove, (eventCallback_t0<idWorldspawn>) idWorldspawn::Event_Remove);
+        }
 
-//					~idWorldspawn();
+
+
+        //					~idWorldspawn();
         @Override
         public void Spawn() {
             super.Spawn();
@@ -116,5 +133,15 @@ public class WorldSpawn {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

@@ -21,8 +21,6 @@ import static neo.Renderer.Material.textureRepeat_t.TR_REPEAT;
 import neo.Renderer.MegaTexture.idMegaTexture;
 import static neo.Renderer.ModelManager.renderModelManager;
 import static neo.Renderer.RenderSystem.renderSystem;
-import static neo.Renderer.RenderSystem_init.r_vidModes;
-import static neo.Renderer.RenderSystem_init.s_numVidModes;
 import neo.Renderer.RenderWorld.R_ListRenderEntityDefs_f;
 import neo.Renderer.RenderWorld.R_ListRenderLightDefs_f;
 import neo.Renderer.RenderWorld.modelTrace_s;
@@ -454,7 +452,7 @@ public class RenderSystem_init {
         r_showTrace = new idCVar("r_showTrace", "0", CVAR_RENDERER | CVAR_INTEGER, "show the intersection of an eye trace with the world", new idCmdSystem.ArgCompletion_Integer(0, 2));
         r_showIntensity = new idCVar("r_showIntensity", "0", CVAR_RENDERER | CVAR_BOOL, "draw the screen colors based on intensity, red = 0, green = 128, blue = 255");
         r_showImages = new idCVar("r_showImages", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = show all images instead of rendering, 2 = show in proportional size", 0, 2, new idCmdSystem.ArgCompletion_Integer(0, 2));
-        r_showSmp = new idCVar("r_showSmp", "0", CVAR_RENDERER | CVAR_BOOL, "show which end =new idCVar(front or back) is blocking");
+        r_showSmp = new idCVar("r_showSmp", "0", CVAR_RENDERER | CVAR_BOOL, "show which end (front or back) is blocking");
         r_showLights = new idCVar("r_showLights", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = just print volumes numbers, highlighting ones covering the view, 2 = also draw planes of each volume, 3 = also draw edges of each volume", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showShadows = new idCVar("r_showShadows", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = visualize the stencil shadow volumes, 2 = draw filled in", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showShadowCount = new idCVar("r_showShadowCount", "0", CVAR_RENDERER | CVAR_INTEGER, "colors screen based on shadow volume depth complexity, >= 2 = print overdraw count based on stencil index values, 3 = only show turboshadows, 4 = only show static shadows", 0, 4, new idCmdSystem.ArgCompletion_Integer(0, 4));
@@ -464,7 +462,7 @@ public class RenderSystem_init {
         r_showInteractionScissors = new idCVar("r_showInteractionScissors", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = show screen rectangle which contains the interaction frustum, 2 = also draw construction lines", 0, 2, new idCmdSystem.ArgCompletion_Integer(0, 2));
         r_showLightCount = new idCVar("r_showLightCount", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = colors surfaces based on light count, 2 = also count everything through walls, 3 = also print overdraw", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showViewEntitys = new idCVar("r_showViewEntitys", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = displays the bounding boxes of all view models, 2 = print index numbers");
-        r_showTris = new idCVar("r_showTris", "0", CVAR_RENDERER | CVAR_INTEGER, "enables wireframe rendering of the world, 1 = only draw visible ones, 2 = draw all front facing, 3 = draw all", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
+        r_showTris = new idCVar("r_showTris", "3", CVAR_RENDERER | CVAR_INTEGER, "enables wireframe rendering of the world, 1 = only draw visible ones, 2 = draw all front facing, 3 = draw all", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showSurfaceInfo = new idCVar("r_showSurfaceInfo", "0", CVAR_RENDERER | CVAR_BOOL, "show surface material name under crosshair");
         r_showNormals = new idCVar("r_showNormals", "0", CVAR_RENDERER | CVAR_FLOAT, "draws wireframe normals");
         r_showMemory = new idCVar("r_showMemory", "0", CVAR_RENDERER | CVAR_BOOL, "print frame memory utilization");

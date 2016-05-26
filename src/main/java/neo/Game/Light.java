@@ -1,10 +1,21 @@
 package neo.Game;
 
+import static neo.Game.Entity.EV_Activate;
+import static neo.Game.Entity.EV_Hide;
 import static neo.Game.Entity.EV_PostSpawn;
+import static neo.Game.Entity.EV_Show;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.eventCallback_t3;
+import neo.Game.GameSys.Class.eventCallback_t4;
 import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -51,6 +62,9 @@ import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  */
@@ -75,7 +89,26 @@ public class Light {
     public static final idEventDef EV_Light_FadeIn = new idEventDef("fadeInLight", "f");
 
     public static class idLight extends idEntity {
-// public 	CLASS_PROTOTYPE( idLight );
+        // public 	CLASS_PROTOTYPE( idLight );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static{
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_Light_SetShader, (eventCallback_t1<idLight>) idLight::Event_SetShader);
+            eventCallbacks.put(EV_Light_GetLightParm, (eventCallback_t1<idLight>) idLight::Event_GetLightParm);
+            eventCallbacks.put(EV_Light_SetLightParm, (eventCallback_t2<idLight>) idLight::Event_SetLightParm);
+            eventCallbacks.put(EV_Light_SetLightParms, (eventCallback_t4<idLight>) idLight::Event_SetLightParms);
+            eventCallbacks.put(EV_Light_SetRadiusXYZ, (eventCallback_t3<idLight>) idLight::Event_SetRadiusXYZ);
+            eventCallbacks.put(EV_Light_SetRadius, (eventCallback_t1<idLight>) idLight::Event_SetRadius);
+            eventCallbacks.put(EV_Hide, (eventCallback_t0<idLight>) idLight::Event_Hide);
+            eventCallbacks.put(EV_Show, (eventCallback_t0<idLight>) idLight::Event_Show);
+            eventCallbacks.put(EV_Light_On, (eventCallback_t0<idLight>) idLight::Event_On);
+            eventCallbacks.put(EV_Light_Off, (eventCallback_t0<idLight>) idLight::Event_Off);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idLight>) idLight::Event_ToggleOnOff);
+            eventCallbacks.put(EV_PostSpawn, (eventCallback_t0<idLight>) idLight::Event_SetSoundHandles);
+            eventCallbacks.put(EV_Light_FadeOut, (eventCallback_t1<idLight>) idLight::Event_FadeOut);
+            eventCallbacks.put(EV_Light_FadeIn, (eventCallback_t1<idLight>) idLight::Event_FadeIn);
+        }
+
 
         private renderLight_s renderLight;          // light presented to the renderer
         private idVec3 localLightOrigin;            // light origin relative to the physics origin
@@ -762,11 +795,12 @@ public class Light {
             }
         }
 
-        private void Event_SetShader(final String shadername) {
-            SetShader(shadername);
+        private void Event_SetShader(final idEventArg<String> shadername) {
+            SetShader(shadername.value);
         }
 
-        private void Event_GetLightParm(int parmnum) {
+        private void Event_GetLightParm(idEventArg<Integer> _parmnum) {
+            int parmnum = _parmnum.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
                 gameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
@@ -774,20 +808,20 @@ public class Light {
             idThread.ReturnFloat(renderLight.shaderParms[ parmnum]);
         }
 
-        private void Event_SetLightParm(int parmnum, float value) {
-            SetLightParm(parmnum, value);
+        private void Event_SetLightParm(idEventArg<Integer> parmnum, idEventArg<Float> value) {
+            SetLightParm(parmnum.value, value.value);
         }
 
-        private void Event_SetLightParms(float parm0, float parm1, float parm2, float parm3) {
-            SetLightParms(parm0, parm1, parm2, parm3);
+        private void Event_SetLightParms(idEventArg<Float> parm0, idEventArg<Float> parm1, idEventArg<Float> parm2, idEventArg<Float> parm3) {
+            SetLightParms(parm0.value, parm1.value, parm2.value, parm3.value);
         }
 
-        private void Event_SetRadiusXYZ(float x, float y, float z) {
-            SetRadiusXYZ(x, y, z);
+        private void Event_SetRadiusXYZ(idEventArg<Float> x, idEventArg<Float> y, idEventArg<Float> z) {
+            SetRadiusXYZ(x.value, y.value, z.value);
         }
 
-        private void Event_SetRadius(float radius) {
-            SetRadius(radius);
+        private void Event_SetRadius(idEventArg<Float> radius) {
+            SetRadius(radius.value);
         }
 
         private void Event_Hide() {
@@ -810,7 +844,7 @@ public class Light {
             Off();
         }
 
-        private void Event_ToggleOnOff(idEntity activator) {
+        private void Event_ToggleOnOff(idEventArg<idEntity> activator) {
             triggercount++;
             if (triggercount < count) {
                 return;
@@ -820,7 +854,7 @@ public class Light {
             triggercount = 0;
 
             if (breakOnTrigger) {
-                BecomeBroken(activator);
+                BecomeBroken(activator.value);
                 breakOnTrigger = false;
                 return;
             }
@@ -870,12 +904,12 @@ public class Light {
             }
         }
 
-        private void Event_FadeOut(float time) {
-            FadeOut(time);
+        private void Event_FadeOut(idEventArg<Float> time) {
+            FadeOut(time.value);
         }
 
-        private void Event_FadeIn(float time) {
-            FadeIn(time);
+        private void Event_FadeIn(idEventArg<Float> time) {
+            FadeIn(time.value);
         }
 
         @Override
@@ -887,5 +921,15 @@ public class Light {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

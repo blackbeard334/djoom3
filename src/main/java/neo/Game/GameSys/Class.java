@@ -1,11 +1,9 @@
 package neo.Game.GameSys;
 
-import java.nio.ByteBuffer;
 import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Entity.EV_Activate;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class.eventCallback_t;
-import static neo.Game.GameSys.Class.idEventArg.toEvent;
+import static neo.Game.GameSys.Class.idEventArg.toArg;
 import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
 import static neo.Game.GameSys.Event.D_EVENT_INTEGER;
@@ -28,13 +26,14 @@ import neo.TempDump.TODO_Exception;
 import static neo.TempDump.sizeof;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.Hierarchy.idHierarchy;
 import neo.idlib.containers.List.idList;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+
+import java.util.Map;
 
 /**
  *
@@ -49,9 +48,80 @@ public class Class {
     static idHierarchy<idTypeInfo> classHierarchy      = new idHierarchy<>();
     static int                     eventCallbackMemory = 0;
 
-    public static abstract class eventCallback_t {
+    @FunctionalInterface
+    public interface eventCallback_t<T extends idClass> {
+        void accept(T t, idEventArg...args);
+    }
 
-        public abstract void run(final int... data);
+    @FunctionalInterface
+    public interface eventCallback_t0<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t);
+        }
+
+        void accept(T e);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t1<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0]);
+        }
+
+        void accept(T t, idEventArg a);
+    }
+
+
+    @FunctionalInterface
+    public interface eventCallback_t2<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1]);
+        }
+
+        void accept(T t, idEventArg a, idEventArg b);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t3<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1], args[2]);
+        }
+
+        void accept(T t, idEventArg a, idEventArg b, idEventArg c);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t4<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1], args[2], args[3]);
+        }
+
+        void accept(T t, idEventArg a, idEventArg b, idEventArg c, idEventArg d);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t5<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1], args[2], args[3], args[4]);
+        }
+
+        void accept(T t, idEventArg a, idEventArg b, idEventArg c, idEventArg d, idEventArg e);
+    }
+
+    @FunctionalInterface
+    public interface eventCallback_t6<T extends idClass> extends eventCallback_t<T> {
+        @Override
+        default void accept(T t, idEventArg... args) {
+            accept(t, args[0], args[1], args[2], args[3], args[4], args[5]);
+        }
+
+        void accept(T t, idEventArg a, idEventArg b, idEventArg c, idEventArg d, idEventArg e, idEventArg f);
     }
 
     public static abstract class classSpawnFunc_t<type> {
@@ -75,15 +145,16 @@ public class Class {
         eventCallback_t function;
     };
 
-    public static class idEventArg {
+    public static class idEventArg<T> {
 
-        public final int    type;
-        public final Object value;
+        public final int type;
+        public final T   value;
 //
 //
 
-        public idEventArg(Object data) {
+        public idEventArg(T data) {
             if(data instanceof Integer)         type = D_EVENT_INTEGER;
+            else if(data instanceof Enum)       type = D_EVENT_INTEGER;
             else if(data instanceof Float)      type = D_EVENT_FLOAT;
             else if(data instanceof idVec3)     type = D_EVENT_VECTOR;
             else if(data instanceof idStr)      type = D_EVENT_STRING;
@@ -93,13 +164,13 @@ public class Class {
             else type = D_EVENT_VOID;
             value = data;
         }
-        
-        static idEventArg toEvent(Object data) {
+
+        public static <T> idEventArg<T> toArg(T data) {
             return new idEventArg(data);
         }
     };
 
-    public static class idAllocError extends idException {
+    public static class idAllocError extends neo.idlib.Lib.idException {
 
         public idAllocError(final String text /*= ""*/) {
             super(text);
@@ -169,6 +240,12 @@ public class Class {
         public abstract idClass CreateInstance();
 
         public abstract java.lang.Class/*idTypeInfo*/ GetType();
+
+        public abstract eventCallback_t getEventCallBack(idEventDef event);
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            throw new UnsupportedOperationException("Never call this function on idClass!");
+        }
 
 // #ifdef ID_REDIRECT_NEWDELETE
 // #undef new
@@ -255,7 +332,7 @@ public class Class {
         }
 
         public boolean RespondsTo(final idEventDef ev) {
-            return false;//HACKME::7
+            return getEventCallBack(ev) != null;//HACKME::7
 //            throw new TODO_Exception();
 //            final idTypeInfo c;
 //
@@ -269,35 +346,35 @@ public class Class {
         }
 
         public boolean PostEventMS(final idEventDef ev, float time, Object arg1) {
-            return PostEventArgs(ev, (int) time, 1, toEvent(arg1));
+            return PostEventArgs(ev, (int) time, 1, toArg(arg1));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2) {
-            return PostEventArgs(ev, time, 2, toEvent(arg1), toEvent(arg1));
+            return PostEventArgs(ev, time, 2, toArg(arg1), toArg(arg2));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3) {
-            return PostEventArgs(ev, time, 3, toEvent(arg1), toEvent(arg2), toEvent(arg3));
+            return PostEventArgs(ev, time, 3, toArg(arg1), toArg(arg2), toArg(arg3));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4) {
-            return PostEventArgs(ev, time, 4, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4));
+            return PostEventArgs(ev, time, 4, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-            return PostEventArgs(ev, time, 5, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5));
+            return PostEventArgs(ev, time, 5, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-            return PostEventArgs(ev, time, 6, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6));
+            return PostEventArgs(ev, time, 6, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-            return PostEventArgs(ev, time, 7, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7));
+            return PostEventArgs(ev, time, 7, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7));
         }
 
         public boolean PostEventMS(final idEventDef ev, int time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8) {
-            return PostEventArgs(ev, time, 8, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7), toEvent(arg8));
+            return PostEventArgs(ev, time, 8, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7), toArg(arg8));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time) {
@@ -305,35 +382,35 @@ public class Class {
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 1, toEvent(arg1));
+            return PostEventArgs(ev, (int) SEC2MS(time), 1, toArg(arg1));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 2, toEvent(arg1), toEvent(arg2));
+            return PostEventArgs(ev, (int) SEC2MS(time), 2, toArg(arg1), toArg(arg2));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 3, toEvent(arg1), toEvent(arg2), toEvent(arg3));
+            return PostEventArgs(ev, (int) SEC2MS(time), 3, toArg(arg1), toArg(arg2), toArg(arg3));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 4, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4));
+            return PostEventArgs(ev, (int) SEC2MS(time), 4, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 5, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5));
+            return PostEventArgs(ev, (int) SEC2MS(time), 5, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 6, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6));
+            return PostEventArgs(ev, (int) SEC2MS(time), 6, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 7, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7));
+            return PostEventArgs(ev, (int) SEC2MS(time), 7, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7));
         }
 
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8) {
-            return PostEventArgs(ev, (int) SEC2MS(time), 8, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7), toEvent(arg8));
+            return PostEventArgs(ev, (int) SEC2MS(time), 8, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7), toArg(arg8));
         }
 
         public boolean ProcessEvent(final idEventDef ev) {
@@ -341,39 +418,38 @@ public class Class {
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1) {
-            return ProcessEventArgs(ev, 1, toEvent(arg1));
+            return ProcessEventArgs(ev, 1, toArg(arg1));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2) {
-            return ProcessEventArgs(ev, 2, toEvent(arg1), toEvent(arg2));
+            return ProcessEventArgs(ev, 2, toArg(arg1), toArg(arg2));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3) {
-            return ProcessEventArgs(ev, 3, toEvent(arg1), toEvent(arg2), toEvent(arg3));
+            return ProcessEventArgs(ev, 3, toArg(arg1), toArg(arg2), toArg(arg3));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4) {
-            return ProcessEventArgs(ev, 4, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4));
+            return ProcessEventArgs(ev, 4, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-            return ProcessEventArgs(ev, 5, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5));
+            return ProcessEventArgs(ev, 5, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-            return ProcessEventArgs(ev, 6, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6));
+            return ProcessEventArgs(ev, 6, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-            return ProcessEventArgs(ev, 7, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7));
+            return ProcessEventArgs(ev, 7, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7));
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8) {
-            return ProcessEventArgs(ev, 8, toEvent(arg1), toEvent(arg2), toEvent(arg3), toEvent(arg4), toEvent(arg5), toEvent(arg6), toEvent(arg7), toEvent(arg8));
+            return ProcessEventArgs(ev, 8, toArg(arg1), toArg(arg2), toArg(arg3), toArg(arg4), toArg(arg5), toArg(arg6), toArg(arg7), toArg(arg8));
         }
 
-        public boolean ProcessEventArgPtr(final idEventDef ev, int[] data) {
-            idTypeInfo c;
+        public boolean ProcessEventArgPtr(final idEventDef ev, idEventArg[] data) {
             int num;
             eventCallback_t callback;
 
@@ -381,24 +457,22 @@ public class Class {
             assert (idEvent.initialized);
 
             if (g_debugTriggers.GetBool() && (ev == EV_Activate) && IsType(idEntity.class)) {
-                idEntity ent = new idEntity();
-                ByteBuffer entityBuffer = ent.AllocBuffer();
-                entityBuffer.asIntBuffer().put(data);
-                ent.Read(entityBuffer);
-//                final idEntity ent = reinterpret_cast < idEntity > (data);
-                gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), ent != null ? ent.GetName() : "NULL");
+                final String name;
+                if (data[0] != null && ((idClass) data[0].value).IsType(idEntity.class))
+                    name = ((idEntity) data[0].value).GetName();
+                else
+                    name = "NULL";
+                gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), name);
             }
             
-/////////TODO: this is TEMPORARILY disabled
-//            c = GetType();
-//            num = ev.GetEventNum();
-//            if (NOT(c.eventMap[num])) {
-//                // we don't respond to this event, so ignore it
-//                return false;
-//            }
-//
-//            callback = c.eventMap[num];
-//
+            num = ev.GetEventNum();
+            callback = this.getEventCallBack(ev);//callback = c.eventMap[num];
+            if (callback == null) {
+                // we don't respond to this event, so ignore it
+                return false;
+            }
+
+////
 //// #if !CPU_EASYARGS
 //// /*
 //// on ppc architecture, floats are passed in a seperate set of registers
@@ -416,64 +490,65 @@ public class Class {
 //            // break;
 //            // }
 //// #else
-//            assert (D_EVENT_MAXARGS == 8);
-//
-//            switch (ev.GetNumArgs()) {
-//                case 0:
+            assert (D_EVENT_MAXARGS == 8);
+
+            switch (ev.GetNumArgs()) {
+                case 0:
 //                    callback.run();
 //                    break;
 //
-//                case 1:
+                case 1:
 ////		typedef void ( idClass.*eventCallback_1_t )( const int );
 ////		( this.*( eventCallback_1_t )callback )( data[ 0 ] );
 //                    callback.run(data[0]);
 //                    break;
 //
-//                case 2:
+                case 2:
 ////		typedef void ( idClass.*eventCallback_2_t )( const int, const int );
 ////		( this.*( eventCallback_2_t )callback )( data[ 0 ], data[ 1 ] );
 //                    callback.run(data[0], data[1]);
 //                    break;
 //
-//                case 3:
+                case 3:
 ////		typedef void ( idClass.*eventCallback_3_t )( const int, const int, const int );
 ////		( this.*( eventCallback_3_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ] );
 //                    callback.run(data[0], data[1], data[2]);
 //                    break;
 //
-//                case 4:
+                case 4:
 ////		typedef void ( idClass.*eventCallback_4_t )( const int, const int, const int, const int );
 ////		( this.*( eventCallback_4_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ] );
 //                    callback.run(data[0], data[1], data[2], data[3]);
 //                    break;
 //
-//                case 5:
+                case 5:
 ////		typedef void ( idClass.*eventCallback_5_t )( const int, const int, const int, const int, const int );
 ////		( this.*( eventCallback_5_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ] );
 //                    callback.run(data[0], data[1], data[2], data[3], data[4]);
 //                    break;
 //
-//                case 6:
+                case 6:
 ////		typedef void ( idClass.*eventCallback_6_t )( const int, const int, const int, const int, const int, const int );
 ////		( this.*( eventCallback_6_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ], data[ 5 ] );
 //                    break;
 //
-//                case 7:
+                case 7:
 ////		typedef void ( idClass.*eventCallback_7_t )( const int, const int, const int, const int, const int, const int, const int );
 ////		( this.*( eventCallback_7_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ], data[ 5 ], data[ 6 ] );
 //                    callback.run(data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
 //                    break;
 //
-//                case 8:
+                case 8:
 ////		typedef void ( idClass.*eventCallback_8_t )( const int, const int, const int, const int, const int, const int, const int, const int );
 ////		( this.*( eventCallback_8_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ], data[ 5 ], data[ 6 ], data[ 7 ] );
 //                    callback.run(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]);
-//                    break;
+                    callback.accept(this, data);
+                    break;
 //
-//                default:
-//                    gameLocal.Warning("Invalid formatspec on event '%s'", ev.GetName());
-//                    break;
-//            }
+                default:
+                    gameLocal.Warning("Invalid formatspec on event '%s'", ev.GetName());
+                    break;
+            }
 
 // #endif
             return true;
@@ -720,7 +795,7 @@ public class Class {
         }
 
         private boolean PostEventArgs(final idEventDef ev, int time, int numargs, idEventArg... args) {
-            idTypeInfo c;
+            java.lang.Class c;
             idEvent event;
 //            va_list args;
 
@@ -731,11 +806,11 @@ public class Class {
             }
 
             //TODO:disabled for medicinal reasons
-//            c = GetType();
-//            if (NOT(c.eventMap[ev.GetEventNum()])) {
-//                // we don't respond to this event, so ignore it
-//                return false;
-//            }
+            c = this.getClass();
+            if (NOT(this.getEventCallBack(ev))) {
+                // we don't respond to this event, so ignore it
+                return false;
+            }
 
             // we service events on the client to avoid any bad code filling up the event pool
             // we don't want them processed usually, unless when the map is (re)loading.
@@ -749,7 +824,7 @@ public class Class {
 //            va_end(args);
 
             //TODO:same as line #755
-//            event.Schedule(this, c, time);
+            event.Schedule(this, c, time);
 
             return true;
         }
@@ -757,7 +832,7 @@ public class Class {
         private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg... args) {
             idTypeInfo c;
             int num;
-            int[] data = new int[D_EVENT_MAXARGS];
+            idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
 //            va_list args;
 
             assert (ev != null);

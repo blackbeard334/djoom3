@@ -10,6 +10,8 @@ import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
+
+import static neo.CM.CollisionModel_local.collisionModelManager;
 import static neo.Game.Game_local.ENTITYNUM_NONE;
 import static neo.Game.Game_local.ENTITYNUM_WORLD;
 import static neo.Game.Game_local.MAX_GENTITIES;
@@ -187,12 +189,12 @@ public class Clip {
                 FreeTraceModel(traceModelIndex);
                 traceModelIndex = -1;
             }
-            collisionModelHandle = CollisionModel_local.collisionModelManager.LoadModel(name, false);
+            collisionModelHandle = collisionModelManager.LoadModel(name, false);
             if (collisionModelHandle != 0) {
-                CollisionModel_local.collisionModelManager.GetModelBounds(collisionModelHandle, bounds);
+                collisionModelManager.GetModelBounds(collisionModelHandle, bounds);
                 {
                     int[] contents = {0};
-                    CollisionModel_local.collisionModelManager.GetModelContents(collisionModelHandle, contents);
+                    collisionModelManager.GetModelContents(collisionModelHandle, contents);
                     this.contents = contents[0];
                 }
                 return true;
@@ -239,7 +241,7 @@ public class Clip {
             savefile.WriteMaterial(material);
             savefile.WriteInt(contents);
             if (collisionModelHandle >= 0) {
-                savefile.WriteString(CollisionModel_local.collisionModelManager.GetModelName(collisionModelHandle));
+                savefile.WriteString(collisionModelManager.GetModelName(collisionModelHandle));
             } else {
                 savefile.WriteString("");
             }
@@ -265,7 +267,7 @@ public class Clip {
             contents = savefile.ReadInt();
             savefile.ReadString(collisionModelName);
             if (collisionModelName.Length() != 0) {
-                collisionModelHandle = CollisionModel_local.collisionModelManager.LoadModel(collisionModelName.toString(), false);
+                collisionModelHandle = collisionModelManager.LoadModel(collisionModelName.toString(), false);
             } else {
                 collisionModelHandle = -1;
             }
@@ -287,8 +289,9 @@ public class Clip {
             }
         }
 
+        private static int DBG_Link = 0;
         public void Link(idClip clp) {				// must have been linked with an entity and id before
-
+            DBG_Link++;
             assert (this.entity != null);
             if (null == this.entity) {
                 return;
@@ -330,6 +333,9 @@ public class Clip {
             this.id = newId;
             this.origin.oSet(newOrigin);
             this.axis.oSet(newAxis);
+            if (origin.z < -1111) {
+                int a = 0;
+            }
             if (renderModelHandle != -1) {
                 this.renderModelHandle = renderModelHandle;
                 final renderEntity_s renderEntity = gameRenderWorld.GetRenderEntity(renderModelHandle);
@@ -362,17 +368,26 @@ public class Clip {
                 Unlink();	// unlink from old position
             }
             origin.oSet(newOrigin);
+            if (origin.z < -1111) {
+                int a = 0;
+            }
             axis.oSet(newAxis);
         }
 
         public void Translate(final idVec3 translation) {							// unlinks the clip model
             Unlink();
             origin.oPluSet(translation);
+            if (origin.z < -1111) {
+                int a = 0;
+            }
         }
 
         public void Rotate(final idRotation rotation) {							// unlinks the clip model
             Unlink();
             origin.oMulSet(rotation);
+            if (origin.z < -1111) {
+                int a = 0;
+            }
             axis.oMulSet(rotation.ToMat3());
         }
 
@@ -465,7 +480,7 @@ public class Clip {
             if (collisionModelHandle != 0) {
                 return collisionModelHandle;
             } else if (traceModelIndex != -1) {
-                return CollisionModel_local.collisionModelManager.SetupTrmModel(GetCachedTraceModel(traceModelIndex), material);
+                return collisionModelManager.SetupTrmModel(GetCachedTraceModel(traceModelIndex), material);
             } else {
                 // this happens in multiplayer on the combat models
                 gameLocal.Warning("idClipModel::Handle: clip model %d on '%s' (%x) is not a collision or trace model", id, entity.name, entity.entityNumber);
@@ -492,7 +507,7 @@ public class Clip {
         }
 
         public static int/*cmHandle_t*/ CheckModel(final String name) {
-            return CollisionModel_local.collisionModelManager.LoadModel(name, false);
+            return collisionModelManager.LoadModel(name, false);
         }
 
         public static int/*cmHandle_t*/ CheckModel(final idStr name) {
@@ -682,8 +697,8 @@ public class Clip {
             numClipSectors = 0;
             touchCount = -1;
             // get world map bounds
-            h = CollisionModel_local.collisionModelManager.LoadModel("worldMap", false);
-            CollisionModel_local.collisionModelManager.GetModelBounds(h, worldBounds);
+            h = collisionModelManager.LoadModel("worldMap", false);
+            collisionModelManager.GetModelBounds(h, worldBounds);
             // create world sectors
             CreateClipSectors_r(0, worldBounds, maxSector);
 
@@ -737,7 +752,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // test world
                 this.numTranslations++;
-                CollisionModel_local.collisionModelManager.Translation(results, start, end, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
+                collisionModelManager.Translation(results, start, end, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
                 results[0].c.entityNum = results[0].fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
                 if (results[0].fraction == 0.0f) {
                     return true;		// blocked immediately by the world
@@ -772,7 +787,7 @@ public class Clip {
                     TraceRenderModel(trace[0], start, end, radius, trmAxis, touch);
                 } else {
                     this.numTranslations++;
-                    CollisionModel_local.collisionModelManager.Translation(trace, start, end, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
+                    collisionModelManager.Translation(trace, start, end, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
                 }
 
                 if (trace[0].fraction < results[0].fraction) {
@@ -802,7 +817,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // test world
                 this.numRotations++;
-                CollisionModel_local.collisionModelManager.Rotation(results, start, rotation, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
+                collisionModelManager.Rotation(results, start, rotation, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
                 results[0].c.entityNum = results[0].fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
                 if (results[0].fraction == 0.0f) {
                     return true;		// blocked immediately by the world
@@ -836,7 +851,7 @@ public class Clip {
                 }
 
                 this.numRotations++;
-                CollisionModel_local.collisionModelManager.Rotation(trace, start, rotation, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
+                collisionModelManager.Rotation(trace, start, rotation, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
 
                 if (trace[0].fraction < results[0].fraction) {
                     results[0] = trace[0];
@@ -894,7 +909,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // translational collision with world
                 this.numTranslations++;
-                CollisionModel_local.collisionModelManager.Translation(translationalTrace, start, end, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
+                collisionModelManager.Translation(translationalTrace, start, end, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
                 translationalTrace[0].c.entityNum = translationalTrace[0].fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
             } else {
 //		memset( &translationalTrace, 0, sizeof( translationalTrace ) );
@@ -930,7 +945,7 @@ public class Clip {
                         TraceRenderModel(trace[0], start, end, radius, trmAxis, touch);
                     } else {
                         this.numTranslations++;
-                        CollisionModel_local.collisionModelManager.Translation(trace, start, end, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
+                        collisionModelManager.Translation(trace, start, end, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
                     }
 
                     if (trace[0].fraction < translationalTrace[0].fraction) {
@@ -953,7 +968,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // rotational collision with world
                 this.numRotations++;
-                CollisionModel_local.collisionModelManager.Rotation(rotationalTrace, endPosition, endRotation, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
+                collisionModelManager.Rotation(rotationalTrace, endPosition, endRotation, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
                 rotationalTrace[0].c.entityNum = rotationalTrace[0].fraction != 1.0f ? ENTITYNUM_WORLD : ENTITYNUM_NONE;
             } else {
 //		memset( &rotationalTrace, 0, sizeof( rotationalTrace ) );
@@ -983,7 +998,7 @@ public class Clip {
                     }
 
                     this.numRotations++;
-                    CollisionModel_local.collisionModelManager.Rotation(trace, endPosition, endRotation, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
+                    collisionModelManager.Rotation(trace, endPosition, endRotation, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
 
                     if (trace[0].fraction < rotationalTrace[0].fraction) {
                         rotationalTrace[0] = trace[0];
@@ -1021,7 +1036,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // test world
                 this.numContacts++;
-                numContacts = CollisionModel_local.collisionModelManager.Contacts(contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
+                numContacts = collisionModelManager.Contacts(contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
             } else {
                 numContacts = 0;
             }
@@ -1057,7 +1072,7 @@ public class Clip {
                 }
 
                 this.numContacts++;
-                n = CollisionModel_local.collisionModelManager.Contacts(
+                n = collisionModelManager.Contacts(
                         Arrays.copyOfRange(contacts, numContacts, contacts.length),
                         maxContacts - numContacts,
                         start, dir, depth, trm, trmAxis, contentMask,
@@ -1077,8 +1092,7 @@ public class Clip {
             return numContacts;
         }
 
-        public int Contents(final idVec3 start,
-                final idClipModel mdl, final idMat3 trmAxis, int contentMask, final idEntity passEntity) {
+        public int Contents(final idVec3 start, final idClipModel mdl, final idMat3 trmAxis, int contentMask, final idEntity passEntity) {
             int i, num, contents;
             idClipModel touch;
             idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
@@ -1090,7 +1104,7 @@ public class Clip {
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
                 // test world
                 this.numContents++;
-                contents = CollisionModel_local.collisionModelManager.Contents(start, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
+                contents = collisionModelManager.Contents(start, trm, trmAxis, contentMask, 0, getVec3_origin(), getMat3_default());
             } else {
                 contents = 0;
             }
@@ -1130,7 +1144,7 @@ public class Clip {
                 }
 
                 this.numContents++;
-                if (CollisionModel_local.collisionModelManager.Contents(start, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis) != 0) {
+                if (collisionModelManager.Contents(start, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis) != 0) {
                     contents |= (touch.contents & contentMask);
                 }
             }
@@ -1155,28 +1169,28 @@ public class Clip {
                 final idClipModel mdl, final idMat3 trmAxis, int contentMask, int/*cmHandle_t*/ model, final idVec3 modelOrigin, final idMat3 modelAxis) {
             final idTraceModel trm = TraceModelForClipModel(mdl);
             this.numTranslations++;
-            CollisionModel_local.collisionModelManager.Translation(results, start, end, trm, trmAxis, contentMask, model, modelOrigin, modelAxis);
+            collisionModelManager.Translation(results, start, end, trm, trmAxis, contentMask, model, modelOrigin, modelAxis);
         }
 
         public void RotationModel(trace_s[] results, final idVec3 start, final idRotation rotation,
                 final idClipModel mdl, final idMat3 trmAxis, int contentMask, int/*cmHandle_t*/ model, final idVec3 modelOrigin, final idMat3 modelAxis) {
             final idTraceModel trm = TraceModelForClipModel(mdl);
             this.numRotations++;
-            CollisionModel_local.collisionModelManager.Rotation(results, start, rotation, trm, trmAxis, contentMask, model, modelOrigin, modelAxis);
+            collisionModelManager.Rotation(results, start, rotation, trm, trmAxis, contentMask, model, modelOrigin, modelAxis);
         }
 
         public int ContactsModel(contactInfo_t[] contacts, final int maxContacts, final idVec3 start, final idVec6 dir, final float depth,
                 final idClipModel mdl, final idMat3 trmAxis, int contentMask, int/*cmHandle_t*/ model, final idVec3 modelOrigin, final idMat3 modelAxis) {
             final idTraceModel trm = TraceModelForClipModel(mdl);
             this.numContacts++;
-            return CollisionModel_local.collisionModelManager.Contacts(contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, model, modelOrigin, modelAxis);
+            return collisionModelManager.Contacts(contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, model, modelOrigin, modelAxis);
         }
 
         public int ContentsModel(final idVec3 start, final idClipModel mdl, final idMat3 trmAxis, int contentMask,
                 int/*cmHandle_t*/ model, final idVec3 modelOrigin, final idMat3 modelAxis) {
             final idTraceModel trm = TraceModelForClipModel(mdl);
             this.numContents++;
-            return CollisionModel_local.collisionModelManager.Contents(start, trm, trmAxis, contentMask, model, modelOrigin, modelAxis);
+            return collisionModelManager.Contents(start, trm, trmAxis, contentMask, model, modelOrigin, modelAxis);
         }
 
         // clip versus all entities but not the world
@@ -1222,7 +1236,7 @@ public class Clip {
                     TraceRenderModel(trace[0], start, end, radius, trmAxis, touch);
                 } else {
                     this.numTranslations++;
-                    CollisionModel_local.collisionModelManager.Translation(trace, start, end, trm, trmAxis, contentMask,
+                    collisionModelManager.Translation(trace, start, end, trm, trmAxis, contentMask,
                             touch.Handle(), touch.origin, touch.axis);
                 }
 
@@ -1253,7 +1267,7 @@ public class Clip {
                     winding.oPluSet(contact.point);
                     return true;
                 } else if (clipModel.traceModelIndex != -1) {
-                    handle = CollisionModel_local.collisionModelManager.SetupTrmModel(idClipModel.GetCachedTraceModel(clipModel.traceModelIndex), clipModel.material);
+                    handle = collisionModelManager.SetupTrmModel(idClipModel.GetCachedTraceModel(clipModel.traceModelIndex), clipModel.material);
                 } else {
                     handle = clipModel.collisionModelHandle;
                 }
@@ -1264,14 +1278,14 @@ public class Clip {
                 switch (contact.type) {
                     case CONTACT_EDGE: {
                         // the model contact feature is a collision model edge
-                        CollisionModel_local.collisionModelManager.GetModelEdge(handle, contact.modelFeature, start, end);
+                        collisionModelManager.GetModelEdge(handle, contact.modelFeature, start, end);
                         winding.oPluSet(start);
                         winding.oPluSet(end);
                         break;
                     }
                     case CONTACT_MODELVERTEX: {
                         // the model contact feature is a collision model vertex
-                        CollisionModel_local.collisionModelManager.GetModelVertex(handle, contact.modelFeature, start);
+                        collisionModelManager.GetModelVertex(handle, contact.modelFeature, start);
                         winding.oPluSet(start);
                         break;
                     }
@@ -1378,7 +1392,7 @@ public class Clip {
                 if (clipModel.renderModelHandle != -1) {
                     gameRenderWorld.DebugBounds(colorCyan, clipModel.GetAbsBounds());
                 } else {
-                    CollisionModel_local.collisionModelManager.DrawModel(clipModel.Handle(), clipModel.GetOrigin(), clipModel.GetAxis(), eye, radius);
+                    collisionModelManager.DrawModel(clipModel.Handle(), clipModel.GetOrigin(), clipModel.GetAxis(), eye, radius);
                 }
             }
         }

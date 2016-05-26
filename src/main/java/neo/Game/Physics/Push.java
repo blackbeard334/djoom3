@@ -68,7 +68,7 @@ public class Push {
             idEntity[] entityList = new idEntity[MAX_GENTITIES];
             idBounds bounds, pushBounds = new idBounds();
             idVec3 clipMove, clipOrigin, oldOrigin, dir, impulse = new idVec3();
-            trace_s[] pushResults = {null};
+            trace_s[] pushResults = {new trace_s()};
             boolean wasEnabled;
             float totalMass;
             idClipModel clipModel;
@@ -248,7 +248,7 @@ public class Push {
             idBounds bounds, pushBounds = new idBounds();
             idRotation clipRotation;
             idMat3 clipAxis, oldAxis;
-            trace_s[] pushResults = {null};
+            trace_s[] pushResults = {new trace_s()};
             boolean wasEnabled;
             float totalMass;
             idClipModel clipModel;

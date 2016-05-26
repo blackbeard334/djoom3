@@ -3,7 +3,9 @@ package neo.Game.Physics;
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import neo.Game.Physics.Clip.idClipModel;
@@ -67,6 +69,8 @@ public class Physics {
 
     public static abstract class idPhysics extends idClass {
         // ABSTRACT_PROTOTYPE( idPhysics );
+        private static  int DBG_counter = 0;
+        protected final int DBG_count   = DBG_counter++;
 
         // virtual						~idPhysics();
         public static int SnapTimeToPhysicsFrame(int t) {
@@ -327,5 +331,10 @@ public class Physics {
         public abstract void WriteToSnapshot(idBitMsgDelta msg);
 
         public abstract void ReadFromSnapshot(final idBitMsgDelta msg);
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return null;
+        }
     };
 }

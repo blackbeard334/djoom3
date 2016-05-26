@@ -1,7 +1,5 @@
 package neo.Game.AI;
 
-import static java.lang.Math.abs;
-import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AF.afTouch_s;
 import neo.Game.AFEntity.idAFAttachment;
@@ -11,6 +9,67 @@ import neo.Game.AI.AAS.aasObstacle_s;
 import neo.Game.AI.AAS.aasPath_s;
 import neo.Game.AI.AAS.idAAS;
 import neo.Game.AI.AAS.idAASCallback;
+import neo.Game.AI.AI_pathing.ballistics_s;
+import neo.Game.AI.AI_pathing.obstacle_s;
+import neo.Game.AI.AI_pathing.pathNode_s;
+import neo.Game.AI.AI_pathing.pathTrace_s;
+import neo.Game.Actor.idActor;
+import neo.Game.Animation.Anim.animFlags_t;
+import neo.Game.Animation.Anim.frameCommand_t;
+import neo.Game.Animation.Anim_Blend.idAnim;
+import neo.Game.Animation.Anim_Blend.idAnimator;
+import neo.Game.Animation.Anim_Blend.idDeclModelDef;
+import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.eventCallback_t3;
+import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Class.idEventArg;
+import neo.Game.GameSys.Event.idEventDef;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Game_local.idEntityPtr;
+import neo.Game.Misc.idPathCorner;
+import neo.Game.Moveable.idMoveable;
+import neo.Game.Physics.Clip.idClipModel;
+import neo.Game.Physics.Physics.idPhysics;
+import neo.Game.Physics.Physics_Monster.idPhysics_Monster;
+import neo.Game.Physics.Physics_Monster.monsterMoveResult_t;
+import neo.Game.Player.idPlayer;
+import neo.Game.Projectile.idProjectile;
+import neo.Game.Projectile.idSoulCubeMissile;
+import neo.Game.Pvs.pvsHandle_t;
+import neo.Game.Script.Script_Program.idScriptBool;
+import neo.Game.Script.Script_Program.idScriptFloat;
+import neo.Game.Script.Script_Thread.idThread;
+import neo.Renderer.RenderWorld.renderLight_s;
+import neo.Sound.snd_shader.idSoundShader;
+import neo.Tools.Compilers.AAS.AASFile.idAASSettings;
+import neo.Tools.Compilers.AAS.AASFile.idReachability;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.framework.DeclParticle.idDeclParticle;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Dict_h.idDict;
+import neo.idlib.Dict_h.idKeyValue;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.List.idList;
+import neo.idlib.geometry.TraceModel.idTraceModel;
+import neo.idlib.math.Angles.idAngles;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Matrix.idMat3;
+import neo.idlib.math.Quat.idQuat;
+import neo.idlib.math.Vector.idVec2;
+import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Vector.idVec4;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.Math.abs;
+import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import static neo.Game.AI.AI.moveCommand_t.MOVE_FACE_ENEMY;
 import static neo.Game.AI.AI.moveCommand_t.MOVE_FACE_ENTITY;
 import static neo.Game.AI.AI.moveCommand_t.MOVE_NONE;
@@ -45,10 +104,129 @@ import static neo.Game.AI.AI.talkState_t.TALK_BUSY;
 import static neo.Game.AI.AI.talkState_t.TALK_DEAD;
 import static neo.Game.AI.AI.talkState_t.TALK_NEVER;
 import static neo.Game.AI.AI.talkState_t.TALK_OK;
+import static neo.Game.AI.AI_Events.AI_AllowDamage;
+import static neo.Game.AI.AI_Events.AI_AllowHiddenMovement;
+import static neo.Game.AI.AI_Events.AI_AllowMovement;
+import static neo.Game.AI.AI_Events.AI_AnimTurn;
+import static neo.Game.AI.AI_Events.AI_AttackMelee;
+import static neo.Game.AI.AI_Events.AI_AttackMissile;
+import static neo.Game.AI.AI_Events.AI_BecomeRagdoll;
+import static neo.Game.AI.AI_Events.AI_BecomeSolid;
+import static neo.Game.AI.AI_Events.AI_BeginAttack;
+import static neo.Game.AI.AI_Events.AI_Burn;
+import static neo.Game.AI.AI_Events.AI_CanBecomeSolid;
+import static neo.Game.AI.AI_Events.AI_CanHitEnemy;
+import static neo.Game.AI.AI_Events.AI_CanHitEnemyFromAnim;
+import static neo.Game.AI.AI_Events.AI_CanHitEnemyFromJoint;
+import static neo.Game.AI.AI_Events.AI_CanReachEnemy;
+import static neo.Game.AI.AI_Events.AI_CanReachEntity;
+import static neo.Game.AI.AI_Events.AI_CanReachPosition;
+import static neo.Game.AI.AI_Events.AI_CanSeeEntity;
+import static neo.Game.AI.AI_Events.AI_ChargeAttack;
+import static neo.Game.AI.AI_Events.AI_ClearBurn;
+import static neo.Game.AI.AI_Events.AI_ClearEnemy;
+import static neo.Game.AI.AI_Events.AI_ClearFlyOffset;
+import static neo.Game.AI.AI_Events.AI_ClosestReachableEnemyOfEntity;
+import static neo.Game.AI.AI_Events.AI_CreateMissile;
+import static neo.Game.AI.AI_Events.AI_DirectDamage;
+import static neo.Game.AI.AI_Events.AI_DisableAFPush;
+import static neo.Game.AI.AI_Events.AI_DisableClip;
+import static neo.Game.AI.AI_Events.AI_DisableGravity;
+import static neo.Game.AI.AI_Events.AI_EnableAFPush;
+import static neo.Game.AI.AI_Events.AI_EnableClip;
+import static neo.Game.AI.AI_Events.AI_EnableGravity;
+import static neo.Game.AI.AI_Events.AI_EndAttack;
+import static neo.Game.AI.AI_Events.AI_EnemyInCombatCone;
+import static neo.Game.AI.AI_Events.AI_EnemyPositionValid;
+import static neo.Game.AI.AI_Events.AI_EnemyRange;
+import static neo.Game.AI.AI_Events.AI_EnemyRange2D;
+import static neo.Game.AI.AI_Events.AI_EntityInAttackCone;
+import static neo.Game.AI.AI_Events.AI_FaceEnemy;
+import static neo.Game.AI.AI_Events.AI_FaceEntity;
+import static neo.Game.AI.AI_Events.AI_FacingIdeal;
+import static neo.Game.AI.AI_Events.AI_FindActorsInBounds;
+import static neo.Game.AI.AI_Events.AI_FindEnemy;
+import static neo.Game.AI.AI_Events.AI_FindEnemyAI;
+import static neo.Game.AI.AI_Events.AI_FindEnemyInCombatNodes;
+import static neo.Game.AI.AI_Events.AI_FireMissileAtTarget;
+import static neo.Game.AI.AI_Events.AI_GetClosestHiddenTarget;
+import static neo.Game.AI.AI_Events.AI_GetCombatNode;
+import static neo.Game.AI.AI_Events.AI_GetCurrentYaw;
+import static neo.Game.AI.AI_Events.AI_GetEnemy;
+import static neo.Game.AI.AI_Events.AI_GetEnemyEyePos;
+import static neo.Game.AI.AI_Events.AI_GetEnemyPos;
+import static neo.Game.AI.AI_Events.AI_GetHealth;
+import static neo.Game.AI.AI_Events.AI_GetJumpVelocity;
+import static neo.Game.AI.AI_Events.AI_GetMoveType;
+import static neo.Game.AI.AI_Events.AI_GetObstacle;
+import static neo.Game.AI.AI_Events.AI_GetRandomTarget;
+import static neo.Game.AI.AI_Events.AI_GetReachableEntityPosition;
+import static neo.Game.AI.AI_Events.AI_GetTalkTarget;
+import static neo.Game.AI.AI_Events.AI_GetTurnDelta;
+import static neo.Game.AI.AI_Events.AI_GetTurnRate;
+import static neo.Game.AI.AI_Events.AI_HeardSound;
+import static neo.Game.AI.AI_Events.AI_IgnoreDamage;
+import static neo.Game.AI.AI_Events.AI_JumpFrame;
+import static neo.Game.AI.AI_Events.AI_KickObstacles;
+import static neo.Game.AI.AI_Events.AI_Kill;
+import static neo.Game.AI.AI_Events.AI_LaunchMissile;
+import static neo.Game.AI.AI_Events.AI_LocateEnemy;
+import static neo.Game.AI.AI_Events.AI_LookAtEnemy;
+import static neo.Game.AI.AI_Events.AI_LookAtEntity;
+import static neo.Game.AI.AI_Events.AI_MeleeAttackToJoint;
+import static neo.Game.AI.AI_Events.AI_MoveOutOfRange;
+import static neo.Game.AI.AI_Events.AI_MoveStatus;
+import static neo.Game.AI.AI_Events.AI_MoveToAttackPosition;
+import static neo.Game.AI.AI_Events.AI_MoveToCover;
+import static neo.Game.AI.AI_Events.AI_MoveToEnemy;
+import static neo.Game.AI.AI_Events.AI_MoveToEnemyHeight;
+import static neo.Game.AI.AI_Events.AI_MoveToEntity;
+import static neo.Game.AI.AI_Events.AI_MoveToPosition;
+import static neo.Game.AI.AI_Events.AI_MuzzleFlash;
+import static neo.Game.AI.AI_Events.AI_NumSmokeEmitters;
+import static neo.Game.AI.AI_Events.AI_PreBurn;
+import static neo.Game.AI.AI_Events.AI_PredictEnemyPos;
+import static neo.Game.AI.AI_Events.AI_PushPointIntoAAS;
+import static neo.Game.AI.AI_Events.AI_RadiusDamageFromJoint;
+import static neo.Game.AI.AI_Events.AI_RandomPath;
 import static neo.Game.AI.AI_Events.AI_RealKill;
+import static neo.Game.AI.AI_Events.AI_RestoreMove;
+import static neo.Game.AI.AI_Events.AI_SaveMove;
+import static neo.Game.AI.AI_Events.AI_SetEnemy;
+import static neo.Game.AI.AI_Events.AI_SetFlyOffset;
+import static neo.Game.AI.AI_Events.AI_SetFlySpeed;
+import static neo.Game.AI.AI_Events.AI_SetHealth;
+import static neo.Game.AI.AI_Events.AI_SetJointMod;
+import static neo.Game.AI.AI_Events.AI_SetMoveType;
+import static neo.Game.AI.AI_Events.AI_SetSmokeVisibility;
+import static neo.Game.AI.AI_Events.AI_SetTalkState;
+import static neo.Game.AI.AI_Events.AI_SetTalkTarget;
+import static neo.Game.AI.AI_Events.AI_SetTurnRate;
 import static neo.Game.AI.AI_Events.AI_Shrivel;
+import static neo.Game.AI.AI_Events.AI_SlideTo;
+import static neo.Game.AI.AI_Events.AI_StopMove;
+import static neo.Game.AI.AI_Events.AI_StopRagdoll;
+import static neo.Game.AI.AI_Events.AI_StopThinking;
+import static neo.Game.AI.AI_Events.AI_TestAnimAttack;
+import static neo.Game.AI.AI_Events.AI_TestAnimMove;
+import static neo.Game.AI.AI_Events.AI_TestAnimMoveTowardEnemy;
+import static neo.Game.AI.AI_Events.AI_TestChargeAttack;
+import static neo.Game.AI.AI_Events.AI_TestMeleeAttack;
+import static neo.Game.AI.AI_Events.AI_TestMoveToPosition;
+import static neo.Game.AI.AI_Events.AI_ThrowAF;
+import static neo.Game.AI.AI_Events.AI_ThrowMoveable;
+import static neo.Game.AI.AI_Events.AI_TravelDistanceBetweenEntities;
+import static neo.Game.AI.AI_Events.AI_TravelDistanceBetweenPoints;
+import static neo.Game.AI.AI_Events.AI_TravelDistanceToEntity;
+import static neo.Game.AI.AI_Events.AI_TravelDistanceToPoint;
+import static neo.Game.AI.AI_Events.AI_TriggerParticles;
+import static neo.Game.AI.AI_Events.AI_TurnTo;
+import static neo.Game.AI.AI_Events.AI_TurnToEntity;
+import static neo.Game.AI.AI_Events.AI_TurnToPos;
 import static neo.Game.AI.AI_Events.AI_WaitAction;
 import static neo.Game.AI.AI_Events.AI_WaitMove;
+import static neo.Game.AI.AI_Events.AI_WakeOnFlashlight;
+import static neo.Game.AI.AI_Events.AI_Wander;
 import static neo.Game.AI.AI_pathing.Ballistics;
 import static neo.Game.AI.AI_pathing.BuildPathTree;
 import static neo.Game.AI.AI_pathing.DrawPathTree;
@@ -61,34 +239,23 @@ import static neo.Game.AI.AI_pathing.MAX_OBSTACLES;
 import static neo.Game.AI.AI_pathing.OVERCLIP;
 import static neo.Game.AI.AI_pathing.PathTrace;
 import static neo.Game.AI.AI_pathing.PrunePathTree;
-import neo.Game.AI.AI_pathing.ballistics_s;
-import neo.Game.AI.AI_pathing.obstacle_s;
 import static neo.Game.AI.AI_pathing.pathNodeAllocator;
-import neo.Game.AI.AI_pathing.pathNode_s;
-import neo.Game.AI.AI_pathing.pathTrace_s;
 import static neo.Game.Actor.AI_PlayAnim;
-import neo.Game.Actor.idActor;
 import static neo.Game.Animation.Anim.ANIMCHANNEL_LEGS;
 import static neo.Game.Animation.Anim.ANIMCHANNEL_TORSO;
 import static neo.Game.Animation.Anim.FRAME2MS;
-import neo.Game.Animation.Anim.animFlags_t;
 import static neo.Game.Animation.Anim.frameCommandType_t.FC_LAUNCHMISSILE;
-import neo.Game.Animation.Anim.frameCommand_t;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD_OVERRIDE;
-import neo.Game.Animation.Anim_Blend.idAnim;
-import neo.Game.Animation.Anim_Blend.idAnimator;
-import neo.Game.Animation.Anim_Blend.idDeclModelDef;
+import static neo.Game.Entity.EV_Activate;
+import static neo.Game.Entity.EV_GetAngles;
+import static neo.Game.Entity.EV_SetAngles;
 import static neo.Game.Entity.EV_SetOwner;
+import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_PHYSICS;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEPARTICLES;
-import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
-import neo.Game.GameSys.Class.idClass;
-import neo.Game.GameSys.Event.idEventDef;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.ai_blockedFailSafe;
 import static neo.Game.GameSys.SysCvar.ai_debugMove;
 import static neo.Game.GameSys.SysCvar.ai_debugTrajectory;
@@ -111,22 +278,9 @@ import static neo.Game.Game_local.gameRenderWorld;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_AMBIENT;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_DAMAGE;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_VOICE;
-import neo.Game.Game_local.idEntityPtr;
-import neo.Game.Misc.idPathCorner;
-import neo.Game.Moveable.idMoveable;
-import neo.Game.Physics.Clip.idClipModel;
-import neo.Game.Physics.Physics.idPhysics;
-import neo.Game.Physics.Physics_Monster.idPhysics_Monster;
-import neo.Game.Physics.Physics_Monster.monsterMoveResult_t;
+import static neo.Game.Moveable.EV_BecomeNonSolid;
 import static neo.Game.Physics.Physics_Monster.monsterMoveResult_t.MM_BLOCKED;
 import static neo.Game.Player.SAVING_THROW_TIME;
-import neo.Game.Player.idPlayer;
-import neo.Game.Projectile.idProjectile;
-import neo.Game.Projectile.idSoulCubeMissile;
-import neo.Game.Pvs.pvsHandle_t;
-import neo.Game.Script.Script_Program.idScriptBool;
-import neo.Game.Script.Script_Program.idScriptFloat;
-import neo.Game.Script.Script_Thread.idThread;
 import static neo.Renderer.Material.CONTENTS_BODY;
 import static neo.Renderer.Material.CONTENTS_SOLID;
 import static neo.Renderer.Model.INVALID_JOINT;
@@ -139,8 +293,6 @@ import static neo.Renderer.RenderWorld.SHADERPARM_RED;
 import static neo.Renderer.RenderWorld.SHADERPARM_TIMEOFFSET;
 import static neo.Renderer.RenderWorld.SHADERPARM_TIMESCALE;
 import static neo.Renderer.RenderWorld.SHADERPARM_TIME_OF_DEATH;
-import neo.Renderer.RenderWorld.renderLight_s;
-import neo.Sound.snd_shader.idSoundShader;
 import static neo.TempDump.NOT;
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
@@ -150,16 +302,8 @@ import static neo.Tools.Compilers.AAS.AASFile.AREA_REACHABLE_WALK;
 import static neo.Tools.Compilers.AAS.AASFile.TFL_AIR;
 import static neo.Tools.Compilers.AAS.AASFile.TFL_FLY;
 import static neo.Tools.Compilers.AAS.AASFile.TFL_WALK;
-import neo.Tools.Compilers.AAS.AASFile.idAASSettings;
-import neo.Tools.Compilers.AAS.AASFile.idReachability;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_PARTICLE;
-import neo.framework.DeclParticle.idDeclParticle;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.Dict_h.idDict;
-import neo.idlib.Dict_h.idKeyValue;
 import static neo.idlib.Lib.BIT;
 import static neo.idlib.Lib.MAX_WORLD_SIZE;
 import static neo.idlib.Lib.colorBlue;
@@ -172,25 +316,15 @@ import static neo.idlib.Lib.colorOrange;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Lib.colorYellow;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
-import neo.idlib.containers.List.idList;
-import neo.idlib.geometry.TraceModel.idTraceModel;
 import static neo.idlib.math.Angles.getAng_zero;
-import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
 import static neo.idlib.math.Math_h.Square;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
-import neo.idlib.math.Quat.idQuat;
 import static neo.idlib.math.Vector.getVec3_origin;
 import static neo.idlib.math.Vector.getVec3_zero;
-import neo.idlib.math.Vector.idVec2;
-import neo.idlib.math.Vector.idVec3;
-import neo.idlib.math.Vector.idVec4;
 
 /**
  *
@@ -569,6 +703,138 @@ public class AI {
 
     public static class idAI extends idActor {
         // CLASS_PROTOTYPE( idAI );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idActor.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idAI>) idAI::Event_Activate);
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idAI>) idAI::Event_Touch);
+            eventCallbacks.put(AI_FindEnemy, (eventCallback_t1<idAI>) idAI::Event_FindEnemy);
+            eventCallbacks.put(AI_FindEnemyAI, (eventCallback_t1<idAI>) idAI::Event_FindEnemyAI);
+            eventCallbacks.put(AI_FindEnemyInCombatNodes, (eventCallback_t0<idAI>) idAI::Event_FindEnemyInCombatNodes);
+            eventCallbacks.put(AI_ClosestReachableEnemyOfEntity, (eventCallback_t1<idAI>) idAI::Event_ClosestReachableEnemyOfEntity);
+            eventCallbacks.put(AI_HeardSound, (eventCallback_t1<idAI>) idAI::Event_HeardSound);
+            eventCallbacks.put(AI_SetEnemy, (eventCallback_t1<idAI>) idAI::Event_SetEnemy);
+            eventCallbacks.put(AI_ClearEnemy, (eventCallback_t0<idAI>) idAI::Event_ClearEnemy);
+            eventCallbacks.put(AI_MuzzleFlash, (eventCallback_t1<idAI>) idAI::Event_MuzzleFlash);
+            eventCallbacks.put(AI_CreateMissile, (eventCallback_t1<idAI>) idAI::Event_CreateMissile);
+            eventCallbacks.put(AI_AttackMissile, (eventCallback_t1<idAI>) idAI::Event_AttackMissile);
+            eventCallbacks.put(AI_FireMissileAtTarget, (eventCallback_t2<idAI>) idAI::Event_FireMissileAtTarget);
+            eventCallbacks.put(AI_LaunchMissile, (eventCallback_t2<idAI>) idAI::Event_LaunchMissile);
+            eventCallbacks.put(AI_AttackMelee, (eventCallback_t1<idAI>) idAI::Event_AttackMelee);
+            eventCallbacks.put(AI_DirectDamage, (eventCallback_t2<idAI>) idAI::Event_DirectDamage);
+            eventCallbacks.put(AI_RadiusDamageFromJoint, (eventCallback_t2<idAI>) idAI::Event_RadiusDamageFromJoint);
+            eventCallbacks.put(AI_BeginAttack, (eventCallback_t1<idAI>) idAI::Event_BeginAttack);
+            eventCallbacks.put(AI_EndAttack, (eventCallback_t0<idAI>) idAI::Event_EndAttack);
+            eventCallbacks.put(AI_MeleeAttackToJoint, (eventCallback_t2<idAI>) idAI::Event_MeleeAttackToJoint);
+            eventCallbacks.put(AI_RandomPath, (eventCallback_t0<idAI>) idAI::Event_RandomPath);
+            eventCallbacks.put(AI_CanBecomeSolid, (eventCallback_t0<idAI>) idAI::Event_CanBecomeSolid);
+            eventCallbacks.put(AI_BecomeSolid, (eventCallback_t0<idAI>) idAI::Event_BecomeSolid);
+            eventCallbacks.put(EV_BecomeNonSolid, (eventCallback_t0<idAI>) idAI::Event_BecomeNonSolid);
+            eventCallbacks.put(AI_BecomeRagdoll, (eventCallback_t0<idAI>) idAI::Event_BecomeRagdoll);
+            eventCallbacks.put(AI_StopRagdoll, (eventCallback_t0<idAI>) idAI::Event_StopRagdoll);
+            eventCallbacks.put(AI_SetHealth, (eventCallback_t1<idAI>) idAI::Event_SetHealth);
+            eventCallbacks.put(AI_GetHealth, (eventCallback_t0<idAI>) idAI::Event_GetHealth);
+            eventCallbacks.put(AI_AllowDamage, (eventCallback_t0<idAI>) idAI::Event_AllowDamage);
+            eventCallbacks.put(AI_IgnoreDamage, (eventCallback_t0<idAI>) idAI::Event_IgnoreDamage);
+            eventCallbacks.put(AI_GetCurrentYaw, (eventCallback_t0<idAI>) idAI::Event_GetCurrentYaw);
+            eventCallbacks.put(AI_TurnTo, (eventCallback_t1<idAI>) idAI::Event_TurnTo);
+            eventCallbacks.put(AI_TurnToPos, (eventCallback_t1<idAI>) idAI::Event_TurnToPos);
+            eventCallbacks.put(AI_TurnToEntity, (eventCallback_t1<idAI>) idAI::Event_TurnToEntity);
+            eventCallbacks.put(AI_MoveStatus, (eventCallback_t0<idAI>) idAI::Event_MoveStatus);
+            eventCallbacks.put(AI_StopMove, (eventCallback_t0<idAI>) idAI::Event_StopMove);
+            eventCallbacks.put(AI_MoveToCover, (eventCallback_t0<idAI>) idAI::Event_MoveToCover);
+            eventCallbacks.put(AI_MoveToEnemy, (eventCallback_t0<idAI>) idAI::Event_MoveToEnemy);
+            eventCallbacks.put(AI_MoveToEnemyHeight, (eventCallback_t0<idAI>) idAI::Event_MoveToEnemyHeight);
+            eventCallbacks.put(AI_MoveOutOfRange, (eventCallback_t2<idAI>) idAI::Event_MoveOutOfRange);
+            eventCallbacks.put(AI_MoveToAttackPosition, (eventCallback_t2<idAI>) idAI::Event_MoveToAttackPosition);
+            eventCallbacks.put(AI_Wander, (eventCallback_t0<idAI>) idAI::Event_Wander);
+            eventCallbacks.put(AI_MoveToEntity, (eventCallback_t1<idAI>) idAI::Event_MoveToEntity);
+            eventCallbacks.put(AI_MoveToPosition, (eventCallback_t1<idAI>) idAI::Event_MoveToPosition);
+            eventCallbacks.put(AI_SlideTo, (eventCallback_t2<idAI>) idAI::Event_SlideTo);
+            eventCallbacks.put(AI_FacingIdeal, (eventCallback_t0<idAI>) idAI::Event_FacingIdeal);
+            eventCallbacks.put(AI_FaceEnemy, (eventCallback_t0<idAI>) idAI::Event_FaceEnemy);
+            eventCallbacks.put(AI_FaceEntity, (eventCallback_t1<idAI>) idAI::Event_FaceEntity);
+            eventCallbacks.put(AI_WaitAction, (eventCallback_t1<idAI>) idAI::Event_WaitAction);
+            eventCallbacks.put(AI_GetCombatNode, (eventCallback_t0<idAI>) idAI::Event_GetCombatNode);
+            eventCallbacks.put(AI_EnemyInCombatCone, (eventCallback_t2<idAI>) idAI::Event_EnemyInCombatCone);
+            eventCallbacks.put(AI_WaitMove, (eventCallback_t0<idAI>) idAI::Event_WaitMove);
+            eventCallbacks.put(AI_GetJumpVelocity, (eventCallback_t3<idAI>) idAI::Event_GetJumpVelocity);
+            eventCallbacks.put(AI_EntityInAttackCone, (eventCallback_t1<idAI>) idAI::Event_EntityInAttackCone);
+            eventCallbacks.put(AI_CanSeeEntity, (eventCallback_t1<idAI>) idAI::Event_CanSeeEntity);
+            eventCallbacks.put(AI_SetTalkTarget, (eventCallback_t1<idAI>) idAI::Event_SetTalkTarget);
+            eventCallbacks.put(AI_GetTalkTarget, (eventCallback_t0<idAI>) idAI::Event_GetTalkTarget);
+            eventCallbacks.put(AI_SetTalkState, (eventCallback_t1<idAI>) idAI::Event_SetTalkState);
+            eventCallbacks.put(AI_EnemyRange, (eventCallback_t0<idAI>) idAI::Event_EnemyRange);
+            eventCallbacks.put(AI_EnemyRange2D, (eventCallback_t0<idAI>) idAI::Event_EnemyRange2D);
+            eventCallbacks.put(AI_GetEnemy, (eventCallback_t0<idAI>) idAI::Event_GetEnemy);
+            eventCallbacks.put(AI_GetEnemyPos, (eventCallback_t0<idAI>) idAI::Event_GetEnemyPos);
+            eventCallbacks.put(AI_GetEnemyEyePos, (eventCallback_t0<idAI>) idAI::Event_GetEnemyEyePos);
+            eventCallbacks.put(AI_PredictEnemyPos, (eventCallback_t1<idAI>) idAI::Event_PredictEnemyPos);
+            eventCallbacks.put(AI_CanHitEnemy, (eventCallback_t0<idAI>) idAI::Event_CanHitEnemy);
+            eventCallbacks.put(AI_CanHitEnemyFromAnim, (eventCallback_t1<idAI>) idAI::Event_CanHitEnemyFromAnim);
+            eventCallbacks.put(AI_CanHitEnemyFromJoint, (eventCallback_t1<idAI>) idAI::Event_CanHitEnemyFromJoint);
+            eventCallbacks.put(AI_EnemyPositionValid, (eventCallback_t0<idAI>) idAI::Event_EnemyPositionValid);
+            eventCallbacks.put(AI_ChargeAttack, (eventCallback_t1<idAI>) idAI::Event_ChargeAttack);
+            eventCallbacks.put(AI_TestChargeAttack, (eventCallback_t0<idAI>) idAI::Event_TestChargeAttack);
+            eventCallbacks.put(AI_TestAnimMoveTowardEnemy, (eventCallback_t1<idAI>) idAI::Event_TestAnimMoveTowardEnemy);
+            eventCallbacks.put(AI_TestAnimMove, (eventCallback_t1<idAI>) idAI::Event_TestAnimMove);
+            eventCallbacks.put(AI_TestMoveToPosition, (eventCallback_t1<idAI>) idAI::Event_TestMoveToPosition);
+            eventCallbacks.put(AI_TestMeleeAttack, (eventCallback_t0<idAI>) idAI::Event_TestMeleeAttack);
+            eventCallbacks.put(AI_TestAnimAttack, (eventCallback_t1<idAI>) idAI::Event_TestAnimAttack);
+            eventCallbacks.put(AI_Shrivel, (eventCallback_t1<idAI>) idAI::Event_Shrivel);
+            eventCallbacks.put(AI_Burn, (eventCallback_t0<idAI>) idAI::Event_Burn);
+            eventCallbacks.put(AI_PreBurn, (eventCallback_t0<idAI>) idAI::Event_PreBurn);
+            eventCallbacks.put(AI_SetSmokeVisibility, (eventCallback_t2<idAI>) idAI::Event_SetSmokeVisibility);
+            eventCallbacks.put(AI_NumSmokeEmitters, (eventCallback_t0<idAI>) idAI::Event_NumSmokeEmitters);
+            eventCallbacks.put(AI_ClearBurn, (eventCallback_t0<idAI>) idAI::Event_ClearBurn);
+            eventCallbacks.put(AI_StopThinking, (eventCallback_t0<idAI>) idAI::Event_StopThinking);
+            eventCallbacks.put(AI_GetTurnDelta, (eventCallback_t0<idAI>) idAI::Event_GetTurnDelta);
+            eventCallbacks.put(AI_GetMoveType, (eventCallback_t0<idAI>) idAI::Event_GetMoveType);
+            eventCallbacks.put(AI_SetMoveType, (eventCallback_t1<idAI>) idAI::Event_SetMoveType);
+            eventCallbacks.put(AI_SaveMove, (eventCallback_t0<idAI>) idAI::Event_SaveMove);
+            eventCallbacks.put(AI_RestoreMove, (eventCallback_t0<idAI>) idAI::Event_RestoreMove);
+            eventCallbacks.put(AI_AllowMovement, (eventCallback_t1<idAI>) idAI::Event_AllowMovement);
+            eventCallbacks.put(AI_JumpFrame, (eventCallback_t0<idAI>) idAI::Event_JumpFrame);
+            eventCallbacks.put(AI_EnableClip, (eventCallback_t0<idAI>) idAI::Event_EnableClip);
+            eventCallbacks.put(AI_DisableClip, (eventCallback_t0<idAI>) idAI::Event_DisableClip);
+            eventCallbacks.put(AI_EnableGravity, (eventCallback_t0<idAI>) idAI::Event_EnableGravity);
+            eventCallbacks.put(AI_DisableGravity, (eventCallback_t0<idAI>) idAI::Event_DisableGravity);
+            eventCallbacks.put(AI_EnableAFPush, (eventCallback_t0<idAI>) idAI::Event_EnableAFPush);
+            eventCallbacks.put(AI_DisableAFPush, (eventCallback_t0<idAI>) idAI::Event_DisableAFPush);
+            eventCallbacks.put(AI_SetFlySpeed, (eventCallback_t1<idAI>) idAI::Event_SetFlySpeed);
+            eventCallbacks.put(AI_SetFlyOffset, (eventCallback_t1<idAI>) idAI::Event_SetFlyOffset);
+            eventCallbacks.put(AI_ClearFlyOffset, (eventCallback_t0<idAI>) idAI::Event_ClearFlyOffset);
+            eventCallbacks.put(AI_GetClosestHiddenTarget, (eventCallback_t1<idAI>) idAI::Event_GetClosestHiddenTarget);
+            eventCallbacks.put(AI_GetRandomTarget, (eventCallback_t1<idAI>) idAI::Event_GetRandomTarget);
+            eventCallbacks.put(AI_TravelDistanceToPoint, (eventCallback_t1<idAI>) idAI::Event_TravelDistanceToPoint);
+            eventCallbacks.put(AI_TravelDistanceToEntity, (eventCallback_t1<idAI>) idAI::Event_TravelDistanceToEntity);
+            eventCallbacks.put(AI_TravelDistanceBetweenPoints, (eventCallback_t2<idAI>) idAI::Event_TravelDistanceBetweenPoints);
+            eventCallbacks.put(AI_TravelDistanceBetweenEntities, (eventCallback_t2<idAI>) idAI::Event_TravelDistanceBetweenEntities);
+            eventCallbacks.put(AI_LookAtEntity, (eventCallback_t2<idAI>) idAI::Event_LookAtEntity);
+            eventCallbacks.put(AI_LookAtEnemy, (eventCallback_t1<idAI>) idAI::Event_LookAtEnemy);
+            eventCallbacks.put(AI_SetJointMod, (eventCallback_t1<idAI>) idAI::Event_SetJointMod);
+            eventCallbacks.put(AI_ThrowMoveable, (eventCallback_t0<idAI>) idAI::Event_ThrowMoveable);
+            eventCallbacks.put(AI_ThrowAF, (eventCallback_t0<idAI>) idAI::Event_ThrowAF);
+            eventCallbacks.put(EV_GetAngles, (eventCallback_t0<idAI>) idAI::Event_GetAngles);
+            eventCallbacks.put(EV_SetAngles, (eventCallback_t1<idAI>) idAI::Event_SetAngles);
+            eventCallbacks.put(AI_RealKill, (eventCallback_t0<idAI>) idAI::Event_RealKill);
+            eventCallbacks.put(AI_Kill, (eventCallback_t0<idAI>) idAI::Event_Kill);
+            eventCallbacks.put(AI_WakeOnFlashlight, (eventCallback_t1<idAI>) idAI::Event_WakeOnFlashlight);
+            eventCallbacks.put(AI_LocateEnemy, (eventCallback_t0<idAI>) idAI::Event_LocateEnemy);
+            eventCallbacks.put(AI_KickObstacles, (eventCallback_t2<idAI>) idAI::Event_KickObstacles);
+            eventCallbacks.put(AI_GetObstacle, (eventCallback_t0<idAI>) idAI::Event_GetObstacle);
+            eventCallbacks.put(AI_PushPointIntoAAS, (eventCallback_t1<idAI>) idAI::Event_PushPointIntoAAS);
+            eventCallbacks.put(AI_GetTurnRate, (eventCallback_t0<idAI>) idAI::Event_GetTurnRate);
+            eventCallbacks.put(AI_SetTurnRate, (eventCallback_t1<idAI>) idAI::Event_SetTurnRate);
+            eventCallbacks.put(AI_AnimTurn, (eventCallback_t1<idAI>) idAI::Event_AnimTurn);
+            eventCallbacks.put(AI_AllowHiddenMovement, (eventCallback_t1<idAI>) idAI::Event_AllowHiddenMovement);
+            eventCallbacks.put(AI_TriggerParticles, (eventCallback_t1<idAI>) idAI::Event_TriggerParticles);
+            eventCallbacks.put(AI_FindActorsInBounds, (eventCallback_t2<idAI>) idAI::Event_FindActorsInBounds);
+            eventCallbacks.put(AI_CanReachPosition, (eventCallback_t1<idAI>) idAI::Event_CanReachPosition);
+            eventCallbacks.put(AI_CanReachEntity, (eventCallback_t1<idAI>) idAI::Event_CanReachEntity);
+            eventCallbacks.put(AI_CanReachEnemy, (eventCallback_t0<idAI>) idAI::Event_CanReachEnemy);
+            eventCallbacks.put(AI_GetReachableEntityPosition, (eventCallback_t1<idAI>) idAI::Event_GetReachableEntityPosition);
+        }
 
         // navigation
         protected       idAAS                            aas;
@@ -1326,7 +1592,7 @@ public class AI {
                 projectileVelocity = idProjectile.GetVelocity(projectileDef);
                 projectileGravity = idProjectile.GetGravity(projectileDef);
                 projectileSpeed = projectileVelocity.Length();
-//		delete projectile.GetEntity();
+		        idEntity.delete(projectile.GetEntity());
                 projectile.oSet(null);
             }
 
@@ -2422,7 +2688,7 @@ public class AI {
 
             torsoAnim.animBlendFrames = 0;
             torsoAnim.lastAnimBlendFrames = 0;
-            ProcessEvent(AI_PlayAnim, ANIMCHANNEL_TORSO, animName);
+            ProcessEvent(AI_PlayAnim, ANIMCHANNEL_TORSO, animName[0]);
 
             // make sure our model gets updated
             animator.ForceUpdate();
@@ -5295,18 +5561,19 @@ public class AI {
         //
         // ai/ai_events.cpp
         //
-        protected void Event_Activate(idEntity activator) {
-            Activate(activator);
+        protected void Event_Activate(idEventArg<idEntity> activator) {
+            Activate(activator.value);
         }
 
-        protected void Event_Touch(idEntity other, trace_s trace) {
+        protected void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
+            idEntity other = _other.value;
             if (null == enemy.GetEntity() && !other.fl.notarget && (ReactionTo(other) & ATTACK_ON_ACTIVATE) != 0) {
                 Activate(other);
             }
             AI_PUSHED._(true);
         }
 
-        protected void Event_FindEnemy(int useFOV) {
+        protected void Event_FindEnemy(idEventArg<Integer> useFOV) {
             int i;
             idEntity ent;
             idActor actor;
@@ -5324,7 +5591,7 @@ public class AI {
                         continue;
                     }
 
-                    if (CanSee(actor, useFOV != 0)) {
+                    if (CanSee(actor, useFOV.value != 0)) {
                         idThread.ReturnEntity(actor);
                         return;
                     }
@@ -5334,7 +5601,7 @@ public class AI {
             idThread.ReturnEntity(null);
         }
 
-        protected void Event_FindEnemyAI(int useFOV) {
+        protected void Event_FindEnemyAI(idEventArg<Integer> useFOV) {
             idEntity ent;
             idActor actor;
             idActor bestEnemy;
@@ -5363,7 +5630,7 @@ public class AI {
 
                 delta = physicsObj.GetOrigin().oMinus(actor.GetPhysics().GetOrigin());
                 dist = delta.LengthSqr();
-                if ((dist < bestDist) && CanSee(actor, useFOV != 0)) {
+                if ((dist < bestDist) && CanSee(actor, useFOV.value != 0)) {
                     bestDist = dist;
                     bestEnemy = actor;
                 }
@@ -5415,7 +5682,8 @@ public class AI {
             idThread.ReturnEntity(null);
         }
 
-        protected void Event_ClosestReachableEnemyOfEntity(idEntity team_mate) {
+        protected void Event_ClosestReachableEnemyOfEntity(idEventArg<idEntity> _team_mate) {
+            idEntity team_mate = _team_mate.value;
             idActor actor;
             idActor ent;
             idActor bestEnt;
@@ -5456,10 +5724,10 @@ public class AI {
             idThread.ReturnEntity(bestEnt);
         }
 
-        protected void Event_HeardSound(int ignore_team) {
+        protected void Event_HeardSound(idEventArg<Integer> ignore_team) {
             // check if we heard any sounds in the last frame
             idActor actor = gameLocal.GetAlertEntity();
-            if (actor != null && (0 == ignore_team || (ReactionTo(actor) & ATTACK_ON_SIGHT) != 0) && gameLocal.InPlayerPVS(this)) {
+            if (actor != null && (0 == ignore_team.value || (ReactionTo(actor) & ATTACK_ON_SIGHT) != 0) && gameLocal.InPlayerPVS(this)) {
                 idVec3 pos = actor.GetPhysics().GetOrigin();
                 idVec3 org = physicsObj.GetOrigin();
                 float dist = (pos.oMinus(org)).LengthSqr();
@@ -5472,7 +5740,8 @@ public class AI {
             idThread.ReturnEntity(null);
         }
 
-        protected void Event_SetEnemy(idEntity ent) {
+        protected void Event_SetEnemy(idEventArg<idEntity> _ent) {
+            idEntity ent = _ent.value;
             if (null == ent) {
                 ClearEnemy();
             } else if (!ent.IsType(idActor.class)) {
@@ -5486,15 +5755,16 @@ public class AI {
             ClearEnemy();
         }
 
-        protected void Event_MuzzleFlash(final String jointname) {
+        protected void Event_MuzzleFlash(final idEventArg<String> jointname) {
             idVec3 muzzle = new idVec3();
             idMat3 axis = new idMat3();
 
-            GetMuzzle(jointname, muzzle, axis);
+            GetMuzzle(jointname.value, muzzle, axis);
             TriggerWeaponEffects(muzzle);
         }
 
-        protected void Event_CreateMissile(final String jointname) {
+        protected void Event_CreateMissile(final idEventArg<String> _jointname) {
+            String jointname = _jointname.value;
             idVec3 muzzle = new idVec3();
             idMat3 axis = new idMat3();
 
@@ -5515,27 +5785,29 @@ public class AI {
             idThread.ReturnEntity(projectile.GetEntity());
         }
 
-        protected void Event_AttackMissile(final String jointname) {
+        protected void Event_AttackMissile(final idEventArg<String> jointname) {
             idProjectile proj;
 
-            proj = LaunchProjectile(jointname, enemy.GetEntity(), true);
+            proj = LaunchProjectile(jointname.value, enemy.GetEntity(), true);
             idThread.ReturnEntity(proj);
         }
 
-        protected void Event_FireMissileAtTarget(final String jointname, final String targetname) {
+        protected void Event_FireMissileAtTarget(final idEventArg<String> jointname, final idEventArg<String> targetname) {
             idEntity aent;
             idProjectile proj;
 
-            aent = gameLocal.FindEntity(targetname);
+            aent = gameLocal.FindEntity(targetname.value);
             if (null == aent) {
-                gameLocal.Warning("Entity '%s' not found for 'fireMissileAtTarget'", targetname);
+                gameLocal.Warning("Entity '%s' not found for 'fireMissileAtTarget'", targetname.value);
             }
 
-            proj = LaunchProjectile(jointname, aent, false);
+            proj = LaunchProjectile(jointname.value, aent, false);
             idThread.ReturnEntity(proj);
         }
 
-        protected void Event_LaunchMissile(final idVec3 muzzle, final idAngles ang) {
+        protected void Event_LaunchMissile(final idEventArg<idVec3> _muzzle, final idEventArg<idAngles> _ang) {
+            final idVec3 muzzle = _muzzle.value;
+            final idAngles ang = _ang.value;
             idVec3 start;
             trace_s[] tr = {null};
             idBounds projBounds;
@@ -5585,44 +5857,44 @@ public class AI {
             lastAttackTime = gameLocal.time;
         }
 
-        protected void Event_AttackMelee(final String meleeDefName) {
+        protected void Event_AttackMelee(final idEventArg<String> meleeDefName) {
             int hit;
 
-            hit = AttackMelee(meleeDefName) ? 1 : 0;
+            hit = AttackMelee(meleeDefName.value) ? 1 : 0;
             idThread.ReturnInt(hit);
         }
 
-        protected void Event_DirectDamage(idEntity damageTarget, final String damageDefName) {
-            DirectDamage(damageDefName, damageTarget);
+        protected void Event_DirectDamage(idEventArg<idEntity> damageTarget, final idEventArg<String> damageDefName) {
+            DirectDamage(damageDefName.value, damageTarget.value);
         }
 
-        protected void Event_RadiusDamageFromJoint(final String jointname, final String damageDefName) {
+        protected void Event_RadiusDamageFromJoint(final idEventArg<String> jointname, final idEventArg<String> damageDefName) {
             int/*jointHandle_t*/ joint;
             idVec3 org = new idVec3();
             idMat3 axis = new idMat3();
 
-            if (!isNotNullOrEmpty(jointname)) {
+            if (!isNotNullOrEmpty(jointname.value)) {
                 org = physicsObj.GetOrigin();
             } else {
-                joint = animator.GetJointHandle(jointname);
+                joint = animator.GetJointHandle(jointname.value);
                 if (joint == INVALID_JOINT) {
-                    gameLocal.Error("Unknown joint '%s' on %s", jointname, GetEntityDefName());
+                    gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
                 }
                 GetJointWorldTransform(joint, gameLocal.time, org, axis);
             }
 
-            gameLocal.RadiusDamage(org, this, this, this, this, damageDefName);
+            gameLocal.RadiusDamage(org, this, this, this, this, damageDefName.value);
         }
 
-        protected void Event_BeginAttack(final String name) {
-            BeginAttack(name);
+        protected void Event_BeginAttack(final idEventArg<String> name) {
+            BeginAttack(name.value);
         }
 
         protected void Event_EndAttack() {
             EndAttack();
         }
 
-        protected void Event_MeleeAttackToJoint(final String jointname, final String meleeDefName) {
+        protected void Event_MeleeAttackToJoint(final idEventArg<String> jointname, final idEventArg<String> meleeDefName) {
             int/*jointHandle_t*/ joint;
             idVec3 start;
             idVec3 end = new idVec3();
@@ -5630,9 +5902,9 @@ public class AI {
             trace_s trace = new trace_s();
             idEntity hitEnt;
 
-            joint = animator.GetJointHandle(jointname);
+            joint = animator.GetJointHandle(jointname.value);
             if (joint == INVALID_JOINT) {
-                gameLocal.Error("Unknown joint '%s' on %s", jointname, GetEntityDefName());
+                gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
             }
             animator.GetJointTransform(joint, gameLocal.time, end, axis);
             end = physicsObj.GetOrigin().oPlus((end.oPlus(modelOffset)).oMultiply(viewAxis).oMultiply(physicsObj.GetGravityAxis()));
@@ -5646,7 +5918,7 @@ public class AI {
             if (trace.fraction < 1.0f) {
                 hitEnt = gameLocal.GetTraceEntity(trace);
                 if (hitEnt != null && hitEnt.IsType(idActor.class)) {
-                    DirectDamage(meleeDefName, hitEnt);
+                    DirectDamage(meleeDefName.value, hitEnt);
                     idThread.ReturnInt(true);
                     return;
                 }
@@ -5725,8 +5997,8 @@ public class AI {
             SetPhysics(physicsObj);
         }
 
-        protected void Event_SetHealth(float newHealth) {
-            health = (int) newHealth;
+        protected void Event_SetHealth(idEventArg<Float> newHealth) {
+            health = newHealth.value.intValue();
             fl.takedamage = true;
             if (health > 0) {
                 AI_DEAD._(false);
@@ -5751,17 +6023,17 @@ public class AI {
             idThread.ReturnFloat(current_yaw);
         }
 
-        protected void Event_TurnTo(float angle) {
-            TurnToward(angle);
+        protected void Event_TurnTo(idEventArg<Float> angle) {
+            TurnToward(angle.value);
         }
 
-        protected void Event_TurnToPos(final idVec3 pos) {
-            TurnToward(pos);
+        protected void Event_TurnToPos(final idEventArg<idVec3> pos) {
+            TurnToward(pos.value);
         }
 
-        protected void Event_TurnToEntity(idEntity ent) {
-            if (ent != null) {
-                TurnToward(ent.GetPhysics().GetOrigin());
+        protected void Event_TurnToEntity(idEventArg<idEntity> ent) {
+            if (ent.value != null) {
+                TurnToward(ent.value.GetPhysics().GetOrigin());
             }
         }
 
@@ -5794,38 +6066,38 @@ public class AI {
             MoveToEnemyHeight();
         }
 
-        protected void Event_MoveOutOfRange(idEntity entity, float range) {
+        protected void Event_MoveOutOfRange(idEventArg<idEntity> entity, idEventArg<Float> range) {
             StopMove(MOVE_STATUS_DEST_NOT_FOUND);
-            MoveOutOfRange(entity, range);
+            MoveOutOfRange(entity.value, range.value);
         }
 
-        protected void Event_MoveToAttackPosition(idEntity entity, final String attack_anim) {
+        protected void Event_MoveToAttackPosition(idEventArg<idEntity> entity, final idEventArg<String> attack_anim) {
             int anim;
 
             StopMove(MOVE_STATUS_DEST_NOT_FOUND);
 
-            anim = GetAnim(ANIMCHANNEL_LEGS, attack_anim);
+            anim = GetAnim(ANIMCHANNEL_LEGS, attack_anim.value);
             if (0 == anim) {
-                gameLocal.Error("Unknown anim '%s'", attack_anim);
+                gameLocal.Error("Unknown anim '%s'", attack_anim.value);
             }
 
-            MoveToAttackPosition(entity, anim);
+            MoveToAttackPosition(entity.value, anim);
         }
 
-        protected void Event_MoveToEntity(idEntity ent) {
+        protected void Event_MoveToEntity(idEventArg<idEntity> ent) {
             StopMove(MOVE_STATUS_DEST_NOT_FOUND);
-            if (ent != null) {
-                MoveToEntity(ent);
+            if (ent.value != null) {
+                MoveToEntity(ent.value);
             }
         }
 
-        protected void Event_MoveToPosition(final idVec3 pos) {
+        protected void Event_MoveToPosition(final idEventArg<idVec3> pos) {
             StopMove(MOVE_STATUS_DONE);
-            MoveToPosition(pos);
+            MoveToPosition(pos.value);
         }
 
-        protected void Event_SlideTo(final idVec3 pos, float time) {
-            SlideToPosition(pos, time);
+        protected void Event_SlideTo(final idEventArg<idVec3> pos, idEventArg<Float> time) {
+            SlideToPosition(pos.value, time.value);
         }
 
         protected void Event_Wander() {
@@ -5841,13 +6113,13 @@ public class AI {
             FaceEnemy();
         }
 
-        protected void Event_FaceEntity(idEntity ent) {
-            FaceEntity(ent);
+        protected void Event_FaceEntity(idEventArg<idEntity> ent) {
+            FaceEntity(ent.value);
         }
 
-        protected void Event_WaitAction(final String waitForState) {
+        protected void Event_WaitAction(final idEventArg<String> waitForState) {
             if (idThread.BeginMultiFrameEvent(this, AI_WaitAction)) {
-                SetWaitState(waitForState);
+                SetWaitState(waitForState.value);
             }
 
             if (null == WaitState()) {
@@ -5901,7 +6173,8 @@ public class AI {
             idThread.ReturnEntity(bestNode);
         }
 
-        protected void Event_EnemyInCombatCone(idEntity ent, int use_current_enemy_location) {
+        protected void Event_EnemyInCombatCone(idEventArg<idEntity> _ent, idEventArg<Integer> use_current_enemy_location) {
+            idEntity ent = _ent.value;
             idCombatNode node;
             boolean result;
             idActor enemyEnt = enemy.GetEntity();
@@ -5925,7 +6198,7 @@ public class AI {
             }
 
             node = (idCombatNode) ent;
-            if (use_current_enemy_location != 0) {
+            if (use_current_enemy_location.value != 0) {
                 final idVec3 pos = enemyEnt.GetPhysics().GetOrigin();
                 result = node.EntityInView(enemyEnt, pos);
             } else {
@@ -5943,7 +6216,10 @@ public class AI {
             }
         }
 
-        protected void Event_GetJumpVelocity(final idVec3 pos, float speed, float max_height) {
+        protected void Event_GetJumpVelocity(final idEventArg<idVec3> _pos, idEventArg<Float> _speed, idEventArg<Float> _max_height) {
+            idVec3 pos = _pos.value;
+            float speed = _speed.value;
+            float max_height = _max_height.value;
             idVec3 start;
             idVec3 end;
             idVec3 dir;
@@ -5977,18 +6253,18 @@ public class AI {
             }
         }
 
-        protected void Event_EntityInAttackCone(idEntity ent) {
+        protected void Event_EntityInAttackCone(idEventArg<idEntity> ent) {
             float attack_cone;
             idVec3 delta;
             float yaw;
             float relYaw;
 
-            if (null == ent) {
+            if (null == ent.value) {
                 idThread.ReturnInt(false);
                 return;
             }
 
-            delta = ent.GetPhysics().GetOrigin().oMinus(GetEyePosition());
+            delta = ent.value.GetPhysics().GetOrigin().oMinus(GetEyePosition());
 
             // get our gravity normal
             final idVec3 gravityDir = GetPhysics().GetGravityNormal();
@@ -6008,17 +6284,18 @@ public class AI {
             }
         }
 
-        protected void Event_CanSeeEntity(idEntity ent) {
-            if (null == ent) {
+        protected void Event_CanSeeEntity(idEventArg<idEntity> ent) {
+            if (null == ent.value) {
                 idThread.ReturnInt(false);
                 return;
             }
 
-            boolean cansee = CanSee(ent, false);
+            boolean cansee = CanSee(ent.value, false);
             idThread.ReturnInt(cansee);
         }
 
-        protected void Event_SetTalkTarget(idEntity target) {
+        protected void Event_SetTalkTarget(idEventArg<idEntity> _target) {
+            idEntity target = _target.value;
             if (target != null && !target.IsType(idActor.class)) {
                 gameLocal.Error("Cannot set talk target to '%s'.  Not a character or player.", target.GetName());
             }
@@ -6034,7 +6311,8 @@ public class AI {
             idThread.ReturnEntity(talkTarget.GetEntity());
         }
 
-        protected void Event_SetTalkState(int state) {
+        protected void Event_SetTalkState(idEventArg<Integer> _state) {
+            int state = _state.value;
             if ((state < 0) || (state >= etoi(NUM_TALK_STATES))) {
                 gameLocal.Error("Invalid talk state (%d)", state);
             }
@@ -6082,7 +6360,7 @@ public class AI {
             idThread.ReturnVector(lastVisibleEnemyPos.oPlus(lastVisibleEnemyEyeOffset));
         }
 
-        protected void Event_PredictEnemyPos(float time) {
+        protected void Event_PredictEnemyPos(idEventArg<Float> time) {
             predictedPath_s path = new predictedPath_s();
             idActor enemyEnt = enemy.GetEntity();
 
@@ -6093,7 +6371,8 @@ public class AI {
             }
 
             // predict the enemy movement
-            idAI.PredictPath(enemyEnt, aas, lastVisibleEnemyPos, enemyEnt.GetPhysics().GetLinearVelocity(), (int) SEC2MS(time), (int) SEC2MS(time),
+            idAI.PredictPath(enemyEnt, aas, lastVisibleEnemyPos, enemyEnt.GetPhysics().GetLinearVelocity(),
+                    (int) SEC2MS(time.value), (int) SEC2MS(time.value),
                     (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             idThread.ReturnVector(path.endPos);
@@ -6139,7 +6418,7 @@ public class AI {
             idThread.ReturnInt(lastHitCheckResult);
         }
 
-        protected void Event_CanHitEnemyFromAnim(final String animname) {
+        protected void Event_CanHitEnemyFromAnim(final idEventArg<String> animname) {
             int anim;
             idVec3 dir;
             idVec3 local_dir = new idVec3();
@@ -6155,7 +6434,7 @@ public class AI {
                 return;
             }
 
-            anim = GetAnim(ANIMCHANNEL_LEGS, animname);
+            anim = GetAnim(ANIMCHANNEL_LEGS, animname.value);
             if (0 == anim) {
                 idThread.ReturnInt(false);
                 return;
@@ -6206,7 +6485,7 @@ public class AI {
             }
         }
 
-        protected void Event_CanHitEnemyFromJoint(final String jointname) {
+        protected void Event_CanHitEnemyFromJoint(final idEventArg<String> jointname) {
             trace_s[] tr = {null};
             idVec3 muzzle = new idVec3();
             idMat3 axis = new idMat3();
@@ -6229,9 +6508,9 @@ public class AI {
 
             final idVec3 org = physicsObj.GetOrigin();
             idVec3 toPos = enemyEnt.GetEyePosition();
-            int/*jointHandle_t*/ joint = animator.GetJointHandle(jointname);
+            int/*jointHandle_t*/ joint = animator.GetJointHandle(jointname.value);
             if (joint == INVALID_JOINT) {
-                gameLocal.Error("Unknown joint '%s' on %s", jointname, GetEntityDefName());
+                gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
             }
             animator.GetJointTransform(joint, gameLocal.time, muzzle, axis);
             muzzle = org.oPlus((muzzle.oPlus(modelOffset)).oMultiply(viewAxis).oMultiply(physicsObj.GetGravityAxis()));
@@ -6276,7 +6555,7 @@ public class AI {
             idThread.ReturnInt(result);
         }
 
-        protected void Event_ChargeAttack(final String damageDef) {
+        protected void Event_ChargeAttack(final idEventArg<String> damageDef) {
             idActor enemyEnt = enemy.GetEntity();
 
             StopMove(MOVE_STATUS_DEST_NOT_FOUND);
@@ -6291,7 +6570,7 @@ public class AI {
                     enemyOrg = enemyEnt.GetPhysics().GetOrigin();
                 }
 
-                BeginAttack(damageDef);
+                BeginAttack(damageDef.value);
                 DirectMoveToPosition(enemyOrg);
                 TurnToward(enemyOrg);
             }
@@ -6332,7 +6611,7 @@ public class AI {
             }
         }
 
-        protected void Event_TestAnimMoveTowardEnemy(final String animname) {
+        protected void Event_TestAnimMoveTowardEnemy(final idEventArg<String> animname) {
             int anim;
             predictedPath_s path = new predictedPath_s();
             idVec3 moveVec;
@@ -6346,9 +6625,9 @@ public class AI {
                 return;
             }
 
-            anim = GetAnim(ANIMCHANNEL_LEGS, animname);
+            anim = GetAnim(ANIMCHANNEL_LEGS, animname.value);
             if (0 == anim) {
-                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname, name, GetEntityDefName());
+                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, name, GetEntityDefName());
                 idThread.ReturnInt(false);
                 return;
             }
@@ -6367,14 +6646,14 @@ public class AI {
             idThread.ReturnInt(path.endEvent == 0);
         }
 
-        protected void Event_TestAnimMove(final String animname) {
+        protected void Event_TestAnimMove(final idEventArg<String> animname) {
             int anim;
             predictedPath_s path = new predictedPath_s();
             idVec3 moveVec;
 
-            anim = GetAnim(ANIMCHANNEL_LEGS, animname);
+            anim = GetAnim(ANIMCHANNEL_LEGS, animname.value);
             if (0 == anim) {
-                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname, name, GetEntityDefName());
+                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, name, GetEntityDefName());
                 idThread.ReturnInt(false);
                 return;
             }
@@ -6390,7 +6669,8 @@ public class AI {
             idThread.ReturnInt(path.endEvent == 0);
         }
 
-        protected void Event_TestMoveToPosition(final idVec3 position) {
+        protected void Event_TestMoveToPosition(final idEventArg<idVec3> _position) {
+            idVec3 position = _position.value;
             predictedPath_s path = new predictedPath_s();
 
             idAI.PredictPath(this, aas, physicsObj.GetOrigin(), position.oMinus(physicsObj.GetOrigin()), 1000, 1000, (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
@@ -6411,13 +6691,13 @@ public class AI {
             idThread.ReturnInt(result);
         }
 
-        protected void Event_TestAnimAttack(final String animname) {
+        protected void Event_TestAnimAttack(final idEventArg<String> animname) {
             int anim;
             predictedPath_s path = new predictedPath_s();
 
-            anim = GetAnim(ANIMCHANNEL_LEGS, animname);
+            anim = GetAnim(ANIMCHANNEL_LEGS, animname.value);
             if (0 == anim) {
-                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname, name, GetEntityDefName());
+                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, name, GetEntityDefName());
                 idThread.ReturnInt(false);
                 return;
             }
@@ -6427,16 +6707,16 @@ public class AI {
             idThread.ReturnInt(path.blockingEntity != null && (path.blockingEntity.equals(enemy.GetEntity())));
         }
 
-        protected void Event_Shrivel(float shrivel_time) {
+        protected void Event_Shrivel(idEventArg<Float> shrivel_time) {
             float t;
 
             if (idThread.BeginMultiFrameEvent(this, AI_Shrivel)) {
-                if (shrivel_time <= 0.0f) {
+                if (shrivel_time.value <= 0.0f) {
                     idThread.EndMultiFrameEvent(this, AI_Shrivel);
                     return;
                 }
 
-                shrivel_rate = 0.001f / shrivel_time;
+                shrivel_rate = 0.001f / shrivel_time.value;
                 shrivel_start = gameLocal.time;
             }
 
@@ -6470,7 +6750,8 @@ public class AI {
             UpdateVisuals();
         }
 
-        protected void Event_SetSmokeVisibility(int num, int on) {
+        protected void Event_SetSmokeVisibility(idEventArg<Integer> _num, idEventArg<Integer> on) {
+            int num = _num.value;
             int i;
             int time;
 
@@ -6479,7 +6760,7 @@ public class AI {
                 return;
             }
 
-            if (on != 0) {
+            if (on.value != 0) {
                 time = gameLocal.time;
                 BecomeActive(TH_UPDATEPARTICLES);
             } else {
@@ -6524,7 +6805,8 @@ public class AI {
             idThread.ReturnInt(etoi(move.moveType));
         }
 
-        protected void Event_SetMoveType(int moveType) {
+        protected void Event_SetMoveType(idEventArg<Integer> _moveType) {
+            int moveType = _moveType.value;
             if ((moveType < 0) || (moveType >= etoi(NUM_MOVETYPES))) {
                 gameLocal.Error("Invalid movetype %d", moveType);
             }
@@ -6604,8 +6886,8 @@ public class AI {
             }
         }
 
-        protected void Event_AllowMovement(float flag) {
-            allowMove = (flag != 0.0f);
+        protected void Event_AllowMovement(idEventArg<Float> flag) {
+            allowMove = (flag.value != 0.0f);
         }
 
         protected void Event_JumpFrame() {
@@ -6638,22 +6920,22 @@ public class AI {
             af_push_moveables = false;
         }
 
-        protected void Event_SetFlySpeed(float speed) {
+        protected void Event_SetFlySpeed(idEventArg<Float> speed) {
             if (move.speed == fly_speed) {
-                move.speed = speed;
+                move.speed = speed.value;
             }
-            fly_speed = speed;
+            fly_speed = speed.value;
         }
 
-        protected void Event_SetFlyOffset(int offset) {
-            fly_offset = offset;
+        protected void Event_SetFlyOffset(idEventArg<Integer> offset) {
+            fly_offset = offset.value;
         }
 
         protected void Event_ClearFlyOffset() {
             fly_offset = spawnArgs.GetInt("fly_offset", "0");
         }
 
-        protected void Event_GetClosestHiddenTarget(final String type) {
+        protected void Event_GetClosestHiddenTarget(final idEventArg<String> type) {
             int i;
             idEntity ent;
             idEntity bestEnt;
@@ -6670,7 +6952,7 @@ public class AI {
 
             if (targets.Num() == 1) {
                 ent = targets.oGet(0).GetEntity();
-                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type) == 0) {
+                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type.value) == 0) {
                     if (!EntityCanSeePos(enemyEnt, lastVisibleEnemyPos, ent.GetPhysics().GetOrigin())) {
                         idThread.ReturnEntity(ent);
                         return;
@@ -6684,7 +6966,7 @@ public class AI {
             bestTime = idMath.INFINITY;
             for (i = 0; i < targets.Num(); i++) {
                 ent = targets.oGet(i).GetEntity();
-                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type) == 0) {
+                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type.value) == 0) {
                     final idVec3 destOrg = ent.GetPhysics().GetOrigin();
                     time = TravelDistance(org, destOrg);
                     if ((time >= 0.0f) && (time < bestTime)) {
@@ -6698,7 +6980,7 @@ public class AI {
             idThread.ReturnEntity(bestEnt);
         }
 
-        protected void Event_GetRandomTarget(final String type) {
+        protected void Event_GetRandomTarget(final idEventArg<String> type) {
             int i;
             int num;
             int which;
@@ -6708,7 +6990,7 @@ public class AI {
             num = 0;
             for (i = 0; i < targets.Num(); i++) {
                 ent = targets.oGet(i).GetEntity();
-                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type) == 0) {
+                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type.value) == 0) {
                     ents[ num++] = ent;
                     if (num >= MAX_GENTITIES) {
                         break;
@@ -6725,37 +7007,38 @@ public class AI {
             idThread.ReturnEntity(ents[ which]);
         }
 
-        protected void Event_TravelDistanceToPoint(final idVec3 pos) {
+        protected void Event_TravelDistanceToPoint(final idEventArg<idVec3> pos) {
             float time;
 
-            time = TravelDistance(physicsObj.GetOrigin(), pos);
+            time = TravelDistance(physicsObj.GetOrigin(), pos.value);
             idThread.ReturnFloat(time);
         }
 
-        protected void Event_TravelDistanceToEntity(idEntity ent) {
+        protected void Event_TravelDistanceToEntity(idEventArg<idEntity> ent) {
             float time;
 
-            time = TravelDistance(physicsObj.GetOrigin(), ent.GetPhysics().GetOrigin());
+            time = TravelDistance(physicsObj.GetOrigin(), ent.value.GetPhysics().GetOrigin());
             idThread.ReturnFloat(time);
         }
 
-        protected void Event_TravelDistanceBetweenPoints(final idVec3 source, final idVec3 dest) {
+        protected void Event_TravelDistanceBetweenPoints(final idEventArg<idVec3> source, final idEventArg<idVec3> dest) {
             float time;
 
-            time = TravelDistance(source, dest);
+            time = TravelDistance(source.value, dest.value);
             idThread.ReturnFloat(time);
         }
 
-        protected void Event_TravelDistanceBetweenEntities(idEntity source, idEntity dest) {
+        protected void Event_TravelDistanceBetweenEntities(idEventArg<idEntity> source, idEventArg<idEntity> dest) {
             float time;
 
-            assert (source != null);
-            assert (dest != null);
-            time = TravelDistance(source.GetPhysics().GetOrigin(), dest.GetPhysics().GetOrigin());
+            assert (source.value != null);
+            assert (dest.value != null);
+            time = TravelDistance(source.value.GetPhysics().GetOrigin(), dest.value.GetPhysics().GetOrigin());
             idThread.ReturnFloat(time);
         }
 
-        protected void Event_LookAtEntity(idEntity ent, float duration) {
+        protected void Event_LookAtEntity(idEventArg<idEntity> _ent, idEventArg<Float> duration) {
+            idEntity ent = _ent.value;
             if (ent.equals(this)) {
                 ent = null;
             } else if ((!ent.equals(focusEntity.GetEntity())) || (focusTime < gameLocal.time)) {
@@ -6765,10 +7048,10 @@ public class AI {
                 blink_time = 0;
             }
 
-            focusTime = (int) (gameLocal.time + SEC2MS(duration));
+            focusTime = (int) (gameLocal.time + SEC2MS(duration.value));
         }
 
-        protected void Event_LookAtEnemy(float duration) {
+        protected void Event_LookAtEnemy(idEventArg<Float> duration) {
             idActor enemyEnt;
 
             enemyEnt = enemy.GetEntity();
@@ -6779,11 +7062,11 @@ public class AI {
                 blink_time = 0;
             }
 
-            focusTime = (int) (gameLocal.time + SEC2MS(duration));
+            focusTime = (int) (gameLocal.time + SEC2MS(duration.value));
         }
 
-        protected void Event_SetJointMod(int allow) {
-            allowJointMod = itob(allow);
+        protected void Event_SetJointMod(idEventArg<Integer> allow) {
+            allowJointMod = itob(allow.value);
         }
 
         protected void Event_ThrowMoveable() {
@@ -6818,8 +7101,8 @@ public class AI {
             }
         }
 
-        protected void Event_SetAngles(final idAngles ang) {
-            current_yaw = ang.yaw;
+        protected void Event_SetAngles(final idEventArg<idAngles> ang) {
+            current_yaw = ang.value.yaw;
             viewAxis = new idAngles(0, current_yaw, 0).ToMat3();
         }
 
@@ -6845,8 +7128,8 @@ public class AI {
             PostEventMS(AI_RealKill, 0);
         }
 
-        protected void Event_WakeOnFlashlight(int enable) {
-            wakeOnFlashlight = (enable != 0);
+        protected void Event_WakeOnFlashlight(idEventArg<Integer> enable) {
+            wakeOnFlashlight = (enable.value != 0);
         }
 
         protected void Event_LocateEnemy() {
@@ -6863,12 +7146,12 @@ public class AI {
             UpdateEnemyPosition();
         }
 
-        protected void Event_KickObstacles(idEntity kickEnt, float force) {
+        protected void Event_KickObstacles(idEventArg<idEntity> kickEnt, idEventArg<Float> force) {
             idVec3 dir;
             idEntity obEnt;
 
-            if (kickEnt != null) {
-                obEnt = kickEnt;
+            if (kickEnt.value != null) {
+                obEnt = kickEnt.value;
             } else {
                 obEnt = move.obstacle.GetEntity();
             }
@@ -6879,14 +7162,15 @@ public class AI {
             } else {
                 dir = viewAxis.oGet(0);
             }
-            KickObstacles(dir, force, obEnt);
+            KickObstacles(dir, force.value, obEnt);
         }
 
         protected void Event_GetObstacle() {
             idThread.ReturnEntity(move.obstacle.GetEntity());
         }
 
-        protected void Event_PushPointIntoAAS(final idVec3 pos) {
+        protected void Event_PushPointIntoAAS(final idEventArg<idVec3> _pos) {
+            idVec3 pos = _pos.value;
             int areaNum;
             idVec3 newPos;
 
@@ -6904,14 +7188,14 @@ public class AI {
             idThread.ReturnFloat(turnRate);
         }
 
-        protected void Event_SetTurnRate(float rate) {
-            turnRate = rate;
+        protected void Event_SetTurnRate(idEventArg<Float> rate) {
+            turnRate = rate.value;
         }
 
-        protected void Event_AnimTurn(float angles) {
+        protected void Event_AnimTurn(idEventArg<Float> angles) {
             turnVel = 0.0f;
-            anim_turn_angles = angles;
-            if (angles != 0) {
+            anim_turn_angles = angles.value;
+            if (angles.value != 0) {
                 anim_turn_yaw = current_yaw;
                 anim_turn_amount = idMath.Fabs(idMath.AngleNormalize180(current_yaw - ideal_yaw));
                 if (anim_turn_amount > anim_turn_angles) {
@@ -6926,21 +7210,21 @@ public class AI {
             }
         }
 
-        protected void Event_AllowHiddenMovement(int enable) {
-            allowHiddenMovement = (enable != 0);
+        protected void Event_AllowHiddenMovement(idEventArg<Integer> enable) {
+            allowHiddenMovement = (enable.value != 0);
         }
 
-        protected void Event_TriggerParticles(final String jointName) {
-            TriggerParticles(jointName);
+        protected void Event_TriggerParticles(final idEventArg<String> jointName) {
+            TriggerParticles(jointName.value);
         }
 
-        protected void Event_FindActorsInBounds(final idVec3 mins, final idVec3 maxs) {
+        protected void Event_FindActorsInBounds(final idEventArg<idVec3> mins, final idEventArg<idVec3> maxs) {
             idEntity ent;
             idEntity[] entityList = new idEntity[MAX_GENTITIES];
             int numListedEntities;
             int i;
 
-            numListedEntities = gameLocal.clip.EntitiesTouchingBounds(new idBounds(mins, maxs), CONTENTS_BODY, entityList, MAX_GENTITIES);
+            numListedEntities = gameLocal.clip.EntitiesTouchingBounds(new idBounds(mins.value, maxs.value), CONTENTS_BODY, entityList, MAX_GENTITIES);
             for (i = 0; i < numListedEntities; i++) {
                 ent = entityList[ i];
                 if (!ent.equals(this) && !ent.IsHidden() && (ent.health > 0) && ent.IsType(idActor.class)) {
@@ -6952,21 +7236,22 @@ public class AI {
             idThread.ReturnEntity(null);
         }
 
-        protected void Event_CanReachPosition(final idVec3 pos) {
+        protected void Event_CanReachPosition(final idEventArg<idVec3> pos) {
             aasPath_s path = new aasPath_s();
             int toAreaNum;
             int areaNum;
 
-            toAreaNum = PointReachableAreaNum(pos);
+            toAreaNum = PointReachableAreaNum(pos.value);
             areaNum = PointReachableAreaNum(physicsObj.GetOrigin());
-            if (0 == toAreaNum || !PathToGoal(path, areaNum, physicsObj.GetOrigin(), toAreaNum, pos)) {
+            if (0 == toAreaNum || !PathToGoal(path, areaNum, physicsObj.GetOrigin(), toAreaNum, pos.value)) {
                 idThread.ReturnInt(false);
             } else {
                 idThread.ReturnInt(true);
             }
         }
 
-        protected void Event_CanReachEntity(idEntity ent) {
+        protected void Event_CanReachEntity(idEventArg<idEntity> _ent) {
+            idEntity ent = _ent.value;
             aasPath_s path = new aasPath_s();
             int toAreaNum;
             int areaNum;
@@ -7043,7 +7328,8 @@ public class AI {
             }
         }
 
-        protected void Event_GetReachableEntityPosition(idEntity ent) {
+        protected void Event_GetReachableEntityPosition(idEventArg<idEntity> _ent) {
+            idEntity ent = _ent.value;
             int toAreaNum;
             idVec3 pos = new idVec3();
 
@@ -7073,10 +7359,26 @@ public class AI {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     public static class idCombatNode extends idEntity {
         // CLASS_PROTOTYPE( idCombatNode );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_CombatNode_MarkUsed, (eventCallback_t0<idCombatNode>) idCombatNode::Event_MarkUsed );
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idCombatNode>) idCombatNode::Event_Activate );
+        }
 
         private float min_dist;
         private float max_dist;
@@ -7241,7 +7543,7 @@ public class AI {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             disabled = !disabled;
         }
 
@@ -7255,6 +7557,17 @@ public class AI {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*

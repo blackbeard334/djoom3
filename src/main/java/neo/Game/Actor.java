@@ -19,9 +19,19 @@ import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_LOCAL_OVERRID
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD_OVERRIDE;
 import neo.Game.Animation.Anim_Blend.idAnimBlend;
 import neo.Game.Animation.Anim_Blend.idAnimator;
+
+import static neo.Game.Entity.EV_StopSound;
 import static neo.Game.Entity.TH_PHYSICS;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.eventCallback_t3;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Class.idEventFunc;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
@@ -69,6 +79,9 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -351,7 +364,53 @@ public class Actor {
 //
 //        public static idClass CreateInstance();
         //        public idTypeInfo GetType();
-        public static idEventFunc<idActor>[]      eventCallbacks;
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+
+        static {
+            eventCallbacks.putAll(idAFEntity_Gibbable.getEventCallBacks());
+            eventCallbacks.put(AI_EnableEyeFocus, (eventCallback_t0<idActor>) idActor::Event_EnableEyeFocus);
+            eventCallbacks.put(AI_DisableEyeFocus, (eventCallback_t0<idActor>) idActor::Event_DisableEyeFocus);
+            eventCallbacks.put(EV_Footstep, (eventCallback_t0<idActor>) idActor::Event_Footstep);
+            eventCallbacks.put(EV_FootstepLeft, (eventCallback_t0<idActor>) idActor::Event_Footstep);
+            eventCallbacks.put(EV_FootstepRight, (eventCallback_t0<idActor>) idActor::Event_Footstep);
+            eventCallbacks.put(EV_EnableWalkIK, (eventCallback_t0<idActor>) idActor::Event_EnableWalkIK);
+            eventCallbacks.put(EV_DisableWalkIK, (eventCallback_t0<idActor>) idActor::Event_DisableWalkIK);
+            eventCallbacks.put(EV_EnableLegIK, (eventCallback_t1<idActor>) idActor::Event_EnableLegIK);
+            eventCallbacks.put(EV_DisableLegIK, (eventCallback_t1<idActor>) idActor::Event_DisableLegIK);
+            eventCallbacks.put(AI_PreventPain, (eventCallback_t1<idActor>) idActor::Event_PreventPain);
+            eventCallbacks.put(AI_DisablePain, (eventCallback_t0<idActor>) idActor::Event_DisablePain);
+            eventCallbacks.put(AI_EnablePain, (eventCallback_t0<idActor>) idActor::Event_EnablePain);
+            eventCallbacks.put(AI_GetPainAnim, (eventCallback_t0<idActor>) idActor::Event_GetPainAnim);
+            eventCallbacks.put(AI_SetAnimPrefix, (eventCallback_t1<idActor>) idActor::Event_SetAnimPrefix);
+            eventCallbacks.put(AI_StopAnim, (eventCallback_t2<idActor>) idActor::Event_StopAnim);
+            eventCallbacks.put(AI_PlayAnim, (eventCallback_t2<idActor>) idActor::Event_PlayAnim);
+            eventCallbacks.put(AI_PlayCycle, (eventCallback_t2<idActor>) idActor::Event_PlayCycle);
+            eventCallbacks.put(AI_IdleAnim, (eventCallback_t2<idActor>) idActor::Event_IdleAnim);
+            eventCallbacks.put(AI_SetSyncedAnimWeight, (eventCallback_t3<idActor>) idActor::Event_SetSyncedAnimWeight);
+            eventCallbacks.put(AI_SetBlendFrames, (eventCallback_t2<idActor>) idActor::Event_SetBlendFrames);
+            eventCallbacks.put(AI_GetBlendFrames, (eventCallback_t1<idActor>) idActor::Event_GetBlendFrames);
+            eventCallbacks.put(AI_AnimState, (eventCallback_t3<idActor>) idActor::Event_AnimState);
+            eventCallbacks.put(AI_GetAnimState, (eventCallback_t1<idActor>) idActor::Event_GetAnimState);
+            eventCallbacks.put(AI_InAnimState, (eventCallback_t2<idActor>) idActor::Event_InAnimState);
+            eventCallbacks.put(AI_FinishAction, (eventCallback_t1<idActor>) idActor::Event_FinishAction);
+            eventCallbacks.put(AI_AnimDone, (eventCallback_t2<idActor>) idActor::Event_AnimDone);
+            eventCallbacks.put(AI_OverrideAnim, (eventCallback_t1<idActor>) idActor::Event_OverrideAnim);
+            eventCallbacks.put(AI_EnableAnim, (eventCallback_t2<idActor>) idActor::Event_EnableAnim);
+            eventCallbacks.put(AI_HasAnim, (eventCallback_t2<idActor>) idActor::Event_HasAnim);
+            eventCallbacks.put(AI_CheckAnim, (eventCallback_t2<idActor>) idActor::Event_CheckAnim);
+            eventCallbacks.put(AI_ChooseAnim, (eventCallback_t2<idActor>) idActor::Event_ChooseAnim);
+            eventCallbacks.put(AI_AnimLength, (eventCallback_t2<idActor>) idActor::Event_AnimLength);
+            eventCallbacks.put(AI_AnimDistance, (eventCallback_t2<idActor>) idActor::Event_AnimDistance);
+            eventCallbacks.put(AI_HasEnemies, (eventCallback_t0<idActor>) idActor::Event_HasEnemies);
+            eventCallbacks.put(AI_NextEnemy, (eventCallback_t1<idActor>) idActor::Event_NextEnemy);
+            eventCallbacks.put(AI_ClosestEnemyToPoint, (eventCallback_t1<idActor>) idActor::Event_ClosestEnemyToPoint);
+            eventCallbacks.put(EV_StopSound, (eventCallback_t2<idActor>) idActor::Event_StopSound);
+            eventCallbacks.put(AI_SetNextState, (eventCallback_t1<idActor>) idActor::Event_SetNextState);
+            eventCallbacks.put(AI_SetState, (eventCallback_t1<idActor>) idActor::Event_SetState);
+            eventCallbacks.put(AI_GetState, (eventCallback_t0<idActor>) idActor::Event_GetState);
+            eventCallbacks.put(AI_GetHead, (eventCallback_t0<idActor>) idActor::Event_GetHead);
+        }
+
         //
         public        int                         team;
         public        int                         rank;                 // monsters don't fight back if the attacker's rank is higher
@@ -2180,21 +2239,21 @@ public class Actor {
             walkIK.DisableAll();
         }
 
-        private void Event_EnableLegIK(int num) {
-            walkIK.EnableLeg(num);
+        private void Event_EnableLegIK(idEventArg<Integer> num) {
+            walkIK.EnableLeg(num.value);
         }
 
-        private void Event_DisableLegIK(int num) {
-            walkIK.DisableLeg(num);
+        private void Event_DisableLegIK(idEventArg<Integer> num) {
+            walkIK.DisableLeg(num.value);
         }
 
-        private void Event_SetAnimPrefix(final String prefix) {
-            animPrefix.oSet(prefix);
+        private void Event_SetAnimPrefix(final idEventArg<String> prefix) {
+            animPrefix.oSet(prefix.value);
         }
 
 //        private void Event_LookAtEntity(idEntity ent, float duration);
-        private void Event_PreventPain(float duration) {
-            painTime = (int) (gameLocal.time + SEC2MS(duration));
+        private void Event_PreventPain(idEventArg<Float> duration) {
+            painTime = (int) (gameLocal.time + SEC2MS(duration.value));
         }
 
         private void Event_DisablePain() {
@@ -2213,18 +2272,18 @@ public class Actor {
             }
         }
 
-        private void Event_StopAnim(int channel, int frames) {
-            switch (channel) {
+        private void Event_StopAnim(idEventArg<Integer> channel, idEventArg<Integer> frames) {
+            switch (channel.value) {
                 case ANIMCHANNEL_HEAD:
-                    headAnim.StopAnim(frames);
+                    headAnim.StopAnim(frames.value);
                     break;
 
                 case ANIMCHANNEL_TORSO:
-                    torsoAnim.StopAnim(frames);
+                    torsoAnim.StopAnim(frames.value);
                     break;
 
                 case ANIMCHANNEL_LEGS:
-                    legsAnim.StopAnim(frames);
+                    legsAnim.StopAnim(frames.value);
                     break;
 
                 default:
@@ -2233,7 +2292,9 @@ public class Actor {
             }
         }
 
-        private void Event_PlayAnim(int channel, final String animName) {
+        private void Event_PlayAnim(idEventArg<Integer> _channel, final idEventArg<String> _animName) {
+            final int channel = _channel.value;
+            final String animName = _animName.value;
             animFlags_t flags;
             idEntity headEnt;
             int anim;
@@ -2308,7 +2369,9 @@ public class Actor {
             idThread.ReturnInt(1);
         }
 
-        private void Event_PlayCycle(int channel, final String animName) {
+        private void Event_PlayCycle(idEventArg<Integer> _channel, final idEventArg<String> _animName) {
+            final int channel = _channel.value;
+            final String animName = _animName.value;
             animFlags_t flags;
             int anim;
 
@@ -2377,7 +2440,9 @@ public class Actor {
             idThread.ReturnInt(true);
         }
 
-        private void Event_IdleAnim(int channel, final String animName) {
+        private void Event_IdleAnim(idEventArg<Integer> _channel, final idEventArg<String> _animName) {
+            final int channel = _channel.value;
+            final String animName = _animName.value;
             int anim;
 
             anim = GetAnim(channel, animName);
@@ -2479,7 +2544,10 @@ public class Actor {
             idThread.ReturnInt(true);
         }
 
-        private void Event_SetSyncedAnimWeight(int channel, int anim, float weight) {
+        private void Event_SetSyncedAnimWeight(idEventArg<Integer> _channel, final idEventArg<Integer> _anim, final idEventArg<Float> _weight) {
+            final int channel = _channel.value;
+            final int anim = _anim.value;
+            final float weight = _weight.value;
             idEntity headEnt;
 
             headEnt = head.GetEntity();
@@ -2523,8 +2591,8 @@ public class Actor {
             }
         }
 
-        private void Event_OverrideAnim(int channel) {
-            switch (channel) {
+        private void Event_OverrideAnim(idEventArg<Integer> channel) {
+            switch (channel.value) {
                 case ANIMCHANNEL_HEAD:
                     headAnim.Disable();
                     if (!torsoAnim.IsIdle()) {
@@ -2553,8 +2621,9 @@ public class Actor {
             }
         }
 
-        private void Event_EnableAnim(int channel, int blendFrames) {
-            switch (channel) {
+        private void Event_EnableAnim(idEventArg<Integer> channel, idEventArg<Integer> _blendFrames) {
+            final int blendFrames = _blendFrames.value;
+            switch (channel.value) {
                 case ANIMCHANNEL_HEAD:
                     headAnim.Enable(blendFrames);
                     break;
@@ -2573,7 +2642,9 @@ public class Actor {
             }
         }
 
-        private void Event_SetBlendFrames(int channel, int blendFrames) {
+        private void Event_SetBlendFrames(idEventArg<Integer> _channel, final idEventArg<Integer> _blendFrames) {
+            final int channel = _channel.value;
+            final int blendFrames = _blendFrames.value;
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
                     headAnim.animBlendFrames = blendFrames;
@@ -2596,7 +2667,8 @@ public class Actor {
             }
         }
 
-        private void Event_GetBlendFrames(int channel) {
+        private void Event_GetBlendFrames(idEventArg<Integer> _channel) {
+            final int channel = _channel.value;
             switch (channel) {
                 case ANIMCHANNEL_HEAD:
                     idThread.ReturnInt(headAnim.animBlendFrames);
@@ -2616,34 +2688,35 @@ public class Actor {
             }
         }
 
-        private void Event_AnimState(int channel, final String statename, int blendFrames) {
-            SetAnimState(channel, statename, blendFrames);
+        private void Event_AnimState(idEventArg<Integer> channel, final idEventArg<String> statename, idEventArg<Integer> blendFrames) {
+            SetAnimState(channel.value, statename.value, blendFrames.value);
         }
 
-        private void Event_GetAnimState(int channel) {
+        private void Event_GetAnimState(idEventArg<Integer> channel) {
             final idStr state;
 
-            state = GetAnimState(channel);
+            state = GetAnimState(channel.value);
             idThread.ReturnString(state);
         }
 
-        private void Event_InAnimState(int channel, final String statename) {
+        private void Event_InAnimState(idEventArg<Integer> channel, final idEventArg<String> statename) {
             boolean instate;
 
-            instate = InAnimState(channel, statename);
+            instate = InAnimState(channel.value, statename.value);
             idThread.ReturnInt(instate);
         }
 
-        private void Event_FinishAction(final String actionname) {
-            if (waitState.equals(actionname)) {
+        private void Event_FinishAction(final idEventArg<String> actionname) {
+            if (waitState.equals(actionname.value)) {
                 SetWaitState("");
             }
         }
 
-        private void Event_AnimDone(int channel, int blendFrames) {
+        private void Event_AnimDone(idEventArg<Integer> channel, idEventArg<Integer> _blendFrames) {
+            int blendFrames = _blendFrames.value;
             boolean result;
 
-            switch (channel) {
+            switch (channel.value) {
                 case ANIMCHANNEL_HEAD:
                     result = headAnim.AnimDone(blendFrames);
                     idThread.ReturnInt(result);
@@ -2664,16 +2737,16 @@ public class Actor {
             }
         }
 
-        private void Event_HasAnim(int channel, final String animName) {
-            if (GetAnim(channel, animName) != 0) {
+        private void Event_HasAnim(idEventArg<Integer> channel, final idEventArg<String> animName) {
+            if (GetAnim(channel.value, animName.value) != 0) {
                 idThread.ReturnFloat(1.0f);
             } else {
                 idThread.ReturnFloat(0);
             }
         }
 
-        private void Event_CheckAnim(int channel, final String animname) {
-            if (0 == GetAnim(channel, animname)) {
+        private void Event_CheckAnim(idEventArg<Integer> channel, final idEventArg<String> animname) {
+            if (0 == GetAnim(channel.value, animname.value)) {
                 if (animPrefix.Length() != 0) {
                     gameLocal.Error("Can't find anim '%s_%s' for '%s'", animPrefix, animname, name);
                 } else {
@@ -2682,12 +2755,12 @@ public class Actor {
             }
         }
 
-        private void Event_ChooseAnim(int channel, final String animname) {
+        private void Event_ChooseAnim(idEventArg<Integer> channel, final idEventArg<String> animname) {
             int anim;
 
-            anim = GetAnim(channel, animname);
+            anim = GetAnim(channel.value, animname.value);
             if (anim != 0) {
-                if (channel == ANIMCHANNEL_HEAD) {
+                if (channel.value == ANIMCHANNEL_HEAD) {
                     if (head.GetEntity() != null) {
                         idThread.ReturnString(head.GetEntity().GetAnimator().AnimFullName(anim));
                         return;
@@ -2701,12 +2774,12 @@ public class Actor {
             idThread.ReturnString("");
         }
 
-        private void Event_AnimLength(int channel, final String animname) {
+        private void Event_AnimLength(idEventArg<Integer> channel, final idEventArg<String> animname) {
             int anim;
 
-            anim = GetAnim(channel, animname);
+            anim = GetAnim(channel.value, animname.value);
             if (anim != 0) {
-                if (channel == ANIMCHANNEL_HEAD) {
+                if (channel.value == ANIMCHANNEL_HEAD) {
                     if (head.GetEntity() != null) {
                         idThread.ReturnFloat(MS2SEC(head.GetEntity().GetAnimator().AnimLength(anim)));
                         return;
@@ -2720,12 +2793,12 @@ public class Actor {
             idThread.ReturnFloat(0);
         }
 
-        private void Event_AnimDistance(int channel, final String animname) {
+        private void Event_AnimDistance(idEventArg<Integer> channel, final idEventArg<String> animname) {
             int anim;
 
-            anim = GetAnim(channel, animname);
+            anim = GetAnim(channel.value, animname.value);
             if (anim != 0) {
-                if (channel == ANIMCHANNEL_HEAD) {
+                if (channel.value == ANIMCHANNEL_HEAD) {
                     if (head.GetEntity() != null) {
                         idThread.ReturnFloat(head.GetEntity().GetAnimator().TotalMovementDelta(anim).Length());
                         return;
@@ -2746,7 +2819,8 @@ public class Actor {
             idThread.ReturnInt(hasEnemy);
         }
 
-        private void Event_NextEnemy(idEntity ent) {
+        private void Event_NextEnemy(idEventArg<idEntity> _ent) {
+            idEntity ent = _ent.value;
             idActor actor;
 
             if (null == ent || (ent.equals(this))) {
@@ -2772,30 +2846,30 @@ public class Actor {
             idThread.ReturnEntity(null);
         }
 
-        private void Event_ClosestEnemyToPoint(final idVec3 pos) {
-            idActor bestEnt = ClosestEnemyToPoint(pos);
+        private void Event_ClosestEnemyToPoint(final idEventArg<idVec3> pos) {
+            idActor bestEnt = ClosestEnemyToPoint(pos.value);
             idThread.ReturnEntity(bestEnt);
         }
 
-        private void Event_StopSound(int channel, int netSync) {
-            if (channel == etoi(SND_CHANNEL_VOICE)) {
+        private void Event_StopSound(idEventArg<Integer> channel, idEventArg<Integer> netSync) {
+            if (channel.value == etoi(SND_CHANNEL_VOICE)) {
                 idEntity headEnt = head.GetEntity();
                 if (headEnt != null) {
-                    headEnt.StopSound(channel, (netSync != 0));
+                    headEnt.StopSound(channel.value, (netSync.value != 0));
                 }
             }
-            StopSound(channel, (netSync != 0));
+            StopSound(channel.value, (netSync.value != 0));
         }
 
-        private void Event_SetNextState(final String name) {
-            idealState = GetScriptFunction(name);
+        private void Event_SetNextState(final idEventArg<String> name) {
+            idealState = GetScriptFunction(name.value);
             if (idealState == state) {
                 state = null;
             }
         }
 
-        private void Event_SetState(final String name) {
-            idealState = GetScriptFunction(name);
+        private void Event_SetState(final idEventArg<String> name) {
+            idealState = GetScriptFunction(name.value);
             if (idealState == state) {
                 state = null;
             }
@@ -2813,5 +2887,15 @@ public class Actor {
         private void Event_GetHead() {
             idThread.ReturnEntity(head.GetEntity());
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

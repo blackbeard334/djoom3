@@ -101,7 +101,7 @@ public class Model {
 
     public static class shadowCache_s {
 
-        private static final int BYTES = idVec4.BYTES;
+        public static final int BYTES = idVec4.BYTES;
 
         public idVec4 xyz;			// we use homogenous coordinate tricks
 

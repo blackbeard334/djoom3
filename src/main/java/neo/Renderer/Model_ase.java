@@ -1018,7 +1018,9 @@ public class Model_ase {
 
                 // ignore regular meshes that aren't part of animation
                 case "*MESH":
+                    idVec3[] transform = ase.currentObject.mesh.transform;//copied from the bfg sources
                     ase.currentMesh = ase.currentObject.mesh = new aseMesh_t();
+                    System.arraycopy(transform, 0, ase.currentMesh.transform, 0, transform.length);
                     ASE_ParseBracedBlock(ASE_KeyMESH.getInstance());
                     break;
 

@@ -2,6 +2,7 @@ package neo.Game;
 
 import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Entity.EV_Activate;
+import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_PHYSICS;
 import static neo.Game.Entity.TH_THINK;
 import neo.Game.Entity.idEntity;
@@ -9,7 +10,15 @@ import static neo.Game.Entity.signalNum_t.SIG_MOVER_1TO2;
 import static neo.Game.Entity.signalNum_t.SIG_MOVER_2TO1;
 import static neo.Game.Entity.signalNum_t.SIG_MOVER_POS1;
 import static neo.Game.Entity.signalNum_t.SIG_MOVER_POS2;
+
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.eventCallback_t3;
+import neo.Game.GameSys.Class.eventCallback_t5;
 import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -43,6 +52,9 @@ import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics_Parametric.idPhysics_Parametric;
 import neo.Game.Player.idPlayer;
 import neo.Game.Script.Script_Thread.idThread;
+
+import static neo.Game.Player.EV_SpectatorTouch;
+import static neo.Game.Script.Script_Thread.EV_Thread_SetCallback;
 import static neo.Game.Sound.SSF_NO_OCCLUSION;
 import static neo.Renderer.Material.CONTENTS_SOLID;
 import static neo.Renderer.Material.CONTENTS_TRIGGER;
@@ -85,6 +97,9 @@ import static neo.idlib.math.Vector.getVec3_origin;
 import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  */
@@ -107,60 +122,60 @@ public class Mover {
         "3", // moving 1 to 2
         "4" // moving 2 to 1
     };
-    public static final idEventDef EV_FindGuiTargets = new idEventDef("<FindGuiTargets>", null);
-    public static final idEventDef EV_TeamBlocked = new idEventDef("<teamblocked>", "ee");
-    public static final idEventDef EV_PartBlocked = new idEventDef("<partblocked>", "e");
-    public static final idEventDef EV_ReachedPos = new idEventDef("<reachedpos>", null);
-    public static final idEventDef EV_ReachedAng = new idEventDef("<reachedang>", null);
-    public static final idEventDef EV_PostRestore = new idEventDef("<postrestore>", "ddddd");
-    public static final idEventDef EV_StopMoving = new idEventDef("stopMoving", null);
-    public static final idEventDef EV_StopRotating = new idEventDef("stopRotating", null);
-    public static final idEventDef EV_Speed = new idEventDef("speed", "f");
-    public static final idEventDef EV_Time = new idEventDef("time", "f");
-    public static final idEventDef EV_AccelTime = new idEventDef("accelTime", "f");
-    public static final idEventDef EV_DecelTime = new idEventDef("decelTime", "f");
-    public static final idEventDef EV_MoveTo = new idEventDef("moveTo", "e");
-    public static final idEventDef EV_MoveToPos = new idEventDef("moveToPos", "v");
-    public static final idEventDef EV_Move = new idEventDef("move", "ff");
-    public static final idEventDef EV_MoveAccelerateTo = new idEventDef("accelTo", "ff");
-    public static final idEventDef EV_MoveDecelerateTo = new idEventDef("decelTo", "ff");
-    public static final idEventDef EV_RotateDownTo = new idEventDef("rotateDownTo", "df");
-    public static final idEventDef EV_RotateUpTo = new idEventDef("rotateUpTo", "df");
-    public static final idEventDef EV_RotateTo = new idEventDef("rotateTo", "v");
-    public static final idEventDef EV_Rotate = new idEventDef("rotate", "v");
-    public static final idEventDef EV_RotateOnce = new idEventDef("rotateOnce", "v");
-    public static final idEventDef EV_Bob = new idEventDef("bob", "ffv");
-    public static final idEventDef EV_Sway = new idEventDef("sway", "ffv");
-    public static final idEventDef EV_Mover_OpenPortal = new idEventDef("openPortal");
-    public static final idEventDef EV_Mover_ClosePortal = new idEventDef("closePortal");
-    public static final idEventDef EV_AccelSound = new idEventDef("accelSound", "s");
-    public static final idEventDef EV_DecelSound = new idEventDef("decelSound", "s");
-    public static final idEventDef EV_MoveSound = new idEventDef("moveSound", "s");
-    public static final idEventDef EV_Mover_InitGuiTargets = new idEventDef("<initguitargets>", null);
-    public static final idEventDef EV_EnableSplineAngles = new idEventDef("enableSplineAngles", null);
-    public static final idEventDef EV_DisableSplineAngles = new idEventDef("disableSplineAngles", null);
+    public static final idEventDef EV_FindGuiTargets            = new idEventDef("<FindGuiTargets>", null);
+    public static final idEventDef EV_TeamBlocked               = new idEventDef("<teamblocked>", "ee");
+    public static final idEventDef EV_PartBlocked               = new idEventDef("<partblocked>", "e");
+    public static final idEventDef EV_ReachedPos                = new idEventDef("<reachedpos>", null);
+    public static final idEventDef EV_ReachedAng                = new idEventDef("<reachedang>", null);
+    public static final idEventDef EV_PostRestore               = new idEventDef("<postrestore>", "ddddd");
+    public static final idEventDef EV_StopMoving                = new idEventDef("stopMoving", null);
+    public static final idEventDef EV_StopRotating              = new idEventDef("stopRotating", null);
+    public static final idEventDef EV_Speed                     = new idEventDef("speed", "f");
+    public static final idEventDef EV_Time                      = new idEventDef("time", "f");
+    public static final idEventDef EV_AccelTime                 = new idEventDef("accelTime", "f");
+    public static final idEventDef EV_DecelTime                 = new idEventDef("decelTime", "f");
+    public static final idEventDef EV_MoveTo                    = new idEventDef("moveTo", "e");
+    public static final idEventDef EV_MoveToPos                 = new idEventDef("moveToPos", "v");
+    public static final idEventDef EV_Move                      = new idEventDef("move", "ff");
+    public static final idEventDef EV_MoveAccelerateTo          = new idEventDef("accelTo", "ff");
+    public static final idEventDef EV_MoveDecelerateTo          = new idEventDef("decelTo", "ff");
+    public static final idEventDef EV_RotateDownTo              = new idEventDef("rotateDownTo", "df");
+    public static final idEventDef EV_RotateUpTo                = new idEventDef("rotateUpTo", "df");
+    public static final idEventDef EV_RotateTo                  = new idEventDef("rotateTo", "v");
+    public static final idEventDef EV_Rotate                    = new idEventDef("rotate", "v");
+    public static final idEventDef EV_RotateOnce                = new idEventDef("rotateOnce", "v");
+    public static final idEventDef EV_Bob                       = new idEventDef("bob", "ffv");
+    public static final idEventDef EV_Sway                      = new idEventDef("sway", "ffv");
+    public static final idEventDef EV_Mover_OpenPortal          = new idEventDef("openPortal");
+    public static final idEventDef EV_Mover_ClosePortal         = new idEventDef("closePortal");
+    public static final idEventDef EV_AccelSound                = new idEventDef("accelSound", "s");
+    public static final idEventDef EV_DecelSound                = new idEventDef("decelSound", "s");
+    public static final idEventDef EV_MoveSound                 = new idEventDef("moveSound", "s");
+    public static final idEventDef EV_Mover_InitGuiTargets      = new idEventDef("<initguitargets>", null);
+    public static final idEventDef EV_EnableSplineAngles        = new idEventDef("enableSplineAngles", null);
+    public static final idEventDef EV_DisableSplineAngles       = new idEventDef("disableSplineAngles", null);
     public static final idEventDef EV_RemoveInitialSplineAngles = new idEventDef("removeInitialSplineAngles", null);
-    public static final idEventDef EV_StartSpline = new idEventDef("startSpline", "e");
-    public static final idEventDef EV_StopSpline = new idEventDef("stopSpline", null);
-    public static final idEventDef EV_IsMoving = new idEventDef("isMoving", null, 'd');
-    public static final idEventDef EV_IsRotating = new idEventDef("isRotating", null, 'd');
+    public static final idEventDef EV_StartSpline               = new idEventDef("startSpline", "e");
+    public static final idEventDef EV_StopSpline                = new idEventDef("stopSpline", null);
+    public static final idEventDef EV_IsMoving                  = new idEventDef("isMoving", null, 'd');
+    public static final idEventDef EV_IsRotating                = new idEventDef("isRotating", null, 'd');
     //
-    public static final idEventDef EV_PostArrival = new idEventDef("postArrival", null);
-    public static final idEventDef EV_GotoFloor = new idEventDef("gotoFloor", "d");
+    public static final idEventDef EV_PostArrival               = new idEventDef("postArrival", null);
+    public static final idEventDef EV_GotoFloor                 = new idEventDef("gotoFloor", "d");
     //
-    public static final idEventDef EV_Mover_ReturnToPos1 = new idEventDef("<returntopos1>", null);
-    public static final idEventDef EV_Mover_MatchTeam = new idEventDef("<matchteam>", "dd");
-    public static final idEventDef EV_Mover_Enable = new idEventDef("enable", null);
-    public static final idEventDef EV_Mover_Disable = new idEventDef("disable", null);
+    public static final idEventDef EV_Mover_ReturnToPos1        = new idEventDef("<returntopos1>", null);
+    public static final idEventDef EV_Mover_MatchTeam           = new idEventDef("<matchteam>", "dd");
+    public static final idEventDef EV_Mover_Enable              = new idEventDef("enable", null);
+    public static final idEventDef EV_Mover_Disable             = new idEventDef("disable", null);
     //    
-    public static final idEventDef EV_Door_StartOpen = new idEventDef("<startOpen>", null);
-    public static final idEventDef EV_Door_SpawnDoorTrigger = new idEventDef("<spawnDoorTrigger>", null);
-    public static final idEventDef EV_Door_SpawnSoundTrigger = new idEventDef("<spawnSoundTrigger>", null);
-    public static final idEventDef EV_Door_Open = new idEventDef("open", null);
-    public static final idEventDef EV_Door_Close = new idEventDef("close", null);
-    public static final idEventDef EV_Door_Lock = new idEventDef("lock", "d");
-    public static final idEventDef EV_Door_IsOpen = new idEventDef("isOpen", null, 'f');
-    public static final idEventDef EV_Door_IsLocked = new idEventDef("isLocked", null, 'f');
+    public static final idEventDef EV_Door_StartOpen            = new idEventDef("<startOpen>", null);
+    public static final idEventDef EV_Door_SpawnDoorTrigger     = new idEventDef("<spawnDoorTrigger>", null);
+    public static final idEventDef EV_Door_SpawnSoundTrigger    = new idEventDef("<spawnSoundTrigger>", null);
+    public static final idEventDef EV_Door_Open                 = new idEventDef("open", null);
+    public static final idEventDef EV_Door_Close                = new idEventDef("close", null);
+    public static final idEventDef EV_Door_Lock                 = new idEventDef("lock", "d");
+    public static final idEventDef EV_Door_IsOpen               = new idEventDef("isOpen", null, 'f');
+    public static final idEventDef EV_Door_IsLocked             = new idEventDef("isLocked", null, 'f');
 
     /*
      ===============================================================================
@@ -171,6 +186,50 @@ public class Mover {
      */
     public static class idMover extends idEntity {
         // CLASS_PROTOTYPE( idMover );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static{
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_FindGuiTargets, (eventCallback_t0<idMover>) idMover::Event_FindGuiTargets);
+            eventCallbacks.put(EV_Thread_SetCallback, (eventCallback_t0<idMover>) idMover::Event_SetCallback);
+            eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idMover>) idMover::Event_TeamBlocked);
+            eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idMover>) idMover::Event_PartBlocked);
+            eventCallbacks.put(EV_ReachedPos, (eventCallback_t0<idMover>) idMover::Event_UpdateMove);
+            eventCallbacks.put(EV_ReachedAng, (eventCallback_t0<idMover>) idMover::Event_UpdateRotation);
+            eventCallbacks.put(EV_PostRestore, (eventCallback_t5<idMover>) idMover::Event_PostRestore);
+            eventCallbacks.put(EV_StopMoving, (eventCallback_t0<idMover>) idMover::Event_StopMoving);
+            eventCallbacks.put(EV_StopRotating, (eventCallback_t0<idMover>) idMover::Event_StopRotating);
+            eventCallbacks.put(EV_Speed, (eventCallback_t1<idMover>) idMover::Event_SetMoveSpeed);
+            eventCallbacks.put(EV_Time, (eventCallback_t1<idMover>) idMover::Event_SetMoveTime);
+            eventCallbacks.put(EV_AccelTime, (eventCallback_t1<idMover>) idMover::Event_SetAccellerationTime);
+            eventCallbacks.put(EV_DecelTime, (eventCallback_t1<idMover>) idMover::Event_SetDecelerationTime);
+            eventCallbacks.put(EV_MoveTo, (eventCallback_t1<idMover>) idMover::Event_MoveTo);
+            eventCallbacks.put(EV_MoveToPos, (eventCallback_t1<idMover>) idMover::Event_MoveToPos);
+            eventCallbacks.put(EV_Move, (eventCallback_t2<idMover>) idMover::Event_MoveDir);
+            eventCallbacks.put(EV_MoveAccelerateTo, (eventCallback_t2<idMover>) idMover::Event_MoveAccelerateTo);
+            eventCallbacks.put(EV_MoveDecelerateTo, (eventCallback_t2<idMover>) idMover::Event_MoveDecelerateTo);
+            eventCallbacks.put(EV_RotateDownTo, (eventCallback_t2<idMover>) idMover::Event_RotateDownTo);
+            eventCallbacks.put(EV_RotateUpTo, (eventCallback_t2<idMover>) idMover::Event_RotateUpTo);
+            eventCallbacks.put(EV_RotateTo, (eventCallback_t1<idMover>) idMover::Event_RotateTo);
+            eventCallbacks.put(EV_Rotate, (eventCallback_t1<idMover>) idMover::Event_Rotate);
+            eventCallbacks.put(EV_RotateOnce, (eventCallback_t1<idMover>) idMover::Event_RotateOnce);
+            eventCallbacks.put(EV_Bob, (eventCallback_t3<idMover>) idMover::Event_Bob);
+            eventCallbacks.put(EV_Sway, (eventCallback_t3<idMover>) idMover::Event_Sway);
+            eventCallbacks.put(EV_Mover_OpenPortal, (eventCallback_t0<idMover>) idMover::Event_OpenPortal);
+            eventCallbacks.put(EV_Mover_ClosePortal, (eventCallback_t0<idMover>) idMover::Event_ClosePortal);
+            eventCallbacks.put(EV_AccelSound, (eventCallback_t1<idMover>) idMover::Event_SetAccelSound);
+            eventCallbacks.put(EV_DecelSound, (eventCallback_t1<idMover>) idMover::Event_SetDecelSound);
+            eventCallbacks.put(EV_MoveSound, (eventCallback_t1<idMover>) idMover::Event_SetMoveSound);
+            eventCallbacks.put(EV_Mover_InitGuiTargets, (eventCallback_t0<idMover>) idMover::Event_InitGuiTargets);
+            eventCallbacks.put(EV_EnableSplineAngles, (eventCallback_t0<idMover>) idMover::Event_EnableSplineAngles);
+            eventCallbacks.put(EV_DisableSplineAngles, (eventCallback_t0<idMover>) idMover::Event_DisableSplineAngles);
+            eventCallbacks.put(EV_RemoveInitialSplineAngles, (eventCallback_t0<idMover>) idMover::Event_RemoveInitialSplineAngles);
+            eventCallbacks.put(EV_StartSpline, (eventCallback_t1<idMover>) idMover::Event_StartSpline);
+            eventCallbacks.put(EV_StopSpline, (eventCallback_t0<idMover>) idMover::Event_StopSpline);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idMover>) idMover::Event_Activate);
+            eventCallbacks.put(EV_IsMoving, (eventCallback_t0<idMover>) idMover::Event_IsMoving);
+            eventCallbacks.put(EV_IsRotating, (eventCallback_t0<idMover>) idMover::Event_IsRotating);
+        }
+
 
         protected moveState_t move;
         //
@@ -563,12 +622,12 @@ public class Mover {
             }
         }
 
-        protected void Event_PartBlocked(idEntity blockingEntity) {
+        protected void Event_PartBlocked(idEventArg<idEntity> blockingEntity) {
             if (damage > 0.0f) {
-                blockingEntity.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
+                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
             if (g_debugMover.GetBool()) {
-                gameLocal.Printf("%d: '%s' blocked by '%s'\n", gameLocal.time, name, blockingEntity.name);
+                gameLocal.Printf("%d: '%s' blocked by '%s'\n", gameLocal.time, name, blockingEntity.value.name);
             }
         }
 
@@ -923,9 +982,9 @@ public class Mover {
             }
         }
 
-        private void Event_TeamBlocked(idEntity blockedPart, idEntity blockingEntity) {
+        private void Event_TeamBlocked(idEventArg<idEntity> blockedPart, idEventArg<idEntity> blockingEntity) {
             if (g_debugMover.GetBool()) {
-                gameLocal.Printf("%d: '%s' stopped due to team member '%s' blocked by '%s'\n", gameLocal.time, name, blockedPart.name, blockingEntity.name);
+                gameLocal.Printf("%d: '%s' stopped due to team member '%s' blocked by '%s'\n", gameLocal.time, name, blockedPart.value.name, blockingEntity.value.name);
             }
         }
 
@@ -1043,71 +1102,71 @@ public class Mover {
             }
         }
 
-        private void Event_SetMoveSpeed(float speed) {
-            if (speed <= 0) {
+        private void Event_SetMoveSpeed(idEventArg<Float> speed) {
+            if (speed.value <= 0) {
                 gameLocal.Error("Cannot set speed less than or equal to 0.");
             }
 
-            move_speed = speed;
+            move_speed = speed.value;
             move_time = 0;			// move_time is calculated for each move when move_speed is non-0
         }
 
-        private void Event_SetMoveTime(float time) {
-            if (time <= 0) {
+        private void Event_SetMoveTime(idEventArg<Float> time) {
+            if (time.value <= 0) {
                 gameLocal.Error("Cannot set time less than or equal to 0.");
             }
 
             move_speed = 0;
-            move_time = (int) SEC2MS(time);
+            move_time = (int) SEC2MS(time.value);
         }
 
-        private void Event_SetDecelerationTime(float time) {
-            if (time < 0) {
+        private void Event_SetDecelerationTime(idEventArg<Float> time) {
+            if (time.value < 0) {
                 gameLocal.Error("Cannot set deceleration time less than 0.");
             }
 
-            deceltime = (int) SEC2MS(time);
+            deceltime = (int) SEC2MS(time.value);
         }
 
-        private void Event_SetAccellerationTime(float time) {
-            if (time < 0) {
+        private void Event_SetAccellerationTime(idEventArg<Float> time) {
+            if (time.value < 0) {
                 gameLocal.Error("Cannot set acceleration time less than 0.");
             }
 
-            acceltime = (int) SEC2MS(time);
+            acceltime = (int) SEC2MS(time.value);
         }
 
-        private void Event_MoveTo(idEntity ent) {
-            if (null == ent) {
+        private void Event_MoveTo(idEventArg<idEntity> ent) {
+            if (null == ent.value) {
                 gameLocal.Warning("Entity not found");
             }
 
-            dest_position = GetLocalCoordinates(ent.GetPhysics().GetOrigin());
+            dest_position = GetLocalCoordinates(ent.value.GetPhysics().GetOrigin());
             BeginMove(idThread.CurrentThread());
         }
 
-        private void Event_MoveToPos(idVec3 pos) {
-            dest_position = GetLocalCoordinates(pos);
+        private void Event_MoveToPos(idEventArg<idVec3> pos) {
+            dest_position = GetLocalCoordinates(pos.value);
             BeginMove(null);
         }
 
-        private void Event_MoveDir(float angle, float distance) {
+        private void Event_MoveDir(idEventArg<Float> angle, idEventArg<Float> distance) {
             idVec3 dir = new idVec3();
             idVec3 org = new idVec3();
 
             physicsObj.GetLocalOrigin(org);
-            VectorForDir(angle, dir);
-            dest_position = org.oPlus(dir.oMultiply(distance));
+            VectorForDir(angle.value, dir);
+            dest_position = org.oPlus(dir.oMultiply(distance.value));
 
             BeginMove(idThread.CurrentThread());
         }
 
-        private void Event_MoveAccelerateTo(float speed, float time) {
+        private void Event_MoveAccelerateTo(idEventArg<Float> speed, idEventArg<Float> time) {
             float v;
             idVec3 org = new idVec3(), dir;
             int at;
 
-            if (time < 0) {
+            if (time.value < 0) {
                 gameLocal.Error("idMover::Event_MoveAccelerateTo: cannot set acceleration time less than 0.");
             }
 
@@ -1120,11 +1179,11 @@ public class Mover {
             }
 
             // if already moving faster than the desired speed
-            if (v >= speed) {
+            if (v >= speed.value) {
                 return;
             }
 
-            at = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time));
+            at = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time.value));
 
             lastCommand = MOVER_MOVING;
 
@@ -1137,15 +1196,15 @@ public class Mover {
 
             StartSound("snd_accel", SND_CHANNEL_BODY2, 0, false, null);
             StartSound("snd_move", SND_CHANNEL_BODY, 0, false, null);
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, move.acceleration, org, dir.oMultiply(speed - v), dir.oMultiply(v));
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_ACCELLINEAR, gameLocal.time, move.acceleration, org, dir.oMultiply(speed.value - v), dir.oMultiply(v));
         }
 
-        private void Event_MoveDecelerateTo(float speed, float time) {
+        private void Event_MoveDecelerateTo(idEventArg<Float> speed, idEventArg<Float> time) {
             float v;
             idVec3 org = new idVec3(), dir;
             int dt;
 
-            if (time < 0) {
+            if (time.value < 0) {
                 gameLocal.Error("idMover::Event_MoveDecelerateTo: cannot set deceleration time less than 0.");
             }
 
@@ -1158,11 +1217,11 @@ public class Mover {
             }
 
             // if already moving slower than the desired speed
-            if (v <= speed) {
+            if (v <= speed.value) {
                 return;
             }
 
-            dt = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time));
+            dt = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time.value));
 
             lastCommand = MOVER_MOVING;
 
@@ -1175,10 +1234,11 @@ public class Mover {
 
             StartSound("snd_decel", SND_CHANNEL_BODY2, 0, false, null);
             StartSound("snd_move", SND_CHANNEL_BODY, 0, false, null);
-            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, move.deceleration, org, dir.oMultiply(v - speed), dir.oMultiply(speed));
+            physicsObj.SetLinearExtrapolation(EXTRAPOLATION_DECELLINEAR, gameLocal.time, move.deceleration, org, dir.oMultiply(v - speed.value), dir.oMultiply(speed.value));
         }
 
-        private void Event_RotateDownTo(int axis, float angle) {
+        private void Event_RotateDownTo(idEventArg<Integer> _axis, idEventArg<Float> angle) {
+            int axis = _axis.value;
             idAngles ang = new idAngles();
 
             if ((axis < 0) || (axis > 2)) {
@@ -1187,7 +1247,7 @@ public class Mover {
 
             physicsObj.GetLocalAngles(ang);
 
-            dest_angles.oSet(axis, angle);
+            dest_angles.oSet(axis, angle.value);
             if (dest_angles.oGet(axis) > ang.oGet(axis)) {
                 dest_angles.oMinSet(axis, 360);
             }
@@ -1195,7 +1255,8 @@ public class Mover {
             BeginRotation(idThread.CurrentThread(), true);
         }
 
-        private void Event_RotateUpTo(int axis, float angle) {
+        private void Event_RotateUpTo(idEventArg<Integer> _axis, idEventArg<Float> angle) {
+            int axis = _axis.value;
             idAngles ang = new idAngles();
 
             if ((axis < 0) || (axis > 2)) {
@@ -1204,7 +1265,7 @@ public class Mover {
 
             physicsObj.GetLocalAngles(ang);
 
-            dest_angles.oSet(axis, angle);
+            dest_angles.oSet(axis, angle.value);
             if (dest_angles.oGet(axis) < ang.oGet(axis)) {
                 dest_angles.oPluSet(axis, 360);
             }
@@ -1212,12 +1273,12 @@ public class Mover {
             BeginRotation(idThread.CurrentThread(), true);
         }
 
-        private void Event_RotateTo(idAngles angles) {
-            dest_angles = angles;
+        private void Event_RotateTo(idEventArg<idAngles> angles) {
+            dest_angles.oSet(angles.value);
             BeginRotation(idThread.CurrentThread(), true);
         }
 
-        private void Event_Rotate(idAngles angles) {
+        private void Event_Rotate(idEventArg<idAngles> angles) {
             idAngles ang = new idAngles();
 
             if (rotate_thread != 0) {
@@ -1225,12 +1286,12 @@ public class Mover {
             }
 
             physicsObj.GetLocalAngles(ang);
-            dest_angles = ang.oPlus(angles.oMultiply(move_time - (acceltime + deceltime) / 2).oMultiply(0.001f));
+            dest_angles = ang.oPlus(angles.value.oMultiply(move_time - (acceltime + deceltime) / 2).oMultiply(0.001f));
 
             BeginRotation(idThread.CurrentThread(), false);
         }
 
-        private void Event_RotateOnce(idAngles angles) {
+        private void Event_RotateOnce(idEventArg<idAngles> angles) {
             idAngles ang = new idAngles();
 
             if (rotate_thread != 0) {
@@ -1238,38 +1299,40 @@ public class Mover {
             }
 
             physicsObj.GetLocalAngles(ang);
-            dest_angles = ang.oPlus(angles);
+            dest_angles = ang.oPlus(angles.value);
 
             BeginRotation(idThread.CurrentThread(), true);
         }
 
-        private void Event_Bob(float speed, float phase, idVec3 depth) {
+        private void Event_Bob(idEventArg<Float> speed, idEventArg<Float> phase, idEventArg<idVec3> depth) {
             idVec3 org = new idVec3();
 
             physicsObj.GetLocalOrigin(org);
-            physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (speed * 1000 * phase), (int) (speed * 500), org, depth.oMultiply(2.0f), getVec3_origin());
+            physicsObj.SetLinearExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (speed.value * 1000 * phase.value),
+                    (int) (speed.value * 500), org, depth.value.oMultiply(2.0f), getVec3_origin());
         }
 
-        private void Event_Sway(float speed, float phase, idAngles depth) {
+        private void Event_Sway(idEventArg<Float> speed, idEventArg<Float> phase, idEventArg<idAngles> _depth) {
+            idAngles depth = _depth.value;
             idAngles ang = new idAngles(), angSpeed;
             float duration;
 
             physicsObj.GetLocalAngles(ang);
-            assert (speed > 0.0f);
-            duration = idMath.Sqrt(depth.oGet(0) * depth.oGet(0) + depth.oGet(1) * depth.oGet(1) + depth.oGet(2) * depth.oGet(2)) / speed;
+            assert (speed.value > 0.0f);
+            duration = idMath.Sqrt(depth.oGet(0) * depth.oGet(0) + depth.oGet(1) * depth.oGet(1) + depth.oGet(2) * depth.oGet(2)) / speed.value;
             angSpeed = depth.oDivide(duration * idMath.SQRT_1OVER2);
-            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (duration * 1000.0f * phase), (int) (duration * 1000.0f), ang, angSpeed, getAng_zero());
+            physicsObj.SetAngularExtrapolation((EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP), (int) (duration * 1000.0f * phase.value), (int) (duration * 1000.0f), ang, angSpeed, getAng_zero());
         }
 
-        private void Event_SetAccelSound(final String sound) {
+        private void Event_SetAccelSound(final idEventArg<String> sound) {
 //	refSound.SetSound( "accel", sound );
         }
 
-        private void Event_SetDecelSound(final String sound) {
+        private void Event_SetDecelSound(final idEventArg<String> sound) {
 //	refSound.SetSound( "decel", sound );
         }
 
-        private void Event_SetMoveSound(final String sound) {
+        private void Event_SetMoveSound(final idEventArg<String> sound) {
 //	refSound.SetSound( "move", sound );
         }
 
@@ -1301,7 +1364,8 @@ public class Mover {
             physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, ang.oNegative(), getAng_zero(), getAng_zero());
         }
 
-        private void Event_StartSpline(idEntity splineEntity) {
+        private void Event_StartSpline(idEventArg<idEntity> _splineEntity) {
+            idEntity splineEntity = _splineEntity.value;
             idCurve_Spline<idVec3> spline;
 
             if (null == splineEntity) {
@@ -1340,12 +1404,13 @@ public class Mover {
             splineEnt = null;
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             Show();
-            Event_StartSpline(this);
+            Event_StartSpline(idEventArg.toArg(this));
         }
 
-        private void Event_PostRestore(int start, int total, int accel, int decel, int useSplineAng) {
+        private void Event_PostRestore(idEventArg<Integer> start, idEventArg<Integer> total, idEventArg<Integer> accel,
+                                       idEventArg<Integer> decel, idEventArg<Integer> useSplineAng) {
             idCurve_Spline<idVec3> spline;
 
             idEntity splineEntity = splineEnt.GetEntity();
@@ -1357,10 +1422,10 @@ public class Mover {
 
             spline = splineEntity.GetSpline();
 
-            spline.MakeUniform(total);
-            spline.ShiftTime(start - spline.GetTime(0));
+            spline.MakeUniform(total.value);
+            spline.ShiftTime(start.value - spline.GetTime(0));
 
-            physicsObj.SetSpline(spline, accel, decel, (useSplineAng != 0));
+            physicsObj.SetSpline(spline, accel.value, decel.value, (useSplineAng.value != 0));
             physicsObj.SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_position, getVec3_origin(), getVec3_origin());
         }
 
@@ -1379,6 +1444,16 @@ public class Mover {
                 idThread.ReturnInt(true);
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1421,6 +1496,16 @@ public class Mover {
      */
     public static class idElevator extends idMover {
         // CLASS_PROTOTYPE( idElevator );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idMover.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idElevator>) idElevator::Event_Activate);
+            eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idElevator>) idElevator::Event_TeamBlocked);
+            eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idElevator>) idElevator::Event_PartBlocked);
+            eventCallbacks.put(EV_PostArrival, (eventCallback_t0<idElevator>) idElevator::Event_PostFloorArrival);
+            eventCallbacks.put(EV_GotoFloor, (eventCallback_t1<idElevator>) idElevator::Event_GotoFloor);
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idElevator>) idElevator::Event_Touch);
+        }
 
         protected enum elevatorState_t {
 
@@ -1572,8 +1657,8 @@ public class Mover {
             return false;
         }
 
-        public void Event_GotoFloor(int floor) {
-            floorInfo_s fi = GetFloorInfo(floor);
+        public void Event_GotoFloor(idEventArg<Integer> floor) {
+            floorInfo_s fi = GetFloorInfo(floor.value);
             if (fi != null) {
                 idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
                 if (door != null) {
@@ -1585,7 +1670,7 @@ public class Mover {
                 DisableAllDoors();
                 CloseAllDoors();
                 state = WAITING_ON_DOORS;
-                pendingFloor = floor;
+                pendingFloor = floor.value;
             }
         }
 
@@ -1651,13 +1736,13 @@ public class Mover {
 //        protected void GetLocalTriggerPosition();
 //
 
-        protected void Event_Touch(idEntity other, trace_s trace) {
+        protected void Event_Touch(idEventArg<idEntity> other, idEventArg<trace_s> trace) {
 
             if (gameLocal.time < lastTouchTime + 2000) {
                 return;
             }
 
-            if (!other.IsType(idPlayer.class)) {
+            if (!other.value.IsType(idPlayer.class)) {
                 return;
             }
 
@@ -1717,7 +1802,7 @@ public class Mover {
                     }
                 }
 
-                Event_GotoFloor(pendingFloor);
+                Event_GotoFloor(idEventArg.toArg(pendingFloor));
                 DisableAllDoors();
                 SetGuiStates((pendingFloor == 1) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1]);
             } else if (state == WAITING_ON_DOORS) {
@@ -1798,12 +1883,12 @@ public class Mover {
             }
         }
 
-        private void Event_TeamBlocked(idEntity blockedEntity, idEntity blockingEntity) {
-            if (blockedEntity == this) {
-                Event_GotoFloor(lastFloor);
-            } else if (blockedEntity != null && blockedEntity.IsType(idDoor.class)) {
+        private void Event_TeamBlocked(idEventArg<idEntity> blockedEntity, idEventArg<idEntity> blockingEntity) {
+            if (blockedEntity.value == this) {
+                Event_GotoFloor(idEventArg.toArg(lastFloor));
+            } else if (blockedEntity != null && blockedEntity.value.IsType(idDoor.class)) {
                 // open the inner doors if one is blocked
-                idDoor blocked = (idDoor) blockedEntity;
+                idDoor blocked = (idDoor) blockedEntity.value;
                 idDoor door = GetDoor(spawnArgs.GetString("innerdoor"));
                 if (door != null && blocked.GetMoveMaster() == door.GetMoveMaster()) {//TODO:equalds
                     door.SetBlocked(true);
@@ -1813,10 +1898,10 @@ public class Mover {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int triggerFloor = spawnArgs.GetInt("triggerFloor");
             if (spawnArgs.GetBool("trigger") && triggerFloor != currentFloor) {
-                Event_GotoFloor(triggerFloor);
+                Event_GotoFloor(idEventArg.toArg(triggerFloor));
             }
         }
 
@@ -1829,6 +1914,16 @@ public class Mover {
                 PostEventSec(EV_GotoFloor, returnTime, returnFloor);
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1859,6 +1954,21 @@ public class Mover {
      */
     public static class idMover_Binary extends idEntity {
         // CLASS_PROTOTYPE( idMover_Binary );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_FindGuiTargets, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_FindGuiTargets);
+            eventCallbacks.put(EV_Thread_SetCallback, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_SetCallback);
+            eventCallbacks.put(EV_Mover_ReturnToPos1, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_ReturnToPos1);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idMover_Binary>) idMover_Binary::Event_Use_BinaryMover);
+            eventCallbacks.put(EV_ReachedPos, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_Reached_BinaryMover);
+            eventCallbacks.put(EV_Mover_MatchTeam, (eventCallback_t2<idMover_Binary>) idMover_Binary::Event_MatchActivateTeam);
+            eventCallbacks.put(EV_Mover_Enable, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_Enable);
+            eventCallbacks.put(EV_Mover_Disable, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_Disable);
+            eventCallbacks.put(EV_Mover_OpenPortal, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_OpenPortal);
+            eventCallbacks.put(EV_Mover_ClosePortal, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_ClosePortal);
+            eventCallbacks.put(EV_Mover_InitGuiTargets, (eventCallback_t0<idMover_Binary>) idMover_Binary::Event_InitGuiTargets);
+        }
 
         protected idVec3                        pos1;
         protected idVec3                        pos2;
@@ -1916,6 +2026,7 @@ public class Mover {
             areaPortal = 0;
             blocked = false;
             fl.networkSync = true;
+            guiTargets = new idList<>();
         }
 
         // ~idMover_Binary();
@@ -2582,8 +2693,8 @@ public class Mover {
             MatchActivateTeam(MOVER_2TO1, gameLocal.time);
         }
 
-        protected void Event_Use_BinaryMover(idEntity activator) {
-            Use_BinaryMover(activator);
+        protected void Event_Use_BinaryMover(idEventArg<idEntity> activator) {
+            Use_BinaryMover(activator.value);
         }
 
         protected void Event_Reached_BinaryMover() {
@@ -2638,8 +2749,8 @@ public class Mover {
             }
         }
 
-        protected void Event_MatchActivateTeam(moverState_t newstate, int time) {
-            MatchActivateTeam(newstate, time);
+        protected void Event_MatchActivateTeam(idEventArg<moverState_t> newstate, idEventArg<Integer> time) {
+            MatchActivateTeam(newstate.value, time.value);
         }
 
         /*
@@ -2748,6 +2859,16 @@ public class Mover {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -2761,6 +2882,26 @@ public class Mover {
      ===============================================================================
      */
     public static class idDoor extends idMover_Binary {
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idMover_Binary.getEventCallBacks());
+            eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idDoor>) idDoor::Event_TeamBlocked);
+            eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idDoor>) idDoor::Event_PartBlocked);
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idDoor>) idDoor::Event_Touch);
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idDoor>) idDoor::Event_Activate);
+            eventCallbacks.put(EV_Door_StartOpen, (eventCallback_t0<idDoor>) idDoor::Event_StartOpen);
+            eventCallbacks.put(EV_Door_SpawnDoorTrigger, (eventCallback_t0<idDoor>) idDoor::Event_SpawnDoorTrigger);
+            eventCallbacks.put(EV_Door_SpawnSoundTrigger, (eventCallback_t0<idDoor>) idDoor::Event_SpawnSoundTrigger);
+            eventCallbacks.put(EV_Door_Open, (eventCallback_t0<idDoor>) idDoor::Event_Open);
+            eventCallbacks.put(EV_Door_Close, (eventCallback_t0<idDoor>) idDoor::Event_Close);
+            eventCallbacks.put(EV_Door_Lock, (eventCallback_t1<idDoor>) idDoor::Event_Lock);
+            eventCallbacks.put(EV_Door_IsOpen, (eventCallback_t0<idDoor>) idDoor::Event_IsOpen);
+            eventCallbacks.put(EV_Door_IsLocked, (eventCallback_t0<idDoor>) idDoor::Event_Locked);
+            eventCallbacks.put(EV_ReachedPos, (eventCallback_t0<idDoor>) idDoor::Event_Reached_BinaryMover);
+            eventCallbacks.put(EV_SpectatorTouch, (eventCallback_t2<idDoor>) idDoor::Event_SpectatorTouch);
+            eventCallbacks.put(EV_Mover_OpenPortal, (eventCallback_t0<idDoor>) idDoor::Event_OpenPortal);
+            eventCallbacks.put(EV_Mover_ClosePortal, (eventCallback_t0<idDoor>) idDoor::Event_ClosePortal);
+        }
 
         private float       triggersize;
         private boolean     crusher;
@@ -3223,7 +3364,7 @@ public class Mover {
             super.Event_Reached_BinaryMover();
         }
 
-        private void Event_TeamBlocked(idEntity blockedEntity, idEntity blockingEntity) {
+        private void Event_TeamBlocked(idEventArg<idEntity> blockedEntity, idEventArg<idEntity> blockingEntity) {
             SetBlocked(true);
 
             if (crusher) {
@@ -3234,17 +3375,19 @@ public class Mover {
             Use_BinaryMover(moveMaster.GetActivator());
 
             if (companionDoor != null) {
-                companionDoor.ProcessEvent(EV_TeamBlocked, blockedEntity, blockingEntity);
+                companionDoor.ProcessEvent(EV_TeamBlocked, blockedEntity.value, blockingEntity.value);
             }
         }
 
-        private void Event_PartBlocked(idEntity blockingEntity) {
+        private void Event_PartBlocked(idEventArg<idEntity> blockingEntity) {
             if (damage > 0.0f) {
-                blockingEntity.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
+                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> _trace) {
+            idEntity other = _other.value;
+            trace_s trace = _trace.value;
 //            idVec3 contact, translate;
 //            idVec3 planeaxis1, planeaxis2, normal;
 //            idBounds bounds;
@@ -3265,7 +3408,7 @@ public class Mover {
             }
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             int old_lock;
 
             if (spawnArgs.GetInt("locked") != 0) {
@@ -3296,12 +3439,12 @@ public class Mover {
                 }
             }
 
-            ActivateTargets(activator);
+            ActivateTargets(activator.value);
 
             renderEntity.shaderParms[ SHADERPARM_MODE] = 1;
             UpdateVisuals();
 
-            Use_BinaryMover(activator);
+            Use_BinaryMover(activator.value);
         }
 
         /*
@@ -3415,8 +3558,8 @@ public class Mover {
             Open();
         }
 
-        private void Event_Lock(int f) {
-            Lock(f);
+        private void Event_Lock(idEventArg<Integer> f) {
+            Lock(f.value);
         }
 
         private void Event_IsOpen() {
@@ -3430,7 +3573,8 @@ public class Mover {
             idThread.ReturnFloat(spawnArgs.GetInt("locked"));
         }
 
-        private void Event_SpectatorTouch(idEntity other, trace_s trace) {
+        private void Event_SpectatorTouch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
+            idEntity other = _other.value;
             idVec3 contact, translate, normal = new idVec3();
             idBounds bounds;
             idPlayer p;
@@ -3445,7 +3589,7 @@ public class Mover {
             if (trigger != null && !IsOpen()) {
                 // teleport to the other side, center to the middle of the trigger brush
                 bounds = trigger.GetAbsBounds();
-                contact = trace.endpos.oMinus(bounds.GetCenter());
+                contact = trace.value.endpos.oMinus(bounds.GetCenter());
                 translate = bounds.GetCenter();
                 normal.Zero();
                 normal.oSet(normalAxisIndex, 1.0f);
@@ -3506,6 +3650,16 @@ public class Mover {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -3517,6 +3671,13 @@ public class Mover {
      */
     public static class idPlat extends idMover_Binary {
         // CLASS_PROTOTYPE( idPlat );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idMover_Binary.getEventCallBacks());
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idPlat>) idPlat::Event_Touch);
+            eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idPlat>) idPlat::Event_TeamBlocked);
+            eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idPlat>) idPlat::Event_PartBlocked);
+        }
 
         private idClipModel trigger;
         private idVec3 localTriggerOrigin;
@@ -3662,26 +3823,37 @@ public class Mover {
             trigger.SetContents(CONTENTS_TRIGGER);
         }
 
-        private void Event_TeamBlocked(idEntity blockedEntity, idEntity blockingEntity) {
+        private void Event_TeamBlocked(idEventArg<idEntity> blockedEntity, idEventArg<idEntity> blockingEntity) {
             // reverse direction
             Use_BinaryMover(activatedBy.GetEntity());
         }
 
-        private void Event_PartBlocked(idEntity blockingEntity) {
+        private void Event_PartBlocked(idEventArg<idEntity> blockingEntity) {
             if (damage > 0) {
-                blockingEntity.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
+                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage, INVALID_JOINT);
             }
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
+            idEntity other = _other.value;
             if (!other.IsType(idPlayer.class)) {
                 return;
             }
 
-            if ((GetMoverState() == MOVER_POS1) && trigger != null && (trace.c.id == trigger.GetId()) && (other.health > 0)) {
+            if ((GetMoverState() == MOVER_POS1) && trigger != null && (trace.value.c.id == trigger.GetId()) && (other.health > 0)) {
                 Use_BinaryMover(other);
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -3700,6 +3872,12 @@ public class Mover {
      */
     public static class idMover_Periodic extends idEntity {
         // CLASS_PROTOTYPE( idMover_Periodic );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idMover_Periodic>) idMover_Periodic::Event_TeamBlocked);
+            eventCallbacks.put(EV_PartBlocked, (eventCallback_t1<idMover_Periodic>) idMover_Periodic::Event_PartBlocked);
+        }
 
         protected idPhysics_Parametric physicsObj;
         protected float[] damage = {0};
@@ -3759,12 +3937,12 @@ public class Mover {
             }
         }
 
-        protected void Event_TeamBlocked(idEntity blockedEntity, idEntity blockingEntity) {
+        protected void Event_TeamBlocked(idEventArg<idEntity> blockedEntity, idEventArg<idEntity> blockingEntity) {
         }
 
-        protected void Event_PartBlocked(idEntity blockingEntity) {
+        protected void Event_PartBlocked(idEventArg<idEntity> blockingEntity) {
             if (damage[0] > 0) {
-                blockingEntity.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage[0], INVALID_JOINT);
+                blockingEntity.value.Damage(this, this, getVec3_origin(), "damage_moverCrush", damage[0], INVALID_JOINT);
             }
         }
 
@@ -3777,6 +3955,16 @@ public class Mover {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -3788,6 +3976,11 @@ public class Mover {
      */
     public static class idRotater extends idMover_Periodic {
         // CLASS_PROTOTYPE( idRotater );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idMover_Periodic.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idRotater>) idRotater::Event_Activate);
+        }
 
         private idEntityPtr<idEntity> activatedBy;
         //
@@ -3826,13 +4019,13 @@ public class Mover {
             activatedBy.Restore(savefile);
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
             float[] speed = {0};
             boolean[] x_axis = {false};
             boolean[] y_axis = {false};
             idAngles delta = new idAngles();
 
-            activatedBy.oSet(activator);
+            activatedBy.oSet(activator.value);
 
             delta.Zero();
 
@@ -3856,6 +4049,16 @@ public class Mover {
 
             physicsObj.SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, physicsObj.GetAxis().ToAngles(), delta, getAng_zero());
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -3969,6 +4172,11 @@ public class Mover {
      */
     public static class idRiser extends idMover_Periodic {
         // CLASS_PROTOTYPE( idRiser );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idMover_Periodic.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idRiser>) idRiser::Event_Activate);
+        }
 
 //public	idRiser( ){}
         @Override
@@ -3989,7 +4197,7 @@ public class Mover {
             SetPhysics(physicsObj);
         }
 
-        private void Event_Activate(idEntity activator) {
+        private void Event_Activate(idEventArg<idEntity> activator) {
 
             if (!IsHidden() && spawnArgs.GetBool("hide")) {
                 Hide();
@@ -4008,5 +4216,15 @@ public class Mover {
                 physicsObj.SetLinearExtrapolation(EXTRAPOLATION_LINEAR, gameLocal.time, (int) (time[0] * 1000), physicsObj.GetOrigin(), delta, getVec3_origin());
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

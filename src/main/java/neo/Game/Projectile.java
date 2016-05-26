@@ -1,17 +1,27 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import neo.Game.AFEntity.idAFAttachment;
 import neo.Game.AI.AI.idAI;
 import neo.Game.Actor.idActor;
 import static neo.Game.Entity.EV_Activate;
+import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_THINK;
 import neo.Game.Entity.idEntity;
 import static neo.Game.Game.TEST_PARTICLE_IMPACT;
 import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -124,6 +134,16 @@ public class Projectile {
     public static final idEventDef EV_RemoveBeams            = new idEventDef("<removeBeams>", null);
 
     public static class idProjectile extends idEntity {
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_Explode, (eventCallback_t0<idProjectile>) idProjectile::Event_Explode);
+            eventCallbacks.put(EV_Fizzle, (eventCallback_t0<idProjectile>) idProjectile::Event_Fizzle);
+            eventCallbacks.put(EV_Touch, (eventCallback_t2<idProjectile>) idProjectile::Event_Touch);
+            eventCallbacks.put(EV_RadiusDamage, (eventCallback_t1<idProjectile>) idProjectile::Event_RadiusDamage);
+            eventCallbacks.put(EV_GetProjectileState, (eventCallback_t0<idProjectile>) idProjectile::Event_GetProjectileState);
+        }
+
 
         protected idEntityPtr<idEntity> owner;
 //
@@ -214,7 +234,14 @@ public class Projectile {
             
             physicsObj = new idPhysics_RigidBody();
         }
-        // virtual					~idProjectile();
+
+        @Override
+        protected void _deconstructor() {
+            super._deconstructor();
+
+            StopSound(SND_CHANNEL_ANY.ordinal(), false);
+            FreeLightDef();
+        }
 
         @Override
         public void Spawn() {
@@ -845,7 +872,7 @@ public class Projectile {
                     }
                     PostEventSec(EV_RadiusDamage, delay, ignore);
                 } else {
-                    Event_RadiusDamage(ignore);
+                    Event_RadiusDamage(idEventArg.toArg(ignore));
                 }
             }
 
@@ -1219,20 +1246,20 @@ public class Projectile {
             Fizzle();
         }
 
-        private void Event_RadiusDamage(idEntity ignore) {
+        private void Event_RadiusDamage(idEventArg<idEntity> ignore) {
             final String splash_damage = spawnArgs.GetString("def_splash_damage");
             if (!splash_damage.isEmpty()) {//[0] != '\0' ) {
-                gameLocal.RadiusDamage(physicsObj.GetOrigin(), this, owner.GetEntity(), ignore, this, splash_damage, damagePower);
+                gameLocal.RadiusDamage(physicsObj.GetOrigin(), this, owner.GetEntity(), ignore.value, this, splash_damage, damagePower);
             }
         }
 
-        private void Event_Touch(idEntity other, trace_s trace) {
+        private void Event_Touch(idEventArg<idEntity> other, idEventArg<trace_s> trace) {
 
             if (IsHidden()) {
                 return;
             }
 
-            if (!other.equals(owner.GetEntity())) {
+            if (!other.value.equals(owner.GetEntity())) {
                 trace_s collision;
 
                 collision = new trace_s();//memset( &collision, 0, sizeof( collision ) );
@@ -1248,6 +1275,16 @@ public class Projectile {
         private void Event_GetProjectileState() {
             idThread.ReturnInt(etoi(state));
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -1656,6 +1693,11 @@ public class Projectile {
      */
     public static class idBFGProjectile extends idProjectile {
         // CLASS_PROTOTYPE( idBFGProjectile );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idProjectile.getEventCallBacks());
+            eventCallbacks.put(EV_RemoveBeams, (eventCallback_t0<idBFGProjectile>) idBFGProjectile::Event_RemoveBeams);
+        }
 
         private idList<beamTarget_t> beamTargets;
         private renderEntity_s       secondModel;
@@ -1672,7 +1714,18 @@ public class Projectile {
             nextDamageTime = 0;
             damageFreq = new idStr();
         }
-        // ~idBFGProjectile();
+
+        @Override
+        protected void _deconstructor() {
+            super._deconstructor();
+
+            FreeBeams();
+
+            if (secondModelDefHandle >= 0) {
+                gameRenderWorld.FreeEntityDef(secondModelDefHandle);
+                secondModelDefHandle = -1;
+            }
+        }
 
         @Override
         public void Save(idSaveGame savefile) {
@@ -1988,6 +2041,16 @@ public class Projectile {
             UpdateVisuals();
         }
 
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
+
 //        private void ApplyDamage();
     };
 
@@ -2000,12 +2063,19 @@ public class Projectile {
      */
     public static class idDebris extends idEntity {
         // CLASS_PROTOTYPE( idDebris );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_Explode, (eventCallback_t0<idDebris>) idDebris::Event_Explode);
+            eventCallbacks.put(EV_Fizzle, (eventCallback_t0<idDebris>) idDebris::Event_Fizzle);
+        }
+
 
         private idEntityPtr<idEntity> owner;
-        private idPhysics_RigidBody physicsObj;
-        private idDeclParticle smokeFly;
-        private int smokeFlyTime;
-        private idSoundShader sndBounce;
+        private idPhysics_RigidBody   physicsObj;
+        private idDeclParticle        smokeFly;
+        private int                   smokeFlyTime;
+        private idSoundShader         sndBounce;
         //
         //
 
@@ -2289,5 +2359,15 @@ public class Projectile {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

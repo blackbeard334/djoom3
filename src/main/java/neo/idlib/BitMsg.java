@@ -62,14 +62,18 @@ public class BitMsg {
         }
 //public					~idBitMsg() {}
 
-        public void Init(ByteBuffer data, int length) {
-            writeData = data;
-            readData = data;
-            maxSize = length;
+        public void Init(byte[] data) {
+            this.Init(ByteBuffer.wrap(data), data.length);
         }
 
         public void Init(ByteBuffer data) {
             this.Init(data, data.capacity());
+        }
+
+        public void Init(ByteBuffer data, int length) {
+            writeData = data;
+            readData = data;
+            maxSize = length;
         }
 
         public void InitReadOnly(final ByteBuffer data, int length) {

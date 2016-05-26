@@ -1042,26 +1042,26 @@ public final class idProgram {
     }
 
     public void ReturnFloat(float value) {
-        returnDef.value.floatPtr[0] = value;
+        returnDef.value = new varEval_s(value);
     }
 
     public void ReturnInteger(int value) {
-        returnDef.value.intPtr[0] = value;
+        returnDef.value = new varEval_s(value);
     }
 
     public void ReturnVector(idVec3 vec) {
-        returnDef.value.vectorPtr[0] = (vec);
+        returnDef.value = new varEval_s(vec);
     }
 
     public void ReturnString(final String string) {
-        returnStringDef.value.stringPtr[0] = string;//idStr.Copynz(returnStringDef.value.stringPtr, string, MAX_STRING_LEN);
+        returnStringDef.value = new varEval_s(string);//idStr.Copynz(returnStringDef.value.stringPtr, string, MAX_STRING_LEN);
     }
 
     public void ReturnEntity(idEntity ent) {
         if (ent != null) {
-            returnDef.value.entityNumberPtr[0] = ent.entityNumber + 1;
+            returnDef.value = new varEval_s(ent.entityNumber + 1);
         } else {
-            returnDef.value.entityNumberPtr[0] = 0;
+            returnDef.value = new varEval_s(0);
         }
     }
 

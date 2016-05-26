@@ -1,6 +1,8 @@
 package neo.Renderer;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
+
 import static neo.Renderer.Interaction.R_CalcInteractionFacing;
 import neo.Renderer.Interaction.srfCullInfo_t;
 import neo.Renderer.Model.silEdge_t;
@@ -173,7 +175,7 @@ public class tr_stencilshadow {
     static int numShadowIndexes;
     static int/*glIndex_t*/[] shadowIndexes = new int[MAX_SHADOW_INDEXES];
     static int numShadowVerts;
-    static final idVec4[] shadowVerts = new idVec4[MAX_SHADOW_VERTS];
+    static final idVec4[] shadowVerts = Stream.generate(idVec4::new).limit(MAX_SHADOW_VERTS).toArray(idVec4[]::new);
     static boolean overflowed;
 //
     static final idPlane[][] pointLightFrustums/*[6][6]*/ = {
@@ -239,7 +241,7 @@ public class tr_stencilshadow {
         int silStart;
         int end;
     };
-    static indexRef_t[] indexRef = new indexRef_t[6];
+    static indexRef_t[] indexRef = Stream.generate(indexRef_t::new).limit(6).toArray(indexRef_t[]::new);
     static int indexFrustumNumber;		// which shadow generating side of a light the indexRef is for
 //
 /*
@@ -327,7 +329,7 @@ public class tr_stencilshadow {
             final idPlane lightPlaneLocal,
             int firstShadowVert, int numShadowVerts) {
         idVec3 lv = new idVec3();
-        idVec4[] mat = new idVec4[4];
+        idVec4[] mat = Stream.generate(idVec4::new).limit(4).toArray(idVec4[]::new);
         int i;
         int in;
 
@@ -483,7 +485,7 @@ public class tr_stencilshadow {
     public static boolean R_ClipTriangleToLight(final idVec3 a, final idVec3 b, final idVec3 c, int planeBits, final idPlane[] frustum/*[6] */) {
         int i;
         int base;
-        clipTri_t[] pingPong = new clipTri_t[2];
+        clipTri_t[] pingPong = {new clipTri_t(), new clipTri_t()};
         clipTri_t ct;
         int p;
 
@@ -514,7 +516,7 @@ public class tr_stencilshadow {
 
         base = numShadowVerts;
         for (i = 0; i < ct.numVerts; i++) {
-            shadowVerts[ base + i * 2].ToVec3().oSet(ct.verts[i]);
+            shadowVerts[base + i * 2].oSet(ct.verts[i]);
         }
         numShadowVerts += ct.numVerts * 2;
 
@@ -773,7 +775,7 @@ public class tr_stencilshadow {
      ================
      */
     public static void R_CalcPointCull(final srfTriangles_s tri, final idPlane[] frustum/*[6]*/, int[] pointCull) {
-        byte i;
+        int i;
         int frontBits;
         float[] planeSide;
         byte[] side1, side2;
@@ -810,8 +812,8 @@ public class tr_stencilshadow {
             }
 
             SIMDProcessor.Dot(planeSide, frustum[i], tri.verts, tri.numVerts);
-            SIMDProcessor.CmpLT(side1, i, planeSide, LIGHT_CLIP_EPSILON, tri.numVerts);
-            SIMDProcessor.CmpGT(side2, i, planeSide, -LIGHT_CLIP_EPSILON, tri.numVerts);
+            SIMDProcessor.CmpLT(side1, (byte) i, planeSide, LIGHT_CLIP_EPSILON, tri.numVerts);
+            SIMDProcessor.CmpGT(side2, (byte) i, planeSide, -LIGHT_CLIP_EPSILON, tri.numVerts);
         }
         for (i = 0; i < tri.numVerts; i++) {
             pointCull[i] |= side1[i] | (side2[i] << 6);
@@ -893,17 +895,17 @@ public class tr_stencilshadow {
 
             if (!POINT_CULLED(i1, pointCull) && remap[i1] == -1) {
                 remap[i1] = numShadowVerts;
-                shadowVerts[numShadowVerts].ToVec3().oSet(tri.verts[i1].xyz);
+                shadowVerts[numShadowVerts].oSet(tri.verts[i1].xyz);
                 numShadowVerts += 2;
             }
             if (!POINT_CULLED(i2, pointCull) && remap[i2] == -1) {
                 remap[i2] = numShadowVerts;
-                shadowVerts[numShadowVerts].ToVec3().oSet(tri.verts[i2].xyz);
+                shadowVerts[numShadowVerts].oSet(tri.verts[i2].xyz);
                 numShadowVerts += 2;
             }
             if (!POINT_CULLED(i3, pointCull) && remap[i3] == -1) {
                 remap[i3] = numShadowVerts;
-                shadowVerts[numShadowVerts].ToVec3().oSet(tri.verts[i3].xyz);
+                shadowVerts[numShadowVerts].oSet(tri.verts[i3].xyz);
                 numShadowVerts += 2;
             }
 
@@ -1312,6 +1314,7 @@ public class tr_stencilshadow {
             // the cull test is redundant for a single shadow frustum projected light, because
             // the surface has already been checked against the main light frustums
             for (j = 0; j < frust.numPlanes; j++) {
+                frustum[j] = new idPlane();
                 R_GlobalPlaneToLocal(ent.modelMatrix, frust.planes[j], frustum[j]);
 
                 // try to cull the entire surface against this frustum

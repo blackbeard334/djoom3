@@ -402,6 +402,7 @@ public class GameEdit {
 
         public idEditEntities() {
             selectableEntityClasses = new idList<>();
+            selectedEntities = new idList<>();
             nextSelectTime = 0;
         }
 
@@ -445,7 +446,7 @@ public class GameEdit {
         }
 
         public void RemoveSelectedEntity(idEntity ent) {
-            if (selectedEntities.Find(ent) != 0) {
+            if (selectedEntities.Find(ent) != Integer.valueOf(0)) {
                 selectedEntities.Remove(ent);
             }
         }

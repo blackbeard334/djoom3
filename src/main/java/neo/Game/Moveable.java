@@ -1,6 +1,9 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
@@ -14,6 +17,11 @@ import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
 import neo.Game.GameSys.Class;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -103,22 +111,32 @@ public class Moveable {
 
     public static class idMoveable extends idEntity {
         // CLASS_PROTOTYPE( idMoveable );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idMoveable>) idMoveable::Event_Activate);
+            eventCallbacks.put(EV_BecomeNonSolid, (eventCallback_t0<idMoveable>) idMoveable::Event_BecomeNonSolid);
+            eventCallbacks.put(EV_SetOwnerFromSpawnArgs, (eventCallback_t0<idMoveable>) idMoveable::Event_SetOwnerFromSpawnArgs);
+            eventCallbacks.put(EV_IsAtRest, (eventCallback_t0<idMoveable>) idMoveable::Event_IsAtRest);
+            eventCallbacks.put(EV_EnableDamage, (eventCallback_t1<idMoveable>) idMoveable::Event_EnableDamage);
+        }
 
-        protected idPhysics_RigidBody physicsObj;	// physics object
-        protected idStr brokenModel;			// model set when health drops down to or below zero
-        protected idStr damage;				// if > 0 apply damage to hit entities
-        protected idStr fxCollide;			// fx system to start when collides with something
-        protected int nextCollideFxTime;		// next time it is ok to spawn collision fx
-        protected float minDamageVelocity;		// minimum velocity before moveable applies damage
-        protected float maxDamageVelocity;		// velocity at which the maximum damage is applied
-        protected idCurve_Spline<idVec3> initialSpline;	// initial spline path the moveable follows
-        protected idVec3 initialSplineDir;		// initial relative direction along the spline path
-        protected boolean explode;			// entity explodes when health drops down to or below zero
-        protected boolean unbindOnDeath;		// unbind from master when health drops down to or below zero
-        protected boolean allowStep;			// allow monsters to step on the object
-        protected boolean canDamage;			// only apply damage when this is set
-        protected int nextDamageTime;			// next time the movable can hurt the player
-        protected int nextSoundTime;			// next time the moveable can make a sound
+
+        protected idPhysics_RigidBody    physicsObj;       // physics object
+        protected idStr                  brokenModel;      // model set when health drops down to or below zero
+        protected idStr                  damage;           // if > 0 apply damage to hit entities
+        protected idStr                  fxCollide;        // fx system to start when collides with something
+        protected int                    nextCollideFxTime;// next time it is ok to spawn collision fx
+        protected float                  minDamageVelocity;// minimum velocity before moveable applies damage
+        protected float                  maxDamageVelocity;// velocity at which the maximum damage is applied
+        protected idCurve_Spline<idVec3> initialSpline;    // initial spline path the moveable follows
+        protected idVec3                 initialSplineDir; // initial relative direction along the spline path
+        protected boolean                explode;          // entity explodes when health drops down to or below zero
+        protected boolean                unbindOnDeath;    // unbind from master when health drops down to or below zero
+        protected boolean                allowStep;        // allow monsters to step on the object
+        protected boolean                canDamage;        // only apply damage when this is set
+        protected int                    nextDamageTime;   // next time the movable can hurt the player
+        protected int                    nextSoundTime;    // next time the moveable can make a sound
         //
         //
 
@@ -444,7 +462,7 @@ public class Moveable {
             return false;
         }
 
-        protected void Event_Activate(idEntity activator) {
+        protected void Event_Activate(idEventArg<idEntity> activator) {
             float delay;
             idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
 
@@ -492,8 +510,8 @@ public class Moveable {
             idThread.ReturnInt(physicsObj.IsAtRest());
         }
 
-        protected void Event_EnableDamage(float enable) {
-            canDamage = (enable != 0.0f);
+        protected void Event_EnableDamage(idEventArg<Float> enable) {
+            canDamage = (enable.value != 0.0f);
         }
 
         @Override
@@ -507,6 +525,16 @@ public class Moveable {
         public void idEntity_Damage(idEntity inflictor, idEntity attacker, final idVec3 dir, final String damageDefName, final float damageScale, final int location) {
             super.Damage(inflictor, attacker, dir, damageDefName, damageScale, location);
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -527,12 +555,12 @@ public class Moveable {
     public static class idBarrel extends idMoveable {
         // CLASS_PROTOTYPE( idBarrel );
 
-        private float radius;				// radius of barrel
-        private int barrelAxis;				// one of the coordinate axes the barrel cylinder is parallel to
-        private idVec3 lastOrigin;			// origin of the barrel the last think frame
-        private idMat3 lastAxis;			// axis of the barrel the last think frame
-        private float additionalRotation;		// additional rotation of the barrel about it's axis
-        private idMat3 additionalAxis;			// additional rotation axis
+        private float  radius;              // radius of barrel
+        private int    barrelAxis;          // one of the coordinate axes the barrel cylinder is parallel to
+        private idVec3 lastOrigin;          // origin of the barrel the last think frame
+        private idMat3 lastAxis;            // axis of the barrel the last think frame
+        private float  additionalRotation;  // additional rotation of the barrel about it's axis
+        private idMat3 additionalAxis;      // additional rotation axis
         //
         //
 
@@ -696,6 +724,14 @@ public class Moveable {
      */
     public static class idExplodingBarrel extends idBarrel {
         // CLASS_PROTOTYPE( idExplodingBarrel );
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idBarrel.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idExplodingBarrel>) idExplodingBarrel::Event_Activate);
+            eventCallbacks.put(EV_Respawn, (eventCallback_t0<idExplodingBarrel>) idExplodingBarrel::Event_Respawn);
+            eventCallbacks.put(EV_Explode, (eventCallback_t0<idExplodingBarrel>) idExplodingBarrel::Event_Explode);
+            eventCallbacks.put(EV_TriggerTargets, (eventCallback_t0<idExplodingBarrel>) idExplodingBarrel::Event_TriggerTargets);
+        }
 
         // enum {
         public static final int EVENT_EXPLODE = idEntity.EVENT_MAXEVENTS;
@@ -711,16 +747,16 @@ public class Moveable {
             BURNEXPIRED,
             EXPLODING
         };
-        private explode_state_t state;
-        private idVec3 spawnOrigin;
-        private idMat3 spawnAxis;
+        private explode_state_t  state;
+        private idVec3           spawnOrigin;
+        private idMat3           spawnAxis;
         private int/*qhandle_t*/ particleModelDefHandle;
         private int/*qhandle_t*/ lightDefHandle;
-        private renderEntity_s particleRenderEntity;
-        private renderLight_s light;
-        private int particleTime;
-        private int lightTime;
-        private float time;
+        private renderEntity_s   particleRenderEntity;
+        private renderLight_s    light;
+        private int              particleTime;
+        private int              lightTime;
+        private float            time;
         //
         //
 
@@ -1048,8 +1084,8 @@ public class Moveable {
         }
 
         @Override
-        public void Event_Activate(idEntity activator) {
-            Killed(activator, activator, 0, getVec3_origin(), 0);
+        public void Event_Activate(idEventArg<idEntity> activator) {
+            Killed(activator.value, activator.value, 0, getVec3_origin(), 0);
         }
 
         private void Event_Respawn() {
@@ -1097,5 +1133,15 @@ public class Moveable {
         private void Event_TriggerTargets() {
             ActivateTargets(this);
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }

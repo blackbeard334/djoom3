@@ -1,0 +1,139 @@
+blanco ingame, go:
+-when enabling r_showViewEntitys & r_showTris we see some wireframes. are we missing light?
+
+-or, let's start by backtracking r_showViewEntitys & r_showTris.
+-also look at the warnings like "rigid body moved outside world bounds for entity..." & "clip model outside world bounds for entity..."
+	-DBG_DropToFloorAndRest = 966
+	-idPhysics_RigidBody::DropToFloorAndRest() is only called 110 times in the original and 591 in our fake version
+		-idClip::Contents() returns no nzero
+			-collisionModelManager.Contents()
+		-ok, so the japanese version is printing more values, which means somewhere a conditional is misfiring
+			-will this help us, no idea, just roll with it
+			-printing the values of current.i.position in Evaluate() is already yielding more results
+				-so the correct value is set in SetOrigin(), which means that this object shouldn't be in the linked list.
+	-idPhysics_Monster::DBG_Evaluate == 1278
+		-self.name.equals("marscity_cinematic_betruger_1")
+			-this one is triggered during idSessionLocal::StartNewGame() in the translation, but not the original
+		-idGameLocal::RunFrame() --> activeEntities.Next() returns wrong value after Next().Next()
+			-idGameLocal::SortActiveEntityList() --> activeEntities.next.owner is the same,
+			 but activeEntities.prev.owner is different. 
+				-good 2087, bad 2093
+				-2093 is added to the linkedlist twice..the second being in BecomeActive() originating at SetupWeaponEntity()
+					-which is added in idEntity::BecomeActive()
+					-2087 is the max loaded by the original, anything afterwards isn't supposed to be
+						-the same idGameLocal::RegisterEntity() call scores 2081 in the original, 2087 in the imitation.
+							-idGameLocal.entities[] seems to have nulls and values at different locations
+							-some entities are being spawned with the same spawn_entnum
+								-idGameLocal::SpawnMapEntities() 67, 68
+								-firstFreeIndex++
+								-105 is unregistered in the original. idGameLocal::UnregisterEntity()
+									-in da ~idEntity() deconstructor...who would have thought deconstructors would serve this much purpose.
+					-fixed, but still no ingame shit. . .
+	-back to backtracking from the warnings.
+		-so the idClipModel.origin values are out of whack, especially the Z.
+			-printed out all 2064 origins.
+			-they seem to match at first glance
+		-idPhysics_Base::IsOutsideWorld()->GetAbsBounds() returns zeroes in the original, but weird arzse values in the jafa.
+			-feels like we're going in circles, but we should've been checking idClipModel.absBounds instead of origin.
+			-let's start by printing out the classnames
+				-the jafa version prints out 880 names vs 254 in the cpp.
+					-a total of 4 instances in the cpp version though.
+						-wrong moron!
+					-is the teamChain part in idEntity::RunPhysics() fucked up?
+						-						cpp jj
+						 idEntity::QuitTeam()  	  7	 6
+						 idEntity::JoinTeam()	205	97
+						 idEntity::Unbind()		207	98
+						-func_door_17 is the last common idEntity(), then there's a gap, and then player1_head
+							-idEvent::ServiceEvents()
+							-idEntity::Event_SpawnBind(), we're missing callbacks(missing being the understatement of the year)
+								-idEvent::Schedule()
+									-idClass::PostEventArgs()
+										idTypeInfo::Init() for c.eventMap[]
+										-idClass::ProcessEventArgPtr()
+										-plan:
+											static methods
+											give object as param	- ServiceEvents
+											varargs object			- ProcessEventArgPtr
+											varargs[0] is object 	- ProcessEventArgPtr
+							-took some effort to fix this(417 from 419 now), moving on
+			-back to checking idClipModel.absBounds
+				-clipmodel.DBG_count==11
+				-which is set in idClipModel::Link() #44
+					-which is set in idPhysics_RigidBody::DropToFloorAndRest()...didn't see that one coming
+						-neither tr.endpos or current.i.orientation match
+							-we should begin with current.i.position though
+								-idPhysics_RigidBody::SetOrigin()
+									-seems like we're comparing oranges and potatoes
+									-we were comparing #97 & #98 in idGameLocal::RunFrame()
+										-it seems #97 moveable_fireext_1, has one too many flags
+											-idEntity::BecomeInactive() isn't hit in our version
+											-plus our version is setting more flags, albe they the same
+                                                -same flags
+                                            -idMoveable::Spawn(), physicsObj.centerOfMass has different values
+                                                -idClipModel::GetMassProperties()
+                                                    -idTraceModel::GetMassProperties()
+                                                        -idTraceModel::VolumeIntegrals()
+                                                        -we've been down this road before, and concluded that the doubel precision isn't the cause of our problem here, so let's ignore it for now
+            -idRenderModelManagerLocal::GetModel()
+                -idRenderModelStatic::ConvertASEToModelSurfaces()
+                    -"models/mapobjects/filler/binder1.ase"
+                    -tri.numVerts don't match   348!=212
+                        -mesh->faces[j].vertexNormals[k].x 1!=0
+                                -((*(((ase)->objects).list))->mesh).faces.vertexNormals
+                            -mesh->faces[j].faceNormal too 
+                                -((*(((ase)->objects).list))->mesh).faces.faceNormal
+                            -mesh->faces[j].vertexColors as well
+                            -((*(((ase)->objects).list))->mesh).transform
+									-ASE_KeyMESH()
+										-ASE_KeyMESH_NORMALS()
+											-ASE_KeyNODE_TM()
+												-GEOMOBJECT()
+						-::DeriveUnsmoothedTangents(), verts match, but dominantTris don't
+					-our version is printing out a shitload more xyz, almost tenfold
+						-we were printing the wrong function, it's still 25% more though.
+							-just had an idea to disable ConvertLWOToModelSurfaces(), and naturally the planet disappears, but also some of the ingame wireframes. 
+							 Most surprising, is the fact that some of the wireframes seem to be moving now.
+							 but we STILL can't move, meaning something is wrong with our input.
+							 -however, the cpp version is crashing...why isn't ours crashing?
+							 -let's try isolating the spinning wireframe, and see if we can move it
+							 -qglVertexPointer()
+								-RB_STD_T_RenderShaderPasses()
+	!@#$WE^Y%*&(^)&%^$E&URKYGF<DYWTEHJFKTREI%(R^*W%&W^$@#%^@$%&*#$^(&*)$%#$^&%^!%~#%@^!$%&*^#%(&)^&(@$&!!%#*&%*!#^^$!#$^$^#%^%^)FUUUCCCK!!!111One$#%^&*()
+-R_AddModelSurfaces()
+	-151 origins
+		*moving the origin does stuff
+		-index
+		-referenceBounds/parms.bounds
+			[-1173.6427 -171.00572 -7965.874, -419.85785 461.26834 -7050.817]
+		-let's see if bounds match for the planet vEntity
+			-they do's
+										
+neo.Renderer.VertexCache$vertCache_s@29876704
+neo.Renderer.VertexCache$vertCache_s@4816c290
+	
+                                                    
+
+
+					
+						
+
+-let's centering all the debug drawrings
+-is our input working properly?
+	-let's assume it isn't...are movement commands being sent properly?
+		-idPlayer::Move()::oldOrigin == -3632.0 -3416.0 195.89555
+			-idClipModel.SetPosition()
+	-are we moving?
+		-if we are, is everything on screen moving with us?
+		-if we aren't, then why not?
+	-idUsercmdGenLocal::MouseMove()
+		-idUsercmdGenLocal::MakeCurrent()
+			-idGameLocal::RunFrame()
+				-idPlayer::UpdateDeltaViewAngles()	:fucked up the view
+				-idPlayer::UpdateViewAngles()		:disables our mouse powers
+					-idPlayer::GetViewPos()			:screen almost looks identical to ours
+						-idPlayerStart::Event_TeleportPlayer()
+							-idCameraAnim::Start()
+								-idEntity::TouchTriggers()
+									-idEntity::ActivateTargets() empty targets?
+										-idEntity::Event_FindTargets()

@@ -831,7 +831,7 @@ public class Image {
 //            scaledBuffer = null;
             // generate the texture number
             texNum = qglGenTextures();
-            System.out.println(imgName + ": " + texNum);
+//            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
             internalFormat = SelectInternalFormat(pic, 1, width, height, depth, isMonochrome);
@@ -1056,7 +1056,7 @@ public class Image {
             // FIXME: allow picmip here
             // generate the texture number
             texNum = qglGenTextures();
-            System.out.println(imgName + ": " + texNum);
+//            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
             // this function doesn't need to know it is 3D, so just make it very "tall"
@@ -1190,7 +1190,7 @@ public class Image {
 
             // generate the texture number
             texNum = qglGenTextures();
-            System.out.println(imgName + ": " + texNum);
+//            System.out.println(imgName + ": " + texNum);
 
             // select proper internal format before we resample
             internalFormat = SelectInternalFormat(pics, 6, width, height, depth, isMonochrome);
@@ -2288,7 +2288,7 @@ public class Image {
 
             // generate the texture number
             texNum = qglGenTextures();
-            System.out.println(imgName + ": " + texNum);
+//            System.out.println(imgName + ": " + texNum);
 
 //            if (texNum == 58) {
 //                DBG_UploadPrecompressedImage = data.duplicate();

@@ -6,6 +6,12 @@ import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
 import neo.Game.FX.idFXLocalAction;
 import static neo.Game.GameSys.Class.EV_Remove;
+
+import neo.Game.GameSys.Class;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.eventCallback_t1;
+import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -44,6 +50,9 @@ import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  */
@@ -81,6 +90,14 @@ public class FX {
     public static final idEventDef EV_Fx_Action = new idEventDef("_fxAction", "e");	// implemented by subclasses
 
     public static class idEntityFx extends idEntity {
+
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idEntityFx>) idEntityFx::Event_Trigger);
+            eventCallbacks.put(EV_Fx_KillFx, (eventCallback_t0<idEntityFx>) idEntityFx::Event_ClearFx);
+        }
+
 
         protected int                     started;
         protected int                     nextTriggerTime;
@@ -608,7 +625,7 @@ public class FX {
             return StartFx(fx.toString(), useOrigin, useAxis, ent, bind);
         }
 
-        protected void Event_Trigger(idEntity activator) {
+        protected void Event_Trigger(idEventArg<idEntity> activator) {
 
             if (g_skipFX.GetBool()) {
                 return;
@@ -635,7 +652,7 @@ public class FX {
                 // prevent multiple triggers on same frame
                 nextTriggerTime = gameLocal.time + 1;
             }
-            PostEventSec(EV_Fx_Action, fxActionDelay, activator);
+            PostEventSec(EV_Fx_Action, fxActionDelay, activator.value);
         }
 
         /*
@@ -715,6 +732,16 @@ public class FX {
                 }
             }
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 
     /*
@@ -725,15 +752,31 @@ public class FX {
      ===============================================================================
      */
     public static class idTeleporter extends idEntityFx {
-
 //        public 	CLASS_PROTOTYPE( idTeleporter );
+
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.putAll(idEntity.getEventCallBacks());
+            eventCallbacks.put(EV_Activate, (eventCallback_t1<idTeleporter>) idTeleporter::Event_DoAction);
+        }
+
         // teleporters to this location
-        private void Event_DoAction(idEntity activator) {
+        private void Event_DoAction(idEventArg<idEntity> activator) {
             float angle;
 
             angle = spawnArgs.GetFloat("angle");
             idAngles a = new idAngles(0, spawnArgs.GetFloat("angle"), 0);
-            activator.Teleport(GetPhysics().GetOrigin(), a, null);
+            activator.value.Teleport(GetPhysics().GetOrigin(), a, null);
         }
+
+        @Override
+        public eventCallback_t getEventCallBack(idEventDef event) {
+            return eventCallbacks.get(event);
+        }
+
+        public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
+            return eventCallbacks;
+        }
+
     };
 }
