@@ -4,13 +4,13 @@
 ####23-05-16
 Version 0.0.6
 
-ingame BANZAI!
+**ingame BANZAI!**
 
 Too dark, and lots and LOTS of graphics bugs though, but who cares.
 
 Check the 2nd half of the video for the wireframe rendering, to see what's actually going on.
 
-[http://www.youtube.com/watch?v=vudRn5F0Z3w](http://www.youtube.com/watch?v=vudRn5F0Z3w)
+[http://www.youtube.com/watch?v=vudRn5F0Z3w](http://www.youtube.com/watch?v=vudRn5F0Z3w)  
 [![Screenshot](http://img.youtube.com/vi/vudRn5F0Z3w/0.jpg)](http://www.youtube.com/watch?v=vudRn5F0Z3w"djoom3 0.0.6")
 
 
