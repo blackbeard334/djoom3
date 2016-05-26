@@ -26,7 +26,7 @@ import org.lwjgl.opengl.Util;
  */
 public class qgl {
 
-    private static final boolean GL_DEBUG = true;
+    private static final boolean GL_DEBUG = false;
 
     static final boolean qGL_FALSE = false;
     static final boolean qGL_TRUE  = true;
@@ -1808,7 +1808,6 @@ public class qgl {
         if (GL_DEBUG) {
             Util.checkGLError();
             System.out.println(functionName);
-            Util.checkGLError();
         }
     }
 

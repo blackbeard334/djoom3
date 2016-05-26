@@ -1,6 +1,19 @@
 #djoom3 - a Doom 3 Java port.
 
 
+####23-05-16
+Version 0.0.6
+
+ingame BANZAI!
+
+Too dark, and lots and LOTS of graphics bugs though, but who cares.
+
+Check the 2nd half of the video for the wireframe rendering, to see what's actually going on.
+
+[http://www.youtube.com/watch?v=vudRn5F0Z3w](http://www.youtube.com/watch?v=vudRn5F0Z3w)
+[![Screenshot](http://img.youtube.com/vi/vudRn5F0Z3w/0.jpg)](http://www.youtube.com/watch?v=vudRn5F0Z3w"djoom3 0.0.6")
+
+
 ####23-03-16
 Version 0.0.5
 
@@ -20,9 +33,9 @@ Version 0.0.4
 ####05-02-15:
 -Initial non playable release.
 
-![http://wiki.djoom3.googlecode.com/git/init_menus.png](http://wiki.djoom3.googlecode.com/git/init_menus.png)
+![https://raw.githubusercontent.com/blackbeard334/djoom3/wiki/init_menus.png](https://raw.githubusercontent.com/blackbeard334/djoom3/wiki/init_menus.png)
 
-![http://wiki.djoom3.googlecode.com/git/title.png](http://wiki.djoom3.googlecode.com/git/title.png)
+![https://raw.githubusercontent.com/blackbeard334/djoom3/wiki/title.png](https://raw.githubusercontent.com/blackbeard334/djoom3/wiki/title.png)
 
 
 
