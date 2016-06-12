@@ -23,6 +23,8 @@ import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
+
+import static neo.Game.GameSys.Class.EV_Remove;
 import static neo.Game.GameSys.SysCvar.g_debugScript;
 import static neo.Game.Game_local.ENTITYNUM_NONE;
 import static neo.Game.Game_local.MAX_GENTITIES;
@@ -35,7 +37,6 @@ import neo.Game.Player.idPlayer;
 import neo.Game.Script.Script_Interpreter.idInterpreter;
 import neo.Game.Script.Script_Program.function_t;
 import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
 import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
@@ -1233,36 +1234,36 @@ public class Script_Thread {
         }
 
         public boolean Execute() {
-            return false;//HACKME::6
-//            idThread oldThread;
-//            boolean done;
-//
-//            if (manualControl && (waitingUntil > gameLocal.time)) {
-//                return false;
-//            }
-//
-//            oldThread = currentThread;
-//            currentThread = this;
-//
-//            lastExecuteTime = gameLocal.time;
-//            ClearWaitFor();
-//            done = interpreter.Execute();
-//            if (done) {
-//                End();
-//                if (interpreter.terminateOnExit) {
-//                    PostEventMS(EV_Remove, 0);
-//                }
-//            } else if (!manualControl) {
-//                if (waitingUntil > lastExecuteTime) {
-//                    PostEventMS(EV_Thread_Execute, waitingUntil - lastExecuteTime);
-//                } else if (interpreter.MultiFrameEventInProgress()) {
-//                    PostEventMS(EV_Thread_Execute, gameLocal.msec);
-//                }
-//            }
-//
-//            currentThread = oldThread;
-//
-//            return done;
+//            return false;//HACKME::6
+            idThread oldThread;
+            boolean done;
+
+            if (manualControl && (waitingUntil > gameLocal.time)) {
+                return false;
+            }
+
+            oldThread = currentThread;
+            currentThread = this;
+
+            lastExecuteTime = gameLocal.time;
+            ClearWaitFor();
+            done = interpreter.Execute();
+            if (done) {
+                End();
+                if (interpreter.terminateOnExit) {
+                    PostEventMS(EV_Remove, 0);
+                }
+            } else if (!manualControl) {
+                if (waitingUntil > lastExecuteTime) {
+                    PostEventMS(EV_Thread_Execute, waitingUntil - lastExecuteTime);
+                } else if (interpreter.MultiFrameEventInProgress()) {
+                    PostEventMS(EV_Thread_Execute, gameLocal.msec);
+                }
+            }
+
+            currentThread = oldThread;
+
+            return done;
         }
 
         public void ManualControl() {
@@ -1374,27 +1375,13 @@ public class Script_Thread {
         }
 
         public void Error(final String fmt, Object... objects) {// const id_attribute((format(printf,2,3)));
-            throw new TODO_Exception();
-//            va_list argptr;
-//            char[] text = new char[1024];
-//            
-//            va_start(argptr, fmt);
-//            vsprintf(text, fmt, argptr);
-//            va_end(argptr);
-//            
-//            interpreter.Error(text);
+            String text = String.format(fmt, objects);
+            interpreter.Error(text);
         }
 
         public void Warning(final String fmt, Object... objects) {// const id_attribute((format(printf,2,3)));
-            throw new TODO_Exception();
-//            va_list argptr;
-//            char[] text = new char[1024];
-//            
-//            va_start(argptr, fmt);
-//            vsprintf(text, fmt, argptr);
-//            va_end(argptr);
-//            
-//            interpreter.Warning(text);
+            String text = String.format(fmt, objects);
+            interpreter.Warning(text);
         }
 
         public static idThread CurrentThread() {

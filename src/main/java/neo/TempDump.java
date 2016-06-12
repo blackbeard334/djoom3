@@ -80,6 +80,26 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         return len;
     }
 
+    public static int strLen(final byte[] str) {
+        return strLen(str, 0);
+    }
+
+    public static int strLen(final byte[] str, final int offset) {
+        int len;
+
+        if (NOT(str)) {
+            return -1;
+        }
+
+        for (len = offset; len < str.length; len++) {
+            if (str[len] == 0) {
+                break;
+            }
+        }
+
+        return len;
+    }
+
     public static int strLen(final String str) {
         return strLen(str.toCharArray());
     }
@@ -346,7 +366,8 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             return null;
         }
 
-        return new String(Arrays.copyOf(bytes, offset));
+        final int length = strLen(bytes, offset) - offset;//c style strings
+        return new String(bytes, offset, length);
     }
 
     public static String btos(byte[] bytes) {

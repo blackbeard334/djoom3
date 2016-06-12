@@ -137,14 +137,20 @@ public class Actor {
      ***********************************************************************/
     public static class idAnimState {
 
-        public boolean idleAnim;
-        public idStr   state;
-        public int     animBlendFrames;
-        public int     lastAnimBlendFrames;        // allows override anims to blend based on the last transition time
+        public  boolean    idleAnim;
+        public  idStr      state;
+        public  int        animBlendFrames;
+        public  int        lastAnimBlendFrames;        // allows override anims to blend based on the last transition time
+        private idActor    self;
+        private idAnimator animator;
+        private idThread   thread;
+        private int        channel;
+        private boolean    disabled;
         //
         //
 
         public idAnimState() {
+            state = new idStr();
             self = null;
             animator = null;
             thread = null;
@@ -326,13 +332,6 @@ public class Actor {
 
             return flags;
         }
-//
-//
-        private idActor self;
-        private idAnimator animator;
-        private idThread thread;
-        private int channel;
-        private boolean disabled;
     };
 
     public static class idAttachInfo {

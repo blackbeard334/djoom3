@@ -45,6 +45,7 @@ public class JointTransform {
      ===============================================================================
      */
     public static class idJointMat {
+        public static final int BYTES = 12 * Float.BYTES;
 
         private final float[] mat = new float[3 * 4];
         //
@@ -54,6 +55,10 @@ public class JointTransform {
 
         public idJointMat() {
             int a = 0;
+        }
+
+        public idJointMat(final float[] mat) {
+            System.arraycopy(mat, 0, this.mat, 0, this.mat.length);
         }
 
         public void SetRotation(final idMat3 m) {
