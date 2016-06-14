@@ -25,6 +25,26 @@ scrambling for a thread...
 					-idProgram::GetDefList() returns the correct chain in both, but for some reason our version has duplicate 952's?
 						-idVarDef::~idVarDef() isn't being called
 
+-idInterpreter::Execute()
+	-idAI::Think()
+		-receptionist_typing_start
+			-instructionPointer!=instructionPointer
+	-idPlayer::Think() DBG_Execute == 14
+		-player1
+			-idInterpreter::NextInstruction() 125
+				-idActor::UpdateAnimState() not called
+					-scratch that, it is being called
+					-27687 vs 27637 though
+					-OP_IFNOT vs OP_IF
+					-st.v.value !=
+					-localstack has wrong value
+						-idInterpreter::Push(), ((int*)localstack)[9]==1701602409
+							-idInterpreter::Execute(),	OP_PUSH_OBJENT,	instructionPointer==27634
+							-(((int*)localstack))[1]==1065353216
+								-instructionPointer==27634
+								-OP_STORE_F
+
+				-
 
 
 

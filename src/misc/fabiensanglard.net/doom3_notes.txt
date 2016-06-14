@@ -1,0 +1,2001 @@
+OVERALL ARCHITECTURE :
+=====================
+
+     - Omnipresence of parser/lexer since most of the game assets are text-based
+       It seems Doom3 marked the time when for a small amount of data ( < 500KB) processing
+       time did not differ significantly.
+       This had the advantage to be HUMAND READABLE.
+       
+       Concept of surface
+       
+       Concept of material
+       
+       Concetp of unified lighting and shadows
+       
+Trivia: You can see that TTimo worked with the game assets from Steam (the Visual Studio project
+        contains "+set fs_basepath C:\Program Files (x86)\Steam\steamapps\common\doom 3"
+       
+        
+              
+Fully Interactive Surfaces In DOOM3 :
+=====================================
+http://www.battleteam.net/tech/fis/docs/index.html
+
+
+Fully interactive surface were so underexploited that is just sad.
+
+
+
+toolchain :
+===========
+     - bmap:          Compile a map
+     - Renderbump     Generate bumpmap from a high poly model.
+
+
+No more binary format:
+======================
+
+Except for map (the volume would have been too high), every entities/models/descriptor are text based: Everything is now human readable.
+Map are preprocessed but the result is still plain text.
+    This mean that the engine cannot just load a blob of bytes in memory and deal with offsets:
+    The engine now features a lexer and a parser.
+
+End of BSP (Doom,Quake,QuakeII,QuakeIII all used it). Portal based system, with little pre-processing overhead.
+Unified lighting: Shader, real time shadows, bump-mapping.
+
+Doom VSD(Visible Surface Determination) :
+=========================================
+
+1. PVS is finally DEAD ! The engine is Portal based. 
+
+
+Doom3 engine licensing :
+========================
+
+   Most tools are command based (in contrast with Unreal Engine )
+
+    http://www.vg247.com/2011/06/09/carmack-happy-to-be-out-of-engine-licensing-business/
+    Carmack: Happy to be out of engine licensing business
+
+    Carmack acknowledged that Gears of War developer Epic Games is a dominant force in engine licensing in this console generation.
+    “Epic’s done a really good job of building up a support structure for [engine licensing]. The market was ours to keep, but we
+     abdicated because we weren’t willing to put that effort into it.
+     
+     “It was never really a business that I wanted to be in,” he said. “In the very early days, people would pester us, 
+     and we would just throw out some ridiculous terms, and we were surprised that people were taking us up on it.
+     
+    “We didn’t want half our company to be about managing technology licensing. Epic has gone and done a great job with it.”
+
+    About Epic and Tim Sweeney:
+    http://kotaku.com/5865951/the-quiet-tinkerer-who-makes-games-beautiful-finally-gets-his-due
+    
+    
+Low level tricks :
+==================
+   
+    No more low level optimizations (But the famous Quake3 InvSqrt is still here in idMath::RSqrt), The CPU is floating type SIMD enabled and the goal of the
+    engine was clearly to exploit the high end GPUs.
+
+
+C++:
+====
+  - no usage of STD, all container were re-programmed by hand.
+  - Why use C++ ? Probably because of the class system.
+  - Code seems to benefit from clear encapsulation (methods are public, attributes are protected)
+  - Good usage of C++ inheritance and abstract class method (idCommon <- idCommonLocal):
+          GOOD: idCommon is an abstract class with abstract OS Specific methods.
+          BAD : IT IS A PAIN TO NAVIGATE !! I don't want to read the interface when I click on "Go to definition" !!!!!!
+  - Usage of exceptions (in Init) idCommonLocal::Init and main loop: idCommonLocal::Frame
+  - Good usage of namespaces
+  - Usage of templates for tools in idLib, this avoid C qsort no inlining performance penalty.
+  - Low level class can be quite messy (templates and memory manager) but high level is very very OOP (see renderer call tree as an example).
+  - Seems they implemented their own run-time type checking and run-time instancing (class.h)
+  - Inline function are defined and declared in the C++ header so the compiler can actually do its job.
+  - No usage of "using" and I like this, namespace are here for a reason.
+  - Usage of "explicit" keyword in order to prevents the compiler from using a single parameter constructor from being used for implicit conversions.
+  
+Internationalization :
+======================
+      - Strings to be displayed are coming from a dictionary  
+
+Fun fact:
+=========
+     - If you are used to read id source code and especially old programs: Memory allocation
+       are small and maximum a few MB. You will be surprised when you see AllocDefragBlock 
+       nonchalantly perform a 1GB malloc !!
+
+  
+Application now multi-thread :
+==============================
+               Synchronization is done via EnterCriticalSection  
+  
+Solution Structure (on Visual Studio 2010):
+===========================================
+
+7 projects:
+  dlls:
+    - Game
+    - Game-d3xp
+    - MayaImport
+  exes:
+    - DoomDLL
+    - TypeInfo
+  libs:
+    - CurLlib
+    - idLib
+    
+CURL lib:
+=========
+
+  - Curl lib is used in the DoomDLL project. It is used by the Filesystem framework.
+  
+
+
+Static code Analysis:
+=====================
+
+	Run PVS Studio on Doom3 codebase: Error this tool can find are amazing. (i.e: V537)
+	Tool ran for about an hour !!
+	http://www.viva64.com/en/pvs-studio/
+	
+Try to work on the codebase using XCode instead of Visual Studio 2010 Profesionnal (Who want to fork 1,000$ ?!!)
+
+Fun fact:
+=========
+            Q: How much Quake3 code is there is Doom3 ?
+            A: Mac version main is called: QuakeMain (MacOS X controller.mm) !!
+
+Try to dig into the interactive video screen, that was mindblowing.
+Try to dig into the silhouette shadow volume generator, it must be really fast.
+
+
+Overall impression: Many many more comment than usual (What is a session object ? => "The session is the glue that holds games together between levels.")
+
+
+Memory manager:
+===============
+            - Heap is an object (Heap.cpp) 2000 lines of code !!!
+            - A page is not a system page but rather a Doom3 struct.
+            - Allocation is not done via malloc, instead it is broken down in three cases:
+                1. < 255 bytes   -> Small alloc
+                         - Memory pool
+                         - "Page allocation" is actually a malloc that fit within a page_t
+                         - AllocDefragBlock: Nonchalantly allocate 0x40000000 (1GB) of memory
+                2. < 32k bytes   -> Medium alloc
+                3                -> Large alloc
+                
+                
+                
+                
+                Memory subsytem (Mem_*) seems to be built on top of the Heap class   
+                
+                Seems there are four systems in the memory system:
+                     - Mem* (up to 70 times faster than Microsoft libc)
+                     - BlockAllocator
+                     - DynamicAlloc
+                     - DynamicBlock
+
+
+Summary off Win32 loop (win_main.cpp):
+     
+    idCommonLocal    commonLocal;                   // OS Specialized object 
+    idCommon *       common = &commonLocal;         // Interface pointer (since Init is OS dependent it is an abstract method
+
+    int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) 
+    {
+    
+    
+       Sys_SetPhysicalWorkMemory( 192 << 20, 1024 << 20 );
+
+        Sys_GetCurrentMemoryStatus( exeLaunchMemoryStats );
+        
+        Sys_CreateConsole();
+        
+        SetErrorMode( SEM_FAILCRITICALERRORS );
+
+        for ( int i = 0; i < MAX_CRITICAL_SECTIONS; i++ ) {
+                InitializeCriticalSection( &win32.criticalSections[i] );
+        }
+        
+        Sys_Milliseconds();
+        
+        common->Init( 0, NULL, lpCmdLine );
+        
+        Sys_StartAsyncThread();
+        
+        Sys_ShowConsole
+        
+          // main game loop
+        while( 1 ) 
+        {
+           Win_Frame();
+           
+           common->Frame();
+        }
+        
+        
+    }
+    
+    
+    
+Doom3 Unrolled WinMain:
+
+
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) 
+    {
+        Sys_SetPhysicalWorkMemory( 192 << 20, 1024 << 20 );
+
+        Sys_GetCurrentMemoryStatus( exeLaunchMemoryStats );
+        
+        Sys_CreateConsole();
+        
+        SetErrorMode( SEM_FAILCRITICALERRORS );
+
+        for ( int i = 0; i < MAX_CRITICAL_SECTIONS; i++ ) {
+                InitializeCriticalSection( &win32.criticalSections[i] );
+        }
+        
+        Sys_Milliseconds();
+        
+        common->Init( 0, NULL, lpCmdLine )
+        {
+            idLib::Init();
+            
+            ParseCommandLine( argc, argv );
+
+		
+            cmdSystem->Init();               // init console command system
+
+            cvarSystem->Init();              // init CVar system
+
+            idCVar::RegisterStaticVars();    // register all static CVars
+
+            idKeyInput::Init();              // initialize key input/binding, done early so bind command exists
+
+            console->Init();                 // init the console so we can take prints
+
+            Sys_Init();                      // get architecture info
+
+            Sys_InitNetworking();            // initialize networking
+
+            if ( !idAsyncNetwork::serverDedicated.GetInteger() && Sys_AlreadyRunning() ) 
+                Sys_Quit();
+		
+
+		
+            InitSIMD();                      // initialize processor specific SIMD implementation
+	
+            InitCommands();                  // init commands
+            
+            
+            InitGame();                      // game specific initialization
+		
+            ClearCommandLine();
+
+            com_fullyInitialized = true;
+            
+        }
+        
+        Sys_StartAsyncThread();
+        {
+            // Create a thread that will block on hTimer in order to run at 60Hz (every 16 milliseconds).
+            // The Thread calls common->Async over and over for Sound mixing and input generation.
+            
+                 while ( 1 )
+                 {
+                        usleep( 16666 );
+                        common->Async();
+                        Sys_TriggerEvent( TRIGGER_EVENT_ONE );
+                        pthread_testcancel();
+                }
+        }
+        
+        Sys_ShowConsole
+        
+          // main game loop
+        while( 1 ) 
+        {
+           Win_Frame();      //Show or hide the console
+           
+           // Called repeatedly as the foreground thread for rendering and game logic.
+           common->Frame()  // All of Doom3 beef is here.
+           {
+               Sys_GenerateEvents();    // pump all the events
+               WriteConfiguration();    // write config file if anything changed
+               eventLoop->RunEventLoop();
+               
+               com_frameTime = com_ticNumber * USERCMD_MSEC;
+               idAsyncNetwork::RunFrame(); 
+               
+               session->Frame();
+               session->UpdateScreen( false ); // normal, in-sequence screen update
+               {
+                  renderSystem->BeginFrame( renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight() );
+                  
+                  // Doesn't actually communicate with the GPU
+                  // but generate Doom cmd for later.
+                  Draw();
+                  {
+                      
+                  }
+                  
+                  // All commands are picked up here and GPU is actually instructed to
+                  // render stuff.
+                  renderSystem->EndFrame
+               }
+               
+            }
+        }
+    }
+    
+    
+Q: How is the event generate/pump working ?
+A: 
+
+Fun fact:
+=========
+              From Quake1 to Doom3 the same method name:
+              // make sure mouse and joystick are only called once a frame
+              IN_Frame();
+
+              
+              
+              
+              
+              
+              
+              
+              
+              
+
+
+
+Renderer :
+==========
+
+      A good global architecure can be found on 
+      http://www.iddevnet.com/doom3/code.php:
+      
+                 The rendere has two parts:
+                     -Frontend generating all the info necessary for rendition
+                     -Backend using infos to perform rendition. Can adapt to hardware 
+                      capabilities.
+                      
+                 The renderer is broken in to 3 different conceptual parts:
+                 
+                      The RenderWorld is very similar to a scene graph. It contains all the render models and textures 
+                      in the scene arranged in some easy to cull fashion. It handles culling and dispatches commands to
+                       the back end.
+                       
+                       The back end is a heavily optimized system for rendering triangle soups. There is a seperate back
+                       end written for each major hardware architecture that Doom 3 supports (NV20, R300, ARB, ARB2, CG).
+                        
+                       The Render System manages all the render worlds (there can be more than one), and works as an entry
+                       point for the render system.
+      
+      
+      Philosophy similar to Quake 1 :
+      ===============================
+          - Emit rendering commands (edits in Quake1)
+          - Commands are picked up later
+          
+          The engine work in passes. There is no ambiant light in Doom3, by definiton
+          the world is pitch black. Each ligh generate a set of interaction.
+          
+          Each interaction is added to the frambuffer, relying on additive blending
+          and saturated register.
+          
+          RADIOSITY has been ABANDONNED, all lights have binary direct contribution (the do or don't,
+          there is no light bouncing on surface all over the place).
+          
+          For each light we need to construct:
+               - The list of surface affected (this is done using the light AABB radius which is
+               faster than the sphere)
+               - A shadowVolume if the light is casting shadow.
+               - Render the interactions via DrawInteractions.
+
+               
+               
+               
+       idRenderSystemLocal    tr;
+       idRenderSystem         *renderSystem = &tr;
+       
+       Internally,the renderer use a idRenderWorld to render the world
+
+       idRenderWorld uses a idGame Interface:
+
+          idGameLocal     gameLocal;
+          idGame          *game = &gameLocal;  // statically pointed at an idGameLocal
+
+       Rendering call hierarchy:
+
+
+        Quite obvious that the renderer was first developed in C:
+           - tr_* files names
+           - All variables declared at top of methods
+           - The engine jumps from C++ class to a global method R_RenderView (Same is the same as Quake3)
+           - C style R_ method names.
+           - Function pointers RB_RenderDrawSurfChainWithFunction instead of polymorphic/interface objects
+
+           
+        STEP 1 :
+        ========     
+         - idCommon::Frame
+           - idSession::UpdateScreen
+             - idSession::Draw
+               - idGame::Draw
+                 - idPlayerView::RenderPlayerView
+                   - idPlayerView::SingleView
+                     - idRenderWorld::RenderScene
+                     |  - build params
+                     |  - ::R_RenderView(params)
+                     |    {
+                     |        R_SetViewMatrix
+                     |        R_SetupViewFrustum
+                     |        R_SetupProjection
+                     |        static_cast<idRenderWorldLocal *>(parms->renderWorld)->FindViewLightsAndEntities();
+                     |        R_ConstrainViewFrustum
+                     |        R_AddLightSurfaces
+                     |        R_AddModelSurfaces
+                     |        R_RemoveUnecessaryViewLights
+                     |        R_SortDrawSurfs                
+                     |        R_GenerateSubViews
+                     |        R_AddDrawViewCmd 
+                     |    }
+                     |
+                     - idPlayer::DrawHUD
+
+          FindViewLightsAndEntities:
+            PointInArea:  Uses tr.viewDef->initialViewAreaOrigin and search for the area
+                          the origin is located in.
+                          This is a non-recursive BSP traversal
+
+            
+
+
+          At the end of the first step, RC_DRAW_VIEW commands are issued. Each command contains a 
+          viewDef which contains among other things the list of surfaces to render.           
+             
+                     
+          Note: R_SortDrawSurfs uses libc qsort, C++ sort with template would have been so much faster 
+          Note: The end of the process (R_AddDrawViewCmd) adds rendering commands to the command buffer.
+                RB_ExecuteBackEndCommands picks up those commands types (RC_DRAW_VIEW)
+
+          STEP 2 :
+          ========         
+                 idRenderSystemLocal::EndFrame
+                   R_IssueRenderCommands
+                     RB_ExecuteBackEndCommands
+                       RB_DrawView
+                        RB_ShowOverdraw
+                        RB_STD_DrawView
+                        {
+                           RB_BeginDrawingView     // clear the z buffer, set the projection matrix, etc
+                           RB_DetermineLightScale
+                           
+                           RB_STD_FillDepthBuffer  // fill the depth buffer and clear color buffer to black except on
+                           
+                           _DrawInteractions
+                           {
+                           5 GPU specific path
+	                           R10 (GeForce256)
+	                           R20 (geForce3)
+	                           R200 (Radeon 8500)
+	                           ARB
+	                           ARB2
+	                        }
+	                        
+	                        // disable stencil shadow test
+	                        qglStencilFunc( GL_ALWAYS, 128, 255 );
+	
+	                        RB_STD_LightScale
+	                        
+	                        RB_STD_DrawShaderPasses   //draw any non-light dependent shading passes
+	                        
+	                        RB_STD_FogAllLights
+	                        
+	                        RB_STD_DrawShaderPasses
+                        }
+                
+          SHADOWS VOLUMES:
+          =========
+ 
+		     Created in two places:
+            
+               1. On map compiling
+        
+                   cmdSystem->AddCommand( "dmap", Dmap_f, CMD_FL_TOOL, "compiles a map", idCmdSystem::ArgCompletion_MapName );
+        
+                   Dmap_f
+                     Dmap
+                       ProcessModels
+                          ProcessModel
+                                Prelight
+                                    BuildLightShadows
+                                        CreateLightShadow     
+                                          R_CreateShadowVolume
+                                            R_CreateShadowVolumeInFrustum
+                                            
+        
+               2. Dynamicaly upom interaction with an entity
+        
+                Q: Where are interaction created ?
+                A: Interaction are created in the frontend.               
+               
+			            R_RenderView   
+			             R_AddModelSurfaces  
+			               idInteraction::AddActiveInteraction
+			                 idInteraction::CreateInteraction
+			                    R_CreateShadowVolume
+			                      R_CreateShadowVolumeInFrustum
+              
+
+                 
+                      
+                      
+              Shadow volume creation: A hard problem.        
+                      
+              Shadow volume creation uses one shadow fustrum for projected light
+              but SIX for any point light !!!
+              s
+              All volumes are created and stored in 
+
+				
+              The infamous Reverse Carmack/Creative labs blackmail :
+              ======================================================
+	              // patent-free work around (draw_common.cpp:line1146)
+	              // traditional depth-pass stencil shadows(draw_common.cpp:line1158)
+	              It seems that depth fail could not be used so depth pass is 
+	              used instead and the stencil buffer is preloaded with the 
+	              number of volumes that get clipped be the near or far clip planes
+	              
+	              John Carmack on Shadow Volumes: http://kb.cnblogs.com/a/28036/
+	              More about Carmak Reverse removal: 
+	                  - http://forums.inside3d.com/viewtopic.php?f=9&t=3491&start=45
+	                  - 25% lose ( need two extra pass to preload)
+	                  - glStencilOpSeparate could reduce to one extra pass
+	                    glStencilOpSeparateATI a.k.a
+	                    glActiveStencilFaceEXT a.k.a
+	              The original code can be reverse engineered via GLIntercept:
+	              
+		                Here's the GL calls that the original code made; this was for the non-reverse case:
+						  Code:
+						glActiveStencilFaceEXT(GL_BACK)
+						glStencilOp(GL_KEEP,GL_KEEP,GL_INCR_WRAP)
+						glActiveStencilFaceEXT(GL_FRONT)
+						glStencilOp(GL_KEEP,GL_KEEP,GL_DECR_WRAP)
+						glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT)
+						glDisable(GL_CULL_FACE)
+						glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER,270)
+						glDrawElements(GL_TRIANGLES,480,GL_UNSIGNED_INT,0x0000) VP=5
+						And here's what Carmack's reverse looked like:
+						  Code:
+						glActiveStencilFaceEXT(GL_BACK)
+						glStencilOp(GL_KEEP,GL_DECR_WRAP,GL_KEEP)
+						glActiveStencilFaceEXT(GL_FRONT)
+						glStencilOp(GL_KEEP,GL_INCR_WRAP,GL_KEEP)
+						glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT)
+						glDisable(GL_CULL_FACE)
+						glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER,2208)
+						glDrawElements(GL_TRIANGLES,444,GL_UNSIGNED_INT,0x0000) VP=5  Time= 12us
+				
+				  
+	              
+	              For each light: RB_StencilShadowPass is called in order to mask
+	              diffuse and specular contributions.
+	              
+	                      RB_STD_DrawView
+	                          RB_ARB_DrawInteractions
+	                                &&
+	                          RB_NV10_DrawInteractions
+	                             for each vLight
+	                                RB_RenderViewLight(vLight)
+	              						RB_StencilShadowPass	
+	              						  RB_RenderDrawSurfChainWithFunction
+	              							RB_T_Shadow //Special case when the viewpoint is inside
+	              							            //a shadow volume
+
+          Read GPU Gems I, Chapter 9: Efficient Shadow Volume Rendering
+          http://http.developer.nvidia.com/GPUGems/gpugems_ch09.html
+          Even though this article describe Depth-pass algorithm it is still worthy.
+
+          
+          Note: It seems the normal, tangent AND cotangent are sent to the shader.  People that
+          wrote map viewers did not send the cotangent but instead used a cross-product in order
+          to generate it on the fly and save bandwidth. This would probably be the favored approach
+          with modern GPUs.
+          
+
+          LIGHTING :
+          ==========
+
+          It seems Doom3 does not have ambiant lighting. Modders had to fake it with "Parrallel lights"
+
+          http://www.katsbits.com/tutorials/idtech/dynamic-outdoor-lighting-techniques.php#ambient_lighting
+          
+          SHADERS :
+          =========
+          
+          drawarb2.cpp: This is bad
+          
+          qglEnableVertexAttribArrayARB( 8 );
+          qglEnableVertexAttribArrayARB( 9 );
+          qglEnableVertexAttribArrayARB( 10 );
+          qglEnableVertexAttribArrayARB( 11 );
+          qglEnableClientState( GL_COLOR_ARRAY );
+          
+          
+Codebase changes :
+==================
+
+- Somebody ported the assembly based shaders to GLSL
+- Project now compiles with Visual Studio Express
+
+Experimental renderer :
+=======================
+Seems the codebase was delivered with experimental renderer (draw_exp.cpp):
+   - Include shadow mapping instead of shadow volume
+   - exp is a valid value in the commercial Doom3 from steam but it seems it is now
+     gone from the released source code.
+   - Seems bloom is implemented (not to be confused with HDR)
+   FAIL FAIL  Most shaders are missing from the commercial version anyway. FAIL FAIL
+   
+   http://forum.beyond3d.com/showthread.php?t=12610
+   Originally Posted by John Carmack, to Rev vis email,
+   All of the r_sb* and r_hdr* cvars are for research code that wasn't included in the shipping build.
+          
+                    
+MAP FORMAT :
+============
+
+   Best way to learn how the engine is working is to look at what is provided by the map.
+
+   http://www.iddevnet.com/doom3/maps.php
+
+          Maps in Doom 3 are defined by four different files, all of which are in ascii so it should be very 
+          easy for other people to write editors and tools for them. For a map to work properly, 
+          all four files must be included (the only exception is .aas files are not needed for multiplayer maps).
+
+          .map 
+          The .map file is the main file that is created when you edit a file, it defines all the entities and brushes 
+          in the map. The other three files are all generated from the .map file with the dmap command. The format hasn't 
+          changed much from the Quake series.
+
+          .cm 
+          The .cm file defines the collision geometry in the map. It is used by the physics system for collision detection.
+
+          .proc 
+          The .proc contains all the pre-processed geometry in the map. It stores all the visible triangles, batched up in to 
+          surfaces. It also stores all the portal information, and any precalculated shadow volumes (if a light doesn't move, 
+          and a brush doesn't move, the shadow volume can be precalculated).
+
+          .aas 
+          The .aas files contain the 'area awareness' data for the AI to navigate through the level. A seperate aas file is 
+          generated for each size monster. Generally an aas48 and an aas96 file is generated for most monsters sizes. If a map 
+          has a special monster in it, such as the mancubus, saboth, guardian, or cyberdemon, then it will generate a special 
+          aas file for them. 
+
+   Doom3 map format specs were very useful:  http://www.modwiki.net/wiki/MAP_%28file_format%29_(file_format)       
+   Insight of proc format                    http://www.modwiki.net/wiki/PROC_%28file_format%29       
+          
+   Maps are made of convex polytopes (either polygons or polyhedron). Ever since Quake, maps are built using CSG (Constructive Solid Geometry)       
+   Maps have to be sealed, if dmap catches a leak it will just stop processing.       
+   A default map consist of 6 brushes: 4 walls, 1 ceiling and one floor
+   Dmap is the map compiler, it generates a .proc from a .map:
+   
+   Q: What is the portal heuristic ? It seems the BSP slicing is cutting things to a very small level. There should be many many portals....
+   ..but if I look at the proc file I only see a few: I have a feeling that this is a key elements of the engine: Build good portals.
+   
+   MAP Preprocessing: DMAP
+   =======================
+   
+   Doom3 Map file contains a list of entities. Some are lights definition, some are triggers and some are monster placment.
+   The first entity ("classname" "worldspawn") is the most interesting since it contains the map.
+   The map entity is built with CSG. Elementary blocks are brushes and patches, this as never changed since Quake QBSP.
+   
+   Dmap
+   {
+       //Parse arguments
+
+       LoadDMapFile // Load the map (text format)
+       {
+          
+          //All elements in a .map are "entities" whether they are made of brush or patch or actually monster, function trigger entities.
+          // The map is actually the first entity: "classname" "worldspawn". It contains primitives called brushes or patches (CSG methodology).
+          
+          // load and parse the map file into canonical form
+          dmapFile->Parse(filename)
+          {
+              while( 1 ) {
+		        mapEnt = idMapEntity::Parse
+          }
+          
+                  
+          
+          
+          // Now process the canonical form into utility form
+          
+          buildBrush = AllocBrush( MAX_BUILD_SIDES );
+          
+          //Convert all idMapBrush into uBrush_t containing side_t.
+          // At first glance it may look wasteful to provide the brushes as planes since
+          // each faces of a brush has to be calculated from the six box plans. But it is 
+          // actually very useful since the engine can identify which faces are sharing a 
+          // same plan while building the plan cache.
+          for ( i = 0 ; i < dmapGlobals.dmapFile->GetNumEntities() ; i++ ) 
+          {
+                ProcessMapEntity( dmapGlobals.dmapFile->GetEntity(i) );
+                {
+                    for ( entityPrimitive = 0; entityPrimitive < mapEnt->GetNumPrimitives(); entityPrimitive++ ) 
+                    {
+                       if ( prim->GetType() == idMapPrimitive::TYPE_BRUSH ) 
+                          ParseBrush( static_cast<idMapBrush*>(prim), entityPrimitive );
+                       if ( prim->GetType() == idMapPrimitive::TYPE_PATCH )
+                          ParsePatch( static_cast<idMapPatch*>(prim), entityPrimitive );
+                    }
+                }
+          }
+          
+          CreateMapLights( dmapGlobals.dmapFile )
+          {
+             for ( i = 0 ; i < dmapFile->GetNumEntities() ; i++ )
+             {
+                if ( !idStr::Icmp( value, "light" ) )
+                    CreateMapLight( mapEnt );
+             } 
+          }
+       }
+       
+       // At this point, everything is contained in dmapGlobals_t.uEntities, the map is the entity #1 at index 0.
+       // Brushes have winding (faces). Plan cache is full.
+       ProcessModels
+       {
+          for ( dmapGlobals.entityNum = 0 ; dmapGlobals.entityNum < dmapGlobals.num_entities ; dmapGlobals.entityNum++ )
+          {
+            ProcessModel
+            {
+              // Two next methos build  a bsp tree using all of the sides of all of the structural brushes.
+              // All faces are stored in leafs. Nothing in nodes.
+            
+              // Transform primitives into bspface_t. The concept of brush is lost now, only remaind a soup
+              // or faces with each their own material/shader etc....
+              MakeStructuralBspFaceList
+              
+              
+              // Partition the entire world via Binary Space Partition: Split the subspaces until there are no more faces available.
+              // At each level: The splitting faces is removed from the list but all the other faces remain.
+              // http://www.flipcode.com/archives/Harmless_Algorithms-Issue_02_Scene_Traversal_Algorithms.shtml
+              // http://www.seas.upenn.edu/~cis568/presentations/bsp-techniques.pdf
+              // http://www.seas.upenn.edu/~cis568/presentations/bsp-techniques.pdf
+              // http://www.seas.upenn.edu/~cis568/presentations/bsp-techniques.pdf
+              // http://www.seas.upenn.edu/~cis568/presentations/bsp-techniques.pdf
+              // http://www.seas.upenn.edu/~cis568/presentations/bsp-techniques.pdf
+              // http://www.seas.upenn.edu/~cis568/presentations/bsp-techniques.pdf
+              // BEST BSP EXPLANATION IN THE WORLD. 
+              // Game Programming Gems 6, Section 1.5
+              e->tree = FaceBSP( faces )
+                 BuildFaceTree_r
+                 {
+                    // The spliter selection heuristic is very interesting here: 
+                    //     - If the map comes with portals defined during the map creation (typically by map designers) them the algo will
+                    //       only select among those portals.
+                    //     - Once all designer defined portals have been used the algo select the highest value of:
+                    //        value =  5*sharing - 5*splits; //(The spliter sharing the MOST plan with other faces and splitting the LESS faces.)
+                    SelectSplitPlaneNum
+                    
+                    
+                    BuildFaceTree_r (front)
+                    BuildFaceTree_r (back )
+                 }
+              
+              
+              // Walk the BSP Tree. The initial map bounding box is sliced for each node using its spliting plan.
+              // As a result the initial convex space is subdivized in convex spaces at each node.
+              // Not that "tiny portals" are discarded.
+              // Note: The algo starts with the 6 faces bounding the map as convex volume.   
+              MakeTreePortals
+                MakeHeadnodePortals
+                MakeTreePortals_r
+                
+                
+              FilterBrushesIntoTree
+              ClipSidesByTree
+              FloodAreas
+                ClearAreas_r
+                FindAreas_r
+                CheckAreas_r
+                FindInterAreaPortals_r
+              PutPrimitivesInAreas
+              Prelight
+                BuildLightShadows
+                    CreateLightShadow     
+                      R_CreateShadowVolume
+                        R_CreateShadowVolumeInFrustum
+              OptimizeEntity
+              FixGlobalTjunctions
+            }
+          }
+       }                           
+       WriteOutputFile
+       {
+          idFileSystem::OpenFileWrite
+
+          // write the entity models and information, writing entities first
+          for ( i=dmapGlobals.num_entities - 1 ; i >= 0 ; i-- )
+             WriteOutputEntity
+             {
+                 WriteOutputSurfaces
+                 WriteOutputPortals
+                 WriteOutputNodes
+             }
+
+          // write the shadow volumes
+          for ( i = 0 ; i < dmapGlobals.mapLights.Num() ; i++ ) 
+             WriteShadowTriangles
+
+
+       }
+       FreeDMapFile
+
+       //Free some more memory
+   } 
+
+
+   
+          
+A.I :
+=====
+    Q: Does Doom3 features a compiler to compile on the fly monster behavior ?
+   
+             
+REMOVE ALL COMPILATION WARNINGS :
+=================================
+          
+  Starting task with 1000+ warnings        
+  A lot of unused variables.
+  LOT LOT LOT of String literal assigned to char* (this is deprecated in C++). Using const char* instead.          
+  Down to 287 Warnings.        
+
+
+
+Q & A :
+=======
+
+Q: What is a session object ?
+A: The session is the glue that holds games together between levels. 
+       Same abstraction layer:
+       idSessionLocal    sessLocal;
+       idSession         *session = &sessLocal;
+   
+
+Q: AllocDefragBlock allocates 1GB or RAM.....why are the PC requirements "512MB RAM"
+
+Q: - Is the game logic running within its own thread (and the render in its own thread ?)
+   - TODO: Try to use Instruments and check for how many thread are created when the game runs.
+
+
+TODO : 
+======
+   - Read Carmack interview (Doom 3 was supported by three primary features:): http://uk.pc.gamespy.com/pc/doom-3/539049p1.html
+        * unified lighting and shadowing, complex animations
+        * scripting that showed real-time with fully dynamic per-pixel lighting and stencil shadowing, 
+        * GUI surfaces that add extra interactivity to the game.
+        
+     More about John Carmack 2004 Quakecon speech (pre-recorded due to baby):
+     Video: http://www.youtube.com/watch?v=nXBDD6TT8Uw
+     Transcript:  http://benryves.com/bin/John%20Carmack%20Quakecon%202004%20Keynote.doc  
+         Really really good analysis of Stencil shadow Vs Shadow Mapping: The 6 projective plans issue is spot on.   
+         JC mentions midpoint rendering in order to solve bias issue for shadow mappping. Pretty neat.
+         JC mentions cascade shadow mapping instead of perspective shadow mapping.
+     LOL: "The overriding concern for us is that we don't want the next game to take as long to make as Doom did"
+     
+        
+   - Try to run PVS Studio
+   - Try to use instruments to see where the most time is spent     
+   - Investigate how in-game GUI are deal with, especially the initial video.
+   - Seems Megatexture (texture streaming)was used in Doom3....where is it ?
+   
+   - Play with all the commands to see what can held explaining shadow map and bumpmap:
+   
+           - How to stop time during a cimematic:
+                - Get cinematic name:                 g_debugCinematic
+                - Get when I want (frame#)to stop it: g_showcamerainfo
+                - Call the cinematic by name:          testVideo
+                - Set com_developer=1
+                - freeze
+           Note: "freeze" command is useless, it just blocks the game !!!! Game dll is certainly
+           not running in its own thread.                      
+   
+           - Use no target
+           - envshot seems to be a really cool/funny command
+           - YYYYYERS  freeze  YYYYYERS
+           - 
+             http://www.doom4portal.com/doom-3-cvars-and-commands
+	   
+		   - Try to see overdraw with      r_showOverDraw
+           - Try to visualize portals with r_showPortals   
+           - Investigate shadows with:
+                   	- r_showPrimitives 
+                   	- r_showShadowCount  
+                   	- r_showShadows  
+                   	- r_showSilhouette     
+                   	- r_showSkel                                                                   
+                   	- r_showSurfaces    
+                   	- r_showTangentSpace               
+   	
+   	Try to include the John Carmack email about discovering depth-fail Shadow mapping
+    Try to include the document describing the Doom3 C++ coding standard.		               
+    Understand what is the lightScale performed before the light additive blending phase.
+          Done in RB_DetermineLightScale
+          Effect: Set 
+                      backEnd.lightScale
+                      backEnd.overBright
+          ***
+    Create a new CVar in order to limit the number of interactin rendererd on the fly.
+    
+    
+John Carmack interview from youtube (http://www.youtube.com/watch?feature=player_embedded&v=sWRctnQU2F4):
+=========================================================================================================
+
+      Q: What are the most impressive graphical effects ?
+      A: Unified shadow and lighting, no more ligh pre-backing in textures
+         Realtime shadows
+         
+      Q: What are the effects of getting close to photorealistic
+      A: Gameplay has to change, the more photorealistic you get the slower the pace and more realistic the action has to be
+      otherwise things will look out of place.
+         Doom III is hence less about speed and fun but more about scary movie athmosphere.
+         Non photorealistic rendering still has a bright future.
+
+      Q: How is it that you are doing the lighting dynamically (that is a weirdly turned question)
+      A: This is now possible because we have the hardware for it. Doom3 was made possible by Nvidia and ATI.
+
+         Until now pretty much all engines used pre-generated lightsmaps with two passes were necessary (one for color the second for illumination ?!! What about multitexturing, id hava been doing this since Quake2 !). So lights used to be static.
+         Now lights are dynamic, for each three light properties one pass is required:
+             1. ambient component
+             2. shadow spencil generation 
+             3.diffuse and specular component
+
+         Shadow Volumes are calculated on the CPU, tests were done where it was done all on the GPU with shaders.
+
+
+      Q: How do you see environmentlight interactions ?
+      A: Super good looking structure are limiting destroyability because it is hard to slice a volume and have the
+         inner sides look at good as what was painted by an artist with bumpmap and specular mapping.
+
+      Q: Character animation improvment ? Do it on hardware ?
+      A: Hm.....No!
+
+
+      Q: Networking ?
+      A: Currently disabled. Doom III is a single player oriented game. The network subsystem won't be as efficient as Quake III since
+         it will be much more generalized (and hence much less optimized).
+      
+      Q: How has the Doom III engine been in development for ?
+      A: Started working on it after the release of Quake III Arena (Dec,1999) before Quake III Team Arena  (Dec,2000). 
+
+      Q: Challenges currently
+      A: Recently finished a Generalized triangle reoptimizer (WTF is this ??!!!)
+         Planning on doing:
+            - Bsp builder that avoid regeneration vertices 
+            - Then use it to make optimized shadow beam trees.
+
+      Quake 1,2 and 3 were evolutionary. Doom III is a cleanest rewrite from an almost white sheet of paper.
+
+
+       Sidenotes: 
+          All polygons now have a diffuse map, specular map and bumpmap
+          Normal maps are generated from 250,000 polygon models and applied on 2,500 poly ingame.
+
+
+
+
+
+
+
+ANNEXE :
+========
+
+
+         Doom3 Rendering path
+						
+						                
+						Name: John Carmack
+						Email: 
+						Description: Programmer
+						Project: 
+						-------------------------------------------------------------------------------
+						Jan 29, 2003
+						------------
+						NV30 vs R300, current developments, etc
+						
+						At the moment, the NV30 is slightly faster on most scenes in Doom than the
+						R300, but I can still find some scenes where the R300 pulls a little bit
+						ahead. The issue is complicated because of the different ways the cards can
+						choose to run the game.
+						
+						The R300 can run Doom in three different modes: ARB (minimum extensions, no
+						specular highlights, no vertex programs), R200 (full featured, almost always
+						single pass interaction rendering), ARB2 (floating point fragment shaders,
+						minor quality improvements, always single pass).
+						
+						The NV30 can run DOOM in five different modes: ARB, NV10 (full featured, five
+						rendering passes, no vertex programs), NV20 (full featured, two or three
+						rendering passes), NV30 ( full featured, single pass), and ARB2.
+						
+						The R200 path has a slight speed advantage over the ARB2 path on the R300, but
+						only by a small margin, so it defaults to using the ARB2 path for the quality
+						improvements. The NV30 runs the ARB2 path MUCH slower than the NV30 path.
+						Half the speed at the moment. This is unfortunate, because when you do an
+						exact, apples-to-apples comparison using exactly the same API, the R300 looks
+						twice as fast, but when you use the vendor-specific paths, the NV30 wins.
+						
+						The reason for this is that ATI does everything at high precision all the
+						time, while Nvidia internally supports three different precisions with
+						different performances. To make it even more complicated, the exact
+						precision that ATI uses is in between the floating point precisions offered by
+						Nvidia, so when Nvidia runs fragment programs, they are at a higher precision
+						than ATI's, which is some justification for the slower speed. Nvidia assures
+						me that there is a lot of room for improving the fragment program performance
+						with improved driver compiler technology.
+						
+						The current NV30 cards do have some other disadvantages: They take up two
+						slots, and when the cooling fan fires up they are VERY LOUD. I'm not usually
+						one to care about fan noise, but the NV30 does annoy me.
+						
+						I am using an NV30 in my primary work system now, largely so I can test more
+						of the rendering paths on one system, and because I feel Nvidia still has
+						somewhat better driver quality (ATI continues to improve, though). For a
+						typical consumer, I don't think the decision is at all clear cut at the
+						moment.
+						
+						For developers doing forward looking work, there is a different tradeoff --
+						the NV30 runs fragment programs much slower, but it has a huge maximum
+						instruction count. I have bumped into program limits on the R300 already.
+						
+						As always, better cards are coming soon.
+						
+						-------------
+						
+						Doom has dropped support for vendor-specific vertex programs
+						(NV_vertex_program and EXT_vertex_shader), in favor of using
+						ARB_vertex_program for all rendering paths. This has been a pleasant thing to
+						do, and both ATI and Nvidia supported the move. The standardization process
+						for ARB_vertex_program was pretty drawn out and arduous, but in the end, it is
+						a just-plain-better API than either of the vendor specific ones that it
+						replaced. I fretted for a while over whether I should leave in support for
+						the older APIs for broader driver compatibility, but the final decision was
+						that we are going to require a modern driver for the game to run in the
+						advanced modes. Older drivers can still fall back to either the ARB or NV10
+						paths.
+						
+						The newly-ratified ARB_vertex_buffer_object extension will probably let me do
+						the same thing for NV_vertex_array_range and ATI_vertex_array_object.
+						
+						Reasonable arguments can be made for and against the OpenGL or Direct-X style
+						of API evolution. With vendor extensions, you get immediate access to new
+						functionality, but then there is often a period of squabbling about exact
+						feature support from different vendors before an industry standard settles
+						down. With central planning, you can have "phasing problems" between
+						hardware and software releases, and there is a real danger of bad decisions
+						hampering the entire industry, but enforced commonality does make life easier
+						for developers. Trying to keep boneheaded-ideas-that-will-haunt-us-for-years
+						out of Direct-X is the primary reason I have been attending the Windows
+						Graphics Summit for the past three years, even though I still code for OpenGL.
+						
+						The most significant functionality in the new crop of cards is the truly
+						flexible fragment programming, as exposed with ARB_fragment_program. Moving
+						from the "switches and dials" style of discrete functional graphics
+						programming to generally flexible programming with indirection and high
+						precision is what is going to enable the next major step in graphics engines.
+						
+						It is going to require fairly deep, non-backwards-compatible modifications to
+						an engine to take real advantage of the new features, but working with
+						ARB_fragment_program is really a lot of fun, so I have added a few little
+						tweaks to the current codebase on the ARB2 path:
+						
+						High dynamic color ranges are supported internally, rather than with
+						post-blending. This gives a few more bits of color precision in the final
+						image, but it isn't something that you really notice.
+						
+						Per-pixel environment mapping, rather than per-vertex. This fixes a pet-peeve
+						of mine, which is large panes of environment mapped glass that aren't
+						tessellated enough, giving that awful warping-around-the-triangulation effect
+						as you move past them.
+						
+						Light and view vectors normalized with math, rather than a cube map. On
+						future hardware this will likely be a performance improvement due to the
+						decrease in bandwidth, but current hardware has the computation and bandwidth
+						balanced such that it is pretty much a wash. What it does (in conjunction
+						with floating point math) give you is a perfectly smooth specular highlight,
+						instead of the pixelish blob that we get on older generations of cards.
+						
+						There are some more things I am playing around with, that will probably remain
+						in the engine as novelties, but not supported features:
+						
+						Per-pixel reflection vector calculations for specular, instead of an
+						interpolated half-angle. The only remaining effect that has any visual
+						dependency on the underlying geometry is the shape of the specular highlight.
+						Ideally, you want the same final image for a surface regardless of if it is
+						two giant triangles, or a mesh of 1024 triangles. This will not be true if
+						any calculation done at a vertex involves anything other than linear math
+						operations. The specular half-angle calculation involves normalizations, so
+						the interpolation across triangles on a surface will be dependent on exactly
+						where the vertexes are located. The most visible end result of this is that
+						on large, flat, shiny surfaces where you expect a clean highlight circle
+						moving across it, you wind up with a highlight that distorts into an L shape
+						around the triangulation line.
+						
+						The extra instructions to implement this did have a noticeable performance
+						hit, and I was a little surprised to see that the highlights not only
+						stabilized in shape, but also sharpened up quite a bit, changing the scene
+						more than I expected. This probably isn't a good tradeoff today for a gamer,
+						but it is nice for any kind of high-fidelity rendering.
+						
+						Renormalization of surface normal map samples makes significant quality
+						improvements in magnified textures, turning tight, blurred corners into shiny,
+						smooth pockets, but it introduces a huge amount of aliasing on minimized
+						textures. Blending between the cases is possible with fragment programs, but
+						the performance overhead does start piling up, and it may require stashing
+						some information in the normal map alpha channel that varies with mip level.
+						Doing good filtering of a specularly lit normal map texture is a fairly
+						interesting problem, with lots of subtle issues.
+						
+						Bump mapped ambient lighting will give much better looking outdoor and
+						well-lit scenes. This only became possible with dependent texture reads, and
+						it requires new designer and tool-chain support to implement well, so it isn't
+						easy to test globally with the current Doom datasets, but isolated demos are
+						promising.
+						
+						The future is in floating point framebuffers. One of the most noticeable
+						thing this will get you without fundamental algorithm changes is the ability
+						to use a correct display gamma ramp without destroying the dark color
+						precision. Unfortunately, using a floating point framebuffer on the current
+						generation of cards is pretty difficult, because no blending operations are
+						supported, and the primary thing we need to do is add light contributions
+						together in the framebuffer. The workaround is to copy the part of the
+						framebuffer you are going to reference to a texture, and have your fragment
+						program explicitly add that texture, instead of having the separate blend unit
+						do it. This is intrusive enough that I probably won't hack up the current
+						codebase, instead playing around on a forked version.
+						
+						Floating point framebuffers and complex fragment shaders will also allow much
+						better volumetric effects, like volumetric illumination of fogged areas with
+						shadows and additive/subtractive eddy currents.
+						
+						John Carmack
+
+
+GUI :
+=====
+  GUI can be fullscreen or applied to a surface:
+     - That is how game menus are done (
+     - That is how in-game manus are done
+     - That is how the HUD is done (where the HP and Ammos are displayed)
+     
+    This system is an evolution of  Team Arena menu system.
+    
+  GUI surface can be transparent if needed (drawn on the screen with partial transparancy)
+  
+   GUI created via script and events :
+     onESC 
+     onActivate 
+   
+   GUI can even host the original DOOM game (Terminal doom):
+   http://www.battleteam.net/tech/fis/
+   This is not because the GUI language is very powerful but rather flexible:
+      Doom is compiled to C and input/output are plugged in the terminal
+   
+   GUI can host Quake2 with software renderer (Terminal Quake 2 ) !!!!
+   http://www.gamedev.no/projects/TerminalQuake2/TerminalQuake2.html\
+   Seems the auhor had some issue to convert palette based system to RGBA (he probably used
+   the converter from the gl renderer :P (Try to find the function name)!
+						
+GUI VIDEOS :
+============
+    - Not a trick, a video frame is actually decompressed an uploaded as a texture !
+    - Video format is the same as Doom3: ROQ from "The 11th hour"
+    - Nice details about ROQ here: 
+         * http://www.modwiki.net/wiki/ROQ_(file_format)
+         * Fast to decode, slow to encode
+         * Fast because only need to convert codebook to colorspace
+         * Rely heavily on vector quantization
+    - Video decompression is not running within a thread: 
+         * The engine calls idCinematicLocal::ImageForTime 						
+         * ImageForTime will repeatibly send RoQInterrupt
+    - Video resolution is quite high for the 2004: 512x512
+    - ROQ videos are 30 frames per seconds
+    
+    
+    
+No preprocessor :
+-----------------
+
+What is usually done via the preprocessor is spread over the lexer and the parser.
+Comment removal for example is done in the lexer.
+All directives (#include #define #ifdef ...) are done in the parser.    
+
+Q: I cannot really figure out how intend_t are discarding lines. How does it works exactly ?
+A: 
+    
+IDLEXER :
+=========
+    
+    Hand codede, no lex/Yacc tools used.
+    Start read token by saving the current position in the script (lastScript_p = script_p)
+    If the expected token is not found, the lexer has the ability to unread (script_p = lastScript_p )
+    The lexer has the ability to peek ahead via CheckTokenString, if the token is not here the tokens read
+    are unread.
+    Similarly the lexer can read a new token and check it is what was expected: ExpectTokenString
+    
+    Check and Peek are actually very very similar...
+    
+    Peek is never used in the code base, Check seems to be prefered all the time.
+    
+IDPARSER :
+==========
+
+     #include -> A Parser has a stack of lexers, used for includes.      
+     #define  -> A Parser has a list of define, stored in a hash 
+              AddDefineToHash
+              FindHashedDefine
+     #ifdef #else #endif are all done with indent_t and a linked list acting as a stack Push, Pop
+    
+
+Note about lexer and parser :
+-----------------------------
+
+Since the are meant to be reused, the lexer and parser have no hard-coded values for keywords.
+Instead keywords have to be detected by the entity on top of the parser when the resource is 
+being parsed.
+Directives are built-in, #define, #define, #ifdef
+          
+     
+SCRIPTING :
+===========
+   
+   Game::Scrip is built on top of idLib::Text
+
+   The game DLL has on instance of the idProgram class: program.
+   program is initialized via StartUp called in idGameLocal::Init.
+   program loads "script/doom_main.script".
+   
+   Q: How are include resolved and where ?
+   A: Inclusion (#include) is done via idParser.
+         
+         idParser::ReadToken
+         {
+             if ( token->type == TT_PUNCTUATION && (*token)[0] == '#' && (*token)[1] == '\0' ) 
+                  idParser::ReadDirective
+         }
+         
+      An included script is added on the idParser script stack.
+   
+   idProgram can compile a script from text or file, results are stored
+   in its private variables: filelist,types,function,vardef.
+   
+   An idThread can be created using a function_t.
+   Upon idThread::Excecute, an idInterpreter is allocated on the stack and starts
+   interpreting the function_t
+
+   
+   --------------------------         -------------------
+   |    idProgram           |         |   idThread      |
+   |                 ------ |         |                 |
+   |                 | db | |         |                 |
+   |                 |    |----->---->---->function_t   |
+   |                 ------ |         |       |         |
+   |                   |    |         |       |         |
+   |    compileText----|    |         |  idInterpreter  |
+   |    compileFile ----    |         |                 |
+   --------------------------         -------------------
+   
+           
+   COMPILER :
+   ==========
+   Doom3 features a DoomC++ compiler(Game/Script/*).
+	   Available :
+	       - Namescapes
+	       - Preprocessor:
+	          - #define
+	          - #include
+	       - Object with inheritance
+	       - Threads ?!?!
+	       
+	   Unavailable:
+	       - Integers: Only types are float,string, boolean and vector
+	       - Templates
+	       - Operator overloading
+	       
+	   
+	   Can take a .script and transform them to bytecode at runtime (it seems a lot is done at
+	   runtime except for the maps that are pre-portalized and pre-bspized ).    
+   
+	   --------------
+	   |   Parser   | 
+	   --------------
+	         |
+	         |
+	         |
+	    -------------
+	    |   Lexer   | 
+	    -------------
+	         
+	         
+	1. Front end :
+	--------------
+	   
+	   Parser seems to be a predictive, Top-Down Recursive decent parser (one function per production
+	   , next production can be recognized based on the next token inputs), taking advantage of LL(1)
+	   structure of C++.
+	   
+	   Parser relies on Parser.cpp, itself relying on Lexer.cpp (classic front end configuration).
+	   Although the lexer does not recognize keywords, identifier and keyword are all of type TT_NAME
+	   Q: How does the compiler recognize keywords ? 
+	         Is the symbol table preloaded ?
+	         Are they recognized on the fly with a perfect minimal hash function ?
+	         
+	   A: Keywords recognizion such as typenames are implemented on top of the parser, when
+	      it returns a token (idCompiler::CheckType). This kinda defeat the parser purpose.
+	      
+	      Keywords recognizion is done the same, idCompiler::ParseStatement compare strings in
+	      a silly way 
+	   
+	   The parser can unread tokens.
+	   
+	   
+	   
+	2. IR (Intermediate Representation) :
+	-------------------------------------   
+	    None, it seems opcode is emitted while parsing occurs.    
+	         
+	3. Back end :
+	-------------
+	    ????
+	    
+	    
+	4. I/O :
+	--------
+	
+	Q: What is immediateType ?
+	A: 
+	
+	Main script loaded is doom_main.script, others are included.
+	Note doom_defs.script:
+	    #define GAME_FPS		60			// number of game frames per second.  rendering framerate is independent of game frames.
+        #define GAME_FRAMETIME	0.016		// 16 milliseconds
+        
+        Reveal that the game tick is 0.016....showing that game time and rendering time
+        are decoupled. 
+        
+        Q: Is game run within a thread and so gametime == realtime ?
+           Or gametime is different and delayed by rendering phrase ?
+	
+	
+   INTERPRETER :
+   =============
+   
+   Seems to be stack machine (as opposed to a register machine) just like Quake3 lcc bytecode.
+   Contrary to Quake3 there is no x86 native compiler, the bytecode is ALWAYS interpreted.
+
+   
+   
+THREADING :
+===========   
+idThreads are not system thread but just unit of work. They use the main system thread execution.  
+Their main role is to run interpreter code. For this purpose, a thread has an interpreter 
+object. 
+   
+
+
+
+IDLIB :
+=======
+
+Containers based on template (allow inlining):
+
+    - Hashtable: Array is a power of two (fast modulo cannot be the only reason...so I have no
+      idea why such a contraint.
+    - HashIndex: Fast hashtable.
+    - Hierarchy: Used by class.h only to model class Hierarchy
+    - BTree: Used only by Fast dynamic block allocator (Heap.h)
+    - String Pool: Used by the id dictionary.
+    - Dictionary: VERY IMPORTANT CLASS, USED EVERYWHERE.
+                  Tracks an arbitrary number of key / value pair combinations. It is used for
+                  map entity spawning, GUI state management, and other things.
+                  Can store int,float and so on but internally it is all stored as a idStr
+    - Pooled string, idStrPool contains a bunch of idPoolStr
+
+    
+Q: What takes so long to load a level ?! id games used to load super fast, why is it so slow.
+   How is the progress bar incremented ?
+A: MapDef are used to provide the number of bytes necessary to load a level for the 4 levels of details.
+   Example:
+              
+  mapDef game/mars_city1 {
+	"name"		"Mars City"
+	"devname"		"01-Mars City"
+	"singleplayer"		"1"
+	"size0"		"241381796"
+	"size1"		"241381796"
+	"size2"		"360373649"
+	"size3"		"509824838"
+}
+              
+              
+mapDef game/hellhole {
+	"name"		"Primary Excavation Site"
+	"devname"		"29-Hell Hole"
+	"singleplayer"		"1"
+	"size0"		"158309408"
+	"size1"		"158309408"
+	"size2"		"268269006"
+	"size3"		"389205648"
+}
+
+ All defs are contained in def/maps.def
+              
+  Note: If no stats are available the engine used a value of 30MB     
+
+Q: Sys_ClockTicksPerSecond is done via the registry system on win32, how is it done on macosx ?
+A: 
+
+SYSTEM :
+========
+
+Q: CPUCount is done using WinBase.h, how is it done on macosx ?
+
+Q: Doom3 is singlethreaded (except for the sound and network part): Why have a CPUCount for ?
+A: This is only used in order to detect if the CPU support HTT (HyperThreading)
+
+Q: Why does Doom3 have DAZ detection ?
+A: It is used to enable Denormals-Are-Zero mode. 
+
+   Timer : 
+   -------
+
+   - Timer is quite special, idTimer::Milliseconds returns milliseconds as
+       	    ticks/ClockTicksPerSecond * 0.001
+   - idLib::Timer is only used to measure time elapsed during processing. It does not 
+     seem to be used for inter-frame timing. For inter-frame, Sys_Milliseconds is used.  
+
+
+TODO TONIGHT :
+============== 
+
+  - Read about RBA2
+  - Trace cinematic calls ROQ decompression.
+  - Fix Fluid water interaction calculations.
+  - Find out what take so long to load:  
+         * Texture processing ? Map parsing ?
+         * Seriously, what can take up to a minute on a 2011 system ? Maybe the problem is that
+           a lot of disk I/O are being performed ?
+
+INPUT :
+=======
+   
+   - Commands are pooled at a set framerate: 60 Hz.
+                const int USERCMD_HZ    = 60;                // 60 frames per second
+                const int USERCMD_MSEC  = 1000 / USERCMD_HZ;
+
+                
+GameTime is running at 60 Hz                
+
+        // update time
+		gameFrame++;
+		gameTime += USERCMD_MSEC;
+		gameTimeResidual -= USERCMD_MSEC;
+
+
+
+Q: What in the world is callback.cpp and it's 10,000 declarations ?
+A: ???
+
+
+
+SDK INFORMATIONS :
+==================
+
+    http://www.iddevnet.com/doom3/code.php
+    Doom3 was developer with Visual Studio .Net
+    
+    
+Fun fact :
+==========
+
+	The working codename for the Quake 3 engine was "Trinity"; Doom 3 is called "Neo". Cute.
+	Source: http://mhquake.blogspot.com/search?updated-max=2011-11-29T23:07:00Z&max-results=10
+
+	I see that they used the same "qgl" subsystem that began with Quake II. Grrrr.
+	
+	
+	
+Data compression :
+==================
+
+Powerfull compression system on top of idFile. LZSS,LZW,Runlength,RunlengthZeroBased and Huffman are supported	
+
+RunlengthZeroBased i used for MsgChannel
+Huffman LZSS LZW and seems to be called for demo files writing and reading
+Gamepak are not read using compressor/decompressor but with unzip.h/unzip.cpp using deflate algorithm.
+
+
+RENDER thoughts :
+=================
+
+Doom3 does not feature an amazing architecture such a BSP of Doom or PVS of Quake.
+Instead it was designed to take the best out of the GPU from NVIDIA and ATI
+
+There are almost no low level assembly tricks. The fastInvSquareRoot is still here but doom3 really focuses on using the hardware
+as it was intended. This marks the era when hardware manufacturer started to produce tools specificly for game developers:
+GPU and SIMD.
+
+All rendition operations use the same srfTriangles_t geometry type.  All geometry can be cached in a VBO (called Vertex Object Space in Doom3).
+
+
+
+RENDERER: The FrontEnd
+======================
+
+     Does not render anything, only populate a structure renderWorld_t that will be passed to the backend.
+     idRenderWorldLocal populate itself and add itself to the command list.
+     
+     Extensive usage of the FrameAllocator R_FrameAlloc. Note that the backend does not allocate memory.
+     
+        - idRenderWorld::RenderScene
+         |  - build viewDef_t* params
+         |  - ::R_RenderView(params)
+         |    {
+         |        R_SetViewMatrix     //Standard gluLookAt, will be used for GL_MODEL_VIEW
+         
+         |        R_SetupViewFrustum  //Four planes + Near plane = 5 planes view frustrum
+         
+         |        R_SetupProjection   //Mostly a gluPerspective. Uses an far-plane-at-infinity trick. will be used for GL_PROJECTION
+                                      //http://www.songho.ca/opengl/files/gl_projectionmatrix_eq16.png
+                                      //http://www.flipcode.com/archives/OpenGLDirect3D_Projection_Matrix.shtml
+                                      // The far-plane-at-infinity trick goal is to map w=0 vertices at infinity to the maximun value in the Z buffer
+                                      // PURE GOLD PURE GOLD http://www.terathon.com/gdc07_lengyel.pdf PURE GOLD PURE GOLD
+         
+         |        static_cast<idRenderWorldLocal *>(parms->renderWorld)->FindViewLightsAndEntities();
+                                      // 1. 
+                                      // 2. Mark all visible area starting from current, flood filling, recurse via the area's portals.
+                                      //    Note that no frustrum testing occurs here, only populate array tr.viewDef->connectedAreas
+                                      // 3. MASSIVE STEP: FlowViewThroughPortals use a portalStack
+                                      {
+                                         PointInArea          //Navigate the BSP in order to find the current area we are in.
+                                         BuildConnectedAreas  //FloodFill all potentially visible areas.
+                                         FlowViewThroughPortals
+                                         {
+//TODO : Read about portal rendition in RealTime rendering book.               
+//       Read about portal rendition in Mathematics for 3D Game Programming and Computer Graphics
+
+//Q: What algorithm is used in order to generate a portal ?                             
+                                         }
+                                      }
+                                      TODO: Figure out how the portal/area are generated in dmap
+         				
+                                      
+         |        R_ConstrainViewFrustum
+                                      // Use an AABB idBound to concatenate all bounding volume from light and entities.
+                                      // Adjust the view frustrum FarDistance accordingly
+                                      
+         |        R_AddLightSurfaces
+                                      //Q: What are lightshaders ?
+                                      //A: LightShader is actually an idMaterial
+                                      
+                                      //Generate all interactions (shadows)
+                                      
+//TODO try to play with r_useEntityScissors and r_showEntityScissors
+//TODO try to play with r_useScissor
+         
+         |        R_AddModelSurfaces
+         
+         |        R_RemoveUnecessaryViewLights
+         
+         |        R_SortDrawSurfs          // simple qsort. Could be twice as fast with a C++ template library that would allow inlining
+
+         
+         |        R_GenerateSubViews      //This can lead to a recursive call to R_RenderView
+//TODO try to play with r_skipSubviews         
+         
+         |        R_AddDrawViewCmd 
+         
+         |    }
+         
+         
+         
+RENDERER: The BackEnd
+======================         
+
+
+
+                 idRenderSystemLocal::EndFrame
+                   R_IssueRenderCommands
+                     RB_ExecuteBackEndCommands    //Seems this will be called asynchronously on multicore (smp) platforms
+                     
+                       RB_DrawView
+                       
+                        RB_ShowOverdraw
+//TODO Play with r_showOverDraw                        
+
+                        RB_STD_DrawView
+                        {
+                           RB_BeginDrawingView     // clear the z buffer, set the projection matrix, etc
+                           RB_DetermineLightScale
+                           
+                           RB_STD_FillDepthBuffer  // fill the depth buffer and clear color buffer to black except on
+                           
+                           _DrawInteractions
+                           {
+                           5 GPU specific path
+	                           R10 (GeForce256)
+	                           R20 (geForce3)
+	                           R200 (Radeon 8500)
+	                           ARB
+	                           ARB2
+	                        }
+	                        
+	                        // disable stencil shadow test
+	                        qglStencilFunc( GL_ALWAYS, 128, 255 );
+	
+	                        RB_STD_LightScale
+	                        
+	                        RB_STD_DrawShaderPasses   //draw any non-light dependent shading passes
+	                        
+	                        RB_STD_FogAllLights
+	                        
+	                        RB_STD_DrawShaderPasses
+	                        
+	                        
+MegaTexture seems to be a dead trail (just like the shadowmap code): The vertext and fragment shader file referenced (megaTexture.vfp) is missing. 	
+
+
+Q: What are entity scissors used for ?
+Q: r_showPortals show all portal traversed and blockers. How is the engine dertermining which portal to traverse and which to stop ? Is this
+precomputer PVS style ?
+A: The render project portal in screenspace and make union of the rectangles. The recursion stops when the union operation returns 0.
+
+
+Portals system :
+================
+
+idtech4 is not BSP/PVS based but portal based. It is very usedful to study dmap (the doom3 map compiler). The information created and made available
+to the engine provide a lot of insight regarding how the engine is working.
+
+iddevnet also has a great page: http://www.iddevnet.com/doom3/visportals.php
+
+Q: How is the BSP leading to an area ?
+
+Info about node in the proc file. Describe how the BSP is formed and how BSP -> AreaId is done.
+http://www.modwiki.net/wiki/PROC_(file_format) 
+
+
+
+Portal are not something new at id software: idtech has an history of using them. The Probably Visible Set was calculated
+using portal gtkradiant:
+
+http://www.gamedev.net/topic/414035-quake-pvs-question/
+git://github.com/mfn/GtkRadiant.git
+
+
+q2map tools features a lot of d3map: tree_t and a lot of things.
+http://www.gamers.org/dEngine/quake/Qbsp/
+
+http://www.gamers.org/dEngine/quake/QDP/qmapspec.html
+"classname" "worldspawn" was already in quake map format !!!!
+
+Understanding qbsp: http://en.wikipedia.org/wiki/Quake_engine
+
+Same code structure in qbsp and dmap, this is crazy:
+
+   	for (i=0 ; i<3 ; i++)
+		for (j=0 ; j<2 ; j++)
+		{
+		    n = j*3 + i;
+
+			p = AllocPortal ();
+			portals[n] = p;
+		}
+
+
+Links explaining how the PVS was build in Quake serie:
+
+http://www.gamedev.net/topic/414035-quake-pvs-question/
+http://web.archive.org/web/20070810212022/http://www.delphi3d.net/articles/viewarticle.php?article=pvs.htm
+
+QUESTIONS TO ASK JOHN CARMACK :
+===============================
+
+- Why C++ ?
+- Why text based assets instead of binary:
+      o What is that the speed increase was not worth it ?
+      o What is that hand editable assets were so much better than binary ?
+- What the design of the renderer (backend and frontend) inspired by lcc design (backend/frontend) 
+    o Do you think this pipeline design is a good thing and the way of the future in terms of functionnal programming.
+    
+    
+    
+- Why abandon the PVS ? The pre depth buffer population does avoid reaching the fragment shader but the geomtry and the
+  vertex shader are still performed. It seems that dropping the PVS was done in order to reduce the pre-processing
+  of a level: Where the portal system was generating a PVS it now generate areas. 
+  Is the tradeoff: Reduce preprocessing time vs Increase useless geomtry sent to the GPU ?
+
+
+
+
+RENDERER ORDER :
+================
+
+- FrontEnd
+    - Build list of visible portals via PVS
+    - Start with the view frustrum, flow through all the portals and try to determine which entity is in the frustrum
+      and which light volume is in the view frustrum 
+        o clip the view frustrum to the portals
+        o Keep a portal stack
+
+
+
+
+- FILL THE Z buffer.
+- Render all interactions.
+     - TODO: Study the Shadow volumes algorythm. This must be fast
+     - TODO: Find out where are emissive texture rendered. It is not in the interactions phase, that is for sure.
+ 
+ //For decomposition degenation
+ g_stopTime 1  
+ g_showHud  0
+ r_lockSurfaces  allow moving the view point without changing the composition of the scene,including culling  
+ r_rol 0-20 for individual light capture
+ r_skipGuiShaders 1
+ r_showInteractions so we can know how many lights are being rendered    
+ r_showLightCount   so we can know how many lights are being rendered    
+ r_showSurfaces ???
+ r_singleLight   ....Not working very well :(
+ r_skipDiffuse
+ r_skipBlendLights
+ r_skipSpecular
+ r_skipAmbient
+ 
+ 
+Doom3 is so old that multi-core was actually called SMP (Symmetric multiprocessing)
+
+Seems the frontend is setting a lot of scissor for the backend: Every lights have one and every entities have one too.
+ 
+ 
+Q: Find out how front is passing list of poly to the backend. No way it is copying.
+A: 
+ 
+
+MakeNodePortal function description seem to be inacurate: The portal winding is clipped against all the current node portal. Maybe the comment was made when they were keeping
+all portal for each node level. But the way recursion is setup in SplitNodePortals all parent portals are NULL.
+
+Try to mention the proportion of PROC:
+
+- Cluster of material surface (model). 20%
+- interAreaPortals 5% or less.
+- BSP treey (nodes) 5%
+- Shadow volumes (shadowModel) 50%.
+
+Try to compile first map and see how portals are generated.
+  - It seems the reliance on visportal placed by the level designer is HUGE. If no visportal are placed in the map: it seems dmap generates only one area !!!
+  - Those visportal seem to be the extension of Quake3 HintBrushes: Lot of nice drawings here:
+    http://tremmapping.pbworks.com/w/page/22453205/Understanding%20Vis%20and%20Hint%20Brushes
+
+
+Doom 3 Beta - (2003) Legacy Video: http://www.youtube.com/watch?v=-u9JOKDkAmQ&feature=related 
+
+Q: I am looking at the MAP format and more particularly the brushDef3: It seems the X,Y and Z plan for a AABB brush are not all pointing inside or outside ??? Some plan are pointing in some are pointing out ?!?! WTF ?!?!
+
+
+TODO: In Visual Studio 2010 it doesn't seem to be possible to "Control-Click" to a symbol definition by default. After installing "Visual Studio 2010 Productivity Power Tools":
+      http://blogs.msdn.com/b/kirillosenkov/archive/2010/06/07/copy-code-in-html-format-with-visual-studio-2010.aspx it seems to be possible.....or did I change something else ?
+      Double check that.
+
+      
+Good link with nice drawing about how visportal are paramount:
+
+http://www.modwiki.net/wiki/Visportal
+
+Q: I still don't really understand what an opaque node is. Is it a node where either side is solid or outside ?
+A: An opaque node is a node that was built using a winding with material that was not translucent or transparent.
+
+During the BSP process it is important that visportals are used as "early as possible" so they are close to the tree root. This makes areas delimitation earlier.
+
+In doom3 a cluster is a part of a brush that has been filtered in the bsp tree. Depending on the splitting plane, a cluster
+can be an entire brush or many part of it.
+   
+   r = FilterBrushIntoTree_r( newb, e->tree->headnode );
+   c_clusters += r;
+   
+   FilterBrushIntoTree_r
+   
+       - Make nodes aware of what brushes are contained in a leaf. (linked list of brushes).
+       - It seems a node is marked opaque if it contains an opaque brush....this doesn't seem to really help
+         portal flood filling....but let's read more.
+         
+         
+                  1                       2                    3
+                                       |      |            ----------
+               ---------               |      |            |         |
+         ------|-------|---------------|------|------------|---------|-------------------
+               |       |               --------            |         |
+               |       |                                   |         |
+                                                           -----------
+         
+         Brush 1 and 2 will not be split (Brush crossing the splitting plane by PLANESIDE_EPSILON are no split).
+         Brush 3 will be split, resulting in the creation of two new brushes that themeselve will be filtered to each respective child node. 
+         
+   Some portions of dmap are similar to qbsp,q2bsp and q3bsp
+   
+   
+   Q: What is a convex hull for a winding anyway ?! I thought winding were all convex...but that mean they can be concave ?!
+   A: 
+   
+   
+   Q: Check if FindSidePortal detects "brush has multiple area portal sides at %s".
+      Check if the Doom3 maps has all the sides of a brush at visportal or just one side and the others are nodraw.
+      This is where 
+      
+      
+      
+The Quake3 famous InvSqrt is still here idMath::InvSqrt. It seems they allow themselve two iteration of the Newton approximation now instead of one.
+optimizeGroup_t are like the texture chains from Quake,Quake3 and Quake3: They allow to render all triangles for one material (avoiding a texture switch). Moreover,
+all triangles in an optimizeGroup_t are coplanar (same planeNum)
+
+// all primitives from the map are added to optimzeGroups, creating new ones as needed
+// each optimizeGroup is then split into the map areas, creating groups in each area
+// each optimizeGroup is then divided by each light, creating more groups
+// the final list of groups is then tjunction fixed against all groups, then optimized internally
+// multiple optimizeGroups will be merged together into .proc surfaces, but no further optimization
+// is done on them.
+     
+
+    Optimize uses SIMD and the old AltiVec instruction set from Apple Computers.
+
+    OptimizeOptList( optimizeGroup_t *opt )
+    {
+       //Save opt->next, set it to NULL
+       FixAreaGroupsTjunctions(opt)
+       //Restore opt->next
+       
+       //Generate axis so optimizations can be done in 2D (plan axis).
+       dmapGlobals.mapPlanes[opt->planeNum].Normal().NormalVectors( opt->axis[0], opt->axis[1] );
+       
+       //Populate originalEdges and numOriginalEdges with all edges. Shared edges are only added once.
+       AddOriginalEdges( opt );
+       {
+           for ( tri = opt->triList ; tri ; tri = tri->next )
+           {
+              //Check if the vertex is in the vertex cache (optVerts). Otherwise create it and add it to the cache. Also add it to the bound (optBounds)
+              FindOptVertex
+              FindOptVertex
+              FindOptVertex
+              
+              //Add all triangle edge to "originalEdges" IF they were not there already.
+              AddOriginalTriangle
+              
+           }
+       }
+       
+       SplitOriginalEdgesAtCrossings( opt );
+       
+       DontSeparateIslands
+       
+       FreeTJunctionHash
+       FreeTriList( opt->triList );
+    }
+    
+    
+    
+Seems all the  dmapGlobals.drawflag stuff has been removed from dmap. Too bad it would have helped tremendously to understand all of this.
+
+
+Mention the video in GUI that were AWESOME !!!
+
+Script compiler:
+
+  Optimized: Operation on constant operand are precomputed.
+
+Script Interpreter:
+
+  Surprisingly tiny (2000 lines).
+  Guts is here: idInterpreter::Execute
+  Variable instruction length (an opcode can have 0 up to 5 parameters.
+  Not a stack machine per say. As an example addition can write directely somewhere. Operations result are not necessarely on the stack.
+  Interpreter can create new threads. Those threads are not OS thread but more execution environment.
+  Runaway controller: Execute only 5,000,000 opcode and then consider the thread as an issue...
+  Seems it is collaboratibe multitasking. The execution is suspended....
+  
+  Good read: http://www.iddevnet.com/doom3/script.php
+  
+  I/O: systemcall in CallSysEvent -> ProcessEventArgPtr:
+        1. Push all parameters on the virtual machine stack
+        2. 
+    syscalls are called "events" and the function addresses are stored in eventMap.
+    syscalls can have up to 8 parameters.
+        num = ev->GetEventNum();
+        callback = c->eventMap[ num ];
+        switch numArgs
+        ( this->*( eventCallback_1_t )callback )( data[ 0 ] );
+        ( this->*( eventCallback_2_t )callback )( data[ 0 ], data[ 1 ] );
+        ( this->*( eventCallback_3_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ] );
+        .
+        .
+        .
+        ( this->*( eventCallback_8_t )callback )( data[ 0 ], data[ 1 ], data[ 2 ], data[ 3 ], data[ 4 ], data[ 5 ], data[ 6 ], data[ 7 ] );
+        
+        
+        http://www.iddevnet.com/doom3/code.php
+        To actually call a script function, create a new idThread (which should be allocated with new, not created on the stack). There are static functions in idThread that handle the tracking of currently active threads. Every thread has an idInterpreter, which contains all the stack information and instruction pointer for a thread. The game threads are not actual operating system threads. The way it works is the scripting system provides every thread a chance to run every frame. The thread runs until it gets a multi-frame event or encounters a pause event, such as sys.pause, sys.waitFor, or sys.wait (there's also a wait command on ai objects).
+        
+        TODO: Take a look at the script editor (type "editDecls" in the console)
+        http://www.iddevnet.com/doom3/editor_decl.php
+        
+        
+  Script compiler:
+      - Since the lexer is re-used not only to parse the scripts but also models, maps and camera path it has only five token types defined:
+         o Number
+         o Literal
+         o String
+         o Name
+         o Punctuation
+         
+         Q: How does keyword (if , when , ...) is differenciated from symbol ? This must be done in the parser.
+     - The compiler does not feature a pre-processor. I wonder if this is a good idea since this means the parser has to do strings concatenation,
+       alias and macro replacement. 
+       Does The lexer performs includes and comments skipping ?
+       But one Lexer cannot fit them all, it seems the internal behavior can be modified with flags (accept punctuation, etc ...)
+       
+    - The recursive descent architecture can be found in idCompiler::ParseStatement where token string is compared in a if else if:
+      A perfect hashmap would have been much better in this regard:
+              ParseReturnStatement
+              ParseWhileStatement
+              ParseForStatement
+              ParseDoWhileStatement
+              ....
+   
+The pseudo preprocessor also is recursive descent
+
+idParser::ReadToken   
+   idParser::ReadDirective
+      "ifdef" -> Directive_ifdef
+      "include" -> Directive_include
+      etc...
+
+   
+idCompiler::CompileFile
+ while(!iof)
+ {   
+    idCompiler::ParseNamespace
+      while(!eof)
+      {
+        idCompiler::ParseDefs
+          ParseFunctionDef
+             ParseStatement          
+             {
+                strcmp("if","while",.... currentToken)
+                ParseReturnStatement
+                ParseWhileStatement
+                ParseForStatement
+                ParseDoWhileStatement
+                ParseStatement
+                
+                GetExpression
+                Expect(";");
+             }
+      }
+  }
+  
+  Q: How are I/O generated ? It seems $sys can be used...where do this lead ?
+  Q: In IA there are a bunch of predefined methods (findEnemy,createMissile) where at those defined ?
+              
+  The LL parser is not stack based as in http://en.wikipedia.org/wiki/LL_parser#Constructing_an_LL.281.29_parsing_table . 
+  It seems the parser is doing a left-most derivation (typical of a LL parser.     
+  Wait wait wait....no way this is a LL parser since left-recursion seems to be allowed (left-recursion is a big no-no in a LL Parser)....am I missing something here ? 
+  
+  No typeded in doom3 scripting language since it makes parsing context-dependent ?
+  
+  > func((T) * x);
+  > If T is a type, the result of dereferencing x is cast to T and passed to func. If T isn’t a type, the multiplication of T and x is passed to func.
+  In order to parse the previous we would need to have the lexer symbol aware (via a symbol table).
+  

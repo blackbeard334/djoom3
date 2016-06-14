@@ -1006,7 +1006,7 @@ public class Script_Program {
         idScriptObject objectPtrPtr;
         String       stringPtr;
 //        final         float[]        floatPtr;
-//        final         idVec3[]       vectorPtr;
+        idVec3       vectorPtr = new idVec3();
         function_t   functionPtr;
 //        final         int[]          intPtr;
 //        final         ByteBuffer     bytePtr;
@@ -1017,7 +1017,7 @@ public class Script_Program {
 //        private int argSize;
         varEval_s    evalPtr;
 //        private int ptrOffset;
-        private final ByteBuffer primitive = ByteBuffer.allocate(idVec3.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+        private ByteBuffer primitive = ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.LITTLE_ENDIAN);
 
         public int getVirtualFunction() {
             return getPrimitive();
@@ -1048,7 +1048,7 @@ public class Script_Program {
         }
 
         public void setIntPtr(final byte[] val, int offset) {
-            primitive.put(val, offset, 4).rewind();
+            setBytePtr(ByteBuffer.wrap(val), offset);
         }
 
         public void setEntityNumberPtr(final int val) {
@@ -1091,13 +1091,14 @@ public class Script_Program {
             setVectorPtr(vector.ToFloatPtr());
         }
 
-        void setVectorPtr(float[]vector) {
-            primitive.asFloatBuffer().put(0, vector[0]).put(1, vector[1]).put(2, vector[2]);
+        void setVectorPtr(float[] vector) {
+            vectorPtr = new idVec3(vector);
+            primitive.putFloat(0, vector[0]);
         }
 
         idVec3 getVectorPtr() {
-            final FloatBuffer fb = primitive.asFloatBuffer();
-            return new idVec3(fb.get(0), fb.get(1), fb.get(2));
+            vectorPtr.oSet(0, primitive.getFloat(0));
+            return vectorPtr;
         }
 
         int getIntPtr() {
@@ -1113,11 +1114,11 @@ public class Script_Program {
         }
 
         void setBytePtr(ByteBuffer bytes, int offset) {
-            setBytePtr(bytes.array(), offset);
+            primitive = (((ByteBuffer) bytes.duplicate().order(ByteOrder.LITTLE_ENDIAN).position(offset).limit(offset + primitive.capacity())).slice()).order(ByteOrder.LITTLE_ENDIAN);
         }
 
         void setBytePtr(byte[] bytes, int offset) {
-            primitive.put(bytes, offset, Math.min(primitive.capacity(), bytes.length - offset)).rewind();
+            setBytePtr(ByteBuffer.wrap(bytes), offset);
         }
 
         public void setStringPtr(ByteBuffer data, int offset) {

@@ -214,8 +214,17 @@ public class Script_Interpreter {
         public  boolean    threadDying;
         public  boolean    terminateOnExit;
         public  boolean    debug;
-//
-//
+        //
+        //
+
+        public idInterpreter() {
+            localstackUsed = 0;
+            terminateOnExit = true;
+            debug = false;
+//            memset(localstack, 0, sizeof(localstack));
+//            memset(callStack, 0, sizeof(callStack));
+            Reset();
+        }
 
         private void PopParms(int numParms) {
             // pop our parms off the stack
@@ -941,7 +950,8 @@ public class Script_Interpreter {
             EnterFunction(func, false);
         }
 
-        public boolean Execute() {
+        private static int DBG_Execute = 0;
+        public boolean Execute() {DBG_Execute++;
             varEval_s var_a = new varEval_s();
             varEval_s var_b;
             varEval_s var_c;
@@ -952,6 +962,7 @@ public class Script_Interpreter {
             float floatVal;
             idScriptObject obj;
             function_t func;
+            System.out.println(instructionPointer);
 
             if (threadDying || NOT(currentFunction)) {
                 return true;
@@ -1036,7 +1047,7 @@ public class Script_Interpreter {
 
                     case OP_IFNOT:
                         var_a = GetVariable(st.a);
-                        if (var_a.getIntPtr() != 0) {
+                        if (var_a.getIntPtr() == 0) {
                             NextInstruction(instructionPointer + st.b.value.getJumpOffset());
                         }
                         break;
@@ -1461,8 +1472,8 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         obj = GetScriptObject(var_a.getEntityNumberPtr());
                         if (obj != null) {
-                            final int pos = st.b.value.getPtrOffset();
-                            obj.data.putFloat(pos, obj.data.getFloat(pos) + 1);
+                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
+                            var.setFloatPtr(var.getFloatPtr() + 1);
                         }
                         break;
 
@@ -1475,8 +1486,8 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         obj = GetScriptObject(var_a.getEntityNumberPtr());
                         if (obj != null) {
-                            final int pos = st.b.value.getPtrOffset();
-                            obj.data.putFloat(pos, obj.data.getFloat(pos) - 1);
+                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
+                            var.setFloatPtr(var.getFloatPtr() - 1);
                         }
                         break;
 
@@ -1760,7 +1771,8 @@ public class Script_Interpreter {
                         if (NOT(obj)) {
                             var_c.setEntityNumberPtr(0);
                         } else {
-                            var_c.setEntityNumberPtr(obj.data.getInt(st.b.value.getPtrOffset()));
+                            var.setBytePtr(obj.data, st.b.value.getPtrOffset());
+                            var_c.setEntityNumberPtr(var.getEntityNumberPtr());
                         }
                         break;
 
