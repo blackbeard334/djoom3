@@ -3,7 +3,7 @@ package neo.Game.Script;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -642,6 +642,7 @@ public class Script_Program {
         private idTypeDef  type;
         //
         public  ByteBuffer data;
+        public  int        offset;
 //
 //
 
@@ -1010,7 +1011,6 @@ public class Script_Program {
         function_t   functionPtr;
 //        final         int[]          intPtr;
 //        final         ByteBuffer     bytePtr;
-//        final         int[]          entityNumberPtr;
 //        private int virtualFunction;
 //        private int jumpOffset;
 //        private int stackOffset;		// offset in stack for local variables
@@ -1123,6 +1123,10 @@ public class Script_Program {
 
         public void setStringPtr(ByteBuffer data, int offset) {
             stringPtr = new String(data.array()).substring(offset);
+        }
+
+        public void setEvalPtr(final int entityNumberIndex) {
+            this.setEntityNumberPtr(entityNumberIndex);
         }
     }
 

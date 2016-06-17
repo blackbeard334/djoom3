@@ -44,9 +44,29 @@ scrambling for a thread...
 								-instructionPointer==27634
 								-OP_STORE_F
 
-				-
 
-
+-lots of idActor::Event_PlayCycle() are missing
+	-idProgram::ReturnString()
+		-idEntity::Event_GetKey()
+			-idProgram::ReturnString("path_cycleanim")
+				-which has "classname" as key
+					-which is set in idInterpreter::PushString() #56
+						-idCompiler::EmitOpcode() 23726
+					-OP_INDIRECT_BOOL - instructionPoitner==23324
+						-GetScriptObject() returns empty obj
+							-(((gameLocal.entities[1712])->scriptObject).data)[352] should be 1
+								-which is set at OP_STOREP_FTOBOOL in idInterpreter::Execute() instructionPointer == 22614
+								-so how is the gameLocal.entities[] being instantiated, and how is it referencing the local stack?
+									-entityNumber	1712	int
+									-let's try injecting it with poison?
+									-idGameLocal::RegisterEntity()
+									-idScriptObject::SetType() #53
+									-::LinkTo()????????????
+									idInterpreter::Execute()
+									OP_ADDRESS
+									var_c.evalPtr->bytePtr = &obj->data[ st->b->value.ptrOffset ]; 
+										sets evalPtr, not the other way around, obviously
+										
 
 
 

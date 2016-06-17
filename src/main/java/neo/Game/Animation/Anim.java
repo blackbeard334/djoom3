@@ -832,9 +832,9 @@ public class Anim {
 
             ConvertTimeToFrame(time, cyclecount, frame);
 
-            Float[] componentPtr1 = componentFrames.Ptr();
+            Float[] componentPtr1 = componentFrames.Ptr(Float[].class);
             c1_ptr = numAnimatedComponents * frame.frame1 + jointInfo.oGet(0).firstComponent;
-            Float[] componentPtr2 = componentFrames.Ptr();
+            Float[] componentPtr2 = componentFrames.Ptr(Float[].class);
             c2_ptr = numAnimatedComponents * frame.frame2 + jointInfo.oGet(0).firstComponent;
 
             if ((jointInfo.oGet(0).animBits & ANIM_TX) != 0) {

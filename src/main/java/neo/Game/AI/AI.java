@@ -505,7 +505,7 @@ public class AI {
             moveStatus = MOVE_STATUS_DONE;
             moveDest = new idVec3();
             moveDir = new idVec3(1.0f, 0.0f, 0.0f);
-            goalEntity = null;
+            goalEntity = new idEntityPtr<>(null);
             goalEntityOrigin = new idVec3();
             toAreaNum = 0;
             startTime = 0;
@@ -515,7 +515,7 @@ public class AI {
             wanderYaw = 0;
             nextWanderTime = 0;
             blockTime = 0;
-            obstacle = null;
+            obstacle = new idEntityPtr<>(null);
             lastMoveOrigin = getVec3_origin();
             lastMoveTime = 0;
             anim = 0;
@@ -2753,7 +2753,7 @@ public class AI {
 
             if (ignore_obstacles) {
                 newPos.oSet(goalPos);
-                move.obstacle = null;
+                move.obstacle.oSet(null);
                 return;
             }
 
@@ -2826,7 +2826,7 @@ public class AI {
                 move.obstacle.oSet(obstacle);
             } else {
                 newPos.oSet(path.seekPos);
-                move.obstacle = null;
+                move.obstacle.oSet(null);
             }
         }
 
@@ -2863,7 +2863,7 @@ public class AI {
                 move.lastMoveTime = gameLocal.time;
             }
 
-            move.obstacle = null;
+            move.obstacle.oSet(null);
             if ((move.moveCommand == MOVE_FACE_ENEMY) && enemy.GetEntity() != null) {
                 TurnToward(lastVisibleEnemyPos);
                 goalPos = oldOrigin;
@@ -2959,7 +2959,7 @@ public class AI {
                 move.lastMoveTime = gameLocal.time;
             }
 
-            move.obstacle = null;
+            move.obstacle.oSet(null);
             if ((move.moveCommand == MOVE_FACE_ENEMY) && enemy.GetEntity() != null) {
                 TurnToward(lastVisibleEnemyPos);
                 goalPos = move.moveDest;
@@ -3790,7 +3790,7 @@ public class AI {
             move.moveCommand = MOVE_NONE;
             move.moveStatus = status;
             move.toAreaNum = 0;
-            move.goalEntity = null;
+            move.goalEntity.oSet(null);
             move.moveDest = physicsObj.GetOrigin();
             AI_DEST_UNREACHABLE._(false);
             AI_OBSTACLE_IN_PATH._(false);
@@ -3868,7 +3868,7 @@ public class AI {
             }
 
             move.moveDest = pos;
-            move.goalEntity = null;
+            move.goalEntity.oSet(null);
             move.moveCommand = MOVE_TO_POSITION_DIRECT;
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
@@ -4171,7 +4171,7 @@ public class AI {
             }
 
             move.moveDest = org;
-            move.goalEntity = null;
+            move.goalEntity.oSet(null);
             move.moveCommand = MOVE_TO_POSITION;
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
@@ -4231,7 +4231,7 @@ public class AI {
             StopMove(MOVE_STATUS_DONE);
 
             move.moveDest = pos;
-            move.goalEntity = null;
+            move.goalEntity.oSet(null);
             move.moveCommand = MOVE_SLIDE_TO_POSITION;
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;

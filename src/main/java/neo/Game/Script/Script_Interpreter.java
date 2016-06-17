@@ -192,6 +192,7 @@ public class Script_Interpreter {
 
     public static class idInterpreter {
 
+        public static final int NULL_ENTITY = -1;
         private final prstack_s[] callStack = new prstack_s[MAX_STACK_DEPTH];
         private int callStackDepth;
         private int maxStackDepth;
@@ -236,6 +237,7 @@ public class Script_Interpreter {
         }
 
         private void PushString(final String string) {
+            System.out.println("+++ " + string);
             if (localstackUsed + MAX_STRING_LEN > LOCALSTACK_SIZE) {
                 Error("PushString: locals stack overflow\n");
             }
@@ -309,6 +311,20 @@ public class Script_Interpreter {
             } else {
                 return def.value;
             }
+        }
+
+        private varEval_s GetEvalVariable(idVarDef def) {
+            final varEval_s var = GetVariable(def);
+            if (var.getEntityNumberPtr() != NULL_ENTITY) {
+                final idScriptObject scriptObject = gameLocal.entities[var.getEntityNumberPtr() - 1].scriptObject;
+                final ByteBuffer data = scriptObject.data;
+                if (data != null) {
+                    var.evalPtr = new varEval_s();
+                    var.evalPtr.setBytePtr(data, scriptObject.offset);
+                }
+            }
+
+            return var;
         }
 
         private idEntity GetEntity(int entnum) {
@@ -962,7 +978,7 @@ public class Script_Interpreter {
             float floatVal;
             idScriptObject obj;
             function_t func;
-            System.out.println(instructionPointer);
+//            System.out.println(instructionPointer);
 
             if (threadDying || NOT(currentFunction)) {
                 return true;
@@ -1578,16 +1594,16 @@ public class Script_Interpreter {
                         break;
 
                     case OP_STOREP_F:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null) {// && var_b.evalPtr.floatPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setFloatPtr(var_a.getFloatPtr());
                         }
                         break;
 
                     case OP_STOREP_ENT:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null) {// && var_b.evalPtr.entityNumberPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setEntityNumberPtr(var_a.getEntityNumberPtr());
                         }
@@ -1595,39 +1611,39 @@ public class Script_Interpreter {
 
                     case OP_STOREP_FLD:
                     case OP_STOREP_BOOL:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null) {// && var_b.evalPtr.intPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setIntPtr(var_a.getIntPtr());
                         }
                         break;
                         
                     case OP_STOREP_S:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null && var_b.evalPtr.stringPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_b.evalPtr.stringPtr = GetString(st.a);//idStr.Copynz(var_b.evalPtr.stringPtr, GetString(st.a), MAX_STRING_LEN);
                         }
                         break;
 
                     case OP_STOREP_V:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null) {// && var_b.evalPtr.vectorPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setVectorPtr(vectorPtr);
                         }
                         break;
 
                     case OP_STOREP_FTOS:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null && var_b.evalPtr.stringPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.stringPtr = FloatToString(var_a.getFloatPtr());//idStr.Copynz(var_b.evalPtr.stringPtr, FloatToString(var_a.floatPtr.oGet()), MAX_STRING_LEN);
                         }
                         break;
 
                     case OP_STOREP_BTOS:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null && var_b.evalPtr.stringPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             if (var_a.getFloatPtr() != 0.0f) {
                                 var_b.evalPtr.stringPtr = "true";//idStr.Copynz(var_b.evalPtr.stringPtr, "true", MAX_STRING_LEN);
@@ -1638,16 +1654,16 @@ public class Script_Interpreter {
                         break;
 
                     case OP_STOREP_VTOS:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null && var_b.evalPtr.stringPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.stringPtr = vectorPtr.ToString();//idStr.Copynz(var_b.evalPtr.stringPtr, var_a.vectorPtr[0].ToString(), MAX_STRING_LEN);
                         }
                         break;
 
                     case OP_STOREP_FTOBOOL:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null) {// && var_b.evalPtr.intPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             if (var_a.getFloatPtr() != 0.0f) {
                                 var_b.evalPtr.setIntPtr(1);
@@ -1658,32 +1674,32 @@ public class Script_Interpreter {
                         break;
 
                     case OP_STOREP_BOOLTOF:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null) {// && var_b.evalPtr.floatPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.evalPtr.setFloatPtr(Float.intBitsToFloat(var_a.getIntPtr()));
+                            var_b.setFloatPtr(Float.intBitsToFloat(var_a.getIntPtr()));
                         }
                         break;
 
                     case OP_STOREP_OBJ:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null) {// && var_b.evalPtr.entityNumberPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             var_b.evalPtr.setEntityNumberPtr(var_a.getEntityNumberPtr());
                         }
                         break;
 
                     case OP_STOREP_OBJENT:
-                        var_b = GetVariable(st.b);
-                        if (var_b.evalPtr != null) {// && var_b.evalPtr.entityNumberPtr != null) {
+                        var_b = GetEvalVariable(st.b);
+                        if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             obj = GetScriptObject(var_a.getEntityNumberPtr());
                             if (NOT(obj)) {
                                 var_b.evalPtr.setEntityNumberPtr(0);
 
-                                // st.b points to type_pointer, which is just a temporary that gets its type reassigned, so we store the real type in st.c
-                                // so that we can do a type check during run time since we don't know what type the script object is at compile time because it
-                                // comes from an entity
+                            // st.b points to type_pointer, which is just a temporary that gets its type reassigned, so we store the real type in st.c
+                            // so that we can do a type check during run time since we don't know what type the script object is at compile time because it
+                            // comes from an entity
                             } else if (!obj.GetTypeDef().Inherits(st.c.TypeDef())) {
                                 //Warning( "object '%s' cannot be converted to '%s'", obj.GetTypeName(), st.c.TypeDef().Name() );
                                 var_b.evalPtr.setEntityNumberPtr(0);
@@ -1698,10 +1714,10 @@ public class Script_Interpreter {
                         var_c = GetVariable(st.c);
                         obj = GetScriptObject(var_a.getEntityNumberPtr());
                         if (obj != null) {
-                            var_c.evalPtr = new varEval_s();
-                            var_c.evalPtr.setBytePtr(obj.data, st.b.value.getPtrOffset());
+                            obj.offset = st.b.value.getPtrOffset();
+                            var_c.setEvalPtr(var_a.getEntityNumberPtr());
                         } else {
-                            var_c.evalPtr = null;
+                            var_c.setEvalPtr(NULL_ENTITY);;
                         }
                         break;
 

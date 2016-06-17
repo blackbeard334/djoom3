@@ -1452,11 +1452,11 @@ public class AAS_local {
             }
             areaCacheIndex = new idRoutingCache[file.GetNumClusters()][areaCacheIndexSize];// Mem_ClearedAlloc(file.GetNumClusters() /* sizeof( idRoutingCache ** )*/ + areaCacheIndexSize /* sizeof( idRoutingCache *)*/);
 //	bytePtr = ((byte *)areaCacheIndex) + file.GetNumClusters() * sizeof( idRoutingCache ** );
-            bytePtr = file.GetNumClusters();
-            for (i = 0; i < file.GetNumClusters(); i++) {
-                areaCacheIndex[i] = new idRoutingCache[bytePtr];
-                bytePtr += file.GetCluster(i).numReachableAreas /* sizeof( idRoutingCache * )*/;
-            }
+//            bytePtr = file.GetNumClusters();
+//            for (i = 0; i < file.GetNumClusters(); i++) {
+//                areaCacheIndex[i] = new idRoutingCache[bytePtr];
+//                bytePtr += file.GetCluster(i).numReachableAreas /* sizeof( idRoutingCache * )*/;
+//            }
 
             portalCacheIndexSize = file.GetNumAreas();
             portalCacheIndex = new idRoutingCache[portalCacheIndexSize];// Mem_ClearedAlloc(portalCacheIndexSize /* sizeof( idRoutingCache * )*/);
@@ -1663,7 +1663,7 @@ public class AAS_local {
             badTravelFlags = ~areaCache.travelFlags;
 
             // initialize first update
-            curUpdate = areaUpdate[clusterAreaNum];
+            curUpdate = areaUpdate[clusterAreaNum] = new idRoutingUpdate();
             curUpdate.areaNum = areaCache.areaNum;
             curUpdate.areaTravelTimes = IntBuffer.wrap(startAreaTravelTimes);
             curUpdate.tmpTravelTime = areaCache.startTravelTime;
@@ -1724,7 +1724,7 @@ public class AAS_local {
 
                         areaCache.travelTimes[clusterAreaNum] = t;
                         areaCache.reachabilities[clusterAreaNum] = reach.number; // reversed reachability used to get into this area
-                        nextUpdate = areaUpdate[clusterAreaNum];
+                        nextUpdate = areaUpdate[clusterAreaNum] = (areaUpdate[clusterAreaNum] == null ? new idRoutingUpdate() : areaUpdate[clusterAreaNum]);
                         nextUpdate.areaNum = nextAreaNum;
                         nextUpdate.tmpTravelTime = t;
                         nextUpdate.areaTravelTimes = reach.areaTravelTimes;
@@ -1795,7 +1795,7 @@ public class AAS_local {
             idRoutingCache cache;
             idRoutingUpdate updateListStart, updateListEnd, curUpdate, nextUpdate;
 
-            curUpdate = portalUpdate[ file.GetNumPortals()];
+            curUpdate = portalUpdate[file.GetNumPortals()] = new idRoutingUpdate();
             curUpdate.cluster = portalCache.cluster;
             curUpdate.areaNum = portalCache.areaNum;
             curUpdate.tmpTravelTime = portalCache.startTravelTime;
@@ -1844,7 +1844,7 @@ public class AAS_local {
 
                         portalCache.travelTimes[portalNum] = t;
                         portalCache.reachabilities[portalNum] = cache.reachabilities[clusterAreaNum];
-                        nextUpdate = portalUpdate[portalNum];
+                        nextUpdate = portalUpdate[portalNum] = (portalUpdate[portalNum] == null ? new idRoutingUpdate() : portalUpdate[portalNum]);
                         if (portal.clusters[0] == curUpdate.cluster) {
                             nextUpdate.cluster = portal.clusters[1];
                         } else {

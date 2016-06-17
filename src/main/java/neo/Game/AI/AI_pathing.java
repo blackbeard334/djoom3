@@ -108,18 +108,20 @@ public class AI_pathing {
 
     static class pathNode_s {
 
-        int        dir;
-        idVec2     pos;
-        idVec2     delta;
-        float      dist;
-        int        obstacle;
-        int        edgeNum;
-        int        numNodes;
-        pathNode_s parent;
+        int          dir;
+        idVec2       pos;
+        idVec2       delta;
+        float        dist;
+        int          obstacle;
+        int          edgeNum;
+        int          numNodes;
+        pathNode_s   parent;
         pathNode_s[] children = new pathNode_s[2];
-        pathNode_s next;
+        pathNode_s   next;
 
         public pathNode_s() {
+            pos = new idVec2();
+            delta = new idVec2();
             pathNodeAllocator++;
         }
 
@@ -835,9 +837,9 @@ public class AI_pathing {
         optimizedPath[0] = root.pos;
         numPathPoints = 1;
 
-        for (nextNode = curNode = root; !curNode.equals(leafNode); curNode = nextNode) {
+        for (nextNode = curNode = root; curNode != leafNode; curNode = nextNode) {
 
-            for (nextNode = leafNode; !nextNode.parent.equals(curNode); nextNode = nextNode.parent) {
+            for (nextNode = leafNode; nextNode.parent != curNode; nextNode = nextNode.parent) {
 
                 // can only take shortcuts when going from one object to another
                 if (nextNode.obstacle == curNode.obstacle) {
@@ -917,6 +919,7 @@ public class AI_pathing {
         float pathLength, bestPathLength;
         boolean pathToGoalExists, optimizedPathCalculated;
 
+        optimizedPath[1] = new idVec2(-107374176, -107374176);
         seekPos.Zero();
         seekPos.z = height;
 
