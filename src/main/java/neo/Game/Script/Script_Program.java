@@ -20,6 +20,7 @@ import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 
 import static neo.TempDump.btoi;
+import static neo.TempDump.btos;
 import static neo.TempDump.itob;
 import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
@@ -1114,7 +1115,7 @@ public class Script_Program {
         }
 
         void setBytePtr(ByteBuffer bytes, int offset) {
-            primitive = (((ByteBuffer) bytes.duplicate().order(ByteOrder.LITTLE_ENDIAN).position(offset).limit(offset + primitive.capacity())).slice()).order(ByteOrder.LITTLE_ENDIAN);
+            primitive = (((ByteBuffer) bytes.duplicate().order(ByteOrder.LITTLE_ENDIAN).position(offset)).slice()).order(ByteOrder.LITTLE_ENDIAN);
         }
 
         void setBytePtr(byte[] bytes, int offset) {
@@ -1122,7 +1123,11 @@ public class Script_Program {
         }
 
         public void setStringPtr(ByteBuffer data, int offset) {
-            stringPtr = new String(data.array()).substring(offset);
+            stringPtr = btos(data.array(), offset);
+        }
+
+        public void setString(final String string) {//TODO:clean up all these weird string pointers
+            primitive.put(string.getBytes()).rewind();
         }
 
         public void setEvalPtr(final int entityNumberIndex) {

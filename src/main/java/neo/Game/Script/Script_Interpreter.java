@@ -1621,7 +1621,7 @@ public class Script_Interpreter {
                     case OP_STOREP_S:
                         var_b = GetEvalVariable(st.b);
                         if (var_b != null && var_b.evalPtr != null) {
-                            var_b.evalPtr.stringPtr = GetString(st.a);//idStr.Copynz(var_b.evalPtr.stringPtr, GetString(st.a), MAX_STRING_LEN);
+                            var_b.evalPtr.setString(GetString(st.a));//idStr.Copynz(var_b.evalPtr.stringPtr, GetString(st.a), MAX_STRING_LEN);
                         }
                         break;
 
@@ -1637,7 +1637,7 @@ public class Script_Interpreter {
                         var_b = GetEvalVariable(st.b);
                         if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.evalPtr.stringPtr = FloatToString(var_a.getFloatPtr());//idStr.Copynz(var_b.evalPtr.stringPtr, FloatToString(var_a.floatPtr.oGet()), MAX_STRING_LEN);
+                            var_b.evalPtr.setString(FloatToString(var_a.getFloatPtr()));//idStr.Copynz(var_b.evalPtr.stringPtr, FloatToString(var_a.floatPtr.oGet()), MAX_STRING_LEN);
                         }
                         break;
 
@@ -1646,9 +1646,9 @@ public class Script_Interpreter {
                         if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
                             if (var_a.getFloatPtr() != 0.0f) {
-                                var_b.evalPtr.stringPtr = "true";//idStr.Copynz(var_b.evalPtr.stringPtr, "true", MAX_STRING_LEN);
+                                var_b.evalPtr.setString("true");//idStr.Copynz(var_b.evalPtr.stringPtr, "true", MAX_STRING_LEN);
                             } else {
-                                var_b.evalPtr.stringPtr = "false";//idStr.Copynz(var_b.evalPtr.stringPtr, "false", MAX_STRING_LEN);
+                                var_b.evalPtr.setString("false");//idStr.Copynz(var_b.evalPtr.stringPtr, "false", MAX_STRING_LEN);
                             }
                         }
                         break;
@@ -1657,7 +1657,7 @@ public class Script_Interpreter {
                         var_b = GetEvalVariable(st.b);
                         if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.evalPtr.stringPtr = vectorPtr.ToString();//idStr.Copynz(var_b.evalPtr.stringPtr, var_a.vectorPtr[0].ToString(), MAX_STRING_LEN);
+                            var_b.evalPtr.setString(vectorPtr.ToString());//idStr.Copynz(var_b.evalPtr.stringPtr, var_a.vectorPtr[0].ToString(), MAX_STRING_LEN);
                         }
                         break;
 

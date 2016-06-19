@@ -1516,7 +1516,7 @@ public class Anim_Blend {
 
             // find a specific animation
             for (i = 0; i < anims.Num(); i++) {
-                if (anims.oGet(i).FullName().equals(name)) {
+                if (name.startsWith(anims.oGet(i).FullName())) {
                     return i + 1;
                 }
             }

@@ -66,7 +66,10 @@ scrambling for a thread...
 									OP_ADDRESS
 									var_c.evalPtr->bytePtr = &obj->data[ st->b->value.ptrOffset ]; 
 										sets evalPtr, not the other way around, obviously
-										
+	-the data is pushed on a localstack, but then we use a different localstack down the line?
+		-the string is copied to the 2nd localstack via a simple idInterpreter::PushString(), 67 & 70 respectively.
+			-which is set in OP_INDIRECT_S >>>> idInterpreter::SetString(), with instructionPointer==22543
+				-set in OP_STOREP_S >>>>instructionPointer==22889
 
 
 
