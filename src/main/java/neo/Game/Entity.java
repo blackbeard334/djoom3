@@ -280,6 +280,7 @@ public class Entity {
         //	ABSTRACT_PROTOTYPE( idEntity );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(Class.idClass.getEventCallBacks());
             eventCallbacks.put(EV_GetName, (eventCallback_t0<idEntity>) idEntity::Event_GetName);
             eventCallbacks.put(EV_SetName, (eventCallback_t1<idEntity>) idEntity::Event_SetName);
             eventCallbacks.put(EV_FindTargets, (eventCallback_t0<idEntity>) idEntity::Event_FindTargets);

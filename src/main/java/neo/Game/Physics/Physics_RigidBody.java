@@ -874,8 +874,12 @@ public class Physics_RigidBody {
             dir.SubVec3_oSet(1, current.i.angularMomentum);
             dir.SubVec3_Normalize(0);
             dir.SubVec3_Normalize(1);
-            num = gameLocal.clip.Contacts(contacts.Ptr(contactInfo_t[].class), 10, clipModel.GetOrigin(),
+            final contactInfo_t[] contactz = contacts.Ptr(contactInfo_t[].class);
+            num = gameLocal.clip.Contacts(contactz, 10, clipModel.GetOrigin(),
                     dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
+            for (int i = 0; i < num; i++) {
+                contacts.oSet(i, contactz[i]);
+            }
             contacts.SetNum(num, false);
 
             AddContactEntitiesForContacts();

@@ -19,6 +19,8 @@ import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.g_debugTriggers;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameState_t.GAMESTATE_STARTUP;
+import neo.Game.Projectile.idBFGProjectile;
+import neo.Game.Projectile.idProjectile;
 import neo.Game.Script.Script_Thread.idThread;
 import neo.TempDump.Deprecation_Exception;
 import static neo.TempDump.NOT;
@@ -33,6 +35,7 @@ import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -224,8 +227,13 @@ public class Class {
     public static abstract class idClass/*<nameOfClass>*/ {
 
         //        public static final idTypeInfo Type = null;
-//        public idEventFunc<nameOfClass>[] eventcallbacks;
-        // 
+        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        static {
+            eventCallbacks.put(EV_Remove, (eventCallback_t0<idClass>) idClass::Event_Remove);
+            eventCallbacks.put(EV_SafeRemove, (eventCallback_t0<idClass>) idClass::Event_SafeRemove);
+        }
+
+        //
         private static boolean            initialized = false;
         // alphabetical order
         private static idList<idTypeInfo> types       = new idList<>();
@@ -244,7 +252,7 @@ public class Class {
         public abstract eventCallback_t getEventCallBack(idEventDef event);
 
         public static Map<idEventDef, eventCallback_t> getEventCallBacks() {
-            throw new UnsupportedOperationException("Never call this function on idClass!");
+            return eventCallbacks;
         }
 
 // #ifdef ID_REDIRECT_NEWDELETE
@@ -559,7 +567,14 @@ public class Class {
         }
 
         public void Event_Remove() {
-//	delete this;//if only
+            //	delete this;//if only
+            if (this instanceof idBFGProjectile) {
+                idBFGProjectile.delete((idBFGProjectile) this);
+            } else if (this instanceof idProjectile) {
+                idProjectile.delete((idProjectile) this);
+            } else if (this instanceof idEntity) {
+                idEntity.delete((idEntity) this);
+            }
         }
 
         // Static functions

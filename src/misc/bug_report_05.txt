@@ -6,71 +6,115 @@ GL_INVALID_VALUE error generated. Width and height must not be negative.
 			-idScreenRect{x1=250, y1=70, x2=254, y2=74}
 			
 			
--let's park this for a while, and try to illuminate
-	-r_showLights
--let's see if we can move around some
-
-scrambling for a thread...
--let's try to reproduce our shitty situation in c++?
-
-
--the java version does an AllocDef() sooner from GetExpression() 528. meaning, on the way back from prio 0(around 4 I think), the java version tries to allocate while the cpp version doesn't
-	-idCompiler::GetExpression()
-		-spin_start
-		-7027
-			-6944 matches on both
-			-7010 misses
-				-idCompiler::FindImmediate()
-				-718
-					-idProgram::GetDefList() returns the correct chain in both, but for some reason our version has duplicate 952's?
-						-idVarDef::~idVarDef() isn't being called
-
--idInterpreter::Execute()
-	-idAI::Think()
-		-receptionist_typing_start
-			-instructionPointer!=instructionPointer
-	-idPlayer::Think() DBG_Execute == 14
-		-player1
-			-idInterpreter::NextInstruction() 125
-				-idActor::UpdateAnimState() not called
-					-scratch that, it is being called
-					-27687 vs 27637 though
-					-OP_IFNOT vs OP_IF
-					-st.v.value !=
-					-localstack has wrong value
-						-idInterpreter::Push(), ((int*)localstack)[9]==1701602409
-							-idInterpreter::Execute(),	OP_PUSH_OBJENT,	instructionPointer==27634
-							-(((int*)localstack))[1]==1065353216
-								-instructionPointer==27634
-								-OP_STORE_F
-
-
--lots of idActor::Event_PlayCycle() are missing
-	-idProgram::ReturnString()
-		-idEntity::Event_GetKey()
-			-idProgram::ReturnString("path_cycleanim")
-				-which has "classname" as key
-					-which is set in idInterpreter::PushString() #56
-						-idCompiler::EmitOpcode() 23726
-					-OP_INDIRECT_BOOL - instructionPoitner==23324
-						-GetScriptObject() returns empty obj
-							-(((gameLocal.entities[1712])->scriptObject).data)[352] should be 1
-								-which is set at OP_STOREP_FTOBOOL in idInterpreter::Execute() instructionPointer == 22614
-								-so how is the gameLocal.entities[] being instantiated, and how is it referencing the local stack?
-									-entityNumber	1712	int
-									-let's try injecting it with poison?
-									-idGameLocal::RegisterEntity()
-									-idScriptObject::SetType() #53
-									-::LinkTo()????????????
-									idInterpreter::Execute()
-									OP_ADDRESS
-									var_c.evalPtr->bytePtr = &obj->data[ st->b->value.ptrOffset ]; 
-										sets evalPtr, not the other way around, obviously
-	-the data is pushed on a localstack, but then we use a different localstack down the line?
-		-the string is copied to the 2nd localstack via a simple idInterpreter::PushString(), 67 & 70 respectively.
-			-which is set in OP_INDIRECT_S >>>> idInterpreter::SetString(), with instructionPointer==22543
-				-set in OP_STOREP_S >>>>instructionPointer==22889
-
+====================================================================================================================================================
+|--------------------------------------------------------------------------------------------------------------------------------------------------
+|-let's park this for a while, and try to illuminate
+|	-r_showLights
+|-let's see if we can move around some
+|
+|scrambling for a thread...
+|-let's try to reproduce our shitty situation in c++?
+|
+|
+|-the java version does an AllocDef() sooner from GetExpression() 528. meaning, on the way back from prio 0(around 4 I think), the java version tries to allocate while the cpp version doesn't
+|	-idCompiler::GetExpression()
+|		-spin_start
+|		-7027
+|			-6944 matches on both
+|			-7010 misses
+|				-idCompiler::FindImmediate()
+|				-718
+|					-idProgram::GetDefList() returns the correct chain in both, but for some reason our version has duplicate 952's?
+|						-idVarDef::~idVarDef() isn't being called
+|
+|-idInterpreter::Execute()
+|	-idAI::Think()
+|		-receptionist_typing_start
+|			-instructionPointer!=instructionPointer
+|	-idPlayer::Think() DBG_Execute == 14
+|		-player1
+|			-idInterpreter::NextInstruction() 125
+|				-idActor::UpdateAnimState() not called
+|					-scratch that, it is being called
+|					-27687 vs 27637 though
+|					-OP_IFNOT vs OP_IF
+|					-st.v.value !=
+|					-localstack has wrong value
+|						-idInterpreter::Push(), ((int*)localstack)[9]==1701602409
+|							-idInterpreter::Execute(),	OP_PUSH_OBJENT,	instructionPointer==27634
+|							-(((int*)localstack))[1]==1065353216
+|								-instructionPointer==27634
+|								-OP_STORE_F
+|
+|
+|-lots of idActor::Event_PlayCycle() are missing
+|	-idProgram::ReturnString()
+|		-idEntity::Event_GetKey()
+|			-idProgram::ReturnString("path_cycleanim")
+|				-which has "classname" as key
+|					-which is set in idInterpreter::PushString() #56
+|						-idCompiler::EmitOpcode() 23726
+|					-OP_INDIRECT_BOOL - instructionPoitner==23324
+|						-GetScriptObject() returns empty obj
+|							-(((gameLocal.entities[1712])->scriptObject).data)[352] should be 1
+|								-which is set at OP_STOREP_FTOBOOL in idInterpreter::Execute() instructionPointer == 22614
+|								-so how is the gameLocal.entities[] being instantiated, and how is it referencing the local stack?
+|									-entityNumber	1712	int
+|									-let's try injecting it with poison?
+|									-idGameLocal::RegisterEntity()
+|									-idScriptObject::SetType() #53
+|									-::LinkTo()????????????
+|									idInterpreter::Execute()
+|									OP_ADDRESS
+|									var_c.evalPtr->bytePtr = &obj->data[ st->b->value.ptrOffset ]; 
+|										sets evalPtr, not the other way around, obviously
+|	-the data is pushed on a localstack, but then we use a different localstack down the line?
+|		-the string is copied to the 2nd localstack via a simple idInterpreter::PushString(), 67 & 70 respectively.
+|			-which is set in OP_INDIRECT_S >>>> idInterpreter::SetString(), with instructionPointer==22543
+|				-set in OP_STOREP_S >>>>instructionPointer==22889
+|--------------------------------------------------------------------------------------------------------------------------------------------------
+====================================================================================================================================================
+				
+-ok, back to the negative values...
+	-should we explore the out of bounds warnings first?
+		-idEntity::RunPhysics()
+		-moveable_diamondbox_sm_1
+		-moveable_diamondbox_sm_2
+			-the order of some of nodes is wrong. moveable_chair2_3 >>>> 2120 idEntity::BecomeActive()
+			-does the order get jumbled in idGameLocal::SortActiveEntityList()?
+				-no
+			-what happens after the initial 2000+ idEntity::BecomeActive() is the problem
+				strstr(activeNode.owner->name.data, "moveable_chair2_3")
+				-no it's not, moveable_chair2_3 becomes active only once, yet it's in our list thrice?
+			-ok, so let's print out the chain size, and see when it changes.
+				-good thinking batman! turns out we were comparing multiple frames. the first 2058 values, are the same frame, and are equivalent.
+					-after that it's like this:
+						j++		c++
+						222		227
+						218		184
+						217		180
+						217		169
+						217		169
+						217		169
+					-this decrease in entities also happens in idGameLocal::RunFrame(), as the stupid entities are removed
+						1837	1844 are removed
+							-ok, so we compared the removed items, and surprise surprise, the stuff not removed is the extra shit we see in the next round...
+								-moveable_chair2_3.thinkFlags == 2, tim_moveable_foamcup_3 as well...TH_PHYSICS
+									-idEntity::BecomeInactive() ---> 8
+										-idPhysics_RigidBody::DropToFloorAndRest() should rest, but it doesn't
+											idCollisionModelManagerLocal::TraceThroughModel()
+											idCollisionModelManagerLocal::TraceThroughAxialBSPTree_r()
+											.
+											.
+											.
+											.
+											idCollisionModelManagerLocal::TranslateTrmVertexThroughPolygon()
+											-missing '~' in FLOATSIGNBITNOTSET()
+									-idEntity::BecomeInactive() ---> 0
+						-almost everything is added/removed in idEvent::ServiceEvents()
+						-some are removed within the idTrigger destructor which is called in idEntity::~idEntity()---> idClass::Event_Remove().
+						-the order of the Schedule() & Alloc() are weird in the Remove() chain of the linkedList between 2058 and the next one
+		
 
 
 /***********************************************************************

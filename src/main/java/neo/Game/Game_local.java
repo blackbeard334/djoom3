@@ -1745,6 +1745,7 @@ public class Game_local {
                                 ent.Think();
                                 num++;
                             }
+                            System.out.println("~~" + num);
                         }
                     }
 

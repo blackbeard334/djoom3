@@ -49,7 +49,7 @@ public class Math_h {
     }
 
     public static int FLOATSIGNBITNOTSET(float f) {
-        return /*(~(*(const unsigned long *)&(f))) >> 31;}*/ ((Float.floatToIntBits(f) & 0x80000000) == 0) ? 0 : 1;
+        return /*(~(*(const unsigned long *)&(f))) >> 31;}*/ (((~Float.floatToIntBits(f)) & 0x80000000) == 0) ? 0 : 1;
     }
 
     public static boolean FLOATNOTZERO(float f) /*{return (*(const unsigned long *)&(f)) & ~(1<<31) ;}*/ {
@@ -79,18 +79,19 @@ public class Math_h {
     public static boolean FLOAT_IS_DENORMAL(float x) {
         return ((Float.floatToIntBits(x) & 0x7f800000) == 0x00000000) && ((Float.floatToIntBits(x) & 0x007fffff) != 0x00000000);
     }
-    private static final int IEEE_FLT_MANTISSA_BITS = 23;
-    private static final int IEEE_FLT_EXPONENT_BITS = 8;
-    private static final int IEEE_FLT_EXPONENT_BIAS = 127;
-    private static final int IEEE_FLT_SIGN_BIT = 31;
-    private static final int IEEE_DBL_MANTISSA_BITS = 52;
-    private static final int IEEE_DBL_EXPONENT_BITS = 11;
-    private static final int IEEE_DBL_EXPONENT_BIAS = 1023;
-    private static final int IEEE_DBL_SIGN_BIT = 63;
+
+    private static final int IEEE_FLT_MANTISSA_BITS  = 23;
+    private static final int IEEE_FLT_EXPONENT_BITS  = 8;
+    private static final int IEEE_FLT_EXPONENT_BIAS  = 127;
+    private static final int IEEE_FLT_SIGN_BIT       = 31;
+    private static final int IEEE_DBL_MANTISSA_BITS  = 52;
+    private static final int IEEE_DBL_EXPONENT_BITS  = 11;
+    private static final int IEEE_DBL_EXPONENT_BIAS  = 1023;
+    private static final int IEEE_DBL_SIGN_BIT       = 63;
     private static final int IEEE_DBLE_MANTISSA_BITS = 63;
     private static final int IEEE_DBLE_EXPONENT_BITS = 15;
     private static final int IEEE_DBLE_EXPONENT_BIAS = 0;
-    private static final int IEEE_DBLE_SIGN_BIT = 79;
+    private static final int IEEE_DBLE_SIGN_BIT      = 79;
 
     public static int MaxIndex(double x, double y) {
         return (x > y) ? 0 : 1;
@@ -920,34 +921,35 @@ public class Math_h {
             }
             return hash;
         }
-        public static final float PI = 3.14159265358979323846f;// pi
-        public static final float TWO_PI = 2.0f * PI;// pi * 2
-        static final float HALF_PI = 0.5f * PI;// pi / 2
-        static final float ONEFOURTH_PI = 0.25f * PI;// pi / 4
-        static final float E = 2.71828182845904523536f;// e
-        static final float SQRT_TWO = 1.41421356237309504880f;// sqrt( 2 )
-        static final float SQRT_THREE = 1.73205080756887729352f;// sqrt( 3 )
-        public static final float SQRT_1OVER2 = 0.70710678118654752440f;// sqrt( 1 / 2 )
-        static final float SQRT_1OVER3 = 0.57735026918962576450f;// sqrt( 1 / 3 )
-        public static final float M_DEG2RAD = PI / 180.0f;// degrees to radians multiplier
-        public static final float M_RAD2DEG = 180.0f / PI;// radians to degrees multiplier
-        static final float M_SEC2MS = 1000.0f;// seconds to milliseconds multiplier
-        public static final float M_MS2SEC = 0.001f;// milliseconds to seconds multiplier
-        public static final float INFINITY = 1e30f;// huge number which should be larger than any valid number used
-        public static final float FLT_EPSILON = 1.192092896e-07f;// smallest positive number such that 1.0+FLT_EPSILON != 1.0
-//	enum {
-        public static final int LOOKUP_BITS = 8;
-        public static final int EXP_POS = 23;
-        public static final int EXP_BIAS = 127;
-        public static final int LOOKUP_POS = (EXP_POS - LOOKUP_BITS);
-        public static final int SEED_POS = (EXP_POS - 8);
+
+        public static final float PI           = 3.14159265358979323846f;// pi
+        public static final float TWO_PI       = 2.0f * PI;// pi * 2
+        static final        float HALF_PI      = 0.5f * PI;// pi / 2
+        static final        float ONEFOURTH_PI = 0.25f * PI;// pi / 4
+        static final        float E            = 2.71828182845904523536f;// e
+        static final        float SQRT_TWO     = 1.41421356237309504880f;// sqrt( 2 )
+        static final        float SQRT_THREE   = 1.73205080756887729352f;// sqrt( 3 )
+        public static final float SQRT_1OVER2  = 0.70710678118654752440f;// sqrt( 1 / 2 )
+        static final        float SQRT_1OVER3  = 0.57735026918962576450f;// sqrt( 1 / 3 )
+        public static final float M_DEG2RAD    = PI / 180.0f;// degrees to radians multiplier
+        public static final float M_RAD2DEG    = 180.0f / PI;// radians to degrees multiplier
+        static final        float M_SEC2MS     = 1000.0f;// seconds to milliseconds multiplier
+        public static final float M_MS2SEC     = 0.001f;// milliseconds to seconds multiplier
+        public static final float INFINITY     = 1e30f;// huge number which should be larger than any valid number used
+        public static final float FLT_EPSILON  = 1.192092896e-07f;// smallest positive number such that 1.0+FLT_EPSILON != 1.0
+        //	enum {
+        public static final int LOOKUP_BITS     = 8;
+        public static final int EXP_POS         = 23;
+        public static final int EXP_BIAS        = 127;
+        public static final int LOOKUP_POS      = (EXP_POS - LOOKUP_BITS);
+        public static final int SEED_POS        = (EXP_POS - 8);
         public static final int SQRT_TABLE_SIZE = (2 << LOOKUP_BITS);
-        public static final int LOOKUP_MASK = (SQRT_TABLE_SIZE - 1);
-//	};
+        public static final int LOOKUP_MASK     = (SQRT_TABLE_SIZE - 1);
+        //	};
 
         static class _flint {
 
-            private int i;
+            private int   i;
             private float f;
 
             public _flint(int i) {

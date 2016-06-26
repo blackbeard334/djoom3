@@ -237,7 +237,7 @@ public class Script_Interpreter {
         }
 
         private void PushString(final String string) {
-            System.out.println("+++ " + string);
+//            System.out.println("+++ " + string);
             if (localstackUsed + MAX_STRING_LEN > LOCALSTACK_SIZE) {
                 Error("PushString: locals stack overflow\n");
             }
@@ -278,7 +278,7 @@ public class Script_Interpreter {
                 final int length = Math.min(str.length(), MAX_STRING_LEN);
                 final int offset = localstackBase + def.value.getStackOffset();
                 final int appendOffset = strLen(localstack, offset);
-                System.arraycopy(from.getBytes(), 0, localstack, appendOffset, length);
+                System.arraycopy(str.getBytes(), 0, localstack, appendOffset, length);
             } else {
                 def.value.stringPtr = idStr.Append(def.value.stringPtr, MAX_STRING_LEN, from);
             }

@@ -1072,13 +1072,14 @@ public class Clip {
                 }
 
                 this.numContacts++;
+                contactInfo_t[] contactz = Arrays.copyOfRange(contacts, numContacts, contacts.length);
                 n = collisionModelManager.Contacts(
-                        Arrays.copyOfRange(contacts, numContacts, contacts.length),
-                        maxContacts - numContacts,
+                        contactz, maxContacts - numContacts,
                         start, dir, depth, trm, trmAxis, contentMask,
                         touch.Handle(), touch.origin, touch.axis);
 
                 for (j = 0; j < n; j++) {
+                    contacts[numContacts] = contactz[j];
                     contacts[numContacts].entityNum = touch.entity.entityNumber;
                     contacts[numContacts].id = touch.id;
                     numContacts++;

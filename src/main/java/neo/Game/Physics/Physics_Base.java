@@ -490,12 +490,14 @@ public class Physics_Base {
             index = contacts.Num();
             contacts.SetNum(index + 10, false);
 
-            contactInfo_t[] contact = {contacts.oGet(index)};
+            contactInfo_t[] contactz = new contactInfo_t[10];
 
             dir.SubVec3_oSet(0, gravityNormal);
             dir.SubVec3_oSet(1, getVec3_origin());
-            num = gameLocal.clip.Contacts(contact, 10, clipModel.GetOrigin(), dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
-            contacts.oSet(index, contact[0]);
+            num = gameLocal.clip.Contacts(contactz, 10, clipModel.GetOrigin(), dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
+            for (int i = 0; i < num; i++) {
+                contacts.oSet(index + i, contactz[i]);
+            }
             contacts.SetNum(index + num, false);
         }
 
