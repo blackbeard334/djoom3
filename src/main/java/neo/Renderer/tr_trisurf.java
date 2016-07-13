@@ -1753,7 +1753,7 @@ public class tr_trisurf {
         if (true) {
 
             if (null == planes) {
-                planes = new idPlane[tri.numIndexes / 3];
+                planes = Stream.generate(idPlane::new).limit(tri.numIndexes / 3).toArray(idPlane[]::new);
             }
 
             SIMDProcessor.DeriveTangents(planes, tri.verts, tri.numVerts, tri.indexes, tri.numIndexes);

@@ -740,7 +740,7 @@ public class Clip {
             idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
             idBounds traceBounds = new idBounds();
             float radius;
-            trace_s[] trace = new trace_s[1];
+            trace_s[] trace = {new trace_s()};
             idTraceModel trm;
 
             if (TestHugeTranslation(results[0], mdl, start, end, trmAxis)) {

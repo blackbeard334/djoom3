@@ -408,7 +408,7 @@ public class RenderWorld {
 
     public static class renderLight_s {
 
-        public idMat3 axis;				// rotation vectors, must be unit length
+        public idMat3 axis   = new idMat3();				// rotation vectors, must be unit length
         public idVec3 origin = new idVec3();
         //
         // if non-zero, the light will not show up in the specific view,
@@ -436,10 +436,10 @@ public class RenderWorld {
         // FIXME: we should probably have real plane equations here, and offer
         // a helper function for conversion from this format
         public idVec3 target = new idVec3();
-        public idVec3 right = new idVec3();
-        public idVec3 up = new idVec3();
-        public idVec3 start = new idVec3();
-        public idVec3 end = new idVec3();
+        public idVec3 right  = new idVec3();
+        public idVec3 up     = new idVec3();
+        public idVec3 start  = new idVec3();
+        public idVec3 end    = new idVec3();
         //
         // Dmap will generate an optimized shadow volume named _prelight_<lightName>
         // for the light against all the _area* models in the map.  The renderer will

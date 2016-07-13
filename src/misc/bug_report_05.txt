@@ -109,11 +109,18 @@ GL_INVALID_VALUE error generated. Width and height must not be negative.
 											.
 											.
 											idCollisionModelManagerLocal::TranslateTrmVertexThroughPolygon()
-											-missing '~' in FLOATSIGNBITNOTSET()
+												-missing '~' in FLOATSIGNBITNOTSET()
 									-idEntity::BecomeInactive() ---> 0
 						-almost everything is added/removed in idEvent::ServiceEvents()
 						-some are removed within the idTrigger destructor which is called in idEntity::~idEntity()---> idClass::Event_Remove().
 						-the order of the Schedule() & Alloc() are weird in the Remove() chain of the linkedList between 2058 and the next one
+						-Ok, so now we're up to 1841 instead of the previous 1837, still 3 shy of 1844 though.
+						 and coincidentally, there are 1847 numEntitiesToDeactivate, which is also 3 less than the 1850 in the original.
+							tim_moveable_foamcup_3
+							tim_moveable_foamcup_6
+							tim_moveable_foamcup_7
+							-idCollisionModelManagerLocal::TraceTrmThroughNode(), tw->positionTest == false
+							
 		
 
 

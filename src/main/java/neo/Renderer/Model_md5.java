@@ -807,7 +807,7 @@ public class Model_md5 {
                 common.Error("idRenderModelMD5::NearestJoint: surfaceNum > meshes.Num()");
             }
 
-            for (final idMD5Mesh mesh : meshes.Ptr()) {
+            for (final idMD5Mesh mesh : meshes.Ptr(idMD5Mesh[].class)) {
                 if (mesh.surfaceNum == surfaceNum) {
                     return mesh.NearestJoint(a, b, c);
                 }

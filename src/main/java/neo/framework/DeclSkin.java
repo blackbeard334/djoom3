@@ -97,7 +97,7 @@ public class DeclSkin {
                 }
 
                 if (0 == token.Icmp("model")) {
-                    associatedModels.Append(token2);
+                    associatedModels.Append(token2.toString());
                     continue;
                 }
 
