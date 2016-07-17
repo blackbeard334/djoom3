@@ -129,8 +129,16 @@ the interpreter started freaking out, after adding some destructors.
 		-no
 	-idInterpreter::GetScriptObject() in idInterpreter::Execute() returns null, which should NEVER happen.
 	
-	
-	
+Warnings:
+-WARNING: location entity 'Security Checkpoint' overlaps 'Mars City Hangar'
+    -idGameLocal::SpreadLocations()
+        -portalAreas[areaNum1].connectedAreaNum[attribute] has the wrong values
+            -idRenderWorldLocal::FloodConnectedAreas() -> 171
+                -idRenderWorldLocal::SetPortalState() wrong portal qhandle
+                    -idRenderWorldLocal::SetPortalState() wrong blackTypes value                    
+-WARNING: idAFTree::Factor: couldn't invert 4x4 matrix for constraint 'light'
+-WARNING: rigid body not at rest for entity 'moveable_chair2_3' type 'neo.Game.Moveable$idMoveable' at (-0 -0 0)
+
 	
 	
 	

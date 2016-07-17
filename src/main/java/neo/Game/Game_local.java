@@ -4510,8 +4510,8 @@ public class Game_local {
 
          Now that everything has been spawned, associate areas with location entities
          ======================
-         */
-        public void SpreadLocations() {
+         */private static int DBG_SpreadLocations = 0;
+        public void SpreadLocations() {DBG_SpreadLocations++;
             idEntity ent;
 
             // allocate the area table
