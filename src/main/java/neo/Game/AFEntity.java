@@ -1065,6 +1065,13 @@ public class AFEntity {
             return eventCallbacks;
         }
 
+        @Override
+        protected void _deconstructor() {
+            if (skeletonModelDefHandle != -1) {
+                gameRenderWorld.FreeEntityDef(skeletonModelDefHandle);
+                skeletonModelDefHandle = -1;
+            }
+        }
     };
 
     /*

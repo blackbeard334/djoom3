@@ -123,6 +123,17 @@ GL_INVALID_VALUE error generated. Width and height must not be negative.
 							
 		
 
+the interpreter started freaking out, after adding some destructors.		
+-locals stack overflow
+	-idInterpreter::CallEvent() -> multiFrameEvent==null
+		-no
+	-idInterpreter::GetScriptObject() in idInterpreter::Execute() returns null, which should NEVER happen.
+	
+	
+	
+	
+	
+	
 
 /***********************************************************************
 

@@ -654,6 +654,17 @@ public class Clip {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
+        protected void _deconstructor() {
+            // make sure the clip model is no longer linked
+            Unlink();
+            if (traceModelIndex != -1) {
+                FreeTraceModel(traceModelIndex);
+            }
+        }
+
+        public static void delete(idClipModel clipModel) {
+            clipModel._deconstructor();
+        }
     };
 
     //===============================================================

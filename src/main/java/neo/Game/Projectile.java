@@ -237,8 +237,6 @@ public class Projectile {
 
         @Override
         protected void _deconstructor() {
-            super._deconstructor();
-
             StopSound(SND_CHANNEL_ANY.ordinal(), false);
             FreeLightDef();
         }
@@ -1717,8 +1715,6 @@ public class Projectile {
 
         @Override
         protected void _deconstructor() {
-            super._deconstructor();
-
             FreeBeams();
 
             if (secondModelDefHandle >= 0) {

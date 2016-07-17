@@ -689,7 +689,7 @@ public final class idProgram {
                 assert (scope.Type() == ev_function);
                 def.value.setStackOffset(scope.value.functionPtr.locals);
                 def.initialized = stackVariable;
-                scope.value.functionPtr.locals++;
+                scope.value.functionPtr.locals += type.Size();
             } else if (scope.TypeDef().Inherits(type_object)) {
                 idTypeDef newtype = new idTypeDef(ev_field, null, "float field", 0, type_float);
                 idTypeDef type2 = GetType(newtype, true);

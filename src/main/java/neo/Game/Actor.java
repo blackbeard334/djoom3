@@ -40,6 +40,7 @@ import static neo.Game.GameSys.SysCvar.ai_debugScript;
 import static neo.Game.GameSys.SysCvar.g_debugDamage;
 import static neo.Game.Game_local.MASK_OPAQUE;
 import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_ANY;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_BODY;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_VOICE;
 import neo.Game.Game_local.idEntityPtr;
@@ -2896,5 +2897,33 @@ public class Actor {
             return eventCallbacks;
         }
 
+        @Override
+        protected void _deconstructor() {
+            int i;
+            idEntity ent;
+
+            DeconstructScriptObject();
+            scriptObject.Free();
+
+            StopSound(SND_CHANNEL_ANY.ordinal(), false);
+
+            idClipModel.delete(combatModel);
+            combatModel = null;
+
+            if (head.GetEntity() != null) {
+                head.GetEntity().ClearBody();
+                head.GetEntity().PostEventMS(EV_Remove, 0);
+            }
+
+            // remove any attached entities
+            for (i = 0; i < attachments.Num(); i++) {
+                ent = attachments.oGet(i).ent.GetEntity();
+                if (ent != null) {
+                    ent.PostEventMS(EV_Remove, 0);
+                }
+            }
+
+            ShutdownThreads();
+        }
     };
 }

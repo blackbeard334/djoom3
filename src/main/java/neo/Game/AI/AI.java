@@ -7369,6 +7369,17 @@ public class AI {
             return eventCallbacks;
         }
 
+        @Override
+        protected void _deconstructor() {
+            if (projectileClipModel != null) idClipModel.delete(projectileClipModel);
+
+            DeconstructScriptObject();
+            scriptObject.Free();
+            if (worldMuzzleFlashHandle != -1) {
+                gameRenderWorld.FreeLightDef(worldMuzzleFlashHandle);
+                worldMuzzleFlashHandle = -1;
+            }
+        }
     };
 
     public static class idCombatNode extends idEntity {

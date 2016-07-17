@@ -2,6 +2,7 @@ package neo.Game.GameSys;
 
 import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Entity.EV_Activate;
+import neo.Game.AI.AI.idAI;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.idEventArg.toArg;
 import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
@@ -22,6 +23,8 @@ import static neo.Game.Game_local.gameState_t.GAMESTATE_STARTUP;
 import neo.Game.Projectile.idBFGProjectile;
 import neo.Game.Projectile.idProjectile;
 import neo.Game.Script.Script_Thread.idThread;
+import neo.Game.Target.idTarget_Remove;
+import neo.Game.Trigger.idTrigger_Multi;
 import neo.TempDump.Deprecation_Exception;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
@@ -281,7 +284,7 @@ public class Class {
          ================
          idClass::IsType
 
-         Checks if the object's class is a subclass of the class defined by the 
+         Checks if the object's class is a subclass of the class defined by the
          passed in idTypeInfo.
          ================
          */
@@ -472,7 +475,7 @@ public class Class {
                     name = "NULL";
                 gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), name);
             }
-            
+
             num = ev.GetEventNum();
             callback = this.getEventCallBack(ev);//callback = c.eventMap[num];
             if (callback == null) {
@@ -568,10 +571,16 @@ public class Class {
 
         public void Event_Remove() {
             //	delete this;//if only
-            if (this instanceof idBFGProjectile) {
+            if (this instanceof idBFGProjectile) {//TODO: remove all this crap
                 idBFGProjectile.delete((idBFGProjectile) this);
             } else if (this instanceof idProjectile) {
                 idProjectile.delete((idProjectile) this);
+            } else if (this instanceof idTrigger_Multi) {
+                idTrigger_Multi.delete((idTrigger_Multi) this);
+            } else if (this instanceof idTarget_Remove) {
+                idTarget_Remove.delete((idTarget_Remove) this);
+            } else if (this instanceof idAI) {
+                idAI.delete((idAI) this);
             } else if (this instanceof idEntity) {
                 idEntity.delete((idEntity) this);
             }
