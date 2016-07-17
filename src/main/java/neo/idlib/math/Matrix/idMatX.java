@@ -785,7 +785,7 @@ public class idMatX {
 
     public boolean IsOrthogonal(final float epsilon) {
         int ptr1, ptr2;
-        double sum;
+        float sum;
 
         if (!IsSquare()) {
             return false;
@@ -822,7 +822,7 @@ public class idMatX {
 
     public boolean IsOrthonormal(final float epsilon) {
         int ptr1, ptr2;
-        double sum;
+        float sum;
 
         if (!IsSquare()) {
             return false;
@@ -3034,7 +3034,7 @@ public class idMatX {
                     for (i = l; i <= k; i++) {
                         f = s * rv1.p[i];
 
-                        if ((idMath.Fabs(f) + anorm[0]) != anorm[0] /* idMath::Fabs( f ) > idMath::FLT_EPSILON */) {
+                        if ((idMath.Fabs((float) f) + anorm[0]) != anorm[0] /* idMath::Fabs( f ) > idMath::FLT_EPSILON */) {
                             g = w.p[i];
                             h = Pythag((float) f, (float) g);
                             w.p[i] = (float) h;

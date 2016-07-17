@@ -2709,7 +2709,7 @@ public class Weapon {
 
                 // predict instant hit projectiles
                 if (projectileDict.GetBool("net_instanthit")) {
-                    double spreadRad = DEG2RAD(spread);
+                    float spreadRad = DEG2RAD(spread);
                     muzzle_pos = muzzleOrigin.oPlus(playerViewAxis.oGet(0).oMultiply(2.0f));
                     for (i = 0; i < num_projectiles; i++) {
                         ang = idMath.Sin(spreadRad * gameLocal.random.RandomFloat());

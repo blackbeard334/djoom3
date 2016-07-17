@@ -533,7 +533,7 @@ public class GameBearShootWindow {
             dir = bear.velocity;
             dir.NormalizeFast();
 
-            angle = (float) RAD2DEG(Math.atan2(dir.x, dir.y));
+            angle = RAD2DEG((float) Math.atan2(dir.x, dir.y));
             bear.rotation = angle - 90;
 
             // Update Bear scale
@@ -630,7 +630,7 @@ public class GameBearShootWindow {
 
             dot = pt.oMultiply(right);
 
-            angle = (float) RAD2DEG(Math.acos(dot));
+            angle = RAD2DEG((float) Math.acos(dot));
 
             turretAngle = idMath.ClampFloat(0.f, 90.f, angle);
         }

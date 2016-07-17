@@ -6340,7 +6340,7 @@ public class Physics_AF {
             int i;
 
             for (i = 0; i < trees.Num(); i++) {
-                trees.oGet(i).Factor();
+                trees.oGet(i).CalculateForces(timeStep);
             }
         }
 

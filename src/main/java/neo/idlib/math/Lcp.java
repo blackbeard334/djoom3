@@ -1,6 +1,8 @@
 package neo.idlib.math;
 
 import neo.framework.CVarSystem.idCVar;
+import static neo.framework.CVarSystem.CVAR_BOOL;
+import static neo.framework.CVarSystem.CVAR_SYSTEM;
 import static neo.idlib.containers.List.idSwap;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMatX;
@@ -14,9 +16,10 @@ import static neo.idlib.math.Vector.idVecX.VECX_ALLOCA;
  */
 public class Lcp {
 
-    static idCVar lcp_showFailures;
-    static final float LCP_BOUND_EPSILON = 1e-5f;
-    static final float LCP_ACCEL_EPSILON = 1e-5f;
+    static final idCVar lcp_showFailures = new idCVar("lcp_showFailures", "0", CVAR_SYSTEM | CVAR_BOOL, "show LCP solver failures");
+
+    static final float LCP_BOUND_EPSILON       = 1e-5f;
+    static final float LCP_ACCEL_EPSILON       = 1e-5f;
     static final float LCP_DELTA_ACCEL_EPSILON = 1e-9f;
     static final float LCP_DELTA_FORCE_EPSILON = 1e-9f;
 

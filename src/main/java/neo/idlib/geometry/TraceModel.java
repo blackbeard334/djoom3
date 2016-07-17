@@ -1463,10 +1463,10 @@ public class TraceModel {
 
         class polygonIntegrals_t {
 
-            double Fa,   Fb,   Fc;
-            double Faa,  Fbb,  Fcc;
-            double Faaa, Fbbb, Fccc;
-            double Faab, Fbbc, Fcca;
+            float Fa,   Fb,   Fc;
+            float Faa,  Fbb,  Fcc;
+            float Faaa, Fbbb, Fccc;
+            float Faab, Fbbc, Fcca;
         };
 
         private void PolygonIntegrals(int polyNum, int a, int b, int c, polygonIntegrals_t integrals) {
@@ -1524,11 +1524,11 @@ public class TraceModel {
             traceModelPoly_t poly;
             polygonIntegrals_t pi = new polygonIntegrals_t();
             int i, a, b, c;
-            double nx, ny, nz;
-            double T0 = 0;
-            double[] T1 = new double[3];
-            double[] T2 = new double[3];
-            double[] TP = new double[3];
+            float nx, ny, nz;
+            float T0 = 0;
+            float[] T1 = new float[3];
+            float[] T2 = new float[3];
+            float[] TP = new float[3];
 
 //	memset( &integrals, 0, sizeof(volumeIntegrals_t) );
             for (i = 0; i < numPolys; i++) {
@@ -1560,16 +1560,16 @@ public class TraceModel {
                 TP[c] += poly.normal.oGet(c) * pi.Fcca;
             }
 
-            integrals.T0 = (float) T0;
-            integrals.T1.oSet(0, (float) (T1[0] * 0.5f));
-            integrals.T1.oSet(1, (float) (T1[1] * 0.5f));
-            integrals.T1.oSet(2, (float) (T1[2] * 0.5f));
-            integrals.T2.oSet(0, (float) (T2[0] * 1.0f / 3.0f));
-            integrals.T2.oSet(1, (float) (T2[1] * 1.0f / 3.0f));
-            integrals.T2.oSet(2, (float) (T2[2] * 1.0f / 3.0f));
-            integrals.TP.oSet(0, (float) (TP[0] * 0.5f));
-            integrals.TP.oSet(1, (float) (TP[1] * 0.5f));
-            integrals.TP.oSet(2, (float) (TP[2] * 0.5f));
+            integrals.T0 = T0;
+            integrals.T1.oSet(0, T1[0] * 0.5f);
+            integrals.T1.oSet(1, T1[1] * 0.5f);
+            integrals.T1.oSet(2, T1[2] * 0.5f);
+            integrals.T2.oSet(0, T2[0] * 1.0f / 3.0f);
+            integrals.T2.oSet(1, T2[1] * 1.0f / 3.0f);
+            integrals.T2.oSet(2, T2[2] * 1.0f / 3.0f);
+            integrals.TP.oSet(0, TP[0] * 0.5f);
+            integrals.TP.oSet(1, TP[1] * 0.5f);
+            integrals.TP.oSet(2, TP[2] * 0.5f);
         }
 
         private void VolumeFromPolygon(idTraceModel trm, float thickness) {

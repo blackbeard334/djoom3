@@ -4928,8 +4928,8 @@ public class AI {
 
             // adjust his aim so it's not perfect.  uses sine based movement so the tracers appear less random in their spread.
             float t = MS2SEC(gameLocal.time + entityNumber * 497);
-            ang.pitch += idMath.Sin16(t * 5.1) * attack_accuracy;
-            ang.yaw += idMath.Sin16(t * 6.7) * attack_accuracy;
+            ang.pitch += idMath.Sin16(t * 5.1f) * attack_accuracy;
+            ang.yaw += idMath.Sin16(t * 6.7f) * attack_accuracy;
 
             if (clampToAttackCone) {
                 // clamp the attack direction to be within monster's attack cone so he doesn't do

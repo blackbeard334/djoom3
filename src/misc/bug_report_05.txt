@@ -137,6 +137,11 @@ Warnings:
                 -idRenderWorldLocal::SetPortalState() wrong portal qhandle
                     -idRenderWorldLocal::SetPortalState() wrong blackTypes value                    
 -WARNING: idAFTree::Factor: couldn't invert 4x4 matrix for constraint 'light'
+    .
+    .
+    .
+    - ......inertiaTensor is set in idClipModel::GetMassProperties()
+        -idTraceModel::GetMassProperties()
 -WARNING: rigid body not at rest for entity 'moveable_chair2_3' type 'neo.Game.Moveable$idMoveable' at (-0 -0 0)
 
 	

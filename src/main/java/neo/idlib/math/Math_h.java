@@ -9,35 +9,35 @@ package neo.idlib.math;
  */
 public class Math_h {
 
-    public static double DEG2RAD(double a) {
+    public static float DEG2RAD(float a) {
         return (a) * idMath.M_DEG2RAD;
-    }//TODO:floats?
+    }
 
-    public static double RAD2DEG(double a) {
+    public static float RAD2DEG(float a) {
         return (a) * idMath.M_RAD2DEG;
     }
 
-    public static double SEC2MS(double t) {
-        return idMath.FtoiFast(((float) (t) * idMath.M_SEC2MS));
+    public static float SEC2MS(float t) {
+        return idMath.FtoiFast((t * idMath.M_SEC2MS));
     }
 
-    public static float MS2SEC(double t) {
-        return (float) (t * idMath.M_MS2SEC);//TODO:doest anybody need the double returns?
+    public static float MS2SEC(float t) {
+        return t * idMath.M_MS2SEC;//TODO:doest anybody need the double returns?
     }
 
-    public static double ANGLE2SHORT(double x) {
-        return idMath.FtoiFast((float) ((x) * 65536.0f / 360.0f)) & 65535;
+    public static float ANGLE2SHORT(float x) {
+        return idMath.FtoiFast((x) * 65536.0f / 360.0f) & 65535;
     }
 
-    public static double SHORT2ANGLE(double x) {
+    public static float SHORT2ANGLE(float x) {
         return (x) * (360.0f / 65536.0f);
     }
 
-    public static double ANGLE2BYTE(double x) {
-        return idMath.FtoiFast((float) ((x) * 256.0f / 360.0f)) & 255;
+    public static float ANGLE2BYTE(float x) {
+        return idMath.FtoiFast((x) * 256.0f / 360.0f) & 255;
     }
 
-    public static double BYTE2ANGLE(double x) {
+    public static float BYTE2ANGLE(float x) {
         return (x) * (360.0f / 256.0f);
     }
 
@@ -93,39 +93,39 @@ public class Math_h {
     private static final int IEEE_DBLE_EXPONENT_BIAS = 0;
     private static final int IEEE_DBLE_SIGN_BIT      = 79;
 
-    public static int MaxIndex(double x, double y) {
+    public static int MaxIndex(float x, float y) {
         return (x > y) ? 0 : 1;
     }
 
-    public static int MinIndex(double x, double y) {
+    public static int MinIndex(float x, float y) {
         return (x < y) ? 0 : 1;
     }
 
-    public static double Max3(double x, double y, double z) {
+    public static float Max3(float x, float y, float z) {
         return (x > y) ? ((x > z) ? x : z) : ((y > z) ? y : z);
     }
 
-    public static double Min3(double x, double y, double z) {
+    public static float Min3(float x, float y, float z) {
         return (x < y) ? ((x < z) ? x : z) : ((y < z) ? y : z);
     }
 
-    public static int Max3Index(double x, double y, double z) {
+    public static int Max3Index(float x, float y, float z) {
         return (x > y) ? ((x > z) ? 0 : 2) : ((y > z) ? 1 : 2);
     }
 
-    public static int Min3Index(double x, double y, double z) {
+    public static int Min3Index(float x, float y, float z) {
         return (x < y) ? ((x < z) ? 0 : 2) : ((y < z) ? 1 : 2);
     }
 
-    public static int Sign(double f) {
+    public static int Sign(float f) {
         return (f > 0) ? 1 : ((f < 0) ? -1 : 0);
     }
 
-    public static double Square(double x) {
-        return x * x;//TODO:check if anybody uses the double return?
+    public static float Square(float x) {//FUCKME: promoting float to double!
+        return x * x;
     }
 
-    public static double Cube(double x) {
+    public static float Cube(float x) {
         return x * x * x;
     }
 
@@ -220,12 +220,12 @@ public class Math_h {
         }
 //TODO:radians?
 
-        public static float Sin(double a) {
+        public static float Sin(float a) {
             return (float) Math.sin(a);
         }			// sine with 32 bits precision
 
-        public static float Sin16(double a) {// sine with 16 bits precision, maximum absolute error is 2.3082e-09
-            double s;
+        public static float Sin16(float a) {// sine with 16 bits precision, maximum absolute error is 2.3082e-09
+            float s;
 
             if ((a < 0.0f) || (a >= TWO_PI)) {
 //		a -= floorf( a / TWO_PI ) * TWO_PI;
@@ -257,12 +257,12 @@ public class Math_h {
             return Math.sin(a);
         }			// sine with 64 bits precision
 
-        public static float Cos(double a) {
+        public static float Cos(float a) {
             return (float) Math.cos(a);
         }			// cosine with 32 bits precision
 
-        public static float Cos16(double a) {// cosine with 16 bits precision, maximum absolute error is 2.3082e-09
-            double s, d;
+        public static float Cos16(float a) {// cosine with 16 bits precision, maximum absolute error is 2.3082e-09
+            float s, d;
 
             if ((a < 0.0f) || (a >= TWO_PI)) {
 //		a -= floorf( a / TWO_PI ) * TWO_PI;
@@ -356,7 +356,7 @@ public class Math_h {
             c[0] = d * (((((-2.605e-07f * t + 2.47609e-05f) * t - 1.3888397e-03f) * t + 4.16666418e-02f) * t - 4.999999963e-01f) * t + 1.0f);
         }
 
-        static void SinCos64(float a, double[] s, double[] c) {// sine and cosine with 64 bits precision
+        static void SinCos64(float a, float[] s, float[] c) {// sine and cosine with 64 bits precision
 //#ifdef _WIN32
 //	_asm {
 //		fld		a
@@ -367,8 +367,8 @@ public class Math_h {
 //		fstp	qword ptr [edx]
 //	}
 //#else
-            s[0] = Math.sin(a);
-            c[0] = Math.cos(a);
+            s[0] = (float) Math.sin(a);
+            c[0] = (float) Math.cos(a);
 //#endif
         }
 
@@ -710,10 +710,6 @@ public class Math_h {
             tmp &= 0x7FFFFFFF;
 //	return *reinterpret_cast<float *>( &tmp );
             return Float.intBitsToFloat(tmp);
-        }
-
-        public static float Fabs(double f) {
-            return Fabs((float) f);
         }
 
         public static float Floor(float f) {// returns the largest integer that is less than or equal to the given value

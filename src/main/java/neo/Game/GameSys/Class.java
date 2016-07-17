@@ -79,7 +79,6 @@ public class Class {
         void accept(T t, idEventArg a);
     }
 
-
     @FunctionalInterface
     public interface eventCallback_t2<T extends idClass> extends eventCallback_t<T> {
         @Override
