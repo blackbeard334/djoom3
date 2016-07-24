@@ -62,9 +62,27 @@ public class CollisionModel {
         public int           entityNum;   // entity the contact surface is a part of
         public int           id;          // id of clip model the contact surface is part of
 
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
+
         public contactInfo_t() {
             point = new idVec3();
             normal = new idVec3();
+//            TempDump.printCallStack("contactInfo_t:" + DBG_count);
+        }
+
+        public contactInfo_t(contactInfo_t c) {
+            this();
+            this.type = c.type;
+            this.point.oSet(c.point);
+            this.normal.oSet(c.normal);
+            this.dist = c.dist;
+            this.contents = c.contents;
+            this.material = c.material;
+            this.modelFeature = c.modelFeature;
+            this.trmFeature = c.trmFeature;
+            this.entityNum = c.entityNum;
+            this.id = c.id;
         }
     };
 

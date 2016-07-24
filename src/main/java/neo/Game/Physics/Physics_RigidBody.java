@@ -1,6 +1,5 @@
 package neo.Game.Physics;
 
-import neo.CM.CollisionModel;
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
@@ -1380,7 +1379,7 @@ public class Physics_RigidBody {
 
             // center of mass in world space
             point = current.i.position.oPlus(centerOfMass.oMultiply(current.i.orientation));
-            point.oMinSet(point.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+            point.oMinSet(gravityNormal.oMultiply(point.oMultiply(gravityNormal)));
 
             // if the point is not inside the winding
             if (!contactWinding.PointInside(gravityNormal, point, 0)) {

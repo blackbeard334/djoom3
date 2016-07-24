@@ -1233,7 +1233,7 @@ public class CollisionModel_local {
             } else {
                 // store results
                 results[0] = tw.trace;
-                results[0].endpos.oSet(start.oPlus(end.oMinus(start)).oMultiply(results[0].fraction));
+                results[0].endpos.oSet(start.oPlus(end.oMinus(start).oMultiply(results[0].fraction)));
                 results[0].endAxis.oSet(trmAxis);
 
                 if (results[0].fraction < 1.0f) {

@@ -143,6 +143,12 @@ Warnings:
     - ......inertiaTensor is set in idClipModel::GetMassProperties()
         -idTraceModel::GetMassProperties()
 -WARNING: rigid body not at rest for entity 'moveable_chair2_3' type 'neo.Game.Moveable$idMoveable' at (-0 -0 0)
+    -idPhysics_RigidBody::EvaluateContacts() -> contacts have the wrong values
+        -idCollisionModelManagerLocal::TranslateTrmThroughPolygon() tw.bounds and p.bounds have WRONG WRONG values
+            -idCollisionModelManagerLocal::Translation() -> tw.start -> start and end are empty
+                -idPhysics_RigidBody::EvaluateContacts() full circle...clipModel.GetOrigin() is empty
+                    -idPhysics_RigidBody::DropToFloorAndRest() -> idClip::Translation() -> idClipModel::Link()
+-GL_INVALID_VALUE error generated. Width and height must not be negative.
 
 	
 	

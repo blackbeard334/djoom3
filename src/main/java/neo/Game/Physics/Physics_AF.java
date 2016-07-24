@@ -5828,8 +5828,6 @@ public class Physics_AF {
         @Override
         public boolean EvaluateContacts() {
             int i, j, k, numContacts, numBodyContacts;
-            idAFBody body;
-            contactInfo_t[] contactInfo = new contactInfo_t[10];
             idEntity passEntity;
             idVecX dir = new idVecX(6, VECX_ALLOCA(6));
 
@@ -5847,7 +5845,8 @@ public class Physics_AF {
 
             // find all the contacts
             for (i = 0; i < bodies.Num(); i++) {
-                body = bodies.oGet(i);
+                idAFBody body = bodies.oGet(i);
+                contactInfo_t[] contactInfo = new contactInfo_t[10];
 
                 if (body.clipMask == 0) {
                     continue;
