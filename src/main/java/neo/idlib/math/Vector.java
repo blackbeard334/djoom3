@@ -2079,18 +2079,15 @@ public class Vector {
 //public	idVecX &		operator*=( const float a );
 
         public idVecX oMulSet(final float a) {
-            idVecX m = new idVecX();
-
-            m.SetTempSize(size);
 //#ifdef VECX_SIMD
-//	SIMDProcessor->Mul16( m.p, p, a, size );
+//	SIMDProcessor->MulAssign16( p, a, size );
 //#else
             int i;
             for (i = 0; i < size; i++) {
-                m.p[i] = p[i] * a;
+                p[i] *= a;
             }
 //#endif
-            return m;
+            return this;
         }
 //public	idVecX &		operator/=( const float a );
 //public	idVecX &		operator+=( const idVecX &a );
@@ -2176,7 +2173,6 @@ public class Vector {
                 p = null;
             }
 //	assert( ( ( (int) data ) & 15 ) == 0 ); // data must be 16 byte aligned
-            assert (data.length == 16);//TODO:??
             p = data;
             size = length;
             alloced = -1;

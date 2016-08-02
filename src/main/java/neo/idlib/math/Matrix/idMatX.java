@@ -455,9 +455,12 @@ public class idMatX {
         this.Identity();
     }
 
-    public void Diag(final idVecX v) {// create diagonal matrix from vector
+    // create diagonal matrix from vector
+    public void Diag(final idVecX v) {
         Zero(v.GetSize(), v.GetSize());
-        System.arraycopy(v.p, 0, mat, 0 * numColumns + 0, v.GetSize());
+        for ( int i = 0; i < v.GetSize(); i++ ) {
+            mat[i * numColumns + i] = v.oGet(i);
+        }
     }
 
     public void Random(int seed) {
@@ -1835,9 +1838,8 @@ public class idMatX {
 
         int[] columnIndex = new int[numRows];
         int[] rowIndex = new int[numRows];
-        boolean[] pivot = new boolean[numRows];
+        boolean[] pivot = new boolean[numRows];//memset( pivot, 0, numRows * sizeof( bool ) );
 
-//	memset( pivot, 0, numRows * sizeof( bool ) );
         // elimination with full pivoting
         for (i = 0; i < numRows; i++) {
 
