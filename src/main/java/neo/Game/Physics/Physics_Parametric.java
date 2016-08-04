@@ -514,12 +514,12 @@ public class Physics_Parametric {
 
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
-            return current.origin;
+            return new idVec3(current.origin);
         }
 
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
-            return current.axis;
+            return new idMat3(current.axis);
         }
 
         @Override

@@ -448,11 +448,11 @@ public class Clip {
         }
 
         public idVec3 GetOrigin() {
-            return origin;
+            return new idVec3(origin);
         }
 
         public idMat3 GetAxis() {
-            return axis;
+            return new idMat3(axis);
         }
 
         public boolean IsTraceModel() {			// returns true if this is a trace model

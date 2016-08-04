@@ -583,8 +583,8 @@ public class Projectile {
 
             // add the light
             if (renderLight.lightRadius.x > 0.0f && g_projectileLights.GetBool()) {
-                renderLight.origin = GetPhysics().GetOrigin().oPlus(GetPhysics().GetAxis().oMultiply(lightOffset));
-                renderLight.axis = GetPhysics().GetAxis();
+                renderLight.origin.oSet(GetPhysics().GetOrigin().oPlus(GetPhysics().GetAxis().oMultiply(lightOffset)));
+                renderLight.axis.oSet(GetPhysics().GetAxis());
                 if ((lightDefHandle != -1)) {
                     if (lightEndTime > 0 && gameLocal.time <= lightEndTime + gameLocal.GetMSec()) {
                         idVec3 color = new idVec3(0, 0, 0);//TODO:superfluous

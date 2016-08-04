@@ -771,12 +771,12 @@ public class Physics_RigidBody {
 
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
-            return current.i.position;
+            return new idVec3(current.i.position);
         }
 
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
-            return current.i.orientation;
+            return new idMat3(current.i.orientation);
         }
 
         @Override

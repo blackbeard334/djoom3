@@ -363,9 +363,9 @@ public class tr_render {
      ======================
      RB_RenderDrawSurfChainWithFunction
      ======================
-     */
+     */private static int DBG_RB_RenderDrawSurfChainWithFunction = 0;
     public static void RB_RenderDrawSurfChainWithFunction(final drawSurf_s drawSurfs, triFunc triFunc_) {
-        drawSurf_s drawSurf;
+        drawSurf_s drawSurf;DBG_RB_RenderDrawSurfChainWithFunction++;
 
         backEnd.currentSpace = null;
 

@@ -149,6 +149,49 @@ Warnings:
                 -idPhysics_RigidBody::EvaluateContacts() full circle...clipModel.GetOrigin() is empty
                     -idPhysics_RigidBody::DropToFloorAndRest() -> idClip::Translation() -> idClipModel::Link()
 -GL_INVALID_VALUE error generated. Width and height must not be negative.
+    -idObjective::Event_CamShot()
+        -R_DeriveLightData()
+            -light_4722 idLight::PresentLightDefChange()
+                -R_AxisToModelMatrix() light->parms.axis, light->parms.origin
+                    -GetPhysics()->GetAxis() in idLight::Present() has wrong value
+                    .   -which is set in idPhysics_Static::Evaluate()
+                    .       -env_swinglight_long_wbulbs_4
+                    .           -CreateFrame
+                    .               -animator.AFPoseJointFrame in idAF::UpdateAnimation()
+                    .                   -idAnimator::FinishAFPose()
+                    .                       -SIMDProcessor->ConvertJointMatsToJointQuats()
+                    -back to this level
+                        -idLight::PresentLightDefChange() -> renderLight.axis
+                            -idLight::Present()
+                                -idPhysics_Static::Evaluate()...again
+                                    -idEntity::GetMasterPosition()
+                                        -masterAnimator.joints[5] 
+                                            -ConvertJointQuatsToJointMats() in CreateFrame() returns the wrong values, because the jointFrame quaternions have the wrong values
+                                                -models/md5/environments/swinglight_long_wbulbs.md5anim
+                        
+                                                -0.707106769
+                                                
++		[0]	{mat=0x24289e20 {1.00000000, 0.000000000, -0.000000000, 0.000000000, -0.000000000, 3.57627869e-007, ...} }	idJointMat
++		[1]	{mat=0x24289e50 {-0.999999523, 0.000000000, 0.000000000, 0.000000000, 0.000000000, -3.57627698e-007, ...} }	idJointMat
++		[2]	{mat=0x24289e80 {-0.999999523, 0.000000000, 0.000000000, 0.000000000, 0.000000000, -3.57627698e-007, ...} }	idJointMat
++		[3]	{mat=0x24289eb0 {-0.999999523, 0.000000000, 0.000000000, 0.000000000, 0.000000000, -3.57627698e-007, ...} }	idJointMat
++		[4]	{mat=0x24289ee0 {-0.999999523, 0.000000000, 0.000000000, 0.000000000, 0.000000000, -3.57627698e-007, ...} }	idJointMat
+-		[5]	{mat=0x24289f10 {0.999999046, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 3.57627528e-007, -0.999999702, ...} }	idJointMat
+-		mat	0x24289f10 {0.999999046, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 3.57627528e-007, -0.999999702, ...}	float[12]
+		[0]	0.999999046	float
+		[1]	0.000000000	float
+		[2]	0.000000000	float
+		[3]	0.000000000	float
+		[4]	0.000000000	float
+		[5]	3.57627528e-007	float
+		[6]	-0.999999702	float
+		[7]	-2.28879471e-005	float
+		[8]	0.000000000	float
+		[9]	0.999998748	float
+		[10]	3.57627869e-007	float
+		[11]	-63.9993210	float
+
+
 
 	
 	

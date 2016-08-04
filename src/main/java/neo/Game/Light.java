@@ -415,8 +415,8 @@ public class Light {
             super.Present();
 
             // current transformation
-            renderLight.axis = localLightAxis.oMultiply(GetPhysics().GetAxis());
-            renderLight.origin = GetPhysics().GetOrigin().oPlus(GetPhysics().GetAxis().oMultiply(localLightOrigin));
+            renderLight.axis.oSet(localLightAxis.oMultiply(GetPhysics().GetAxis()));
+            renderLight.origin.oSet(GetPhysics().GetOrigin().oPlus(GetPhysics().GetAxis().oMultiply(localLightOrigin)));
 
             // reference the sound for shader synced effects
             if (lightParent != null) {

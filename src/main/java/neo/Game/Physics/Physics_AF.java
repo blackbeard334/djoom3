@@ -3775,11 +3775,11 @@ public class Physics_AF {
         }
 
         public idVec3 GetWorldOrigin() {
-            return current.worldOrigin;
+            return new idVec3(current.worldOrigin);
         }
 
         public idMat3 GetWorldAxis() {
-            return current.worldAxis;
+            return new idMat3(current.worldAxis);
         }
 
         public idVec3 GetLinearVelocity() {
@@ -5657,7 +5657,7 @@ public class Physics_AF {
             if (id < 0 || id >= bodies.Num()) {
                 return getVec3_origin();
             } else {
-                return bodies.oGet(id).current.worldOrigin;
+                return new idVec3(bodies.oGet(id).current.worldOrigin);
             }
         }
 
@@ -5666,7 +5666,7 @@ public class Physics_AF {
             if (id < 0 || id >= bodies.Num()) {
                 return getMat3_identity();
             } else {
-                return bodies.oGet(id).current.worldAxis;
+                return new idMat3(bodies.oGet(id).current.worldAxis);
             }
         }
 

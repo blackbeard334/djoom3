@@ -897,8 +897,8 @@ public class AF {
          */
         protected void SetBase(idAFBody body, final idJointMat[] joints) {
             physicsObj.ForceBodyId(body, 0);
-            baseOrigin = body.GetWorldOrigin();
-            baseAxis = body.GetWorldAxis();
+            baseOrigin.oSet(body.GetWorldOrigin());
+            baseAxis.oSet(body.GetWorldAxis());
             AddBody(body, joints, animator.GetJointName(animator.GetFirstChild("origin")), AF_JOINTMOD_AXIS);
         }
 
