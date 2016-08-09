@@ -76,7 +76,7 @@ public class Bounds {
         }
 
         public idVec3 oSet(final int index, final idVec3 t) {
-            return b[index] = t;
+            return b[index].oSet(t);
         }
 
         public float oSet(final int x, final int y, final float value) {

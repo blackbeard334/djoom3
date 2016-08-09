@@ -190,6 +190,15 @@ Warnings:
 		[9]	0.999998748	float
 		[10]	3.57627869e-007	float
 		[11]	-63.9993210	float
+-WARNING: rigid body not at rest for entity 'moveable_chair2_2' type 'neo.Game.Moveable$idMoveable' at (-1078 -1231 118)
+    -idPhysics_RigidBody::EvaluateContacts(), current.i.position.z
+        -idCollisionModelManagerLocal::Translation()
+            -idClip::Translation() loop            
+-WARNING: rigid body not at rest for entity 'tim_moveable_cokecan_5' type 'neo.Game.Moveable$idMoveable' at (-284 -1022 129)
+    -idCollisionModelManagerLocal::TranslateTrmVertexThroughPolygon() 0.00558470190
+        -idCollisionModelManagerLocal::TraceThroughModel() tw->model.DBG_count==2525
+            -idCollisionModelManagerLocal::LoadRenderModel() models/mapobjects/chairs/modchair/modtable.lwo
+                -idCollisionModelManagerLocal::AddPolygonToNode()
 
 
 
