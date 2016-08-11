@@ -100,9 +100,8 @@ public class AI_pathing {
     };
 
     static class obstacle_s {
-
-        idVec2[] bounds = new idVec2[2];
-        idWinding2D winding;
+        idVec2[]    bounds  = new idVec2[2];
+        idWinding2D winding = new idWinding2D();
         idEntity    entity;
     };
 
@@ -547,7 +546,7 @@ public class AI_pathing {
             for (i = 0; i < numObstacles; i++) {
                 obstacle_s obstacle = obstacles[i];
                 for (j = 0; j < obstacle.winding.GetNumPoints(); j++) {
-                    silVerts[j].ToVec2().oSet(obstacle.winding.oGet(j));
+                    silVerts[j].oSet(obstacle.winding.oGet(j));
                     silVerts[j].z = startPos.z;
                 }
                 for (j = 0; j < obstacle.winding.GetNumPoints(); j++) {
@@ -588,9 +587,9 @@ public class AI_pathing {
         for (node = root; node != null; node = node.next) {
             for (i = 0; i < 2; i++) {
                 if (node.children[i] != null) {
-                    start.ToVec2().oSet(node.pos);
+                    start.oSet(node.pos);
                     start.z = height;
-                    end.ToVec2().oSet(node.children[i].pos);
+                    end.oSet(node.children[i].pos);
                     end.z = height;
                     gameRenderWorld.DebugArrow(node.edgeNum == -1 ? colorYellow : (i != 0 ? colorBlue : colorRed), start, end, 1);
                     break;
@@ -942,7 +941,7 @@ public class AI_pathing {
                     if (!optimizedPathCalculated) {
                         bestNumPathPoints = OptimizePath(root, bestNode, obstacles, numObstacles, optimizedPath);
                         bestPathLength = PathLength(optimizedPath, bestNumPathPoints, curDir.ToVec2());
-                        seekPos.ToVec2().oSet(optimizedPath[1]);
+                        seekPos.oSet(optimizedPath[1]);
                     }
 
                     numPathPoints = OptimizePath(root, node, obstacles, numObstacles, optimizedPath);
@@ -952,7 +951,7 @@ public class AI_pathing {
                         bestNode = node;
                         bestNumPathPoints = numPathPoints;
                         bestPathLength = pathLength;
-                        seekPos.ToVec2().oSet(optimizedPath[1]);
+                        seekPos.oSet(optimizedPath[1]);
                     }
                     optimizedPathCalculated = true;
 
@@ -978,10 +977,10 @@ public class AI_pathing {
         }
 
         if (!pathToGoalExists) {
-            seekPos.ToVec2().oSet(root.children[0].pos);
+            seekPos.oSet(root.children[0].pos);
         } else if (!optimizedPathCalculated) {
             OptimizePath(root, bestNode, obstacles, numObstacles, optimizedPath);
-            seekPos.ToVec2().oSet(optimizedPath[1]);
+            seekPos.oSet(optimizedPath[1]);
         }
 
         if (ai_showObstacleAvoidance.GetBool()) {
@@ -989,8 +988,8 @@ public class AI_pathing {
             start.z = end.z = height + 4.0f;
             numPathPoints = OptimizePath(root, bestNode, obstacles, numObstacles, optimizedPath);
             for (i = 0; i < numPathPoints - 1; i++) {
-                start.ToVec2().oSet(optimizedPath[i]);
-                end.ToVec2().oSet(optimizedPath[i + 1]);
+                start.oSet(optimizedPath[i]);
+                end.oSet(optimizedPath[i + 1]);
                 gameRenderWorld.DebugArrow(colorCyan, start, end, 1);
             }
         }

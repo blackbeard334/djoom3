@@ -199,6 +199,9 @@ Warnings:
         -idCollisionModelManagerLocal::TraceThroughModel() tw->model.DBG_count==2525
             -idCollisionModelManagerLocal::LoadRenderModel() models/mapobjects/chairs/modchair/modtable.lwo
                 -idCollisionModelManagerLocal::AddPolygonToNode()
+-tim_char_marine_helmet_1 nullpointer
+    -BuildPathTree()
+
 
 
 

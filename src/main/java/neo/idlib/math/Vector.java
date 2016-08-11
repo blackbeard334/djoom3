@@ -433,6 +433,12 @@ public class Vector {
             return this;
         }
 
+        public idVec3 oSet(final idVec2 a) {
+            this.x = a.x;
+            this.y = a.y;
+            return this;
+        }
+
 //public	float			operator*( final  idVec3 &a ) final ;
         @Override
         public float oMultiply(final idVec3 a) {

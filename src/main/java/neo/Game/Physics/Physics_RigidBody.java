@@ -1093,7 +1093,7 @@ public class Physics_RigidBody {
         private void Integrate(final float deltaTime, rigidBodyPState_s next) {
             idVec3 position;
 
-            position = current.i.position;
+            position = new idVec3(current.i.position);
             current.i.position.oPluSet(centerOfMass.oMultiply(current.i.orientation));
 
             current.i.orientation.TransposeSelf();

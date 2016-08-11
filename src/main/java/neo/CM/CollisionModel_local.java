@@ -1019,7 +1019,7 @@ public class CollisionModel_local {
                 // trace through the model
                 this.TraceThroughModel(tw);
                 // store results
-                results[0] = tw.trace;
+                results[0].oSet(tw.trace);
                 results[0].endpos.oSet(start.oPlus(end.oMinus(start).oMultiply(results[0].fraction)));
                 results[0].endAxis.oSet(getMat3_identity());
 
@@ -1232,7 +1232,7 @@ public class CollisionModel_local {
                 this.numContacts = tw.numContacts;
             } else {
                 // store results
-                results[0] = tw.trace;
+                results[0].oSet(tw.trace);
                 results[0].endpos.oSet(start.oPlus(end.oMinus(start).oMultiply(results[0].fraction)));
                 results[0].endAxis.oSet(trmAxis);
 
@@ -5341,7 +5341,7 @@ public class CollisionModel_local {
                 return false;
             }
             // make a local copy of the winding
-            neww = w;
+            neww = new idFixedWinding(w);
             neww.GetBounds(bounds);
             origin = (bounds.oGet(1).oMinus(bounds.oGet(0))).oMultiply(0.5f);
             radius = origin.Length() + CHOP_EPSILON;

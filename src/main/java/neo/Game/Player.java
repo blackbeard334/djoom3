@@ -7554,7 +7554,7 @@ public class Player {
                 if (groundEnt != null && groundEnt.IsType(idAI.class)) {
                     idVec3 vel = physicsObj.GetLinearVelocity();
                     if (vel.ToVec2().LengthSqr() < 0.1f) {
-                        vel.ToVec2().oSet(physicsObj.GetOrigin().ToVec2().oMinus(groundEnt.GetPhysics().GetAbsBounds().GetCenter().ToVec2()));
+                        vel.oSet(physicsObj.GetOrigin().ToVec2().oMinus(groundEnt.GetPhysics().GetAbsBounds().GetCenter().ToVec2()));
                         vel.ToVec2().NormalizeFast();
                         vel.ToVec2().oMulSet(pm_walkspeed.GetFloat());//TODO:ToVec2 back ref.
                     } else {

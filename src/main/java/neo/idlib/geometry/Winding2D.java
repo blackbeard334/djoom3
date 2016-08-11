@@ -13,6 +13,8 @@ import static neo.idlib.math.Plane.SIDE_ON;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 
+import java.util.stream.Stream;
+
 /**
  *
  */
@@ -57,10 +59,14 @@ public class Winding2D {
 
     public static class idWinding2D {
 
+        private int numPoints;
+        private idVec2[] p = Stream.generate(idVec2::new).limit(MAX_POINTS_ON_WINDING_2D).toArray(idVec2[]::new);
+        //
+        //
+
         public idWinding2D() {
             numPoints = 0;
         }
-//
 
         public idWinding2D oSet(final idWinding2D winding) {
             int i;
@@ -71,8 +77,8 @@ public class Winding2D {
             numPoints = winding.numPoints;
             return this;
         }
-//public	final idVec2 	operator[]( final int index ) ;
 
+//public	final idVec2 	operator[]( final int index ) ;
         public idVec2 oGet(final int index) {
             return p[ index];
         }
@@ -100,7 +106,6 @@ public class Winding2D {
         public int GetNumPoints() {
             return numPoints;
         }
-//
 
         public void Expand(final float d) {
             int i;
@@ -159,7 +164,6 @@ public class Winding2D {
                 }
             }
         }
-//
 
         // splits the winding into a front and back winding, the winding itself stays unchanged
         // returns a SIDE_?
@@ -275,10 +279,8 @@ public class Winding2D {
             return SIDE_CROSS;
         }
 
-//					// cuts off the part at the back side of the plane, returns true if some part was at the front
-//					// if there is nothing at the front the number of points is set to zero
-//public	boolean			ClipInPlace( final idVec3 plane );
-//public	boolean			ClipInPlace( final idVec3 plane, final float epsilon );
+        // cuts off the part at the back side of the plane, returns true if some part was at the front
+		// if there is nothing at the front the number of points is set to zero
         public boolean ClipInPlace(final idVec3 plane, final float epsilon, final boolean keepOn) {
             int i, j, maxpts, newNumPoints;
             int[] sides = new int[MAX_POINTS_ON_WINDING_2D + 1], counts = new int[3];
@@ -373,7 +375,6 @@ public class Winding2D {
 
             return true;
         }
-//
 
         public idWinding2D Copy() {
             idWinding2D w;
@@ -396,7 +397,6 @@ public class Winding2D {
             }
             return w;
         }
-//
 
         public float GetArea() {
             int i;
@@ -462,7 +462,7 @@ public class Winding2D {
                 }
             }
         }
-//
+
         static final float EDGE_LENGTH = 0.2f;
 
         public boolean IsTiny() {
@@ -504,7 +504,6 @@ public class Winding2D {
 //		idLib::common->Printf( "(%5.1f, %5.1f)\n", p[i][0], p[i][1] );
             }
         }
-//
 
         public float PlaneDistance(final idVec3 plane) {
             int i;
@@ -536,7 +535,7 @@ public class Winding2D {
             return 0.0f;
         }
 
-//public	int				PlaneSide( final idVec3 plane, final float epsilon = ON_EPSILON ) ;
+        //public	int				PlaneSide( final idVec3 plane, final float epsilon = ON_EPSILON ) ;
         public int PlaneSide(final idVec3 plane, final float epsilon) {
             boolean front, back;
             int i;
@@ -569,7 +568,6 @@ public class Winding2D {
             }
             return SIDE_ON;
         }
-//
 
         public boolean PointInside(final idVec2 point, final float epsilon) {
             int i;
@@ -642,7 +640,7 @@ public class Winding2D {
             return true;
         }
 
-//public	boolean			RayIntersection( final idVec2 start, final idVec2 dir, float scale1, float scale2) ;
+        //public	boolean			RayIntersection( final idVec2 start, final idVec2 dir, float scale1, float scale2) ;
         public boolean RayIntersection(final idVec2 start, final idVec2 dir, float[] scale1, float[] scale2, int[] edgeNums) {
             int i, numEdges;
             int[] localEdgeNums = new int[2];
@@ -715,7 +713,6 @@ public class Winding2D {
             }
             return true;
         }
-//
 
         public static idVec3 Plane2DFromPoints(final idVec2 start, final idVec2 end) {
             return Plane2DFromPoints(start, end, false);
@@ -766,8 +763,5 @@ public class Winding2D {
             point.y = f0 * plane1.y + f1 * plane2.y;
             return true;
         }
-//
-        private int numPoints;
-        private idVec2[] p = new idVec2[MAX_POINTS_ON_WINDING_2D];
     };
 }

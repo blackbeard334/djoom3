@@ -67,6 +67,7 @@ import neo.idlib.math.Vector.idVec4;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.lang.Math.abs;
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
@@ -424,6 +425,12 @@ public class AI {
         idEntity startPosObstacle;          // if != NULL the obstacle containing the start position
         idVec3   seekPosOutsideObstacles;   // seek position outside obstacles
         idEntity seekPosObstacle;           // if != NULL the obstacle containing the seek position
+
+        public obstaclePath_s() {
+            seekPos = new idVec3();
+            startPosOutsideObstacles = new idVec3();
+            seekPosOutsideObstacles = new idVec3();
+        }
     };
 
     // path prediction
@@ -1757,17 +1764,17 @@ public class AI {
         public static boolean FindPathAroundObstacles(final idPhysics physics, final idAAS aas, final idEntity ignore, final idVec3 startPos, final idVec3 seekPos, obstaclePath_s path) {
             int numObstacles, areaNum;
             int[] insideObstacle = {0};
-            obstacle_s[] obstacles = new obstacle_s[MAX_OBSTACLES];
+            obstacle_s[] obstacles = Stream.generate(obstacle_s::new).limit(MAX_OBSTACLES).toArray(obstacle_s[]::new);
             idBounds clipBounds = new idBounds();
             idBounds bounds = new idBounds();
             pathNode_s root;
             boolean pathToGoalExists;
 
-            path.seekPos = seekPos;
+            path.seekPos.oSet(seekPos);
             path.firstObstacle = null;
-            path.startPosOutsideObstacles = startPos;
+            path.startPosOutsideObstacles.oSet(startPos);
             path.startPosObstacle = null;
-            path.seekPosOutsideObstacles = seekPos;
+            path.seekPosOutsideObstacles.oSet(seekPos);
             path.seekPosObstacle = null;
 
             if (NOT(aas)) {
@@ -2017,21 +2024,21 @@ public class AI {
                 numSegments = 4;
                 // point in the middle between top and start
                 t2 = (time - t) * 0.5f;
-                points[1].ToVec2().oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
+                points[1].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
                 points[1].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
                 // top of parabolic
                 t2 = time - t;
-                points[2].ToVec2().oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
+                points[2].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
                 points[2].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
                 // point in the middel between top and end
                 t2 = time - t * 0.5f;
-                points[3].ToVec2().oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
+                points[3].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
                 points[3].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
             } else {
                 numSegments = 2;
                 // point halfway through
                 t2 = time * 0.5f;
-                points[1].ToVec2().oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(0.5f)));
+                points[1].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(0.5f)));
                 points[1].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
             }
 

@@ -115,9 +115,11 @@ public class CollisionModel {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-        @Deprecated
-        public void oSet(trace_s trace_s) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public void oSet(trace_s s) {
+            this.fraction = s.fraction;
+            this.endpos.oSet(s.endpos);
+            this.endAxis.oSet(s.endAxis);
+            this.c = new contactInfo_t(s.c);
         }
     };
 //
