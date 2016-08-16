@@ -61,7 +61,16 @@ public class Physics_Actor {
             masterDeltaYaw = 0.0f;
             groundEntityPtr = new idEntityPtr<>(null);
         }
+
         // ~idPhysics_Actor();
+        private void _deconstructor(){
+            idClipModel.delete(clipModel);
+            clipModel = null;
+        }
+
+        public static void delete(idPhysics_Actor actor) {
+            actor._deconstructor();
+        }
 
         @Override
         public void Save(idSaveGame savefile) {
@@ -125,13 +134,12 @@ public class Physics_Actor {
         @Override
         public void SetClipModel(idClipModel model, float density, int id /*= 0*/, boolean freeOld /*= true*/) {
             assert (self != null);
-            assert (model != null);					// a clip model is required
-            assert (model.IsTraceModel());	// and it should be a trace model
-            assert (density > 0.0f);			// density should be valid
+            assert (model != null);           // a clip model is required
+            assert (model.IsTraceModel());    // and it should be a trace model
+            assert (density > 0.0f);          // density should be valid
 
-            if (clipModel != null && !clipModel.equals(model) && freeOld) {
-//		delete clipModel;
-                clipModel = null;
+            if (clipModel != null && clipModel != model && freeOld) {
+                idClipModel.delete(clipModel);
             }
             clipModel = model;
             clipModel.Link(gameLocal.clip, self, 0, clipModel.GetOrigin(), clipModelAxis);

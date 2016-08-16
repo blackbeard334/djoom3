@@ -236,7 +236,18 @@ public class Physics_RigidBody {
                 lastTimerReset = 0;
             }
         }
+
         // ~idPhysics_RigidBody();
+        private void _deconstructor(){
+            if ( clipModel != null ) {
+                idClipModel.delete(clipModel);
+            }
+//            delete integrator;
+        }
+
+        public static void delete(idPhysics_RigidBody body) {
+            body._deconstructor();
+        }
 
         @Override
         public void Save(idSaveGame savefile) {
@@ -344,9 +355,8 @@ public class Physics_RigidBody {
             assert (model.IsTraceModel());    // and it should be a trace model
             assert (density > 0.0f);            // density should be valid
 
-            if (clipModel != null && !clipModel.equals(model) && freeOld) {
-//		delete clipModel;
-                clipModel = null;
+            if (clipModel != null && clipModel != model && freeOld) {
+                idClipModel.delete(clipModel);
             }
             clipModel = model;
             clipModel.Link(gameLocal.clip, self, 0, current.i.position, current.i.orientation);

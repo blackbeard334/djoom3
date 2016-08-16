@@ -440,11 +440,11 @@ public class Clip {
         }
 
         public idBounds GetBounds() {
-            return bounds;
+            return new idBounds(bounds);
         }
 
         public idBounds GetAbsBounds() {
-            return absBounds;
+            return new idBounds(absBounds);
         }
 
         public idVec3 GetOrigin() {
@@ -1517,8 +1517,10 @@ public class Clip {
                 }
             }
 
+            int i = 0;
             for (clipLink_s link = node.clipLinks; link != null; link = link.nextInSector) {
                 idClipModel check = link.clipModel;
+                i++;
 
                 // if the clip model is enabled
                 if (!check.enabled) {

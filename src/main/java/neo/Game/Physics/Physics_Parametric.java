@@ -116,7 +116,21 @@ public class Physics_Parametric {
             hasMaster = false;
             isOrientated = false;
         }
+
         // ~idPhysics_Parametric();
+        private void _deconstructor(){
+            if ( clipModel != null ) {
+            idClipModel.delete(clipModel);
+            }
+            if ( current.spline != null ) {
+//                delete current.spline;
+                current.spline = null;
+            }
+        }
+
+        public static void delete(idPhysics_Parametric param) {
+            param._deconstructor();
+        }
 
         @Override
         public void Save(idSaveGame savefile) {
@@ -257,9 +271,9 @@ public class Physics_Parametric {
             assert (self != null);
             assert (model != null);
 
-//	if ( clipModel && clipModel != model && freeOld ) {
-//		delete clipModel;
-//	}
+            if (clipModel != null && clipModel != model && freeOld) {
+                idClipModel.delete(clipModel);
+            }
             clipModel = model;
             clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
         }

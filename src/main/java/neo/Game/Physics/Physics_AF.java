@@ -3712,6 +3712,14 @@ public class Physics_AF {
         }
 
         // ~idAFBody();
+        private void _deconstructor(){
+            idClipModel.delete(clipModel);
+        }
+
+        public static void delete(idAFBody body) {
+            body._deconstructor();
+        }
+
         public void Init() {
             name = new idStr("noname");
             parent = null;

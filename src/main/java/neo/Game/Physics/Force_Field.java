@@ -155,9 +155,9 @@ public class Force_Field {
 
         // clip model describing the extents of the force field	
         public void SetClipModel(idClipModel clipModel) {
-//	if ( this.clipModel && clipModel != this.clipModel ) {
-//		delete this.clipModel;
-//	}
+            if (this.clipModel != null && clipModel != this.clipModel) {
+                idClipModel.delete(this.clipModel);
+            }
             this.clipModel = clipModel;
         }
 

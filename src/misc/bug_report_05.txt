@@ -201,7 +201,11 @@ Warnings:
                 -idCollisionModelManagerLocal::AddPolygonToNode()
 -tim_char_marine_helmet_1 nullpointer
     -BuildPathTree()
-
+    
+-idClip::numContacts    in idClip::Contacts()
+    -idCollisionModelManagerLocal::Translation() ----> tw.model->node->polygons empty
+        /\detour: too many contacts
+ 
 
 
 
