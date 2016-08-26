@@ -4098,7 +4098,7 @@ public class Physics_AF {
                         child.body1.J.TransposeMultiply(child.body1.I).Multiply(childI, child.body1.J);
                         childI.Negate();
 
-                        child.invI = childI;
+                        child.invI = new idMatX(childI);
                         if (!child.invI.InverseFastSelf()) {
                             gameLocal.Warning("idAFTree::Factor: couldn't invert %dx%d matrix for constraint '%s'",
                                     child.invI.GetNumRows(), child.invI.GetNumColumns(), child.GetName());
@@ -4106,6 +4106,7 @@ public class Physics_AF {
                         child.J = child.invI.oMultiply(child.J);
 
                         body.I.oMinSet(child.J.TransposeMultiply(childI).oMultiply(child.J));
+                        int a = 0;
                     }
 
                     body.invI.oSet(body.I);
@@ -4115,9 +4116,11 @@ public class Physics_AF {
                     }
                     if (body.primaryConstraint != null) {
                         body.J.oSet(body.invI.oMultiply(body.J));
+                        int a = 0;
                     }
                 } else if (body.primaryConstraint != null) {
                     body.J.oSet(body.inverseWorldSpatialInertia.oMultiply(body.J));
+                    int a = 0;
                 }
             }
         }
@@ -4171,7 +4174,7 @@ public class Physics_AF {
                     }
                     primaryConstraint.J.MultiplySub(primaryConstraint.s, primaryConstraint.body2.s);
 
-                    primaryConstraint.lm = primaryConstraint.s;
+                    primaryConstraint.lm.oSet(primaryConstraint.s);
 
                     if (useSymmetry && body.maxSubTreeAuxiliaryIndex < auxiliaryIndex) {
                         continue;
@@ -4182,9 +4185,11 @@ public class Physics_AF {
                             body.s.oSet(body.invI.oMultiply(body.s));
                         }
                         body.J.MultiplySub(body.s, primaryConstraint.s);
+                        int a = 0;
                     }
                 } else if (body.children.Num() != 0) {
                     body.s.oSet(body.invI.oMultiply(body.s));
+                    int a = 0;
                 }
             }
         }
@@ -4317,6 +4322,7 @@ public class Physics_AF {
                 body = sortedBodies.oGet(i);
 
                 body.totalForce.SubVec6(0).oSet(body.current.externalForce.oPlus(body.auxForce.SubVec6(0)));
+                int a = 0;
             }
 
             // if a single body don't waste time because there aren't any primary constraints
@@ -5653,6 +5659,7 @@ public class Physics_AF {
 
                 body.current.worldOrigin.oMulSet(rotation);
                 body.current.worldAxis.oMulSet(rotation.ToMat3());
+                int a = 0;
             }
 
             Activate();
@@ -6075,6 +6082,7 @@ public class Physics_AF {
                  state.externalForce[5] = msg.ReadDeltaFloat( 0.0f, AF_FORCE_EXPONENT_BITS, AF_FORCE_MANTISSA_BITS );
                  */
                 state.worldAxis.oSet(quat.ToMat3());
+                int a = 0;
             }
 
             UpdateClipModels();
@@ -6281,6 +6289,7 @@ public class Physics_AF {
 
                 if (body.primaryConstraint != null) {
                     body.J.oSet(body.primaryConstraint.J1.Transpose());
+                    int a = 0;
                 }
             }
         }

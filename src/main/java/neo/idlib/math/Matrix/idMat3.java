@@ -192,15 +192,17 @@ public class idMat3 {
 
     public idMat3 oMulSet(final idMat3 a) {
         int i, j;
+        float[] dst = new float[3];
 
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                float value 
-                        = mat[i].x * a.mat[0].oGet(j)
+                dst[j]  = mat[i].x * a.mat[0].oGet(j)
                         + mat[i].y * a.mat[1].oGet(j)
                         + mat[i].z * a.mat[2].oGet(j);
-                this.oSet(i, j, value);
             }
+            this.oSet(i, 0, dst[0]);
+            this.oSet(i, 1, dst[1]);
+            this.oSet(i, 2, dst[2]);
         }
         return this;
     }
@@ -444,7 +446,7 @@ public class idMat3 {
     public idMat3 Inverse() {// returns the inverse ( m * m.Inverse() = identity )
         idMat3 invMat;
 
-        invMat = this;
+        invMat = new idMat3(this);
         boolean r = invMat.InverseSelf();
         assert (r);
         return invMat;

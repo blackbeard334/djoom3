@@ -204,7 +204,47 @@ Warnings:
     
 -idClip::numContacts    in idClip::Contacts()
     -idCollisionModelManagerLocal::Translation() ----> tw.model->node->polygons empty
-        /\detour: too many contacts
+            /\detour: too many contacts
+                idClip::Contacts()this.numContacts++
+                idClip::ClipModelsTouchingBounds()touchCount++
+        -((contactWinding).data)[0]	{x=634.094604 y=-1801.36975 z=0.000000000 ...}	idVec5
+        -idEntity::RunPhysics()
+        -idClipModel::Link_r() strstr(link->clipModel->entity->name.data, "env_gibs_leftleg_1")
+            (16399 hits in 1 file)
+                ~~~~~-0.034207698 0.1045222 -5.226404
+                ~~~~~-0.114609875 0.19323614 -17.504065
+                ~~~~~1.0 -3.0 -27.0
+                ~~~~~-0.034207698 0.1045222 -5.226404
+                ~~~~~-0.114609875 0.19323614 -17.504065
+                ~~~~~1.0 -3.0 -27.0
+                ~~~~~1.1891785 -1.3401172 -4.910939
+                ~~~~~3.97225 -4.6390176 -16.405588
+                ~~~~~7.049098 -10.325985 -24.138845
+                ~~~~~-2411.8108 -2674.34 242.08907
+                ~~~~~-2409.0278 -2677.639 230.5944
+                ~~~~~-2405.951 -2683.326 222.86116
+                ~~~~~-2411.8108 -2674.34 242.08907
+                ~~~~~-2409.0278 -2677.639 230.5944
+                ~~~~~-2405.951 -2683.326 222.86116
+                ~~~~~NaN NaN NaN
+                ~~~~~NaN NaN NaN
+                
+            -idPhysics_AF::CheckForCollisions()
+                -idPhysics_AF::Evolve() spatialVelocity
+                    -idAFTree::CalculateForces() totalForce
+                        -idAFTree::Solve() primaryConstraint.lm --> .s --> .body2.s
+                            -idAFTree::Factor() body.J
+                                        /\/\/\detour: idAFTree::Factor() sortedBodies[0]->inertiaTensor != sortedBodies.oGet(0).inertiaTensor
+                                -idMatX::InverseFastSelf() returns NaN's, but the input values are wrong, so let's pursue that first
+                                    -wrong input:
+                                        -idPhysics_AF::EvaluateConstraints() body.primaryConstraint.J1
+                                            -idAFConstraint_UniversalJoint::Evaluate() body.primaryConstraint.J1 --> body1.GetWorldAxis(0,1 == 1,1)
+                                                -idPhysics_AF::Rotate()
+                                                    -idMat3::operator*=( const idMat3 &a )
+                                        -idAFTree::Factor() --> child->body1->I != child.body1.I
+                                            -idPhysics_AF::EvaluateBodies() --> body->inertiaTensor
+                                        
+
  
 
 

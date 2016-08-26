@@ -73,6 +73,10 @@ public class idMatX {
         mat = null;
         SetData(rows, columns, src);
     }
+
+    public idMatX(idMatX matX) {
+        this.oSet(matX);
+    }
 //public					~idMatX( void );
 
     public void Set(int rows, int columns, final float[] src) {

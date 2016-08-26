@@ -167,6 +167,9 @@ public class Clip {
             id = model.id;
             owner = model.owner;
             origin.oSet(model.origin);
+            if (Float.isNaN(origin.oGet(0))) {
+                int a = 0;
+            }
             axis.oSet(model.axis);
             bounds.oSet(model.bounds);
             absBounds.oSet(model.absBounds);
@@ -332,10 +335,10 @@ public class Clip {
             this.entity = ent;
             this.id = newId;
             this.origin.oSet(newOrigin);
-            this.axis.oSet(newAxis);
-            if (origin.z < -1111) {
+            if (Float.isNaN(origin.z)) {
                 int a = 0;
             }
+            this.axis.oSet(newAxis);
             if (renderModelHandle != -1) {
                 this.renderModelHandle = renderModelHandle;
                 final renderEntity_s renderEntity = gameRenderWorld.GetRenderEntity(renderModelHandle);
@@ -368,7 +371,7 @@ public class Clip {
                 Unlink();	// unlink from old position
             }
             origin.oSet(newOrigin);
-            if (origin.z < -1111) {
+            if (Float.isNaN(origin.z)) {
                 int a = 0;
             }
             axis.oSet(newAxis);
@@ -377,7 +380,7 @@ public class Clip {
         public void Translate(final idVec3 translation) {							// unlinks the clip model
             Unlink();
             origin.oPluSet(translation);
-            if (origin.z < -1111) {
+            if (Float.isNaN(origin.z)) {
                 int a = 0;
             }
         }
@@ -385,7 +388,7 @@ public class Clip {
         public void Rotate(final idRotation rotation) {							// unlinks the clip model
             Unlink();
             origin.oMulSet(rotation);
-            if (origin.z < -1111) {
+            if (Float.isNaN(origin.z)) {
                 int a = 0;
             }
             axis.oMulSet(rotation.ToMat3());
@@ -599,8 +602,18 @@ public class Clip {
             link.sector = node;
             link.nextInSector = node.clipLinks;
             link.prevInSector = null;
+            if (link.clipModel.entity.name.equals("env_gibs_leftleg_1")) {
+                int a = 0;
+                float x = origin.oGet(0);
+                if(Float.isNaN(x) || Float.isInfinite(x))
+                System.out.println("~~~~~" + this.origin);
+            }
             if (node.clipLinks != null) {
                 node.clipLinks.prevInSector = link;
+            }
+            if (this.entity.name.equals("marscity_cinematic_player_1") &&
+                    node.clipLinks.clipModel.entity.name.equals("env_gibs_leftleg_1")) {
+                int a = 0;
             }
             node.clipLinks = link;
             link.nextLink = clipLinks;
@@ -1483,6 +1496,11 @@ public class Clip {
             anode.children[0] = CreateClipSectors_r(depth + 1, front, maxSector);
             anode.children[1] = CreateClipSectors_r(depth + 1, back, maxSector);
 
+            if(anode.children[1] != null &&
+                anode.children[1].clipLinks != null &&
+                anode.children[1].clipLinks.clipModel.entity.name.equals("env_gibs_leftleg_1")) {
+                int b = 0;
+            }
             return anode;
         }
 

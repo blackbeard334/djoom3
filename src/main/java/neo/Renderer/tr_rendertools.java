@@ -2069,9 +2069,9 @@ public class tr_rendertools {
 
         if (rb_numDebugLines < MAX_DEBUG_LINES) {
             line = rb_debugLines[rb_numDebugLines++] = new debugLine_s();
-            line.rgb = color;
-            line.start = start;
-            line.end = end;
+            line.rgb = new idVec4(color);
+            line.start = new idVec3(start);
+            line.end = new idVec3(end);
             line.depthTest = depthTest;
             line.lifeTime = rb_debugLineTime + lifeTime;
         }
