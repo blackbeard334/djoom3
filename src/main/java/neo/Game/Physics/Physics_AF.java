@@ -4321,7 +4321,7 @@ public class Physics_AF {
             for (i = 0; i < sortedBodies.Num(); i++) {
                 body = sortedBodies.oGet(i);
 
-                body.totalForce.SubVec6(0).oSet(body.current.externalForce.oPlus(body.auxForce.SubVec6(0)));
+                body.totalForce.SubVec6_oSet(body.current.externalForce.oPlus(body.auxForce.SubVec6(0)));
                 int a = 0;
             }
 
@@ -4360,10 +4360,12 @@ public class Physics_AF {
                 primaryConstraint = body.primaryConstraint;
                 if (primaryConstraint != null) {
                     primaryConstraint.J1.TransposeMultiplyAdd(body.totalForce, primaryConstraint.lm);
+                    int a = 0;
                 }
                 for (j = 0; j < body.children.Num(); j++) {
                     child = body.children.oGet(j).primaryConstraint;
                     child.J2.TransposeMultiplyAdd(body.totalForce, child.lm);
+                    int a = 0;
                 }
             }
         }
@@ -6492,7 +6494,8 @@ public class Physics_AF {
             for (i = 0; i < bodies.Num(); i++) {
                 body = bodies.oGet(i);
                 body.InverseWorldSpatialInertiaMultiply(body.acceleration, body.totalForce.ToFloatPtr());
-                body.acceleration.SubVec6(0).oPluSet(body.current.spatialVelocity.oMultiply(invStep));
+                body.acceleration.SubVec6_oPluSet(body.current.spatialVelocity.oMultiply(invStep));
+                int a = 0;
             }
 
             rhs.SetData(numAuxConstraints, VECX_ALLOCA(numAuxConstraints));

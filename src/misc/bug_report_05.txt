@@ -243,6 +243,10 @@ Warnings:
                                                     -idMat3::operator*=( const idMat3 &a )
                                         -idAFTree::Factor() --> child->body1->I != child.body1.I
                                             -idPhysics_AF::EvaluateBodies() --> body->inertiaTensor
+                                    -idPhysics_AF::Evolve() --> body.acceleration --> body.totalForce
+                                        -idAFTree::Solve() primaryConstraint.lm --> .s --> .body2.s
+                                            -idAFTree::Factor() --> child.body1.J != child->body1->J --> body->invI != body.invI
+                                                waist --> chest --> torso
                                         
 
  

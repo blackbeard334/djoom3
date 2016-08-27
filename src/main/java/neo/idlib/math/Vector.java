@@ -2331,6 +2331,8 @@ public class Vector {
             return size;
         }
 
+        /**@deprecated readonly */
+        @Deprecated
         public idVec3 SubVec3(int index) {
             assert (index >= 0 && index * 3 + 3 <= size);
 //	return *reinterpret_cast<idVec3 *>(p + index * 3);
@@ -2338,6 +2340,8 @@ public class Vector {
         }
 //public	idVec3 &		SubVec3( int index );
 
+        /**@deprecated readonly */
+        @Deprecated
         public idVec6 SubVec6(int index) {
             assert (index >= 0 && index * 6 + 6 <= size);
 //	return *reinterpret_cast<idVec6 *>(p + index * 6);
@@ -2373,6 +2377,24 @@ public class Vector {
             p = new float[alloced];
             idVecX.tempIndex += alloced;
             VECX_CLEAREND();
+        }
+
+        public void SubVec6_oSet(idVec6 vec6) {
+            p[0] = vec6.oGet(0);
+            p[1] = vec6.oGet(1);
+            p[2] = vec6.oGet(2);
+            p[3] = vec6.oGet(3);
+            p[4] = vec6.oGet(4);
+            p[5] = vec6.oGet(5);
+        }
+
+        public void SubVec6_oPluSet(idVec6 vec6) {
+            p[0] += vec6.oGet(0);
+            p[1] += vec6.oGet(1);
+            p[2] += vec6.oGet(2);
+            p[3] += vec6.oGet(3);
+            p[4] += vec6.oGet(4);
+            p[5] += vec6.oGet(5);
         }
     }
 

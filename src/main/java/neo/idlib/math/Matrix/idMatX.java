@@ -1249,9 +1249,8 @@ public class idMatX {
     public idMatX InverseFast() {// returns the inverse ( m * m.Inverse() = identity )
         idMatX invMat = new idMatX();
 
-//	invMat.SetTempSize( numRows, numColumns );//TODO:what does settemp do?
-//	memcpy( invMat.mat, mat, numRows * numColumns * sizeof( float ) );
-        invMat.SetData(numRows, numColumns, mat);
+	    invMat.SetTempSize( numRows, numColumns );
+        System.arraycopy(mat, 0, invMat.mat, 0, numRows * numColumns);
         boolean r = invMat.InverseFastSelf();
         assert (r);
         return invMat;

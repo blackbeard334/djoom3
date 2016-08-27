@@ -935,15 +935,15 @@ public class idMat6 {
         this.mat[5].p[2] = r3[2].x * r2[0].z + r3[2].y * r2[1].z + r3[2].z * r2[2].z;
 
         // m0 = r0 - r1 * m2;
-        this.mat[0].p[0] = r0[0].x - r1[0].x * mat[3 * 6 + 0] - r1[0].y * mat[4 * 6 + 0] - r1[0].z * mat[5 * 6 + 0];
-        this.mat[0].p[1] = r0[0].y - r1[0].x * mat[3 * 6 + 1] - r1[0].y * mat[4 * 6 + 1] - r1[0].z * mat[5 * 6 + 1];
-        this.mat[0].p[2] = r0[0].z - r1[0].x * mat[3 * 6 + 2] - r1[0].y * mat[4 * 6 + 2] - r1[0].z * mat[5 * 6 + 2];
-        this.mat[1].p[0] = r0[1].x - r1[1].x * mat[3 * 6 + 0] - r1[1].y * mat[4 * 6 + 0] - r1[1].z * mat[5 * 6 + 0];
-        this.mat[1].p[1] = r0[1].y - r1[1].x * mat[3 * 6 + 1] - r1[1].y * mat[4 * 6 + 1] - r1[1].z * mat[5 * 6 + 1];
-        this.mat[1].p[2] = r0[1].z - r1[1].x * mat[3 * 6 + 2] - r1[1].y * mat[4 * 6 + 2] - r1[1].z * mat[5 * 6 + 2];
-        this.mat[2].p[0] = r0[2].x - r1[2].x * mat[3 * 6 + 0] - r1[2].y * mat[4 * 6 + 0] - r1[2].z * mat[5 * 6 + 0];
-        this.mat[2].p[1] = r0[2].y - r1[2].x * mat[3 * 6 + 1] - r1[2].y * mat[4 * 6 + 1] - r1[2].z * mat[5 * 6 + 1];
-        this.mat[2].p[2] = r0[2].z - r1[2].x * mat[3 * 6 + 2] - r1[2].y * mat[4 * 6 + 2] - r1[2].z * mat[5 * 6 + 2];
+        this.mat[0].p[0] = r0[0].x - r1[0].x * this.mat[3].p[0] - r1[0].y * this.mat[4].p[0] - r1[0].z * this.mat[5].p[0];
+        this.mat[0].p[1] = r0[0].y - r1[0].x * this.mat[3].p[1] - r1[0].y * this.mat[4].p[1] - r1[0].z * this.mat[5].p[1];
+        this.mat[0].p[2] = r0[0].z - r1[0].x * this.mat[3].p[2] - r1[0].y * this.mat[4].p[2] - r1[0].z * this.mat[5].p[2];
+        this.mat[1].p[0] = r0[1].x - r1[1].x * this.mat[3].p[0] - r1[1].y * this.mat[4].p[0] - r1[1].z * this.mat[5].p[0];
+        this.mat[1].p[1] = r0[1].y - r1[1].x * this.mat[3].p[1] - r1[1].y * this.mat[4].p[1] - r1[1].z * this.mat[5].p[1];
+        this.mat[1].p[2] = r0[1].z - r1[1].x * this.mat[3].p[2] - r1[1].y * this.mat[4].p[2] - r1[1].z * this.mat[5].p[2];
+        this.mat[2].p[0] = r0[2].x - r1[2].x * this.mat[3].p[0] - r1[2].y * this.mat[4].p[0] - r1[2].z * this.mat[5].p[0];
+        this.mat[2].p[1] = r0[2].y - r1[2].x * this.mat[3].p[1] - r1[2].y * this.mat[4].p[1] - r1[2].z * this.mat[5].p[1];
+        this.mat[2].p[2] = r0[2].z - r1[2].x * this.mat[3].p[2] - r1[2].y * this.mat[4].p[2] - r1[2].z * this.mat[5].p[2];
 
         // m1 = r1 * r3;
         this.mat[0].p[3] = r1[0].x * r3[0].x + r1[0].y * r3[1].x + r1[0].z * r3[2].x;
