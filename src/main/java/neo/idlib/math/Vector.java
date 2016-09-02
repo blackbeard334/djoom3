@@ -32,7 +32,7 @@ public class Vector {
 
     @Deprecated
     public static float RAD2DEG(double a) {
-        return (float) (a * idMath.M_RAD2DEG);
+        return ((float) a) * idMath.M_RAD2DEG;
     }
 
     public static idVec2 getVec2_origin() {
@@ -1685,10 +1685,15 @@ public class Vector {
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float p[] = new float[6];
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
         //
         //
 
-        public idVec6() {
+        private static int DBG_idVec6 = 0;
+        public idVec6() {    DBG_idVec6++;
+            int a = 0;
         }
 
         public idVec6(final float[] a) {
@@ -1931,6 +1936,13 @@ public class Vector {
             this.SubVec3_oSet(i, v);
 
             return normalize;
+        }
+
+        @Override
+        public String toString() {
+            return "idVec6{" +
+                    "p=" + Arrays.toString(p) +
+                    '}';
         }
     }
 
@@ -2379,22 +2391,34 @@ public class Vector {
             VECX_CLEAREND();
         }
 
-        public void SubVec6_oSet(idVec6 vec6) {
-            p[0] = vec6.oGet(0);
-            p[1] = vec6.oGet(1);
-            p[2] = vec6.oGet(2);
-            p[3] = vec6.oGet(3);
-            p[4] = vec6.oGet(4);
-            p[5] = vec6.oGet(5);
+        public void SubVec3_Normalize(int i) {
+            idVec3 vec3 = new idVec3(p, i * 3);
+            vec3.Normalize();
+            this.SubVec3_oSet(i, vec3);
         }
 
-        public void SubVec6_oPluSet(idVec6 vec6) {
-            p[0] += vec6.oGet(0);
-            p[1] += vec6.oGet(1);
-            p[2] += vec6.oGet(2);
-            p[3] += vec6.oGet(3);
-            p[4] += vec6.oGet(4);
-            p[5] += vec6.oGet(5);
+        public void SubVec3_oSet(int i, idVec3 v) {
+            p[i * 3 + 0] = v.oGet(0);
+            p[i * 3 + 1] = v.oGet(1);
+            p[i * 3 + 2] = v.oGet(2);
+        }
+
+        public void SubVec6_oSet(int i, idVec6 v) {
+            p[i * 6 + 0] = v.oGet(0);
+            p[i * 6 + 1] = v.oGet(1);
+            p[i * 6 + 2] = v.oGet(2);
+            p[i * 6 + 3] = v.oGet(3);
+            p[i * 6 + 4] = v.oGet(4);
+            p[i * 6 + 5] = v.oGet(5);
+        }
+
+        public void SubVec6_oPluSet(int i, idVec6 v) {
+            p[i * 6 + 0] += v.oGet(0);
+            p[i * 6 + 1] += v.oGet(1);
+            p[i * 6 + 2] += v.oGet(2);
+            p[i * 6 + 3] += v.oGet(3);
+            p[i * 6 + 4] += v.oGet(4);
+            p[i * 6 + 5] += v.oGet(5);
         }
     }
 

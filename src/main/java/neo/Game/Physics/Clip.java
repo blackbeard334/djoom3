@@ -986,7 +986,7 @@ public class Clip {
             }
 
             endPosition = translationalTrace[0].endpos;
-            endRotation = rotation;
+            endRotation = new idRotation(rotation);
             endRotation.SetOrigin(endPosition);
 
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
