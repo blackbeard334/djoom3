@@ -288,6 +288,20 @@ Warnings:
                                                     idAFTree::CalculateForces() ---> child.lm
                                                         idAFTree::Solve() ---> primaryConstraint.body2.s ---> child.s
                                     "env_swinglight_long_wbulbs_32_11"
+                                        body.next.worldAxis != body->next->worldAxis in idPhysics_AF::CheckForCollisions()
+                                            body.totalForce != body->totalForce in idPhysics_AF::Evolve()
+                                                primaryConstraint.s != primaryConstraint->s in idAFTree::Solve()
+                                                    c.c1 != c->c1 in idAFTree::CalculateForces()
+                                                        idAFConstraint_UniversalJoint::Evaluate()
+                                            body.next.spatialVelocity != body->next->spatialVelocity in idPhysics_AF::Evolve()
+                                                .
+                                                .(same as "kitchen_swing2", but different on 6th hit)
+                                                .
+                                                c.body2.acceleration != c->body2->acceleration in idAFTree::CalculateForces()
+                                                    body.totalForce != body->totalForce ---> body.auxForce != body->auxForce
+                                                        lm != lm ---> jmk != jmk  in idPhysics_AF::AuxiliaryForces()
+                                                            constraint.body1.response(00000's) != constraint->body1->response
+                                                                idAFTree::Response()
                         "env_gibs_leftleg_1"
 
 

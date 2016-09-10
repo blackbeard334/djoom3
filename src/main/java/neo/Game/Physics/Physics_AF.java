@@ -1179,7 +1179,7 @@ public class Physics_AF {
                 a2 = anchor2.oMultiply(master.GetWorldAxis());
                 s2 = shaft2.oMultiply(master.GetWorldAxis());
                 d2 = axis2.oMultiply(master.GetWorldAxis());
-                c1.SubVec3_oSet(0, (a2.oPlus(master.GetWorldOrigin().oMinus(a1.oPlus(body1.GetWorldOrigin())))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
+                c1.SubVec3_oSet(0, (a2.oPlus(master.GetWorldOrigin()).oMinus(a1.oPlus(body1.GetWorldOrigin()))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
             } else {
                 a2 = anchor2;
                 s2 = shaft2;
@@ -4020,9 +4020,15 @@ public class Physics_AF {
             }
         }
 
+        /**@deprecated returns immutable response*/
+        @Deprecated
         public idVec6 GetResponseForce(int index) {
 //            return reinterpret_cast < idVec6 > (response[ index * 8]);
             return new idVec6(Arrays.copyOfRange(response, index * 8, (index * 8) + 6));
+        }
+
+        public void SetResponseForce(int index, final idVec6 v) {
+            System.arraycopy(v.p, 0, response, index * 8, 6);
         }
 
         public void Save(idSaveGame saveFile) {
@@ -4235,11 +4241,11 @@ public class Physics_AF {
             if (sortedBodies.Num() == 1) {
                 body = constraint.body1;
                 if (body.tree == this) {
-                    body.GetResponseForce(body.numResponses).oSet(constraint.J1.SubVec6(row));
+                    body.SetResponseForce(body.numResponses, constraint.J1.SubVec6(row));
                     body.responseIndex[body.numResponses++] = auxiliaryIndex;
                 } else {
                     body = constraint.body2;
-                    body.GetResponseForce(body.numResponses).oSet(constraint.J2.SubVec6(row));
+                    body.SetResponseForce(body.numResponses, constraint.J2.SubVec6(row));
                     body.responseIndex[body.numResponses++] = auxiliaryIndex;
                 }
                 return;
@@ -4257,7 +4263,7 @@ public class Physics_AF {
                 }
                 body.s.Zero();
                 body.fl.isZero = true;
-                body.GetResponseForce(body.numResponses).Zero();
+                body.SetResponseForce(body.numResponses, Vector.getVec6_zero());
             }
 
             // set right hand side for first constrained body
@@ -4274,7 +4280,7 @@ public class Physics_AF {
                     child.J2.Multiply(child.s, v);
                     child.fl.isZero = false;
                 }
-                body.GetResponseForce(body.numResponses).oSet(constraint.J1.SubVec6(row));
+                body.SetResponseForce(body.numResponses, constraint.J1.SubVec6(row));
             }
 
             // set right hand side for second constrained body
@@ -4291,7 +4297,7 @@ public class Physics_AF {
                     child.J2.MultiplyAdd(child.s, v);
                     child.fl.isZero = false;
                 }
-                body.GetResponseForce(body.numResponses).oSet(constraint.J2.SubVec6(row));
+                body.SetResponseForce(body.numResponses, constraint.J2.SubVec6(row));
             }
 
             // solve for primary constraints
@@ -4308,7 +4314,9 @@ public class Physics_AF {
                     continue;
                 }
 
-                force.SetData(6, Arrays.copyOfRange(body.response, body.numResponses * 8, body.response.length));
+                final int from = body.numResponses * 8;
+                final int to = from + 6;
+                force.SetData(6, Arrays.copyOfRange(body.response, from, to));
 
                 // add forces of all primary constraints acting on this body
                 primaryConstraint = body.primaryConstraint;
@@ -4320,6 +4328,7 @@ public class Physics_AF {
                     child.J2.TransposeMultiplyAdd(force, child.lm);
                 }
 
+                System.arraycopy(force.p, 0, body.response, from, 6);
                 body.responseIndex[body.numResponses++] = auxiliaryIndex;
             }
         }
@@ -6410,8 +6419,8 @@ public class Physics_AF {
 //            index = new int[bodies.Num() * numAuxConstraints];
             for (i = 0; i < bodies.Num(); i++) {
                 body = bodies.oGet(i);
-                body.response = new float[numAuxConstraints * 8];
-                body.responseIndex = new int[numAuxConstraints];
+                body.response = new float[bodies.Num() * numAuxConstraints * 8];
+                body.responseIndex = new int[bodies.Num() * numAuxConstraints];
                 body.numResponses = 0;
                 body.maxAuxiliaryIndex = 0;
 //                forcePtr += numAuxConstraints * 8;
@@ -6465,20 +6474,21 @@ public class Physics_AF {
                     j1 = tmp.ToFloatPtr();
                     ptr = constraint.body1.response;
                     index = constraint.body1.responseIndex;
-                    dstPtr = jmk.oGet(k);
+                    dstPtr = jmk.ToFloatPtr();
                     s = af_useSymmetry.GetBool() ? k + 1 : numAuxConstraints;
-                    for (l = n = p_i = 0, m = index[0]; n < constraint.body1.numResponses && m < s; n++) {
-                        m = index[n];
+                    final int c = k * jmk.GetNumColumns();
+                    for (l = n = p_i = 0, m = index[n]; n < constraint.body1.numResponses && m < s; n++, m = index[n]) {
                         while (l < m) {
-                            dstPtr[l++] = 0.0f;
+                            dstPtr[c + l++] = 0.0f;
                         }
-                        dstPtr[l++] = j1[0] * ptr[p_i + 0] + j1[1] * ptr[p_i + 1] + j1[2] * ptr[p_i + 2]
-                                + j1[3] * ptr[p_i + 3] + j1[4] * ptr[p_i + 4] + j1[5] * ptr[p_i + 5];
+                        dstPtr[c + l++] = j1[0] * ptr[p_i + 0] + j1[1] * ptr[p_i + 1] +
+                                j1[2] * ptr[p_i + 2] + j1[3] * ptr[p_i + 3] +
+                                j1[4] * ptr[p_i + 4] + j1[5] * ptr[p_i + 5];
                         p_i += 8;
                     }
 
                     while (l < s) {
-                        dstPtr[l++] = 0.0f;
+                        dstPtr[c + l++] = 0.0f;
                     }
 
                     if (constraint.body2 != null) {
@@ -6486,10 +6496,10 @@ public class Physics_AF {
                         j2 = tmp.ToFloatPtr();
                         ptr = constraint.body2.response;
                         index = constraint.body2.responseIndex;
-                        for (n = p_i = 0, m = index[0]; n < constraint.body2.numResponses && m < s; n++) {
-                            m = index[n];
-                            dstPtr[m] += j2[0] * ptr[p_i + 0] + j2[1] * ptr[p_i + 1] + j2[2] * ptr[p_i + 2]
-                                    + j2[3] * ptr[p_i + 3] + j2[4] * ptr[p_i + 4] + j2[5] * ptr[p_i + 5];
+                        for (n = p_i = 0, m = index[n]; n < constraint.body2.numResponses && m < s; n++, m = index[n]) {
+                            dstPtr[c + m] += j2[0] * ptr[p_i + 0] + j2[1] * ptr[p_i + 1] +
+                                    j2[2] * ptr[p_i + 2] + j2[3] * ptr[p_i + 3] +
+                                    j2[4] * ptr[p_i + 4] + j2[5] * ptr[p_i + 5];
                             p_i += 8;
                         }
                     }

@@ -6166,20 +6166,39 @@ public class idMatX {
         return mat[column + (row * numColumns)] = value;
     }
 
+    @Deprecated
     public void oPluSet(final int row, final int column, final double value) {
+        mat[column + (row * numColumns)] += (float) value;
+    }
+
+    @Deprecated
+    public void oMinSet(final int row, final int column, final double value) {
+        mat[column + (row * numColumns)] -= (float) value;
+    }
+
+    @Deprecated
+    public void oMulSet(final int row, final int column, final double value) {
+        mat[column + (row * numColumns)] *= (float) value;
+    }
+
+    @Deprecated
+    public void oDivSet(final int row, final int column, final double value) {
+        mat[column + (row * numColumns)] /= (float) value;
+    }
+
+    public void oPluSet(final int row, final int column, final float value) {
         mat[column + (row * numColumns)] += value;
     }
 
-    // DOUBLE: let the compiler cast it back to float AFTER the value has been subtracted.
-    public void oMinSet(final int row, final int column, final double value) {
+    public void oMinSet(final int row, final int column, final float value) {
         mat[column + (row * numColumns)] -= value;
     }
 
-    public void oMulSet(final int row, final int column, final double value) {
+    public void oMulSet(final int row, final int column, final float value) {
         mat[column + (row * numColumns)] *= value;
     }
 
-    public void oDivSet(final int row, final int column, final double value) {
+    public void oDivSet(final int row, final int column, final float value) {
         mat[column + (row * numColumns)] /= value;
     }
 
