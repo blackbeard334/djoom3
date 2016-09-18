@@ -1564,9 +1564,9 @@ public class TraceModel {
             integrals.T1.oSet(0, T1[0] * 0.5f);
             integrals.T1.oSet(1, T1[1] * 0.5f);
             integrals.T1.oSet(2, T1[2] * 0.5f);
-            integrals.T2.oSet(0, T2[0] * 1.0f / 3.0f);
-            integrals.T2.oSet(1, T2[1] * 1.0f / 3.0f);
-            integrals.T2.oSet(2, T2[2] * 1.0f / 3.0f);
+            integrals.T2.oSet(0, T2[0] * (1.0f / 3.0f));
+            integrals.T2.oSet(1, T2[1] * (1.0f / 3.0f));
+            integrals.T2.oSet(2, T2[2] * (1.0f / 3.0f));
             integrals.TP.oSet(0, TP[0] * 0.5f);
             integrals.TP.oSet(1, TP[1] * 0.5f);
             integrals.TP.oSet(2, TP[2] * 0.5f);

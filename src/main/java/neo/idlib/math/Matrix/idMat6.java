@@ -500,7 +500,7 @@ public class idMat6 {
     public boolean InverseSelf() {// returns false if determinant is zero
         // 810+6+36 = 852 multiplications
         //				1 division
-        float det, invDet;
+        double det, invDet;
 
         // 2x2 sub-determinants required to calculate 6x6 determinant
         float det2_45_01 = mat[4].p[0] * mat[5].p[1] - mat[4].p[1] * mat[5].p[0];
@@ -570,7 +570,7 @@ public class idMat6 {
         det = mat[0].p[0] * det5_12345_12345 - mat[0].p[1] * det5_12345_02345 + mat[0].p[2] * det5_12345_01345
                 - mat[0].p[3] * det5_12345_01245 + mat[0].p[4] * det5_12345_01235 - mat[0].p[5] * det5_12345_01234;
 
-        if (idMath.Fabs(det) < MATRIX_INVERSE_EPSILON) {
+        if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
             return false;
         }
 
@@ -764,47 +764,47 @@ public class idMat6 {
         float det5_02345_02345 = mat[0].p[0] * det4_2345_2345 - mat[0].p[2] * det4_2345_0345 + mat[0].p[3] * det4_2345_0245 - mat[0].p[4] * det4_2345_0235 + mat[0].p[5] * det4_2345_0234;
         float det5_02345_12345 = mat[0].p[1] * det4_2345_2345 - mat[0].p[2] * det4_2345_1345 + mat[0].p[3] * det4_2345_1245 - mat[0].p[4] * det4_2345_1235 + mat[0].p[5] * det4_2345_1234;
 
-        mat[0].p[0] = det5_12345_12345 * invDet;
-        mat[0].p[1] = -det5_02345_12345 * invDet;
-        mat[0].p[2] = det5_01345_12345 * invDet;
-        mat[0].p[3] = -det5_01245_12345 * invDet;
-        mat[0].p[4] = det5_01235_12345 * invDet;
-        mat[0].p[5] = -det5_01234_12345 * invDet;
+        mat[0].p[0] = (float) (det5_12345_12345 * invDet);
+        mat[0].p[1] = (float) (-det5_02345_12345 * invDet);
+        mat[0].p[2] = (float) (det5_01345_12345 * invDet);
+        mat[0].p[3] = (float) (-det5_01245_12345 * invDet);
+        mat[0].p[4] = (float) (det5_01235_12345 * invDet);
+        mat[0].p[5] = (float) (-det5_01234_12345 * invDet);
 
-        mat[1].p[0] = -det5_12345_02345 * invDet;
-        mat[1].p[1] = det5_02345_02345 * invDet;
-        mat[1].p[2] = -det5_01345_02345 * invDet;
-        mat[1].p[3] = det5_01245_02345 * invDet;
-        mat[1].p[4] = -det5_01235_02345 * invDet;
-        mat[1].p[5] = det5_01234_02345 * invDet;
+        mat[1].p[0] = (float) (-det5_12345_02345 * invDet);
+        mat[1].p[1] = (float) (det5_02345_02345 * invDet);
+        mat[1].p[2] = (float) (-det5_01345_02345 * invDet);
+        mat[1].p[3] = (float) (det5_01245_02345 * invDet);
+        mat[1].p[4] = (float) (-det5_01235_02345 * invDet);
+        mat[1].p[5] = (float) (det5_01234_02345 * invDet);
 
-        mat[2].p[0] = det5_12345_01345 * invDet;
-        mat[2].p[1] = -det5_02345_01345 * invDet;
-        mat[2].p[2] = det5_01345_01345 * invDet;
-        mat[2].p[3] = -det5_01245_01345 * invDet;
-        mat[2].p[4] = det5_01235_01345 * invDet;
-        mat[2].p[5] = -det5_01234_01345 * invDet;
+        mat[2].p[0] = (float) (det5_12345_01345 * invDet);
+        mat[2].p[1] = (float) (-det5_02345_01345 * invDet);
+        mat[2].p[2] = (float) (det5_01345_01345 * invDet);
+        mat[2].p[3] = (float) (-det5_01245_01345 * invDet);
+        mat[2].p[4] = (float) (det5_01235_01345 * invDet);
+        mat[2].p[5] = (float) (-det5_01234_01345 * invDet);
 
-        mat[3].p[0] = -det5_12345_01245 * invDet;
-        mat[3].p[1] = det5_02345_01245 * invDet;
-        mat[3].p[2] = -det5_01345_01245 * invDet;
-        mat[3].p[3] = det5_01245_01245 * invDet;
-        mat[3].p[4] = -det5_01235_01245 * invDet;
-        mat[3].p[5] = det5_01234_01245 * invDet;
+        mat[3].p[0] = (float) (-det5_12345_01245 * invDet);
+        mat[3].p[1] = (float) (det5_02345_01245 * invDet);
+        mat[3].p[2] = (float) (-det5_01345_01245 * invDet);
+        mat[3].p[3] = (float) (det5_01245_01245 * invDet);
+        mat[3].p[4] = (float) (-det5_01235_01245 * invDet);
+        mat[3].p[5] = (float) (det5_01234_01245 * invDet);
 
-        mat[4].p[0] = det5_12345_01235 * invDet;
-        mat[4].p[1] = -det5_02345_01235 * invDet;
-        mat[4].p[2] = det5_01345_01235 * invDet;
-        mat[4].p[3] = -det5_01245_01235 * invDet;
-        mat[4].p[4] = det5_01235_01235 * invDet;
-        mat[4].p[5] = -det5_01234_01235 * invDet;
+        mat[4].p[0] = (float) (det5_12345_01235 * invDet);
+        mat[4].p[1] = (float) (-det5_02345_01235 * invDet);
+        mat[4].p[2] = (float) (det5_01345_01235 * invDet);
+        mat[4].p[3] = (float) (-det5_01245_01235 * invDet);
+        mat[4].p[4] = (float) (det5_01235_01235 * invDet);
+        mat[4].p[5] = (float) (-det5_01234_01235 * invDet);
 
-        mat[5].p[0] = -det5_12345_01234 * invDet;
-        mat[5].p[1] = det5_02345_01234 * invDet;
-        mat[5].p[2] = -det5_01345_01234 * invDet;
-        mat[5].p[3] = det5_01245_01234 * invDet;
-        mat[5].p[4] = -det5_01235_01234 * invDet;
-        mat[5].p[5] = det5_01234_01234 * invDet;
+        mat[5].p[0] = (float) (-det5_12345_01234 * invDet);
+        mat[5].p[1] = (float) (det5_02345_01234 * invDet);
+        mat[5].p[2] = (float) (-det5_01345_01234 * invDet);
+        mat[5].p[3] = (float) (det5_01245_01234 * invDet);
+        mat[5].p[4] = (float) (-det5_01235_01234 * invDet);
+        mat[5].p[5] = (float) (det5_01234_01234 * invDet);
 
         return true;
     }

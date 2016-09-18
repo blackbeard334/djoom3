@@ -35,6 +35,10 @@ public class Vector {
         return ((float) a) * idMath.M_RAD2DEG;
     }
 
+    public static float RAD2DEG(float a) {
+        return a * idMath.M_RAD2DEG;
+    }
+
     public static idVec2 getVec2_origin() {
         return new idVec2(vec2_origin);
     }
@@ -1070,7 +1074,7 @@ public class Vector {
             return value;
         }
 
-        public void oPluSet(final int i, final double value) {
+        public void oPluSet(final int i, final float value) {
             if (i == 1) {
                 y += value;
             } else if (i == 2) {

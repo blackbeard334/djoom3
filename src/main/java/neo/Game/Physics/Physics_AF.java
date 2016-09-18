@@ -3896,7 +3896,8 @@ public class Physics_AF {
             return bouncyness;
         }
 
-        public void SetDensity(float density, final idMat3 inertiaScale /*= mat3_identity*/) {
+        private static int DBG_SetDensity = 0;
+        public void SetDensity(float density, final idMat3 inertiaScale /*= mat3_identity*/) {DBG_SetDensity++;
 
             float[] massTemp = {mass};
 
@@ -3923,6 +3924,7 @@ public class Physics_AF {
             invMass = 1.0f / mass;
             if (!inertiaScale.equals(getMat3_identity())) {
                 inertiaTensor.oMulSet(inertiaScale);
+                int a = 0;
             }
             if (inertiaTensor.IsDiagonal(1e-3f)) {
                 inertiaTensor.oSet(0, 1, inertiaTensor.oSet(0, 2, 0.0f));
@@ -3932,8 +3934,10 @@ public class Physics_AF {
                 inverseInertiaTensor.oSet(0, 0, 1.0f / inertiaTensor.oGet(0, 0));
                 inverseInertiaTensor.oSet(1, 1, 1.0f / inertiaTensor.oGet(1, 1));
                 inverseInertiaTensor.oSet(2, 2, 1.0f / inertiaTensor.oGet(2, 2));
+                int a = 0;
             } else {
                 inverseInertiaTensor.oSet(inertiaTensor.Inverse());
+                int a = 0;
             }
         }
 
@@ -4323,7 +4327,7 @@ public class Physics_AF {
                 if (primaryConstraint != null) {
                     primaryConstraint.J1.TransposeMultiplyAdd(force, primaryConstraint.lm);
                 }
-                for (j = 0; j < body.children.Num(); j++) {
+                for (j = 0; j < body.children.Num(); j++) {   DBG_force++;
                     child = body.children.oGet(j).primaryConstraint;
                     child.J2.TransposeMultiplyAdd(force, child.lm);
                 }
@@ -4331,7 +4335,7 @@ public class Physics_AF {
                 System.arraycopy(force.p, 0, body.response, from, 6);
                 body.responseIndex[body.numResponses++] = auxiliaryIndex;
             }
-        }
+        }           private static int DBG_force = 0;
 
         /*
          ================
@@ -6151,6 +6155,7 @@ public class Physics_AF {
                     b.invMass = 1.0f / b.mass;
                     b.inertiaTensor.oMulSet(scale);
                     b.inverseInertiaTensor.oSet(b.inertiaTensor.Inverse());
+                    int a =0;
                 }
                 totalMass = forceTotalMass;
             }

@@ -709,6 +709,14 @@ public class Lib {
         return (x < y) ? x : y;
     }
 
+    public static float Max(float x, float y) {
+        return (x > y) ? x : y;
+    }
+
+    public static float Min(float x, float y) {
+        return (x < y) ? x : y;
+    }
+
     public static int Max(int x, int y) {
         return (x > y) ? x : y;
     }

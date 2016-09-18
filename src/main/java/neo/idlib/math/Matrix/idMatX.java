@@ -1325,7 +1325,7 @@ public class idMatX {
      */
     public boolean LowerTriangularInverse() {// in-place inversion, returns false if determinant is zero
         int i, j, k;
-        float d, sum;
+        double d, sum;
 
         for (i = 0; i < numRows; i++) {
             d = this.oGet(i, i);
@@ -1333,7 +1333,7 @@ public class idMatX {
             if (d == 0.0f) {
                 return false;
             }
-            this.oSet(i, i, d = 1.0f / d);
+            this.oSet(i, i, (float) (d = 1.0f / d));
 //                System.out.println("2:" + d);
 
             for (j = 0; j < i; j++) {
@@ -1341,7 +1341,7 @@ public class idMatX {
                 for (k = j; k < i; k++) {
                     sum -= this.oGet(i, k) * this.oGet(k, j);
                 }
-                this.oSet(i, j, sum * d);
+                this.oSet(i, j, (float) (sum * d));
 //                    System.out.println("3:" + sum * d);
             }
         }
@@ -5311,17 +5311,17 @@ public class idMatX {
      * Computes (a^2 + b^2)^1/2 without underflow or overflow. ============
      */
     private float Pythag(float a, float b) {
-        float at, bt, ct;
+        double at, bt, ct;
 
         at = idMath.Fabs(a);
         bt = idMath.Fabs(b);
         if (at > bt) {
             ct = bt / at;
-            return at * idMath.Sqrt(1.0f + ct * ct);
+            return (float) (at * idMath.Sqrt((float) (1.0f + ct * ct)));
         } else {
             if (bt != 0) {
                 ct = at / bt;
-                return bt * idMath.Sqrt(1.0f + ct * ct);
+                return (float) (bt * idMath.Sqrt((float) (1.0f + ct * ct)));
             } else {
                 return 0.0f;
             }

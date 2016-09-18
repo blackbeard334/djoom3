@@ -456,7 +456,7 @@ public class idMat3 {
         // 18+3+9 = 30 multiplications
         //			 1 division
         idMat3 inverse = new idMat3();
-        float det, invDet;
+        double det, invDet;
 
         inverse.mat[0].x = mat[1].y * mat[2].z - mat[1].z * mat[2].y;
         inverse.mat[1].x = mat[1].z * mat[2].x - mat[1].x * mat[2].z;
@@ -464,7 +464,7 @@ public class idMat3 {
 
         det = mat[0].x * inverse.mat[0].x + mat[0].y * inverse.mat[1].x + mat[0].z * inverse.mat[2].x;
 
-        if (idMath.Fabs(det) < MATRIX_INVERSE_EPSILON) {
+        if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
             return false;
         }
 
@@ -477,17 +477,17 @@ public class idMat3 {
         inverse.mat[2].y = mat[0].y * mat[2].x - mat[0].x * mat[2].y;
         inverse.mat[2].z = mat[0].x * mat[1].y - mat[0].y * mat[1].x;
 
-        mat[0].x = inverse.mat[0].x * invDet;
-        mat[0].y = inverse.mat[0].y * invDet;
-        mat[0].z = inverse.mat[0].z * invDet;
+        mat[0].x = (float) (inverse.mat[0].x * invDet);
+        mat[0].y = (float) (inverse.mat[0].y * invDet);
+        mat[0].z = (float) (inverse.mat[0].z * invDet);
 
-        mat[1].x = inverse.mat[1].x * invDet;
-        mat[1].y = inverse.mat[1].y * invDet;
-        mat[1].z = inverse.mat[1].z * invDet;
+        mat[1].x = (float) (inverse.mat[1].x * invDet);
+        mat[1].y = (float) (inverse.mat[1].y * invDet);
+        mat[1].z = (float) (inverse.mat[1].z * invDet);
 
-        mat[2].x = inverse.mat[2].x * invDet;
-        mat[2].y = inverse.mat[2].y * invDet;
-        mat[2].z = inverse.mat[2].z * invDet;
+        mat[2].x = (float) (inverse.mat[2].x * invDet);
+        mat[2].y = (float) (inverse.mat[2].y * invDet);
+        mat[2].z = (float) (inverse.mat[2].z * invDet);
 
         return true;
     }

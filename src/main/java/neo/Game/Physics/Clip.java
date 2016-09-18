@@ -620,7 +620,8 @@ public class Clip {
             clipLinks = link;
         }
 
-        private static int AllocTraceModel(final idTraceModel trm) {
+        private static int DBG_AllocTraceModel = 0;
+        private static int AllocTraceModel(final idTraceModel trm) {DBG_AllocTraceModel++;
             int i, hashKey, traceModelIndex;
             trmCache_s entry;
 

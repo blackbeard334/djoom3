@@ -302,6 +302,12 @@ Warnings:
                                                         lm != lm ---> jmk != jmk  in idPhysics_AF::AuxiliaryForces()
                                                             constraint.body1.response(00000's) != constraint->body1->response
                                                                 idAFTree::Response()
+                                                                    body.children.oGet(j).primaryConstraint.lm!=body->children[j]->primaryConstraint->lm
+                                                                        idAFTree::Solve()
+                                                                            idAFBody::InverseWorldSpatialInertiaMultiply() ---> mPtr!=mPtr
+                                                                                idPhysics_AF::EvaluateBodies() ---> body.inverseInertiaTensor!=body->inverseInertiaTensor
+                                                                                    idAFBody::SetDensity() ---> idClipModel::GetMassProperties()
+                                                                                        idClipModel::AllocTraceModel() count is out of wack
                         "env_gibs_leftleg_1"
 
 

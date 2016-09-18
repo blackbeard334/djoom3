@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import neo.CM.CollisionModel_local.cm_polygon_s;
+import java.util.stream.IntStream;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.idRenderModel;
@@ -306,6 +306,10 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
     public static int ftoi(float f) {
         return Float.floatToIntBits(f);
+    }
+
+    public static int[] ftoi(float[] a) {
+        return IntStream.range(0, a.length).map(i -> Float.floatToIntBits(a[i])).toArray();
     }
 
     public static int atoi(String ascii) {
