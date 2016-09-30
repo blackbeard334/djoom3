@@ -250,64 +250,77 @@ Warnings:
 
 -WARNING: rigid body not at rest for entity 'moveable_diamondbox_sm_3' type 'neo.Game.Moveable$idMoveable' at (643 -1818 24)
     -idClip::Contacts() 4 != 7
-        -idCollisionModelManagerLocal::TranslateTrmEdgeThroughPolygon() --> CM_AddContact()
-            -CM_SetVertexSidedness() --> the pluecker is empty --> looking closer at tw.edges in TranslateTrmThroughPolygon(), we see that some edges are all zeroes???
-                -idCollisionModelManagerLocal::SetupTrm() --> trm.edges is zeroes??
-                    -no, trm.edges has the correct values
-                    -idCollisionModelManagerLocal::SetupTrm() --> hit==2
-                        -static tw.edges has the wrong values upon entry
-                            -the correct values are set, but we overwrite somewhere?
-                                -funny how the answer jsut stares you in the face...idCollisionModelManagerLocal::SetupTrm()
-            -poly.edges has the wrong values
-                -idCollisionModelManagerLocal::Translation() --> tw.model
-                    -idCollisionModelManagerLocal::SetupTrmModel() 62 hits
-            -tw.model.vertices[].checkCount has wrong value
-                |----------------------|----------|--------|
-                |                      |  j++     |  c++   |
-                |----------------------|----------|--------|
-                |ContentsTrm           |  171     |  138   |
-                |ParseCollisionModel   |  456     |  456   |
-                |WindingOutsideBrushes |  19130   |  19130 |
-                |OptimizeArrays        |  114     |  114   |
-                |FinishModel           |  342     |  342   |
-                |TrmFromModel          |  76      |  76    |
-                |Rotation180           |  7       |  11    |
-                |Translation           |  553     |  564   |
-                |----------------------|----------|--------|
-                |                      |  20849   |  20831 |
-                |----------------------|----------|--------|
-                idCollisionModelManagerLocal::Rotation180()
-                    idAFEntity_Base::Think()
-                        "env_gibs_leftarm_1"
-                            idClip::Motion() ---> rotation
-                                idPhysics_AF::CheckForCollisions() ---> body.current==body.next
-                                    "kitchen_swing2"
-                                        body.current.worldAxis
-                                            idPhysics_AF::Evolve()
-                                                body.next.spatialVelocity ---> body.acceleration.SubVec6(0) ----> body.totalForce
-                                                    idAFTree::CalculateForces() ---> child.lm
-                                                        idAFTree::Solve() ---> primaryConstraint.body2.s ---> child.s
-                                    "env_swinglight_long_wbulbs_32_11"
-                                        body.next.worldAxis != body->next->worldAxis in idPhysics_AF::CheckForCollisions()
-                                            body.totalForce != body->totalForce in idPhysics_AF::Evolve()
-                                                primaryConstraint.s != primaryConstraint->s in idAFTree::Solve()
-                                                    c.c1 != c->c1 in idAFTree::CalculateForces()
-                                                        idAFConstraint_UniversalJoint::Evaluate()
-                                            body.next.spatialVelocity != body->next->spatialVelocity in idPhysics_AF::Evolve()
-                                                .
-                                                .(same as "kitchen_swing2", but different on 6th hit)
-                                                .
-                                                c.body2.acceleration != c->body2->acceleration in idAFTree::CalculateForces()
-                                                    body.totalForce != body->totalForce ---> body.auxForce != body->auxForce
-                                                        lm != lm ---> jmk != jmk  in idPhysics_AF::AuxiliaryForces()
-                                                            constraint.body1.response(00000's) != constraint->body1->response
-                                                                idAFTree::Response()
-                                                                    body.children.oGet(j).primaryConstraint.lm!=body->children[j]->primaryConstraint->lm
-                                                                        idAFTree::Solve()
-                                                                            idAFBody::InverseWorldSpatialInertiaMultiply() ---> mPtr!=mPtr
-                                                                                idPhysics_AF::EvaluateBodies() ---> body.inverseInertiaTensor!=body->inverseInertiaTensor
-                                                                                    idAFBody::SetDensity() ---> idClipModel::GetMassProperties()
-                                                                                        idClipModel::AllocTraceModel() count is out of wack
+    |   -idCollisionModelManagerLocal::TranslateTrmEdgeThroughPolygon() --> CM_AddContact()
+    |       -CM_SetVertexSidedness() --> the pluecker is empty --> looking closer at tw.edges in TranslateTrmThroughPolygon(), we see that some edges are all zeroes???
+    |           -idCollisionModelManagerLocal::SetupTrm() --> trm.edges is zeroes??
+    |               -no, trm.edges has the correct values
+    |               -idCollisionModelManagerLocal::SetupTrm() --> hit==2
+    |                   -static tw.edges has the wrong values upon entry
+    |                       -the correct values are set, but we overwrite somewhere?
+    |                           -funny how the answer jsut stares you in the face...idCollisionModelManagerLocal::SetupTrm()
+    |       -poly.edges has the wrong values
+    |           -idCollisionModelManagerLocal::Translation() --> tw.model
+    |               -idCollisionModelManagerLocal::SetupTrmModel() 62 hits
+    |       -tw.model.vertices[].checkCount has wrong value
+    |           |----------------------|----------|--------|
+    |           |                      |  j++     |  c++   |
+    |           |----------------------|----------|--------|
+    |           |ContentsTrm           |  171     |  138   |
+    |           |ParseCollisionModel   |  456     |  456   |
+    |           |WindingOutsideBrushes |  19130   |  19130 |
+    |           |OptimizeArrays        |  114     |  114   |
+    |           |FinishModel           |  342     |  342   |
+    |           |TrmFromModel          |  76      |  76    |
+    |           |Rotation180           |  7       |  11    |
+    |           |Translation           |  553     |  564   |
+    |           |----------------------|----------|--------|
+    |           |                      |  20849   |  20831 |
+    |           |----------------------|----------|--------|
+    |           idCollisionModelManagerLocal::Rotation180()
+    |               idAFEntity_Base::Think()
+    |                   "env_gibs_leftarm_1"
+    |                       idClip::Motion() ---> rotation
+    |                           idPhysics_AF::CheckForCollisions() ---> body.current==body.next
+    |                               "kitchen_swing2"
+    |                                   body.current.worldAxis
+    |                                       idPhysics_AF::Evolve()
+    |                                           body.next.spatialVelocity ---> body.acceleration.SubVec6(0) ----> body.totalForce
+    |                                               idAFTree::CalculateForces() ---> child.lm
+    |                                                   idAFTree::Solve() ---> primaryConstraint.body2.s ---> child.s
+    |                               "env_swinglight_long_wbulbs_32_11"
+    |                                   body.next.worldAxis != body->next->worldAxis in idPhysics_AF::CheckForCollisions()
+    |                                       body.totalForce != body->totalForce in idPhysics_AF::Evolve()
+    |                                           primaryConstraint.s != primaryConstraint->s in idAFTree::Solve()
+    |                                               c.c1 != c->c1 in idAFTree::CalculateForces()
+    |                                                   idAFConstraint_UniversalJoint::Evaluate()
+    |                                       body.next.spatialVelocity != body->next->spatialVelocity in idPhysics_AF::Evolve()
+    |                                           .
+    |                                           .(same as "kitchen_swing2", but different on 6th hit)
+    |                                           .
+    |                                           c.body2.acceleration != c->body2->acceleration in idAFTree::CalculateForces()
+    |                                               body.totalForce != body->totalForce ---> body.auxForce != body->auxForce
+    |                                                   lm != lm ---> jmk != jmk  in idPhysics_AF::AuxiliaryForces()
+    |                                                       constraint.body1.response(00000's) != constraint->body1->response
+    |                                                           idAFTree::Response()
+    |                                                               body.children.oGet(j).primaryConstraint.lm!=body->children[j]->primaryConstraint->lm
+    |                                                                   idAFTree::Solve()
+    |                                                                       idAFBody::InverseWorldSpatialInertiaMultiply() ---> mPtr!=mPtr
+    |                                                                           idPhysics_AF::EvaluateBodies() ---> body.inverseInertiaTensor!=body->inverseInertiaTensor
+    |                                                                               idAFBody::SetDensity() ---> idClipModel::GetMassProperties()
+    |                                                               child->lm!=child.lm
+    |                                                                   idAFTree::Solve() ---> primaryConstraint->lm = primaryConstraint->s;
+    |                                                                       primaryConstraint->J[17]!=primaryConstraint.J[17]
+    |                                                                           idAFTree::Factor() ---> child->J = child->invI * child->J;
+    |---TranslateTrmEdgeThroughPolygon 4500 vs 4386
+          TODO: idCollisionModelManagerLocal::checkCount != idCollisionModelManagerLocal.checkCount
+            v1.sideSet!=v1->sideSet ---> 0!=5120
+            v1.side!=v1->side
+            v2.side!=v2->side
+                adasdsa called from the wrong location 
+                    idCollisionModelManagerLocal::TranslateVertexThroughTrmPolygon() f!=f --> 1.0!=7.62939453e-006 ---> trmpoly.plane.d!=24.0900021
+                        idCollisionModelManagerLocal::Translation() tw.edges[1....]!=tw->edges[1....]
+                            tw.polys-->tw.edges-->tw.vertices-->trm.verts
+    
                         "env_gibs_leftleg_1"
 
 

@@ -1148,7 +1148,7 @@ public class CollisionModel_local {
             }
 
             // setup trm edges
-            for (i = 1; i < tw.numEdges; i++) {
+            for (i = 1; i <= tw.numEdges; i++) {
                 edge = tw.edges[i];
                 if (!edge.used) {
                     continue;
@@ -1819,7 +1819,8 @@ public class CollisionModel_local {
             return true;
         }
 
-        private void TranslateTrmEdgeThroughPolygon(cm_traceWork_s tw, cm_polygon_s poly, cm_trmEdge_s trmEdge) {
+        private static int DBG_TranslateTrmEdgeThroughPolygon = 0;
+        private void TranslateTrmEdgeThroughPolygon(cm_traceWork_s tw, cm_polygon_s poly, cm_trmEdge_s trmEdge) {        DBG_TranslateTrmEdgeThroughPolygon++;
             int i, edgeNum;
             float dist, d1, d2;
             idVec3 start, end, normal = new idVec3();
@@ -2961,7 +2962,7 @@ public class CollisionModel_local {
             idPlane epsPlane;
 
             // epsilon expanded plane
-            epsPlane = plane;
+            epsPlane = new idPlane(plane);
             epsPlane.SetDist(epsPlane.Dist() + CM_CLIP_EPSILON);
 
             // if the rotation sphere at the rotation origin is too far away from the polygon plane
