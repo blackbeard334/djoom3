@@ -89,7 +89,7 @@ public class Force_Spring {
                 pos1 = physics1.GetOrigin(id1);
                 pos1.oPluSet(p1.oMultiply(axis));
                 if (damping > 0.0f) {
-                    physics1.GetImpactInfo(id1, pos1, info);
+                    info = physics1.GetImpactInfo(id1, pos1);
                     velocity1 = info.velocity;
                 }
             }
@@ -99,7 +99,7 @@ public class Force_Spring {
                 pos2 = physics2.GetOrigin(id2);
                 pos2.oPluSet(p2.oMultiply(axis));
                 if (damping > 0.0f) {
-                    physics2.GetImpactInfo(id2, pos2, info);
+                    info = physics2.GetImpactInfo(id2, pos2);
                     velocity2 = info.velocity;
                 }
             }

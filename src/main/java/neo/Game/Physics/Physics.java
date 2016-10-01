@@ -57,13 +57,15 @@ public class Physics {
 
     public static class impactInfo_s {
 
-        float invMass;			// inverse mass
-        idMat3 invInertiaTensor;	// inverse inertia tensor
-        idVec3 position;		// impact position relative to center of mass
-        idVec3 velocity;		// velocity at the impact position
+        float  invMass;         // inverse mass
+        idMat3 invInertiaTensor;// inverse inertia tensor
+        idVec3 position;        // impact position relative to center of mass
+        idVec3 velocity;        // velocity at the impact position
 
-        void clear() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public impactInfo_s() {
+            invInertiaTensor = new idMat3();
+            position = new idVec3();
+            velocity = new idVec3();
         }
     };
 
@@ -177,7 +179,7 @@ public class Physics {
         public abstract int GetTime();
         // collision interaction between different physics objects
 
-        public abstract void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info);
+        public abstract impactInfo_s GetImpactInfo(final int id, final idVec3 point);
 
         public abstract void ApplyImpulse(final int id, final idVec3 point, final idVec3 impulse);
 

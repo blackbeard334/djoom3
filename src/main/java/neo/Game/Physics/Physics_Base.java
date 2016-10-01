@@ -186,8 +186,8 @@ public class Physics_Base {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
-//	memset( info, 0, sizeof( *info ) );
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
+            return new impactInfo_s();
         }
 
         @Override

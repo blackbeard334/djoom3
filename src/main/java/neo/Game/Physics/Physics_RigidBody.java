@@ -45,7 +45,6 @@ import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
-import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
@@ -629,18 +628,20 @@ public class Physics_RigidBody {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
             idVec3 linearVelocity, angularVelocity;
             idMat3 inverseWorldInertiaTensor;
+            impactInfo_s info = new impactInfo_s();
 
             linearVelocity = current.i.linearMomentum.oMultiply(inverseMass);
             inverseWorldInertiaTensor = current.i.orientation.Transpose().oMultiply(inverseInertiaTensor.oMultiply(current.i.orientation));
             angularVelocity = inverseWorldInertiaTensor.oMultiply(current.i.angularMomentum);
 
             info.invMass = inverseMass;
-            info.invInertiaTensor = inverseWorldInertiaTensor;
+            info.invInertiaTensor.oSet(inverseWorldInertiaTensor);
             info.position = point.oMinus(current.i.position.oPlus(centerOfMass.oMultiply(current.i.orientation)));
             info.velocity = linearVelocity.oPlus(angularVelocity.Cross(info.position));
+            return info;
         }
 
         @Override
@@ -1182,12 +1183,12 @@ public class Physics_RigidBody {
             idVec3 r, linearVelocity, angularVelocity, velocity;
             idMat3 inverseWorldInertiaTensor;
             float impulseNumerator, impulseDenominator, vel;
-            impactInfo_s info = new impactInfo_s();
+            impactInfo_s info;
             idEntity ent;
 
             // get info from other entity involved
             ent = gameLocal.entities[collision.c.entityNum];
-            ent.GetImpactInfo(self, collision.c.id, collision.c.point, info);
+            info = ent.GetImpactInfo(self, collision.c.id, collision.c.point);
 
             // collision point relative to the body center of mass
             r = collision.c.point.oMinus(current.i.position.oPlus(centerOfMass.oMultiply(current.i.orientation)));

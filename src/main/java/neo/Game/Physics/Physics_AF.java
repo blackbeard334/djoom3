@@ -5521,16 +5521,16 @@ public class Physics_AF {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
+            impactInfo_s info = new impactInfo_s();
             if (id < 0 || id >= bodies.Num()) {
-//                memset(info, 0, sizeof(info));
-                info.clear();
-                return;
+                return info;
             }
             info.invMass = 1.0f / bodies.oGet(id).mass;
             info.invInertiaTensor = bodies.oGet(id).current.worldAxis.Transpose().oMultiply(bodies.oGet(id).inverseInertiaTensor.oMultiply(bodies.oGet(id).current.worldAxis));
             info.position = point.oMinus(bodies.oGet(id).current.worldOrigin);
             info.velocity = bodies.oGet(id).current.spatialVelocity.SubVec3(0).oPlus(bodies.oGet(id).current.spatialVelocity.SubVec3(1).Cross(info.position));
+            return info;
         }
 
         @Override
@@ -6869,7 +6869,7 @@ public class Physics_AF {
             idVec3 r, velocity, impulse;
             idMat3 inverseWorldInertiaTensor;
             float impulseNumerator, impulseDenominator;
-            impactInfo_s info = new impactInfo_s();
+            impactInfo_s info;
             idEntity ent;
 
             ent = gameLocal.entities[collision.c.entityNum];
@@ -6878,7 +6878,7 @@ public class Physics_AF {
             }
 
             // get info from other entity involved
-            ent.GetImpactInfo(self, collision.c.id, collision.c.point, info);
+            info = ent.GetImpactInfo(self, collision.c.id, collision.c.point);
             // collision point relative to the body center of mass
             r = collision.c.point.oMinus(body.current.worldOrigin.oPlus(body.centerOfMass.oMultiply(body.current.worldAxis)));
             // the velocity at the collision point

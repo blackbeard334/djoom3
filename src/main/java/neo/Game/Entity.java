@@ -2323,8 +2323,8 @@ public class Entity {
         }
 
         // retrieves impact information, 'ent' is the entity retrieving the info
-        public void GetImpactInfo(idEntity ent, int id, final idVec3 point, impactInfo_s info) {
-            GetPhysics().GetImpactInfo(id, point, info);
+        public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
+            return GetPhysics().GetImpactInfo(id, point);
         }
 
         // apply an impulse to the physics object, 'ent' is the entity applying the impulse
@@ -4731,8 +4731,8 @@ public class Entity {
             super.Show();
         }
 
-        public final void idEntity_GetImpactInfo(idEntity ent, int id, final idVec3 point, impactInfo_s info) {
-            super.GetImpactInfo(ent, id, point, info);
+        public final impactInfo_s idEntity_GetImpactInfo(idEntity ent, int id, final idVec3 point) {
+            return super.GetImpactInfo(ent, id, point);
         }
 
         public final void idEntity_ApplyImpulse(idEntity ent, int id, final idVec3 point, final idVec3 impulse) {

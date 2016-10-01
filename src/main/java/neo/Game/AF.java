@@ -32,12 +32,6 @@ import static neo.Renderer.Model.INVALID_JOINT;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.RenderWorld.renderEntity_s;
 import static neo.TempDump.NOT;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_BALLANDSOCKETJOINT;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_FIXED;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_HINGE;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_SLIDER;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_SPRING;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_UNIVERSALJOINT;
 import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_AXIS;
 import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_BOTH;
 import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_ORIGIN;
@@ -704,9 +698,9 @@ public class AF {
             axis.oSet(baseAxis.Transpose());
         }
 
-        public void GetImpactInfo(idEntity ent, int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
             SetupPose(self, gameLocal.time);
-            physicsObj.GetImpactInfo(BodyForClipModelId(id), point, info);
+            return physicsObj.GetImpactInfo(BodyForClipModelId(id), point);
         }
 
         public void ApplyImpulse(idEntity ent, int id, final idVec3 point, final idVec3 impulse) {

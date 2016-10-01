@@ -15,7 +15,6 @@ import static neo.Game.Game_local.MASK_SOLID;
 import static neo.Game.Game_local.MASK_WATER;
 import static neo.Game.Game_local.gameLocal;
 
-import neo.Game.Game_local;
 import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Physics.Physics.impactInfo_s;
 import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
@@ -399,11 +398,13 @@ public class Physics_Player {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
+            impactInfo_s info = new impactInfo_s();
             info.invMass = invMass;
             info.invInertiaTensor.Zero();
             info.position.Zero();
-            info.velocity = current.velocity;
+            info.velocity.oSet(current.velocity);
+            return info;
         }
 
         @Override
@@ -1521,8 +1522,7 @@ public class Physics_Player {
             self.Collide(groundTrace, current.velocity);
 
             if (groundEntityPtr.GetEntity() != null) {
-                impactInfo_s info = new impactInfo_s();
-                groundEntityPtr.GetEntity().GetImpactInfo(self, groundTrace.c.id, groundTrace.c.point, info);
+                impactInfo_s info = groundEntityPtr.GetEntity().GetImpactInfo(self, groundTrace.c.id, groundTrace.c.point);
                 if (info.invMass != 0.0f) {
                     groundEntityPtr.GetEntity().ApplyImpulse(self, groundTrace.c.id, groundTrace.c.point, current.velocity.oDivide(info.invMass * 10.0f));
                 }

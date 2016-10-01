@@ -237,8 +237,8 @@ public class Physics_Static {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
-//	memset( info, 0, sizeof( *info ) );//TODO:
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
+            return new impactInfo_s();
         }
 
         @Override

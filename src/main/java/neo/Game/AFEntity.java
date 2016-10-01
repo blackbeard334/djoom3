@@ -6,7 +6,7 @@ import java.util.Map;
 
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AF.idAF;
-import neo.Game.AFEntity.jointTransformData_t;
+
 import static neo.Game.Animation.Anim.ANIMCHANNEL_ALL;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD_OVERRIDE;
@@ -23,7 +23,6 @@ import neo.Game.Entity.idAnimatedEntity;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
 
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
@@ -407,11 +406,11 @@ public class AFEntity {
         }
 
         @Override
-        public void GetImpactInfo(idEntity ent, int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
             if (body != null) {
-                body.GetImpactInfo(ent, JOINT_HANDLE_TO_CLIPMODEL_ID(attachJoint), point, info);
+               return  body.GetImpactInfo(ent, JOINT_HANDLE_TO_CLIPMODEL_ID(attachJoint), point);
             } else {
-                idEntity_GetImpactInfo(ent, id, point, info);
+                return idEntity_GetImpactInfo(ent, id, point);
             }
         }
 
@@ -570,11 +569,11 @@ public class AFEntity {
         }
 
         @Override
-        public void GetImpactInfo(idEntity ent, int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
             if (af.IsActive()) {
-                af.GetImpactInfo(ent, id, point, info);
+                return af.GetImpactInfo(ent, id, point);
             } else {
-                idEntity_GetImpactInfo(ent, id, point, info);
+                return idEntity_GetImpactInfo(ent, id, point);
             }
         }
 
