@@ -195,6 +195,7 @@ public class Rotation {
             } else if (angle < -180.0f) {
                 angle += 360.0f;
             }
+            int a = 0;
         }
 //	void				Normalize360( void );
 //

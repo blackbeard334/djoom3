@@ -488,6 +488,7 @@ public class Physics_AF {
             c1.SubVec3_oSet(1, r.GetVec().oMultiply(-(float) DEG2RAD(r.GetAngle())).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
 
             c1.Clamp(-ERROR_REDUCTION_MAX, ERROR_REDUCTION_MAX);
+            int a = 0;
         }
 
         @Override
@@ -726,7 +727,7 @@ public class Physics_AF {
 
             if (master != null) {
                 a2 = anchor2.oMultiply(master.GetWorldAxis());
-                c1.SubVec3_oSet(0, (a2.oPlus(master.GetWorldOrigin().oMinus(a1.oPlus(body1.GetWorldOrigin())))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
+                c1.SubVec3_oSet(0, (a2.oPlus(master.GetWorldOrigin()).oMinus(a1.oPlus(body1.GetWorldOrigin()))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
             } else {
                 c1.SubVec3_oSet(0, (anchor2.oMinus(a1.oPlus(body1.GetWorldOrigin()))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
             }
@@ -945,14 +946,13 @@ public class Physics_AF {
             // the cardan axis is a vector orthogonal to both cardan shafts
             cardanAxis = shaft1.Cross(shaft2);
             if (cardanAxis.Normalize() == 0.0f) {
-//		idVec3 vecY = new idVec3();
-//		shaft1.OrthogonalBasis( cardanAxis, vecY );
-                shaft1.OrthogonalBasis(cardanAxis, new idVec3());
+                idVec3 vecY = new idVec3();
+                shaft1.OrthogonalBasis(cardanAxis, vecY);
                 cardanAxis.Normalize();
             }
 
             shaft1.oMulSet(body1.GetWorldAxis().Transpose());
-            axis1.oSet(cardanAxis.oMulSet(body1.GetWorldAxis().Transpose()));
+            axis1.oSet(cardanAxis.oMultiply(body1.GetWorldAxis().Transpose()));
             if (body2 != null) {
                 shaft2.oMulSet(body2.GetWorldAxis().Transpose());
                 axis2.oSet(cardanAxis.oMultiply(body2.GetWorldAxis().Transpose()));
@@ -1048,9 +1048,9 @@ public class Physics_AF {
                 s2 = shaft2.oMultiply(master.GetWorldAxis());
                 d2 = axis2.oMultiply(master.GetWorldAxis());
             } else {
-                a2 = anchor2;
-                s2 = shaft2;
-                d2 = axis2;
+                a2 = new idVec3(anchor2);
+                s2 = new idVec3(shaft2);
+                d2 = new idVec3(axis2);
             }
 
             v = s1.Cross(s2);
@@ -1181,9 +1181,9 @@ public class Physics_AF {
                 d2 = axis2.oMultiply(master.GetWorldAxis());
                 c1.SubVec3_oSet(0, (a2.oPlus(master.GetWorldOrigin()).oMinus(a1.oPlus(body1.GetWorldOrigin()))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
             } else {
-                a2 = anchor2;
-                s2 = shaft2;
-                d2 = axis2;
+                a2 = new idVec3(anchor2);
+                s2 = new idVec3(shaft2);
+                d2 = new idVec3(axis2);
                 c1.SubVec3_oSet(0, (a2.oMinus(a1.oPlus(body1.GetWorldOrigin()))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
             }
 
@@ -1683,7 +1683,7 @@ public class Physics_AF {
             if (master != null) {
                 a2 = anchor2.oMultiply(master.GetWorldAxis()); // anchor in master space
                 x2 = axis2.oMultiply(master.GetWorldAxis());
-                c1.SubVec3_oSet(0, (a2.oPlus(master.GetWorldOrigin().oMinus(a1.oPlus(body1.GetWorldOrigin())))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
+                c1.SubVec3_oSet(0, (a2.oPlus(master.GetWorldOrigin()).oMinus(a1.oPlus(body1.GetWorldOrigin()))).oMultiply(-(invTimeStep * ERROR_REDUCTION)));
             } else {
                 a2 = anchor2;
                 x2 = axis2;
@@ -2102,6 +2102,7 @@ public class Physics_AF {
             c1.p[4] = -(invTimeStep * ERROR_REDUCTION) * (vecY.oMultiply(ofs));
 
             c1.Clamp(-ERROR_REDUCTION_MAX, ERROR_REDUCTION_MAX);
+            int a = 0;
         }
 
         @Override
@@ -2274,6 +2275,7 @@ public class Physics_AF {
             c1.p[0] = -(invTimeStep * ERROR_REDUCTION) * (a1.oMultiply(normal) - a2.oMultiply(normal));
 
             c1.Clamp(-ERROR_REDUCTION_MAX, ERROR_REDUCTION_MAX);
+            int a = 0;
         }
 
         @Override
@@ -2530,6 +2532,7 @@ public class Physics_AF {
             }
 
             c1.Clamp(-ERROR_REDUCTION_MAX, ERROR_REDUCTION_MAX);
+            int a = 0;
         }
 
         @Override
@@ -3866,6 +3869,7 @@ public class Physics_AF {
 
         public void SetAngularVelocity(final idVec3 angular) {
             current.spatialVelocity.SubVec3_oSet(1, angular);
+            int a = 0;
         }
 
         public void SetFriction(float linear, float angular, float contact) {
@@ -5653,8 +5657,9 @@ public class Physics_AF {
             Rotate(rotation);
         }
 
+        private static int DBG_Translate = 0;
         @Override
-        public void Translate(final idVec3 translation, int id /*= -1*/) {
+        public void Translate(final idVec3 translation, int id /*= -1*/) {  DBG_Translate++;
             int i;
             idAFBody body;
 
@@ -5670,6 +5675,7 @@ public class Physics_AF {
 
                 body = bodies.oGet(i);
                 body.current.worldOrigin.oPluSet(translation);
+                int a = 0;
             }
 
             Activate();
@@ -6310,7 +6316,7 @@ public class Physics_AF {
             for (i = 0; i < primaryConstraints.Num(); i++) {
                 c = primaryConstraints.oGet(i);
                 c.Evaluate(invTimeStep);
-                c.J = c.J2;
+                c.J = new idMatX(c.J2);
             }
             for (i = 0; i < auxiliaryConstraints.Num(); i++) {
                 auxiliaryConstraints.oGet(i).Evaluate(invTimeStep);
@@ -6682,6 +6688,7 @@ public class Physics_AF {
                 if (v <= 0.0f) {
                     body.next.spatialVelocity.SubVec3_oMinSet(0, normal.oMultiply(1.0001f * v));
                 }
+                int a = 0;
             }
 // }
         }
@@ -6750,6 +6757,7 @@ public class Physics_AF {
                     vSqr = body.next.spatialVelocity.SubVec3(0).LengthSqr();
                     if (vSqr > Square(maxLinearVelocity)) {
                         body.next.spatialVelocity.SubVec3_oMulSet(0, idMath.InvSqrt(vSqr) * maxLinearVelocity);
+                        int a = 0;
                     }
                 }
 
@@ -6758,10 +6766,9 @@ public class Physics_AF {
                     vSqr = body.next.spatialVelocity.SubVec3(1).LengthSqr();
                     if (vSqr > Square(maxAngularVelocity)) {
                         body.next.spatialVelocity.SubVec3_oMulSet(1, idMath.InvSqrt(vSqr) * maxAngularVelocity);
+                        int a = 0;
                     }
                 }
-
-                int a = 0;
             }
 
             // make absolutely sure all contact constraints are satisfied
@@ -6923,8 +6930,8 @@ public class Physics_AF {
          if there is a collision the next state is set to the state at the moment of impact
          assumes all bodies are linked for collision detection and relinks all bodies after moving them
          ================
-         */
-        private void CheckForCollisions(float timeStep) {
+         */                   private static int DBG_CheckForCollisions = 0;
+        private void CheckForCollisions(float timeStep) {              DBG_CheckForCollisions++;
 //	#define TEST_COLLISION_DETECTION
             int i, index;
             idAFBody body;
