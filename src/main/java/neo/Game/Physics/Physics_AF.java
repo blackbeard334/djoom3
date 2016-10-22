@@ -6584,7 +6584,9 @@ public class Physics_AF {
                     } else {
                         boxIndex[k] = -1;
                     }
+                    float v = jmk.oGet(k)[k];
                     jmk.oPluSet(k, k, constraint.e.p[j] * invStep);
+                    int a = 0;
                 }
             }
 
@@ -6641,7 +6643,8 @@ public class Physics_AF {
             }
         }
 
-        private void VerifyContactConstraints() {
+        private static int DBG_VerifyContactConstraints = 0;
+        private void VerifyContactConstraints() {      DBG_VerifyContactConstraints++;
 // if (false){
             // int i;
             // float impulseNumerator, impulseDenominator;

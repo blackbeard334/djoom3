@@ -434,8 +434,8 @@ public class Frustum {
                 return false;
             }
 
-            idSwap(indexPoints, 2, indexPoints, 3);
-            idSwap(indexPoints, 6, indexPoints, 7);
+            idSwap(indexPoints, indexPoints, 2, 3);
+            idSwap(indexPoints, indexPoints, 6, 7);
 
             if (LocalFrustumIntersectsBounds(indexPoints, bounds)) {
                 return true;
@@ -474,8 +474,8 @@ public class Frustum {
                 return false;
             }
 
-            idSwap(indexPoints, 2, indexPoints, 3);
-            idSwap(indexPoints, 6, indexPoints, 7);
+            idSwap(indexPoints, indexPoints, 2, 3);
+            idSwap(indexPoints, indexPoints, 6, 7);
 
             if (LocalFrustumIntersectsBounds(indexPoints, new idBounds(box.GetExtents().oNegative(), box.GetExtents()))) {
                 return true;
@@ -650,15 +650,15 @@ public class Frustum {
                 return false;
             }
 
-            idSwap(indexPoints2, 2, indexPoints2, 3);
-            idSwap(indexPoints2, 6, indexPoints2, 7);
+            idSwap(indexPoints2, indexPoints2, 2, 3);
+            idSwap(indexPoints2, indexPoints2, 6, 7);
 
             if (LocalFrustumIntersectsFrustum(indexPoints2, (localFrustum2.dNear > 0.0f))) {
                 return true;
             }
 
-            idSwap(indexPoints1, 2, indexPoints1, 3);
-            idSwap(indexPoints1, 6, indexPoints1, 7);
+            idSwap(indexPoints1, indexPoints1, 2, 3);
+            idSwap(indexPoints1, indexPoints1, 6, 7);
 
             if (frustum.LocalFrustumIntersectsFrustum(indexPoints1, (localFrustum1.dNear > 0.0f))) {
                 return true;
@@ -708,8 +708,8 @@ public class Frustum {
                 }
             }
 
-            idSwap(indexPoints, 2, indexPoints, 3);
-            idSwap(indexPoints, 6, indexPoints, 7);
+            idSwap(indexPoints, indexPoints, 2, 3);
+            idSwap(indexPoints, indexPoints, 6, 7);
 
             // test if any edges of the frustum intersect the winding
             for (i = 0; i < 4; i++) {

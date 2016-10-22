@@ -1,6 +1,8 @@
 package neo.idlib.math.Matrix;
 
+import java.nio.FloatBuffer;
 import java.util.Arrays;
+import neo.TempDump;
 import neo.idlib.Lib;
 import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Str.idStr;
@@ -1653,6 +1655,13 @@ public class idMatX {
 
     public float[] ToFloatPtr() {// pointer to const matrix float array
         return mat;
+    }
+
+    public FloatBuffer GetRowPtr(final int row) {
+        final int start = row * numColumns;
+//        final int end = start + numColumns;
+//        return ((FloatBuffer)FloatBuffer.wrap(mat).position(start).limit(end)).slice();
+        return ((FloatBuffer)FloatBuffer.wrap(mat).position(start)).slice();
     }
 
     public void FromFloatPtr(float[] mat) {
@@ -6211,7 +6220,11 @@ public class idMatX {
     }
 
     public void arraycopy(final float[] src, final int destPos, final int length) {
-        System.arraycopy(src, 0, mat, destPos * numColumns, length);
+        arraycopy(src, 0, destPos, length);
+    }
+
+    public void arraycopy(final FloatBuffer src, final int destPos, final int length) {
+        arraycopy(TempDump.fbtofa(src), destPos, length);
     }
 
     public void SubVec63_oSet(final int vec6, final int vec3, final idVec3 v) {

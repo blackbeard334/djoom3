@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
@@ -310,6 +311,14 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
     public static int[] ftoi(float[] a) {
         return IntStream.range(0, a.length).map(i -> Float.floatToIntBits(a[i])).toArray();
+    }
+
+    /** FloatBuffer to Float Array */
+    public static float[] fbtofa(final FloatBuffer fb){
+        float[] fa = new float[fb.capacity()];
+        fb.duplicate().get(fa);
+
+        return fa;
     }
 
     public static int atoi(String ascii) {

@@ -895,18 +895,19 @@ public class List {
 //        b = c;
 //    }
 //    
+
+    public static <T> void idSwap(final T[] a1, final T[] a2, final int p1, final int p2) {
+        final T c = a1[p1];
+        a1[p1] = a2[p2];
+        a2[p2] = c;
+    }
+
     public static void idSwap(final int[] array, final int p1, final int p2) {
         idSwap(array, array, p1, p2);
     }
 
     public static void idSwap(final int[] a1, final int[] a2, final int p1, final int p2) {
         final int c = a1[p1];
-        a1[p1] = a2[p2];
-        a2[p2] = c;
-    }
-
-    public static void idSwap(final Object[] a1, final int p1, final Object[] a2, final int p2) {
-        final Object c = a1[p1];
         a1[p1] = a2[p2];
         a2[p2] = c;
     }
@@ -919,12 +920,6 @@ public class List {
 
     public static void idSwap(final float[] a1, final float[] a2, final int p1, final int p2) {
         final float c = a1[p1];
-        a1[p1] = a2[p2];
-        a2[p2] = c;
-    }
-
-    public static void idSwap(final float[][] a1, final float[][] a2, final int p1, final int p2) {
-        final float[] c = a1[p1];
         a1[p1] = a2[p2];
         a2[p2] = c;
     }

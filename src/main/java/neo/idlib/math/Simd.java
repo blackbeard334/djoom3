@@ -24,6 +24,7 @@ import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVecX;
 
 import static neo.TempDump.btoi;
+import static neo.TempDump.fbtofa;
 import static neo.sys.sys_public.CPUID_GENERIC;
 import static neo.sys.sys_public.CPUID_NONE;
 
@@ -325,7 +326,10 @@ public class Simd {
         public abstract void /*VPCALL*/ Dot(float[] dst, final idVec3[] src0, final idVec3[] src1, final int count);
 
         public abstract void /*VPCALL*/ Dot(float[] dot, final float[] src1, final float[] src2, final int count);
-//
+
+        public void Dot(float[] dot, final FloatBuffer src1, final float[] src2, final int count) {
+            Dot(dot, fbtofa(src1), src2, count);
+        }
 
         public abstract void /*VPCALL*/ CmpGT(/*byte*/boolean[] dst, final float[] src0, final float constant, final int count);
 
@@ -416,6 +420,10 @@ public class Simd {
         public abstract void /*VPCALL*/ MatX_TransposeMultiplyMatX(idMatX dst, final idMatX m1, final idMatX m2);
 
         public abstract void /*VPCALL*/ MatX_LowerTriangularSolve(final idMatX L, float[] x, final float[] b, final int n/*, int skip = 0*/);
+
+        public void MatX_LowerTriangularSolve(final idMatX L, float[] x, final FloatBuffer b, final int n/*, int skip = 0*/) {
+            MatX_LowerTriangularSolve(L, x, fbtofa(b), n);
+        }
 
         public abstract void /*VPCALL*/ MatX_LowerTriangularSolve(final idMatX L, float[] x, final float[] b, final int n, int skip);
 

@@ -1,14 +1,19 @@
 package neo.idlib.math;
 
+import neo.TempDump;
 import neo.framework.CVarSystem.idCVar;
-import static neo.framework.CVarSystem.CVAR_BOOL;
-import static neo.framework.CVarSystem.CVAR_SYSTEM;
-import static neo.idlib.containers.List.idSwap;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Matrix.idMatX;
+import neo.idlib.math.Vector.idVecX;
+
+import java.nio.FloatBuffer;
+
+import static neo.framework.CVarSystem.CVAR_BOOL;
+import static neo.framework.CVarSystem.CVAR_SYSTEM;
+import static neo.idlib.Lib.idLib;
+import static neo.idlib.containers.List.idSwap;
 import static neo.idlib.math.Matrix.idMatX.MATX_ALLOCA;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import neo.idlib.math.Vector.idVecX;
 import static neo.idlib.math.Vector.idVecX.VECX_ALLOCA;
 
 /**
@@ -94,17 +99,17 @@ public class Lcp {
     static class idLCP_Square extends idLCP {
 
         private idMatX m;		// original matrix
-        idVecX b;			// right hand side
+        idVecX b;			    // right hand side
         idVecX lo, hi;			// low and high bounds
         idVecX f, a;			// force and acceleration
-        idVecX delta_f, delta_a;	// delta force and delta acceleration
+        idVecX delta_f, delta_a;// delta force and delta acceleration
         idMatX clamped;			// LU factored sub matrix for clamped variables
         idVecX diagonal;		// reciprocal of diagonal of U of the LU factored sub matrix for clamped variables
         int numUnbounded;		// number of unbounded variables
         int numClamped;			// number of clamped variables
-        private float[][] rowPtrs;	// pointers to the rows of m
+        private FloatBuffer[] rowPtrs;	// pointers to the rows of m
         private int[] boxIndex;		// box index
-        private int[] side;		// tells if a variable is at the low boundary = -1, high boundary = 1 or inbetween = 0
+        private int[] side;		    // tells if a variable is at the low boundary = -1, high boundary = 1 or inbetween = 0
         private int[] permuted;		// index to keep track of the permutation
         private boolean padded;		// set to true if the rows of the initial matrix are 16 byte padded
         //
@@ -155,10 +160,9 @@ public class Lcp {
             hi = o_hi;
 
             // pointers to the rows of m
-//	rowPtrs = (float **) _alloca16( m.GetNumRows() * sizeof( float * ) );
-            rowPtrs = new float[m.GetNumRows()][];
+            rowPtrs = new FloatBuffer[m.GetNumRows()];//rowPtrs = (float **) _alloca16( m.GetNumRows() * sizeof( float * ) );
             for (i = 0; i < m.GetNumRows(); i++) {
-                rowPtrs[i] = m.oGet(i);
+                rowPtrs[i] = m.GetRowPtr(i);
             }
 
             // tells if a variable is at the low boundary, high boundary or inbetween
@@ -500,7 +504,7 @@ public class Lcp {
 
             // add row to L
             for (i = 0; i < numClamped; i++) {
-                sum = rowPtrs[numClamped][i];
+                sum = rowPtrs[numClamped].get(i);
                 for (j = 0; j < i; j++) {
                     sum -= clamped.oGet(numClamped)[j] * clamped.oGet(j)[i];
                 }
@@ -509,7 +513,7 @@ public class Lcp {
 
             // add column to U
             for (i = 0; i <= numClamped; i++) {
-                sum = rowPtrs[i][numClamped];
+                sum = rowPtrs[i].get(numClamped);
                 for (j = 0; j < i; j++) {
                     sum -= clamped.oGet(i)[j] * clamped.oGet(j)[numClamped];
                 }
@@ -546,7 +550,7 @@ public class Lcp {
 
             // the row/column need to be subtracted from the factorization
             for (i = 0; i < numClamped; i++) {
-                y0[i] = -rowPtrs[i][r];
+                y0[i] = -rowPtrs[i].get(r);
             }
 
 //	memset( y1, 0, numClamped * sizeof( float ) );
@@ -556,7 +560,7 @@ public class Lcp {
             z0[r] = 1.0f;
 
             for (i = 0; i < numClamped; i++) {
-                z1[i] = -rowPtrs[r][i];
+                z1[i] = -rowPtrs[r].get(i);
             }
 
             // swap the to be removed row/column with the last row/column
@@ -564,11 +568,11 @@ public class Lcp {
 
             // the swapped last row/column need to be added to the factorization
             for (i = 0; i < numClamped; i++) {
-                y0[i] += rowPtrs[i][r];
+                y0[i] += rowPtrs[i].get(r);
             }
 
             for (i = 0; i < numClamped; i++) {
-                z1[i] += rowPtrs[r][i];
+                z1[i] += rowPtrs[r].get(i);
             }
             z1[r] = 0.0f;
 
@@ -667,7 +671,7 @@ public class Lcp {
 //	ptr = (float *) _alloca16( numClamped * sizeof( float ) );
             ptr = new float[numClamped];
             for (i = 0; i < numClamped; i++) {
-                ptr[i] = rowPtrs[i][d];
+                ptr[i] = rowPtrs[i].get(d);
             }
 
             // solve force delta
@@ -697,7 +701,7 @@ public class Lcp {
             for (j = numClamped; j <= d; j++) {
                 // only the clamped variables and the current variable have a force delta unequal zero
                 SIMDProcessor.Dot(dot, rowPtrs[j], delta_f.ToFloatPtr(), numClamped);
-                delta_a.p[j] = dot[0] + rowPtrs[j][d] * delta_f.p[d];
+                delta_a.p[j] = dot[0] + rowPtrs[j].get(d) * delta_f.p[d];
             }
         }
 
@@ -823,23 +827,23 @@ public class Lcp {
     //===============================================================
     static class idLCP_Symmetric extends idLCP {
 
-        private idMatX    m;                    // original matrix
-        private idVecX    b;                    // right hand side
-        private idVecX    lo, hi;               // low and high bounds
-        private idVecX    f, a;                 // force and acceleration
-        private idVecX    delta_f, delta_a;     // delta force and delta acceleration
-        private idMatX    clamped;              // LDLt factored sub matrix for clamped variables
-        private idVecX    diagonal;             // reciprocal of diagonal of LDLt factored sub matrix for clamped variables
-        private idVecX    solveCache1;          // intermediate result cached in SolveClamped
-        private idVecX    solveCache2;          // "
-        private int       numUnbounded;         // number of unbounded variables
-        private int       numClamped;           // number of clamped variables
-        private int       clampedChangeStart;   // lowest row/column changed in the clamped matrix during an iteration
-        private float[][] rowPtrs;              // pointers to the rows of m
-        private int[]     boxIndex;             // box index
-        private int[]     side;                 // tells if a variable is at the low boundary = -1, high boundary = 1 or inbetween = 0
-        private int[]     permuted;             // index to keep track of the permutation
-        private boolean   padded;               // set to true if the rows of the initial matrix are 16 byte padded
+        private idMatX        m;                    // original matrix
+        private idVecX        b;                    // right hand side
+        private idVecX        lo, hi;               // low and high bounds
+        private idVecX        f, a;                 // force and acceleration
+        private idVecX        delta_f, delta_a;     // delta force and delta acceleration
+        private idMatX        clamped;              // LDLt factored sub matrix for clamped variables
+        private idVecX        diagonal;             // reciprocal of diagonal of LDLt factored sub matrix for clamped variables
+        private idVecX        solveCache1;          // intermediate result cached in SolveClamped
+        private idVecX        solveCache2;          // "
+        private int           numUnbounded;         // number of unbounded variables
+        private int           numClamped;           // number of clamped variables
+        private int           clampedChangeStart;   // lowest row/column changed in the clamped matrix during an iteration
+        private FloatBuffer[] rowPtrs;              // pointers to the rows of m
+        private int[]         boxIndex;             // box index
+        private int[]         side;                 // tells if a variable is at the low boundary = -1, high boundary = 1 or inbetween = 0
+        private int[]         permuted;             // index to keep track of the permutation
+        private boolean       padded;               // set to true if the rows of the initial matrix are 16 byte padded
         //
         //
 
@@ -900,10 +904,9 @@ public class Lcp {
             hi.oSet(o_hi);
 
             // pointers to the rows of m
-//	rowPtrs = (float **) _alloca16( m.GetNumRows() * sizeof( float * ) );
-            rowPtrs = new float[m.GetNumRows()][];
+            rowPtrs = new FloatBuffer[m.GetNumRows()];//rowPtrs = (float **) _alloca16( m.GetNumRows() * sizeof( float * ) );
             for (i = 0; i < m.GetNumRows(); i++) {
-                rowPtrs[i] = m.oGet(i);
+                rowPtrs[i] = m.GetRowPtr(i);
             }
 
             // tells if a variable is at the low boundary, high boundary or inbetween
@@ -1168,7 +1171,8 @@ public class Lcp {
 //		memcpy( clamped[i], rowPtrs[i], numClamped * sizeof( float ) );
                 clamped.arraycopy(rowPtrs[i], i, numClamped);
             }
-            return SIMDProcessor.MatX_LDLTFactor(clamped, diagonal, numClamped);
+            boolean b = SIMDProcessor.MatX_LDLTFactor(clamped, diagonal, numClamped);
+            return b;
         }
 
         private void SolveClamped(idVecX x, final float[] b) {
@@ -1183,6 +1187,10 @@ public class Lcp {
             SIMDProcessor.MatX_LowerTriangularSolveTranspose(clamped, x.ToFloatPtr(), solveCache2.ToFloatPtr(), numClamped);
 
             clampedChangeStart = numClamped;
+        }
+
+        private void SolveClamped(idVecX x, final FloatBuffer b) {
+            SolveClamped(x, TempDump.fbtofa(b));
         }
 
         private void Swap(int i, int j) {
@@ -1244,10 +1252,10 @@ public class Lcp {
             }
 
             // update diagonal[numClamped]
-            d = rowPtrs[numClamped][numClamped] - dot[0];
+            d = rowPtrs[numClamped].get(numClamped) - dot[0];
 
             if (d == 0.0f) {
-//		idLib::common->Printf( "idLCP_Symmetric::AddClamped: updating factorization failed\n" );
+                idLib.common.Printf("idLCP_Symmetric::AddClamped: updating factorization failed\n");
                 numClamped++;
                 return;
             }
@@ -1260,10 +1268,10 @@ public class Lcp {
 
         private void RemoveClamped(int r) {
             int i, j, n;
-            int ptr_i;
-            float[] addSub, original, v, ptr, v1, v2;
+            float[] addSub, v, v1, v2;
             float[] dot = new float[1];
             float sum, diag, newDiag, invNewDiag, p1, p2, alpha1, alpha2, beta1, beta2;
+            FloatBuffer original, ptr;
 
             assert (r < numClamped);
 
@@ -1288,9 +1296,9 @@ public class Lcp {
             if (r == 0) {
 
                 if (numClamped == 1) {
-                    diag = rowPtrs[0][0];
+                    diag = rowPtrs[0].get(0);
                     if (diag == 0.0f) {
-//				idLib::common->Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
+                        idLib.common.Printf("idLCP_Symmetric::RemoveClamped: updating factorization failed\n");
                         return;
                     }
                     clamped.oSet(0, 0, diag);
@@ -1301,9 +1309,9 @@ public class Lcp {
                 // calculate the row/column to be added to the lower right sub matrix starting at (r, r)
                 original = rowPtrs[numClamped];
                 ptr = rowPtrs[r];
-                addSub[0] = ptr[0] - original[numClamped];
+                addSub[0] = ptr.get(0) - original.get(numClamped);
                 for (i = 1; i < numClamped; i++) {
-                    addSub[i] = ptr[i] - original[i];
+                    addSub[i] = ptr.get(i) - original.get(i);
                 }
 
             } else {
@@ -1322,7 +1330,7 @@ public class Lcp {
                 if (r == numClamped - 1) {
                     // only calculate new diagonal
                     SIMDProcessor.Dot(dot, clampedArray, v, r);
-                    diag = rowPtrs[r][r] - dot[0];
+                    diag = rowPtrs[r].get(r) - dot[0];
                     if (diag == 0.0f) {
 //				idLib::common->Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
                         return;
@@ -1343,11 +1351,11 @@ public class Lcp {
                     } else {
                         sum = clamped.oGet(r)[r] * clamped.oGet(i)[r];
                     }
-                    ptr = clamped.oGet(i);
+                    ptr = clamped.GetRowPtr(i);
                     for (j = 0; j < r; j++) {
-                        sum += ptr[j] * v[j];
+                        sum += ptr.get(j) * v[j];
                     }
-                    addSub[i] = rowPtrs[r][i] - sum;
+                    addSub[i] = rowPtrs[r].get(i) - sum;
                 }
             }
 
@@ -1401,13 +1409,12 @@ public class Lcp {
                 alpha2 *= diag;
 
                 // update column below diagonal (i,i)
-                ptr = clamped.ToFloatPtr();
-                ptr_i = i;
+                ptr = clamped.GetRowPtr(i);
 
                 for (j = i + 1; j < numClamped - 1; j += 2) {
 
-                    float sum0 = ptr[ptr_i + (j + 0) * n];
-                    float sum1 = ptr[ptr_i + (j + 1) * n];
+                    float sum0 = ptr.get((j + 0) * n);
+                    float sum1 = ptr.get((j + 1) * n);
 
                     v1[j + 0] -= p1 * sum0;
                     v1[j + 1] -= p1 * sum1;
@@ -1421,13 +1428,13 @@ public class Lcp {
                     sum0 += beta2 * v2[j + 0];
                     sum1 += beta2 * v2[j + 1];
 
-                    ptr[ptr_i + (j + 0) * n] = sum0;
-                    ptr[ptr_i + (j + 1) * n] = sum1;
+                    ptr.put((j + 0) * n, sum0);
+                    ptr.put((j + 1) * n, sum1);
                 }
 
                 for (; j < numClamped; j++) {
 
-                    sum = ptr[ptr_i + j * n];
+                    sum = ptr.get(j * n);
 
                     v1[j] -= p1 * sum;
                     sum += beta1 * v1[j];
@@ -1435,7 +1442,7 @@ public class Lcp {
                     v2[j] -= p2 * sum;
                     sum += beta2 * v2[j];
 
-                    ptr[ptr_i + j * n] = sum;
+                    ptr.put(j * n, sum);
                 }
             }
         }
@@ -1465,6 +1472,7 @@ public class Lcp {
                 ptr = delta_f.ToFloatPtr();
                 for (i = 0; i < numClamped; i++) {
                     ptr[i] = -ptr[i];
+                    int a = 0;
                 }
             }
         }
@@ -1484,7 +1492,7 @@ public class Lcp {
             for (j = numClamped; j <= d; j++) {
                 // only the clamped variables and the current variable have a force delta unequal zero
                 SIMDProcessor.Dot(dot, rowPtrs[j], delta_f.ToFloatPtr(), numClamped);
-                delta_a.p[j] = dot[0] + rowPtrs[j][d] * delta_f.p[d];
+                delta_a.p[j] = dot[0] + rowPtrs[j].get(d) * delta_f.p[d];
             }
         }
 
@@ -1499,6 +1507,7 @@ public class Lcp {
             // only the clamped variables and current variable have a force delta unequal zero
             SIMDProcessor.MulAdd(f.ToFloatPtr(), step, delta_f.ToFloatPtr(), numClamped);
             f.p[d] += step * delta_f.p[d];
+            int a = 0;
         }
 
         /*
