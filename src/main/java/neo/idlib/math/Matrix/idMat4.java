@@ -592,21 +592,21 @@ public class idMat4 {
         //	6*8+2*6 = 60 multiplications
         //		2*1 =  2 divisions
         float[][] r0 = new float[2][2], r1 = new float[2][2], r2 = new float[2][2], r3 = new float[2][2];
-        double a, det, invDet;
+        float a, det, invDet;
 
         // r0 = m0.Inverse();
         det = mat[0].x * mat[1].y - mat[0].y * mat[1].x;
 
-        if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
+        if (idMath.Fabs(det) < MATRIX_INVERSE_EPSILON) {
             return false;
         }
 
         invDet = 1.0f / det;
 
-        r0[0][0] = (float) (mat[1].y * invDet);
-        r0[0][1] = (float) (-mat[0].y * invDet);
-        r0[1][0] = (float) (-mat[1].x * invDet);
-        r0[1][1] = (float) (mat[0].x * invDet);
+        r0[0][0] = mat[1].y * invDet;
+        r0[0][1] = -mat[0].y * invDet;
+        r0[1][0] = -mat[1].x * invDet;
+        r0[1][1] = mat[0].x * invDet;
 
         // r1 = r0 * m1;
         r1[0][0] = r0[0][0] * mat[0].z + r0[0][1] * mat[1].z;
@@ -629,17 +629,17 @@ public class idMat4 {
         // r3.InverseSelf();
         det = r3[0][0] * r3[1][1] - r3[0][1] * r3[1][0];
 
-        if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
+        if (idMath.Fabs(det) < MATRIX_INVERSE_EPSILON) {
             return false;
         }
 
         invDet = 1.0f / det;
 
         a = r3[0][0];
-        r3[0][0] = (float) (r3[1][1] * invDet);
-        r3[0][1] = (float) (-r3[0][1] * invDet);
-        r3[1][0] = (float) (-r3[1][0] * invDet);
-        r3[1][1] = (float) (a * invDet);
+        r3[0][0] = r3[1][1] * invDet;
+        r3[0][1] = -r3[0][1] * invDet;
+        r3[1][0] = -r3[1][0] * invDet;
+        r3[1][1] = a * invDet;
 
         // r2 = m2 * r0;
         r2[0][0] = mat[2].x * r0[0][0] + mat[2].y * r0[1][0];

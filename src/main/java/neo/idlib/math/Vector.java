@@ -684,14 +684,14 @@ public class Vector {
         }
 
         public float Normalize() {// returns length
-            double sqrLength, invLength;
+            float sqrLength, invLength;
 
             sqrLength = x * x + y * y + z * z;
-            invLength = idMath.InvSqrt((float) sqrLength);
+            invLength = idMath.InvSqrt(sqrLength);
             x *= invLength;
             y *= invLength;
             z *= invLength;
-            return (float) (invLength * sqrLength);
+            return invLength * sqrLength;
         }
 
         public float NormalizeFast() {// returns length

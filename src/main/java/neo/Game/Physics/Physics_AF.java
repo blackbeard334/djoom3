@@ -4153,6 +4153,7 @@ public class Physics_AF {
                         int a = 0;
                     }
                 } else if (body.primaryConstraint != null) {
+                    final float[] J = body.J.ToFloatPtr().clone();
                     body.J.oSet(body.inverseWorldSpatialInertia.oMultiply(body.J));
                     int a = 0;
                 }
@@ -4222,6 +4223,7 @@ public class Physics_AF {
                         int a = 0;
                     }
                 } else if (body.children.Num() != 0) {
+                    float[] s = body.s.p.clone();
                     body.s.oSet(body.invI.oMultiply(body.s));
                     int a = 0;
                 }
@@ -5699,6 +5701,7 @@ public class Physics_AF {
             for (i = 0; i < bodies.Num(); i++) {
                 body = bodies.oGet(i);
 
+                final idMat3 old = body.GetWorldAxis();
                 body.current.worldOrigin.oMulSet(rotation);
                 body.current.worldAxis.oMulSet(rotation.ToMat3());
                 int a = 0;
