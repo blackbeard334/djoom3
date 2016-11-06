@@ -1129,40 +1129,40 @@ public class Simd_Generic {
             switch (mat.GetNumRows()) {
                 case 1:
                     for (i = 0; i < numColumns; i++) {//TODO:check pointer to array conversion
-                        dstPtr[i] = (mPtr[mIndex]) * vPtr[0];
+                        dstPtr[i] = mPtr[mIndex] * vPtr[0];
                         mIndex++;
                     }
                     break;
                 case 2:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] = (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1];
+                        dstPtr[i] = mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1];
                         mIndex++;
                     }
                     break;
                 case 3:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] = (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2];
+                        dstPtr[i] = mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2];
                         mIndex++;
                     }
                     break;
                 case 4:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] = (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3];
+                        dstPtr[i] = mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3];
                         mIndex++;
                     }
                     break;
                 case 5:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] = (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3] + (mPtr[mIndex] + 4 * numColumns) * vPtr[4];
+                        dstPtr[i] = mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3] + mPtr[mIndex + 4 * numColumns] * vPtr[4];
                         mIndex++;
                     }
                     break;
                 case 6:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] = (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3] + (mPtr[mIndex] + 4 * numColumns) * vPtr[4] + (mPtr[mIndex] + 5 * numColumns) * vPtr[5];
+                        dstPtr[i] = mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3] + mPtr[mIndex + 4 * numColumns] * vPtr[4] + mPtr[mIndex + 5 * numColumns] * vPtr[5];
                         mIndex++;
                     }
                     break;
@@ -1198,40 +1198,40 @@ public class Simd_Generic {
             switch (mat.GetNumRows()) {
                 case 1:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] += (mPtr[mIndex]) * vPtr[0];
+                        dstPtr[i] += mPtr[mIndex] * vPtr[0];
                         mIndex++;
                     }
                     break;
                 case 2:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] += (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1];
+                        dstPtr[i] += mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1];
                         mIndex++;
                     }
                     break;
                 case 3:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] += (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2];
+                        dstPtr[i] += mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2];
                         mIndex++;
                     }
                     break;
                 case 4:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] += (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3];
+                        dstPtr[i] += mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3];
                         mIndex++;
                     }
                     break;
                 case 5:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] += (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3] + (mPtr[mIndex] + 4 * numColumns) * vPtr[4];
+                        dstPtr[i] += mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3] + mPtr[mIndex + 4 * numColumns] * vPtr[4];
                         mIndex++;
                     }
                     break;
                 case 6:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] += (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3] + (mPtr[mIndex] + 4 * numColumns) * vPtr[4] + (mPtr[mIndex] + 5 * numColumns) * vPtr[5];
+                        dstPtr[i] += mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3] + mPtr[mIndex + 4 * numColumns] * vPtr[4] + mPtr[mIndex + 5 * numColumns] * vPtr[5];
                         mIndex++;
                     }
                     break;
@@ -1267,40 +1267,40 @@ public class Simd_Generic {
             switch (mat.GetNumRows()) {
                 case 1:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] -= (mPtr[mIndex]) * vPtr[0];
+                        dstPtr[i] -= mPtr[mIndex] * vPtr[0];
                         mIndex++;
                     }
                     break;
                 case 2:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] -= (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1];
+                        dstPtr[i] -= mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1];
                         mIndex++;
                     }
                     break;
                 case 3:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] -= (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2];
+                        dstPtr[i] -= mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2];
                         mIndex++;
                     }
                     break;
                 case 4:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] -= (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3];
+                        dstPtr[i] -= mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3];
                         mIndex++;
                     }
                     break;
                 case 5:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] -= (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3] + (mPtr[mIndex] + 4 * numColumns) * vPtr[4];
+                        dstPtr[i] -= mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3] + mPtr[mIndex + 4 * numColumns] * vPtr[4];
                         mIndex++;
                     }
                     break;
                 case 6:
                     for (i = 0; i < numColumns; i++) {
-                        dstPtr[i] -= (mPtr[mIndex]) * vPtr[0] + (mPtr[mIndex] + numColumns) * vPtr[1] + (mPtr[mIndex] + 2 * numColumns) * vPtr[2]
-                                + (mPtr[mIndex] + 3 * numColumns) * vPtr[3] + (mPtr[mIndex] + 4 * numColumns) * vPtr[4] + (mPtr[mIndex] + 5 * numColumns) * vPtr[5];
+                        dstPtr[i] -= mPtr[mIndex] * vPtr[0] + mPtr[mIndex + numColumns] * vPtr[1] + mPtr[mIndex + 2 * numColumns] * vPtr[2]
+                                + mPtr[mIndex + 3 * numColumns] * vPtr[3] + mPtr[mIndex + 4 * numColumns] * vPtr[4] + mPtr[mIndex + 5 * numColumns] * vPtr[5];
                         mIndex++;
                     }
                     break;
@@ -1308,10 +1308,10 @@ public class Simd_Generic {
                     int numRows = mat.GetNumRows();
                     for (i = 0; i < numColumns; i++) {
                         mIndex = i;
-                        float sum = mPtr[0] * vPtr[0];
+                        float sum = mPtr[mIndex] * vPtr[0];
                         for (int j = 1; j < numRows; j++) {
                             mIndex += numColumns;
-                            sum += mPtr[0] * vPtr[j];
+                            sum += mPtr[mIndex] * vPtr[j];
                         }
                         dstPtr[i] -= sum;
                     }
@@ -1780,7 +1780,7 @@ public class Simd_Generic {
                             dstPtr[dIndex++] = m1Ptr[m1Index + 0 * 6] * m2Ptr[m2Index + 0 * 5 + 2] + m1Ptr[m1Index + 1 * 6] * m2Ptr[m2Index + 1 * 5 + 2] + m1Ptr[m1Index + 2 * 6] * m2Ptr[m2Index + 2 * 5 + 2] + m1Ptr[m1Index + 3 * 6] * m2Ptr[m2Index + 3 * 5 + 2] + m1Ptr[m1Index + 4 * 6] * m2Ptr[m2Index + 4 * 5 + 2];
                             dstPtr[dIndex++] = m1Ptr[m1Index + 0 * 6] * m2Ptr[m2Index + 0 * 5 + 3] + m1Ptr[m1Index + 1 * 6] * m2Ptr[m2Index + 1 * 5 + 3] + m1Ptr[m1Index + 2 * 6] * m2Ptr[m2Index + 2 * 5 + 3] + m1Ptr[m1Index + 3 * 6] * m2Ptr[m2Index + 3 * 5 + 3] + m1Ptr[m1Index + 4 * 6] * m2Ptr[m2Index + 4 * 5 + 3];
                             dstPtr[dIndex++] = m1Ptr[m1Index + 0 * 6] * m2Ptr[m2Index + 0 * 5 + 4] + m1Ptr[m1Index + 1 * 6] * m2Ptr[m2Index + 1 * 5 + 4] + m1Ptr[m1Index + 2 * 6] * m2Ptr[m2Index + 2 * 5 + 4] + m1Ptr[m1Index + 3 * 6] * m2Ptr[m2Index + 3 * 5 + 4] + m1Ptr[m1Index + 4 * 6] * m2Ptr[m2Index + 4 * 5 + 4];
-                            m2Index++;
+                            m1Index++;
                         }
                         return;
                     }

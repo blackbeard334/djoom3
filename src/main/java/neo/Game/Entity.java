@@ -2159,7 +2159,7 @@ public class Entity {
             for (part = this; part != null; part = part.teamChain) {
 
                 if (part.physics != null) {
-                                             if(name.equals("env_gibs_spine_1")) DBG_RunPhysics++;
+                                             if(name.equals("env_gibs_leftleg_1")) DBG_RunPhysics++;
                     // run physics
                     moved = part.physics.Evaluate(endTime - startTime, endTime);
 

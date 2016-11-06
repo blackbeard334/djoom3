@@ -212,7 +212,7 @@ public class Lcp {
 
                 // factor and solve for unbounded variables
                 if (!FactorClamped()) {
-//			idLib::common->Printf( "idLCP_Square::Solve: unbounded factorization failed\n" );
+			        idLib.common.Printf( "idLCP_Square::Solve: unbounded factorization failed\n" );
                     return false;
                 }
                 SolveClamped(f, b.ToFloatPtr());
@@ -356,7 +356,7 @@ public class Lcp {
 //#ifdef IGNORE_UNSATISFIABLE_VARIABLES
             if (numIgnored != 0) {
                 if (lcp_showFailures.GetBool()) {
-//			idLib::common->Printf( "idLCP_Symmetric::Solve: %d of %d bounded variables ignored\n", numIgnored, m.GetNumRows() - numUnbounded );
+			        idLib.common.Printf( "idLCP_Symmetric::Solve: %d of %d bounded variables ignored\n", numIgnored, m.GetNumRows() - numUnbounded );
                 }
             }
 //#endif
@@ -364,7 +364,7 @@ public class Lcp {
             // if failed clear remaining forces
             if (failed != null) {
                 if (lcp_showFailures.GetBool()) {
-//			idLib::common->Printf( "idLCP_Square::Solve: %s (%d of %d bounded variables ignored)\n", failed, m.GetNumRows() - i, m.GetNumRows() - numUnbounded );
+			        idLib.common.Printf( "idLCP_Square::Solve: %s (%d of %d bounded variables ignored)\n", failed, m.GetNumRows() - i, m.GetNumRows() - numUnbounded );
                 }
                 for (j = i; j < m.GetNumRows(); j++) {
                     f.p[j] = 0.0f;
@@ -600,7 +600,7 @@ public class Lcp {
                 diag += p0 * p1;
 
                 if (diag == 0.0f) {
-//			idLib::common->Printf( "idLCP_Square::RemoveClamped: updating factorization failed\n" );
+			        idLib.common.Printf( "idLCP_Square::RemoveClamped: updating factorization failed\n" );
                     return;
                 }
 
@@ -611,7 +611,7 @@ public class Lcp {
                 diag += q0 * q1;
 
                 if (diag == 0.0f) {
-//			idLib::common->Printf( "idLCP_Square::RemoveClamped: updating factorization failed\n" );
+			        idLib.common.Printf( "idLCP_Square::RemoveClamped: updating factorization failed\n" );
                     return;
                 }
 
@@ -958,7 +958,7 @@ public class Lcp {
 
                 // factor and solve for unbounded variables
                 if (!FactorClamped()) {
-//			idLib::common->Printf( "idLCP_Symmetric::Solve: unbounded factorization failed\n" );
+			        idLib.common.Printf( "idLCP_Symmetric::Solve: unbounded factorization failed\n" );
                     return false;
                 }
                 SolveClamped(f, b.ToFloatPtr());
@@ -1104,7 +1104,7 @@ public class Lcp {
 //#ifdef IGNORE_UNSATISFIABLE_VARIABLES
             if (0 != numIgnored) {
                 if (lcp_showFailures.GetBool()) {
-//			idLib::common->Printf( "idLCP_Symmetric::Solve: %d of %d bounded variables ignored\n", numIgnored, m.GetNumRows() - numUnbounded );
+			        idLib.common.Printf( "idLCP_Symmetric::Solve: %d of %d bounded variables ignored\n", numIgnored, m.GetNumRows() - numUnbounded );
                 }
             }
 //#endif
@@ -1112,7 +1112,7 @@ public class Lcp {
             // if failed clear remaining forces
             if (null != failed) {
                 if (lcp_showFailures.GetBool()) {
-//			idLib::common->Printf( "idLCP_Symmetric::Solve: %s (%d of %d bounded variables ignored)\n", failed, m.GetNumRows() - i, m.GetNumRows() - numUnbounded );
+			        idLib.common.Printf( "idLCP_Symmetric::Solve: %s (%d of %d bounded variables ignored)\n", failed, m.GetNumRows() - i, m.GetNumRows() - numUnbounded );
                 }
                 for (j = i; j < m.GetNumRows(); j++) {
                     f.p[j] = 0.0f;
@@ -1332,7 +1332,7 @@ public class Lcp {
                     SIMDProcessor.Dot(dot, clampedArray, v, r);
                     diag = rowPtrs[r].get(r) - dot[0];
                     if (diag == 0.0f) {
-//				idLib::common->Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
+				        idLib.common.Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
                         return;
                     }
                     unClam(clamped.ToFloatPtr(), clampedArray);
@@ -1384,7 +1384,7 @@ public class Lcp {
                 newDiag = diag + alpha1 * p1 * p1;
 
                 if (newDiag == 0.0f) {
-//			idLib::common->Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
+			        idLib.common.Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
                     return;
                 }
 
@@ -1397,7 +1397,7 @@ public class Lcp {
                 newDiag = diag + alpha2 * p2 * p2;
 
                 if (newDiag == 0.0f) {
-//			idLib::common->Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
+			        idLib.common.Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
                     return;
                 }
 

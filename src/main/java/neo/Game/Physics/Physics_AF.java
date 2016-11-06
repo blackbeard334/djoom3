@@ -4149,6 +4149,7 @@ public class Physics_AF {
                                 child.invI.GetNumRows(), child.invI.GetNumColumns(), body.GetName());
                     }
                     if (body.primaryConstraint != null) {
+                        final float[] J = body.J.ToFloatPtr().clone();
                         body.J.oSet(body.invI.oMultiply(body.J));
                         int a = 0;
                     }
@@ -4180,6 +4181,7 @@ public class Physics_AF {
                     child = body.children.oGet(j);
                     primaryConstraint = child.primaryConstraint;
 
+                    final float[] s = primaryConstraint.s.ToFloatPtr().clone();
                     if (!child.fl.isZero) {
                         child.J.TransposeMultiplySub(primaryConstraint.s, child.s);
                         primaryConstraint.fl.isZero = false;
@@ -4204,6 +4206,7 @@ public class Physics_AF {
                         continue;
                     }
 
+                    final float[] s = primaryConstraint.s.ToFloatPtr().clone();
                     if (!primaryConstraint.fl.isZero) {
                         primaryConstraint.s = primaryConstraint.invI.oMultiply(primaryConstraint.s);
                     }
@@ -4489,6 +4492,9 @@ public class Physics_AF {
         float  activateTime;              // time since last activation
         float  lastTimeStep;              // last time step
         idVec6 pushVelocity;              // velocity with which the af is pushed
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
 
         public AFPState_s() {
             pushVelocity = new idVec6();
