@@ -239,6 +239,8 @@ public class Projectile {
         protected void _deconstructor() {
             StopSound(SND_CHANNEL_ANY.ordinal(), false);
             FreeLightDef();
+
+            super._deconstructor();
         }
 
         @Override
@@ -1721,6 +1723,8 @@ public class Projectile {
                 gameRenderWorld.FreeEntityDef(secondModelDefHandle);
                 secondModelDefHandle = -1;
             }
+
+            super._deconstructor();
         }
 
         @Override

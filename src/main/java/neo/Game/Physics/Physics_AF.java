@@ -3734,7 +3734,7 @@ public class Physics_AF {
         }
 
         // ~idAFBody();
-        private void _deconstructor(){
+        protected void _deconstructor(){
             idClipModel.delete(clipModel);
         }
 
@@ -4139,6 +4139,7 @@ public class Physics_AF {
                         }
                         child.J = child.invI.oMultiply(child.J);
 
+                        final float[] bodyI = body.I.ToFloatPtr().clone();
                         body.I.oMinSet(child.J.TransposeMultiply(childI).oMultiply(child.J));
                         int a = 0;
                     }

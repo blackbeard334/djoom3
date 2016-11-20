@@ -11,6 +11,8 @@ import static neo.Game.Game_local.gameRenderWorld;
 import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Physics.Clip.idClipModel;
 import static neo.Game.Physics.Physics.CONTACT_EPSILON;
+
+import neo.Game.Physics.Force.idForce;
 import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics.impactInfo_s;
 import static neo.idlib.BV.Bounds.bounds_zero;
@@ -67,7 +69,16 @@ public class Physics_Base {
             gravityNormal.Normalize();
             ClearContacts();
         }
+
         // ~idPhysics_Base( void );
+        @Override
+        protected void _deconstructor() {
+            if (self != null && self.GetPhysics() == this) {
+                self.SetPhysics(null);
+            }
+            idForce.DeletePhysics(this);
+            ClearContacts();
+        }
 
         @Override
         public void Save(idSaveGame savefile) {

@@ -33,6 +33,10 @@ public class Force {
         }
 
         // virtual				~idForce( void );
+        protected void _deconstructor() {
+            forceList.Remove(this);
+        }
+
         public static void DeletePhysics(final idPhysics phys) {
             int i;
 

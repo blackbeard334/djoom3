@@ -1070,6 +1070,8 @@ public class AFEntity {
                 gameRenderWorld.FreeEntityDef(skeletonModelDefHandle);
                 skeletonModelDefHandle = -1;
             }
+
+            super._deconstructor();
         }
     };
 

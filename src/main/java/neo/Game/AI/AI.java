@@ -7386,6 +7386,8 @@ public class AI {
                 gameRenderWorld.FreeLightDef(worldMuzzleFlashHandle);
                 worldMuzzleFlashHandle = -1;
             }
+
+            super._deconstructor();
         }
     };
 

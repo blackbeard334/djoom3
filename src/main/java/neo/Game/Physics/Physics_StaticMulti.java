@@ -68,7 +68,8 @@ public class Physics_StaticMulti {
         }
 
         // ~idPhysics_StaticMulti();
-        private void _deconstructor() {
+        @Override
+        protected void _deconstructor() {
             if (self != null && self.GetPhysics() == this) {
                 self.SetPhysics(null);
             }

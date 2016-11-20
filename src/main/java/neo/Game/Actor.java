@@ -2924,6 +2924,8 @@ public class Actor {
             }
 
             ShutdownThreads();
+
+            super._deconstructor();
         }
     };
 }

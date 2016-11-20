@@ -63,9 +63,12 @@ public class Physics_Actor {
         }
 
         // ~idPhysics_Actor();
-        private void _deconstructor(){
+        @Override
+        protected void _deconstructor(){
             idClipModel.delete(clipModel);
             clipModel = null;
+
+            super._deconstructor();
         }
 
         public static void delete(idPhysics_Actor actor) {

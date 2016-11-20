@@ -237,11 +237,14 @@ public class Physics_RigidBody {
         }
 
         // ~idPhysics_RigidBody();
-        private void _deconstructor(){
+        @Override
+        protected void _deconstructor(){
             if ( clipModel != null ) {
                 idClipModel.delete(clipModel);
             }
 //            delete integrator;
+
+            super._deconstructor();
         }
 
         public static void delete(idPhysics_RigidBody body) {

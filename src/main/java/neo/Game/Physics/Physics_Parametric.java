@@ -118,7 +118,8 @@ public class Physics_Parametric {
         }
 
         // ~idPhysics_Parametric();
-        private void _deconstructor(){
+        @Override
+        protected void _deconstructor(){
             if ( clipModel != null ) {
             idClipModel.delete(clipModel);
             }
@@ -126,6 +127,8 @@ public class Physics_Parametric {
 //                delete current.spline;
                 current.spline = null;
             }
+
+            super._deconstructor();
         }
 
         public static void delete(idPhysics_Parametric param) {
