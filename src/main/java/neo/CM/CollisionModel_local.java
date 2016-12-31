@@ -2132,9 +2132,10 @@ public class CollisionModel_local {
                     }
                     // pluecker coordinate for vertex movement vector
                     tw.polygonVertexPlueckerCache[i].FromRay(v.p, tw.dir.oNegative());
+                    int bla = 0;
                 }
                 // copy first to last so we can easily cycle through for the edges
-                tw.polygonVertexPlueckerCache[p.numEdges] = tw.polygonVertexPlueckerCache[0];
+                tw.polygonVertexPlueckerCache[p.numEdges].Set(tw.polygonVertexPlueckerCache[0]);
 
                 // trace trm vertices through polygon
                 for (i = 0; i < tw.numVerts; i++) {

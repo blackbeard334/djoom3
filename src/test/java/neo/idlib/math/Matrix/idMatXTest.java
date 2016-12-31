@@ -4,8 +4,9 @@ import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVecX;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
+@Ignore
 public class idMatXTest {
 
     private idMatX original = new idMatX();

@@ -1,12 +1,13 @@
 package neo.idlib.math;
 
 import java.util.Arrays;
+
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 
 /**
- *
+ *  Plücker
  */
 public class Pluecker {
 
@@ -18,13 +19,14 @@ public class Pluecker {
      ===============================================================================
      */
     public static class idPluecker {
+        private float[] p = new float[6];
+        
 
         public idPluecker() {
         }
 
         public idPluecker(final float[] a) {
-//    memcpy( p, a, 6 * sizeof( float ) );
-            System.arraycopy(a, 0, p, 0, 6);
+            System.arraycopy(a, 0, p, 0, 6);//memcpy( p, a, 6 * sizeof( float ) );
         }
 
         public idPluecker(final idVec3 start, final idVec3 end) {
@@ -39,9 +41,8 @@ public class Pluecker {
             p[4] = a5;
             p[5] = a6;
         }
-//
-//public	float			operator[]( final int index ) final;
 
+        //public	float			operator[]( final int index ) final;
         public float oGet(final int index) {
             return p[index];
         }
@@ -117,7 +118,6 @@ public class Pluecker {
             p[5] -= a.oGet(5);
             return this;
         }
-//
 
         public boolean Compare(final idPluecker a) {// exact compare, no epsilon
             return ((p[0] == a.p[0]) && (p[1] == a.p[1]) && (p[2] == a.p[2])
@@ -175,7 +175,15 @@ public class Pluecker {
             }
             return true;
         }
-//
+
+        public void Set(final idPluecker a) {
+            p[0] = a.p[0];
+            p[1] = a.p[1];
+            p[2] = a.p[2];
+            p[3] = a.p[3];
+            p[4] = a.p[4];
+            p[5] = a.p[5];
+        }
 
         public void Set(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {
             p[0] = a1;
@@ -189,7 +197,6 @@ public class Pluecker {
         public void Zero() {
             p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = 0.0f;
         }
-//
 
         public void FromLine(final idVec3 start, final idVec3 end) {// pluecker from line{
             p[0] = start.oGet(0) * end.oGet(1) - end.oGet(0) * start.oGet(1);
@@ -300,7 +307,7 @@ public class Pluecker {
             dir.oSet(1, a.p[4] * p[2] - a.p[2] * p[4]);
             dir.oSet(2, a.p[2] * -p[5] - -a.p[5] * p[2]);
             if (dir.oGet(0) == 0.0f && dir.oGet(1) == 0.0f && dir.oGet(2) == 0.0f) {
-                return -1.0f;	// FIXME: implement for parallel lines
+                return -1.0f;    // FIXME: implement for parallel lines
             }
             d = a.p[4] * (p[2] * dir.oGet(1) - -p[5] * dir.oGet(0))
                     + a.p[5] * (p[2] * dir.oGet(2) - p[4] * dir.oGet(0))
@@ -308,7 +315,6 @@ public class Pluecker {
             s = PermutedInnerProduct(a) / d;
             return (dir.oMultiply(dir)) * (s * s);
         }
-//
 
         public float Length() {// pluecker length
             return idMath.Sqrt(p[5] * p[5] + p[4] * p[4] + p[2] * p[2]);
@@ -345,7 +351,6 @@ public class Pluecker {
             p[5] *= d;
             return d * l;
         }
-//
 
         public int GetDimension() {
             return 6;
@@ -354,6 +359,5 @@ public class Pluecker {
 //public	final float *	ToFloatPtr( void ) final;
 //public	float *			ToFloatPtr( void );
 //public	final char *	ToString( int precision = 2 ) final;
-        private float[] p = new float[6];
     };
 }
