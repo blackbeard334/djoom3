@@ -663,9 +663,9 @@ public class Bounds {
                 this.b = BoundsForPointRotation(axis.oMultiply(bounds.oGet(0)).oPlus(origin), rotation).b;//TODO:check if function output is gargbage collected
                 for (i = 1; i < 8; i++) {
                     point.oSet(0, bounds.oGet((i ^ (i >> 1)) & 1).oGet(0));
-                    point.oSet(0, bounds.oGet((i >> 1) & 1).oGet(1));
-                    point.oSet(0, bounds.oGet((i >> 2) & 1).oGet(2));
-                    this.b = BoundsForPointRotation(axis.oMultiply(point).oPlus(origin), rotation).b;
+                    point.oSet(1, bounds.oGet((i >> 1) & 1).oGet(1));
+                    point.oSet(2, bounds.oGet((i >> 2) & 1).oGet(2));
+                    this.oPluSet(BoundsForPointRotation(axis.oMultiply(point).oPlus(origin), rotation));
                 }
             } else {
 

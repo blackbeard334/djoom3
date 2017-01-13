@@ -176,8 +176,16 @@ idClip::Motion()
 -----------------------------------------------                     
 -----------------------------------------------                     
 idClip::numTranslations++
-    idCollisionModelManagerLocal::TranslateVertexThroughTrmPolygon()
-        #151
+    #151
+        idCollisionModelManagerLocal::TranslateVertexThroughTrmPolygon()
             f -0.0042204396 != 0
                 idCollisionModelManagerLocal::TranslateTrmThroughPolygon()
                     tw.polygonVertexPlueckerCache
+    #218
+        env_gibs_leftleg_1
+            idClip::Motion()
+                GetTraceClipModels() 1 != 2
+                    +		traceBounds	{b=0x05df9c94 {{x=-2408.88916 y=-2688.64600 z=218.375671 }, {x=-2402.97266 y=-2678.17334 z=227.346664 }} }	idBounds
+                    [-2403.041 -2683.4934 223.58693, -2403.0 -2683.308 223.59053]
+                        idBounds::FromBoundsRotation()
+            
