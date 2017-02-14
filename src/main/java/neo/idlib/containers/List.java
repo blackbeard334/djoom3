@@ -1,11 +1,11 @@
 package neo.idlib.containers;
 
-import com.rits.cloning.Cloner;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import static neo.TempDump.NOT;
 import static neo.TempDump.reflects._Minus;
@@ -42,7 +42,6 @@ public class List {
         protected int granularity = 16;
         private type[]      list;
         private Class<type> type;
-        private static final Cloner CLONER = new Cloner();//TODO:
         //
         private static int DBG_counter = 0;
         private final  int DBG_count   = DBG_counter++;
@@ -474,7 +473,7 @@ public class List {
             return list;
         }
         
-        public <T extends Object> T[] Ptr(final Class<? extends T[]> type) {										// returns a pointer to the list
+        public <T> T[] Ptr(final Class<? extends T[]> type) {										// returns a pointer to the list
             return Arrays.copyOf(this.list, this.num, type);
         }
 //public	const type *	Ptr( ) const;									// returns a pointer to the list
@@ -538,10 +537,10 @@ public class List {
          *
          * Because we have a mix of const refs and member pointers that we don't
          * want to rewrite in java, we will copy the const refs where necessary.
-         * @see Append(type)
+         * @see #Append(type)
          */
         public int AppendClone(final type obj) {
-            return this.Append(CLONER.shallowClone(obj));//TODO:create copy constructors instead of reflecting.
+            return this.Append(TempDump.clone(obj));//TODO:create copy constructors instead of reflecting.
         }
 
         /*

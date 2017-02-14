@@ -21,6 +21,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
+import com.rits.cloning.Cloner;
+import neo.Game.Entity.idEntity;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.idRenderModel;
 import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
@@ -33,6 +35,7 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.LinkList.idLinkList;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Curve;
 import neo.idlib.math.Matrix.idMat3;
@@ -604,6 +607,22 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static void printCallStackCount() {
         System.out.println(Arrays.toString(CALL_STACK_MAP.entrySet().toArray()));
     }
+
+    public static void printLinkedList(final idLinkList<idEntity> head) {
+        idEntity ent = head.Next();
+        while (ent != null) {
+            System.out.println(ent.name);
+            ent = ent.activeNode.Next();
+        }
+    }
+
+    private static final Cloner CLONER = Cloner.standard();
+
+    /** shallow clone */
+    public static <T>T clone(T obj){
+        return CLONER.shallowClone(obj);
+    }
+
 
     @Deprecated
     public static <T> T[] allocArray(Class<T> clazz, int length) {

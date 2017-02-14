@@ -1743,6 +1743,9 @@ public class Game_local {
                             num = 0;
                             for (ent = activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
                                 ent.Think();
+                                if(num==117){
+                                    DBG_RunFrame++;
+                                }
                                 num++;
                             }
 //                            System.out.println("~~" + num);
@@ -1835,6 +1838,7 @@ public class Game_local {
 
             return ret;
         }
+        private static int DBG_RunFrame = 0;
 
         /*
          ================
@@ -2721,7 +2725,7 @@ public class Game_local {
 
             // initialize all entities for this game
             entities = new idEntity[entities.length];//	memset( entities, 0, sizeof( entities ) );
-            usercmds = Stream.generate(() -> new usercmd_t()).limit(usercmds.length).toArray(usercmd_t[]::new);//memset( usercmds, 0, sizeof( usercmds ) );
+            usercmds = Stream.generate(usercmd_t::new).limit(usercmds.length).toArray(usercmd_t[]::new);//memset( usercmds, 0, sizeof( usercmds ) );
             spawnIds = new int[spawnIds.length];//memset( spawnIds, -1, sizeof( spawnIds ) );
             spawnCount = INITIAL_SPAWN_COUNT;
 
