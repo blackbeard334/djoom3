@@ -2936,7 +2936,7 @@ public class AI {
             AI_ONGROUND._(physicsObj.OnGround());
 
             idVec3 org = physicsObj.GetOrigin();
-            if (oldOrigin != org) {
+            if (!oldOrigin.equals(org)) {//FIXME: so this checks value instead of refs which COULD go wrong!
                 TouchTriggers();
             }
 

@@ -199,4 +199,12 @@ idClip::numTranslations++
                                     idEntity::BecomeInactive()
                                         idPhysics_Parametric::Evaluate()
                                             current.linearExtrapolation != current.linearExtrapolation
+        idClip::GetTraceClipModels() 2!=0
+            idClip::ClipModelsTouchingBounds()
+                idClip::ClipModelsTouchingBounds_r() i==36, func_static_4611 != scan_thing_2
+        
+        seneca_func_door_2
+            idEntity::BecomeInactive() flags 8!=2
+                idPhysics_Parametric::TestIfAtRest()
+                    current.linearExtrapolation ~~~~ extrapolationType, startTime, duration, speed
             
