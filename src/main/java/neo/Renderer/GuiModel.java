@@ -251,6 +251,9 @@ public class GuiModel {
 
             // add the surfaces to this view
             for (int i = 0; i < surfaces.Num(); i++) {
+                if (i == 33) {
+                    surfaces.oGet(i).material.DBG_BALLS = i;
+                }
                 EmitSurface(surfaces.oGet(i), viewDef.worldSpace.modelMatrix, viewDef.worldSpace.modelViewMatrix, false);
             }
 

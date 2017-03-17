@@ -58,17 +58,15 @@ public class MarkerWindow {
         //
 
         public idMarkerWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idMarkerWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 //virtual ~idMarkerWindow();
@@ -346,8 +344,7 @@ public class MarkerWindow {
             return super.ParseInternalVar(_name, src);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             numStats = 0;
             currentTime = -1;
             currentMarker = -1;

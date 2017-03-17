@@ -183,17 +183,15 @@ public class GameBearShootWindow {
     public static class idGameBearShootWindow extends idWindow {
 
         public idGameBearShootWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idGameBearShootWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
         // ~idGameBearShootWindow();
@@ -369,8 +367,7 @@ public class GameBearShootWindow {
             return super.GetWinVarByName(_name, winLookup, owner);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             BSEntity ent;
 
             // Precache sounds

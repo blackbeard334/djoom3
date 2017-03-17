@@ -11,21 +11,21 @@ Too dark, and lots and LOTS of graphics bugs though, but who cares.
 Check the 2nd half of the video for the wireframe rendering, to see what's actually going on.
 
 [http://www.youtube.com/watch?v=vudRn5F0Z3w](http://www.youtube.com/watch?v=vudRn5F0Z3w)  
-[![Screenshot](http://img.youtube.com/vi/vudRn5F0Z3w/0.jpg)](http://www.youtube.com/watch?v=vudRn5F0Z3w"djoom3 0.0.6")
+[![Screenshot](http://img.youtube.com/vi/vudRn5F0Z3w/0.jpg)](http://www.youtube.com/watch?v=vudRn5F0Z3w "djoom3 0.0.6")
 
 
 #### 23-03-16
 Version 0.0.5
 
 [http://www.youtube.com/watch?v=JstU-T1mHPo](http://www.youtube.com/watch?v=JstU-T1mHPo)  
-[![Screenshot](http://img.youtube.com/vi/JstU-T1mHPo/0.jpg)](http://www.youtube.com/watch?v=JstU-T1mHPo"djoom3 0.0.5")
+[![Screenshot](http://img.youtube.com/vi/JstU-T1mHPo/0.jpg)](http://www.youtube.com/watch?v=JstU-T1mHPo "djoom3 0.0.5")
 
 
 #### 05-03-16
 Version 0.0.4
 
 [http://www.youtube.com/watch?v=TuR7x7iYVJU](http://www.youtube.com/watch?v=TuR7x7iYVJU)  
-[![Screenshot](http://img.youtube.com/vi/TuR7x7iYVJU/0.jpg)](http://www.youtube.com/watch?v=TuR7x7iYVJU"djoom3 0.0.4")
+[![Screenshot](http://img.youtube.com/vi/TuR7x7iYVJU/0.jpg)](http://www.youtube.com/watch?v=TuR7x7iYVJU "djoom3 0.0.4")
 
 
 
@@ -59,7 +59,7 @@ TODO
 4. Add **"+set fs_basepath '~/.local/share/Steam/steamapps/common/doom 3' +set com_allowConsole 1 +set si_pure 0"**(with quotes) to the program arguments of the [run configuration] (https://www.jetbrains.com/idea/help/setting-configuration-options.html)
 
 ### Important
-#### Operator Overloading:####
+#### Operator Overloading:
 |c++|java|
 |---------|------------|
 |operator=| oSet(value)|

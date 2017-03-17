@@ -64,17 +64,15 @@ public class SliderWindow {
         //
 
         public idSliderWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idSliderWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 //	// virtual				~idSliderWindow();
@@ -190,7 +188,7 @@ public class SliderWindow {
 
         @Override
         public void Draw(int time, float x, float y) {
-            idVec4 color = foreColor.data;
+            final idVec4 color = foreColor.data;
 
             if (null == cvar && null == buddyWin) {
                 return;
@@ -233,12 +231,12 @@ public class SliderWindow {
             thumbRect.h = thumbHeight;
 
             if (hover && !noEvents.oCastBoolean() && Contains(gui.CursorX(), gui.CursorY())) {
-                color = hoverColor.data;
+                color.oSet(hoverColor.data);
             } else {
                 hover = false;
             }
             if ((flags & WIN_CAPTURE) != 0) {
-                color = hoverColor.data;
+                color.oSet(hoverColor.data);
                 hover = true;
             }
 
@@ -395,8 +393,7 @@ public class SliderWindow {
             return super.ParseInternalVar(_name, src);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             value.data = 0;
             low = 0;
             high = 100.0f;

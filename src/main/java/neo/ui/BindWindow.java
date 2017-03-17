@@ -30,17 +30,15 @@ public class BindWindow {
         //
 
         public idBindWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idBindWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 //	virtual ~idBindWindow();
@@ -126,8 +124,7 @@ public class BindWindow {
             bindName.Update();
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             bindName.data.oSet("");
             waitingOnKey = false;
         }

@@ -207,4 +207,5 @@ idClip::numTranslations++
             idEntity::BecomeInactive() flags 8!=2
                 idPhysics_Parametric::TestIfAtRest()
                     current.linearExtrapolation ~~~~ extrapolationType, startTime, duration, speed
-            
+
+env_gibs_torso_1 #44

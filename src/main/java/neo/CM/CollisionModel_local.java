@@ -19,6 +19,7 @@ import static neo.CM.CollisionModel_debug.cm_backFaceCull;
 import static neo.CM.CollisionModel_debug.cm_color;
 import static neo.CM.CollisionModel_debug.cm_contentsFlagByIndex;
 import static neo.CM.CollisionModel_debug.cm_contentsNameByIndex;
+import static neo.CM.CollisionModel_debug.cm_debugCollision;
 import static neo.CM.CollisionModel_debug.cm_drawColor;
 import static neo.CM.CollisionModel_debug.cm_drawFilled;
 import static neo.CM.CollisionModel_debug.cm_drawInternal;
@@ -7707,8 +7708,6 @@ public class CollisionModel_local {
             }
         }
     };
-    // for debugging
-    public static idCVar cm_debugCollision;
 
     public static void setCollisionModelManager(idCollisionModelManager collisionModelManager) {
         CollisionModel_local.collisionModelManager

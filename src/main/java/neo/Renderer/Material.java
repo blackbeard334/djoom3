@@ -770,6 +770,7 @@ public class Material {
         //
         private static int debug_creation_counter = 0;
         private final int dbg_count;
+        public int DBG_BALLS = 0;
 
         public idMaterial() {
             dbg_count = debug_creation_counter++;

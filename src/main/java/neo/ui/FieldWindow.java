@@ -26,17 +26,15 @@ public class FieldWindow {
         //
 
         public idFieldWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idFieldWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
         //virtual ~idFieldWindow();
@@ -73,8 +71,7 @@ public class FieldWindow {
             return super.ParseInternalVar(_name, src);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             cursorPos = 0;
             lastTextLength = 0;
             lastCursorPos = 0;

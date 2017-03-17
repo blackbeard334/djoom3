@@ -318,17 +318,17 @@ public class Quat {
             wy = w * y2;
             wz = w * z2;
 
-            mat.oSet(0, 0, 1.0f - yy - zz);
+            mat.oSet(0, 0, 1.0f - ( yy + zz ));
             mat.oSet(0, 1, xy - wz);
             mat.oSet(0, 2, xz + wy);
 
             mat.oSet(1, 0, xy + wz);
-            mat.oSet(1, 1, 1.0f - xx - zz);
+            mat.oSet(1, 1, 1.0f - ( xx + zz ));
             mat.oSet(1, 2, yz - wx);
 
             mat.oSet(2, 0, xz - wy);
             mat.oSet(2, 1, yz + wx);
-            mat.oSet(2, 2, 1.0f - xx - yy);
+            mat.oSet(2, 2, 1.0f - ( xx + yy ));
 
             return mat;
         }

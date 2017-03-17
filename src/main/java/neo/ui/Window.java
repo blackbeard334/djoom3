@@ -394,9 +394,6 @@ public class Window {
         private static int DBG_COUNTER = 0;
         private final  int DBG_COUNT= DBG_COUNTER++;
 
-        protected idWindow() {
-        }
-
         public idWindow(idUserInterfaceLocal gui) {
             dc = null;
             this.gui = gui;
@@ -1021,7 +1018,7 @@ public class Window {
 
         }
 
-        public void CommonInit() {
+        private void CommonInit() {
             childID = 0;
             flags = 0;
             lastTimeRun = 0;
@@ -1911,7 +1908,7 @@ public class Window {
 
             if (gui_debug.GetInteger() != 0 && (flags & WIN_DESKTOP) != 0) {
                 dc.EnableClipping(false);
-                str = new idStr(String.format("x: %1.f y: %1.f", gui.CursorX(), gui.CursorY()));
+                str = new idStr(String.format("x: %.1f y: %.1f", gui.CursorX(), gui.CursorY()));
                 dc.DrawText(str.toString(), 0.25f, 0, dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
                 dc.DrawText(gui.GetSourceFile(), 0.25f, 0, dc.colorWhite, new idRectangle(0, 20, 300, 20), false);
                 dc.EnableClipping(true);

@@ -67,17 +67,15 @@ public class ChoiceWindow {
         //
 
         public idChoiceWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idChoiceWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 //	virtual				~idChoiceWindow();
@@ -286,8 +284,7 @@ public class ChoiceWindow {
             return super.ParseInternalVar(_name, src);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             currentChoice = 0;
             choiceType = 0;
             cvar = null;

@@ -955,10 +955,11 @@ public class draw_common {
         qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
 
         for (stage = 0; stage < shader.GetNumStages(); stage++) {
-            if (stage > 1) {
+            if (stage == 2 || stage == 3) {
 //                System.out.printf("RB_STD_T_RenderShaderPasses(%d)\n", DBG_RB_STD_T_RenderShaderPasses++);
 //                continue;//HACKME::4:our blending doesn't seem to work properly.
             }
+
             pStage = shader.GetStage(stage);
 
             // check the enable condition

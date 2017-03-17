@@ -13,6 +13,8 @@ import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
+
+import static neo.Game.GameEdit.*;
 import static neo.Game.GameSys.SysCvar.af_testSolid;
 import static neo.Game.Game_local.MAX_GENTITIES;
 import static neo.Game.Game_local.gameLocal;
@@ -242,7 +244,7 @@ public class AF {
             // create the animation frame used to setup the articulated figure
             numJoints = animator.NumJoints();
             joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
-            GameEdit.gameEdit.ANIM_CreateAnimFrame(model, animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
+            gameEdit.ANIM_CreateAnimFrame(model, animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
 
             // set all vector positions from model joints
             file.Finish(GetJointTransform.INSTANCE, joints, animator);

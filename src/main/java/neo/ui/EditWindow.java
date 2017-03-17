@@ -89,17 +89,15 @@ public class EditWindow {
         //
 
         public idEditWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idEditWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 //	// virtual 			~idEditWindow();
@@ -560,8 +558,7 @@ public class EditWindow {
             this.UpdateCvar(read, false);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             maxChars = 128;
             numeric = false;
             paintOffset = 0;

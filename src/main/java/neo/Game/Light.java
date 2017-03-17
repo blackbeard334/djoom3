@@ -790,6 +790,7 @@ public class Light {
             // add to refresh list
             if (modelDefHandle == -1) {
                 modelDefHandle = gameRenderWorld.AddEntityDef(renderEntity);
+                int a = 0;
             } else {
                 gameRenderWorld.UpdateEntityDef(modelDefHandle, renderEntity);
             }
