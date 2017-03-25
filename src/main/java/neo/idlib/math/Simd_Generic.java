@@ -108,15 +108,16 @@ public class Simd_Generic {
          */
         @Override
         public void Sub(float[] dst, float constant, float[] src, int count) {
+            final double c = constant;
             int _IX, _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant - src[_IX + 0];
-                dst[_IX + 1] = constant - src[_IX + 1];
-                dst[_IX + 2] = constant - src[_IX + 2];
-                dst[_IX + 3] = constant - src[_IX + 3];
+                dst[_IX + 0] = (float) (c - src[_IX + 0]);
+                dst[_IX + 1] = (float) (c - src[_IX + 1]);
+                dst[_IX + 2] = (float) (c - src[_IX + 2]);
+                dst[_IX + 3] = (float) (c - src[_IX + 3]);
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = constant - src[_IX];
+                dst[_IX] = (float) (c - src[_IX]);
             }
         }
 
@@ -150,15 +151,16 @@ public class Simd_Generic {
          */
         @Override
         public void Mul(float[] dst, float constant, float[] src, int count) {
+            final double c = constant;
             int _IX, _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant * src[_IX + 0];
-                dst[_IX + 1] = constant * src[_IX + 1];
-                dst[_IX + 2] = constant * src[_IX + 2];
-                dst[_IX + 3] = constant * src[_IX + 3];
+                dst[_IX + 0] = (float) (c * src[_IX + 0]);
+                dst[_IX + 1] = (float) (c * src[_IX + 1]);
+                dst[_IX + 2] = (float) (c * src[_IX + 2]);
+                dst[_IX + 3] = (float) (c * src[_IX + 3]);
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = constant * src[_IX];
+                dst[_IX] = (float) (c * src[_IX]);
             }
         }
 
@@ -192,15 +194,16 @@ public class Simd_Generic {
          */
         @Override
         public void Div(float[] dst, float constant, float[] src, int count) {
+            final double c = constant;
             int _IX, _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant / src[_IX + 0];
-                dst[_IX + 1] = constant / src[_IX + 1];
-                dst[_IX + 2] = constant / src[_IX + 2];
-                dst[_IX + 3] = constant / src[_IX + 3];
+                dst[_IX + 0] = (float) (c / src[_IX + 0]);
+                dst[_IX + 1] = (float) (c / src[_IX + 1]);
+                dst[_IX + 2] = (float) (c / src[_IX + 2]);
+                dst[_IX + 3] = (float) (c / src[_IX + 3]);
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = constant / src[_IX];
+                dst[_IX] = (float) (c / src[_IX]);
             }
         }
 
@@ -234,15 +237,16 @@ public class Simd_Generic {
          */
         @Override
         public void MulAdd(float[] dst, float constant, float[] src, int count) {
+            final double c = constant;
             int _IX, _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] += constant * src[_IX + 0];
-                dst[_IX + 1] += constant * src[_IX + 1];
-                dst[_IX + 2] += constant * src[_IX + 2];
-                dst[_IX + 3] += constant * src[_IX + 3];
+                dst[_IX + 0] += c * src[_IX + 0];
+                dst[_IX + 1] += c * src[_IX + 1];
+                dst[_IX + 2] += c * src[_IX + 2];
+                dst[_IX + 3] += c * src[_IX + 3];
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] += constant * src[_IX];
+                dst[_IX] += c * src[_IX];
             }
         }
 
@@ -276,15 +280,16 @@ public class Simd_Generic {
          */
         @Override
         public void MulSub(float[] dst, float constant, float[] src, int count) {
+            final double c = constant;
             int _IX, _NM = count & 0xfffffffc;
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] -= constant * src[_IX + 0];
-                dst[_IX + 1] -= constant * src[_IX + 1];
-                dst[_IX + 2] -= constant * src[_IX + 2];
-                dst[_IX + 3] -= constant * src[_IX + 3];
+                dst[_IX + 0] -= c * src[_IX + 0];
+                dst[_IX + 1] -= c * src[_IX + 1];
+                dst[_IX + 2] -= c * src[_IX + 2];
+                dst[_IX + 3] -= c * src[_IX + 3];
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] -= constant * src[_IX];
+                dst[_IX] -= c * src[_IX];
             }
         }
 

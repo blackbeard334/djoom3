@@ -2964,7 +2964,7 @@ public class Physics_AF {
             normal = coneVector.Cross(ax).Cross(coneVector);
             normal.Normalize();
 
-            p1 = anchor.oPlus(coneVector.oMultiply(32.0f).oMinus(body1.GetWorldOrigin()));
+            p1 = anchor.oPlus(coneVector.oMultiply(32.0f)).oMinus(body1.GetWorldOrigin());
 
             J1row.SubVec3_oSet(0, normal);
             J1row.SubVec3_oSet(1, p1.Cross(normal));
@@ -2974,7 +2974,7 @@ public class Physics_AF {
 
             if (body2 != null) {
 
-                p2 = anchor.oPlus(coneVector.oMultiply(32.0f).oMinus(master.GetWorldOrigin()));
+                p2 = anchor.oPlus(coneVector.oMultiply(32.0f)).oMinus(master.GetWorldOrigin());
 
                 J2row.SubVec3_oSet(0, normal.oNegative());
                 J2row.SubVec3_oSet(1, p2.Cross(normal.oNegative()));

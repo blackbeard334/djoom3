@@ -726,14 +726,14 @@ public class Lcp {
          ============
          */
         private void ChangeAccel(int d, float step) {
-            float[] clampedA = clam(a.ToFloatPtr(), numClamped);
-            float[] clampedDeltaA = clam(delta_a.ToFloatPtr(), numClamped);
+            float[] clampedA = clam(a, numClamped);
+            float[] clampedDeltaA = clam(delta_a, numClamped);
 
             // only the not clamped variables, including the current variable, can have an acceleration unequal zero
             SIMDProcessor.MulAdd(clampedA, step, clampedDeltaA, d - numClamped + 1);
 
-            unClam(a.ToFloatPtr(), clampedA);
-            unClam(delta_a.ToFloatPtr(), clampedDeltaA);
+            unClam(a, clampedA);
+            unClam(delta_a, clampedDeltaA);
         }
 
         private void GetMaxStep(int d, float dir, float[] maxStep, int[] limit, int[] limitSide) {
@@ -1170,8 +1170,10 @@ public class Lcp {
             for (int i = 0; i < numClamped; i++) {
 //		memcpy( clamped[i], rowPtrs[i], numClamped * sizeof( float ) );
                 clamped.arraycopy(rowPtrs[i], i, numClamped);
+                int a = 0;
             }
             boolean b = SIMDProcessor.MatX_LDLTFactor(clamped, diagonal, numClamped);
+            int a = 0;
             return b;
         }
 
@@ -1233,14 +1235,13 @@ public class Lcp {
                 // the lower triangular solve was cached in SolveClamped called by CalcForceDelta
 //                memcpy(clamped[numClamped], solveCache2.ToFloatPtr(), numClamped * sizeof(float));
                 clamped.arraycopy(solveCache2.ToFloatPtr(), numClamped, numClamped);
+                int a = 0;
                 // calculate row dot product
                 SIMDProcessor.Dot(dot, solveCache2.ToFloatPtr(), solveCache1.ToFloatPtr(), numClamped);
 
             } else {
-
-//                float *v = (float *) _alloca16(numClamped * sizeof(float));
-                float[] v = new float[numClamped];
-                float[] clampedArray = clam(clamped.ToFloatPtr(), numClamped);
+                float[] v = new float[numClamped];//(float *) _alloca16(numClamped * sizeof(float));
+                float[] clampedArray = clam(clamped, numClamped);
 
                 SIMDProcessor.MatX_LowerTriangularSolve(clamped, v, rowPtrs[numClamped], numClamped);
                 // add bottom row to L
@@ -1248,7 +1249,7 @@ public class Lcp {
                 // calculate row dot product
                 SIMDProcessor.Dot(dot, clampedArray, v, numClamped);
 
-                unClam(clamped.ToFloatPtr(), clampedArray);
+                unClam(clamped, clampedArray);
             }
 
             // update diagonal[numClamped]
@@ -1316,9 +1317,8 @@ public class Lcp {
 
             } else {
 
-//		v = (float *) _alloca16( numClamped * sizeof( float ) );
-                v = new float[numClamped];
-                float[] clampedArray = clam(clamped.ToFloatPtr(), r);
+                v = new float[numClamped];//= (float *) _alloca16( numClamped * sizeof( float ) );
+                float[] clampedArray = clam(clamped, r);
 
                 // solve for v in L * v = rowPtr[r]
                 SIMDProcessor.MatX_LowerTriangularSolve(clamped, v, rowPtrs[r], r);
@@ -1335,7 +1335,7 @@ public class Lcp {
 				        idLib.common.Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
                         return;
                     }
-                    unClam(clamped.ToFloatPtr(), clampedArray);
+                    unClam(clamped, clampedArray);
                     clamped.oSet(r, r, diag);
                     diagonal.p[r] = 1.0f / diag;
                     return;
@@ -1430,6 +1430,7 @@ public class Lcp {
 
                     ptr.put((j + 0) * n, sum0);
                     ptr.put((j + 1) * n, sum1);
+                    int a = 0;
                 }
 
                 for (; j < numClamped; j++) {
@@ -1465,6 +1466,7 @@ public class Lcp {
             }
 
             // solve force delta
+            float[] clone = delta_f.p.clone();
             SolveClamped(delta_f, rowPtrs[d]);
 
             // flip force delta based on direction
@@ -1493,6 +1495,7 @@ public class Lcp {
                 // only the clamped variables and the current variable have a force delta unequal zero
                 SIMDProcessor.Dot(dot, rowPtrs[j], delta_f.ToFloatPtr(), numClamped);
                 delta_a.p[j] = dot[0] + rowPtrs[j].get(d) * delta_f.p[d];
+                int a = 0;
             }
         }
 
@@ -1518,14 +1521,15 @@ public class Lcp {
          ============
          */
         private void ChangeAccel(int d, float step) {
-            float[] clampedA = clam(a.ToFloatPtr(), numClamped);
-            float[] clampedDeltaA = clam(delta_a.ToFloatPtr(), numClamped);
+            float[] clampedA = clam(a, numClamped);
+            float[] clampedDeltaA = clam(delta_a, numClamped);
 
             // only the not clamped variables, including the current variable, can have an acceleration unequal zero
             SIMDProcessor.MulAdd(clampedA, step, clampedDeltaA, d - numClamped + 1);
 
-            unClam(a.ToFloatPtr(), clampedA);
-            unClam(delta_a.ToFloatPtr(), clampedDeltaA);
+            unClam(a, clampedA);
+            unClam(delta_a, clampedDeltaA);
+            int a = 0;
         }
 
         private void GetMaxStep(int d, float dir, float[] maxStep, int[] limit, int[] limitSide) {
@@ -1627,7 +1631,15 @@ public class Lcp {
      *
      *
      */
-    public static float[] clam(final float[] src, int numClamped) {
+    public static float[] clam(final idMatX src, final int numClamped) {
+       return clam(src.ToFloatPtr(), numClamped * src.GetNumColumns());
+    }
+
+    public static float[] clam(final idVecX src, final int numClamped) {
+       return clam(src.ToFloatPtr(), numClamped);
+    }
+
+    public static float[] clam(final float[] src, final int numClamped) {
         float[] clamped = new float[src.length - numClamped];
 
         System.arraycopy(src, numClamped, clamped, 0, clamped.length);
@@ -1635,7 +1647,15 @@ public class Lcp {
         return clamped;
     }
 
-    public static float[] unClam(float[] dst, float[] clamArray) {
+    public static float[] unClam(idMatX dst, final float[] clamArray) {
+        return unClam(dst.ToFloatPtr(), clamArray);
+    }
+
+    public static float[] unClam(idVecX dst, final float[] clamArray) {
+        return unClam(dst.ToFloatPtr(), clamArray);
+    }
+
+    public static float[] unClam(float[] dst, final float[] clamArray) {
         System.arraycopy(clamArray, 0, dst, dst.length - clamArray.length, clamArray.length);
         return dst;
     }
