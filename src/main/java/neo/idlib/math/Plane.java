@@ -602,7 +602,7 @@ public class Plane {
         
         public static idPlane[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new idPlane()).
+                    generate(idPlane::new).
                     limit(length).
                     toArray(idPlane[]::new);
         }

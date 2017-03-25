@@ -108,7 +108,6 @@ import static neo.Renderer.tr_local.renderCommand_t.RC_SWAP_BUFFERS;
 import static neo.Renderer.tr_main.R_GlobalToNormalizedDeviceCoordinates;
 import static neo.Renderer.tr_main.R_ShutdownFrameData;
 import static neo.Renderer.tr_main.R_ToggleSmpFrame;
-import static neo.Renderer.tr_main.R_TransformEyeZToWin;
 import static neo.Renderer.tr_rendertools.RB_ShutdownDebugTools;
 import static neo.Renderer.tr_trisurf.R_InitTriSurfData;
 import static neo.Renderer.tr_trisurf.R_ShutdownTriSurfData;
@@ -121,14 +120,7 @@ import static neo.framework.DemoFile.demoSystem_t.DS_RENDER;
 import static neo.framework.EventLoop.eventLoop;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.Session.session;
-import static neo.idlib.Lib.colorBlue;
-import static neo.idlib.Lib.colorCyan;
-import static neo.idlib.Lib.colorGreen;
-import static neo.idlib.Lib.colorMagenta;
-import static neo.idlib.Lib.colorPurple;
-import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorWhite;
-import static neo.idlib.Lib.colorYellow;
 import static neo.idlib.Text.Str.C_COLOR_DEFAULT;
 import static neo.idlib.math.Vector.getVec3_zero;
 import static neo.sys.win_glimp.GLimp_Shutdown;
@@ -291,7 +283,7 @@ public class tr_local {
         
         static idScreenRect[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new idScreenRect()).
+                    generate(idScreenRect::new).
                     limit(length).
                     toArray(idScreenRect[]::new);
         }

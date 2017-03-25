@@ -7,7 +7,6 @@ import static neo.Game.Entity.EV_Show;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;

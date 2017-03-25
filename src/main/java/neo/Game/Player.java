@@ -1593,9 +1593,9 @@ public class Player {
             privateCameraView = null;
 
 //	memset( loggedViewAngles, 0, sizeof( loggedViewAngles ) );
-            loggedViewAngles = Stream.generate(() -> new idAngles()).limit(NUM_LOGGED_VIEW_ANGLES).toArray(idAngles[]::new);
+            loggedViewAngles = Stream.generate(idAngles::new).limit(NUM_LOGGED_VIEW_ANGLES).toArray(idAngles[]::new);
 //	memset( loggedAccel, 0, sizeof( loggedAccel ) );
-            loggedAccel = Stream.generate(() -> new loggedAccel_t()).limit(NUM_LOGGED_ACCELS).toArray(loggedAccel_t[]::new);
+            loggedAccel = Stream.generate(loggedAccel_t::new).limit(NUM_LOGGED_ACCELS).toArray(loggedAccel_t[]::new);
             currentLoggedAccel = 0;
 
             focusTime = 0;

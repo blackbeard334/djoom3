@@ -1,7 +1,7 @@
 package neo.Game;
 
 import static java.lang.Math.sin;
-import neo.Game.GameSys.Class.idClass;
+
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.g_blobSize;

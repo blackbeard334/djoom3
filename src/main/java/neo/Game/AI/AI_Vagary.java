@@ -2,7 +2,6 @@ package neo.Game.AI;
 
 import neo.Game.AI.AI.idAI;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t2;
 import neo.Game.GameSys.Class.eventCallback_t5;

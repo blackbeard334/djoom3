@@ -5,10 +5,9 @@ import static neo.idlib.containers.List.idSwap;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Surface.idSurface;
 import static neo.idlib.geometry.Winding.*;
-import neo.idlib.geometry.Winding.idFixedWinding;
 import static neo.idlib.math.Math_h.*;
 import static neo.idlib.math.Plane.*;
-import neo.idlib.math.Plane.idPlane;
+
 import neo.idlib.math.Vector.idVec3;
 
 /**

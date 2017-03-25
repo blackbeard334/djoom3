@@ -6,7 +6,6 @@ import static neo.CM.CollisionModel.CM_MAX_TRACE_DIST;
 import neo.CM.CollisionModel.contactInfo_t;
 import static neo.CM.CollisionModel.contactType_t.CONTACT_TRMVERTEX;
 import neo.CM.CollisionModel.trace_s;
-import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;

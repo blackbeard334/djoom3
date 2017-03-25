@@ -61,7 +61,7 @@ public class Surface {
         int[] tris = new int[2];	// edge triangles
 
         private static surfaceEdge_t[] generateArray(final int length) {
-            return Stream.generate(() -> new surfaceEdge_t()).limit(length).toArray(surfaceEdge_t[]::new);
+            return Stream.generate(surfaceEdge_t::new).limit(length).toArray(surfaceEdge_t[]::new);
         }
     };
 

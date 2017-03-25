@@ -3,7 +3,6 @@ package neo.idlib.math;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
-import neo.Renderer.Model;
 import neo.Renderer.Model.dominantTri_s;
 import neo.Renderer.Model.shadowCache_s;
 import neo.TempDump.TODO_Exception;

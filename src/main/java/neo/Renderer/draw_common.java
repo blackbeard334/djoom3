@@ -179,7 +179,6 @@ import static org.lwjgl.opengl.EXTDepthBoundsTest.GL_DEPTH_BOUNDS_TEST_EXT;
 import static org.lwjgl.opengl.GL11.GL_ALPHA_SCALE;
 import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
 import static org.lwjgl.opengl.GL11.GL_ALWAYS;
-import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_COLOR_ARRAY;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;

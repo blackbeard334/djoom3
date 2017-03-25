@@ -491,7 +491,7 @@ public class Entity {
 //        public static idEventFunc<idEntity>[] eventCallbacks;
 //
         public idEntity() {
-            targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<idEntity>().getClass());
+            targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<>().getClass());
 
             entityNumber = ENTITYNUM_NONE;
             entityDefNumber = -1;
@@ -4436,7 +4436,7 @@ public class Entity {
                 return false;
             }
 
-            frame = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
+            frame = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
             GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), anim.MD5Anim(0), renderEntity.numJoints, frame, frameTime, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
 
             offset.oSet(frame[jointHandle].ToVec3());

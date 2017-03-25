@@ -7,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
-import org.lwjgl.Sys;
 
 import static neo.TempDump.atoi;
 import static neo.framework.BuildDefines._WIN32;

@@ -321,7 +321,7 @@ public class MultiplayerGame {
 
             boolean ingame = playerState[ clientNum].ingame;
 
-            playerState = Stream.generate(() -> new mpPlayerState_s()).limit(playerState.length).toArray(mpPlayerState_s[]::new);
+            playerState = Stream.generate(mpPlayerState_s::new).limit(playerState.length).toArray(mpPlayerState_s[]::new);
             if (!gameLocal.isClient) {
                 idPlayer p = (idPlayer) gameLocal.entities[ clientNum];
                 p.spawnedTime = gameLocal.time;
@@ -3070,7 +3070,7 @@ public class MultiplayerGame {
             currentTourneyPlayer[ 0] = -1;
             currentTourneyPlayer[ 1] = -1;
             one = two = three = false;
-            playerState = Stream.generate(() -> new mpPlayerState_s()).limit(playerState.length).toArray(mpPlayerState_s[]::new);
+            playerState = Stream.generate(mpPlayerState_s::new).limit(playerState.length).toArray(mpPlayerState_s[]::new);
             lastWinner = -1;
             currentMenu = 0;
             bCurrentMenuMsg = false;

@@ -62,7 +62,6 @@ import static neo.framework.Common.EDITOR_SOUND;
 import static neo.framework.Common.com_editors;
 import static neo.framework.Common.com_skipRenderer;
 import static neo.framework.Common.common;
-import static neo.framework.UsercmdGen.USERCMD_MSEC;
 
 import neo.idlib.CmdArgs.idCmdArgs;
 
@@ -549,18 +548,14 @@ public class win_main {//TODO: rename to plain "main" or something.
 //	int			findhandle;
 //        final boolean _A_SUBDIR;
 
-        search = new FilenameFilter() {
-
-            @Override
-            public boolean accept(File pathname, final String name) {
-                // passing a slash as extension will find directories
-                if (extension.equals('/')) {
+        search = (pathname, name) -> {
+            // passing a slash as extension will find directories
+            if (extension.equals('/')) {
 //                    _A_SUBDIR = false;
-                    return pathname.isDirectory();
-                } else {
+                return pathname.isDirectory();
+            } else {
 //                    _A_SUBDIR = true;
-                    return name.endsWith(extension);
-                }
+                return name.endsWith(extension);
             }
         };
 
@@ -609,9 +604,7 @@ public class win_main {//TODO: rename to plain "main" or something.
 //		CloseClipboard();
 //	}
 //	return data;
-        } catch (UnsupportedFlavorException ex) {
-            Logger.getLogger(win_main.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } catch (UnsupportedFlavorException | IOException ex) {
             Logger.getLogger(win_main.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;

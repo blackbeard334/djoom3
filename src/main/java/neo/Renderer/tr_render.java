@@ -69,7 +69,6 @@ import static neo.Renderer.tr_rendertools.RB_ShowOverdraw;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
 
-import neo.TempDump;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec4;

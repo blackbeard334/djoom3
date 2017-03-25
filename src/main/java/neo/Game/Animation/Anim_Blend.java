@@ -1369,7 +1369,7 @@ public class Anim_Blend {
             }
 
             // set up initial pose for model (with no pose, model is just a jumbled mess)
-            list = Stream.generate(() -> new idJointMat()).limit(num).toArray(idJointMat[]::new);
+            list = Stream.generate(idJointMat::new).limit(num).toArray(idJointMat[]::new);
             pose = GetDefaultPose();
 
             // convert the joint quaternions to joint matrices
@@ -3856,7 +3856,7 @@ public class Anim_Blend {
                         }
                     }
 
-                    idJointMat[] joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
+                    idJointMat[] joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
 
                     // convert the joint quaternions to joint matrices
                     SIMDProcessor.ConvertJointQuatsToJointMats(joints, jointFrame, numJoints);

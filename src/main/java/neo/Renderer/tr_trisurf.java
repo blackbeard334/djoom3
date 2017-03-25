@@ -1219,7 +1219,7 @@ public class tr_trisurf {
         
         static faceTangents_t[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new faceTangents_t()).
+                    generate(faceTangents_t::new).
                     limit(length).
                     toArray(faceTangents_t[]::new);
         }

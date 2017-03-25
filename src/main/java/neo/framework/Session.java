@@ -8,15 +8,10 @@ import static neo.Sound.snd_system.soundSystem;
 import neo.Sound.sound.idSoundWorld;
 
 import static neo.TempDump.*;
-import static neo.TempDump.SERIAL_SIZE;
 
-import neo.TempDump;
-import neo.TempDump.SERiAL;
-import static neo.TempDump.isNotNullOrEmpty;
 import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
 import static neo.framework.CVarSystem.CVAR_SERVERINFO;
 import static neo.framework.CVarSystem.cvarSystem;
-import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
 import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
 import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.CmdSystem.cmdSystem;
@@ -28,14 +23,11 @@ import neo.framework.FileSystem_h.backgroundDownload_s;
 import static neo.framework.FileSystem_h.fileSystem;
 import neo.framework.FileSystem_h.findFile_t;
 import neo.framework.File_h.idFile;
-import static neo.framework.Session.msgBoxType_t.MSG_CDKEY;
-import static neo.framework.Session.msgBoxType_t.MSG_OK;
+
 import neo.framework.Session_local.idSessionLocal;
 import static neo.framework.Session_local.timeDemo_t.TD_YES;
 import static neo.framework.Session_local.timeDemo_t.TD_YES_THEN_QUIT;
 import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.Dict_h;
-import neo.idlib.LangDict;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;

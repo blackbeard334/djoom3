@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.NVRegisterCombiners;
-import org.lwjgl.opengl.Util;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor

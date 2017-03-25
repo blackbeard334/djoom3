@@ -90,7 +90,7 @@ public class SmokeParticles {
             initialized = false;
             renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
             renderEntityHandle = -1;
-            smokes = Stream.generate(()->new singleSmoke_t()).limit(MAX_SMOKE_PARTICLES).toArray(singleSmoke_t[]::new);
+            smokes = Stream.generate(singleSmoke_t::new).limit(MAX_SMOKE_PARTICLES).toArray(singleSmoke_t[]::new);
             activeStages = new idList<>();
             freeSmokes = null;
             numActiveSmokes = 0;

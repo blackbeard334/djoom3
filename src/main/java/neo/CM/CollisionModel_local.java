@@ -214,7 +214,7 @@ public class CollisionModel_local {
         }
 
         static cm_vertex_s[]generateArray(final int length){
-            return Stream.generate(() -> new cm_vertex_s()).
+            return Stream.generate(cm_vertex_s::new).
                     limit(length).
                     toArray(cm_vertex_s[]::new);
         }
@@ -233,7 +233,7 @@ public class CollisionModel_local {
         idVec3 normal = new idVec3();       // edge normal
 
         static cm_edge_s[] generateArray(final int length) {
-            return Stream.generate(() -> new cm_edge_s()).
+            return Stream.generate(cm_edge_s::new).
                     limit(length).
                     toArray(cm_edge_s[]::new);
         }
@@ -423,7 +423,7 @@ public class CollisionModel_local {
         }
 
         private static cm_model_s[] generateArray(final int length) {
-            return Stream.generate(() -> new cm_model_s()).limit(length).toArray(cm_model_s[]::new);
+            return Stream.generate(cm_model_s::new).limit(length).toArray(cm_model_s[]::new);
         }
     }
 
@@ -556,9 +556,9 @@ public class CollisionModel_local {
 
             heartPlane1 = new idPlane();
             heartPlane2 = new idPlane();
-            this.polygonEdgePlueckerCache = Stream.generate(() -> new idPluecker()).limit(CM_MAX_POLYGON_EDGES).toArray(idPluecker[]::new);
-            this.polygonVertexPlueckerCache = Stream.generate(() -> new idPluecker()).limit(CM_MAX_POLYGON_EDGES).toArray(idPluecker[]::new);
-            this.polygonRotationOriginCache = Stream.generate(() -> new idVec3()).limit(CM_MAX_POLYGON_EDGES).toArray(idVec3[]::new);
+            this.polygonEdgePlueckerCache = Stream.generate(idPluecker::new).limit(CM_MAX_POLYGON_EDGES).toArray(idPluecker[]::new);
+            this.polygonVertexPlueckerCache = Stream.generate(idPluecker::new).limit(CM_MAX_POLYGON_EDGES).toArray(idPluecker[]::new);
+            this.polygonRotationOriginCache = Stream.generate(idVec3::new).limit(CM_MAX_POLYGON_EDGES).toArray(idVec3[]::new);
         }
     }
 

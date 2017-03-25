@@ -73,7 +73,7 @@ public class win_glimp {
         // first make sure the user is not trying to select a mode that his card/monitor can't handle
         matched = false;
         DisplayMode[] displayModes = Display.getAvailableDisplayModes();
-        Arrays.sort(displayModes, (o1, o2) -> o1.getWidth() - o2.getWidth());
+        Arrays.sort(displayModes, Comparator.comparingInt(DisplayMode::getWidth));
         for (DisplayMode devmode : displayModes) {
 //		if ( !EnumDisplaySettings( NULL, modeNum, &devmode ) ) {
             if (matched) {

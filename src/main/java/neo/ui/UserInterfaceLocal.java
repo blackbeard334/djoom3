@@ -8,7 +8,6 @@ import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_MATERIAL;
 
-import neo.framework.Common;
 import neo.framework.DemoFile.idDemoFile;
 import static neo.framework.FileSystem_h.fileSystem;
 import neo.framework.File_h.idFile;

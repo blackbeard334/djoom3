@@ -253,7 +253,7 @@ public class Mover {
         //
         private int/*qhandle_t*/ areaPortal;		// 0 = no portal
         //
-        private final idList<idEntityPtr<idEntity>> guiTargets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<idEntity>().getClass());
+        private final idList<idEntityPtr<idEntity>> guiTargets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<>().getClass());
 
         @Override
         public idClass CreateInstance() {
@@ -3987,7 +3987,7 @@ public class Mover {
         //
 
         public idRotater() {
-            this.activatedBy = new idEntityPtr<idEntity>().oSet(this);
+            this.activatedBy = new idEntityPtr<>().oSet(this);
         }
 
         @Override

@@ -5,7 +5,6 @@ import java.util.Scanner;
 import neo.Renderer.Material.idMaterial;
 
 import static neo.TempDump.atoi;
-import static neo.TempDump.itob;
 import static neo.framework.DeclManager.declManager;
 
 import neo.framework.File_h.idFile;

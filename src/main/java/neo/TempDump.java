@@ -178,8 +178,8 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         final int width = input[0].length;
         byte[] output = new byte[height * width];
 
-        for (int a = 0; a < height; a++) {
-            System.arraycopy(input[a], 0, output, width, width);
+        for (byte[] anInput : input) {
+            System.arraycopy(anInput, 0, output, width, width);
         }
 
         return output;

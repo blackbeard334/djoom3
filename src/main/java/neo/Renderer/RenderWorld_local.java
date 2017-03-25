@@ -157,7 +157,6 @@ import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_shared.Sys_Milliseconds;

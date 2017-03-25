@@ -29,7 +29,6 @@ import neo.ui.Winvar.idWinBool;
 import neo.ui.Winvar.idWinFloat;
 import neo.ui.Winvar.idWinInt;
 import neo.ui.Winvar.idWinRectangle;
-import neo.ui.Winvar.idWinStr;
 import neo.ui.Winvar.idWinVar;
 import neo.ui.Winvar.idWinVec2;
 import neo.ui.Winvar.idWinVec3;
