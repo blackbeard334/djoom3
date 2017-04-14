@@ -863,7 +863,7 @@ public class Lcp {
         }
 
         @Override
-        public boolean Solve(idMatX o_m, idVecX o_x, idVecX o_b, idVecX o_lo, idVecX o_hi, int[] o_boxIndex) {
+        public boolean Solve(final idMatX o_m, idVecX o_x, final idVecX o_b, final idVecX o_lo, final idVecX o_hi, final int[] o_boxIndex) {
             int i, j, n, boxStartIndex;
             int[] limit = new int[1], limitSide = new int[1];
             float dir, s;
@@ -1330,16 +1330,17 @@ public class Lcp {
                 if (r == numClamped - 1) {
                     // only calculate new diagonal
                     SIMDProcessor.Dot(dot, clampedArray, v, r);
+                    unClam(clamped, clampedArray);
                     diag = rowPtrs[r].get(r) - dot[0];
                     if (diag == 0.0f) {
 				        idLib.common.Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
                         return;
                     }
-                    unClam(clamped, clampedArray);
                     clamped.oSet(r, r, diag);
                     diagonal.p[r] = 1.0f / diag;
                     return;
                 }
+                unClam(clamped, clampedArray);
 
                 // calculate the row/column to be added to the lower right sub matrix starting at (r, r)
                 for (i = 0; i < r; i++) {

@@ -3628,7 +3628,7 @@ public class FileSystem_h {
                 //                return new FileInputStream(fp.toFile()).getChannel();
                 return FileChannel.open(fp, fopenOptions(mode));
             } catch (NoSuchFileException ex) {//TODO:turn exceptions back on.
-                Logger.getLogger(FileSystem_h.class.getName()).log(Level.WARNING, null, ex);
+//                Logger.getLogger(FileSystem_h.class.getName()).log(Level.WARNING, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -3475,7 +3475,7 @@ public class CollisionModel_local {
                 this.TraceThroughModel(tw1);
 
                 // store results
-                results[0] = tw1.trace;
+                results[0].oSet(tw1.trace);
                 results[0].endpos.oSet(start);
                 if (tw1.maxTan == initialTan) {
                     results[0].fraction = 1.0f;
@@ -3688,7 +3688,7 @@ public class CollisionModel_local {
             this.TraceThroughModel(tw1);
 
             // store results
-            results[0] = tw1.trace;
+            results[0].oSet(tw1.trace);
             results[0].endpos.oSet(start);
             if (tw1.maxTan == initialTan) {
                 results[0].fraction = 1.0f;

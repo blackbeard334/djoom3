@@ -100,6 +100,12 @@ public class CollisionModel {
             this.c = new contactInfo_t();
         }
 
+        public trace_s(final trace_s bla) {
+            endpos = new idVec3(bla.endpos);
+            endAxis = new idMat3(bla.endAxis);
+            this.c = new contactInfo_t(bla.c);
+        }
+
         @Override
         public ByteBuffer AllocBuffer() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

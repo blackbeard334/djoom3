@@ -6902,7 +6902,7 @@ public class Physics_AF {
             // collision point relative to the body center of mass
             r = collision.c.point.oMinus(body.current.worldOrigin.oPlus(body.centerOfMass.oMultiply(body.current.worldAxis)));
             // the velocity at the collision point
-            velocity = body.current.spatialVelocity.SubVec3_oPluSet(0, body.current.spatialVelocity.SubVec3(1).Cross(r));
+            velocity = body.current.spatialVelocity.SubVec3(0).oPlus(body.current.spatialVelocity.SubVec3(1).Cross(r));
             // subtract velocity of other entity
             velocity.oMinSet(info.velocity);
             // never stick
@@ -6991,7 +6991,7 @@ public class Physics_AF {
                         index = collisions.Num();
                         collisions.SetNum(index + 1, false);
                         collisions.oSet(index, new AFCollision_s());
-                        collisions.oGet(index).trace = collision[0];
+                        collisions.oGet(index).trace = new trace_s(collision[0]);
                         collisions.oGet(index).body = body;
                     }
 

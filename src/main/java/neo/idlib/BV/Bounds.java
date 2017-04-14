@@ -768,7 +768,7 @@ public class Bounds {
         end = rotation.oMultiply(start);
         axis = rotation.GetVec();
         origin = rotation.GetOrigin().oPlus(axis.oMultiply(axis.oMultiply((start.oMinus(rotation.GetOrigin())))));
-        radiusSqr = (start.oPlus(origin)).LengthSqr();
+        radiusSqr = start.oMinus(origin).LengthSqr();
         v1 = (start.oMinus(origin)).Cross(axis);
         v2 = (end.oMinus(origin)).Cross(axis);
 

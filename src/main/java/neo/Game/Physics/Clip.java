@@ -1025,7 +1025,7 @@ public class Clip {
                     collisionModelManager.Rotation(trace, endPosition, endRotation, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
 
                     if (trace[0].fraction < rotationalTrace[0].fraction) {
-                        rotationalTrace[0] = trace[0];
+                        rotationalTrace[0].oSet(trace[0]);
                         rotationalTrace[0].c.entityNum = touch.entity.entityNumber;
                         rotationalTrace[0].c.id = touch.id;
                         if (rotationalTrace[0].fraction == 0.0f) {
@@ -1036,9 +1036,9 @@ public class Clip {
             }
 
             if (rotationalTrace[0].fraction < 1.0f) {
-                results[0] = rotationalTrace[0];
+                results[0].oSet(rotationalTrace[0]);
             } else {
-                results[0] = translationalTrace[0];
+                results[0].oSet(translationalTrace[0]);
                 results[0].endAxis.oSet(rotationalTrace[0].endAxis);
             }
 
