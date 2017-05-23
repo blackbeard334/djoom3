@@ -528,7 +528,7 @@ public class Lcp {
         void RemoveClamped(int r) {
             int i, j;
             float[] y0, y1, z0, z1;
-            float diag, beta0, beta1, p0, p1, q0, q1, d;
+            double diag, beta0, beta1, p0, p1, q0, q1, d;
 
             assert (r < numClamped);
 
@@ -618,8 +618,8 @@ public class Lcp {
                 d = 1.0f / diag;
                 beta1 = q1 * d;
 
-                clamped.oSet(i, i, diag);
-                diagonal.p[i] = d;
+                clamped.oSet(i, i, (float) diag);
+                diagonal.p[i] = (float) d;
 
                 for (j = i + 1; j < numClamped; j++) {
 
@@ -631,7 +631,7 @@ public class Lcp {
                     d += q0 * z1[j];
                     z1[j] -= beta1 * d;
 
-                    clamped.oSet(i, j, d);
+                    clamped.oSet(i, j, (float) d);
                 }
 
                 for (j = i + 1; j < numClamped; j++) {
@@ -644,7 +644,7 @@ public class Lcp {
                     y1[j] -= q0 * d;
                     d += beta1 * y1[j];
 
-                    clamped.oSet(j, i, d);
+                    clamped.oSet(j, i, (float) d);
                 }
             }
             return;
@@ -1233,8 +1233,7 @@ public class Lcp {
             if (useSolveCache) {
 
                 // the lower triangular solve was cached in SolveClamped called by CalcForceDelta
-//                memcpy(clamped[numClamped], solveCache2.ToFloatPtr(), numClamped * sizeof(float));
-                clamped.arraycopy(solveCache2.ToFloatPtr(), numClamped, numClamped);
+                clamped.arraycopy(solveCache2.ToFloatPtr(), numClamped, numClamped);//memcpy(clamped[numClamped], solveCache2.ToFloatPtr(), numClamped * sizeof(float));
                 int a = 0;
                 // calculate row dot product
                 SIMDProcessor.Dot(dot, solveCache2.ToFloatPtr(), solveCache1.ToFloatPtr(), numClamped);
@@ -1269,9 +1268,8 @@ public class Lcp {
 
         private void RemoveClamped(int r) {
             int i, j, n;
-            float[] addSub, v, v1, v2;
-            float[] dot = new float[1];
-            float sum, diag, newDiag, invNewDiag, p1, p2, alpha1, alpha2, beta1, beta2;
+            float[] addSub, v, v1, v2, dot = new float[1];
+            double sum, diag, newDiag, invNewDiag, p1, p2, alpha1, alpha2, beta1, beta2;
             FloatBuffer original, ptr;
 
             assert (r < numClamped);
@@ -1291,8 +1289,7 @@ public class Lcp {
             Swap(r, numClamped);
 
             // update the factored matrix
-//	addSub = (float *) _alloca16( numClamped * sizeof( float ) );
-            addSub = new float[numClamped];
+            addSub = new float[numClamped];//	addSub = (float *) _alloca16( numClamped * sizeof( float ) );
 
             if (r == 0) {
 
@@ -1302,8 +1299,8 @@ public class Lcp {
                         idLib.common.Printf("idLCP_Symmetric::RemoveClamped: updating factorization failed\n");
                         return;
                     }
-                    clamped.oSet(0, 0, diag);
-                    diagonal.p[0] = 1.0f / diag;
+                    clamped.oSet(0, 0, (float) diag);
+                    diagonal.p[0] = (float) (1.0f / diag);
                     return;
                 }
 
@@ -1336,8 +1333,8 @@ public class Lcp {
 				        idLib.common.Printf( "idLCP_Symmetric::RemoveClamped: updating factorization failed\n" );
                         return;
                     }
-                    clamped.oSet(r, r, diag);
-                    diagonal.p[r] = 1.0f / diag;
+                    clamped.oSet(r, r, (float) diag);
+                    diagonal.p[r] = (float) (1.0f / diag);
                     return;
                 }
                 unClam(clamped, clampedArray);
@@ -1356,21 +1353,19 @@ public class Lcp {
                     for (j = 0; j < r; j++) {
                         sum += ptr.get(j) * v[j];
                     }
-                    addSub[i] = rowPtrs[r].get(i) - sum;
+                    addSub[i] = (float) (rowPtrs[r].get(i) - sum);
                 }
             }
 
             // add row/column to the lower right sub matrix starting at (r, r)
-//	v1 = (float *) _alloca16( numClamped * sizeof( float ) );
-//	v2 = (float *) _alloca16( numClamped * sizeof( float ) );
-            v1 = new float[numClamped];
-            v2 = new float[numClamped];
+            v1 = new float[numClamped];//	v1 = (float *) _alloca16( numClamped * sizeof( float ) );
+            v2 = new float[numClamped];//	v2 = (float *) _alloca16( numClamped * sizeof( float ) );
 
             diag = idMath.SQRT_1OVER2;
-            v1[r] = (0.5f * addSub[r] + 1.0f) * diag;
-            v2[r] = (0.5f * addSub[r] - 1.0f) * diag;
+            v1[r] = (float) ((0.5f * addSub[r] + 1.0f) * diag);
+            v2[r] = (float) ((0.5f * addSub[r] - 1.0f) * diag);
             for (i = r + 1; i < numClamped; i++) {
-                v1[i] = v2[i] = addSub[i] * diag;
+                v1[i] = v2[i] = (float) (addSub[i] * diag);
             }
 
             alpha1 = 1.0f;
@@ -1402,15 +1397,15 @@ public class Lcp {
                     return;
                 }
 
-                clamped.oSet(i, i, newDiag);
-                diagonal.p[i] = invNewDiag = 1.0f / newDiag;
+                clamped.oSet(i, i, (float) newDiag);
+                diagonal.p[i] = (float) (invNewDiag = 1.0f / newDiag);
 
                 alpha2 *= invNewDiag;
                 beta2 = p2 * alpha2;
                 alpha2 *= diag;
 
                 // update column below diagonal (i,i)
-                ptr = clamped.GetRowPtr(i);
+                ptr = clamped.ToFloatBufferPtr(i);
 
                 for (j = i + 1; j < numClamped - 1; j += 2) {
 
@@ -1444,7 +1439,7 @@ public class Lcp {
                     v2[j] -= p2 * sum;
                     sum += beta2 * v2[j];
 
-                    ptr.put(j * n, sum);
+                    ptr.put(j * n, (float) sum);
                 }
             }
         }
@@ -1529,7 +1524,6 @@ public class Lcp {
             SIMDProcessor.MulAdd(clampedA, step, clampedDeltaA, d - numClamped + 1);
 
             unClam(a, clampedA);
-            unClam(delta_a, clampedDeltaA);
             int a = 0;
         }
 

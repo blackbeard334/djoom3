@@ -265,6 +265,9 @@ public class CollisionModel_local {
         int        numEdges;                // number of edges
         int[] edges = new int[1];           // variable sized, indexes into cm_edge_t list
 
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
+
         public cm_polygon_s() {
             this.bounds = new idBounds();
             this.material = new idMaterial();

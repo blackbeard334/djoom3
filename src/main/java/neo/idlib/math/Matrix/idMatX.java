@@ -1661,11 +1661,19 @@ public class idMatX {
         return mat;
     }
 
+    public FloatBuffer ToFloatBufferPtr() {
+        return ToFloatBufferPtr(0);
+    }
+
+    public FloatBuffer ToFloatBufferPtr(final int offset) {
+        return ((FloatBuffer) FloatBuffer.wrap(mat).position(offset)).slice();
+    }
+
     public FloatBuffer GetRowPtr(final int row) {
         final int start = row * numColumns;
 //        final int end = start + numColumns;
 //        return ((FloatBuffer)FloatBuffer.wrap(mat).position(start).limit(end)).slice();
-        return ((FloatBuffer)FloatBuffer.wrap(mat).position(start)).slice();
+        return ToFloatBufferPtr(start);
     }
 
     public void FromFloatPtr(float[] mat) {
