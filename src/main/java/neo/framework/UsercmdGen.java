@@ -9,6 +9,7 @@ import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.nio.ByteBuffer;
@@ -131,7 +132,7 @@ import static neo.sys.sys_public.joystickAxis_t.MAX_JOYSTICK_AXIS;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
 import static neo.sys.win_input.Sys_EndKeyboardInputEvents;
-import static neo.sys.win_input.Sys_PollKeyboardInputEvents;
+import static neo.sys.win_input.Sys_EndMouseInputEvents;
 import static neo.sys.win_input.Sys_ReturnKeyboardInputEvent;
 import static neo.sys.win_main.Sys_DebugPrintf;
 import static neo.sys.win_main.Sys_QueEvent;
@@ -684,10 +685,8 @@ public class UsercmdGen {
         @Override
         public void Clear() {
             // clears all key states 
-//	memset( buttonState, 0, sizeof( buttonState ) );
-//	memset( keyState, false, sizeof( keyState ) );
-            Arrays.fill(buttonState, 0);
-            Arrays.fill(keyState, false);
+            Arrays.fill(buttonState, 0);//	memset( buttonState, 0, sizeof( buttonState ) );
+            Arrays.fill(keyState, false);//	memset( keyState, false, sizeof( keyState ) );
 
             inhibitCommands = 0;//false;
 
@@ -851,7 +850,6 @@ public class UsercmdGen {
         @Override
         public usercmd_t GetDirectUsercmd() {
 
-//            Display.processMessages();
             // initialize current usercmd
             InitCurrent();
 
@@ -864,6 +862,7 @@ public class UsercmdGen {
 //            // process the system joystick events
 //            Joystick();
 //TODO:enable our input devices.
+
             // create the usercmd
             MakeCurrent();
 
@@ -1164,8 +1163,6 @@ public class UsercmdGen {
         }
 
         private void Mouse() {
-//            numEvents = Sys_PollMouseInputEvents();
-
             //
             // Study each of the buffer elements and process them.
             //
@@ -1196,39 +1193,29 @@ public class UsercmdGen {
                         Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(false), 0, null);
                     }
                 }
-                if (Mouse.getEventButtonState()) {//TODO:find out what Mouse.next() does exactly.
-                    final int diaction = Mouse.getEventButton();
+
+                final int diaction = Mouse.getEventButton();
+                if (diaction != -1) {
                     final int button = Mouse.isButtonDown(diaction) ? 0x80 : 0;// (polled_didod[n].dwData & 0x80) == 0x80;
                     mouseButton = K_MOUSE1 + diaction;
                     mouseDown = (button != 0);
                     Key(mouseButton, mouseDown);
-                    B1 = true;
                     Sys_QueEvent(dwTimeStamp, SE_KEY, mouseButton, button, 0, null);
-                } else if (B1) {
-                    Sys_QueEvent(dwTimeStamp, SE_KEY, mouseButton, 0, 0, null);
-                    B1 = false;
                 }
             }
-//            }
 
-//            Sys_EndMouseInputEvents();
+            Sys_EndMouseInputEvents();
         }
-        private static boolean B1 = false;
 
         private void Keyboard() {
-
-            int numEvents = Sys_PollKeyboardInputEvents();
-
-            if (numEvents != 0) {
+            int[] key = {0};
+            boolean[] state = {false};
+            while (Keyboard.next()) {
                 //
                 // Study each of the buffer elements and process them.
                 //
-                int[] key = {0};
-                boolean[] state = {false};
-                for (int i = 0; i < numEvents; i++) {
-                    if (Sys_ReturnKeyboardInputEvent(i, key, state) != 0) {
-                        Key(key[0], state[0]);
-                    }
+                if (Sys_ReturnKeyboardInputEvent(key, state) != 0) {
+                    Key(key[0], state[0]);
                 }
             }
 
@@ -1236,8 +1223,7 @@ public class UsercmdGen {
         }
 
         private void Joystick() {
-//	memset( joystickAxis, 0, sizeof( joystickAxis ) );
-            Arrays.fill(joystickAxis, 0);
+            Arrays.fill(joystickAxis, 0);//	memset( joystickAxis, 0, sizeof( joystickAxis ) );
         }
 
         /*

@@ -327,97 +327,7 @@ static char[] keyScanTable = s_scantokey;
 
         try {
             Keyboard.create();
-//    HRESULT hr;
-//    bool    bExclusive;
-//    bool    bForeground;
-//    bool    bImmediate;
-//    bool    bDisableWindowsKey;
-//    DWORD   dwCoopFlags;
-//
-//	if (!win32.g_pdi) {
-//		common->Printf("keyboard: DirectInput has not been started\n");
-//		return false;
-//	}
-//
-//	if (win32.g_pKeyboard) {
-//		win32.g_pKeyboard->Release();
-//		win32.g_pKeyboard = NULL;
-//	}
-//
-//    // Detrimine where the buffer would like to be allocated 
-//    bExclusive         = false;
-//    bForeground        = true;
-//    bImmediate         = false;
-//    bDisableWindowsKey = true;
-//
-//    if( bExclusive )
-//        dwCoopFlags = DISCL_EXCLUSIVE;
-//    else
-//        dwCoopFlags = DISCL_NONEXCLUSIVE;
-//
-//    if( bForeground )
-//        dwCoopFlags |= DISCL_FOREGROUND;
-//    else
-//        dwCoopFlags |= DISCL_BACKGROUND;
-//
-//    // Disabling the windows key is only allowed only if we are in foreground nonexclusive
-//    if( bDisableWindowsKey && !bExclusive && bForeground )
-//        dwCoopFlags |= DISCL_NOWINKEY;
-//
-//    // Obtain an interface to the system keyboard device.
-//    if( FAILED( hr = win32.g_pdi->CreateDevice( GUID_SysKeyboard, &win32.g_pKeyboard, NULL ) ) ) {
-//		common->Printf("keyboard: couldn't find a keyboard device\n");
-//        return false;
-//	}
-//
-//    // Set the data format to "keyboard format" - a predefined data format 
-//    //
-//    // A data format specifies which controls on a device we
-//    // are interested in, and how they should be reported.
-//    //
-//    // This tells DirectInput that we will be passing an array
-//    // of 256 bytes to IDirectInputDevice::GetDeviceState.
-//    if( FAILED( hr = win32.g_pKeyboard->SetDataFormat( &c_dfDIKeyboard ) ) )
-//        return false;
-//    
-//    // Set the cooperativity level to let DirectInput know how
-//    // this device should interact with the system and with other
-//    // DirectInput applications.
-//    hr = win32.g_pKeyboard->SetCooperativeLevel( win32.hWnd, dwCoopFlags );
-//    if( hr == DIERR_UNSUPPORTED && !bForeground && bExclusive ) {
-//        common->Printf("keyboard: SetCooperativeLevel() returned DIERR_UNSUPPORTED.\nFor security reasons, background exclusive keyboard access is not allowed.\n");
-//        return false;
-//    }
-//
-//    if( FAILED(hr) ) {
-//        return false;
-//	}
-//
-//    if( !bImmediate ) {
-//        // IMPORTANT STEP TO USE BUFFERED DEVICE DATA!
-//        //
-//        // DirectInput uses unbuffered I/O (buffer size = 0) by default.
-//        // If you want to read buffered data, you need to set a nonzero
-//        // buffer size.
-//        //
-//        // Set the buffer size to DINPUT_BUFFERSIZE (defined above) elements.
-//        //
-//        // The buffer size is a DWORD property associated with the device.
-//        DIPROPDWORD dipdw;
-//
-//        dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
-//        dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-//        dipdw.diph.dwObj        = 0;
-//        dipdw.diph.dwHow        = DIPH_DEVICE;
-//        dipdw.dwData            = DINPUT_BUFFERSIZE; // Arbitary buffer size
-//
-//        if( FAILED( hr = win32.g_pKeyboard->SetProperty( DIPROP_BUFFERSIZE, &dipdw.diph ) ) )
-//            return false;
-//    }
-//
-//    // Acquire the newly created device
-//    win32.g_pKeyboard->Acquire();
-//
+
             if (Keyboard.isCreated()) {
                 common.Printf("keyboard: DirectInput initialized.\n");
                 return true;
@@ -531,13 +441,10 @@ static char[] keyScanTable = s_scantokey;
      IN_DeactivateKeyboard
      ==========================
      */
-    @Deprecated
     public static void IN_DeactivateKeyboard() {
-        throw new TODO_Exception();
-//	if (!win32.g_pKeyboard) {
-//		return;
-//	}
-//	win32.g_pKeyboard->Unacquire( );
+        if (Keyboard.isCreated()) {
+            Keyboard.destroy();
+        }
     }
 
     /*
@@ -583,67 +490,6 @@ static char[] keyScanTable = s_scantokey;
             Mouse.setClipMouseCoordinatesToWindow(true);
             Mouse.setCursorPosition(Display.getWidth() / 2, Display.getHeight() / 2);
 
-//    HRESULT		hr;
-//
-//	if ( win32.g_pdi == NULL) {
-//		return false;
-//	}
-//
-//	// obtain an interface to the system mouse device.
-//	hr = win32.g_pdi->CreateDevice( GUID_SysMouse, &win32.g_pMouse, NULL);
-//
-//	if (FAILED(hr)) {
-//		common->Printf ("mouse: Couldn't open DI mouse device\n");
-//		return false;
-//	}
-//
-//    // Set the data format to "mouse format" - a predefined data format 
-//    //
-//    // A data format specifies which controls on a device we
-//    // are interested in, and how they should be reported.
-//    //
-//    // This tells DirectInput that we will be passing a
-//    // DIMOUSESTATE2 structure to IDirectInputDevice::GetDeviceState.
-//    if( FAILED( hr = win32.g_pMouse->SetDataFormat( &c_dfDIMouse2 ) ) ) {
-//		common->Printf ("mouse: Couldn't set DI mouse format\n");
-//		return false;
-//	}
-//    
-//	// set the cooperativity level.
-//	hr = win32.g_pMouse->SetCooperativeLevel( win32.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
-//
-//	if (FAILED(hr)) {
-//		common->Printf ("mouse: Couldn't set DI coop level\n");
-//		return false;
-//	}
-//
-//
-//    // IMPORTANT STEP TO USE BUFFERED DEVICE DATA!
-//    //
-//    // DirectInput uses unbuffered I/O (buffer size = 0) by default.
-//    // If you want to read buffered data, you need to set a nonzero
-//    // buffer size.
-//    //
-//    // Set the buffer size to SAMPLE_BUFFER_SIZE (defined above) elements.
-//    //
-//    // The buffer size is a DWORD property associated with the device.
-//    DIPROPDWORD dipdw;
-//    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
-//    dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-//    dipdw.diph.dwObj        = 0;
-//    dipdw.diph.dwHow        = DIPH_DEVICE;
-//    dipdw.dwData            = DINPUT_BUFFERSIZE; // Arbitary buffer size
-//
-//    if( FAILED( hr = win32.g_pMouse->SetProperty( DIPROP_BUFFERSIZE, &dipdw.diph ) ) ) {
-//		common->Printf ("mouse: Couldn't set DI buffersize\n");
-//		return false;
-//	}
-//
-//	IN_ActivateMouse();
-//
-//	// clear any pending samples
-//	Sys_PollMouseInputEvents();
-//
             if (Mouse.isCreated()) {
                 common.Printf("mouse: DirectInput initialized.\n");
                 return true;
@@ -691,23 +537,10 @@ static char[] keyScanTable = s_scantokey;
      IN_DeactivateMouse
      ==========================
      */
-    @Deprecated
     public static void IN_DeactivateMouse() {
-        throw new TODO_Exception();
-//	int i;
-//
-//	if (!win32.g_pMouse || !win32.mouseGrabbed ) {
-//		return;
-//	}
-//
-//	win32.g_pMouse->Unacquire();
-//
-//	for ( i = 0; i < 10; i++ ) {
-//		if ( ::ShowCursor( true ) >= 0 ) {
-//			break;
-//		}
-//	}
-//	win32.mouseGrabbed = false;
+        if (Mouse.isCreated()) {
+            Mouse.destroy();
+        }
     }
 
     /*
@@ -736,8 +569,8 @@ static char[] keyScanTable = s_scantokey;
      */
     public static void Sys_ShutdownInput() {
 
-//        IN_DeactivateMouse();
-//        IN_DeactivateKeyboard();
+        IN_DeactivateMouse();
+        IN_DeactivateKeyboard();
         if (win32.g_pKeyboard != null) {
 //		win32.g_pKeyboard->Release();
             win32.g_pKeyboard = null;
@@ -891,142 +724,40 @@ static char[] keyScanTable = s_scantokey;
      Sys_PollKeyboardInputEvents
      ====================
      */
+    @Deprecated
     public static int Sys_PollKeyboardInputEvents() {
         return Keyboard.getNumKeyboardEvents();
-//    DWORD              dwElements;
-//    HRESULT            hr;
-//
-//    if( win32.g_pKeyboard == NULL ) {
-//        return 0;
-//	}
-//    
-//    dwElements = DINPUT_BUFFERSIZE;
-//    hr = win32.g_pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA),
-//                                     polled_didod, &dwElements, 0 );
-//    if( hr != DI_OK ) 
-//    {
-//        // We got an error or we got DI_BUFFEROVERFLOW.
-//        //
-//        // Either way, it means that continuous contact with the
-//        // device has been lost, either due to an external
-//        // interruption, or because the buffer overflowed
-//        // and some events were lost.
-//        hr = win32.g_pKeyboard->Acquire();
-//
-//		
-//
-//		// nuke the garbage
-//		if (!FAILED(hr)) {
-//			//Bug 951: The following command really clears the garbage input.
-//			//The original will still process keys in the buffer and was causing
-//			//some problems.
-//			win32.g_pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), NULL, &dwElements, 0 );
-//			dwElements = 0;
-//		}
-//        // hr may be DIERR_OTHERAPPHASPRIO or other errors.  This
-//        // may occur when the app is minimized or in the process of 
-//        // switching, so just try again later 
-//    }
-//
-//    if( FAILED(hr) ) {
-//        return 0;
-//	}
-//
-//	return dwElements;
     }
-
-//#else
-//
-///*
-//====================
-//Sys_PollKeyboardInputEvents
-//
-//Fake events by getting the entire device state
-//and checking transitions
-//====================
-//*/
-//int Sys_PollKeyboardInputEvents( void ) {
-//    HRESULT            hr;
-//
-//    if( win32.g_pKeyboard == NULL ) {
-//        return 0;
-//	}
-//    
-//	hr = win32.g_pKeyboard->GetDeviceState( sizeof( toggleFetch[ diFetch ] ), toggleFetch[ diFetch ] );
-//    if( hr != DI_OK ) 
-//    {
-//        // We got an error or we got DI_BUFFEROVERFLOW.
-//        //
-//        // Either way, it means that continuous contact with the
-//        // device has been lost, either due to an external
-//        // interruption, or because the buffer overflowed
-//        // and some events were lost.
-//        hr = win32.g_pKeyboard->Acquire();
-//
-//		// nuke the garbage
-//		if (!FAILED(hr)) {
-//			hr = win32.g_pKeyboard->GetDeviceState( sizeof( toggleFetch[ diFetch ] ), toggleFetch[ diFetch ] );
-//		}
-//        // hr may be DIERR_OTHERAPPHASPRIO or other errors.  This
-//        // may occur when the app is minimized or in the process of 
-//        // switching, so just try again later 
-//    }
-//
-//    if( FAILED(hr) ) {
-//        return 0;
-//	}
-//
-//	// build faked events
-//	int		numChanges = 0;
-//
-//	for ( int i = 0 ; i < 256 ; i++ ) {
-//		if ( toggleFetch[0][i] != toggleFetch[1][i] ) {
-//			polled_didod[ numChanges ].dwOfs = i;
-//			polled_didod[ numChanges ].dwData = toggleFetch[ diFetch ][i] ? 0x80 : 0;
-//			numChanges++;
-//		}
-//	}
-//
-//	diFetch ^= 1;
-//
-//	return numChanges;
-//}
-//
-//#endif
 
     /*
      ====================
      Sys_PollKeyboardInputEvents
      ====================
      */
-    public static int Sys_ReturnKeyboardInputEvent(final int n, int[] ch, boolean[] state) {
-        if (Keyboard.next()) {
-            ch[0] = IN_DIMapKey(Keyboard.getEventKey());
-            state[0] = Keyboard.getEventKeyState();//state = (polled_didod[ n ].dwData & 0x80) == 0x80;
-            switch (ch[0]) {
-                case K_PRINT_SCR:
-                    if (!state[0]) {
-                        // don't queue printscreen keys.  Since windows doesn't send us key
-                        // down events for this, we handle queueing them with DirectInput
-                        break;
-                    }
-                case K_CTRL:
-                case K_ALT:
-                case K_RIGHT_ALT:
-                    // for windows, add a keydown event for print screen here, since
-                    // windows doesn't send keydown events to the WndProc for this key.
-                    // ctrl and alt are handled here to get around windows sending ctrl and
-                    // alt messages when the right-alt is pressed on non-US 102 keyboards.
-                    Sys_QueEvent(GetTickCount(), SE_KEY, ch[0], btoi(state[0]), 0, null);//TODO:enable this
+    public static int Sys_ReturnKeyboardInputEvent(int[] ch, boolean[] state) {
+        ch[0] = IN_DIMapKey(Keyboard.getEventKey());
+        state[0] = Keyboard.getEventKeyState();//state = (polled_didod[ n ].dwData & 0x80) == 0x80;
+        switch (ch[0]) {
+            case K_PRINT_SCR:
+                if (!state[0]) {
+                    // don't queue printscreen keys.  Since windows doesn't send us key
+                    // down events for this, we handle queueing them with DirectInput
                     break;
-                default:// nabbed from MainWndProc.
-                    int key = ch[0];//MapKey(ch[0]);
-                    Sys_QueEvent(System.nanoTime(), SE_KEY, key, btoi(state[0]), 0, null);
-            }
-            return ch[0];
+                }
+            case K_CTRL:
+            case K_ALT:
+            case K_RIGHT_ALT:
+                // for windows, add a keydown event for print screen here, since
+                // windows doesn't send keydown events to the WndProc for this key.
+                // ctrl and alt are handled here to get around windows sending ctrl and
+                // alt messages when the right-alt is pressed on non-US 102 keyboards.
+                Sys_QueEvent(GetTickCount(), SE_KEY, ch[0], btoi(state[0]), 0, null);//TODO:enable this
+                break;
+            default:// nabbed from MainWndProc.
+                int key = ch[0];//MapKey(ch[0]);
+                Sys_QueEvent(System.nanoTime(), SE_KEY, key, btoi(state[0]), 0, null);
         }
-
-        return 0;
+        return ch[0];
     }
 
     private static long GetTickCount() {
