@@ -63,6 +63,7 @@ import static neo.framework.KeyInput.K_SHIFT;
 import static neo.framework.KeyInput.K_UPARROW;
 import static neo.idlib.Lib.idLib.cvarSystem;
 import neo.idlib.Text.Str.idStr;
+import static neo.sys.sys_public.sysEventType_t.SE_CHAR;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
 import static neo.sys.sys_public.sys_mEvents.M_ACTION1;
@@ -756,6 +757,7 @@ static char[] keyScanTable = s_scantokey;
             default:// nabbed from MainWndProc.
                 int key = ch[0];//MapKey(ch[0]);
                 Sys_QueEvent(System.nanoTime(), SE_KEY, key, btoi(state[0]), 0, null);
+                if (state[0]) Sys_QueEvent(System.nanoTime(), SE_CHAR, key, 0, 0, null);
         }
         return ch[0];
     }

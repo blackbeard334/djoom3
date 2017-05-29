@@ -9,14 +9,14 @@ import neo.TempDump.TODO_Exception;
 import static neo.TempDump.isNotNullOrEmpty;
 import neo.idlib.Text.Str.idStr;
 import neo.sys.sys_public.sysMemoryStats_s;
+import org.lwjgl.Sys;
 
 /**
  *
  */
 public class win_shared {
 
-    private static final long sys_timeBase = System.currentTimeMillis();
-//    private static boolean initialized = false;
+    private static final long sys_timeBase = Sys.getTime();
 
     /*
      ================
@@ -24,15 +24,7 @@ public class win_shared {
      ================
      */
     public static int Sys_Milliseconds() {
-        int sys_curtime;
-
-//        if (!initialized) {
-//            sys_timeBase = System.currentTimeMillis();
-//            initialized = true;
-//        }
-        sys_curtime = (int) (System.currentTimeMillis() - sys_timeBase);
-
-        return sys_curtime;
+        return (int) (Sys.getTime() - sys_timeBase);
     }
 
     /*
@@ -60,7 +52,7 @@ public class win_shared {
 //        return -1;
         final long ram = ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
         int megaRam = (int) (ram / 1000000);
-        
+
         return megaRam;
     }
 
