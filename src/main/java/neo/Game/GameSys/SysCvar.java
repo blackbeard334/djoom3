@@ -129,7 +129,7 @@ public class SysCvar {
     public static final idCVar        g_debugScript                = new idCVar("g_debugScript", "0", CVAR_GAME | CVAR_BOOL, "");
     public static final idCVar        g_debugMover                 = new idCVar("g_debugMover", "0", CVAR_GAME | CVAR_BOOL, "");
     public static final idCVar        g_debugTriggers              = new idCVar("g_debugTriggers", "0", CVAR_GAME | CVAR_BOOL, "");
-    public static final idCVar        g_debugCinematic             = new idCVar("g_debugCinematic", "0", CVAR_GAME | CVAR_BOOL, "");
+    public static final idCVar        g_debugCinematic             = new idCVar("g_debugCinematic", "1", CVAR_GAME | CVAR_BOOL, "");
     public static final idCVar        g_stopTime                   = new idCVar("g_stopTime", "0", CVAR_GAME | CVAR_BOOL, "");
     public static final idCVar        g_damageScale                = new idCVar("g_damageScale", "1", CVAR_GAME | CVAR_FLOAT | CVAR_ARCHIVE, "scale final damage on player by this factor");
     public static final idCVar        g_armorProtection            = new idCVar("g_armorProtection", "0.3", CVAR_GAME | CVAR_FLOAT | CVAR_ARCHIVE, "armor takes this percentage of damage");

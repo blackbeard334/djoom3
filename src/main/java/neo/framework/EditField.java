@@ -258,7 +258,7 @@ public class EditField {
             //
             // ignore any other non printable chars
             //
-            if (ch < 32) {
+            if (ch < 32 || ch > 125) {
                 return;
             }
 

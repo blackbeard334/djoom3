@@ -153,7 +153,7 @@ public class Console {
         //
         private final short[] text = new short[CON_TEXTSIZE];
         private int current;		// line where next message will be printed
-        private int x;			// offset in current line for next print
+        private int x;			    // offset in current line for next print
         private int display;		// bottom of console displays this line
         private int lastKeyEvent;	// time of last key event for scroll delay
         private int nextKeyEvent;	// keyboard repeat rate
@@ -170,12 +170,12 @@ public class Console {
         //
         private final idEditField[] historyEditLines = new idEditField[COMMAND_HISTORY];
         //
-        private int nextHistoryLine;    // the last line in the history buffer, not masked
+        private int nextHistoryLine;// the last line in the history buffer, not masked
         private int historyLine;	// the line being displayed from history buffer will be <= nextHistoryLine
         //
         private idEditField consoleField;
         //
-        private static final idCVar con_speed = new idCVar("con_speed", "3", CVAR_SYSTEM, "speed at which the console moves up and down");
+        private static final idCVar con_speed      = new idCVar("con_speed", "3", CVAR_SYSTEM, "speed at which the console moves up and down");
         private static final idCVar con_notifyTime = new idCVar("con_notifyTime", "3", CVAR_SYSTEM, "time messages are displayed onscreen when console is pulled up");
         private static final idCVar con_noPrint;
         //
@@ -569,10 +569,11 @@ public class Console {
 
             // enter finishes the line
             if (key == K_ENTER || key == K_KP_ENTER) {
+                final String buffer = ctos(consoleField.GetBuffer());
 
-                common.Printf("]%s\n", consoleField.GetBuffer());
+                common.Printf("]%s\n", buffer);
 
-                cmdSystem.BufferCommandText(CMD_EXEC_APPEND, ctos(consoleField.GetBuffer()));	// valid command
+                cmdSystem.BufferCommandText(CMD_EXEC_APPEND, buffer);	// valid command
                 cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "\n");
 
                 // copy line to history buffer
@@ -580,7 +581,7 @@ public class Console {
                 nextHistoryLine++;
                 historyLine = nextHistoryLine;
 
-                consoleField.Clear();
+                consoleField = new idEditField();
                 consoleField.SetWidthInChars(LINE_WIDTH);
 
                 session.UpdateScreen();// force an update, because the command

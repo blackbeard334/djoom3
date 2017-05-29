@@ -2045,7 +2045,7 @@ public class tr_local {
 //	primaryWorld = NULL;
             
             // set the time for shader effects in 2D rendering
-            frameShaderTime = eventLoop.Milliseconds() * 0.001f;
+            frameShaderTime = (float) (eventLoop.Milliseconds() * 0.001);
 
             //
             // draw buffer stuff
