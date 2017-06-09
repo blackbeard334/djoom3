@@ -2676,13 +2676,13 @@ public class AI {
             allowEyeFocus = false;
 
             spawnArgs.GetString(va("anim%d", current_cinematic), null, animName);
-            if (null == animName) {
+            if (null == animName[0]) {
                 gameLocal.Warning("missing 'anim%d' key on %s", current_cinematic, name);
                 return;
             }
 
             if (g_debugCinematic.GetBool()) {
-                gameLocal.Printf("%d: '%s' start '%s'\n", gameLocal.framenum, GetName(), animName);
+                gameLocal.Printf("%d: '%s' start '%s'\n", gameLocal.framenum, GetName(), animName[0]);
             }
 
             headAnim.animBlendFrames = 0;

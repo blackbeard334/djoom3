@@ -1676,6 +1676,14 @@ public class Vector {
                     limit(length).
                     toArray(idVec5[]::new);
         }
+
+        public void ToVec3_oMulSet(final idMat3 axis) {
+            this.oSet(ToVec3().oMulSet(axis));
+        }
+
+        public void ToVec3_oPluSet(final idVec3 origin) {
+            this.oSet(ToVec3().oPluSet(origin));
+        }
     }
 
     //===============================================================

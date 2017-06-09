@@ -288,7 +288,7 @@ public class Physics_Monster {
                     current.velocity.oSet(delta.oDivide(timeStep));
                 }
 
-                current.velocity.oMinSet(current.velocity.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+                current.velocity.oMinSet(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
 
                 if (delta.equals(getVec3_origin())) {
                     Rest();
