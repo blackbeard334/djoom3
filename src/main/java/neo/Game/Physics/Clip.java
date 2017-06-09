@@ -1325,8 +1325,8 @@ public class Clip {
             // transform the winding to world space
             if (clipModel != null) {
                 for (i = 0; i < winding.GetNumPoints(); i++) {
-                    winding.oGet(i).ToVec3().oMulSet(clipModel.axis);//TODO:watch out for these back refs.
-                    winding.oGet(i).ToVec3().oPluSet(clipModel.origin);
+                    winding.oGet(i).ToVec3_oMulSet(clipModel.axis);
+                    winding.oGet(i).ToVec3_oPluSet(clipModel.origin);
                 }
             }
 

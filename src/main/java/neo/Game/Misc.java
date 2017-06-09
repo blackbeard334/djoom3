@@ -1273,12 +1273,12 @@ public class Misc {
 
             anim = animator.GetAnim(animName[0]);
             if (0 == anim) {
-                gameLocal.Warning("missing anim '%s' on %s", animName, name);
+                gameLocal.Warning("missing anim '%s' on %s", animName[0], name);
                 return;
             }
 
             if (g_debugCinematic.GetBool()) {
-                gameLocal.Printf("%d: '%s' start anim '%s'\n", gameLocal.framenum, GetName(), animName);
+                gameLocal.Printf("%d: '%s' start anim '%s'\n", gameLocal.framenum, GetName(), animName[0]);
             }
 
             spawnArgs.GetInt("cycle", "1", cycle);

@@ -61,6 +61,8 @@ import neo.Renderer.tr_local.drawSurf_s;
 import neo.Renderer.tr_local.drawSurfsCommand_t;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
+
+import neo.Renderer.tr_local.idScreenRect;
 import neo.Renderer.tr_local.viewLight_s;
 import static neo.Renderer.tr_main.R_GlobalPlaneToLocal;
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
@@ -384,7 +386,7 @@ public class tr_render {
 
             // change the scissor if needed
             if (r_useScissor.GetBool() && !backEnd.currentScissor.Equals(drawSurf.scissorRect)) {
-                backEnd.currentScissor = drawSurf.scissorRect;
+                backEnd.currentScissor = new idScreenRect(drawSurf.scissorRect);
                 qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                         backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
                         backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,

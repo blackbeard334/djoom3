@@ -26,7 +26,7 @@ import org.lwjgl.opengl.NVRegisterCombiners;
  */
 public class qgl {
 
-    private static final boolean GL_DEBUG = true;
+    private static final boolean GL_DEBUG = false;
     static {
         if (GL_DEBUG) qglEnable(GL43.GL_DEBUG_OUTPUT);
     }

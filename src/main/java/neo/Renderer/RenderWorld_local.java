@@ -1154,7 +1154,7 @@ public class RenderWorld_local {
                 local = R_LocalTrace(localStart, localEnd, 0.0f, tri);
                 if (local.fraction < 1.0) {
                     idVec3 origin = new idVec3();
-                    idVec3[] axis = new idVec3[3];
+                    idVec3[] axis = idVec3.generateArray(3);
                     idVec3 cursor;
                     float[] axisLen = new float[2];
 

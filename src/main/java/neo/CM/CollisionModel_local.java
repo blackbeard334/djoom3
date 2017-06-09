@@ -5882,22 +5882,20 @@ public class CollisionModel_local {
                 return node;
             }
             // create two child nodes
-            frontNode = AllocNode(model, NODE_BLOCK_SIZE_LARGE);
-//	memset( frontNode, 0, sizeof(cm_node_t) );
+            frontNode = AllocNode(model, NODE_BLOCK_SIZE_LARGE);//	memset( frontNode, 0, sizeof(cm_node_t) );
             frontNode.parent = node;
             frontNode.planeType = -1;
             //
-            backNode = AllocNode(model, NODE_BLOCK_SIZE_LARGE);
-//	memset( backNode, 0, sizeof(cm_node_t) );
+            backNode = AllocNode(model, NODE_BLOCK_SIZE_LARGE);//	memset( backNode, 0, sizeof(cm_node_t) );
             backNode.parent = node;
             backNode.planeType = -1;
             //
             model.numNodes += 2;
             // set front node bounds
-            frontBounds = bounds;
+            frontBounds = new idBounds(bounds);
             frontBounds.oGet(0).oSet(planeType[0], planeDist[0]);
             // set back node bounds
-            backBounds = bounds;
+            backBounds = new idBounds(bounds);
             backBounds.oGet(1).oSet(planeType[0], planeDist[0]);
             //
             node.planeType = planeType[0];

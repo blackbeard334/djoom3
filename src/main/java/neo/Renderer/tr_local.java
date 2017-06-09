@@ -154,6 +154,9 @@ public class tr_local {
       
         public int x1, y1, x2, y2;					// inclusive pixel bounds inside viewport
         public float zmin, zmax;					// for depth bounds test
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
         //
         //
 

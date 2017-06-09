@@ -976,7 +976,7 @@ public class Physics_Player {
             vel = current.velocity;
             if (walking) {
                 // ignore slope movement, remove all velocity in gravity direction
-                vel.oPluSet(vel.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+                vel.oPluSet(gravityNormal.oMultiply(vel.oMultiply(gravityNormal)));
             }
 
             speed = vel.Length();
@@ -985,7 +985,7 @@ public class Physics_Player {
                 if (abs(current.velocity.oMultiply(gravityNormal)) < 1e-5f) {
                     current.velocity.Zero();
                 } else {
-                    current.velocity.oSet(current.velocity.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+                    current.velocity.oSet(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
                 }
                 // FIXME: still have z friction underwater?
                 return;
@@ -1127,8 +1127,8 @@ public class Physics_Player {
             scale = this.CmdScale(command);
 
             // project moves down to flat plane
-            viewForward.oMinSet(viewForward.oMultiply(gravityNormal.oMultiply(gravityNormal)));
-            viewRight.oMinSet(viewRight.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+            viewForward.oMinSet(gravityNormal.oMultiply(viewForward.oMultiply(gravityNormal)));
+            viewRight.oMinSet(gravityNormal.oMultiply(viewRight.oMultiply(gravityNormal)));
             viewForward.Normalize();
             viewRight.Normalize();
 
@@ -1181,8 +1181,8 @@ public class Physics_Player {
             scale = this.CmdScale(command);
 
             // project moves down to flat plane
-            viewForward.oMinSet(viewForward.oMultiply(gravityNormal.oMultiply(gravityNormal)));
-            viewRight.oMinSet(viewRight.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+            viewForward.oMinSet(gravityNormal.oMultiply(viewForward.oMultiply(gravityNormal)));
+            viewRight.oMinSet(gravityNormal.oMultiply(viewRight.oMultiply(gravityNormal)));
 
             // project the forward and right directions onto the ground plane
             viewForward.ProjectOntoPlane(groundTrace.c.normal, OVERCLIP);
@@ -1238,7 +1238,7 @@ public class Physics_Player {
             }
 
             // don't do anything if standing still
-            vel = current.velocity.oMinus(current.velocity.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+            vel = current.velocity.oMinus(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
             if (0 == vel.LengthSqr()) {
                 return;
             }
@@ -1680,7 +1680,7 @@ public class Physics_Player {
                 return false;
             }
 
-            flatforward = viewForward.oMinus(viewForward.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+            flatforward = viewForward.oMinus(gravityNormal.oMultiply(viewForward.oMultiply(gravityNormal)));
             flatforward.Normalize();
 
             spot = current.origin.oPlus(flatforward.oMultiply(30.0f));
