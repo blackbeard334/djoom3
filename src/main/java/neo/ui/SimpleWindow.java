@@ -69,23 +69,23 @@ public class SimpleWindow {
         protected float                textAligny;
         protected int                  textShadow;
         // 
-        protected idWinStr             text;
-        protected idWinBool            visible;
-        protected idWinRectangle       rect;              // overall rect
-        protected idWinVec4            backColor;
-        protected idWinVec4            matColor;
-        protected idWinVec4            foreColor;
-        protected idWinVec4            borderColor;
-        protected idWinFloat           textScale;
-        protected idWinFloat           rotate;
-        protected idWinVec2            shear;
-        protected idWinBackground      backGroundName;
+        protected idWinStr             text           = new idWinStr();
+        protected idWinBool            visible        = new idWinBool();
+        protected idWinRectangle       rect           = new idWinRectangle();// overall rect
+        protected idWinVec4            backColor      = new idWinVec4();
+        protected idWinVec4            matColor       = new idWinVec4();
+        protected idWinVec4            foreColor      = new idWinVec4();
+        protected idWinVec4            borderColor    = new idWinVec4();
+        protected idWinFloat           textScale      = new idWinFloat();
+        protected idWinFloat           rotate         = new idWinFloat();
+        protected idWinVec2            shear          = new idWinVec2();
+        protected idWinBackground      backGroundName = new idWinBackground();
         // 
         protected idMaterial           background;
         // 	
         protected idWindow             mParent;
         // 
-        protected idWinBool            hideCursor;
+        protected idWinBool            hideCursor     = new idWinBool();
         //
         private static idMat3     trans = new idMat3();
         private static idVec3     org   = new idVec3();
@@ -97,11 +97,11 @@ public class SimpleWindow {
         //
         //
         private static int DBG_countersOfCreation = 0;
-        private        int DBG_count              = 0;
+        private final  int DBG_count              = DBG_countersOfCreation++;
 
         public static int DBG_idSimpleWindow = 0;
+
         public idSimpleWindow(idWindow win) {
-            DBG_count = DBG_countersOfCreation++;
             gui = win.GetGui();
             dc = win.dc;
             drawRect = new idRectangle(win.drawRect);
@@ -120,21 +120,21 @@ public class SimpleWindow {
             flags = win.flags;
             textShadow = win.textShadow;
 
-            text = new idWinStr(win.text);
-            visible = new idWinBool(win.visible);
-            rect = new idWinRectangle(win.rect);
-            backColor = new idWinVec4(win.backColor);
-            matColor = new idWinVec4(win.matColor);
-            foreColor = new idWinVec4(win.foreColor);
-            borderColor = new idWinVec4(win.borderColor);
-            textScale = new idWinFloat(win.textScale);
-            rotate = new idWinFloat(win.rotate);
-            shear = new idWinVec2(win.shear);
-            backGroundName = new idWinBackground(win.backGroundName);
+            text.oSet(win.text);
+            visible.oSet(win.visible);
+            rect.oSet(win.rect);
+            backColor.oSet(win.backColor);
+            matColor.oSet(win.matColor);
+            foreColor.oSet(win.foreColor);
+            borderColor.oSet(win.borderColor);
+            textScale.oSet(win.textScale);
+            rotate.oSet(win.rotate);
+            shear.oSet(win.shear);
+            backGroundName.oSet(win.backGroundName);
             if (backGroundName.Length() != 0) {
                 background = declManager.FindMaterial(backGroundName.data);
                 background.SetSort(SS_GUI);
-                background.SetImageClassifications(1);	// just for resource tracking
+                background.SetImageClassifications(1);    // just for resource tracking
             }
             backGroundName.SetMaterialPtr(background);
 
@@ -143,7 +143,7 @@ public class SimpleWindow {
             mParent = win.GetParent();
             // 
 
-            hideCursor = new idWinBool(win.hideCursor);
+            hideCursor.oSet(win.hideCursor);
 
             idWindow parent = win.GetParent();
             if (parent != null) {
