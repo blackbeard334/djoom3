@@ -831,7 +831,7 @@ public class Image {
 //            scaledBuffer = null;
             // generate the texture number
             texNum = qglGenTextures();
-//            System.out.println(imgName + ": " + texNum);
+            System.out.println(">>>>" + imgName + ": " + texNum);
 
             // select proper internal format before we resample
             internalFormat = SelectInternalFormat(pic, 1, width, height, depth, isMonochrome);
