@@ -205,12 +205,12 @@ public class Physics_Static {
 
         @Override
         public boolean Evaluate(int timeStepMSec, int endTimeMSec) {
-            idVec3 masterOrigin = new idVec3(), oldOrigin;
-            idMat3 masterAxis = new idMat3(), oldAxis;
+            idVec3 masterOrigin = new idVec3(), oldOrigin = new idVec3();
+            idMat3 masterAxis = new idMat3(), oldAxis = new idMat3();
 
             if (hasMaster) {
-                oldOrigin = current.origin;
-                oldAxis = current.axis;
+                oldOrigin.oSet(current.origin);
+                oldAxis.oSet(current.axis);
 
                 self.GetMasterPosition(masterOrigin, masterAxis);
                 current.origin.oSet(masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis)));

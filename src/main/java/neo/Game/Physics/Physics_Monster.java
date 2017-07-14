@@ -437,7 +437,7 @@ public class Physics_Monster {
 
         @Override
         public idVec3 GetLinearVelocity(int id /*= 0*/) {
-            return current.velocity;
+            return new idVec3(current.velocity);
         }
 
         @Override
