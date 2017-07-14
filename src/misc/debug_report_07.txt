@@ -1,0 +1,29 @@
+Blending
+-see doom logo
+-what if we are blending correctly, but the texture loading bug causes the blending to produce weird results?
+--maybe pursue the texture bug first??
+-logo blending "guis/assets/caverns/testmat2"                              
+
+Texture loading
+-see level 1 walls and floors
+-idImageManager::AllocImage() seems to be loading the correct order
+-next, check idImageManager::ImageFromFile()
+RB_DrawView()    
+    R_AddDrawViewCmd()
+    		floatTime	0.0320000015	float
+            R_AddDrawSurf()
+                idGuiModel::AdvanceSurf()
+                    idSimpleWindow::DBG_count==683 has an empty text.data
+                        name = "CreditsTextFlashWin1A" != "CreditsTextA1a"
+                            result = {neo.idlib.math.Vector$idVec4@4576} "0.2 0.6 0.6 0.0"
+                             x = 0.2
+                             y = 0.6
+                             z = 0.6
+                             w = 0.0
+                             DBG_count = 24807                           
+                             
+Missing active entities
+-activeEntities in idGameLocal::RunFrame() is 170 != 139~140
+    -interesting...the differenceis the exact number of entities that SHOULD be deactivated below
+    -luckily they're the last ~30 elements in the list, so we just add a size counter to the original, and see where they're added!!1One
+        -0x296aed84 "light_5296" is activated by "marscity_ship2_1" >> num#52

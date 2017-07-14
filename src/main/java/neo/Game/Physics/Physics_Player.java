@@ -491,10 +491,8 @@ public class Physics_Player {
 
         @Override
         public idVec3 GetLinearVelocity(int id /*= 0*/) {
-            return current.velocity;
+            return new idVec3(current.velocity);
         }
-
-        ;
 
         @Override
         public void SetPushed(int deltaTime) {
@@ -702,24 +700,24 @@ public class Physics_Player {
             float d, time_left, into, totalMass;
             idVec3 dir;
             idVec3[] planes = new idVec3[MAX_CLIP_PLANES];
-            idVec3 end, stepEnd, primal_velocity, endVelocity, endClipVelocity, clipVelocity;
+            idVec3 end, stepEnd, primal_velocity = new idVec3(), endVelocity = new idVec3(), endClipVelocity = new idVec3(), clipVelocity = new idVec3();
             trace_s[] trace = {null}, stepTrace = {null}, downTrace = {null};
             boolean nearGround, stepped, pushed;
 
             numbumps = 4;
 
-            primal_velocity = current.velocity;
+            primal_velocity.oSet(current.velocity);
 
             if (gravity) {
-                endVelocity = current.velocity.oPlus(gravityVector.oMultiply(frametime));
+                endVelocity.oSet(current.velocity.oPlus(gravityVector.oMultiply(frametime)));
                 current.velocity.oSet((current.velocity.oPlus(endVelocity)).oMultiply(0.5f));
-                primal_velocity = endVelocity;
+                primal_velocity.oSet(endVelocity);
                 if (groundPlane) {
                     // slide along the ground plane
                     current.velocity.ProjectOntoPlane(groundTrace.c.normal, OVERCLIP);
                 }
             } else {
-                endVelocity = current.velocity;
+                endVelocity.oSet(current.velocity);
             }
 
             time_left = frametime;
@@ -733,7 +731,7 @@ public class Physics_Player {
             }
 
             // never turn against original velocity
-            planes[numplanes] = current.velocity;
+            planes[numplanes] = new idVec3(current.velocity);
             planes[numplanes].Normalize();
             numplanes++;
 
@@ -877,11 +875,11 @@ public class Physics_Player {
                     }
 
                     // slide along the plane
-                    clipVelocity = current.velocity;
+                    clipVelocity.oSet(current.velocity);
                     clipVelocity.ProjectOntoPlane(planes[i], OVERCLIP);
 
                     // slide along the plane
-                    endClipVelocity = endVelocity;
+                    endClipVelocity.oSet(endVelocity);
                     endClipVelocity.ProjectOntoPlane(planes[i], OVERCLIP);
 
                     // see if there is a second plane that the new move enters
@@ -906,12 +904,12 @@ public class Physics_Player {
                         dir = planes[i].Cross(planes[j]);
                         dir.Normalize();
                         d = dir.oMultiply(current.velocity);
-                        clipVelocity = dir.oMultiply(d);
+                        clipVelocity.oSet(dir.oMultiply(d));
 
                         dir = planes[i].Cross(planes[j]);
                         dir.Normalize();
                         d = dir.oMultiply(endVelocity);
-                        endClipVelocity = dir.oMultiply(d);
+                        endClipVelocity.oSet(dir.oMultiply(d));
 
                         // see if there is a third plane the the new move enters
                         for (k = 0; k < numplanes; k++) {
@@ -930,7 +928,7 @@ public class Physics_Player {
 
                     // if we have fixed all interactions, try another move
                     current.velocity.oSet(clipVelocity);
-                    endVelocity = endClipVelocity;
+                    endVelocity.oSet(endClipVelocity);
                     break;
                 }
             }
@@ -1191,7 +1189,7 @@ public class Physics_Player {
             viewForward.Normalize();
             viewRight.Normalize();
 
-            wishvel = (viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove))).oMultiply(scale);
+            wishvel = viewForward.oMultiply(command.forwardmove).oPlus(viewRight.oMultiply(command.rightmove));
             wishdir = wishvel;
             wishspeed = wishdir.Normalize();
             wishspeed *= scale;
