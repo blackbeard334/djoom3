@@ -106,7 +106,7 @@ public class tr_guisurf {
 
         // take point 0 and project the vectors to the texture origin
         VectorMA(a.xyz, boundsOrg[0] - a.st.oGet(0), axis[0], origin);
-        VectorMA(origin, boundsOrg[1] - a.st.oGet(0), axis[1], origin);
+        VectorMA(origin, boundsOrg[1] - a.st.oGet(1), axis[1], origin);
     }
 
     /*

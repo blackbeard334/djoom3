@@ -1,5 +1,7 @@
 package neo.idlib.math;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import neo.Renderer.Model.dominantTri_s;
@@ -2585,21 +2587,42 @@ public class Simd_Generic {
         @Override
         public void TransformVerts(idDrawVert[] verts, int numVerts, idJointMat[] joints, idVec4[] weights, int[] index, int numWeights) {
             int i, j;
-//	byte jointsPtr = (byte *)joints;
+            ByteBuffer jointsPtr = jmtobb(joints);
 
             for (j = i = 0; i < numVerts; i++) {
                 idVec3 v;
 
-                v = joints[index[j * 2 + 0]].oMultiply(weights[j]);//TODO:check if this equals to the byte pointer
+                v = toIdJointMat(jointsPtr, index[j * 2 + 0]).oMultiply(weights[j]);//TODO:check if this equals to the byte pointer
                 while (index[j * 2 + 1] == 0) {
                     j++;
-                    v.oPluSet(joints[index[j * 2 + 0]].oMultiply(weights[j]));
+                    v.oPluSet(toIdJointMat(jointsPtr, index[j * 2 + 0]).oMultiply(weights[j]));
                 }
                 j++;
 
                 verts[i] = (verts[i] == null ? new idDrawVert() : verts[i]);
                 verts[i].xyz = v;
             }
+        }
+
+        //TODO: move to TempDump
+        private static ByteBuffer jmtobb(final idJointMat[] joints) {
+            ByteBuffer byteBuffer = ByteBuffer.allocate(idJointMat.SIZE * joints.length).order(ByteOrder.LITTLE_ENDIAN);
+
+            for (int i = 0; i < joints.length; i++) {
+                byteBuffer.position(i * idJointMat.SIZE);
+                byteBuffer.asFloatBuffer().put(joints[i].ToFloatPtr());
+            }
+
+            return byteBuffer;
+        }
+
+        private static idJointMat toIdJointMat(final ByteBuffer jointsPtr, final int position) {
+            ByteBuffer buffer = ((ByteBuffer) jointsPtr.duplicate().position(position)).order(ByteOrder.LITTLE_ENDIAN);
+            float[] temp = new float[12];
+            for (int i = 0; i < 12; i++) {
+                temp[i] = buffer.getFloat();
+            }
+            return new idJointMat(temp);
         }
 
         @Override

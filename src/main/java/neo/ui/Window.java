@@ -386,7 +386,7 @@ public class Window {
         //
         private static       idMat3     trans   = new idMat3();
         private static       idVec3     org     = new idVec3();
-        private static       idRotation rot;
+        private static       idRotation rot     = new idRotation();
         private static final idVec3     vec     = new idVec3(0, 0, 1);
         private static       idMat3     smat    = new idMat3();
         //

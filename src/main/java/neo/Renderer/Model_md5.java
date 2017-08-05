@@ -246,7 +246,7 @@ public class Model_md5 {
                     scaledWeights[count] = new idVec4();
                     scaledWeights[count].oSet(tempWeights.oGet(num).offset.oMultiply(tempWeights.oGet(num).jointWeight));
                     scaledWeights[count].w = tempWeights.oGet(num).jointWeight;
-                    weightIndex[count * 2 + 0] = tempWeights.oGet(num).joint /* sizeof( idJointMat )*/;
+                    weightIndex[count * 2 + 0] = tempWeights.oGet(num).joint * idJointMat.SIZE;
                 }
                 weightIndex[count * 2 - 1] = 1;
             }
@@ -382,16 +382,16 @@ public class Model_md5 {
             // find the first weight for this vertex
             weightVertNum = 0;
             for (i = 0; weightVertNum < vertNum; i++) {
-                weightVertNum += weightIndex[i * 2 + 1] * idJointMat.BYTES;
+                weightVertNum += weightIndex[i * 2 + 1] * idJointMat.SIZE;
             }
 
             // get the joint for the largest weight
             bestWeight = scaledWeights[i].w;
-            bestJoint = weightIndex[i * 2 + 0];// sizeof(idJointMat);
+            bestJoint = weightIndex[i * 2 + 0] / idJointMat.SIZE;
             for (; weightIndex[i * 2 + 1] == 0; i++) {
                 if (scaledWeights[i].w > bestWeight) {
                     bestWeight = scaledWeights[i].w;
-                    bestJoint = weightIndex[i * 2 + 0];// sizeof(idJointMat);
+                    bestJoint = weightIndex[i * 2 + 0] / idJointMat.SIZE;
                 }
             }
             return bestJoint;

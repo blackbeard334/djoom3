@@ -45,7 +45,8 @@ public class JointTransform {
      ===============================================================================
      */
     public static class idJointMat {
-        public static final int BYTES = 12 * Float.BYTES;
+        public static final int SIZE = 12 * Float.BYTES;
+        public static final int BYTES = SIZE / Byte.SIZE;
 
         private final float[] mat = new float[3 * 4];
         //

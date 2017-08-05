@@ -258,6 +258,7 @@ public class tr_subview {
 
         // set the mirror clip plane
         parms.numClipPlanes = 1;
+        parms.clipPlanes[0] = new idPlane();
         parms.clipPlanes[0].oSet(camera.axis.oGet(0).oNegative());
 
         parms.clipPlanes[0].oSet(3, -(camera.origin.oMultiply(parms.clipPlanes[0].Normal())));

@@ -129,6 +129,7 @@ public class AAS_local {
 
         public idAASLocal() {
             file = null;
+            obstacleList = new idList<>();
         }
         // virtual						~idAASLocal();
 

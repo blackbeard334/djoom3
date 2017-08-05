@@ -27,3 +27,28 @@ Missing active entities
     -interesting...the differenceis the exact number of entities that SHOULD be deactivated below
     -luckily they're the last ~30 elements in the list, so we just add a size counter to the original, and see where they're added!!1One
         -0x296aed84 "light_5296" is activated by "marscity_ship2_1" >> num#52
+        
+Lights
+-let's see if we can figure out why the lights aren't working properly
+-FindViewLightsAndEntites()
+    -R_SetEntityDefViewEntity()
+        -set idPlayerView::SingleView()->hackedView.viewaxis to identity matrix
+        
+        
+R_SortDrawSurfs()
+    RB_DrawElementsWithCounters()
+        qglDrawElements()
+            R_CreateVertexProgramShadowCache()
+                idRenderModelMD5::InstantiateDynamicModel()
+                    idDeclModelDef::SetupJoints()
+                        idSIMD_Generic::ConvertJointQuatsToJointMats()
+                        idGameEdit::ANIM_CreateAnimFrame()
+                        idAnimator::CreateFrame()
+    idAnimator::SetModel()--> let's pursue the model creation stages
+        idDeclModelDef::SetupJoints()
+            idPhysics_Monster::SetOrigin()
+            ((idEntity*)this)->renderEntity
+            &(((((*((DOOM3.exe!idRenderModelMD5*)((((idEntity*)this)->renderEntity).hModel))).meshes).list)->texCoords).list)[0]
+            idAF::LoadBody()????
+            VBO_OFFSET==10080
+                idVertexCache::AllocFrameTemp()--> block->vbo==1023&&block->offset==10080

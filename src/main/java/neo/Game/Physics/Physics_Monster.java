@@ -294,8 +294,7 @@ public class Physics_Monster {
                     Rest();
                 } else {
                     // try moving into the desired direction
-                    moveResult = this.StepMove(current.origin, current.velocity, delta
-                    );
+                    moveResult = this.StepMove(current.origin, current.velocity, delta);
                     delta.Zero();
                 }
             }
@@ -559,10 +558,10 @@ public class Physics_Monster {
         private monsterMoveResult_t SlideMove(idVec3 start, idVec3 velocity, final idVec3 delta) {
             int i;
             trace_s[] tr = {null};
-            idVec3 move;
+            idVec3 move = new idVec3();
 
             blockingEntity = null;
-            move = delta;
+            move.oSet(delta);
             for (i = 0; i < 3; i++) {
                 gameLocal.clip.Translation(tr, start, start.oPlus(move), clipModel, clipModel.GetAxis(), clipMask, self);
 

@@ -961,6 +961,7 @@ public class draw_common {
 
             pStage = shader.GetStage(stage);
 
+//            if(pStage.texture.image[0].imgName.equals("guis/assets/caverns/testmat2"))continue;
             // check the enable condition
             if (regs[pStage.conditionRegister] == 0) {
                 continue;
