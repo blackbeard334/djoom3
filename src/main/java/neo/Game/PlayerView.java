@@ -538,6 +538,7 @@ public class PlayerView {
             // hack the shake in at the very last moment, so it can't cause any consistency problems
             renderView_s hackedView = view;
             hackedView.viewaxis = hackedView.viewaxis.oMultiply(ShakeAxis());
+//            hackedView.viewaxis = idMat3.getMat3_identity();//HACKME::10
 
             gameRenderWorld.RenderScene(hackedView);
 

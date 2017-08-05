@@ -7046,9 +7046,9 @@ public class AI {
 
         protected void Event_LookAtEntity(idEventArg<idEntity> _ent, idEventArg<Float> duration) {
             idEntity ent = _ent.value;
-            if (ent.equals(this)) {
+            if (ent == this) {
                 ent = null;
-            } else if ((!ent.equals(focusEntity.GetEntity())) || (focusTime < gameLocal.time)) {
+            } else if ((ent != focusEntity.GetEntity()) || (focusTime < gameLocal.time)) {
                 focusEntity.oSet(ent);
                 alignHeadTime = gameLocal.time;
                 forceAlignHeadTime = (int) (gameLocal.time + SEC2MS(1));

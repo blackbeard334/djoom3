@@ -1018,8 +1018,12 @@ public class tr_main {
     public static void R_SortDrawSurfs() {
         // sort the drawsurfs by sort type, then orientation, then shader
 //        qsort(tr.viewDef.drawSurfs, tr.viewDef.numDrawSurfs, sizeof(tr.viewDef.drawSurfs[0]), R_QsortSurfaces);
-        if (tr.viewDef.drawSurfs != null) {
-            Arrays.sort(tr.viewDef.drawSurfs, new R_QsortSurfaces());
+       if (tr.viewDef.drawSurfs != null) {
+           Arrays.sort(tr.viewDef.drawSurfs, 0, tr.viewDef.numDrawSurfs, new R_QsortSurfaces());
+//           final int to = 1;
+//           tr.viewDef.drawSurfs = Arrays.copyOfRange(tr.viewDef.drawSurfs, 0, to);
+//           tr.viewDef.numDrawSurfs = to;
+//           tr.viewDef.drawSurfs[0].geo.indexes = null;
         }
     }
 

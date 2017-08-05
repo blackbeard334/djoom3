@@ -2160,7 +2160,7 @@ public class Entity {
             for (part = this; part != null; part = part.teamChain) {
 
                 if (part.physics != null) {
-                                             if(name.equals("env_gibs_torso_1")) DBG_RunPhysics++;
+                                             if(name.equals("marscity_cinematic_sarge_1")) DBG_RunPhysics++;
                     // run physics
                     moved = part.physics.Evaluate(endTime - startTime, endTime);
 
@@ -2286,7 +2286,7 @@ public class Entity {
 
         // get the floor position underneath the physics object
         public boolean GetFloorPos(float max_dist, idVec3 floorpos) {
-            trace_s[] result = {null};
+            trace_s[] result = {new trace_s()};
 
             if (!GetPhysics().HasGroundContacts()) {
                 GetPhysics().ClipTranslation(result, GetPhysics().GetGravityNormal().oMultiply(max_dist), null);

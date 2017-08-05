@@ -5146,7 +5146,7 @@ public class Player {
                 }
             }
 
-            int bps = idMath.FtoiFast(60 / heartRate * 1000);
+            int bps = idMath.FtoiFast(60f / heartRate * 1000f);
             if (gameLocal.time - lastHeartBeat > bps) {
                 int dmgVol = DMG_VOLUME;
                 int deathVol = DEATH_VOLUME;
@@ -5170,8 +5170,7 @@ public class Player {
                 if (pct != zeroVol) {
                     StartSound("snd_heartbeat", SND_CHANNEL_HEART, SSF_PRIVATE_SOUND, false, null);
                     // modify just this channel to a custom volume
-                    soundShaderParms_t parms = new soundShaderParms_t();
-//			memset( &parms, 0, sizeof( parms ) );
+                    soundShaderParms_t parms = new soundShaderParms_t();//memset( &parms, 0, sizeof( parms ) );
                     parms.volume = pct;
                     refSound.referenceSound.ModifySound(etoi(SND_CHANNEL_HEART), parms);
                 }

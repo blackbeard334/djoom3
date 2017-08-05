@@ -3124,7 +3124,7 @@ public class Physics_AF {
             pyramidBasis.oSet(0, baseAxis);
             pyramidBasis.oGet(0).oMinSet(pyramidBasis.oGet(2).oMultiply(baseAxis.oMultiply(pyramidBasis.oGet(2))));
             pyramidBasis.oGet(0).Normalize();
-            pyramidBasis.oSet(0, pyramidBasis.oGet(0).Cross(pyramidBasis.oGet(2)));
+            pyramidBasis.oSet(1, pyramidBasis.oGet(0).Cross(pyramidBasis.oGet(2)));
             // pyramid top
             pyramidAnchor.oSet(pyramidAnchor);
             // angles
@@ -5777,7 +5777,7 @@ public class Physics_AF {
         public void ClipTranslation(trace_s[] results, final idVec3 translation, final idClipModel model) {
             int i;
             idAFBody body;
-            trace_s[] bodyResults = {null};
+            trace_s[] bodyResults = {new trace_s()};
 
             results[0].fraction = 1.0f;
 
