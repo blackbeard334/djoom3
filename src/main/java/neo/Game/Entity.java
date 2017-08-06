@@ -280,6 +280,7 @@ public class Entity {
         //	ABSTRACT_PROTOTYPE( idEntity );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(Class.idClass.getEventCallBacks());
             eventCallbacks.put(EV_GetName, (eventCallback_t0<idEntity>) idEntity::Event_GetName);
             eventCallbacks.put(EV_SetName, (eventCallback_t1<idEntity>) idEntity::Event_SetName);
             eventCallbacks.put(EV_FindTargets, (eventCallback_t0<idEntity>) idEntity::Event_FindTargets);
@@ -490,7 +491,7 @@ public class Entity {
 //        public static idEventFunc<idEntity>[] eventCallbacks;
 //
         public idEntity() {
-            targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<idEntity>().getClass());
+            targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<>().getClass());
 
             entityNumber = ENTITYNUM_NONE;
             entityDefNumber = -1;
@@ -1104,6 +1105,7 @@ public class Entity {
             // add to refresh list
             if (modelDefHandle == -1) {
                 modelDefHandle = gameRenderWorld.AddEntityDef(renderEntity);
+                int a = 0;
             } else {
                 gameRenderWorld.UpdateEntityDef(modelDefHandle, renderEntity);
             }
@@ -2116,6 +2118,7 @@ public class Entity {
             physics = phys;
         }
 
+        private static int DBG_RunPhysics = 0;
         // run the physics for this entity
         public boolean RunPhysics() {
             int i, reachedTime, startTime, endTime;
@@ -2152,12 +2155,12 @@ public class Entity {
                     part.physics.SaveState();
                 }
             }
-
+                                                      DBG_name = name.toString();
             // move the whole team
             for (part = this; part != null; part = part.teamChain) {
 
                 if (part.physics != null) {
-
+                                             if(name.equals("env_gibs_torso_1")) DBG_RunPhysics++;
                     // run physics
                     moved = part.physics.Evaluate(endTime - startTime, endTime);
 
@@ -2254,6 +2257,7 @@ public class Entity {
 
             return true;
         }
+        public static String DBG_name = "";
 
         // set the origin of the physics object (relative to bindMaster if not NULL)
         public void SetOrigin(final idVec3 org) {
@@ -2322,8 +2326,8 @@ public class Entity {
         }
 
         // retrieves impact information, 'ent' is the entity retrieving the info
-        public void GetImpactInfo(idEntity ent, int id, final idVec3 point, impactInfo_s info) {
-            GetPhysics().GetImpactInfo(id, point, info);
+        public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
+            return GetPhysics().GetImpactInfo(id, point);
         }
 
         // apply an impulse to the physics object, 'ent' is the entity applying the impulse
@@ -4432,7 +4436,7 @@ public class Entity {
                 return false;
             }
 
-            frame = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
+            frame = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
             GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), anim.MD5Anim(0), renderEntity.numJoints, frame, frameTime, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
 
             offset.oSet(frame[jointHandle].ToVec3());
@@ -4730,8 +4734,8 @@ public class Entity {
             super.Show();
         }
 
-        public final void idEntity_GetImpactInfo(idEntity ent, int id, final idVec3 point, impactInfo_s info) {
-            super.GetImpactInfo(ent, id, point, info);
+        public final impactInfo_s idEntity_GetImpactInfo(idEntity ent, int id, final idVec3 point) {
+            return super.GetImpactInfo(ent, id, point);
         }
 
         public final void idEntity_ApplyImpulse(idEntity ent, int id, final idVec3 point, final idVec3 impulse) {

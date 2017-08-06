@@ -3,6 +3,8 @@ package neo.idlib.containers;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 
+import java.util.stream.Stream;
+
 /**
  *
  */
@@ -20,9 +22,9 @@ public class HashTable {
 
         private hashnode_s[] heads;
         //
-        private int tablesize;
-        private int numentries;
-        private int tablesizemask;
+        private int          tablesize;
+        private int          numentries;
+        private int          tablesizemask;
         //
         //
 
@@ -32,12 +34,7 @@ public class HashTable {
             tablesize = newtablesize;
             assert (tablesize > 0);
 
-            heads = new hashnode_s[tablesize];
-//	memset( heads, 0, sizeof( *heads ) * tablesize );
-            for (int h = 0; h < heads.length; h++) {
-                heads[h] = new hashnode_s();
-            }
-
+            heads = Stream.generate(hashnode_s::new).limit(tablesize).toArray(hashnode_s[]::new);//	memset( heads, 0, sizeof( *heads ) * tablesize );
             numentries = 0;
 
             tablesizemask = tablesize - 1;
@@ -50,11 +47,7 @@ public class HashTable {
             tablesize = newtablesize;
             assert (tablesize > 0);
 
-            heads = new hashnode_s[tablesize];
-//	memset( heads, 0, sizeof( *heads ) * tablesize );
-            for (int h = 0; h < heads.length; h++) {
-                heads[h] = new hashnode_s();
-            }
+            heads = Stream.generate(hashnode_s::new).limit(tablesize).toArray(hashnode_s[]::new);//	memset( heads, 0, sizeof( *heads ) * tablesize );
 
             numentries = 0;
 
@@ -115,7 +108,7 @@ public class HashTable {
 
             numentries++;
 
-            nextPtr = new hashnode_s(key, value, heads[ hash]);
+            nextPtr = new hashnode_s(key, value, heads[hash]);
             nextPtr.next = node;
         }
 
@@ -250,7 +243,6 @@ public class HashTable {
 
             return null;
         }
-//
 
         public int GetSpread() {
             int i, average, error, e;
@@ -277,8 +269,8 @@ public class HashTable {
 
         private class hashnode_s<Type> {
 
-            idStr key;
-            Type value;
+            idStr      key;
+            Type       value;
             hashnode_s next;
             //
             //

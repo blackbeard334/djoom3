@@ -7,7 +7,6 @@ import static neo.Game.Entity.EV_Show;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
@@ -415,8 +414,8 @@ public class Light {
             super.Present();
 
             // current transformation
-            renderLight.axis = localLightAxis.oMultiply(GetPhysics().GetAxis());
-            renderLight.origin = GetPhysics().GetOrigin().oPlus(GetPhysics().GetAxis().oMultiply(localLightOrigin));
+            renderLight.axis.oSet(localLightAxis.oMultiply(GetPhysics().GetAxis()));
+            renderLight.origin.oSet(GetPhysics().GetOrigin().oPlus(GetPhysics().GetAxis().oMultiply(localLightOrigin)));
 
             // reference the sound for shader synced effects
             if (lightParent != null) {
@@ -790,6 +789,7 @@ public class Light {
             // add to refresh list
             if (modelDefHandle == -1) {
                 modelDefHandle = gameRenderWorld.AddEntityDef(renderEntity);
+                int a = 0;
             } else {
                 gameRenderWorld.UpdateEntityDef(modelDefHandle, renderEntity);
             }

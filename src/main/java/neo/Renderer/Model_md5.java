@@ -94,14 +94,14 @@ public class Model_md5 {
     public static class idMD5Mesh {
         // friend class				idRenderModelMD5;
 
-        private idList<idVec2> texCoords;	// texture coordinates
-        private int numWeights;			// number of weights
-        private idVec4[] scaledWeights;		// joint weights
-        private int[] weightIndex;		// pairs of: joint offset + bool true if next weight is for next vertex
-        private idMaterial shader;		// material applied to mesh
-        private int numTris;			// number of triangles
-        private deformInfo_s deformInfo;	// used to create srfTriangles_t from base frames and new vertexes
-        private int surfaceNum;			// number of the static surface created for this mesh
+        private idList<idVec2> texCoords;    // texture coordinates
+        private int            numWeights;   // number of weights
+        private idVec4[]       scaledWeights;// joint weights
+        private int[]          weightIndex;  // pairs of: joint offset + bool true if next weight is for next vertex
+        private idMaterial     shader;       // material applied to mesh
+        private int            numTris;      // number of triangles
+        private deformInfo_s   deformInfo;   // used to create srfTriangles_t from base frames and new vertexes
+        private int            surfaceNum;   // number of the static surface created for this mesh
         //
         //
 
@@ -382,7 +382,7 @@ public class Model_md5 {
             // find the first weight for this vertex
             weightVertNum = 0;
             for (i = 0; weightVertNum < vertNum; i++) {
-                weightVertNum += weightIndex[i * 2 + 1];
+                weightVertNum += weightIndex[i * 2 + 1] * idJointMat.BYTES;
             }
 
             // get the joint for the largest weight
@@ -807,7 +807,7 @@ public class Model_md5 {
                 common.Error("idRenderModelMD5::NearestJoint: surfaceNum > meshes.Num()");
             }
 
-            for (final idMD5Mesh mesh : meshes.Ptr()) {
+            for (final idMD5Mesh mesh : meshes.Ptr(idMD5Mesh[].class)) {
                 if (mesh.surfaceNum == surfaceNum) {
                     return mesh.NearestJoint(a, b, c);
                 }

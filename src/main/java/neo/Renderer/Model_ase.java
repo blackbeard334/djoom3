@@ -8,7 +8,6 @@ import neo.Renderer.Model_ase.aseMesh_t;
 import neo.Renderer.Model_ase.aseObject_t;
 import static neo.TempDump.bbtocb;
 import static neo.TempDump.isNotNullOrEmpty;
-import static neo.TempDump.replaceByIndex;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
 import neo.idlib.Text.Str.idStr;

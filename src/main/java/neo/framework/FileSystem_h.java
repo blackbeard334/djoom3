@@ -1383,8 +1383,8 @@ public class FileSystem_h {
                 base = OSPath.indexOf(BASE_GAMEDIR);
                 String tempStr = OSPath;
                 tempStr = tempStr.toLowerCase();
-                if ((tempStr.indexOf("//") > -1 || tempStr.indexOf("w:") > -1)
-                        && tempStr.indexOf("/doom/base/") > -1) {
+                if ((tempStr.contains("//") || tempStr.contains("w:"))
+                        && tempStr.contains("/doom/base/")) {
                     // will cause a warning but will load the file. ase models have
                     // hard coded doom/base/ in the material names
                     base = OSPath.indexOf("base");
@@ -1524,7 +1524,7 @@ public class FileSystem_h {
 
             // make absolutely sure that it can't back up the path
             // FIXME: what about c: ?
-            if (OSPath.indexOf("..") > -1 || OSPath.indexOf("::") > -1) {
+            if (OSPath.contains("..") || OSPath.contains("::")) {
                 if (_DEBUG) {
                     common.DPrintf("refusing to create relative path \"%s\"\n", OSPath);
                 }
@@ -1566,7 +1566,7 @@ public class FileSystem_h {
             // make absolutely sure that it can't back up the path.
             // The searchpaths do guarantee that something will always
             // be prepended, so we don't need to worry about "c:" or "//limbo" 
-            if (relativePath.indexOf("..") > -1 || relativePath.indexOf("::") > -1) {
+            if (relativePath.contains("..") || relativePath.contains("::")) {
                 return false;
             }
 
@@ -3630,7 +3630,7 @@ public class FileSystem_h {
             } catch (NoSuchFileException ex) {//TODO:turn exceptions back on.
 //                Logger.getLogger(FileSystem_h.class.getName()).log(Level.WARNING, null, ex);
             } catch (IOException ex) {
-//                Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             return null;

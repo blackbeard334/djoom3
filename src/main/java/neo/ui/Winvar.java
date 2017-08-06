@@ -5,7 +5,6 @@ import java.util.Scanner;
 import neo.Renderer.Material.idMaterial;
 
 import static neo.TempDump.atoi;
-import static neo.TempDump.itob;
 import static neo.framework.DeclManager.declManager;
 
 import neo.framework.File_h.idFile;
@@ -186,9 +185,9 @@ public class Winvar {
             super();
         }
 
-        public idWinBool(int a) {
+        public idWinBool(boolean a) {
             this();
-            data = itob(a);
+            data = a;
         }
 
         //copy constructor
@@ -952,9 +951,9 @@ public class Winvar {
             data = new idVec4();
         }
 
-        public idWinVec4(int a) {//TODO: check whether the int to pointer cast works like this.
+        public idWinVec4(float x, float y, float z, float w) {//TODO: check whether the int to pointer cast works like this.
             this();
-            data.oSet(new idVec4(a, 0, 0, 0));
+            data.oSet(new idVec4(x, y, z, w));
         }
 
         //copy constructor

@@ -808,7 +808,7 @@ public class Model_lwo {
 
         static lwVMapPt[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new lwVMapPt()).
+                    generate(lwVMapPt::new).
                     limit(length).
                     toArray(lwVMapPt[]::new);
         }
@@ -5461,7 +5461,7 @@ public class Model_lwo {
         /* allocate vmap references for each mapped point */
         for (i = 0; i < point.count; i++) {
             if (point.pt[i].nvmaps != 0) {
-                point.pt[i].vm = Stream.generate(() -> new lwVMapPt()).
+                point.pt[i].vm = Stream.generate(lwVMapPt::new).
                         limit(point.pt[i].nvmaps).
                         toArray(lwVMapPt[]::new);// Mem_ClearedAlloc(point.pt[ i].nvmaps);
                 if (null == point.pt[i].vm) {

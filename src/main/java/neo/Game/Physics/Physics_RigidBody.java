@@ -1,6 +1,5 @@
 package neo.Game.Physics;
 
-import neo.CM.CollisionModel;
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
@@ -46,7 +45,6 @@ import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
-import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
@@ -237,7 +235,21 @@ public class Physics_RigidBody {
                 lastTimerReset = 0;
             }
         }
+
         // ~idPhysics_RigidBody();
+        @Override
+        protected void _deconstructor(){
+            if ( clipModel != null ) {
+                idClipModel.delete(clipModel);
+            }
+//            delete integrator;
+
+            super._deconstructor();
+        }
+
+        public static void delete(idPhysics_RigidBody body) {
+            body._deconstructor();
+        }
 
         @Override
         public void Save(idSaveGame savefile) {
@@ -345,9 +357,8 @@ public class Physics_RigidBody {
             assert (model.IsTraceModel());    // and it should be a trace model
             assert (density > 0.0f);            // density should be valid
 
-            if (clipModel != null && !clipModel.equals(model) && freeOld) {
-//		delete clipModel;
-                clipModel = null;
+            if (clipModel != null && clipModel != model && freeOld) {
+                idClipModel.delete(clipModel);
             }
             clipModel = model;
             clipModel.Link(gameLocal.clip, self, 0, current.i.position, current.i.orientation);
@@ -620,18 +631,20 @@ public class Physics_RigidBody {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
             idVec3 linearVelocity, angularVelocity;
             idMat3 inverseWorldInertiaTensor;
+            impactInfo_s info = new impactInfo_s();
 
             linearVelocity = current.i.linearMomentum.oMultiply(inverseMass);
             inverseWorldInertiaTensor = current.i.orientation.Transpose().oMultiply(inverseInertiaTensor.oMultiply(current.i.orientation));
             angularVelocity = inverseWorldInertiaTensor.oMultiply(current.i.angularMomentum);
 
             info.invMass = inverseMass;
-            info.invInertiaTensor = inverseWorldInertiaTensor;
+            info.invInertiaTensor.oSet(inverseWorldInertiaTensor);
             info.position = point.oMinus(current.i.position.oPlus(centerOfMass.oMultiply(current.i.orientation)));
             info.velocity = linearVelocity.oPlus(angularVelocity.Cross(info.position));
+            return info;
         }
 
         @Override
@@ -772,12 +785,12 @@ public class Physics_RigidBody {
 
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
-            return current.i.position;
+            return new idVec3(current.i.position);
         }
 
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
-            return current.i.orientation;
+            return new idMat3(current.i.orientation);
         }
 
         @Override
@@ -874,8 +887,12 @@ public class Physics_RigidBody {
             dir.SubVec3_oSet(1, current.i.angularMomentum);
             dir.SubVec3_Normalize(0);
             dir.SubVec3_Normalize(1);
-            num = gameLocal.clip.Contacts(contacts.Ptr(contactInfo_t[].class), 10, clipModel.GetOrigin(),
+            final contactInfo_t[] contactz = contacts.Ptr(contactInfo_t[].class);
+            num = gameLocal.clip.Contacts(contactz, 10, clipModel.GetOrigin(),
                     dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
+            for (int i = 0; i < num; i++) {
+                contacts.oSet(i, contactz[i]);
+            }
             contacts.SetNum(num, false);
 
             AddContactEntitiesForContacts();
@@ -1090,7 +1107,7 @@ public class Physics_RigidBody {
         private void Integrate(final float deltaTime, rigidBodyPState_s next) {
             idVec3 position;
 
-            position = current.i.position;
+            position = new idVec3(current.i.position);
             current.i.position.oPluSet(centerOfMass.oMultiply(current.i.orientation));
 
             current.i.orientation.TransposeSelf();
@@ -1169,12 +1186,12 @@ public class Physics_RigidBody {
             idVec3 r, linearVelocity, angularVelocity, velocity;
             idMat3 inverseWorldInertiaTensor;
             float impulseNumerator, impulseDenominator, vel;
-            impactInfo_s info = new impactInfo_s();
+            impactInfo_s info;
             idEntity ent;
 
             // get info from other entity involved
             ent = gameLocal.entities[collision.c.entityNum];
-            ent.GetImpactInfo(self, collision.c.id, collision.c.point, info);
+            info = ent.GetImpactInfo(self, collision.c.id, collision.c.point);
 
             // collision point relative to the body center of mass
             r = collision.c.point.oMinus(current.i.position.oPlus(centerOfMass.oMultiply(current.i.orientation)));
@@ -1376,7 +1393,7 @@ public class Physics_RigidBody {
 
             // center of mass in world space
             point = current.i.position.oPlus(centerOfMass.oMultiply(current.i.orientation));
-            point.oMinSet(point.oMultiply(gravityNormal.oMultiply(gravityNormal)));
+            point.oMinSet(gravityNormal.oMultiply(point.oMultiply(gravityNormal)));
 
             // if the point is not inside the winding
             if (!contactWinding.PointInside(gravityNormal, point, 0)) {

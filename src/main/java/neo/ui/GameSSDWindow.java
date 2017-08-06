@@ -1559,17 +1559,15 @@ public class GameSSDWindow {
         //
 
         public idGameSSDWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idGameSSDWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 //	~idGameSSDWindow();
@@ -2079,8 +2077,7 @@ public class GameSSDWindow {
 
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             crosshair.InitCrosshairs();
 
             beginLevel.data = false;

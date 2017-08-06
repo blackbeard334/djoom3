@@ -1838,7 +1838,7 @@ public class Parser {
         private boolean Directive_include() throws Lib.idException {
             idLexer script;
             idToken token = new idToken();
-            idStr path;
+            idStr path = new idStr();
 
             if (!this.ReadSourceToken(token)) {
                 this.Error("#include without file name");
@@ -1851,16 +1851,16 @@ public class Parser {
             if (token.type == TT_STRING) {
                 script = new idLexer();
                 // try relative to the current file
-                path = scriptstack.GetFileName();
+                path.oSet(scriptstack.GetFileName());
                 path.StripFilename();
                 path.oPluSet("/");
                 path.oPluSet(token);
                 if (!script.LoadFile(path.toString(), OSPath)) {
                     // try absolute path
-                    path = token;
+                    path.oSet(token);
                     if (!script.LoadFile(path.toString(), OSPath)) {
                         // try from the include path
-                        path = includepath.oPlus(token);
+                        path.oSet(includepath.oPlus(token));
                         if (!script.LoadFile(path.toString(), OSPath)) {
 //					delete script;
                             script = null;
@@ -1868,7 +1868,7 @@ public class Parser {
                     }
                 }
             } else if (token.type == TT_PUNCTUATION && token.equals("<")) {
-                path = this.includepath;
+                path.oSet(this.includepath);
                 while (this.ReadSourceToken(token)) {
                     if (token.linesCrossed > 0) {
                         this.UnreadSourceToken(token);

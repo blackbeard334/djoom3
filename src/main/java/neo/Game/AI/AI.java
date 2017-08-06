@@ -67,6 +67,7 @@ import neo.idlib.math.Vector.idVec4;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.lang.Math.abs;
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
@@ -424,6 +425,12 @@ public class AI {
         idEntity startPosObstacle;          // if != NULL the obstacle containing the start position
         idVec3   seekPosOutsideObstacles;   // seek position outside obstacles
         idEntity seekPosObstacle;           // if != NULL the obstacle containing the seek position
+
+        public obstaclePath_s() {
+            seekPos = new idVec3();
+            startPosOutsideObstacles = new idVec3();
+            seekPosOutsideObstacles = new idVec3();
+        }
     };
 
     // path prediction
@@ -505,7 +512,7 @@ public class AI {
             moveStatus = MOVE_STATUS_DONE;
             moveDest = new idVec3();
             moveDir = new idVec3(1.0f, 0.0f, 0.0f);
-            goalEntity = null;
+            goalEntity = new idEntityPtr<>(null);
             goalEntityOrigin = new idVec3();
             toAreaNum = 0;
             startTime = 0;
@@ -515,7 +522,7 @@ public class AI {
             wanderYaw = 0;
             nextWanderTime = 0;
             blockTime = 0;
-            obstacle = null;
+            obstacle = new idEntityPtr<>(null);
             lastMoveOrigin = getVec3_origin();
             lastMoveTime = 0;
             anim = 0;
@@ -1757,17 +1764,17 @@ public class AI {
         public static boolean FindPathAroundObstacles(final idPhysics physics, final idAAS aas, final idEntity ignore, final idVec3 startPos, final idVec3 seekPos, obstaclePath_s path) {
             int numObstacles, areaNum;
             int[] insideObstacle = {0};
-            obstacle_s[] obstacles = new obstacle_s[MAX_OBSTACLES];
+            obstacle_s[] obstacles = Stream.generate(obstacle_s::new).limit(MAX_OBSTACLES).toArray(obstacle_s[]::new);
             idBounds clipBounds = new idBounds();
             idBounds bounds = new idBounds();
             pathNode_s root;
             boolean pathToGoalExists;
 
-            path.seekPos = seekPos;
+            path.seekPos.oSet(seekPos);
             path.firstObstacle = null;
-            path.startPosOutsideObstacles = startPos;
+            path.startPosOutsideObstacles.oSet(startPos);
             path.startPosObstacle = null;
-            path.seekPosOutsideObstacles = seekPos;
+            path.seekPosOutsideObstacles.oSet(seekPos);
             path.seekPosObstacle = null;
 
             if (NOT(aas)) {
@@ -2017,21 +2024,21 @@ public class AI {
                 numSegments = 4;
                 // point in the middle between top and start
                 t2 = (time - t) * 0.5f;
-                points[1].ToVec2().oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
+                points[1].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
                 points[1].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
                 // top of parabolic
                 t2 = time - t;
-                points[2].ToVec2().oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
+                points[2].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
                 points[2].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
                 // point in the middel between top and end
                 t2 = time - t * 0.5f;
-                points[3].ToVec2().oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
+                points[3].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
                 points[3].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
             } else {
                 numSegments = 2;
                 // point halfway through
                 t2 = time * 0.5f;
-                points[1].ToVec2().oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(0.5f)));
+                points[1].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(0.5f)));
                 points[1].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
             }
 
@@ -2753,7 +2760,7 @@ public class AI {
 
             if (ignore_obstacles) {
                 newPos.oSet(goalPos);
-                move.obstacle = null;
+                move.obstacle.oSet(null);
                 return;
             }
 
@@ -2826,7 +2833,7 @@ public class AI {
                 move.obstacle.oSet(obstacle);
             } else {
                 newPos.oSet(path.seekPos);
-                move.obstacle = null;
+                move.obstacle.oSet(null);
             }
         }
 
@@ -2863,7 +2870,7 @@ public class AI {
                 move.lastMoveTime = gameLocal.time;
             }
 
-            move.obstacle = null;
+            move.obstacle.oSet(null);
             if ((move.moveCommand == MOVE_FACE_ENEMY) && enemy.GetEntity() != null) {
                 TurnToward(lastVisibleEnemyPos);
                 goalPos = oldOrigin;
@@ -2929,7 +2936,7 @@ public class AI {
             AI_ONGROUND._(physicsObj.OnGround());
 
             idVec3 org = physicsObj.GetOrigin();
-            if (oldOrigin != org) {
+            if (!oldOrigin.equals(org)) {//FIXME: so this checks value instead of refs which COULD go wrong!
                 TouchTriggers();
             }
 
@@ -2959,7 +2966,7 @@ public class AI {
                 move.lastMoveTime = gameLocal.time;
             }
 
-            move.obstacle = null;
+            move.obstacle.oSet(null);
             if ((move.moveCommand == MOVE_FACE_ENEMY) && enemy.GetEntity() != null) {
                 TurnToward(lastVisibleEnemyPos);
                 goalPos = move.moveDest;
@@ -3790,7 +3797,7 @@ public class AI {
             move.moveCommand = MOVE_NONE;
             move.moveStatus = status;
             move.toAreaNum = 0;
-            move.goalEntity = null;
+            move.goalEntity.oSet(null);
             move.moveDest = physicsObj.GetOrigin();
             AI_DEST_UNREACHABLE._(false);
             AI_OBSTACLE_IN_PATH._(false);
@@ -3868,7 +3875,7 @@ public class AI {
             }
 
             move.moveDest = pos;
-            move.goalEntity = null;
+            move.goalEntity.oSet(null);
             move.moveCommand = MOVE_TO_POSITION_DIRECT;
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
@@ -4171,7 +4178,7 @@ public class AI {
             }
 
             move.moveDest = org;
-            move.goalEntity = null;
+            move.goalEntity.oSet(null);
             move.moveCommand = MOVE_TO_POSITION;
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
@@ -4231,7 +4238,7 @@ public class AI {
             StopMove(MOVE_STATUS_DONE);
 
             move.moveDest = pos;
-            move.goalEntity = null;
+            move.goalEntity.oSet(null);
             move.moveCommand = MOVE_SLIDE_TO_POSITION;
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
@@ -4928,8 +4935,8 @@ public class AI {
 
             // adjust his aim so it's not perfect.  uses sine based movement so the tracers appear less random in their spread.
             float t = MS2SEC(gameLocal.time + entityNumber * 497);
-            ang.pitch += idMath.Sin16(t * 5.1) * attack_accuracy;
-            ang.yaw += idMath.Sin16(t * 6.7) * attack_accuracy;
+            ang.pitch += idMath.Sin16(t * 5.1f) * attack_accuracy;
+            ang.yaw += idMath.Sin16(t * 6.7f) * attack_accuracy;
 
             if (clampToAttackCone) {
                 // clamp the attack direction to be within monster's attack cone so he doesn't do
@@ -7369,6 +7376,19 @@ public class AI {
             return eventCallbacks;
         }
 
+        @Override
+        protected void _deconstructor() {
+            if (projectileClipModel != null) idClipModel.delete(projectileClipModel);
+
+            DeconstructScriptObject();
+            scriptObject.Free();
+            if (worldMuzzleFlashHandle != -1) {
+                gameRenderWorld.FreeLightDef(worldMuzzleFlashHandle);
+                worldMuzzleFlashHandle = -1;
+            }
+
+            super._deconstructor();
+        }
     };
 
     public static class idCombatNode extends idEntity {

@@ -25,14 +25,12 @@ import static neo.Game.Entity.TH_PHYSICS;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
 
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
 import neo.Game.GameSys.Class.eventCallback_t2;
 import neo.Game.GameSys.Class.eventCallback_t3;
 import neo.Game.GameSys.Class.idEventArg;
-import neo.Game.GameSys.Class.idEventFunc;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -40,6 +38,7 @@ import static neo.Game.GameSys.SysCvar.ai_debugScript;
 import static neo.Game.GameSys.SysCvar.g_debugDamage;
 import static neo.Game.Game_local.MASK_OPAQUE;
 import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_ANY;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_BODY;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_VOICE;
 import neo.Game.Game_local.idEntityPtr;
@@ -137,14 +136,20 @@ public class Actor {
      ***********************************************************************/
     public static class idAnimState {
 
-        public boolean idleAnim;
-        public idStr   state;
-        public int     animBlendFrames;
-        public int     lastAnimBlendFrames;        // allows override anims to blend based on the last transition time
+        public  boolean    idleAnim;
+        public  idStr      state;
+        public  int        animBlendFrames;
+        public  int        lastAnimBlendFrames;        // allows override anims to blend based on the last transition time
+        private idActor    self;
+        private idAnimator animator;
+        private idThread   thread;
+        private int        channel;
+        private boolean    disabled;
         //
         //
 
         public idAnimState() {
+            state = new idStr();
             self = null;
             animator = null;
             thread = null;
@@ -326,13 +331,6 @@ public class Actor {
 
             return flags;
         }
-//
-//
-        private idActor self;
-        private idAnimator animator;
-        private idThread thread;
-        private int channel;
-        private boolean disabled;
     };
 
     public static class idAttachInfo {
@@ -2897,5 +2895,35 @@ public class Actor {
             return eventCallbacks;
         }
 
+        @Override
+        protected void _deconstructor() {
+            int i;
+            idEntity ent;
+
+            DeconstructScriptObject();
+            scriptObject.Free();
+
+            StopSound(SND_CHANNEL_ANY.ordinal(), false);
+
+            idClipModel.delete(combatModel);
+            combatModel = null;
+
+            if (head.GetEntity() != null) {
+                head.GetEntity().ClearBody();
+                head.GetEntity().PostEventMS(EV_Remove, 0);
+            }
+
+            // remove any attached entities
+            for (i = 0; i < attachments.Num(); i++) {
+                ent = attachments.oGet(i).ent.GetEntity();
+                if (ent != null) {
+                    ent.PostEventMS(EV_Remove, 0);
+                }
+            }
+
+            ShutdownThreads();
+
+            super._deconstructor();
+        }
     };
 }

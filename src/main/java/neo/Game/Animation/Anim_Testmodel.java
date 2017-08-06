@@ -20,7 +20,6 @@ import static neo.Game.GameSys.Class.EV_Remove;
 
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
-import neo.Game.GameSys.Event;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;

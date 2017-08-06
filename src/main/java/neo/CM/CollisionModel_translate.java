@@ -1,14 +1,16 @@
 package neo.CM;
 
-import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
 import neo.CM.CollisionModel_local.cm_edge_s;
 import neo.CM.CollisionModel_local.cm_traceWork_s;
 import neo.CM.CollisionModel_local.cm_vertex_s;
-import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
-import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Vector.idVec3;
+
+import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
+import static neo.CM.CollisionModel.contactInfo_t;
+import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
+import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 
 /**
  *
@@ -33,14 +35,14 @@ public class CollisionModel_translate {
      ================
      CM_AddContact
      ================
-     */
+     */          private static int DBG_CM_AddContact = 0;
     static void CM_AddContact(cm_traceWork_s tw) {
 
         if (tw.numContacts >= tw.maxContacts) {
             return;
-        }
+        }         DBG_CM_AddContact++;
         // copy contact information from trace_t
-        tw.contacts[tw.numContacts] = tw.trace.c;
+        tw.contacts[tw.numContacts] = new contactInfo_t(tw.trace.c);
         tw.numContacts++;
         // set fraction back to 1 to find all other contacts
         tw.trace.fraction = 1.0f;

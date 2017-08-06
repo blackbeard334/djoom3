@@ -152,7 +152,6 @@ import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
 import neo.Renderer.tr_local.viewDef_s;
 import neo.Sound.sound.idSoundEmitter;
-import neo.TempDump;
 import neo.TempDump.CPP_class;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
@@ -770,6 +769,7 @@ public class Material {
         //
         private static int debug_creation_counter = 0;
         private final int dbg_count;
+        public int DBG_BALLS = 0;
 
         public idMaterial() {
             dbg_count = debug_creation_counter++;

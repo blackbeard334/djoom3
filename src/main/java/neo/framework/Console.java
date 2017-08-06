@@ -34,7 +34,6 @@ import static neo.framework.Common.com_allowConsole;
 import static neo.framework.Common.com_editors;
 import static neo.framework.Common.com_frameTime;
 import static neo.framework.Common.com_showAsyncStats;
-import static neo.framework.Common.com_showFPS;
 import static neo.framework.Common.com_showMemoryUsage;
 import static neo.framework.Common.com_showSoundDecoders;
 import static neo.framework.Common.common;

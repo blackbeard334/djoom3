@@ -108,17 +108,15 @@ public class ListWindow {
         //
 
         public idListWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idListWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
@@ -627,8 +625,7 @@ public class ListWindow {
             return super.ParseInternalVar(_name, src);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             typed.oSet("");
             typedTime = 0;
             clickTime = 0;

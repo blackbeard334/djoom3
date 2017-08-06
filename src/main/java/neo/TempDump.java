@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
@@ -18,8 +19,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import neo.CM.CollisionModel_local.cm_polygon_s;
+import java.util.stream.IntStream;
 import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
+import com.rits.cloning.Cloner;
+import neo.Game.Entity.idEntity;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.idRenderModel;
 import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
@@ -32,6 +35,7 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.LinkList.idLinkList;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Curve;
 import neo.idlib.math.Matrix.idMat3;
@@ -73,6 +77,26 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
         for (len = 0; len < str.length; len++) {
             if (str[len] == '\0') {
+                break;
+            }
+        }
+
+        return len;
+    }
+
+    public static int strLen(final byte[] str) {
+        return strLen(str, 0);
+    }
+
+    public static int strLen(final byte[] str, final int offset) {
+        int len;
+
+        if (NOT(str)) {
+            return -1;
+        }
+
+        for (len = offset; len < str.length; len++) {
+            if (str[len] == 0) {
                 break;
             }
         }
@@ -154,8 +178,8 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         final int width = input[0].length;
         byte[] output = new byte[height * width];
 
-        for (int a = 0; a < height; a++) {
-            System.arraycopy(input[a], 0, output, width, width);
+        for (byte[] anInput : input) {
+            System.arraycopy(anInput, 0, output, width, width);
         }
 
         return output;
@@ -288,6 +312,18 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         return Float.floatToIntBits(f);
     }
 
+    public static int[] ftoi(float[] a) {
+        return IntStream.range(0, a.length).map(i -> Float.floatToIntBits(a[i])).toArray();
+    }
+
+    /** FloatBuffer to Float Array */
+    public static float[] fbtofa(final FloatBuffer fb){
+        float[] fa = new float[fb.capacity()];
+        fb.duplicate().get(fa);
+
+        return fa;
+    }
+
     public static int atoi(String ascii) {
         try {
             return Integer.parseInt(ascii.trim());
@@ -346,7 +382,8 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             return null;
         }
 
-        return new String(Arrays.copyOf(bytes, offset));
+        final int length = strLen(bytes, offset) - offset;//c style strings
+        return new String(bytes, offset, length);
     }
 
     public static String btos(byte[] bytes) {
@@ -570,6 +607,22 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static void printCallStackCount() {
         System.out.println(Arrays.toString(CALL_STACK_MAP.entrySet().toArray()));
     }
+
+    public static void printLinkedList(final idLinkList<idEntity> head) {
+        idEntity ent = head.Next();
+        while (ent != null) {
+            System.out.println(ent.name);
+            ent = ent.activeNode.Next();
+        }
+    }
+
+    private static final Cloner CLONER = Cloner.standard();
+
+    /** shallow clone */
+    public static <T>T clone(T obj){
+        return CLONER.shallowClone(obj);
+    }
+
 
     @Deprecated
     public static <T> T[] allocArray(Class<T> clazz, int length) {

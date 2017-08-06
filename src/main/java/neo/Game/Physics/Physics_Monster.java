@@ -11,7 +11,6 @@ import static neo.Game.Game_local.ENTITYNUM_WORLD;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Physics.Physics.CONTACT_EPSILON;
 
-import neo.Game.Game_local;
 import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Physics.Physics.impactInfo_s;
 import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
@@ -328,11 +327,13 @@ public class Physics_Monster {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
+            impactInfo_s info = new impactInfo_s();
             info.invMass = invMass;
             info.invInertiaTensor.Zero();
             info.position.Zero();
-            info.velocity = current.velocity;
+            info.velocity.oSet(current.velocity);
+            return info;
         }
 
         @Override
@@ -548,8 +549,7 @@ public class Physics_Monster {
 
             // apply impact to a non world floor entity
             if (groundTrace[0].c.entityNum != ENTITYNUM_WORLD && groundEntityPtr.GetEntity() != null) {
-                impactInfo_s info = new impactInfo_s();
-                groundEntityPtr.GetEntity().GetImpactInfo(self, groundTrace[0].c.id, groundTrace[0].c.point, info);
+                impactInfo_s info = groundEntityPtr.GetEntity().GetImpactInfo(self, groundTrace[0].c.id, groundTrace[0].c.point);
                 if (info.invMass != 0.0f) {
                     groundEntityPtr.GetEntity().ApplyImpulse(self, 0, groundTrace[0].c.point, state.velocity.oDivide(info.invMass * 10.0f));
                 }

@@ -36,7 +36,6 @@ import neo.Game.GameSys.Class.eventCallback_t2;
 import neo.Game.GameSys.Class.eventCallback_t4;
 import neo.Game.GameSys.Class.eventCallback_t6;
 import neo.Game.GameSys.Class.idEventArg;
-import neo.Game.GameSys.Event;
 import neo.Game.GameSys.Event.idEventDef;
 import static neo.Game.GameSys.SaveGame.INITIAL_RELEASE_BUILD_NUMBER;
 import neo.Game.GameSys.SaveGame.idRestoreGame;

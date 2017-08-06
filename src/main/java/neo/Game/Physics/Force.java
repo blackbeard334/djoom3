@@ -23,16 +23,19 @@ public class Force {
     public static class idForce extends idClass {
         // CLASS_PROTOTYPE( idForce );
 
-        private static idList<idForce> forceList;
+        private static idList<idForce> forceList = new idList<>();
         //
         //
 
         public idForce() {
-            forceList = new idList<>();
             forceList.Append(this);
         }
 
         // virtual				~idForce( void );
+        protected void _deconstructor() {
+            forceList.Remove(this);
+        }
+
         public static void DeletePhysics(final idPhysics phys) {
             int i;
 

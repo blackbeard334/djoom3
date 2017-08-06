@@ -1,0 +1,563 @@
+shitload of glErrors:
+GL_INVALID_VALUE error generated. Width and height must not be negative.   
+-qglScissor()
+	-AddActiveInteraction()
+		-R_RemoveUnecessaryViewLights()
+			-idScreenRect{x1=250, y1=70, x2=254, y2=74}
+			
+			
+====================================================================================================================================================
+|--------------------------------------------------------------------------------------------------------------------------------------------------
+|-let's park this for a while, and try to illuminate
+|	-r_showLights
+|-let's see if we can move around some
+|
+|scrambling for a thread...
+|-let's try to reproduce our shitty situation in c++?
+|
+|
+|-the java version does an AllocDef() sooner from GetExpression() 528. meaning, on the way back from prio 0(around 4 I think), the java version tries to allocate while the cpp version doesn't
+|	-idCompiler::GetExpression()
+|		-spin_start
+|		-7027
+|			-6944 matches on both
+|			-7010 misses
+|				-idCompiler::FindImmediate()
+|				-718
+|					-idProgram::GetDefList() returns the correct chain in both, but for some reason our version has duplicate 952's?
+|						-idVarDef::~idVarDef() isn't being called
+|
+|-idInterpreter::Execute()
+|	-idAI::Think()
+|		-receptionist_typing_start
+|			-instructionPointer!=instructionPointer
+|	-idPlayer::Think() DBG_Execute == 14
+|		-player1
+|			-idInterpreter::NextInstruction() 125
+|				-idActor::UpdateAnimState() not called
+|					-scratch that, it is being called
+|					-27687 vs 27637 though
+|					-OP_IFNOT vs OP_IF
+|					-st.v.value !=
+|					-localstack has wrong value
+|						-idInterpreter::Push(), ((int*)localstack)[9]==1701602409
+|							-idInterpreter::Execute(),	OP_PUSH_OBJENT,	instructionPointer==27634
+|							-(((int*)localstack))[1]==1065353216
+|								-instructionPointer==27634
+|								-OP_STORE_F
+|
+|
+|-lots of idActor::Event_PlayCycle() are missing
+|	-idProgram::ReturnString()
+|		-idEntity::Event_GetKey()
+|			-idProgram::ReturnString("path_cycleanim")
+|				-which has "classname" as key
+|					-which is set in idInterpreter::PushString() #56
+|						-idCompiler::EmitOpcode() 23726
+|					-OP_INDIRECT_BOOL - instructionPoitner==23324
+|						-GetScriptObject() returns empty obj
+|							-(((gameLocal.entities[1712])->scriptObject).data)[352] should be 1
+|								-which is set at OP_STOREP_FTOBOOL in idInterpreter::Execute() instructionPointer == 22614
+|								-so how is the gameLocal.entities[] being instantiated, and how is it referencing the local stack?
+|									-entityNumber	1712	int
+|									-let's try injecting it with poison?
+|									-idGameLocal::RegisterEntity()
+|									-idScriptObject::SetType() #53
+|									-::LinkTo()????????????
+|									idInterpreter::Execute()
+|									OP_ADDRESS
+|									var_c.evalPtr->bytePtr = &obj->data[ st->b->value.ptrOffset ]; 
+|										sets evalPtr, not the other way around, obviously
+|	-the data is pushed on a localstack, but then we use a different localstack down the line?
+|		-the string is copied to the 2nd localstack via a simple idInterpreter::PushString(), 67 & 70 respectively.
+|			-which is set in OP_INDIRECT_S >>>> idInterpreter::SetString(), with instructionPointer==22543
+|				-set in OP_STOREP_S >>>>instructionPointer==22889
+|--------------------------------------------------------------------------------------------------------------------------------------------------
+====================================================================================================================================================
+				
+-ok, back to the negative values...
+	-should we explore the out of bounds warnings first?
+		-idEntity::RunPhysics()
+		-moveable_diamondbox_sm_1
+		-moveable_diamondbox_sm_2
+			-the order of some of nodes is wrong. moveable_chair2_3 >>>> 2120 idEntity::BecomeActive()
+			-does the order get jumbled in idGameLocal::SortActiveEntityList()?
+				-no
+			-what happens after the initial 2000+ idEntity::BecomeActive() is the problem
+				strstr(activeNode.owner->name.data, "moveable_chair2_3")
+				-no it's not, moveable_chair2_3 becomes active only once, yet it's in our list thrice?
+			-ok, so let's print out the chain size, and see when it changes.
+				-good thinking batman! turns out we were comparing multiple frames. the first 2058 values, are the same frame, and are equivalent.
+					-after that it's like this:
+						j++		c++
+						222		227
+						218		184
+						217		180
+						217		169
+						217		169
+						217		169
+					-this decrease in entities also happens in idGameLocal::RunFrame(), as the stupid entities are removed
+						1837	1844 are removed
+							-ok, so we compared the removed items, and surprise surprise, the stuff not removed is the extra shit we see in the next round...
+								-moveable_chair2_3.thinkFlags == 2, tim_moveable_foamcup_3 as well...TH_PHYSICS
+									-idEntity::BecomeInactive() ---> 8
+										-idPhysics_RigidBody::DropToFloorAndRest() should rest, but it doesn't
+											idCollisionModelManagerLocal::TraceThroughModel()
+											idCollisionModelManagerLocal::TraceThroughAxialBSPTree_r()
+											.
+											.
+											.
+											.
+											idCollisionModelManagerLocal::TranslateTrmVertexThroughPolygon()
+												-missing '~' in FLOATSIGNBITNOTSET()
+									-idEntity::BecomeInactive() ---> 0
+						-almost everything is added/removed in idEvent::ServiceEvents()
+						-some are removed within the idTrigger destructor which is called in idEntity::~idEntity()---> idClass::Event_Remove().
+						-the order of the Schedule() & Alloc() are weird in the Remove() chain of the linkedList between 2058 and the next one
+						-Ok, so now we're up to 1841 instead of the previous 1837, still 3 shy of 1844 though.
+						 and coincidentally, there are 1847 numEntitiesToDeactivate, which is also 3 less than the 1850 in the original.
+							tim_moveable_foamcup_3
+							tim_moveable_foamcup_6
+							tim_moveable_foamcup_7
+							-idCollisionModelManagerLocal::TraceTrmThroughNode(), tw->positionTest == false
+							
+		
+
+the interpreter started freaking out, after adding some destructors.		
+-locals stack overflow
+	-idInterpreter::CallEvent() -> multiFrameEvent==null
+		-no
+	-idInterpreter::GetScriptObject() in idInterpreter::Execute() returns null, which should NEVER happen.
+	
+Warnings:
+-WARNING: location entity 'Security Checkpoint' overlaps 'Mars City Hangar'
+    -idGameLocal::SpreadLocations()
+        -portalAreas[areaNum1].connectedAreaNum[attribute] has the wrong values
+            -idRenderWorldLocal::FloodConnectedAreas() -> 171
+                -idRenderWorldLocal::SetPortalState() wrong portal qhandle
+                    -idRenderWorldLocal::SetPortalState() wrong blackTypes value                    
+-WARNING: idAFTree::Factor: couldn't invert 4x4 matrix for constraint 'light'
+    .
+    .
+    .
+    - ......inertiaTensor is set in idClipModel::GetMassProperties()
+        -idTraceModel::GetMassProperties()
+-WARNING: rigid body not at rest for entity 'moveable_chair2_3' type 'neo.Game.Moveable$idMoveable' at (-0 -0 0)
+    -idPhysics_RigidBody::EvaluateContacts() -> contacts have the wrong values
+        -idCollisionModelManagerLocal::TranslateTrmThroughPolygon() tw.bounds and p.bounds have WRONG WRONG values
+            -idCollisionModelManagerLocal::Translation() -> tw.start -> start and end are empty
+                -idPhysics_RigidBody::EvaluateContacts() full circle...clipModel.GetOrigin() is empty
+                    -idPhysics_RigidBody::DropToFloorAndRest() -> idClip::Translation() -> idClipModel::Link()
+-GL_INVALID_VALUE error generated. Width and height must not be negative.
+    -idObjective::Event_CamShot()
+        -R_DeriveLightData()
+            -light_4722 idLight::PresentLightDefChange()
+                -R_AxisToModelMatrix() light->parms.axis, light->parms.origin
+                    -GetPhysics()->GetAxis() in idLight::Present() has wrong value
+                    .   -which is set in idPhysics_Static::Evaluate()
+                    .       -env_swinglight_long_wbulbs_4
+                    .           -CreateFrame
+                    .               -animator.AFPoseJointFrame in idAF::UpdateAnimation()
+                    .                   -idAnimator::FinishAFPose()
+                    .                       -SIMDProcessor->ConvertJointMatsToJointQuats()
+                    -back to this level
+                        -idLight::PresentLightDefChange() -> renderLight.axis
+                            -idLight::Present()
+                                -idPhysics_Static::Evaluate()...again
+                                    -idEntity::GetMasterPosition()
+                                        -masterAnimator.joints[5] 
+                                            -ConvertJointQuatsToJointMats() in CreateFrame() returns the wrong values, because the jointFrame quaternions have the wrong values
+                                                -models/md5/environments/swinglight_long_wbulbs.md5anim
+                        
+                                                -0.707106769
+                                                
++		[0]	{mat=0x24289e20 {1.00000000, 0.000000000, -0.000000000, 0.000000000, -0.000000000, 3.57627869e-007, ...} }	idJointMat
++		[1]	{mat=0x24289e50 {-0.999999523, 0.000000000, 0.000000000, 0.000000000, 0.000000000, -3.57627698e-007, ...} }	idJointMat
++		[2]	{mat=0x24289e80 {-0.999999523, 0.000000000, 0.000000000, 0.000000000, 0.000000000, -3.57627698e-007, ...} }	idJointMat
++		[3]	{mat=0x24289eb0 {-0.999999523, 0.000000000, 0.000000000, 0.000000000, 0.000000000, -3.57627698e-007, ...} }	idJointMat
++		[4]	{mat=0x24289ee0 {-0.999999523, 0.000000000, 0.000000000, 0.000000000, 0.000000000, -3.57627698e-007, ...} }	idJointMat
+-		[5]	{mat=0x24289f10 {0.999999046, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 3.57627528e-007, -0.999999702, ...} }	idJointMat
+-		mat	0x24289f10 {0.999999046, 0.000000000, 0.000000000, 0.000000000, 0.000000000, 3.57627528e-007, -0.999999702, ...}	float[12]
+		[0]	0.999999046	float
+		[1]	0.000000000	float
+		[2]	0.000000000	float
+		[3]	0.000000000	float
+		[4]	0.000000000	float
+		[5]	3.57627528e-007	float
+		[6]	-0.999999702	float
+		[7]	-2.28879471e-005	float
+		[8]	0.000000000	float
+		[9]	0.999998748	float
+		[10]	3.57627869e-007	float
+		[11]	-63.9993210	float
+-WARNING: rigid body not at rest for entity 'moveable_chair2_2' type 'neo.Game.Moveable$idMoveable' at (-1078 -1231 118)
+    -idPhysics_RigidBody::EvaluateContacts(), current.i.position.z
+        -idCollisionModelManagerLocal::Translation()
+            -idClip::Translation() loop            
+-WARNING: rigid body not at rest for entity 'tim_moveable_cokecan_5' type 'neo.Game.Moveable$idMoveable' at (-284 -1022 129)
+    -idCollisionModelManagerLocal::TranslateTrmVertexThroughPolygon() 0.00558470190
+        -idCollisionModelManagerLocal::TraceThroughModel() tw->model.DBG_count==2525
+            -idCollisionModelManagerLocal::LoadRenderModel() models/mapobjects/chairs/modchair/modtable.lwo
+                -idCollisionModelManagerLocal::AddPolygonToNode()
+-tim_char_marine_helmet_1 nullpointer
+    -BuildPathTree()
+    
+-idClip::numContacts    in idClip::Contacts()
+    -idCollisionModelManagerLocal::Translation() ----> tw.model->node->polygons empty
+            /\detour: too many contacts
+                idClip::Contacts()this.numContacts++
+                idClip::ClipModelsTouchingBounds()touchCount++
+        -((contactWinding).data)[0]	{x=634.094604 y=-1801.36975 z=0.000000000 ...}	idVec5
+        -idEntity::RunPhysics()
+        -idClipModel::Link_r() strstr(link->clipModel->entity->name.data, "env_gibs_leftleg_1")
+            (16399 hits in 1 file)
+                ~~~~~-0.034207698 0.1045222 -5.226404
+                ~~~~~-0.114609875 0.19323614 -17.504065
+                ~~~~~1.0 -3.0 -27.0
+                ~~~~~-0.034207698 0.1045222 -5.226404
+                ~~~~~-0.114609875 0.19323614 -17.504065
+                ~~~~~1.0 -3.0 -27.0
+                ~~~~~1.1891785 -1.3401172 -4.910939
+                ~~~~~3.97225 -4.6390176 -16.405588
+                ~~~~~7.049098 -10.325985 -24.138845
+                ~~~~~-2411.8108 -2674.34 242.08907
+                ~~~~~-2409.0278 -2677.639 230.5944
+                ~~~~~-2405.951 -2683.326 222.86116
+                ~~~~~-2411.8108 -2674.34 242.08907
+                ~~~~~-2409.0278 -2677.639 230.5944
+                ~~~~~-2405.951 -2683.326 222.86116
+                ~~~~~NaN NaN NaN
+                ~~~~~NaN NaN NaN
+                
+            -idPhysics_AF::CheckForCollisions()
+                -idPhysics_AF::Evolve() spatialVelocity
+                    -idAFTree::CalculateForces() totalForce
+                        -idAFTree::Solve() primaryConstraint.lm --> .s --> .body2.s
+                            -idAFTree::Factor() body.J
+                                        /\/\/\detour: idAFTree::Factor() sortedBodies[0]->inertiaTensor != sortedBodies.oGet(0).inertiaTensor
+                                -idMatX::InverseFastSelf() returns NaN's, but the input values are wrong, so let's pursue that first
+                                    -wrong input:
+                                        -idPhysics_AF::EvaluateConstraints() body.primaryConstraint.J1
+                                            -idAFConstraint_UniversalJoint::Evaluate() body.primaryConstraint.J1 --> body1.GetWorldAxis(0,1 == 1,1)
+                                                -idPhysics_AF::Rotate()
+                                                    -idMat3::operator*=( const idMat3 &a )
+                                        -idAFTree::Factor() --> child->body1->I != child.body1.I
+                                            -idPhysics_AF::EvaluateBodies() --> body->inertiaTensor
+                                    -idPhysics_AF::Evolve() --> body.acceleration --> body.totalForce
+                                        -idAFTree::Solve() primaryConstraint.lm --> .s --> .body2.s
+                                            -idAFTree::Factor() --> child.body1.J != child->body1->J --> body->invI != body.invI
+                                                waist --> chest --> torso
+
+-WARNING: rigid body not at rest for entity 'moveable_diamondbox_sm_3' type 'neo.Game.Moveable$idMoveable' at (643 -1818 24)
+    -idClip::Contacts() 4 != 7
+    |   -idCollisionModelManagerLocal::TranslateTrmEdgeThroughPolygon() --> CM_AddContact()
+    |       -CM_SetVertexSidedness() --> the pluecker is empty --> looking closer at tw.edges in TranslateTrmThroughPolygon(), we see that some edges are all zeroes???
+    |           -idCollisionModelManagerLocal::SetupTrm() --> trm.edges is zeroes??
+    |               -no, trm.edges has the correct values
+    |               -idCollisionModelManagerLocal::SetupTrm() --> hit==2
+    |                   -static tw.edges has the wrong values upon entry
+    |                       -the correct values are set, but we overwrite somewhere?
+    |                           -funny how the answer jsut stares you in the face...idCollisionModelManagerLocal::SetupTrm()
+    |       -poly.edges has the wrong values
+    |           -idCollisionModelManagerLocal::Translation() --> tw.model
+    |               -idCollisionModelManagerLocal::SetupTrmModel() 62 hits
+    |       -tw.model.vertices[].checkCount has wrong value
+    |           |----------------------|----------|--------|
+    |           |                      |  j++     |  c++   |
+    |           |----------------------|----------|--------|
+    |           |ContentsTrm           |  171     |  138   |
+    |           |ParseCollisionModel   |  456     |  456   |
+    |           |WindingOutsideBrushes |  19130   |  19130 |
+    |           |OptimizeArrays        |  114     |  114   |
+    |           |FinishModel           |  342     |  342   |
+    |           |TrmFromModel          |  76      |  76    |
+    |           |Rotation180           |  7       |  11    |
+    |           |Translation           |  553     |  564   |
+    |           |----------------------|----------|--------|
+    |           |                      |  20849   |  20831 |
+    |           |----------------------|----------|--------|
+    |           idCollisionModelManagerLocal::Rotation180()
+    |               idAFEntity_Base::Think()
+    |                   "env_gibs_leftarm_1"
+    |                       idClip::Motion() ---> rotation
+    |                           idPhysics_AF::CheckForCollisions() ---> body.current==body.next
+    |                               "kitchen_swing2"
+    |                                   body.current.worldAxis
+    |                                       idPhysics_AF::Evolve()
+    |                                           body.next.spatialVelocity ---> body.acceleration.SubVec6(0) ----> body.totalForce
+    |                                               idAFTree::CalculateForces() ---> child.lm
+    |                                                   idAFTree::Solve() ---> primaryConstraint.body2.s ---> child.s
+    |                               "env_swinglight_long_wbulbs_32_11"
+    |                                   body.next.worldAxis != body->next->worldAxis in idPhysics_AF::CheckForCollisions()
+    |                                       body.totalForce != body->totalForce in idPhysics_AF::Evolve()
+    |                                           primaryConstraint.s != primaryConstraint->s in idAFTree::Solve()
+    |                                               c.c1 != c->c1 in idAFTree::CalculateForces()
+    |                                                   idAFConstraint_UniversalJoint::Evaluate()
+    |                                       body.next.spatialVelocity != body->next->spatialVelocity in idPhysics_AF::Evolve()
+    |                                           .
+    |                                           .(same as "kitchen_swing2", but different on 6th hit)
+    |                                           .
+    |                                           c.body2.acceleration != c->body2->acceleration in idAFTree::CalculateForces()
+    |                                               body.totalForce != body->totalForce ---> body.auxForce != body->auxForce
+    |                                                   lm != lm ---> jmk != jmk  in idPhysics_AF::AuxiliaryForces()
+    |                                                       constraint.body1.response(00000's) != constraint->body1->response
+    |                                                           idAFTree::Response()
+    |                                                               body.children.oGet(j).primaryConstraint.lm!=body->children[j]->primaryConstraint->lm
+    |                                                                   idAFTree::Solve()
+    |                                                                       idAFBody::InverseWorldSpatialInertiaMultiply() ---> mPtr!=mPtr
+    |                                                                           idPhysics_AF::EvaluateBodies() ---> body.inverseInertiaTensor!=body->inverseInertiaTensor
+    |                                                                               idAFBody::SetDensity() ---> idClipModel::GetMassProperties()
+    |                                                               child->lm!=child.lm
+    |                                                                   idAFTree::Solve() ---> primaryConstraint->lm = primaryConstraint->s;
+    |                                                                       primaryConstraint->J[17]!=primaryConstraint.J[17]
+    |                                                                           idAFTree::Factor() ---> child->J = child->invI * child->J;
+    |---TranslateTrmEdgeThroughPolygon 4500 vs 4386
+          TODO: idCollisionModelManagerLocal::checkCount != idCollisionModelManagerLocal.checkCount
+            v1.sideSet!=v1->sideSet ---> 0!=5120
+            v1.side!=v1->side
+            v2.side!=v2->side
+                adasdsa called from the wrong location 
+                    idCollisionModelManagerLocal::TranslateVertexThroughTrmPolygon() f!=f --> 1.0!=7.62939453e-006 ---> trmpoly.plane.d!=24.0900021
+                        idCollisionModelManagerLocal::Translation() tw.edges[1....]!=tw->edges[1....]
+                            tw.polys-->tw.edges-->tw.vertices-->trm.verts
+    
+                        "env_gibs_leftleg_1"
+
+
+ 
+
+
+
+	
+	
+	
+
+/***********************************************************************
+
+weapon_chaingun.script
+
+***********************************************************************/
+
+#define CHAINGUN_FIRE_SKIPFRAMES	7		// 6 shots per second
+#define CHAINGUN_LOWAMMO			10
+#define CHAINGUN_NUMPROJECTILES		1
+#define	CHAINGUN_BARREL_SPEED		( 60 * ( GAME_FPS / CHAINGUN_FIRE_SKIPFRAMES ) )
+#define	CHAINGUN_BARREL_ACCEL_TIME	0.4
+#define CHAINGUN_BARREL_DECCEL_TIME	1.0
+#define	CHAINGUN_BARREL_ACCEL		( CHAINGUN_BARREL_SPEED / CHAINGUN_BARREL_ACCEL_TIME )
+#define CHAINGUN_BARREL_DECCEL		( CHAINGUN_BARREL_SPEED / CHAINGUN_BARREL_DECCEL_TIME )
+
+// blend times
+#define CHAINGUN_IDLE_TO_LOWER		4
+#define CHAINGUN_IDLE_TO_FIRE		0
+#define	CHAINGUN_IDLE_TO_RELOAD		4
+#define CHAINGUN_RAISE_TO_IDLE		0
+#define CHAINGUN_WINDDOWN_TO_IDLE	0
+#define CHAINGUN_RELOAD_TO_IDLE		0
+
+object weapon_chaingun : weapon_base {
+	entity		world_model;
+	float		world_barrel_joint;
+	float		barrel_joint;
+	float		barrel_angle;
+	float		current_rate;
+	float		start_rate;
+	float		end_rate;
+	float		spin_start;
+	float		spin_end;
+	float		spread;
+	
+	void		init();
+	
+	void		UpdateBarrel();
+	void		SpinUp();
+	void		SpinDown();
+	
+	void		Lower();
+	void		Raise();
+	void		Idle();
+	void		Fire();
+	void		Reload();
+	void		ExitCinematic();
+};
+
+void weapon_chaingun::init() {
+	world_model		= getWorldModel();
+	world_barrel_joint = world_model.getJointHandle( "toob" );
+	barrel_joint	= getJointHandle( "spinner" );
+	barrel_angle	= 0;
+	current_rate	= 0;
+	start_rate		= 0;
+	end_rate		= 0;
+	spin_start		= 0;
+	spin_end		= 0;
+	spread			= getFloatKey( "spread" );
+
+	weaponState( "Raise", 0 );
+}
+
+void weapon_chaingun::destroy() {
+	stopSound( SND_CHANNEL_BODY3, false );
+}
+
+void weapon_chaingun::UpdateBarrel() {
+	float currentTime;
+	float t;
+	vector ang;
+	
+	currentTime = sys.getTime();
+	if ( currentTime < spin_end ) {
+		t = ( currentTime - spin_start ) / ( spin_end - spin_start );
+		current_rate = start_rate + t * ( end_rate - start_rate );
+	} else {
+		current_rate = end_rate;
+	}
+	
+	if ( current_rate ) {
+		barrel_angle = barrel_angle + current_rate * GAME_FRAMETIME;
+		
+		ang_x = 0;
+		ang_y = 0;
+		ang_z = barrel_angle;	
+		setJointAngle( barrel_joint, JOINTMOD_LOCAL, ang );
+
+		ang_y = barrel_angle;
+		ang_z = 0;
+		world_model.setJointAngle( world_barrel_joint, JOINTMOD_LOCAL, ang );	
+	}
+}
+
+void weapon_chaingun::SpinUp() {
+	start_rate = current_rate;
+	end_rate = CHAINGUN_BARREL_SPEED;
+	spin_start = sys.getTime();
+	spin_end = spin_start + ( end_rate - current_rate ) / CHAINGUN_BARREL_ACCEL;
+	startSound( "snd_windup", SND_CHANNEL_BODY3, false );
+}
+
+void weapon_chaingun::SpinDown() {
+	start_rate = current_rate;
+	end_rate = 0;
+	spin_start = sys.getTime();
+	spin_end = spin_start + ( current_rate - end_rate ) / CHAINGUN_BARREL_DECCEL;
+	startSound( "snd_winddown", SND_CHANNEL_BODY3, false );
+}
+
+void weapon_chaingun::Raise() {
+	weaponRising();
+	playAnim( ANIMCHANNEL_ALL, "raise" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, CHAINGUN_RAISE_TO_IDLE ) );
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+	weaponState( "Idle", CHAINGUN_RAISE_TO_IDLE );
+}
+
+void weapon_chaingun::Lower() {
+	weaponLowering();
+	playAnim( ANIMCHANNEL_ALL, "putaway" );
+	
+	while( !animDone( ANIMCHANNEL_ALL, 0 ) ) {
+		UpdateBarrel();
+		waitFrame();
+	}
+	
+	weaponHolstered();
+	waitUntil( WEAPON_RAISEWEAPON );
+	weaponState( "Raise", 0 );
+}
+
+void weapon_chaingun::Idle() {
+	float ammoClip;
+	float avail;
+	float clip_size;
+	
+	clip_size = clipSize();	
+	
+	if ( !ammoInClip() ) {
+		weaponOutOfAmmo();
+	} else {
+		weaponReady();
+	}
+
+	while( 1 ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "Lower", CHAINGUN_IDLE_TO_LOWER );
+		}
+		ammoClip = ammoInClip();
+		if ( WEAPON_ATTACK || WEAPON_NETFIRING ) {
+			if ( WEAPON_NETFIRING || ammoClip > 0 ) {
+				weaponState( "Fire", CHAINGUN_IDLE_TO_FIRE );
+			} else if ( ammoAvailable() > 0 ) {
+				if ( autoReload() ) {
+					netReload();
+					weaponState( "Reload", CHAINGUN_IDLE_TO_RELOAD );
+				}
+			}
+		}
+		if ( WEAPON_RELOAD && ( ammoAvailable() > ammoClip ) && ( ammoClip < clip_size ) ) {
+			netReload();
+			weaponState( "Reload", CHAINGUN_IDLE_TO_RELOAD );
+		}
+		if ( WEAPON_NETRELOAD ) {
+			WEAPON_NETRELOAD = false;
+			weaponState( "Reload", CHAINGUN_IDLE_TO_RELOAD );
+		}
+		UpdateBarrel();
+		waitFrame();
+	}
+}
+
+void weapon_chaingun::Fire() {
+	float ammoClip;
+	float currentTime;
+	float skip;
+
+	SpinUp();
+	ammoClip = ammoInClip();
+	while( ( current_rate < end_rate ) && !WEAPON_RELOAD && ( WEAPON_NETFIRING || ( WEAPON_ATTACK && ( ammoClip > 0 ) ) ) ) {
+		UpdateBarrel();
+		waitFrame();
+		ammoClip = ammoInClip();
+	}
+		
+	startSound( "snd_spin", SND_CHANNEL_BODY3, false );
+	ammoClip = ammoInClip();
+	while ( !WEAPON_RELOAD && ( WEAPON_NETFIRING || ( WEAPON_ATTACK && ( ammoClip > 0 ) ) ) ) {
+		launchProjectiles( CHAINGUN_NUMPROJECTILES, spread, 0, 1.0, 1.0 );
+		startSound( "snd_fire", SND_CHANNEL_WEAPON, false );
+		ammoClip = ammoInClip();
+		if ( ammoClip == CHAINGUN_LOWAMMO ) {
+			startSound( "snd_lowammo", SND_CHANNEL_ITEM, false );
+		}
+
+		// skip frames
+		for( skip = 0; skip < CHAINGUN_FIRE_SKIPFRAMES; skip++ ) {
+			UpdateBarrel();
+			waitFrame();
+		}
+	}
+
+	SpinDown();
+	weaponState( "Idle", CHAINGUN_WINDDOWN_TO_IDLE );
+}
+
+void weapon_chaingun::Reload() {
+	weaponReloading();
+	playAnim( ANIMCHANNEL_ALL, "reload" );
+	while( !animDone( ANIMCHANNEL_ALL, CHAINGUN_RELOAD_TO_IDLE ) ) {
+		UpdateBarrel();
+		waitFrame();
+	}
+	addToClip( clipSize() );
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+	weaponState( "Idle", CHAINGUN_RELOAD_TO_IDLE );
+}
+
+void weapon_chaingun::ExitCinematic() {
+	current_rate	= 0;
+	start_rate		= 0;
+	end_rate		= 0;
+	spin_start		= 0;
+	spin_end		= 0;
+
+	weaponState( "Idle", 0 );
+}

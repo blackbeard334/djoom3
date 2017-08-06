@@ -9,6 +9,7 @@ import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.g_gravity;
 import static neo.Game.Game_local.gameLocal;
 import neo.Game.Physics.Clip.idClipModel;
+import neo.Game.Physics.Force.idForce;
 import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics.impactInfo_s;
 import neo.Game.Physics.Physics_Static.staticPState_s;
@@ -65,7 +66,22 @@ public class Physics_StaticMulti {
             clipModels.SetNum(1);
             clipModels.oSet(0, null);
         }
+
         // ~idPhysics_StaticMulti();
+        @Override
+        protected void _deconstructor() {
+            if (self != null && self.GetPhysics() == this) {
+                self.SetPhysics(null);
+            }
+            idForce.DeletePhysics(this);
+            for (int i = 0; i < clipModels.Num(); i++) {
+                idClipModel.delete(clipModels.oGet(i));
+            }
+        }
+
+        public static void delete(idPhysics_StaticMulti multi) {
+            multi._deconstructor();
+        }
 
         @Override
         public void Save(idSaveGame savefile) {
@@ -121,7 +137,7 @@ public class Physics_StaticMulti {
                 return;
             }
             if (clipModels.oGet(id) != null && freeClipModel) {
-//		delete clipModels[id];
+                idClipModel.delete(clipModels.oGet(id));
                 clipModels.oSet(id, null);
             }
             clipModels.RemoveIndex(id);
@@ -150,9 +166,9 @@ public class Physics_StaticMulti {
                 clipModels.AssureSize(id + 1, null);
             }
 
-//	if ( clipModels[id] && clipModels[id] != model && freeOld ) {
-//		delete clipModels[id];
-//	}
+            if (clipModels.oGet(id) != null && clipModels.oGet(id) != model && freeOld) {
+                idClipModel.delete(clipModels.oGet(id));
+            }
             clipModels.oSet(id, model);
             if (clipModels.oGet(id) != null) {
                 clipModels.oGet(id).Link(gameLocal.clip, self, id, current.oGet(id).origin, current.oGet(id).axis);
@@ -320,8 +336,8 @@ public class Physics_StaticMulti {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
-//	memset( info, 0, sizeof( *info ) );//TODO:
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
+            return new impactInfo_s();
         }
 
         @Override

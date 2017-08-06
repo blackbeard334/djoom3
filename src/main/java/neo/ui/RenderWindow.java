@@ -20,7 +20,6 @@ import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Vector.getVec3_origin;
 
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.ui.DeviceContext.idDeviceContext;
@@ -64,18 +63,16 @@ public class RenderWindow {
         //
 
         public idRenderWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.dc = null;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idRenderWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 //	// virtual ~idRenderWindow();
@@ -149,8 +146,7 @@ public class RenderWindow {
             return super.GetWinVarByName(_name, winLookup, owner);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             world = renderSystem.AllocRenderWorld();
             needsRender.data = true;
             lightOrigin.oSet(new idVec4(-128.0f, 0.0f, 0.0f, 1.0f));

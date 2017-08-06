@@ -474,7 +474,7 @@ public class IK /*ea*/ {
             }
 
             int numJoints = animator.NumJoints();
-            idJointMat[] joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
+            idJointMat[] joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
 
             // create the animation frame used to setup the IK
             GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset().oPlus(modelOffset), animator.RemoveOrigin());

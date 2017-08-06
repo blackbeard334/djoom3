@@ -2,7 +2,6 @@ package neo.Renderer;
 
 import static neo.Renderer.Model.MD5_MESH_EXT;
 import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.modelSurface_s;
 import neo.Renderer.Model_beam.idRenderModelBeam;
 import neo.Renderer.Model_liquid.idRenderModelLiquid;
 import neo.Renderer.Model_local.idRenderModelStatic;

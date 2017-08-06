@@ -415,7 +415,7 @@ public class idMat5 {
     public boolean InverseSelf() {// returns false if determinant is zero
         // 280+5+25 = 310 multiplications
         //				1 division
-        float det, invDet;
+        double det, invDet;
 
         // 2x2 sub-determinants required to calculate 5x5 determinant
         float det2_34_01 = mat[3].x * mat[4].y - mat[3].y * mat[4].x;
@@ -451,7 +451,7 @@ public class idMat5 {
         // determinant of 5x5 matrix
         det = mat[0].x * det4_1234_1234 - mat[0].y * det4_1234_0234 + mat[0].z * det4_1234_0134 - mat[0].s * det4_1234_0124 + mat[0].t * det4_1234_0123;
 
-        if (idMath.Fabs(det) < MATRIX_INVERSE_EPSILON) {
+        if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
             return false;
         }
 
@@ -533,35 +533,35 @@ public class idMat5 {
         float det4_0234_0234 = mat[0].x * det3_234_234 - mat[0].z * det3_234_034 + mat[0].s * det3_234_024 - mat[0].t * det3_234_023;
         float det4_0234_1234 = mat[0].y * det3_234_234 - mat[0].z * det3_234_134 + mat[0].s * det3_234_124 - mat[0].t * det3_234_123;
 
-        mat[0].x = det4_1234_1234 * invDet;
-        mat[0].y = -det4_0234_1234 * invDet;
-        mat[0].z = det4_0134_1234 * invDet;
-        mat[0].s = -det4_0124_1234 * invDet;
-        mat[0].t = det4_0123_1234 * invDet;
+        mat[0].x = (float) (det4_1234_1234 * invDet);
+        mat[0].y = (float) (-det4_0234_1234 * invDet);
+        mat[0].z = (float) (det4_0134_1234 * invDet);
+        mat[0].s = (float) (-det4_0124_1234 * invDet);
+        mat[0].t = (float) (det4_0123_1234 * invDet);
 
-        mat[1].x = -det4_1234_0234 * invDet;
-        mat[1].y = det4_0234_0234 * invDet;
-        mat[1].z = -det4_0134_0234 * invDet;
-        mat[1].s = det4_0124_0234 * invDet;
-        mat[1].t = -det4_0123_0234 * invDet;
+        mat[1].x = (float) (-det4_1234_0234 * invDet);
+        mat[1].y = (float) (det4_0234_0234 * invDet);
+        mat[1].z = (float) (-det4_0134_0234 * invDet);
+        mat[1].s = (float) (det4_0124_0234 * invDet);
+        mat[1].t = (float) (-det4_0123_0234 * invDet);
 
-        mat[2].x = det4_1234_0134 * invDet;
-        mat[2].y = -det4_0234_0134 * invDet;
-        mat[2].z = det4_0134_0134 * invDet;
-        mat[2].s = -det4_0124_0134 * invDet;
-        mat[2].t = det4_0123_0134 * invDet;
+        mat[2].x = (float) (det4_1234_0134 * invDet);
+        mat[2].y = (float) (-det4_0234_0134 * invDet);
+        mat[2].z = (float) (det4_0134_0134 * invDet);
+        mat[2].s = (float) (-det4_0124_0134 * invDet);
+        mat[2].t = (float) (det4_0123_0134 * invDet);
 
-        mat[3].x = -det4_1234_0124 * invDet;
-        mat[3].y = det4_0234_0124 * invDet;
-        mat[3].z = -det4_0134_0124 * invDet;
-        mat[3].s = det4_0124_0124 * invDet;
-        mat[3].t = -det4_0123_0124 * invDet;
+        mat[3].x = (float) (-det4_1234_0124 * invDet);
+        mat[3].y = (float) (det4_0234_0124 * invDet);
+        mat[3].z = (float) (-det4_0134_0124 * invDet);
+        mat[3].s = (float) (det4_0124_0124 * invDet);
+        mat[3].t = (float) (-det4_0123_0124 * invDet);
 
-        mat[4].x = det4_1234_0123 * invDet;
-        mat[4].y = -det4_0234_0123 * invDet;
-        mat[4].z = det4_0134_0123 * invDet;
-        mat[4].s = -det4_0124_0123 * invDet;
-        mat[4].t = det4_0123_0123 * invDet;
+        mat[4].x = (float) (det4_1234_0123 * invDet);
+        mat[4].y = (float) (-det4_0234_0123 * invDet);
+        mat[4].z = (float) (det4_0134_0123 * invDet);
+        mat[4].s = (float) (-det4_0124_0123 * invDet);
+        mat[4].t = (float) (det4_0123_0123 * invDet);
 
         return true;
     }
@@ -658,15 +658,15 @@ public class idMat5 {
         this.mat[4].oSet(2, r3[1].x * r2[0].z + r3[1].y * r2[1].z);
 
         // m0 = r0 - r1 * m2;	// 3x3 = 3x3 - 3x2 * 2x3
-        this.mat[0].oSet(0, r0[0].x - r1[0].x * matt[3 * 5 + 0] - r1[0].y * matt[4 * 5 + 0]);
-        this.mat[0].oSet(1, r0[0].y - r1[0].x * matt[3 * 5 + 1] - r1[0].y * matt[4 * 5 + 1]);
-        this.mat[0].oSet(2, r0[0].z - r1[0].x * matt[3 * 5 + 2] - r1[0].y * matt[4 * 5 + 2]);
-        this.mat[1].oSet(0, r0[1].x - r1[1].x * matt[3 * 5 + 0] - r1[1].y * matt[4 * 5 + 0]);
-        this.mat[1].oSet(1, r0[1].y - r1[1].x * matt[3 * 5 + 1] - r1[1].y * matt[4 * 5 + 1]);
-        this.mat[1].oSet(2, r0[1].z - r1[1].x * matt[3 * 5 + 2] - r1[1].y * matt[4 * 5 + 2]);
-        this.mat[2].oSet(0, r0[2].x - r1[2].x * matt[3 * 5 + 0] - r1[2].y * matt[4 * 5 + 0]);
-        this.mat[2].oSet(1, r0[2].y - r1[2].x * matt[3 * 5 + 1] - r1[2].y * matt[4 * 5 + 1]);
-        this.mat[2].oSet(2, r0[2].z - r1[2].x * matt[3 * 5 + 2] - r1[2].y * matt[4 * 5 + 2]);
+        this.mat[0].oSet(0, r0[0].x - r1[0].x * this.mat[3].oGet(0) - r1[0].y * this.mat[4].oGet(0));
+        this.mat[0].oSet(1, r0[0].y - r1[0].x * this.mat[3].oGet(1) - r1[0].y * this.mat[4].oGet(1));
+        this.mat[0].oSet(2, r0[0].z - r1[0].x * this.mat[3].oGet(2) - r1[0].y * this.mat[4].oGet(2));
+        this.mat[1].oSet(0, r0[1].x - r1[1].x * this.mat[3].oGet(0) - r1[1].y * this.mat[4].oGet(0));
+        this.mat[1].oSet(1, r0[1].y - r1[1].x * this.mat[3].oGet(1) - r1[1].y * this.mat[4].oGet(1));
+        this.mat[1].oSet(2, r0[1].z - r1[1].x * this.mat[3].oGet(2) - r1[1].y * this.mat[4].oGet(2));
+        this.mat[2].oSet(0, r0[2].x - r1[2].x * this.mat[3].oGet(0) - r1[2].y * this.mat[4].oGet(0));
+        this.mat[2].oSet(1, r0[2].y - r1[2].x * this.mat[3].oGet(1) - r1[2].y * this.mat[4].oGet(1));
+        this.mat[2].oSet(2, r0[2].z - r1[2].x * this.mat[3].oGet(2) - r1[2].y * this.mat[4].oGet(2));
 
         // m1 = r1 * r3;		// 3x2 = 3x2 * 2x2
         this.mat[0].oSet(3, r1[0].x * r3[0].x + r1[0].y * r3[1].x);

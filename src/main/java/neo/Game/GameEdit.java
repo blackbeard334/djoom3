@@ -10,7 +10,7 @@ import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
 import neo.Game.Game.idGameEdit;
-import neo.Game.GameSys.Class.idTypeInfo;
+
 import static neo.Game.GameSys.SysCvar.g_dragDamping;
 import static neo.Game.GameSys.SysCvar.g_dragShowSelection;
 import static neo.Game.GameSys.SysCvar.g_editEntityMode;

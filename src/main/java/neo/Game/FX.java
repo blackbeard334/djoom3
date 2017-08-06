@@ -7,7 +7,6 @@ import neo.Game.FX.idEntityFx;
 import neo.Game.FX.idFXLocalAction;
 import static neo.Game.GameSys.Class.EV_Remove;
 
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
@@ -359,10 +358,9 @@ public class FX {
                     case FX_LIGHT: {
                         if (useAction.lightDefHandle == -1) {
                             if (fxaction.type == FX_LIGHT) {
-//						memset( &useAction.renderLight, 0, sizeof( renderLight_t ) );
-                                useAction.renderLight = new renderLight_s();
-                                useAction.renderLight.origin = GetPhysics().GetOrigin().oPlus(fxaction.offset);
-                                useAction.renderLight.axis = GetPhysics().GetAxis();
+                                useAction.renderLight = new renderLight_s();//memset( &useAction.renderLight, 0, sizeof( renderLight_t ) );
+                                useAction.renderLight.origin.oSet(GetPhysics().GetOrigin().oPlus(fxaction.offset));
+                                useAction.renderLight.axis.oSet(GetPhysics().GetAxis());
                                 useAction.renderLight.lightRadius.oSet(0, fxaction.lightRadius);
                                 useAction.renderLight.lightRadius.oSet(1, fxaction.lightRadius);
                                 useAction.renderLight.lightRadius.oSet(2, fxaction.lightRadius);

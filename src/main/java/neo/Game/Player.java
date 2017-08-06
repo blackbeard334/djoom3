@@ -1593,9 +1593,9 @@ public class Player {
             privateCameraView = null;
 
 //	memset( loggedViewAngles, 0, sizeof( loggedViewAngles ) );
-            loggedViewAngles = Stream.generate(() -> new idAngles()).limit(NUM_LOGGED_VIEW_ANGLES).toArray(idAngles[]::new);
+            loggedViewAngles = Stream.generate(idAngles::new).limit(NUM_LOGGED_VIEW_ANGLES).toArray(idAngles[]::new);
 //	memset( loggedAccel, 0, sizeof( loggedAccel ) );
-            loggedAccel = Stream.generate(() -> new loggedAccel_t()).limit(NUM_LOGGED_ACCELS).toArray(loggedAccel_t[]::new);
+            loggedAccel = Stream.generate(loggedAccel_t::new).limit(NUM_LOGGED_ACCELS).toArray(loggedAccel_t[]::new);
             currentLoggedAccel = 0;
 
             focusTime = 0;
@@ -7554,7 +7554,7 @@ public class Player {
                 if (groundEnt != null && groundEnt.IsType(idAI.class)) {
                     idVec3 vel = physicsObj.GetLinearVelocity();
                     if (vel.ToVec2().LengthSqr() < 0.1f) {
-                        vel.ToVec2().oSet(physicsObj.GetOrigin().ToVec2().oMinus(groundEnt.GetPhysics().GetAbsBounds().GetCenter().ToVec2()));
+                        vel.oSet(physicsObj.GetOrigin().ToVec2().oMinus(groundEnt.GetPhysics().GetAbsBounds().GetCenter().ToVec2()));
                         vel.ToVec2().NormalizeFast();
                         vel.ToVec2().oMulSet(pm_walkspeed.GetFloat());//TODO:ToVec2 back ref.
                     } else {

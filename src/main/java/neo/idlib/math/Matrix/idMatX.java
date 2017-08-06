@@ -1,6 +1,8 @@
 package neo.idlib.math.Matrix;
 
+import java.nio.FloatBuffer;
 import java.util.Arrays;
+import neo.TempDump;
 import neo.idlib.Lib;
 import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Str.idStr;
@@ -14,6 +16,8 @@ import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Vector.idVecX;
+
+import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.idlib.math.Vector.idVecX.VECX_ALLOCA;
 
 public class idMatX {
@@ -30,11 +34,13 @@ public class idMatX {
     static final  int     MATX_MAX_TEMP       = 1024;
     //
     public static boolean DISABLE_RANDOM_TEST = false;
+    public static boolean MATX_SIMD           = true;
     //
     private int     numRows;                // number of rows
     private int     numColumns;             // number of columns
     private int     alloced;                // floats allocated, if -1 then mat points to data set with SetData
     private float[] mat;                    // memory the matrix is stored
+
     private static float[] temp = new float[MATX_MAX_TEMP + 4];    // used to store intermediate results
     private static int tempPtr;             // pointer to 16 byte aligned temporary memory
     private static int tempIndex;           // index into memory pool, wraps around
@@ -72,6 +78,10 @@ public class idMatX {
         numRows = numColumns = alloced = 0;
         mat = null;
         SetData(rows, columns, src);
+    }
+
+    public idMatX(idMatX matX) {
+        this.oSet(matX);
     }
 //public					~idMatX( void );
 
@@ -132,15 +142,15 @@ public class idMatX {
         idMatX m = new idMatX();
 
         m.SetTempSize(numRows, numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->Mul16( m.mat, mat, a, numRows * numColumns );
-//#else
-        int i, s;
-        s = numRows * numColumns;
-        for (i = 0; i < s; i++) {
-            m.mat[i] = mat[i] * a;
+        if (MATX_SIMD) {
+            SIMDProcessor.Mul16(m.mat, mat, a, numRows * numColumns);
+        } else {
+            int i, s;
+            s = numRows * numColumns;
+            for (i = 0; i < s; i++) {
+                m.mat[i] = mat[i] * a;
+            }
         }
-//#endif
         return m;
     }
 //public	idVecX			operator*( const idVecX &vec ) const;
@@ -151,11 +161,11 @@ public class idMatX {
         assert (numColumns == vec.GetSize());
 
         dst.SetTempSize(numRows);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_MultiplyVecX( dst, *this, vec );
-//#else
-        Multiply(dst, vec);
-//#endif
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_MultiplyVecX(dst, this, vec);
+        } else {
+            Multiply(dst, vec);
+        }
         return dst;
     }
 //public	idMatX			operator*( const idMatX &a ) const;
@@ -166,11 +176,11 @@ public class idMatX {
         assert (numColumns == a.numRows);
 
         dst.SetTempSize(numRows, a.numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_MultiplyMatX( dst, *this, a );
-//#else
-        Multiply(dst, a);
-//#endif
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_MultiplyMatX(dst, this, a);
+        } else {
+            Multiply(dst, a);
+        }
         return dst;
     }
 //public	idMatX			operator+( const idMatX &a ) const;
@@ -180,15 +190,15 @@ public class idMatX {
 
         assert (numRows == a.numRows && numColumns == a.numColumns);
         m.SetTempSize(numRows, numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->Add16( m.mat, mat, a.mat, numRows * numColumns );
-//#else
-        int i, s;
-        s = numRows * numColumns;
-        for (i = 0; i < s; i++) {
-            m.mat[i] = mat[i] + a.mat[i];
+        if (MATX_SIMD) {
+            SIMDProcessor.Add16(m.mat, mat, a.mat, numRows * numColumns);
+        } else {
+            int i, s;
+            s = numRows * numColumns;
+            for (i = 0; i < s; i++) {
+                m.mat[i] = mat[i] + a.mat[i];
+            }
         }
-//#endif
         return m;
     }
 //public	idMatX			operator-( const idMatX &a ) const;
@@ -198,29 +208,29 @@ public class idMatX {
 
         assert (numRows == a.numRows && numColumns == a.numColumns);
         m.SetTempSize(numRows, numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->Sub16( m.mat, mat, a.mat, numRows * numColumns );
-//#else
-        int i, s;
-        s = numRows * numColumns;
-        for (i = 0; i < s; i++) {
-            m.mat[i] = mat[i] - a.mat[i];
+        if (MATX_SIMD) {
+            SIMDProcessor.Sub16(m.mat, mat, a.mat, numRows * numColumns);
+        } else {
+            int i, s;
+            s = numRows * numColumns;
+            for (i = 0; i < s; i++) {
+                m.mat[i] = mat[i] - a.mat[i];
+            }
         }
-//#endif
         return m;
     }
 //public	idMatX &		operator*=( const float a );
 
     public idMatX oMulSet(final float a) {
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MulAssign16( mat, a, numRows * numColumns );
-//#else
-        int i, s;
-        s = numRows * numColumns;
-        for (i = 0; i < s; i++) {
-            mat[i] *= a;
+        if (MATX_SIMD) {
+            SIMDProcessor.MulAssign16(mat, a, numRows * numColumns);
+        } else {
+            int i, s;
+            s = numRows * numColumns;
+            for (i = 0; i < s; i++) {
+                mat[i] *= a;
+            }
         }
-//#endif
         idMatX.tempIndex = 0;
         return this;
     }
@@ -235,15 +245,15 @@ public class idMatX {
 
     public idMatX oPluSet(final idMatX a) {
         assert (numRows == a.numRows && numColumns == a.numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->AddAssign16( mat, a.mat, numRows * numColumns );
-//#else
-        int i, s;
-        s = numRows * numColumns;
-        for (i = 0; i < s; i++) {
-            mat[i] += a.mat[i];
+        if (MATX_SIMD) {
+            SIMDProcessor.AddAssign16(mat, a.mat, numRows * numColumns);
+        } else {
+            int i, s;
+            s = numRows * numColumns;
+            for (i = 0; i < s; i++) {
+                mat[i] += a.mat[i];
+            }
         }
-//#endif
         idMatX.tempIndex = 0;
         return this;
     }
@@ -251,15 +261,15 @@ public class idMatX {
 //public	idMatX &		operator-=( const idMatX &a );
     public idMatX oMinSet(final idMatX a) {
         assert (numRows == a.numRows && numColumns == a.numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->SubAssign16( mat, a.mat, numRows * numColumns );
-//#else
-        int i, s;
-        s = numRows * numColumns;
-        for (i = 0; i < s; i++) {
-            mat[i] -= a.mat[i];
+        if (MATX_SIMD) {
+            SIMDProcessor.SubAssign16(mat, a.mat, numRows * numColumns);
+        } else {
+            int i, s;
+            s = numRows * numColumns;
+            for (i = 0; i < s; i++) {
+                mat[i] -= a.mat[i];
+            }
         }
-//#endif
         idMatX.tempIndex = 0;
         return this;
     }
@@ -455,9 +465,12 @@ public class idMatX {
         this.Identity();
     }
 
-    public void Diag(final idVecX v) {// create diagonal matrix from vector
+    // create diagonal matrix from vector
+    public void Diag(final idVecX v) {
         Zero(v.GetSize(), v.GetSize());
-        System.arraycopy(v.p, 0, mat, 0 * numColumns + 0, v.GetSize());
+        for ( int i = 0; i < v.GetSize(); i++ ) {
+            mat[i * numColumns + i] = v.oGet(i);
+        }
     }
 
     public void Random(int seed) {
@@ -506,15 +519,15 @@ public class idMatX {
     }
 
     public void Negate() {// (*this) = - (*this)
-//#ifdef MATX_SIMD
-//	SIMDProcessor->Negate16( mat, numRows * numColumns );
-//#else
-        int i, s;
-        s = numRows * numColumns;
-        for (i = 0; i < s; i++) {
-            mat[i] = -mat[i];
+        if (MATX_SIMD) {
+            SIMDProcessor.Negate16(mat, numRows * numColumns);
+        } else {
+            int i, s;
+            s = numRows * numColumns;
+            for (i = 0; i < s; i++) {
+                mat[i] = -mat[i];
+            }
         }
-//#endif
     }
 
     public void Clamp(float min, float max) {// clamp all values
@@ -785,7 +798,7 @@ public class idMatX {
 
     public boolean IsOrthogonal(final float epsilon) {
         int ptr1, ptr2;
-        double sum;
+        float sum;
 
         if (!IsSquare()) {
             return false;
@@ -822,7 +835,7 @@ public class idMatX {
 
     public boolean IsOrthonormal(final float epsilon) {
         int ptr1, ptr2;
-        double sum;
+        float sum;
 
         if (!IsSquare()) {
             return false;
@@ -1242,9 +1255,8 @@ public class idMatX {
     public idMatX InverseFast() {// returns the inverse ( m * m.Inverse() = identity )
         idMatX invMat = new idMatX();
 
-//	invMat.SetTempSize( numRows, numColumns );//TODO:what does settemp do?
-//	memcpy( invMat.mat, mat, numRows * numColumns * sizeof( float ) );
-        invMat.SetData(numRows, numColumns, mat);
+	    invMat.SetTempSize( numRows, numColumns );
+        System.arraycopy(mat, 0, invMat.mat, 0, numRows * numColumns);
         boolean r = invMat.InverseFastSelf();
         assert (r);
         return invMat;
@@ -1319,7 +1331,7 @@ public class idMatX {
      */
     public boolean LowerTriangularInverse() {// in-place inversion, returns false if determinant is zero
         int i, j, k;
-        float d, sum;
+        double d, sum;
 
         for (i = 0; i < numRows; i++) {
             d = this.oGet(i, i);
@@ -1327,7 +1339,7 @@ public class idMatX {
             if (d == 0.0f) {
                 return false;
             }
-            this.oSet(i, i, d = 1.0f / d);
+            this.oSet(i, i, (float) (d = 1.0f / d));
 //                System.out.println("2:" + d);
 
             for (j = 0; j < i; j++) {
@@ -1335,7 +1347,7 @@ public class idMatX {
                 for (k = j; k < i; k++) {
                     sum -= this.oGet(i, k) * this.oGet(k, j);
                 }
-                this.oSet(i, j, sum * d);
+                this.oSet(i, j, (float) (sum * d));
 //                    System.out.println("3:" + sum * d);
             }
         }
@@ -1375,11 +1387,11 @@ public class idMatX {
         assert (numColumns == vec.GetSize());
 
         dst.SetTempSize(numRows);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_MultiplyVecX( dst, *this, vec );
-//#else
-        Multiply(dst, vec);
-//#endif
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_MultiplyVecX(dst, this, vec);
+        } else {
+            Multiply(dst, vec);
+        }
         return dst;
     }
 
@@ -1389,11 +1401,11 @@ public class idMatX {
         assert (numRows == vec.GetSize());
 
         dst.SetTempSize(numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_TransposeMultiplyVecX( dst, *this, vec );
-//#else
-        TransposeMultiply(dst, vec);
-//#endif
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_TransposeMultiplyVecX(dst, this, vec);
+        } else {
+            TransposeMultiply(dst, vec);
+        }
         return dst;
     }
 
@@ -1403,11 +1415,11 @@ public class idMatX {
         assert (numColumns == a.numRows);
 
         dst.SetTempSize(numRows, a.numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_MultiplyMatX( dst, *this, a );
-//#else
-        Multiply(dst, a);
-//#endif
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_MultiplyMatX(dst, this, a);
+        } else {
+            Multiply(dst, a);
+        }
         return dst;
     }
 
@@ -1417,207 +1429,207 @@ public class idMatX {
         assert (numRows == a.numRows);
 
         dst.SetTempSize(numColumns, a.numColumns);
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_TransposeMultiplyMatX( dst, *this, a );
-//#else
-        TransposeMultiply(dst, a);
-//#endif
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_TransposeMultiplyMatX(dst, this, a);
+        } else {
+            TransposeMultiply(dst, a);
+        }
         return dst;
     }
 
     public void Multiply(idVecX dst, final idVecX vec) {// dst = (*this) * vec
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_MultiplyVecX( dst, *this, vec );
-//#else
-        int i, j, m = 0;
-        final float[] mPtr, vPtr, dstPtr;
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_MultiplyVecX(dst, this, vec);
+        } else {
+            int i, j, m = 0;
+            final float[] mPtr, vPtr, dstPtr;
 
-        mPtr = mat;
-        vPtr = vec.ToFloatPtr();
-        dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numRows; i++) {
-            float sum = mPtr[m + 0] * vPtr[0];
-            for (j = 1; j < numColumns; j++) {
-                sum += mPtr[m + j] * vPtr[j];
+            mPtr = mat;
+            vPtr = vec.ToFloatPtr();
+            dstPtr = dst.ToFloatPtr();
+            for (i = 0; i < numRows; i++) {
+                float sum = mPtr[m + 0] * vPtr[0];
+                for (j = 1; j < numColumns; j++) {
+                    sum += mPtr[m + j] * vPtr[j];
+                }
+                dstPtr[i] = sum;
+                m += numColumns;
             }
-            dstPtr[i] = sum;
-            m += numColumns;
         }
-//#endif
     }
 
     public void MultiplyAdd(idVecX dst, final idVecX vec) {// dst += (*this) * vec
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_MultiplyAddVecX( dst, *this, vec );
-//#else
-        int i, j, m = 0;
-        final float[] mPtr, vPtr, dstPtr;
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_MultiplyAddVecX(dst, this, vec);
+        } else {
+            int i, j, m = 0;
+            final float[] mPtr, vPtr, dstPtr;
 
-        mPtr = mat;
-        vPtr = vec.ToFloatPtr();
-        dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numRows; i++) {
-            float sum = mPtr[0 + m] * vPtr[0];
-            for (j = 1; j < numColumns; j++) {
-                sum += mPtr[j + m] * vPtr[j];
+            mPtr = mat;
+            vPtr = vec.ToFloatPtr();
+            dstPtr = dst.ToFloatPtr();
+            for (i = 0; i < numRows; i++) {
+                float sum = mPtr[0 + m] * vPtr[0];
+                for (j = 1; j < numColumns; j++) {
+                    sum += mPtr[j + m] * vPtr[j];
+                }
+                dstPtr[i] += sum;
+                m += numColumns;
             }
-            dstPtr[i] += sum;
-            m += numColumns;
         }
-//#endif
     }
 
     public void MultiplySub(idVecX dst, final idVecX vec) {// dst -= (*this) * vec
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_MultiplySubVecX( dst, *this, vec );
-//#else
-        int i, j, m = 0;
-        final float[] mPtr, vPtr, dstPtr;
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_MultiplySubVecX(dst, this, vec);
+        } else {
+            int i, j, m = 0;
+            final float[] mPtr, vPtr, dstPtr;
 
-        mPtr = mat;
-        vPtr = vec.ToFloatPtr();
-        dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numRows; i++) {
-            float sum = mPtr[0 + m] * vPtr[0];
-            for (j = 1; j < numColumns; j++) {
-                sum += mPtr[j + m] * vPtr[j];
+            mPtr = mat;
+            vPtr = vec.ToFloatPtr();
+            dstPtr = dst.ToFloatPtr();
+            for (i = 0; i < numRows; i++) {
+                float sum = mPtr[0 + m] * vPtr[0];
+                for (j = 1; j < numColumns; j++) {
+                    sum += mPtr[j + m] * vPtr[j];
+                }
+                dstPtr[i] -= sum;
+                m += numColumns;
             }
-            dstPtr[i] -= sum;
-            m += numColumns;
         }
-//#endif
     }
 
     public void TransposeMultiply(idVecX dst, final idVecX vec) {// dst = this->Transpose() * vec
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_TransposeMultiplyVecX( dst, *this, vec );
-//#else
-        int i, j, mPtr;
-        final float[] vPtr, dstPtr;
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_TransposeMultiplyVecX(dst, this, vec);
+        } else {
+            int i, j, mPtr;
+            final float[] vPtr, dstPtr;
 
-        vPtr = vec.ToFloatPtr();
-        dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numColumns; i++) {
-            mPtr = i;
-            float sum = mat[mPtr] * vPtr[0];
-            for (j = 1; j < numRows; j++) {
-                mPtr += numColumns;
-                sum += mat[mPtr] * vPtr[j];
+            vPtr = vec.ToFloatPtr();
+            dstPtr = dst.ToFloatPtr();
+            for (i = 0; i < numColumns; i++) {
+                mPtr = i;
+                float sum = mat[mPtr] * vPtr[0];
+                for (j = 1; j < numRows; j++) {
+                    mPtr += numColumns;
+                    sum += mat[mPtr] * vPtr[j];
+                }
+                dstPtr[i] = sum;
             }
-            dstPtr[i] = sum;
         }
-//#endif
     }
 
     public void TransposeMultiplyAdd(idVecX dst, final idVecX vec) {// dst += this->Transpose() * vec
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_TransposeMultiplyAddVecX( dst, *this, vec );
-//#else
-        int i, j, mPtr;
-        final float[] vPtr, dstPtr;
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_TransposeMultiplyAddVecX(dst, this, vec );
+        } else {
+            int i, j, mPtr;
+            final float[] vPtr, dstPtr;
 
-        vPtr = vec.ToFloatPtr();
-        dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numColumns; i++) {
-            mPtr = i;
-            float sum = mat[mPtr] * vPtr[0];
-            for (j = 1; j < numRows; j++) {
-                mPtr += numColumns;
-                sum += mat[mPtr] * vPtr[j];
+            vPtr = vec.ToFloatPtr();
+            dstPtr = dst.ToFloatPtr();
+            for (i = 0; i < numColumns; i++) {
+                mPtr = i;
+                float sum = mat[mPtr] * vPtr[0];
+                for (j = 1; j < numRows; j++) {
+                    mPtr += numColumns;
+                    sum += mat[mPtr] * vPtr[j];
+                }
+                dstPtr[i] += sum;
             }
-            dstPtr[i] += sum;
         }
-//#endif
     }
 
     public void TransposeMultiplySub(idVecX dst, final idVecX vec) {// dst -= this->Transpose() * vec
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_TransposeMultiplySubVecX( dst, *this, vec );
-//#else
-        int i, j, mPtr;
-        final float[] vPtr, dstPtr;
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_TransposeMultiplySubVecX(dst, this, vec);
+        } else {
+            int i, j, mPtr;
+            final float[] vPtr, dstPtr;
 
-        vPtr = vec.ToFloatPtr();
-        dstPtr = dst.ToFloatPtr();
-        for (i = 0; i < numColumns; i++) {
-            mPtr = i;
-            float sum = mat[mPtr] * vPtr[0];
-            for (j = 1; j < numRows; j++) {
-                mPtr += numColumns;
-                sum += mat[mPtr] * vPtr[j];
+            vPtr = vec.ToFloatPtr();
+            dstPtr = dst.ToFloatPtr();
+            for (i = 0; i < numColumns; i++) {
+                mPtr = i;
+                float sum = mat[mPtr] * vPtr[0];
+                for (j = 1; j < numRows; j++) {
+                    mPtr += numColumns;
+                    sum += mat[mPtr] * vPtr[j];
+                }
+                dstPtr[i] -= sum;
             }
-            dstPtr[i] -= sum;
         }
-//#endif
     }
 
     public void Multiply(idMatX dst, final idMatX a) {// dst = (*this) * a
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_MultiplyMatX( dst, *this, a );
-//#else
-        int i, j, k, l, n;
-        float[] dstPtr;
-        final float[] m1Ptr, m2Ptr;
-        double sum;//double, the difference between life and death.
-        int m1 = 0, m2 = 0, d0 = 0;//indices
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_MultiplyMatX(dst, this, a);
+        } else {
+            int i, j, k, l, n;
+            float[] dstPtr;
+            final float[] m1Ptr, m2Ptr;
+            double sum;//double, the difference between life and death.
+            int m1 = 0, m2 = 0, d0 = 0;//indices
 
-        assert (numColumns == a.numRows);
+            assert (numColumns == a.numRows);
 
-        dstPtr = dst.ToFloatPtr();
-        m1Ptr = ToFloatPtr();
-        m2Ptr = a.ToFloatPtr();
-        k = numRows;
-        l = a.GetNumColumns();
+            dstPtr = dst.ToFloatPtr();
+            m1Ptr = ToFloatPtr();
+            m2Ptr = a.ToFloatPtr();
+            k = numRows;
+            l = a.GetNumColumns();
 
-        for (i = 0; i < k; i++) {
-            for (j = 0; j < l; j++) {
-                m2 = j;
-                sum = m1Ptr[0 + m1] * m2Ptr[0 + m2];
-                for (n = 1; n < numColumns; n++) {
-                    m2 += l;
-                    sum += m1Ptr[n + m1] * m2Ptr[0 + m2];
+            for (i = 0; i < k; i++) {
+                for (j = 0; j < l; j++) {
+                    m2 = j;
+                    sum = m1Ptr[0 + m1] * m2Ptr[0 + m2];
+                    for (n = 1; n < numColumns; n++) {
+                        m2 += l;
+                        sum += m1Ptr[n + m1] * m2Ptr[0 + m2];
 //                    System.out.printf("%f %f\n", m1Ptr[n + m1], m2Ptr[0 + m2]);
-                }
-                dstPtr[d0++] = (float) sum;
+                    }
+                    dstPtr[d0++] = (float) sum;
 //                System.out.printf("%f\n", sum);
+                }
+                m1 += numColumns;
             }
-            m1 += numColumns;
         }
-//#endif
     }
 
     public void TransposeMultiply(idMatX dst, final idMatX a) {// dst = this->Transpose() * a
-//#ifdef MATX_SIMD
-//	SIMDProcessor->MatX_TransposeMultiplyMatX( dst, *this, a );
-//#else
-        int i, j, k, l, n;
-        float[] dstPtr;
-        final float[] m1Ptr, m2Ptr;
-        double sum;
-        int m1 = 0, m2 = 0, d0 = 0;//indices
+        if (MATX_SIMD) {
+            SIMDProcessor.MatX_TransposeMultiplyMatX(dst, this, a);
+        } else {
+            int i, j, k, l, n;
+            float[] dstPtr;
+            final float[] m1Ptr, m2Ptr;
+            double sum;
+            int m1 = 0, m2 = 0, d0 = 0;//indices
 
-        assert (numRows == a.numRows);//TODO:check if these pseudo indices work like the pointers
+            assert (numRows == a.numRows);//TODO:check if these pseudo indices work like the pointers
 
-        dstPtr = dst.ToFloatPtr();
-        m1Ptr = ToFloatPtr();
-        m2Ptr = a.ToFloatPtr();
-        k = numColumns;
-        l = a.numColumns;
+            dstPtr = dst.ToFloatPtr();
+            m1Ptr = ToFloatPtr();
+            m2Ptr = a.ToFloatPtr();
+            k = numColumns;
+            l = a.numColumns;
 
-        for (i = 0; i < k; i++) {
-            for (j = 0; j < l; j++) {
-                m1 = i;
-                m2 = j;
-                sum = m1Ptr[0 + m1] * m2Ptr[0 + m2];
-                for (n = 1; n < numRows; n++) {
-                    m1 += numColumns;
-                    m2 += a.numColumns;
-                    sum += m1Ptr[0 + m1] * m2Ptr[0 + m2];
+            for (i = 0; i < k; i++) {
+                for (j = 0; j < l; j++) {
+                    m1 = i;
+                    m2 = j;
+                    sum = m1Ptr[0 + m1] * m2Ptr[0 + m2];
+                    for (n = 1; n < numRows; n++) {
+                        m1 += numColumns;
+                        m2 += a.numColumns;
+                        sum += m1Ptr[0 + m1] * m2Ptr[0 + m2];
+                    }
+                    dstPtr[d0++] = (float) sum;
                 }
-                dstPtr[d0++] = (float) sum;
             }
         }
-//#endif
     }
 
     public int GetDimension() {// returns total number of values in matrix
@@ -1647,6 +1659,21 @@ public class idMatX {
 
     public float[] ToFloatPtr() {// pointer to const matrix float array
         return mat;
+    }
+
+    public FloatBuffer ToFloatBufferPtr() {
+        return ToFloatBufferPtr(0);
+    }
+
+    public FloatBuffer ToFloatBufferPtr(final int offset) {
+        return ((FloatBuffer) FloatBuffer.wrap(mat).position(offset)).slice();
+    }
+
+    public FloatBuffer GetRowPtr(final int row) {
+        final int start = row * numColumns;
+//        final int end = start + numColumns;
+//        return ((FloatBuffer)FloatBuffer.wrap(mat).position(start).limit(end)).slice();
+        return ToFloatBufferPtr(start);
     }
 
     public void FromFloatPtr(float[] mat) {
@@ -1835,9 +1862,8 @@ public class idMatX {
 
         int[] columnIndex = new int[numRows];
         int[] rowIndex = new int[numRows];
-        boolean[] pivot = new boolean[numRows];
+        boolean[] pivot = new boolean[numRows];//memset( pivot, 0, numRows * sizeof( bool ) );
 
-//	memset( pivot, 0, numRows * sizeof( bool ) );
         // elimination with full pivoting
         for (i = 0; i < numRows; i++) {
 
@@ -3034,7 +3060,7 @@ public class idMatX {
                     for (i = l; i <= k; i++) {
                         f = s * rv1.p[i];
 
-                        if ((idMath.Fabs(f) + anorm[0]) != anorm[0] /* idMath::Fabs( f ) > idMath::FLT_EPSILON */) {
+                        if ((idMath.Fabs((float) f) + anorm[0]) != anorm[0] /* idMath::Fabs( f ) > idMath::FLT_EPSILON */) {
                             g = w.p[i];
                             h = Pythag((float) f, (float) g);
                             w.p[i] = (float) h;
@@ -5306,17 +5332,17 @@ public class idMatX {
      * Computes (a^2 + b^2)^1/2 without underflow or overflow. ============
      */
     private float Pythag(float a, float b) {
-        float at, bt, ct;
+        double at, bt, ct;
 
         at = idMath.Fabs(a);
         bt = idMath.Fabs(b);
         if (at > bt) {
             ct = bt / at;
-            return at * idMath.Sqrt(1.0f + ct * ct);
+            return (float) (at * idMath.Sqrt((float) (1.0f + ct * ct)));
         } else {
             if (bt != 0) {
                 ct = at / bt;
-                return bt * idMath.Sqrt(1.0f + ct * ct);
+                return (float) (bt * idMath.Sqrt((float) (1.0f + ct * ct)));
             } else {
                 return 0.0f;
             }
@@ -6161,20 +6187,39 @@ public class idMatX {
         return mat[column + (row * numColumns)] = value;
     }
 
+    @Deprecated
     public void oPluSet(final int row, final int column, final double value) {
+        mat[column + (row * numColumns)] += (float) value;
+    }
+
+    @Deprecated
+    public void oMinSet(final int row, final int column, final double value) {
+        mat[column + (row * numColumns)] -= (float) value;
+    }
+
+    @Deprecated
+    public void oMulSet(final int row, final int column, final double value) {
+        mat[column + (row * numColumns)] *= (float) value;
+    }
+
+    @Deprecated
+    public void oDivSet(final int row, final int column, final double value) {
+        mat[column + (row * numColumns)] /= (float) value;
+    }
+
+    public void oPluSet(final int row, final int column, final float value) {
         mat[column + (row * numColumns)] += value;
     }
 
-    // DOUBLE: let the compiler cast it back to float AFTER the value has been subtracted.
-    public void oMinSet(final int row, final int column, final double value) {
+    public void oMinSet(final int row, final int column, final float value) {
         mat[column + (row * numColumns)] -= value;
     }
 
-    public void oMulSet(final int row, final int column, final double value) {
+    public void oMulSet(final int row, final int column, final float value) {
         mat[column + (row * numColumns)] *= value;
     }
 
-    public void oDivSet(final int row, final int column, final double value) {
+    public void oDivSet(final int row, final int column, final float value) {
         mat[column + (row * numColumns)] /= value;
     }
 
@@ -6187,7 +6232,11 @@ public class idMatX {
     }
 
     public void arraycopy(final float[] src, final int destPos, final int length) {
-        System.arraycopy(src, 0, mat, destPos * numColumns, length);
+        arraycopy(src, 0, destPos, length);
+    }
+
+    public void arraycopy(final FloatBuffer src, final int destPos, final int length) {
+        arraycopy(TempDump.fbtofa(src), destPos, length);
     }
 
     public void SubVec63_oSet(final int vec6, final int vec3, final idVec3 v) {

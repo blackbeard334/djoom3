@@ -1,9 +1,8 @@
 package neo.Renderer;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
 import java.util.stream.Stream;
-import static neo.Renderer.Interaction.LIGHT_TRIS_DEFERRED;
+
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.RenderWorld.renderEntity_s;
 import neo.Renderer.VertexCache.vertCache_s;

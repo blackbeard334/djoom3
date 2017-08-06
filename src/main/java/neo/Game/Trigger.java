@@ -9,7 +9,6 @@ import static neo.Game.Entity.TH_THINK;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
 
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;

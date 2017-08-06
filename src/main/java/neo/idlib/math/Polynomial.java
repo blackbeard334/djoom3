@@ -1,6 +1,8 @@
 package neo.idlib.math;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
+
 import neo.idlib.Lib;
 import neo.idlib.math.Complex.idComplex;
 import neo.idlib.math.Math_h.idMath;
@@ -109,9 +111,7 @@ public class Polynomial {
 
         public idPolynomial oSet(final idPolynomial p) {
             Resize(p.degree, false);
-            for (int i = 0; i <= degree; i++) {
-                coefficient[i] = p.coefficient[i];
-            }
+            System.arraycopy(p.coefficient, 0, coefficient, 0, degree + 1);
             return this;
         }
 
@@ -337,7 +337,6 @@ public class Polynomial {
             }
             return true;
         }
-//
 
         public void Zero() {
             degree = 0;
@@ -349,7 +348,6 @@ public class Polynomial {
                 coefficient[i] = 0.0f;
             }
         }
-//
 
         public int GetDimension() {// get the degree of the polynomial
             return degree;
@@ -410,11 +408,10 @@ public class Polynomial {
 
         public int GetRoots(idComplex[] roots) {// get all roots
             int i, j;
-            idComplex x = new idComplex(), b, c;
+            idComplex x = new idComplex(), b = new idComplex(), c = new idComplex();
             idComplex[] coef;
 
-//	coef = (idComplex *) _alloca16( ( degree + 1 ) * sizeof( idComplex ) );
-            coef = new idComplex[degree + 1];
+            coef = new idComplex[degree + 1];//	coef = (idComplex *) _alloca16( ( degree + 1 ) * sizeof( idComplex ) );
             for (i = 0; i <= degree; i++) {
                 coef[i] = new idComplex(coefficient[i], 0.0f);
             }
@@ -425,11 +422,11 @@ public class Polynomial {
                 if (idMath.Fabs(x.i) < 2.0f * EPSILON * idMath.Fabs(x.r)) {
                     x.i = 0.0f;
                 }
-                roots[i] = x;
-                b = coef[i + 1];
+                roots[i].oSet(x);
+                b.oSet(coef[i + 1]);
                 for (j = i; j >= 0; j--) {
-                    c = coef[j];
-                    coef[j] = b;
+                    c.oSet(coef[j]);
+                    coef[j].oSet(b);
                     b.oSet(x.oMultiply(b).oPlus(c));
                 }
             }
@@ -442,14 +439,14 @@ public class Polynomial {
             }
 
             for (i = 1; i < degree; i++) {
-                x = roots[i];
+                x.oSet(roots[i]);
                 for (j = i - 1; j >= 0; j--) {
                     if (roots[j].r <= x.r) {
                         break;
                     }
-                    roots[j + 1] = roots[j];
+                    roots[j + 1].oSet(roots[j]);
                 }
-                roots[j + 1] = x;
+                roots[j + 1].oSet(x);
             }
 
             return degree;
@@ -489,7 +486,6 @@ public class Polynomial {
             }
             return num;
         }
-//
 
         public static int GetRoots1(float a, float b, float[] roots) {
             assert (a != 0.0f);
@@ -645,13 +641,10 @@ public class Polynomial {
         private void Resize(int d, boolean keep) {
             int alloc = (d + 1 + 3) & ~3;
             if (alloc > allocated) {
-//		float *ptr = (float *) Mem_Alloc16( alloc * sizeof( float ) );
-                float[] ptr = new float[alloc];
+                float[] ptr = new float[alloc];//float *ptr = (float *) Mem_Alloc16( alloc * sizeof( float ) );
                 if (coefficient != null) {
                     if (keep) {
-                        for (int i = 0; i <= degree; i++) {
-                            ptr[i] = coefficient[i];
-                        }
+                        System.arraycopy(coefficient, 0, ptr, 0, degree + 1);
                     }
 //			Mem_Free16( coefficient );
                 }
@@ -703,7 +696,7 @@ public class Polynomial {
                     return i;
                 }
                 if (i % MT == 0) {
-                    x = cx;
+                    x.oSet(cx);
                 } else {
                     x.oMinSet(dx.oMultiply(frac[i / MT]));
                 }
@@ -715,7 +708,7 @@ public class Polynomial {
             int i, num;
             float roots[] = new float[4];
             float value;
-            idComplex[] complexRoots = new idComplex[4];
+            idComplex[] complexRoots = Stream.generate(idComplex::new).limit(4).toArray(idComplex[]::new);
             idComplex complexValue;
             idPolynomial p;
 

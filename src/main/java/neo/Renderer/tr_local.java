@@ -108,7 +108,6 @@ import static neo.Renderer.tr_local.renderCommand_t.RC_SWAP_BUFFERS;
 import static neo.Renderer.tr_main.R_GlobalToNormalizedDeviceCoordinates;
 import static neo.Renderer.tr_main.R_ShutdownFrameData;
 import static neo.Renderer.tr_main.R_ToggleSmpFrame;
-import static neo.Renderer.tr_main.R_TransformEyeZToWin;
 import static neo.Renderer.tr_rendertools.RB_ShutdownDebugTools;
 import static neo.Renderer.tr_trisurf.R_InitTriSurfData;
 import static neo.Renderer.tr_trisurf.R_ShutdownTriSurfData;
@@ -121,14 +120,7 @@ import static neo.framework.DemoFile.demoSystem_t.DS_RENDER;
 import static neo.framework.EventLoop.eventLoop;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.Session.session;
-import static neo.idlib.Lib.colorBlue;
-import static neo.idlib.Lib.colorCyan;
-import static neo.idlib.Lib.colorGreen;
-import static neo.idlib.Lib.colorMagenta;
-import static neo.idlib.Lib.colorPurple;
-import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorWhite;
-import static neo.idlib.Lib.colorYellow;
 import static neo.idlib.Text.Str.C_COLOR_DEFAULT;
 import static neo.idlib.math.Vector.getVec3_zero;
 import static neo.sys.win_glimp.GLimp_Shutdown;
@@ -291,48 +283,11 @@ public class tr_local {
         
         static idScreenRect[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new idScreenRect()).
+                    generate(idScreenRect::new).
                     limit(length).
                     toArray(idScreenRect[]::new);
         }
     };
-
-    /*
-     ======================
-     R_ScreenRectFromViewFrustumBounds
-     ======================
-     */
-    static idScreenRect R_ScreenRectFromViewFrustumBounds(final idBounds bounds) {
-        idScreenRect screenRect = new idScreenRect();
-
-        screenRect.x1 = idMath.FtoiFast(0.5f * (1.0f - bounds.oGet(1).y) * (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1));
-        screenRect.x2 = idMath.FtoiFast(0.5f * (1.0f - bounds.oGet(0).y) * (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1));
-        screenRect.y1 = idMath.FtoiFast(0.5f * (1.0f + bounds.oGet(0).z) * (tr.viewDef.viewport.y2 - tr.viewDef.viewport.y1));
-        screenRect.y2 = idMath.FtoiFast(0.5f * (1.0f + bounds.oGet(1).z) * (tr.viewDef.viewport.y2 - tr.viewDef.viewport.y1));
-
-        if (RenderSystem_init.r_useDepthBoundsTest.GetInteger() != 0) {
-            float[] zmin = {0}, zmax = {0};
-            R_TransformEyeZToWin(-bounds.oGet(0).x, tr.viewDef.projectionMatrix, zmin);
-            R_TransformEyeZToWin(-bounds.oGet(1).x, tr.viewDef.projectionMatrix, zmax);
-            screenRect.zmin = zmin[0];
-            screenRect.zmax = zmax[0];
-        }
-
-        return screenRect;
-    }
-    /*
-     ======================
-     R_ShowColoredScreenRect
-     ======================
-     */
-    static final idVec4[] colors = {colorRed, colorGreen, colorBlue, colorYellow, colorMagenta, colorCyan, colorWhite, colorPurple};
-
-    static void R_ShowColoredScreenRect(final idScreenRect rect, int colorIndex) {
-        if (!rect.IsEmpty()) {
-
-            tr.viewDef.renderWorld.DebugScreenRect(colors[colorIndex & 7], rect, tr.viewDef);
-        }
-    }
 
     enum demoCommand_t {
 
@@ -374,14 +329,17 @@ public class tr_local {
     public static class drawSurf_s {
 
         public srfTriangles_s geo;
-        public viewEntity_s space;
-        public idMaterial material;                // may be NULL for shadow volumes
-        public float sort;                         // material->sort, modified by gui / entity sort offsets
-        public float[] shaderRegisters;            // evaluated and adjusted for referenceShaders
-        public drawSurf_s nextOnLight;             // viewLight chains
-        public idScreenRect scissorRect;           // for scissor clipping, local inside renderView viewport
-        public int dsFlags;                        // DSF_VIEW_INSIDE_SHADOW, etc
-        public vertCache_s[] dynamicTexCoords;     // float * in vertex cache memory
+        public viewEntity_s   space;
+        public idMaterial     material;             // may be NULL for shadow volumes
+        public float          sort;                 // material->sort, modified by gui / entity sort offsets
+        public float[]        shaderRegisters;      // evaluated and adjusted for referenceShaders
+        public drawSurf_s     nextOnLight;          // viewLight chains
+        public idScreenRect   scissorRect;          // for scissor clipping, local inside renderView viewport
+        public int            dsFlags;              // DSF_VIEW_INSIDE_SHADOW, etc
+        public vertCache_s[]  dynamicTexCoords;     // float * in vertex cache memory
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
 
         // specular directions for non vertex program cards, skybox texcoords, etc
         public void oSet(final drawSurf_s s) {

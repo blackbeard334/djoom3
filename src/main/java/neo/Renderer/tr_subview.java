@@ -35,8 +35,8 @@ public class tr_subview {
 
     static class orientation_t {
 
-        idVec3 origin;
-        idMat3 axis;
+        idVec3 origin = new idVec3();
+        idMat3 axis   = new idMat3();
     };
 
 
@@ -233,12 +233,12 @@ public class tr_subview {
         R_PlaneForSurface(drawSurf.geo, originalPlane);
         R_LocalPlaneToGlobal(drawSurf.space.modelMatrix, originalPlane, plane);
 
-        surface.origin = plane.Normal().oMultiply(-plane.oGet(3));
+        surface.origin.oSet(plane.Normal().oMultiply(-plane.oGet(3)));
         surface.axis.oSet(0, plane.Normal());
         surface.axis.oGet(0).NormalVectors(surface.axis.oGet(1), surface.axis.oGet(2));
         surface.axis.oSet(2, surface.axis.oGet(2).oNegative());
 
-        camera.origin = surface.origin;
+        camera.origin.oSet(surface.origin);
         camera.axis.oSet(0, surface.axis.oGet(0).oNegative());
         camera.axis.oSet(1, surface.axis.oGet(1));
         camera.axis.oSet(2, surface.axis.oGet(2));

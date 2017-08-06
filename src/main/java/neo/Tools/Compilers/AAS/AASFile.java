@@ -1,7 +1,7 @@
 package neo.Tools.Compilers.AAS;
 
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
+
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
 import neo.framework.DeclEntityDef.idDeclEntityDef;

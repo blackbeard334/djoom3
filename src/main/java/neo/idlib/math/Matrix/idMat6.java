@@ -500,7 +500,7 @@ public class idMat6 {
     public boolean InverseSelf() {// returns false if determinant is zero
         // 810+6+36 = 852 multiplications
         //				1 division
-        float det, invDet;
+        double det, invDet;
 
         // 2x2 sub-determinants required to calculate 6x6 determinant
         float det2_45_01 = mat[4].p[0] * mat[5].p[1] - mat[4].p[1] * mat[5].p[0];
@@ -570,7 +570,7 @@ public class idMat6 {
         det = mat[0].p[0] * det5_12345_12345 - mat[0].p[1] * det5_12345_02345 + mat[0].p[2] * det5_12345_01345
                 - mat[0].p[3] * det5_12345_01245 + mat[0].p[4] * det5_12345_01235 - mat[0].p[5] * det5_12345_01234;
 
-        if (idMath.Fabs(det) < MATRIX_INVERSE_EPSILON) {
+        if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
             return false;
         }
 
@@ -764,47 +764,47 @@ public class idMat6 {
         float det5_02345_02345 = mat[0].p[0] * det4_2345_2345 - mat[0].p[2] * det4_2345_0345 + mat[0].p[3] * det4_2345_0245 - mat[0].p[4] * det4_2345_0235 + mat[0].p[5] * det4_2345_0234;
         float det5_02345_12345 = mat[0].p[1] * det4_2345_2345 - mat[0].p[2] * det4_2345_1345 + mat[0].p[3] * det4_2345_1245 - mat[0].p[4] * det4_2345_1235 + mat[0].p[5] * det4_2345_1234;
 
-        mat[0].p[0] = det5_12345_12345 * invDet;
-        mat[0].p[1] = -det5_02345_12345 * invDet;
-        mat[0].p[2] = det5_01345_12345 * invDet;
-        mat[0].p[3] = -det5_01245_12345 * invDet;
-        mat[0].p[4] = det5_01235_12345 * invDet;
-        mat[0].p[5] = -det5_01234_12345 * invDet;
+        mat[0].p[0] = (float) (det5_12345_12345 * invDet);
+        mat[0].p[1] = (float) (-det5_02345_12345 * invDet);
+        mat[0].p[2] = (float) (det5_01345_12345 * invDet);
+        mat[0].p[3] = (float) (-det5_01245_12345 * invDet);
+        mat[0].p[4] = (float) (det5_01235_12345 * invDet);
+        mat[0].p[5] = (float) (-det5_01234_12345 * invDet);
 
-        mat[1].p[0] = -det5_12345_02345 * invDet;
-        mat[1].p[1] = det5_02345_02345 * invDet;
-        mat[1].p[2] = -det5_01345_02345 * invDet;
-        mat[1].p[3] = det5_01245_02345 * invDet;
-        mat[1].p[4] = -det5_01235_02345 * invDet;
-        mat[1].p[5] = det5_01234_02345 * invDet;
+        mat[1].p[0] = (float) (-det5_12345_02345 * invDet);
+        mat[1].p[1] = (float) (det5_02345_02345 * invDet);
+        mat[1].p[2] = (float) (-det5_01345_02345 * invDet);
+        mat[1].p[3] = (float) (det5_01245_02345 * invDet);
+        mat[1].p[4] = (float) (-det5_01235_02345 * invDet);
+        mat[1].p[5] = (float) (det5_01234_02345 * invDet);
 
-        mat[2].p[0] = det5_12345_01345 * invDet;
-        mat[2].p[1] = -det5_02345_01345 * invDet;
-        mat[2].p[2] = det5_01345_01345 * invDet;
-        mat[2].p[3] = -det5_01245_01345 * invDet;
-        mat[2].p[4] = det5_01235_01345 * invDet;
-        mat[2].p[5] = -det5_01234_01345 * invDet;
+        mat[2].p[0] = (float) (det5_12345_01345 * invDet);
+        mat[2].p[1] = (float) (-det5_02345_01345 * invDet);
+        mat[2].p[2] = (float) (det5_01345_01345 * invDet);
+        mat[2].p[3] = (float) (-det5_01245_01345 * invDet);
+        mat[2].p[4] = (float) (det5_01235_01345 * invDet);
+        mat[2].p[5] = (float) (-det5_01234_01345 * invDet);
 
-        mat[3].p[0] = -det5_12345_01245 * invDet;
-        mat[3].p[1] = det5_02345_01245 * invDet;
-        mat[3].p[2] = -det5_01345_01245 * invDet;
-        mat[3].p[3] = det5_01245_01245 * invDet;
-        mat[3].p[4] = -det5_01235_01245 * invDet;
-        mat[3].p[5] = det5_01234_01245 * invDet;
+        mat[3].p[0] = (float) (-det5_12345_01245 * invDet);
+        mat[3].p[1] = (float) (det5_02345_01245 * invDet);
+        mat[3].p[2] = (float) (-det5_01345_01245 * invDet);
+        mat[3].p[3] = (float) (det5_01245_01245 * invDet);
+        mat[3].p[4] = (float) (-det5_01235_01245 * invDet);
+        mat[3].p[5] = (float) (det5_01234_01245 * invDet);
 
-        mat[4].p[0] = det5_12345_01235 * invDet;
-        mat[4].p[1] = -det5_02345_01235 * invDet;
-        mat[4].p[2] = det5_01345_01235 * invDet;
-        mat[4].p[3] = -det5_01245_01235 * invDet;
-        mat[4].p[4] = det5_01235_01235 * invDet;
-        mat[4].p[5] = -det5_01234_01235 * invDet;
+        mat[4].p[0] = (float) (det5_12345_01235 * invDet);
+        mat[4].p[1] = (float) (-det5_02345_01235 * invDet);
+        mat[4].p[2] = (float) (det5_01345_01235 * invDet);
+        mat[4].p[3] = (float) (-det5_01245_01235 * invDet);
+        mat[4].p[4] = (float) (det5_01235_01235 * invDet);
+        mat[4].p[5] = (float) (-det5_01234_01235 * invDet);
 
-        mat[5].p[0] = -det5_12345_01234 * invDet;
-        mat[5].p[1] = det5_02345_01234 * invDet;
-        mat[5].p[2] = -det5_01345_01234 * invDet;
-        mat[5].p[3] = det5_01245_01234 * invDet;
-        mat[5].p[4] = -det5_01235_01234 * invDet;
-        mat[5].p[5] = det5_01234_01234 * invDet;
+        mat[5].p[0] = (float) (-det5_12345_01234 * invDet);
+        mat[5].p[1] = (float) (det5_02345_01234 * invDet);
+        mat[5].p[2] = (float) (-det5_01345_01234 * invDet);
+        mat[5].p[3] = (float) (det5_01245_01234 * invDet);
+        mat[5].p[4] = (float) (-det5_01235_01234 * invDet);
+        mat[5].p[5] = (float) (det5_01234_01234 * invDet);
 
         return true;
     }
@@ -924,26 +924,26 @@ public class idMat6 {
         r2[2].z = mat[5 * 6 + 0] * r0[0].z + mat[5 * 6 + 1] * r0[1].z + mat[5 * 6 + 2] * r0[2].z;
 
         // m2 = r3 * r2;
-        mat[3 * 6 + 0] = r3[0].x * r2[0].x + r3[0].y * r2[1].x + r3[0].z * r2[2].x;
-        mat[3 * 6 + 1] = r3[0].x * r2[0].y + r3[0].y * r2[1].y + r3[0].z * r2[2].y;
-        mat[3 * 6 + 2] = r3[0].x * r2[0].z + r3[0].y * r2[1].z + r3[0].z * r2[2].z;
-        mat[4 * 6 + 0] = r3[1].x * r2[0].x + r3[1].y * r2[1].x + r3[1].z * r2[2].x;
-        mat[4 * 6 + 1] = r3[1].x * r2[0].y + r3[1].y * r2[1].y + r3[1].z * r2[2].y;
-        mat[4 * 6 + 2] = r3[1].x * r2[0].z + r3[1].y * r2[1].z + r3[1].z * r2[2].z;
-        mat[5 * 6 + 0] = r3[2].x * r2[0].x + r3[2].y * r2[1].x + r3[2].z * r2[2].x;
-        mat[5 * 6 + 1] = r3[2].x * r2[0].y + r3[2].y * r2[1].y + r3[2].z * r2[2].y;
-        mat[5 * 6 + 2] = r3[2].x * r2[0].z + r3[2].y * r2[1].z + r3[2].z * r2[2].z;
+        this.mat[3].p[0] = r3[0].x * r2[0].x + r3[0].y * r2[1].x + r3[0].z * r2[2].x;
+        this.mat[3].p[1] = r3[0].x * r2[0].y + r3[0].y * r2[1].y + r3[0].z * r2[2].y;
+        this.mat[3].p[2] = r3[0].x * r2[0].z + r3[0].y * r2[1].z + r3[0].z * r2[2].z;
+        this.mat[4].p[0] = r3[1].x * r2[0].x + r3[1].y * r2[1].x + r3[1].z * r2[2].x;
+        this.mat[4].p[1] = r3[1].x * r2[0].y + r3[1].y * r2[1].y + r3[1].z * r2[2].y;
+        this.mat[4].p[2] = r3[1].x * r2[0].z + r3[1].y * r2[1].z + r3[1].z * r2[2].z;
+        this.mat[5].p[0] = r3[2].x * r2[0].x + r3[2].y * r2[1].x + r3[2].z * r2[2].x;
+        this.mat[5].p[1] = r3[2].x * r2[0].y + r3[2].y * r2[1].y + r3[2].z * r2[2].y;
+        this.mat[5].p[2] = r3[2].x * r2[0].z + r3[2].y * r2[1].z + r3[2].z * r2[2].z;
 
         // m0 = r0 - r1 * m2;
-        this.mat[0].p[0] = r0[0].x - r1[0].x * mat[3 * 6 + 0] - r1[0].y * mat[4 * 6 + 0] - r1[0].z * mat[5 * 6 + 0];
-        this.mat[0].p[1] = r0[0].y - r1[0].x * mat[3 * 6 + 1] - r1[0].y * mat[4 * 6 + 1] - r1[0].z * mat[5 * 6 + 1];
-        this.mat[0].p[2] = r0[0].z - r1[0].x * mat[3 * 6 + 2] - r1[0].y * mat[4 * 6 + 2] - r1[0].z * mat[5 * 6 + 2];
-        this.mat[1].p[0] = r0[1].x - r1[1].x * mat[3 * 6 + 0] - r1[1].y * mat[4 * 6 + 0] - r1[1].z * mat[5 * 6 + 0];
-        this.mat[1].p[1] = r0[1].y - r1[1].x * mat[3 * 6 + 1] - r1[1].y * mat[4 * 6 + 1] - r1[1].z * mat[5 * 6 + 1];
-        this.mat[1].p[2] = r0[1].z - r1[1].x * mat[3 * 6 + 2] - r1[1].y * mat[4 * 6 + 2] - r1[1].z * mat[5 * 6 + 2];
-        this.mat[2].p[0] = r0[2].x - r1[2].x * mat[3 * 6 + 0] - r1[2].y * mat[4 * 6 + 0] - r1[2].z * mat[5 * 6 + 0];
-        this.mat[2].p[1] = r0[2].y - r1[2].x * mat[3 * 6 + 1] - r1[2].y * mat[4 * 6 + 1] - r1[2].z * mat[5 * 6 + 1];
-        this.mat[2].p[2] = r0[2].z - r1[2].x * mat[3 * 6 + 2] - r1[2].y * mat[4 * 6 + 2] - r1[2].z * mat[5 * 6 + 2];
+        this.mat[0].p[0] = r0[0].x - r1[0].x * this.mat[3].p[0] - r1[0].y * this.mat[4].p[0] - r1[0].z * this.mat[5].p[0];
+        this.mat[0].p[1] = r0[0].y - r1[0].x * this.mat[3].p[1] - r1[0].y * this.mat[4].p[1] - r1[0].z * this.mat[5].p[1];
+        this.mat[0].p[2] = r0[0].z - r1[0].x * this.mat[3].p[2] - r1[0].y * this.mat[4].p[2] - r1[0].z * this.mat[5].p[2];
+        this.mat[1].p[0] = r0[1].x - r1[1].x * this.mat[3].p[0] - r1[1].y * this.mat[4].p[0] - r1[1].z * this.mat[5].p[0];
+        this.mat[1].p[1] = r0[1].y - r1[1].x * this.mat[3].p[1] - r1[1].y * this.mat[4].p[1] - r1[1].z * this.mat[5].p[1];
+        this.mat[1].p[2] = r0[1].z - r1[1].x * this.mat[3].p[2] - r1[1].y * this.mat[4].p[2] - r1[1].z * this.mat[5].p[2];
+        this.mat[2].p[0] = r0[2].x - r1[2].x * this.mat[3].p[0] - r1[2].y * this.mat[4].p[0] - r1[2].z * this.mat[5].p[0];
+        this.mat[2].p[1] = r0[2].y - r1[2].x * this.mat[3].p[1] - r1[2].y * this.mat[4].p[1] - r1[2].z * this.mat[5].p[1];
+        this.mat[2].p[2] = r0[2].z - r1[2].x * this.mat[3].p[2] - r1[2].y * this.mat[4].p[2] - r1[2].z * this.mat[5].p[2];
 
         // m1 = r1 * r3;
         this.mat[0].p[3] = r1[0].x * r3[0].x + r1[0].y * r3[1].x + r1[0].z * r3[2].x;

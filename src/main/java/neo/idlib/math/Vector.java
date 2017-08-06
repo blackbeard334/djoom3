@@ -32,7 +32,11 @@ public class Vector {
 
     @Deprecated
     public static float RAD2DEG(double a) {
-        return (float) (a * idMath.M_RAD2DEG);
+        return ((float) a) * idMath.M_RAD2DEG;
+    }
+
+    public static float RAD2DEG(float a) {
+        return a * idMath.M_RAD2DEG;
     }
 
     public static idVec2 getVec2_origin() {
@@ -433,6 +437,12 @@ public class Vector {
             return this;
         }
 
+        public idVec3 oSet(final idVec2 a) {
+            this.x = a.x;
+            this.y = a.y;
+            return this;
+        }
+
 //public	float			operator*( final  idVec3 &a ) final ;
         @Override
         public float oMultiply(final idVec3 a) {
@@ -674,14 +684,14 @@ public class Vector {
         }
 
         public float Normalize() {// returns length
-            double sqrLength, invLength;
+            float sqrLength, invLength;
 
             sqrLength = x * x + y * y + z * z;
-            invLength = idMath.InvSqrt((float) sqrLength);
+            invLength = idMath.InvSqrt(sqrLength);
             x *= invLength;
             y *= invLength;
             z *= invLength;
-            return (float) (invLength * sqrLength);
+            return invLength * sqrLength;
         }
 
         public float NormalizeFast() {// returns length
@@ -1064,7 +1074,7 @@ public class Vector {
             return value;
         }
 
-        public void oPluSet(final int i, final double value) {
+        public void oPluSet(final int i, final float value) {
             if (i == 1) {
                 y += value;
             } else if (i == 2) {
@@ -1679,10 +1689,15 @@ public class Vector {
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float p[] = new float[6];
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
         //
         //
 
-        public idVec6() {
+        private static int DBG_idVec6 = 0;
+        public idVec6() {    DBG_idVec6++;
+            int a = 0;
         }
 
         public idVec6(final float[] a) {
@@ -1926,6 +1941,13 @@ public class Vector {
 
             return normalize;
         }
+
+        @Override
+        public String toString() {
+            return "idVec6{" +
+                    "p=" + Arrays.toString(p) +
+                    '}';
+        }
     }
 
     //===============================================================
@@ -2079,18 +2101,15 @@ public class Vector {
 //public	idVecX &		operator*=( const float a );
 
         public idVecX oMulSet(final float a) {
-            idVecX m = new idVecX();
-
-            m.SetTempSize(size);
 //#ifdef VECX_SIMD
-//	SIMDProcessor->Mul16( m.p, p, a, size );
+//	SIMDProcessor->MulAssign16( p, a, size );
 //#else
             int i;
             for (i = 0; i < size; i++) {
-                m.p[i] = p[i] * a;
+                p[i] *= a;
             }
 //#endif
-            return m;
+            return this;
         }
 //public	idVecX &		operator/=( const float a );
 //public	idVecX &		operator+=( const idVecX &a );
@@ -2176,7 +2195,6 @@ public class Vector {
                 p = null;
             }
 //	assert( ( ( (int) data ) & 15 ) == 0 ); // data must be 16 byte aligned
-            assert (data.length == 16);//TODO:??
             p = data;
             size = length;
             alloced = -1;
@@ -2329,6 +2347,8 @@ public class Vector {
             return size;
         }
 
+        /**@deprecated readonly */
+        @Deprecated
         public idVec3 SubVec3(int index) {
             assert (index >= 0 && index * 3 + 3 <= size);
 //	return *reinterpret_cast<idVec3 *>(p + index * 3);
@@ -2336,6 +2356,8 @@ public class Vector {
         }
 //public	idVec3 &		SubVec3( int index );
 
+        /**@deprecated readonly */
+        @Deprecated
         public idVec6 SubVec6(int index) {
             assert (index >= 0 && index * 6 + 6 <= size);
 //	return *reinterpret_cast<idVec6 *>(p + index * 6);
@@ -2371,6 +2393,36 @@ public class Vector {
             p = new float[alloced];
             idVecX.tempIndex += alloced;
             VECX_CLEAREND();
+        }
+
+        public void SubVec3_Normalize(int i) {
+            idVec3 vec3 = new idVec3(p, i * 3);
+            vec3.Normalize();
+            this.SubVec3_oSet(i, vec3);
+        }
+
+        public void SubVec3_oSet(int i, idVec3 v) {
+            p[i * 3 + 0] = v.oGet(0);
+            p[i * 3 + 1] = v.oGet(1);
+            p[i * 3 + 2] = v.oGet(2);
+        }
+
+        public void SubVec6_oSet(int i, idVec6 v) {
+            p[i * 6 + 0] = v.oGet(0);
+            p[i * 6 + 1] = v.oGet(1);
+            p[i * 6 + 2] = v.oGet(2);
+            p[i * 6 + 3] = v.oGet(3);
+            p[i * 6 + 4] = v.oGet(4);
+            p[i * 6 + 5] = v.oGet(5);
+        }
+
+        public void SubVec6_oPluSet(int i, idVec6 v) {
+            p[i * 6 + 0] += v.oGet(0);
+            p[i * 6 + 1] += v.oGet(1);
+            p[i * 6 + 2] += v.oGet(2);
+            p[i * 6 + 3] += v.oGet(3);
+            p[i * 6 + 4] += v.oGet(4);
+            p[i * 6 + 5] += v.oGet(5);
         }
     }
 

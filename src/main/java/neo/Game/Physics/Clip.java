@@ -6,7 +6,6 @@ import static neo.CM.CollisionModel.CM_MAX_TRACE_DIST;
 import neo.CM.CollisionModel.contactInfo_t;
 import static neo.CM.CollisionModel.contactType_t.CONTACT_TRMVERTEX;
 import neo.CM.CollisionModel.trace_s;
-import neo.CM.CollisionModel_local;
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
@@ -167,6 +166,9 @@ public class Clip {
             id = model.id;
             owner = model.owner;
             origin.oSet(model.origin);
+            if (Float.isNaN(origin.oGet(0))) {
+                int a = 0;
+            }
             axis.oSet(model.axis);
             bounds.oSet(model.bounds);
             absBounds.oSet(model.absBounds);
@@ -332,10 +334,10 @@ public class Clip {
             this.entity = ent;
             this.id = newId;
             this.origin.oSet(newOrigin);
-            this.axis.oSet(newAxis);
-            if (origin.z < -1111) {
+            if (Float.isNaN(origin.z)) {
                 int a = 0;
             }
+            this.axis.oSet(newAxis);
             if (renderModelHandle != -1) {
                 this.renderModelHandle = renderModelHandle;
                 final renderEntity_s renderEntity = gameRenderWorld.GetRenderEntity(renderModelHandle);
@@ -368,7 +370,7 @@ public class Clip {
                 Unlink();	// unlink from old position
             }
             origin.oSet(newOrigin);
-            if (origin.z < -1111) {
+            if (Float.isNaN(origin.z)) {
                 int a = 0;
             }
             axis.oSet(newAxis);
@@ -377,7 +379,7 @@ public class Clip {
         public void Translate(final idVec3 translation) {							// unlinks the clip model
             Unlink();
             origin.oPluSet(translation);
-            if (origin.z < -1111) {
+            if (Float.isNaN(origin.z)) {
                 int a = 0;
             }
         }
@@ -385,7 +387,7 @@ public class Clip {
         public void Rotate(final idRotation rotation) {							// unlinks the clip model
             Unlink();
             origin.oMulSet(rotation);
-            if (origin.z < -1111) {
+            if (Float.isNaN(origin.z)) {
                 int a = 0;
             }
             axis.oMulSet(rotation.ToMat3());
@@ -440,19 +442,19 @@ public class Clip {
         }
 
         public idBounds GetBounds() {
-            return bounds;
+            return new idBounds(bounds);
         }
 
         public idBounds GetAbsBounds() {
-            return absBounds;
+            return new idBounds(absBounds);
         }
 
         public idVec3 GetOrigin() {
-            return origin;
+            return new idVec3(origin);
         }
 
         public idMat3 GetAxis() {
-            return axis;
+            return new idMat3(axis);
         }
 
         public boolean IsTraceModel() {			// returns true if this is a trace model
@@ -599,15 +601,26 @@ public class Clip {
             link.sector = node;
             link.nextInSector = node.clipLinks;
             link.prevInSector = null;
+            if (link.clipModel.entity.name.equals("env_gibs_leftleg_1")) {
+                int a = 0;
+                float x = origin.oGet(0);
+                if(Float.isNaN(x) || Float.isInfinite(x))
+                System.out.println("~~~~~" + this.origin);
+            }
             if (node.clipLinks != null) {
                 node.clipLinks.prevInSector = link;
+            }
+            if (this.entity.name.equals("marscity_cinematic_player_1") &&
+                    node.clipLinks.clipModel.entity.name.equals("env_gibs_leftleg_1")) {
+                int a = 0;
             }
             node.clipLinks = link;
             link.nextLink = clipLinks;
             clipLinks = link;
         }
 
-        private static int AllocTraceModel(final idTraceModel trm) {
+        private static int DBG_AllocTraceModel = 0;
+        private static int AllocTraceModel(final idTraceModel trm) {DBG_AllocTraceModel++;
             int i, hashKey, traceModelIndex;
             trmCache_s entry;
 
@@ -654,6 +667,17 @@ public class Clip {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
+        protected void _deconstructor() {
+            // make sure the clip model is no longer linked
+            Unlink();
+            if (traceModelIndex != -1) {
+                FreeTraceModel(traceModelIndex);
+            }
+        }
+
+        public static void delete(idClipModel clipModel) {
+            clipModel._deconstructor();
+        }
     };
 
     //===============================================================
@@ -740,7 +764,7 @@ public class Clip {
             idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
             idBounds traceBounds = new idBounds();
             float radius;
-            trace_s[] trace = new trace_s[1];
+            trace_s[] trace = {new trace_s()};
             idTraceModel trm;
 
             if (TestHugeTranslation(results[0], mdl, start, end, trmAxis)) {
@@ -962,7 +986,7 @@ public class Clip {
             }
 
             endPosition = translationalTrace[0].endpos;
-            endRotation = rotation;
+            endRotation = new idRotation(rotation);
             endRotation.SetOrigin(endPosition);
 
             if (null == passEntity || passEntity.entityNumber != ENTITYNUM_WORLD) {
@@ -1001,7 +1025,7 @@ public class Clip {
                     collisionModelManager.Rotation(trace, endPosition, endRotation, trm, trmAxis, contentMask, touch.Handle(), touch.origin, touch.axis);
 
                     if (trace[0].fraction < rotationalTrace[0].fraction) {
-                        rotationalTrace[0] = trace[0];
+                        rotationalTrace[0].oSet(trace[0]);
                         rotationalTrace[0].c.entityNum = touch.entity.entityNumber;
                         rotationalTrace[0].c.id = touch.id;
                         if (rotationalTrace[0].fraction == 0.0f) {
@@ -1012,9 +1036,9 @@ public class Clip {
             }
 
             if (rotationalTrace[0].fraction < 1.0f) {
-                results[0] = rotationalTrace[0];
+                results[0].oSet(rotationalTrace[0]);
             } else {
-                results[0] = translationalTrace[0];
+                results[0].oSet(translationalTrace[0]);
                 results[0].endAxis.oSet(rotationalTrace[0].endAxis);
             }
 
@@ -1072,13 +1096,14 @@ public class Clip {
                 }
 
                 this.numContacts++;
+                contactInfo_t[] contactz = Arrays.copyOfRange(contacts, numContacts, contacts.length);
                 n = collisionModelManager.Contacts(
-                        Arrays.copyOfRange(contacts, numContacts, contacts.length),
-                        maxContacts - numContacts,
+                        contactz, maxContacts - numContacts,
                         start, dir, depth, trm, trmAxis, contentMask,
                         touch.Handle(), touch.origin, touch.axis);
 
                 for (j = 0; j < n; j++) {
+                    contacts[numContacts] = contactz[j];
                     contacts[numContacts].entityNum = touch.entity.entityNumber;
                     contacts[numContacts].id = touch.id;
                     numContacts++;
@@ -1471,6 +1496,11 @@ public class Clip {
             anode.children[0] = CreateClipSectors_r(depth + 1, front, maxSector);
             anode.children[1] = CreateClipSectors_r(depth + 1, back, maxSector);
 
+            if(anode.children[1] != null &&
+                anode.children[1].clipLinks != null &&
+                anode.children[1].clipLinks.clipModel.entity.name.equals("env_gibs_leftleg_1")) {
+                int b = 0;
+            }
             return anode;
         }
 
@@ -1505,8 +1535,10 @@ public class Clip {
                 }
             }
 
+            int i = 0;
             for (clipLink_s link = node.clipLinks; link != null; link = link.nextInSector) {
                 idClipModel check = link.clipModel;
+                i++;
 
                 // if the clip model is enabled
                 if (!check.enabled) {

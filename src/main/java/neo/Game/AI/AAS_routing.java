@@ -1,8 +1,6 @@
 package neo.Game.AI;
 
 import java.nio.IntBuffer;
-import neo.Game.AI.AAS_routing.idRoutingCache;
-import static neo.TempDump.sizeof;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec3;
@@ -22,6 +20,7 @@ public class AAS_routing {
 
     static class idRoutingCache {
         // friend class idAASLocal;
+        public static final int BYTES = Integer.BYTES * 12;
 
         int            type;            // portal or area cache
         int            size;            // size of cache
@@ -29,12 +28,12 @@ public class AAS_routing {
         int            areaNum;         // area of the cache
         int            travelFlags;     // combinations of the travel flags
         idRoutingCache next;            // next in list
-        idRoutingCache prev;			// previous in list
-        idRoutingCache time_next;		// next in time based list
-        idRoutingCache time_prev;		// previous in time based list
-        int startTravelTime;            // travel time to start with
-        byte[] reachabilities;			// reachabilities used for routing
-        int[] travelTimes;              // travel time for every area
+        idRoutingCache prev;            // previous in list
+        idRoutingCache time_next;       // next in time based list
+        idRoutingCache time_prev;       // previous in time based list
+        int            startTravelTime; // travel time to start with
+        byte[]         reachabilities;  // reachabilities used for routing
+        int[]          travelTimes;     // travel time for every area
         //
         //
 
@@ -55,7 +54,7 @@ public class AAS_routing {
 
         // ~idRoutingCache( void );
         public int Size() {
-            return sizeof(idRoutingCache.class) + size * sizeof(reachabilities[0]) + size * sizeof(travelTimes[0]);
+            return idRoutingCache.BYTES + size * Byte.BYTES + size * Short.BYTES;//TODO:we use integers for travelTimes, but are using shorts for the sake of consistency...
         }
     };
 
@@ -72,9 +71,7 @@ public class AAS_routing {
         boolean         isInList;        // true if the update is in the list
         //
         //
-    }
-
-    ;
+    };
 
     static class idRoutingObstacle {
         // friend class idAASLocal;

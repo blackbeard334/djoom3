@@ -408,7 +408,7 @@ public class RenderWorld {
 
     public static class renderLight_s {
 
-        public idMat3 axis;				// rotation vectors, must be unit length
+        public idMat3 axis   = new idMat3();				// rotation vectors, must be unit length
         public idVec3 origin = new idVec3();
         //
         // if non-zero, the light will not show up in the specific view,
@@ -436,10 +436,10 @@ public class RenderWorld {
         // FIXME: we should probably have real plane equations here, and offer
         // a helper function for conversion from this format
         public idVec3 target = new idVec3();
-        public idVec3 right = new idVec3();
-        public idVec3 up = new idVec3();
-        public idVec3 start = new idVec3();
-        public idVec3 end = new idVec3();
+        public idVec3 right  = new idVec3();
+        public idVec3 up     = new idVec3();
+        public idVec3 start  = new idVec3();
+        public idVec3 end    = new idVec3();
         //
         // Dmap will generate an optimized shadow volume named _prelight_<lightName>
         // for the light against all the _area* models in the map.  The renderer will
@@ -641,12 +641,12 @@ public class RenderWorld {
     // modelTrace_t is for tracing vs. visual geometry
     public static class modelTrace_s {
 
-        public float fraction;			// fraction of trace completed
-        public idVec3 point;			// end point of trace in global space
-        public idVec3 normal;			// hit triangle normal vector in global space
-        public idMaterial material;		// material of hit surface
-        public renderEntity_s entity;		// render entity that was hit
-        public int jointNumber;                 // md5 joint nearest to the hit triangle
+        public float          fraction;      // fraction of trace completed
+        public idVec3         point;         // end point of trace in global space
+        public idVec3         normal;        // hit triangle normal vector in global space
+        public idMaterial     material;      // material of hit surface
+        public renderEntity_s entity;        // render entity that was hit
+        public int            jointNumber;   // md5 joint nearest to the hit triangle
 
         public void clear() {
             this.point = new idVec3();
@@ -657,18 +657,20 @@ public class RenderWorld {
         }
 
     };
-    static final int NUM_PORTAL_ATTRIBUTES = 3;
+    static final int NUM_PORTAL_ATTRIBUTES = 3;//PS_BLOCK_ALL needs to be changed manually if this value is changed.
 
     public enum portalConnection_t {
 
-        PS_BLOCK_NONE,
+        PS_BLOCK_NONE,// = 0,
         //
-        PS_BLOCK_VIEW,
-        PS_BLOCK_LOCATION,// game map location strings often stop in hallways
-        /* *******************************************/ __3,
-        PS_BLOCK_AIR, // windows between pressurized and unpresurized areas
+        PS_BLOCK_VIEW,// = 1,
+        PS_BLOCK_LOCATION,// = 2,  // game map location strings often stop in hallways
+        /** padding */ __3,
+        PS_BLOCK_AIR,// = 4,       // windows between pressurized and unpresurized areas
         //
-        PS_BLOCK_ALL;//= (1 << NUM_PORTAL_ATTRIBUTES) - 1;//TODO:
+        /** padding */ __5,
+        /** padding */ __6,
+        PS_BLOCK_ALL;//= (1 << NUM_PORTAL_ATTRIBUTES) - 1
     };
 
     public static abstract class idRenderWorld {

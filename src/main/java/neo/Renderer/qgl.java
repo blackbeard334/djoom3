@@ -17,8 +17,8 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.NVRegisterCombiners;
-import org.lwjgl.opengl.Util;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
@@ -26,7 +26,10 @@ import org.lwjgl.opengl.Util;
  */
 public class qgl {
 
-    private static final boolean GL_DEBUG = false;
+    private static final boolean GL_DEBUG = true;
+    static {
+        if (GL_DEBUG) qglEnable(GL43.GL_DEBUG_OUTPUT);
+    }
 
     static final boolean qGL_FALSE = false;
     static final boolean qGL_TRUE  = true;
@@ -633,11 +636,11 @@ public class qgl {
         GL11.glDrawBuffer(mode);
     }
 
-    public static void qglDrawElements(int mode, int count, int type, ByteBuffer indices) {DEBUG_printName("glDrawElements");
+    public static void qglDrawElements(int mode, int count, int type, ByteBuffer indices) {DEBUG_printName("glDrawElements1");
         GL11.glDrawElements(mode, count, type, indices);
     }
 
-    public static void qglDrawElements(int mode, int count, int type, int[] indices) {DEBUG_printName("glDrawElements");
+    public static void qglDrawElements(int mode, int count, int type, int[] indices) {DEBUG_printName("glDrawElements2");
         GL11.glDrawElements(mode, (IntBuffer) wrap(indices).position(count).flip());//TODO:subarray
     }
 
@@ -673,6 +676,7 @@ public class qgl {
 
     public static void qglEnd() {DEBUG_printName("glEnd");
         GL11.glEnd();
+
     }
 
     public static void qglEndList() {DEBUG_printName("glEndList");
@@ -796,6 +800,7 @@ public class qgl {
     }
 
     public static int qglGetError() {//DEBUG_printName("glGetError");
+        checkGLError();
         return GL11.glGetError();
     }
 
@@ -1806,8 +1811,18 @@ public class qgl {
 
     private static void DEBUG_printName(final String functionName) {
         if (GL_DEBUG) {
-            Util.checkGLError();
-            System.out.println(functionName);
+//            System.out.println(functionName);
+        }
+    }
+
+    private static void checkGLError() {
+        if (GL_DEBUG) {
+            final ByteBuffer messageLog = BufferUtils.createByteBuffer(1000);
+            while (GL43.glGetDebugMessageLog(1, null, null, null, null, null, messageLog) > 0) {
+                System.out.println(TempDump.bbtoa(messageLog));
+                messageLog.clear();
+            }
+//            Util.checkGLError();
         }
     }
 

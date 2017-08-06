@@ -437,17 +437,15 @@ public class GameBustOutWindow {
         //
 
         public idGameBustOutWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idGameBustOutWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 //	// ~idGameBustOutWindow();
@@ -680,8 +678,7 @@ public class GameBustOutWindow {
         public idList<BOEntity> entities;
 //        
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             BOEntity ent;
 
             // Precache images

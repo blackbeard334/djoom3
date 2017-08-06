@@ -62,9 +62,27 @@ public class CollisionModel {
         public int           entityNum;   // entity the contact surface is a part of
         public int           id;          // id of clip model the contact surface is part of
 
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
+
         public contactInfo_t() {
             point = new idVec3();
             normal = new idVec3();
+//            TempDump.printCallStack("contactInfo_t:" + DBG_count);
+        }
+
+        public contactInfo_t(contactInfo_t c) {
+            this();
+            this.type = c.type;
+            this.point.oSet(c.point);
+            this.normal.oSet(c.normal);
+            this.dist = c.dist;
+            this.contents = c.contents;
+            this.material = c.material;
+            this.modelFeature = c.modelFeature;
+            this.trmFeature = c.trmFeature;
+            this.entityNum = c.entityNum;
+            this.id = c.id;
         }
     };
 
@@ -82,6 +100,12 @@ public class CollisionModel {
             this.c = new contactInfo_t();
         }
 
+        public trace_s(final trace_s bla) {
+            endpos = new idVec3(bla.endpos);
+            endAxis = new idMat3(bla.endAxis);
+            this.c = new contactInfo_t(bla.c);
+        }
+
         @Override
         public ByteBuffer AllocBuffer() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -97,9 +121,11 @@ public class CollisionModel {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-        @Deprecated
-        public void oSet(trace_s trace_s) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        public void oSet(trace_s s) {
+            this.fraction = s.fraction;
+            this.endpos.oSet(s.endpos);
+            this.endAxis.oSet(s.endAxis);
+            this.c = new contactInfo_t(s.c);
         }
     };
 //

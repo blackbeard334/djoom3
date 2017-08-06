@@ -183,17 +183,15 @@ public class GameBearShootWindow {
     public static class idGameBearShootWindow extends idWindow {
 
         public idGameBearShootWindow(idUserInterfaceLocal gui) {
-            super();
+            super(gui);
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
 
         public idGameBearShootWindow(idDeviceContext dc, idUserInterfaceLocal gui) {
-            super();
+            super(dc, gui);
             this.dc = dc;
             this.gui = gui;
-            super.CommonInit();
             CommonInit();
         }
         // ~idGameBearShootWindow();
@@ -369,8 +367,7 @@ public class GameBearShootWindow {
             return super.GetWinVarByName(_name, winLookup, owner);
         }
 
-        @Override
-        public void CommonInit() {
+        private void CommonInit() {
             BSEntity ent;
 
             // Precache sounds
@@ -533,7 +530,7 @@ public class GameBearShootWindow {
             dir = bear.velocity;
             dir.NormalizeFast();
 
-            angle = (float) RAD2DEG(Math.atan2(dir.x, dir.y));
+            angle = RAD2DEG((float) Math.atan2(dir.x, dir.y));
             bear.rotation = angle - 90;
 
             // Update Bear scale
@@ -630,7 +627,7 @@ public class GameBearShootWindow {
 
             dot = pt.oMultiply(right);
 
-            angle = (float) RAD2DEG(Math.acos(dot));
+            angle = RAD2DEG((float) Math.acos(dot));
 
             turretAngle = idMath.ClampFloat(0.f, 90.f, angle);
         }

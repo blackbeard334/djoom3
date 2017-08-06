@@ -76,7 +76,7 @@ public class Bounds {
         }
 
         public idVec3 oSet(final int index, final idVec3 t) {
-            return b[index] = t;
+            return b[index].oSet(t);
         }
 
         public float oSet(final int x, final int y, final float value) {
@@ -663,9 +663,9 @@ public class Bounds {
                 this.b = BoundsForPointRotation(axis.oMultiply(bounds.oGet(0)).oPlus(origin), rotation).b;//TODO:check if function output is gargbage collected
                 for (i = 1; i < 8; i++) {
                     point.oSet(0, bounds.oGet((i ^ (i >> 1)) & 1).oGet(0));
-                    point.oSet(0, bounds.oGet((i >> 1) & 1).oGet(1));
-                    point.oSet(0, bounds.oGet((i >> 2) & 1).oGet(2));
-                    this.b = BoundsForPointRotation(axis.oMultiply(point).oPlus(origin), rotation).b;
+                    point.oSet(1, bounds.oGet((i >> 1) & 1).oGet(1));
+                    point.oSet(2, bounds.oGet((i >> 2) & 1).oGet(2));
+                    this.oPluSet(BoundsForPointRotation(axis.oMultiply(point).oPlus(origin), rotation));
                 }
             } else {
 
@@ -768,7 +768,7 @@ public class Bounds {
         end = rotation.oMultiply(start);
         axis = rotation.GetVec();
         origin = rotation.GetOrigin().oPlus(axis.oMultiply(axis.oMultiply((start.oMinus(rotation.GetOrigin())))));
-        radiusSqr = (start.oPlus(origin)).LengthSqr();
+        radiusSqr = start.oMinus(origin).LengthSqr();
         v1 = (start.oMinus(origin)).Cross(axis);
         v2 = (end.oMinus(origin)).Cross(axis);
 

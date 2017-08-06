@@ -157,7 +157,7 @@ public abstract class win_local {
         static final idCVar win_username               = new idCVar("win_username", "", CVAR_SYSTEM | CVAR_INIT, "windows user name");
         static final idCVar win_xpos                   = new idCVar("win_xpos", "3", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_INTEGER, "horizontal position of window");            // archived X coordinate of window position
         static final idCVar win_ypos                   = new idCVar("win_ypos", "22", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_INTEGER, "vertical position of window");            // archived Y coordinate of window position
-        static final idCVar win_outputDebugString      = new idCVar("win_outputDebugString", "0", CVAR_SYSTEM | CVAR_BOOL, "");
+        static final idCVar win_outputDebugString      = new idCVar("win_outputDebugString", "1", CVAR_SYSTEM | CVAR_BOOL, "");
         static final idCVar win_outputEditString       = new idCVar("win_outputEditString", "1", CVAR_SYSTEM | CVAR_BOOL, "");
         static final idCVar win_viewlog                = new idCVar("win_viewlog", "0", CVAR_SYSTEM | CVAR_INTEGER, "");
         static final idCVar win_timerUpdate            = new idCVar("win_timerUpdate", "0", CVAR_SYSTEM | CVAR_BOOL, "allows the game to be updated while dragging the window");

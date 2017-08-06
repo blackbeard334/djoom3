@@ -518,21 +518,21 @@ public class DeclPDA {
 
                 if (0 == token.Icmp("pda_email")) {
                     src.ReadToken(token);
-                    emails.Append(token);
+                    emails.Append(token.toString());
                     declManager.FindType(DECL_EMAIL, token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_audio")) {
                     src.ReadToken(token);
-                    audios.Append(token);
+                    audios.Append(token.toString());
                     declManager.FindType(DECL_AUDIO, token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_video")) {
                     src.ReadToken(token);
-                    videos.Append(token);
+                    videos.Append(token.toString());
                     declManager.FindType(DECL_VIDEO, token);
                     continue;
                 }

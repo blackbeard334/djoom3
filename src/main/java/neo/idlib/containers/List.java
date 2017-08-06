@@ -1,11 +1,11 @@
 package neo.idlib.containers;
 
-import com.rits.cloning.Cloner;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import neo.TempDump;
 import neo.TempDump.CPP_class;
 import static neo.TempDump.NOT;
 import static neo.TempDump.reflects._Minus;
@@ -42,7 +42,6 @@ public class List {
         protected int granularity = 16;
         private type[]      list;
         private Class<type> type;
-        private static final Cloner CLONER = new Cloner();//TODO:
         //
         private static int DBG_counter = 0;
         private final  int DBG_count   = DBG_counter++;
@@ -474,7 +473,7 @@ public class List {
             return list;
         }
         
-        public <T extends Object> T[] Ptr(final Class<? extends T[]> type) {										// returns a pointer to the list
+        public <T> T[] Ptr(final Class<? extends T[]> type) {										// returns a pointer to the list
             return Arrays.copyOf(this.list, this.num, type);
         }
 //public	const type *	Ptr( ) const;									// returns a pointer to the list
@@ -538,10 +537,10 @@ public class List {
          *
          * Because we have a mix of const refs and member pointers that we don't
          * want to rewrite in java, we will copy the const refs where necessary.
-         * @see Append(type)
+         * @see #Append(type)
          */
         public int AppendClone(final type obj) {
-            return this.Append(CLONER.shallowClone(obj));//TODO:create copy constructors instead of reflecting.
+            return this.Append(TempDump.clone(obj));//TODO:create copy constructors instead of reflecting.
         }
 
         /*
@@ -895,18 +894,19 @@ public class List {
 //        b = c;
 //    }
 //    
+
+    public static <T> void idSwap(final T[] a1, final T[] a2, final int p1, final int p2) {
+        final T c = a1[p1];
+        a1[p1] = a2[p2];
+        a2[p2] = c;
+    }
+
     public static void idSwap(final int[] array, final int p1, final int p2) {
         idSwap(array, array, p1, p2);
     }
 
     public static void idSwap(final int[] a1, final int[] a2, final int p1, final int p2) {
         final int c = a1[p1];
-        a1[p1] = a2[p2];
-        a2[p2] = c;
-    }
-
-    public static void idSwap(final Object[] a1, final int p1, final Object[] a2, final int p2) {
-        final Object c = a1[p1];
         a1[p1] = a2[p2];
         a2[p2] = c;
     }
@@ -919,12 +919,6 @@ public class List {
 
     public static void idSwap(final float[] a1, final float[] a2, final int p1, final int p2) {
         final float c = a1[p1];
-        a1[p1] = a2[p2];
-        a2[p2] = c;
-    }
-
-    public static void idSwap(final float[][] a1, final float[][] a2, final int p1, final int p2) {
-        final float[] c = a1[p1];
         a1[p1] = a2[p2];
         a2[p2] = c;
     }

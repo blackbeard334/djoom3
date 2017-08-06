@@ -1,9 +1,6 @@
 package neo.Game;
 
 import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class;
-import neo.Game.GameSys.Class.idClass;
-import neo.Game.GameSys.Event;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 

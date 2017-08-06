@@ -157,7 +157,6 @@ import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_shared.Sys_Milliseconds;
@@ -202,15 +201,13 @@ public class RenderWorld_local {
     };
 
     public static class portalArea_s {
-
-
-        int areaNum;
-        int[] connectedAreaNum;         // if two areas have matching connectedAreaNum, they are
-        //                              // not separated by a portal with the apropriate PS_BLOCK_* blockingBits
-        int viewCount;                  // set by R_FindViewLightsAndEntities
-        portal_s portals;		// never changes after load
-        areaReference_s entityRefs;	// head/tail of doubly linked list, may change
-        areaReference_s lightRefs;	// head/tail of doubly linked list, may change
+        int             areaNum;
+        int[]           connectedAreaNum;   // if two areas have matching connectedAreaNum, they are
+                                            // not separated by a portal with the apropriate PS_BLOCK_* blockingBits
+        int             viewCount;          // set by R_FindViewLightsAndEntities
+        portal_s        portals;            // never changes after load
+        areaReference_s entityRefs;         // head/tail of doubly linked list, may change
+        areaReference_s lightRefs;          // head/tail of doubly linked list, may change
 
         public portalArea_s() {
             this.connectedAreaNum = new int[NUM_PORTAL_ATTRIBUTES];
@@ -220,13 +217,13 @@ public class RenderWorld_local {
 
         public static portalArea_s[] generateArray(final int length) {
             return Stream.
-                    generate(() -> new portalArea_s()).
+                    generate(portalArea_s::new).
                     limit(length).
                     toArray(portalArea_s[]::new);
         }
     };
     static final int CHILDREN_HAVE_MULTIPLE_AREAS = -2;
-    static final int AREANUM_SOLID = -1;
+    static final int AREANUM_SOLID                = -1;
 
     public static class areaNode_t {
 
@@ -238,20 +235,20 @@ public class RenderWorld_local {
 
     public static class idRenderWorldLocal extends idRenderWorld {
 
-        public idStr mapName;				// ie: maps/tim_dm2.proc, written to demoFile
-        public long[] /*ID_TIME_T*/ mapTimeStamp;	// for fast reloads of the same level
+        public idStr                mapName;         // ie: maps/tim_dm2.proc, written to demoFile
+        public long[] /*ID_TIME_T*/ mapTimeStamp;    // for fast reloads of the same level
         //
-        public areaNode_t[] areaNodes;
-        public int numAreaNodes;
+        public areaNode_t[]         areaNodes;
+        public int                  numAreaNodes;
         //
-        public portalArea_s[] portalAreas;
-        public int numPortalAreas;
-        public int connectedAreaNum;                    // incremented every time a door portal state changes
+        public portalArea_s[]       portalAreas;
+        public int                  numPortalAreas;
+        public int                  connectedAreaNum;// incremented every time a door portal state changes
         //
-        public idScreenRect[] areaScreenRect;
+        public idScreenRect[]       areaScreenRect;
         //
-        public doublePortal_s[] doublePortals;
-        public int numInterAreaPortals;
+        public doublePortal_s[]     doublePortals;
+        public int                  numInterAreaPortals;
         //
         public idList<idRenderModel> localModels = new idList<>();
         //

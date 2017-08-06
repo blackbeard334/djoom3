@@ -69,7 +69,6 @@ import static neo.Renderer.tr_rendertools.RB_ShowOverdraw;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
 
-import neo.TempDump;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec4;
@@ -363,9 +362,9 @@ public class tr_render {
      ======================
      RB_RenderDrawSurfChainWithFunction
      ======================
-     */
+     */private static int DBG_RB_RenderDrawSurfChainWithFunction = 0;
     public static void RB_RenderDrawSurfChainWithFunction(final drawSurf_s drawSurfs, triFunc triFunc_) {
-        drawSurf_s drawSurf;
+        drawSurf_s drawSurf;DBG_RB_RenderDrawSurfChainWithFunction++;
 
         backEnd.currentSpace = null;
 

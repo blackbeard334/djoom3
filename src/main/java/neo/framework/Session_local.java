@@ -19,14 +19,7 @@ import static neo.Sound.snd_system.soundSystem;
 import neo.Sound.sound.idSoundWorld;
 
 import static neo.TempDump.*;
-import static neo.TempDump.NOT;
-import static neo.TempDump.SERIAL_SIZE;
 
-import neo.TempDump;
-import neo.TempDump.SERiAL;
-import static neo.TempDump.atobb;
-import static neo.TempDump.ctos;
-import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.Async.AsyncNetwork.MAX_ASYNC_CLIENTS;
 import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
 import static neo.framework.Async.ServerScan.serverSort_t.SORT_GAME;
@@ -191,7 +184,6 @@ import static neo.sys.win_main.Sys_GenerateEvents;
 import static neo.sys.win_main.Sys_IsWindowVisible;
 import static neo.sys.win_main.Sys_Sleep;
 import static neo.sys.win_main.Sys_WaitForEvent;
-import static neo.sys.win_shared.Sys_GetDriveFreeSpace;
 import static neo.sys.win_shared.Sys_Milliseconds;
 
 import neo.ui.ListGUI.idListGUI;

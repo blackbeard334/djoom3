@@ -1369,7 +1369,7 @@ public class Anim_Blend {
             }
 
             // set up initial pose for model (with no pose, model is just a jumbled mess)
-            list = Stream.generate(() -> new idJointMat()).limit(num).toArray(idJointMat[]::new);
+            list = Stream.generate(idJointMat::new).limit(num).toArray(idJointMat[]::new);
             pose = GetDefaultPose();
 
             // convert the joint quaternions to joint matrices
@@ -1516,7 +1516,7 @@ public class Anim_Blend {
 
             // find a specific animation
             for (i = 0; i < anims.Num(); i++) {
-                if (anims.oGet(i).FullName().equals(name)) {
+                if (name.startsWith(anims.oGet(i).FullName())) {
                     return i + 1;
                 }
             }
@@ -3149,8 +3149,8 @@ public class Anim_Blend {
                         idJointMat[][] joints = {null};
                         modelDef.SetupJoints(numJoints, joints, frameBounds, removeOriginOffset);
                         this.joints = joints[0];
+                        this.numJoints = numJoints[0];
                     }
-                    this.numJoints = numJoints[0];
                     modelDef.ModelHandle().Reset();
 
                     // set the modelDef on all channels
@@ -3856,7 +3856,7 @@ public class Anim_Blend {
                         }
                     }
 
-                    idJointMat[] joints = Stream.generate(() -> new idJointMat()).limit(numJoints).toArray(idJointMat[]::new);
+                    idJointMat[] joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
 
                     // convert the joint quaternions to joint matrices
                     SIMDProcessor.ConvertJointQuatsToJointMats(joints, jointFrame, numJoints);

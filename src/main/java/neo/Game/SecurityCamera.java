@@ -6,7 +6,6 @@ import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
 import neo.Game.Entity.idEntity;
 import neo.Game.FX.idEntityFx;
-import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Event.idEventDef;
@@ -347,6 +346,7 @@ public class SecurityCamera {
             // add to refresh list
             if (modelDefHandle == -1) {
                 modelDefHandle = gameRenderWorld.AddEntityDef(renderEntity);
+                int a = 0;
             } else {
                 gameRenderWorld.UpdateEntityDef(modelDefHandle, renderEntity);
             }

@@ -18,7 +18,7 @@ import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
-import neo.TempDump;
+
 import neo.TempDump.SERiAL;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;

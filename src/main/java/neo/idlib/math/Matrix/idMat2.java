@@ -269,22 +269,21 @@ public class idMat2 {
         // 2+4 = 6 multiplications
         //		 1 division
 //	double det, invDet, a;
-        float det, invDet, a;
+        double det, invDet, a;
 
-//	det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
-        det = this.Determinant();
+        det = this.Determinant();//	det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
 
-        if (idMath.Fabs(det) < MATRIX_INVERSE_EPSILON) {
+        if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
             return false;
         }
 
         invDet = 1.0f / det;
 
         a = mat[0].x;
-        mat[0].x = mat[1].y * invDet;
-        mat[0].y = -mat[0].y * invDet;
-        mat[1].x = -mat[1].x * invDet;
-        mat[1].y = a * invDet;
+        mat[0].x = (float) (mat[1].y * invDet);
+        mat[0].y = (float) (-mat[0].y * invDet);
+        mat[1].x = (float) (-mat[1].x * invDet);
+        mat[1].y = (float) (a * invDet);
 
         return true;
     }
@@ -302,22 +301,21 @@ public class idMat2 {
 //#if 1
         // 2+4 = 6 multiplications
         //		 1 division
-        float det, invDet, a;
+        double det, invDet, a;
 
-//	det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
-        det = this.Determinant();
+        det = this.Determinant();//	det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
 
-        if (idMath.Fabs(det) < MATRIX_INVERSE_EPSILON) {
+        if (idMath.Fabs((float) det) < MATRIX_INVERSE_EPSILON) {
             return false;
         }
 
         invDet = 1.0f / det;
 
         a = mat[0].x;
-        mat[0].x = mat[1].y * invDet;
-        mat[0].y = -mat[0].y * invDet;
-        mat[1].x = -mat[1].x * invDet;
-        mat[1].y = a * invDet;
+        mat[0].x = (float) (mat[1].y * invDet);
+        mat[0].y = (float) (-mat[0].y * invDet);
+        mat[1].x = (float) (-mat[1].x * invDet);
+        mat[1].y = (float) (a * invDet);
 
         return true;
     }

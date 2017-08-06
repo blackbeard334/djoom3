@@ -11,7 +11,7 @@ import static neo.Renderer.tr_light.R_AddDrawSurf;
 import neo.Renderer.tr_local.drawSurf_s;
 import static neo.Renderer.tr_local.tr;
 import neo.Renderer.tr_local.viewDef_s;
-import static neo.Renderer.tr_main.R_FrameAlloc;
+
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
 import static neo.Renderer.tr_main.R_GlobalVectorToLocal;
 import static neo.Renderer.tr_trisurf.R_DeriveTangents;

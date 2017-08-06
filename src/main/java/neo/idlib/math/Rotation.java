@@ -42,6 +42,11 @@ public class Rotation {
             axisValid = false;
         }
 
+        public idRotation(final idRotation rotation) {
+            this();
+            this.oSet(rotation);
+        }
+
         public void Set(final idVec3 rotationOrigin, final idVec3 rotationVec, final float rotationAngle) {
             origin.oSet(rotationOrigin);
             vec.oSet(rotationVec);
@@ -190,9 +195,16 @@ public class Rotation {
             } else if (angle < -180.0f) {
                 angle += 360.0f;
             }
+            int a = 0;
         }
 //	void				Normalize360( void );
 //
 
+        public void oSet(final idRotation other) {
+            origin.oSet(other.origin);
+            vec.oSet(other.vec);
+            angle = other.angle;
+            axisValid = other.axisValid;
+        }
     };
 }

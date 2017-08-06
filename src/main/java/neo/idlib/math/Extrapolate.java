@@ -1,5 +1,6 @@
 package neo.idlib.math;
 
+import neo.TempDump;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
@@ -47,18 +48,18 @@ public class Extrapolate {
 //	memset( &baseSpeed, 0, sizeof( baseSpeed ) );
 //	memset( &speed, 0, sizeof( speed ) );
             currentTime = -1;
-            currentValue = startValue;
+//            currentValue = startValue;
         }
 
         public void Init(final float startTime, final float duration, final type startValue, final type baseSpeed, final type speed, final /*extrapolation_t*/ int extrapolationType) {
             this.extrapolationType = extrapolationType;
             this.startTime = startTime;
             this.duration = duration;
-            this.startValue = startValue;
-            this.baseSpeed = baseSpeed;
-            this.speed = speed;
+            this.startValue = TempDump.clone(startValue);
+            this.baseSpeed = TempDump.clone(baseSpeed);
+            this.speed = TempDump.clone(speed);
             currentTime = -1;
-            currentValue = startValue;
+            currentValue = TempDump.clone(startValue);
         }
 
         public type GetCurrentValue(float time) {
@@ -91,7 +92,7 @@ public class Extrapolate {
                 }
                 case EXTRAPOLATION_ACCELLINEAR: {
                     if (0 == duration) {
-                        currentValue = startValue;
+                        currentValue =TempDump.clone(startValue);
                     } else {
                         deltaTime = (time - startTime) / duration;
                         s = (0.5f * deltaTime * deltaTime) * (duration * 0.001f);
@@ -101,7 +102,7 @@ public class Extrapolate {
                 }
                 case EXTRAPOLATION_DECELLINEAR: {
                     if (0 == duration) {
-                        currentValue = startValue;
+                        currentValue = TempDump.clone(startValue);
                     } else {
                         deltaTime = (time - startTime) / duration;
                         s = (deltaTime - (0.5f * deltaTime * deltaTime)) * (duration * 0.001f);
@@ -111,7 +112,7 @@ public class Extrapolate {
                 }
                 case EXTRAPOLATION_ACCELSINE: {
                     if (0 == duration) {
-                        currentValue = startValue;
+                        currentValue = TempDump.clone(startValue);
                     } else {
                         deltaTime = (time - startTime) / duration;
                         s = (1.0f - idMath.Cos(deltaTime * idMath.HALF_PI)) * duration * 0.001f * idMath.SQRT_1OVER2;
@@ -121,7 +122,7 @@ public class Extrapolate {
                 }
                 case EXTRAPOLATION_DECELSINE: {
                     if (0 == duration) {
-                        currentValue = startValue;
+                        currentValue = TempDump.clone(startValue);
                     } else {
                         deltaTime = (time - startTime) / duration;
                         s = idMath.Sin(deltaTime * idMath.HALF_PI) * duration * 0.001f * idMath.SQRT_1OVER2;
@@ -199,7 +200,7 @@ public class Extrapolate {
         }
 
         public void SetStartValue(final type value) {
-            startValue = value;
+            startValue = TempDump.clone(value);
             currentTime = -1;
         }
 

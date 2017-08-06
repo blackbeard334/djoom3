@@ -10,6 +10,7 @@ import static neo.Game.GameSys.SysCvar.g_gravity;
 import static neo.Game.Game_local.MASK_SOLID;
 import static neo.Game.Game_local.gameLocal;
 import neo.Game.Physics.Clip.idClipModel;
+import neo.Game.Physics.Force.idForce;
 import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics.impactInfo_s;
 import static neo.idlib.BV.Bounds.bounds_zero;
@@ -72,7 +73,22 @@ public class Physics_Static {
             hasMaster = false;
             isOrientated = false;
         }
+
         // ~idPhysics_Static();
+        @Override
+        protected void _deconstructor() {
+            if (self != null && self.GetPhysics() == this) {
+                self.SetPhysics(null);
+            }
+            idForce.DeletePhysics(this);
+            if (clipModel != null) {
+                idClipModel.delete(clipModel);
+            }
+        }
+
+        public static void delete(idPhysics_Static body) {
+            body._deconstructor();
+        }
 
         @Override
         public void Save(idSaveGame savefile) {
@@ -113,9 +129,9 @@ public class Physics_Static {
         public void SetClipModel(idClipModel model, float density, int id /*= 0*/, boolean freeOld /*= true*/) {
             assert (self != null);
 
-//	if ( clipModel && clipModel != model && freeOld ) {
-//		delete clipModel;
-//	}
+            if (clipModel != null && clipModel != model && freeOld) {
+                idClipModel.delete(clipModel);
+            }
             clipModel = model;
             if (clipModel != null) {
                 clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
@@ -222,8 +238,8 @@ public class Physics_Static {
         }
 
         @Override
-        public void GetImpactInfo(final int id, final idVec3 point, impactInfo_s info) {
-//	memset( info, 0, sizeof( *info ) );//TODO:
+        public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
+            return new impactInfo_s();
         }
 
         @Override

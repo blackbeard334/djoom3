@@ -21,7 +21,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.Common.common;
 import neo.framework.EditField.idEditField;

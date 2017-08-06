@@ -13,7 +13,7 @@ import static neo.framework.CVarSystem.CVAR_NOCHEAT;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
 import neo.framework.CVarSystem.idCVar;
 import neo.framework.CmdSystem.idCmdSystem;
-import neo.idlib.Heap.idBlockAlloc;
+
 import static neo.idlib.Lib.idLib.common;
 
 /**

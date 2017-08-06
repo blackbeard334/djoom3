@@ -1,14 +1,12 @@
 package neo.Sound;
 
 import java.nio.ByteBuffer;
-import neo.TempDump.TODO_Exception;
+
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
-import org.lwjgl.openal.EFX10;
-import org.lwjgl.openal.EFXUtil;
 
 /**
  *
@@ -36,7 +34,7 @@ public class snd_efxfile {
         public idList<idSoundEffect> effects;
 
         public idEFXFile() {
-            effects = new idList<idSoundEffect>();
+            effects = new idList<>();
         }
 //	~idEFXFile();
 

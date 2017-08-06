@@ -832,9 +832,9 @@ public class Anim {
 
             ConvertTimeToFrame(time, cyclecount, frame);
 
-            Float[] componentPtr1 = componentFrames.Ptr();
+            Float[] componentPtr1 = componentFrames.Ptr(Float[].class);
             c1_ptr = numAnimatedComponents * frame.frame1 + jointInfo.oGet(0).firstComponent;
-            Float[] componentPtr2 = componentFrames.Ptr();
+            Float[] componentPtr2 = componentFrames.Ptr(Float[].class);
             c2_ptr = numAnimatedComponents * frame.frame2 + jointInfo.oGet(0).firstComponent;
 
             if ((jointInfo.oGet(0).animBits & ANIM_TX) != 0) {
@@ -872,9 +872,9 @@ public class Anim {
 
             ConvertTimeToFrame(time, cyclecount, frame);
 
-            Float[] jointframe1 = componentFrames.Ptr();
+            Float[] jointframe1 = componentFrames.Ptr(Float[].class);
             j1_ptr = numAnimatedComponents * frame.frame1 + jointInfo.oGet(0).firstComponent;
-            Float[] jointframe2 = componentFrames.Ptr();
+            Float[] jointframe2 = componentFrames.Ptr(Float[].class);
             j2_ptr = numAnimatedComponents * frame.frame2 + jointInfo.oGet(0).firstComponent;
 
             if ((animBits & ANIM_TX) != 0) {
@@ -984,9 +984,9 @@ public class Anim {
             // origin position
             offset = baseFrame.oGet(0).t;
             if ((jointInfo.oGet(0).animBits & (ANIM_TX | ANIM_TY | ANIM_TZ)) != 0) {
-                Float[] componentPtr1 = componentFrames.Ptr();
+                Float[] componentPtr1 = componentFrames.Ptr(Float[].class);
                 c1_ptr = numAnimatedComponents * frame.frame1 + jointInfo.oGet(0).firstComponent;
-                Float[] componentPtr2 = componentFrames.Ptr();
+                Float[] componentPtr2 = componentFrames.Ptr(Float[].class);
                 c2_ptr = numAnimatedComponents * frame.frame2 + jointInfo.oGet(0).firstComponent;
 
                 if ((jointInfo.oGet(0).animBits & ANIM_TX) != 0) {

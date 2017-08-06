@@ -13,6 +13,8 @@ import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
+
+import static neo.Game.GameEdit.*;
 import static neo.Game.GameSys.SysCvar.af_testSolid;
 import static neo.Game.Game_local.MAX_GENTITIES;
 import static neo.Game.Game_local.gameLocal;
@@ -32,12 +34,6 @@ import static neo.Renderer.Model.INVALID_JOINT;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.RenderWorld.renderEntity_s;
 import static neo.TempDump.NOT;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_BALLANDSOCKETJOINT;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_FIXED;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_HINGE;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_SLIDER;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_SPRING;
-import static neo.framework.DeclAF.declAFConstraintType_t.DECLAF_CONSTRAINT_UNIVERSALJOINT;
 import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_AXIS;
 import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_BOTH;
 import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_ORIGIN;
@@ -248,7 +244,7 @@ public class AF {
             // create the animation frame used to setup the articulated figure
             numJoints = animator.NumJoints();
             joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
-            GameEdit.gameEdit.ANIM_CreateAnimFrame(model, animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
+            gameEdit.ANIM_CreateAnimFrame(model, animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
 
             // set all vector positions from model joints
             file.Finish(GetJointTransform.INSTANCE, joints, animator);
@@ -704,9 +700,9 @@ public class AF {
             axis.oSet(baseAxis.Transpose());
         }
 
-        public void GetImpactInfo(idEntity ent, int id, final idVec3 point, impactInfo_s info) {
+        public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
             SetupPose(self, gameLocal.time);
-            physicsObj.GetImpactInfo(BodyForClipModelId(id), point, info);
+            return physicsObj.GetImpactInfo(BodyForClipModelId(id), point);
         }
 
         public void ApplyImpulse(idEntity ent, int id, final idVec3 point, final idVec3 impulse) {
@@ -897,8 +893,8 @@ public class AF {
          */
         protected void SetBase(idAFBody body, final idJointMat[] joints) {
             physicsObj.ForceBodyId(body, 0);
-            baseOrigin = body.GetWorldOrigin();
-            baseAxis = body.GetWorldAxis();
+            baseOrigin.oSet(body.GetWorldOrigin());
+            baseAxis.oSet(body.GetWorldAxis());
             AddBody(body, joints, animator.GetJointName(animator.GetFirstChild("origin")), AF_JOINTMOD_AXIS);
         }
 

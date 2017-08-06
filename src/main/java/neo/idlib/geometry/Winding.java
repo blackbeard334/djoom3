@@ -1,6 +1,5 @@
 package neo.idlib.geometry;
 
-import neo.Renderer.tr_main;
 import neo.TempDump;
 import neo.TempDump.NiLLABLE;
 import neo.idlib.BV.Bounds.idBounds;
@@ -21,7 +20,6 @@ import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
-import neo.sys.win_main;
 
 /**
  *

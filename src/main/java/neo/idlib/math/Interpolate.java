@@ -1,6 +1,7 @@
 package neo.idlib.math;
 
 import java.nio.ByteBuffer;
+import neo.TempDump;
 import neo.TempDump.SERiAL;
 import static neo.TempDump.reflects._Minus;
 import static neo.TempDump.reflects._Multiply;
@@ -34,16 +35,16 @@ public class Interpolate {
         public idInterpolate() {
             currentTime = startTime = duration = 0;
 //            memset( & currentValue, 0, sizeof(currentValue));
-            startValue = endValue = currentValue;
+//            startValue = endValue = currentValue;
         }
 
         public void Init(final float startTime, final float duration, final type startValue, final type endValue) {
             this.startTime = startTime;
             this.duration = duration;
-            this.startValue = startValue;
-            this.endValue = endValue;
+            this.startValue = TempDump.clone(startValue);
+            this.endValue = TempDump.clone(endValue);
             this.currentTime = startTime - 1;
-            this.currentValue = startValue;
+            this.currentValue = TempDump.clone(startValue);
         }
 
         public void SetStartTime(float time) {
@@ -55,11 +56,11 @@ public class Interpolate {
         }
 
         public void SetStartValue(final type startValue) {
-            this.startValue = startValue;
+            this.startValue = TempDump.clone(startValue);
         }
 
         public void SetEndValue(final type endValue) {
-            this.endValue = endValue;
+            this.endValue = TempDump.clone(endValue);
         }
 
         public type GetCurrentValue(float time) {
@@ -69,9 +70,9 @@ public class Interpolate {
             if (time != currentTime) {
                 currentTime = time;
                 if (deltaTime <= 0) {
-                    currentValue = startValue;
+                    currentValue = TempDump.clone(startValue);
                 } else if (deltaTime >= duration) {
-                    currentValue = endValue;
+                    currentValue = TempDump.clone(endValue);
                 } else {
                     if (currentValue instanceof Integer) {
                         final int e = (Integer) this.endValue;
@@ -137,7 +138,7 @@ public class Interpolate {
             startTime = accelTime = linearTime = decelTime = 0;
 //	memset( &startValue, 0, sizeof( startValue ) );
             endValue = startValue;
-            this.extrapolate = new idExtrapolate<type>();
+            this.extrapolate = new idExtrapolate<>();
         }
 
         public void Init(final float startTime, final float accelTime, final float decelTime, final float duration, final type startValue, final type endValue) {
