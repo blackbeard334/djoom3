@@ -496,7 +496,7 @@ public class Anim {
             int[] lerpIndex;
 
             // copy the baseframe
-            SIMDProcessor.Memcpy(joints, baseFrame.Ptr(), baseFrame.Num() /* sizeof( baseFrame[ 0 ] )*/);
+            SIMDProcessor.Memcpy(joints, baseFrame.Ptr(idJointQuat[].class), baseFrame.Num() /* sizeof( baseFrame[ 0 ] )*/);
 
             if (0 == numAnimatedComponents) {
                 // just use the base frame
@@ -682,7 +682,7 @@ public class Anim {
             jointAnimInfo_t infoPtr;
 
             // copy the baseframe
-            SIMDProcessor.Memcpy(joints, baseFrame.Ptr(), baseFrame.Num() /* sizeof( baseFrame[ 0 ] )*/);
+            SIMDProcessor.Memcpy(joints, baseFrame.Ptr(idJointQuat[].class), baseFrame.Num() /* sizeof( baseFrame[ 0 ] )*/);
 
             if ((framenum == 0) || 0 == numAnimatedComponents) {
                 // just use the base frame

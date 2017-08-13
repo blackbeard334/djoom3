@@ -28,6 +28,11 @@ public class JointTransform {
             q = new idQuat();
             t = new idVec3();
         }
+
+        public idJointQuat(final idJointQuat quat) {
+            this.q = new idQuat(quat.q);
+            this.t = new idVec3(quat.t);
+        }
     };
 
     /*

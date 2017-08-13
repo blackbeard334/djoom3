@@ -2160,7 +2160,7 @@ public class Entity {
             for (part = this; part != null; part = part.teamChain) {
 
                 if (part.physics != null) {
-                                             if(name.equals("marscity_cinematic_sarge_1")) DBG_RunPhysics++;
+                                             if(name.equals("marscity_civilian1_1_head")) DBG_RunPhysics++;
                     // run physics
                     moved = part.physics.Evaluate(endTime - startTime, endTime);
 
@@ -2271,7 +2271,7 @@ public class Entity {
         public void SetAxis(final idMat3 axis) {
 
             if (GetPhysics().IsType(idPhysics_Actor.class)) {
-                ((idActor) this).viewAxis = axis;
+                ((idActor) this).viewAxis.oSet(axis);
             } else {
                 GetPhysics().SetAxis(axis);
             }

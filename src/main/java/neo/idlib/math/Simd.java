@@ -363,13 +363,31 @@ public class Simd {
         public abstract void /*VPCALL*/ ClampMin(float[] dst, final float[] src, final float min, final int count);
 
         public abstract void /*VPCALL*/ ClampMax(float[] dst, final float[] src, final float max, final int count);
-//
 
+        @Deprecated
         public abstract void /*VPCALL*/ Memcpy(Object[] dst, final Object[] src, final int count);
+
+        public void /*VPCALL*/ Memcpy(idDrawVert[] dst, final idDrawVert[] src, final int count) {
+            for (int i = 0; i < count; i++) {
+                dst[i].oSet(src[i]);
+            }
+        }
+        
+        public void /*VPCALL*/ Memcpy(idJointQuat[] dst, final idJointQuat[] src, final int count) {
+            for (int i = 0; i < count; i++) {
+                dst[i] = new idJointQuat(src[i]);
+            }
+        }
 
         public void /*VPCALL*/ Memcpy(shadowCache_s[] dst, final idVec4[] src, final int count) {
             for (int i = 0; i < count; i++) {
                 dst[i].xyz.oSet(src[i]);
+            }
+        }
+
+        public void /*VPCALL*/ Memcpy(shadowCache_s[] dst, final shadowCache_s[] src, final int count) {
+            for (int i = 0; i < count; i++) {
+                dst[i].xyz.oSet(src[i].xyz);
             }
         }
 
