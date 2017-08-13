@@ -37,7 +37,13 @@ public class Quat {
             this.z = z;
             this.w = w;
         }
-//
+
+        public idQuat(final idQuat quat) {
+            this.x = quat.x;
+            this.y = quat.y;
+            this.z = quat.z;
+            this.w = quat.w;
+        }
 
         public void Set(float x, float y, float z, float w) {
             this.x = x;

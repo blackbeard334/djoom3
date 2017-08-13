@@ -567,7 +567,7 @@ public class RenderWorld {
         public renderView_s() {
         }
 
-        renderView_s(final renderView_s renderView) {
+        public renderView_s(final renderView_s renderView) {
             this.viewID = renderView.viewID;
             this.x = renderView.x;
             this.y = renderView.y;

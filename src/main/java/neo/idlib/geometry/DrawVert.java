@@ -71,6 +71,14 @@ public class DrawVert {
             this.tangents = new idVec3[]{new idVec3(dv.tangents[0]), new idVec3(dv.tangents[1])};
         }
 
+        public void oSet(final idDrawVert dv) {
+            this.xyz.oSet(dv.xyz);
+            this.st.oSet(dv.st);
+            this.normal.oSet(dv.normal);
+            this.tangents[0].oSet(dv.tangents[0]);
+            this.tangents[1].oSet(dv.tangents[1]);
+        }
+
         /**
          * cast constructor
          *

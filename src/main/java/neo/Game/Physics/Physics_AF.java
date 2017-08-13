@@ -2569,7 +2569,7 @@ public class Physics_AF {
 
             body1 = b1;
             body2 = b2;
-            contact = c;
+            contact = new contactInfo_t(c);
 
             p = c.point.oMinus(body1.GetWorldOrigin());
             v.SubVec3_oSet(0, c.normal);
