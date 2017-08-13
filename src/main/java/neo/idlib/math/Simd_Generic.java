@@ -5,6 +5,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import neo.Renderer.Model.dominantTri_s;
+import neo.TempDump;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.JointTransform.idJointMat;
@@ -840,7 +841,8 @@ public class Simd_Generic {
         @Override
         public void Memcpy(Object[] dst, Object[] src, int count) {
 //            memcpy( dst, src, count );
-            System.arraycopy(src, 0, dst, 0, count);
+//            System.arraycopy(src, 0, dst, 0, count);
+            throw new TempDump.Deprecation_Exception();
         }
 
         @Override
