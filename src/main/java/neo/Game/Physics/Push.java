@@ -421,7 +421,7 @@ public class Push {
             translation = newOrigin.oMinus(oldOrigin);
 
             // if the pusher translates
-            if (translation != getVec3_origin()) {
+            if (!translation.equals(getVec3_origin())) {
 
                 mass += ClipTranslationalPush(results, pusher, flags, newOrigin, translation);
                 if (results[0].fraction < 1.0f) {

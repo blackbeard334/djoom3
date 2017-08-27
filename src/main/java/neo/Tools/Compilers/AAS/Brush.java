@@ -363,7 +363,7 @@ public class Brush {
                 }
                 transformed = true;
             }
-            if (origin != getVec3_origin()) {
+            if (!origin.equals(getVec3_origin())) {
                 for (i = 0; i < sides.Num(); i++) {
                     sides.oGet(i).plane.TranslateSelf(origin);
                 }

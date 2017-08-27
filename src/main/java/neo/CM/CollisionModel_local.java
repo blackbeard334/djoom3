@@ -1230,7 +1230,7 @@ public class CollisionModel_local {
                         tw.contacts[i].point.oMulSet(modelAxis);
                     }
                 }
-                if (modelOrigin != getVec3_origin()) {
+                if (!modelOrigin.equals(getVec3_origin())) {
                     for (i = 0; i < tw.numContacts; i++) {
                         tw.contacts[i].point.oPluSet(modelOrigin);
                         tw.contacts[i].dist += modelOrigin.oMultiply(tw.contacts[i].normal);

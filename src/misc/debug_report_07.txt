@@ -52,3 +52,33 @@ R_SortDrawSurfs()
             idAF::LoadBody()????
             VBO_OFFSET==10080
                 idVertexCache::AllocFrameTemp()--> block->vbo==1023&&block->offset==10080
+"rupleg"
+    idAF::LoadConstraint()
+        R_SortDrawSurfs()
+            "models/monsters/spectre/dis2"
+                R_SetEntityDefViewEntity()
+                    #64 "models/md5/characters/npcs/heads/h1.md5mesh"
+                    +		def->parms.axis	{mat=0x30a73bb0 {{x=-0.142828777 y=0.988580823 z=-0.0480432585 }, {x=-0.985759676 y=-0.146438569 z=-0.0826653168 }, ...} }	idMat3
+                        0.9999092f 0.013496902 6.5267086E-6,
+                        -0.01349686 0.9999092 4.19288E-6,
+                        -6.576432E-6 -4.132399E-6 0.9999999
+                            idEntity::UpdateModelTransform()
+                                idPhysics_Static::Evaluate() masterAxis
+                                    idEntity::GetMasterPosition()
+                                        #22 idAnimator::GetJointTransform()
+                                            idAnimator::CreateFrame()
+                                                idJointMat::SetRotation()
+                                                    idSIMD_Generic::ConvertJointQuatsToJointMats()
+                                                        idAnimBlend::Anim() --> animNum
+                                                            idAnimBlend::CycleAnim()
+                                                                idAnimator::SyncAnimChannels
+                                                jointMod->jointnum !=
+                                                    jointMods !=
+                                                        idAnimator::SetJointAxis()
+                                                            lookJoints !=
+                                                                idAI::Spawn()
+
+                        myGlMultMatrix()
+                        
+                        
+                        idInterpreter::Execute() IP !=
