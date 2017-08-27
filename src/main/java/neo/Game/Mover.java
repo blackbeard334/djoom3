@@ -839,7 +839,7 @@ public class Mover {
 
             physicsObj.GetLocalAngles(ang);
             angle_delta = dest_angles.oMinus(ang);
-            if (angle_delta == getAng_zero()) {
+            if (angle_delta.equals(getAng_zero())) {
                 // set our final angles so that we get rid of any numerical inaccuracy
                 dest_angles.Normalize360();
                 physicsObj.SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, dest_angles, getAng_zero(), getAng_zero());

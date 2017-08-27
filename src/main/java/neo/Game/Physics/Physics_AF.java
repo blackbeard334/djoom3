@@ -7141,7 +7141,7 @@ public class Physics_AF {
         private void AddPushVelocity(final idVec6 pushVelocity) {
             int i;
 
-            if (pushVelocity != getVec6_origin()) {
+            if (!pushVelocity.equals(getVec6_origin())) {
                 for (i = 0; i < bodies.Num(); i++) {
                     bodies.oGet(i).current.spatialVelocity.oPluSet(pushVelocity);
                     int a = 0;

@@ -909,7 +909,7 @@ public class Clip {
                 return true;
             }
 
-            if (mdl != null && rotation.GetAngle() != 0.0f && rotation.GetVec() != getVec3_origin()) {
+            if (mdl != null && rotation.GetAngle() != 0.0f && !rotation.GetVec().equals(getVec3_origin())) {
                 // if no translation
                 if (start == end) {
                     // pure rotation
