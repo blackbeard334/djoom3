@@ -1951,6 +1951,21 @@ public class Vector {
         }
 
         @Override
+        public int hashCode() {
+            return Arrays.hashCode(p);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            idVec6 idVec6 = (idVec6) o;
+
+            return Arrays.equals(p, idVec6.p);
+        }
+
+        @Override
         public String toString() {
             return "idVec6{" +
                     "p=" + Arrays.toString(p) +

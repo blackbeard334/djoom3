@@ -3,6 +3,7 @@ package neo.idlib.math;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
+import neo.Game.Animation.Anim_Blend.idAnimBlend;
 import neo.Renderer.Model.dominantTri_s;
 import neo.Renderer.Model.shadowCache_s;
 import neo.TempDump.TODO_Exception;
@@ -366,6 +367,12 @@ public class Simd {
 
         @Deprecated
         public abstract void /*VPCALL*/ Memcpy(Object[] dst, final Object[] src, final int count);
+
+        public void /*VPCALL*/ Memcpy(idAnimBlend[] dst, final idAnimBlend[] src, final int count) {
+            for (int i = 0; i < count; i++) {
+                dst[i] = new idAnimBlend(src[i]);
+            }
+        }
 
         public void /*VPCALL*/ Memcpy(idDrawVert[] dst, final idDrawVert[] src, final int count) {
             for (int i = 0; i < count; i++) {

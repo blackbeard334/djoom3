@@ -1864,11 +1864,31 @@ public class Anim_Blend {
         private boolean allowFrameCommands;
         //
         //
+        private static int DBG_counter;
+        private final  int DBG_count = DBG_counter++;
         
         public idAnimBlend() {
             Reset(null);
         }
-        
+
+        public idAnimBlend(final idAnimBlend blend) {
+            this.modelDef = blend.modelDef;
+            this.starttime = blend.starttime;
+            this.endtime = blend.endtime;
+            this.timeOffset = blend.timeOffset;
+            this.rate = blend.rate;
+            this.blendStartTime = blend.blendStartTime;
+            this.blendDuration = blend.blendDuration;
+            this.blendStartValue = blend.blendStartValue;
+            this.blendEndValue = blend.blendEndValue;
+            System.arraycopy(blend.animWeights, 0, this.animWeights, 0, ANIM_MaxSyncedAnims);
+            this.cycle = blend.cycle;
+            this.frame = blend.frame;
+            this.animNum = blend.animNum;
+            this.allowMove = blend.allowMove;
+            this.allowFrameCommands = blend.allowFrameCommands;
+        }
+
         private void Reset(final idDeclModelDef _modelDef) {
             modelDef = _modelDef;
             cycle = 1;
@@ -2141,8 +2161,8 @@ public class Anim_Blend {
                     final int num = modelDef.NumJointsOnChannel(channel);
                     for (i = 0; i < num; i++) {
                         int j = index[i];
-                        blendFrame[j].t = jointFrame[j].t;
-                        blendFrame[j].q = jointFrame[j].q;
+                        blendFrame[j].t.oSet(jointFrame[j].t);
+                        blendFrame[j].q.oSet(jointFrame[j].q);
                     }
                 }
             } else {
@@ -3681,6 +3701,7 @@ public class Anim_Blend {
                     float weight = fromBlend.blendEndValue;
                     if ((fromBlend.Anim() != toBlend.Anim()) || (fromBlend.GetStartTime() != toBlend.GetStartTime()) || (fromBlend.GetEndTime() != toBlend.GetEndTime())) {
                         PushAnims(channelNum, currentTime, blendTime);
+                        SIMDProcessor.Memcpy(channels[channelNum], channels[fromChannelNum], ANIM_MaxAnimsPerChannel);
                         toBlend = fromBlend;
                         toBlend.blendStartValue = 0.0f;
                         toBlend.blendEndValue = 0.0f;

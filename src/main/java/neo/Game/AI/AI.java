@@ -1481,7 +1481,7 @@ public class AI {
             lookJointAngles.SetGranularity(1);
             kv = spawnArgs.MatchPrefix("look_joint", null);
             while (kv != null) {
-                jointName = kv.GetKey();
+                jointName.oSet(kv.GetKey());
                 jointName.StripLeadingOnce("look_joint ");
                 joint = animator.GetJointHandle(jointName);
                 if (joint == INVALID_JOINT) {
@@ -1492,7 +1492,7 @@ public class AI {
 
                     // if no scale on any component, then don't bother adding it.  this may be done to
                     // zero out rotation from an inherited entitydef.
-                    if (jointScale != getAng_zero()) {
+                    if (!jointScale.equals(getAng_zero())) {
                         lookJoints.Append(joint);
                         lookJointAngles.Append(jointScale);
                     }
@@ -2110,7 +2110,7 @@ public class AI {
             }
 
             // if no velocity or the projectile is not affected by gravity
-            if (projectileSpeed <= 0.0f || projGravity == getVec3_origin()) {
+            if (projectileSpeed <= 0.0f || projGravity.equals(getVec3_origin())) {
 
                 aimDir.oSet(target.oMinus(firePos));
                 aimDir.Normalize();
@@ -2739,7 +2739,7 @@ public class AI {
             animator.GetDelta(gameLocal.time - gameLocal.msec, gameLocal.time, delta);
             delta.oSet(axis.oMultiply(delta));
 
-            if (modelOffset != getVec3_zero()) {
+            if (!modelOffset.equals(getVec3_zero())) {
                 // the pivot of the monster's model is around its origin, and not around the bounding
                 // box's origin, so we have to compensate for this when the model is offset so that
                 // the monster still appears to rotate around it's origin.
@@ -5414,8 +5414,7 @@ public class AI {
                     alignHeadTime = (int) (gameLocal.time + (0.5f + 0.5f * gameLocal.random.RandomFloat()) * focusAlignTime);
                 }
             }
-            if (idMath.Fabs(newLookAng.yaw)
-                    < 0.1f) {
+            if (idMath.Fabs(newLookAng.yaw) < 0.1f) {
                 alignHeadTime = gameLocal.time;
             }
             if ((gameLocal.time >= alignHeadTime) || (gameLocal.time < forceAlignHeadTime)) {
@@ -5424,14 +5423,12 @@ public class AI {
                 destLookAng.Clamp(lookMin, lookMax);
             }
             diff = destLookAng.oMinus(lookAng);
-            if ((lookMin.pitch == -180.0f) && (lookMax.pitch
-                    == 180.0f)) {
+            if ((lookMin.pitch == -180.0f) && (lookMax.pitch == 180.0f)) {
                 if ((diff.pitch > 180.0f) || (diff.pitch <= -180.0f)) {
                     diff.pitch = 360.0f - diff.pitch;
                 }
             }
-            if ((lookMin.yaw == -180.0f) && (lookMax.yaw
-                    == 180.0f)) {
+            if ((lookMin.yaw == -180.0f) && (lookMax.yaw == 180.0f)) {
                 if (diff.yaw > 180.0f) {
                     diff.yaw -= 360.0f;
                 } else if (diff.yaw <= -180.0f) {
@@ -5442,9 +5439,7 @@ public class AI {
 
             lookAng.Normalize180();
             jointAng.roll = 0.0f;
-            for (i = 0;
-                    i < lookJoints.Num();
-                    i++) {
+            for (i = 0; i < lookJoints.Num(); i++) {
                 jointAng.pitch = lookAng.pitch * lookJointAngles.oGet(i).pitch;
                 jointAng.yaw = lookAng.yaw * lookJointAngles.oGet(i).yaw;
                 animator.SetJointAxis(lookJoints.oGet(i), JOINTMOD_WORLD, jointAng.ToMat3());
