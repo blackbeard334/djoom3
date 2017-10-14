@@ -415,7 +415,7 @@ public class Physics_Parametric {
                 Rest();
             }
 
-            return (current.origin != oldOrigin || current.axis != oldAxis);
+            return (!current.origin.equals(oldOrigin) || !current.axis.equals(oldAxis));
         }
 
         @Override

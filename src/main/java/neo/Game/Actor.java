@@ -540,7 +540,6 @@ public class Actor {
             idEntity[] ent = {null};
             idStr jointName = new idStr();
             float[] fovDegrees = {0};
-            copyJoints_t copyJoint = new copyJoints_t();
             int[] rank = {0}, team = {0};
             boolean[] use_combat_bbox = {false};
 
@@ -621,6 +620,7 @@ public class Actor {
                         continue;
                     }
 
+                    copyJoints_t copyJoint = new copyJoints_t();
                     jointName.oSet(kv.GetKey());
                     if (jointName.StripLeadingOnce("copy_joint_world ")) {
                         copyJoint.mod = JOINTMOD_WORLD_OVERRIDE;

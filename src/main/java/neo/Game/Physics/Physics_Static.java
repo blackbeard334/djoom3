@@ -223,7 +223,7 @@ public class Physics_Static {
                     clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
                 }
 
-                return (current.origin != oldOrigin || current.axis != oldAxis);
+                return (!current.origin.equals(oldOrigin) || !current.axis.equals(oldAxis));
             }
             return false;
         }
