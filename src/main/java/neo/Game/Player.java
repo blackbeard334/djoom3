@@ -823,7 +823,7 @@ public class Player {
             int i;
             int num;
             idDict item;
-            idStr key;
+            idStr key = new idStr();
             String itemname;
             idKeyValue kv;
             String name;
@@ -856,7 +856,7 @@ public class Player {
                 itemname = String.format("item_%d ", i);
                 kv = dict.MatchPrefix(itemname);
                 while (kv != null) {
-                    key = kv.GetKey();
+                    key.oSet(kv.GetKey());
                     key.Strip(itemname);
                     item.Set(key, kv.GetValue());
                     kv = dict.MatchPrefix(itemname, kv);

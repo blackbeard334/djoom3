@@ -90,6 +90,15 @@ R_SortDrawSurfs()
                                                     idAnimBlend::BlendAnim()
                                                         idMD5Anim::GetInterpolatedFrame() frame.frame1
                                                             idAnimator::CreateFrame() jointMods
+                                                                ....."marscity_security_machinegun_1"
+                                                                    idAnimator::SetJointAxis()
+                                                                        idActor::CopyJointsFromBodyToHead()
+                                                                            idDeclModelDef::SetupJoints() --init
+                                                                                idAnimatedEntity::GetJointWorldTransform() --> idAnimator::CreateFrame() --> idSIMD_Generic::ConvertJointQuatsToJointMats()
+                                                                                    anim.MD5Anim(0).baseFrame -->idMD5Anim::LoadAnim()..."models/md5/chars/stand.md5anim"
+                                                            idActor::SetupHead() --> damageGroups
+                                                                idActor::SetupDamageGroups --> args
+                                                                    idDeclLocal::ParseLocal()
                         myGlMultMatrix()
                         
                         

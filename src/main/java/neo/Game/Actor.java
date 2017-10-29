@@ -1349,7 +1349,7 @@ public class Actor {
         public void SetupDamageGroups() {
             int i;
             idKeyValue arg;
-            idStr groupname;
+            idStr groupname = new idStr();
             idList<Integer/*jointHandle_t*/> jointList = new idList<>();
             int jointnum;
             float scale;
@@ -1358,7 +1358,7 @@ public class Actor {
             damageGroups.SetNum(animator.NumJoints());
             arg = spawnArgs.MatchPrefix("damage_zone ", null);
             while (arg != null) {
-                groupname = arg.GetKey();
+                groupname.oSet(arg.GetKey());
                 groupname.Strip("damage_zone ");
                 animator.GetJointList(arg.GetValue(), jointList);
                 for (i = 0; i < jointList.Num(); i++) {
@@ -1379,7 +1379,7 @@ public class Actor {
             arg = spawnArgs.MatchPrefix("damage_scale ", null);
             while (arg != null) {
                 scale = atof(arg.GetValue());
-                groupname = arg.GetKey();
+                groupname.oSet(arg.GetKey());
                 groupname.Strip("damage_scale ");
                 for (i = 0; i < damageScale.Num(); i++) {
                     if (groupname.equals(damageGroups.oGet(i))) {
