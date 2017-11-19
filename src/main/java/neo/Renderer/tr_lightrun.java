@@ -258,9 +258,9 @@ public class tr_lightrun {
         idVec3 startGlobal;
         idVec4 targetGlobal = new idVec4();
 
-        right = rightVector;
+        right = new idVec3(rightVector);
         rLen = right.Normalize();
-        up = upVector;
+        up = new idVec3(upVector);
         uLen = up.Normalize();
         normal = up.Cross(right);
 //normal = right.Cross( up );

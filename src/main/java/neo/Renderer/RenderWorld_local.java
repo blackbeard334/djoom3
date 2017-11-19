@@ -2162,8 +2162,8 @@ public class RenderWorld_local {
                 def.referenceBounds.oSet(def.parms.hModel.Bounds());
 
                 def.parms.axis.oSet(0, 0, 1);
-                def.parms.axis.oSet(2, 1, 1);
-                def.parms.axis.oSet(1, 2, 1);
+                def.parms.axis.oSet(1, 1, 1);
+                def.parms.axis.oSet(2, 2, 1);
 
                 R_AxisToModelMatrix(def.parms.axis, def.parms.origin, def.modelMatrix);
 

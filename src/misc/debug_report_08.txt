@@ -1,0 +1,9 @@
+let's debug why we are drawing so little
+
+R_AddModelSurfaces()
+    we're missing about half...105 vs 230?????
+        idRenderWorldLocal::AddAreaEntityRefs()
+            idRenderWorldLocal::CullEntityByPortals() //_area1
+                idRenderWorldLocal::AddWorldModelEntities()
+                    idRenderWorldLocal::AddEntityRefToArea()
+                    idRenderWorldLocal::AddLightRefToArea()

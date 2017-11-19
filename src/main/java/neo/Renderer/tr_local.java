@@ -584,6 +584,8 @@ public class tr_local {
         boolean needsPortalSky;
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         public idRenderEntityLocal() {
             parms = new renderEntity_s();//memset( parms, 0, sizeof( parms ) );
