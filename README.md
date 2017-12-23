@@ -1,6 +1,20 @@
 # djoom3 - a Doom 3 Java port.
 
 
+#### 23-12-17
+Version 0.0.7
+
+So I was gonna work on fixing a shitload of bugs during christmas, but 20 years ago today, idSoftware open sourced the original Doom. **Thank you** for that. And I'm sure I speak for most of us when I say we're looking forward to seeing the Rage & Doom(reboot) source code!
+
+Too much has happened since the last release, but it's starting to look proper now.
+Still, lots of bugs with lighting, texture mapping...and blending.
+
+As usual, check the 2nd half of the video for the wireframes.
+
+[http://www.youtube.com/watch?v=Ub3dBjdauCY](http://www.youtube.com/watch?v=Ub3dBjdauCY)  
+[![Screenshot](http://img.youtube.com/vi/Ub3dBjdauCY/0.jpg)](http://www.youtube.com/watch?v=Ub3dBjdauCY "djoom3 0.0.7")
+
+
 #### 23-05-16
 Version 0.0.6
 
