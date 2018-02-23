@@ -923,8 +923,7 @@ public class Entity {
             if (null == renderView) {
                 renderView = new renderView_s();
             }
-            renderView = new renderView_s();
-//	memset( renderView, 0, sizeof( *renderView ) );
+            //	memset( renderView, 0, sizeof( *renderView ) );
 
             renderView.vieworg = new idVec3(GetPhysics().GetOrigin());
             renderView.fov_x = 120;

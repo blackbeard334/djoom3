@@ -7,3 +7,26 @@ R_AddModelSurfaces()
                 idRenderWorldLocal::AddWorldModelEntities()
                     idRenderWorldLocal::AddEntityRefToArea()
                     idRenderWorldLocal::AddLightRefToArea()
+                    
+
+
+intro console HUD thingy
+
+idPlayerView::SingleView()
+    idCameraAnim::GetViewParms()
+    idPlayer::CalculateRenderView()
+        idEvent::ServiceEvents() "<triggerAction>"
+        //
+        idEntity::TouchTriggers() "trigger_once_19"
+        +		data	0x30d589b4 "seneca_func_door_2"	char *
+
+        
+
+        
+        
+
+fuck the hud for now, let's check why the door isn't opening and scanner isn't turning
+
+-- idDoor::Event_OpenPortal()
+-- idMover_Binary::Use_BinaryMover()
+idMover_Binary::SetMoverState()

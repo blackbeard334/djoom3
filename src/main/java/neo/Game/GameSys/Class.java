@@ -1,7 +1,9 @@
 package neo.Game.GameSys;
 
-import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Entity.EV_Activate;
+
+import neo.CM.CollisionModel;
+import neo.CM.CollisionModel.trace_s;
 import neo.Game.AI.AI.idAI;
 import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.idEventArg.toArg;
@@ -9,14 +11,16 @@ import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
 import static neo.Game.GameSys.Event.D_EVENT_INTEGER;
 import static neo.Game.GameSys.Event.D_EVENT_MAXARGS;
-import static neo.Game.GameSys.Event.D_EVENT_STRING;
-import static neo.Game.GameSys.Event.D_EVENT_TRACE;
-import static neo.Game.GameSys.Event.D_EVENT_VECTOR;
-import static neo.Game.GameSys.Event.D_EVENT_VOID;
+
 import neo.Game.GameSys.Event.idEvent;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
+
+import static neo.Game.GameSys.Event.D_EVENT_STRING;
+import static neo.Game.GameSys.Event.D_EVENT_TRACE;
+import static neo.Game.GameSys.Event.D_EVENT_VECTOR;
+import static neo.Game.GameSys.Event.D_EVENT_VOID;
 import static neo.Game.GameSys.SysCvar.g_debugTriggers;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameState_t.GAMESTATE_STARTUP;
@@ -25,6 +29,7 @@ import neo.Game.Projectile.idProjectile;
 import neo.Game.Script.Script_Thread.idThread;
 import neo.Game.Target.idTarget_Remove;
 import neo.Game.Trigger.idTrigger_Multi;
+import neo.TempDump;
 import neo.TempDump.Deprecation_Exception;
 import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
@@ -36,6 +41,7 @@ import neo.idlib.containers.Hierarchy.idHierarchy;
 import neo.idlib.containers.List.idList;
 import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 
 import java.util.HashMap;
@@ -157,7 +163,7 @@ public class Class {
 //
 //
 
-        public idEventArg(T data) {
+        private idEventArg(T data) {
             if(data instanceof Integer)         type = D_EVENT_INTEGER;
             else if(data instanceof Enum)       type = D_EVENT_INTEGER;
             else if(data instanceof Float)      type = D_EVENT_FLOAT;
@@ -166,12 +172,48 @@ public class Class {
             else if(data instanceof String)     type = D_EVENT_STRING;
             else if(data instanceof idEntity)   type = D_EVENT_ENTITY;
             else if(data instanceof trace_s)    type = D_EVENT_TRACE;
-            else type = D_EVENT_VOID;
+            else {
+//                type = D_EVENT_VOID;
+                throw new TempDump.TypeErasure_Expection();
+            }
             value = data;
         }
 
-        public static <T> idEventArg<T> toArg(T data) {
+        private idEventArg(int type, T data) {
+            this.type = type;
+            value = data;
+        }
+
+        static <T> idEventArg<T> toArg(T data) {
             return new idEventArg(data);
+        }
+
+        public static idEventArg<Integer> toArg(int data) {
+            return new idEventArg(D_EVENT_INTEGER, data);
+        }
+
+        public static idEventArg<Float> toArg(float data) {
+            return new idEventArg(D_EVENT_FLOAT, data);
+        }
+
+        public static idEventArg<idVec3> toArg(idVec3 data) {
+            return new idEventArg(D_EVENT_VECTOR, data);
+        }
+
+        public static idEventArg<idStr> toArg(idStr data) {
+            return new idEventArg(D_EVENT_STRING, data);
+        }
+
+        public static idEventArg<String> toArg(String data) {
+            return new idEventArg(D_EVENT_STRING, data);
+        }
+
+        public static idEventArg<idEntity> toArg(idEntity data) {
+            return new idEventArg(D_EVENT_ENTITY, data);
+        }
+
+        public static idEventArg<trace_s> toArg(trace_s data) {
+            return new idEventArg(D_EVENT_TRACE, data);
         }
     };
 
@@ -391,6 +433,10 @@ public class Class {
             return PostEventArgs(ev, (int) SEC2MS(time), 0);
         }
 
+        public boolean PostEventSec(final idEventDef ev, float time, idEventArg arg1) {
+            return PostEventArgs(ev, (int) SEC2MS(time), 1, arg1);
+        }
+
         public boolean PostEventSec(final idEventDef ev, float time, Object arg1) {
             return PostEventArgs(ev, (int) SEC2MS(time), 1, toArg(arg1));
         }
@@ -428,6 +474,9 @@ public class Class {
         }
 
         public boolean ProcessEvent(final idEventDef ev, Object arg1) {
+            return ProcessEventArgs(ev, 1, toArg(arg1));
+        }
+        public boolean ProcessEvent(final idEventDef ev, idEntity arg1) {
             return ProcessEventArgs(ev, 1, toArg(arg1));
         }
 
@@ -827,7 +876,7 @@ public class Class {
             if (!idEvent.initialized) {
                 return false;
             }
-
+                                                            
             //TODO:disabled for medicinal reasons
             c = this.getClass();
             if (NOT(this.getEventCallBack(ev))) {

@@ -26,6 +26,12 @@ public class Curve {
      */
     static class idCurve<type> {
 
+        protected idList<Float>  times  = new idList<>();   // knots
+        protected idList<Double> values = new idList<>();   // knot values
+        protected int            currentIndex;              // cached index for fast lookup
+        protected boolean        changed;
+
+
         public idCurve() {
             currentIndex = -1;
             changed = false;
@@ -238,11 +244,7 @@ public class Curve {
                 values.oSet(i, values.oGet(i) + (Double) translation);
             }
             changed = true;
-        }
-        protected idList<Float> times;			// knots
-        protected idList<Double> values;                                  // knot values
-        protected int currentIndex;                                     // cached index for fast lookup
-        protected boolean changed;                                      // set whenever the curve changes
+        }                                   // set whenever the curve changes
 
         /*
          ====================
@@ -785,6 +787,10 @@ public class Curve {
      */
     public static class idCurve_Spline<type> extends idCurve<type> {
 
+        protected int   boundaryType;
+        protected float closeTime;
+
+
         /**
          * enum	boundary_t { BT_FREE, BT_CLAMPED, BT_CLOSED };
          */
@@ -817,8 +823,6 @@ public class Curve {
         public float GetCloseTime() {
             return boundaryType == BT_CLOSED ? closeTime : 0.0f;
         }
-        protected int boundaryType;
-        protected float closeTime;
 
         /*
          ====================
@@ -1567,6 +1571,9 @@ public class Curve {
      * ===============================================================================
      */
     public static class idCurve_BSpline<type> extends idCurve_Spline<type> {
+        
+        protected int order;
+
 
         public idCurve_BSpline() {
             order = 4;	// default to cubic
@@ -1661,7 +1668,6 @@ public class Curve {
             }
             return (type) v;
         }
-        protected int order;
 
         /*
          ====================
@@ -2047,6 +2053,9 @@ public class Curve {
      ===============================================================================
      */
     public static class idCurve_NURBS<type> extends idCurve_NonUniformBSpline<type> {
+        
+        protected idList<Float> weights = new idList<>();
+
 
         public idCurve_NURBS() {
         }
@@ -2225,7 +2234,6 @@ public class Curve {
             }
             return (type) (Object) (((wb * wb) * (wb * vd2 - vb * wd2) - (wb * vd1 - vb * wd1) * 2.0f * wb * wd1) / (wb * wb * wb * wb));
         }
-        protected idList<Float> weights;
 
         protected float WeightForIndex(final int index) {
             int n = weights.Num() - 1;

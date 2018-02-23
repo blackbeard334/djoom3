@@ -3848,7 +3848,6 @@ public class Player {
             if (NOT(renderView)) {
                 renderView = new renderView_s();
             }
-            renderView = new renderView_s();
 //	memset( renderView, 0, sizeof( *renderView ) );
 
             // copy global shader parms
@@ -4507,9 +4506,9 @@ public class Player {
 
         public void GiveObjective(final String title, final String text, final String screenshot) {
             idObjectiveInfo info = new idObjectiveInfo();
-            info.title.oSet(title);
-            info.text.oSet(text);
-            info.screenshot.oSet(screenshot);
+            info.title = new idStr(title);
+            info.text = new idStr(text);
+            info.screenshot = new idStr(screenshot);
             inventory.objectiveNames.Append(info);
             ShowObjective("newObjective");
             if (hud != null) {

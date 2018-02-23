@@ -1291,7 +1291,7 @@ public class Mover {
             BeginRotation(idThread.CurrentThread(), false);
         }
 
-        private void Event_RotateOnce(idEventArg<idAngles> angles) {
+        private void Event_RotateOnce(idEventArg<idVec3> angles) {
             idAngles ang = new idAngles();
 
             if (rotate_thread != 0) {
@@ -1373,7 +1373,7 @@ public class Mover {
             }
 
             // Needed for savegames
-            splineEnt.oSet(splineEntity);
+            splineEnt = new idEntityPtr<>(splineEntity);
 
             spline = splineEntity.GetSpline();
             if (null == spline) {

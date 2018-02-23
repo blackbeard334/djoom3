@@ -10,6 +10,8 @@ import static neo.Game.Entity.EV_CacheSoundShader;
 import static neo.Game.Entity.EV_SetShaderParm;
 import static neo.Game.Entity.signalNum_t.NUM_SIGNALS;
 import static neo.Game.Entity.signalNum_t.SIG_TRIGGER;
+
+import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
@@ -153,6 +155,7 @@ public class Script_Thread {
 
         protected static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(Class.idClass.getEventCallBacks());
             eventCallbacks.put(EV_Thread_Execute, (eventCallback_t0<idThread>)  idThread::Event_Execute);
             eventCallbacks.put(EV_Thread_TerminateThread, (eventCallback_t1<idThread>) idThread::Event_TerminateThread);
             eventCallbacks.put(EV_Thread_Pause, (eventCallback_t0<idThread>) idThread::Event_Pause);

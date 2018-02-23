@@ -533,7 +533,7 @@ public class Model_md5 {
          */
         @Override
         public void TouchData() {
-            for (final idMD5Mesh mesh : meshes.Ptr()) {
+            for (final idMD5Mesh mesh : meshes.Ptr(idMD5Mesh[].class)) {
                 declManager.FindMaterial(mesh.shader.GetName());
             }
         }

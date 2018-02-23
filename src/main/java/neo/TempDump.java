@@ -1118,4 +1118,14 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             System.exit(666);
         }
     }
+
+    public static final class TypeErasure_Expection extends javax.swing.undo.CannotUndoException {
+        
+        public TypeErasure_Expection() {
+            printStackTrace();
+            System.err.println("The future is always blank.\n" +
+                    "Only your willpower can leave footsteps there.");
+            System.exit(666);
+        }
+    }
 }

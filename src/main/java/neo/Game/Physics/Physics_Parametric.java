@@ -190,14 +190,14 @@ public class Physics_Parametric {
         public void SetLinearExtrapolation(int/*extrapolation_t*/ type, int time, int duration, final idVec3 base, final idVec3 speed, final idVec3 baseSpeed) {
             current.time = gameLocal.time;
             current.linearExtrapolation.Init(time, duration, base, baseSpeed, speed, type);
-            current.localOrigin = base;
+            current.localOrigin.oSet(base);
             Activate();
         }
 
         public void SetAngularExtrapolation(int/*extrapolation_t*/ type, int time, int duration, final idAngles base, final idAngles speed, final idAngles baseSpeed) {
             current.time = gameLocal.time;
             current.angularExtrapolation.Init(time, duration, base, baseSpeed, speed, type);
-            current.localAngles = base;
+            current.localAngles.oSet(base);
             Activate();
         }
 
@@ -212,14 +212,14 @@ public class Physics_Parametric {
         public void SetLinearInterpolation(int time, int accelTime, int decelTime, int duration, final idVec3 startPos, final idVec3 endPos) {
             current.time = gameLocal.time;
             current.linearInterpolation.Init(time, accelTime, decelTime, duration, startPos, endPos);
-            current.localOrigin = startPos;
+            current.localOrigin.oSet(startPos);
             Activate();
         }
 
         public void SetAngularInterpolation(int time, int accelTime, int decelTime, int duration, final idAngles startAng, final idAngles endAng) {
             current.time = gameLocal.time;
             current.angularInterpolation.Init(time, accelTime, decelTime, duration, startAng, endAng);
-            current.localAngles = startAng;
+            current.localAngles.oSet(startAng);
             Activate();
         }
 
@@ -338,11 +338,11 @@ public class Physics_Parametric {
             idMat3 oldAxis, masterAxis = new idMat3();
 
             isBlocked = false;
-            oldLocalOrigin = current.localOrigin;
-            oldOrigin = current.origin;
-            oldLocalAngles = current.localAngles;
-            oldAngles = current.angles;
-            oldAxis = current.axis;
+            oldLocalOrigin = new idVec3(current.localOrigin);
+            oldOrigin = new idVec3(current.origin);
+            oldLocalAngles = new idAngles(current.localAngles);
+            oldAngles = new idAngles(current.angles);
+            oldAxis = new idMat3(current.axis);
 
             current.localOrigin.Zero();
             current.localAngles.Zero();
@@ -350,7 +350,7 @@ public class Physics_Parametric {
             if (current.spline != null) {
                 float length = current.splineInterpolate.GetCurrentValue(endTimeMSec);
                 float t = current.spline.GetTimeForLength(length, 0.01f);
-                current.localOrigin = current.spline.GetCurrentValue(t);
+                current.localOrigin.oSet(current.spline.GetCurrentValue(t));
                 if (current.useSplineAngles) {
                     current.localAngles = current.spline.GetCurrentFirstDerivative(t).ToAngles();
                 }
@@ -367,9 +367,9 @@ public class Physics_Parametric {
             }
 
             current.localAngles.Normalize360();
-            current.origin = current.localOrigin;
-            current.angles = current.localAngles;
-            current.axis = current.localAngles.ToMat3();
+            current.origin.oSet(current.localOrigin);
+            current.angles.oSet(current.localAngles);
+            current.axis.oSet(current.localAngles.ToMat3());
 
             if (hasMaster) {
                 self.GetMasterPosition(masterOrigin, masterAxis);
@@ -488,7 +488,7 @@ public class Physics_Parametric {
                 self.GetMasterPosition(masterOrigin, masterAxis);
                 current.origin = masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis));
             } else {
-                current.origin = current.localOrigin;
+                current.origin.oSet(current.localOrigin);
             }
             if (clipModel != null) {
                 clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
@@ -513,7 +513,7 @@ public class Physics_Parametric {
                 current.angles = current.axis.ToAngles();
             } else {
                 current.axis = current.localAngles.ToMat3();
-                current.angles = current.localAngles;
+                current.angles.oSet(current.localAngles);
             }
             if (clipModel != null) {
                 clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
@@ -631,8 +631,8 @@ public class Physics_Parametric {
             } else {
                 if (hasMaster) {
                     // transform from master space to world space
-                    current.localOrigin = current.origin;
-                    current.localAngles = current.angles;
+                    current.localOrigin.oSet(current.origin);
+                    current.localAngles.oSet(current.angles);
                     SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, current.origin, getVec3_origin(), getVec3_origin());
                     SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, current.angles, getAng_zero(), getAng_zero());
                     hasMaster = false;

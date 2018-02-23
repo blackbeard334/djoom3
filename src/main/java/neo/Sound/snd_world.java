@@ -379,10 +379,10 @@ public class snd_world {
 
             listenerPrivateId = listenerId;
 
-            listenerQU = origin;                            // Doom units
-            listenerPos = origin.oMultiply(DOOM_TO_METERS);            // meters
-            listenerAxis = axis;
-            listenerAreaName = areaName;
+            listenerQU.oSet(origin);                            // Doom units
+            listenerPos = origin.oMultiply(DOOM_TO_METERS);     // meters
+            listenerAxis.oSet(axis);
+            listenerAreaName.oSet(areaName);
             listenerAreaName.ToLower();
 
             if (rw != null) {

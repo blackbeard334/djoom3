@@ -2445,7 +2445,7 @@ public class RenderWorld_local {
                 if (d < 1.0f) {
 
                     // go through this portal
-                    newStack = ps;
+                    newStack = new portalStack_s(ps);
                     newStack.p = p;
                     newStack.next = ps;
                     FloodViewThroughArea_r(origin, p.intoArea, newStack);
