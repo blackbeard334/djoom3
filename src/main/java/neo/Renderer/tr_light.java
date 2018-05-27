@@ -444,6 +444,7 @@ public class tr_light {
 
             vModel.next = tr.viewDef.viewEntitys;
             tr.viewDef.viewEntitys = vModel;
+            tr.viewDef.numViewEntitys++;
         }
 
         def.viewEntity = vModel;
@@ -780,10 +781,12 @@ public class tr_light {
         viewLight_s vLight;
         idRenderLightLocal light;
         viewLight_s ptr;
+        int z = 0;
 
         // go through each visible light, possibly removing some from the list
         ptr = tr.viewDef.viewLights;
         while (ptr != null) {
+            z++;
             vLight = ptr;
             light = vLight.lightDef;
 
@@ -1455,6 +1458,7 @@ public class tr_light {
         viewEntity_s vEntity;
         idInteraction inter, next;
         idRenderModel model;
+        int i = 0;
 
         // clear the ambient surface list
         tr.viewDef.numDrawSurfs = 0;
@@ -1462,7 +1466,7 @@ public class tr_light {
 
         // go through each entity that is either visible to the view, or to
         // any light that intersects the view (for shadows)
-        for (vEntity = tr.viewDef.viewEntitys; vEntity != null; vEntity = vEntity.next) {
+        for (vEntity = tr.viewDef.viewEntitys; vEntity != null; vEntity = vEntity.next, i++) {
 
             if (r_useEntityScissors.GetBool()) {
                 // calculate the screen area covered by the entity

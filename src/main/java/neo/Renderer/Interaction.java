@@ -206,9 +206,11 @@ public class Interaction {
         private final idFrustum frustum;		// frustum which contains the interaction
         private areaNumRef_s frustumAreas;		// numbers of the areas the frustum touches
         //
-        private int dynamicModelFrameCount;             // so we can tell if a callback model animated
+        private int dynamicModelFrameCount;     // so we can tell if a callback model animated
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
 
         public idInteraction() {
             numSurfaces = 0;

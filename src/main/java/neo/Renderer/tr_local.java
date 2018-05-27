@@ -742,16 +742,16 @@ public class tr_local {
     public static class viewDef_s {
         // specified in the call to DrawScene()
 
-        public renderView_s renderView;
+        public renderView_s       renderView;
 //
-        public float[] projectionMatrix = new float[16];
-        public viewEntity_s worldSpace;
+        public float[]            projectionMatrix = new float[16];
+        public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
 //
-        public float floatTime;
+        public float              floatTime;
 //
-        public idVec3 initialViewAreaOrigin;
+        public idVec3             initialViewAreaOrigin;
         // Used to find the portalArea that view flooding will take place from.
         // for a normal view, the initialViewOrigin will be renderView.viewOrg,
         // but a mirror may put the projection origin outside
@@ -761,40 +761,41 @@ public class tr_local {
         // mirror intersects a portal, and the initialViewAreaOrigin is on
         // a different side than the renderView.viewOrg is.
 //
-        public boolean isSubview;				// true if this view is not the main view
-        public boolean isMirror;				// the portal is a mirror, invert the face culling
-        public boolean isXraySubview;
-//
-        public boolean isEditor;
-//
-        public int numClipPlanes;                               // mirrors will often use a single clip plane
-        public idPlane[] clipPlanes;                            // in world space, the positive side
-        // of the plane is the visible side
-        public idScreenRect viewport;				// in real pixels and proper Y flip
-//
-        public idScreenRect scissor;
+        public boolean            isSubview;             // true if this view is not the main view
+        public boolean            isMirror;              // the portal is a mirror, invert the face culling
+        public boolean            isXraySubview;
+        //
+        public boolean            isEditor;
+        //
+        public int                numClipPlanes;         // mirrors will often use a single clip plane
+        public idPlane[]          clipPlanes;            // in world space, the positive side
+                                                         // of the plane is the visible side
+        public idScreenRect       viewport;              // in real pixels and proper Y flip
+        //
+        public idScreenRect       scissor;
         // for scissor clipping, local inside renderView viewport
         // subviews may only be rendering part of the main view
         // these are real physical pixel values, possibly scaled and offset from the
         // renderView x/y/width/height
 //
-        public viewDef_s superView;				// never go into an infinite subview loop 
-        public drawSurf_s subviewSurface;
+        public viewDef_s          superView;             // never go into an infinite subview loop
+        public drawSurf_s         subviewSurface;
 //
         // drawSurfs are the visible surfaces of the viewEntities, sorted
         // by the material sort parameter
-        public drawSurf_s[] drawSurfs;				// we don't use an idList for this, because
-        public int numDrawSurfs;                                // it is allocated in frame temporary memory
-        public int maxDrawSurfs;                                // may be resized
+        public drawSurf_s[]       drawSurfs;             // we don't use an idList for this, because
+        public int                numDrawSurfs;          // it is allocated in frame temporary memory
+        public int                maxDrawSurfs;          // may be resized
 //
-        public viewLight_s viewLights;                          // chain of all viewLights effecting view
-        public viewEntity_s viewEntitys;			// chain of all viewEntities effecting view, including off screen ones casting shadows
-        public idPlane[] frustum;
-        public idFrustum viewFrustum;
+        public viewLight_s        viewLights;            // chain of all viewLights effecting view
+        public viewEntity_s       viewEntitys;           // chain of all viewEntities effecting view, including off screen ones casting shadows
+        public int                numViewEntitys;
+        public idPlane[]          frustum;
+        public idFrustum          viewFrustum;
 //
-        public int areaNum;                                     // -1 = not in a valid area
+        public int                areaNum;               // -1 = not in a valid area
 //
-        public boolean[] connectedAreas;
+        public boolean[]          connectedAreas;
         // An array in frame temporary memory that lists if an area can be reached without
         // crossing a closed door.  This is used to avoid drawing interactions
         // when the light is behind a closed door.

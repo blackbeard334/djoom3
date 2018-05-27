@@ -287,12 +287,12 @@ public class tr_lightrun {
         lightProject[1].oSet(3, -(origin.oMultiply(lightProject[1].Normal())));
 
         // now offset to center
-        targetGlobal.oSet(target.oPluSet(origin));
+        targetGlobal.oSet(target.oPlus(origin));
         targetGlobal.oSet(3, 1);
         ofs = 0.5f - (targetGlobal.oMultiply(lightProject[0].ToVec4())) / (targetGlobal.oMultiply(lightProject[2].ToVec4()));
-        lightProject[0].ToVec4().oPluSet(lightProject[2].ToVec4().oMultiply(ofs));
+        lightProject[0].ToVec4_oPluSet(lightProject[2].ToVec4().oMultiply(ofs));
         ofs = 0.5f - (targetGlobal.oMultiply(lightProject[1].ToVec4())) / (targetGlobal.oMultiply(lightProject[2].ToVec4()));
-        lightProject[1].ToVec4().oPluSet(lightProject[2].ToVec4().oMultiply(ofs));
+        lightProject[1].ToVec4_oPluSet(lightProject[2].ToVec4().oMultiply(ofs));
 
         // set the falloff vector
         normal = stop.oMinus(start);

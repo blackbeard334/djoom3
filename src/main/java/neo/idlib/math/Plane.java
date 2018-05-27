@@ -595,6 +595,13 @@ public class Plane {
             return new idVec4(abc.x, abc.y, abc.z, d);
         }
 
+        public void ToVec4_oPluSet(final idVec4 v) {
+            abc.x += v.x;
+            abc.y += v.y;
+            abc.z += v.z;
+            d += v.w;
+        }
+
         public float[] ToFloatPtr() {
             return new float[]{abc.x, abc.y, abc.z, d};
         }

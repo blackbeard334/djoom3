@@ -1837,6 +1837,7 @@ public class RenderWorld_local {
                 tri.shadowVertexes[j].xyz.oSet(3, 1);// no homogenous value
 
                 tri.bounds.AddPoint(tri.shadowVertexes[j].xyz.ToVec3());
+                int a = 0;
             }
 
             R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
@@ -3054,6 +3055,7 @@ public class RenderWorld_local {
             // clear the visible lightDef and entityDef lists
             tr.viewDef.viewLights = null;
             tr.viewDef.viewEntitys = null;
+            tr.viewDef.numViewEntitys = 0;
 
             // find the area to start the portal flooding in
             if (!r_usePortals.GetBool()) {
@@ -4363,12 +4365,13 @@ public class RenderWorld_local {
             idRenderEntityLocal eDef;
             portalArea_s area;
             idInteraction inter;
+            int i = 0, j = 0;
 
-            for (lRef = lDef.references; lRef != null; lRef = lRef.ownerNext) {
+            for (lRef = lDef.references; lRef != null; lRef = lRef.ownerNext, i++) {
                 area = lRef.area;
 
                 // check all the models in this area
-                for (eRef = area.entityRefs.areaNext; eRef != area.entityRefs; eRef = eRef.areaNext) {
+                for (eRef = area.entityRefs.areaNext; eRef != area.entityRefs; eRef = eRef.areaNext, j++) {
                     eDef = eRef.entity;
 
                     // if the entity doesn't have any light-interacting surfaces, we could skip this,
@@ -4404,6 +4407,9 @@ public class RenderWorld_local {
                         // the CPU time.  The table is updated at interaction::AllocAndLink() and interaction::UnlinkAndFree()
                         int index = lDef.index * this.interactionTableWidth + eDef.index;
                         inter = this.interactionTable[index];
+                        if (index == 441291) {
+                            int x = 0;
+                        }
                         if (inter != null) {
                             // if this entity wasn't in view already, the scissor rect will be empty,
                             // so it will only be used for shadow casting

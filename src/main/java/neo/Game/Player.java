@@ -187,6 +187,8 @@ import static neo.framework.CVarSystem.cvarSystem;
 import static neo.framework.Common.STRTABLE_ID;
 import static neo.framework.Common.STRTABLE_ID_LENGTH;
 import static neo.framework.Common.common;
+
+import neo.framework.BuildDefines;
 import neo.framework.DeclEntityDef.idDeclEntityDef;
 import static neo.framework.DeclManager.declManager;
 import neo.framework.DeclManager.declType_t;
@@ -262,7 +264,6 @@ import static neo.ui.UserInterface.uiManager;
  */
 public class Player {
 
-    private static final boolean    ID_DEMO_BUILD               = false;
     /*
      ===============================================================================
 
@@ -902,7 +903,7 @@ public class Player {
             // weapons are stored as a number for persistant data, but as strings in the entityDef
             weapons = dict.GetInt("weapon_bits", "0");
 
-            if (ID_DEMO_BUILD) {
+            if (BuildDefines.ID_DEMO_BUILD) {
                 Give(owner, dict, "weapon", dict.GetString("weapon"), null, false);
             } else {
                 if (g_skill.GetInteger() >= 3) {
@@ -1841,7 +1842,7 @@ public class Player {
                 } else {
                     g_damageScale.SetFloat(1.0f);
                     g_armorProtection.SetFloat((g_skill.GetInteger() < 2) ? 0.4f : 0.2f);
-                    if (ID_DEMO_BUILD) {
+                    if (BuildDefines.ID_DEMO_BUILD) {
                         if (g_skill.GetInteger() == 3) {
                             healthTake = true;
                             nextHealthTake = gameLocal.time + g_healthTakeTime.GetInteger() * 1000;
@@ -7617,7 +7618,7 @@ public class Player {
                 nextHealthPulse = gameLocal.time + HEALTHPULSE_TIME;
                 healthPulse = true;
             }
-            if (ID_DEMO_BUILD) {
+            if (BuildDefines.ID_DEMO_BUILD) {
                 if (!gameLocal.inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal.time > nextHealthTake && !AI_DEAD._() && health > g_healthTakeLimit.GetInteger()) {
                     assert (!gameLocal.isClient);	// healthPool never be set on client
                     health -= g_healthTakeAmt.GetInteger();

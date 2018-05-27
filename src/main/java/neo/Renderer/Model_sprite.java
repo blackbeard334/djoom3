@@ -166,7 +166,7 @@ public class Model_sprite {
 
             R_BoundTriSurf(tri);
 
-            staticModel.bounds = tri.bounds;
+            staticModel.bounds = new idBounds(tri.bounds);
 
             return staticModel;
         }

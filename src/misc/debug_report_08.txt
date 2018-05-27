@@ -30,3 +30,30 @@ fuck the hud for now, let's check why the door isn't opening and scanner isn't t
 -- idDoor::Event_OpenPortal()
 -- idMover_Binary::Use_BinaryMover()
 idMover_Binary::SetMoverState()
+
+
+ok, back to the whale heads
+
+idActor::CopyJointsFromBodyToHead()
+
+
+
+texture madness instead...
+
+R_SortDrawSurfs() 233 vs 240
+"textures/mcity/mchangar12_local"
+r_showDefs::shadowEntities 30~ vs 170~
+    R_AddModelSurfaces()
+        R_SetEntityDefViewEntity() 71 vs 70 ====> 114 vs 235
+        idRenderWorldLocal::CreateLightDefInteractions()
+            idRenderWorldLocal::GenerateAllInteractions() interactionTableWidth
+            lDef.frustum <>
+                R_SetLightFrustum()
+
+R_AddLightSurfaces()
+            
+            
+idRenderWorldLocal::CreateLightDefInteractions() inter.numSurfaces is changed the first couple of iterations to 0, then no more
+    viewFrustrum
+
+entityDef->index==1091
