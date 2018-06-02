@@ -129,6 +129,7 @@ import neo.Game.Physics.Physics_Parametric.idPhysics_Parametric;
 import neo.Game.Physics.Push.idPush;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idBFGProjectile;
+import neo.Game.Projectile.idDebris;
 import neo.Game.Projectile.idProjectile;
 import neo.Game.Pvs.idPVS;
 import neo.Game.Pvs.pvsHandle_t;
@@ -3469,6 +3470,9 @@ public class Game_local {
                         break;
                     case "idPlayer":
                         obj = new idPlayer();
+                        break;
+                    case "idDebris":
+                        obj = new idDebris();
                         break;
                     default:
                         obj = null;

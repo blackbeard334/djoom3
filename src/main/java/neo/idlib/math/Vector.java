@@ -1152,6 +1152,33 @@ public class Vector {
                     limit(length).
                     toArray(idVec3[]::new);
         }
+
+        public void ToVec2_oPluSet(idVec2 v) {
+            this.x += v.x;
+            this.y += v.y;
+        }
+
+        public void ToVec2_oMinSet(idVec2 v) {
+            this.x -= v.x;
+            this.y -= v.y;
+        }
+
+        public void ToVec2_oMulSet(float a) {
+            this.x *= a;
+            this.y *= a;
+        }
+
+        public void ToVec2_Normalize() {
+            idVec2 v = ToVec2();
+            v.Normalize();
+            this.oSet(v);
+        }
+
+        public void ToVec2_NormalizeFast() {
+            idVec2 v = ToVec2();
+            v.NormalizeFast();
+            this.oSet(v);
+        }
     }
 
     //===============================================================

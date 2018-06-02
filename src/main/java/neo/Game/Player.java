@@ -6255,9 +6255,9 @@ public class Player {
                         // smoothen by pushing back to the previous position
                         if (selfSmooth) {
                             assert (entityNumber == gameLocal.localClientNum);
-                            renderOrigin.ToVec2().oMinSet(originDiff.oMultiply(net_clientSelfSmoothing.GetFloat()));
+                            renderOrigin.ToVec2_oMinSet(originDiff.oMultiply(net_clientSelfSmoothing.GetFloat()));
                         } else {
-                            renderOrigin.ToVec2().oMinSet(originDiff.oMultiply(gameLocal.clientSmoothing));
+                            renderOrigin.ToVec2_oMinSet(originDiff.oMultiply(gameLocal.clientSmoothing));
                         }
                     }
                     smoothedOrigin = renderOrigin;
@@ -7554,8 +7554,8 @@ public class Player {
                     idVec3 vel = physicsObj.GetLinearVelocity();
                     if (vel.ToVec2().LengthSqr() < 0.1f) {
                         vel.oSet(physicsObj.GetOrigin().ToVec2().oMinus(groundEnt.GetPhysics().GetAbsBounds().GetCenter().ToVec2()));
-                        vel.ToVec2().NormalizeFast();
-                        vel.ToVec2().oMulSet(pm_walkspeed.GetFloat());//TODO:ToVec2 back ref.
+                        vel.ToVec2_NormalizeFast();
+                        vel.ToVec2_oMulSet(pm_walkspeed.GetFloat());//TODO:ToVec2 back ref.
                     } else {
                         // give em a push in the direction they're going
                         vel.oMulSet(1.1f);

@@ -602,6 +602,14 @@ public class Plane {
             d += v.w;
         }
 
+        public void ToVec4_ToVec3_Cross(final idVec3 a, final idVec3 b) {
+            abc.Cross(a, b);
+        }
+
+        public void ToVec4_ToVec3_Normalize() {
+            abc.Normalize();
+        }
+
         public float[] ToFloatPtr() {
             return new float[]{abc.x, abc.y, abc.z, d};
         }

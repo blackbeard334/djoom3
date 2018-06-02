@@ -233,6 +233,7 @@ public class Projectile {
             netSyncPhysics = false;
             
             physicsObj = new idPhysics_RigidBody();
+            thruster = new idForce_Constant();
         }
 
         @Override
@@ -2081,6 +2082,7 @@ public class Projectile {
 
         public idDebris() {
             owner = null;
+            physicsObj = new idPhysics_RigidBody();
             smokeFly = null;
             smokeFlyTime = 0;
             sndBounce = null;
@@ -2113,6 +2115,8 @@ public class Projectile {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             owner = null;
             smokeFly = null;
             smokeFlyTime = 0;
@@ -2123,7 +2127,7 @@ public class Projectile {
             GetPhysics().SetOrigin(start);
             GetPhysics().SetAxis(axis);
             GetPhysics().SetContents(0);
-            this.owner.oSet(owner);
+            this.owner = new idEntityPtr<>(owner);
             smokeFly = null;
             smokeFlyTime = 0;
             sndBounce = null;

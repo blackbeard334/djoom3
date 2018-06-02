@@ -700,7 +700,7 @@ public class AI {
             dir = targetPos.oMinus(areaCenter);
             gravityAxis.ProjectVector(dir, local_dir);
             local_dir.z = 0.0f;
-            local_dir.ToVec2().Normalize();
+            local_dir.ToVec2_Normalize();
             axis = local_dir.ToMat3();
             fromPos = areaCenter.oPlus(fireOffset.oMultiply(axis));
 
@@ -3470,7 +3470,7 @@ public class AI {
                     perpendicular.x = -delta.y;
                     perpendicular.y = delta.x;
                     delta.z += 0.5f;
-                    delta.ToVec2().oPluSet(perpendicular.oMultiply(gameLocal.random.CRandomFloat() * 0.5f));
+                    delta.ToVec2_oPluSet(perpendicular.oMultiply(gameLocal.random.CRandomFloat() * 0.5f));
                     forceVec = delta.oMultiply(force * obEnt.GetPhysics().GetMass());
                     obEnt.ApplyImpulse(this, 0, obEnt.GetPhysics().GetOrigin(), forceVec);
                 }
@@ -3482,7 +3482,7 @@ public class AI {
                 perpendicular.x = -delta.y;
                 perpendicular.y = delta.x;
                 delta.z += 0.5f;
-                delta.ToVec2().oPluSet(perpendicular.oMultiply(gameLocal.random.CRandomFloat() * 0.5f));
+                delta.ToVec2_oPluSet(perpendicular.oMultiply(gameLocal.random.CRandomFloat() * 0.5f));
                 forceVec = delta.oMultiply(force * alwaysKick.GetPhysics().GetMass());
                 alwaysKick.ApplyImpulse(this, 0, alwaysKick.GetPhysics().GetOrigin(), forceVec);
             }
@@ -6453,7 +6453,7 @@ public class AI {
             dir = lastVisibleEnemyPos.oMinus(org);
             physicsObj.GetGravityAxis().ProjectVector(dir, local_dir);
             local_dir.z = 0.0f;
-            local_dir.ToVec2().Normalize();
+            local_dir.ToVec2_Normalize();
             axis = local_dir.ToMat3();
             fromPos = physicsObj.GetOrigin().oPlus(missileLaunchOffset.oGet(anim).oMultiply(axis));
 
