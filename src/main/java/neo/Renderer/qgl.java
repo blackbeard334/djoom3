@@ -1,6 +1,7 @@
 package neo.Renderer;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -8,8 +9,10 @@ import neo.TempDump;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.ARBImaging;
+import org.lwjgl.opengl.ARBMultitexture;
 import org.lwjgl.opengl.ARBProgram;
 import org.lwjgl.opengl.ARBTextureCompression;
+import org.lwjgl.opengl.ARBVertexProgram;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.EXTDepthBoundsTest;
 import org.lwjgl.opengl.GL11;
@@ -26,7 +29,7 @@ import org.lwjgl.opengl.NVRegisterCombiners;
  */
 public class qgl {
 
-    private static final boolean GL_DEBUG = true;
+    private static final boolean GL_DEBUG = false;
     static {
         if (GL_DEBUG) qglEnable(GL43.GL_DEBUG_OUTPUT);
     }
@@ -37,26 +40,25 @@ public class qgl {
     //
 //    // multitexture
     public static void qglActiveTextureARB(int texture) {DEBUG_printName("glActiveTextureARB");
-        GL13.glActiveTexture(texture);
+        ARBMultitexture.glActiveTextureARB(texture);
     }
 
     public static void qglClientActiveTextureARB(int texture) {DEBUG_printName("glClientActiveTextureARB");
-        GL13.glClientActiveTexture(texture);
+        ARBMultitexture.glClientActiveTextureARB(texture);
     }
 
     // ARB_vertex_buffer_object
     public static void qglBindBufferARB(int target, int buffer) {DEBUG_printName("glBindBufferARB");
-        GL15.glBindBuffer(target, buffer);
+        ARBBufferObject.glBindBufferARB(target, buffer);
     }
 
     //extern PFNGLDELETEBUFFERSARBPROC qglDeleteBuffersARB;
     public static void qglGenBuffersARB(int n, IntBuffer[] buffers) {DEBUG_printName("glGenBuffersARB");
-        GL15.glGenBuffers(buffers[0] = BufferUtils.createIntBuffer(n));
-//            ARBBufferObject.glGenBuffersARB(buffers[0] = IntBuffer.allocate(n));
+        ARBBufferObject.glGenBuffersARB(buffers[0] = BufferUtils.createIntBuffer(n));
     }
 
     public static int qglGenBuffersARB() {DEBUG_printName("glGenBuffersARB");
-        return GL15.glGenBuffers();
+        return ARBBufferObject.glGenBuffersARB();
     }
 
     //extern PFNGLISBUFFERARBPROC qglIsBufferARB;
@@ -66,7 +68,7 @@ public class qgl {
     }
 
     public static  /*PFNGLBUFFERSUBDATAARBPROC*/void qglBufferSubDataARB(int target, long offset, long size, ByteBuffer data) {DEBUG_printName("glBufferSubDataARB");
-        GL15.glBufferSubData(target, offset, data);
+        ARBBufferObject.glBufferSubDataARB(target, offset, data);
     }
 
     //extern PFNGLGETBUFFERSUBDATAARBPROC qglGetBufferSubDataARB;
@@ -194,11 +196,11 @@ public class qgl {
     }
 
     public static /*PFNGLENABLEVERTEXATTRIBARRAYARBPROC*/    void qglEnableVertexAttribArrayARB(int index) {DEBUG_printName("glEnableVertexAttribArrayARB");
-        GL20.glEnableVertexAttribArray(index);
+        ARBVertexShader.glEnableVertexAttribArrayARB(index);
     }
 
     public static /*PFNGLDISABLEVERTEXATTRIBARRAYARBPROC*/    void qglDisableVertexAttribArrayARB(int index) {DEBUG_printName("glDisableVertexAttribArrayARB");
-        GL20.glDisableVertexAttribArray(index);
+        ARBVertexShader.glDisableVertexAttribArrayARB(index);
     }
 
     public static  /*PFNGLPROGRAMSTRINGARBPROC*/void qglProgramStringARB(int target, int format, int len, final String string) {DEBUG_printName("glProgramStringARB");
@@ -1845,7 +1847,7 @@ public class qgl {
     private static IntBuffer wrap(final int[] intArray) {
 
         return (IntBuffer) BufferUtils.
-                createIntBuffer(intArray.length | 16).
+                createIntBuffer(intArray.length).
                 put(intArray).
                 flip();
     }

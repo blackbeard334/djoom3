@@ -468,11 +468,6 @@ public class Item {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
 
-        @Override
-        public java.lang.Class /*idTypeInfo*/ GetType() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
         public static class ModelCallback extends deferredEntityCallback_t {
 
             public static final deferredEntityCallback_t instance = new ModelCallback();
@@ -623,6 +618,8 @@ public class Item {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             time[0] = spawnArgs.GetInt("time", "30");
             type[0] = spawnArgs.GetInt("type", "0");
         }
@@ -845,6 +842,14 @@ public class Item {
         }
 
         // virtual					~idMoveableItem();
+        @Override
+        protected void _deconstructor() {
+            if (trigger != null) {
+                idClipModel.delete(trigger);
+            }
+            super._deconstructor();
+        }
+
         @Override
         public void Save(idSaveGame savefile) {
             savefile.WriteStaticObject(physicsObj);

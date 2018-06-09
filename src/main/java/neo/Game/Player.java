@@ -433,7 +433,7 @@ public class Player {
         public int nextItemPickup;
         public int nextItemNum;
         public int onePickupTime;
-        public idList<idItemInfo>      pickupItemNames = new idList<>();
+        public idList<idItemInfo>      pickupItemNames = new idList<>(idItemInfo.class);
         public idList<idObjectiveInfo> objectiveNames  = new idList<>();
 
         public idInventory() {
@@ -1126,11 +1126,11 @@ public class Player {
                 idItemInfo info = pickupItemNames.Alloc();
 
                 if (idStr.Cmpn(name, STRTABLE_ID, STRTABLE_ID_LENGTH) == 0) {
-                    info.name.oSet(common.GetLanguageDict().GetString(name));
+                    info.name = new idStr(common.GetLanguageDict().GetString(name));
                 } else {
-                    info.name.oSet(name);
+                    info.name = new idStr(name);
                 }
-                info.icon.oSet(icon);
+                info.icon = new idStr(icon);
             }
         }
 

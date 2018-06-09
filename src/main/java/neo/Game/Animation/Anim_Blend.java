@@ -1410,7 +1410,7 @@ public class Anim_Blend {
             boolean getChildren;
             boolean subtract;
 
-            if (null == modelHandle) {
+            if (null == modelHandle || jointnames.isEmpty()) {
                 return;
             }
 

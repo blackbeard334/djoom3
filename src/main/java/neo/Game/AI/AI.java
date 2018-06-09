@@ -7447,6 +7447,8 @@ public class AI {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             float fov;
             float yaw;
             float height;

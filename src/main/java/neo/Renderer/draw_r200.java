@@ -27,6 +27,7 @@ import static neo.Renderer.qgl.qglDisable;
 import static neo.Renderer.qgl.qglDisableClientState;
 import static neo.Renderer.qgl.qglEnable;
 import static neo.Renderer.qgl.qglEnableClientState;
+import static neo.Renderer.qgl.qglGetInteger;
 import static neo.Renderer.qgl.qglGetIntegerv;
 import static neo.Renderer.qgl.qglProgramEnvParameter4fvARB;
 import static neo.Renderer.qgl.qglScissor;
@@ -70,6 +71,8 @@ import static neo.TempDump.NOT;
 import static neo.framework.BuildDefines.MACOS_X;
 import static neo.framework.Common.common;
 import neo.idlib.geometry.DrawVert.idDrawVert;
+import org.lwjgl.BufferUtils;
+
 import static org.lwjgl.opengl.ARBMultitexture.GL_TEXTURE0_ARB;
 import static org.lwjgl.opengl.ARBMultitexture.GL_TEXTURE1_ARB;
 import static org.lwjgl.opengl.ARBMultitexture.GL_TEXTURE2_ARB;
@@ -142,16 +145,16 @@ public class draw_r200 {
         /*GLint*/
 
         //TODO:init
-        IntBuffer numFragmentRegisters;               // 6
-        IntBuffer numFragmentConstants;               // 8
-        IntBuffer numPasses;                          // 2
-        IntBuffer numInstructionsPerPass;             // 8
-        IntBuffer numInstructionsTotal;               // 16
-        IntBuffer colorAlphaPairing;                  // 1
-        IntBuffer numLoopbackComponenets;             // 3
-        IntBuffer numInputInterpolatorComponents;	// 3
+        int numFragmentRegisters;               // 6
+        int numFragmentConstants;               // 8
+        int numPasses;                          // 2
+        int numInstructionsPerPass;             // 8
+        int numInstructionsTotal;               // 16
+        int colorAlphaPairing;                  // 1
+        int numLoopbackComponenets;             // 3
+        int numInputInterpolatorComponents;	    // 3
     };
-    static atiFragmentShaderInfo_t fsi;
+    static atiFragmentShaderInfo_t fsi = new atiFragmentShaderInfo_t();
 
     static class atiVertexShaderInfo_t {
         // vertex shader invariants
@@ -586,14 +589,14 @@ public class draw_r200 {
 
         GL_CheckErrors();
 
-        qglGetIntegerv(GL_NUM_FRAGMENT_REGISTERS_ATI, fsi.numFragmentRegisters);
-        qglGetIntegerv(GL_NUM_FRAGMENT_CONSTANTS_ATI, fsi.numFragmentConstants);
-        qglGetIntegerv(GL_NUM_PASSES_ATI, fsi.numPasses);
-        qglGetIntegerv(GL_NUM_INSTRUCTIONS_PER_PASS_ATI, fsi.numInstructionsPerPass);
-        qglGetIntegerv(GL_NUM_INSTRUCTIONS_TOTAL_ATI, fsi.numInstructionsTotal);
-        qglGetIntegerv(GL_COLOR_ALPHA_PAIRING_ATI, fsi.colorAlphaPairing);
-        qglGetIntegerv(GL_NUM_LOOPBACK_COMPONENTS_ATI, fsi.numLoopbackComponenets);
-        qglGetIntegerv(GL_NUM_INPUT_INTERPOLATOR_COMPONENTS_ATI, fsi.numInputInterpolatorComponents);
+        fsi.numFragmentRegisters = qglGetInteger(GL_NUM_FRAGMENT_REGISTERS_ATI);
+        fsi.numFragmentConstants = qglGetInteger(GL_NUM_FRAGMENT_CONSTANTS_ATI);
+        fsi.numPasses = qglGetInteger(GL_NUM_PASSES_ATI);
+        fsi.numInstructionsPerPass = qglGetInteger(GL_NUM_INSTRUCTIONS_PER_PASS_ATI);
+        fsi.numInstructionsTotal = qglGetInteger(GL_NUM_INSTRUCTIONS_TOTAL_ATI);
+        fsi.colorAlphaPairing = qglGetInteger(GL_COLOR_ALPHA_PAIRING_ATI);
+        fsi.numLoopbackComponenets = qglGetInteger(GL_NUM_LOOPBACK_COMPONENTS_ATI);
+        fsi.numInputInterpolatorComponents = qglGetInteger(GL_NUM_INPUT_INTERPOLATOR_COMPONENTS_ATI);
 
         common.Printf("GL_NUM_FRAGMENT_REGISTERS_ATI: %d\n", fsi.numFragmentRegisters);
         common.Printf("GL_NUM_FRAGMENT_CONSTANTS_ATI: %d\n", fsi.numFragmentConstants);

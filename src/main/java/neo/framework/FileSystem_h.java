@@ -2936,7 +2936,7 @@ public class FileSystem_h {
 
         @Override
         public findFile_t FindFile(String path, boolean scheduleAddons) {
-            pack_t[] pak = new pack_t[0];
+            pack_t[] pak = new pack_t[1];
             idFile f = OpenFileReadFlags(path, FSFLAG_SEARCH_DIRS | FSFLAG_SEARCH_PAKS | FSFLAG_SEARCH_ADDONS, pak);
             if (null == f) {
                 return FIND_NO;

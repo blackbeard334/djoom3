@@ -241,7 +241,7 @@ public class Light {
                     }
                     brokenModel.oPluSet("_broken");
                     if (pos > 0) {
-                        brokenModel.oPluSet(model.oGet(pos));
+                        brokenModel.oPluSet(model.substring(pos));
                     }
                 }
 

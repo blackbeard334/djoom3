@@ -587,7 +587,7 @@ public class tr_light {
             final float[] constRegs = shader.ConstantRegisters();
             if (constRegs != null) {
                 // this shader has only constants for parameters
-                drawSurf.shaderRegisters = constRegs;
+                drawSurf.shaderRegisters = constRegs.clone();
             } else {
                 // FIXME: share with the ambient surface?
                 float[] regs = new float[shader.GetNumRegisters()];//R_FrameAlloc(shader.GetNumRegisters());
@@ -1130,7 +1130,7 @@ public class tr_light {
         final float[] constRegs = shader.ConstantRegisters();
         if (constRegs != null) {
             // shader only uses constant values
-            drawSurf.shaderRegisters = constRegs;
+            drawSurf.shaderRegisters = constRegs.clone();
         } else {
             float[] regs = new float[shader.GetNumRegisters()];// R_FrameAlloc(shader.GetNumRegisters());
             drawSurf.shaderRegisters = regs;

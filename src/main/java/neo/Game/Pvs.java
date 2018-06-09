@@ -166,23 +166,20 @@ public class Pvs {
             areaQueue = new int[numAreas];
 
             areaVisBytes = (((numAreas + 31) & ~31) >> 3);
-            areaVisLongs = areaVisBytes;// / sizeof(long);
+            areaVisLongs = areaVisBytes / Long.BYTES;
 
-            areaPVS = new byte[numAreas * areaVisBytes];
-//	memset( areaPVS, 0xFF, numAreas * areaVisBytes );
+            areaPVS = new byte[numAreas * areaVisBytes];//	memset( areaPVS, 0xFF, numAreas * areaVisBytes );
             Arrays.fill(areaPVS, 0, numAreas * areaVisBytes, (byte) 0xFF);
 
             numPortals = GetPortalCount();
 
             portalVisBytes = (((numPortals + 31) & ~31) >> 3);
-            portalVisLongs = portalVisBytes;// / sizeof(long);
+            portalVisLongs = portalVisBytes / Long.BYTES;
 
             for (int i = 0; i < MAX_CURRENT_PVS; i++) {
                 currentPVS[i].handle.i = -1;
                 currentPVS[i].handle.h = 0;
-                currentPVS[i].pvs = new byte[areaVisBytes];
-//		memset( currentPVS[i].pvs, 0, areaVisBytes );
-                currentPVS[i].pvs = new byte[areaVisBytes];
+                currentPVS[i].pvs = new byte[areaVisBytes];//memset( currentPVS[i].pvs, 0, areaVisBytes );
             }
 
             idTimer timer = new idTimer();
@@ -320,36 +317,33 @@ public class Pvs {
             handle = AllocCurrentPVS(h);
 
             if (0 == numSourceAreas || sourceAreas[0] < 0 || sourceAreas[0] >= numAreas) {
-//                memset(currentPVS[handle.i].pvs, 0, areaVisBytes);
-                Arrays.fill(currentPVS[handle.i].pvs, 0, areaVisBytes, (byte) 0);
+                Arrays.fill(currentPVS[handle.i].pvs, 0, areaVisBytes, (byte) 0);//memset(currentPVS[handle.i].pvs, 0, areaVisBytes);
                 return handle;
             }
 
             if (type != PVS_CONNECTED_AREAS) {
                 // merge PVS of all areas the source is in
-//		memcpy( currentPVS[handle.i].pvs, areaPVS + sourceAreas[0] * areaVisBytes, areaVisBytes );
-                System.arraycopy(areaPVS, sourceAreas[0] * areaVisBytes, currentPVS[handle.i].pvs, 0, areaVisBytes);
+                System.arraycopy(areaPVS, sourceAreas[0] * areaVisBytes, currentPVS[handle.i].pvs, 0, areaVisBytes);//		memcpy( currentPVS[handle.i].pvs, areaPVS + sourceAreas[0] * areaVisBytes, areaVisBytes );
                 for (i = 1; i < numSourceAreas; i++) {
 
                     assert (sourceAreas[i] >= 0 && sourceAreas[i] < numAreas);
 
-                    vis = reinterpret_cast_long_array(Arrays.copyOf(areaPVS, sourceAreas[i] * areaVisBytes));
+                    final int vOffset = sourceAreas[i] * areaVisBytes;
+                    vis = reinterpret_cast_long_array(areaPVS);
                     pvs = reinterpret_cast_long_array(currentPVS[handle.i].pvs);
                     for (j = 0; j < areaVisLongs; j++) {
-                        pvs[j] |= vis[j];
+                        pvs[j] |= vis[j + vOffset];
                     }
                 }
             } else {
-//		memset( currentPVS[handle.i].pvs, -1, areaVisBytes );
-                Arrays.fill(currentPVS[handle.i].pvs, 0, areaVisBytes, (byte) -1);
+                Arrays.fill(currentPVS[handle.i].pvs, 0, areaVisBytes, (byte) -1);//memset( currentPVS[handle.i].pvs, -1, areaVisBytes );
             }
 
             if (type == PVS_ALL_PORTALS_OPEN) {
                 return handle;
             }
 
-//	memset( connectedAreas, 0, numAreas * sizeof( *connectedAreas ) );
-            Arrays.fill(connectedAreas, 0, numAreas, false);
+            Arrays.fill(connectedAreas, 0, numAreas, false);//memset( connectedAreas, 0, numAreas * sizeof( *connectedAreas ) );
 
             // get all areas connected to any of the source areas
             for (i = 0; i < numSourceAreas; i++) {
@@ -1089,7 +1083,7 @@ public class Pvs {
             pvsPortal_t source, target, p;
             pvsArea_t area;
             pvsPassage_t passage;
-            idFixedWinding winding;
+            idFixedWinding winding = new idFixedWinding();
             byte canSee, mightSee, bit;
 
             passageMemory = 0;
@@ -1161,7 +1155,7 @@ public class Pvs {
                             // if not at the front of all bounding planes and thus not completely inside the passage
                             if (front != numBounds[0]) {
 
-                                winding = (idFixedWinding) p.w;
+                                winding.oSet(p.w);
 
                                 for (l = 0; l < numBounds[0]; l++) {
                                     // only clip if the winding possibly crosses this plane
