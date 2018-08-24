@@ -328,7 +328,7 @@ public class Pvs {
 
                     assert (sourceAreas[i] >= 0 && sourceAreas[i] < numAreas);
 
-                    final int vOffset = sourceAreas[i] * areaVisBytes;
+                    final int vOffset = sourceAreas[i] * areaVisBytes / Long.BYTES;
                     vis = reinterpret_cast_long_array(areaPVS);
                     pvs = reinterpret_cast_long_array(currentPVS[handle.i].pvs);
                     for (j = 0; j < areaVisLongs; j++) {

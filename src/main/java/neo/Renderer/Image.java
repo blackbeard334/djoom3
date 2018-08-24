@@ -129,12 +129,14 @@ import static neo.sys.win_shared.Sys_Milliseconds;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.ARBTextureCompression.GL_COMPRESSED_RGBA_ARB;
 import static org.lwjgl.opengl.ARBTextureCompression.GL_COMPRESSED_RGB_ARB;
-import static org.lwjgl.opengl.EXTBgra.GL_BGRA_EXT;
-import static org.lwjgl.opengl.EXTBgra.GL_BGR_EXT;
-import static org.lwjgl.opengl.EXTPalettedTexture.GL_COLOR_INDEX8_EXT;
+import static org.lwjgl.opengl.EXTBGRA.GL_BGRA_EXT;
+import static org.lwjgl.opengl.EXTBGRA.GL_BGR_EXT;
 import static org.lwjgl.opengl.EXTSharedTexturePalette.GL_SHARED_TEXTURE_PALETTE_EXT;
+import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT;
-import static org.lwjgl.opengl.EXTTextureLODBias.GL_TEXTURE_LOD_BIAS_EXT;
 import static org.lwjgl.opengl.GL11.GL_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_ALPHA8;
 import static org.lwjgl.opengl.GL11.GL_BACK;
@@ -171,11 +173,8 @@ import static org.lwjgl.opengl.GL12.GL_TEXTURE_WRAP_R;
 import static org.lwjgl.opengl.GL13.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-import static org.lwjgl.opengl.NVTextureCompressionVTC.GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-import static org.lwjgl.opengl.NVTextureCompressionVTC.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-import static org.lwjgl.opengl.NVTextureCompressionVTC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static org.lwjgl.opengl.NVTextureCompressionVTC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-import static org.lwjgl.opengl.NVTextureRectangle.GL_TEXTURE_RECTANGLE_NV;
+import static org.lwjgl.opengl.GL14.GL_TEXTURE_LOD_BIAS;
+import static org.lwjgl.opengl.GL31.GL_TEXTURE_RECTANGLE;
 
 /**
  *
@@ -722,7 +721,7 @@ public class Image {
             if (type == TT_2D) {
                 qglBindTexture(GL_TEXTURE_2D, texNum);
             } else if (type == TT_RECT) {
-                qglBindTexture(GL_TEXTURE_RECTANGLE_NV, texNum);
+                qglBindTexture(GL_TEXTURE_RECTANGLE, texNum);
             } else if (type == TT_CUBIC) {
                 qglBindTexture(GL_TEXTURE_CUBE_MAP/*_EXT*/, texNum);
             } else if (type == TT_3D) {
@@ -946,7 +945,7 @@ public class Image {
             // upload the main image level
             Bind();
 
-            if (internalFormat == GL_COLOR_INDEX8_EXT) {
+            if (internalFormat == 0x80E5) {
                 /*
                  if ( depth == TD_BUMP ) {
                  for ( int i = 0; i < scaled_width * scaled_height * 4; i += 4 ) {
@@ -990,7 +989,7 @@ public class Image {
                 }
 
                 // upload the mip map
-                if (internalFormat == GL_COLOR_INDEX8_EXT) {
+                if (internalFormat == 0x80E5) {
                     UploadCompressedNormalMap(scaled_width[0], scaled_height[0], scaledBuffer.array(), miplevel);
                 } else {
                     qglTexImage2D(GL_TEXTURE_2D, miplevel, internalFormat, scaled_width[0], scaled_height[0],
@@ -1227,7 +1226,7 @@ public class Image {
             }
 
             // upload the base level
-            // FIXME: support GL_COLOR_INDEX8_EXT?
+            // FIXME: support 0x80E5?
             for (i = 0; i < 6; i++) {
                 pics[i].rewind();
                 qglTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X/*_EXT*/ + i, 0, internalFormat, scaled_width, scaled_height, 0,
@@ -1589,7 +1588,7 @@ public class Image {
                 case GL_RGB5:
                     common.Printf("RGB5  ");
                     break;
-                case GL_COLOR_INDEX8_EXT:
+                case 0x80E5:
                     common.Printf("CI8   ");
                     break;
                 case GL_COLOR_INDEX:
@@ -1824,7 +1823,7 @@ public class Image {
                 }
             }
             if (glConfig.textureLODBiasAvailable) {
-                qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS_EXT, globalImages.textureLODBias);
+                qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, globalImages.textureLODBias);
             }
 
             // set the wrap/clamp modes
@@ -1946,7 +1945,7 @@ public class Image {
             int altInternalFormat = 0;
             int bitSize = 0;
             switch (internalFormat) {
-                case GL_COLOR_INDEX8_EXT:
+                case 0x80E5:
                 case GL_COLOR_INDEX:
                     // this will not work with dds viewers but we need it in this format to save disk
                     // load speed ( i.e. size ) 
@@ -2059,7 +2058,7 @@ public class Image {
                         break;
                 }
             } else {
-                header.ddspf.dwFlags = (internalFormat == GL_COLOR_INDEX8_EXT) ? DDSF_RGB | DDSF_ID_INDEXCOLOR : DDSF_RGB;
+                header.ddspf.dwFlags = (internalFormat == 0x80E5) ? DDSF_RGB | DDSF_ID_INDEXCOLOR : DDSF_RGB;
                 header.ddspf.dwRGBBitCount = bitSize;
                 switch (altInternalFormat) {
                     case GL_BGRA_EXT:
@@ -2346,7 +2345,7 @@ public class Image {
             } else if (((header.ddspf.dwFlags & DDSF_RGB) != 0) && header.ddspf.dwRGBBitCount == 24) {
                 if ((header.ddspf.dwFlags & DDSF_ID_INDEXCOLOR) != 0) {
                     externalFormat = GL_COLOR_INDEX;
-                    internalFormat = GL_COLOR_INDEX8_EXT;
+                    internalFormat = 0x80E5;
                 } else {
                     externalFormat = GL_BGR_EXT;
                     internalFormat = GL_RGB8;
@@ -2631,7 +2630,7 @@ public class Image {
                     return 16;
                 case GL_RGB5:
                     return 16;
-                case GL_COLOR_INDEX8_EXT:
+                case 0x80E5:
                     return 8;
                 case GL_COLOR_INDEX:
                     return 8;
@@ -2707,7 +2706,7 @@ public class Image {
             if (glConfig.sharedTexturePaletteAvailable) {
                 qglTexImage2D(GL_TEXTURE_2D,
                         mipLevel,
-                        GL_COLOR_INDEX8_EXT,
+                        0x80E5,
                         width,
                         height,
                         0,
@@ -2797,7 +2796,7 @@ public class Image {
             if (minimumDepth == TD_BUMP) {
                 if (globalImages.image_useCompression.GetBool() && globalImages.image_useNormalCompression.GetInteger() == 1 && glConfig.sharedTexturePaletteAvailable) {
                     // image_useNormalCompression should only be set to 1 on nv_10 and nv_20 paths
-                    return GL_COLOR_INDEX8_EXT;
+                    return 0x80E5;
                 } else if (globalImages.image_useCompression.GetBool() && (globalImages.image_useNormalCompression.GetInteger() != 0) && glConfig.textureCompressionAvailable) {
                     // image_useNormalCompression == 2 uses rxgb format which produces really good quality for medium settings
                     return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
@@ -3891,7 +3890,7 @@ public class Image {
                     qglTexParameterf(texEnum, GL_TEXTURE_MAX_ANISOTROPY_EXT, globalImages.textureAnisotropy);
                 }
                 if (glConfig.textureLODBiasAvailable) {
-                    qglTexParameterf(texEnum, GL_TEXTURE_LOD_BIAS_EXT, globalImages.textureLODBias);
+                    qglTexParameterf(texEnum, GL_TEXTURE_LOD_BIAS, globalImages.textureLODBias);
                 }
             }
         }

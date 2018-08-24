@@ -758,6 +758,7 @@ public class Model_md5 {
 
                 staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(0));
                 staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(1));
+                int a = 0;
             }
 
             return staticModel;
@@ -821,6 +822,7 @@ public class Model_md5 {
             bounds.Clear();
             for (i = 0; i < meshes.Num(); ++i) {
                 bounds.AddBounds(meshes.oGet(i).CalcBounds(entJoints));
+                int a = 0;
             }
         }
 

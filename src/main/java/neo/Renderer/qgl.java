@@ -1,27 +1,24 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import neo.TempDump;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBBufferObject;
 import org.lwjgl.opengl.ARBImaging;
 import org.lwjgl.opengl.ARBMultitexture;
-import org.lwjgl.opengl.ARBProgram;
 import org.lwjgl.opengl.ARBTextureCompression;
+import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.ARBVertexProgram;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.EXTDepthBoundsTest;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
-import org.lwjgl.opengl.NVRegisterCombiners;
+
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor
@@ -49,26 +46,26 @@ public class qgl {
 
     // ARB_vertex_buffer_object
     public static void qglBindBufferARB(int target, int buffer) {DEBUG_printName("glBindBufferARB");
-        ARBBufferObject.glBindBufferARB(target, buffer);
+        ARBVertexBufferObject.glBindBufferARB(target, buffer);
     }
 
     //extern PFNGLDELETEBUFFERSARBPROC qglDeleteBuffersARB;
     public static void qglGenBuffersARB(int n, IntBuffer[] buffers) {DEBUG_printName("glGenBuffersARB");
-        ARBBufferObject.glGenBuffersARB(buffers[0] = BufferUtils.createIntBuffer(n));
+        ARBVertexBufferObject.glGenBuffersARB(buffers[0] = BufferUtils.createIntBuffer(n));
     }
 
     public static int qglGenBuffersARB() {DEBUG_printName("glGenBuffersARB");
-        return ARBBufferObject.glGenBuffersARB();
+        return ARBVertexBufferObject.glGenBuffersARB();
     }
 
     //extern PFNGLISBUFFERARBPROC qglIsBufferARB;
     public static void qglBufferDataARB(int target, int size, ByteBuffer data, int usage) {DEBUG_printName("glBufferDataARB");
 //        GL15.glBufferData(target, data, usage);//TODO:!!!!!!!!!!!!!!!!!!!!!!!!!
-        ARBBufferObject.glBufferDataARB(target, data, usage);
+        ARBVertexBufferObject.glBufferDataARB(target, data, usage);
     }
 
     public static  /*PFNGLBUFFERSUBDATAARBPROC*/void qglBufferSubDataARB(int target, long offset, long size, ByteBuffer data) {DEBUG_printName("glBufferSubDataARB");
-        ARBBufferObject.glBufferSubDataARB(target, offset, data);
+        ARBVertexBufferObject.glBufferSubDataARB(target, offset, data);
     }
 
     //extern PFNGLGETBUFFERSUBDATAARBPROC qglGetBufferSubDataARB;
@@ -86,20 +83,24 @@ public class qgl {
     //extern	void ( APIENTRY *qglCombinerParameterivNV )( GLenum pName, const GLint *params );
 //extern	void ( APIENTRY *qglCombinerParameterfNV )( GLenum pName, const GLfloat param );
     public static void qglCombinerParameteriNV(int pName, final int param) {DEBUG_printName("glCombinerParameteriNV");
-        NVRegisterCombiners.glCombinerParameteriNV(pName, param);
+//        NVRegisterCombiners.glCombinerParameteriNV(pName, param);
+        throw new UnsupportedOperationException();
     }
 
     public static void qglCombinerInputNV(int stage, int portion, int variable, int input, int mapping, int componentUsage) {DEBUG_printName("glCombinerInputNV");
-        NVRegisterCombiners.glCombinerInputNV(stage, portion, variable, input, mapping, componentUsage);
+//        NVRegisterCombiners.glCombinerInputNV(stage, portion, variable, input, mapping, componentUsage);
+        throw new UnsupportedOperationException();
     }
 
     public static void qglCombinerOutputNV(int stage, int portion, int abOutput, int cdOutput, int sumOutput, int scale, int bias,
                                            boolean abDotProduct, boolean cdDotProduct, boolean muxSum) {DEBUG_printName("glCombinerOutputNV");
-        NVRegisterCombiners.glCombinerOutputNV(stage, portion, abOutput, cdOutput, sumOutput, scale, bias, abDotProduct, cdDotProduct, muxSum);
+//        NVRegisterCombiners.glCombinerOutputNV(stage, portion, abOutput, cdOutput, sumOutput, scale, bias, abDotProduct, cdDotProduct, muxSum);
+        throw new UnsupportedOperationException();
     }
 
     public static void qglFinalCombinerInputNV(int variable, int input, int mapping, int componentUsage) {DEBUG_printName("glFinalCombinerInputNV");
-        NVRegisterCombiners.glFinalCombinerInputNV(variable, input, mapping, componentUsage);
+//        NVRegisterCombiners.glFinalCombinerInputNV(variable, input, mapping, componentUsage);
+        throw new UnsupportedOperationException();
     }
 
     // 3D textures
@@ -203,8 +204,8 @@ public class qgl {
         ARBVertexShader.glDisableVertexAttribArrayARB(index);
     }
 
-    public static  /*PFNGLPROGRAMSTRINGARBPROC*/void qglProgramStringARB(int target, int format, int len, final String string) {DEBUG_printName("glProgramStringARB");
-        ARBProgram.glProgramStringARB(target, format, string);
+    public static  /*PFNGLPROGRAMSTRINGARBPROC*/void qglProgramStringARB(int target, int format, int len, final ByteBuffer string) {DEBUG_printName("glProgramStringARB");
+        ARBVertexProgram.glProgramStringARB(target, format, string);
     }
 
     public static /*PFNGLBINDPROGRAMARBPROC*/void qglBindProgramARB(int target, Enum program) {DEBUG_printName("glBindProgramARB");
@@ -212,13 +213,13 @@ public class qgl {
     }
 
     public static /*PFNGLBINDPROGRAMARBPROC*/void qglBindProgramARB(int target, int program) {DEBUG_printName("glBindProgramARB");
-        ARBProgram.glBindProgramARB(target, program);
+        ARBVertexProgram.glBindProgramARB(target, program);
     }
 //extern PFNGLGENPROGRAMSARBPROC				qglGenProgramsARB;
 //
 
     public static /*PFNGLPROGRAMENVPARAMETER4FVARBPROC*/ void qglProgramEnvParameter4fvARB(int target, Enum index, final FloatBuffer params) {DEBUG_printName("glProgramEnvParameter4fvARB");
-        ARBProgram.glProgramEnvParameter4ARB(target, index.ordinal(), params);
+        ARBVertexProgram.glProgramEnvParameter4fvARB(target, index.ordinal(), params);
     }
 
     //    @Deprecated
@@ -228,16 +229,16 @@ public class qgl {
 
     //    @Deprecated
     public static /*PFNGLPROGRAMENVPARAMETER4FVARBPROC*/ void qglProgramEnvParameter4fvARB(int target, int index, final float[] params) {DEBUG_printName("glProgramEnvParameter4fvARB");//TODO:convert calls to floatbuffer
-        ARBProgram.glProgramEnvParameter4fARB(target, index, params[0], params[1], params[2], params[3]);
+        ARBVertexProgram.glProgramEnvParameter4fARB(target, index, params[0], params[1], params[2], params[3]);
 //        qglProgramEnvParameter4fvARB(target, index, wrap(params));
     }
 
     public static /*PFNGLPROGRAMENVPARAMETER4FVARBPROC*/ void qglProgramEnvParameter4fvARB(int target, int index, final FloatBuffer params) {DEBUG_printName("glProgramEnvParameter4fvARB");
-        ARBProgram.glProgramEnvParameter4ARB(target, index, params);
+        ARBVertexProgram.glProgramEnvParameter4fvARB(target, index, params);
     }
 
     public static /*PFNGLPROGRAMLOCALPARAMETER4FVARBPROC*/ void qglProgramLocalParameter4fvARB(int target, int index, final FloatBuffer params) {DEBUG_printName("glProgramLocalParameter4fvARB");
-        ARBProgram.glProgramLocalParameter4ARB(target, index, params);
+        ARBVertexProgram.glProgramLocalParameter4fvARB(target, index, params);
     }
 //extern PFNGLPROGRAMLOCALPARAMETER4FVARBPROC	qglProgramLocalParameter4fvARB;
 //
@@ -639,7 +640,7 @@ public class qgl {
     }
 
     public static void qglDrawElements(int mode, int count, int type, ByteBuffer indices) {DEBUG_printName("glDrawElements1");
-        GL11.glDrawElements(mode, count, type, indices);
+        GL11.glDrawElements(mode, type, indices);
     }
 
     public static void qglDrawElements(int mode, int count, int type, int[] indices) {DEBUG_printName("glDrawElements2");
@@ -807,7 +808,7 @@ public class qgl {
     }
 
     public static void qglGetFloatv(int pName, FloatBuffer params) {DEBUG_printName("glGetFloatv");
-        GL11.glGetFloat(pName, params);
+        GL11.glGetFloatv(pName, params);
     }
 
     public static int qglGetInteger(int pName) {DEBUG_printName("glGetInteger");
@@ -815,7 +816,7 @@ public class qgl {
     }
 
     public static void qglGetIntegerv(int pName, IntBuffer params) {DEBUG_printName("glGetIntegerv");
-        GL11.glGetInteger(pName, params);
+        GL11.glGetIntegerv(pName, params);
     }
 
     public static void qglGetLightfv(int light, int pName, float[] params) {DEBUG_printName("glGetLightfv");
@@ -872,6 +873,10 @@ public class qgl {
 
     public static String qglGetString(int name) {DEBUG_printName("glGetString");
         return GL11.glGetString(name);
+    }
+
+    public static String qglGetStringi(int name, int index) {DEBUG_printName("glGetStringi");
+        return GL30.glGetStringi(name, index);
     }
 
     public static void qglGetTexEnvfv(int target, int pName, float[] params) {DEBUG_printName("glGetTexEnvfv");
@@ -992,7 +997,7 @@ public class qgl {
     }
 
     public static void qglLightModelfv(int pName, FloatBuffer params) {DEBUG_printName("glLightModelfv");
-        GL11.glLightModel(pName, params);
+        GL11.glLightModelfv(pName, params);
     }
 
     public static void qglLightModeli(int pName, int param) {DEBUG_printName("glLightModeli");
@@ -1000,7 +1005,7 @@ public class qgl {
     }
 
     public static void qglLightModeliv(int pName, IntBuffer params) {DEBUG_printName("glLightModeliv");
-        GL11.glLightModel(pName, params);
+        GL11.glLightModeliv(pName, params);
     }
 
     public static void qglLightf(int light, int pName, float param) {DEBUG_printName("glLightf");
@@ -1008,7 +1013,7 @@ public class qgl {
     }
 
     public static void qglLightfv(int light, int pName, FloatBuffer params) {DEBUG_printName("glLightfv");
-        GL11.glLight(light, pName, params);
+        GL11.glLightfv(light, pName, params);
     }
 
     public static void qglLighti(int light, int pName, int param) {DEBUG_printName("glLighti");
@@ -1016,7 +1021,7 @@ public class qgl {
     }
 
     public static void qglLightiv(int light, int pName, IntBuffer params) {DEBUG_printName("glLightiv");
-        GL11.glLight(light, pName, params);
+        GL11.glLightiv(light, pName, params);
     }
 
     public static void qglLineStipple(int factor, short pattern) {DEBUG_printName("glLineStipple");
@@ -1036,11 +1041,11 @@ public class qgl {
     }
 
     public static void qglLoadMatrixd(DoubleBuffer m) {DEBUG_printName("glLoadMatrixd");
-        GL11.glLoadMatrix(m);
+        GL11.glLoadMatrixd(m);
     }
 
     public static void qglLoadMatrixf(float[] m) {DEBUG_printName("glLoadMatrixf");//TODO:convert to FloatBuffer.
-        GL11.glLoadMatrix(wrap(m));
+        GL11.glLoadMatrixf(m);
     }
 
     public static void qglLoadName(int name) {DEBUG_printName("glLoadName");
@@ -1584,7 +1589,7 @@ public class qgl {
     }
 
     public static void qglTexEnvfv(int target, int pName, FloatBuffer params) {DEBUG_printName("glTexEnvfv");
-        GL11.glTexEnv(target, pName, params);
+        GL11.glTexEnvfv(target, pName, params);
     }
 
     public static void qglTexEnvi(int target, int pName, int param) {DEBUG_printName("glTexEnvi");//ENVY!!
@@ -1608,7 +1613,7 @@ public class qgl {
     }
 
     public static void qglTexGenfv(int coord, int pName, float[] params) {DEBUG_printName("glTexGenfv");
-        GL11.glTexGen(coord, pName, wrap(params));
+        GL11.glTexGenfv(coord, pName, params);
     }
 
     public static void qglTexGeni(int coord, int pName, int param) {DEBUG_printName("glTexGeni");
@@ -1638,7 +1643,7 @@ public class qgl {
     }
 
     public static void qglTexParameterfv(int target, int pName, FloatBuffer params) {DEBUG_printName("glTexParameterfv");
-        GL11.glTexParameter(target, pName, params);
+        GL11.glTexParameterfv(target, pName, params);
     }
 
     public static void qglTexParameteri(int target, int pName, int param) {DEBUG_printName("glTexParameteri");
@@ -1820,10 +1825,10 @@ public class qgl {
     private static void checkGLError() {
         if (GL_DEBUG) {
             final ByteBuffer messageLog = BufferUtils.createByteBuffer(1000);
-            while (GL43.glGetDebugMessageLog(1, null, null, null, null, null, messageLog) > 0) {
-                System.out.println(TempDump.bbtoa(messageLog));
-                messageLog.clear();
-            }
+//            while (GL43.glGetDebugMessageLog(1, null, null, null, null, null, messageLog) > 0) {
+//                System.out.println(TempDump.bbtoa(messageLog));
+//                messageLog.clear();
+//            }
 //            Util.checkGLError();
         }
     }

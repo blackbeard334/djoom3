@@ -419,7 +419,7 @@ public class Session_local {
 
             cmdSystem.AddCommand("writePrecache", Sess_WritePrecache_f.getInstance(), CMD_FL_SYSTEM | CMD_FL_CHEAT, "writes precache commands");
 
-            if (ID_DEDICATED) {
+//            if (ID_DEDICATED) {
                 cmdSystem.AddCommand("map", Session_Map_f.getInstance(), CMD_FL_SYSTEM, "loads a map", idCmdSystem.ArgCompletion_MapName.getInstance());
                 cmdSystem.AddCommand("devmap", Session_DevMap_f.getInstance(), CMD_FL_SYSTEM, "loads a map in developer mode", idCmdSystem.ArgCompletion_MapName.getInstance());
                 cmdSystem.AddCommand("testmap", Session_TestMap_f.getInstance(), CMD_FL_SYSTEM, "tests a map", idCmdSystem.ArgCompletion_MapName.getInstance());
@@ -438,7 +438,7 @@ public class Session_local {
                 cmdSystem.AddCommand("timeDemoQuit", Session_TimeDemoQuit_f.getInstance(), CMD_FL_SYSTEM, "times a demo and quits", idCmdSystem.ArgCompletion_DemoName.getInstance());
                 cmdSystem.AddCommand("aviDemo", Session_AVIDemo_f.getInstance(), CMD_FL_SYSTEM, "writes AVIs for a demo", idCmdSystem.ArgCompletion_DemoName.getInstance());
                 cmdSystem.AddCommand("compressDemo", Session_CompressDemo_f.getInstance(), CMD_FL_SYSTEM, "compresses a demo file", idCmdSystem.ArgCompletion_DemoName.getInstance());
-            }
+//            }
 
             cmdSystem.AddCommand("disconnect", Session_Disconnect_f.getInstance(), CMD_FL_SYSTEM, "disconnects from a game");
 

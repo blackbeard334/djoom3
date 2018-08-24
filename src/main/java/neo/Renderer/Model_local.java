@@ -307,6 +307,7 @@ public class Model_local {
 
                     R_BoundTriSurf(surf.geometry);
                     bounds.AddBounds(surf.geometry.bounds);
+                    int a = 0;
                 }
 
                 return;
@@ -411,6 +412,7 @@ public class Model_local {
 
                     // add to the model bounds
                     bounds.AddBounds(surf.geometry.bounds);
+                    int a = 0;
                 }
             }
         }

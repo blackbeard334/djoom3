@@ -1,22 +1,21 @@
 package neo.sys;
 
 import com.sun.management.OperatingSystemMXBean;
+import neo.TempDump.TODO_Exception;
+import neo.idlib.Text.Str.idStr;
+import neo.sys.sys_public.sysMemoryStats_s;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
 
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.isNotNullOrEmpty;
-import neo.idlib.Text.Str.idStr;
-import neo.sys.sys_public.sysMemoryStats_s;
-import org.lwjgl.Sys;
 
 /**
  *
  */
 public class win_shared {
 
-    private static final long sys_timeBase = Sys.getTime();
+    private static final long sys_timeBase = System.currentTimeMillis();
 
     /*
      ================
@@ -24,7 +23,7 @@ public class win_shared {
      ================
      */
     public static int Sys_Milliseconds() {
-        return (int) (Sys.getTime() - sys_timeBase);
+        return (int) (System.currentTimeMillis() - sys_timeBase);
     }
 
     /*

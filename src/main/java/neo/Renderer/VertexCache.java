@@ -33,10 +33,10 @@ import static neo.idlib.math.Simd.SIMDProcessor;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import org.lwjgl.BufferUtils;
-import static org.lwjgl.opengl.ARBBufferObject.GL_STATIC_DRAW_ARB;
-import static org.lwjgl.opengl.ARBBufferObject.GL_STREAM_DRAW_ARB;
 import static org.lwjgl.opengl.ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB;
 import static org.lwjgl.opengl.ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB;
+import static org.lwjgl.opengl.ARBVertexBufferObject.GL_STATIC_DRAW_ARB;
+import static org.lwjgl.opengl.ARBVertexBufferObject.GL_STREAM_DRAW_ARB;
 
 /**
  *

@@ -229,6 +229,7 @@ public class Model_prt {
                 surf.geometry.numVerts = numVerts;
                 surf.geometry.numIndexes = numIndexes;
                 surf.geometry.bounds.oSet(stage.bounds);// just always draw the particles
+                int a = 0;
             }
 
             return staticModel;

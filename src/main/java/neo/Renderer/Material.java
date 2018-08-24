@@ -443,7 +443,7 @@ public class Material {
         int fragmentProgram;
         int numFragmentProgramImages;
         idImage[] fragmentProgramImages = new idImage[MAX_FRAGMENT_IMAGES];
-        idMegaTexture megaTexture;      // handles all the binding and parameter setting 
+        idMegaTexture megaTexture;      // handles all the binding and parameter setting
     };
 
     public static class shaderStage_t {
@@ -749,7 +749,7 @@ public class Material {
         private int                numStages;
         private int                numAmbientStages;
         //																										
-        private shaderStage_t[]    stages;
+        public shaderStage_t[]    stages;
         //
         private mtrParsingData_s   pd;           // only used during parsing
         //

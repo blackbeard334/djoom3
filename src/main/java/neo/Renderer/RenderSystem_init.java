@@ -28,15 +28,16 @@ import neo.Renderer.RenderWorld.renderView_s;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_arb2.R_ARB2_Init;
 import neo.Renderer.draw_arb2.R_ReloadARBPrograms_f;
-import static neo.Renderer.draw_nv10.R_NV10_Init;
-import static neo.Renderer.draw_nv20.R_NV20_Init;
-import static neo.Renderer.draw_r200.R_R200_Init;
+//import static neo.Renderer.draw_nv10.R_NV10_Init;
+//import static neo.Renderer.draw_nv20.R_NV20_Init;
+//import static neo.Renderer.draw_r200.R_R200_Init;
 import static neo.Renderer.qgl.qglFinish;
 import static neo.Renderer.qgl.qglGetError;
 import static neo.Renderer.qgl.qglGetFloatv;
 import static neo.Renderer.qgl.qglGetInteger;
 import static neo.Renderer.qgl.qglGetIntegerv;
 import static neo.Renderer.qgl.qglGetString;
+import static neo.Renderer.qgl.qglGetStringi;
 import static neo.Renderer.qgl.qglReadBuffer;
 import static neo.Renderer.qgl.qglReadPixels;
 import neo.Renderer.tr_guisurf.R_ListGuis_f;
@@ -462,7 +463,7 @@ public class RenderSystem_init {
         r_showInteractionScissors = new idCVar("r_showInteractionScissors", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = show screen rectangle which contains the interaction frustum, 2 = also draw construction lines", 0, 2, new idCmdSystem.ArgCompletion_Integer(0, 2));
         r_showLightCount = new idCVar("r_showLightCount", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = colors surfaces based on light count, 2 = also count everything through walls, 3 = also print overdraw", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showViewEntitys = new idCVar("r_showViewEntitys", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = displays the bounding boxes of all view models, 2 = print index numbers");
-        r_showTris = new idCVar("r_showTris", "3", CVAR_RENDERER | CVAR_INTEGER, "enables wireframe rendering of the world, 1 = only draw visible ones, 2 = draw all front facing, 3 = draw all", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
+        r_showTris = new idCVar("r_showTris", "0", CVAR_RENDERER | CVAR_INTEGER, "enables wireframe rendering of the world, 1 = only draw visible ones, 2 = draw all front facing, 3 = draw all", 0, 3, new idCmdSystem.ArgCompletion_Integer(0, 3));
         r_showSurfaceInfo = new idCVar("r_showSurfaceInfo", "0", CVAR_RENDERER | CVAR_BOOL, "show surface material name under crosshair");
         r_showNormals = new idCVar("r_showNormals", "0", CVAR_RENDERER | CVAR_FLOAT, "draws wireframe normals");
         r_showMemory = new idCVar("r_showMemory", "0", CVAR_RENDERER | CVAR_BOOL, "print frame memory utilization");
@@ -2053,7 +2054,13 @@ public class RenderSystem_init {
         glConfig.vendor_string = qglGetString(GL_VENDOR);
         glConfig.renderer_string = qglGetString(GL_RENDERER);
         glConfig.version_string = qglGetString(GL_VERSION);
-        glConfig.extensions_string = qglGetString(GL_EXTENSIONS);
+
+        StringBuilder bla = new StringBuilder();
+        String ext;
+        for (int j = 0; (ext = qglGetStringi(GL_EXTENSIONS, j)) != null; j++) {
+            bla.append(ext).append(' ');
+        }
+        glConfig.extensions_string = bla.toString();
 
         // OpenGL driver constants
         qglGetIntegerv(GL_MAX_TEXTURE_SIZE, temp);
@@ -2071,9 +2078,9 @@ public class RenderSystem_init {
 
         // parse our vertex and fragment programs, possibly disable support for
         // one of the paths if there was an error
-        R_NV10_Init();
-        R_NV20_Init();
-        R_R200_Init();
+//        R_NV10_Init();
+//        R_NV20_Init();
+//        R_R200_Init();
         R_ARB2_Init();
 
         cmdSystem.AddCommand("reloadARBprograms", R_ReloadARBPrograms_f.getInstance(), CMD_FL_RENDERER, "reloads ARB programs");

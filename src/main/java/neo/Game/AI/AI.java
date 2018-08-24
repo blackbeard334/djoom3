@@ -444,12 +444,12 @@ public class AI {
 
     public static class predictedPath_s {
 
-        idVec3 endPos;                      // final position
-        idVec3 endVelocity;                 // velocity at end position
-        idVec3 endNormal;                   // normal of blocking surface
-        int    endTime;                     // time predicted
-        int    endEvent;                    // event that stopped the prediction
-        static idEntity blockingEntity;     // entity that blocks the movement
+        idVec3   endPos      = new idVec3();  // final position
+        idVec3   endVelocity = new idVec3();  // velocity at end position
+        idVec3   endNormal   = new idVec3();  // normal of blocking surface
+        int      endTime;                     // time predicted
+        int      endEvent;                    // event that stopped the prediction
+        idEntity blockingEntity;              // entity that blocks the movement
     };
 
 
@@ -1865,8 +1865,8 @@ public class AI {
                 minFloorCos = 0.7f;
             }
 
-            path.endPos = start;
-            path.endVelocity = velocity;
+            path.endPos.oSet(start);
+            path.endVelocity.oSet(velocity);
             path.endNormal.Zero();
             path.endEvent = 0;
             path.endTime = 0;
@@ -1885,7 +1885,7 @@ public class AI {
 
                 delta = curVelocity.oMultiply(curFrameTime).oMultiply(0.001f);
 
-                path.endVelocity = curVelocity;
+                path.endVelocity.oSet(curVelocity);
                 path.endTime = i * frameTime;
 
                 // allow sliding along a few surfaces per frame
@@ -1914,7 +1914,7 @@ public class AI {
                             if ((lastEnd.oMinus(start)).LengthSqr() > (trace.endPos.oMinus(start)).LengthSqr() - 0.1f
                                     || (trace.normal.oMultiply(invGravityDir)) < minFloorCos) {
                                 if ((stopEvent & SE_BLOCKED) != 0) {
-                                    path.endPos = lastEnd;
+                                    path.endPos.oSet(lastEnd);
                                     path.endEvent = SE_BLOCKED;
 
                                     if (ai_debugMove.GetBool()) {
@@ -1929,7 +1929,7 @@ public class AI {
                             }
                         }
 
-                        path.endNormal = trace.normal;
+                        path.endNormal.oSet(trace.normal);
                         path.blockingEntity = trace.blockingEntity;
 
                         // if the trace is not blocked or blocked by a floor surface
@@ -1965,7 +1965,7 @@ public class AI {
                         // if going backwards
                         if ((curVelocity.oMinus(gravityDir.oMultiply(curVelocity.oMultiply(gravityDir))))
                                 .oMultiply(velocity.oMinus(gravityDir.oMultiply(velocity.oMultiply(gravityDir)))) < 0.0f) {
-                            path.endPos = curStart;
+                            path.endPos.oSet(curStart);
                             path.endEvent = SE_BLOCKED;
 
                             return true;
@@ -1975,7 +1975,7 @@ public class AI {
 
                 if (j >= MAX_FRAME_SLIDE) {
                     if ((stopEvent & SE_BLOCKED) != 0) {
-                        path.endPos = curStart;
+                        path.endPos.oSet(curStart);
                         path.endEvent = SE_BLOCKED;
                         return true;
                     }
@@ -1986,8 +1986,8 @@ public class AI {
             }
 
             path.endTime = totalTime;
-            path.endVelocity = curVelocity;
-            path.endPos = curStart;
+            path.endVelocity.oSet(curVelocity);
+            path.endPos.oSet(curStart);
             path.endEvent = 0;
 
             return false;
@@ -3874,7 +3874,7 @@ public class AI {
                 return true;
             }
 
-            move.moveDest = pos;
+            move.moveDest.oSet(pos);
             move.goalEntity.oSet(null);
             move.moveCommand = MOVE_TO_POSITION_DIRECT;
             move.moveStatus = MOVE_STATUS_MOVING;
@@ -3952,7 +3952,7 @@ public class AI {
                 return true;
             }
 
-            move.moveDest = goal.origin;
+            move.moveDest.oSet(goal.origin);
             move.toAreaNum = goal.areaNum;
             move.goalEntity.oSet(ent);
             move.moveCommand = MOVE_OUT_OF_RANGE;
@@ -3999,7 +3999,7 @@ public class AI {
                 return false;
             }
 
-            move.moveDest = goal.origin;
+            move.moveDest.oSet(goal.origin);
             move.toAreaNum = goal.areaNum;
             move.goalEntity.oSet(ent);
             move.moveCommand = MOVE_TO_ATTACK_POSITION;
@@ -4053,7 +4053,7 @@ public class AI {
                 if (move.moveCommand == MOVE_TO_ENEMY) {
                     if (NOT(aas)) {
                         // keep the move destination up to date for wandering
-                        move.moveDest = pos;
+                        move.moveDest.oSet(pos);
                     }
                     return false;
                 }
@@ -4070,7 +4070,7 @@ public class AI {
                 move.startTime = gameLocal.time;
             }
 
-            move.moveDest = pos;
+            move.moveDest.oSet(pos);
             move.goalEntity.oSet(enemyEnt);
             move.speed = fly_speed;
             move.moveStatus = MOVE_STATUS_MOVING;
@@ -4118,7 +4118,7 @@ public class AI {
                 if (move.moveCommand == MOVE_TO_ENTITY) {
                     if (NOT(aas)) {
                         // keep the move destination up to date for wandering
-                        move.moveDest = pos;
+                        move.moveDest.oSet(pos);
                     }
                     return false;
                 }
@@ -4136,7 +4136,7 @@ public class AI {
                 move.moveCommand = MOVE_TO_ENTITY;
             }
 
-            move.moveDest = pos;
+            move.moveDest.oSet(pos);
             move.goalEntityOrigin = ent.GetPhysics().GetOrigin();
             move.moveStatus = MOVE_STATUS_MOVING;
             move.speed = fly_speed;
@@ -4177,7 +4177,7 @@ public class AI {
                 return false;
             }
 
-            move.moveDest = org;
+            move.moveDest.oSet(org);
             move.goalEntity.oSet(null);
             move.moveCommand = MOVE_TO_POSITION;
             move.moveStatus = MOVE_STATUS_MOVING;
@@ -4220,7 +4220,7 @@ public class AI {
                 return true;
             }
 
-            move.moveDest = hideGoal.origin;
+            move.moveDest.oSet(hideGoal.origin);
             move.toAreaNum = hideGoal.areaNum;
             move.goalEntity.oSet(entity);
             move.moveCommand = MOVE_TO_COVER;
@@ -4237,7 +4237,7 @@ public class AI {
         protected boolean SlideToPosition(final idVec3 pos, float time) {
             StopMove(MOVE_STATUS_DONE);
 
-            move.moveDest = pos;
+            move.moveDest.oSet(pos);
             move.goalEntity.oSet(null);
             move.moveCommand = MOVE_SLIDE_TO_POSITION;
             move.moveStatus = MOVE_STATUS_MOVING;
@@ -4698,10 +4698,10 @@ public class AI {
             if (move.moveCommand == MOVE_TO_ENEMY) {
                 if (NOT(aas)) {
                     // keep the move destination up to date for wandering
-                    move.moveDest = lastVisibleReachableEnemyPos;
+                    move.moveDest.oSet(lastVisibleReachableEnemyPos);
                 } else if (enemyAreaNum != 0) {
                     move.toAreaNum = lastVisibleReachableEnemyAreaNum;
-                    move.moveDest = lastVisibleReachableEnemyPos;
+                    move.moveDest.oSet(lastVisibleReachableEnemyPos);
                 }
 
                 if (move.moveType == MOVETYPE_FLY) {
@@ -4709,7 +4709,7 @@ public class AI {
                     idVec3 end = move.moveDest;
                     end.z += enemyEnt.EyeOffset().z + fly_offset;
                     idAI.PredictPath(this, aas, move.moveDest, end.oMinus(move.moveDest), 1000, 1000, SE_BLOCKED, path2);
-                    move.moveDest = path2.endPos;
+                    move.moveDest.oSet(path2.endPos);
                     move.toAreaNum = PointReachableAreaNum(move.moveDest, 1.0f);
                 }
             }

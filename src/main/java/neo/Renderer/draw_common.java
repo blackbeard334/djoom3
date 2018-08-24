@@ -51,9 +51,9 @@ import neo.Renderer.VertexCache.vertCache_s;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_arb.RB_ARB_DrawInteractions;
 import static neo.Renderer.draw_arb2.RB_ARB2_DrawInteractions;
-import static neo.Renderer.draw_nv10.RB_NV10_DrawInteractions;
-import static neo.Renderer.draw_nv20.RB_NV20_DrawInteractions;
-import static neo.Renderer.draw_r200.RB_R200_DrawInteractions;
+//import static neo.Renderer.draw_nv10.RB_NV10_DrawInteractions;
+//import static neo.Renderer.draw_nv20.RB_NV20_DrawInteractions;
+//import static neo.Renderer.draw_r200.RB_R200_DrawInteractions;
 import static neo.Renderer.qgl.qglAlphaFunc;
 import static neo.Renderer.qgl.qglBegin;
 import static neo.Renderer.qgl.qglBindProgramARB;
@@ -786,22 +786,22 @@ public class draw_common {
 //	int	 w = backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1 + 1;
 //	pot = globalImages.currentRenderImage.uploadWidth;
 //	if ( w == pot ) {
-//		parm[0] = 1.0f;
+//		parm0[0] = 1.0f;
 //	} else {
-//		parm[0] = (float)(w-1) / pot;
+//		parm0[0] = (float)(w-1) / pot;
 //	}
 //
 //	int	 h = backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1 + 1;
 //	pot = globalImages.currentRenderImage.uploadHeight;
 //	if ( h == pot ) {
-//		parm[1] = 1.0;
+//		parm0[1] = 1.0;
 //	} else {
-//		parm[1] = (float)(h-1) / pot;
+//		parm0[1] = (float)(h-1) / pot;
 //	}
 //
-//	parm[2] = 0;
-//	parm[3] = 1;
-//	qglProgramEnvParameter4fvARB( GL_VERTEX_PROGRAM_ARB, 0, parm );
+//	parm0[2] = 0;
+//	parm0[3] = 1;
+//	qglProgramEnvParameter4fvARB( GL_VERTEX_PROGRAM_ARB, 0, parm0 );
 //}else{
         // screen power of two correction factor, assuming the copy to _currentRender
         // also copied an extra row and column for the bilerp
@@ -1209,7 +1209,7 @@ public class draw_common {
         // because we want to defer the matrix load because many
         // surfaces won't draw any ambient passes
         backEnd.currentSpace = null;
-        for (i = 0; i < numDrawSurfs; i++) {
+        for (i = 0; i < numDrawSurfs /*&& numDrawSurfs == 5*/; i++) {
             if (drawSurfs[i].material.SuppressInSubview()) {
                 continue;
             }
@@ -1907,16 +1907,16 @@ public class draw_common {
                 break;
             case BE_ARB2:
                 RB_ARB2_DrawInteractions();
-                break;
-            case BE_NV20:
-                RB_NV20_DrawInteractions();
-                break;
-            case BE_NV10:
-                RB_NV10_DrawInteractions();
-                break;
-            case BE_R200:
-                RB_R200_DrawInteractions();
-                break;
+//                break;
+//            case BE_NV20:
+//                RB_NV20_DrawInteractions();
+//                break;
+//            case BE_NV10:
+//                RB_NV10_DrawInteractions();
+//                break;
+//            case BE_R200:
+//                RB_R200_DrawInteractions();
+//                break;
         }
 
         // disable stencil shadow test
