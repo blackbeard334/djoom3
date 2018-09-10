@@ -3738,10 +3738,6 @@ public class Physics_AF {
             idClipModel.delete(clipModel);
         }
 
-        public static void delete(idAFBody body) {
-            body._deconstructor();
-        }
-
         public void Init() {
             name = new idStr("noname");
             parent = null;

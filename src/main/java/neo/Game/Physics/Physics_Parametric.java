@@ -131,10 +131,6 @@ public class Physics_Parametric {
             super._deconstructor();
         }
 
-        public static void delete(idPhysics_Parametric param) {
-            param._deconstructor();
-        }
-
         @Override
         public void Save(idSaveGame savefile) {
 

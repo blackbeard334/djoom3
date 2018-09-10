@@ -355,9 +355,9 @@ public class draw_arb {
 
             // set the vertex arrays, which may not all be enabled on a given pass
             idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyz.ToFloatPtr());
+            qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             GL_SelectTexture(0);
-            qglTexCoordPointer(2, GL_FLOAT, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.st.ToFloatPtr());
+            qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
             qglColor3f(1, 1, 1);
 
             //

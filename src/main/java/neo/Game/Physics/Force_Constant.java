@@ -85,7 +85,7 @@ public class Force_Constant {
 
         @Override
         public void RemovePhysics(final idPhysics phys) {
-            if (physics.equals(phys)) {
+            if (physics == phys) {
                 physics = null;
             }
         }

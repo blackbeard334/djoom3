@@ -86,6 +86,9 @@ public class Clip {
         clipLink_s prevInSector;
         clipLink_s nextInSector;
         clipLink_s nextLink;
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
     };
 
     public static class trmCache_s {

@@ -540,6 +540,7 @@ public class Entity {
 
         }
 
+        @Override
         protected void _deconstructor() {
             if (gameLocal.GameState() != GAMESTATE_SHUTDOWN && !gameLocal.isClient && fl.networkSync && entityNumber >= MAX_CLIENTS) {
                 idBitMsg msg = new idBitMsg();
@@ -584,6 +585,14 @@ public class Entity {
             FreeSoundEmitter(false);
 
             gameLocal.UnregisterEntity(this);
+
+            delete(teamChain);
+            delete(teamMaster);
+            delete(bindMaster);
+            delete(physics);
+            if (physics != defaultPhysicsObj) delete(defaultPhysicsObj);
+            delete(cameraTarget);
+            super._deconstructor();
         }
 
         @Override
@@ -4216,10 +4225,6 @@ public class Entity {
         private void Event_SetNeverDormant(idEventArg<Integer> enable) {
             fl.neverDormant = (enable.value != 0);
             dormantStart = 0;
-        }
-
-        public static void delete(final idEntity entity){
-            entity._deconstructor();
         }
     }
 

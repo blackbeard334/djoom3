@@ -309,7 +309,12 @@ public class Class {
 // #ifdef ID_REDIRECT_NEWDELETE
 // #define new ID_DEBUG_NEW
 // #endif
+
         // virtual						~idClass();
+        protected void _deconstructor() {
+            idEvent.CancelEvents(this);
+        }
+
         public void Spawn() {
         }
 
@@ -619,19 +624,14 @@ public class Class {
 
         public void Event_Remove() {
             //	delete this;//if only
-            if (this instanceof idBFGProjectile) {//TODO: remove all this crap
-                idBFGProjectile.delete((idBFGProjectile) this);
-            } else if (this instanceof idProjectile) {
-                idProjectile.delete((idProjectile) this);
-            } else if (this instanceof idTrigger_Multi) {
-                idTrigger_Multi.delete((idTrigger_Multi) this);
-            } else if (this instanceof idTarget_Remove) {
-                idTarget_Remove.delete((idTarget_Remove) this);
-            } else if (this instanceof idAI) {
-                idAI.delete((idAI) this);
-            } else if (this instanceof idEntity) {
-                idEntity.delete((idEntity) this);
-            }
+            if (this instanceof idBFGProjectile) idBFGProjectile.delete((idBFGProjectile) this);
+            else if (this instanceof idProjectile) idProjectile.delete((idProjectile) this);
+            else if (this instanceof idTrigger_Multi) idTrigger_Multi.delete((idTrigger_Multi) this);
+            else if (this instanceof idTarget_Remove) idTarget_Remove.delete((idTarget_Remove) this);
+            else if (this instanceof idAI) idAI.delete((idAI) this);
+            else if (this instanceof idEntity) idEntity.delete((idEntity) this);
+            else if (this instanceof idThread) idThread.delete((idThread) this);
+            else throw new TODO_Exception();
         }
 
         // Static functions
@@ -930,6 +930,10 @@ public class Class {
         private void Event_SafeRemove() {
             // Forces the remove to be done at a safe time
             PostEventMS(EV_Remove, 0);
+        }
+
+        public static void delete(final idClass clazz){
+            if (clazz != null) clazz._deconstructor();
         }
     };
 

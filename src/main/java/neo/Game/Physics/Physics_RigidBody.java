@@ -247,10 +247,6 @@ public class Physics_RigidBody {
             super._deconstructor();
         }
 
-        public static void delete(idPhysics_RigidBody body) {
-            body._deconstructor();
-        }
-
         @Override
         public void Save(idSaveGame savefile) {
 
