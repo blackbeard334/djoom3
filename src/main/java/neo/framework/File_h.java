@@ -351,7 +351,7 @@ public class File_h {
         public int ReadInt(int[] value) {
             ByteBuffer intBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
             int result = Read(intBytes);
-            value[0] = LittleLong(intBytes.getInt());
+            value[0] = LittleLong(intBytes.getInt(0));
             return result;
         }
 

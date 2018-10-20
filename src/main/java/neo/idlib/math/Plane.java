@@ -51,6 +51,7 @@ public class Plane {
 
         private final idVec3 abc = new idVec3();
         private float d;
+
         //
         //
 

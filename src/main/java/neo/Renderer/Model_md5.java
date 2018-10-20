@@ -324,7 +324,7 @@ public class Model_md5 {
                 R_AllocStaticTriSurfVerts(tri, tri.numVerts);
                 for (i = 0; i < deformInfo.numSourceVerts; i++) {
                     tri.verts[i].Clear();
-                    tri.verts[i].st = texCoords.oGet(i);
+                    tri.verts[i].st.oSet(texCoords.oGet(i));
                 }
             }
 

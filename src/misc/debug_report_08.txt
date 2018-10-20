@@ -57,3 +57,16 @@ idRenderWorldLocal::CreateLightDefInteractions() inter.numSurfaces is changed th
     viewFrustrum
 
 entityDef->index==1091
+
+
+tri->indexes
+    idGuiModel::EmitSurface()
+    
+    glDepthRange
+    
+    surf.shaderRegisters
+    
+RB_ARB2_DrawInteractions()
+    RB_T_Shadow() tri->numIndexes !=
+        R_SetLightDefViewLight()
+            idInteraction::AddActiveInteraction() vLight->globalShadows

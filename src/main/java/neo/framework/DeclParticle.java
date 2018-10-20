@@ -799,10 +799,10 @@ public class DeclParticle {
             left.oMulSet(width);
             up.oMulSet(height);
 
-            verts[0].xyz = origin.oMinus(left).oPluSet(up);
-            verts[1].xyz = origin.oPluSet(left).oPluSet(up);
+            verts[0].xyz = origin.oMinus(left).oPlus(up);
+            verts[1].xyz = origin.oPlus(left).oPlus(up);
             verts[2].xyz = origin.oMinus(left).oMinus(up);
-            verts[3].xyz = origin.oPluSet(left).oMinus(up);
+            verts[3].xyz = origin.oPlus(left).oMinus(up);
 
             return 4;
         }

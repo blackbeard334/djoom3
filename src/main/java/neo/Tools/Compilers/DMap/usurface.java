@@ -821,7 +821,7 @@ public class usurface {
         // shadowers will contain all the triangles that will contribute to the
         // shadow volume
         shadowerGroups = null;
-        lightOrigin = light.def.globalLightOrigin;
+        lightOrigin = new idVec3(light.def.globalLightOrigin);
 
         // if the light is no-shadows, don't add any surfaces
         // to the beam tree at all

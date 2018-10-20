@@ -816,7 +816,7 @@ public class Mover {
             move.acceleration = at;
             move.movetime = move_time - at - dt;
             move.deceleration = dt;
-            move.dir = move_delta;
+            move.dir = new idVec3(move_delta);
 
             ProcessEvent(EV_ReachedPos);
         }

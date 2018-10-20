@@ -389,7 +389,7 @@ public class tr_rendertools {
         int i;
         ByteBuffer stencilReadback;
 
-        stencilReadback = ByteBuffer.allocate(glConfig.vidWidth * glConfig.vidHeight);// R_StaticAlloc(glConfig.vidWidth * glConfig.vidHeight);
+        stencilReadback = BufferUtils.createByteBuffer(glConfig.vidWidth * glConfig.vidHeight);// R_StaticAlloc(glConfig.vidWidth * glConfig.vidHeight);
         qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback);
 
         count = 0;
@@ -820,8 +820,8 @@ public class tr_rendertools {
                         }
                     }
 
-                    shadowCache_s cache = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
-                    qglVertexPointer(4, GL_FLOAT, 0/*sizeof(cache)*/, cache.xyz.ToFloatPtr());
+                    ByteBuffer cache = vertexCache.Position(tri.shadowCache);//TODO:figure out how to work these damn casts.
+                    qglVertexPointer(4, GL_FLOAT, shadowCache_s.BYTES/*sizeof(cache)*/, cache);
                     RB_DrawElementsWithCounters(tri);
                 }
             }
@@ -1466,6 +1466,8 @@ public class tr_rendertools {
         for (i = 0; i < numDrawSurfs; i++) {
             drawSurf = drawSurfs[i];
 
+            if(i!=101)continue;
+
             tri = drawSurf.geo;
 
             if (null == tri.verts) {
@@ -1485,7 +1487,7 @@ public class tr_rendertools {
                 idVec3 temp = new idVec3();
                 float[] d0 = new float[5], d1 = new float[5];
                 idVec3 mid;
-                idVec3[] tangents = new idVec3[2];
+                idVec3[] tangents = {new idVec3(), new idVec3()};
 
                 a = tri.verts[tri.indexes[j + 0]];
                 b = tri.verts[tri.indexes[j + 1]];
@@ -1513,13 +1515,13 @@ public class tr_rendertools {
                 temp.oSet(1, (d0[1] * d1[4] - d0[4] * d1[1]) * inva);
                 temp.oSet(2, (d0[2] * d1[4] - d0[4] * d1[2]) * inva);
                 temp.Normalize();
-                tangents[0] = temp;
+                tangents[0].oSet(temp);
 
                 temp.oSet(0, (d0[3] * d1[0] - d0[0] * d1[3]) * inva);
                 temp.oSet(1, (d0[3] * d1[1] - d0[1] * d1[3]) * inva);
                 temp.oSet(2, (d0[3] * d1[2] - d0[2] * d1[3]) * inva);
                 temp.Normalize();
-                tangents[1] = temp;
+                tangents[1].oSet(temp);
 
                 // draw the tangents
                 tangents[0] = mid.oPlus(tangents[0].oMultiply(r_showTextureVectors.GetFloat()));

@@ -984,7 +984,7 @@ public class RenderWorld_local {
          ===============
          */
         @Override
-        public int PointInArea(idVec3 point) {
+        public int PointInArea(final idVec3 point) {
             areaNode_t node;
             int nodeNum;
             float d;
@@ -2863,7 +2863,7 @@ public class RenderWorld_local {
             int i, j;
             srfTriangles_s tri;
             float d;
-            idFixedWinding w;		// we won't overflow because MAX_PORTAL_PLANES = 20
+            idFixedWinding w = new idFixedWinding();		// we won't overflow because MAX_PORTAL_PLANES = 20
 
             if (r_useLightCulling.GetInteger() == 0) {
                 return false;
@@ -2888,7 +2888,7 @@ public class RenderWorld_local {
                         continue;
                     }
 
-                    w = new idFixedWinding(ow);
+                    w.oSet(ow);
 
                     // now check the winding against each of the portalStack planes
                     for (j = 0; j < ps.numPortalPlanes - 1; j++) {

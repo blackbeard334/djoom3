@@ -326,14 +326,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idVec3 constant, idVec3[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = src[_IX + 0].oMultiply(constant);
-                dst[_IX + 1] = src[_IX + 1].oMultiply(constant);
-                dst[_IX + 2] = src[_IX + 2].oMultiply(constant);
-                dst[_IX + 3] = src[_IX + 3].oMultiply(constant);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX] = src[_IX].oMultiply(constant);
             }
         }
@@ -347,15 +341,9 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idVec3 constant, idPlane[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = src[_IX + 0].Normal().oPlus(src[_IX + 0].oGet(3)).oMultiply(constant);
-                dst[_IX + 1] = src[_IX + 1].Normal().oPlus(src[_IX + 1].oGet(3)).oMultiply(constant);
-                dst[_IX + 2] = src[_IX + 2].Normal().oPlus(src[_IX + 2].oGet(3)).oMultiply(constant);
-                dst[_IX + 3] = src[_IX + 3].Normal().oPlus(src[_IX + 3].oGet(3)).oMultiply(constant);
-            }
-            for (; _IX < count; _IX++) {
-                dst[_IX] = src[_IX].Normal().oPlus(src[_IX].oGet(3)).oMultiply(constant);
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
+                dst[_IX] = constant.oMultiply(src[_IX].Normal()) + src[_IX].oGet(3);//NB I'm not saying operator overloading would have prevented this bug, but....!@#$%$@#^&#$^%^#%^&#$*^&
             }
         }
 
@@ -368,14 +356,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idVec3 constant, idDrawVert[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = src[_IX + 0].xyz.oMultiply(constant);
-                dst[_IX + 0] = src[_IX + 1].xyz.oMultiply(constant);
-                dst[_IX + 0] = src[_IX + 2].xyz.oMultiply(constant);
-                dst[_IX + 0] = src[_IX + 3].xyz.oMultiply(constant);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX + 0] = src[_IX].xyz.oMultiply(constant);
             }
         }
@@ -389,14 +371,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idPlane constant, idVec3[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 0]) + constant.oGet(3);
-                dst[_IX + 1] = constant.Normal().oMultiply(src[_IX + 1]) + constant.oGet(3);
-                dst[_IX + 2] = constant.Normal().oMultiply(src[_IX + 2]) + constant.oGet(3);
-                dst[_IX + 3] = constant.Normal().oMultiply(src[_IX + 3]) + constant.oGet(3);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX] = constant.Normal().oMultiply(src[_IX]) + constant.oGet(3);
             }
         }
@@ -410,14 +386,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idPlane constant, idPlane[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 0].Normal()) + src[_IX + 0].oGet(3) * constant.oGet(3);
-                dst[_IX + 1] = constant.Normal().oMultiply(src[_IX + 1].Normal()) + src[_IX + 1].oGet(3) * constant.oGet(3);
-                dst[_IX + 2] = constant.Normal().oMultiply(src[_IX + 2].Normal()) + src[_IX + 2].oGet(3) * constant.oGet(3);
-                dst[_IX + 3] = constant.Normal().oMultiply(src[_IX + 3].Normal()) + src[_IX + 3].oGet(3) * constant.oGet(3);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX] = constant.Normal().oMultiply(src[_IX].Normal()) + src[_IX].oGet(3) * constant.oGet(3);
             }
         }
@@ -431,15 +401,9 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idPlane constant, idDrawVert[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 0].xyz) * constant.oGet(3);
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 1].xyz) * constant.oGet(3);
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 2].xyz) * constant.oGet(3);
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 3].xyz) * constant.oGet(3);
-            }
-            for (; _IX < count; _IX++) {
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX].xyz) * constant.oGet(3);
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
+                dst[_IX] = constant.Normal().oMultiply(src[_IX].xyz) + constant.oGet(3);
             }
         }
 
@@ -452,14 +416,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idVec3[] src0, idVec3[] src1, int count) {
-            int _IX, _NM = count & ~3;//TODO:check chekc checks
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = src0[_IX + 0].oMultiply(src1[_IX + 0]);
-                dst[_IX + 1] = src0[_IX + 1].oMultiply(src1[_IX + 1]);
-                dst[_IX + 2] = src0[_IX + 2].oMultiply(src1[_IX + 2]);
-                dst[_IX + 3] = src0[_IX + 3].oMultiply(src1[_IX + 3]);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX] = src0[_IX].oMultiply(src1[_IX]);
             }
         }

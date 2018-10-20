@@ -223,7 +223,7 @@ public class draw_common {
      =====================
      */
 
-    public static void RB_BakeTextureMatrixIntoTexgen(idPlane[] lightProject/*[3]*/, final float[] textureMatrix) {
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
         float[] genMatrix = new float[16];
         float[] finale = new float[16];
 

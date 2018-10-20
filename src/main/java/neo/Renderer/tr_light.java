@@ -619,7 +619,7 @@ public class tr_light {
         int i, j;
         idRenderLightLocal light = vLight.lightDef;
         idScreenRect r = new idScreenRect();
-        idFixedWinding w;
+        idFixedWinding w = new idFixedWinding();
 
         r.Clear();
 
@@ -639,7 +639,7 @@ public class tr_light {
                 continue;
             }
 
-            w = new idFixedWinding(ow);
+            w.oSet(ow);
 
             // now check the winding against each of the frustum planes
             for (j = 0; j < 5; j++) {
@@ -780,11 +780,12 @@ public class tr_light {
     public static void R_AddLightSurfaces() throws idException {
         viewLight_s vLight;
         idRenderLightLocal light;
-        viewLight_s ptr;
+        viewLight_s ptr, prevPtr;
         int z = 0;
 
         // go through each visible light, possibly removing some from the list
         ptr = tr.viewDef.viewLights;
+        prevPtr = null;
         while (ptr != null) {
             z++;
             vLight = ptr;
@@ -799,13 +800,15 @@ public class tr_light {
             if (!r_skipSuppress.GetBool()) {
                 if (light.parms.suppressLightInViewID != 0
                         && light.parms.suppressLightInViewID == tr.viewDef.renderView.viewID) {
-                    ptr = vLight.next;
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
                 if (light.parms.allowLightInViewID != 0
                         && light.parms.allowLightInViewID != tr.viewDef.renderView.viewID) {
-                    ptr = vLight.next;
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
@@ -857,7 +860,8 @@ public class tr_light {
                     // remove the light from the viewLights list, and change its frame marker
                     // so interaction generation doesn't think the light is visible and
                     // create a shadow for it
-                    ptr = vLight.next;
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
@@ -885,6 +889,7 @@ public class tr_light {
 //		}
 //            }
             // this one stays on the list
+            prevPtr = ptr;
             ptr = vLight.next;
 
             // if we are doing a soft-shadow novelty test, regenerate the light with

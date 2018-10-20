@@ -426,22 +426,22 @@ public class tr_lightrun {
         R_AxisToModelMatrix(light.parms.axis, light.parms.origin, light.modelMatrix);
 
         for (i = 0; i < 6; i++) {
-            idPlane temp;
-            temp = light.frustum[i];
+            idPlane temp = new idPlane();
+            temp.oSet(light.frustum[i]);
             R_LocalPlaneToGlobal(light.modelMatrix, temp, light.frustum[i]);
         }
         for (i = 0; i < 4; i++) {
-            idPlane temp;
-            temp = light.lightProject[i];
+            idPlane temp = new idPlane();
+            temp.oSet(light.lightProject[i]);
             R_LocalPlaneToGlobal(light.modelMatrix, temp, light.lightProject[i]);
         }
 
         // adjust global light origin for off center projections and parallel projections
         // we are just faking parallel by making it a very far off center for now
         if (light.parms.parallel) {
-            idVec3 dir;
+            idVec3 dir = new idVec3();
 
-            dir = light.parms.lightCenter;
+            dir.oSet(light.parms.lightCenter);
             if (0 == dir.Normalize()) {
                 // make point straight up if not specified
                 dir.oSet(2, 1);
@@ -449,7 +449,7 @@ public class tr_lightrun {
             light.globalLightOrigin = light.parms.origin.oPlus(dir.oMultiply(100000));
         } else {
             light.globalLightOrigin = light.parms.origin.oPlus(light.parms.axis.oMultiply(light.parms.lightCenter));
-        }
+        }                                                                         
 
         R_FreeLightDefFrustum(light);
 
