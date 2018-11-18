@@ -52,3 +52,18 @@ RB_ShowTextureVectors() ???? <---are we drawing all them textures?
                 R_CreateLightTris()
 
     R_AddAmbientDrawsurfs
+    
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+r_showLightCount 1
+    RB_ShowLightCount() /*...duh*/ ---> r_singleLight _1
+        vLight->globalInteractions 48 vs 45
+            interactions 2, 3, 4:
+                textures/mcity/mchangar7_local
+                textures/mcity/mcityb22_local
+                textures/mcity/mchangar8_local
+                    idInteraction::AddActiveInteraction()
+                        idInteraction::CreateInteraction()
+                            R_CreateLightTris() numIndexes 6!=0
+                                R_CalcInteractionCullBits()

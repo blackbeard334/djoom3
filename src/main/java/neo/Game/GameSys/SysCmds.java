@@ -741,7 +741,7 @@ public class SysCmds {
                 }
             } else {
                 player = gameLocal.GetLocalPlayer();
-                if (NOT(player != null)) {
+                if (player == null) {
                     return;
                 }
                 player.Kill(false, false);

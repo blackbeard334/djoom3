@@ -538,13 +538,13 @@ public class Simd_Generic {
             int _IX, _NM = count & 0xfffffffc;
             final byte _bitNum = (byte) (1 << bitNum);//TODO:check byte signage
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = (byte) (src0[_IX + 0] > constant ? _bitNum : 0);
-                dst[_IX + 1] = (byte) (src0[_IX + 1] > constant ? _bitNum : 0);
-                dst[_IX + 2] = (byte) (src0[_IX + 2] > constant ? _bitNum : 0);
-                dst[_IX + 3] = (byte) (src0[_IX + 3] > constant ? _bitNum : 0);
+                dst[_IX + 0] |= src0[_IX + 0] > constant ? _bitNum : 0;
+                dst[_IX + 1] |= src0[_IX + 1] > constant ? _bitNum : 0;
+                dst[_IX + 2] |= src0[_IX + 2] > constant ? _bitNum : 0;
+                dst[_IX + 3] |= src0[_IX + 3] > constant ? _bitNum : 0;
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = (byte) (src0[_IX] > constant ? _bitNum : 0);
+                dst[_IX] |= src0[_IX] > constant ? _bitNum : 0;
             }
         }
 
@@ -581,13 +581,13 @@ public class Simd_Generic {
             int _IX, _NM = count & 0xfffffffc;
             final byte _bitNum = (byte) (1 << bitNum);//TODO:check byte signage
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = (byte) (src0[_IX + 0] >= constant ? _bitNum : 0);
-                dst[_IX + 1] = (byte) (src0[_IX + 1] >= constant ? _bitNum : 0);
-                dst[_IX + 2] = (byte) (src0[_IX + 2] >= constant ? _bitNum : 0);
-                dst[_IX + 3] = (byte) (src0[_IX + 3] >= constant ? _bitNum : 0);
+                dst[_IX + 0] |= src0[_IX + 0] >= constant ? _bitNum : 0;
+                dst[_IX + 1] |= src0[_IX + 1] >= constant ? _bitNum : 0;
+                dst[_IX + 2] |= src0[_IX + 2] >= constant ? _bitNum : 0;
+                dst[_IX + 3] |= src0[_IX + 3] >= constant ? _bitNum : 0;
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = (byte) (src0[_IX] >= constant ? _bitNum : 0);
+                dst[_IX] |= src0[_IX] >= constant ? _bitNum : 0;
             }
         }
 
@@ -624,13 +624,13 @@ public class Simd_Generic {
             int _IX, _NM = count & 0xfffffffc;
             final byte _bitNum = (byte) (1 << bitNum);//TODO:check byte signage
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = (byte) (src0[_IX + 0] < constant ? _bitNum : 0);
-                dst[_IX + 1] = (byte) (src0[_IX + 1] < constant ? _bitNum : 0);
-                dst[_IX + 2] = (byte) (src0[_IX + 2] < constant ? _bitNum : 0);
-                dst[_IX + 3] = (byte) (src0[_IX + 3] < constant ? _bitNum : 0);
+                dst[_IX + 0] |= src0[_IX + 0] < constant ? _bitNum : 0;
+                dst[_IX + 1] |= src0[_IX + 1] < constant ? _bitNum : 0;
+                dst[_IX + 2] |= src0[_IX + 2] < constant ? _bitNum : 0;
+                dst[_IX + 3] |= src0[_IX + 3] < constant ? _bitNum : 0;
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = (byte) (src0[_IX] < constant ? _bitNum : 0);
+                dst[_IX] |= src0[_IX] < constant ? _bitNum : 0;
             }
         }
 
