@@ -340,22 +340,10 @@ public class tr_local {
         public idScreenRect   scissorRect;          // for scissor clipping, local inside renderView viewport
         public int            dsFlags;              // DSF_VIEW_INSIDE_SHADOW, etc
         public vertCache_s[]  dynamicTexCoords;     // float * in vertex cache memory
+        // specular directions for non vertex program cards, skybox texcoords, etc
 
         private static int DBG_counter = 0;
         private final  int DBG_count   = DBG_counter++;
-
-        // specular directions for non vertex program cards, skybox texcoords, etc
-        public void oSet(final drawSurf_s s) {
-            this.geo = s.geo;
-            this.space = s.space;
-            this.material = s.material;
-            this.sort = s.sort;
-            this.shaderRegisters = s.shaderRegisters;
-            this.nextOnLight = s.nextOnLight;
-            this.scissorRect = new idScreenRect(s.scissorRect);
-            this.dsFlags = s.dsFlags;
-            this.dynamicTexCoords = s.dynamicTexCoords;
-        }
     };
 
     public static class shadowFrustum_t {

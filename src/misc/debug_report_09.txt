@@ -67,3 +67,15 @@ r_showLightCount 1
                         idInteraction::CreateInteraction()
                             R_CreateLightTris() numIndexes 6!=0
                                 R_CalcInteractionCullBits()
+r_showLightCount 26
+    vLight->localInteractions 9 vs 15
+        interactions 6, 10...14:
+            textures/mcity/mchangar10_local
+            addnormals( models/mapobjects/lab/diamondbox/diamondbox_sm_local, heightmap( models/mapobjects/lab/diamondbox/diamondbox_sm_bmp, 4))
+            models/mapobjects/com/platguistand/platguistand_local
+            textures/base_light/sterlightdecal_add
+            addnormals( models/mapobjects/lab/diamondbox/diamondbox_sm_local, heightmap( models/mapobjects/lab/diamondbox/diamondbox_sm_bmp, 4))
+            addnormals( models/mapobjects/lab/diamondbox/diamondbox_sm_local, heightmap( models/mapobjects/lab/diamondbox/diamondbox_sm_bmp, 4))
+                R_LinkLightSurf()
+                    idInteraction::AddActiveInteraction() numSurfaces==49 && c==17
+                        idInteraction::CreateInteraction()

@@ -559,7 +559,7 @@ public class tr_light {
      R_LinkLightSurf
      =================
      */
-    public static void R_LinkLightSurf(final drawSurf_s[] link, final srfTriangles_s tri, final viewEntity_s spaceView,
+    public static void R_LinkLightSurf(drawSurf_s[] link, final srfTriangles_s tri, final viewEntity_s spaceView,
             final idRenderLightLocal light, final idMaterial shader, final idScreenRect scissor, boolean viewInsideShadow) {
         drawSurf_s drawSurf;
         viewEntity_s space = spaceView;//TODO:should a back reference be set here?

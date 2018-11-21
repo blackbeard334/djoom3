@@ -659,8 +659,8 @@ public class tr_rendertools {
 
         globalImages.defaultImage.Bind();
 
+        int counter = 0;
         for (vLight = backEnd.viewDef.viewLights; vLight != null; vLight = vLight.next) {
-                int counter = 0;
             for (i = 0; i < 2; i++) {
                 for (surf = (i != 0 ? vLight.localInteractions[0] : vLight.globalInteractions[0]); surf != null; surf = surf.nextOnLight) {
                     RB_SimpleSurfaceSetup(surf);counter++;

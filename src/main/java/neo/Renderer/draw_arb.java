@@ -508,7 +508,8 @@ public class draw_arb {
      RB_CreateDrawInteractions
      ==================
      */
-    public static void RB_CreateDrawInteractions(final drawSurf_s surf) {
+    public static void RB_CreateDrawInteractions(final drawSurf_s surfs) {
+        drawSurf_s surf = surfs;
         if (NOT(surf)) {
             return;
         }
@@ -517,12 +518,12 @@ public class draw_arb {
         backEnd.currentSpace = null;
 
         if (r_useTripleTextureARB.GetBool() && glConfig.maxTextureUnits >= 3) {
-            for (; surf != null; surf.oSet(surf.nextOnLight)) {
+            for (; surf != null; surf = surf.nextOnLight) {
                 // break it up into multiple primitive draw interactions if necessary
                 RB_CreateSingleDrawInteractions(surf, RB_ARB_DrawThreeTextureInteraction.INSTANCE);
             }
         } else {
-            for (; surf != null; surf.oSet(surf.nextOnLight)) {
+            for (; surf != null; surf = surf.nextOnLight) {
                 // break it up into multiple primitive draw interactions if necessary
                 RB_CreateSingleDrawInteractions(surf, RB_ARB_DrawInteraction.INSTANCE);
             }
