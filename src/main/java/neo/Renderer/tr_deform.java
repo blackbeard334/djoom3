@@ -30,6 +30,7 @@ import neo.idlib.math.Random.idRandom;
 import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -1154,9 +1155,9 @@ public class tr_deform {
                     }
 
                     if (particleCycle == stageCycle) {
-                        g.random = steppingRandom;
+                        g.random = new idRandom(steppingRandom);
                     } else {
-                        g.random = steppingRandom2;
+                        g.random = new idRandom(steppingRandom2);
                     }
 
                     inCycleTime = particleAge - particleCycle * stage.cycleMsec;
@@ -1210,13 +1211,13 @@ public class tr_deform {
 
                     //-----------------------
                     // this is needed so aimed particles can calculate origins at different times
-                    g.originalRandom = g.random;
+                    g.originalRandom = new idRandom(g.random);
 
                     g.age = g.frac * stage.particleLife;
 
                     // if the particle doesn't get drawn because it is faded out or beyond a kill region,
                     // don't increment the verts
-                    tri.numVerts += stage.CreateParticle(g, tri.verts, tri.numVerts);
+                    tri.numVerts += stage.CreateParticle(g, Arrays.copyOfRange(tri.verts, tri.numVerts, tri.verts.length));
                 }
 
                 if (tri.numVerts > 0) {

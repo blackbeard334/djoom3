@@ -25,6 +25,8 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Random.idRandom;
 
+import java.util.Arrays;
+
 /**
  *
  */
@@ -175,9 +177,9 @@ public class Model_prt {
                     }
 
                     if (particleCycle == stageCycle) {
-                        g.random = steppingRandom;
+                        g.random = new idRandom(steppingRandom);
                     } else {
-                        g.random = steppingRandom2;
+                        g.random = new idRandom(steppingRandom2);
                     }
 
                     int inCycleTime = particleAge - particleCycle * stage.cycleMsec;
@@ -200,12 +202,12 @@ public class Model_prt {
                     }
 
                     // this is needed so aimed particles can calculate origins at different times
-                    g.originalRandom = g.random;
+                    g.originalRandom = new idRandom(g.random);
 
                     g.age = g.frac * stage.particleLife;
 
                     // if the particle doesn't get drawn because it is faded out or beyond a kill region, don't increment the verts
-                    numVerts += stage.CreateParticle(g, verts, numVerts);
+                    numVerts += stage.CreateParticle(g, Arrays.copyOfRange(verts, numVerts, verts.length));
                 }
 
                 // numVerts must be a multiple of 4

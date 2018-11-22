@@ -79,3 +79,8 @@ r_showLightCount 26
                 R_LinkLightSurf()
                     idInteraction::AddActiveInteraction() numSurfaces==49 && c==17
                         idInteraction::CreateInteraction()
+r_showTrace 211
+    lancave_dust.prt
+        numIndexes < indexes.length
+        numVerts < verts.length
+            idRenderModelPrt::InstantiateDynamicModel() 1790

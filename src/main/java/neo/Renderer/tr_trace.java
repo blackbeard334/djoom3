@@ -393,6 +393,8 @@ public class tr_trace {
             surf = drawSurfs[i];
             tri = surf.geo;
 
+            if (i > 211) continue;
+            
             if (tri == null || tri.verts == null) {
                 continue;
             }
