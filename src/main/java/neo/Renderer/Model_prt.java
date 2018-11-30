@@ -93,8 +93,9 @@ public class Model_prt {
              */
             if (cachedModel != null) {
 
-//		assert( dynamic_cast<idRenderModelStatic *>(cachedModel) != null );
-//		assert( idStr::Icmp( cachedModel.Name(), parametricParticle_SnapshotName ) == 0 );
+                assert (cachedModel instanceof idRenderModelStatic);
+                assert (idStr.Icmp(cachedModel.Name(), parametricParticle_SnapshotName) == 0);
+
                 staticModel = (idRenderModelStatic) cachedModel;
 
             } else {

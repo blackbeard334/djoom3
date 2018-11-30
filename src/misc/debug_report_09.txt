@@ -84,3 +84,7 @@ r_showTrace 211
         numIndexes < indexes.length
         numVerts < verts.length
             idRenderModelPrt::InstantiateDynamicModel() 1790
+        facePlanes.d
+            idSIMD_Generic::DeriveTriPlanes()
+                verts.x
+                    idParticleStage::ParticleVerts()

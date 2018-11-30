@@ -438,7 +438,7 @@ public class DeclParticle {
             float frac = g.animationFrameFrac;
             float iFrac = 1.0f - frac;
             for (int i = 0; i < numVerts; i++) {
-                verts[numVerts + i] = verts[i];
+                verts[numVerts + i].oSet(verts[i]);
 
                 verts[numVerts + i].st.x += width;
 
@@ -559,7 +559,7 @@ public class DeclParticle {
                         break;
                     }
                     case PDIR_OUTWARD: {
-                        dir = origin;
+                        dir.oSet(origin);
                         dir.Normalize();
                         dir.oPluSet(2, directionParms[0]);
                         break;
@@ -837,7 +837,7 @@ public class DeclParticle {
             verts[2].st.oSet(0, s);
             verts[2].st.oSet(1, t + height);
 
-            verts[3].st.oSet(1, s + width);
+            verts[3].st.oSet(0, s + width);
             verts[3].st.oSet(1, t + height);
         }
 
