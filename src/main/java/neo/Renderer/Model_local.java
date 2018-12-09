@@ -700,13 +700,13 @@ public class Model_local {
                     f.ReadVec3(tri.verts[j].tangents[0]);
                     f.ReadVec3(tri.verts[j].tangents[1]);
                     f.ReadUnsignedChar(color[0]);
-                    tri.verts[j].color[0] = (short) color[0][0];
+                    tri.verts[j].color[0] = (byte) color[0][0];
                     f.ReadUnsignedChar(color[0]);
-                    tri.verts[j].color[1] = (short) color[1][0];
+                    tri.verts[j].color[1] = (byte) color[1][0];
                     f.ReadUnsignedChar(color[0]);
-                    tri.verts[j].color[2] = (short) color[2][0];
+                    tri.verts[j].color[2] = (byte) color[2][0];
                     f.ReadUnsignedChar(color[0]);
-                    tri.verts[j].color[3] = (short) color[3][0];
+                    tri.verts[j].color[3] = (byte) color[3][0];
                 }
 
                 surf.geometry = tri;
@@ -1013,7 +1013,7 @@ public class Model_local {
 
             matchVert_s next;
             int v, tv;
-            short[] color = new short[4];
+            byte[] color = new byte[4];
             idVec3 normal = new idVec3();
 
             final int index;
@@ -1061,7 +1061,7 @@ public class Model_local {
 //                        toArray(matchVert_s[]::new);
 //            }
         };
-        static final short[] identityColor/*[4]*/ = {255, 255, 255, 255};
+        static final byte[] identityColor/*[4]*/ = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
                               private static int DBG_ConvertASEToModelSurfaces = 0;
         public boolean ConvertASEToModelSurfaces(final aseModel_s ase) {
             aseObject_t object;
@@ -1082,7 +1082,7 @@ public class Model_local {
             float uOffset, vOffset, textureSin, textureCos;
             float uTiling, vTiling;
             int[] mergeTo;
-            short[] color;
+            byte[] color;
             modelSurface_s surf = new modelSurface_s(), modelSurf;
 
             if (NOT(ase)) {
@@ -1386,7 +1386,7 @@ public class Model_local {
             matchVert_s mv;
             idVec3 normal = new idVec3();
             int[] mergeTo;
-            short[] color = new short[4];
+            byte[] color = new byte[4];
             modelSurface_s surf, modelSurf;
 
             if (NOT(lwo)) {
@@ -1604,10 +1604,10 @@ public class Model_local {
 
                         tv = 0;
 
-                        color[0] = (short) (lwoSurf.color.rgb[0] * 255);
-                        color[1] = (short) (lwoSurf.color.rgb[1] * 255);
-                        color[2] = (short) (lwoSurf.color.rgb[2] * 255);
-                        color[3] = 255;
+                        color[0] = (byte) (lwoSurf.color.rgb[0] * 255);
+                        color[1] = (byte) (lwoSurf.color.rgb[1] * 255);
+                        color[2] = (byte) (lwoSurf.color.rgb[2] * 255);
+                        color[3] = (byte) 255;
 
                         // first set attributes from the vertex
                         lwPoint pt = layer.point.pt[poly.getV(k).index];
@@ -1620,7 +1620,7 @@ public class Model_local {
                             }
                             if (vm.vmap.type == LWID_('R', 'G', 'B', 'A')) {
                                 for (int chan = 0; chan < 4; chan++) {
-                                    color[chan] = (short) (255 * vm.vmap.val[vm.index][chan]);
+                                    color[chan] = (byte) (255 * vm.vmap.val[vm.index][chan]);
                                 }
                             }
                         }
@@ -1634,7 +1634,7 @@ public class Model_local {
                             }
                             if (vm.vmap.type == LWID_('R', 'G', 'B', 'A')) {
                                 for (int chan = 0; chan < 4; chan++) {
-                                    color[chan] = (short) (255 * vm.vmap.val[vm.index][chan]);
+                                    color[chan] = (byte) (255 * vm.vmap.val[vm.index][chan]);
                                 }
                             }
                         }
@@ -1741,7 +1741,7 @@ public class Model_local {
             float uOffset, vOffset, textureSin, textureCos;
             float uTiling, vTiling;
             int[] mergeTo;
-            short[] color;
+            byte[] color;
             modelSurface_s surf = new modelSurface_s(), modelSurf;
 
             if (NOT(ma)) {

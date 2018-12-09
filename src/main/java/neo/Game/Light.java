@@ -931,5 +931,13 @@ public class Light {
             return eventCallbacks;
         }
 
+        @Override
+        protected void _deconstructor() {
+            if (lightDefHandle != -1) {
+                gameRenderWorld.FreeLightDef(lightDefHandle);
+            }
+
+            super._deconstructor();
+        }
     };
 }

@@ -48,6 +48,7 @@ import static neo.Renderer.qgl.qglColor3f;
 import static neo.Renderer.qgl.qglColor3fv;
 import static neo.Renderer.qgl.qglColor4f;
 import static neo.Renderer.qgl.qglColor4fv;
+import static neo.Renderer.qgl.qglColor4ubv;
 import static neo.Renderer.qgl.qglColor4usv;
 import static neo.Renderer.qgl.qglDepthRange;
 import static neo.Renderer.qgl.qglDisable;
@@ -1264,7 +1265,7 @@ public class tr_rendertools {
                 final idDrawVert v;
 
                 v = tri.verts[tri.indexes[j]];
-                qglColor4usv(v.color);
+                qglColor4ubv(v.color);
                 qglVertex3fv(v.xyz.ToFloatPtr());
             }
             qglEnd();

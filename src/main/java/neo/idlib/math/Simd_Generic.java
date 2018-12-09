@@ -676,11 +676,8 @@ public class Simd_Generic {
             max[0] = -idMath.INFINITY;
 
             for (int _IX = 0; _IX < count; _IX++) {
-                if (src[(_IX)] < min[0]) {
-                    min[0] = src[(_IX)];
-                } else if (src[(_IX)] > max[0]) {
-                    max[0] = src[(_IX)];
-                }
+                if (src[(_IX)] < min[0]) min[0] = src[(_IX)];
+                if (src[(_IX)] > max[0]) max[0] = src[(_IX)];
             }
         }
 
@@ -690,16 +687,10 @@ public class Simd_Generic {
             max.x = max.y = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
                 final idVec2 v = src[_IX];
-                if (v.x < min.x) {
-                    min.x = v.x;
-                } else if (v.x > max.x) {
-                    max.x = v.x;
-                }
-                if (v.y < min.y) {
-                    min.y = v.y;
-                } else if (v.y > max.y) {
-                    max.y = v.y;
-                }
+                if (v.x < min.x) min.x = v.x;
+                if (v.x > max.x) max.x = v.x;
+                if (v.y < min.y) min.y = v.y;
+                if (v.y > max.y) max.y = v.y;
             }
         }
 
@@ -709,21 +700,12 @@ public class Simd_Generic {
             max.x = max.y = max.z = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
                 final idVec3 v = src[_IX];
-                if (v.x < min.x) {
-                    min.x = v.x;
-                } else if (v.x > max.x) {
-                    max.x = v.x;
-                }
-                if (v.y < min.y) {
-                    min.y = v.y;
-                } else if (v.y > max.y) {
-                    max.y = v.y;
-                }
-                if (v.z < min.z) {
-                    min.z = v.z;
-                } else if (v.z > max.z) {
-                    max.z = v.z;
-                }
+                if (v.x < min.x) min.x = v.x;
+                if (v.x > max.x) max.x = v.x;
+                if (v.y < min.y) min.y = v.y;
+                if (v.y > max.y) max.y = v.y;
+                if (v.z < min.z) min.z = v.z;
+                if (v.z > max.z) max.z = v.z;
             }
         }
 
@@ -732,22 +714,13 @@ public class Simd_Generic {
             min.x = min.y = min.z = idMath.INFINITY;
             max.x = max.y = max.z = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
-                final idDrawVert v = src[_IX];
-                if (v.oGet(0) < min.x) {
-                    min.x = v.oGet(0);
-                } else if (v.oGet(0) > max.x) {
-                    max.x = v.oGet(0);
-                }
-                if (v.oGet(1) < min.y) {
-                    min.y = v.oGet(1);
-                } else if (v.oGet(1) > max.y) {
-                    max.y = v.oGet(1);
-                }
-                if (v.oGet(2) < min.z) {
-                    min.z = v.oGet(2);
-                } else if (v.oGet(2) > max.z) {
-                    max.z = v.oGet(2);
-                }
+                final idVec3 v = src[_IX].xyz;
+                if (v.oGet(0) < min.x) min.x = v.oGet(0);
+                if (v.oGet(0) > max.x) max.x = v.oGet(0);
+                if (v.oGet(1) < min.y) min.y = v.oGet(1);
+                if (v.oGet(1) > max.y) max.y = v.oGet(1);
+                if (v.oGet(2) < min.z) min.z = v.oGet(2);
+                if (v.oGet(2) > max.z) max.z = v.oGet(2);
             }
         }
 
@@ -756,22 +729,13 @@ public class Simd_Generic {
             min.x = min.y = min.z = idMath.INFINITY;
             max.x = max.y = max.z = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
-                final idDrawVert v = src[indexes[_IX]];
-                if (v.oGet(0) < min.x) {
-                    min.x = v.oGet(0);
-                } else if (v.oGet(0) > max.x) {
-                    max.x = v.oGet(0);
-                }
-                if (v.oGet(1) < min.y) {
-                    min.y = v.oGet(1);
-                } else if (v.oGet(1) > max.y) {
-                    max.y = v.oGet(1);
-                }
-                if (v.oGet(2) < min.z) {
-                    min.z = v.oGet(2);
-                } else if (v.oGet(2) > max.z) {
-                    max.z = v.oGet(2);
-                }
+                final idVec3 v = src[indexes[_IX]].xyz;
+                if (v.oGet(0) < min.x) min.x = v.oGet(0);
+                if (v.oGet(0) > max.x) max.x = v.oGet(0);
+                if (v.oGet(1) < min.y) min.y = v.oGet(1);
+                if (v.oGet(1) > max.y) max.y = v.oGet(1);
+                if (v.oGet(2) < min.z) min.z = v.oGet(2);
+                if (v.oGet(2) > max.z) max.z = v.oGet(2);
             }
         }
 

@@ -132,13 +132,13 @@ public class GuiModel {
                 demo.ReadVec3(verts.oGet(j).tangents[0]);
                 demo.ReadVec3(verts.oGet(j).tangents[1]);
                 demo.ReadUnsignedChar(color);
-                verts.oGet(j).color[0] = (short) color[0];
+                verts.oGet(j).color[0] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                verts.oGet(j).color[1] = (short) color[0];
+                verts.oGet(j).color[1] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                verts.oGet(j).color[2] = (short) color[0];
+                verts.oGet(j).color[2] = (byte) color[0];
                 demo.ReadUnsignedChar(color);
-                verts.oGet(j).color[3] = (short) color[0];
+                verts.oGet(j).color[3] = (byte) color[0];
             }
 
             i[0] = indexes.Num();

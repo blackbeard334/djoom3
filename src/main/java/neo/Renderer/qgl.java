@@ -533,7 +533,7 @@ public class qgl {
     }
 
     public static void qglColor4ubv(byte[] v) {DEBUG_printName("glColor4ubv");
-        throw new UnsupportedOperationException("Not supported yet.");
+        GL11.glColor4ub(v[0], v[1], v[2], v[3]);
     }
 
     public static void qglColor4ui(int red, int green, int blue, int alpha) {DEBUG_printName("glColor4ui");
@@ -544,12 +544,12 @@ public class qgl {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public static void qglColor4us(short red, short green, short blue, short alpha) {DEBUG_printName("glColor4us");
-        throw new UnsupportedOperationException("Not supported yet.");
+    public static void qglColor4usv(short[] v) {DEBUG_printName("glColor4usv");
+        GL11.glColor4usv(v);
     }
 
-    public static void qglColor4usv(short[] v) {DEBUG_printName("glColor4usv");
-        qglColor4f(v[0], v[1], v[2], v[3]);
+    public static void qglColor4us(short red, short green, short blue, short alpha) {DEBUG_printName("glColor4us");
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public static void qglColorMask(int red, int green, int blue, int alpha) {

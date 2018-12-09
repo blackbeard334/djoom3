@@ -4133,6 +4133,8 @@ public class Mover {
 //        }
         @Override
         public void Spawn() {
+            super.Spawn();
+
             float[] speed = {0};
             float[] freq = {0};
             float[] length = {0};

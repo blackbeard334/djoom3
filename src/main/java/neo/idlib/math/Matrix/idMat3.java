@@ -430,7 +430,7 @@ public class idMat3 {
     public idMat3 TransposeSelf() {
         float tmp0, tmp1, tmp2;
 
-        tmp0 = mat[0].x;
+        tmp0 = mat[0].y;
         mat[0].y = mat[1].x;
         mat[1].x = tmp0;
         tmp1 = mat[0].z;

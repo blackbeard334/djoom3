@@ -1488,10 +1488,10 @@ public class draw_common {
             // this gets used for both blend lights and shadow draws
             if (tri.ambientCache != null) {
                 idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-                qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyz.ToFloatPtr());
+                qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             } else if (tri.shadowCache != null) {
                 shadowCache_s sc = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
-                qglVertexPointer(3, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, sc.xyz.ToFloatPtr());
+                qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, sc.xyz.ToFloatPtr());
             }
 
             RB_DrawElementsWithCounters(tri);

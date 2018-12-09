@@ -771,6 +771,8 @@ public class Trigger {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+
             random = spawnArgs.GetFloat("random", "1");
             wait = spawnArgs.GetFloat("wait", "1");
             on = spawnArgs.GetBool("start_on", "0");

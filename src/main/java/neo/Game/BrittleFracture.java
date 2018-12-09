@@ -90,15 +90,15 @@ public class BrittleFracture {
 
     public static class shard_s {
 
-        idClipModel clipModel;
-        idFixedWinding winding;
+        idClipModel            clipModel;
+        idFixedWinding         winding;
         idList<idFixedWinding> decals;
-        idList<Boolean> edgeHasNeighbour;
-        idList< shard_s> neighbours;
-        idPhysics_RigidBody physicsObj;
-        int droppedTime;
-        boolean atEdge;
-        int islandNum;
+        idList<Boolean>        edgeHasNeighbour;
+        idList<shard_s>        neighbours;
+        idPhysics_RigidBody    physicsObj;
+        int                    droppedTime;
+        boolean                atEdge;
+        int                    islandNum;
     };
 //
     public static final int SHARD_ALIVE_TIME = 5000;
@@ -120,36 +120,36 @@ public class BrittleFracture {
         //        
         // enum {
         public static final int EVENT_PROJECT_DECAL = idEntity.EVENT_MAXEVENTS;
-        public static final int EVENT_SHATTER = 1 + EVENT_PROJECT_DECAL;
-        public static final int EVENT_MAXEVENTS = 2 + EVENT_PROJECT_DECAL;
+        public static final int EVENT_SHATTER       = 1 + EVENT_PROJECT_DECAL;
+        public static final int EVENT_MAXEVENTS     = 2 + EVENT_PROJECT_DECAL;
         // };
         //        
 
         //
         // setttings
-        private idMaterial material;
-        private idMaterial decalMaterial;
-        private float decalSize;
-        private float maxShardArea;
-        private float maxShatterRadius;
-        private float minShatterRadius;
-        private float linearVelocityScale;
-        private float angularVelocityScale;
-        private float shardMass;
-        private float density;
-        private float friction;
-        private float bouncyness;
-        private idStr fxFracture;
+        private idMaterial            material;
+        private idMaterial            decalMaterial;
+        private float                 decalSize;
+        private float                 maxShardArea;
+        private float                 maxShatterRadius;
+        private float                 minShatterRadius;
+        private float                 linearVelocityScale;
+        private float                 angularVelocityScale;
+        private float                 shardMass;
+        private float                 density;
+        private float                 friction;
+        private float                 bouncyness;
+        private idStr                 fxFracture;
         //
         // state
         private idPhysics_StaticMulti physicsObj;
-        private idList<shard_s> shards;
-        private idBounds bounds;
-        private boolean disableFracture;
+        private idList<shard_s>       shards;
+        private idBounds              bounds;
+        private boolean               disableFracture;
         //
         // for rendering
-        private int lastRenderEntityUpdate;
-        private boolean changed;
+        private int                   lastRenderEntityUpdate;
+        private boolean               changed;
         //
         //
 
@@ -166,9 +166,10 @@ public class BrittleFracture {
             density = 0;
             friction = 0;
             bouncyness = 0;
-            fxFracture.Clear();
+            fxFracture = new idStr();
 
-            bounds.Clear();
+            shards = new idList<>();
+            bounds = idBounds.ClearBounds();
             disableFracture = false;
 
             lastRenderEntityUpdate = -1;
@@ -176,7 +177,6 @@ public class BrittleFracture {
 
             fl.networkSync = true;
         }
-        // virtual						~idBrittleFracture( void );
 
         @Override
         public void Save(idSaveGame savefile) {
@@ -1302,5 +1302,21 @@ public class BrittleFracture {
             return eventCallbacks;
         }
 
+        // virtual						~idBrittleFracture( void );
+        @Override
+        protected void _deconstructor() {
+            int i;
+
+            for (i = 0; i < shards.Num(); i++) {
+                shards.oGet(i).decals.DeleteContents(true);
+//                delete shards[i];
+            }
+
+            // make sure the render entity is freed before the model is freed
+            FreeModelDef();
+            renderModelManager.FreeModel(renderEntity.hModel);
+
+            super._deconstructor();
+        }
     };
 }

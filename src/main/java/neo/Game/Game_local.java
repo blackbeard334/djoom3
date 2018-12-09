@@ -15,6 +15,7 @@ import neo.Game.Animation.Anim.idAnimManager;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
 import neo.Game.Animation.Anim_Import.idModelExport;
 import neo.Game.Animation.Anim_Testmodel.idTestModel;
+import neo.Game.BrittleFracture.idBrittleFracture;
 import neo.Game.Camera.idCamera;
 import neo.Game.Camera.idCameraAnim;
 import neo.Game.Camera.idCameraView;
@@ -133,6 +134,7 @@ import neo.Game.Moveable.idMoveable;
 import neo.Game.Mover.idDoor;
 import neo.Game.Mover.idElevator;
 import neo.Game.Mover.idMover;
+import neo.Game.Mover.idPendulum;
 import neo.Game.Mover.idRotater;
 import neo.Game.Mover.idSplinePath;
 import neo.Game.MultiplayerGame.gameType_t;
@@ -148,6 +150,7 @@ import neo.Game.Physics.Push.idPush;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idBFGProjectile;
 import neo.Game.Projectile.idDebris;
+import neo.Game.Projectile.idGuidedProjectile;
 import neo.Game.Projectile.idProjectile;
 import neo.Game.Pvs.idPVS;
 import neo.Game.Pvs.pvsHandle_t;
@@ -170,11 +173,13 @@ import neo.Game.Target.idTarget_Remove;
 import neo.Game.Target.idTarget_SetInfluence;
 import neo.Game.Target.idTarget_SetPrimaryObjective;
 import neo.Game.Target.idTarget_SetShaderParm;
+import neo.Game.Target.idTarget_Show;
 import neo.Game.Target.idTarget_Tip;
 import neo.Game.Trigger.idTrigger_Count;
 import neo.Game.Trigger.idTrigger_Fade;
 import neo.Game.Trigger.idTrigger_Hurt;
 import neo.Game.Trigger.idTrigger_Multi;
+import neo.Game.Trigger.idTrigger_Timer;
 import neo.Game.WorldSpawn.idWorldspawn;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.ModelManager;
@@ -3568,6 +3573,21 @@ public class Game_local {
                         break;
                     case "idEarthQuake":
                         obj = new idEarthQuake();
+                        break;
+                    case "idGuidedProjectile":
+                        obj = new idGuidedProjectile();
+                        break;
+                    case "idTarget_Show":
+                        obj = new idTarget_Show();
+                        break;
+                    case "idBrittleFracture":
+                        obj = new idBrittleFracture();
+                        break;
+                    case "idTrigger_Timer":
+                        obj = new idTrigger_Timer();
+                        break;
+                    case "idPendulum":
+                        obj = new idPendulum();
                         break;
                     default:
                         obj = null;

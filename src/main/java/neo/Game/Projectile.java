@@ -1364,6 +1364,7 @@ public class Projectile {
 
         @Override
         public void Spawn() {
+            super.Spawn();
         }
 
         @Override

@@ -144,10 +144,10 @@ public class Model_beam {
                 minor.oMulSet(renderEntity.shaderParms[SHADERPARM_BEAM_WIDTH] * 0.5f);
             }
 
-            short red = (short) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_RED] * 255.0f);
-            short green = (short) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_GREEN] * 255.0f);
-            short blue = (short) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_BLUE] * 255.0f);
-            short alpha = (short) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
+            byte red = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_RED] * 255.0f);
+            byte green = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_GREEN] * 255.0f);
+            byte blue = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_BLUE] * 255.0f);
+            byte alpha = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
 
             tri.verts[0].xyz = minor;
             tri.verts[0].color[0] = red;

@@ -902,7 +902,7 @@ public class Clip {
             idBounds traceBounds = new idBounds();
             float radius;
             trace_s[] translationalTrace = {null}, rotationalTrace = {null};
-            trace_s[] trace = new trace_s[1];
+            trace_s[] trace = {new trace_s()};
             idRotation endRotation;
             idTraceModel trm;
 

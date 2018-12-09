@@ -1740,6 +1740,10 @@ public class Vector {
             System.arraycopy(a, 0, p, 0, 6);
         }
 
+        public idVec6(final idVec6 v) {
+            System.arraycopy(v.p, 0, p, 0, 6);
+        }
+
         public idVec6(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {
             p[0] = a1;
             p[1] = a2;

@@ -749,6 +749,12 @@ public class Bounds {
 
             return buffer;
         }
+
+        public static idBounds ClearBounds(){
+            idBounds idBounds = new idBounds();
+            idBounds.Clear();
+            return idBounds;
+        }
     };
 
     /*
