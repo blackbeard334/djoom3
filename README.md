@@ -1,5 +1,21 @@
 # djoom3 - a Doom 3 Java port.
 
+#### 17-11-18
+Version 0.0.8
+
+Can't be bothered to merge and create a release(since the input isn't working in the **lwjgl3 branch**), but this *"release"* was basically till the [b9adea7df00135eda35e98a5610b69b22dc3cf29](https://github.com/blackbeard334/djoom3/commit/b9adea7df00135eda35e98a5610b69b22dc3cf29) commit.
+
+Where to start...many many physics and lighting fixes. **No more wireframes!!!!1One**
+
+Also had to switch to lwjgl3 cuz of some nvidia driver issues that was causing problems(see issue #1 on the never updated issues).
+
+**//TODO** add more changes
+
+
+[http://www.youtube.com/watch?v=aEantnePSDs](http://www.youtube.com/watch?v=aEantnePSDs)  
+[![Screenshot](http://img.youtube.com/vi/aEantnePSDs/0.jpg)](http://www.youtube.com/watch?v=aEantnePSDs "djoom3 0.0.8")
+
+
 
 #### 23-12-17
 Version 0.0.7
