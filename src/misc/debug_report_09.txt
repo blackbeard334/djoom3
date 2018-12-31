@@ -88,3 +88,15 @@ r_showTrace 211
             idSIMD_Generic::DeriveTriPlanes()
                 verts.x
                     idParticleStage::ParticleVerts()
+textures/particles/fbeam
+map game/alphalabs1
+    r_singleLight 553
+        r_showLightCount 1
+            vLight->globalInteractions 26 vs 14
+                R_AddModelSurfaces()
+                    addnormals( models/weapons/grenades/grenades3_local, heightmap( models/weapons/grenades/grenades3_h, 7))
+                        idInteraction::AddActiveInteraction() 
+                            surfaces:
+                            88 3 6 3 3 3 2 36
+                            88 3 6         36
+                                idInteraction::CullInteractionByViewFrustum()
