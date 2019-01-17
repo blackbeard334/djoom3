@@ -1578,10 +1578,8 @@ public class qgl {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Deprecated
     public static void qglTexCoordPointer(int size, int type, int stride, ByteBuffer pointer) {DEBUG_printName("glTexCoordPointer");
-//        GL11.glTexCoordPointer(size, type, stride, pointer);
-        throw new UnsupportedOperationException("Not supported yet.");
+        GL11.glTexCoordPointer(size, type, stride, pointer);
     }
 
     public static void qglTexEnvf(int target, int pName, float param) {DEBUG_printName("glTexEnvf");

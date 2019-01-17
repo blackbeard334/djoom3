@@ -396,6 +396,7 @@ public class Material {
         private textureStage_t(textureStage_t texture) {
             this.cinematic[0] = texture.cinematic[0];//pointer
             this.image[0] = texture.image[0];//pointer
+            this.texgen = texture.texgen;
             this.hasMatrix = texture.hasMatrix;
             System.arraycopy(texture.matrix[0], 0, this.matrix[0], 0, this.matrix[0].length);
             System.arraycopy(texture.matrix[1], 0, this.matrix[1], 0, this.matrix[1].length);

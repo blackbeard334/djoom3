@@ -528,9 +528,7 @@ public class tr_render {
 
         }
         if (texture.texgen == TG_SKYBOX_CUBE || texture.texgen == TG_WOBBLESKY_CUBE) {
-            for (vertCache_s dynamicTexCoords : surf.dynamicTexCoords) {
-                qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(dynamicTexCoords));
-            }
+            qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(surf.dynamicTexCoords));
         }
         if (texture.texgen == TG_REFLECT_CUBE) {
             qglEnable(GL_TEXTURE_GEN_S);

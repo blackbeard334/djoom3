@@ -18,7 +18,8 @@ import static neo.Renderer.qgl.qglBufferSubDataARB;
 import static neo.Renderer.qgl.qglGenBuffersARB;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
-import neo.TempDump.TODO_Exception;
+
+import neo.TempDump.Deprecation_Exception;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
 import static neo.framework.CVarSystem.CVAR_RENDERER;
 import neo.framework.CVarSystem.idCVar;
@@ -66,7 +67,7 @@ public class VertexCache {
         private int            size;       // may be larger than the amount asked for, due
         //                                 // to round up and minimum fragment sizes
         private vertBlockTag_t tag;        // a tag of 0 is a free block
-        private vertCache_s[]  user;       // will be set to zero when purged
+        private vertCache_s    user;       // will be set to zero when purged
         private vertCache_s    next, prev; // may be on the static list or one of the frame lists
         private int frameUsed;             // it can't be purged if near the current frame
 
@@ -221,11 +222,7 @@ public class VertexCache {
             ByteBuffer junk = BufferUtils.createByteBuffer(frameBytes);// Mem_Alloc(frameBytes);
             for (int i = 0; i < NUM_VERTEX_FRAMES; i++) {
                 allocatingTempBuffer = true;    // force the alloc to use GL_STREAM_DRAW_ARB
-                {
-                    vertCache_s[] tempBuffer = {null};
-                    Alloc(junk, frameBytes, tempBuffer);
-                    tempBuffers[i] = tempBuffer[0];
-                }
+                tempBuffers[i] = Alloc(junk, frameBytes);
                 allocatingTempBuffer = false;
                 tempBuffers[i].tag = TAG_FIXED;
                 // unlink these from the static list, so they won't ever get purged
@@ -279,19 +276,15 @@ public class VertexCache {
         // Alloc does NOT do a touch, which allows purging of things
         // created at level load time even if a frame hasn't passed yet.
         // These allocations can be purged, which will zero the pointer.
-        public vertCache_s[] Alloc(ByteBuffer data, int size, vertCache_s[] buffer, boolean indexBuffer /*= false*/) {
+        public vertCache_s Alloc(ByteBuffer data, int size, @Deprecated vertCache_s buffer, boolean indexBuffer /*= false*/) {
             vertCache_s block;
 
             if (size <= 0) {
                 common.Error("idVertexCache::Alloc: size = %d\n", size);
             }
 
-            if (null == buffer) {
-                buffer = new vertCache_s[1];
-            }
-
             // if we can't find anything, it will be NULL
-            buffer[0] = null;
+            buffer = null;
 
             // if we don't have any remaining unused headers, allocate some more
             if (freeStaticHeaders.next == freeStaticHeaders) {
@@ -331,7 +324,7 @@ public class VertexCache {
 
             // this will be set to zero when it is purged
             block.user = buffer;//TODO:wtf?
-            buffer[0] = block;
+            buffer = block;
 
             // allocation doesn't imply used-for-drawing, because at level
             // load time lots of things may be created, but they aren't
@@ -362,32 +355,48 @@ public class VertexCache {
             return buffer;
         }
 
+        @Deprecated
         public void Alloc(int[] data, int size, vertCache_s buffer, boolean indexBuffer /*= false*/) {
             ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
             byteData.asIntBuffer().put(data);
 
 //            Alloc(byteData, size, buffer, indexBuffer);
-            throw new TODO_Exception();
+            throw new Deprecation_Exception();
         }
 
-        public vertCache_s[] Alloc(ByteBuffer data, int size, vertCache_s[] buffer) {
+        public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
+            ByteBuffer byteData = BufferUtils.createByteBuffer(size);
+            byteData.asIntBuffer().put(data);
+
+            return Alloc(byteData, size, indexBuffer);
+        }
+
+        public vertCache_s Alloc(ByteBuffer data, int size, vertCache_s buffer) {
             return Alloc(data, size, buffer, false);
         }
 
-        public vertCache_s[] Alloc(idDrawVert[] data, int size, vertCache_s[] buffer) {
+        public vertCache_s Alloc(ByteBuffer data, int size, boolean indexBuffer) {
+            return Alloc(data, size, null, indexBuffer);
+        }
+
+        public vertCache_s Alloc(ByteBuffer data, int size) {
+            return Alloc(data, size, null);
+        }
+
+        public vertCache_s Alloc(idDrawVert[] data, int size, vertCache_s buffer) {
             return Alloc(DrawVert.toByteBuffer(data), size, buffer, false);
         }
 
         public vertCache_s Alloc(idDrawVert[] data, int size) {
-            return Alloc(DrawVert.toByteBuffer(data), size, null)[0];
+            return Alloc(DrawVert.toByteBuffer(data), size, null);
         }
 
-        public vertCache_s[] Alloc(lightingCache_s[] data, int size) {
-            return Alloc(lightingCache_s.toByteBuffer(data), size, null, false);
+        public vertCache_s Alloc(lightingCache_s[] data, int size) {
+            return Alloc(lightingCache_s.toByteBuffer(data), size, null);
         }
 
-        public vertCache_s[] Alloc(shadowCache_s[] data, int size) {
-            return Alloc(shadowCache_s.toByteBuffer(data), size, null, false);
+        public vertCache_s Alloc(shadowCache_s[] data, int size) {
+            return Alloc(shadowCache_s.toByteBuffer(data), size, null);
         }
 
         /*
@@ -460,76 +469,6 @@ public class VertexCache {
                 // if we don't have enough room in the temp block, allocate a static block,
                 // but immediately free it so it will get freed at the next frame
                 tempOverflow = true;
-//                Alloc(data, size, block);
-                Free(block);
-                return block;
-            }
-
-            // this data is just going on the shared dynamic list
-            // if we don't have any remaining unused headers, allocate some more
-            if (freeDynamicHeaders.next == freeDynamicHeaders) {
-
-                for (int i = 0; i < EXPAND_HEADERS; i++) {
-                    block = new vertCache_s();//headerAllocator.Alloc();
-                    block.next = freeDynamicHeaders.next;
-                    block.prev = freeDynamicHeaders;
-                    block.next.prev = block;
-                    block.prev.next = block;
-                }
-            }
-
-            // move it from the freeDynamicHeaders list to the dynamicHeaders list
-            block = freeDynamicHeaders.next;
-            block.next.prev = block.prev;
-            block.prev.next = block.next;
-            block.next = dynamicHeaders.next;
-            block.prev = dynamicHeaders;
-            block.next.prev = block;
-            block.prev.next = block;
-
-            block.size = size;
-            block.tag = TAG_TEMP;
-            block.indexBuffer = false;
-            block.offset = dynamicAllocThisFrame;
-            dynamicAllocThisFrame += block.size;
-            dynamicCountThisFrame++;
-            block.user = null;
-            block.frameUsed = 0;
-
-            // copy the data
-            block.virtMem = tempBuffers[listNum].virtMem;
-            block.vbo = tempBuffers[listNum].vbo;
-
-            if (block.vbo != 0) {
-                qglBindBufferARB(GL_ARRAY_BUFFER_ARB, block.vbo);
-                qglBufferSubDataARB(GL_ARRAY_BUFFER_ARB, block.offset, /*(GLsizeiptrARB)*/ size, data);
-            } else {
-                SIMDProcessor.Memcpy(block.virtMem.position(block.offset), data, size);
-            }
-
-            return block;
-        }
-
-        /*
-         ===========
-         idVertexCache::AllocFrameTemp
-
-         A frame temp allocation must never be allowed to fail due to overflow.
-         We can't simply sync with the GPU and overwrite what we have, because
-         there may still be future references to dynamically created surfaces.
-         ===========
-         */
-        public vertCache_s AllocFrameTemp(idDrawVert[] data, int size) {
-            vertCache_s block = null;
-
-            if (size <= 0) {
-                common.Error("idVertexCache::AllocFrameTemp: size = %d\n", size);
-            }
-
-            if (dynamicAllocThisFrame + size > frameBytes) {
-                // if we don't have enough room in the temp block, allocate a static block,
-                // but immediately free it so it will get freed at the next frame
-                tempOverflow = true;
                 block = Alloc(data, size);
                 Free(block);
                 return block;
@@ -573,25 +512,26 @@ public class VertexCache {
             if (block.vbo != 0) {
 //                GL30.glBindVertexArray(block.vao);
                 qglBindBufferARB(GL_ARRAY_BUFFER_ARB, block.vbo);
-                qglBufferSubDataARB(GL_ARRAY_BUFFER_ARB, block.offset, /*(GLsizeiptrARB)*/ size, DrawVert.toByteBuffer(data));
+                qglBufferSubDataARB(GL_ARRAY_BUFFER_ARB, block.offset, /*(GLsizeiptrARB)*/ size, data);
 //                GL15.glBufferData(GL_ARRAY_BUFFER, DrawVert.toByteBuffer(data), GL15.GL_STATIC_DRAW);
 //                GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
             } else {
-                throw new TODO_Exception();
-//		SIMDProcessor->Memcpy( (byte *)block->virtMem + block->offset, data, size );
-//                block[0].virtMem.position(block[0].offset);
-//                block[0].virtMem.put(data[0].Write());
+                SIMDProcessor.Memcpy(block.virtMem.position(block.offset), data, size);
             }
 
             return block;
         }
 
+        public vertCache_s AllocFrameTemp(idDrawVert[] data, int size) {
+            return AllocFrameTemp(DrawVert.toByteBuffer(data), size);
+        }
+
         public vertCache_s AllocFrameTemp(idVec3[] data, int size) {
-            throw new TODO_Exception();
+            return AllocFrameTemp(idVec3.toByteBuffer(data), size);
         }
 
         public vertCache_s AllocFrameTemp(idVec4[] data, int size) {
-            throw new TODO_Exception();
+            return AllocFrameTemp(idVec4.toByteBuffer(data), size);
         }
 
         // notes that a buffer is used this frame, so it can't be purged

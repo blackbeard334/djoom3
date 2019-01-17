@@ -13,6 +13,8 @@ import neo.idlib.math.Matrix.idMatX;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Rotation.idRotation;
+import org.lwjgl.BufferUtils;
+
 import static neo.idlib.math.Simd.SIMDProcessor;
 
 /**
@@ -1179,6 +1181,16 @@ public class Vector {
             v.NormalizeFast();
             this.oSet(v);
         }
+
+        public static ByteBuffer toByteBuffer(idVec3[] vecs) {
+            ByteBuffer data = BufferUtils.createByteBuffer(idVec3.BYTES * vecs.length);
+
+            for (idVec3 vec : vecs) {
+                data.put((ByteBuffer) vec.Write().rewind());
+            }
+
+            return (ByteBuffer) data.flip();
+        }
     }
 
     //===============================================================
@@ -1519,6 +1531,16 @@ public class Vector {
                     generate(idVec4::new).
                     limit(length).
                     toArray(idVec4[]::new);
+        }
+
+        public static ByteBuffer toByteBuffer(idVec4[] vecs) {
+            ByteBuffer data = BufferUtils.createByteBuffer(idVec4.BYTES * vecs.length);
+
+            for (idVec4 vec : vecs) {
+                data.put((ByteBuffer) vec.Write().rewind());
+            }
+
+            return (ByteBuffer) data.flip();
         }
     }
 

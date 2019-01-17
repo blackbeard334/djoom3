@@ -282,9 +282,7 @@ public class draw_common {
             qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
         }
         if (pStage.texture.texgen == TG_SKYBOX_CUBE || pStage.texture.texgen == TG_WOBBLESKY_CUBE) {
-            for (vertCache_s dynamicTexCoords : surf.dynamicTexCoords) {
-                qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(dynamicTexCoords));
-            }
+            qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(surf.dynamicTexCoords));
         }
         if (pStage.texture.texgen == TG_SCREEN) {
             qglEnable(GL_TEXTURE_GEN_S);

@@ -1024,7 +1024,7 @@ public class tr_main {
 //            for (int i = 0; i < tr.viewDef.numDrawSurfs; i++) {
 //                Material.shaderStage_t[] stages = tr.viewDef.drawSurfs[i].material.stages;
 //                if (stages != null && stages[0].texture.image[0] != null &&
-//                        stages[0].texture.image[0].imgName.toString().contains("textures/particles/fbeam")) {
+//                        stages[0].texture.image[0].imgName.toString().contains("env/cloudy")) {
 //                    tr.viewDef.drawSurfs[bla++] = tr.viewDef.drawSurfs[i];
 //                    System.out.println(stages[0].texture.image[0].imgName);
 //                }

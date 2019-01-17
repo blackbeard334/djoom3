@@ -138,7 +138,7 @@ public class tr_light {
 
         R_GlobalPointToLocal(ent.modelMatrix, light.globalLightOrigin, localLightOrigin);
 
-        int size = tri.ambientSurface.numVerts;
+        int size = tri.ambientSurface.numVerts * lightingCache_s.BYTES;
         lightingCache_s[] cache = new lightingCache_s[size];
 
         if (true) {
@@ -171,7 +171,7 @@ public class tr_light {
 //	}
         }
 
-        tri.lightingCache = vertexCache.Alloc(cache, size)[0];
+        tri.lightingCache = vertexCache.Alloc(cache, size);
         if (NOT(tri.lightingCache)) {
             return false;
         }
@@ -190,7 +190,7 @@ public class tr_light {
             return;
         }
 
-        tri.shadowCache = vertexCache.Alloc(tri.shadowVertexes, tri.numVerts)[0];
+        tri.shadowCache = vertexCache.Alloc(tri.shadowVertexes, tri.numVerts * shadowCache_s.BYTES);
     }
 
     /*
@@ -225,7 +225,7 @@ public class tr_light {
             temp[i * 2 + 1].xyz.oSet(3, 0.0f);        // will be projected to infinity
         }
 
-        tri.shadowCache = vertexCache.Alloc(temp, tri.numVerts * 2)[0];
+        tri.shadowCache = vertexCache.Alloc(temp, tri.numVerts * 2 * shadowCache_s.BYTES);
     }
 
     /*
@@ -245,12 +245,10 @@ public class tr_light {
 
         final idDrawVert[] verts = surf.geo.verts;
         for (i = 0; i < numVerts; i++) {
-            texCoords[i].oSet(0, verts[i].xyz.oGet(0) - localViewOrigin.oGet(0));
-            texCoords[i].oSet(1, verts[i].xyz.oGet(1) - localViewOrigin.oGet(1));
-            texCoords[i].oSet(2, verts[i].xyz.oGet(2) - localViewOrigin.oGet(2));
+            texCoords[i] = verts[i].xyz.oMinus(localViewOrigin);
         }
 
-        surf.dynamicTexCoords[0] = vertexCache.AllocFrameTemp(texCoords, size);//TODO:should [0] be set?
+        surf.dynamicTexCoords = vertexCache.AllocFrameTemp(texCoords, size);
     }
 
     /*
@@ -332,7 +330,7 @@ public class tr_light {
             texCoords[i] = R_LocalPointToGlobal(transform, v);
         }
 
-        surf.dynamicTexCoords[0] = vertexCache.AllocFrameTemp(texCoords, size);
+        surf.dynamicTexCoords = vertexCache.AllocFrameTemp(texCoords, size);
     }
 
     /*
@@ -400,7 +398,7 @@ public class tr_light {
 //	}
         }
 
-        surf.dynamicTexCoords[0] = vertexCache.AllocFrameTemp(texCoords, size);
+        surf.dynamicTexCoords = vertexCache.AllocFrameTemp(texCoords, size);
     }
 
 //==================================================================================================================================================================================================
@@ -950,7 +948,7 @@ public class tr_light {
                 vertexCache.Touch(tri.shadowCache);
 
                 if (NOT(tri.indexCache) && r_useIndexBuffers.GetBool()) {
-                    vertexCache.Alloc(tri.indexes, tri.numIndexes, tri.indexCache, true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -1325,7 +1323,7 @@ public class tr_light {
                 vertexCache.Touch(tri.ambientCache);
 
                 if (r_useIndexBuffers.GetBool() && NOT(tri.indexCache)) {
-                    vertexCache.Alloc(tri.indexes, tri.numIndexes /* sizeof( tri.indexes[0] */, tri.indexCache, true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);

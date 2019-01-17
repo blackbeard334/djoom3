@@ -339,7 +339,7 @@ public class tr_local {
         public drawSurf_s     nextOnLight;          // viewLight chains
         public idScreenRect   scissorRect;          // for scissor clipping, local inside renderView viewport
         public int            dsFlags;              // DSF_VIEW_INSIDE_SHADOW, etc
-        public vertCache_s[]  dynamicTexCoords;     // float * in vertex cache memory
+        public vertCache_s    dynamicTexCoords;     // float * in vertex cache memory
         // specular directions for non vertex program cards, skybox texcoords, etc
 
         private static int DBG_counter = 0;
