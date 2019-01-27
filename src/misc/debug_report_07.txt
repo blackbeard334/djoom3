@@ -77,7 +77,28 @@ R_SortDrawSurfs()
                                                         idAnimator::SetJointAxis()
                                                             lookJoints !=
                                                                 idAI::Spawn()
-
+            "models/monsters/zsecurity/zsechead3"
+                ((*(tr.viewDef->drawSurfs))->geo)->bounds
+                    R_BoundTriSurf()
+                        idMD5Mesh::UpdateSurface()
+                            R_EntityDefDynamicModel()
+                                "models/md5/characters/npcs/heads/goggles.md5mesh"
+                                    idRenderModelMD5::InstantiateDynamicModel() [i=3]surf->geometry->bounds
+                                        idSIMD_Generic::TransformVerts() joints[3]
+                                            idSIMD_Generic::ConvertJointQuatsToJointMats()
+                                                ......."marscity_security_goggles_pda_2" idEntity::RunPhysics()
+                                                    idAnimBlend::BlendAnim()
+                                                        idMD5Anim::GetInterpolatedFrame() frame.frame1
+                                                            idAnimator::CreateFrame() jointMods
+                                                                ....."marscity_security_machinegun_1"
+                                                                    idAnimator::SetJointAxis()
+                                                                        idActor::CopyJointsFromBodyToHead()
+                                                                            idDeclModelDef::SetupJoints() --init
+                                                                                idAnimatedEntity::GetJointWorldTransform() --> idAnimator::CreateFrame() --> idSIMD_Generic::ConvertJointQuatsToJointMats()
+                                                                                    anim.MD5Anim(0).baseFrame -->idMD5Anim::LoadAnim()..."models/md5/chars/stand.md5anim"
+                                                            idActor::SetupHead() --> damageGroups
+                                                                idActor::SetupDamageGroups --> args
+                                                                    idDeclLocal::ParseLocal()
                         myGlMultMatrix()
                         
                         

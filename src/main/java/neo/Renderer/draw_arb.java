@@ -355,9 +355,9 @@ public class draw_arb {
 
             // set the vertex arrays, which may not all be enabled on a given pass
             idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyz.ToFloatPtr());
+            qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             GL_SelectTexture(0);
-            qglTexCoordPointer(2, GL_FLOAT, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.st.ToFloatPtr());
+            qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
             qglColor3f(1, 1, 1);
 
             //
@@ -508,7 +508,8 @@ public class draw_arb {
      RB_CreateDrawInteractions
      ==================
      */
-    public static void RB_CreateDrawInteractions(final drawSurf_s surf) {
+    public static void RB_CreateDrawInteractions(final drawSurf_s surfs) {
+        drawSurf_s surf = surfs;
         if (NOT(surf)) {
             return;
         }
@@ -517,12 +518,12 @@ public class draw_arb {
         backEnd.currentSpace = null;
 
         if (r_useTripleTextureARB.GetBool() && glConfig.maxTextureUnits >= 3) {
-            for (; surf != null; surf.oSet(surf.nextOnLight)) {
+            for (; surf != null; surf = surf.nextOnLight) {
                 // break it up into multiple primitive draw interactions if necessary
                 RB_CreateSingleDrawInteractions(surf, RB_ARB_DrawThreeTextureInteraction.INSTANCE);
             }
         } else {
-            for (; surf != null; surf.oSet(surf.nextOnLight)) {
+            for (; surf != null; surf = surf.nextOnLight) {
                 // break it up into multiple primitive draw interactions if necessary
                 RB_CreateSingleDrawInteractions(surf, RB_ARB_DrawInteraction.INSTANCE);
             }

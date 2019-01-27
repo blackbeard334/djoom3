@@ -145,20 +145,20 @@ public class Frustum {
             this.dUp *= scale;
             this.invFar = 1.0f / dFar;
         }
-//
 
-        public final idVec3 GetOrigin() {						// returns frustum origin
-            return origin;
+        // returns frustum origin
+        public final idVec3 GetOrigin() {
+            return new idVec3(origin);
         }
 
-        public final idMat3 GetAxis() {							// returns frustum orientation
-            return axis;
+        // returns frustum orientation
+        public final idMat3 GetAxis() {
+            return new idMat3(axis);
         }
 
         public idVec3 GetCenter() {						// returns center of frustum
             return origin.oPlus(axis.oGet(0).oMultiply((dFar - dNear) * 0.5f));
         }
-//
 
         public boolean IsValid() {							// returns true if the frustum is valid
             return (dFar > dNear);
@@ -380,7 +380,7 @@ public class Frustum {
             idVec3[] indexPoints = new idVec3[8], cornerVecs = new idVec3[4];
 
             // transform the given frustum into the space of this frustum
-            localFrustum = frustum;
+            localFrustum = new idFrustum(frustum);
             localFrustum.origin = (frustum.origin.oMinus(origin)).oMultiply(axis.Transpose());
             localFrustum.axis = frustum.axis.oMultiply(axis.Transpose());
 
@@ -1340,7 +1340,7 @@ public class Frustum {
             projectionBounds.Clear();
 
             // transform the given frustum into the space of this frustum
-            localFrustum = frustum;
+            localFrustum = new idFrustum(frustum);
             localFrustum.origin = (frustum.origin.oMinus(origin)).oMultiply(axis.Transpose());
             localFrustum.axis = frustum.axis.oMultiply(axis.Transpose());
             localFrustum.ToPoints(points);
@@ -1541,9 +1541,9 @@ public class Frustum {
             usedClipPlanes = clipPlanes[0] | clipPlanes[1] | clipPlanes[2] | clipPlanes[3];
 
             // transform the clipped frustum to the space of this frustum
-            transpose = axis;
+            transpose = new idMat3(axis);
             transpose.TransposeSelf();
-            localFrustum = frustum;
+            localFrustum = new idFrustum(frustum);
             localFrustum.origin = (frustum.origin.oMinus(origin)).oMultiply(transpose);
             localFrustum.axis = frustum.axis.oMultiply(transpose);
             localFrustum.ToClippedPoints(clipFractions, clipPoints);
@@ -1591,7 +1591,7 @@ public class Frustum {
                     (clipPlanes[0] != clipPlanes[1] || clipPlanes[1] != clipPlanes[2] || clipPlanes[2] != clipPlanes[3])) {
 
                 // transform the clip box into the space of the other frustum
-                transpose = frustum.axis;
+                transpose = new idMat3(frustum.axis);
                 transpose.TransposeSelf();
                 localOrigin1 = (clipBox.GetCenter().oMinus(frustum.origin)).oMultiply(transpose);
                 localAxis1 = clipBox.GetAxis().oMultiply(transpose);
@@ -1616,7 +1616,7 @@ public class Frustum {
                 }
 
                 // transform the clip box into the space of this frustum
-                transpose = axis;
+                transpose = new idMat3(axis);
                 transpose.TransposeSelf();
                 localOrigin2 = (clipBox.GetCenter().oMinus(origin)).oMultiply(transpose);
                 localAxis2 = clipBox.GetAxis().oMultiply(transpose);
@@ -1667,7 +1667,7 @@ public class Frustum {
             if (outside != 1 && outside != 2 && outside != 4 && outside != 8) {
 
                 // transform this frustum into the space of the other frustum
-                transpose = frustum.axis;
+                transpose = new idMat3(frustum.axis);
                 transpose.TransposeSelf();
                 localOrigin1 = (origin.oMinus(frustum.origin)).oMultiply(transpose);
                 localAxis1 = axis.oMultiply(transpose);
@@ -1676,7 +1676,7 @@ public class Frustum {
                 localAxis1.oGet(2).oMulSet(dUp);
 
                 // transform this frustum into the space of the clip bounds
-                transpose = clipBox.GetAxis();
+                transpose = new idMat3(clipBox.GetAxis());
                 transpose.TransposeSelf();
                 localOrigin2 = (origin.oMinus(clipBox.GetCenter())).oMultiply(transpose);
                 localAxis2 = axis.oMultiply(transpose);
@@ -1763,8 +1763,8 @@ public class Frustum {
                 return true;
             }
 
-            testOrigin = localOrigin;
-            testAxis = localAxis;
+            testOrigin = new idVec3(localOrigin);
+            testAxis = new idMat3(localAxis);
 
             if (testOrigin.y < 0.0f) {
                 testOrigin.y = -testOrigin.y;

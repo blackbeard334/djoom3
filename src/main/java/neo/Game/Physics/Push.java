@@ -535,6 +535,7 @@ public class Push {
                 return;
             }
 
+            pushed[numPushed] = new pushed_s();
             pushed[numPushed].ent = ent;
 
             // if the entity is an actor

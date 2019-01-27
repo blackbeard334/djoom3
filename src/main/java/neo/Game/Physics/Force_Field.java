@@ -63,7 +63,7 @@ public class Force_Field {
         }
     };
 
-    public class idForce_Field extends idForce {
+    public static class idForce_Field extends idForce {
 //	CLASS_PROTOTYPE( idForce_Field );
 
         // force properties
@@ -106,7 +106,7 @@ public class Force_Field {
             type = FORCEFIELD_UNIFORM;
             applyType = FORCEFIELD_APPLY_FORCE;
             magnitude = 0.0f;
-            dir.Set(0, 0, 1);
+            dir = new idVec3(0, 0, 1);
             randomTorque = 0.0f;
             playerOnly = false;
             monsterOnly = false;

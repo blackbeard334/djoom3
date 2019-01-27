@@ -1410,7 +1410,7 @@ public class Anim_Blend {
             boolean getChildren;
             boolean subtract;
 
-            if (null == modelHandle) {
+            if (null == modelHandle || jointnames.isEmpty()) {
                 return;
             }
 
@@ -1944,9 +1944,9 @@ public class Anim_Blend {
 
             if (fromFrameTime <= 0) {
                 // make sure first frame is called
-                CallFrameCommands(ent, -1, frame2.frame1);
+                anim.CallFrameCommands(ent, -1, frame2.frame1);
             } else {
-                CallFrameCommands(ent, frame1.frame1, frame2.frame1);
+                anim.CallFrameCommands(ent, frame1.frame1, frame2.frame1);
             }
         }
 
@@ -4065,7 +4065,7 @@ public class Anim_Blend {
                     CreateFrame(currentTime, false);
 
                     if (jointHandle > 0) {
-                        idJointMat m = joints[ jointHandle];
+                        idJointMat m = new idJointMat(joints[ jointHandle]);
                         m.oDivSet(joints[ modelJoints.oGet(jointHandle).parentNum]);
                         offset.oSet(m.ToVec3());
                         axis.oSet(m.ToMat3());

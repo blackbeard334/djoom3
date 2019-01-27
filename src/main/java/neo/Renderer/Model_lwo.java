@@ -2549,7 +2549,7 @@ public class Model_lwo {
                 switch (id) {
                     case ID_LAYR:
                         if (object.nlayers > 0) {
-                            object.layer = layer = new lwLayer();// Mem_ClearedAlloc(sizeof(lwLayer));
+                            layer = new lwLayer();// Mem_ClearedAlloc(sizeof(lwLayer));
 //                            if (null == layer) {
 //                                break Fail;
 //                            }

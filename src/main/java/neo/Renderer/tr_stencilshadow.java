@@ -800,10 +800,8 @@ public class tr_stencilshadow {
         }
 
         planeSide = new float[tri.numVerts];
-        side1 = new byte[tri.numVerts];
-        side2 = new byte[tri.numVerts];
-//	SIMDProcessor.Memset( side1, 0, tri.numVerts * sizeof( byte ) );
-//	SIMDProcessor.Memset( side2, 0, tri.numVerts * sizeof( byte ) );
+        side1 = new byte[tri.numVerts];//SIMDProcessor.Memset( side1, 0, tri.numVerts * sizeof( byte ) );
+        side2 = new byte[tri.numVerts];//SIMDProcessor.Memset( side2, 0, tri.numVerts * sizeof( byte ) );
 
         for (i = 0; i < 6; i++) {
 

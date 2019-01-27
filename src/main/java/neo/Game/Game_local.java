@@ -4,6 +4,7 @@ import neo.CM.CollisionModel.trace_s;
 import neo.CM.CollisionModel_local;
 import neo.Game.AFEntity.idAFAttachment;
 import neo.Game.AFEntity.idAFEntity_Generic;
+import neo.Game.AFEntity.idAFEntity_WithAttachedHead;
 import neo.Game.AI.AAS.idAAS;
 import neo.Game.AI.AI.idAI;
 import neo.Game.AI.AI.idCombatNode;
@@ -14,6 +15,7 @@ import neo.Game.Animation.Anim.idAnimManager;
 import neo.Game.Animation.Anim_Blend.idDeclModelDef;
 import neo.Game.Animation.Anim_Import.idModelExport;
 import neo.Game.Animation.Anim_Testmodel.idTestModel;
+import neo.Game.BrittleFracture.idBrittleFracture;
 import neo.Game.Camera.idCamera;
 import neo.Game.Camera.idCameraAnim;
 import neo.Game.Camera.idCameraView;
@@ -100,6 +102,8 @@ import neo.Game.GameSys.TypeInfo.TestSaveGame_f;
 import neo.Game.GameSys.TypeInfo.WriteGameState_f;
 import neo.Game.Game_network.idEventQueue;
 import neo.Game.Item.idItem;
+import neo.Game.Item.idItemPowerup;
+import neo.Game.Item.idMoveableItem;
 import neo.Game.Item.idMoveablePDAItem;
 import neo.Game.Item.idObjective;
 import neo.Game.Item.idObjectiveComplete;
@@ -107,15 +111,31 @@ import neo.Game.Item.idPDAItem;
 import neo.Game.Item.idVideoCDItem;
 import neo.Game.Light.idLight;
 import neo.Game.Misc.idAnimated;
+import neo.Game.Misc.idBeam;
+import neo.Game.Misc.idEarthQuake;
+import neo.Game.Misc.idExplodable;
+import neo.Game.Misc.idForceField;
+import neo.Game.Misc.idFuncAASObstacle;
 import neo.Game.Misc.idFuncEmitter;
+import neo.Game.Misc.idFuncPortal;
+import neo.Game.Misc.idFuncRadioChatter;
+import neo.Game.Misc.idFuncSmoke;
 import neo.Game.Misc.idLocationEntity;
 import neo.Game.Misc.idLocationSeparatorEntity;
 import neo.Game.Misc.idPathCorner;
+import neo.Game.Misc.idPhantomObjects;
 import neo.Game.Misc.idPlayerStart;
+import neo.Game.Misc.idShaking;
+import neo.Game.Misc.idSpawnableEntity;
 import neo.Game.Misc.idStaticEntity;
+import neo.Game.Misc.idVacuumEntity;
+import neo.Game.Moveable.idExplodingBarrel;
 import neo.Game.Moveable.idMoveable;
 import neo.Game.Mover.idDoor;
+import neo.Game.Mover.idElevator;
 import neo.Game.Mover.idMover;
+import neo.Game.Mover.idPendulum;
+import neo.Game.Mover.idRotater;
 import neo.Game.Mover.idSplinePath;
 import neo.Game.MultiplayerGame.gameType_t;
 import neo.Game.MultiplayerGame.idMultiplayerGame;
@@ -129,6 +149,8 @@ import neo.Game.Physics.Physics_Parametric.idPhysics_Parametric;
 import neo.Game.Physics.Push.idPush;
 import neo.Game.Player.idPlayer;
 import neo.Game.Projectile.idBFGProjectile;
+import neo.Game.Projectile.idDebris;
+import neo.Game.Projectile.idGuidedProjectile;
 import neo.Game.Projectile.idProjectile;
 import neo.Game.Pvs.idPVS;
 import neo.Game.Pvs.pvsHandle_t;
@@ -140,17 +162,24 @@ import neo.Game.SmokeParticles.idSmokeParticles;
 import neo.Game.Sound.idSound;
 import neo.Game.Target.idTarget;
 import neo.Game.Target.idTarget_CallObjectFunction;
+import neo.Game.Target.idTarget_EnableLevelWeapons;
 import neo.Game.Target.idTarget_EndLevel;
 import neo.Game.Target.idTarget_FadeEntity;
 import neo.Game.Target.idTarget_GiveEmail;
+import neo.Game.Target.idTarget_LightFadeIn;
+import neo.Game.Target.idTarget_LightFadeOut;
+import neo.Game.Target.idTarget_LockDoor;
 import neo.Game.Target.idTarget_Remove;
+import neo.Game.Target.idTarget_SetInfluence;
 import neo.Game.Target.idTarget_SetPrimaryObjective;
 import neo.Game.Target.idTarget_SetShaderParm;
+import neo.Game.Target.idTarget_Show;
 import neo.Game.Target.idTarget_Tip;
 import neo.Game.Trigger.idTrigger_Count;
 import neo.Game.Trigger.idTrigger_Fade;
 import neo.Game.Trigger.idTrigger_Hurt;
 import neo.Game.Trigger.idTrigger_Multi;
+import neo.Game.Trigger.idTrigger_Timer;
 import neo.Game.WorldSpawn.idWorldspawn;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.ModelManager;
@@ -3469,6 +3498,96 @@ public class Game_local {
                         break;
                     case "idPlayer":
                         obj = new idPlayer();
+                        break;
+                    case "idDebris":
+                        obj = new idDebris();
+                        break;
+                    case "idSpawnableEntity":
+                        obj = new idSpawnableEntity();
+                        break;
+                    case "idTarget_LightFadeIn":
+                        obj = new idTarget_LightFadeIn();
+                        break;
+                    case "idTarget_LightFadeOut":
+                        obj = new idTarget_LightFadeOut();
+                        break;
+                    case "idItemPowerup":
+                        obj = new idItemPowerup();
+                        break;
+                    case "idForceField":
+                        obj = new idForceField();
+                        break;
+                    case "idTarget_LockDoor":
+                        obj = new idTarget_LockDoor();
+                        break;
+                    case "idTarget_SetInfluence":
+                        obj = new idTarget_SetInfluence();
+                        break;
+                    case "idExplodingBarrel":
+                        obj = new idExplodingBarrel();
+                        break;
+                    case "idTarget_EnableLevelWeapons":
+                        obj = new idTarget_EnableLevelWeapons();
+                        break;
+                    case "idAFEntity_WithAttachedHead":
+                        obj = new idAFEntity_WithAttachedHead();
+                        break;
+                    case "idCombatNode":
+                        obj = new idCombatNode();
+                        break;
+                    case "idFuncAASObstacle":
+                        obj = new idFuncAASObstacle();
+                        break;
+                    case "idVacuumEntity":
+                        obj = new idVacuumEntity();
+                        break;
+                    case "idRotater":
+                        obj = new idRotater();
+                        break;
+                    case "idElevator":
+                        obj = new idElevator();
+                        break;
+                    case "idShaking":
+                        obj = new idShaking();
+                        break;
+                    case "idFuncRadioChatter":
+                        obj = new idFuncRadioChatter();
+                        break;
+                    case "idFuncPortal":
+                        obj = new idFuncPortal();
+                        break;
+                    case "idMoveableItem":
+                        obj = new idMoveableItem();
+                        break;
+                    case "idFuncSmoke":
+                        obj = new idFuncSmoke();
+                        break;
+                    case "idPhantomObjects":
+                        obj = new idPhantomObjects();
+                        break;
+                    case "idBeam":
+                        obj = new idBeam();
+                        break;
+                    case "idExplodable":
+                        obj = new idExplodable();
+                        break;
+                    case "idEarthQuake":
+                        obj = new idEarthQuake();
+                        break;
+                    case "idGuidedProjectile":
+                        obj = new idGuidedProjectile();
+                        break;
+                    case "idTarget_Show":
+                        obj = new idTarget_Show();
+                        break;
+                    case "idBrittleFracture":
+                        obj = new idBrittleFracture();
+                        break;
+                    case "idTrigger_Timer":
+                        obj = new idTrigger_Timer();
+                        break;
+                    case "idPendulum":
+                        obj = new idPendulum();
                         break;
                     default:
                         obj = null;

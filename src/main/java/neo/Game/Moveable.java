@@ -567,15 +567,17 @@ public class Moveable {
         public idBarrel() {
             radius = 1.0f;
             barrelAxis = 0;
-            lastOrigin.Zero();
-            lastAxis.Identity();
+            lastOrigin = new idVec3();
+            lastAxis = idMat3.getMat3_identity();
             additionalRotation = 0;
-            additionalAxis.Identity();
+            additionalAxis = idMat3.getMat3_identity();
             fl.networkSync = true;
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             final idBounds bounds = GetPhysics().GetBounds();
 
             // radius of the barrel cylinder
@@ -761,8 +763,8 @@ public class Moveable {
         //
 
         public idExplodingBarrel() {
-            spawnOrigin.Zero();
-            spawnAxis.Zero();
+            spawnOrigin = new idVec3();
+            spawnAxis = new idMat3();
             state = NORMAL;
             particleModelDefHandle = -1;
             lightDefHandle = -1;
@@ -774,10 +776,23 @@ public class Moveable {
             lightTime = 0;
             time = 0.0f;
         }
+
         // ~idExplodingBarrel();
+        @Override
+        protected void _deconstructor() {
+            if (particleModelDefHandle >= 0) {
+                gameRenderWorld.FreeEntityDef(particleModelDefHandle);
+            }
+            if (lightDefHandle >= 0) {
+                gameRenderWorld.FreeLightDef(lightDefHandle);
+            }
+            super._deconstructor();
+        }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             health = spawnArgs.GetInt("health", "5");
             fl.takedamage = true;
             spawnOrigin = GetPhysics().GetOrigin();
@@ -788,10 +803,8 @@ public class Moveable {
             lightTime = 0;
             particleTime = 0;
             time = spawnArgs.GetFloat("time");
-            //	memset( &particleRenderEntity, 0, sizeof( particleRenderEntity ) );
-            particleRenderEntity = new renderEntity_s();
-//	memset( &light, 0, sizeof( light ) );
-            light = new renderLight_s();
+            particleRenderEntity = new renderEntity_s();//	memset( &particleRenderEntity, 0, sizeof( particleRenderEntity ) );
+            light = new renderLight_s();//	memset( &light, 0, sizeof( light ) );
         }
 
         @Override

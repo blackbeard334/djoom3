@@ -1203,12 +1203,23 @@ public class AFEntity {
         //
 
         public idAFEntity_WithAttachedHead() {
-            head = null;
+            head = new idEntityPtr<>(null);
         }
+
         // ~idAFEntity_WithAttachedHead();
+        @Override
+        protected void _deconstructor() {
+            if (head.GetEntity() != null) {
+                head.GetEntity().ClearBody();
+                head.GetEntity().PostEventMS(EV_Remove, 0);
+            }
+            super._deconstructor();
+        }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+            
             SetupHead();
 
             LoadAF();

@@ -984,7 +984,7 @@ public class RenderWorld_local {
          ===============
          */
         @Override
-        public int PointInArea(idVec3 point) {
+        public int PointInArea(final idVec3 point) {
             areaNode_t node;
             int nodeNum;
             float d;
@@ -1837,6 +1837,7 @@ public class RenderWorld_local {
                 tri.shadowVertexes[j].xyz.oSet(3, 1);// no homogenous value
 
                 tri.bounds.AddPoint(tri.shadowVertexes[j].xyz.ToVec3());
+                int a = 0;
             }
 
             R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
@@ -2162,8 +2163,8 @@ public class RenderWorld_local {
                 def.referenceBounds.oSet(def.parms.hModel.Bounds());
 
                 def.parms.axis.oSet(0, 0, 1);
-                def.parms.axis.oSet(2, 1, 1);
-                def.parms.axis.oSet(1, 2, 1);
+                def.parms.axis.oSet(1, 1, 1);
+                def.parms.axis.oSet(2, 2, 1);
 
                 R_AxisToModelMatrix(def.parms.axis, def.parms.origin, def.modelMatrix);
 
@@ -2445,7 +2446,7 @@ public class RenderWorld_local {
                 if (d < 1.0f) {
 
                     // go through this portal
-                    newStack = ps;
+                    newStack = new portalStack_s(ps);
                     newStack.p = p;
                     newStack.next = ps;
                     FloodViewThroughArea_r(origin, p.intoArea, newStack);
@@ -2862,7 +2863,7 @@ public class RenderWorld_local {
             int i, j;
             srfTriangles_s tri;
             float d;
-            idFixedWinding w;		// we won't overflow because MAX_PORTAL_PLANES = 20
+            idFixedWinding w = new idFixedWinding();		// we won't overflow because MAX_PORTAL_PLANES = 20
 
             if (r_useLightCulling.GetInteger() == 0) {
                 return false;
@@ -2887,7 +2888,7 @@ public class RenderWorld_local {
                         continue;
                     }
 
-                    w = new idFixedWinding(ow);
+                    w.oSet(ow);
 
                     // now check the winding against each of the portalStack planes
                     for (j = 0; j < ps.numPortalPlanes - 1; j++) {
@@ -3054,6 +3055,7 @@ public class RenderWorld_local {
             // clear the visible lightDef and entityDef lists
             tr.viewDef.viewLights = null;
             tr.viewDef.viewEntitys = null;
+            tr.viewDef.numViewEntitys = 0;
 
             // find the area to start the portal flooding in
             if (!r_usePortals.GetBool()) {
@@ -4363,12 +4365,13 @@ public class RenderWorld_local {
             idRenderEntityLocal eDef;
             portalArea_s area;
             idInteraction inter;
+            int i = 0, j = 0;
 
-            for (lRef = lDef.references; lRef != null; lRef = lRef.ownerNext) {
+            for (lRef = lDef.references; lRef != null; lRef = lRef.ownerNext, i++) {
                 area = lRef.area;
 
                 // check all the models in this area
-                for (eRef = area.entityRefs.areaNext; eRef != area.entityRefs; eRef = eRef.areaNext) {
+                for (eRef = area.entityRefs.areaNext; eRef != area.entityRefs; eRef = eRef.areaNext, j++) {
                     eDef = eRef.entity;
 
                     // if the entity doesn't have any light-interacting surfaces, we could skip this,
@@ -4404,6 +4407,9 @@ public class RenderWorld_local {
                         // the CPU time.  The table is updated at interaction::AllocAndLink() and interaction::UnlinkAndFree()
                         int index = lDef.index * this.interactionTableWidth + eDef.index;
                         inter = this.interactionTable[index];
+                        if (index == 441291) {
+                            int x = 0;
+                        }
                         if (inter != null) {
                             // if this entity wasn't in view already, the scissor rect will be empty,
                             // so it will only be used for shadow casting

@@ -520,7 +520,7 @@ public class Image_files {
         }
 
         buf_p = buffer[0];
-        buf_p.order(ByteOrder.LITTLE_ENDIAN);
+        buf_p.order(ByteOrder.LITTLE_ENDIAN).rewind();
 
         targa_header.id_length = buf_p.get();
         targa_header.colormap_type = buf_p.get();

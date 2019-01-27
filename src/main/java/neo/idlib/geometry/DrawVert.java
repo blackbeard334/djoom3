@@ -2,6 +2,8 @@ package neo.idlib.geometry;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
@@ -35,7 +37,7 @@ public class DrawVert {
         public idVec2   st;
         public idVec3   normal;
         public idVec3[] tangents;
-        public short[] color = new short[4];
+        public byte[] color = new byte[4];
 ////#if 0 // was MACOS_X see comments concerning DRAWVERT_PADDED in Simd_Altivec.h 
 ////	float			padding;
 ////#endif
@@ -155,7 +157,8 @@ public class DrawVert {
 
         public void SetColor(long color) {
 //	*reinterpret_cast<dword *>(this->color) = color;
-            this.color = this.set_reinterpret_cast(color);
+//            this.color = this.set_reinterpret_cast(color);
+            throw new TempDump.TODO_Exception();
         }
 
         public long GetColor() {

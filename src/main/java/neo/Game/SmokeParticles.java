@@ -1,6 +1,7 @@
 package neo.Game;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.stream.Stream;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
@@ -387,15 +388,15 @@ public class SmokeParticles {
                     }
 
                     g.index = smoke.index;
-                    g.random = smoke.random;
+                    g.random = new idRandom(smoke.random);
 
                     g.origin.oSet(smoke.origin);
                     g.axis.oSet(smoke.axis);
 
-                    g.originalRandom = g.random;
+                    g.originalRandom = new idRandom(g.random);
                     g.age = g.frac * stage.particleLife;
 
-                    tri.numVerts += stage.CreateParticle(g, tri.verts, tri.numVerts);
+                    tri.numVerts += stage.CreateParticle(g, Arrays.copyOfRange(tri.verts, tri.numVerts, tri.verts.length));
 
                     last = smoke;
                 }

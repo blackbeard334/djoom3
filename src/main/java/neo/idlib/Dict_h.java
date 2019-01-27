@@ -361,10 +361,12 @@ public class Dict_h {
             Set(key.toString(), value.toString());//TODO:check if toString is sufficient instead of checking whether it's an idStr first?
         }
 
+        private static int DBG_Set = 0;
         public void Set(final String key, final String value) throws idException {
             int i;
             idKeyValue kv = new idKeyValue();
 
+//            System.out.println(DBG_Set++ + " " + key);
             if (key == null || key.isEmpty() || key.charAt(0) == '\0') {
                 return;
             }

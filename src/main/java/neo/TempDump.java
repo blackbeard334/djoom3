@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
+import java.nio.LongBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
@@ -539,17 +540,12 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static long[] reinterpret_cast_long_array(final byte[] array) {
-        final long[] temp = new long[array.length];
+        final int len = array.length / Long.BYTES;
+        final LongBuffer buffer = ByteBuffer.wrap(array).asLongBuffer();
+        long[] temp = new long[len];
 
-        for (int b = 0, l = 0; b < array.length; l++) {
-            temp[l] |= (array[b++] & 0xFFL) << 56;
-            temp[l] |= (array[b++] & 0xFFL) << 48;
-            temp[l] |= (array[b++] & 0xFFL) << 40;
-            temp[l] |= (array[b++] & 0xFFL) << 32;
-            temp[l] |= (array[b++] & 0xFFL) << 24;
-            temp[l] |= (array[b++] & 0xFFL) << 16;
-            temp[l] |= (array[b++] & 0xFFL) << 8;
-            temp[l] |= (array[b++] & 0xFFL) << 0;
+        for (int l = 0; l < len; l++) {
+            temp[l] = buffer.get(l);
         }
 
         return temp;
@@ -1115,6 +1111,16 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
                     + "I cannot live..."
                     + "I cannot die..."
                     + "body my holding cell!");
+            System.exit(666);
+        }
+    }
+
+    public static final class TypeErasure_Expection extends javax.swing.undo.CannotUndoException {
+        
+        public TypeErasure_Expection() {
+            printStackTrace();
+            System.err.println("The future is always blank.\n" +
+                    "Only your willpower can leave footsteps there.");
             System.exit(666);
         }
     }

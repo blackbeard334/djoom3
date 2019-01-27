@@ -313,7 +313,7 @@ public class GameEdit {
             // parse all the bind constraints
             kv = af.spawnArgs.MatchPrefix("bindConstraint ", null);
             while (kv != null) {
-                key = kv.GetKey();
+                key.oSet(kv.GetKey());
                 key.Strip("bindConstraint ");
                 if ((num = sscanf(key, "bind%d")) != -1) {
                     if (num >= largestNum) {

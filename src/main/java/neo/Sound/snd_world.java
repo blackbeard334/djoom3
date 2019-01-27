@@ -135,9 +135,10 @@ import static org.lwjgl.openal.AL10.alDeleteBuffers;
 import static org.lwjgl.openal.AL10.alGenBuffers;
 import static org.lwjgl.openal.AL10.alGetSourcei;
 import static org.lwjgl.openal.AL10.alIsSource;
-import static org.lwjgl.openal.AL10.alListener;
+//import static org.lwjgl.openal.AL10.alListener;
 import static org.lwjgl.openal.AL10.alListener3f;
 import static org.lwjgl.openal.AL10.alListenerf;
+import static org.lwjgl.openal.AL10.alListenerfv;
 import static org.lwjgl.openal.AL10.alSource3f;
 import static org.lwjgl.openal.AL10.alSourcePlay;
 import static org.lwjgl.openal.AL10.alSourceQueueBuffers;
@@ -379,10 +380,10 @@ public class snd_world {
 
             listenerPrivateId = listenerId;
 
-            listenerQU = origin;                            // Doom units
-            listenerPos = origin.oMultiply(DOOM_TO_METERS);            // meters
-            listenerAxis = axis;
-            listenerAreaName = areaName;
+            listenerQU.oSet(origin);                            // Doom units
+            listenerPos = origin.oMultiply(DOOM_TO_METERS);     // meters
+            listenerAxis.oSet(axis);
+            listenerAreaName.oSet(areaName);
             listenerAreaName.ToLower();
 
             if (rw != null) {
@@ -1812,7 +1813,7 @@ public class snd_world {
 
                 alListenerf(AL_GAIN, 1.0f);
                 alListener3f(AL_POSITION, listenerPosition[0], listenerPosition[1], listenerPosition[2]);
-                alListener(AL_ORIENTATION, listenerOrientation);//SO6874122
+                alListenerfv(AL_ORIENTATION, listenerOrientation);//SO6874122
 
 // #if ID_OPENAL
                 // if ( soundSystemLocal.s_useEAXReverb.GetBool() ) {
@@ -2211,7 +2212,7 @@ public class snd_world {
                         sourceBuffer[j] = (j & 1) == 1 ? 32767.0f : -32767.0f;
                     }
                 } else {
-                    int offset = (localTime - localTriggerTimes);    // offset in samples
+                    int offset = Math.abs(localTime - localTriggerTimes);    // offset in samples
                     int size = (looping ? chan.soundShader.entries[0].LengthIn44kHzSamples() : chan.leadinSample.LengthIn44kHzSamples());
                     ShortBuffer amplitudeData = (looping ? chan.soundShader.entries[0].amplitudeData : chan.leadinSample.amplitudeData).asShortBuffer();
 

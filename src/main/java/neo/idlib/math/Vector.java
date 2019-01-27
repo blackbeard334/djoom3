@@ -13,6 +13,8 @@ import neo.idlib.math.Matrix.idMatX;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Rotation.idRotation;
+import org.lwjgl.BufferUtils;
+
 import static neo.idlib.math.Simd.SIMDProcessor;
 
 /**
@@ -1152,6 +1154,43 @@ public class Vector {
                     limit(length).
                     toArray(idVec3[]::new);
         }
+
+        public void ToVec2_oPluSet(idVec2 v) {
+            this.x += v.x;
+            this.y += v.y;
+        }
+
+        public void ToVec2_oMinSet(idVec2 v) {
+            this.x -= v.x;
+            this.y -= v.y;
+        }
+
+        public void ToVec2_oMulSet(float a) {
+            this.x *= a;
+            this.y *= a;
+        }
+
+        public void ToVec2_Normalize() {
+            idVec2 v = ToVec2();
+            v.Normalize();
+            this.oSet(v);
+        }
+
+        public void ToVec2_NormalizeFast() {
+            idVec2 v = ToVec2();
+            v.NormalizeFast();
+            this.oSet(v);
+        }
+
+        public static ByteBuffer toByteBuffer(idVec3[] vecs) {
+            ByteBuffer data = BufferUtils.createByteBuffer(idVec3.BYTES * vecs.length);
+
+            for (idVec3 vec : vecs) {
+                data.put((ByteBuffer) vec.Write().rewind());
+            }
+
+            return (ByteBuffer) data.flip();
+        }
     }
 
     //===============================================================
@@ -1493,6 +1532,16 @@ public class Vector {
                     limit(length).
                     toArray(idVec4[]::new);
         }
+
+        public static ByteBuffer toByteBuffer(idVec4[] vecs) {
+            ByteBuffer data = BufferUtils.createByteBuffer(idVec4.BYTES * vecs.length);
+
+            for (idVec4 vec : vecs) {
+                data.put((ByteBuffer) vec.Write().rewind());
+            }
+
+            return (ByteBuffer) data.flip();
+        }
     }
 
     //===============================================================
@@ -1711,6 +1760,10 @@ public class Vector {
         public idVec6(final float[] a) {
 //	memcpy( p, a, 6 * sizeof( float ) );
             System.arraycopy(a, 0, p, 0, 6);
+        }
+
+        public idVec6(final idVec6 v) {
+            System.arraycopy(v.p, 0, p, 0, 6);
         }
 
         public idVec6(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {

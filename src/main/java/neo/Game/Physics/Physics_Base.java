@@ -78,6 +78,8 @@ public class Physics_Base {
             }
             idForce.DeletePhysics(this);
             ClearContacts();
+
+            super._deconstructor();
         }
 
         @Override

@@ -86,6 +86,9 @@ public class Clip {
         clipLink_s prevInSector;
         clipLink_s nextInSector;
         clipLink_s nextLink;
+
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
     };
 
     public static class trmCache_s {
@@ -899,7 +902,7 @@ public class Clip {
             idBounds traceBounds = new idBounds();
             float radius;
             trace_s[] translationalTrace = {null}, rotationalTrace = {null};
-            trace_s[] trace = new trace_s[1];
+            trace_s[] trace = {new trace_s()};
             idRotation endRotation;
             idTraceModel trm;
 

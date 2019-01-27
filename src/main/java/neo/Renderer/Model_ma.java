@@ -92,7 +92,7 @@ public class Model_ma {
 //
         //Colors
         int numColors;
-        short[] colors;
+        byte[] colors;
 //
         //Faces
         int numFaces;
@@ -561,7 +561,7 @@ public class Model_ma {
         //Allocate enough space for all the verts if this is the first attribute for verticies
         if (null == pMesh.colors) {
             pMesh.numColors = header.size;
-            pMesh.colors = new short[pMesh.numColors * 4];// Mem_Alloc(pMesh.numColors * 4);
+            pMesh.colors = new byte[pMesh.numColors * 4];// Mem_Alloc(pMesh.numColors * 4);
         }
 
         //Get the start and end index for this attribute
@@ -573,10 +573,10 @@ public class Model_ma {
 
         //Read each vert
         for (int i = minIndex[0]; i <= maxIndex[0]; i++) {
-            pMesh.colors[i * 4] = (short) (parser.ParseFloat() * 255);
-            pMesh.colors[i * 4 + 1] = (short) (parser.ParseFloat() * 255);
-            pMesh.colors[i * 4 + 2] = (short) (parser.ParseFloat() * 255);
-            pMesh.colors[i * 4 + 3] = (short) (parser.ParseFloat() * 255);
+            pMesh.colors[i * 4 + 0] = (byte) (parser.ParseFloat() * 255);
+            pMesh.colors[i * 4 + 1] = (byte) (parser.ParseFloat() * 255);
+            pMesh.colors[i * 4 + 2] = (byte) (parser.ParseFloat() * 255);
+            pMesh.colors[i * 4 + 3] = (byte) (parser.ParseFloat() * 255);
         }
 
         return true;

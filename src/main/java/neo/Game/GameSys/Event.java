@@ -491,6 +491,10 @@ public class Event {
             return data;
         }
 
+        public static void CancelEvents(final idClass obj) {
+            CancelEvents(obj, null);
+        }
+        
         public static void CancelEvents(final idClass obj, final idEventDef evdef /*= NULL*/) {
             idEvent event;
             idEvent next;

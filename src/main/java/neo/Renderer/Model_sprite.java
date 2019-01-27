@@ -132,10 +132,10 @@ public class Model_sprite {
                 staticModel.AddSurface(surf);
             }
 
-            final short red = (short) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_RED] * 255.0f);
-            final short green = (short) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_GREEN] * 255.0f);
-            final short blue = (short) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_BLUE] * 255.0f);
-            final short alpha = (short) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
+            final byte red = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_RED] * 255.0f);
+            final byte green = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_GREEN] * 255.0f);
+            final byte blue = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_BLUE] * 255.0f);
+            final byte alpha = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
 
             idVec3 right = new idVec3(0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH] * 0.5f, 0.0f);
             idVec3 up = new idVec3(0.0f, 0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT] * 0.5f);
@@ -166,7 +166,7 @@ public class Model_sprite {
 
             R_BoundTriSurf(tri);
 
-            staticModel.bounds = tri.bounds;
+            staticModel.bounds = new idBounds(tri.bounds);
 
             return staticModel;
         }

@@ -1019,7 +1019,7 @@ public class CVarSystem {
                     moveCVarsToDict.Set(cvar.GetName(), cvar.GetString());
                 }
             }
-            return moveCVarsToDict;
+            return new idDict(moveCVarsToDict);
         }
 
         @Override

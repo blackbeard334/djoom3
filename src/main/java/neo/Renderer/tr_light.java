@@ -138,7 +138,7 @@ public class tr_light {
 
         R_GlobalPointToLocal(ent.modelMatrix, light.globalLightOrigin, localLightOrigin);
 
-        int size = tri.ambientSurface.numVerts;
+        int size = tri.ambientSurface.numVerts * lightingCache_s.BYTES;
         lightingCache_s[] cache = new lightingCache_s[size];
 
         if (true) {
@@ -171,7 +171,7 @@ public class tr_light {
 //	}
         }
 
-        tri.lightingCache = vertexCache.Alloc(cache, size)[0];
+        tri.lightingCache = vertexCache.Alloc(cache, size);
         if (NOT(tri.lightingCache)) {
             return false;
         }
@@ -190,7 +190,7 @@ public class tr_light {
             return;
         }
 
-        tri.shadowCache = vertexCache.Alloc(tri.shadowVertexes, tri.numVerts)[0];
+        tri.shadowCache = vertexCache.Alloc(tri.shadowVertexes, tri.numVerts * shadowCache_s.BYTES);
     }
 
     /*
@@ -225,7 +225,7 @@ public class tr_light {
             temp[i * 2 + 1].xyz.oSet(3, 0.0f);        // will be projected to infinity
         }
 
-        tri.shadowCache = vertexCache.Alloc(temp, tri.numVerts * 2)[0];
+        tri.shadowCache = vertexCache.Alloc(temp, tri.numVerts * 2 * shadowCache_s.BYTES);
     }
 
     /*
@@ -245,12 +245,10 @@ public class tr_light {
 
         final idDrawVert[] verts = surf.geo.verts;
         for (i = 0; i < numVerts; i++) {
-            texCoords[i].oSet(0, verts[i].xyz.oGet(0) - localViewOrigin.oGet(0));
-            texCoords[i].oSet(1, verts[i].xyz.oGet(1) - localViewOrigin.oGet(1));
-            texCoords[i].oSet(2, verts[i].xyz.oGet(2) - localViewOrigin.oGet(2));
+            texCoords[i] = verts[i].xyz.oMinus(localViewOrigin);
         }
 
-        surf.dynamicTexCoords[0] = vertexCache.AllocFrameTemp(texCoords, size);//TODO:should [0] be set?
+        surf.dynamicTexCoords = vertexCache.AllocFrameTemp(texCoords, size);
     }
 
     /*
@@ -332,7 +330,7 @@ public class tr_light {
             texCoords[i] = R_LocalPointToGlobal(transform, v);
         }
 
-        surf.dynamicTexCoords[0] = vertexCache.AllocFrameTemp(texCoords, size);
+        surf.dynamicTexCoords = vertexCache.AllocFrameTemp(texCoords, size);
     }
 
     /*
@@ -400,7 +398,7 @@ public class tr_light {
 //	}
         }
 
-        surf.dynamicTexCoords[0] = vertexCache.AllocFrameTemp(texCoords, size);
+        surf.dynamicTexCoords = vertexCache.AllocFrameTemp(texCoords, size);
     }
 
 //==================================================================================================================================================================================================
@@ -444,6 +442,7 @@ public class tr_light {
 
             vModel.next = tr.viewDef.viewEntitys;
             tr.viewDef.viewEntitys = vModel;
+            tr.viewDef.numViewEntitys++;
         }
 
         def.viewEntity = vModel;
@@ -558,7 +557,7 @@ public class tr_light {
      R_LinkLightSurf
      =================
      */
-    public static void R_LinkLightSurf(final drawSurf_s[] link, final srfTriangles_s tri, final viewEntity_s spaceView,
+    public static void R_LinkLightSurf(drawSurf_s[] link, final srfTriangles_s tri, final viewEntity_s spaceView,
             final idRenderLightLocal light, final idMaterial shader, final idScreenRect scissor, boolean viewInsideShadow) {
         drawSurf_s drawSurf;
         viewEntity_s space = spaceView;//TODO:should a back reference be set here?
@@ -586,7 +585,7 @@ public class tr_light {
             final float[] constRegs = shader.ConstantRegisters();
             if (constRegs != null) {
                 // this shader has only constants for parameters
-                drawSurf.shaderRegisters = constRegs;
+                drawSurf.shaderRegisters = constRegs.clone();
             } else {
                 // FIXME: share with the ambient surface?
                 float[] regs = new float[shader.GetNumRegisters()];//R_FrameAlloc(shader.GetNumRegisters());
@@ -618,7 +617,7 @@ public class tr_light {
         int i, j;
         idRenderLightLocal light = vLight.lightDef;
         idScreenRect r = new idScreenRect();
-        idFixedWinding w;
+        idFixedWinding w = new idFixedWinding();
 
         r.Clear();
 
@@ -638,7 +637,7 @@ public class tr_light {
                 continue;
             }
 
-            w = new idFixedWinding(ow);
+            w.oSet(ow);
 
             // now check the winding against each of the frustum planes
             for (j = 0; j < 5; j++) {
@@ -779,11 +778,14 @@ public class tr_light {
     public static void R_AddLightSurfaces() throws idException {
         viewLight_s vLight;
         idRenderLightLocal light;
-        viewLight_s ptr;
+        viewLight_s ptr, prevPtr;
+        int z = 0;
 
         // go through each visible light, possibly removing some from the list
         ptr = tr.viewDef.viewLights;
+        prevPtr = null;
         while (ptr != null) {
+            z++;
             vLight = ptr;
             light = vLight.lightDef;
 
@@ -796,13 +798,15 @@ public class tr_light {
             if (!r_skipSuppress.GetBool()) {
                 if (light.parms.suppressLightInViewID != 0
                         && light.parms.suppressLightInViewID == tr.viewDef.renderView.viewID) {
-                    ptr = vLight.next;
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
                 if (light.parms.allowLightInViewID != 0
                         && light.parms.allowLightInViewID != tr.viewDef.renderView.viewID) {
-                    ptr = vLight.next;
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
@@ -854,7 +858,8 @@ public class tr_light {
                     // remove the light from the viewLights list, and change its frame marker
                     // so interaction generation doesn't think the light is visible and
                     // create a shadow for it
-                    ptr = vLight.next;
+                    if (vLight == tr.viewDef.viewLights) tr.viewDef.viewLights = ptr = vLight.next;
+                    else prevPtr.next = ptr = vLight.next;
                     light.viewCount = -1;
                     continue;
                 }
@@ -882,6 +887,7 @@ public class tr_light {
 //		}
 //            }
             // this one stays on the list
+            prevPtr = ptr;
             ptr = vLight.next;
 
             // if we are doing a soft-shadow novelty test, regenerate the light with
@@ -942,7 +948,7 @@ public class tr_light {
                 vertexCache.Touch(tri.shadowCache);
 
                 if (NOT(tri.indexCache) && r_useIndexBuffers.GetBool()) {
-                    vertexCache.Alloc(tri.indexes, tri.numIndexes, tri.indexCache, true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -1127,7 +1133,7 @@ public class tr_light {
         final float[] constRegs = shader.ConstantRegisters();
         if (constRegs != null) {
             // shader only uses constant values
-            drawSurf.shaderRegisters = constRegs;
+            drawSurf.shaderRegisters = constRegs.clone();
         } else {
             float[] regs = new float[shader.GetNumRegisters()];// R_FrameAlloc(shader.GetNumRegisters());
             drawSurf.shaderRegisters = regs;
@@ -1317,7 +1323,7 @@ public class tr_light {
                 vertexCache.Touch(tri.ambientCache);
 
                 if (r_useIndexBuffers.GetBool() && NOT(tri.indexCache)) {
-                    vertexCache.Alloc(tri.indexes, tri.numIndexes /* sizeof( tri.indexes[0] */, tri.indexCache, true);
+                    tri.indexCache = vertexCache.Alloc(tri.indexes, tri.numIndexes * Integer.BYTES, true);
                 }
                 if (tri.indexCache != null) {
                     vertexCache.Touch(tri.indexCache);
@@ -1455,6 +1461,7 @@ public class tr_light {
         viewEntity_s vEntity;
         idInteraction inter, next;
         idRenderModel model;
+        int i = 0;
 
         // clear the ambient surface list
         tr.viewDef.numDrawSurfs = 0;
@@ -1462,7 +1469,7 @@ public class tr_light {
 
         // go through each entity that is either visible to the view, or to
         // any light that intersects the view (for shadows)
-        for (vEntity = tr.viewDef.viewEntitys; vEntity != null; vEntity = vEntity.next) {
+        for (vEntity = tr.viewDef.viewEntitys; vEntity != null; vEntity = vEntity.next, i++) {
 
             if (r_useEntityScissors.GetBool()) {
                 // calculate the screen area covered by the entity

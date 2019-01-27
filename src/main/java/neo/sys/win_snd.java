@@ -10,8 +10,10 @@ import neo.TempDump.TODO_Exception;
 import static neo.framework.BuildDefines.ID_OPENAL;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-import org.lwjgl.LWJGLException;
+//import org.lwjgl.LWJGLException;
 import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
 
 /**
  *
@@ -223,14 +225,16 @@ public class win_snd {
     public static boolean Sys_LoadOpenAL() {
         if (ID_OPENAL) {
             try {
-                AL.create();
-            } catch (LWJGLException | UnsatisfiedLinkError ex) {
+                ALC.create();
+            } catch (UnsatisfiedLinkError ex) {
                 Logger.getLogger(win_snd.class.getName()).log(Level.SEVERE, null, ex);
                 common.Warning("LoadLibrary %s failed.", idSoundSystemLocal.s_libOpenAL.GetString());
                 return false;
+            } catch (IllegalStateException ex) {
+                return "ALC has already been created.".equals(ex.getMessage());
             }
 
-            return AL.isCreated();
+            return true;
         } else {
             return false;
         }
@@ -242,7 +246,7 @@ public class win_snd {
      ===============
      */
     public static void Sys_FreeOpenAL() {
-        AL.destroy();
+        ALC.destroy();
     }
 
 }

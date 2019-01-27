@@ -411,7 +411,7 @@ public class ModelDecal {
                         } else if (icolor > 255) {
                             icolor = 255;
                         }
-                        tri.verts[ind].color[k] = (short) icolor;
+                        tri.verts[ind].color[k] = (byte) icolor;
                     }
                 }
             }
@@ -481,7 +481,7 @@ public class ModelDecal {
                         } else if (icolor > 255) {
                             icolor = 255;
                         }
-                        tri.verts[tri.numVerts + i].color[k] = (short) icolor;
+                        tri.verts[tri.numVerts + i].color[k] = (byte) icolor;
                     }
                 }
                 for (i = 2; i < w.GetNumPoints(); i++) {

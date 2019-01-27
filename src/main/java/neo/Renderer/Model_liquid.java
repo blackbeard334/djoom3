@@ -269,7 +269,7 @@ public class Model_liquid {
 
             staticModel = new idRenderModelStatic();
             staticModel.AddSurface(surf);
-            staticModel.bounds = surf.geometry.bounds;
+            staticModel.bounds = new idBounds(surf.geometry.bounds);
 
             return staticModel;
         }

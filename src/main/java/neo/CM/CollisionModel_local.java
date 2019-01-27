@@ -6004,7 +6004,7 @@ public class CollisionModel_local {
             cm_vertexHash.Clear();
             cm_edgeHash.Clear();
 
-            cm_modelBounds = bounds;
+            cm_modelBounds = new idBounds(bounds);
             max = bounds.oGet(1).x - bounds.oGet(0).x;
             f = bounds.oGet(1).y - bounds.oGet(0).y;
             if (f > max) {

@@ -1,0 +1,8 @@
+Cinematic
+
+idCinematicLocal::ImageForTime()
+
+g_debugCinematic
+    idAnimated::Event_AnimDone() 2605: 'marscity_ship_1' end anim 'window'
+        idAnimated::Event_Start()
+            idClip::ClipModelsTouchingBounds_r()

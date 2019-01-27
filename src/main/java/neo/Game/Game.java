@@ -924,7 +924,7 @@ public class Game {
             idAngles angles = new idAngles();
             idDict defArgs;
             idKeyValue arg;
-            idStr name;
+            idStr name = new idStr();
             jointTransformData_t data = new jointTransformData_t();
             String classname, afName, modelName;
             idRenderModel md5;
@@ -1022,7 +1022,7 @@ public class Game {
 
             // get any new body transforms stored in the key/value pairs
             for (arg = args.MatchPrefix("body ", null); arg != null; arg = args.MatchPrefix("body ", arg)) {
-                name = arg.GetKey();
+                name.oSet(arg.GetKey());
                 name.Strip("body ");
                 for (i = 0; i < af.bodies.Num(); i++) {
                     fb = af.bodies.oGet(i);

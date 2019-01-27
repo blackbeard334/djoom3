@@ -816,7 +816,7 @@ public class Mover {
             move.acceleration = at;
             move.movetime = move_time - at - dt;
             move.deceleration = dt;
-            move.dir = move_delta;
+            move.dir = new idVec3(move_delta);
 
             ProcessEvent(EV_ReachedPos);
         }
@@ -1278,7 +1278,7 @@ public class Mover {
             BeginRotation(idThread.CurrentThread(), true);
         }
 
-        private void Event_Rotate(idEventArg<idAngles> angles) {
+        private void Event_Rotate(idEventArg<idVec3> angles) {
             idAngles ang = new idAngles();
 
             if (rotate_thread != 0) {
@@ -1291,7 +1291,7 @@ public class Mover {
             BeginRotation(idThread.CurrentThread(), false);
         }
 
-        private void Event_RotateOnce(idEventArg<idAngles> angles) {
+        private void Event_RotateOnce(idEventArg<idVec3> angles) {
             idAngles ang = new idAngles();
 
             if (rotate_thread != 0) {
@@ -1312,8 +1312,8 @@ public class Mover {
                     (int) (speed.value * 500), org, depth.value.oMultiply(2.0f), getVec3_origin());
         }
 
-        private void Event_Sway(idEventArg<Float> speed, idEventArg<Float> phase, idEventArg<idAngles> _depth) {
-            idAngles depth = _depth.value;
+        private void Event_Sway(idEventArg<Float> speed, idEventArg<Float> phase, idEventArg<idVec3> _depth) {
+            idAngles depth = new idAngles(_depth.value);
             idAngles ang = new idAngles(), angSpeed;
             float duration;
 
@@ -1373,7 +1373,7 @@ public class Mover {
             }
 
             // Needed for savegames
-            splineEnt.oSet(splineEntity);
+            splineEnt = new idEntityPtr<>(splineEntity);
 
             spline = splineEntity.GetSpline();
             if (null == spline) {
@@ -1528,7 +1528,7 @@ public class Mover {
 
         public idElevator() {
             state = INIT;
-            floorInfo.Clear();
+            floorInfo = new idList<>();
             currentFloor = 0;
             pendingFloor = 0;
             lastFloor = 0;
@@ -1540,6 +1540,8 @@ public class Mover {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             idStr str;
             int len1;
 
@@ -2026,7 +2028,7 @@ public class Mover {
             areaPortal = 0;
             blocked = false;
             fl.networkSync = true;
-            guiTargets = new idList<>();
+            guiTargets = new idList(idEntityPtr.class);
         }
 
         // ~idMover_Binary();
@@ -3886,11 +3888,14 @@ public class Mover {
 
         public idMover_Periodic() {
             damage[0] = 0;
+            physicsObj = new idPhysics_Parametric();
             fl.neverDormant = false;
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             spawnArgs.GetFloat("damage", "0", damage);
             if (!spawnArgs.GetBool("solid", "1")) {
                 GetPhysics().SetContents(0);
@@ -3992,6 +3997,8 @@ public class Mover {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             physicsObj.SetSelf(this);
             physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
             physicsObj.SetOrigin(GetPhysics().GetOrigin());
@@ -4126,6 +4133,8 @@ public class Mover {
 //        }
         @Override
         public void Spawn() {
+            super.Spawn();
+
             float[] speed = {0};
             float[] freq = {0};
             float[] length = {0};

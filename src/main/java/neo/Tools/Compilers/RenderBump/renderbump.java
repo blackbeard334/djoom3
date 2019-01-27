@@ -16,6 +16,7 @@ import static neo.Renderer.qgl.qglBegin;
 import static neo.Renderer.qgl.qglClear;
 import static neo.Renderer.qgl.qglClearColor;
 import static neo.Renderer.qgl.qglColor3f;
+import static neo.Renderer.qgl.qglColor3ubv;
 import static neo.Renderer.qgl.qglColor3usv;
 import static neo.Renderer.qgl.qglCullFace;
 import static neo.Renderer.qgl.qglDepthFunc;
@@ -1557,7 +1558,7 @@ public class renderbump {
                                     float[] a;
 
                                     v = mesh.indexes[j + k];
-                                    qglColor3usv(mesh.verts[v].color);
+                                    qglColor3ubv(mesh.verts[v].color);
                                     a = mesh.verts[v].xyz.ToFloatPtr();
                                     qglVertex3f(a[0] + xOff, a[2] + yOff, a[1]);
                                 }

@@ -1018,12 +1018,24 @@ public class tr_main {
     public static void R_SortDrawSurfs() {
         // sort the drawsurfs by sort type, then orientation, then shader
 //        qsort(tr.viewDef.drawSurfs, tr.viewDef.numDrawSurfs, sizeof(tr.viewDef.drawSurfs[0]), R_QsortSurfaces);
-       if (tr.viewDef.drawSurfs != null) {
-           Arrays.sort(tr.viewDef.drawSurfs, 0, tr.viewDef.numDrawSurfs, new R_QsortSurfaces());
-//           final int to = 1;
-//           tr.viewDef.drawSurfs = Arrays.copyOfRange(tr.viewDef.drawSurfs, 0, to);
-//           tr.viewDef.numDrawSurfs = to;
-//           tr.viewDef.drawSurfs[0].geo.indexes = null;
+        if (tr.viewDef.drawSurfs != null) {
+            Arrays.sort(tr.viewDef.drawSurfs, 0, tr.viewDef.numDrawSurfs, new R_QsortSurfaces());
+//            int bla = 0;
+//            for (int i = 0; i < tr.viewDef.numDrawSurfs; i++) {
+//                Material.shaderStage_t[] stages = tr.viewDef.drawSurfs[i].material.stages;
+//                if (stages != null && stages[0].texture.image[0] != null &&
+//                        stages[0].texture.image[0].imgName.toString().contains("env/cloudy")) {
+//                    tr.viewDef.drawSurfs[bla++] = tr.viewDef.drawSurfs[i];
+//                    System.out.println(stages[0].texture.image[0].imgName);
+//                }
+//            }
+//            tr.viewDef.numDrawSurfs = bla;
+//
+//            final int from = 61;
+//            final int to = Math.min(tr.viewDef.numDrawSurfs - from, from + 1);
+//            tr.viewDef.drawSurfs = Arrays.copyOfRange(tr.viewDef.drawSurfs, from, to);
+//            tr.viewDef.numDrawSurfs = to - from;
+//           tr.viewDef.drasawwwwwwwwwwwwwwwwwwwwwwwwwwwwaw a    wSurfs[0].geo.indexes = null;
         }
     }
 

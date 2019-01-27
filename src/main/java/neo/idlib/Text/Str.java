@@ -310,6 +310,13 @@ public class Str {
         public idStr oSet(final String text) {
             int l;
 
+            if (text == null) {
+                // safe behaviour if NULL
+                EnsureAlloced(1, false);
+                len = 0;
+                return this;
+            }
+
             l = text.length();
             EnsureAlloced(l + 1, false);
             data = text;
@@ -2475,6 +2482,10 @@ public class Str {
             if (amount > alloced) {
                 ReAllocate(amount, keepold);
             }
+        }
+
+        public String substring(int beginIndex) {
+            return data.substring(beginIndex);
         }
 
         @Override
