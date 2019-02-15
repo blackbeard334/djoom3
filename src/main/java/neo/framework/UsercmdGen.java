@@ -362,7 +362,7 @@ public class UsercmdGen {
         public idUsercmdGenLocal.MouseScrollCallback mouseScrollCallback;
         public idUsercmdGenLocal.MouseButtonCallback mouseButtonCallback;
     };
-//    
+//
     static final int KEY_MOVESPEED = 127;
 
     public enum usercmdButton_t {
@@ -1249,7 +1249,7 @@ public class UsercmdGen {
                 //                        //-+
                 // Study each of the buffer elements and process them.
                 //
-                if (Sys_ReturnKeyboardInputEvent(ch, action, scancode) != 0) {
+                if (Sys_ReturnKeyboardInputEvent(ch, action, key, scancode, mods) != 0) {
                     Key(ch[0], action != GLFW_RELEASE);
                 }
 

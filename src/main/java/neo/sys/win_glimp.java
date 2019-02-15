@@ -42,6 +42,7 @@ import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
@@ -173,6 +174,7 @@ public class win_glimp {
             GL.createCapabilities();
 //                win32.cdsFullscreen = true;
             glfwShowWindow(window);
+            glfwSetInputMode(window, GLFW.GLFW_LOCK_KEY_MODS, GLFW_TRUE);
             glfwSetKeyCallback(window, usercmdGen.keyboardCallback);
             glfwSetCursorPosCallback(window, usercmdGen.mouseCursorCallback);
             glfwSetScrollCallback(window, usercmdGen.mouseScrollCallback);
