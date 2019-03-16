@@ -2018,8 +2018,8 @@ public class RenderSystem_init {
             {
                 int[] vidWidth = {0}, vidHeight = {0};
                 R_GetModeInfo(vidWidth, vidHeight, r_mode.GetInteger());
-                glConfig.vidWidth = vidWidth[0];//1024;
-                glConfig.vidHeight = vidHeight[0];//768;
+                glConfig.vidWidth = 1024;//vidWidth[0];HACKME::0
+                glConfig.vidHeight = 768;//vidHeight[0];
             }
 
             parms.width = glConfig.vidWidth;

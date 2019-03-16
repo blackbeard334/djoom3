@@ -9,7 +9,6 @@ import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
@@ -1284,8 +1283,8 @@ public class UsercmdGen {
 
                 if (!Inhibited()) {
                     if (action >= UB_IMPULSE0.ordinal() && action <= UB_IMPULSE61.ordinal()) {
-                        cmd.impulse = (byte) (action - UB_IMPULSE0.ordinal());
-                        cmd.flags ^= UCF_IMPULSE_SEQUENCE;
+                        impulse = cmd.impulse = (byte) (action - UB_IMPULSE0.ordinal());
+                        flags = cmd.flags ^= UCF_IMPULSE_SEQUENCE;
                     }
                 }
             } else {

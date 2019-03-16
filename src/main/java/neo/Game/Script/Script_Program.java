@@ -1098,7 +1098,7 @@ public class Script_Program {
         }
 
         idVec3 getVectorPtr() {
-            vectorPtr.oSet(0, primitive.getFloat(0));
+            vectorPtr.oSet(0, primitive.getFloat(0));//TODO why are we only setting the first argument??
             return vectorPtr;
         }
 

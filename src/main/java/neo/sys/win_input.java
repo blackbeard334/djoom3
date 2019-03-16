@@ -65,6 +65,7 @@ import static neo.sys.sys_public.sysEventType_t.SE_CHAR;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.win_local.win32;
 import static neo.sys.win_main.Sys_QueEvent;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 /**
@@ -765,7 +766,7 @@ static char[] keyScanTable = s_scantokey;
 				Sys_QueEvent(GetTickCount(), SE_KEY, ch[0], action, 0, null);//TODO:enable this
 				break;
 			default:// nabbed from MainWndProc.
-                if (action == 0 && ch[0] > 31 && ch[0] != '~' && ch[0] != '`' && ch[0] < 128)
+                if (action == GLFW_RELEASE && ch[0] > 31 && ch[0] != '~' && ch[0] != '`' && ch[0] < 128)
                     Sys_QueEvent(System.currentTimeMillis(), SE_CHAR, ch[0], action, 0, null);
                 else
                     Sys_QueEvent(System.currentTimeMillis(), SE_KEY, ch[0], action, 0, null);

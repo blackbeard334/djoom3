@@ -11,3 +11,15 @@ R_SortDrawSurfs() //ローグタウン
 
 
 strstr(tr.viewDef->drawSurfs[4]->material->stages[0].texture.image[0].imgName.data, "env/cloudy")
+
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+idPlayer::EvaluateControls()
+    idPlayer::Think()
+        idGameLocal::RunFrame()
+            idUsercmdGenLocal::GetDirectUsercmd()
+            
+
+            
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+"idMoveablePDAItem_pda_marscity_security_goggles_pda_377"
