@@ -4467,10 +4467,10 @@ public class Entity {
             // start impact sound based on material type
             key = va("snd_%s", materialType);
             sound = spawnArgs.GetString(key);
-            if (sound.isEmpty()) {// == '\0' ) {
+            if (sound == null || sound.isEmpty()) {// == '\0' ) {
                 sound = def.dict.GetString(key);
             }
-            if (!sound.isEmpty()) {// != '\0' ) {
+            if (sound != null && !sound.isEmpty()) {// != '\0' ) {
                 StartSoundShader(declManager.FindSound(sound), SND_CHANNEL_BODY, 0, false, null);
             }
 
@@ -4478,11 +4478,11 @@ public class Entity {
                 // place a wound overlay on the model
                 key = va("mtr_wound_%s", materialType);
                 decal = spawnArgs.RandomPrefix(key, gameLocal.random);
-                if (decal.isEmpty()) {// == '\0' ) {
+                if (decal == null || decal.isEmpty()) {// == '\0' ) {
                     decal = def.dict.RandomPrefix(key, gameLocal.random);
                 }
-                if (!decal.isEmpty()) {// != '\0' ) {
-                    idVec3 dir = velocity;
+                if (decal != null && !decal.isEmpty()) {// != '\0' ) {
+                    idVec3 dir = new idVec3(velocity);
                     dir.Normalize();
                     ProjectOverlay(collision.c.point, dir, 20.0f, decal);
                 }
@@ -4511,20 +4511,20 @@ public class Entity {
             // start impact sound based on material type
             key = va("snd_%s", materialType);
             sound = spawnArgs.GetString(key);
-            if (sound.isEmpty()) {// == '\0' ) {
+            if (sound == null || sound.isEmpty()) {// == '\0' ) {
                 sound = def.dict.GetString(key);
             }
-            if (!sound.isEmpty()) {// != '\0' ) {
+            if (sound != null && !sound.isEmpty()) {// != '\0' ) {
                 StartSoundShader(declManager.FindSound(sound), SND_CHANNEL_BODY, 0, false, null);
             }
 
             // blood splats are thrown onto nearby surfaces
             key = va("mtr_splat_%s", materialType);
             splat = spawnArgs.RandomPrefix(key, gameLocal.random);
-            if (splat.isEmpty()) {// == '\0' ) {
+            if (splat == null || splat.isEmpty()) {// == '\0' ) {
                 splat = def.dict.RandomPrefix(key, gameLocal.random);
             }
-            if (!splat.isEmpty()) {// 1= '\0' ) {
+            if (splat != null && !splat.isEmpty()) {// 1= '\0' ) {
                 gameLocal.BloodSplat(origin, dir, 64.0f, splat);
             }
 
@@ -4533,10 +4533,10 @@ public class Entity {
                 // place a wound overlay on the model
                 key = va("mtr_wound_%s", materialType);
                 decal = spawnArgs.RandomPrefix(key, gameLocal.random);
-                if (decal.isEmpty()) {// == '\0' ) {
+                if (decal == null || decal.isEmpty()) {// == '\0' ) {
                     decal = def.dict.RandomPrefix(key, gameLocal.random);
                 }
-                if (!decal.isEmpty()) {// == '\0' ) {
+                if (decal != null && !decal.isEmpty()) {// == '\0' ) {
                     ProjectOverlay(origin, dir, 20.0f, decal);
                 }
             }
@@ -4544,17 +4544,17 @@ public class Entity {
             // a blood spurting wound is added
             key = va("smoke_wound_%s", materialType);
             bleed = spawnArgs.GetString(key);
-            if (bleed.isEmpty()) {// == '\0' ) {
+            if (bleed == null || bleed.isEmpty()) {// == '\0' ) {
                 bleed = def.dict.GetString(key);
             }
-            if (!bleed.isEmpty()) {// == '\0' ) {
+            if (bleed != null && !bleed.isEmpty()) {// == '\0' ) {
                 de = new damageEffect_s();
                 de.next = this.damageEffects;
                 this.damageEffects = de;
 
                 de.jointNum = jointNum;
-                de.localOrigin = localOrigin;
-                de.localNormal = localNormal;
+                de.localOrigin = new idVec3(localOrigin);
+                de.localNormal = new idVec3(localNormal);
                 de.type = (idDeclParticle) declManager.FindType(DECL_PARTICLE, bleed);
                 de.time = gameLocal.time;
             }
@@ -4681,11 +4681,11 @@ public class Entity {
          modifies the orientation of the joint based on the transform type
          ================
          */
-        private static void Event_SetJointAngle(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<jointModTransform_t> transform_type, final idEventArg<idAngles> angles) {
+        private static void Event_SetJointAngle(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<Integer>/*jointModTransform_t*/ transform_type, final idEventArg<idVec3> angles) {
             idMat3 mat;
 
             mat = angles.value.ToMat3();
-            e.animator.SetJointAxis(jointnum.value, transform_type.value, mat);
+            e.animator.SetJointAxis(jointnum.value, jointModTransform_t.values()[transform_type.value], mat);
         }
 
         /*
