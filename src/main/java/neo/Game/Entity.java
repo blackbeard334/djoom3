@@ -3129,13 +3129,13 @@ public class Entity {
 
             idStr str = kv.GetKey().Right(kv.GetKey().Length() - curveTag.length());
             if (str.Icmp("CatmullRomSpline") == 0) {
-                spline = new idCurve_CatmullRomSpline<>();
+                spline = new idCurve_CatmullRomSpline<>(idVec3.class);
             } else if (str.Icmp("nubs") == 0) {
-                spline = new idCurve_NonUniformBSpline<>();
+                spline = new idCurve_NonUniformBSpline<>(idVec3.class);
             } else if (str.Icmp("nurbs") == 0) {
-                spline = new idCurve_NURBS<>();
+                spline = new idCurve_NURBS<>(idVec3.class);
             } else {
-                spline = new idCurve_BSpline<>();
+                spline = new idCurve_BSpline<>(idVec3.class);
             }
 
             spline.SetBoundaryType(idCurve_Spline.BT_CLAMPED);
@@ -4806,11 +4806,11 @@ public class Entity {
      */
     public static idUserInterface AddRenderGui(final String name, final idDict args) {
         idUserInterface gui;
-        
+
         final idKeyValue kv = args.MatchPrefix("gui_parm", null);
         gui = uiManager.FindGui(name, true, (kv != null));
         UpdateGuiParms(gui, args);
-        
+
         return gui;
     }
 

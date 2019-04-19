@@ -3,6 +3,8 @@ package neo.idlib.math;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
+
+import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Angles.idAngles;
@@ -77,21 +79,53 @@ public class Vector {
         return new idVec6(vec6_infinity.p);
     }
 
-    public interface idVec<type> {
+    public interface idVec<type extends Vector.idVec> {
         //reflection was too slow. 
         //never thought I would say this, but thank God for type erasure.
 
-        public float oGet(final int index);
+        default float oGet(final int index) {
+            throw new TempDump.TODO_Exception();
+        }
 
-        public float oSet(final int index, final float value);
+        default type oSet(final type a) {
+            throw new TempDump.TODO_Exception();
+        }
 
-        public type oPlus(final type a);
+        default float oSet(final int index, final float value) {
+            throw new TempDump.TODO_Exception();
+        }
 
-        public type oMinus(final type a);
+        default type oPlus(final type a) {
+            throw new TempDump.TODO_Exception();
+        }
 
-        public float oMultiply(final type a);
+        default type oMinus(final type a) {
+            throw new TempDump.TODO_Exception();
+        }
 
-        public type oDivide(final float a);
+        default float oMultiply(final type a) {
+            throw new TempDump.TODO_Exception();
+        }
+
+        default type oMultiply(final float a) {
+            throw new TempDump.TODO_Exception();
+        }
+
+        default type oDivide(final float a) {
+            throw new TempDump.TODO_Exception();
+        }
+
+        default type oPluSet(final type a) {
+            throw new TempDump.TODO_Exception();
+        }
+
+        default int GetDimension() {
+            throw new TempDump.TODO_Exception();
+        }
+
+        default void Zero() {
+            throw new TempDump.TODO_Exception();
+        }
 
     }
 
@@ -102,7 +136,7 @@ public class Vector {
     //===============================================================
     public static class idVec2 implements idVec<idVec2>, SERiAL {
 
-        public static final transient int SIZE = 2 * Float.SIZE;
+        public static final transient int SIZE  = 2 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -126,11 +160,12 @@ public class Vector {
             this.y = y;
         }
 
+        @Override
         public void Zero() {
             x = y = 0.0f;
         }
 
-//public	float			operator[]( int index ) const;
+        //public	float			operator[]( int index ) const;
         @Override
         public float oSet(final int index, final float value) {
             if (index == 1) {
@@ -158,13 +193,14 @@ public class Vector {
         }
 //public	idVec2			operator-() const;
 
-//public	float			operator*( const idVec2 &a ) const;
+        //public	float			operator*( const idVec2 &a ) const;
         @Override
         public float oMultiply(final idVec2 a) {
             return this.x * a.x + this.y * a.y;
         }
 
-//public	idVec2			operator*( const float a ) const;
+        //public	idVec2			operator*( const float a ) const;
+        @Override
         public idVec2 oMultiply(final float a) {
             return new idVec2(this.x * a, this.y * a);
         }
@@ -176,26 +212,27 @@ public class Vector {
             return new idVec2(x * inva, y * inva);
         }
 
-//public	idVec2			operator+( const idVec2 &a ) const;
+        //public	idVec2			operator+( const idVec2 &a ) const;
         @Override
         public idVec2 oPlus(final idVec2 a) {
             return new idVec2(this.x + a.x, this.y + a.y);
         }
 
-//public	idVec2			operator-( const idVec2 &a ) const;
+        //public	idVec2			operator-( const idVec2 &a ) const;
         @Override
         public idVec2 oMinus(final idVec2 a) {
             return new idVec2(this.x - a.x, this.y - a.y);
         }
 
-//public	idVec2 &		operator+=( const idVec2 &a );
+        //public	idVec2 &		operator+=( const idVec2 &a );
+        @Override
         public idVec2 oPluSet(final idVec2 a) {
             this.x += a.x;
             this.y += a.y;
             return this;
         }
 
-//public	idVec2 &		operator-=( const idVec2 &a );
+        //public	idVec2 &		operator-=( const idVec2 &a );
         public idVec2 oMinSet(final idVec2 a) {
             this.x -= a.x;
             this.y -= a.y;
@@ -211,7 +248,8 @@ public class Vector {
             return this;
         }
 
-//public	friend idVec2	operator*( const float a, const idVec2 b );
+        //public	friend idVec2	operator*( const float a, const idVec2 b );
+        @Override
         public idVec2 oSet(final idVec2 a) {
             this.x = a.x;
             this.y = a.y;
@@ -313,6 +351,7 @@ public class Vector {
             y = (float) (int) y;
         }
 
+        @Override
         public int GetDimension() {
             return 2;
         }
@@ -382,7 +421,7 @@ public class Vector {
     //===============================================================
     public static class idVec3 implements idVec<idVec3>, SERiAL {
 
-        public static final transient int SIZE = 3 * Float.SIZE;
+        public static final transient int SIZE  = 3 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -420,18 +459,20 @@ public class Vector {
             this.z = z;
         }
 
+        @Override
         public void Zero() {
             x = y = z = 0.0f;
         }
 
-//public	float			operator[]( final  int index ) final ;
+        //public	float			operator[]( final  int index ) final ;
 //public	float &			operator[]( final  int index );
 //public	idVec3			operator-() final ;
         public idVec3 oNegative() {
             return new idVec3(-x, -y, -z);
         }
 
-//public	idVec3 &		operator=( final  idVec3 &a );		// required because of a msvc 6 & 7 bug
+        //public	idVec3 &		operator=( final  idVec3 &a );		// required because of a msvc 6 & 7 bug
+        @Override
         public idVec3 oSet(final idVec3 a) {
             this.x = a.x;
             this.y = a.y;
@@ -445,13 +486,14 @@ public class Vector {
             return this;
         }
 
-//public	float			operator*( final  idVec3 &a ) final ;
+        //public	float			operator*( final  idVec3 &a ) final ;
         @Override
         public float oMultiply(final idVec3 a) {
             return a.x * this.x + a.y * this.y + a.z * this.z;
         }
 
-//public	idVec3			operator*( final  float a ) final ;
+        //public	idVec3			operator*( final  float a ) final ;
+        @Override
         public idVec3 oMultiply(final float a) {
             return new idVec3(this.x * a, this.y * a, this.z * a);
         }
@@ -471,26 +513,27 @@ public class Vector {
             return a.oMultiply(this);
         }
 
-//public	idVec3			operator/( final  float a ) final ;
+        //public	idVec3			operator/( final  float a ) final ;
         @Override
         public idVec3 oDivide(final float a) {
             float inva = 1.0f / a;
             return new idVec3(x * inva, y * inva, z * inva);
         }
 
-//public	idVec3			operator+( final  idVec3 &a ) final ;F
+        //public	idVec3			operator+( final  idVec3 &a ) final ;F
         @Override
         public idVec3 oPlus(final idVec3 a) {
             return new idVec3(this.x + a.x, this.y + a.y, this.z + a.z);
         }
 
-//public	idVec3			operator-( final  idVec3 &a ) final ;
+        //public	idVec3			operator-( final  idVec3 &a ) final ;
         @Override
         public idVec3 oMinus(final idVec3 a) {
             return new idVec3(this.x - a.x, this.y - a.y, this.z - a.z);
         }
 
-//public	idVec3 &		operator+=( final  idVec3 &a );
+        //public	idVec3 &		operator+=( final  idVec3 &a );
+        @Override
         public idVec3 oPluSet(final idVec3 a) {
             this.x += a.x;
             this.y += a.y;
@@ -498,7 +541,7 @@ public class Vector {
             return this;
         }
 
-//public	idVec3 &		operator-=( final  idVec3 &a );
+        //public	idVec3 &		operator-=( final  idVec3 &a );
         public idVec3 oMinSet(final idVec3 a) {
             this.x -= a.x;
             this.y -= a.y;
@@ -506,7 +549,7 @@ public class Vector {
             return this;
         }
 
-//public	idVec3 &		operator/=( final  idVec3 &a );
+        //public	idVec3 &		operator/=( final  idVec3 &a );
         public idVec3 oDivSet(final float a) {
             this.x /= a;
             this.y /= a;
@@ -514,7 +557,7 @@ public class Vector {
             return this;
         }
 
-//public	idVec3 &		operator*=( final  float a );
+        //public	idVec3 &		operator*=( final  float a );
         public idVec3 oMulSet(final float a) {
             this.x *= a;
             this.y *= a;
@@ -532,7 +575,7 @@ public class Vector {
             return this;
         }
 
-//public	friend idVec3	operator*( final  float a, final  idVec3 b );
+        //public	friend idVec3	operator*( final  float a, final  idVec3 b );
         public static idVec3 oMultiply(final float a, final idVec3 b) {
             return new idVec3(b.x * a, b.y * a, b.z * a);
         }
@@ -559,7 +602,7 @@ public class Vector {
 //public	boolean			operator==(	final  idVec3 &a ) final ;						// exact compare, no epsilon
 //public	boolean			operator!=(	final  idVec3 &a ) final ;						// exact compare, no epsilon
 
-//private idVec3  multiply(float a){
+        //private idVec3  multiply(float a){
 //    return new idVec3( this.x * a, this.y * a, this.z * a );
 //}
         public idVec3 oPlus(final float a) {
@@ -756,6 +799,7 @@ public class Vector {
             z = (int) z;
         }
 
+        @Override
         public int GetDimension() {
             return 3;
         }
@@ -1200,7 +1244,7 @@ public class Vector {
     //===============================================================
     public static class idVec4 implements idVec<idVec4>, SERiAL {
 
-        public static final transient int SIZE = 4 * Float.SIZE;
+        public static final transient int SIZE  = 4 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -1235,11 +1279,12 @@ public class Vector {
             this.w = w;
         }
 
+        @Override
         public void Zero() {
             x = y = z = w = 0.0f;
         }
 
-//public	float			operator[]( final  int index ) final ;
+        //public	float			operator[]( final  int index ) final ;
 //public	float &			operator[]( final  int index );
 //public	idVec4			operator-() final ;
         @Override
@@ -1247,6 +1292,7 @@ public class Vector {
             return x * a.x + y * a.y + z * a.z + w * a.w;
         }
 
+        @Override
         public idVec4 oMultiply(final float a) {
             return new idVec4(this.x * a, this.y * a, this.z * a, this.w * a);
         }
@@ -1270,7 +1316,7 @@ public class Vector {
             return new idVec4(-this.x, -this.y, -this.z, -this.w);
         }
 
-//public	idVec4			operator-( final  idVec4 &a ) final ;
+        //public	idVec4			operator-( final  idVec4 &a ) final ;
         public void oMinSet(final int i, final float value) {//TODO:rename you lazy ass          
             switch (i) {
                 default:
@@ -1306,6 +1352,7 @@ public class Vector {
         }
 //public	idVec4 &		operator+=( final  idVec4 &a );
 
+        @Override
         public idVec4 oPluSet(final idVec4 a) {
             this.x += a.x;
             this.y += a.y;
@@ -1314,7 +1361,7 @@ public class Vector {
             return this;
         }
 
-//public	idVec4 &		operator-=( final  idVec4 &a );
+        //public	idVec4 &		operator-=( final  idVec4 &a );
 //public	idVec4 &		operator/=( final  idVec4 &a );
 //public	idVec4 &		operator/=( final  float a );
 //public	idVec4 &		operator*=( final  float a );
@@ -1378,6 +1425,7 @@ public class Vector {
             return invLength * sqrLength;
         }
 
+        @Override
         public final int GetDimension() {
             return 4;
         }
@@ -1443,6 +1491,7 @@ public class Vector {
             }
         }
 
+        @Override
         public idVec4 oSet(final idVec4 a) {
             this.x = a.x;
             this.y = a.y;
@@ -1551,7 +1600,7 @@ public class Vector {
     //===============================================================
     public static class idVec5 implements idVec<idVec5>, SERiAL {
 
-        public static final transient int SIZE = 5 * Float.SIZE;
+        public static final transient int SIZE  = 5 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -1596,7 +1645,7 @@ public class Vector {
             this.t = a.t;
         }
 
-//public	float			operator[]( int index ) final ;
+        //public	float			operator[]( int index ) final ;
         @Override
         public float oGet(final int i) {//TODO:rename you lazy sod          
             switch (i) {
@@ -1629,6 +1678,7 @@ public class Vector {
             }
         }
 
+        @Override
         public idVec5 oSet(final idVec5 a) {
             this.x = a.x;
             this.y = a.y;
@@ -1647,6 +1697,7 @@ public class Vector {
 //public	float &			operator[]( int index );
 //public	idVec5 &		operator=( final  idVec3 &a );
 
+        @Override
         public final int GetDimension() {
             return 5;
         }
@@ -1656,7 +1707,7 @@ public class Vector {
             return new idVec3(x, y, z);
         }
 
-//public	idVec3 &		ToVec3( void );
+        //public	idVec3 &		ToVec3( void );
         public final float[] ToFloatPtr() {
             return new float[]{x, y, z};//TODO:array!?
         }
@@ -1742,7 +1793,7 @@ public class Vector {
     //===============================================================
     public static class idVec6 implements idVec<idVec6>, SERiAL {
 
-        public static final transient int SIZE = 6 * Float.SIZE;
+        public static final transient int SIZE  = 6 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float p[] = new float[6];
@@ -1753,7 +1804,9 @@ public class Vector {
         //
 
         private static int DBG_idVec6 = 0;
-        public idVec6() {    DBG_idVec6++;
+
+        public idVec6() {
+            DBG_idVec6++;
             int a = 0;
         }
 
@@ -1784,21 +1837,23 @@ public class Vector {
             p[5] = a6;
         }
 
+        @Override
         public void Zero() {
             p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = 0.0f;
         }
 
-//public 	float			operator[]( final  int index ) final ;
+        //public 	float			operator[]( final  int index ) final ;
 //public 	float &			operator[]( final  int index );
         public idVec6 oNegative() {
             return new idVec6(-p[0], -p[1], -p[2], -p[3], -p[4], -p[5]);
         }
 
+        @Override
         public idVec6 oMultiply(final float a) {
             return new idVec6(p[0] * a, p[1] * a, p[2] * a, p[3] * a, p[4] * a, p[5] * a);
         }
 
-//public 	idVec6			operator/( final  float a ) final ;
+        //public 	idVec6			operator/( final  float a ) final ;
         @Override
         public float oMultiply(final idVec6 a) {
             return p[0] * a.p[0] + p[1] * a.p[1] + p[2] * a.p[2] + p[3] * a.p[3] + p[4] * a.p[4] + p[5] * a.p[5];
@@ -1812,6 +1867,7 @@ public class Vector {
 //public 	idVec6 &		operator*=( final  float a );
 //public 	idVec6 &		operator/=( final  float a );
 
+        @Override
         public idVec6 oPluSet(final idVec6 a) {
             this.p[0] += a.p[0];
             this.p[1] += a.p[1];
@@ -1896,6 +1952,7 @@ public class Vector {
             return invLength * sqrLength;
         }
 
+        @Override
         public final int GetDimension() {
             return 6;
         }
@@ -1921,6 +1978,7 @@ public class Vector {
             return idStr.FloatArrayToString(ToFloatPtr(), GetDimension(), precision);
         }
 
+        @Override
         public idVec6 oSet(final idVec6 a) {
             this.p[0] = a.p[0];
             this.p[1] = a.p[1];
@@ -2046,7 +2104,7 @@ public class Vector {
 
         private static float[] temp    = new float[VECX_MAX_TEMP + 4];    // used to store intermediate results
         private static float[] tempPtr = temp;                            // pointer to 16 byte aligned temporary memory
-        private static int tempIndex;                                     // index into memory pool, wraps around
+        private static int     tempIndex;                                     // index into memory pool, wraps around
         //
         //
 
@@ -2094,7 +2152,7 @@ public class Vector {
         }
 //public					~idVecX( void );
 
-//public	float			operator[]( const int index ) const;
+        //public	float			operator[]( const int index ) const;
         public float oGet(final int index) {
             return p[index];
         }
@@ -2103,7 +2161,7 @@ public class Vector {
             return p[index] = value;
         }
 
-//public	float &			operator[]( const int index );
+        //public	float &			operator[]( const int index );
 //public	idVecX			operator-() const;
         public idVecX oNegative() {
             int i;
@@ -2116,7 +2174,7 @@ public class Vector {
             return m;
         }
 
-//public	idVecX &		operator=( const idVecX &a );
+        //public	idVecX &		operator=( const idVecX &a );
         public idVecX oSet(final idVecX a) {
             SetSize(a.size);
 //#ifdef VECX_SIMD
@@ -2423,7 +2481,7 @@ public class Vector {
             return size;
         }
 
-        /**@deprecated readonly */
+        /** @deprecated readonly */
         @Deprecated
         public idVec3 SubVec3(int index) {
             assert (index >= 0 && index * 3 + 3 <= size);
@@ -2432,7 +2490,7 @@ public class Vector {
         }
 //public	idVec3 &		SubVec3( int index );
 
-        /**@deprecated readonly */
+        /** @deprecated readonly */
         @Deprecated
         public idVec6 SubVec6(int index) {
             assert (index >= 0 && index * 6 + 6 <= size);
@@ -2528,7 +2586,7 @@ public class Vector {
             this.phi = phi;
         }
 
-//public	float			operator[]( const int index ) const;
+        //public	float			operator[]( const int index ) const;
 //public	float &			operator[]( const int index );
 //public	idPolar3		operator-() const;
 //public	idPolar3 &		operator=( const idPolar3 &a );

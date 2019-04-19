@@ -346,21 +346,21 @@ public class Player {
 
     public static class idItemInfo {
 
-        idStr name;
-        idStr icon;
+        idStr name = new idStr();
+        idStr icon = new idStr();
     }
 
     public static class idObjectiveInfo {
 
-        idStr title;
-        idStr text;
-        idStr screenshot;
+        idStr title = new idStr();
+        idStr text = new idStr();
+        idStr screenshot = new idStr();
     }
 
     public static class idLevelTriggerInfo {
 
-        idStr levelName;
-        idStr triggerName;
+        idStr levelName = new idStr();
+        idStr triggerName = new idStr();
     }
 
     ;

@@ -674,7 +674,7 @@ public class MsgChannel {
             tmp.WriteLong(reliableReceive.GetLast());
 
             // write reliable messages
-            reliableSend.CopyToBuffer(Arrays.copyOfRange(tmp.GetData().array(), tmp.GetSize(), tmp.GetData().capacity() - 1));
+            reliableSend.CopyToBuffer(Arrays.copyOfRange(tmp.GetData().array(), tmp.GetSize(), tmp.GetData().capacity()));
             tmp.SetSize(tmp.GetSize() + reliableSend.GetTotalSize());
             tmp.WriteShort(0);
 
@@ -725,7 +725,7 @@ public class MsgChannel {
                 }
                 reliableSequence = out.ReadLong();
                 if (reliableSequence == reliableReceive.GetLast() + 1) {
-                    reliableReceive.Add(Arrays.copyOfRange(out.GetData().array(), out.GetReadCount(), out.GetData().capacity() - 1), reliableMessageSize[0]);
+                    reliableReceive.Add(Arrays.copyOfRange(out.GetData().array(), out.GetReadCount(), out.GetData().capacity()), reliableMessageSize[0]);
                 }
                 out.ReadData(null, reliableMessageSize[0]);
                 reliableMessageSize[0] = out.ReadShort();
