@@ -3,9 +3,6 @@ package neo.idlib.math;
 import java.nio.ByteBuffer;
 import neo.TempDump;
 import neo.TempDump.SERiAL;
-import static neo.TempDump.reflects._Minus;
-import static neo.TempDump.reflects._Multiply;
-import static neo.TempDump.reflects._Plus;
 import neo.idlib.math.Extrapolate.idExtrapolate;
 import neo.idlib.math.Math_h.idMath;
 
@@ -264,6 +261,46 @@ public class Interpolate {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        private type _Multiply(final type t, final float f) {
+            if (t instanceof Vector.idVec3) {
+                return (type) ((Vector.idVec3) t).oMultiply(f);
+            } else if (t instanceof Vector.idVec4) {
+                return (type) ((Vector.idVec4) t).oMultiply(f);
+            } else if (t instanceof Angles.idAngles) {
+                return (type) ((Angles.idAngles) t).oMultiply(f);
+            } else if (t instanceof Double) {
+                return (type) Double.valueOf(f * ((Double) t));
+            }
+
+            return (type) Float.valueOf(f * ((Float) t));
+        }
+
+        private type _Plus(final type t1, final type t2) {
+            if (t1 instanceof Vector.idVec3) {
+                return (type) ((Vector.idVec3) t1).oPlus((Vector.idVec3) t2);
+            } else if (t1 instanceof Vector.idVec4) {
+                return (type) ((Vector.idVec4) t1).oPlus((Vector.idVec4) t2);
+            } else if (t1 instanceof Angles.idAngles) {
+                return (type) ((Angles.idAngles) t1).oPlus((Angles.idAngles) t2);
+            } else if (t1 instanceof Double) {
+                return (type) Double.valueOf((Double) t1 + (Double) t2);
+            }
+
+            return (type) Float.valueOf((Float) t1 + (Float) t2);
+        }
+
+        private type _Minus(final type t1, final type t2) {
+            if (t1 instanceof Vector.idVec3) {
+                return (type) ((Vector.idVec3) t1).oMinus((Vector.idVec3) t2);
+            } else if (t1 instanceof Vector.idVec4) {
+                return (type) ((Vector.idVec4) t1).oMinus((Vector.idVec4) t2);
+            } else if (t1 instanceof Angles.idAngles) {
+                return (type) ((Angles.idAngles) t1).oMinus((Angles.idAngles) t2);
+            }
+
+            return (type) Float.valueOf((Float) t1 - (Float) t2);
+        }
     };
 
     /*
@@ -400,6 +437,46 @@ public class Interpolate {
                     extrapolate.Init(startTime + accelTime + linearTime, decelTime, (type) _Plus(endValue, _Minus(extrapolate.GetSpeed(), (decelTime * 0.001f * idMath.SQRT_1OVER2))), extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_DECELSINE);
                 }
             }
+        }
+
+        private type _Multiply(final type t, final float f) {
+            if (t instanceof Vector.idVec3) {
+                return (type) ((Vector.idVec3) t).oMultiply(f);
+            } else if (t instanceof Vector.idVec4) {
+                return (type) ((Vector.idVec4) t).oMultiply(f);
+            } else if (t instanceof Angles.idAngles) {
+                return (type) ((Angles.idAngles) t).oMultiply(f);
+            } else if (t instanceof Double) {
+                return (type) Double.valueOf(f * ((Double) t));
+            }
+
+            return (type) Float.valueOf(f * ((Float) t));
+        }
+
+        private type _Plus(final type t1, final Object t2) {
+            if (t1 instanceof Vector.idVec3) {
+                return (type) ((Vector.idVec3) t1).oPlus((Vector.idVec3) t2);
+            } else if (t1 instanceof Vector.idVec4) {
+                return (type) ((Vector.idVec4) t1).oPlus((Vector.idVec4) t2);
+            } else if (t1 instanceof Angles.idAngles) {
+                return (type) ((Angles.idAngles) t1).oPlus((Angles.idAngles) t2);
+            } else if (t1 instanceof Double) {
+                return (type) Double.valueOf((Double) t1 + (Double) t2);
+            }
+
+            return (type) Float.valueOf((Float) t1 + (Float) t2);
+        }
+
+        private type _Minus(final type t1, final Object t2) {
+            if (t1 instanceof Vector.idVec3) {
+                return (type) ((Vector.idVec3) t1).oMinus((Vector.idVec3) t2);
+            } else if (t1 instanceof Vector.idVec4) {
+                return (type) ((Vector.idVec4) t1).oMinus((Vector.idVec4) t2);
+            } else if (t1 instanceof Angles.idAngles) {
+                return (type) ((Angles.idAngles) t1).oMinus((Angles.idAngles) t2);
+            }
+
+            return (type) Float.valueOf((Float) t1 - (Float) t2);
         }
     };
 }

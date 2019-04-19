@@ -245,9 +245,11 @@ public class Extrapolate {
                 return (type) ((idVec4) t).oMultiply(f);
             } else if (t instanceof idAngles) {
                 return (type) ((idAngles) t).oMultiply(f);
+            } else if (t instanceof Double) {
+                return (type) Double.valueOf(f * ((Double) t));
             }
 
-            return (type) Float.valueOf(f*((Float)t));
+            return (type) Float.valueOf(f * ((Float) t));
         }
 
         private type _Plus(final type t1, final type t2) {
@@ -257,6 +259,8 @@ public class Extrapolate {
                 return (type) ((idVec4) t1).oPlus((idVec4) t2);
             } else if (t1 instanceof idAngles) {
                 return (type) ((idAngles) t1).oPlus((idAngles) t2);
+            } else if (t1 instanceof Double) {
+                return (type) Double.valueOf((Double) t1 + (Double) t2);
             }
 
             return (type) Float.valueOf((Float) t1 + (Float) t2);

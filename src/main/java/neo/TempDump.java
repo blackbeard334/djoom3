@@ -465,6 +465,9 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      * Integer array TO Int array
      */
     public static int[] itoi(Integer[] integerArray) {
+        if (integerArray == null)
+            return null;
+
         int[] intArray = new int[integerArray.length];
         for (int a = 0; a < intArray.length; a++) {
             intArray[a] = integerArray[a];
@@ -592,7 +595,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             }
         }
     }
-    
+
     private static void breakOnALError() {
         final int e;
         if ((e = AL10.alGetError()) != 0) {
@@ -622,7 +625,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
     @Deprecated
     public static <T> T[] allocArray(Class<T> clazz, int length) {
-        
+
         T[] array = (T[]) Array.newInstance(clazz, length);
 
         for (int a = 0; a < length; a++) {
@@ -635,7 +638,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
         return array;
     }
-    
+
     /**
      *
      *
@@ -739,8 +742,9 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      *
      *
      *
-     */    
+     */
 
+    @Deprecated
     public static final class reflects {
 
         /**
@@ -1098,7 +1102,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             System.exit(666);
         }
     }
-    
+
     public static final class Deprecation_Exception extends UnsupportedOperationException {
 
         public Deprecation_Exception() {
@@ -1116,7 +1120,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static final class TypeErasure_Expection extends javax.swing.undo.CannotUndoException {
-        
+
         public TypeErasure_Expection() {
             printStackTrace();
             System.err.println("The future is always blank.\n" +
