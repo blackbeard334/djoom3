@@ -43,7 +43,9 @@ import org.lwjgl.BufferUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -151,7 +153,7 @@ public class tr_local {
     // idScreenRect gets carried around with each drawSurf, so it makes sense
     // to keep it compact, instead of just using the idBounds class
     public static class idScreenRect {
-      
+
         public int x1, y1, x2, y2;					// inclusive pixel bounds inside viewport
         public float zmin, zmax;					// for depth bounds test
 
@@ -283,7 +285,7 @@ public class tr_local {
         public String toString() {
             return "idScreenRect{" + "x1=" + x1 + ", y1=" + y1 + ", x2=" + x2 + ", y2=" + y2 + '}';
         }
-        
+
         static idScreenRect[] generateArray(final int length) {
             return Stream.
                     generate(idScreenRect::new).
@@ -690,30 +692,39 @@ public class tr_local {
      * single frame, as when seen in a mirror
      */
     public static class viewEntity_s {
-        
-        public static int DBG_COUNTER=0;
-
-        public viewEntity_s next;
-//
+        public viewEntity_s        next;
+        //
         // back end should NOT reference the entityDef, because it can change when running SMP
         public idRenderEntityLocal entityDef;
-//
+        //
         // for scissor clipping, local inside renderView viewport
         // scissorRect.Empty() is true if the viewEntity_t was never actually
         // seen through any portals, but was created for shadow casting.
         // a viewEntity can have a non-empty scissorRect, meaning that an area
         // that it is in is visible, and still not be visible.
-        public idScreenRect scissorRect = new idScreenRect();
-//
-        public boolean weaponDepthHack;
-        public float modelDepthHack;
-//
-        public float[] modelMatrix = new float[16];             // local coords to global coords
-        public float[] modelViewMatrix = new float[16];         // local coords to eye coords
-        
-        public viewEntity_s(){
-            DBG_COUNTER++;
-//            TempDump.printCallStack("--------------"+DBG_COUNTER);
+        public idScreenRect        scissorRect     = new idScreenRect();
+        //
+        public boolean             weaponDepthHack;
+        public float               modelDepthHack;
+        //
+        public float[]             modelMatrix     = new float[16];         // local coords to global coords
+        public float[]             modelViewMatrix = new float[16];         // local coords to eye coords
+
+        private static int DBG_COUNTER = 0;
+        private final  int DBG_COUNT   = DBG_COUNTER++;
+
+        public viewEntity_s() {
+//            TempDump.printCallStack("--------------"+DBG_COUNT);
+        }
+
+        public viewEntity_s(viewEntity_s v) {
+            this.next = v.next;
+            this.entityDef = v.entityDef;
+            this.scissorRect = new idScreenRect(v.scissorRect);
+            this.weaponDepthHack = v.weaponDepthHack;
+            this.modelDepthHack = v.modelDepthHack;
+            System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
+            System.arraycopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
         }
 
         public void memSetZero() {
@@ -797,7 +808,42 @@ public class tr_local {
             this.viewFrustum = new idFrustum();
             this.frustum = idPlane.generateArray(5);
         }
-    };
+
+        public viewDef_s(final viewDef_s v) {
+            this.renderView = new renderView_s(v.renderView);
+            System.arraycopy(v.projectionMatrix, 0, this.projectionMatrix, 0, 16);
+            this.worldSpace = new viewEntity_s(v.worldSpace);
+            this.renderWorld = v.renderWorld;
+            this.floatTime = v.floatTime;
+            this.initialViewAreaOrigin = new idVec3(v.initialViewAreaOrigin);
+            this.isSubview = v.isSubview;
+            this.isMirror = v.isMirror;
+            this.isXraySubview = v.isXraySubview;
+            this.isEditor = v.isEditor;
+            this.numClipPlanes = v.numClipPlanes;
+            this.clipPlanes = new idPlane[MAX_CLIP_PLANES];
+            for (int i = 0; i < MAX_CLIP_PLANES; i++) {
+                if (v.clipPlanes[i] != null)
+                    this.clipPlanes[i].oSet(v.clipPlanes[i]);
+            }
+            this.viewport = new idScreenRect(v.viewport);
+            this.scissor = new idScreenRect(v.scissor);
+            this.superView = v.superView;
+            this.subviewSurface = v.subviewSurface;
+            this.drawSurfs = v.drawSurfs;
+            this.numDrawSurfs = v.numDrawSurfs;
+            this.maxDrawSurfs = v.maxDrawSurfs;
+            this.viewLights = v.viewLights;
+            this.viewEntitys = v.viewEntitys;
+            this.frustum = Arrays.stream(v.frustum).map(idPlane::new).toArray(idPlane[]::new);
+            this.viewFrustum = new idFrustum(v.viewFrustum);
+            this.areaNum = v.areaNum;
+            if (v.connectedAreas != null) {
+                this.connectedAreas = new boolean[v.connectedAreas.length];
+                System.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
+            }
+        }
+    }
 
 // complex light / surface interactions are broken up into multiple passes of a
 // simple interaction shader
@@ -815,7 +861,7 @@ public class tr_local {
         public final idVec4 specularColor = new idVec4();       // may have a light color baked into it, will be < tr.backEndRendererMaxLight
         public stageVertexColor_t vertexColor;                  // applies to both diffuse and specular
 //
-        public int ambientLight;                                // use tr.ambientNormalMap instead of normalization cube map 
+        public int ambientLight;                                // use tr.ambientNormalMap instead of normalization cube map
 //                                                              // (not a bool just to avoid an uninitialized memory check of the pad region by valgrind)
 //
         // these are loaded into the vertex program
@@ -2037,7 +2083,7 @@ public class tr_local {
             // screenshot, rather than a possible subsequent remote
             // or mirror render
 //	primaryWorld = NULL;
-            
+
             // set the time for shader effects in 2D rendering
             frameShaderTime = (float) (eventLoop.Milliseconds() * 0.001);
 

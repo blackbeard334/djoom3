@@ -1065,7 +1065,7 @@ public class RenderSystem_init {
                 return;
             }
 
-            primary = tr.primaryView;
+            primary = new viewDef_s(tr.primaryView);
 
 //	memset( &axis, 0, sizeof( axis ) );
             axis[0].oSet(0, 0, 1);
@@ -1093,7 +1093,7 @@ public class RenderSystem_init {
             axis[5].oSet(2, 1, 1);
 
             for (i = 0; i < 6; i++) {
-                ref = primary.renderView;
+                ref = new renderView_s(primary.renderView);
                 ref.x = ref.y = 0;
                 ref.fov_x = ref.fov_y = 90;
                 ref.width = glConfig.vidWidth;
