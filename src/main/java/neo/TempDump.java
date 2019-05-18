@@ -377,14 +377,17 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         return "" + ascii;
     }
 
-    public static String btos(byte[] bytes, int offset) {
-
+    public static String btos(byte[] bytes, int offset, int length) {
         if (NOT(bytes)) {
             return null;
         }
 
-        final int length = strLen(bytes, offset) - offset;//c style strings
         return new String(bytes, offset, length);
+    }
+
+    public static String btos(byte[] bytes, int offset) {
+        final int length = strLen(bytes, offset) - offset;//c style strings
+        return btos(bytes, offset, length);
     }
 
     public static String btos(byte[] bytes) {

@@ -481,8 +481,12 @@ public class Script_Thread {
             ReturnVector(result);
         }
 
-        private static void Event_AngToForward(idThread t, idEventArg<idAngles> ang) {
-            ReturnVector(ang.value.ToForward());
+//        private static void Event_AngToForward(idThread t, idEventArg<idAngles> ang) {
+//            ReturnVector(ang.value.ToForward());
+//        }
+
+        private static void Event_AngToForward(idThread t, idEventArg<idVec3> ang) {
+            ReturnVector(new idAngles(ang.value).ToForward());
         }
 
         private static void Event_AngToRight(idThread t, idEventArg<idAngles> ang) {
