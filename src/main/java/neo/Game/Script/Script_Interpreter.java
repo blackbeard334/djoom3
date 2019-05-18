@@ -249,6 +249,9 @@ public class Script_Interpreter {
         }
 
         private void Push(int value) {
+            if (localstackUsed == 36) {
+                int a = 0;
+            }
             if (localstackUsed + Integer.BYTES > LOCALSTACK_SIZE) {
                 Error("Push: locals stack overflow\n");
             }
@@ -572,6 +575,7 @@ public class Script_Interpreter {
 
                     case D_EVENT_STRING:
                         data[i] = idEventArg.toArg(btos(localstack, start + pos));
+//                        data[i] = idEventArg.toArg(btos(localstack, start + pos, argsize));
                         break;
 
                     case D_EVENT_ENTITY:
@@ -1002,7 +1006,6 @@ public class Script_Interpreter {
                 // next statement
                 st = gameLocal.program.GetStatement(instructionPointer);
 
-                final idVec3 vectorPtr = var_a.getVectorPtr();
                 switch (st.op) {
                     case OP_RETURN:
                         LeaveFunction(st.a);
@@ -1090,7 +1093,7 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setVectorPtr(vectorPtr.oPlus(var_b.getVectorPtr()));
+                        var_c.setVectorPtr(var_a.getVectorPtr().oPlus(var_b.getVectorPtr()));
                         break;
 
                     case OP_ADD_S:
@@ -1112,7 +1115,7 @@ public class Script_Interpreter {
 
                     case OP_ADD_VS:
                         var_a = GetVariable(st.a);
-                        SetString(st.c, vectorPtr.ToString());
+                        SetString(st.c, var_a.getVectorPtr().ToString());
                         AppendString(st.c, GetString(st.b));
                         break;
 
@@ -1133,7 +1136,7 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setVectorPtr(vectorPtr.oMinus(var_b.getVectorPtr()));
+                        var_c.setVectorPtr(var_a.getVectorPtr().oMinus(var_b.getVectorPtr()));
                         break;
 
                     case OP_MUL_F:
@@ -1147,7 +1150,7 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(vectorPtr.oMultiply(var_b.getVectorPtr()));
+                        var_c.setFloatPtr(var_a.getVectorPtr().oMultiply(var_b.getVectorPtr()));
                         break;
 
                     case OP_MUL_FV:
@@ -1161,7 +1164,7 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.getVectorPtr().oSet(vectorPtr.oMultiply(var_b.getFloatPtr()));
+                        var_c.getVectorPtr().oSet(var_a.getVectorPtr().oMultiply(var_b.getFloatPtr()));
                         break;
 
                     case OP_DIV_F:
@@ -1303,7 +1306,7 @@ public class Script_Interpreter {
                     case OP_NOT_V:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(vectorPtr.equals(getVec3_zero())));
+                        var_c.setFloatPtr(btoi(var_a.getVectorPtr().equals(getVec3_zero())));
                         break;
 
                     case OP_NOT_S:
@@ -1326,7 +1329,7 @@ public class Script_Interpreter {
                     case OP_NEG_V:
                         var_a = GetVariable(st.a);
                         var_c = GetVariable(st.c);
-                        var_c.setVectorPtr(vectorPtr.oNegative());
+                        var_c.setVectorPtr(var_a.getVectorPtr().oNegative());
                         break;
 
                     case OP_INT_F:
@@ -1346,7 +1349,7 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(vectorPtr.equals(var_b.getVectorPtr())));
+                        var_c.setFloatPtr(btoi(var_a.getVectorPtr().equals(var_b.getVectorPtr())));
                         break;
 
                     case OP_EQ_S:
@@ -1377,7 +1380,7 @@ public class Script_Interpreter {
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
                         var_c = GetVariable(st.c);
-                        var_c.setFloatPtr(btoi(!vectorPtr.equals(var_b.getVectorPtr())));
+                        var_c.setFloatPtr(btoi(!var_a.getVectorPtr().equals(var_b.getVectorPtr())));
                         break;
 
                     case OP_NE_S:
@@ -1404,7 +1407,7 @@ public class Script_Interpreter {
                     case OP_UADD_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setVectorPtr(var_b.getVectorPtr().oPlus(vectorPtr));
+                        var_b.setVectorPtr(var_b.getVectorPtr().oPlus(var_a.getVectorPtr()));
                         break;
 
                     case OP_USUB_F:
@@ -1416,7 +1419,7 @@ public class Script_Interpreter {
                     case OP_USUB_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setVectorPtr(var_b.getVectorPtr().oMinus(vectorPtr));
+                        var_b.setVectorPtr(var_b.getVectorPtr().oMinus(var_a.getVectorPtr()));
                         break;
 
                     case OP_UMUL_F:
@@ -1559,7 +1562,7 @@ public class Script_Interpreter {
                     case OP_STORE_V:
                         var_a = GetVariable(st.a);
                         var_b = GetVariable(st.b);
-                        var_b.setVectorPtr(vectorPtr);
+                        var_b.setVectorPtr(var_a.getVectorPtr());
                         break;
 
                     case OP_STORE_FTOS:
@@ -1574,7 +1577,7 @@ public class Script_Interpreter {
 
                     case OP_STORE_VTOS:
                         var_a = GetVariable(st.a);
-                        SetString(st.b, vectorPtr.ToString());
+                        SetString(st.b, var_a.getVectorPtr().ToString());
                         break;
 
                     case OP_STORE_FTOBOOL:
@@ -1629,7 +1632,7 @@ public class Script_Interpreter {
                         var_b = GetEvalVariable(st.b);
                         if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.evalPtr.setVectorPtr(vectorPtr);
+                            var_b.evalPtr.setVectorPtr(var_a.getVectorPtr());
                         }
                         break;
 
@@ -1657,7 +1660,7 @@ public class Script_Interpreter {
                         var_b = GetEvalVariable(st.b);
                         if (var_b != null && var_b.evalPtr != null) {
                             var_a = GetVariable(st.a);
-                            var_b.evalPtr.setString(vectorPtr.ToString());//idStr.Copynz(var_b.evalPtr.stringPtr, var_a.vectorPtr[0].ToString(), MAX_STRING_LEN);
+                            var_b.evalPtr.setString(var_a.getVectorPtr().ToString());//idStr.Copynz(var_b.evalPtr.stringPtr, var_a.vectorPtr[0].ToString(), MAX_STRING_LEN);
                         }
                         break;
 
@@ -1819,7 +1822,7 @@ public class Script_Interpreter {
 
                     case OP_PUSH_VTOS:
                         var_a = GetVariable(st.a);
-                        PushString(vectorPtr.ToString());
+                        PushString(var_a.getVectorPtr().ToString());
                         break;
 
                     case OP_PUSH_BTOS:
@@ -1838,9 +1841,9 @@ public class Script_Interpreter {
 
                     case OP_PUSH_V:
                         var_a = GetVariable(st.a);
-                        Push(Float.floatToIntBits(vectorPtr.x));
-                        Push(Float.floatToIntBits(vectorPtr.y));
-                        Push(Float.floatToIntBits(vectorPtr.z));
+                        Push(Float.floatToIntBits(var_a.getVectorPtr().x));
+                        Push(Float.floatToIntBits(var_a.getVectorPtr().y));
+                        Push(Float.floatToIntBits(var_a.getVectorPtr().z));
                         break;
 
                     case OP_PUSH_OBJ:

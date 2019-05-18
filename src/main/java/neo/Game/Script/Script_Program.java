@@ -1018,7 +1018,8 @@ public class Script_Program {
 //        private int argSize;
         varEval_s    evalPtr;
 //        private int ptrOffset;
-        private ByteBuffer primitive = ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.LITTLE_ENDIAN);
+        private ByteBuffer primitive = ByteBuffer.allocate(Float.BYTES * 3).order(ByteOrder.LITTLE_ENDIAN);
+        private int offset;
 
         public int getVirtualFunction() {
             return getPrimitive();
@@ -1095,10 +1096,14 @@ public class Script_Program {
         void setVectorPtr(float[] vector) {
             vectorPtr = new idVec3(vector);
             primitive.putFloat(0, vector[0]);
+            primitive.putFloat(4, vector[1]);
+            primitive.putFloat(8, vector[2]);
         }
 
         idVec3 getVectorPtr() {
-            vectorPtr.oSet(0, primitive.getFloat(0));//TODO why are we only setting the first argument??
+            vectorPtr.oSet(0, primitive.getFloat(0));
+            vectorPtr.oSet(1, primitive.getFloat(4));
+            vectorPtr.oSet(2, primitive.getFloat(8));
             return vectorPtr;
         }
 
@@ -1115,6 +1120,7 @@ public class Script_Program {
         }
 
         void setBytePtr(ByteBuffer bytes, int offset) {
+            this.offset = offset;
             primitive = (((ByteBuffer) bytes.duplicate().order(ByteOrder.LITTLE_ENDIAN).position(offset)).slice()).order(ByteOrder.LITTLE_ENDIAN);
         }
 
