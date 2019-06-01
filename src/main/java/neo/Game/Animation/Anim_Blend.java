@@ -404,32 +404,6 @@ public class Anim_Blend {
                     return va("Event '%s' has arguments", token);
                 }
                 fc.string = new idStr(token);
-            } else if (token.equals("sound")) {
-                if (!src.ReadTokenOnLine(token)) {
-                    return "Unexpected end of line";
-                }
-                fc.type = FC_SOUND;
-                if (0 == token.Cmpn("snd_", 4)) {
-                    fc.string = new idStr(token);
-                } else {
-                    fc.soundShader = declManager.FindSound(token);
-                    if (fc.soundShader.GetState() == DS_DEFAULTED) {
-                        gameLocal.Warning("Sound '%s' not found", token);
-                    }
-                }
-            } else if (token.equals("sound_voice")) {
-                if (!src.ReadTokenOnLine(token)) {
-                    return "Unexpected end of line";
-                }
-                fc.type = FC_SOUND_VOICE;
-                if (0 == token.Cmpn("snd_", 4)) {
-                    fc.string = new idStr(token);
-                } else {
-                    fc.soundShader = declManager.FindSound(token);
-                    if (fc.soundShader.GetState() == DS_DEFAULTED) {
-                        gameLocal.Warning("Sound '%s' not found", token);
-                    }
-                }
             } else if (token.equals("sound_voice2")) {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
@@ -443,11 +417,11 @@ public class Anim_Blend {
                         gameLocal.Warning("Sound '%s' not found", token);
                     }
                 }
-            } else if (token.equals("sound_body")) {
+            } else if (token.equals("sound_voice")) {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
                 }
-                fc.type = FC_SOUND_BODY;
+                fc.type = FC_SOUND_VOICE;
                 if (0 == token.Cmpn("snd_", 4)) {
                     fc.string = new idStr(token);
                 } else {
@@ -474,6 +448,19 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_SOUND_BODY3;
+                if (0 == token.Cmpn("snd_", 4)) {
+                    fc.string = new idStr(token);
+                } else {
+                    fc.soundShader = declManager.FindSound(token);
+                    if (fc.soundShader.GetState() == DS_DEFAULTED) {
+                        gameLocal.Warning("Sound '%s' not found", token);
+                    }
+                }
+            } else if (token.equals("sound_body")) {
+                if (!src.ReadTokenOnLine(token)) {
+                    return "Unexpected end of line";
+                }
+                fc.type = FC_SOUND_BODY;
                 if (0 == token.Cmpn("snd_", 4)) {
                     fc.string = new idStr(token);
                 } else {
@@ -526,6 +513,19 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_SOUND_CHATTER;
+                if (0 == token.Cmpn("snd_", 4)) {
+                    fc.string = new idStr(token);
+                } else {
+                    fc.soundShader = declManager.FindSound(token);
+                    if (fc.soundShader.GetState() == DS_DEFAULTED) {
+                        gameLocal.Warning("Sound '%s' not found", token);
+                    }
+                }
+            } else if (token.equals("sound")) {
+                if (!src.ReadTokenOnLine(token)) {
+                    return "Unexpected end of line";
+                }
+                fc.type = FC_SOUND;
                 if (0 == token.Cmpn("snd_", 4)) {
                     fc.string = new idStr(token);
                 } else {
@@ -695,7 +695,7 @@ public class Anim_Blend {
             if (0 == frameLookup.Num()) {
                 // we haven't, so allocate the table and initialize it
                 frameLookup.SetGranularity(1);
-                frameLookup.SetNum(anims[ 0].NumFrames());
+                frameLookup.SetNum(anims[0].NumFrames());
                 for (i = 0; i < frameLookup.Num(); i++) {
                     frameLookup.oSet(i, new frameLookup_t()).num = 0;
                     frameLookup.oGet(i).firstCommand = 0;
