@@ -2153,7 +2153,7 @@ public class Actor {
                     sndKV = spawnArgs.MatchPrefix("snd_", sndKV);
                 }
 
-                headEnt = (idAFAttachment) gameLocal.SpawnEntityType(idAFAttachment.class, null);
+                headEnt = (idAFAttachment) gameLocal.SpawnEntityType(idAFAttachment.class, args);
                 headEnt.SetName(va("%s_head", name));
                 headEnt.SetBody(this, headModel, damageJoint);
                 head.oSet(headEnt);
