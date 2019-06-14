@@ -289,7 +289,6 @@ public class Game {
         public refSound_t() {
             this.referenceSound = null;
             this.origin = new idVec3();
-            this.shader = new idSoundShader();
             this.parms = new soundShaderParms_t();
         }
     };

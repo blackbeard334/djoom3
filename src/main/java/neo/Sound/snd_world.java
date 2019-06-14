@@ -2214,9 +2214,10 @@ public class snd_world {
                 } else {
                     int offset = Math.abs(localTime - localTriggerTimes);    // offset in samples
                     int size = (looping ? chan.soundShader.entries[0].LengthIn44kHzSamples() : chan.leadinSample.LengthIn44kHzSamples());
-                    ShortBuffer amplitudeData = (looping ? chan.soundShader.entries[0].amplitudeData : chan.leadinSample.amplitudeData).asShortBuffer();
+                    ByteBuffer plitudeData = looping ? chan.soundShader.entries[0].amplitudeData : chan.leadinSample.amplitudeData;
 
-                    if (amplitudeData != null) {
+                    if (plitudeData != null) {
+                        ShortBuffer amplitudeData = plitudeData.asShortBuffer();
                         // when the amplitudeData is present use that fill a dummy sourceBuffer
                         // this is to allow for amplitude based effect on hardware audio solutions
                         if (looping) {
