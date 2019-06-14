@@ -604,7 +604,7 @@ public class snd_system {
             } else {
                 // clear the buffer for all the mixing output
 //                SIMDProcessor.Memset(finalMixBuffer, 0, MIXBUFFER_SAMPLES * sizeof(float) * numSpeakers);
-                Arrays.fill(finalMixBuffer, 0);
+                Arrays.fill(finalMixBuffer, 0, 0, MIXBUFFER_SAMPLES * numSpeakers);
             }
 
             // let the active sound world mix all the channels in unless muted or avi demo recording

@@ -460,7 +460,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -570,7 +570,7 @@ public class SysCmds {
             idAngles ang;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null)) {
+            if (player == null) {
                 return;
             }
 
@@ -606,7 +606,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -648,7 +648,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -688,7 +688,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -732,7 +732,7 @@ public class SysCmds {
                     networkSystem.ClientSendReliableMessage(outMsg);
                 } else {
                     player = gameLocal.GetClientByCmdArgs(args);
-                    if (NOT(player != null)) {
+                    if (player == null) {
                         common.Printf("kill <client nickname> or kill <client index>\n");
                         return;
                     }
@@ -773,7 +773,7 @@ public class SysCmds {
             idAngles ang;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -944,7 +944,7 @@ public class SysCmds {
             }
 
             player = gameLocal.GetClientByCmdArgs(args);
-            if (NOT(player != null)) {
+            if (player == null) {
                 gameLocal.Printf("usage: kick <client nickname> or kick <client index>\n");
                 return;
             }
@@ -976,7 +976,7 @@ public class SysCmds {
             idMat3 axis = new idMat3();
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null)) {
+            if (player == null) {
                 return;
             }
 
@@ -1014,7 +1014,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -1061,7 +1061,7 @@ public class SysCmds {
             idEntity ent;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -1108,7 +1108,7 @@ public class SysCmds {
             idEntity ent;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -1155,7 +1155,7 @@ public class SysCmds {
             idDict dict = new idDict();
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk(false)) {
+            if (player == null || !gameLocal.CheatsOk(false)) {
                 return;
             }
 
@@ -1287,7 +1287,7 @@ public class SysCmds {
             idDict dict = new idDict();
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk(false)) {
+            if (player == null || !gameLocal.CheatsOk(false)) {
                 return;
             }
 
@@ -1357,7 +1357,7 @@ public class SysCmds {
             idDict dict = new idDict();
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk(false)) {
+            if (player == null || !gameLocal.CheatsOk(false)) {
                 return;
             }
 
@@ -1520,7 +1520,7 @@ public class SysCmds {
             idDict dict = new idDict();
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2097,7 +2097,7 @@ public class SysCmds {
             String damageDefName;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2150,7 +2150,7 @@ public class SysCmds {
             String bone, fx;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2187,7 +2187,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2225,7 +2225,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2262,7 +2262,7 @@ public class SysCmds {
             String name = null;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2333,7 +2333,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2542,7 +2542,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2573,7 +2573,7 @@ public class SysCmds {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 
@@ -2820,7 +2820,7 @@ public class SysCmds {
             }
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null)) {
+            if (player == null) {
                 return;
             }
 
@@ -2869,7 +2869,7 @@ public class SysCmds {
         public void run(idCmdArgs args) {
             idPlayer player = gameLocal.GetLocalPlayer();
 
-            if (NOT(player != null)) {
+            if (player == null) {
                 return;
             }
 
@@ -2904,7 +2904,7 @@ public class SysCmds {
 
             player = gameLocal.GetLocalPlayer();
 
-            if (NOT(player != null)) {
+            if (player == null) {
                 return;
             }
 
@@ -2971,7 +2971,7 @@ public class SysCmds {
             modelSurface_s[] surfaces = new modelSurface_s[MAX_RENDERENTITY_GUI];
 
             player = gameLocal.GetLocalPlayer();
-            if (NOT(player != null) || !gameLocal.CheatsOk()) {
+            if (player == null || !gameLocal.CheatsOk()) {
                 return;
             }
 

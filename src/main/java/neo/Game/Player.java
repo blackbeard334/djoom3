@@ -5257,7 +5257,7 @@ public class Player {
         public boolean HandleSingleGuiCommand(idEntity entityGui, idLexer src) {
             idToken token = new idToken();
 
-            if (NOT(src.ReadToken(token))) {
+            if (!src.ReadToken(token)) {
                 return false;
             }
 

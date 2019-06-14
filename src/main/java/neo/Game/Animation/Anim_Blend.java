@@ -774,7 +774,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_VOICE: {
                             if (NOT(command.soundShader)) {
-                                if (NOT(ent.StartSound(command.string.toString(), SND_CHANNEL_VOICE, 0, false, null))) {
+                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_VOICE, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_voice' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }

@@ -698,7 +698,7 @@ public class Entity {
             }
 
             // auto-start a sound on the entity
-            if (refSound.shader != null && NOT(refSound.waitfortrigger)) {
+            if (refSound.shader != null && !refSound.waitfortrigger) {
                 StartSoundShader(refSound.shader, SND_CHANNEL_ANY, 0, false, null);
             }
 
