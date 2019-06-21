@@ -401,7 +401,7 @@ public class Script_Thread {
 
             assert (name != null);
 
-            if (name.charAt(0) == '*') {
+            if (name.startsWith("*")) {
                 entnum = Integer.parseInt(name.substring(1));
                 if ((entnum < 0) || (entnum >= MAX_GENTITIES)) {
                     t.Error("Entity number in string out of range.");
