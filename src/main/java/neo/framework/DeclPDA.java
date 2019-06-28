@@ -66,7 +66,6 @@ public class DeclPDA {
         @Override
         public boolean Parse(String _text, int textLength) throws idException {
             idLexer src = new idLexer();
-            idToken token = new idToken();
 
             src.LoadMemory(_text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT | LEXFL_NOFATALERRORS);
@@ -75,6 +74,7 @@ public class DeclPDA {
             text = new idStr("");
             // scan through, identifying each individual parameter
             while (true) {
+                idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
@@ -205,7 +205,6 @@ public class DeclPDA {
         @Override
         public boolean Parse(String _text, int textLength) throws idException {
             idLexer src = new idLexer();
-            idToken token = new idToken();
 
             src.LoadMemory(_text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT | LEXFL_NOFATALERRORS);
@@ -213,6 +212,7 @@ public class DeclPDA {
 
             // scan through, identifying each individual parameter
             while (true) {
+                idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
@@ -328,7 +328,6 @@ public class DeclPDA {
         @Override
         public boolean Parse(String text, int textLength) throws idException {
             idLexer src = new idLexer();
-            idToken token = new idToken();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT | LEXFL_NOFATALERRORS);
@@ -336,6 +335,7 @@ public class DeclPDA {
 
             // scan through, identifying each individual parameter
             while (true) {
+                idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
