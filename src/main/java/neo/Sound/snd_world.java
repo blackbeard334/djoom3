@@ -1580,11 +1580,11 @@ public class snd_world {
                     if (global || omni) {
                         alSourcei(chan.openalSource, AL_SOURCE_RELATIVE, AL_TRUE);
                         alSource3f(chan.openalSource, AL_POSITION, 0.0f, 0.0f, 0.0f);
-                        alSourcef(chan.openalSource, AL_GAIN, (volume) < (1.0f) ? (volume) : (1.0f));
+                        alSourcef(chan.openalSource, AL_GAIN, Math.min((volume), (1.0f)));
                     } else {
                         alSourcei(chan.openalSource, AL_SOURCE_RELATIVE, AL_FALSE);
                         alSource3f(chan.openalSource, AL_POSITION, -spatializedOriginInMeters.y, spatializedOriginInMeters.z, -spatializedOriginInMeters.x);
-                        alSourcef(chan.openalSource, AL_GAIN, (volume) < (1.0f) ? (volume) : (1.0f));
+                        alSourcef(chan.openalSource, AL_GAIN, Math.min((volume), (1.0f)));
                     }
                     alSourcei(chan.openalSource, AL_LOOPING, (looping && chan.soundShader.entries[0].hardwareBuffer) ? AL_TRUE : AL_FALSE);
                     if (!MACOS_X) {

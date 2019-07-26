@@ -229,7 +229,7 @@ public class qgl {
 
     //    @Deprecated
     public static /*PFNGLPROGRAMENVPARAMETER4FVARBPROC*/ void qglProgramEnvParameter4fvARB(int target, int index, final float[] params) {DEBUG_printName("glProgramEnvParameter4fvARB");//TODO:convert calls to floatbuffer
-        ARBVertexProgram.glProgramEnvParameter4fARB(target, index, params[0], params[1], params[2], params[3]);
+        ARBVertexProgram.glProgramEnvParameter4fvARB(target, index, params);
 //        qglProgramEnvParameter4fvARB(target, index, wrap(params));
     }
 
@@ -763,7 +763,7 @@ public class qgl {
     }
 
     public static void qglFrontFace(int mode) {DEBUG_printName("glFrontFace");
-        qglFrontFace(mode);
+        GL11.glFrontFace(mode);
     }
 
     public static void qglFrustum(double left, double right, double bottom, double top, double zNear, double zFar) {DEBUG_printName("glFrustum");

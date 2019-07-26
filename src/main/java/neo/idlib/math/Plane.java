@@ -391,13 +391,7 @@ public class Plane {
         }
 
         public boolean FromPoints(final idVec3 p1, final idVec3 p2, final idVec3 p3, boolean fixDegenerate) {
-            idVec3 vec3 = Normal().oSet(p1.oMinus(p2)).Cross(p3.oMinus(p2));
-
-            {                      //TODO: remove this pointless shit
-                final float oldD = d;//save old d
-                this.oSet(vec3);     //set new values
-                d = oldD;            //replace the zeroed d with its original value
-            }
+            Normal().oSet(p1.oMinus(p2).Cross(p3.oMinus(p2)));
 
             if (Normalize(fixDegenerate) == 0.0f) {
                 return false;

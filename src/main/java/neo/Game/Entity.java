@@ -940,9 +940,7 @@ public class Entity {
             renderView.viewaxis = new idMat3(GetPhysics().GetAxis());
 
             // copy global shader parms
-            for (int i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++) {
-                renderView.shaderParms[i] = gameLocal.globalShaderParms[i];
-            }
+            System.arraycopy(gameLocal.globalShaderParms, 0, renderView.shaderParms, 0, MAX_GLOBAL_SHADER_PARMS);
 
             renderView.globalMaterial = gameLocal.GetGlobalMaterial();
 
@@ -3489,9 +3487,9 @@ public class Entity {
                         idTraceModel trm = new idTraceModel();
 
                         if (spawnArgs.GetInt("cylinder", "0", numSides) && numSides[0] > 0) {
-                            trm.SetupCylinder(bounds, numSides[0] < 3 ? 3 : numSides[0]);
+                            trm.SetupCylinder(bounds, Math.max(numSides[0], 3));
                         } else if (spawnArgs.GetInt("cone", "0", numSides) && numSides[0] > 0) {
-                            trm.SetupCone(bounds, numSides[0] < 3 ? 3 : numSides[0]);
+                            trm.SetupCone(bounds, Math.max(numSides[0], 3));
                         } else {
                             trm.SetupBox(bounds);
                         }
