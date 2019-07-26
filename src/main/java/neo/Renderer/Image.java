@@ -2660,7 +2660,7 @@ public class Image {
             int row;
 
             // OpenGL's pixel packing rule
-            row = width < 4 ? 4 : width;
+            row = Math.max(width, 4);
 
             normals = new byte[row * height];
             if (NOT(normals)) {
@@ -2696,8 +2696,7 @@ public class Image {
                     ImageProgramStringToCompressedFileName(imgName, filename);
                     int ext = filename[0].lastIndexOf('.');
                     if (ext != -1) {
-//				strcpy(ext, "_pal.tga");
-                        System.arraycopy("_pal.tga".toCharArray(), 0, filename, ext, "_pal.tga".length());
+                        filename[0] = filename[0].substring(0, ext) + "_pal.tga";//strcpy(ext, "_pal.tga");
                         R_WritePalTGA(filename[0], normals, globalImages.compressedPalette, width, height);
                     }
                 }

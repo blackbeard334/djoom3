@@ -1,6 +1,7 @@
 package neo.Renderer;
 
 import java.nio.ByteBuffer;
+
 import static neo.idlib.Lib.idLib.common;
 import org.lwjgl.BufferUtils;
 

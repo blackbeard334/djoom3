@@ -1022,7 +1022,7 @@ public class Vector {
                 return false;
             }
             cross.oMulSet(overBounce * normal.oMultiply(this) / len);//	cross *= overBounce * ( normal * (*this) ) / len;
-            this.oMinus(cross);//(*this) -= cross;
+            this.oMinSet(cross);//(*this) -= cross;
             return true;
         }
         /*
@@ -2303,9 +2303,7 @@ public class Vector {
                 p = new float[alloc];
                 alloced = alloc;
                 if (oldVec != null) {
-                    for (int i = 0; i < size; i++) {
-                        p[i] = oldVec[i];
-                    }
+                    System.arraycopy(oldVec, 0, p, 0, size);
 //			Mem_Free16( oldVec );//garbage collect me!
                 }//TODO:ifelse
                 if (makeZero) {

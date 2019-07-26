@@ -5268,7 +5268,7 @@ public class Player {
             if (token.Icmp("addhealth") == 0) {
                 if (entityGui != null && health < 100) {
                     int _health = entityGui.spawnArgs.GetInt("gui_parm1");
-                    int amt = (_health >= HEALTH_PER_DOSE) ? HEALTH_PER_DOSE : _health;
+                    int amt = Math.min(_health, HEALTH_PER_DOSE);
                     _health -= amt;
                     entityGui.spawnArgs.SetInt("gui_parm1", _health);
                     if (entityGui.GetRenderEntity() != null && entityGui.GetRenderEntity().gui[0] != null) {
