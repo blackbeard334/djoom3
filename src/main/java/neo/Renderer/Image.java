@@ -909,25 +909,25 @@ public class Image {
 //			strcpy( ext, ".tga" );
                     filename[0] = filename[0].substring(0, ext) + ".tga";// + filename[0].substring(ext);
                     // swap the red/alpha for the write
-			/*
-                     if ( depth == TD_BUMP ) {
-                     for ( int i = 0; i < scaled_width * scaled_height * 4; i += 4 ) {
-                     scaledBuffer[ i ] = scaledBuffer[ i + 3 ];
-                     scaledBuffer[ i + 3 ] = 0;
-                     }
-                     }
-                     */
+                    /*
+                    if ( depth == TD_BUMP ) {
+                        for ( int i = 0; i < scaled_width * scaled_height * 4; i += 4 ) {
+                            scaledBuffer[ i ] = scaledBuffer[ i + 3 ];
+                            scaledBuffer[ i + 3 ] = 0;
+                        }
+                    }
+                    */
                     R_WriteTGA(filename[0], scaledBuffer, scaled_width[0], scaled_height[0], false);
 
                     // put it back
-			/*
-                     if ( depth == TD_BUMP ) {
-                     for ( int i = 0; i < scaled_width * scaled_height * 4; i += 4 ) {
-                     scaledBuffer[ i + 3 ] = scaledBuffer[ i ];
-                     scaledBuffer[ i ] = 0;
-                     }
-                     }
-                     */
+                    /*
+                    if ( depth == TD_BUMP ) {
+                        for ( int i = 0; i < scaled_width * scaled_height * 4; i += 4 ) {
+                            scaledBuffer[ i + 3 ] = scaledBuffer[ i ];
+                            scaledBuffer[ i ] = 0;
+                        }
+                    }
+                    */
                 }
             }
 
@@ -968,7 +968,7 @@ public class Image {
                 // preserve the border after mip map unless repeating
                 shrunk = R_MipMap(scaledBuffer, scaled_width[0], scaled_height[0], preserveBorder);
                 scaledBuffer.clear();//R_StaticFree(scaledBuffer);
-                scaledBuffer.put(shrunk);
+                scaledBuffer.put(shrunk).flip();
 
                 scaled_width[0] >>= 1;
                 scaled_height[0] >>= 1;

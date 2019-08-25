@@ -15,6 +15,7 @@ import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
+import org.lwjgl.BufferUtils;
 
 /**
  *
@@ -101,7 +102,7 @@ public class Image_program {
         }
 
         if (0 == token.Icmp("addnormals")) {
-            ByteBuffer[] pic2 = {pic != null ? ByteBuffer.allocate(pic[0].capacity()) : null};
+            ByteBuffer[] pic2 = {pic != null && pic[0] != null ? ByteBuffer.allocate(pic[0].capacity()) : null};
             int[] width2 = {0}, height2 = {0};
 
             MatchAndAppendToken(src, "(");
@@ -123,6 +124,7 @@ public class Image_program {
             if (pic != null && pic[0] != null) {
                 R_AddNormalMaps(pic[0], width[0], height[0], pic2[0], width2[0], height2[0]);
 //                R_StaticFree(pic2);
+                pic2 = null;
                 if (depth != null) {
                     depth[0] = TD_BUMP;
                 }
@@ -545,7 +547,7 @@ public class Image_program {
         // resample pic2 to the same size as pic1
         if (width2 != width1 || height2 != height1) {
             newMap = R_Dropsample(data2, width2, height2, width1, height1);
-            data2.put(newMap);
+            data2 = (ByteBuffer) BufferUtils.createByteBuffer(newMap.length).put(newMap).flip();
         } else {
             newMap = null;
         }
