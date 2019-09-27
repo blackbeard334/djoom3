@@ -10,8 +10,7 @@
     
     <properties>
         <cloning.version>1.9.1</cloning.version>
-        <jorbis.version>0.0.17-2</jorbis.version>
-        <lwjgl.version>3.2.0</lwjgl.version>
+        <lwjgl.version>3.2.3</lwjgl.version>
         <lwjgl.natives>natives-windows</lwjgl.natives>
 
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -137,6 +136,13 @@
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-stb</artifactId>
+            <version>${lwjgl.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
             <version>${lwjgl.version}</version>
             <classifier>${lwjgl.natives}</classifier>
@@ -159,16 +165,17 @@
             <version>${lwjgl.version}</version>
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-stb</artifactId>
+            <version>${lwjgl.version}</version>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
 
         <dependency>
             <groupId>uk.com.robust-it</groupId>
             <artifactId>cloning</artifactId>
             <version>${cloning.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.soundlibs</groupId>
-            <artifactId>jorbis</artifactId>
-            <version>${jorbis.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
