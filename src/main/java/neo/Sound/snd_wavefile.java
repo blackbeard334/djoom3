@@ -1,26 +1,27 @@
 package neo.Sound;
 
-import com.jcraft.jorbis.Info;
-import com.jcraft.jorbis.JOrbisException;
-import com.jcraft.jorbis.VorbisFile;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
-import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 import neo.Sound.snd_local.mminfo_s;
 import neo.Sound.snd_local.pcmwaveformat_s;
 import neo.Sound.snd_local.waveformatex_s;
 import neo.Sound.snd_local.waveformatextensible_s;
-import static neo.Sound.snd_system.idSoundSystemLocal.s_realTimeDecoding;
 import neo.TempDump.TODO_Exception;
+import neo.framework.File_h.idFile;
+import neo.idlib.Text.Str.idStr;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.stb.STBVorbis;
+import org.lwjgl.stb.STBVorbisInfo;
+
+import java.nio.ByteBuffer;
+
+import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
+import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
+import static neo.Sound.snd_system.idSoundSystemLocal.s_realTimeDecoding;
 import static neo.TempDump.stobb;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
-import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.LittleLong;
 import static neo.idlib.Lib.LittleRevBytes;
 import static neo.idlib.Lib.LittleShort;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
@@ -53,19 +54,19 @@ public class snd_wavefile {
         //
         private idFile                 mhmmio;      // I/O handle for the WAVE
         private mminfo_s               mck;         // Multimedia RIFF chunk
-        private mminfo_s mckRiff = new mminfo_s();  // used when opening a WAVE file
-        private long/*dword*/     mdwSize;          // size in samples
-        private long/*dword*/     mMemSize;         // size of the wave data in memory
-        private long/*dword*/     mseekBase;
-        private long/*ID_TIME_T*/ mfileTime;
+        private mminfo_s               mckRiff;     // used when opening a WAVE file
+        private long/*dword*/          mdwSize;     // size in samples
+        private long/*dword*/          mMemSize;    // size of the wave data in memory
+        private long/*dword*/          mseekBase;
+        private long/*ID_TIME_T*/      mfileTime;
         //
-        private boolean           mbIsReadingFromMemory;
-        private ByteBuffer        mpbData;
-        private ByteBuffer        mpbDataCur;
-        private long/*dword*/     mulDataSize;
+        private boolean                mbIsReadingFromMemory;
+        private ByteBuffer             mpbData;
+        private ByteBuffer             mpbDataCur;
+        private long/*dword*/          mulDataSize;
         //
-        private Object            ogg;              // only !NULL when !s_realTimeDecoding
-        private boolean           isOgg;
+        private Object                 ogg;         // only !NULL when !s_realTimeDecoding
+        private boolean                isOgg;
         //
         //
 
@@ -80,6 +81,7 @@ public class snd_wavefile {
             mpwfx = new waveformatextensible_s();
             mhmmio = null;
             mck = new mminfo_s();
+            mckRiff = new mminfo_s();
             mdwSize = 0;
             mseekBase = 0;
             mbIsReadingFromMemory = false;
@@ -368,7 +370,7 @@ public class snd_wavefile {
             if (pcmWaveFormat.wf.wFormatTag == WAVE_FORMAT_TAG_PCM) {
                 mpwfx.Format.cbSize = 0;
             } else {
-                return -1;	// we don't handle these (32 bit wavefiles, etc)
+                return -1;    // we don't handle these (32 bit wavefiles, etc)
 // #if 0
                 // // Read in length of extra bytes.
                 // word cbExtraBytes = 0L;
@@ -389,6 +391,8 @@ public class snd_wavefile {
 
         private int OpenOGG(final String strFileName, waveformatex_s[] pwfx /*= NULL*/) {
 //            memset(pwfx, 0, sizeof(waveformatex_t));
+            int error[] = {0};
+            STBVorbisInfo vi = null;
             mhmmio = fileSystem.OpenFileRead(strFileName);
             if (null == mhmmio) {
                 return -1;
@@ -398,15 +402,21 @@ public class snd_wavefile {
 
             ByteBuffer buffer = ByteBuffer.allocate(mhmmio.Length());
             mhmmio.Read(buffer);
-            try (VorbisFile ov = new VorbisFile(buffer)) {
+            try {
+                ByteBuffer d_buffer = (ByteBuffer) BufferUtils.createByteBuffer(buffer.capacity()).put(buffer).rewind();
+                final long ov = STBVorbis.stb_vorbis_open_memory(d_buffer, error, null);
+                if (error[0] != 0) {
+                    fileSystem.CloseFile(mhmmio);
+                    mhmmio = null;
+                    return -1;
+                }
+                vi = STBVorbis.stb_vorbis_get_info(ov, STBVorbisInfo.create());
                 mfileTime = mhmmio.Timestamp();
 
-                Info vi = ov.getInfo()[0];
-
-                mpwfx.Format.nSamplesPerSec = vi.rate;
-                mpwfx.Format.nChannels = vi.channels;
+                mpwfx.Format.nSamplesPerSec = vi.sample_rate();
+                mpwfx.Format.nChannels = vi.channels();
                 mpwfx.Format.wBitsPerSample = Short.SIZE;
-                mdwSize = ov.pcm_total(-1) * vi.channels;	// pcm samples * num channels
+                mdwSize = STBVorbis.stb_vorbis_stream_length_in_samples(ov) * vi.channels();    // pcm samples * num channels
                 mbIsReadingFromMemory = false;
 
                 if (s_realTimeDecoding.GetBool()) {
@@ -418,7 +428,7 @@ public class snd_wavefile {
                     mMemSize = mhmmio.Length();
 
                 } else {
-                    ogg = ov;
+                    ogg = "we only check if this is not null";
 
                     mpwfx.Format.wFormatTag = WAVE_FORMAT_TAG_PCM;
                     mMemSize = mdwSize * Short.SIZE / Byte.SIZE;
@@ -427,10 +437,6 @@ public class snd_wavefile {
                 if (pwfx != null) {
                     pwfx[0] = new waveformatex_s(mpwfx.Format);
                 }
-            } catch (JOrbisException | IOException ex) {
-                fileSystem.CloseFile(mhmmio);
-                mhmmio = null;
-                return -1;
             } finally {
                 Sys_LeaveCriticalSection(CRITICAL_SECTION_ONE);
             }
@@ -482,5 +488,5 @@ public class snd_wavefile {
 //            }
 //            return -1;
         }
-    };
+    }
 }
