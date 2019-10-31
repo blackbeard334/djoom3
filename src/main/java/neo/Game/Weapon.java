@@ -95,6 +95,8 @@ import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
 import neo.framework.DeclEntityDef.idDeclEntityDef;
+
+import static neo.framework.BuildDefines.ID_DEMO_BUILD;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_PARTICLE;
 import static neo.framework.DeclManager.declType_t.DECL_SKIN;
@@ -1194,7 +1196,8 @@ public class Weapon {
             WEAPON_RELOAD.LinkTo(scriptObject, "WEAPON_RELOAD");
             WEAPON_NETRELOAD.LinkTo(scriptObject, "WEAPON_NETRELOAD");
             WEAPON_NETENDRELOAD.LinkTo(scriptObject, "WEAPON_NETENDRELOAD");
-            WEAPON_NETFIRING.LinkTo(scriptObject, "WEAPON_NETFIRING");
+            if (!ID_DEMO_BUILD)
+                WEAPON_NETFIRING.LinkTo(scriptObject, "WEAPON_NETFIRING");
             WEAPON_RAISEWEAPON.LinkTo(scriptObject, "WEAPON_RAISEWEAPON");
             WEAPON_LOWERWEAPON.LinkTo(scriptObject, "WEAPON_LOWERWEAPON");
 

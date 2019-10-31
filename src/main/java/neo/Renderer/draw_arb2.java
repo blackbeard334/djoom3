@@ -281,7 +281,7 @@ public class draw_arb2 {
 //            qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, 0/*sizeof(idDrawVert)*/, ac.tangentsOffset_0());
 //            qglVertexAttribPointerARB(8, 2, GL_FLOAT, false, 0/*sizeof(idDrawVert)*/, ac.stOffset());
 //            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyzOffset());
-            
+
             qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.BYTES, ac.colorOffset());
             qglVertexAttribPointerARB(11, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.normalOffset());
             qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_1());
