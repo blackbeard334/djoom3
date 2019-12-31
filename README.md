@@ -1,5 +1,28 @@
 # djoom3 - a Doom 3 Java port.
 
+#### 31-12-19
+Version 0.0.9
+
+This release works with the demo assets available in the gamershell.com version of the demo(crc B4FA48EC). To enable you need to set **ID_DEMO_BUILD=true**, command line version would be something like **-D**ID_DEMO_BUILD=true.
+
+As usual, this release broke some stuff...but let's not talk about that.
+
+Other fixes include:
+* some major sound fixes  
+    * like NPC voices that weren't played correctly
+    * or other sounds that were stopping way too early due to some vorbis mania
+* some MipMaping issues were "partially" fixed, allowing HQ configs to look less...horrible  
+* input...enough said
+* mirror mirror on the wall...who's the dumbest developer of them all(fixed the mirror headache in the bathroom)
+* other stuff I don't remember
+  
+Hopefully 2020 will have more progress/releases T_T
+
+[http://www.youtube.com/watch?v=ki3fMz796W0](http://www.youtube.com/watch?v=ki3fMz796W0)  
+[![Screenshot](http://img.youtube.com/vi/ki3fMz796W0/0.jpg)](http://www.youtube.com/watch?v=ki3fMz796W0 "djoom3 0.0.8")
+
+
+
 #### 17-11-18
 Version 0.0.8
 
@@ -87,6 +110,9 @@ TODO
 2. [Create a run configuration](https://www.jetbrains.com/idea/help/creating-and-editing-run-debug-configurations.html) for **neo.sys.win_main.java** 
 3. Add **-Djava.library.path=/bla/natives**(location of the lwjgl native dll/so files) to the VM parameters of the [run configuration] (https://www.jetbrains.com/idea/help/setting-configuration-options.html)
 4. Add **"+set fs_basepath '~/.local/share/Steam/steamapps/common/doom 3' +set com_allowConsole 1 +set si_pure 0"**(with quotes) to the program arguments of the [run configuration] (https://www.jetbrains.com/idea/help/setting-configuration-options.html)
+
+###### Run with demo assets(optional)
+To run with the demo assets, you need to add **-DID_DEMO_BUILD=true** to the VM params in step 3 above.
 
 ### Important
 #### Operator Overloading:
