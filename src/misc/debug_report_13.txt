@@ -1,0 +1,38 @@
+D E M O
+--------
+guis/mainmenu.gui
+
+/*
+    casting madness
+*/
+inrow = /*in +*/ (4 * inwidth * (int) ((i + 0.25f) * inheight / outheight));
+inrow = /*in +*/ (int) (4 * inwidth * ((i + 0.25f) * inheight / outheight));
+
+
+idAFEntity_WithAttachedHead::SetupHead
+
+"marscity_security_goggles_pda_2_head"
+    idEntity::StartSound
+        idActor::SetupHead --> "marscity_security_goggles_pda_2"
+        
+        
+        
+------------------------------------------
+
+strstr(((*((idDeclLocal*)((*((idDecl*)(&(*((idMaterial*)((vLight)->lightShader)))))).base))).name).data, "lights/flashlight5")
+
+
+
+
+------------------------------------------
+idSoundWorldLocal::MixLoop
+    ((sound->channels)[0]).leadinSample
+        idEntityFx::Run
+        idEntity::StartSoundShader
+            idSoundWorldLocal::MixLoop 
+                emitters   19   !=  122
+                emitters 2038   !=  122
+            idSoundWorldLocal::AddChannelContribution
+                openalStreamingOffset
+                ((idSampleDecoderLocal)chan.decoder).failed
+                    idSoundChannel::GatherChannelSamples
