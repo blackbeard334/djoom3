@@ -11,7 +11,7 @@ public class BuildDefines {
     //
     public static final boolean _WIN32    = System.getProperty("os.name").startsWith("Windows");
     public static final boolean WIN32     = _WIN32;
-    public static final boolean MACOS_X   = System.getProperty("os.name").equals("MacOSX");
+    public static final boolean MACOS_X   = System.getProperty("os.name").equals("Mac OS X");
     public static final boolean __ppc__   = MACOS_X;//TODO:can macosx run on non ppc?
     public static final boolean __linux__ = System.getProperty("os.name").equals("Linux");
 

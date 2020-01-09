@@ -22,7 +22,7 @@
 
         <junit.version>4.12</junit.version>
 
-        <output.folder>/bla</output.folder>
+        <output.folder>target</output.folder>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

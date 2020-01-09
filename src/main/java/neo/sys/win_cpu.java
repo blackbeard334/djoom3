@@ -9,6 +9,7 @@ import static neo.TempDump.NOT;
 import neo.TempDump.TODO_Exception;
 
 import static neo.TempDump.atoi;
+import static neo.framework.BuildDefines.MACOS_X;
 import static neo.framework.BuildDefines._WIN32;
 import static neo.sys.sys_public.CPUID_3DNOW;
 import static neo.sys.sys_public.CPUID_AMD;
@@ -109,13 +110,9 @@ public class win_cpu {
 //#else
         if (_WIN32) {
             if (NOT(ticks)) {
-                try {
-                    final int procSpeed = atoi(wmic("cpu get MaxClockSpeed"));
+                final int procSpeed = atoi(wmic("cpu get MaxClockSpeed"));
 
-                    ticks = procSpeed * 1000000L;
-                } catch (IOException ex) {
-                    Logger.getLogger(win_cpu.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                ticks = procSpeed * 1000000L;
             }
         }
 
@@ -137,15 +134,15 @@ public class win_cpu {
      HasCPUID
      ================
      */
-    public static boolean HasCPUID() throws IOException {
+    public static boolean HasCPUID() {
         if (_WIN32) {
-            final String cpuid;
-
-            cpuid = wmic("cpu get ProcessorId");
-
+            String cpuid = wmic("cpu get ProcessorId");
             return !cpuid.isEmpty();
         }
-
+        if (MACOS_X) {
+            // Every AMD64 CPU supports CPUID.
+            return System.getProperty("os.arch").equals("x86_64");
+        }
         throw new TODO_Exception();
 //	__asm 
 //	{
@@ -210,8 +207,14 @@ public class win_cpu {
      ================
      */
     public static boolean IsAMD() {
-        return System.getenv("PROCESSOR_IDENTIFIER").startsWith("AMD");
-//        throw new TODO_Exception();
+        String vendor = null;
+        if (_WIN32) {
+            vendor = System.getenv("PROCESSOR_IDENTIFIER");
+        }
+        if (MACOS_X) {
+            vendor = cmd("sysctl machdep.cpu.vendor");
+        }
+        return vendor.contains("AuthenticAMD");
 //	char pstring[16];
 //	char processorString[13];
 //
@@ -570,15 +573,11 @@ public class win_cpu {
      ================
      */
     public static int/*cpuid_t*/ Sys_GetCPUId() {
+        int flags = 0;
 
-        int flags;
-        try {
-            // verify we're at least a Pentium or 486 with CPUID support
-            if (!HasCPUID()) {
-                return CPUID_UNSUPPORTED;
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(win_cpu.class.getName()).log(Level.SEVERE, null, ex);
+        // verify we're at least a Pentium or 486 with CPUID support
+        if (!HasCPUID()) {
+            return CPUID_UNSUPPORTED;
         }
 
         // check for an AMD
@@ -989,34 +988,40 @@ public class win_cpu {
     /**
      *
      */
-    static String wmic(final String query) throws IOException {
-        final String result;
+    private static String wmic(final String query) {
+        String result = "";
 
-        Process wmic = Runtime.getRuntime().exec("wmic " + query);
-//                wmic.waitFor();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(wmic.getInputStream()))) {
-            if (reader.readLine().startsWith("Node")) {
-                return "";// invalid query
+        try {
+            Process wmic = Runtime.getRuntime().exec("wmic " + query);
+            //                wmic.waitFor();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(wmic.getInputStream()))) {
+                if (reader.readLine().startsWith("Node")) {
+                    return ""; // invalid query
+                }
+                reader.readLine(); // empty line
+                result = reader.readLine();
             }
-
-            reader.readLine();// empty line
-            result = reader.readLine();
+            wmic.destroy();
+        } catch (IOException e) {
+            Logger.getLogger(win_cpu.class.getName()).log(Level.SEVERE, null, e);
         }
-        wmic.destroy();
 
         return result;
     }
 
-    static String cmd(final String query) throws IOException {
-        final String result;
+    private static String cmd(final String query) {
+        String result = "";
 
-        Process wmic = Runtime.getRuntime().exec(query);
-//                wmic.waitFor();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(wmic.getInputStream()))) {
-
-            result = reader.readLine();
+        try {
+            Process wmic = Runtime.getRuntime().exec(query);
+            //                wmic.waitFor();
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(wmic.getInputStream()))) {
+                result = reader.readLine();
+            }
+            wmic.destroy();
+        } catch (IOException e) {
+            Logger.getLogger(win_cpu.class.getName()).log(Level.SEVERE, null, e);
         }
-        wmic.destroy();
 
         return result;
     }
