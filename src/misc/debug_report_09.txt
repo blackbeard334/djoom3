@@ -1,0 +1,102 @@
+-lights are not shining...  r_singleLight 16 light_5254-->hanger_fog_mover-->map_marscity1::move_hangar_fog
+-too few/many shadows       r_showShadows
+-too FEW textures           r_showTextureVectors
+
+
+RB_CreateSingleDrawInteractions()
+    RB_BakeTextureMatrixIntoTexgen()
+        RB_STD_DrawShaderPasses() :: drawSurf 221 vs 228 (big light on the top right) <--rhymes
+                                  :: surf->space->modelViewMatrix
+                                  idGameLocal::CallFrameCommand()
+                                  
+916.0 -1712.0 -1072.0
++		globalLightOrigin	{x=916.000000 y=-1712.00000 z=-752.000000 }	idVec3
+    light.params.origin
+
+frustum[5]
+idPlane{a=0.0, b=0.0, c=1.0, d=-728.0}
+-		[5]	{a=0.000000000 b=0.000000000 c=1.00000000 ...}	idPlane
+		a	0.000000000	float
+		b	0.000000000	float
+		c	1.00000000	float
+		d	-1048.00000	float
+
+ligt.viewLight.shaderRegisters[5]
+-12.816001f
+		[5]	-51.4880028	const float
+        
+        
+        
+-interesting: r_singleLight 16 && r_singleEntity 1 && r_showLights 3 
+              shows the same results on cpp when we add r_showShadowCount
+              
+RB_ShowTextureVectors() ???? <---are we drawing all them textures?
+    R_AddModelSurfaces() models/md5/characters/npcs/heads/goggles.md5mesh
+        R_EntityDefDynamicModel()
+            idRenderModelMD5::InstantiateDynamicModel()
+                idAnimatedEntity::SetModel()
+                    idAnimator::CreateFrame() marscity_security_goggles_pda_2_head
+                        idSIMD_Generic::ConvertJointQuatsToJointMats()
+                        idSIMD_Generic::TransformJoints()
+                            idActor::CopyJointsFromBodyToHead()
+                            ????idAnimBlend::BlendAnim
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    101
+        idRenderModelStatic::ConvertLWOToModelSurfaces()
+            R_DuplicateMirroredVertexes()
+    facePlanes[0].DBG=473620
+        R_DeriveFacePlanes()    
+            R_AddModelSurfaces()
+                R_CreateLightTris()
+
+    R_AddAmbientDrawsurfs
+    
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+r_showLightCount 1
+    RB_ShowLightCount() /*...duh*/ ---> r_singleLight _1
+        vLight->globalInteractions 48 vs 45
+            interactions 2, 3, 4:
+                textures/mcity/mchangar7_local
+                textures/mcity/mcityb22_local
+                textures/mcity/mchangar8_local
+                    idInteraction::AddActiveInteraction()
+                        idInteraction::CreateInteraction()
+                            R_CreateLightTris() numIndexes 6!=0
+                                R_CalcInteractionCullBits()
+r_showLightCount 26
+    vLight->localInteractions 9 vs 15
+        interactions 6, 10...14:
+            textures/mcity/mchangar10_local
+            addnormals( models/mapobjects/lab/diamondbox/diamondbox_sm_local, heightmap( models/mapobjects/lab/diamondbox/diamondbox_sm_bmp, 4))
+            models/mapobjects/com/platguistand/platguistand_local
+            textures/base_light/sterlightdecal_add
+            addnormals( models/mapobjects/lab/diamondbox/diamondbox_sm_local, heightmap( models/mapobjects/lab/diamondbox/diamondbox_sm_bmp, 4))
+            addnormals( models/mapobjects/lab/diamondbox/diamondbox_sm_local, heightmap( models/mapobjects/lab/diamondbox/diamondbox_sm_bmp, 4))
+                R_LinkLightSurf()
+                    idInteraction::AddActiveInteraction() numSurfaces==49 && c==17
+                        idInteraction::CreateInteraction()
+r_showTrace 211
+    lancave_dust.prt
+        numIndexes < indexes.length
+        numVerts < verts.length
+            idRenderModelPrt::InstantiateDynamicModel() 1790
+        facePlanes.d
+            idSIMD_Generic::DeriveTriPlanes()
+                verts.x
+                    idParticleStage::ParticleVerts()
+textures/particles/fbeam
+map game/alphalabs1
+    r_singleLight 553
+        r_showLightCount 1
+            vLight->globalInteractions 26 vs 14
+                R_AddModelSurfaces()
+                    addnormals( models/weapons/grenades/grenades3_local, heightmap( models/weapons/grenades/grenades3_h, 7))
+                        idInteraction::AddActiveInteraction() 
+                            surfaces:
+                            88 3 6 3 3 3 2 36
+                            88 3 6         36
+                                idInteraction::CullInteractionByViewFrustum()

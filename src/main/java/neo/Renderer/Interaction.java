@@ -206,9 +206,11 @@ public class Interaction {
         private final idFrustum frustum;		// frustum which contains the interaction
         private areaNumRef_s frustumAreas;		// numbers of the areas the frustum touches
         //
-        private int dynamicModelFrameCount;             // so we can tell if a callback model animated
+        private int dynamicModelFrameCount;     // so we can tell if a callback model animated
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
 
         public idInteraction() {
             numSurfaces = 0;
@@ -565,11 +567,7 @@ public class Interaction {
                             }
 
                             if (NOT(lightTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                                vertCache_s[] indexCache = {null};
-                                ByteBuffer indexes = ByteBuffer.allocate(lightTris.indexes.length * 4);
-                                indexes.asIntBuffer().put(lightTris.indexes);
-                                vertexCache.Alloc(indexes, lightTris.numIndexes /*sizeof(lightTris.indexes[0])*/, indexCache, true);
-                                lightTris.indexCache = indexCache[0];
+                                lightTris.indexCache = vertexCache.Alloc(lightTris.indexes, lightTris.numIndexes * Integer.BYTES, true);
                             }
                             if (lightTris.indexCache != null) {
                                 vertexCache.Touch(lightTris.indexCache);
@@ -647,11 +645,7 @@ public class Interaction {
                     vertexCache.Touch(shadowTris.shadowCache);
 
                     if (NOT(shadowTris.indexCache) && r_useIndexBuffers.GetBool()) {
-                        vertCache_s[] indexCache = {null};
-                        ByteBuffer indexes = ByteBuffer.allocate(shadowTris.indexes.length * 4);
-                        indexes.asIntBuffer().put(shadowTris.indexes);
-                        vertexCache.Alloc(indexes, shadowTris.numIndexes/* sizeof(shadowTris.indexes[0])*/, indexCache, true);
-                        shadowTris.indexCache = indexCache[0];
+                        shadowTris.indexCache = vertexCache.Alloc(shadowTris.indexes, shadowTris.numIndexes * Integer.BYTES, true);
 
                         vertexCache.Touch(shadowTris.indexCache);
                     }

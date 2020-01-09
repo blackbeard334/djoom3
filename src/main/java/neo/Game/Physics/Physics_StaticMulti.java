@@ -77,10 +77,8 @@ public class Physics_StaticMulti {
             for (int i = 0; i < clipModels.Num(); i++) {
                 idClipModel.delete(clipModels.oGet(i));
             }
-        }
 
-        public static void delete(idPhysics_StaticMulti multi) {
-            multi._deconstructor();
+            super._deconstructor();
         }
 
         @Override
@@ -507,10 +505,10 @@ public class Physics_StaticMulti {
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
             if (id >= 0 && id < clipModels.Num()) {
-                return current.oGet(id).origin;
+                return new idVec3(current.oGet(id).origin);
             }
             if (clipModels.Num() != 0) {
-                return current.oGet(0).origin;
+                return new idVec3(current.oGet(0).origin);
             } else {
                 return getVec3_origin();
             }
@@ -519,10 +517,10 @@ public class Physics_StaticMulti {
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
             if (id >= 0 && id < clipModels.Num()) {
-                return current.oGet(id).axis;
+                return new idMat3(current.oGet(id).axis);
             }
             if (clipModels.Num() != 0) {
-                return current.oGet(0).axis;
+                return new idMat3(current.oGet(0).axis);
             } else {
                 return getMat3_identity();
             }

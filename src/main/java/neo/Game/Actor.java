@@ -540,7 +540,6 @@ public class Actor {
             idEntity[] ent = {null};
             idStr jointName = new idStr();
             float[] fovDegrees = {0};
-            copyJoints_t copyJoint = new copyJoints_t();
             int[] rank = {0}, team = {0};
             boolean[] use_combat_bbox = {false};
 
@@ -621,6 +620,7 @@ public class Actor {
                         continue;
                     }
 
+                    copyJoints_t copyJoint = new copyJoints_t();
                     jointName.oSet(kv.GetKey());
                     if (jointName.StripLeadingOnce("copy_joint_world ")) {
                         copyJoint.mod = JOINTMOD_WORLD_OVERRIDE;
@@ -1349,7 +1349,7 @@ public class Actor {
         public void SetupDamageGroups() {
             int i;
             idKeyValue arg;
-            idStr groupname;
+            idStr groupname = new idStr();
             idList<Integer/*jointHandle_t*/> jointList = new idList<>();
             int jointnum;
             float scale;
@@ -1358,7 +1358,7 @@ public class Actor {
             damageGroups.SetNum(animator.NumJoints());
             arg = spawnArgs.MatchPrefix("damage_zone ", null);
             while (arg != null) {
-                groupname = arg.GetKey();
+                groupname.oSet(arg.GetKey());
                 groupname.Strip("damage_zone ");
                 animator.GetJointList(arg.GetValue(), jointList);
                 for (i = 0; i < jointList.Num(); i++) {
@@ -1379,7 +1379,7 @@ public class Actor {
             arg = spawnArgs.MatchPrefix("damage_scale ", null);
             while (arg != null) {
                 scale = atof(arg.GetValue());
-                groupname = arg.GetKey();
+                groupname.oSet(arg.GetKey());
                 groupname.Strip("damage_scale ");
                 for (i = 0; i < damageScale.Num(); i++) {
                     if (groupname.equals(damageGroups.oGet(i))) {
@@ -2153,7 +2153,7 @@ public class Actor {
                     sndKV = spawnArgs.MatchPrefix("snd_", sndKV);
                 }
 
-                headEnt = (idAFAttachment) gameLocal.SpawnEntityType(idAFAttachment.class, null);
+                headEnt = (idAFAttachment) gameLocal.SpawnEntityType(idAFAttachment.class, args);
                 headEnt.SetName(va("%s_head", name));
                 headEnt.SetBody(this, headModel, damageJoint);
                 head.oSet(headEnt);

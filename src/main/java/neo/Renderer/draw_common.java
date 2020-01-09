@@ -51,9 +51,9 @@ import neo.Renderer.VertexCache.vertCache_s;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_arb.RB_ARB_DrawInteractions;
 import static neo.Renderer.draw_arb2.RB_ARB2_DrawInteractions;
-import static neo.Renderer.draw_nv10.RB_NV10_DrawInteractions;
-import static neo.Renderer.draw_nv20.RB_NV20_DrawInteractions;
-import static neo.Renderer.draw_r200.RB_R200_DrawInteractions;
+//import static neo.Renderer.draw_nv10.RB_NV10_DrawInteractions;
+//import static neo.Renderer.draw_nv20.RB_NV20_DrawInteractions;
+//import static neo.Renderer.draw_r200.RB_R200_DrawInteractions;
 import static neo.Renderer.qgl.qglAlphaFunc;
 import static neo.Renderer.qgl.qglBegin;
 import static neo.Renderer.qgl.qglBindProgramARB;
@@ -223,7 +223,7 @@ public class draw_common {
      =====================
      */
 
-    public static void RB_BakeTextureMatrixIntoTexgen(idPlane[] lightProject/*[3]*/, final float[] textureMatrix) {
+    public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
         float[] genMatrix = new float[16];
         float[] finale = new float[16];
 
@@ -282,9 +282,7 @@ public class draw_common {
             qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
         }
         if (pStage.texture.texgen == TG_SKYBOX_CUBE || pStage.texture.texgen == TG_WOBBLESKY_CUBE) {
-            for (vertCache_s dynamicTexCoords : surf.dynamicTexCoords) {
-                qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(dynamicTexCoords));
-            }
+            qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(surf.dynamicTexCoords));
         }
         if (pStage.texture.texgen == TG_SCREEN) {
             qglEnable(GL_TEXTURE_GEN_S);
@@ -786,22 +784,22 @@ public class draw_common {
 //	int	 w = backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1 + 1;
 //	pot = globalImages.currentRenderImage.uploadWidth;
 //	if ( w == pot ) {
-//		parm[0] = 1.0f;
+//		parm0[0] = 1.0f;
 //	} else {
-//		parm[0] = (float)(w-1) / pot;
+//		parm0[0] = (float)(w-1) / pot;
 //	}
 //
 //	int	 h = backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1 + 1;
 //	pot = globalImages.currentRenderImage.uploadHeight;
 //	if ( h == pot ) {
-//		parm[1] = 1.0;
+//		parm0[1] = 1.0;
 //	} else {
-//		parm[1] = (float)(h-1) / pot;
+//		parm0[1] = (float)(h-1) / pot;
 //	}
 //
-//	parm[2] = 0;
-//	parm[3] = 1;
-//	qglProgramEnvParameter4fvARB( GL_VERTEX_PROGRAM_ARB, 0, parm );
+//	parm0[2] = 0;
+//	parm0[3] = 1;
+//	qglProgramEnvParameter4fvARB( GL_VERTEX_PROGRAM_ARB, 0, parm0 );
 //}else{
         // screen power of two correction factor, assuming the copy to _currentRender
         // also copied an extra row and column for the bilerp
@@ -1209,7 +1207,7 @@ public class draw_common {
         // because we want to defer the matrix load because many
         // surfaces won't draw any ambient passes
         backEnd.currentSpace = null;
-        for (i = 0; i < numDrawSurfs; i++) {
+        for (i = 0; i < numDrawSurfs /*&& numDrawSurfs == 5*/; i++) {
             if (drawSurfs[i].material.SuppressInSubview()) {
                 continue;
             }
@@ -1488,10 +1486,10 @@ public class draw_common {
             // this gets used for both blend lights and shadow draws
             if (tri.ambientCache != null) {
                 idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
-                qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyz.ToFloatPtr());
+                qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             } else if (tri.shadowCache != null) {
                 shadowCache_s sc = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
-                qglVertexPointer(3, GL_FLOAT, 0/*sizeof(shadowCache_s)*/, sc.xyz.ToFloatPtr());
+                qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, sc.xyz.ToFloatPtr());
             }
 
             RB_DrawElementsWithCounters(tri);
@@ -1907,16 +1905,16 @@ public class draw_common {
                 break;
             case BE_ARB2:
                 RB_ARB2_DrawInteractions();
-                break;
-            case BE_NV20:
-                RB_NV20_DrawInteractions();
-                break;
-            case BE_NV10:
-                RB_NV10_DrawInteractions();
-                break;
-            case BE_R200:
-                RB_R200_DrawInteractions();
-                break;
+//                break;
+//            case BE_NV20:
+//                RB_NV20_DrawInteractions();
+//                break;
+//            case BE_NV10:
+//                RB_NV10_DrawInteractions();
+//                break;
+//            case BE_R200:
+//                RB_R200_DrawInteractions();
+//                break;
         }
 
         // disable stencil shadow test

@@ -71,10 +71,6 @@ public class Physics_Actor {
             super._deconstructor();
         }
 
-        public static void delete(idPhysics_Actor actor) {
-            actor._deconstructor();
-        }
-
         @Override
         public void Save(idSaveGame savefile) {
 

@@ -51,6 +51,7 @@ public class Plane {
 
         private final idVec3 abc = new idVec3();
         private float d;
+
         //
         //
 
@@ -390,13 +391,7 @@ public class Plane {
         }
 
         public boolean FromPoints(final idVec3 p1, final idVec3 p2, final idVec3 p3, boolean fixDegenerate) {
-            idVec3 vec3 = Normal().oSet(p1.oMinus(p2)).Cross(p3.oMinus(p2));
-
-            {
-                final float oldD = d;//save old d
-                this.oSet(vec3);     //set new values
-                d = oldD;            //replace the zeroed d with its original value
-            }
+            Normal().oSet(p1.oMinus(p2).Cross(p3.oMinus(p2)));
 
             if (Normalize(fixDegenerate) == 0.0f) {
                 return false;
@@ -593,6 +588,21 @@ public class Plane {
 
         public idVec4 ToVec4() {
             return new idVec4(abc.x, abc.y, abc.z, d);
+        }
+
+        public void ToVec4_oPluSet(final idVec4 v) {
+            abc.x += v.x;
+            abc.y += v.y;
+            abc.z += v.z;
+            d += v.w;
+        }
+
+        public void ToVec4_ToVec3_Cross(final idVec3 a, final idVec3 b) {
+            abc.Cross(a, b);
+        }
+
+        public void ToVec4_ToVec3_Normalize() {
+            abc.Normalize();
         }
 
         public float[] ToFloatPtr() {

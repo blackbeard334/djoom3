@@ -75,7 +75,10 @@ public class Physics {
         protected final int DBG_count   = DBG_counter++;
 
         // virtual						~idPhysics();
-        protected abstract void _deconstructor();
+        @Override
+        protected void _deconstructor() {
+            super._deconstructor();
+        }
 
         public static int SnapTimeToPhysicsFrame(int t) {
             int s;

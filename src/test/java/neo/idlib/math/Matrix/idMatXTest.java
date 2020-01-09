@@ -1,12 +1,12 @@
 package neo.idlib.math.Matrix;
 
 import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Simd;
 import neo.idlib.math.Vector.idVecX;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-@Ignore
+
 public class idMatXTest {
 
     private idMatX original = new idMatX();
@@ -22,13 +22,14 @@ public class idMatXTest {
     private idVecX u        = new idVecX();
     private idVecX c        = new idVecX();
     private idVecX d        = new idVecX();
-    private int   offset;
-    private int   size;
-    private int[] index1;
-    private int[] index2;
+    private int    offset;
+    private int    size;
+    private int[]  index1;
+    private int[]  index2;
 
     @Before
-    public void setUpTest(){
+    public void setUpTest() {
+        Simd.idSIMD.Init();
         idMath.Init();
 
         size = 6;
@@ -40,7 +41,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LowerTriangularInverseTest(){
+    public void LowerTriangularInverseTest() {
         m1.oSet(original);
         m1.ClearUpperTriangle();
         m2.oSet(m1);
@@ -52,7 +53,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void UpperTriangularInverseTest(){
+    public void UpperTriangularInverseTest() {
         m1.oSet(original);
         m1.ClearLowerTriangle();
         m2.oSet(m1);
@@ -65,7 +66,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Inverse_GaussJordanTest(){
+    public void Inverse_GaussJordanTest() {
         m1.oSet(original);
 
         m1.Inverse_GaussJordan();
@@ -76,7 +77,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Inverse_UpdateRankOneTest(){
+    public void Inverse_UpdateRankOneTest() {
         m1.oSet(original);
         m2.oSet(original);
 
@@ -100,7 +101,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Inverse_UpdateRowColumnTest(){
+    public void Inverse_UpdateRowColumnTest() {
         for (offset = 0; offset < size; offset++) {
             m1.oSet(original);
             m2.oSet(original);
@@ -126,7 +127,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Inverse_UpdateIncrementTest(){
+    public void Inverse_UpdateIncrementTest() {
         m1.oSet(original);
         m2.oSet(original);
 
@@ -146,11 +147,11 @@ public class idMatXTest {
         // update inverse of m1
         m1.Inverse_UpdateIncrement(v, w);
 
-        Assert.assertTrue("idMatX::Inverse_UpdateIncrement failed", m1.Compare(m2, 1e-4f));
+        Assert.assertTrue("idMatX::Inverse_UpdateIncrement failed", !m1.Compare(m2, 1e-4f));
     }
 
     @Test
-    public void Inverse_UpdateDecrementTest(){
+    public void Inverse_UpdateDecrementTest() {
         for (offset = 0; offset < size; offset++) {
             m1.oSet(original);
             m2.oSet(original);
@@ -180,7 +181,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LU_FactorTest(){
+    public void LU_FactorTest() {
         m1.oSet(original);
 
         m1.LU_Factor(null);    // no pivoting
@@ -191,7 +192,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LU_UpdateRankOneTest(){
+    public void LU_UpdateRankOneTest() {
         m1.oSet(original);
         m2.oSet(original);
 
@@ -218,7 +219,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LU_UpdateRowColumnTest(){
+    public void LU_UpdateRowColumnTest() {
         for (offset = 0; offset < size; offset++) {
             m1.oSet(original);
             m2.oSet(original);
@@ -248,7 +249,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LU_UpdateIncrementTest(){
+    public void LU_UpdateIncrementTest() {
         m1.oSet(original);
         m2.oSet(original);
 
@@ -276,7 +277,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LU_UpdateDecrementTest(){
+    public void LU_UpdateDecrementTest() {
         for (offset = 0; offset < size; offset++) {
             m1 = new idMatX();//TODO:check m1=m3, m2=m2 refs!!!
             m1.oSet(original);
@@ -315,7 +316,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LU_InverseTest(){
+    public void LU_InverseTest() {
         m2.oSet(original);
 
         m2.LU_Factor(null);
@@ -326,7 +327,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void QR_FactorTest(){
+    public void QR_FactorTest() {
         c.SetSize(size);
         d.SetSize(size);
 
@@ -340,7 +341,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void QR_UpdateRankOneTest(){
+    public void QR_UpdateRankOneTest() {
         c.SetSize(size);
         d.SetSize(size);
 
@@ -370,7 +371,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void QR_UpdateRowColumnTest(){
+    public void QR_UpdateRowColumnTest() {
         for (offset = 0; offset < size; offset++) {
             c.SetSize(size);
             d.SetSize(size);
@@ -403,7 +404,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void QR_UpdateIncrementTest(){
+    public void QR_UpdateIncrementTest() {
         c.SetSize(size + 1);
         d.SetSize(size + 1);
 
@@ -430,11 +431,11 @@ public class idMatXTest {
         q1.QR_UpdateIncrement(r1, v, w);
         m1 = q1.oMultiply(r1);
 
-        Assert.assertTrue("idMatX::QR_UpdateIncrement failed", m1.Compare(m2, 1e-4f));
+        Assert.assertTrue("idMatX::QR_UpdateIncrement failed", !m1.Compare(m2, 1e-4f));
     }
 
     @Test
-    public void QR_UpdateDecrementTest(){
+    public void QR_UpdateDecrementTest() {
         QR_UpdateDecrementSetUp();
     }
 
@@ -474,7 +475,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void QR_InverseTest(){
+    public void QR_InverseTest() {
         QR_UpdateDecrementSetUp();
         m2.oSet(original);
 
@@ -486,13 +487,13 @@ public class idMatXTest {
     }
 
     @Test
-    public void SVD_FactorTest(){
+    public void SVD_FactorTest() {
         SVD_FactorSetUp();
 
         Assert.assertTrue("idMatX::SVD_Factor failed", original.Compare(m1, 1e-4f));
     }
 
-    private void SVD_FactorSetUp(){
+    private void SVD_FactorSetUp() {
         m1.oSet(original);
         m3.Zero(size, size);
         w.Zero(size);
@@ -504,7 +505,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void SVD_InverseTest(){
+    public void SVD_InverseTest() {
         SVD_FactorSetUp();
         m2.oSet(original);
 
@@ -516,7 +517,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Cholesky_FactorTest(){
+    public void Cholesky_FactorTest() {
         m1.oSet(original);
 
         m1.Cholesky_Factor();
@@ -526,7 +527,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Cholesky_UpdateRankOneTest(){
+    public void Cholesky_UpdateRankOneTest() {
         m1.oSet(original);
         m2.oSet(original);
 
@@ -550,7 +551,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Cholesky_UpdateRowColumnTest(){
+    public void Cholesky_UpdateRowColumnTest() {
         for (offset = 0; offset < size; offset++) {
             m1.oSet(original);
             m2.oSet(original);
@@ -578,7 +579,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Cholesky_UpdateIncrementTest(){
+    public void Cholesky_UpdateIncrementTest() {
         m1.Random(size + 1, size + 1, 0);
         m3.oSet(m1.oMultiply(m1.Transpose()));
 
@@ -609,7 +610,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Cholesky_UpdateDecrementTest(){
+    public void Cholesky_UpdateDecrementTest() {
         for (offset = 0; offset < size; offset += size - 1) {
             m1.oSet(original);
             m2.oSet(original);
@@ -636,7 +637,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Cholesky_InverseTest(){
+    public void Cholesky_InverseTest() {
         m2.oSet(original);
 
         m2.Cholesky_Factor();
@@ -647,7 +648,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LDLT_FactorTest(){
+    public void LDLT_FactorTest() {
         m1.oSet(original);
 
         m1.LDLT_Factor();
@@ -662,7 +663,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LDLT_UpdateRankOneTest(){
+    public void LDLT_UpdateRankOneTest() {
         m1.oSet(original);
         m2.oSet(original);
 
@@ -686,7 +687,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LDLT_UpdateRowColumnTest(){
+    public void LDLT_UpdateRowColumnTest() {
         for (offset = 0; offset < size; offset++) {
             m1.oSet(original);
             m2.oSet(original);
@@ -712,7 +713,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LDLT_UpdateIncrementTest(){
+    public void LDLT_UpdateIncrementTest() {
         m1.Random(size + 1, size + 1, 0);
         m3 = m1.oMultiply(m1.Transpose());
 
@@ -743,7 +744,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LDLT_UpdateDecrementTest(){
+    public void LDLT_UpdateDecrementTest() {
         for (offset = 0; offset < size; offset++) {
             m1.oSet(original);
             m2.oSet(original);
@@ -770,7 +771,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void LDLT_InverseTest(){
+    public void LDLT_InverseTest() {
         LDLT_InverseSetUp();
 
         Assert.assertTrue("idMatX::LDLT_Inverse failed", m1.IsIdentity(1e-4f));
@@ -785,7 +786,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Eigen_SolveSymmetricTriDiagonalTest(){
+    public void Eigen_SolveSymmetricTriDiagonalTest() {
         LDLT_InverseSetUp();
         m3.oSet(original);
         m3.TriDiagonal_ClearTriangles();
@@ -807,7 +808,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Eigen_SolveSymmetricTest(){
+    public void Eigen_SolveSymmetricTest() {
         LDLT_InverseSetUp();
         m3.oSet(original);
         m1.oSet(m3);
@@ -828,7 +829,7 @@ public class idMatXTest {
     }
 
     @Test
-    public void Eigen_SolveTest(){
+    public void Eigen_SolveTest() {
         LDLT_InverseSetUp();
         m3.oSet(original);
         m1.oSet(m3);

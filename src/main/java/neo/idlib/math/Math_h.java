@@ -65,7 +65,7 @@ public class Math_h {
     }
 
     public static boolean FLOAT_IS_NAN(float x) /*(((*(const unsigned long *)&x) & 0x7f800000) == 0x7f800000)*/ {
-        return x == Float.NaN;
+        return Float.isNaN(x);
     }
 
     static boolean FLOAT_IS_INF(float x) {

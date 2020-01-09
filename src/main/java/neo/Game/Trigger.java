@@ -451,7 +451,7 @@ public class Trigger {
             if (delay > 0) {
                 // don't allow it to trigger again until our delay has passed
                 nextTriggerTime += SEC2MS(delay + random_delay * gameLocal.random.CRandomFloat());
-                PostEventSec(EV_TriggerAction, delay, activator);
+                PostEventSec(EV_TriggerAction, delay, _activator);
             } else {
                 TriggerAction(activator);
             }
@@ -771,6 +771,8 @@ public class Trigger {
          */
         @Override
         public void Spawn() {
+            super.Spawn();
+
             random = spawnArgs.GetFloat("random", "1");
             wait = spawnArgs.GetFloat("wait", "1");
             on = spawnArgs.GetBool("start_on", "0");

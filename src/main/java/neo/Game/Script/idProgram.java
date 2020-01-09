@@ -1025,6 +1025,9 @@ public final class idProgram {
     }
 
     public statement_s AllocStatement() {
+        if (statements.Num() == 61960) {
+            int a = 0;
+        }
         if (statements.Num() >= statements.Max()) {
             throw new idCompileError(va("Exceeded maximum allowed number of statements (%d)", statements.Max()));
         }
@@ -1032,6 +1035,9 @@ public final class idProgram {
     }
 
     public statement_s GetStatement(int index) {
+        if (index == 61961) {
+            int a = 0;
+        }
         return statements.oGet(index);
     }
 

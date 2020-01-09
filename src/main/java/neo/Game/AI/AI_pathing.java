@@ -94,8 +94,8 @@ public class AI_pathing {
     static class pathTrace_s {
 
         float    fraction;
-        idVec3   endPos;
-        idVec3   normal;
+        idVec3   endPos = new idVec3();
+        idVec3   normal = new idVec3();
         idEntity blockingEntity;
     };
 
@@ -1015,7 +1015,7 @@ public class AI_pathing {
      ============
      */
     static boolean PathTrace(final idEntity ent, final idAAS aas, final idVec3 start, final idVec3 end, int stopEvent, pathTrace_s trace, predictedPath_s path) {
-        trace_s[] clipTrace = {null};
+        trace_s[] clipTrace = {new trace_s()};
         aasTrace_s aasTrace = new aasTrace_s();
 
 //	memset( &trace, 0, sizeof( trace ) );TODO:
@@ -1046,15 +1046,15 @@ public class AI_pathing {
             if (clipTrace[0].fraction >= 1.0f) {
 
                 trace.fraction = aasTrace.fraction;
-                trace.endPos = aasTrace.endpos;
-                trace.normal = aas.GetPlane(aasTrace.planeNum).Normal();
+                trace.endPos.oSet(aasTrace.endpos);
+                trace.normal.oSet(aas.GetPlane(aasTrace.planeNum).Normal());
                 trace.blockingEntity = gameLocal.world;
 
                 if (aasTrace.fraction < 1.0f) {
                     if ((stopEvent & SE_ENTER_LEDGE_AREA) != 0) {
                         if ((aas.AreaFlags(aasTrace.blockingAreaNum) & AREA_LEDGE) != 0) {
-                            path.endPos = trace.endPos;
-                            path.endNormal = trace.normal;
+                            path.endPos.oSet(trace.endPos);
+                            path.endNormal.oSet(trace.normal);
                             path.endEvent = SE_ENTER_LEDGE_AREA;
                             path.blockingEntity = trace.blockingEntity;
 
@@ -1066,8 +1066,8 @@ public class AI_pathing {
                     }
                     if ((stopEvent & SE_ENTER_OBSTACLE) != 0) {
                         if ((aas.AreaTravelFlags(aasTrace.blockingAreaNum) & TFL_INVALID) != 0) {
-                            path.endPos = trace.endPos;
-                            path.endNormal = trace.normal;
+                            path.endPos.oSet(trace.endPos);
+                            path.endNormal.oSet(trace.normal);
                             path.endEvent = SE_ENTER_OBSTACLE;
                             path.blockingEntity = trace.blockingEntity;
 

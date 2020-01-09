@@ -1,5 +1,7 @@
 package neo.framework;
 
+import java.util.Objects;
+
 /**
  *
  */
@@ -65,7 +67,7 @@ public class BuildDefines {
 
     // if this is defined, the executable positively won't work with any paks other
     // than the demo pak, even if productid is present.
-    public static final boolean ID_DEMO_BUILD      = false;
+    public static final boolean ID_DEMO_BUILD      = Objects.equals(System.getProperty("ID_DEMO_BUILD"), Boolean.TRUE.toString());
 
     // don't define ID_ALLOW_TOOLS when we don't want tool code in the executable.
     public static final boolean ID_ALLOW_TOOLS;

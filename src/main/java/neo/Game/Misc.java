@@ -149,6 +149,7 @@ public class Misc {
         @Override
         public void Spawn() {
             // this just holds dict information
+            super.Spawn();
         }
 
         @Override
@@ -746,6 +747,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             Hide();
         }
 
@@ -938,7 +941,7 @@ public class Misc {
             eventCallbacks.put(EV_FindTargets, (eventCallback_t0<idForceField>) idForceField::Event_FindTargets );
         }
 
-        private idForce_Field forceField;
+        private idForce_Field forceField = new idForce_Field();
         //
         //
 
@@ -954,6 +957,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             idVec3 uniform = new idVec3();
             float[] explosion = {0}, implosion = {0}, randomTorque = {0};
 
@@ -1826,6 +1831,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             final String smokeName = spawnArgs.GetString("smoke");
             if (!smokeName.isEmpty()) {// != '\0' ) {
                 smoke = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
@@ -2213,6 +2220,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             if (gameLocal.vacuumAreaNum != -1) {
                 gameLocal.Warning("idVacuumEntity::Spawn: multiple idVacuumEntity in level");
                 return;
@@ -2263,6 +2272,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             float[] width = new float[1];
 
             if (spawnArgs.GetFloat("width", "0", width)) {
@@ -2499,11 +2510,14 @@ public class Misc {
         //
 
         public idShaking() {
+            physicsObj = new idPhysics_Parametric();
             active = false;
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             physicsObj.SetSelf(this);
             physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
             physicsObj.SetOrigin(GetPhysics().GetOrigin());
@@ -2592,14 +2606,14 @@ public class Misc {
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idEarthQuake>) idEarthQuake::Event_Activate);
         }
 
-        private int nextTriggerTime;
-        private int shakeStopTime;
-        private float wait;
-        private float random;
+        private int     nextTriggerTime;
+        private int     shakeStopTime;
+        private float   wait;
+        private float   random;
         private boolean triggered;
         private boolean playerOriented;
         private boolean disabled;
-        private float shakeTime;
+        private float   shakeTime;
         //
         //
 
@@ -2616,6 +2630,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             nextTriggerTime = 0;
             shakeStopTime = 0;
             wait = spawnArgs.GetFloat("wait", "15");
@@ -2779,6 +2795,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             portal[0] = gameRenderWorld.FindPortal(GetPhysics().GetAbsBounds().Expand(32.0f));
             if (portal[0] > 0) {
                 state[0] = spawnArgs.GetBool("start_on");
@@ -2921,6 +2939,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             state[0] = spawnArgs.GetBool("start_on");
             gameLocal.SetAASAreaState(GetPhysics().GetAbsBounds(), AREACONTENTS_OBSTACLE, state[0]);
         }
@@ -2980,17 +3000,6 @@ public class Misc {
             eventCallbacks.put(EV_ResetRadioHud, (eventCallback_t1<idFuncRadioChatter>) idFuncRadioChatter::Event_ResetRadioHud);
         }
 
-        private int end_time;
-        private float throw_time;
-        private float shake_time;
-        private idVec3 shake_ang;
-        private float speed;
-        private int min_wait;
-        private int max_wait;
-        private idEntityPtr<idActor> target;
-        private idList<Integer> targetTime;
-        private idList<idVec3> lastTargetPos;
-        //
         private float time;
         //
         //
@@ -3001,6 +3010,8 @@ public class Misc {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             time = spawnArgs.GetFloat("time", "5.0");
         }
 
@@ -3107,15 +3118,19 @@ public class Misc {
             end_time = 0;
             throw_time = 0.0f;
             shake_time = 0.0f;
-            shake_ang.Zero();
+            shake_ang = new idVec3();
             speed = 0.0f;
             min_wait = 0;
             max_wait = 0;
             fl.neverDormant = false;
+            targetTime = new idList<>();
+            lastTargetPos = new idList<>();
         }
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             throw_time = spawnArgs.GetFloat("time", "5");
             speed = spawnArgs.GetFloat("speed", "1200");
             shake_time = spawnArgs.GetFloat("shake_time", "1");

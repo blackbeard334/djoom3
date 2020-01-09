@@ -408,22 +408,18 @@ public class DeclParticle {
          */
         // returns the number of verts created, which will range from 0 to 4*NumQuadsPerParticle()
         public int CreateParticle(particleGen_t g, idDrawVert[] verts) throws idException {
-            return CreateParticle(g, verts, 0);
-        }
-
-        public int CreateParticle(particleGen_t g, idDrawVert[] verts, final int offset) throws idException {
             idVec3 origin = new idVec3();
 
-            verts[offset + 0].Clear();
-            verts[offset + 1].Clear();
-            verts[offset + 2].Clear();
-            verts[offset + 3].Clear();
+            verts[0].Clear();
+            verts[1].Clear();
+            verts[2].Clear();
+            verts[3].Clear();
 
             ParticleColors(g, verts);
 
             // if we are completely faded out, kill the particle
-            if (verts[offset + 0].color[0] == 0 && verts[offset + 0].color[1] == 0
-                    && verts[offset + 0].color[2] == 0 && verts[offset + 0].color[3] == 0) {
+            if (verts[0].color[0] == 0 && verts[0].color[1] == 0
+                    && verts[0].color[2] == 0 && verts[0].color[3] == 0) {
                 return 0;
             }
 
@@ -442,19 +438,19 @@ public class DeclParticle {
             float frac = g.animationFrameFrac;
             float iFrac = 1.0f - frac;
             for (int i = 0; i < numVerts; i++) {
-                verts[offset + numVerts + i] = verts[offset + i];
+                verts[numVerts + i].oSet(verts[i]);
 
-                verts[offset + numVerts + i].st.x += width;
+                verts[numVerts + i].st.x += width;
 
-                verts[offset + numVerts + i].color[0] *= frac;
-                verts[offset + numVerts + i].color[1] *= frac;
-                verts[offset + numVerts + i].color[2] *= frac;
-                verts[offset + numVerts + i].color[3] *= frac;
+                verts[numVerts + i].color[0] *= frac;
+                verts[numVerts + i].color[1] *= frac;
+                verts[numVerts + i].color[2] *= frac;
+                verts[numVerts + i].color[3] *= frac;
 
-                verts[offset + i].color[0] *= iFrac;
-                verts[offset + i].color[1] *= iFrac;
-                verts[offset + i].color[2] *= iFrac;
-                verts[offset + i].color[3] *= iFrac;
+                verts[i].color[0] *= iFrac;
+                verts[i].color[1] *= iFrac;
+                verts[i].color[2] *= iFrac;
+                verts[i].color[3] *= iFrac;
             }
 
             return numVerts * 2;
@@ -563,7 +559,7 @@ public class DeclParticle {
                         break;
                     }
                     case PDIR_OUTWARD: {
-                        dir = origin;
+                        dir.oSet(origin);
                         dir.Normalize();
                         dir.oPluSet(2, directionParms[0]);
                         break;
@@ -662,7 +658,7 @@ public class DeclParticle {
 
             if (orientation == POR_AIMED) {
                 // reset the values to an earlier time to get a previous origin
-                idRandom currentRandom = g.random;
+                idRandom currentRandom = new idRandom(g.random);
                 float currentAge = g.age;
                 float currentFrac = g.frac;
 //		idDrawVert []verts_p = verts[verts_p;
@@ -680,7 +676,7 @@ public class DeclParticle {
                 float t = 0;
 
                 for (int i = 0; i <= numTrails; i++) {
-                    g.random = g.originalRandom;
+                    g.random = new idRandom(g.originalRandom);
                     g.age = currentAge - (i + 1) * trailTime / (numTrails + 1);	// time to back up
                     g.frac = g.age / particleLife;
 
@@ -699,10 +695,10 @@ public class DeclParticle {
                     left = up.Cross(forwardDir);
                     left.oMulSet(psize);
 
-                    verts[verts_p + 0] = verts[0];
-                    verts[verts_p + 1] = verts[1];
-                    verts[verts_p + 2] = verts[2];
-                    verts[verts_p + 3] = verts[3];
+                    verts[verts_p + 0].oSet(verts[0]);
+                    verts[verts_p + 1].oSet(verts[1]);
+                    verts[verts_p + 2].oSet(verts[2]);
+                    verts[verts_p + 3].oSet(verts[3]);
 
                     if (i == 0) {
                         verts[verts_p + 0].xyz = stepOrigin.oMinus(left);
@@ -735,7 +731,7 @@ public class DeclParticle {
                     stepLeft = left;
                 }
 
-                g.random = currentRandom;
+                g.random = new idRandom(currentRandom);
                 g.age = currentAge;
                 g.frac = currentFrac;
 
@@ -799,10 +795,10 @@ public class DeclParticle {
             left.oMulSet(width);
             up.oMulSet(height);
 
-            verts[0].xyz = origin.oMinus(left).oPluSet(up);
-            verts[1].xyz = origin.oPluSet(left).oPluSet(up);
+            verts[0].xyz = origin.oMinus(left).oPlus(up);
+            verts[1].xyz = origin.oPlus(left).oPlus(up);
             verts[2].xyz = origin.oMinus(left).oMinus(up);
-            verts[3].xyz = origin.oPluSet(left).oMinus(up);
+            verts[3].xyz = origin.oPlus(left).oMinus(up);
 
             return 4;
         }
@@ -841,7 +837,7 @@ public class DeclParticle {
             verts[2].st.oSet(0, s);
             verts[2].st.oSet(1, t + height);
 
-            verts[3].st.oSet(1, s + width);
+            verts[3].st.oSet(0, s + width);
             verts[3].st.oSet(1, t + height);
         }
 
@@ -1121,7 +1117,7 @@ public class DeclParticle {
 
             // just step through a lot of possible particles as a representative sampling
             for (int i = 0; i < 1000; i++) {
-                g.random = g.originalRandom = steppingRandom;
+                g.random = new idRandom(g.originalRandom = new idRandom(steppingRandom));
 
                 int maxMsec = (int) (stage.particleLife * 1000);
                 for (int inCycleTime = 0; inCycleTime < maxMsec; inCycleTime += 16) {

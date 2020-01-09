@@ -322,18 +322,20 @@ public class Box {
             extents.Zero();
             axis.Identity();
         }
-//
 
-        public idVec3 GetCenter() {                        // returns center of the box
-            return center;
+        // returns center of the box
+        public idVec3 GetCenter() {
+            return new idVec3(center);
         }
 
-        public idVec3 GetExtents() {                        // returns extents of the box
-            return extents;
+        // returns extents of the box
+        public idVec3 GetExtents() {
+            return new idVec3(extents);
         }
 
-        public idMat3 GetAxis() {                            // returns the axis of the box
-            return axis;
+        // returns the axis of the box
+        public idMat3 GetAxis() {
+            return new idMat3(axis);
         }
 
         public float GetVolume() {                        // returns the volume of the box

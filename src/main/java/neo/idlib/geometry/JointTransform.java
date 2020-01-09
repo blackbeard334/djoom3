@@ -67,6 +67,10 @@ public class JointTransform {
             System.arraycopy(mat, 0, this.mat, 0, this.mat.length);
         }
 
+        public idJointMat(final idJointMat mat) {
+            this(mat.mat);
+        }
+
         public void SetRotation(final idMat3 m) {
             // NOTE: idMat3 is transposed because it is column-major
             mat[0 * 4 + 0] = m.oGet(0).oGet(0);

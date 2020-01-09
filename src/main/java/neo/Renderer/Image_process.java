@@ -1,6 +1,7 @@
 package neo.Renderer;
 
 import java.nio.ByteBuffer;
+
 import static neo.idlib.Lib.idLib.common;
 import org.lwjgl.BufferUtils;
 
@@ -62,22 +63,14 @@ public class Image_process {
             inrow2.position(4 * inwidth * (int) ((i + 0.75f) * inheight / outheight));
             frac = fracstep >> 1;
             for (j = 0; j < outwidth; j++) {
-                pix1 = inrow.duplicate();
-                pix1.position(p1[j]);
-                pix2 = inrow.duplicate();
-                pix2.position(p2[j]);
-                pix3 = inrow2.duplicate();
-                pix3.position(p1[j]);
-                pix4 = inrow2.duplicate();
-                pix4.position(p2[j]);
-//			out_p[j*4+0] = (pix1[0] + pix2[0] + pix3[0] + pix4[0])>>2;
-//			out_p[j*4+1] = (pix1[1] + pix2[1] + pix3[1] + pix4[1])>>2;
-//			out_p[j*4+2] = (pix1[2] + pix2[2] + pix3[2] + pix4[2])>>2;
-//			out_p[j*4+3] = (pix1[3] + pix2[3] + pix3[3] + pix4[3])>>2;
-                out_p.put((byte) ((pix1.get() + pix2.get() + pix3.get() + pix4.get()) >> 2));
-                out_p.put((byte) ((pix1.get() + pix2.get() + pix3.get() + pix4.get()) >> 2));
-                out_p.put((byte) ((pix1.get() + pix2.get() + pix3.get() + pix4.get()) >> 2));
-                out_p.put((byte) ((pix1.get() + pix2.get() + pix3.get() + pix4.get()) >> 2));
+                pix1 = (ByteBuffer) inrow.duplicate().position(p1[j]);
+                pix2 = (ByteBuffer) inrow.duplicate().position(p2[j]);
+                pix3 = (ByteBuffer) inrow2.duplicate().position(p1[j]);
+                pix4 = (ByteBuffer) inrow2.duplicate().position(p2[j]);
+                out_p.put((byte) (addUnsignedBytes(pix1.get(), pix2.get(), pix3.get(), pix4.get()) >> 2));
+                out_p.put((byte) (addUnsignedBytes(pix1.get(), pix2.get(), pix3.get(), pix4.get()) >> 2));
+                out_p.put((byte) (addUnsignedBytes(pix1.get(), pix2.get(), pix3.get(), pix4.get()) >> 2));
+                out_p.put((byte) (addUnsignedBytes(pix1.get(), pix2.get(), pix3.get(), pix4.get()) >> 2));
             }
         }
 
@@ -103,7 +96,7 @@ public class Image_process {
         out_p = 0;
 
         for (i = 0; i < outheight; i++, out_p += outwidth * 4) {
-            inrow = /*in +*/ (int) (4 * inwidth * ((i + 0.25f) * inheight / outheight));
+            inrow = /*in +*/ (4 * inwidth * (int) ((i + 0.25f) * inheight / outheight));
             for (j = 0; j < outwidth; j++) {
                 k = j * inwidth / outwidth;
                 pix1 = inrow + k * 4;
@@ -278,10 +271,10 @@ public class Image_process {
                 }
             } else {
                 for (i = 0; i < width; i++, out_p += 4, in_p += 8) {
-                    out.put(out_p + 0, (byte) ((in.get(in_p + 0) + in.get(in_p + 4)) >> 1));
-                    out.put(out_p + 1, (byte) ((in.get(in_p + 1) + in.get(in_p + 5)) >> 1));
-                    out.put(out_p + 2, (byte) ((in.get(in_p + 2) + in.get(in_p + 6)) >> 1));
-                    out.put(out_p + 3, (byte) ((in.get(in_p + 3) + in.get(in_p + 7)) >> 1));
+                    out.put(out_p + 0, (byte) (addUnsignedBytes(in.get(in_p + 0), in.get(in_p + 4)) >> 1));
+                    out.put(out_p + 1, (byte) (addUnsignedBytes(in.get(in_p + 1), in.get(in_p + 5)) >> 1));
+                    out.put(out_p + 2, (byte) (addUnsignedBytes(in.get(in_p + 2), in.get(in_p + 6)) >> 1));
+                    out.put(out_p + 3, (byte) (addUnsignedBytes(in.get(in_p + 3), in.get(in_p + 7)) >> 1));
                 }
             }
             return out;
@@ -289,10 +282,10 @@ public class Image_process {
 
         for (i = 0; i < height; i++, in_p += row) {
             for (j = 0; j < width; j++, out_p += 4, in_p += 8) {
-                out.put(out_p + 0, (byte) ((in.get(in_p + 0) + in.get(in_p + 4) + in.get(in_p + row + 0) + in.get(in_p + row + 4)) >> 2));
-                out.put(out_p + 1, (byte) ((in.get(in_p + 1) + in.get(in_p + 5) + in.get(in_p + row + 1) + in.get(in_p + row + 5)) >> 2));
-                out.put(out_p + 2, (byte) ((in.get(in_p + 2) + in.get(in_p + 6) + in.get(in_p + row + 2) + in.get(in_p + row + 6)) >> 2));
-                out.put(out_p + 3, (byte) ((in.get(in_p + 3) + in.get(in_p + 7) + in.get(in_p + row + 3) + in.get(in_p + row + 7)) >> 2));
+                out.put(out_p + 0, (byte) (addUnsignedBytes(in.get(in_p + 0), in.get(in_p + 4), in.get(in_p + row + 0), in.get(in_p + row + 4)) >> 2));
+                out.put(out_p + 1, (byte) (addUnsignedBytes(in.get(in_p + 1), in.get(in_p + 5), in.get(in_p + row + 1), in.get(in_p + row + 5)) >> 2));
+                out.put(out_p + 2, (byte) (addUnsignedBytes(in.get(in_p + 2), in.get(in_p + 6), in.get(in_p + row + 2), in.get(in_p + row + 6)) >> 2));
+                out.put(out_p + 3, (byte) (addUnsignedBytes(in.get(in_p + 3), in.get(in_p + 7), in.get(in_p + row + 3), in.get(in_p + row + 7)) >> 2));
             }
         }
 
@@ -302,6 +295,14 @@ public class Image_process {
         }
 
         return out;
+    }
+
+    static int addUnsignedBytes(byte... bytes) {
+        int result = 0;
+        for (byte b : bytes) {
+            result += b & 0xFF;
+        }
+        return result;
     }
 
     /*
@@ -359,38 +360,38 @@ public class Image_process {
         for (k = 0; k < depth; k++, in_p += plane) {
             for (i = 0; i < height; i++, in_p += row) {
                 for (j = 0; j < width; j++, out_p += 4, in_p += 8) {
-                    out.put(out_p + 0, (byte) ((in.get(in_p + 0)
-                            + in.get(in_p + 4)
-                            + in.get(in_p + row + 0)
-                            + in.get(in_p + row + 4)
-                            + in.get(in_p + plane + 0)
-                            + in.get(in_p + plane + 4)
-                            + in.get(in_p + plane + row + 0)
-                            + in.get(in_p + plane + row + 4)) >> 3));
-                    out.put(out_p + 1, (byte) ((in.get(in_p + 1)
-                            + in.get(in_p + 5)
-                            + in.get(in_p + row + 1)
-                            + in.get(in_p + row + 5)
-                            + in.get(in_p + plane + 1)
-                            + in.get(in_p + plane + 5)
-                            + in.get(in_p + plane + row + 1)
-                            + in.get(in_p + plane + row + 5)) >> 3));
-                    out.put(out_p + 2, (byte) ((in.get(in_p + 2)
-                            + in.get(in_p + 6)
-                            + in.get(in_p + row + 2)
-                            + in.get(in_p + row + 6)
-                            + in.get(in_p + plane + 2)
-                            + in.get(in_p + plane + 6)
-                            + in.get(in_p + plane + row + 2)
-                            + in.get(in_p + plane + row + 6)) >> 3));
-                    out.put(out_p + 3, (byte) ((in.get(in_p + 3)
-                            + in.get(in_p + 7)
-                            + in.get(in_p + row + 3)
-                            + in.get(in_p + row + 7)
-                            + in.get(in_p + plane + 3)
-                            + in.get(in_p + plane + 6)
-                            + in.get(in_p + plane + row + 3)
-                            + in.get(in_p + plane + row + 6)) >> 3));
+                    out.put(out_p + 0, (byte) (addUnsignedBytes(in.get(in_p + 0),
+                            in.get(in_p + 4),
+                            in.get(in_p + row + 0),
+                            in.get(in_p + row + 4),
+                            in.get(in_p + plane + 0),
+                            in.get(in_p + plane + 4),
+                            in.get(in_p + plane + row + 0),
+                            in.get(in_p + plane + row + 4)) >> 3));
+                    out.put(out_p + 1, (byte) (addUnsignedBytes(in.get(in_p + 1),
+                            in.get(in_p + 5),
+                            in.get(in_p + row + 1),
+                            in.get(in_p + row + 5),
+                            in.get(in_p + plane + 1),
+                            in.get(in_p + plane + 5),
+                            in.get(in_p + plane + row + 1),
+                            in.get(in_p + plane + row + 5)) >> 3));
+                    out.put(out_p + 2, (byte) (addUnsignedBytes(in.get(in_p + 2),
+                            in.get(in_p + 6),
+                            in.get(in_p + row + 2),
+                            in.get(in_p + row + 6),
+                            in.get(in_p + plane + 2),
+                            in.get(in_p + plane + 6),
+                            in.get(in_p + plane + row + 2),
+                            in.get(in_p + plane + row + 6)) >> 3));
+                    out.put(out_p + 3, (byte) (addUnsignedBytes(in.get(in_p + 3),
+                            in.get(in_p + 7),
+                            in.get(in_p + row + 3),
+                            in.get(in_p + row + 7),
+                            in.get(in_p + plane + 3),
+                            in.get(in_p + plane + 6),
+                            in.get(in_p + plane + row + 3),
+                            in.get(in_p + plane + row + 6)) >> 3));
                 }
             }
         }
@@ -421,9 +422,9 @@ public class Image_process {
         premult[2] = blend[2] * blend[3];
 
         for (i = 0; i < pixelCount; i++/*, data+=4*/) {
-            data.put(i * 4 + 0, (byte) ((data.get(i * 4 + 0) * inverseAlpha + premult[0]) >> 9));//TODO:signed byte arithmetic(overflow)
-            data.put(i * 4 + 1, (byte) ((data.get(i * 4 + 1) * inverseAlpha + premult[1]) >> 9));
-            data.put(i * 4 + 2, (byte) ((data.get(i * 4 + 2) * inverseAlpha + premult[2]) >> 9));
+            data.put(i * 4 + 0, (byte) ((data.get(i * 4 + 0) & 0xFF * inverseAlpha + premult[0]) >> 9));//TODO:signed byte arithmetic(overflow)
+            data.put(i * 4 + 1, (byte) ((data.get(i * 4 + 1) & 0xFF * inverseAlpha + premult[1]) >> 9));
+            data.put(i * 4 + 2, (byte) ((data.get(i * 4 + 2) & 0xFF * inverseAlpha + premult[2]) >> 9));
         }
     }
 
@@ -454,8 +455,9 @@ public class Image_process {
         for (i = 0; i < width; i++) {
             for (j = 0; j < height / 2; j++) {
                 temp = data.getInt(j * width + i);
-                data.putInt(j * width + i, data.getInt((height - 1 - j) * width + i));
-                data.putInt((height - 1 - j) * width + i, temp);
+                final int index = (height - 1 - j) * width + i;
+                data.putInt(j * width + i, data.getInt(index));
+                data.putInt(index, temp);
             }
         }
     }

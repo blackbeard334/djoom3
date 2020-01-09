@@ -43,7 +43,9 @@ import org.lwjgl.BufferUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -151,7 +153,7 @@ public class tr_local {
     // idScreenRect gets carried around with each drawSurf, so it makes sense
     // to keep it compact, instead of just using the idBounds class
     public static class idScreenRect {
-      
+
         public int x1, y1, x2, y2;					// inclusive pixel bounds inside viewport
         public float zmin, zmax;					// for depth bounds test
 
@@ -283,7 +285,7 @@ public class tr_local {
         public String toString() {
             return "idScreenRect{" + "x1=" + x1 + ", y1=" + y1 + ", x2=" + x2 + ", y2=" + y2 + '}';
         }
-        
+
         static idScreenRect[] generateArray(final int length) {
             return Stream.
                     generate(idScreenRect::new).
@@ -339,23 +341,11 @@ public class tr_local {
         public drawSurf_s     nextOnLight;          // viewLight chains
         public idScreenRect   scissorRect;          // for scissor clipping, local inside renderView viewport
         public int            dsFlags;              // DSF_VIEW_INSIDE_SHADOW, etc
-        public vertCache_s[]  dynamicTexCoords;     // float * in vertex cache memory
+        public vertCache_s    dynamicTexCoords;     // float * in vertex cache memory
+        // specular directions for non vertex program cards, skybox texcoords, etc
 
         private static int DBG_counter = 0;
         private final  int DBG_count   = DBG_counter++;
-
-        // specular directions for non vertex program cards, skybox texcoords, etc
-        public void oSet(final drawSurf_s s) {
-            this.geo = s.geo;
-            this.space = s.space;
-            this.material = s.material;
-            this.sort = s.sort;
-            this.shaderRegisters = s.shaderRegisters;
-            this.nextOnLight = s.nextOnLight;
-            this.scissorRect = new idScreenRect(s.scissorRect);
-            this.dsFlags = s.dsFlags;
-            this.dynamicTexCoords = s.dynamicTexCoords;
-        }
     };
 
     public static class shadowFrustum_t {
@@ -584,6 +574,8 @@ public class tr_local {
         boolean needsPortalSky;
         //
         //
+        private static int DBG_counter = 0;
+        private final  int DBG_count = DBG_counter++;
 
         public idRenderEntityLocal() {
             parms = new renderEntity_s();//memset( parms, 0, sizeof( parms ) );
@@ -700,30 +692,39 @@ public class tr_local {
      * single frame, as when seen in a mirror
      */
     public static class viewEntity_s {
-        
-        public static int DBG_COUNTER=0;
-
-        public viewEntity_s next;
-//
+        public viewEntity_s        next;
+        //
         // back end should NOT reference the entityDef, because it can change when running SMP
         public idRenderEntityLocal entityDef;
-//
+        //
         // for scissor clipping, local inside renderView viewport
         // scissorRect.Empty() is true if the viewEntity_t was never actually
         // seen through any portals, but was created for shadow casting.
         // a viewEntity can have a non-empty scissorRect, meaning that an area
         // that it is in is visible, and still not be visible.
-        public idScreenRect scissorRect = new idScreenRect();
-//
-        public boolean weaponDepthHack;
-        public float modelDepthHack;
-//
-        public float[] modelMatrix = new float[16];             // local coords to global coords
-        public float[] modelViewMatrix = new float[16];         // local coords to eye coords
-        
-        public viewEntity_s(){
-            DBG_COUNTER++;
-//            TempDump.printCallStack("--------------"+DBG_COUNTER);
+        public idScreenRect        scissorRect     = new idScreenRect();
+        //
+        public boolean             weaponDepthHack;
+        public float               modelDepthHack;
+        //
+        public float[]             modelMatrix     = new float[16];         // local coords to global coords
+        public float[]             modelViewMatrix = new float[16];         // local coords to eye coords
+
+        private static int DBG_COUNTER = 0;
+        private final  int DBG_COUNT   = DBG_COUNTER++;
+
+        public viewEntity_s() {
+//            TempDump.printCallStack("--------------"+DBG_COUNT);
+        }
+
+        public viewEntity_s(viewEntity_s v) {
+            this.next = v.next;
+            this.entityDef = v.entityDef;
+            this.scissorRect = new idScreenRect(v.scissorRect);
+            this.weaponDepthHack = v.weaponDepthHack;
+            this.modelDepthHack = v.modelDepthHack;
+            System.arraycopy(v.modelMatrix, 0, this.modelMatrix, 0, 16);
+            System.arraycopy(v.modelViewMatrix, 0, this.modelViewMatrix, 0, 16);
         }
 
         public void memSetZero() {
@@ -740,16 +741,16 @@ public class tr_local {
     public static class viewDef_s {
         // specified in the call to DrawScene()
 
-        public renderView_s renderView;
+        public renderView_s       renderView;
 //
-        public float[] projectionMatrix = new float[16];
-        public viewEntity_s worldSpace;
+        public float[]            projectionMatrix = new float[16];
+        public viewEntity_s       worldSpace;
 //
         public idRenderWorldLocal renderWorld;
 //
-        public float floatTime;
+        public float              floatTime;
 //
-        public idVec3 initialViewAreaOrigin;
+        public idVec3             initialViewAreaOrigin;
         // Used to find the portalArea that view flooding will take place from.
         // for a normal view, the initialViewOrigin will be renderView.viewOrg,
         // but a mirror may put the projection origin outside
@@ -759,40 +760,41 @@ public class tr_local {
         // mirror intersects a portal, and the initialViewAreaOrigin is on
         // a different side than the renderView.viewOrg is.
 //
-        public boolean isSubview;				// true if this view is not the main view
-        public boolean isMirror;				// the portal is a mirror, invert the face culling
-        public boolean isXraySubview;
-//
-        public boolean isEditor;
-//
-        public int numClipPlanes;                               // mirrors will often use a single clip plane
-        public idPlane[] clipPlanes;                            // in world space, the positive side
-        // of the plane is the visible side
-        public idScreenRect viewport;				// in real pixels and proper Y flip
-//
-        public idScreenRect scissor;
+        public boolean            isSubview;             // true if this view is not the main view
+        public boolean            isMirror;              // the portal is a mirror, invert the face culling
+        public boolean            isXraySubview;
+        //
+        public boolean            isEditor;
+        //
+        public int                numClipPlanes;         // mirrors will often use a single clip plane
+        public idPlane[]          clipPlanes;            // in world space, the positive side
+                                                         // of the plane is the visible side
+        public idScreenRect       viewport;              // in real pixels and proper Y flip
+        //
+        public idScreenRect       scissor;
         // for scissor clipping, local inside renderView viewport
         // subviews may only be rendering part of the main view
         // these are real physical pixel values, possibly scaled and offset from the
         // renderView x/y/width/height
 //
-        public viewDef_s superView;				// never go into an infinite subview loop 
-        public drawSurf_s subviewSurface;
+        public viewDef_s          superView;             // never go into an infinite subview loop
+        public drawSurf_s         subviewSurface;
 //
         // drawSurfs are the visible surfaces of the viewEntities, sorted
         // by the material sort parameter
-        public drawSurf_s[] drawSurfs;				// we don't use an idList for this, because
-        public int numDrawSurfs;                                // it is allocated in frame temporary memory
-        public int maxDrawSurfs;                                // may be resized
+        public drawSurf_s[]       drawSurfs;             // we don't use an idList for this, because
+        public int                numDrawSurfs;          // it is allocated in frame temporary memory
+        public int                maxDrawSurfs;          // may be resized
 //
-        public viewLight_s viewLights;                          // chain of all viewLights effecting view
-        public viewEntity_s viewEntitys;			// chain of all viewEntities effecting view, including off screen ones casting shadows
-        public idPlane[] frustum;
-        public idFrustum viewFrustum;
+        public viewLight_s        viewLights;            // chain of all viewLights effecting view
+        public viewEntity_s       viewEntitys;           // chain of all viewEntities effecting view, including off screen ones casting shadows
+        public int                numViewEntitys;
+        public idPlane[]          frustum;
+        public idFrustum          viewFrustum;
 //
-        public int areaNum;                                     // -1 = not in a valid area
+        public int                areaNum;               // -1 = not in a valid area
 //
-        public boolean[] connectedAreas;
+        public boolean[]          connectedAreas;
         // An array in frame temporary memory that lists if an area can be reached without
         // crossing a closed door.  This is used to avoid drawing interactions
         // when the light is behind a closed door.
@@ -806,7 +808,42 @@ public class tr_local {
             this.viewFrustum = new idFrustum();
             this.frustum = idPlane.generateArray(5);
         }
-    };
+
+        public viewDef_s(final viewDef_s v) {
+            this.renderView = new renderView_s(v.renderView);
+            System.arraycopy(v.projectionMatrix, 0, this.projectionMatrix, 0, 16);
+            this.worldSpace = new viewEntity_s(v.worldSpace);
+            this.renderWorld = v.renderWorld;
+            this.floatTime = v.floatTime;
+            this.initialViewAreaOrigin = new idVec3(v.initialViewAreaOrigin);
+            this.isSubview = v.isSubview;
+            this.isMirror = v.isMirror;
+            this.isXraySubview = v.isXraySubview;
+            this.isEditor = v.isEditor;
+            this.numClipPlanes = v.numClipPlanes;
+            this.clipPlanes = new idPlane[MAX_CLIP_PLANES];
+            for (int i = 0; i < MAX_CLIP_PLANES; i++) {
+                if (v.clipPlanes[i] != null)
+                    this.clipPlanes[i].oSet(v.clipPlanes[i]);
+            }
+            this.viewport = new idScreenRect(v.viewport);
+            this.scissor = new idScreenRect(v.scissor);
+            this.superView = v.superView;
+            this.subviewSurface = v.subviewSurface;
+            this.drawSurfs = v.drawSurfs;
+            this.numDrawSurfs = v.numDrawSurfs;
+            this.maxDrawSurfs = v.maxDrawSurfs;
+            this.viewLights = v.viewLights;
+            this.viewEntitys = v.viewEntitys;
+            this.frustum = Arrays.stream(v.frustum).map(idPlane::new).toArray(idPlane[]::new);
+            this.viewFrustum = new idFrustum(v.viewFrustum);
+            this.areaNum = v.areaNum;
+            if (v.connectedAreas != null) {
+                this.connectedAreas = new boolean[v.connectedAreas.length];
+                System.arraycopy(v.connectedAreas, 0, this.connectedAreas, 0, v.connectedAreas.length);
+            }
+        }
+    }
 
 // complex light / surface interactions are broken up into multiple passes of a
 // simple interaction shader
@@ -824,7 +861,7 @@ public class tr_local {
         public final idVec4 specularColor = new idVec4();       // may have a light color baked into it, will be < tr.backEndRendererMaxLight
         public stageVertexColor_t vertexColor;                  // applies to both diffuse and specular
 //
-        public int ambientLight;                                // use tr.ambientNormalMap instead of normalization cube map 
+        public int ambientLight;                                // use tr.ambientNormalMap instead of normalization cube map
 //                                                              // (not a bool just to avoid an uninitialized memory check of the pad region by valgrind)
 //
         // these are loaded into the vertex program
@@ -2046,7 +2083,7 @@ public class tr_local {
             // screenshot, rather than a possible subsequent remote
             // or mirror render
 //	primaryWorld = NULL;
-            
+
             // set the time for shader effects in 2D rendering
             frameShaderTime = (float) (eventLoop.Milliseconds() * 0.001);
 

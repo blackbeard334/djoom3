@@ -54,7 +54,7 @@ public class Surface_SweptSpline {
          ====================
          */
         public void SetSweptCircle(final float radius) {
-            idCurve_NURBS<idVec4> nurbs = new idCurve_NURBS<>();
+            idCurve_NURBS<idVec4> nurbs = new idCurve_NURBS<>(idVec4.class);
             nurbs.Clear();
             nurbs.AddValue(0.0f, new idVec4(radius, radius, 0.0f, 0.00f));
             nurbs.AddValue(100.0f, new idVec4(-radius, radius, 0.0f, 0.25f));
@@ -156,7 +156,7 @@ public class Surface_SweptSpline {
             GenerateEdgeIndexes();
         }
 
-//
+        //
         @Override
         public void Clear() {
             super.Clear();
@@ -167,7 +167,8 @@ public class Surface_SweptSpline {
             sweptSpline = null;
             sweptSpline = null;
         }
-//
+
+        //
         protected idCurve_Spline<idVec4> spline;
         protected idCurve_Spline<idVec4> sweptSpline;
 //
@@ -226,5 +227,7 @@ public class Surface_SweptSpline {
             newFrame.setRow(0, newFrame.oGet(0).Cross(newFrame.oGet(1), newFrame.oGet(2)));
             newFrame.oGet(0).Normalize();
         }
-    };
+    }
+
+    ;
 }

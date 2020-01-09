@@ -108,7 +108,6 @@ import static neo.framework.Common.common;
 import static neo.sys.win_glimp.GLimp_SwapBuffers;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static org.lwjgl.opengl.ARBMultitexture.GL_TEXTURE0_ARB;
-import static org.lwjgl.opengl.EXTTextureEnvCombine.GL_COMBINE_EXT;
 import static org.lwjgl.opengl.GL11.GL_ADD;
 import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
 import static org.lwjgl.opengl.GL11.GL_ALWAYS;
@@ -160,6 +159,7 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_MODE;
 import static org.lwjgl.opengl.GL11.GL_VERTEX_ARRAY;
 import static org.lwjgl.opengl.GL11.GL_ZERO;
 import static org.lwjgl.opengl.GL12.GL_TEXTURE_3D;
+import static org.lwjgl.opengl.GL13.GL_COMBINE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
 
 /**
@@ -325,7 +325,7 @@ public class tr_backend {
         }
         tmu.texEnv = env;
         switch (env) {
-            case GL_COMBINE_EXT:
+            case GL_COMBINE:
             case GL_MODULATE:
             case GL_REPLACE:
             case GL_DECAL:
@@ -497,6 +497,42 @@ public class tr_backend {
         // alpha test
         //
         if ((diff & GLS_ATEST_BITS) != 0) {
+            if(backEnd.viewDef.numDrawSurfs==5){
+                tr_local.drawSurf_s temp = backEnd.viewDef.drawSurfs[3];
+//                backEnd.viewDef.drawSurfs[0] =
+//                backEnd.viewDef.drawSurfs[1] =
+//                backEnd.viewDef.drawSurfs[2] =
+//                backEnd.viewDef.drawSurfs[3] =
+//                backEnd.viewDef.drawSurfs[4] =
+//                temp;
+////                temp.shaderRegisters[0] = 330.102997f;
+////                temp.shaderRegisters[1] = 1.00000000f;
+////                temp.shaderRegisters[2] = 1.00000000f;
+////                temp.shaderRegisters[3] = 1.00000000f;
+////                temp.shaderRegisters[4] = 1.00000000f;
+////                temp.shaderRegisters[5] = 0.000000000f;
+////                temp.shaderRegisters[6] = 0.000000000f;
+////                temp.shaderRegisters[7] = 0.000000000f;
+////                temp.shaderRegisters[8] = 0.000000000f;
+////                temp.shaderRegisters[9] = 0.000000000f;
+////                temp.shaderRegisters[10] = 0.000000000f;
+////                temp.shaderRegisters[11] = 0.000000000f;
+////                temp.shaderRegisters[12] = 0.000000000f;
+////                temp.shaderRegisters[13] = 0.000000000f;
+////                temp.shaderRegisters[14] = 0.000000000f;
+////                temp.shaderRegisters[15] = 0.000000000f;
+////                temp.shaderRegisters[16] = 0.000000000f;
+////                temp.shaderRegisters[17] = 0.000000000f;
+////                temp.shaderRegisters[18] = 0.000000000f;
+////                temp.shaderRegisters[19] = 0.000000000f;
+////                temp.shaderRegisters[20] = 0.000000000f;
+////                temp.shaderRegisters[21] = 1.00000000f;
+////                temp.shaderRegisters[22] = 0.00999999978f;
+////                temp.shaderRegisters[23] = 3.30102992f;
+////                temp.shaderRegisters[24] = 0.0120000001f;
+////                temp.shaderRegisters[25] = 3.96123600f;
+////                temp.shaderRegisters[26] = 0.000000000f;
+            }
             switch (stateBits & GLS_ATEST_BITS) {
                 case 0:
                     qglDisable(GL_ALPHA_TEST);

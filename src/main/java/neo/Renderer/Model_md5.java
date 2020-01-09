@@ -324,7 +324,7 @@ public class Model_md5 {
                 R_AllocStaticTriSurfVerts(tri, tri.numVerts);
                 for (i = 0; i < deformInfo.numSourceVerts; i++) {
                     tri.verts[i].Clear();
-                    tri.verts[i].st = texCoords.oGet(i);
+                    tri.verts[i].st.oSet(texCoords.oGet(i));
                 }
             }
 
@@ -533,7 +533,7 @@ public class Model_md5 {
          */
         @Override
         public void TouchData() {
-            for (final idMD5Mesh mesh : meshes.Ptr()) {
+            for (final idMD5Mesh mesh : meshes.Ptr(idMD5Mesh[].class)) {
                 declManager.FindMaterial(mesh.shader.GetName());
             }
         }
@@ -758,6 +758,7 @@ public class Model_md5 {
 
                 staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(0));
                 staticModel.bounds.AddPoint(surf.geometry.bounds.oGet(1));
+                int a = 0;
             }
 
             return staticModel;
@@ -821,6 +822,7 @@ public class Model_md5 {
             bounds.Clear();
             for (i = 0; i < meshes.Num(); ++i) {
                 bounds.AddBounds(meshes.oGet(i).CalcBounds(entJoints));
+                int a = 0;
             }
         }
 

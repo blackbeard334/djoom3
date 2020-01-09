@@ -723,7 +723,7 @@ public class Winding2D {
             plane.x = start.y - end.y;
             plane.y = end.x - start.x;
             if (normalize) {
-                plane.ToVec2().Normalize();
+                plane.ToVec2_Normalize();
             }
             plane.z = -(start.x * plane.x + start.y * plane.y);
             return plane;
@@ -738,7 +738,7 @@ public class Winding2D {
             plane.x = -dir.y;
             plane.y = dir.x;
             if (normalize) {
-                plane.ToVec2().Normalize();
+                plane.ToVec2_Normalize();
             }
             plane.z = -(start.x * plane.x + start.y * plane.y);
             return plane;

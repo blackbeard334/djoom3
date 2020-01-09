@@ -412,6 +412,7 @@ public class AAS_local {
             sequenceLast = new wallEdge_s[numEdges];
 
             for (i = 0; i < numEdges; i++) {
+                wallEdges[i] = new wallEdge_s();
                 wallEdges[i].edgeNum = edges[i];
                 GetEdgeVertexNumbers(edges[i], wallEdges[i].verts);
                 wallEdges[i].next = null;

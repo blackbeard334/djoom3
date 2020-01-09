@@ -168,7 +168,7 @@ public class EditField {
                 } else {
 
                     // multiple matches, complete to shortest
-                    idStr.snPrintf(buffer, buffer.length, "%s", autoComplete.currentMatch);
+                    idStr.snPrintf(buffer, buffer.length, "%s", ctos(autoComplete.currentMatch));
                     if (strLen(completionArgString) != 0) {
                         idStr.Append(buffer, buffer.length, " ");
                         idStr.Append(buffer, buffer.length, ctos(completionArgString));
@@ -179,7 +179,7 @@ public class EditField {
                 autoComplete.valid = (autoComplete.matchCount != 1);
                 SetCursor(autoComplete.length);
 
-                common.Printf("]%s\n", buffer);
+                common.Printf("]%s\n", ctos(buffer));
 
                 // run through again, printing matches
                 globalAutoComplete = autoComplete;

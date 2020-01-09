@@ -342,8 +342,8 @@ public class shadowopt3 {
             idVec3 d1 = tri.v[1].oMinus(tri.v[0]);
             idVec3 d2 = tri.v[2].oMinus(tri.v[0]);
 
-            tri.plane.ToVec4().ToVec3().Cross(d2, d1);
-            tri.plane.ToVec4().ToVec3().Normalize();
+            tri.plane.ToVec4_ToVec3_Cross(d2, d1);
+            tri.plane.ToVec4_ToVec3_Normalize();
             tri.plane.oSet(3, tri.v[0].oMultiply(tri.plane.ToVec4().ToVec3()));
 
             // get the plane number before any clipping
@@ -726,7 +726,7 @@ public class shadowopt3 {
             idVec3 dir = uniqued[check.index[1]].oMinus(uniqued[check.index[0]]);
             separate.Normal().Cross(dir, silPlane.normal);
             separate.Normal().Normalize();
-            separate.ToVec4().oSet(3, -uniqued[check.index[1]].oMultiply(separate.Normal()));
+            separate.oSet(3, -uniqued[check.index[1]].oMultiply(separate.Normal()));
 
             // this may miss a needed separation when the quad would be
             // clipped into a triangle and a quad

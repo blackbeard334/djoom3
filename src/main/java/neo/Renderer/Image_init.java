@@ -47,11 +47,11 @@ import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
 import org.lwjgl.BufferUtils;
-import static org.lwjgl.opengl.EXTPalettedTexture.GL_COLOR_INDEX8_EXT;
+
+import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_BORDER_COLOR;
-import static org.lwjgl.opengl.NVTextureCompressionVTC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static org.lwjgl.opengl.NVTextureCompressionVTC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 
 /**
  *
@@ -213,7 +213,7 @@ public class Image_init {
 
                 if (uncompressedOnly) {
                     if ((image.internalFormat >= GL_COMPRESSED_RGB_S3TC_DXT1_EXT && image.internalFormat <= GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
-                            || image.internalFormat == GL_COLOR_INDEX8_EXT) {
+                            || image.internalFormat == 0x80E5) {
                         continue;
                     }
                 }

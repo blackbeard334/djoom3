@@ -710,6 +710,10 @@ public class CmdSystem {
                 return;		// no tokens
             }
 
+            if (args.Argv(0).equals("bla1")) {
+                args.oSet("map game/alphalabs1");//HACKME::11
+            }
+
             // check registered command functions	
             for (prev = cmd = commands; cmd != null; cmd = cmd.next) {
 //                cmd = prev;

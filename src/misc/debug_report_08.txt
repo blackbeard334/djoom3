@@ -1,0 +1,72 @@
+let's debug why we are drawing so little
+
+R_AddModelSurfaces()
+    we're missing about half...105 vs 230?????
+        idRenderWorldLocal::AddAreaEntityRefs()
+            idRenderWorldLocal::CullEntityByPortals() //_area1
+                idRenderWorldLocal::AddWorldModelEntities()
+                    idRenderWorldLocal::AddEntityRefToArea()
+                    idRenderWorldLocal::AddLightRefToArea()
+                    
+
+
+intro console HUD thingy
+
+idPlayerView::SingleView()
+    idCameraAnim::GetViewParms()
+    idPlayer::CalculateRenderView()
+        idEvent::ServiceEvents() "<triggerAction>"
+        //
+        idEntity::TouchTriggers() "trigger_once_19"
+        +		data	0x30d589b4 "seneca_func_door_2"	char *
+
+        
+
+        
+        
+
+fuck the hud for now, let's check why the door isn't opening and scanner isn't turning
+
+-- idDoor::Event_OpenPortal()
+-- idMover_Binary::Use_BinaryMover()
+idMover_Binary::SetMoverState()
+
+
+ok, back to the whale heads
+
+idActor::CopyJointsFromBodyToHead()
+
+
+
+texture madness instead...
+
+R_SortDrawSurfs() 233 vs 240
+"textures/mcity/mchangar12_local"
+r_showDefs::shadowEntities 30~ vs 170~
+    R_AddModelSurfaces()
+        R_SetEntityDefViewEntity() 71 vs 70 ====> 114 vs 235
+        idRenderWorldLocal::CreateLightDefInteractions()
+            idRenderWorldLocal::GenerateAllInteractions() interactionTableWidth
+            lDef.frustum <>
+                R_SetLightFrustum()
+
+R_AddLightSurfaces()
+            
+            
+idRenderWorldLocal::CreateLightDefInteractions() inter.numSurfaces is changed the first couple of iterations to 0, then no more
+    viewFrustrum
+
+entityDef->index==1091
+
+
+tri->indexes
+    idGuiModel::EmitSurface()
+    
+    glDepthRange
+    
+    surf.shaderRegisters
+    
+RB_ARB2_DrawInteractions()
+    RB_T_Shadow() tri->numIndexes !=
+        R_SetLightDefViewLight()
+            idInteraction::AddActiveInteraction() vLight->globalShadows

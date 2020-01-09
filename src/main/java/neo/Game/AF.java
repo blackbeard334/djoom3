@@ -746,7 +746,7 @@ public class AF {
 
         public void LoadState(final idDict args) {
             idKeyValue kv;
-            idStr name;
+            idStr name = new idStr();
             idAFBody body;
             idVec3 origin = new idVec3();
             idAngles angles = new idAngles();
@@ -754,7 +754,7 @@ public class AF {
             kv = args.MatchPrefix("body ", null);
             while (kv != null) {
 
-                name = kv.GetKey();
+                name.oSet(kv.GetKey());
                 name.Strip("body ");
                 body = physicsObj.GetBody(name.toString());
                 if (body != null) {
@@ -781,7 +781,7 @@ public class AF {
 
         public void AddBindConstraints() {
             idKeyValue kv;
-            idStr name;
+            idStr name = new idStr();
             idAFBody body;
             idLexer lexer = new idLexer();
             idToken type = new idToken(), bodyName = new idToken(), jointName = new idToken();
@@ -802,7 +802,7 @@ public class AF {
 
             // parse all the bind constraints
             for (kv = args.MatchPrefix("bindConstraint ", null); kv != null; kv = args.MatchPrefix("bindConstraint ", kv)) {
-                name = kv.GetKey();
+                name.oSet(kv.GetKey());
                 name.Strip("bindConstraint ");
 
                 lexer.LoadMemory(kv.GetValue(), kv.GetValue().Length(), kv.GetKey());
@@ -867,11 +867,11 @@ public class AF {
             }
 
             final idDict args = self.spawnArgs;
-            idStr name;
+            idStr name = new idStr();
 
             kv = args.MatchPrefix("bindConstraint ", null);
             while (kv != null) {
-                name = kv.GetKey();
+                name.oSet(kv.GetKey());
                 name.Strip("bindConstraint ");
 
                 if (physicsObj.GetConstraint(name.toString()) != null) {

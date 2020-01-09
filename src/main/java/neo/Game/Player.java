@@ -187,6 +187,8 @@ import static neo.framework.CVarSystem.cvarSystem;
 import static neo.framework.Common.STRTABLE_ID;
 import static neo.framework.Common.STRTABLE_ID_LENGTH;
 import static neo.framework.Common.common;
+
+import neo.framework.BuildDefines;
 import neo.framework.DeclEntityDef.idDeclEntityDef;
 import static neo.framework.DeclManager.declManager;
 import neo.framework.DeclManager.declType_t;
@@ -262,7 +264,6 @@ import static neo.ui.UserInterface.uiManager;
  */
 public class Player {
 
-    private static final boolean    ID_DEMO_BUILD               = false;
     /*
      ===============================================================================
 
@@ -345,21 +346,21 @@ public class Player {
 
     public static class idItemInfo {
 
-        idStr name;
-        idStr icon;
+        idStr name = new idStr();
+        idStr icon = new idStr();
     }
 
     public static class idObjectiveInfo {
 
-        idStr title;
-        idStr text;
-        idStr screenshot;
+        idStr title = new idStr();
+        idStr text = new idStr();
+        idStr screenshot = new idStr();
     }
 
     public static class idLevelTriggerInfo {
 
-        idStr levelName;
-        idStr triggerName;
+        idStr levelName = new idStr();
+        idStr triggerName = new idStr();
     }
 
     ;
@@ -432,7 +433,7 @@ public class Player {
         public int nextItemPickup;
         public int nextItemNum;
         public int onePickupTime;
-        public idList<idItemInfo>      pickupItemNames = new idList<>();
+        public idList<idItemInfo>      pickupItemNames = new idList<>(idItemInfo.class);
         public idList<idObjectiveInfo> objectiveNames  = new idList<>();
 
         public idInventory() {
@@ -823,7 +824,7 @@ public class Player {
             int i;
             int num;
             idDict item;
-            idStr key;
+            idStr key = new idStr();
             String itemname;
             idKeyValue kv;
             String name;
@@ -856,7 +857,7 @@ public class Player {
                 itemname = String.format("item_%d ", i);
                 kv = dict.MatchPrefix(itemname);
                 while (kv != null) {
-                    key = kv.GetKey();
+                    key.oSet(kv.GetKey());
                     key.Strip(itemname);
                     item.Set(key, kv.GetValue());
                     kv = dict.MatchPrefix(itemname, kv);
@@ -902,7 +903,7 @@ public class Player {
             // weapons are stored as a number for persistant data, but as strings in the entityDef
             weapons = dict.GetInt("weapon_bits", "0");
 
-            if (ID_DEMO_BUILD) {
+            if (BuildDefines.ID_DEMO_BUILD) {
                 Give(owner, dict, "weapon", dict.GetString("weapon"), null, false);
             } else {
                 if (g_skill.GetInteger() >= 3) {
@@ -1125,11 +1126,11 @@ public class Player {
                 idItemInfo info = pickupItemNames.Alloc();
 
                 if (idStr.Cmpn(name, STRTABLE_ID, STRTABLE_ID_LENGTH) == 0) {
-                    info.name.oSet(common.GetLanguageDict().GetString(name));
+                    info.name = new idStr(common.GetLanguageDict().GetString(name));
                 } else {
-                    info.name.oSet(name);
+                    info.name = new idStr(name);
                 }
-                info.icon.oSet(icon);
+                info.icon = new idStr(icon);
             }
         }
 
@@ -1841,7 +1842,7 @@ public class Player {
                 } else {
                     g_damageScale.SetFloat(1.0f);
                     g_armorProtection.SetFloat((g_skill.GetInteger() < 2) ? 0.4f : 0.2f);
-                    if (ID_DEMO_BUILD) {
+                    if (BuildDefines.ID_DEMO_BUILD) {
                         if (g_skill.GetInteger() == 3) {
                             healthTake = true;
                             nextHealthTake = gameLocal.time + g_healthTakeTime.GetInteger() * 1000;
@@ -3848,7 +3849,6 @@ public class Player {
             if (NOT(renderView)) {
                 renderView = new renderView_s();
             }
-            renderView = new renderView_s();
 //	memset( renderView, 0, sizeof( *renderView ) );
 
             // copy global shader parms
@@ -4507,9 +4507,9 @@ public class Player {
 
         public void GiveObjective(final String title, final String text, final String screenshot) {
             idObjectiveInfo info = new idObjectiveInfo();
-            info.title.oSet(title);
-            info.text.oSet(text);
-            info.screenshot.oSet(screenshot);
+            info.title = new idStr(title);
+            info.text = new idStr(text);
+            info.screenshot = new idStr(screenshot);
             inventory.objectiveNames.Append(info);
             ShowObjective("newObjective");
             if (hud != null) {
@@ -5257,7 +5257,7 @@ public class Player {
         public boolean HandleSingleGuiCommand(idEntity entityGui, idLexer src) {
             idToken token = new idToken();
 
-            if (NOT(src.ReadToken(token))) {
+            if (!src.ReadToken(token)) {
                 return false;
             }
 
@@ -5268,7 +5268,7 @@ public class Player {
             if (token.Icmp("addhealth") == 0) {
                 if (entityGui != null && health < 100) {
                     int _health = entityGui.spawnArgs.GetInt("gui_parm1");
-                    int amt = (_health >= HEALTH_PER_DOSE) ? HEALTH_PER_DOSE : _health;
+                    int amt = Math.min(_health, HEALTH_PER_DOSE);
                     _health -= amt;
                     entityGui.spawnArgs.SetInt("gui_parm1", _health);
                     if (entityGui.GetRenderEntity() != null && entityGui.GetRenderEntity().gui[0] != null) {
@@ -6255,9 +6255,9 @@ public class Player {
                         // smoothen by pushing back to the previous position
                         if (selfSmooth) {
                             assert (entityNumber == gameLocal.localClientNum);
-                            renderOrigin.ToVec2().oMinSet(originDiff.oMultiply(net_clientSelfSmoothing.GetFloat()));
+                            renderOrigin.ToVec2_oMinSet(originDiff.oMultiply(net_clientSelfSmoothing.GetFloat()));
                         } else {
-                            renderOrigin.ToVec2().oMinSet(originDiff.oMultiply(gameLocal.clientSmoothing));
+                            renderOrigin.ToVec2_oMinSet(originDiff.oMultiply(gameLocal.clientSmoothing));
                         }
                     }
                     smoothedOrigin = renderOrigin;
@@ -7554,8 +7554,8 @@ public class Player {
                     idVec3 vel = physicsObj.GetLinearVelocity();
                     if (vel.ToVec2().LengthSqr() < 0.1f) {
                         vel.oSet(physicsObj.GetOrigin().ToVec2().oMinus(groundEnt.GetPhysics().GetAbsBounds().GetCenter().ToVec2()));
-                        vel.ToVec2().NormalizeFast();
-                        vel.ToVec2().oMulSet(pm_walkspeed.GetFloat());//TODO:ToVec2 back ref.
+                        vel.ToVec2_NormalizeFast();
+                        vel.ToVec2_oMulSet(pm_walkspeed.GetFloat());//TODO:ToVec2 back ref.
                     } else {
                         // give em a push in the direction they're going
                         vel.oMulSet(1.1f);
@@ -7618,7 +7618,7 @@ public class Player {
                 nextHealthPulse = gameLocal.time + HEALTHPULSE_TIME;
                 healthPulse = true;
             }
-            if (ID_DEMO_BUILD) {
+            if (BuildDefines.ID_DEMO_BUILD) {
                 if (!gameLocal.inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal.time > nextHealthTake && !AI_DEAD._() && health > g_healthTakeLimit.GetInteger()) {
                     assert (!gameLocal.isClient);	// healthPool never be set on client
                     health -= g_healthTakeAmt.GetInteger();

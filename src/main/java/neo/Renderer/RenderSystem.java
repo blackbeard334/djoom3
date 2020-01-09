@@ -42,6 +42,7 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+
 import static neo.sys.win_glimp.GLimp_EnableLogging;
 
 /**
@@ -76,7 +77,7 @@ public class RenderSystem {
         public int maxTextureImageUnits;
         public float maxTextureAnisotropy;
 //   
-        public int colorBits, depthBits, stencilBits;
+        public int colorBits, depthBits, stencilBits = 8;
 //   
         public boolean multitextureAvailable;
         public boolean textureCompressionAvailable;

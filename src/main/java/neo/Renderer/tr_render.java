@@ -528,9 +528,7 @@ public class tr_render {
 
         }
         if (texture.texgen == TG_SKYBOX_CUBE || texture.texgen == TG_WOBBLESKY_CUBE) {
-            for (vertCache_s dynamicTexCoords : surf.dynamicTexCoords) {
-                qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(dynamicTexCoords));
-            }
+            qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(surf.dynamicTexCoords));
         }
         if (texture.texgen == TG_REFLECT_CUBE) {
             qglEnable(GL_TEXTURE_GEN_S);
@@ -868,13 +866,7 @@ public class tr_render {
             // now multiply the texgen by the light texture matrix
             if (lightStage.texture.hasMatrix) {
                 RB_GetShaderTextureMatrix(lightRegs, lightStage.texture, backEnd.lightTextureMatrix);
-                {
-                    idPlane[] planes = new idPlane[inter.lightProjection.length];
-                    for (int a = 0; a < planes.length; a++) {
-                        planes[a] = new idPlane(inter.lightProjection[a]);
-                    }
-                    RB_BakeTextureMatrixIntoTexgen( /*reinterpret_cast<class idPlane *>*/planes, backEnd.lightTextureMatrix);
-                }
+                RB_BakeTextureMatrixIntoTexgen( /*reinterpret_cast<class idPlane *>*/inter.lightProjection, backEnd.lightTextureMatrix);
             }
 
             inter.bumpImage = null;

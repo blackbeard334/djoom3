@@ -326,14 +326,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idVec3 constant, idVec3[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = src[_IX + 0].oMultiply(constant);
-                dst[_IX + 1] = src[_IX + 1].oMultiply(constant);
-                dst[_IX + 2] = src[_IX + 2].oMultiply(constant);
-                dst[_IX + 3] = src[_IX + 3].oMultiply(constant);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX] = src[_IX].oMultiply(constant);
             }
         }
@@ -347,15 +341,9 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idVec3 constant, idPlane[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = src[_IX + 0].Normal().oPlus(src[_IX + 0].oGet(3)).oMultiply(constant);
-                dst[_IX + 1] = src[_IX + 1].Normal().oPlus(src[_IX + 1].oGet(3)).oMultiply(constant);
-                dst[_IX + 2] = src[_IX + 2].Normal().oPlus(src[_IX + 2].oGet(3)).oMultiply(constant);
-                dst[_IX + 3] = src[_IX + 3].Normal().oPlus(src[_IX + 3].oGet(3)).oMultiply(constant);
-            }
-            for (; _IX < count; _IX++) {
-                dst[_IX] = src[_IX].Normal().oPlus(src[_IX].oGet(3)).oMultiply(constant);
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
+                dst[_IX] = constant.oMultiply(src[_IX].Normal()) + src[_IX].oGet(3);//NB I'm not saying operator overloading would have prevented this bug, but....!@#$%$@#^&#$^%^#%^&#$*^&
             }
         }
 
@@ -368,14 +356,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idVec3 constant, idDrawVert[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = src[_IX + 0].xyz.oMultiply(constant);
-                dst[_IX + 0] = src[_IX + 1].xyz.oMultiply(constant);
-                dst[_IX + 0] = src[_IX + 2].xyz.oMultiply(constant);
-                dst[_IX + 0] = src[_IX + 3].xyz.oMultiply(constant);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX + 0] = src[_IX].xyz.oMultiply(constant);
             }
         }
@@ -389,14 +371,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idPlane constant, idVec3[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 0]) + constant.oGet(3);
-                dst[_IX + 1] = constant.Normal().oMultiply(src[_IX + 1]) + constant.oGet(3);
-                dst[_IX + 2] = constant.Normal().oMultiply(src[_IX + 2]) + constant.oGet(3);
-                dst[_IX + 3] = constant.Normal().oMultiply(src[_IX + 3]) + constant.oGet(3);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX] = constant.Normal().oMultiply(src[_IX]) + constant.oGet(3);
             }
         }
@@ -410,14 +386,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idPlane constant, idPlane[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 0].Normal()) + src[_IX + 0].oGet(3) * constant.oGet(3);
-                dst[_IX + 1] = constant.Normal().oMultiply(src[_IX + 1].Normal()) + src[_IX + 1].oGet(3) * constant.oGet(3);
-                dst[_IX + 2] = constant.Normal().oMultiply(src[_IX + 2].Normal()) + src[_IX + 2].oGet(3) * constant.oGet(3);
-                dst[_IX + 3] = constant.Normal().oMultiply(src[_IX + 3].Normal()) + src[_IX + 3].oGet(3) * constant.oGet(3);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX] = constant.Normal().oMultiply(src[_IX].Normal()) + src[_IX].oGet(3) * constant.oGet(3);
             }
         }
@@ -431,15 +401,9 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idPlane constant, idDrawVert[] src, int count) {
-            int _IX, _NM = count & 0xfffffffc;
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 0].xyz) * constant.oGet(3);
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 1].xyz) * constant.oGet(3);
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 2].xyz) * constant.oGet(3);
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX + 3].xyz) * constant.oGet(3);
-            }
-            for (; _IX < count; _IX++) {
-                dst[_IX + 0] = constant.Normal().oMultiply(src[_IX].xyz) * constant.oGet(3);
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
+                dst[_IX] = constant.Normal().oMultiply(src[_IX].xyz) + constant.oGet(3);
             }
         }
 
@@ -452,14 +416,8 @@ public class Simd_Generic {
          */
         @Override
         public void Dot(float[] dst, idVec3[] src0, idVec3[] src1, int count) {
-            int _IX, _NM = count & ~3;//TODO:check chekc checks
-            for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = src0[_IX + 0].oMultiply(src1[_IX + 0]);
-                dst[_IX + 1] = src0[_IX + 1].oMultiply(src1[_IX + 1]);
-                dst[_IX + 2] = src0[_IX + 2].oMultiply(src1[_IX + 2]);
-                dst[_IX + 3] = src0[_IX + 3].oMultiply(src1[_IX + 3]);
-            }
-            for (; _IX < count; _IX++) {
+            int _IX;
+            for (_IX = 0; _IX < count; _IX++) {
                 dst[_IX] = src0[_IX].oMultiply(src1[_IX]);
             }
         }
@@ -580,13 +538,13 @@ public class Simd_Generic {
             int _IX, _NM = count & 0xfffffffc;
             final byte _bitNum = (byte) (1 << bitNum);//TODO:check byte signage
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = (byte) (src0[_IX + 0] > constant ? _bitNum : 0);
-                dst[_IX + 1] = (byte) (src0[_IX + 1] > constant ? _bitNum : 0);
-                dst[_IX + 2] = (byte) (src0[_IX + 2] > constant ? _bitNum : 0);
-                dst[_IX + 3] = (byte) (src0[_IX + 3] > constant ? _bitNum : 0);
+                dst[_IX + 0] |= src0[_IX + 0] > constant ? _bitNum : 0;
+                dst[_IX + 1] |= src0[_IX + 1] > constant ? _bitNum : 0;
+                dst[_IX + 2] |= src0[_IX + 2] > constant ? _bitNum : 0;
+                dst[_IX + 3] |= src0[_IX + 3] > constant ? _bitNum : 0;
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = (byte) (src0[_IX] > constant ? _bitNum : 0);
+                dst[_IX] |= src0[_IX] > constant ? _bitNum : 0;
             }
         }
 
@@ -623,13 +581,13 @@ public class Simd_Generic {
             int _IX, _NM = count & 0xfffffffc;
             final byte _bitNum = (byte) (1 << bitNum);//TODO:check byte signage
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = (byte) (src0[_IX + 0] >= constant ? _bitNum : 0);
-                dst[_IX + 1] = (byte) (src0[_IX + 1] >= constant ? _bitNum : 0);
-                dst[_IX + 2] = (byte) (src0[_IX + 2] >= constant ? _bitNum : 0);
-                dst[_IX + 3] = (byte) (src0[_IX + 3] >= constant ? _bitNum : 0);
+                dst[_IX + 0] |= src0[_IX + 0] >= constant ? _bitNum : 0;
+                dst[_IX + 1] |= src0[_IX + 1] >= constant ? _bitNum : 0;
+                dst[_IX + 2] |= src0[_IX + 2] >= constant ? _bitNum : 0;
+                dst[_IX + 3] |= src0[_IX + 3] >= constant ? _bitNum : 0;
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = (byte) (src0[_IX] >= constant ? _bitNum : 0);
+                dst[_IX] |= src0[_IX] >= constant ? _bitNum : 0;
             }
         }
 
@@ -666,13 +624,13 @@ public class Simd_Generic {
             int _IX, _NM = count & 0xfffffffc;
             final byte _bitNum = (byte) (1 << bitNum);//TODO:check byte signage
             for (_IX = 0; _IX < _NM; _IX += 4) {
-                dst[_IX + 0] = (byte) (src0[_IX + 0] < constant ? _bitNum : 0);
-                dst[_IX + 1] = (byte) (src0[_IX + 1] < constant ? _bitNum : 0);
-                dst[_IX + 2] = (byte) (src0[_IX + 2] < constant ? _bitNum : 0);
-                dst[_IX + 3] = (byte) (src0[_IX + 3] < constant ? _bitNum : 0);
+                dst[_IX + 0] |= src0[_IX + 0] < constant ? _bitNum : 0;
+                dst[_IX + 1] |= src0[_IX + 1] < constant ? _bitNum : 0;
+                dst[_IX + 2] |= src0[_IX + 2] < constant ? _bitNum : 0;
+                dst[_IX + 3] |= src0[_IX + 3] < constant ? _bitNum : 0;
             }
             for (; _IX < count; _IX++) {
-                dst[_IX] = (byte) (src0[_IX] < constant ? _bitNum : 0);
+                dst[_IX] |= src0[_IX] < constant ? _bitNum : 0;
             }
         }
 
@@ -718,11 +676,8 @@ public class Simd_Generic {
             max[0] = -idMath.INFINITY;
 
             for (int _IX = 0; _IX < count; _IX++) {
-                if (src[(_IX)] < min[0]) {
-                    min[0] = src[(_IX)];
-                } else if (src[(_IX)] > max[0]) {
-                    max[0] = src[(_IX)];
-                }
+                if (src[(_IX)] < min[0]) min[0] = src[(_IX)];
+                if (src[(_IX)] > max[0]) max[0] = src[(_IX)];
             }
         }
 
@@ -732,16 +687,10 @@ public class Simd_Generic {
             max.x = max.y = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
                 final idVec2 v = src[_IX];
-                if (v.x < min.x) {
-                    min.x = v.x;
-                } else if (v.x > max.x) {
-                    max.x = v.x;
-                }
-                if (v.y < min.y) {
-                    min.y = v.y;
-                } else if (v.y > max.y) {
-                    max.y = v.y;
-                }
+                if (v.x < min.x) min.x = v.x;
+                if (v.x > max.x) max.x = v.x;
+                if (v.y < min.y) min.y = v.y;
+                if (v.y > max.y) max.y = v.y;
             }
         }
 
@@ -751,21 +700,12 @@ public class Simd_Generic {
             max.x = max.y = max.z = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
                 final idVec3 v = src[_IX];
-                if (v.x < min.x) {
-                    min.x = v.x;
-                } else if (v.x > max.x) {
-                    max.x = v.x;
-                }
-                if (v.y < min.y) {
-                    min.y = v.y;
-                } else if (v.y > max.y) {
-                    max.y = v.y;
-                }
-                if (v.z < min.z) {
-                    min.z = v.z;
-                } else if (v.z > max.z) {
-                    max.z = v.z;
-                }
+                if (v.x < min.x) min.x = v.x;
+                if (v.x > max.x) max.x = v.x;
+                if (v.y < min.y) min.y = v.y;
+                if (v.y > max.y) max.y = v.y;
+                if (v.z < min.z) min.z = v.z;
+                if (v.z > max.z) max.z = v.z;
             }
         }
 
@@ -774,22 +714,13 @@ public class Simd_Generic {
             min.x = min.y = min.z = idMath.INFINITY;
             max.x = max.y = max.z = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
-                final idDrawVert v = src[_IX];
-                if (v.oGet(0) < min.x) {
-                    min.x = v.oGet(0);
-                } else if (v.oGet(0) > max.x) {
-                    max.x = v.oGet(0);
-                }
-                if (v.oGet(1) < min.y) {
-                    min.y = v.oGet(1);
-                } else if (v.oGet(1) > max.y) {
-                    max.y = v.oGet(1);
-                }
-                if (v.oGet(2) < min.z) {
-                    min.z = v.oGet(2);
-                } else if (v.oGet(2) > max.z) {
-                    max.z = v.oGet(2);
-                }
+                final idVec3 v = src[_IX].xyz;
+                if (v.oGet(0) < min.x) min.x = v.oGet(0);
+                if (v.oGet(0) > max.x) max.x = v.oGet(0);
+                if (v.oGet(1) < min.y) min.y = v.oGet(1);
+                if (v.oGet(1) > max.y) max.y = v.oGet(1);
+                if (v.oGet(2) < min.z) min.z = v.oGet(2);
+                if (v.oGet(2) > max.z) max.z = v.oGet(2);
             }
         }
 
@@ -798,22 +729,13 @@ public class Simd_Generic {
             min.x = min.y = min.z = idMath.INFINITY;
             max.x = max.y = max.z = -idMath.INFINITY;
             for (int _IX = 0; _IX < count; _IX++) {
-                final idDrawVert v = src[indexes[_IX]];
-                if (v.oGet(0) < min.x) {
-                    min.x = v.oGet(0);
-                } else if (v.oGet(0) > max.x) {
-                    max.x = v.oGet(0);
-                }
-                if (v.oGet(1) < min.y) {
-                    min.y = v.oGet(1);
-                } else if (v.oGet(1) > max.y) {
-                    max.y = v.oGet(1);
-                }
-                if (v.oGet(2) < min.z) {
-                    min.z = v.oGet(2);
-                } else if (v.oGet(2) > max.z) {
-                    max.z = v.oGet(2);
-                }
+                final idVec3 v = src[indexes[_IX]].xyz;
+                if (v.oGet(0) < min.x) min.x = v.oGet(0);
+                if (v.oGet(0) > max.x) max.x = v.oGet(0);
+                if (v.oGet(1) < min.y) min.y = v.oGet(1);
+                if (v.oGet(1) > max.y) max.y = v.oGet(1);
+                if (v.oGet(2) < min.z) min.z = v.oGet(2);
+                if (v.oGet(2) > max.z) max.z = v.oGet(2);
             }
         }
 

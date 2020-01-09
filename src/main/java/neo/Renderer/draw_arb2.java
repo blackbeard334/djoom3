@@ -92,9 +92,9 @@ import neo.idlib.geometry.DrawVert.idDrawVert;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB;
 import static org.lwjgl.opengl.ARBMultitexture.GL_TEXTURE0_ARB;
-import static org.lwjgl.opengl.ARBProgram.GL_PROGRAM_ERROR_POSITION_ARB;
-import static org.lwjgl.opengl.ARBProgram.GL_PROGRAM_ERROR_STRING_ARB;
-import static org.lwjgl.opengl.ARBProgram.GL_PROGRAM_FORMAT_ASCII_ARB;
+import static org.lwjgl.opengl.ARBVertexProgram.GL_PROGRAM_ERROR_POSITION_ARB;
+import static org.lwjgl.opengl.ARBVertexProgram.GL_PROGRAM_ERROR_STRING_ARB;
+import static org.lwjgl.opengl.ARBVertexProgram.GL_PROGRAM_FORMAT_ASCII_ARB;
 import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
 import static org.lwjgl.opengl.GL11.GL_ALWAYS;
 import static org.lwjgl.opengl.GL11.GL_COLOR_ARRAY;
@@ -281,7 +281,7 @@ public class draw_arb2 {
 //            qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, 0/*sizeof(idDrawVert)*/, ac.tangentsOffset_0());
 //            qglVertexAttribPointerARB(8, 2, GL_FLOAT, false, 0/*sizeof(idDrawVert)*/, ac.stOffset());
 //            qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyzOffset());
-            
+
             qglColorPointer(4, GL_UNSIGNED_BYTE, idDrawVert.BYTES, ac.colorOffset());
             qglVertexAttribPointerARB(11, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.normalOffset());
             qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, idDrawVert.BYTES, ac.tangentsOffset_1());
@@ -526,11 +526,13 @@ public class draw_arb2 {
             return;
         }
         buffer = buffer.substring(start, end + 3);//end[3] = 0;
+        ByteBuffer substring = BufferUtils.createByteBuffer(buffer.length());
+        substring.put(buffer.getBytes()).flip();
 
         qglBindProgramARB(progs[progIndex].target, progs[progIndex].ident);
         qglGetError();
 
-        qglProgramStringARB(progs[progIndex].target, GL_PROGRAM_FORMAT_ASCII_ARB, 0, /*(unsigned char *)*/ buffer);
+        qglProgramStringARB(progs[progIndex].target, GL_PROGRAM_FORMAT_ASCII_ARB, 0, /*(unsigned char *)*/ substring);
 
         err = qglGetError();
         qglGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, ofs);

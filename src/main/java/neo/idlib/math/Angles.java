@@ -147,6 +147,10 @@ public class Angles {
             return new idAngles(pitch + a.pitch, yaw + a.yaw, roll + a.roll);
         }
 
+        public idAngles oPlus(final idVec3 a) {
+            return new idAngles(pitch + a.x, yaw + a.y, roll + a.z);
+        }
+
         public idAngles oPluSet(final idAngles a) {
             pitch += a.pitch;
             yaw += a.yaw;

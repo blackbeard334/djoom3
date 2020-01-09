@@ -121,7 +121,6 @@ public class DeclFX {
         @Override
         public boolean Parse(String text, int textLength) throws Lib.idException {
             idLexer src = new idLexer();
-            idToken token = new idToken();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
@@ -129,6 +128,7 @@ public class DeclFX {
 
             // scan through, identifying each individual parameter
             while (true) {
+                idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
@@ -210,11 +210,11 @@ public class DeclFX {
         public void List() throws idException {
             common.Printf("%s, %d stages\n", GetName(), events.Num());
         }
-//        
-//        
+//
+//
         public idList<idFXSingleAction> events = new idList<>();
         public idStr joint = new idStr();
-//        
+//
 
         private void ParseSingleFXAction(idLexer src, idFXSingleAction FXAction) throws Lib.idException {
             idToken token = new idToken();
@@ -284,13 +284,13 @@ public class DeclFX {
 
                 if (0 == token.Icmp("name")) {
                     src.ReadToken(token);
-                    FXAction.name = token;
+                    FXAction.name.oSet(token);
                     continue;
                 }
 
                 if (0 == token.Icmp("fire")) {
                     src.ReadToken(token);
-                    FXAction.fire = token;
+                    FXAction.fire.oSet(token);
                     continue;
                 }
 
@@ -359,7 +359,7 @@ public class DeclFX {
                     src.ExpectTokenString(",");
                     v.z = src.ParseFloat();
                     v.Normalize();
-                    FXAction.axis = v.ToMat3();
+                    FXAction.axis.oSet(v.ToMat3());
                     FXAction.explicitAxis = true;
                     continue;
                 }
@@ -371,18 +371,18 @@ public class DeclFX {
                     a.oSet(1, src.ParseFloat());
                     src.ExpectTokenString(",");
                     a.oSet(2, src.ParseFloat());
-                    FXAction.axis = a.ToMat3();
+                    FXAction.axis.oSet(a.ToMat3());
                     FXAction.explicitAxis = true;
                     continue;
                 }
 
                 if (0 == token.Icmp("uselight")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     for (int i = 0; i < events.Num(); i++) {
                         if (events.oGet(i).name.Icmp(FXAction.data.toString()) == 0) {
                             FXAction.sibling = i;
-                            FXAction.lightColor = events.oGet(i).lightColor;
+                            FXAction.lightColor.oSet(events.oGet(i).lightColor);
                             FXAction.lightRadius = events.oGet(i).lightRadius;
                         }
                     }
@@ -395,7 +395,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("attachlight")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     FXAction.type = FX_ATTACHLIGHT;
 
                     // precache it
@@ -405,7 +405,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("attachentity")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     FXAction.type = FX_ATTACHENTITY;
 
                     // precache the model
@@ -415,7 +415,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("launch")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     FXAction.type = FX_LAUNCH;
 
                     // precache the entity def
@@ -425,7 +425,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("useModel")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     for (int i = 0; i < events.Num(); i++) {
                         if (events.oGet(i).name.Icmp(FXAction.data) == 0) {
                             FXAction.sibling = i;
@@ -440,7 +440,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("light")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     src.ExpectTokenString(",");
                     FXAction.lightColor.oSet(0, src.ParseFloat());
                     src.ExpectTokenString(",");
@@ -458,7 +458,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("model")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     FXAction.type = FX_MODEL;
 
                     // precache it
@@ -468,7 +468,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("particle")) {	// FIXME: now the same as model
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     FXAction.type = FX_PARTICLE;
 
                     // precache it
@@ -478,7 +478,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("decal")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     FXAction.type = FX_DECAL;
 
                     // precache it
@@ -493,7 +493,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("sound")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     FXAction.type = FX_SOUND;
 
                     // precache it
@@ -508,7 +508,7 @@ public class DeclFX {
 
                 if (0 == token.Icmp("shockwave")) {
                     src.ReadToken(token);
-                    FXAction.data = token;
+                    FXAction.data.oSet(token);
                     FXAction.type = FX_SHOCKWAVE;
 
                     // precache the entity def

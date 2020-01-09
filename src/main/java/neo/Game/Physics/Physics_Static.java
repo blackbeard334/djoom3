@@ -84,10 +84,8 @@ public class Physics_Static {
             if (clipModel != null) {
                 idClipModel.delete(clipModel);
             }
-        }
 
-        public static void delete(idPhysics_Static body) {
-            body._deconstructor();
+            super._deconstructor();
         }
 
         @Override
@@ -223,7 +221,7 @@ public class Physics_Static {
                     clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
                 }
 
-                return (current.origin != oldOrigin || current.axis != oldAxis);
+                return (!current.origin.equals(oldOrigin) || !current.axis.equals(oldAxis));
             }
             return false;
         }
@@ -353,12 +351,12 @@ public class Physics_Static {
 
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
-            return current.origin;
+            return new idVec3(current.origin);
         }
 
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
-            return current.axis;
+            return new idMat3(current.axis);
         }
 
         @Override

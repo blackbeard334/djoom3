@@ -533,16 +533,23 @@ public class Simd {
             Arrays.fill(cullBits, 0, numVerts, i);
         }
 
+        /*
+        ============
+        idSIMD_Generic::CmpGE
+
+          dst[i] = src0[i] >= constant;
+        ============
+        */
         public void CmpGE(byte[] facing, float[] planeSide, float f, int numFaces) {
             int i, nm = numFaces & 0xfffffffc;
             for (i = 0; i < nm; i += 4) {
-                facing[i + 0] = (byte) btoi(planeSide[i + 0] > f);
-                facing[i + 1] = (byte) btoi(planeSide[i + 1] > f);
-                facing[i + 2] = (byte) btoi(planeSide[i + 2] > f);
-                facing[i + 3] = (byte) btoi(planeSide[i + 3] > f);
+                facing[i + 0] = (byte) btoi(planeSide[i + 0] >= f);
+                facing[i + 1] = (byte) btoi(planeSide[i + 1] >= f);
+                facing[i + 2] = (byte) btoi(planeSide[i + 2] >= f);
+                facing[i + 3] = (byte) btoi(planeSide[i + 3] >= f);
             }
             for (; i < numFaces; i++) {
-                facing[i + 0] = (byte) btoi(planeSide[i + 0] > f);
+                facing[i + 0] = (byte) btoi(planeSide[i + 0] >= f);
             }
         }
 

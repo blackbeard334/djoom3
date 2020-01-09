@@ -472,8 +472,12 @@ public class List {
         public type[] Ptr() {										// returns a pointer to the list
             return list;
         }
-        
-        public <T> T[] Ptr(final Class<? extends T[]> type) {										// returns a pointer to the list
+
+        public <T> T[] Ptr(final Class<? extends T[]> type) {
+            if (this.num == 0)
+                return null;
+            
+            // returns a pointer to the list
             return Arrays.copyOf(this.list, this.num, type);
         }
 //public	const type *	Ptr( ) const;									// returns a pointer to the list

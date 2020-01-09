@@ -530,7 +530,7 @@ public class Anim {
 
                     switch (animBits & (ANIM_TX | ANIM_TY | ANIM_TZ)) {
                         case 0:
-                            blendPtr.t = jointPtr.t;
+                            blendPtr.t.oSet(jointPtr.t);
                             break;
                         case ANIM_TX:
                             jointPtr.t.x = jointframe1[jf1_ptr + 0];
@@ -597,7 +597,7 @@ public class Anim {
 
                     switch (animBits & (ANIM_QX | ANIM_QY | ANIM_QZ)) {
                         case 0:
-                            blendPtr.q = jointPtr.q;
+                            blendPtr.q.oSet(jointPtr.q);
                             break;
                         case ANIM_QX:
                             jointPtr.q.x = jointframe1[jf1_ptr + 0];

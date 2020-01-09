@@ -60,6 +60,11 @@ import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.sys.win_snd.Sys_FreeOpenAL;
 import static neo.sys.win_snd.Sys_LoadOpenAL;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
+
 import static org.lwjgl.openal.AL10.AL_BUFFER;
 import static org.lwjgl.openal.AL10.AL_NO_ERROR;
 import static org.lwjgl.openal.AL10.AL_ROLLOFF_FACTOR;
@@ -79,8 +84,6 @@ import static org.lwjgl.openal.ALC10.alcMakeContextCurrent;
 import static org.lwjgl.openal.ALC10.alcOpenDevice;
 import static org.lwjgl.openal.ALC10.alcProcessContext;
 import static org.lwjgl.openal.ALC10.alcSuspendContext;
-import org.lwjgl.openal.ALCcontext;
-import org.lwjgl.openal.ALCdevice;
 
 /**
  *
@@ -138,8 +141,8 @@ public class snd_system {
         //
         public idList<SoundFX> fxList;
         //
-        public ALCdevice       openalDevice;
-        public ALCcontext      openalContext;
+        public long       openalDevice;
+        public long      openalContext;
         public int/*ALsizei*/  openalSourceCount;
         public openalSource_t[] openalSources = new openalSource_t[256];
 //        public boolean alEAXSet;
@@ -282,9 +285,13 @@ public class snd_system {
                     idSoundSystemLocal.s_useOpenAL.SetBool(false);
                 } else {
                     common.Printf("Setup OpenAL device and context... ");
-                    openalDevice = alcOpenDevice(null);
-                    openalContext = alcCreateContext(openalDevice, null);
+                    openalDevice = alcOpenDevice((ByteBuffer) null);
+                    openalContext = alcCreateContext(openalDevice, (int[]) null);
+
                     alcMakeContextCurrent(openalContext);
+                    
+                    ALCCapabilities alcCapabilities = ALC.createCapabilities(openalDevice);
+                    ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
                     common.Printf("Done.\n");
 
                     // try to obtain EAX extensions
@@ -314,13 +321,13 @@ public class snd_system {
                     if (!idSoundSystemLocal.s_useOpenAL.GetBool()) {
                         common.Printf("OpenAL: disabling ( no EAX ). Using legacy mixer.\n");
 
-                        alcMakeContextCurrent(null);
+                        alcMakeContextCurrent(openalContext);
 
                         alcDestroyContext(openalContext);
-                        openalContext = null;
+                        openalContext = 0;
 
                         alcCloseDevice(openalDevice);
-                        openalDevice = null;
+                        openalDevice = 0;
                     } else {
 
                         int/*ALuint*/ handle;
@@ -413,13 +420,13 @@ public class snd_system {
 
             // destroy openal device and context
             if (useOpenAL) {
-                alcMakeContextCurrent(null);
+                alcMakeContextCurrent(openalContext);
 
                 alcDestroyContext(openalContext);
-                openalContext = null;
+                openalContext = 0;
 
                 alcCloseDevice(openalDevice);
-                openalDevice = null;
+                openalDevice = 0;
             }
 
             Sys_FreeOpenAL();
@@ -597,7 +604,7 @@ public class snd_system {
             } else {
                 // clear the buffer for all the mixing output
 //                SIMDProcessor.Memset(finalMixBuffer, 0, MIXBUFFER_SAMPLES * sizeof(float) * numSpeakers);
-                Arrays.fill(finalMixBuffer, 0);
+                Arrays.fill(finalMixBuffer, 0, 0, MIXBUFFER_SAMPLES * numSpeakers);
             }
 
             // let the active sound world mix all the channels in unless muted or avi demo recording

@@ -95,6 +95,8 @@ import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
 import neo.framework.DeclEntityDef.idDeclEntityDef;
+
+import static neo.framework.BuildDefines.ID_DEMO_BUILD;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_PARTICLE;
 import static neo.framework.DeclManager.declType_t.DECL_SKIN;
@@ -1022,8 +1024,7 @@ public class Weapon {
             nextStrikeFx = 0;
 
             // setup gui light
-//	memset( &guiLight, 0, sizeof( guiLight ) );
-            guiLight = new renderLight_s();
+            guiLight = new renderLight_s();//	memset( &guiLight, 0, sizeof( guiLight ) );
             final String guiLightShader = weaponDef.dict.GetString("mtr_guiLightShader");
             if (isNotNullOrEmpty(guiLightShader)) {
                 guiLight.shader = declManager.FindMaterial(guiLightShader, false);
@@ -1088,8 +1089,7 @@ public class Weapon {
             flashUp = weaponDef.dict.GetVector("flashUp");
             flashRight = weaponDef.dict.GetVector("flashRight");
 
-//            memset( & muzzleFlash, 0, sizeof(muzzleFlash));
-            muzzleFlash = new renderLight_s();
+            muzzleFlash = new renderLight_s();//memset( & muzzleFlash, 0, sizeof(muzzleFlash));
             muzzleFlash.lightId = LIGHTID_VIEW_MUZZLE_FLASH + owner.entityNumber;
             muzzleFlash.allowLightInViewID = owner.entityNumber + 1;
 
@@ -1109,14 +1109,14 @@ public class Weapon {
             muzzleFlash.lightRadius.oSet(2, flashRadius);
 
             if (!flashPointLight) {
-                muzzleFlash.target = flashTarget;
-                muzzleFlash.up = flashUp;
-                muzzleFlash.right = flashRight;
-                muzzleFlash.end = flashTarget;
+                muzzleFlash.target.oSet(flashTarget);
+                muzzleFlash.up.oSet(flashUp);
+                muzzleFlash.right.oSet(flashRight);
+                muzzleFlash.end.oSet(flashTarget);
             }
 
             // the world muzzle flash is the same, just positioned differently
-            worldMuzzleFlash = muzzleFlash;
+            worldMuzzleFlash = new renderLight_s(muzzleFlash);
             worldMuzzleFlash.suppressLightInViewID = owner.entityNumber + 1;
             worldMuzzleFlash.allowLightInViewID = 0;
             worldMuzzleFlash.lightId = LIGHTID_WORLD_MUZZLE_FLASH + owner.entityNumber;
@@ -1196,11 +1196,12 @@ public class Weapon {
             WEAPON_RELOAD.LinkTo(scriptObject, "WEAPON_RELOAD");
             WEAPON_NETRELOAD.LinkTo(scriptObject, "WEAPON_NETRELOAD");
             WEAPON_NETENDRELOAD.LinkTo(scriptObject, "WEAPON_NETENDRELOAD");
-            WEAPON_NETFIRING.LinkTo(scriptObject, "WEAPON_NETFIRING");
+            if (!ID_DEMO_BUILD)
+                WEAPON_NETFIRING.LinkTo(scriptObject, "WEAPON_NETFIRING");
             WEAPON_RAISEWEAPON.LinkTo(scriptObject, "WEAPON_RAISEWEAPON");
             WEAPON_LOWERWEAPON.LinkTo(scriptObject, "WEAPON_LOWERWEAPON");
 
-            spawnArgs = weaponDef.dict;
+            spawnArgs.oSet(weaponDef.dict);
 
             shader[0] = spawnArgs.GetString("snd_hum");
             if (isNotNullOrEmpty(shader[0])) {

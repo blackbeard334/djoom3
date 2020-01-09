@@ -564,6 +564,9 @@ public class RenderWorld {
         public float[] shaderParms = new float[MAX_GLOBAL_SHADER_PARMS];// can be used in any way by shader
         public idMaterial globalMaterial;				 // used to override everything draw
 
+        private static int DBG_counter = 0;
+        private final  int DBG_count   = DBG_counter++;
+
         public renderView_s() {
         }
 

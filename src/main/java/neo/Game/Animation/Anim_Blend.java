@@ -404,32 +404,6 @@ public class Anim_Blend {
                     return va("Event '%s' has arguments", token);
                 }
                 fc.string = new idStr(token);
-            } else if (token.equals("sound")) {
-                if (!src.ReadTokenOnLine(token)) {
-                    return "Unexpected end of line";
-                }
-                fc.type = FC_SOUND;
-                if (0 == token.Cmpn("snd_", 4)) {
-                    fc.string = new idStr(token);
-                } else {
-                    fc.soundShader = declManager.FindSound(token);
-                    if (fc.soundShader.GetState() == DS_DEFAULTED) {
-                        gameLocal.Warning("Sound '%s' not found", token);
-                    }
-                }
-            } else if (token.equals("sound_voice")) {
-                if (!src.ReadTokenOnLine(token)) {
-                    return "Unexpected end of line";
-                }
-                fc.type = FC_SOUND_VOICE;
-                if (0 == token.Cmpn("snd_", 4)) {
-                    fc.string = new idStr(token);
-                } else {
-                    fc.soundShader = declManager.FindSound(token);
-                    if (fc.soundShader.GetState() == DS_DEFAULTED) {
-                        gameLocal.Warning("Sound '%s' not found", token);
-                    }
-                }
             } else if (token.equals("sound_voice2")) {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
@@ -443,11 +417,11 @@ public class Anim_Blend {
                         gameLocal.Warning("Sound '%s' not found", token);
                     }
                 }
-            } else if (token.equals("sound_body")) {
+            } else if (token.equals("sound_voice")) {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
                 }
-                fc.type = FC_SOUND_BODY;
+                fc.type = FC_SOUND_VOICE;
                 if (0 == token.Cmpn("snd_", 4)) {
                     fc.string = new idStr(token);
                 } else {
@@ -474,6 +448,19 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_SOUND_BODY3;
+                if (0 == token.Cmpn("snd_", 4)) {
+                    fc.string = new idStr(token);
+                } else {
+                    fc.soundShader = declManager.FindSound(token);
+                    if (fc.soundShader.GetState() == DS_DEFAULTED) {
+                        gameLocal.Warning("Sound '%s' not found", token);
+                    }
+                }
+            } else if (token.equals("sound_body")) {
+                if (!src.ReadTokenOnLine(token)) {
+                    return "Unexpected end of line";
+                }
+                fc.type = FC_SOUND_BODY;
                 if (0 == token.Cmpn("snd_", 4)) {
                     fc.string = new idStr(token);
                 } else {
@@ -526,6 +513,19 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_SOUND_CHATTER;
+                if (0 == token.Cmpn("snd_", 4)) {
+                    fc.string = new idStr(token);
+                } else {
+                    fc.soundShader = declManager.FindSound(token);
+                    if (fc.soundShader.GetState() == DS_DEFAULTED) {
+                        gameLocal.Warning("Sound '%s' not found", token);
+                    }
+                }
+            } else if (token.equals("sound")) {
+                if (!src.ReadTokenOnLine(token)) {
+                    return "Unexpected end of line";
+                }
+                fc.type = FC_SOUND;
                 if (0 == token.Cmpn("snd_", 4)) {
                     fc.string = new idStr(token);
                 } else {
@@ -695,7 +695,7 @@ public class Anim_Blend {
             if (0 == frameLookup.Num()) {
                 // we haven't, so allocate the table and initialize it
                 frameLookup.SetGranularity(1);
-                frameLookup.SetNum(anims[ 0].NumFrames());
+                frameLookup.SetNum(anims[0].NumFrames());
                 for (i = 0; i < frameLookup.Num(); i++) {
                     frameLookup.oSet(i, new frameLookup_t()).num = 0;
                     frameLookup.oGet(i).firstCommand = 0;
@@ -774,7 +774,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_VOICE: {
                             if (NOT(command.soundShader)) {
-                                if (NOT(ent.StartSound(command.string.toString(), SND_CHANNEL_VOICE, 0, false, null))) {
+                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_VOICE, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_voice' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -1410,7 +1410,7 @@ public class Anim_Blend {
             boolean getChildren;
             boolean subtract;
 
-            if (null == modelHandle) {
+            if (null == modelHandle || jointnames.isEmpty()) {
                 return;
             }
 
@@ -1944,9 +1944,9 @@ public class Anim_Blend {
 
             if (fromFrameTime <= 0) {
                 // make sure first frame is called
-                CallFrameCommands(ent, -1, frame2.frame1);
+                anim.CallFrameCommands(ent, -1, frame2.frame1);
             } else {
-                CallFrameCommands(ent, frame1.frame1, frame2.frame1);
+                anim.CallFrameCommands(ent, frame1.frame1, frame2.frame1);
             }
         }
 
@@ -4065,7 +4065,7 @@ public class Anim_Blend {
                     CreateFrame(currentTime, false);
 
                     if (jointHandle > 0) {
-                        idJointMat m = joints[ jointHandle];
+                        idJointMat m = new idJointMat(joints[ jointHandle]);
                         m.oDivSet(joints[ modelJoints.oGet(jointHandle).parentNum]);
                         offset.oSet(m.ToVec3());
                         axis.oSet(m.ToMat3());

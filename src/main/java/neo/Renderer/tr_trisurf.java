@@ -2444,7 +2444,9 @@ public class tr_trisurf {
     }
 
     private static shadowCache_s[] Resize(shadowCache_s[] shadowVertexes, int numVerts) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        shadowCache_s[] newArray = new shadowCache_s[numVerts];
+        System.arraycopy(shadowVertexes, 0, newArray, 0, Math.min(shadowVertexes.length, numVerts));
+        return newArray;
     }
 
     private static int[] Resize(int[] indexes, int numIndexes) {

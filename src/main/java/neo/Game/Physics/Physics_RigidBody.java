@@ -114,6 +114,13 @@ public class Physics_RigidBody {
             this.fromFloats(state);
         }
 
+        private rigidBodyIState_s(rigidBodyIState_s r) {
+            position = new idVec3(r.position);
+            orientation = new idMat3(r.orientation);
+            linearMomentum = new idVec3(r.linearMomentum);
+            angularMomentum = new idVec3(r.angularMomentum);
+        }
+
         private float[] toFloats() {
             FloatBuffer buffer = FloatBuffer.allocate(BYTES / Float.BYTES);
             buffer.put(position.ToFloatPtr())
@@ -161,6 +168,17 @@ public class Physics_RigidBody {
             this.pushVelocity = new idVec6();
             this.externalForce = new idVec3();
             this.externalTorque = new idVec3();
+        }
+
+        public rigidBodyPState_s(rigidBodyPState_s r) {
+            this.atRest = r.atRest;
+            this.lastTimeStep = r.lastTimeStep;
+            this.localOrigin = new idVec3(r.localOrigin);
+            this.localAxis = new idMat3(r.localAxis);
+            this.pushVelocity = new idVec6(r.pushVelocity);
+            this.externalForce = new idVec3(r.externalForce);
+            this.externalTorque = new idVec3(r.externalTorque);
+            this.i = new rigidBodyIState_s(r.i);
         }
     }
 
@@ -245,10 +263,6 @@ public class Physics_RigidBody {
 //            delete integrator;
 
             super._deconstructor();
-        }
-
-        public static void delete(idPhysics_RigidBody body) {
-            body._deconstructor();
         }
 
         @Override
@@ -512,7 +526,7 @@ public class Physics_RigidBody {
 //	current.i.angularMomentum -= current.pushVelocity.SubVec3( 1 ) * inertiaTensor;
             clipModel.Unlink();
 
-            next = current;
+            next = new rigidBodyPState_s(current);
 
             // calculate next position and orientation
             Integrate(timeStep, next);
@@ -529,7 +543,7 @@ public class Physics_RigidBody {
             }
 
             // set the new state
-            current = next;
+            current = new rigidBodyPState_s(next);
 
             if (collided) {
                 // apply collision impulse

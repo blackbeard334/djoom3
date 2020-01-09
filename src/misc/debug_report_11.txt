@@ -1,0 +1,25 @@
+R_SortDrawSurfs() //ローグタウン
+    "env/cloudy"
+        ambientCache
+            idVertexCache::AllocFrameTemp()
+        RB_STD_DrawView()
+            RB_STD_T_RenderShaderPasses()
+                GL_State()
+                RB_PrepareStageTexturing()
+                    R_SkyboxTexGen()
+
+
+
+strstr(tr.viewDef->drawSurfs[4]->material->stages[0].texture.image[0].imgName.data, "env/cloudy")
+
+
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+idPlayer::EvaluateControls()
+    idPlayer::Think()
+        idGameLocal::RunFrame()
+            idUsercmdGenLocal::GetDirectUsercmd()
+            
+
+            
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+"idMoveablePDAItem_pda_marscity_security_goggles_pda_377"

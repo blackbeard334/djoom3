@@ -923,10 +923,15 @@ public class Target {
         //
 
         public idTarget_SetInfluence() {
+            lightList = new idList<>();
+            guiList = new idList<>();
+            soundList = new idList<>();
+            genericList = new idList<>();
             flashIn = 0.0f;
             flashOut = 0.0f;
             delay = 0.0f;
             switchToCamera = null;
+            fovSetting = new idInterpolate<>();
             soundFaded = false;
             restoreOnTrigger = false;
         }
@@ -1030,11 +1035,13 @@ public class Target {
 
         @Override
         public void Spawn() {
+            super.Spawn();
+
             PostEventMS(EV_GatherEntities, 0);
             flashIn = spawnArgs.GetFloat("flashIn", "0");
             flashOut = spawnArgs.GetFloat("flashOut", "0");
-            flashInSound.oSet(spawnArgs.GetString("snd_flashin"));
-            flashOutSound.oSet(spawnArgs.GetString("snd_flashout"));
+            flashInSound = new idStr(spawnArgs.GetString("snd_flashin"));
+            flashOutSound = new idStr(spawnArgs.GetString("snd_flashout"));
             delay = spawnArgs.GetFloat("delay");
             soundFaded = false;
             restoreOnTrigger = false;

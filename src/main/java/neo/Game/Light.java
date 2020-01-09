@@ -241,7 +241,7 @@ public class Light {
                     }
                     brokenModel.oPluSet("_broken");
                     if (pos > 0) {
-                        brokenModel.oPluSet(model.oGet(pos));
+                        brokenModel.oPluSet(model.substring(pos));
                     }
                 }
 
@@ -931,5 +931,13 @@ public class Light {
             return eventCallbacks;
         }
 
+        @Override
+        protected void _deconstructor() {
+            if (lightDefHandle != -1) {
+                gameRenderWorld.FreeLightDef(lightDefHandle);
+            }
+
+            super._deconstructor();
+        }
     };
 }

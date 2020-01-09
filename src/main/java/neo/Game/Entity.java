@@ -540,6 +540,7 @@ public class Entity {
 
         }
 
+        @Override
         protected void _deconstructor() {
             if (gameLocal.GameState() != GAMESTATE_SHUTDOWN && !gameLocal.isClient && fl.networkSync && entityNumber >= MAX_CLIENTS) {
                 idBitMsg msg = new idBitMsg();
@@ -584,6 +585,14 @@ public class Entity {
             FreeSoundEmitter(false);
 
             gameLocal.UnregisterEntity(this);
+
+            delete(teamChain);
+            delete(teamMaster);
+            delete(bindMaster);
+            delete(physics);
+            if (physics != defaultPhysicsObj) delete(defaultPhysicsObj);
+            delete(cameraTarget);
+            super._deconstructor();
         }
 
         @Override
@@ -689,7 +698,7 @@ public class Entity {
             }
 
             // auto-start a sound on the entity
-            if (refSound.shader != null && NOT(refSound.waitfortrigger)) {
+            if (refSound.shader != null && !refSound.waitfortrigger) {
                 StartSoundShader(refSound.shader, SND_CHANNEL_ANY, 0, false, null);
             }
 
@@ -923,8 +932,7 @@ public class Entity {
             if (null == renderView) {
                 renderView = new renderView_s();
             }
-            renderView = new renderView_s();
-//	memset( renderView, 0, sizeof( *renderView ) );
+            //	memset( renderView, 0, sizeof( *renderView ) );
 
             renderView.vieworg = new idVec3(GetPhysics().GetOrigin());
             renderView.fov_x = 120;
@@ -932,9 +940,7 @@ public class Entity {
             renderView.viewaxis = new idMat3(GetPhysics().GetAxis());
 
             // copy global shader parms
-            for (int i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++) {
-                renderView.shaderParms[i] = gameLocal.globalShaderParms[i];
-            }
+            System.arraycopy(gameLocal.globalShaderParms, 0, renderView.shaderParms, 0, MAX_GLOBAL_SHADER_PARMS);
 
             renderView.globalMaterial = gameLocal.GetGlobalMaterial();
 
@@ -3121,13 +3127,13 @@ public class Entity {
 
             idStr str = kv.GetKey().Right(kv.GetKey().Length() - curveTag.length());
             if (str.Icmp("CatmullRomSpline") == 0) {
-                spline = new idCurve_CatmullRomSpline<>();
+                spline = new idCurve_CatmullRomSpline<>(idVec3.class);
             } else if (str.Icmp("nubs") == 0) {
-                spline = new idCurve_NonUniformBSpline<>();
+                spline = new idCurve_NonUniformBSpline<>(idVec3.class);
             } else if (str.Icmp("nurbs") == 0) {
-                spline = new idCurve_NURBS<>();
+                spline = new idCurve_NURBS<>(idVec3.class);
             } else {
-                spline = new idCurve_BSpline<>();
+                spline = new idCurve_BSpline<>(idVec3.class);
             }
 
             spline.SetBoundaryType(idCurve_Spline.BT_CLAMPED);
@@ -3481,9 +3487,9 @@ public class Entity {
                         idTraceModel trm = new idTraceModel();
 
                         if (spawnArgs.GetInt("cylinder", "0", numSides) && numSides[0] > 0) {
-                            trm.SetupCylinder(bounds, numSides[0] < 3 ? 3 : numSides[0]);
+                            trm.SetupCylinder(bounds, Math.max(numSides[0], 3));
                         } else if (spawnArgs.GetInt("cone", "0", numSides) && numSides[0] > 0) {
-                            trm.SetupCone(bounds, numSides[0] < 3 ? 3 : numSides[0]);
+                            trm.SetupCone(bounds, Math.max(numSides[0], 3));
                         } else {
                             trm.SetupBox(bounds);
                         }
@@ -4218,10 +4224,6 @@ public class Entity {
             fl.neverDormant = (enable.value != 0);
             dormantStart = 0;
         }
-
-        public static void delete(final idEntity entity){
-            entity._deconstructor();
-        }
     }
 
     /*
@@ -4463,10 +4465,10 @@ public class Entity {
             // start impact sound based on material type
             key = va("snd_%s", materialType);
             sound = spawnArgs.GetString(key);
-            if (sound.isEmpty()) {// == '\0' ) {
+            if (sound == null || sound.isEmpty()) {// == '\0' ) {
                 sound = def.dict.GetString(key);
             }
-            if (!sound.isEmpty()) {// != '\0' ) {
+            if (sound != null && !sound.isEmpty()) {// != '\0' ) {
                 StartSoundShader(declManager.FindSound(sound), SND_CHANNEL_BODY, 0, false, null);
             }
 
@@ -4474,11 +4476,11 @@ public class Entity {
                 // place a wound overlay on the model
                 key = va("mtr_wound_%s", materialType);
                 decal = spawnArgs.RandomPrefix(key, gameLocal.random);
-                if (decal.isEmpty()) {// == '\0' ) {
+                if (decal == null || decal.isEmpty()) {// == '\0' ) {
                     decal = def.dict.RandomPrefix(key, gameLocal.random);
                 }
-                if (!decal.isEmpty()) {// != '\0' ) {
-                    idVec3 dir = velocity;
+                if (decal != null && !decal.isEmpty()) {// != '\0' ) {
+                    idVec3 dir = new idVec3(velocity);
                     dir.Normalize();
                     ProjectOverlay(collision.c.point, dir, 20.0f, decal);
                 }
@@ -4507,20 +4509,20 @@ public class Entity {
             // start impact sound based on material type
             key = va("snd_%s", materialType);
             sound = spawnArgs.GetString(key);
-            if (sound.isEmpty()) {// == '\0' ) {
+            if (sound == null || sound.isEmpty()) {// == '\0' ) {
                 sound = def.dict.GetString(key);
             }
-            if (!sound.isEmpty()) {// != '\0' ) {
+            if (sound != null && !sound.isEmpty()) {// != '\0' ) {
                 StartSoundShader(declManager.FindSound(sound), SND_CHANNEL_BODY, 0, false, null);
             }
 
             // blood splats are thrown onto nearby surfaces
             key = va("mtr_splat_%s", materialType);
             splat = spawnArgs.RandomPrefix(key, gameLocal.random);
-            if (splat.isEmpty()) {// == '\0' ) {
+            if (splat == null || splat.isEmpty()) {// == '\0' ) {
                 splat = def.dict.RandomPrefix(key, gameLocal.random);
             }
-            if (!splat.isEmpty()) {// 1= '\0' ) {
+            if (splat != null && !splat.isEmpty()) {// 1= '\0' ) {
                 gameLocal.BloodSplat(origin, dir, 64.0f, splat);
             }
 
@@ -4529,10 +4531,10 @@ public class Entity {
                 // place a wound overlay on the model
                 key = va("mtr_wound_%s", materialType);
                 decal = spawnArgs.RandomPrefix(key, gameLocal.random);
-                if (decal.isEmpty()) {// == '\0' ) {
+                if (decal == null || decal.isEmpty()) {// == '\0' ) {
                     decal = def.dict.RandomPrefix(key, gameLocal.random);
                 }
-                if (!decal.isEmpty()) {// == '\0' ) {
+                if (decal != null && !decal.isEmpty()) {// == '\0' ) {
                     ProjectOverlay(origin, dir, 20.0f, decal);
                 }
             }
@@ -4540,17 +4542,17 @@ public class Entity {
             // a blood spurting wound is added
             key = va("smoke_wound_%s", materialType);
             bleed = spawnArgs.GetString(key);
-            if (bleed.isEmpty()) {// == '\0' ) {
+            if (bleed == null || bleed.isEmpty()) {// == '\0' ) {
                 bleed = def.dict.GetString(key);
             }
-            if (!bleed.isEmpty()) {// == '\0' ) {
+            if (bleed != null && !bleed.isEmpty()) {// == '\0' ) {
                 de = new damageEffect_s();
                 de.next = this.damageEffects;
                 this.damageEffects = de;
 
                 de.jointNum = jointNum;
-                de.localOrigin = localOrigin;
-                de.localNormal = localNormal;
+                de.localOrigin = new idVec3(localOrigin);
+                de.localNormal = new idVec3(localNormal);
                 de.type = (idDeclParticle) declManager.FindType(DECL_PARTICLE, bleed);
                 de.time = gameLocal.time;
             }
@@ -4677,11 +4679,11 @@ public class Entity {
          modifies the orientation of the joint based on the transform type
          ================
          */
-        private static void Event_SetJointAngle(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<jointModTransform_t> transform_type, final idEventArg<idAngles> angles) {
+        private static void Event_SetJointAngle(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum, idEventArg<Integer>/*jointModTransform_t*/ transform_type, final idEventArg<idVec3> angles) {
             idMat3 mat;
 
             mat = angles.value.ToMat3();
-            e.animator.SetJointAxis(jointnum.value, transform_type.value, mat);
+            e.animator.SetJointAxis(jointnum.value, jointModTransform_t.values()[transform_type.value], mat);
         }
 
         /*
@@ -4802,11 +4804,11 @@ public class Entity {
      */
     public static idUserInterface AddRenderGui(final String name, final idDict args) {
         idUserInterface gui;
-        
+
         final idKeyValue kv = args.MatchPrefix("gui_parm", null);
         gui = uiManager.FindGui(name, true, (kv != null));
         UpdateGuiParms(gui, args);
-        
+
         return gui;
     }
 

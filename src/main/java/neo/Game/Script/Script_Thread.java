@@ -10,6 +10,8 @@ import static neo.Game.Entity.EV_CacheSoundShader;
 import static neo.Game.Entity.EV_SetShaderParm;
 import static neo.Game.Entity.signalNum_t.NUM_SIGNALS;
 import static neo.Game.Entity.signalNum_t.SIG_TRIGGER;
+
+import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
@@ -153,6 +155,7 @@ public class Script_Thread {
 
         protected static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
+            eventCallbacks.putAll(Class.idClass.getEventCallBacks());
             eventCallbacks.put(EV_Thread_Execute, (eventCallback_t0<idThread>)  idThread::Event_Execute);
             eventCallbacks.put(EV_Thread_TerminateThread, (eventCallback_t1<idThread>) idThread::Event_TerminateThread);
             eventCallbacks.put(EV_Thread_Pause, (eventCallback_t0<idThread>) idThread::Event_Pause);
@@ -398,7 +401,7 @@ public class Script_Thread {
 
             assert (name != null);
 
-            if (name.charAt(0) == '*') {
+            if (name.startsWith("*")) {
                 entnum = Integer.parseInt(name.substring(1));
                 if ((entnum < 0) || (entnum >= MAX_GENTITIES)) {
                     t.Error("Entity number in string out of range.");
@@ -478,8 +481,12 @@ public class Script_Thread {
             ReturnVector(result);
         }
 
-        private static void Event_AngToForward(idThread t, idEventArg<idAngles> ang) {
-            ReturnVector(ang.value.ToForward());
+//        private static void Event_AngToForward(idThread t, idEventArg<idAngles> ang) {
+//            ReturnVector(ang.value.ToForward());
+//        }
+
+        private static void Event_AngToForward(idThread t, idEventArg<idVec3> ang) {
+            ReturnVector(new idAngles(ang.value).ToForward());
         }
 
         private static void Event_AngToRight(idThread t, idEventArg<idAngles> ang) {
@@ -942,7 +949,32 @@ public class Script_Thread {
                 gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, threadNum, threadName);
             }
         }
+
         // virtual						~idThread();
+        @Override
+        protected void _deconstructor() {
+            idThread thread;
+            int i;
+            int n;
+
+            if (g_debugScript.GetBool()) {
+                gameLocal.Printf("%d: end thread (%d) '%s'\n", gameLocal.time, threadNum, threadName);
+            }
+            threadList.Remove(this);
+            n = threadList.Num();
+            for (i = 0; i < n; i++) {
+                thread = threadList.oGet(i);
+                if (thread.WaitingOnThread() == this) {
+                    thread.ThreadCallback(this);
+                }
+            }
+
+            if (currentThread == this) {
+                currentThread = null;
+            }
+
+            super._deconstructor();
+        }
 
         // tells the thread manager not to delete this thread when it ends
         public void ManualDelete() {
@@ -1431,13 +1463,17 @@ public class Script_Thread {
         public static void ReturnInt(boolean value) {
             ReturnInt(value ? 1 : 0);
         }
-
+                                                     
         public static void ReturnVector(final idVec3 vec) {
             gameLocal.program.ReturnVector(vec);
         }
 
         public static void ReturnEntity(idEntity ent) {
             gameLocal.program.ReturnEntity(ent);
+        }
+
+        public static void delete(final idThread thread){
+            thread._deconstructor();
         }
     };
 }
