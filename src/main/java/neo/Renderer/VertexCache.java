@@ -516,7 +516,7 @@ public class VertexCache {
 //                GL15.glBufferData(GL_ARRAY_BUFFER, DrawVert.toByteBuffer(data), GL15.GL_STATIC_DRAW);
 //                GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
             } else {
-                SIMDProcessor.Memcpy(block.virtMem.position(block.offset), data, size);
+                SIMDProcessor.Memcpy((ByteBuffer) block.virtMem.position(block.offset), data, size);
             }
 
             return block;

@@ -2233,82 +2233,6 @@ public class tr_trisurf {
      ===================================================================================
      */
 
-    /*
-     ===================
-     R_BuildDeformInfo
-     ===================
-     */
-    public static deformInfo_s R_BuildDeformInfo(int numVerts, final idDrawVert verts, int numIndexes, final int[] indexes, boolean useUnsmoothedTangents) {
-        deformInfo_s deform;
-        srfTriangles_s tri;
-        int i;
-
-        tri = new srfTriangles_s();
-
-        tri.numVerts = numVerts;
-        R_AllocStaticTriSurfVerts(tri, tri.numVerts);
-        SIMDProcessor.Memcpy(tri.verts, verts, tri.numVerts);
-
-        tri.numIndexes = numIndexes;
-        R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
-
-        // don't memcpy, so we can change the index type from int to short without changing the interface
-        for (i = 0; i < tri.numIndexes; i++) {
-            tri.indexes[i] = indexes[i];
-        }
-
-        R_RangeCheckIndexes(tri);
-        R_CreateSilIndexes(tri);
-
-// should we order the indexes here?
-//	R_RemoveDuplicatedTriangles( &tri );
-//	R_RemoveDegenerateTriangles( &tri );
-//	R_RemoveUnusedVerts( &tri );
-        R_IdentifySilEdges(tri, false);			// we cannot remove coplanar edges, because
-        // they can deform to silhouettes
-
-        R_DuplicateMirroredVertexes(tri);		// split mirror points into multiple points
-
-        R_CreateDupVerts(tri);
-
-        if (useUnsmoothedTangents) {
-            R_BuildDominantTris(tri);
-        }
-
-        deform = new deformInfo_s();//R_ClearedStaticAlloc(sizeof(deform));
-
-        deform.numSourceVerts = numVerts;
-        deform.numOutputVerts = tri.numVerts;
-
-        deform.numIndexes = numIndexes;
-        deform.indexes = tri.indexes;
-
-        deform.silIndexes = tri.silIndexes;
-
-        deform.numSilEdges = tri.numSilEdges;
-        deform.silEdges = tri.silEdges;
-
-        deform.dominantTris = tri.dominantTris;
-
-        deform.numMirroredVerts = tri.numMirroredVerts;
-        deform.mirroredVerts = tri.mirroredVerts;
-
-        deform.numDupVerts = tri.numDupVerts;
-        deform.dupVerts = tri.dupVerts;
-
-        if (tri.verts != null) {
-//            triVertexAllocator.Free(tri.verts);
-            tri.verts = null;
-        }
-
-        if (tri.facePlanes != null) {
-//            triPlaneAllocator.Free(tri.facePlanes);
-            tri.facePlanes = null;
-        }
-
-        return deform;
-    }
-
     public static deformInfo_s R_BuildDeformInfo(int numVerts, final idDrawVert[] verts, int numIndexes, final idList<Integer> indexes, boolean useUnsmoothedTangents) {
         deformInfo_s deform;
         srfTriangles_s tri;
@@ -2331,10 +2255,11 @@ public class tr_trisurf {
         R_RangeCheckIndexes(tri);
         R_CreateSilIndexes(tri);
 
-        // should we order the indexes here?
-//	R_RemoveDuplicatedTriangles( &tri );
-//	R_RemoveDegenerateTriangles( &tri );
-//	R_RemoveUnusedVerts( &tri );
+    // should we order the indexes here?
+
+    //	R_RemoveDuplicatedTriangles( &tri );
+    //	R_RemoveDegenerateTriangles( &tri );
+    //	R_RemoveUnusedVerts( &tri );
         R_IdentifySilEdges(tri, false);			// we cannot remove coplanar edges, because
         //                                              // they can deform to silhouettes
 

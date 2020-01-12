@@ -1,5 +1,7 @@
 package neo.idlib.math;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
@@ -398,8 +400,9 @@ public class Simd {
             }
         }
 
-        public void /*VPCALL*/ Memcpy(Object dst, final Object src, final int count) {
-            throw new TODO_Exception();
+        public void /*VPCALL*/ Memcpy(ByteBuffer dst, final ByteBuffer src, final int count) {
+            final ByteBuffer src_slice = (ByteBuffer) src.slice().limit(count);
+            dst.put(src_slice);
         }
 
         @Deprecated
