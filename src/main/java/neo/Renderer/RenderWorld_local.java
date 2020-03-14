@@ -103,6 +103,7 @@ import static neo.Renderer.tr_main.R_LocalPointToGlobal;
 import static neo.Renderer.tr_main.R_RenderView;
 import static neo.Renderer.tr_rendertools.RB_AddDebugLine;
 import static neo.Renderer.tr_rendertools.RB_AddDebugPolygon;
+import static neo.Renderer.tr_rendertools.RB_AddDebugText;
 import static neo.Renderer.tr_rendertools.RB_ClearDebugLines;
 import static neo.Renderer.tr_rendertools.RB_ClearDebugPolygons;
 import static neo.Renderer.tr_rendertools.RB_ClearDebugText;
@@ -1724,7 +1725,7 @@ public class RenderWorld_local {
 
         @Override
         public void DrawText(String text, idVec3 origin, float scale, idVec4 color, idMat3 viewAxis, int align, int lifetime, boolean depthTest) {
-            throw new UnsupportedOperationException("Not supported yet.");
+        	RB_AddDebugText( text, origin, scale, color, viewAxis, align, lifetime, depthTest );
         }
 
         //-----------------------
