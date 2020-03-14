@@ -1,16 +1,6 @@
 package neo.Renderer;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 import static neo.Renderer.Interaction.R_CalcInteractionFacing;
-import neo.Renderer.Interaction.srfCullInfo_t;
-import neo.Renderer.Model.silEdge_t;
-import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.tr_local.idRenderEntityLocal;
-import neo.Renderer.tr_local.idRenderLightLocal;
-import neo.Renderer.tr_local.optimizedShadow_t;
-import neo.Renderer.tr_local.shadowFrustum_t;
 import static neo.Renderer.tr_local.tr;
 import static neo.Renderer.tr_main.R_GlobalPlaneToLocal;
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
@@ -27,8 +17,19 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.idlib.math.Plane.SIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_ON;
-import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Simd.SIMDProcessor;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import neo.Renderer.Interaction.srfCullInfo_t;
+import neo.Renderer.Model.silEdge_t;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.tr_local.idRenderEntityLocal;
+import neo.Renderer.tr_local.idRenderLightLocal;
+import neo.Renderer.tr_local.optimizedShadow_t;
+import neo.Renderer.tr_local.shadowFrustum_t;
+import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 

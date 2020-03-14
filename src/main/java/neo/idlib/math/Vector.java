@@ -1,23 +1,24 @@
 package neo.idlib.math;
 
+import static neo.idlib.math.Simd.SIMDProcessor;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.stream.Stream;
+
+import org.lwjgl.BufferUtils;
 
 import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Matrix.idMat4;
-import neo.idlib.math.Matrix.idMatX;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Rotation.idRotation;
-import org.lwjgl.BufferUtils;
-
-import static neo.idlib.math.Simd.SIMDProcessor;
+import neo.idlib.math.Matrix.idMat3;
+import neo.idlib.math.Matrix.idMat4;
+import neo.idlib.math.Matrix.idMatX;
 
 /**
  *

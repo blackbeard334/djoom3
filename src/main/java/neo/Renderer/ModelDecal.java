@@ -1,31 +1,33 @@
 package neo.Renderer;
 
+import static neo.Renderer.VertexCache.vertexCache;
+import static neo.Renderer.tr_light.R_AddDrawSurf;
+import static neo.Renderer.tr_local.tr;
+import static neo.Renderer.tr_main.R_AxisToModelMatrix;
+import static neo.Renderer.tr_main.R_GlobalPlaneToLocal;
+import static neo.Renderer.tr_main.R_GlobalPointToLocal;
+import static neo.framework.Common.common;
+import static neo.idlib.math.Plane.SIDE_CROSS;
+import static neo.idlib.math.Simd.SIMDProcessor;
+
 import java.util.Arrays;
+
 import neo.Renderer.Material.decalInfo_t;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model.modelSurface_s;
 import neo.Renderer.Model.srfTriangles_s;
-import static neo.Renderer.VertexCache.vertexCache;
-import static neo.Renderer.tr_light.R_AddDrawSurf;
-import static neo.Renderer.tr_local.tr;
 import neo.Renderer.tr_local.viewEntity_s;
-import static neo.Renderer.tr_main.R_AxisToModelMatrix;
-import static neo.Renderer.tr_main.R_GlobalPlaneToLocal;
-import static neo.Renderer.tr_main.R_GlobalPointToLocal;
-import static neo.framework.Common.common;
 import neo.framework.DemoFile.idDemoFile;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Plane.SIDE_CROSS;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Simd.SIMDProcessor;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

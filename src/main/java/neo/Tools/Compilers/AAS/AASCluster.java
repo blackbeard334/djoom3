@@ -4,13 +4,14 @@ import static java.lang.Math.abs;
 import static neo.Tools.Compilers.AAS.AASFile.AREACONTENTS_CLUSTERPORTAL;
 import static neo.Tools.Compilers.AAS.AASFile.AREA_REACHABLE_FLY;
 import static neo.Tools.Compilers.AAS.AASFile.AREA_REACHABLE_WALK;
+import static neo.framework.Common.common;
+
 import neo.Tools.Compilers.AAS.AASFile.aasArea_s;
 import neo.Tools.Compilers.AAS.AASFile.aasCluster_s;
 import neo.Tools.Compilers.AAS.AASFile.aasFace_s;
 import neo.Tools.Compilers.AAS.AASFile.aasPortal_s;
 import neo.Tools.Compilers.AAS.AASFile.idReachability;
 import neo.Tools.Compilers.AAS.AASFile_local.idAASFileLocal;
-import static neo.framework.Common.common;
 
 /**
  *

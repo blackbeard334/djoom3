@@ -1,20 +1,20 @@
 package neo.idlib.math;
 
-import neo.TempDump;
-import neo.framework.CVarSystem.idCVar;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMatX;
-import neo.idlib.math.Vector.idVecX;
-
-import java.nio.FloatBuffer;
-
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
-import static neo.idlib.Lib.idLib;
 import static neo.idlib.containers.List.idSwap;
 import static neo.idlib.math.Matrix.idMatX.MATX_ALLOCA;
 import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.idlib.math.Vector.idVecX.VECX_ALLOCA;
+
+import java.nio.FloatBuffer;
+
+import neo.TempDump;
+import neo.framework.CVarSystem.idCVar;
+import neo.idlib.Lib.idLib;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVecX;
+import neo.idlib.math.Matrix.idMatX;
 
 /**
  *

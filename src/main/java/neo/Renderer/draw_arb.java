@@ -3,8 +3,6 @@ package neo.Renderer;
 import static neo.Renderer.Image.globalImages;
 import static neo.Renderer.Material.stageVertexColor_t.SVC_IGNORE;
 import static neo.Renderer.Material.stageVertexColor_t.SVC_INVERSE_MODULATE;
-import neo.Renderer.Model.lightingCache_s;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.RenderSystem_init.r_useTripleTextureARB;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_common.RB_StencilShadowPass;
@@ -37,17 +35,10 @@ import static neo.Renderer.tr_local.GLS_DSTBLEND_ZERO;
 import static neo.Renderer.tr_local.GLS_SRCBLEND_DST_ALPHA;
 import static neo.Renderer.tr_local.GLS_SRCBLEND_ONE;
 import static neo.Renderer.tr_local.backEnd;
-import neo.Renderer.tr_local.drawInteraction_t;
-import neo.Renderer.tr_local.drawSurf_s;
 import static neo.Renderer.tr_local.glConfig;
-import neo.Renderer.tr_local.idScreenRect;
-import neo.Renderer.tr_local.viewLight_s;
-import neo.Renderer.tr_render.DrawInteraction;
 import static neo.Renderer.tr_render.RB_CreateSingleDrawInteractions;
 import static neo.Renderer.tr_render.RB_DrawElementsWithCounters;
 import static neo.TempDump.NOT;
-import neo.idlib.geometry.DrawVert.idDrawVert;
-import neo.idlib.math.Vector.idVec4;
 import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_COMBINE_ARB;
 import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_COMBINE_RGB_ARB;
 import static org.lwjgl.opengl.ARBTextureEnvCombine.GL_OPERAND0_RGB_ARB;
@@ -78,6 +69,16 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_Q;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_T;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+
+import neo.Renderer.Model.lightingCache_s;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.tr_local.drawInteraction_t;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.Renderer.tr_local.idScreenRect;
+import neo.Renderer.tr_local.viewLight_s;
+import neo.Renderer.tr_render.DrawInteraction;
+import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.idlib.math.Vector.idVec4;
 
 /**
  *

@@ -5,7 +5,7 @@ import java.nio.ByteOrder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import static neo.idlib.Lib.idException;
+import neo.idlib.Lib.idException;
 
 /**
  *

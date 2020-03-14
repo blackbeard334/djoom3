@@ -4,14 +4,7 @@ import static java.lang.Math.floor;
 import static neo.Renderer.Material.CONTENTS_AREAPORTAL;
 import static neo.TempDump.NOT;
 import static neo.Tools.Compilers.DMap.dmap.PLANENUM_LEAF;
-import neo.Tools.Compilers.DMap.dmap.bspface_s;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
-import neo.Tools.Compilers.DMap.dmap.node_s;
-import neo.Tools.Compilers.DMap.dmap.primitive_s;
-import neo.Tools.Compilers.DMap.dmap.side_s;
-import neo.Tools.Compilers.DMap.dmap.tree_s;
-import neo.Tools.Compilers.DMap.dmap.uBrush_t;
-import neo.Tools.Compilers.DMap.dmap.uPortal_s;
 import static neo.Tools.Compilers.DMap.map.FindFloatPlane;
 import static neo.Tools.Compilers.DMap.portals.FreePortal;
 import static neo.Tools.Compilers.DMap.portals.RemovePortalFromNode;
@@ -20,15 +13,23 @@ import static neo.Tools.Compilers.DMap.ubrush.AllocTree;
 import static neo.Tools.Compilers.DMap.ubrush.CLIP_EPSILON;
 import static neo.Tools.Compilers.DMap.ubrush.FreeBrushList;
 import static neo.framework.Common.common;
-import neo.idlib.geometry.Winding.idWinding;
-import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Plane.PLANETYPE_TRUEAXIAL;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.idlib.math.Plane.SIDE_CROSS;
 import static neo.idlib.math.Plane.SIDE_FRONT;
+import static neo.sys.win_shared.Sys_Milliseconds;
+
+import neo.Tools.Compilers.DMap.dmap.bspface_s;
+import neo.Tools.Compilers.DMap.dmap.node_s;
+import neo.Tools.Compilers.DMap.dmap.primitive_s;
+import neo.Tools.Compilers.DMap.dmap.side_s;
+import neo.Tools.Compilers.DMap.dmap.tree_s;
+import neo.Tools.Compilers.DMap.dmap.uBrush_t;
+import neo.Tools.Compilers.DMap.dmap.uPortal_s;
+import neo.idlib.geometry.Winding.idWinding;
+import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
-import static neo.sys.win_shared.Sys_Milliseconds;
 
 /**
  *

@@ -1,29 +1,31 @@
 package neo.Game;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
 import static neo.Game.Pvs.pvsType_t.PVS_ALL_PORTALS_OPEN;
 import static neo.Game.Pvs.pvsType_t.PVS_CONNECTED_AREAS;
 import static neo.Game.Pvs.pvsType_t.PVS_NORMAL;
-import neo.Renderer.RenderWorld.exitPortal_t;
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_VIEW;
 import static neo.TempDump.indexOf;
 import static neo.TempDump.memcmp;
 import static neo.TempDump.reinterpret_cast_long_array;
 import static neo.framework.Common.common;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.BitMsg.idBitMsg;
 import static neo.idlib.Lib.colorCyan;
 import static neo.idlib.Lib.colorRed;
-import neo.idlib.Timer.idTimer;
-import neo.idlib.geometry.Winding.idFixedWinding;
-import neo.idlib.geometry.Winding.idWinding;
 import static neo.idlib.math.Plane.ON_EPSILON;
 import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import neo.Renderer.RenderWorld.exitPortal_t;
+import neo.idlib.BitMsg.idBitMsg;
+import neo.idlib.Timer.idTimer;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.geometry.Winding.idFixedWinding;
+import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;

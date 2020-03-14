@@ -1,8 +1,6 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
 import static neo.Renderer.Image.MAX_IMAGE_NAME;
-import neo.Renderer.Image.textureDepth_t;
 import static neo.Renderer.Image.textureDepth_t.TD_BUMP;
 import static neo.Renderer.Image_files.R_LoadImage;
 import static neo.Renderer.Image_process.R_Dropsample;
@@ -10,12 +8,17 @@ import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOFATALERRORS;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
+
+import neo.Renderer.Image.textureDepth_t;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import org.lwjgl.BufferUtils;
 
 /**
  *

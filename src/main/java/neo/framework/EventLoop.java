@@ -1,25 +1,27 @@
 package neo.framework;
 
-import java.nio.ByteBuffer;
 import static neo.TempDump.bbtoa;
 import static neo.framework.CVarSystem.CVAR_INIT;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
-import neo.framework.CVarSystem.idCVar;
-import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
 import static neo.framework.CmdSystem.cmdSystem;
-import neo.framework.CmdSystem.idCmdSystem;
+import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.framework.File_h.idFile;
-import neo.framework.KeyInput.idKeyInput;
 import static neo.framework.Session.session;
-import neo.idlib.Lib.idException;
 import static neo.sys.sys_public.sysEventType_t.SE_CONSOLE;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.sys_public.sysEventType_t.SE_NONE;
-import neo.sys.sys_public.sysEvent_s;
 import static neo.sys.win_main.Sys_GetEvent;
 import static neo.sys.win_shared.Sys_Milliseconds;
+
+import java.nio.ByteBuffer;
+
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.CmdSystem.idCmdSystem;
+import neo.framework.File_h.idFile;
+import neo.framework.KeyInput.idKeyInput;
+import neo.idlib.Lib.idException;
+import neo.sys.sys_public.sysEvent_s;
 
 /**
  *

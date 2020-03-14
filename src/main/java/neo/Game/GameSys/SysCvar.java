@@ -1,6 +1,5 @@
 package neo.Game.GameSys;
 
-import java.util.Date;
 import static neo.Game.Game_local.DEFAULT_GRAVITY_STRING;
 import static neo.Game.Game_local.GAME_VERSION;
 import static neo.Game.MultiplayerGame.MP_PLAYER_MAXFRAGS;
@@ -17,10 +16,13 @@ import static neo.framework.CVarSystem.CVAR_RENDERER;
 import static neo.framework.CVarSystem.CVAR_ROM;
 import static neo.framework.CVarSystem.CVAR_SERVERINFO;
 import static neo.framework.CVarSystem.CVAR_USERINFO;
-import neo.framework.CVarSystem.idCVar;
-import neo.framework.CmdSystem.idCmdSystem;
 import static neo.framework.Licensee.ENGINE_VERSION;
 import static neo.sys.sys_public.BUILD_STRING;
+
+import java.util.Date;
+
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.CmdSystem.idCmdSystem;
 
 /**
  *

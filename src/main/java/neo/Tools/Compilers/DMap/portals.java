@@ -1,27 +1,27 @@
 package neo.Tools.Compilers.DMap;
 
 import static neo.Renderer.Material.CONTENTS_AREAPORTAL;
-import neo.Renderer.Material.idMaterial;
 import static neo.TempDump.NOT;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.Tools.Compilers.DMap.dmap.PLANENUM_LEAF;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
+import static neo.Tools.Compilers.DMap.ubrush.CLIP_EPSILON;
+import static neo.framework.Common.common;
+import static neo.framework.DeclManager.declManager;
+import static neo.idlib.Lib.MAX_WORLD_COORD;
+import static neo.idlib.Lib.MIN_WORLD_COORD;
+import static neo.idlib.math.Plane.ON_EPSILON;
+
+import neo.Renderer.Material.idMaterial;
 import neo.Tools.Compilers.DMap.dmap.node_s;
 import neo.Tools.Compilers.DMap.dmap.side_s;
 import neo.Tools.Compilers.DMap.dmap.tree_s;
 import neo.Tools.Compilers.DMap.dmap.uBrush_t;
 import neo.Tools.Compilers.DMap.dmap.uEntity_t;
 import neo.Tools.Compilers.DMap.dmap.uPortal_s;
-import neo.Tools.Compilers.DMap.portals.interAreaPortal_t;
-import static neo.Tools.Compilers.DMap.ubrush.CLIP_EPSILON;
-import static neo.framework.Common.common;
-import static neo.framework.DeclManager.declManager;
-import neo.idlib.BV.Bounds.idBounds;
-import static neo.idlib.Lib.MAX_WORLD_COORD;
-import static neo.idlib.Lib.MIN_WORLD_COORD;
 import neo.idlib.MapFile.idMapEntity;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.Winding.idWinding;
-import static neo.idlib.math.Plane.ON_EPSILON;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 

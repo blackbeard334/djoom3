@@ -1,9 +1,6 @@
 package neo.Sound;
 
-import neo.Sound.snd_cache.idSoundSample;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
-import neo.Sound.snd_shader.idSoundShader;
-import neo.Sound.snd_system.idSoundSystemLocal;
 import static neo.Sound.snd_system.soundSystemLocal;
 import static neo.TempDump.etoi;
 import static neo.TempDump.sizeof;
@@ -12,22 +9,25 @@ import static neo.framework.Common.com_makingBuild;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.DECL_LEXER_FLAGS;
 import static neo.framework.DeclManager.declManager;
-import neo.framework.DeclManager.idDecl;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.idlib.Lib.BIT;
-import neo.idlib.Text.Lexer.idLexer;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import static neo.idlib.Text.Token.TT_NUMBER;
-import neo.idlib.Text.Token.idToken;
-import neo.idlib.containers.StrList.idStrList;
-import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Simd.speakerLabel.SPEAKER_BACKLEFT;
 import static neo.idlib.math.Simd.speakerLabel.SPEAKER_BACKRIGHT;
 import static neo.idlib.math.Simd.speakerLabel.SPEAKER_CENTER;
 import static neo.idlib.math.Simd.speakerLabel.SPEAKER_LEFT;
 import static neo.idlib.math.Simd.speakerLabel.SPEAKER_LFE;
 import static neo.idlib.math.Simd.speakerLabel.SPEAKER_RIGHT;
+
+import neo.Sound.snd_cache.idSoundSample;
+import neo.Sound.snd_system.idSoundSystemLocal;
+import neo.framework.DeclManager.idDecl;
+import neo.idlib.Text.Lexer.idLexer;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.Text.Token.idToken;
+import neo.idlib.containers.StrList.idStrList;
+import neo.idlib.math.Math_h.idMath;
 
 /**
  *

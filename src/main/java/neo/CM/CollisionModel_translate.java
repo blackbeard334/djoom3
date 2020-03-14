@@ -1,16 +1,16 @@
 package neo.CM;
 
+import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
+import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
+import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
+
+import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel_local.cm_edge_s;
 import neo.CM.CollisionModel_local.cm_traceWork_s;
 import neo.CM.CollisionModel_local.cm_vertex_s;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Vector.idVec3;
-
-import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
-import static neo.CM.CollisionModel.contactInfo_t;
-import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
-import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 
 /**
  *

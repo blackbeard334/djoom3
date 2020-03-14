@@ -1,11 +1,5 @@
 package neo.sys;
 
-import neo.TempDump.TODO_Exception;
-import neo.idlib.Text.Str.idStr;
-import org.lwjgl.glfw.GLFW;
-
-import java.awt.event.InputEvent;
-
 import static neo.framework.Common.common;
 import static neo.framework.KeyInput.K_ALT;
 import static neo.framework.KeyInput.K_BACKSPACE;
@@ -65,8 +59,14 @@ import static neo.sys.sys_public.sysEventType_t.SE_CHAR;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.win_local.win32;
 import static neo.sys.win_main.Sys_QueEvent;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+
+import java.awt.event.InputEvent;
+
+import org.lwjgl.glfw.GLFW;
+
+import neo.TempDump.TODO_Exception;
+import neo.idlib.Text.Str.idStr;
 
 /**
  *

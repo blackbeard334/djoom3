@@ -1,10 +1,6 @@
 package neo.Tools.Compilers.DMap;
 
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.Material.materialCoverage_t.MC_OPAQUE;
-import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.ModelManager.renderModelManager;
 import static neo.TempDump.NOT;
 import static neo.TempDump.etoi;
@@ -12,16 +8,6 @@ import static neo.TempDump.isNotNullOrEmpty;
 import static neo.Tools.Compilers.DMap.dmap.MAX_GROUP_LIGHTS;
 import static neo.Tools.Compilers.DMap.dmap.PLANENUM_LEAF;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
-import neo.Tools.Compilers.DMap.dmap.mapLight_t;
-import neo.Tools.Compilers.DMap.dmap.mapTri_s;
-import neo.Tools.Compilers.DMap.dmap.node_s;
-import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
-import neo.Tools.Compilers.DMap.dmap.primitive_s;
-import neo.Tools.Compilers.DMap.dmap.side_s;
-import neo.Tools.Compilers.DMap.dmap.textureVectors_t;
-import neo.Tools.Compilers.DMap.dmap.uArea_t;
-import neo.Tools.Compilers.DMap.dmap.uBrush_t;
-import neo.Tools.Compilers.DMap.dmap.uEntity_t;
 import static neo.Tools.Compilers.DMap.map.FindFloatPlane;
 import static neo.Tools.Compilers.DMap.map.FreeOptimizeGroupList;
 import static neo.Tools.Compilers.DMap.shadowopt3.CreateLightShadow;
@@ -34,19 +20,34 @@ import static neo.Tools.Compilers.DMap.tritools.PlaneForTri;
 import static neo.Tools.Compilers.DMap.tritools.WindingForTri;
 import static neo.Tools.Compilers.DMap.tritools.WindingToTriList;
 import static neo.framework.Common.common;
+import static neo.idlib.math.Plane.ON_EPSILON;
+import static neo.idlib.math.Vector.DotProduct;
+import static neo.idlib.math.Vector.VectorCopy;
+import static neo.sys.win_shared.Sys_Milliseconds;
+
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Tools.Compilers.DMap.dmap.mapLight_t;
+import neo.Tools.Compilers.DMap.dmap.mapTri_s;
+import neo.Tools.Compilers.DMap.dmap.node_s;
+import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
+import neo.Tools.Compilers.DMap.dmap.primitive_s;
+import neo.Tools.Compilers.DMap.dmap.side_s;
+import neo.Tools.Compilers.DMap.dmap.textureVectors_t;
+import neo.Tools.Compilers.DMap.dmap.uArea_t;
+import neo.Tools.Compilers.DMap.dmap.uBrush_t;
+import neo.Tools.Compilers.DMap.dmap.uEntity_t;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Plane.ON_EPSILON;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.DotProduct;
-import static neo.idlib.math.Vector.VectorCopy;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
-import static neo.sys.win_shared.Sys_Milliseconds;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

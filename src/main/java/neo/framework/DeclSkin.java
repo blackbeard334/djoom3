@@ -1,12 +1,14 @@
 package neo.framework;
 
-import java.nio.ByteBuffer;
-import neo.Renderer.Material.idMaterial;
 import static neo.TempDump.NOT;
-import neo.TempDump.SERiAL;
 import static neo.framework.DeclManager.DECL_LEXER_FLAGS;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_MATERIAL;
+
+import java.nio.ByteBuffer;
+
+import neo.TempDump.SERiAL;
+import neo.Renderer.Material.idMaterial;
 import neo.framework.DeclManager.idDecl;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Lexer.idLexer;

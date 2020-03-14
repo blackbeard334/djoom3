@@ -21,18 +21,8 @@ import static neo.framework.DeclAF.idAFVector.type.VEC_BONEDIR;
 import static neo.framework.DeclAF.idAFVector.type.VEC_COORDS;
 import static neo.framework.DeclAF.idAFVector.type.VEC_JOINT;
 import static neo.framework.DeclManager.DECL_LEXER_FLAGS;
-import neo.framework.DeclManager.idDecl;
-import neo.framework.File_h.idFile;
-import neo.framework.File_h.idFile_Memory;
-import neo.idlib.Lib.idException;
-import neo.idlib.Text.Lexer.idLexer;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Token.TT_NAME;
 import static neo.idlib.Text.Token.TT_STRING;
-import neo.idlib.Text.Token.idToken;
-import neo.idlib.containers.List.idList;
-import neo.idlib.geometry.JointTransform.idJointMat;
-import neo.idlib.geometry.TraceModel.traceModel_t;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_BONE;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_BOX;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_CONE;
@@ -40,13 +30,24 @@ import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_CYLINDER;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_DODECAHEDRON;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_INVALID;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_OCTAHEDRON;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+
+import neo.framework.DeclManager.idDecl;
+import neo.framework.File_h.idFile;
+import neo.framework.File_h.idFile_Memory;
+import neo.idlib.Lib.idException;
+import neo.idlib.Text.Lexer.idLexer;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.Text.Token.idToken;
+import neo.idlib.containers.List.idList;
+import neo.idlib.geometry.JointTransform.idJointMat;
+import neo.idlib.geometry.TraceModel.traceModel_t;
 import neo.idlib.math.Angles;
 import neo.idlib.math.Angles.idAngles;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

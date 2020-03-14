@@ -1,13 +1,17 @@
 package neo.idlib.geometry;
 
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.containers.List.idSwap;
+import static neo.idlib.geometry.Winding.MAX_POINTS_ON_WINDING;
+import static neo.idlib.math.Math_h.INTSIGNBITNOTSET;
+import static neo.idlib.math.Math_h.INTSIGNBITSET;
+import static neo.idlib.math.Plane.ON_EPSILON;
+import static neo.idlib.math.Plane.SIDE_CROSS;
+
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Surface.idSurface;
-import static neo.idlib.geometry.Winding.*;
-import static neo.idlib.math.Math_h.*;
-import static neo.idlib.math.Plane.*;
-
+import neo.idlib.geometry.Winding.idFixedWinding;
+import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 
 /**

@@ -5,15 +5,16 @@ import static neo.idlib.Lib.MIN_WORLD_COORD;
 import static neo.idlib.containers.List.idSwap;
 import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
 import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
-import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.idlib.math.Plane.SIDE_CROSS;
 import static neo.idlib.math.Plane.SIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_ON;
-import neo.idlib.math.Vector.idVec2;
-import neo.idlib.math.Vector.idVec3;
 
 import java.util.stream.Stream;
+
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVec2;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

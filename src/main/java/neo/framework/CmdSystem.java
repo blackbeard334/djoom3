@@ -1,26 +1,23 @@
 package neo.framework;
 
-import java.nio.ByteBuffer;
-
-import neo.TempDump.void_callback;
-import neo.TempDump.TODO_Exception;
 import static neo.framework.CVarSystem.cvarSystem;
 import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
 import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_INSERT;
-import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
-import neo.framework.CmdSystem.commandDef_s;
-import neo.framework.CmdSystem.idCmdSystem.ArgCompletion_ConfigName;
 import static neo.framework.DeclManager.declManager;
-import neo.framework.DeclManager.declType_t;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.framework.FileSystem_h.idFileList;
 import static neo.framework.Session.session;
-import neo.idlib.CmdArgs.idCmdArgs;
 import static neo.idlib.Lib.BIT;
-import neo.idlib.Lib.idException;
 import static neo.idlib.Lib.idLib.common;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
+
+import java.nio.ByteBuffer;
+
+import neo.TempDump.void_callback;
+import neo.framework.DeclManager.declType_t;
+import neo.framework.FileSystem_h.idFileList;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Lib.idException;
+import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;

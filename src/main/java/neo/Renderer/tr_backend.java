@@ -1,14 +1,6 @@
 package neo.Renderer;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static neo.Renderer.Image.globalImages;
-import neo.Renderer.Image.idImage;
 import static neo.Renderer.Material.cullType_t.CT_BACK_SIDED;
 import static neo.Renderer.Material.cullType_t.CT_TWO_SIDED;
 import static neo.Renderer.RenderSystem_init.r_clear;
@@ -89,19 +81,9 @@ import static neo.Renderer.tr_local.GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA;
 import static neo.Renderer.tr_local.GLS_SRCBLEND_SRC_ALPHA;
 import static neo.Renderer.tr_local.GLS_SRCBLEND_ZERO;
 import static neo.Renderer.tr_local.backEnd;
-import neo.Renderer.tr_local.copyRenderCommand_t;
-import neo.Renderer.tr_local.drawSurfsCommand_t;
-import neo.Renderer.tr_local.emptyCommand_t;
 import static neo.Renderer.tr_local.glConfig;
-import neo.Renderer.tr_local.glstate_t;
-import static neo.Renderer.tr_local.renderCommand_t.RC_COPY_RENDER;
-import static neo.Renderer.tr_local.renderCommand_t.RC_DRAW_VIEW;
-import static neo.Renderer.tr_local.renderCommand_t.RC_NOP;
-import static neo.Renderer.tr_local.renderCommand_t.RC_SET_BUFFER;
-import static neo.Renderer.tr_local.renderCommand_t.RC_SWAP_BUFFERS;
-import neo.Renderer.tr_local.setBufferCommand_t;
-import neo.Renderer.tr_local.tmu_t;
 import static neo.Renderer.tr_local.tr;
+import static neo.Renderer.tr_local.renderCommand_t.RC_NOP;
 import static neo.Renderer.tr_render.RB_DrawView;
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
@@ -161,6 +143,22 @@ import static org.lwjgl.opengl.GL11.GL_ZERO;
 import static org.lwjgl.opengl.GL12.GL_TEXTURE_3D;
 import static org.lwjgl.opengl.GL13.GL_COMBINE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import neo.Renderer.Image.idImage;
+import neo.Renderer.tr_local.copyRenderCommand_t;
+import neo.Renderer.tr_local.drawSurfsCommand_t;
+import neo.Renderer.tr_local.emptyCommand_t;
+import neo.Renderer.tr_local.glstate_t;
+import neo.Renderer.tr_local.setBufferCommand_t;
+import neo.Renderer.tr_local.tmu_t;
 
 /**
  *

@@ -1,5 +1,13 @@
 package neo.sys;
 
+import static neo.TempDump.NOT;
+import static neo.TempDump.isNotNullOrEmpty;
+import static neo.framework.Common.common;
+import static neo.framework.Licensee.GAME_NAME;
+import static neo.sys.RC.doom_resource.IDI_ICON1;
+import static neo.sys.win_local.win32;
+import static neo.sys.win_main.Sys_Error;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -13,6 +21,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -20,15 +29,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import static neo.TempDump.NOT;
-import static neo.TempDump.isNotNullOrEmpty;
-import static neo.framework.Common.common;
+
 import neo.framework.EditField.idEditField;
-import static neo.framework.Licensee.GAME_NAME;
 import neo.idlib.Text.Str.idStr;
-import static neo.sys.RC.doom_resource.IDI_ICON1;
-import static neo.sys.win_local.win32;
-import static neo.sys.win_main.Sys_Error;
 
 /**
  *

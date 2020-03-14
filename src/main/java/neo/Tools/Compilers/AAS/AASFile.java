@@ -1,24 +1,25 @@
 package neo.Tools.Compilers.AAS;
 
-import java.nio.IntBuffer;
-
 import static neo.TempDump.NOT;
 import static neo.framework.Common.common;
-import neo.framework.DeclEntityDef.idDeclEntityDef;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_ENTITYDEF;
-import neo.framework.File_h.idFile;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.Dict_h.idDict;
-import neo.idlib.Dict_h.idKeyValue;
 import static neo.idlib.Lib.BIT;
-import neo.idlib.Lib.idException;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
+import static neo.idlib.Text.Token.TT_STRING;
+
+import java.nio.IntBuffer;
+
+import neo.framework.DeclEntityDef.idDeclEntityDef;
+import neo.framework.File_h.idFile;
+import neo.idlib.Dict_h.idDict;
+import neo.idlib.Dict_h.idKeyValue;
+import neo.idlib.Lib.idException;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Token.TT_STRING;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.PlaneSet.idPlaneSet;

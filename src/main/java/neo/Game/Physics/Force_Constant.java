@@ -1,10 +1,11 @@
 package neo.Game.Physics;
 
+import static neo.idlib.math.Vector.getVec3_zero;
+
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
 import neo.Game.Physics.Force.idForce;
 import neo.Game.Physics.Physics.idPhysics;
-import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
 
 /**

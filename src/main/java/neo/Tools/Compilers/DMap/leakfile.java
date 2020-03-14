@@ -1,19 +1,21 @@
 package neo.Tools.Compilers.DMap;
 
+import static neo.TempDump.NOT;
+import static neo.TempDump.fopenOptions;
+import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
+import static neo.framework.Common.common;
+import static neo.framework.FileSystem_h.fileSystem;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static neo.TempDump.NOT;
-import static neo.TempDump.fopenOptions;
-import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
+
 import neo.Tools.Compilers.DMap.dmap.node_s;
 import neo.Tools.Compilers.DMap.dmap.tree_s;
 import neo.Tools.Compilers.DMap.dmap.uPortal_s;
-import static neo.framework.Common.common;
-import static neo.framework.FileSystem_h.fileSystem;
 import neo.idlib.math.Vector.idVec3;
 
 /**

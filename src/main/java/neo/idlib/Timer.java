@@ -1,10 +1,11 @@
 package neo.idlib;
 
+import static neo.idlib.Timer.State.TS_STARTED;
+import static neo.idlib.Timer.State.TS_STOPPED;
+
 import neo.idlib.Lib.idException;
 import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Timer.State.TS_STARTED;
-import static neo.idlib.Timer.State.TS_STOPPED;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 

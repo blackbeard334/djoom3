@@ -1,25 +1,26 @@
 package neo.idlib.geometry;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-import neo.idlib.containers.List.idList;
-import neo.idlib.geometry.DrawVert.idDrawVert;
-import neo.idlib.geometry.Surface.idSurface;
 import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
 import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 import static neo.idlib.math.Math_h.INTSIGNBITNOTSET;
 import static neo.idlib.math.Math_h.INTSIGNBITSET;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Plane;
 import static neo.idlib.math.Plane.ON_EPSILON;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.idlib.math.Plane.SIDE_CROSS;
 import static neo.idlib.math.Plane.SIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_ON;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import neo.idlib.containers.List.idList;
+import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Plane;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

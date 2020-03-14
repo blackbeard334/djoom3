@@ -1,8 +1,10 @@
 package neo.framework;
 
+import static neo.framework.Common.common;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import static neo.framework.Common.common;
+
 import neo.framework.File_h.fsOrigin_t;
 import neo.framework.File_h.idFile;
 import neo.idlib.Lib;

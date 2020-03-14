@@ -1,8 +1,6 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
 import static neo.Renderer.Image.globalImages;
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.RenderSystem_init.R_SetColorMappings;
 import static neo.Renderer.RenderSystem_init.r_brightness;
 import static neo.Renderer.RenderSystem_init.r_gamma;
@@ -18,32 +16,35 @@ import static neo.Renderer.RenderSystem_init.r_showPrimitives;
 import static neo.Renderer.RenderSystem_init.r_showSurfaces;
 import static neo.Renderer.RenderSystem_init.r_showUpdates;
 import static neo.Renderer.RenderSystem_init.r_skipBackEnd;
-import neo.Renderer.RenderWorld.idRenderWorld;
-import neo.Renderer.RenderWorld.renderView_s;
 import static neo.Renderer.tr_backend.RB_ExecuteBackEndCommands;
 import static neo.Renderer.tr_local.backEnd;
-import neo.Renderer.tr_local.drawSurfsCommand_t;
-import neo.Renderer.tr_local.emptyCommand_t;
 import static neo.Renderer.tr_local.frameData;
+import static neo.Renderer.tr_local.tr;
 import static neo.Renderer.tr_local.renderCommand_t.RC_DRAW_VIEW;
 import static neo.Renderer.tr_local.renderCommand_t.RC_NOP;
-import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_local.viewDef_s;
-import neo.Renderer.tr_local.viewEntity_s;
 import static neo.Renderer.tr_main.R_CountFrameData;
 import static neo.Renderer.tr_main.R_SetViewMatrix;
 import static neo.Renderer.tr_main.myGlMultMatrix;
+import static neo.TempDump.NOT;
+import static neo.framework.Common.common;
+import static neo.sys.win_glimp.GLimp_EnableLogging;
+
+import java.nio.ByteBuffer;
+
 import neo.TempDump.CPP_class.Char;
 import neo.TempDump.CPP_class.Pointer;
-import static neo.TempDump.NOT;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.RenderWorld.idRenderWorld;
+import neo.Renderer.RenderWorld.renderView_s;
+import neo.Renderer.tr_local.drawSurfsCommand_t;
+import neo.Renderer.tr_local.emptyCommand_t;
+import neo.Renderer.tr_local.viewDef_s;
+import neo.Renderer.tr_local.viewEntity_s;
 import neo.framework.Common.MemInfo_t;
-import static neo.framework.Common.common;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-
-import static neo.sys.win_glimp.GLimp_EnableLogging;
 
 /**
  *

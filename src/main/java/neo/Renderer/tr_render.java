@@ -1,18 +1,12 @@
 package neo.Renderer;
 
-import neo.Renderer.Cinematic.cinData_t;
 import static neo.Renderer.Image.globalImages;
-import neo.Renderer.Image.idImage;
 import static neo.Renderer.Material.cullType_t.CT_FRONT_SIDED;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Material.shaderStage_t;
 import static neo.Renderer.Material.texgen_t.TG_DIFFUSE_CUBE;
 import static neo.Renderer.Material.texgen_t.TG_REFLECT_CUBE;
 import static neo.Renderer.Material.texgen_t.TG_SKYBOX_CUBE;
 import static neo.Renderer.Material.texgen_t.TG_WOBBLESKY_CUBE;
-import neo.Renderer.Material.textureStage_t;
 import static neo.Renderer.Model.GL_INDEX_TYPE;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.RenderSystem_init.r_lightScale;
 import static neo.Renderer.RenderSystem_init.r_singleTriangle;
 import static neo.Renderer.RenderSystem_init.r_skipBump;
@@ -24,7 +18,6 @@ import static neo.Renderer.RenderSystem_init.r_skipRenderContext;
 import static neo.Renderer.RenderSystem_init.r_skipSpecular;
 import static neo.Renderer.RenderSystem_init.r_useIndexBuffers;
 import static neo.Renderer.RenderSystem_init.r_useScissor;
-import neo.Renderer.VertexCache.vertCache_s;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.draw_common.RB_BakeTextureMatrixIntoTexgen;
 import static neo.Renderer.draw_common.RB_STD_DrawView;
@@ -56,24 +49,14 @@ import static neo.Renderer.tr_backend.RB_LogComment;
 import static neo.Renderer.tr_backend.RB_SetDefaultGLState;
 import static neo.Renderer.tr_local.GLS_DEFAULT;
 import static neo.Renderer.tr_local.backEnd;
-import neo.Renderer.tr_local.drawInteraction_t;
-import neo.Renderer.tr_local.drawSurf_s;
-import neo.Renderer.tr_local.drawSurfsCommand_t;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
-
-import neo.Renderer.tr_local.idScreenRect;
-import neo.Renderer.tr_local.viewLight_s;
 import static neo.Renderer.tr_main.R_GlobalPlaneToLocal;
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
 import static neo.Renderer.tr_main.R_TransposeGLMatrix;
 import static neo.Renderer.tr_rendertools.RB_ShowOverdraw;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
-
-import neo.idlib.geometry.DrawVert.idDrawVert;
-import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Vector.idVec4;
 import static neo.sys.win_glimp.GLimp_ActivateContext;
 import static neo.sys.win_glimp.GLimp_DeactivateContext;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
@@ -95,6 +78,21 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_GEN_T;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL13.GL_REFLECTION_MAP;
+
+import neo.Renderer.Cinematic.cinData_t;
+import neo.Renderer.Image.idImage;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Material.shaderStage_t;
+import neo.Renderer.Material.textureStage_t;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.tr_local.drawInteraction_t;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.Renderer.tr_local.drawSurfsCommand_t;
+import neo.Renderer.tr_local.idScreenRect;
+import neo.Renderer.tr_local.viewLight_s;
+import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Vector.idVec4;
 
 /**
  *

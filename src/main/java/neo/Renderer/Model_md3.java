@@ -1,32 +1,32 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Model.dynamicModel_t;
 import static neo.Renderer.Model.dynamicModel_t.DM_CACHED;
-import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.Model_local.idRenderModelStatic;
-import neo.Renderer.Model_md3.md3Shader_t;
 import static neo.Renderer.RenderWorld.SHADERPARM_MD3_BACKLERP;
 import static neo.Renderer.RenderWorld.SHADERPARM_MD3_FRAME;
 import static neo.Renderer.RenderWorld.SHADERPARM_MD3_LASTFRAME;
-import neo.Renderer.RenderWorld.renderEntity_s;
-import neo.Renderer.tr_local.viewDef_s;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
-
-import neo.TempDump.SERiAL;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.Lib.LittleFloat;
 import static neo.idlib.Lib.LittleLong;
 import static neo.idlib.Lib.LittleShort;
+
+import java.nio.ByteBuffer;
+
+import neo.TempDump.SERiAL;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Model.dynamicModel_t;
+import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.Model_local.idRenderModelStatic;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.Renderer.tr_local.viewDef_s;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Vector.idVec3;
 

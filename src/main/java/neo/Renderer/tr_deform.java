@@ -1,37 +1,37 @@
 package neo.Renderer;
 
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.RenderSystem_init.r_skipDeforms;
 import static neo.Renderer.RenderWorld.SHADERPARM_DIVERSITY;
 import static neo.Renderer.RenderWorld.SHADERPARM_PARTICLE_STOPTIME;
 import static neo.Renderer.RenderWorld.SHADERPARM_TIMEOFFSET;
-import neo.Renderer.RenderWorld.renderEntity_s;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.tr_light.R_AddDrawSurf;
-import neo.Renderer.tr_local.drawSurf_s;
 import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_local.viewDef_s;
-
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
 import static neo.Renderer.tr_main.R_GlobalVectorToLocal;
 import static neo.Renderer.tr_trisurf.R_DeriveTangents;
 import static neo.framework.Common.common;
+import static neo.idlib.containers.BinSearch.idBinSearch_LessEqual;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.Renderer.tr_local.viewDef_s;
 import neo.framework.DeclParticle.idDeclParticle;
 import neo.framework.DeclParticle.idParticleStage;
 import neo.framework.DeclParticle.particleGen_t;
 import neo.framework.DeclTable.idDeclTable;
 import neo.idlib.BV.Bounds.idBounds;
-import static neo.idlib.containers.BinSearch.idBinSearch_LessEqual;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idWinding;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Random.idRandom;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 /**
  *

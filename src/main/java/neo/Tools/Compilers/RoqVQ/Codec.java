@@ -1,8 +1,6 @@
 package neo.Tools.Compilers.RoqVQ;
 
 import static java.lang.Math.sqrt;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import static neo.TempDump.NOT;
 import static neo.TempDump.replaceByIndex;
 import static neo.Tools.Compilers.RoqVQ.GDefs.BIEMULT;
@@ -24,14 +22,18 @@ import static neo.Tools.Compilers.RoqVQ.QuadDefs.MINSIZE;
 import static neo.Tools.Compilers.RoqVQ.QuadDefs.MOT;
 import static neo.Tools.Compilers.RoqVQ.QuadDefs.PAT;
 import static neo.Tools.Compilers.RoqVQ.QuadDefs.SLD;
-import neo.Tools.Compilers.RoqVQ.QuadDefs.quadcel;
 import static neo.Tools.Compilers.RoqVQ.Roq.theRoQ;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.framework.File_h.idFile;
 import static neo.framework.Session.session;
-import neo.idlib.math.Math_h.idMath;
 import static neo.sys.win_shared.Sys_Milliseconds;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import neo.Tools.Compilers.RoqVQ.QuadDefs.quadcel;
+import neo.framework.File_h.idFile;
+import neo.idlib.math.Math_h.idMath;
 
 /**
  *

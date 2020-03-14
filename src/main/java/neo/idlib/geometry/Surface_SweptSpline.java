@@ -5,9 +5,9 @@ import neo.idlib.geometry.Surface.idSurface;
 import neo.idlib.math.Curve.idCurve_NURBS;
 import neo.idlib.math.Curve.idCurve_Spline;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

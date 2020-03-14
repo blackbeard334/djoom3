@@ -1,32 +1,7 @@
 package neo.Renderer;
 
 import static java.lang.Math.log;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Stream;
-import neo.Renderer.Model_lwo.lwClip;
-import neo.Renderer.Model_lwo.lwEnvelope;
-import neo.Renderer.Model_lwo.lwGradKey;
-import neo.Renderer.Model_lwo.lwKey;
-import neo.Renderer.Model_lwo.lwLayer;
-import neo.Renderer.Model_lwo.lwNode;
-import neo.Renderer.Model_lwo.lwObject;
-import neo.Renderer.Model_lwo.lwPlugin;
-import neo.Renderer.Model_lwo.lwPoint;
-import neo.Renderer.Model_lwo.lwPointList;
-import neo.Renderer.Model_lwo.lwPolVert;
-import neo.Renderer.Model_lwo.lwPolygon;
-import neo.Renderer.Model_lwo.lwPolygonList;
-import neo.Renderer.Model_lwo.lwSurface;
-import neo.Renderer.Model_lwo.lwTagList;
-import neo.Renderer.Model_lwo.lwTexture;
-import neo.Renderer.Model_lwo.lwVMap;
-import neo.Renderer.Model_lwo.lwVMapPt;
 import static neo.TempDump.NOT;
-import neo.TempDump.NiLLABLE;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.bbtocb;
 import static neo.TempDump.btoi;
 import static neo.TempDump.replaceByIndex;
@@ -34,10 +9,19 @@ import static neo.TempDump.strLen;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_CUR;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
-import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.BigRevBytes;
-import neo.idlib.containers.List.cmp_t;
 import static neo.idlib.math.Math_h.FLOAT_IS_DENORMAL;
+
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import neo.TempDump.NiLLABLE;
+import neo.TempDump.TODO_Exception;
+import neo.framework.File_h.idFile;
+import neo.idlib.containers.List.cmp_t;
 import neo.idlib.math.Math_h.idMath;
 
 /**

@@ -1,6 +1,5 @@
 package neo.Game;
 
-import neo.Game.Game_local.entityNetEvent_s;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_network.idEventQueue.outOfOrderBehaviour_t.OUTOFORDER_DROP;
 import static neo.Game.Game_network.idEventQueue.outOfOrderBehaviour_t.OUTOFORDER_SORT;
@@ -11,10 +10,11 @@ import static neo.framework.CVarSystem.CVAR_GAME;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
 import static neo.framework.CVarSystem.CVAR_NOCHEAT;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
+import static neo.idlib.Lib.idLib.common;
+
+import neo.Game.Game_local.entityNetEvent_s;
 import neo.framework.CVarSystem.idCVar;
 import neo.framework.CmdSystem.idCmdSystem;
-
-import static neo.idlib.Lib.idLib.common;
 
 /**
  *

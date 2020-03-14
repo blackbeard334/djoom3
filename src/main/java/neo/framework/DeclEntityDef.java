@@ -4,17 +4,17 @@ import static neo.Game.Game_local.game;
 import static neo.framework.Common.EDITOR_AAS;
 import static neo.framework.Common.EDITOR_RADIANT;
 import static neo.framework.Common.com_editors;
-import neo.framework.DeclEntityDef.idDeclEntityDef;
 import static neo.framework.DeclManager.DECL_LEXER_FLAGS;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_ENTITYDEF;
+import static neo.idlib.Text.Token.TT_STRING;
+
 import neo.framework.DeclManager.idDecl;
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.Dict_h.idKeyValue;
 import neo.idlib.Lib;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Lexer.idLexer;
-import static neo.idlib.Text.Token.TT_STRING;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 

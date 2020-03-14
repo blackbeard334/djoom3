@@ -1,6 +1,9 @@
 package neo.idlib.containers;
 
-import static neo.idlib.containers.BTree.*;
+import static neo.idlib.containers.BTree.GT;
+import static neo.idlib.containers.BTree.GTE;
+import static neo.idlib.containers.BTree.LT;
+import static neo.idlib.containers.BTree.LTE;
 
 /**
  *

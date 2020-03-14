@@ -1,24 +1,27 @@
 package neo.idlib;
 
-import java.util.Objects;
-
 import static neo.TempDump.atob;
 import static neo.TempDump.atof;
 import static neo.TempDump.atoi;
 import static neo.TempDump.btoi;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.Common.common;
-import neo.framework.File_h.idFile;
-import neo.idlib.CmdArgs.idCmdArgs;
 import static neo.idlib.Lib.LittleLong;
 import static neo.idlib.Lib.MAX_STRING_CHARS;
+import static neo.idlib.Text.Str.va;
+import static neo.idlib.Text.Token.TT_PUNCTUATION;
+import static neo.idlib.Text.Token.TT_STRING;
+import static neo.idlib.hashing.CRC32.CRC32_FinishChecksum;
+import static neo.idlib.hashing.CRC32.CRC32_InitChecksum;
+
+import java.util.Objects;
+
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.framework.File_h.idFile;
+import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idException;
 import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
-import static neo.idlib.Text.Token.TT_PUNCTUATION;
-import static neo.idlib.Text.Token.TT_STRING;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.cmp_t;
@@ -26,14 +29,12 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrPool.idPoolStr;
 import neo.idlib.containers.StrPool.idStrPool;
 import neo.idlib.hashing.CRC32;
-import static neo.idlib.hashing.CRC32.CRC32_FinishChecksum;
-import static neo.idlib.hashing.CRC32.CRC32_InitChecksum;
 import neo.idlib.math.Angles.idAngles;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

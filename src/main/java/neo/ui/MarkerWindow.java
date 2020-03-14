@@ -1,30 +1,31 @@
 package neo.ui;
 
-import java.util.Arrays;
 import static neo.Renderer.Material.SS_GUI;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Material.shaderStage_t;
 import static neo.TempDump.itob;
 import static neo.TempDump.wrapToNativeBuffer;
 import static neo.framework.DeclManager.declManager;
-import neo.framework.FileSystem_h.idFileList;
-import neo.framework.File_h.idFile;
 import static neo.framework.KeyInput.K_MOUSE1;
 import static neo.framework.KeyInput.K_MOUSE2;
 import static neo.framework.KeyInput.K_SPACE;
 import static neo.framework.Session.MAX_LOGGED_STATS;
-import neo.framework.Session.logStats_t;
 import static neo.idlib.Lib.idLib.common;
 import static neo.idlib.Lib.idLib.fileSystem;
+import static neo.idlib.Text.Str.va;
+import static neo.sys.sys_public.sysEventType_t.SE_KEY;
+
+import java.util.Arrays;
+
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Material.shaderStage_t;
+import neo.framework.FileSystem_h.idFileList;
+import neo.framework.File_h.idFile;
+import neo.framework.Session.logStats_t;
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec4;
-import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.DeviceContext.idDeviceContext;
-import neo.ui.MarkerWindow.markerData_t;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.UserInterfaceLocal.idUserInterfaceLocal;
 import neo.ui.Window.idWindow;

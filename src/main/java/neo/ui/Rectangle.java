@@ -1,9 +1,11 @@
 package neo.ui;
 
+import static neo.idlib.math.Math_h.DEG2RAD;
+
 import java.nio.ByteBuffer;
+
 import neo.TempDump.SERiAL;
 import neo.idlib.containers.List.idList;
-import static neo.idlib.math.Math_h.DEG2RAD;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 

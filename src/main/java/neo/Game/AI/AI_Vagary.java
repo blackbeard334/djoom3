@@ -1,26 +1,26 @@
 package neo.Game.AI;
 
-import neo.Game.AI.AI.idAI;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class.eventCallback_t;
-import neo.Game.GameSys.Class.eventCallback_t2;
-import neo.Game.GameSys.Class.eventCallback_t5;
-import neo.Game.GameSys.Class.idEventArg;
-import neo.Game.GameSys.Event.idEventDef;
-import neo.Game.Moveable.idMoveable;
-import neo.Game.Physics.Physics.idPhysics;
-import neo.Game.Script.Script_Thread.idThread;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.math.Vector.idVec3;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import static neo.Game.GameSys.SysCvar.ai_debugTrajectory;
 import static neo.Game.Game_local.MAX_GENTITIES;
 import static neo.Game.Game_local.gameLocal;
 import static neo.TempDump.NOT;
 import static neo.idlib.Lib.MAX_WORLD_SIZE;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import neo.Game.Entity.idEntity;
+import neo.Game.Moveable.idMoveable;
+import neo.Game.AI.AI.idAI;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t2;
+import neo.Game.GameSys.Class.eventCallback_t5;
+import neo.Game.GameSys.Class.idEventArg;
+import neo.Game.GameSys.Event.idEventDef;
+import neo.Game.Physics.Physics.idPhysics;
+import neo.Game.Script.Script_Thread.idThread;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

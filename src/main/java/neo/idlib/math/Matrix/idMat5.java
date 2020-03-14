@@ -1,11 +1,12 @@
 package neo.idlib.math.Matrix;
 
-import java.util.Arrays;
-import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
 import static neo.idlib.math.Matrix.idMat0.genVec3Array;
 
+import java.util.Arrays;
+
+import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 

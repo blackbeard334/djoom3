@@ -1,24 +1,15 @@
 package neo.sys;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.btoi;
 import static neo.framework.BuildDefines._WIN32;
 import static neo.framework.BuildDefines.__linux__;
 import static neo.framework.CVarSystem.CVAR_ARCHIVE;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
 import static neo.framework.CVarSystem.cvarSystem;
-import neo.framework.CVarSystem.idCVar;
-import neo.framework.CmdSystem.idCmdSystem;
 import static neo.framework.KeyInput.K_MOUSE1;
-import neo.idlib.Lib.idException;
-import neo.idlib.Text.Str.idStr;
 import static neo.sys.sys_public.CPUSTRING;
-import neo.sys.sys_public.idSys;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
-import neo.sys.sys_public.sysEvent_s;
 import static neo.sys.win_cpu.Sys_ClockTicksPerSecond;
 import static neo.sys.win_cpu.Sys_FPU_EnableExceptions;
 import static neo.sys.win_cpu.Sys_FPU_GetState;
@@ -38,6 +29,17 @@ import static neo.sys.win_shared.Sys_GetCallStackStr;
 import static neo.sys.win_shared.Sys_LockMemory;
 import static neo.sys.win_shared.Sys_ShutdownSymbols;
 import static neo.sys.win_shared.Sys_UnlockMemory;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import neo.TempDump.TODO_Exception;
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.CmdSystem.idCmdSystem;
+import neo.idlib.Lib.idException;
+import neo.idlib.Text.Str.idStr;
+import neo.sys.sys_public.idSys;
+import neo.sys.sys_public.sysEvent_s;
 
 /**
  *

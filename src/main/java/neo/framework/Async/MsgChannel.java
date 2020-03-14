@@ -1,19 +1,21 @@
 package neo.framework.Async;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
-import neo.framework.CVarSystem.idCVar;
 import static neo.framework.Common.common;
+import static neo.sys.sys_public.netadrtype_t.NA_BAD;
+import static neo.sys.win_net.Sys_NetAdrToString;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import neo.framework.CVarSystem.idCVar;
 import neo.framework.Compressor.idCompressor;
 import neo.framework.File_h.idFile_BitMsg;
 import neo.idlib.BitMsg.idBitMsg;
 import neo.idlib.Lib.idException;
 import neo.sys.sys_public.idPort;
 import neo.sys.sys_public.netadr_t;
-import static neo.sys.sys_public.netadrtype_t.NA_BAD;
-import static neo.sys.win_net.Sys_NetAdrToString;
 
 /**
  *

@@ -1,23 +1,20 @@
 package neo.idlib;
 
+import static neo.idlib.MapFile.idMapPrimitive.TYPE_BRUSH;
+import static neo.idlib.MapFile.idMapPrimitive.TYPE_PATCH;
+import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
+import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
+import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
+import static neo.idlib.Text.Str.va;
+import static neo.idlib.Text.Token.TT_STRING;
+
 import neo.framework.File_h.idFile;
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.Dict_h.idKeyValue;
 import neo.idlib.Lib.idException;
 import neo.idlib.Lib.idLib;
-import neo.idlib.MapFile.idMapBrush;
-import neo.idlib.MapFile.idMapBrushSide;
-import neo.idlib.MapFile.idMapPrimitive;
-import static neo.idlib.MapFile.idMapPrimitive.TYPE_BRUSH;
-import static neo.idlib.MapFile.idMapPrimitive.TYPE_INVALID;
-import static neo.idlib.MapFile.idMapPrimitive.TYPE_PATCH;
-import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
-import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
-import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
-import static neo.idlib.Text.Token.TT_STRING;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;

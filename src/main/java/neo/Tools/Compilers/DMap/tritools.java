@@ -1,15 +1,16 @@
 package neo.Tools.Compilers.DMap;
 
 import static neo.TempDump.NOT;
-import neo.Tools.Compilers.DMap.dmap.mapTri_s;
 import static neo.Tools.Compilers.DMap.gldraw.DrawWinding;
+import static neo.idlib.math.Vector.VectorCopy;
+
+import neo.Tools.Compilers.DMap.dmap.mapTri_s;
 import neo.Tools.Compilers.DMap.optimize.optVertex_s;
 import neo.Tools.Compilers.DMap.tritjunction.hashVert_s;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.VectorCopy;
 import neo.idlib.math.Vector.idVec3;
 
 /**

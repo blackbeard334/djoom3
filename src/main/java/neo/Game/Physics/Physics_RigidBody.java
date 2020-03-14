@@ -1,12 +1,6 @@
 package neo.Game.Physics;
 
-import neo.CM.CollisionModel.contactInfo_t;
-import neo.CM.CollisionModel.trace_s;
-import neo.CM.CollisionModel_local;
 import static neo.Game.Entity.TH_PHYSICS;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.rb_showActive;
 import static neo.Game.GameSys.SysCvar.rb_showBodies;
 import static neo.Game.GameSys.SysCvar.rb_showInertia;
@@ -16,37 +10,44 @@ import static neo.Game.GameSys.SysCvar.rb_showVelocity;
 import static neo.Game.Game_local.MASK_SOLID;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
-import neo.Game.Physics.Clip.idClipModel;
 import static neo.Game.Physics.Physics.CONTACT_EPSILON;
-import neo.Game.Physics.Physics.impactInfo_s;
-import neo.Game.Physics.Physics_Base.idPhysics_Base;
 import static neo.framework.UsercmdGen.USERCMD_MSEC;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.BitMsg.idBitMsgDelta;
 import static neo.idlib.Lib.colorCyan;
 import static neo.idlib.Text.Str.va;
-import neo.idlib.Timer.idTimer;
-import neo.idlib.geometry.Winding.idFixedWinding;
-import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Math_h.FLOAT_IS_NAN;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.Min3Index;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Matrix.idMat3.SkewSymmetric;
 import static neo.idlib.math.Matrix.idMat3.TransposeMultiply;
 import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import java.nio.FloatBuffer;
+
+import neo.CM.CollisionModel.contactInfo_t;
+import neo.CM.CollisionModel.trace_s;
+import neo.CM.CollisionModel_local;
+import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Physics.Clip.idClipModel;
+import neo.Game.Physics.Physics.impactInfo_s;
+import neo.Game.Physics.Physics_Base.idPhysics_Base;
+import neo.idlib.BitMsg.idBitMsgDelta;
+import neo.idlib.Timer.idTimer;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.geometry.Winding.idFixedWinding;
+import neo.idlib.math.Angles.idAngles;
+import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Ode.deriveFunction_t;
 import neo.idlib.math.Ode.idODE;
 import neo.idlib.math.Ode.idODE_Euler;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
-
-import java.nio.FloatBuffer;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

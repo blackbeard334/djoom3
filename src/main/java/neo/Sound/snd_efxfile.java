@@ -1,8 +1,9 @@
 package neo.Sound;
 
+import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
+
 import java.nio.ByteBuffer;
 
-import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;

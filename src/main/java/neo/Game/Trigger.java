@@ -1,14 +1,32 @@
 package neo.Game;
 
-import neo.CM.CollisionModel.trace_s;
-
 import static neo.Game.Entity.EV_Activate;
 import static neo.Game.Entity.EV_ActivateTargets;
 import static neo.Game.Entity.EV_Touch;
 import static neo.Game.Entity.TH_THINK;
-import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.EV_Remove;
+import static neo.Game.Game_local.MAX_GENTITIES;
+import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Game_local.gameRenderWorld;
+import static neo.Renderer.Material.CONTENTS_FLASHLIGHT_TRIGGER;
+import static neo.Renderer.Material.CONTENTS_TRIGGER;
+import static neo.Renderer.Model.INVALID_JOINT;
+import static neo.TempDump.NOT;
+import static neo.idlib.Lib.colorGreen;
+import static neo.idlib.Lib.colorOrange;
+import static neo.idlib.Lib.colorWhite;
+import static neo.idlib.Lib.colorYellow;
+import static neo.idlib.Text.Str.va;
+import static neo.idlib.math.Math_h.SEC2MS;
+import static neo.idlib.math.Vector.RAD2DEG;
+import static neo.idlib.math.Vector.getVec3_origin;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.Entity.idEntity;
+import neo.Game.Player.idPlayer;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
 import neo.Game.GameSys.Class.eventCallback_t1;
@@ -18,35 +36,15 @@ import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
-import static neo.Game.Game_local.MAX_GENTITIES;
-import static neo.Game.Game_local.gameLocal;
-import static neo.Game.Game_local.gameRenderWorld;
 import neo.Game.Physics.Clip.idClipModel;
-import neo.Game.Player.idPlayer;
 import neo.Game.Script.Script_Program.function_t;
 import neo.Game.Script.Script_Thread.idThread;
-import neo.Game.Trigger.idTrigger;
-import static neo.Renderer.Material.CONTENTS_FLASHLIGHT_TRIGGER;
-import static neo.Renderer.Material.CONTENTS_TRIGGER;
-import static neo.Renderer.Model.INVALID_JOINT;
-import static neo.TempDump.NOT;
 import neo.idlib.BV.Bounds.idBounds;
-import static neo.idlib.Lib.colorGreen;
-import static neo.idlib.Lib.colorOrange;
-import static neo.idlib.Lib.colorWhite;
-import static neo.idlib.Lib.colorYellow;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
-import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Vector.RAD2DEG;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-
-import java.util.HashMap;
-import java.util.Map;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

@@ -1,39 +1,41 @@
 package neo.Game;
 
-import java.util.stream.Stream;
-import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_NONE;
 import static neo.Game.Animation.Anim.jointModTransform_t.JOINTMOD_WORLD_OVERRIDE;
-import neo.Game.Animation.Anim_Blend.idAnimator;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.ik_debug;
 import static neo.Game.GameSys.SysCvar.ik_enable;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
-import neo.Game.Mover.idPlat;
-import neo.Game.Physics.Clip.idClipModel;
-import neo.Game.Physics.Physics.idPhysics;
 import static neo.Renderer.Material.CONTENTS_IKCLIP;
 import static neo.Renderer.Material.CONTENTS_SOLID;
 import static neo.Renderer.Model.INVALID_JOINT;
-import neo.Renderer.Model.idRenderModel;
 import static neo.idlib.Lib.Min;
 import static neo.idlib.Lib.colorCyan;
 import static neo.idlib.Lib.colorGreen;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorYellow;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import java.util.stream.Stream;
+
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.Entity.idEntity;
+import neo.Game.Mover.idPlat;
+import neo.Game.Animation.Anim_Blend.idAnimator;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Physics.Clip.idClipModel;
+import neo.Game.Physics.Physics.idPhysics;
+import neo.Renderer.Model.idRenderModel;
+import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

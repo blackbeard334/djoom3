@@ -1,15 +1,16 @@
 package neo.idlib.math.Matrix;
 
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.DEG2RAD;
-import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
 import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
+import static neo.idlib.math.Vector.RAD2DEG;
+
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.math.Angles.idAngles;
+import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Quat.idQuat;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.RAD2DEG;
 import neo.idlib.math.Vector.idVec3;
 
 //===============================================================

@@ -1,14 +1,15 @@
 package neo.sys;
 
-import com.sun.management.OperatingSystemMXBean;
-import neo.TempDump.TODO_Exception;
-import neo.idlib.Text.Str.idStr;
-import neo.sys.sys_public.sysMemoryStats_s;
+import static neo.TempDump.isNotNullOrEmpty;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
 
-import static neo.TempDump.isNotNullOrEmpty;
+import com.sun.management.OperatingSystemMXBean;
+
+import neo.TempDump.TODO_Exception;
+import neo.idlib.Text.Str.idStr;
+import neo.sys.sys_public.sysMemoryStats_s;
 
 /**
  *

@@ -1,15 +1,8 @@
 package neo.Game.Physics;
 
-import java.util.Arrays;
 import static neo.CM.CollisionModel.CM_BOX_EPSILON;
 import static neo.CM.CollisionModel.CM_MAX_TRACE_DIST;
-import neo.CM.CollisionModel.contactInfo_t;
 import static neo.CM.CollisionModel.contactType_t.CONTACT_TRMVERTEX;
-import neo.CM.CollisionModel.trace_s;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
-
 import static neo.CM.CollisionModel_local.collisionModelManager;
 import static neo.Game.Game_local.ENTITYNUM_NONE;
 import static neo.Game.Game_local.ENTITYNUM_WORLD;
@@ -18,29 +11,37 @@ import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
 import static neo.Renderer.Material.CONTENTS_BODY;
 import static neo.Renderer.Material.CONTENTS_RENDERMODEL;
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.Model.INVALID_JOINT;
-import neo.Renderer.RenderWorld.modelTrace_s;
-import neo.Renderer.RenderWorld.renderEntity_s;
 import static neo.TempDump.sizeof;
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.Lib.Max;
 import static neo.idlib.Lib.colorCyan;
 import static neo.idlib.Lib.colorWhite;
+import static neo.idlib.math.Math_h.Square;
+import static neo.idlib.math.Matrix.idMat3.getMat3_default;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import java.util.Arrays;
+
+import neo.CM.CollisionModel.contactInfo_t;
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.RenderWorld.modelTrace_s;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.geometry.Winding.idFixedWinding;
-import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_default;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

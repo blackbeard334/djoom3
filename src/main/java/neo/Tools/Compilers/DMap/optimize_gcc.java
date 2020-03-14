@@ -1,8 +1,9 @@
 package neo.Tools.Compilers.DMap;
 
+import static neo.framework.Common.common;
+
 import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
 import neo.Tools.Compilers.DMap.optimize.optVertex_s;
-import static neo.framework.Common.common;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 

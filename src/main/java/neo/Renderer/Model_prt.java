@@ -1,15 +1,9 @@
 package neo.Renderer;
 
-import neo.Renderer.Model.dynamicModel_t;
 import static neo.Renderer.Model.dynamicModel_t.DM_CONTINUOUS;
-import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model_local.idRenderModelStatic;
 import static neo.Renderer.RenderWorld.SHADERPARM_DIVERSITY;
 import static neo.Renderer.RenderWorld.SHADERPARM_PARTICLE_STOPTIME;
 import static neo.Renderer.RenderWorld.SHADERPARM_TIMEOFFSET;
-import neo.Renderer.RenderWorld.renderEntity_s;
-import neo.Renderer.tr_local.viewDef_s;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfPlanes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
@@ -17,6 +11,15 @@ import static neo.Renderer.tr_trisurf.R_FreeStaticTriSurfVertexCaches;
 import static neo.TempDump.sizeof;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_PARTICLE;
+
+import java.util.Arrays;
+
+import neo.Renderer.Model.dynamicModel_t;
+import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model_local.idRenderModelStatic;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.Renderer.tr_local.viewDef_s;
 import neo.framework.DeclParticle.idDeclParticle;
 import neo.framework.DeclParticle.idParticleStage;
 import neo.framework.DeclParticle.particleGen_t;
@@ -24,8 +27,6 @@ import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Random.idRandom;
-
-import java.util.Arrays;
 
 /**
  *

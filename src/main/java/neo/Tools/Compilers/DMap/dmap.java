@@ -1,14 +1,8 @@
 package neo.Tools.Compilers.DMap;
 
-import neo.CM.CollisionModel_local;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.tr_local.idRenderLightLocal;
 import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.atoi;
 import static neo.TempDump.isNotNullOrEmpty;
-import neo.Tools.Compilers.AAS.AASBuild.RunAAS_f;
 import static neo.Tools.Compilers.DMap.dmap.shadowOptLevel_t.SO_MERGE_SURFACES;
 import static neo.Tools.Compilers.DMap.dmap.shadowOptLevel_t.SO_NONE;
 import static neo.Tools.Compilers.DMap.facebsp.FaceBSP;
@@ -17,7 +11,6 @@ import static neo.Tools.Compilers.DMap.leakfile.LeakFile;
 import static neo.Tools.Compilers.DMap.map.FreeDMapFile;
 import static neo.Tools.Compilers.DMap.map.LoadDMapFile;
 import static neo.Tools.Compilers.DMap.optimize.OptimizeEntity;
-import neo.Tools.Compilers.DMap.optimize.optVertex_s;
 import static neo.Tools.Compilers.DMap.output.WriteOutputFile;
 import static neo.Tools.Compilers.DMap.portals.FillOutside;
 import static neo.Tools.Compilers.DMap.portals.FloodAreas;
@@ -25,22 +18,31 @@ import static neo.Tools.Compilers.DMap.portals.FloodEntities;
 import static neo.Tools.Compilers.DMap.portals.MakeTreePortals;
 import static neo.Tools.Compilers.DMap.tritjunction.FixEntityTjunctions;
 import static neo.Tools.Compilers.DMap.tritjunction.FixGlobalTjunctions;
-import neo.Tools.Compilers.DMap.tritjunction.hashVert_s;
 import static neo.Tools.Compilers.DMap.ubrush.FilterBrushesIntoTree;
 import static neo.Tools.Compilers.DMap.usurface.ClipSidesByTree;
 import static neo.Tools.Compilers.DMap.usurface.Prelight;
 import static neo.Tools.Compilers.DMap.usurface.PutPrimitivesInAreas;
 import static neo.framework.BuildDefines._WIN32;
-import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.CmdSystem.cmdSystem;
+import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
 import static neo.framework.Common.com_outputMsg;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.CmdArgs.idCmdArgs;
 import static neo.idlib.Lib.idLib.common;
+import static neo.sys.win_shared.Sys_Milliseconds;
+
+import neo.TempDump.TODO_Exception;
+import neo.CM.CollisionModel_local;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.tr_local.idRenderLightLocal;
+import neo.Tools.Compilers.AAS.AASBuild.RunAAS_f;
+import neo.Tools.Compilers.DMap.optimize.optVertex_s;
+import neo.Tools.Compilers.DMap.tritjunction.hashVert_s;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.MapFile.idMapEntity;
 import neo.idlib.MapFile.idMapFile;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.PlaneSet.idPlaneSet;
@@ -49,7 +51,6 @@ import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import static neo.sys.win_shared.Sys_Milliseconds;
 
 /**
  *

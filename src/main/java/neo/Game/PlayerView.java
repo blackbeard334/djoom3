@@ -1,9 +1,6 @@
 package neo.Game;
 
 import static java.lang.Math.sin;
-
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.g_blobSize;
 import static neo.Game.GameSys.SysCvar.g_blobTime;
 import static neo.Game.GameSys.SysCvar.g_doubleVision;
@@ -22,26 +19,28 @@ import static neo.Game.Game_local.gameRenderWorld;
 import static neo.Game.Game_local.gameSoundWorld;
 import static neo.Game.Game_network.net_clientLagOMeter;
 import static neo.Game.Player.BERSERK;
-import neo.Game.Player.idPlayer;
-import neo.Game.PlayerView.screenBlob_t;
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.RenderSystem.SCREEN_HEIGHT;
 import static neo.Renderer.RenderSystem.SCREEN_WIDTH;
 import static neo.Renderer.RenderSystem.renderSystem;
-import neo.Renderer.RenderWorld.renderView_s;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.DeclManager.declManager;
-import neo.idlib.Dict_h.idDict;
 import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Lib.idLib.common;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.MS2SEC;
 import static neo.idlib.math.Math_h.SEC2MS;
+
+import neo.Game.Player.idPlayer;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.RenderWorld.renderView_s;
+import neo.idlib.Dict_h.idDict;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat3;
 import neo.ui.UserInterface.idUserInterface;
 
 /**

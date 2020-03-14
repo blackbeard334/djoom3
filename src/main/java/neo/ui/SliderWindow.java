@@ -1,10 +1,8 @@
 package neo.ui;
 
 import static neo.Renderer.Material.SS_GUI;
-import neo.Renderer.Material.idMaterial;
 import static neo.TempDump.NOT;
 import static neo.TempDump.isNotNullOrEmpty;
-import neo.framework.CVarSystem.idCVar;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.KeyInput.K_KP_LEFTARROW;
@@ -14,19 +12,22 @@ import static neo.framework.KeyInput.K_MOUSE1;
 import static neo.framework.KeyInput.K_MOUSE2;
 import static neo.framework.KeyInput.K_RIGHTARROW;
 import static neo.idlib.Lib.idLib.cvarSystem;
+import static neo.sys.sys_public.sysEventType_t.SE_KEY;
+import static neo.ui.Window.WIN_CANFOCUS;
+import static neo.ui.Window.WIN_CAPTURE;
+import static neo.ui.Window.WIN_FOCUS;
+import static neo.ui.Window.WIN_HOLDCAPTURE;
+
+import neo.Renderer.Material.idMaterial;
+import neo.framework.CVarSystem.idCVar;
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Vector.idVec4;
-import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.SimpleWindow.drawWin_t;
 import neo.ui.UserInterfaceLocal.idUserInterfaceLocal;
-import static neo.ui.Window.WIN_CANFOCUS;
-import static neo.ui.Window.WIN_CAPTURE;
-import static neo.ui.Window.WIN_FOCUS;
-import static neo.ui.Window.WIN_HOLDCAPTURE;
 import neo.ui.Window.idWindow;
 import neo.ui.Winvar.idWinBool;
 import neo.ui.Winvar.idWinFloat;

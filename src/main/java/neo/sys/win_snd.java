@@ -1,19 +1,20 @@
 package neo.sys;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.sound.sampled.SourceDataLine;
 import static neo.Sound.snd_local.PRIMARYFREQ;
-import neo.Sound.snd_local.idAudioHardware;
-import neo.Sound.snd_system.idSoundSystemLocal;
-import neo.TempDump.TODO_Exception;
 import static neo.framework.BuildDefines.ID_OPENAL;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-//import org.lwjgl.LWJGLException;
-import org.lwjgl.openal.AL;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.sound.sampled.SourceDataLine;
+
 import org.lwjgl.openal.ALC;
-import org.lwjgl.openal.ALCCapabilities;
+
+import neo.TempDump.TODO_Exception;
+import neo.Sound.snd_local.idAudioHardware;
+import neo.Sound.snd_system.idSoundSystemLocal;
 
 /**
  *

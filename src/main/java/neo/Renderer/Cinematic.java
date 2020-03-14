@@ -1,8 +1,5 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import static neo.Renderer.Cinematic.cinStatus_t.FMV_EOF;
 import static neo.Renderer.Cinematic.cinStatus_t.FMV_IDLE;
 import static neo.Renderer.Cinematic.cinStatus_t.FMV_LOOPED;
@@ -11,13 +8,18 @@ import static neo.Renderer.RenderSystem_init.r_skipROQ;
 import static neo.Renderer.tr_local.backEnd;
 import static neo.Sound.snd_system.soundSystem;
 import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.wrapToNativeBuffer;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
-import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.LittleLong;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+
+import neo.TempDump.TODO_Exception;
+import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
 
 /**

@@ -16,6 +16,7 @@ import static neo.Renderer.Material.CONTENTS_TRIGGER;
 import static neo.Renderer.Material.CONTENTS_WATER;
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_GAME;
+
 import neo.framework.CVarSystem.idCVar;
 import neo.framework.CmdSystem.idCmdSystem;
 import neo.idlib.math.Vector.idVec4;

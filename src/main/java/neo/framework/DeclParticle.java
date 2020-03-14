@@ -1,19 +1,11 @@
 package neo.framework;
 
-import java.util.Arrays;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.RenderWorld.renderEntity_s;
-import neo.Renderer.RenderWorld.renderView_s;
 import static neo.TempDump.atof;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.DECL_LEXER_FLAGS;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_PARTICLE;
 import static neo.framework.DeclManager.declType_t.DECL_TABLE;
-import neo.framework.DeclManager.idDecl;
-import neo.framework.DeclParticle.idParticleStage;
-import neo.framework.DeclParticle.prtCustomPth_t;
-import static neo.framework.DeclParticle.prtCustomPth_t.PPATH_DRIP;
 import static neo.framework.DeclParticle.prtCustomPth_t.PPATH_FLIES;
 import static neo.framework.DeclParticle.prtCustomPth_t.PPATH_HELIX;
 import static neo.framework.DeclParticle.prtCustomPth_t.PPATH_ORBIT;
@@ -28,23 +20,30 @@ import static neo.framework.DeclParticle.prtOrientation_t.POR_VIEW;
 import static neo.framework.DeclParticle.prtOrientation_t.POR_X;
 import static neo.framework.DeclParticle.prtOrientation_t.POR_Y;
 import static neo.framework.DeclParticle.prtOrientation_t.POR_Z;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+
+import java.util.Arrays;
+
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.Renderer.RenderWorld.renderView_s;
+import neo.framework.DeclManager.idDecl;
 import neo.framework.DeclTable.idDeclTable;
 import neo.framework.File_h.idFile;
 import neo.framework.File_h.idFile_Memory;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Lib.idException;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

@@ -2,7 +2,6 @@ package neo.Game;
 
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
-import neo.Game.Player.idPlayer;
 import static neo.Game.PlayerIcon.playerIconType_t.ICON_CHAT;
 import static neo.Game.PlayerIcon.playerIconType_t.ICON_LAG;
 import static neo.Game.PlayerIcon.playerIconType_t.ICON_NONE;
@@ -14,11 +13,13 @@ import static neo.Renderer.RenderWorld.SHADERPARM_GREEN;
 import static neo.Renderer.RenderWorld.SHADERPARM_RED;
 import static neo.Renderer.RenderWorld.SHADERPARM_SPRITE_HEIGHT;
 import static neo.Renderer.RenderWorld.SHADERPARM_SPRITE_WIDTH;
-import neo.Renderer.RenderWorld.renderEntity_s;
 import static neo.TempDump.etoi;
 import static neo.framework.DeclManager.declManager;
-import neo.idlib.math.Matrix.idMat3;
+
+import neo.Game.Player.idPlayer;
+import neo.Renderer.RenderWorld.renderEntity_s;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

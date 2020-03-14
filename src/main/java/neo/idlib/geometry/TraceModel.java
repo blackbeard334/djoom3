@@ -1,29 +1,30 @@
 package neo.idlib.geometry;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.Lib.idLib;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_BONE;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_BOX;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_CONE;
-import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_CUSTOM;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_CYLINDER;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_DODECAHEDRON;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_INVALID;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_OCTAHEDRON;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_POLYGON;
 import static neo.idlib.geometry.TraceModel.traceModel_t.TRM_POLYGONVOLUME;
-import neo.idlib.geometry.Winding.idWinding;
 import static neo.idlib.math.Math_h.Cube;
 import static neo.idlib.math.Math_h.INTSIGNBITNOTSET;
 import static neo.idlib.math.Math_h.INTSIGNBITSET;
 import static neo.idlib.math.Math_h.Square;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Vector.getVec3_origin;
+
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import neo.idlib.Lib.idLib;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.geometry.Winding.idWinding;
+import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

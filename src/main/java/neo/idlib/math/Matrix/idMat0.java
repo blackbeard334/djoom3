@@ -1,8 +1,8 @@
 package neo.idlib.math.Matrix;
 
-import neo.idlib.math.Vector;
-
 import java.util.stream.Stream;
+
+import neo.idlib.math.Vector;
 
 /**
  * Yes, the one, the only, the ever illusive zero matrix.

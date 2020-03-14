@@ -1,14 +1,16 @@
 package neo.Sound;
 
+import static neo.framework.UsercmdGen.USERCMD_MSEC;
+import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import neo.Sound.snd_cache.idSoundSample;
-import neo.Sound.snd_decoder.idSampleDecoderLocal;
+
 import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
-import static neo.framework.UsercmdGen.USERCMD_MSEC;
-import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
+import neo.Sound.snd_cache.idSoundSample;
+import neo.Sound.snd_decoder.idSampleDecoderLocal;
 import neo.sys.win_snd.idAudioHardwareWIN32;
 
 /**

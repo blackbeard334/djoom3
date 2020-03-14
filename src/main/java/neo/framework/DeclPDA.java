@@ -6,13 +6,14 @@ import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_AUDIO;
 import static neo.framework.DeclManager.declType_t.DECL_EMAIL;
 import static neo.framework.DeclManager.declType_t.DECL_VIDEO;
-import neo.framework.DeclManager.idDecl;
-import neo.idlib.Lib.idException;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWBACKSLASHSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWMULTICHARLITERALS;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOFATALERRORS;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
+
+import neo.framework.DeclManager.idDecl;
+import neo.idlib.Lib.idException;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;

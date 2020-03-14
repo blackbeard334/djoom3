@@ -1,18 +1,19 @@
 package neo.Game.Physics;
 
+import static neo.Game.Game_local.gameLocal;
+import static neo.idlib.math.Vector.getVec3_zero;
+
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idEntityPtr;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
-import static neo.Game.Game_local.gameLocal;
-import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Physics.Clip.idClipModel;
 import neo.Game.Physics.Physics_Base.idPhysics_Base;
 import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

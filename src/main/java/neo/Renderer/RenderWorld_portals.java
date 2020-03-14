@@ -1,10 +1,10 @@
 package neo.Renderer;
 
+import java.util.stream.Stream;
+
 import neo.Renderer.RenderWorld_local.portal_s;
 import neo.Renderer.tr_local.idScreenRect;
 import neo.idlib.math.Plane.idPlane;
-
-import java.util.stream.Stream;
 
 /**
  *

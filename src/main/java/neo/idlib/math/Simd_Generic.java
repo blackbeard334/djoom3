@@ -1,24 +1,26 @@
 package neo.idlib.math;
 
+import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
-import neo.Renderer.Model.dominantTri_s;
+
 import neo.TempDump;
+import neo.Renderer.Model.dominantTri_s;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.JointTransform.idJointQuat;
-import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMatX;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Simd.idSIMDProcessor;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVecX;
+import neo.idlib.math.Matrix.idMatX;
 
 /**
  *

@@ -1,30 +1,31 @@
 package neo.ui;
 
 import static neo.Renderer.Material.SS_GUI;
-import neo.Renderer.Material.idMaterial;
 import static neo.TempDump.atoi;
 import static neo.TempDump.dynamic_cast;
 import static neo.TempDump.sizeof;
-import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
 import static neo.framework.CmdSystem.cmdSystem;
+import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
 import static neo.framework.Common.STRTABLE_ID;
 import static neo.framework.Common.STRTABLE_ID_LENGTH;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
-import neo.framework.DemoFile.idDemoFile;
-import neo.framework.File_h.idFile;
 import static neo.framework.Session.session;
 import static neo.idlib.Lib.idLib.cvarSystem;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWBACKSLASHSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWMULTICHARLITERALS;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
+import static neo.ui.Window.WIN_NOCURSOR;
+
+import neo.Renderer.Material.idMaterial;
+import neo.framework.DemoFile.idDemoFile;
+import neo.framework.File_h.idFile;
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.SimpleWindow.drawWin_t;
-import static neo.ui.Window.WIN_NOCURSOR;
 import neo.ui.Window.idWindow;
 import neo.ui.Winvar.idWinBackground;
 import neo.ui.Winvar.idWinFloat;

@@ -1,16 +1,40 @@
 package neo.Game.Script;
 
-import neo.CM.CollisionModel.trace_s;
-import neo.Game.AFEntity.idAFEntity_Base;
-import neo.Game.Camera.idCamera;
 import static neo.Game.Entity.EV_Activate;
-import neo.Game.Entity.idEntity;
-
 import static neo.Game.Entity.EV_CacheSoundShader;
 import static neo.Game.Entity.EV_SetShaderParm;
 import static neo.Game.Entity.signalNum_t.NUM_SIGNALS;
 import static neo.Game.Entity.signalNum_t.SIG_TRIGGER;
+import static neo.Game.GameSys.Class.EV_Remove;
+import static neo.Game.GameSys.SysCvar.g_debugScript;
+import static neo.Game.Game_local.ENTITYNUM_NONE;
+import static neo.Game.Game_local.MAX_GENTITIES;
+import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Game_local.gameRenderWorld;
+import static neo.Game.Game_local.gameSoundWorld;
+import static neo.Game.Physics.Clip.CLIPMODEL_ID_TO_JOINT_HANDLE;
+import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
+import static neo.TempDump.btoi;
+import static neo.TempDump.etoi;
+import static neo.framework.CmdSystem.cmdSystem;
+import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
+import static neo.framework.DeclManager.declManager;
+import static neo.framework.UsercmdGen.USERCMD_HZ;
+import static neo.idlib.Lib.idLib.cvarSystem;
+import static neo.idlib.Text.Str.va;
+import static neo.idlib.math.Math_h.DEG2RAD;
+import static neo.idlib.math.Math_h.MS2SEC;
+import static neo.idlib.math.Math_h.SEC2MS;
+import static neo.idlib.math.Vector.getVec3_origin;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.AFEntity.idAFEntity_Base;
+import neo.Game.Camera.idCamera;
+import neo.Game.Entity.idEntity;
+import neo.Game.Player.idPlayer;
 import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
 import neo.Game.GameSys.Class.eventCallback_t0;
@@ -25,45 +49,19 @@ import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
-
-import static neo.Game.GameSys.Class.EV_Remove;
-import static neo.Game.GameSys.SysCvar.g_debugScript;
-import static neo.Game.Game_local.ENTITYNUM_NONE;
-import static neo.Game.Game_local.MAX_GENTITIES;
-import static neo.Game.Game_local.gameLocal;
-import static neo.Game.Game_local.gameRenderWorld;
-import static neo.Game.Game_local.gameSoundWorld;
-import static neo.Game.Physics.Clip.CLIPMODEL_ID_TO_JOINT_HANDLE;
 import neo.Game.Physics.Physics_AF.idAFBody;
-import neo.Game.Player.idPlayer;
 import neo.Game.Script.Script_Interpreter.idInterpreter;
 import neo.Game.Script.Script_Program.function_t;
-import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
-import static neo.TempDump.btoi;
-import static neo.TempDump.etoi;
-import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
 import neo.framework.CmdSystem.cmdFunction_t;
-import static neo.framework.CmdSystem.cmdSystem;
-import static neo.framework.DeclManager.declManager;
-import static neo.framework.UsercmdGen.USERCMD_HZ;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Dict_h.idDict;
-import static neo.idlib.Lib.idLib.cvarSystem;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Angles.idAngles;
-import static neo.idlib.math.Math_h.DEG2RAD;
-import static neo.idlib.math.Math_h.MS2SEC;
-import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *

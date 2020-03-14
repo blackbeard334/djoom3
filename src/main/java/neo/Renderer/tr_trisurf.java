@@ -1,25 +1,28 @@
 package neo.Renderer;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
 import static neo.Renderer.Interaction.LIGHT_TRIS_DEFERRED;
-import neo.Renderer.Model.dominantTri_s;
-import neo.Renderer.Model.shadowCache_s;
-import neo.Renderer.Model.silEdge_t;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.tr_local.USE_TRI_DATA_ALLOCATOR;
-import neo.Renderer.tr_local.deformInfo_s;
 import static neo.Renderer.tr_local.frameData;
-import neo.Renderer.tr_local.frameData_t;
 import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_trisurf.faceTangents_t;
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
 import static neo.TempDump.sizeof;
 import static neo.framework.BuildDefines._DEBUG;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.Common.common;
+import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import neo.Renderer.Model.dominantTri_s;
+import neo.Renderer.Model.shadowCache_s;
+import neo.Renderer.Model.silEdge_t;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.tr_local.deformInfo_s;
+import neo.Renderer.tr_local.frameData_t;
+import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.cmp_t;
@@ -27,8 +30,6 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 
 /**

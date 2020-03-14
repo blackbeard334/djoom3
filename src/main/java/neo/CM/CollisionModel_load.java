@@ -2,14 +2,15 @@ package neo.CM;
 
 import static neo.CM.CollisionModel_local.MAX_NODE_POLYGONS;
 import static neo.CM.CollisionModel_local.MIN_NODE_SIZE;
+
 import neo.CM.CollisionModel_local.cm_brushRef_s;
 import neo.CM.CollisionModel_local.cm_node_s;
 import neo.CM.CollisionModel_local.cm_polygonRef_s;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.MapFile.idMapBrush;
 import neo.idlib.MapFile.idMapEntity;
 import neo.idlib.MapFile.idMapPatch;
 import neo.idlib.MapFile.idMapPrimitive;
+import neo.idlib.BV.Bounds.idBounds;
 
 /**
  *

@@ -1,9 +1,9 @@
 package neo.idlib.containers;
 
+import java.util.stream.Stream;
+
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
-
-import java.util.stream.Stream;
 
 /**
  *

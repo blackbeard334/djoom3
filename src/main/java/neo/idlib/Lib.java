@@ -1,26 +1,28 @@
 package neo.idlib;
 
+import static neo.TempDump.ctos;
+
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
 import neo.Game.Entity.idEntity.entityFlags_s;
 import neo.Game.Projectile.idProjectile.projectileFlags_s;
-import static neo.TempDump.ctos;
 import neo.framework.CVarSystem.idCVarSystem;
 import neo.framework.Common.idCommon;
 import neo.framework.FileSystem_h.idFileSystem;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Dict_h.idDict;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMatX;
 import neo.idlib.math.Polynomial.idPolynomial;
 import neo.idlib.math.Simd.idSIMD;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVec5;
+import neo.idlib.math.Matrix.idMatX;
 import neo.sys.sys_public.idSys;
 
 /**

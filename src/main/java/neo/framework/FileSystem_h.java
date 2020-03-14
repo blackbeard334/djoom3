@@ -1,48 +1,5 @@
 package neo.framework;
 
-import neo.TempDump.CPP_class;
-import neo.TempDump.CPP_class.Bool;
-import neo.TempDump.CPP_class.Char;
-import neo.TempDump.CPP_class.Pointer;
-import neo.TempDump.TODO_Exception;
-import neo.framework.CVarSystem.idCVar;
-import neo.framework.CmdSystem.cmdFunction_t;
-import neo.framework.CmdSystem.idCmdSystem;
-import neo.framework.DeclEntityDef.idDeclEntityDef;
-import neo.framework.DeclManager.idDecl;
-import neo.framework.File_h.idFile;
-import neo.framework.File_h.idFile_InZip;
-import neo.framework.File_h.idFile_Permanent;
-import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.Dict_h.idDict;
-import neo.idlib.Text.Lexer.idLexer;
-import neo.idlib.Text.Parser.idParser;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.Text.Token.idToken;
-import neo.idlib.containers.HashIndex;
-import neo.idlib.containers.HashIndex.idHashIndex;
-import neo.idlib.containers.List.idList;
-import neo.idlib.containers.StrList.idStrList;
-import neo.sys.sys_public.xthreadInfo;
-import neo.sys.sys_public.xthread_t;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Enumeration;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static neo.TempDump.NOT;
 import static neo.TempDump.etoi;
@@ -120,6 +77,49 @@ import static neo.sys.win_main.Sys_Mkdir;
 import static neo.sys.win_main.Sys_TriggerEvent;
 import static neo.sys.win_main.remove;
 import static neo.sys.win_main.tmpfile;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Enumeration;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import neo.TempDump.CPP_class;
+import neo.TempDump.CPP_class.Bool;
+import neo.TempDump.CPP_class.Char;
+import neo.TempDump.CPP_class.Pointer;
+import neo.TempDump.TODO_Exception;
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.framework.CmdSystem.idCmdSystem;
+import neo.framework.DeclEntityDef.idDeclEntityDef;
+import neo.framework.DeclManager.idDecl;
+import neo.framework.File_h.idFile;
+import neo.framework.File_h.idFile_InZip;
+import neo.framework.File_h.idFile_Permanent;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Dict_h.idDict;
+import neo.idlib.Text.Lexer.idLexer;
+import neo.idlib.Text.Parser.idParser;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.Text.Token.idToken;
+import neo.idlib.containers.HashIndex;
+import neo.idlib.containers.HashIndex.idHashIndex;
+import neo.idlib.containers.List.idList;
+import neo.idlib.containers.StrList.idStrList;
+import neo.sys.sys_public.xthreadInfo;
+import neo.sys.sys_public.xthread_t;
 
 /**
  *

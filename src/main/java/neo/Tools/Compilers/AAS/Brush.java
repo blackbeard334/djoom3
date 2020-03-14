@@ -1,30 +1,32 @@
 package neo.Tools.Compilers.AAS;
 
-import java.util.Arrays;
 import static neo.TempDump.NOT;
 import static neo.TempDump.SNOT;
-import neo.Tools.Compilers.AAS.AASBuild.Allowance;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.framework.File_h.idFile;
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.Lib.MAX_WORLD_COORD;
 import static neo.idlib.Lib.MIN_WORLD_COORD;
 import static neo.idlib.MapFile.CURRENT_MAP_VERSION;
+import static neo.idlib.math.Plane.PLANESIDE_BACK;
+import static neo.idlib.math.Plane.PLANESIDE_CROSS;
+import static neo.idlib.math.Plane.PLANESIDE_FRONT;
+import static neo.idlib.math.Plane.SIDE_ON;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.sys.win_shared.Sys_Milliseconds;
+
+import java.util.Arrays;
+
+import neo.Tools.Compilers.AAS.AASBuild.Allowance;
+import neo.framework.File_h.idFile;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.PlaneSet.idPlaneSet;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Plane.PLANESIDE_BACK;
-import static neo.idlib.math.Plane.PLANESIDE_CROSS;
-import static neo.idlib.math.Plane.PLANESIDE_FRONT;
-import static neo.idlib.math.Plane.SIDE_ON;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
-import static neo.sys.win_shared.Sys_Milliseconds;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

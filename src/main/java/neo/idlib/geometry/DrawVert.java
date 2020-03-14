@@ -3,11 +3,12 @@ package neo.idlib.geometry;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.lwjgl.BufferUtils;
+
 import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
-import org.lwjgl.BufferUtils;
 
 /**
  *

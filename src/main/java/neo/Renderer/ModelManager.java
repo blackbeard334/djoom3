@@ -1,6 +1,20 @@
 package neo.Renderer;
 
 import static neo.Renderer.Model.MD5_MESH_EXT;
+import static neo.Renderer.tr_lightrun.R_CheckForEntityDefsUsingModel;
+import static neo.Renderer.tr_lightrun.R_FreeDerivedData;
+import static neo.Renderer.tr_lightrun.R_ReCreateWorldReferences;
+import static neo.Renderer.tr_local.frameData;
+import static neo.Renderer.tr_trisurf.R_PurgeTriSurfData;
+import static neo.framework.CmdSystem.CMD_FL_CHEAT;
+import static neo.framework.CmdSystem.CMD_FL_RENDERER;
+import static neo.framework.CmdSystem.cmdSystem;
+import static neo.framework.Common.com_purgeAll;
+import static neo.framework.Common.common;
+import static neo.framework.FileSystem_h.fileSystem;
+import static neo.framework.Session.session;
+import static neo.sys.win_shared.Sys_Milliseconds;
+
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.Model_beam.idRenderModelBeam;
 import neo.Renderer.Model_liquid.idRenderModelLiquid;
@@ -9,28 +23,15 @@ import neo.Renderer.Model_md3.idRenderModelMD3;
 import neo.Renderer.Model_md5.idRenderModelMD5;
 import neo.Renderer.Model_prt.idRenderModelPrt;
 import neo.Renderer.Model_sprite.idRenderModelSprite;
-import static neo.Renderer.tr_lightrun.R_CheckForEntityDefsUsingModel;
-import static neo.Renderer.tr_lightrun.R_FreeDerivedData;
-import static neo.Renderer.tr_lightrun.R_ReCreateWorldReferences;
-import static neo.Renderer.tr_local.frameData;
-import static neo.Renderer.tr_trisurf.R_PurgeTriSurfData;
-import static neo.framework.CmdSystem.CMD_FL_CHEAT;
-import static neo.framework.CmdSystem.CMD_FL_RENDERER;
 import neo.framework.CmdSystem.cmdFunction_t;
-import static neo.framework.CmdSystem.cmdSystem;
 import neo.framework.CmdSystem.idCmdSystem;
 import neo.framework.Common.MemInfo_t;
-import static neo.framework.Common.com_purgeAll;
-import static neo.framework.Common.common;
-import static neo.framework.FileSystem_h.fileSystem;
 import neo.framework.File_h.idFile;
-import static neo.framework.Session.session;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idException;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.idList;
-import static neo.sys.win_shared.Sys_Milliseconds;
 
 /**
  *

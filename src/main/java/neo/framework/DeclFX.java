@@ -15,6 +15,7 @@ import static neo.framework.DeclFX.fx_enum.FX_SOUND;
 import static neo.framework.DeclManager.DECL_LEXER_FLAGS;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_ENTITYDEF;
+
 import neo.framework.DeclManager.idDecl;
 import neo.idlib.Lib;
 import neo.idlib.Lib.idException;
@@ -23,9 +24,9 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Angles.idAngles;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

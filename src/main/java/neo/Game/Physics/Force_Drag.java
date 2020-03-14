@@ -1,16 +1,17 @@
 package neo.Game.Physics;
 
+import static neo.framework.UsercmdGen.USERCMD_MSEC;
+import static neo.idlib.math.Math_h.MS2SEC;
+import static neo.idlib.math.Vector.RAD2DEG;
+import static neo.idlib.math.Vector.getVec3_zero;
+
 import neo.Game.Physics.Clip.idClipModel;
 import neo.Game.Physics.Force.idForce;
 import neo.Game.Physics.Physics.idPhysics;
-import static neo.framework.UsercmdGen.USERCMD_MSEC;
-import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.RAD2DEG;
-import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

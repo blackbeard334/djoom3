@@ -1,11 +1,6 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.Arrays;
-import neo.Renderer.Image.GeneratorFunction;
 import static neo.Renderer.Image.globalImages;
-import neo.Renderer.Image.idImage;
 import static neo.Renderer.Image.idImage.DEFAULT_SIZE;
 import static neo.Renderer.Image.textureDepth_t.TD_DEFAULT;
 import static neo.Renderer.Image.textureDepth_t.TD_HIGH_QUALITY;
@@ -39,19 +34,26 @@ import static neo.Renderer.tr_local.tr;
 import static neo.TempDump.NOT;
 import static neo.TempDump.flatten;
 import static neo.TempDump.wrapToNativeBuffer;
-import neo.framework.CmdSystem.cmdFunction_t;
-import neo.idlib.CmdArgs.idCmdArgs;
 import static neo.idlib.Lib.idLib.common;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.containers.List.cmp_t;
-import neo.idlib.containers.List.idList;
-import neo.idlib.math.Math_h.idMath;
-import org.lwjgl.BufferUtils;
-
 import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_BORDER_COLOR;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.Arrays;
+
+import org.lwjgl.BufferUtils;
+
+import neo.Renderer.Image.GeneratorFunction;
+import neo.Renderer.Image.idImage;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.List.cmp_t;
+import neo.idlib.containers.List.idList;
+import neo.idlib.math.Math_h.idMath;
 
 /**
  *

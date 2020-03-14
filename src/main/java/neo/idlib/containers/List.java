@@ -1,14 +1,16 @@
 package neo.idlib.containers;
 
+import static neo.TempDump.NOT;
+import static neo.TempDump.reflects._Minus;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import neo.TempDump;
 import neo.TempDump.CPP_class;
-import static neo.TempDump.NOT;
-import static neo.TempDump.reflects._Minus;
 import neo.framework.CVarSystem;
 import neo.framework.CVarSystem.idInternalCVar;
 import neo.framework.CmdSystem;

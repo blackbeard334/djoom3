@@ -1,11 +1,12 @@
 package neo.idlib.math;
 
 import static java.lang.Math.floor;
-import neo.idlib.math.Angles.idAngles;
 import static neo.idlib.math.Math_h.DEG2RAD;
+
+import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

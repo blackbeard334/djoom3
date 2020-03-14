@@ -1,19 +1,19 @@
 package neo.Renderer;
 
-import neo.Renderer.tr_local.idRenderEntityLocal;
-import neo.Renderer.tr_local.idRenderLightLocal;
-import neo.Renderer.tr_local.idScreenRect;
-import neo.Renderer.tr_local.viewDef_s;
-import neo.Renderer.tr_shadowbounds.MyArrayInt;
 import static neo.framework.Common.common;
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.Lib.colorBlue;
 import static neo.idlib.Lib.colorGreen;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorYellow;
-import neo.idlib.math.Matrix.idMat4;
+
+import neo.Renderer.tr_local.idRenderEntityLocal;
+import neo.Renderer.tr_local.idRenderLightLocal;
+import neo.Renderer.tr_local.idScreenRect;
+import neo.Renderer.tr_local.viewDef_s;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat4;
 
 /**
  *

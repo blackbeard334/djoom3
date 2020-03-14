@@ -1,6 +1,5 @@
 package neo.Tools.Compilers.DMap;
 
-import java.util.Arrays;
 import static neo.Renderer.qgl.qglBegin;
 import static neo.Renderer.qgl.qglBlendFunc;
 import static neo.Renderer.qgl.qglColor3f;
@@ -12,13 +11,7 @@ import static neo.Renderer.qgl.qglPointSize;
 import static neo.Renderer.qgl.qglVertex3fv;
 import static neo.TempDump.NOT;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
-import neo.Tools.Compilers.DMap.dmap.mapTri_s;
-import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
-import neo.Tools.Compilers.DMap.dmap.uEntity_t;
 import static neo.Tools.Compilers.DMap.gldraw.Draw_ClearWindow;
-import neo.Tools.Compilers.DMap.optimize.optEdge_s;
-import neo.Tools.Compilers.DMap.optimize.optTri_s;
-import neo.Tools.Compilers.DMap.optimize.optVertex_s;
 import static neo.Tools.Compilers.DMap.tritjunction.CountGroupListTris;
 import static neo.Tools.Compilers.DMap.tritjunction.FixAreaGroupsTjunctions;
 import static neo.Tools.Compilers.DMap.tritjunction.FreeTJunctionHash;
@@ -28,21 +21,27 @@ import static neo.Tools.Compilers.DMap.tritools.FreeTri;
 import static neo.Tools.Compilers.DMap.tritools.FreeTriList;
 import static neo.Tools.Compilers.DMap.tritools.PlaneForTri;
 import static neo.framework.Common.common;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.containers.List.cmp_t;
-import neo.idlib.geometry.DrawVert.idDrawVert;
-import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Random.idRandom;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorMA;
 import static neo.idlib.math.Vector.VectorSubtract;
-import neo.idlib.math.Vector.idVec3;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
 import static org.lwjgl.opengl.GL11.GL_ONE;
 import static org.lwjgl.opengl.GL11.GL_POINTS;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+
+import java.util.Arrays;
+
+import neo.Tools.Compilers.DMap.dmap.mapTri_s;
+import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
+import neo.Tools.Compilers.DMap.dmap.uEntity_t;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.containers.List.cmp_t;
+import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Random.idRandom;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

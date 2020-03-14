@@ -1,28 +1,15 @@
 package neo.ui;
 
-import java.nio.ByteBuffer;
 import static neo.Renderer.Image_files.R_LoadImage;
 import static neo.Renderer.Material.SS_GUI;
-import neo.Renderer.Material.idMaterial;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
-import neo.framework.File_h.idFile;
 import static neo.framework.KeyInput.K_MOUSE1;
 import static neo.framework.Session.session;
 import static neo.idlib.Lib.colorWhite;
-import neo.idlib.Text.Parser.idParser;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
-import neo.idlib.containers.List.idList;
 import static neo.idlib.math.Math_h.DEG2RAD;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Vector.idVec2;
-import neo.idlib.math.Vector.idVec4;
 import static neo.sys.sys_public.sysEventType_t.SE_KEY;
-import neo.sys.sys_public.sysEvent_s;
-import neo.ui.DeviceContext.idDeviceContext;
-import neo.ui.GameBustOutWindow.BOBrick;
-import neo.ui.GameBustOutWindow.BOEntity;
 import static neo.ui.GameBustOutWindow.collideDir_t.COLLIDE_DOWN;
 import static neo.ui.GameBustOutWindow.collideDir_t.COLLIDE_LEFT;
 import static neo.ui.GameBustOutWindow.collideDir_t.COLLIDE_NONE;
@@ -31,6 +18,19 @@ import static neo.ui.GameBustOutWindow.collideDir_t.COLLIDE_UP;
 import static neo.ui.GameBustOutWindow.powerupType_t.POWERUP_BIGPADDLE;
 import static neo.ui.GameBustOutWindow.powerupType_t.POWERUP_MULTIBALL;
 import static neo.ui.GameBustOutWindow.powerupType_t.POWERUP_NONE;
+
+import java.nio.ByteBuffer;
+
+import neo.Renderer.Material.idMaterial;
+import neo.framework.File_h.idFile;
+import neo.idlib.Text.Parser.idParser;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.List.idList;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVec2;
+import neo.idlib.math.Vector.idVec4;
+import neo.sys.sys_public.sysEvent_s;
+import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.SimpleWindow.drawWin_t;
 import neo.ui.UserInterfaceLocal.idUserInterfaceLocal;
 import neo.ui.Window.idWindow;

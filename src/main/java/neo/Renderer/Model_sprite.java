@@ -1,26 +1,27 @@
 package neo.Renderer;
 
-import neo.Renderer.Model.dynamicModel_t;
 import static neo.Renderer.Model.dynamicModel_t.DM_CONTINUOUS;
-import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.Model_local.idRenderModelStatic;
 import static neo.Renderer.RenderWorld.SHADERPARM_ALPHA;
 import static neo.Renderer.RenderWorld.SHADERPARM_BLUE;
 import static neo.Renderer.RenderWorld.SHADERPARM_GREEN;
 import static neo.Renderer.RenderWorld.SHADERPARM_RED;
 import static neo.Renderer.RenderWorld.SHADERPARM_SPRITE_HEIGHT;
 import static neo.Renderer.RenderWorld.SHADERPARM_SPRITE_WIDTH;
-import neo.Renderer.RenderWorld.renderEntity_s;
 import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_local.viewDef_s;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.Lib.Max;
+
+import neo.Renderer.Model.dynamicModel_t;
+import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.Model_local.idRenderModelStatic;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.Renderer.tr_local.viewDef_s;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 

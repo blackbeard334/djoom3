@@ -1,13 +1,14 @@
 package neo.Game.Physics;
 
+import static neo.idlib.math.Math_h.Square;
+import static neo.idlib.math.Vector.getVec3_origin;
+import static neo.idlib.math.Vector.getVec3_zero;
+
 import neo.Game.Physics.Force.idForce;
 import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics.impactInfo_s;
-import static neo.idlib.math.Math_h.Square;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Vector.getVec3_origin;
-import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

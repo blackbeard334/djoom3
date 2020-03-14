@@ -1,14 +1,15 @@
 package neo.idlib.geometry;
 
+import static neo.idlib.math.Math_h.Square;
+import static neo.idlib.math.Vector.getVec3_origin;
+
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.Lib.idException;
 import neo.idlib.Lib.idLib;
 import neo.idlib.MapFile.idMapPrimitive;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Surface.idSurface;
-import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 
 /**

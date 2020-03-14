@@ -1,8 +1,15 @@
 package neo.sys;
 
+import static neo.sys.win_net.NET_IPSocket;
+import static neo.sys.win_net.NET_OpenSocks;
+import static neo.sys.win_net.Net_WaitForUDPPacket;
+import static neo.sys.win_net.net_ip;
+import static neo.sys.win_net.net_socksEnabled;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.TimerTask;
+
 import neo.TempDump.CPP_class;
 import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
@@ -10,12 +17,7 @@ import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.sys.sys_local.idSysLocal;
-import static neo.sys.win_net.NET_IPSocket;
-import static neo.sys.win_net.NET_OpenSocks;
-import static neo.sys.win_net.Net_WaitForUDPPacket;
 import neo.sys.win_net.idUDPLag;
-import static neo.sys.win_net.net_ip;
-import static neo.sys.win_net.net_socksEnabled;
 
 /**
  *

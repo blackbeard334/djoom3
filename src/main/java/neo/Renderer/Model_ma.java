@@ -1,30 +1,27 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import neo.Renderer.Model_ma.maFileNode_t;
-import neo.Renderer.Model_ma.maMaterial_t;
-import neo.Renderer.Model_ma.maMesh_t;
-import neo.Renderer.Model_ma.maNodeHeader_t;
-import neo.Renderer.Model_ma.maObject_t;
 import static neo.TempDump.NOT;
 import static neo.TempDump.bbtocb;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.idlib.Lib.idException;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
+import static neo.idlib.Text.Str.va;
+import static neo.idlib.math.Math_h.DEG2RAD;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+
+import neo.idlib.Lib.idException;
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.HashTable.idHashTable;
 import neo.idlib.containers.List.idList;
-import static neo.idlib.math.Math_h.DEG2RAD;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat4;
 
 /**
  *

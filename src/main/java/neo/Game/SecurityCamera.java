@@ -1,16 +1,7 @@
 package neo.Game;
 
-import neo.CM.CollisionModel.trace_s;
-import neo.CM.CollisionModel_local;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
-import neo.Game.Entity.idEntity;
-import neo.Game.FX.idEntityFx;
-import neo.Game.GameSys.Class.eventCallback_t;
-import neo.Game.GameSys.Class.eventCallback_t0;
-import neo.Game.GameSys.Event.idEventDef;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.g_showEntityInfo;
 import static neo.Game.Game_local.MASK_OPAQUE;
 import static neo.Game.Game_local.MASK_SOLID;
@@ -18,32 +9,42 @@ import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_ANY;
 import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_BODY;
-import neo.Game.Light.idLight;
-import neo.Game.Physics.Clip.idClipModel;
-import neo.Game.Physics.Physics_RigidBody.idPhysics_RigidBody;
-import neo.Game.Player.idPlayer;
-import neo.Game.Pvs.pvsHandle_t;
 import static neo.Renderer.Material.CONTENTS_BODY;
 import static neo.Renderer.Material.CONTENTS_CORPSE;
 import static neo.Renderer.Material.CONTENTS_MOVEABLECLIP;
 import static neo.Renderer.Material.CONTENTS_SOLID;
 import static neo.Renderer.RenderWorld.SHADERPARM_MODE;
-import neo.Renderer.RenderWorld.renderView_s;
 import static neo.TempDump.NOT;
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
+import static neo.idlib.math.Math_h.MS2SEC;
+import static neo.idlib.math.Math_h.SEC2MS;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import neo.CM.CollisionModel.trace_s;
+import neo.CM.CollisionModel_local;
+import neo.Game.Entity.idEntity;
+import neo.Game.FX.idEntityFx;
+import neo.Game.Light.idLight;
+import neo.Game.Player.idPlayer;
+import neo.Game.Pvs.pvsHandle_t;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Event.idEventDef;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Physics.Clip.idClipModel;
+import neo.Game.Physics.Physics_RigidBody.idPhysics_RigidBody;
+import neo.Renderer.RenderWorld.renderView_s;
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.math.Angles.idAngles;
-import static neo.idlib.math.Math_h.MS2SEC;
-import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *

@@ -1,27 +1,28 @@
 package neo.ui;
 
 import static neo.Renderer.Material.SS_GUI;
-import neo.Renderer.Material.idMaterial;
 import static neo.TempDump.itob;
 import static neo.TempDump.sizeof;
 import static neo.framework.DeclManager.declManager;
-import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.colorBlack;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
-import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.getVec3_origin;
-import neo.idlib.math.Vector.idVec2;
-import neo.idlib.math.Vector.idVec3;
-import neo.ui.DeviceContext.idDeviceContext;
-import neo.ui.Rectangle.idRectangle;
-import neo.ui.UserInterfaceLocal.idUserInterfaceLocal;
 import static neo.ui.Window.WIN_BORDER;
 import static neo.ui.Window.WIN_INVERTRECT;
 import static neo.ui.Window.WIN_NATURALMAT;
 import static neo.ui.Window.WIN_NOCLIP;
 import static neo.ui.Window.WIN_NOWRAP;
+
+import neo.Renderer.Material.idMaterial;
+import neo.framework.File_h.idFile;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.math.Rotation.idRotation;
+import neo.idlib.math.Vector.idVec2;
+import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
+import neo.ui.DeviceContext.idDeviceContext;
+import neo.ui.Rectangle.idRectangle;
+import neo.ui.UserInterfaceLocal.idUserInterfaceLocal;
 import neo.ui.Window.idWindow;
 import neo.ui.Winvar.idWinBackground;
 import neo.ui.Winvar.idWinBool;

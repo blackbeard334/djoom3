@@ -3,22 +3,25 @@ package neo.Game.Animation;
 import static neo.Game.Animation.Anim.AFJointModType_t.AF_JOINTMOD_AXIS;
 import static neo.Game.Game_local.animationLib;
 import static neo.Game.Game_local.gameLocal;
-import neo.Game.Script.Script_Program.function_t;
 import static neo.Renderer.Model.MD5_ANIM_EXT;
 import static neo.Renderer.Model.MD5_VERSION;
 import static neo.Renderer.Model.MD5_VERSION_STRING;
-import neo.Renderer.Model.idMD5Joint;
-import neo.Renderer.Model.idRenderModel;
-import neo.Sound.snd_shader.idSoundShader;
 import static neo.TempDump.NOT;
 import static neo.TempDump.indexOf;
 import static neo.TempDump.sizeof;
-import neo.framework.DeclSkin.idDeclSkin;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.Lib.idException;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Simd.SIMDProcessor;
+
+import neo.Game.Script.Script_Program.function_t;
+import neo.Renderer.Model.idMD5Joint;
+import neo.Renderer.Model.idRenderModel;
+import neo.Sound.snd_shader.idSoundShader;
+import neo.framework.DeclSkin.idDeclSkin;
+import neo.idlib.Lib.idException;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
@@ -27,12 +30,10 @@ import neo.idlib.containers.HashTable.idHashTable;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StrList.idStrList;
 import neo.idlib.geometry.JointTransform.idJointQuat;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Quat.idQuat;
-import static neo.idlib.math.Simd.SIMDProcessor;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

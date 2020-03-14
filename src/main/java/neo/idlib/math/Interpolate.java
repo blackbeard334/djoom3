@@ -1,6 +1,7 @@
 package neo.idlib.math;
 
 import java.nio.ByteBuffer;
+
 import neo.TempDump;
 import neo.TempDump.SERiAL;
 import neo.idlib.math.Extrapolate.idExtrapolate;

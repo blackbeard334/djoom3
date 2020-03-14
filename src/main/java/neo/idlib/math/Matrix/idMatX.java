@@ -1,24 +1,25 @@
 package neo.idlib.math.Matrix;
 
+import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
+import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
+import static neo.idlib.math.Simd.SIMDProcessor;
+import static neo.idlib.math.Vector.idVecX.VECX_ALLOCA;
+
 import java.nio.FloatBuffer;
 import java.util.Arrays;
+
 import neo.TempDump;
 import neo.idlib.Lib;
 import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Matrix.idMat0.MATRIX_EPSILON;
-import static neo.idlib.math.Matrix.idMat0.MATRIX_INVERSE_EPSILON;
 import neo.idlib.math.Random;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec5;
 import neo.idlib.math.Vector.idVec6;
 import neo.idlib.math.Vector.idVecX;
-
-import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.idlib.math.Vector.idVecX.VECX_ALLOCA;
 
 public class idMatX {
 //===============================================================

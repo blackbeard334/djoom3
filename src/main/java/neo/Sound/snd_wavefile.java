@@ -1,18 +1,5 @@
 package neo.Sound;
 
-import neo.Sound.snd_local.mminfo_s;
-import neo.Sound.snd_local.pcmwaveformat_s;
-import neo.Sound.snd_local.waveformatex_s;
-import neo.Sound.snd_local.waveformatextensible_s;
-import neo.TempDump.TODO_Exception;
-import neo.framework.File_h.idFile;
-import neo.idlib.Text.Str.idStr;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBVorbis;
-import org.lwjgl.stb.STBVorbisInfo;
-
-import java.nio.ByteBuffer;
-
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 import static neo.Sound.snd_system.idSoundSystemLocal.s_realTimeDecoding;
@@ -26,6 +13,20 @@ import static neo.idlib.math.Simd.SIMDProcessor;
 import static neo.sys.sys_public.CRITICAL_SECTION_ONE;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
+
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.stb.STBVorbis;
+import org.lwjgl.stb.STBVorbisInfo;
+
+import neo.TempDump.TODO_Exception;
+import neo.Sound.snd_local.mminfo_s;
+import neo.Sound.snd_local.pcmwaveformat_s;
+import neo.Sound.snd_local.waveformatex_s;
+import neo.Sound.snd_local.waveformatextensible_s;
+import neo.framework.File_h.idFile;
+import neo.idlib.Text.Str.idStr;
 
 /**
  *

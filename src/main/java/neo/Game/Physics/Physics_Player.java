@@ -2,10 +2,6 @@ package neo.Game.Physics;
 
 import static java.lang.Math.abs;
 import static neo.CM.CollisionModel.contactType_t.CONTACT_TRMVERTEX;
-import neo.CM.CollisionModel.trace_s;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.pm_crouchheight;
 import static neo.Game.GameSys.SysCvar.pm_deadheight;
 import static neo.Game.GameSys.SysCvar.pm_normalheight;
@@ -14,10 +10,6 @@ import static neo.Game.Game_local.ENTITYNUM_WORLD;
 import static neo.Game.Game_local.MASK_SOLID;
 import static neo.Game.Game_local.MASK_WATER;
 import static neo.Game.Game_local.gameLocal;
-
-import neo.Game.Game_local.idEntityPtr;
-import neo.Game.Physics.Physics.impactInfo_s;
-import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
 import static neo.Game.Physics.Physics_Player.pmtype_t.PM_DEAD;
 import static neo.Game.Physics.Physics_Player.pmtype_t.PM_FREEZE;
 import static neo.Game.Physics.Physics_Player.pmtype_t.PM_NOCLIP;
@@ -33,20 +25,28 @@ import static neo.Game.Physics.Push.PUSHFL_ONLYMOVEABLE;
 import static neo.Renderer.Material.CONTENTS_SOLID;
 import static neo.Renderer.Material.SURF_LADDER;
 import static neo.Renderer.Material.SURF_SLICK;
-import neo.Renderer.Material.idMaterial;
 import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idEntityPtr;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Physics.Physics.impactInfo_s;
+import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
+import neo.Renderer.Material.idMaterial;
 import neo.framework.UsercmdGen.usercmd_t;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.BitMsg.idBitMsgDelta;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

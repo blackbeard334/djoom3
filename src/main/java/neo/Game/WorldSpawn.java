@@ -1,24 +1,27 @@
 package neo.Game;
 
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Event.idEventDef;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-
-import static neo.Game.GameSys.Class.*;
+import static neo.Game.GameSys.Class.EV_Remove;
+import static neo.Game.GameSys.Class.EV_SafeRemove;
 import static neo.Game.GameSys.SysCvar.g_gravity;
 import static neo.Game.GameSys.SysCvar.pm_stamina;
 import static neo.Game.Game_local.DEFAULT_GRAVITY;
 import static neo.Game.Game_local.gameLocal;
-import neo.Game.Script.Script_Program.function_t;
-import neo.Game.Script.Script_Thread.idThread;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.idlib.Dict_h.idKeyValue;
-import neo.idlib.Text.Str.idStr;
+import static neo.idlib.Text.Str.va;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static neo.idlib.Text.Str.va;
+import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.Class.eventCallback_t;
+import neo.Game.GameSys.Class.eventCallback_t0;
+import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Event.idEventDef;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.Script.Script_Program.function_t;
+import neo.Game.Script.Script_Thread.idThread;
+import neo.idlib.Dict_h.idKeyValue;
+import neo.idlib.Text.Str.idStr;
 
 /*
  game_worldspawn.cpp

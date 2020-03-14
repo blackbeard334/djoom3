@@ -1,16 +1,9 @@
 package neo.idlib.Text;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.util.Arrays;
 import static neo.TempDump.NOT;
 import static neo.TempDump.atocb;
 import static neo.TempDump.bbtocb;
-import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.BIT;
-import neo.idlib.Lib.idException;
-import neo.idlib.Lib.idLib;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import static neo.idlib.Text.Token.TT_BINARY;
 import static neo.idlib.Text.Token.TT_DECIMAL;
@@ -33,13 +26,22 @@ import static neo.idlib.Text.Token.TT_PUNCTUATION;
 import static neo.idlib.Text.Token.TT_SINGLE_PRECISION;
 import static neo.idlib.Text.Token.TT_STRING;
 import static neo.idlib.Text.Token.TT_UNSIGNED;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.util.Arrays;
+
+import neo.framework.File_h.idFile;
+import neo.idlib.Lib.idException;
+import neo.idlib.Lib.idLib;
+import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Quat.idCQuat;
 import neo.idlib.math.Quat.idQuat;
 import neo.idlib.math.Vector.idVec;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

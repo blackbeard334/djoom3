@@ -5,18 +5,10 @@
  */
 package neo.Game.Script;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.GameSys.SysCvar.g_disasm;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Script.Script_Compiler.OP_RETURN;
 import static neo.Game.Script.Script_Compiler.RESULT_STRING;
-import neo.Game.Script.Script_Compiler.idCompiler;
-import neo.Game.Script.Script_Compiler.opcode_s;
 import static neo.Game.Script.Script_Program.MAX_FUNCS;
 import static neo.Game.Script.Script_Program.MAX_GLOBALS;
 import static neo.Game.Script.Script_Program.MAX_STATEMENTS;
@@ -26,33 +18,43 @@ import static neo.Game.Script.Script_Program.ev_field;
 import static neo.Game.Script.Script_Program.ev_function;
 import static neo.Game.Script.Script_Program.ev_namespace;
 import static neo.Game.Script.Script_Program.ev_vector;
-import neo.Game.Script.Script_Program.function_t;
-import neo.Game.Script.Script_Program.idCompileError;
-import neo.Game.Script.Script_Program.idTypeDef;
-import neo.Game.Script.Script_Program.idVarDef;
-import static neo.Game.Script.Script_Program.idVarDef.initialized_t.stackVariable;
-import neo.Game.Script.Script_Program.idVarDefName;
-import neo.Game.Script.Script_Program.statement_s;
 import static neo.Game.Script.Script_Program.type_entity;
 import static neo.Game.Script.Script_Program.type_float;
 import static neo.Game.Script.Script_Program.type_object;
 import static neo.Game.Script.Script_Program.type_string;
 import static neo.Game.Script.Script_Program.type_vector;
 import static neo.Game.Script.Script_Program.type_void;
-import neo.Game.Script.Script_Program.varEval_s;
-import neo.Game.Script.Script_Thread.idThread;
+import static neo.Game.Script.Script_Program.idVarDef.initialized_t.stackVariable;
 import static neo.TempDump.indexOf;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.FileSystem_h.fsMode_t.FS_WRITE;
-import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.idLib.fileSystem;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
+import static neo.idlib.hashing.MD4.MD4_BlockChecksum;
+
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Script.Script_Compiler.idCompiler;
+import neo.Game.Script.Script_Compiler.opcode_s;
+import neo.Game.Script.Script_Program.function_t;
+import neo.Game.Script.Script_Program.idCompileError;
+import neo.Game.Script.Script_Program.idTypeDef;
+import neo.Game.Script.Script_Program.idVarDef;
+import neo.Game.Script.Script_Program.idVarDefName;
+import neo.Game.Script.Script_Program.statement_s;
+import neo.Game.Script.Script_Program.varEval_s;
+import neo.Game.Script.Script_Thread.idThread;
+import neo.framework.File_h.idFile;
+import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.idList;
 import neo.idlib.containers.StaticList.idStaticList;
 import neo.idlib.containers.StrList.idStrList;
-import static neo.idlib.hashing.MD4.MD4_BlockChecksum;
 import neo.idlib.math.Vector.idVec3;
 
 /* **********************************************************************

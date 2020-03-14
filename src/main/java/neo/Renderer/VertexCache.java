@@ -1,11 +1,5 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import neo.Renderer.Model.lightingCache_s;
-import neo.Renderer.Model.shadowCache_s;
 import static neo.Renderer.RenderSystem_init.r_useIndexBuffers;
 import static neo.Renderer.RenderSystem_init.r_useVertexBuffers;
 import static neo.Renderer.VertexCache.vertBlockTag_t.TAG_FIXED;
@@ -18,26 +12,34 @@ import static neo.Renderer.qgl.qglBufferSubDataARB;
 import static neo.Renderer.qgl.qglGenBuffersARB;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
-
-import neo.TempDump.Deprecation_Exception;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
 import static neo.framework.CVarSystem.CVAR_RENDERER;
-import neo.framework.CVarSystem.idCVar;
 import static neo.framework.CmdSystem.CMD_FL_RENDERER;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.common;
-import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.geometry.DrawVert;
-import neo.idlib.geometry.DrawVert.idDrawVert;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import neo.idlib.math.Vector.idVec3;
-import neo.idlib.math.Vector.idVec4;
-import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB;
 import static org.lwjgl.opengl.ARBVertexBufferObject.GL_ELEMENT_ARRAY_BUFFER_ARB;
 import static org.lwjgl.opengl.ARBVertexBufferObject.GL_STATIC_DRAW_ARB;
 import static org.lwjgl.opengl.ARBVertexBufferObject.GL_STREAM_DRAW_ARB;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.lwjgl.BufferUtils;
+
+import neo.TempDump.Deprecation_Exception;
+import neo.Renderer.Model.lightingCache_s;
+import neo.Renderer.Model.shadowCache_s;
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.geometry.DrawVert;
+import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Vector.idVec4;
 
 /**
  *

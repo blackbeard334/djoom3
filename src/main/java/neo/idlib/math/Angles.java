@@ -1,15 +1,16 @@
 package neo.idlib.math;
 
 import java.nio.ByteBuffer;
+
 import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Matrix.idMat4;
 import neo.idlib.math.Quat.idQuat;
 import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
+import neo.idlib.math.Matrix.idMat4;
 
 /**
  *

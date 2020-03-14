@@ -1,42 +1,44 @@
 package neo.framework;
 
-import java.nio.ByteBuffer;
 import static neo.Game.Game_local.game;
 import static neo.Renderer.ModelManager.renderModelManager;
-import neo.Renderer.RenderWorld.idRenderWorld;
 import static neo.Sound.snd_system.soundSystem;
-import neo.Sound.sound.idSoundWorld;
-
-import static neo.TempDump.*;
-
-import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
+import static neo.TempDump.SERIAL_SIZE;
+import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.CVarSystem.CVAR_SERVERINFO;
 import static neo.framework.CVarSystem.cvarSystem;
-import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.CmdSystem.cmdSystem;
+import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_NOW;
 import static neo.framework.Common.common;
 import static neo.framework.Console.console;
 import static neo.framework.DeclManager.declManager;
-import neo.framework.DemoFile.idDemoFile;
-import neo.framework.FileSystem_h.backgroundDownload_s;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.framework.FileSystem_h.findFile_t;
-import neo.framework.File_h.idFile;
-
-import neo.framework.Session_local.idSessionLocal;
 import static neo.framework.Session_local.timeDemo_t.TD_YES;
 import static neo.framework.Session_local.timeDemo_t.TD_YES_THEN_QUIT;
-import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.Lib.idException;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
-import neo.sys.sys_public.sysEvent_s;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 import static neo.sys.win_main.Sys_Sleep;
-import neo.ui.UserInterface.idUserInterface;
 import static neo.ui.UserInterface.uiManager;
+
+import java.nio.ByteBuffer;
+
+import neo.TempDump.SERiAL;
+import neo.TempDump.TODO_Exception;
+import neo.Renderer.RenderWorld.idRenderWorld;
+import neo.Sound.sound.idSoundWorld;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.framework.DemoFile.idDemoFile;
+import neo.framework.FileSystem_h.backgroundDownload_s;
+import neo.framework.FileSystem_h.findFile_t;
+import neo.framework.File_h.idFile;
+import neo.framework.Session_local.idSessionLocal;
+import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Lib.idException;
+import neo.idlib.Text.Str.idStr;
+import neo.sys.sys_public.sysEvent_s;
+import neo.ui.UserInterface.idUserInterface;
 
 /**
  *

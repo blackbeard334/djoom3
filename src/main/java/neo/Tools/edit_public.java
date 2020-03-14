@@ -1,8 +1,9 @@
 package neo.Tools;
 
+import static neo.framework.Common.common;
+
 import neo.Game.Script.Script_Interpreter.idInterpreter;
 import neo.Game.Script.idProgram;
-import static neo.framework.Common.common;
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Vector.idVec3;

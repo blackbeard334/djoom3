@@ -1,16 +1,18 @@
 package neo.sys;
 
-import java.awt.event.KeyListener;
-import java.awt.event.MouseListener;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import static neo.framework.CVarSystem.CVAR_ARCHIVE;
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_INIT;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
 import static neo.framework.CVarSystem.CVAR_SYSTEM;
-import neo.framework.CVarSystem.idCVar;
 import static neo.sys.sys_public.MAX_CRITICAL_SECTIONS;
+
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import neo.framework.CVarSystem.idCVar;
 
 /**
  *

@@ -2,31 +2,32 @@ package neo.Renderer;
 
 import static neo.Renderer.Image.globalImages;
 import static neo.Renderer.Material.SS_SUBVIEW;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Material.shaderStage_t;
-import neo.Renderer.Material.textureStage_t;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.RenderSystem.SCREEN_HEIGHT;
 import static neo.Renderer.RenderSystem.SCREEN_WIDTH;
 import static neo.Renderer.RenderSystem_init.r_skipSubviews;
-import neo.Renderer.RenderWorld.renderView_s;
-import neo.Renderer.tr_local.drawSurf_s;
-import neo.Renderer.tr_local.idScreenRect;
 import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_local.viewDef_s;
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
 import static neo.Renderer.tr_main.R_GlobalToNormalizedDeviceCoordinates;
 import static neo.Renderer.tr_main.R_LocalPlaneToGlobal;
 import static neo.Renderer.tr_main.R_LocalPointToGlobal;
 import static neo.Renderer.tr_main.R_RenderView;
 import static neo.Renderer.tr_main.R_TransformModelToClip;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Material.shaderStage_t;
+import neo.Renderer.Material.textureStage_t;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.RenderWorld.renderView_s;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.Renderer.tr_local.idScreenRect;
+import neo.Renderer.tr_local.viewDef_s;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idFixedWinding;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

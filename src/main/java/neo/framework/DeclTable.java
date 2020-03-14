@@ -1,6 +1,7 @@
 package neo.framework;
 
 import static neo.framework.DeclManager.DECL_LEXER_FLAGS;
+
 import neo.framework.DeclManager.idDecl;
 import neo.idlib.Lib;
 import neo.idlib.Text.Lexer.idLexer;

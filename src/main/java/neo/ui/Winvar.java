@@ -1,16 +1,16 @@
 package neo.ui;
 
-import java.util.Objects;
-import java.util.Scanner;
-import neo.Renderer.Material.idMaterial;
-
 import static neo.TempDump.atoi;
 import static neo.framework.DeclManager.declManager;
+import static neo.idlib.Text.Str.va;
 
+import java.util.Objects;
+import java.util.Scanner;
+
+import neo.Renderer.Material.idMaterial;
 import neo.framework.File_h.idFile;
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;

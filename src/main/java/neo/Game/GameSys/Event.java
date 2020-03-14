@@ -1,19 +1,20 @@
 package neo.Game.GameSys;
 
+import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Script.Script_Program.MAX_STRING_LEN;
+import static neo.TempDump.etoi;
+
+import java.nio.ByteBuffer;
+
+import neo.TempDump.CPP_class;
+import neo.TempDump.TODO_Exception;
 import neo.CM.CollisionModel.contactType_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.AFEntity;
-import neo.Game.AI.AI;
-import neo.Game.AI.AI_Events;
-import neo.Game.AI.AI_Vagary;
 import neo.Game.Actor;
 import neo.Game.Camera;
 import neo.Game.Entity;
 import neo.Game.FX;
-import neo.Game.GameSys.Class.idClass;
-import neo.Game.GameSys.Class.idEventArg;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import neo.Game.Item;
 import neo.Game.Light;
 import neo.Game.Misc;
@@ -21,23 +22,22 @@ import neo.Game.Moveable;
 import neo.Game.Mover;
 import neo.Game.Player;
 import neo.Game.Projectile;
-import neo.Game.Script.Script_Thread;
 import neo.Game.SecurityCamera;
 import neo.Game.Sound;
 import neo.Game.Target;
 import neo.Game.Trigger;
 import neo.Game.Weapon;
-import neo.TempDump.CPP_class;
-import neo.TempDump.TODO_Exception;
+import neo.Game.AI.AI;
+import neo.Game.AI.AI_Events;
+import neo.Game.AI.AI_Vagary;
+import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.Class.idEventArg;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Script.Script_Thread;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.LinkList.idLinkList;
 import neo.idlib.math.Vector.idVec3;
-
-import java.nio.ByteBuffer;
-
-import static neo.Game.Game_local.gameLocal;
-import static neo.Game.Script.Script_Program.MAX_STRING_LEN;
-import static neo.TempDump.etoi;
 
 /**
  *

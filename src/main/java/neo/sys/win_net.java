@@ -1,5 +1,13 @@
 package neo.sys;
 
+import static neo.TempDump.NOT;
+import static neo.TempDump.ntohl;
+import static neo.framework.CVarSystem.CVAR_ARCHIVE;
+import static neo.framework.CVarSystem.CVAR_BOOL;
+import static neo.framework.CVarSystem.CVAR_INTEGER;
+import static neo.framework.CVarSystem.CVAR_SYSTEM;
+import static neo.framework.Common.common;
+
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -8,15 +16,9 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static neo.TempDump.NOT;
+
 import neo.TempDump.TODO_Exception;
-import static neo.TempDump.ntohl;
-import static neo.framework.CVarSystem.CVAR_ARCHIVE;
-import static neo.framework.CVarSystem.CVAR_BOOL;
-import static neo.framework.CVarSystem.CVAR_INTEGER;
-import static neo.framework.CVarSystem.CVAR_SYSTEM;
 import neo.framework.CVarSystem.idCVar;
-import static neo.framework.Common.common;
 import neo.sys.sys_public.netadr_t;
 
 /**

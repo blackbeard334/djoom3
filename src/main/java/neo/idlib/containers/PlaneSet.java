@@ -1,9 +1,12 @@
 package neo.idlib.containers;
 
+import static neo.idlib.math.Plane.PLANETYPE_NEGX;
+import static neo.idlib.math.Plane.PLANETYPE_TRUEAXIAL;
+
 import neo.idlib.containers.HashIndex.idHashIndex;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Plane.*;
+import neo.idlib.math.Plane.idPlane;
 
 /**
  *

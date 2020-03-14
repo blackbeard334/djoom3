@@ -1,16 +1,20 @@
 package neo.Renderer;
 
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
 
+import org.lwjgl.BufferUtils;
+
+import neo.TempDump.SERiAL;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.RenderWorld.renderEntity_s;
 import neo.Renderer.VertexCache.vertCache_s;
 import neo.Renderer.tr_local.viewDef_s;
-import neo.TempDump.SERiAL;
 import neo.framework.DemoFile.idDemoFile;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Lib.idException;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
@@ -18,9 +22,6 @@ import neo.idlib.geometry.JointTransform.idJointQuat;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
-import org.lwjgl.BufferUtils;
-
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 
 /**
  *

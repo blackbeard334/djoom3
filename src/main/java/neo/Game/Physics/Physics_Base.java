@@ -1,34 +1,34 @@
 package neo.Game.Physics;
 
+import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Game_local.gameRenderWorld;
+import static neo.Game.Physics.Physics.CONTACT_EPSILON;
+import static neo.idlib.BV.Bounds.bounds_zero;
+import static neo.idlib.Lib.colorBlue;
+import static neo.idlib.Lib.colorRed;
+import static neo.idlib.math.Math_h.Square;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
 import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idEntityPtr;
 import neo.Game.GameSys.Class.idClass;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
-import static neo.Game.Game_local.gameLocal;
-import static neo.Game.Game_local.gameRenderWorld;
-import neo.Game.Game_local.idEntityPtr;
 import neo.Game.Physics.Clip.idClipModel;
-import static neo.Game.Physics.Physics.CONTACT_EPSILON;
-
 import neo.Game.Physics.Force.idForce;
 import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics.impactInfo_s;
-import static neo.idlib.BV.Bounds.bounds_zero;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.BitMsg.idBitMsgDelta;
-import static neo.idlib.Lib.colorBlue;
-import static neo.idlib.Lib.colorRed;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.containers.List.idList;
-import static neo.idlib.math.Math_h.Square;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

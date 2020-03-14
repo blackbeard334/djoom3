@@ -1,8 +1,9 @@
 package neo.Renderer;
 
+import static neo.idlib.Lib.idLib.common;
+
 import java.nio.ByteBuffer;
 
-import static neo.idlib.Lib.idLib.common;
 import org.lwjgl.BufferUtils;
 
 /**

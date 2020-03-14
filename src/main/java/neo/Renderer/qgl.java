@@ -1,6 +1,10 @@
 package neo.Renderer;
 
-import neo.TempDump;
+import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBImaging;
 import org.lwjgl.opengl.ARBMultitexture;
@@ -15,10 +19,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
-import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import neo.TempDump;
 
 /**
  * so yeah, it's easier to use this class as an interface. rather than refactor

@@ -1,9 +1,6 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import static neo.Renderer.Image.globalImages;
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.RenderSystem_init.r_skipTranslucent;
 import static neo.Renderer.RenderSystem_init.r_testARBProgram;
 import static neo.Renderer.RenderSystem_init.r_useScissor;
@@ -38,9 +35,7 @@ import static neo.Renderer.tr_local.GLS_DEPTHMASK;
 import static neo.Renderer.tr_local.GLS_DSTBLEND_ONE;
 import static neo.Renderer.tr_local.GLS_SRCBLEND_ONE;
 import static neo.Renderer.tr_local.backEnd;
-import neo.Renderer.tr_local.drawSurf_s;
 import static neo.Renderer.tr_local.glConfig;
-import neo.Renderer.tr_local.idScreenRect;
 import static neo.Renderer.tr_local.programParameter_t.PP_BUMP_MATRIX_S;
 import static neo.Renderer.tr_local.programParameter_t.PP_BUMP_MATRIX_T;
 import static neo.Renderer.tr_local.programParameter_t.PP_COLOR_ADD;
@@ -55,7 +50,6 @@ import static neo.Renderer.tr_local.programParameter_t.PP_LIGHT_PROJECT_T;
 import static neo.Renderer.tr_local.programParameter_t.PP_SPECULAR_MATRIX_S;
 import static neo.Renderer.tr_local.programParameter_t.PP_SPECULAR_MATRIX_T;
 import static neo.Renderer.tr_local.programParameter_t.PP_VIEW_ORIGIN;
-import neo.Renderer.tr_local.program_t;
 import static neo.Renderer.tr_local.program_t.FPROG_AMBIENT;
 import static neo.Renderer.tr_local.program_t.FPROG_BUMPY_ENVIRONMENT;
 import static neo.Renderer.tr_local.program_t.FPROG_ENVIRONMENT;
@@ -76,20 +70,12 @@ import static neo.Renderer.tr_local.program_t.VPROG_NV20_SPECULAR_COLOR;
 import static neo.Renderer.tr_local.program_t.VPROG_R200_INTERACTION;
 import static neo.Renderer.tr_local.program_t.VPROG_STENCIL_SHADOW;
 import static neo.Renderer.tr_local.program_t.VPROG_TEST;
-import neo.Renderer.tr_local.viewLight_s;
-import neo.Renderer.tr_render.DrawInteraction;
 import static neo.Renderer.tr_render.RB_CreateSingleDrawInteractions;
 import static neo.Renderer.tr_render.RB_DrawElementsWithCounters;
 import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
 import static neo.TempDump.isNotNullOrEmpty;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.Common.common;
-import neo.idlib.CmdArgs.idCmdArgs;
 import static neo.idlib.Lib.idLib.fileSystem;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.geometry.DrawVert.idDrawVert;
-import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB;
 import static org.lwjgl.opengl.ARBMultitexture.GL_TEXTURE0_ARB;
 import static org.lwjgl.opengl.ARBVertexProgram.GL_PROGRAM_ERROR_POSITION_ARB;
@@ -103,6 +89,23 @@ import static org.lwjgl.opengl.GL11.GL_INVALID_OPERATION;
 import static org.lwjgl.opengl.GL11.GL_STENCIL_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
+import org.lwjgl.BufferUtils;
+
+import neo.TempDump.TODO_Exception;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.Renderer.tr_local.idScreenRect;
+import neo.Renderer.tr_local.program_t;
+import neo.Renderer.tr_local.viewLight_s;
+import neo.Renderer.tr_render.DrawInteraction;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.geometry.DrawVert.idDrawVert;
 
 /**
  *

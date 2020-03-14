@@ -1,18 +1,8 @@
 package neo.Sound;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import neo.Renderer.RenderWorld.idRenderWorld;
-import neo.Sound.snd_cache.idSoundSample;
-
 import static neo.Sound.snd_local.PRIMARYFREQ;
 import static neo.Sound.snd_local.SOUND_DECODER_FREE_DELAY;
 import static neo.Sound.snd_local.SOUND_MAX_CHANNELS;
-
-import neo.Sound.snd_local.idSampleDecoder;
-
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_FADE;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_FREE;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_MODIFY;
@@ -24,36 +14,17 @@ import static neo.Sound.snd_shader.METERS_TO_DOOM;
 import static neo.Sound.snd_shader.SSF_LOOPING;
 import static neo.Sound.snd_shader.SSF_NO_DUPS;
 import static neo.Sound.snd_shader.SSF_PLAY_ONCE;
-
-import neo.Sound.snd_shader.idSoundShader;
-import neo.Sound.snd_shader.soundShaderParms_t;
-import neo.Sound.snd_system.idSoundSystemLocal;
-
 import static neo.Sound.snd_system.soundSystemLocal;
-
-import neo.Sound.snd_world.idSoundWorldLocal;
-import neo.Sound.sound.idSoundEmitter;
-
 import static neo.TempDump.NOT;
 import static neo.TempDump.btoi;
 import static neo.TempDump.indexOf;
 import static neo.framework.Common.common;
 import static neo.framework.DemoFile.demoSystem_t.DS_SOUND;
 import static neo.framework.Session.session;
-
-import neo.idlib.math.Math_h.idMath;
-
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-
-import neo.idlib.math.Vector.idVec3;
-
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 import static neo.sys.win_shared.Sys_Milliseconds;
-import org.lwjgl.BufferUtils;
-
-import org.lwjgl.openal.AL10;
-
 import static org.lwjgl.openal.AL10.AL_BUFFER;
 import static org.lwjgl.openal.AL10.AL_NO_ERROR;
 import static org.lwjgl.openal.AL10.AL_PLAYING;
@@ -63,6 +34,24 @@ import static org.lwjgl.openal.AL10.alGetError;
 import static org.lwjgl.openal.AL10.alIsSource;
 import static org.lwjgl.openal.AL10.alSourceStop;
 import static org.lwjgl.openal.AL10.alSourcei;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
+
+import neo.Renderer.RenderWorld.idRenderWorld;
+import neo.Sound.snd_cache.idSoundSample;
+import neo.Sound.snd_local.idSampleDecoder;
+import neo.Sound.snd_shader.idSoundShader;
+import neo.Sound.snd_shader.soundShaderParms_t;
+import neo.Sound.snd_system.idSoundSystemLocal;
+import neo.Sound.snd_world.idSoundWorldLocal;
+import neo.Sound.sound.idSoundEmitter;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

@@ -1,16 +1,18 @@
 package neo.idlib;
 
-import java.nio.ByteBuffer;
 import static neo.TempDump.bbtocb;
 import static neo.framework.Common.STRTABLE_ID;
 import static neo.framework.Common.STRTABLE_ID_LENGTH;
-import neo.framework.File_h.idFile;
-import neo.idlib.Lib.idException;
-import neo.idlib.Lib.idLib;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWBACKSLASHSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWMULTICHARLITERALS;
 import static neo.idlib.Text.Lexer.LEXFL_NOFATALERRORS;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
+
+import java.nio.ByteBuffer;
+
+import neo.framework.File_h.idFile;
+import neo.idlib.Lib.idException;
+import neo.idlib.Lib.idLib;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str;
 import neo.idlib.Text.Str.idStr;

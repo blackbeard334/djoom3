@@ -1,24 +1,25 @@
 package neo.framework;
 
 import static neo.TempDump.ctos;
-import neo.TempDump.void_callback;
 import static neo.framework.BuildDefines.MACOS_X;
 import static neo.framework.CVarSystem.CVAR_ARCHIVE;
 import static neo.framework.CVarSystem.cvarSystem;
 import static neo.framework.CmdSystem.CMD_FL_SYSTEM;
-import neo.framework.CmdSystem.argCompletion_t;
-import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.CmdSystem.cmdSystem;
+import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
 import static neo.framework.Common.common;
-import neo.framework.File_h.idFile;
 import static neo.framework.UsercmdGen.usercmdGen;
-import neo.idlib.CmdArgs.idCmdArgs;
 import static neo.idlib.Lib.MAX_STRING_CHARS;
-import neo.idlib.Lib.idException;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
 import static neo.sys.win_input.Sys_MapCharForKey;
+
+import neo.TempDump.void_callback;
+import neo.framework.CmdSystem.argCompletion_t;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.framework.File_h.idFile;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Lib.idException;
+import neo.idlib.Text.Str.idStr;
 
 /**
  *

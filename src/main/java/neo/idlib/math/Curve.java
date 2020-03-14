@@ -1,12 +1,12 @@
 package neo.idlib.math;
 
+import java.util.Arrays;
+
 import neo.TempDump;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMatX;
 import neo.idlib.math.Vector.idVecX;
-
-import java.util.Arrays;
+import neo.idlib.math.Matrix.idMatX;
 
 /**
  *

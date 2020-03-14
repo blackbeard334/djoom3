@@ -1,7 +1,6 @@
 package neo.Tools.Compilers.RoqVQ;
 
 import static java.lang.Math.abs;
-import java.util.Scanner;
 import static neo.TempDump.atoi;
 import static neo.TempDump.ctos;
 import static neo.TempDump.strLen;
@@ -9,9 +8,12 @@ import static neo.framework.Common.common;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
+import static neo.idlib.Text.Str.va;
+
+import java.util.Scanner;
+
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.StrList.idStrList;
 

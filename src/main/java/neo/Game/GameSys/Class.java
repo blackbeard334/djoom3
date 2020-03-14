@@ -1,51 +1,46 @@
 package neo.Game.GameSys;
 
 import static neo.Game.Entity.EV_Activate;
-
-import neo.CM.CollisionModel;
-import neo.CM.CollisionModel.trace_s;
-import neo.Game.AI.AI.idAI;
-import neo.Game.Entity.idEntity;
 import static neo.Game.GameSys.Class.idEventArg.toArg;
 import static neo.Game.GameSys.Event.D_EVENT_ENTITY;
 import static neo.Game.GameSys.Event.D_EVENT_FLOAT;
 import static neo.Game.GameSys.Event.D_EVENT_INTEGER;
 import static neo.Game.GameSys.Event.D_EVENT_MAXARGS;
+import static neo.Game.GameSys.Event.D_EVENT_STRING;
+import static neo.Game.GameSys.Event.D_EVENT_TRACE;
+import static neo.Game.GameSys.Event.D_EVENT_VECTOR;
+import static neo.Game.GameSys.SysCvar.g_debugTriggers;
+import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Game_local.gameState_t.GAMESTATE_STARTUP;
+import static neo.TempDump.NOT;
+import static neo.TempDump.sizeof;
+import static neo.idlib.math.Math_h.SEC2MS;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import neo.TempDump;
+import neo.TempDump.Deprecation_Exception;
+import neo.TempDump.TODO_Exception;
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.Entity.idEntity;
+import neo.Game.Projectile.idBFGProjectile;
+import neo.Game.Projectile.idProjectile;
+import neo.Game.Target.idTarget_Remove;
+import neo.Game.Trigger.idTrigger_Multi;
+import neo.Game.AI.AI.idAI;
 import neo.Game.GameSys.Event.idEvent;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
-
-import static neo.Game.GameSys.Event.D_EVENT_STRING;
-import static neo.Game.GameSys.Event.D_EVENT_TRACE;
-import static neo.Game.GameSys.Event.D_EVENT_VECTOR;
-import static neo.Game.GameSys.Event.D_EVENT_VOID;
-import static neo.Game.GameSys.SysCvar.g_debugTriggers;
-import static neo.Game.Game_local.gameLocal;
-import static neo.Game.Game_local.gameState_t.GAMESTATE_STARTUP;
-import neo.Game.Projectile.idBFGProjectile;
-import neo.Game.Projectile.idProjectile;
 import neo.Game.Script.Script_Thread.idThread;
-import neo.Game.Target.idTarget_Remove;
-import neo.Game.Trigger.idTrigger_Multi;
-import neo.TempDump;
-import neo.TempDump.Deprecation_Exception;
-import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
-import static neo.TempDump.sizeof;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.Hierarchy.idHierarchy;
 import neo.idlib.containers.List.idList;
-import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *

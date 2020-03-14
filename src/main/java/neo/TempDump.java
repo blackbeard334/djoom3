@@ -1,5 +1,9 @@
 package neo;
 
+import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
+import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
+import static neo.Renderer.RenderWorld.MAX_RENDERENTITY_GUI;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -21,29 +25,29 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
+
 import com.rits.cloning.Cloner;
+
 import neo.Game.Entity.idEntity;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.idRenderModel;
-import static neo.Renderer.RenderWorld.MAX_GLOBAL_SHADER_PARMS;
-import static neo.Renderer.RenderWorld.MAX_RENDERENTITY_GUI;
 import neo.Renderer.RenderWorld.deferredEntityCallback_t;
 import neo.Renderer.RenderWorld.renderView_s;
 import neo.Sound.sound.idSoundEmitter;
 import neo.framework.DeclSkin.idDeclSkin;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idException;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.LinkList.idLinkList;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Curve;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 import neo.ui.UserInterface.idUserInterface;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
 
 /**
  *

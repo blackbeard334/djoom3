@@ -1,22 +1,22 @@
 package neo.Renderer;
 
-import neo.Renderer.GuiModel.guiModelSurface_t;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.RenderSystem.R_AddDrawViewCmd;
 import static neo.Renderer.RenderSystem.SCREEN_HEIGHT;
 import static neo.Renderer.RenderSystem.SCREEN_WIDTH;
-import neo.Renderer.RenderWorld.renderEntity_s;
 import static neo.Renderer.VertexCache.vertexCache;
 import static neo.Renderer.tr_light.R_AddDrawSurf;
-import neo.Renderer.tr_local.drawSurf_s;
 import static neo.Renderer.tr_local.glConfig;
 import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_local.viewDef_s;
-import neo.Renderer.tr_local.viewEntity_s;
 import static neo.Renderer.tr_main.myGlMultMatrix;
 import static neo.TempDump.NOT;
 import static neo.framework.DeclManager.declManager;
+
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.Renderer.tr_local.viewDef_s;
+import neo.Renderer.tr_local.viewEntity_s;
 import neo.framework.DemoFile.idDemoFile;
 import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;

@@ -1,23 +1,25 @@
 package neo.idlib.BV;
 
-import java.util.Objects;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.BV.Sphere.idSphere;
 import static neo.idlib.math.Math_h.FLOATNOTZERO;
 import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
 import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 import static neo.idlib.math.Math_h.Min3Index;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Matrix.idMatX;
 import static neo.idlib.math.Plane.ON_EPSILON;
 import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
+
+import java.util.Objects;
+
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.BV.Sphere.idSphere;
+import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVecX;
+import neo.idlib.math.Matrix.idMat3;
+import neo.idlib.math.Matrix.idMatX;
 
 /**
  *

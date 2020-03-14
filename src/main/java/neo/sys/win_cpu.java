@@ -1,13 +1,6 @@
 package neo.sys;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
-
 import static neo.TempDump.atoi;
 import static neo.framework.BuildDefines._WIN32;
 import static neo.sys.sys_public.CPUID_3DNOW;
@@ -22,6 +15,14 @@ import static neo.sys.sys_public.CPUID_SSE;
 import static neo.sys.sys_public.CPUID_SSE2;
 import static neo.sys.sys_public.CPUID_SSE3;
 import static neo.sys.sys_public.CPUID_UNSUPPORTED;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import neo.TempDump.TODO_Exception;
 
 /**
  *

@@ -1,26 +1,27 @@
 package neo.idlib.BV;
 
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.BV.Box.idBox;
-import neo.idlib.BV.Sphere.idSphere;
-import neo.idlib.Lib;
 import static neo.idlib.Lib.Max;
 import static neo.idlib.Lib.Min;
 import static neo.idlib.containers.List.idSwap;
-import neo.idlib.geometry.Winding.idWinding;
 import static neo.idlib.math.Math_h.FLOATNOTZERO;
 import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
 import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
 import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import static neo.idlib.math.Plane.ON_EPSILON;
 import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
-import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Vector.getVec3_origin;
+
+import neo.idlib.Lib;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.BV.Box.idBox;
+import neo.idlib.BV.Sphere.idSphere;
+import neo.idlib.geometry.Winding.idWinding;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

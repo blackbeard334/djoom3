@@ -1,22 +1,22 @@
 package neo.Renderer;
 
-import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.tr_local.drawSurf_s;
-
 import static neo.Renderer.RenderSystem_init.r_skipGuiShaders;
 import static neo.Renderer.tr_local.tr;
 import static neo.Renderer.tr_main.myGlMultMatrix;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.Common.common;
+import static neo.idlib.math.Vector.VectorMA;
+import static neo.idlib.math.Vector.VectorSubtract;
+import static neo.ui.UserInterface.uiManager;
+
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.VectorMA;
-import static neo.idlib.math.Vector.VectorSubtract;
 import neo.idlib.math.Vector.idVec3;
 import neo.ui.UserInterface.idUserInterface;
-import static neo.ui.UserInterface.uiManager;
 
 /**
  *

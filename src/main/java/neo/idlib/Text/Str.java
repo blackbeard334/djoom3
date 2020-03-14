@@ -1,15 +1,17 @@
 package neo.idlib.Text;
 
+import static neo.TempDump.ctos;
+import static neo.TempDump.isNotNullOrEmpty;
+import static neo.TempDump.strLen;
+
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.util.Objects;
+
 import neo.TempDump.CPP_class.Char;
 import neo.TempDump.CPP_class.Pointer;
 import neo.TempDump.SERiAL;
 import neo.TempDump.TODO_Exception;
-import static neo.TempDump.ctos;
-import static neo.TempDump.isNotNullOrEmpty;
-import static neo.TempDump.strLen;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Lib.idLib;

@@ -3,6 +3,19 @@ package neo.Game;
 import static neo.Game.Entity.EV_Activate;
 import static neo.Game.Entity.TH_THINK;
 import static neo.Game.Entity.TH_UPDATEVISUALS;
+import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_ANY;
+import static neo.TempDump.etoi;
+import static neo.framework.Common.EDITOR_SOUND;
+import static neo.framework.Common.common;
+import static neo.framework.DeclManager.declManager;
+import static neo.idlib.Lib.BIT;
+import static neo.idlib.math.Angles.getAng_zero;
+import static neo.idlib.math.Vector.getVec3_zero;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import neo.Game.Entity.idEntity;
 import neo.Game.GameSys.Class;
 import neo.Game.GameSys.Class.eventCallback_t;
@@ -12,24 +25,12 @@ import neo.Game.GameSys.Class.idEventArg;
 import neo.Game.GameSys.Event.idEventDef;
 import neo.Game.GameSys.SaveGame.idRestoreGame;
 import neo.Game.GameSys.SaveGame.idSaveGame;
-import static neo.Game.Game_local.gameLocal;
-import static neo.Game.Game_local.gameSoundChannel_t.SND_CHANNEL_ANY;
 import neo.Sound.snd_shader.idSoundShader;
 import neo.Sound.sound.idSoundEmitter;
-import static neo.TempDump.etoi;
-import static neo.framework.Common.EDITOR_SOUND;
-import static neo.framework.Common.common;
-import static neo.framework.DeclManager.declManager;
 import neo.idlib.Dict_h.idDict;
-import static neo.idlib.Lib.BIT;
-import static neo.idlib.math.Angles.getAng_zero;
 import neo.idlib.math.Angles.idAngles;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Vector.getVec3_zero;
 import neo.idlib.math.Vector.idVec3;
-
-import java.util.HashMap;
-import java.util.Map;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

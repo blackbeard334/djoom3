@@ -1,19 +1,10 @@
 package neo.Game.Physics;
 
-import neo.CM.CollisionModel.trace_s;
-import neo.Game.Actor.idActor;
 import static neo.Game.Entity.TH_PHYSICS;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.Game_local.ENTITYNUM_NONE;
 import static neo.Game.Game_local.ENTITYNUM_WORLD;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Physics.Physics.CONTACT_EPSILON;
-
-import neo.Game.Game_local.idEntityPtr;
-import neo.Game.Physics.Physics.impactInfo_s;
-import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
 import static neo.Game.Physics.Physics_Monster.monsterMoveResult_t.MM_BLOCKED;
 import static neo.Game.Physics.Physics_Monster.monsterMoveResult_t.MM_FALLING;
 import static neo.Game.Physics.Physics_Monster.monsterMoveResult_t.MM_OK;
@@ -21,14 +12,23 @@ import static neo.Game.Physics.Physics_Monster.monsterMoveResult_t.MM_SLIDING;
 import static neo.Game.Physics.Physics_Monster.monsterMoveResult_t.MM_STEPPED;
 import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
-import neo.idlib.BitMsg.idBitMsgDelta;
 import static neo.idlib.math.Math_h.MS2SEC;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.getVec3_origin;
 import static neo.idlib.math.Vector.getVec3_zero;
+
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.Actor.idActor;
+import neo.Game.Entity.idEntity;
+import neo.Game.Game_local.idEntityPtr;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Physics.Physics.impactInfo_s;
+import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
+import neo.idlib.BitMsg.idBitMsgDelta;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

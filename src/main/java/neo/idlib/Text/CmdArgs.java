@@ -1,9 +1,5 @@
 package neo.idlib.Text;
 
-import java.util.Arrays;
-import neo.idlib.Lib;
-import neo.idlib.Lib.idException;
-import neo.idlib.Lib.idLib;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWIPADDRESSES;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOERRORS;
@@ -11,12 +7,18 @@ import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
 import static neo.idlib.Text.Lexer.LEXFL_NOWARNINGS;
 import static neo.idlib.Text.Lexer.LEXFL_ONLYSTRINGS;
-import neo.idlib.Text.Lexer.idLexer;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Token.TT_NUMBER;
-import neo.idlib.Text.Token.idToken;
 import static neo.idlib.math.Lcp.clam;
 import static neo.idlib.math.Lcp.unClam;
+
+import java.util.Arrays;
+
+import neo.idlib.Lib;
+import neo.idlib.Lib.idException;
+import neo.idlib.Lib.idLib;
+import neo.idlib.Text.Lexer.idLexer;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.Text.Token.idToken;
 
 /**
  *

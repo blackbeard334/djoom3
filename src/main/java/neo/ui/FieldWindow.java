@@ -1,12 +1,13 @@
 package neo.ui;
 
 import static neo.TempDump.itob;
+import static neo.ui.Window.WIN_FOCUS;
+
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.UserInterfaceLocal.idUserInterfaceLocal;
-import static neo.ui.Window.WIN_FOCUS;
 import neo.ui.Window.idWindow;
 
 /**

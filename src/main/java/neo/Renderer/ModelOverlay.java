@@ -1,11 +1,6 @@
 package neo.Renderer;
 
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.Model.dynamicModel_t.DM_STATIC;
-import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.Model_local.idRenderModelStatic;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
@@ -13,10 +8,16 @@ import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
 import static neo.Renderer.tr_trisurf.R_FreeStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_FreeStaticTriSurfVertexCaches;
 import static neo.framework.Common.common;
+import static neo.idlib.math.Simd.SIMDProcessor;
+
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.Model_local.idRenderModelStatic;
 import neo.framework.DemoFile.idDemoFile;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Simd.SIMDProcessor;
 import neo.idlib.math.Vector.idVec2;
 
 /**

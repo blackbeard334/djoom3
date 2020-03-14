@@ -1,22 +1,12 @@
 package neo.Tools.Compilers.DMap;
 
 import static java.lang.Math.floor;
-import neo.Game.GameEdit;
 import static neo.Renderer.Material.CONTENTS_AREAPORTAL;
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.Material.materialCoverage_t.MC_OPAQUE;
 import static neo.Renderer.tr_lightrun.R_DeriveLightData;
 import static neo.Renderer.tr_lightrun.R_FreeLightDefDerivedData;
 import static neo.TempDump.NOT;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
-import neo.Tools.Compilers.DMap.dmap.mapLight_t;
-import neo.Tools.Compilers.DMap.dmap.mapTri_s;
-import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
-import neo.Tools.Compilers.DMap.dmap.primitive_s;
-import neo.Tools.Compilers.DMap.dmap.side_s;
-import neo.Tools.Compilers.DMap.dmap.uArea_t;
-import neo.Tools.Compilers.DMap.dmap.uBrush_t;
-import neo.Tools.Compilers.DMap.dmap.uEntity_t;
 import static neo.Tools.Compilers.DMap.facebsp.FreeTree;
 import static neo.Tools.Compilers.DMap.tritools.AllocTri;
 import static neo.Tools.Compilers.DMap.tritools.FreeTriList;
@@ -25,20 +15,31 @@ import static neo.Tools.Compilers.DMap.ubrush.CreateBrushWindings;
 import static neo.Tools.Compilers.DMap.ubrush.c_active_brushes;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.MapFile.DEFAULT_CURVE_MAX_ERROR;
 import static neo.idlib.MapFile.DEFAULT_CURVE_MAX_LENGTH;
+import static neo.idlib.math.Vector.DotProduct;
+
+import neo.Game.GameEdit;
+import neo.Renderer.Material.idMaterial;
+import neo.Tools.Compilers.DMap.dmap.mapLight_t;
+import neo.Tools.Compilers.DMap.dmap.mapTri_s;
+import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
+import neo.Tools.Compilers.DMap.dmap.primitive_s;
+import neo.Tools.Compilers.DMap.dmap.side_s;
+import neo.Tools.Compilers.DMap.dmap.uArea_t;
+import neo.Tools.Compilers.DMap.dmap.uBrush_t;
+import neo.Tools.Compilers.DMap.dmap.uEntity_t;
 import neo.idlib.MapFile.idMapBrush;
 import neo.idlib.MapFile.idMapBrushSide;
 import neo.idlib.MapFile.idMapEntity;
 import neo.idlib.MapFile.idMapFile;
 import neo.idlib.MapFile.idMapPatch;
 import neo.idlib.MapFile.idMapPrimitive;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.Surface.idSurface;
 import neo.idlib.geometry.Surface_Patch.idSurface_Patch;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.DotProduct;
 
 /**
  *

@@ -1,12 +1,17 @@
 package neo.idlib.math;
 
+import static neo.TempDump.btoi;
+import static neo.TempDump.fbtofa;
+import static neo.sys.sys_public.CPUID_GENERIC;
+import static neo.sys.sys_public.CPUID_NONE;
+
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 
+import neo.TempDump.TODO_Exception;
 import neo.Game.Animation.Anim_Blend.idAnimBlend;
 import neo.Renderer.Model.dominantTri_s;
 import neo.Renderer.Model.shadowCache_s;
-import neo.TempDump.TODO_Exception;
 import neo.framework.CmdSystem;
 import neo.framework.CmdSystem.cmdFunction_t;
 import neo.idlib.CmdArgs.idCmdArgs;
@@ -15,18 +20,13 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.JointTransform.idJointQuat;
-import neo.idlib.math.Matrix.idMatX;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Simd_Generic.idSIMD_Generic;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.idlib.math.Vector.idVecX;
-
-import static neo.TempDump.btoi;
-import static neo.TempDump.fbtofa;
-import static neo.sys.sys_public.CPUID_GENERIC;
-import static neo.sys.sys_public.CPUID_NONE;
+import neo.idlib.math.Matrix.idMatX;
 
 /**
  *

@@ -1,6 +1,7 @@
 package neo.CM;
 
 import static neo.CM.CollisionModel.CM_CLIP_EPSILON;
+
 import neo.idlib.math.Vector.idVec3;
 
 /**

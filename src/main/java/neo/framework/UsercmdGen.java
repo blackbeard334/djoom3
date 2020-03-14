@@ -1,23 +1,5 @@
 package neo.framework;
 
-import neo.TempDump.SERiAL;
-import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
-import neo.framework.CVarSystem.idCVar;
-import neo.framework.CmdSystem.idCmdSystem;
-import neo.framework.KeyInput.idKeyInput;
-import neo.idlib.Lib.idException;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Vector.idVec3;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
-import org.lwjgl.glfw.GLFWScrollCallback;
-
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
-import static neo.TempDump.TODO_Exception;
 import static neo.TempDump.btoi;
 import static neo.TempDump.etoi;
 import static neo.framework.CVarSystem.CVAR_ARCHIVE;
@@ -139,6 +121,25 @@ import static neo.sys.win_input.Sys_ReturnKeyboardInputEvent;
 import static neo.sys.win_main.Sys_DebugPrintf;
 import static neo.sys.win_main.Sys_QueEvent;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
+
+import neo.TempDump.SERiAL;
+import neo.TempDump.TODO_Exception;
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.CmdSystem.idCmdSystem;
+import neo.framework.KeyInput.idKeyInput;
+import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
+import neo.idlib.Lib.idException;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

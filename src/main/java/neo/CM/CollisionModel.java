@@ -1,20 +1,22 @@
 package neo.CM;
 
+import static neo.idlib.Text.Str.idStr.parseStr;
+
 import java.nio.ByteBuffer;
+
+import neo.TempDump.SERiAL;
 import neo.CM.CollisionModel_local.cm_polygon_s;
 import neo.Renderer.Material.idMaterial;
-import neo.TempDump.SERiAL;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.MapFile.idMapEntity;
 import neo.idlib.MapFile.idMapFile;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.idStr.parseStr;
 import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.geometry.Winding.idFixedWinding;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec6;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

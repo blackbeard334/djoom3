@@ -1,14 +1,15 @@
 package neo.Renderer;
 
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfIndexes;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
 import static neo.framework.Common.common;
+import static neo.idlib.math.Plane.ON_EPSILON;
+
+import neo.Renderer.Model.srfTriangles_s;
 import neo.idlib.Lib.idException;
 import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.geometry.Winding.idWinding;
-import static neo.idlib.math.Plane.ON_EPSILON;
 import neo.idlib.math.Plane.idPlane;
 
 /**

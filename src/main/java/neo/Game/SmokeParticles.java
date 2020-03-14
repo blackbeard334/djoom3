@@ -1,31 +1,30 @@
 package neo.Game;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.stream.Stream;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Game_local.gameRenderWorld;
-import neo.Game.SmokeParticles.activeSmokeStage_t;
-import neo.Game.SmokeParticles.idSmokeParticles;
-import neo.Game.SmokeParticles.singleSmoke_t;
-import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.ModelManager.renderModelManager;
 import static neo.Renderer.RenderWorld.SHADERPARM_BLUE;
 import static neo.Renderer.RenderWorld.SHADERPARM_GREEN;
 import static neo.Renderer.RenderWorld.SHADERPARM_RED;
+import static neo.framework.UsercmdGen.USERCMD_MSEC;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.RenderWorld.deferredEntityCallback_t;
 import neo.Renderer.RenderWorld.renderEntity_s;
 import neo.Renderer.RenderWorld.renderView_s;
 import neo.framework.DeclParticle.idDeclParticle;
 import neo.framework.DeclParticle.idParticleStage;
 import neo.framework.DeclParticle.particleGen_t;
-import static neo.framework.UsercmdGen.USERCMD_MSEC;
 import neo.idlib.containers.List.idList;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

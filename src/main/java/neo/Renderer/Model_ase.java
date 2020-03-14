@@ -1,15 +1,13 @@
 package neo.Renderer;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import neo.Renderer.Model_ase.aseFace_t;
-import neo.Renderer.Model_ase.aseMaterial_t;
-import neo.Renderer.Model_ase.aseMesh_t;
-import neo.Renderer.Model_ase.aseObject_t;
 import static neo.TempDump.bbtocb;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec2;

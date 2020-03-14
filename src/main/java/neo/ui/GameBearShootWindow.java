@@ -1,25 +1,26 @@
 package neo.ui;
 
 import static neo.Renderer.Material.SS_GUI;
-import neo.Renderer.Material.idMaterial;
 import static neo.framework.CVarSystem.CVAR_FLOAT;
-import neo.framework.CVarSystem.idCVar;
 import static neo.framework.DeclManager.declManager;
-import neo.framework.File_h.idFile;
 import static neo.framework.KeyInput.K_MOUSE1;
 import static neo.framework.Session.session;
 import static neo.idlib.Lib.colorWhite;
-import neo.idlib.Text.Parser.idParser;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
-import neo.idlib.containers.List.idList;
 import static neo.idlib.math.Math_h.DEG2RAD;
 import static neo.idlib.math.Math_h.RAD2DEG;
+import static neo.sys.sys_public.sysEventType_t.SE_KEY;
+
+import neo.Renderer.Material.idMaterial;
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.File_h.idFile;
+import neo.idlib.Text.Parser.idParser;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec2;
 import neo.idlib.math.Vector.idVec4;
-import static neo.sys.sys_public.sysEventType_t.SE_KEY;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.SimpleWindow.drawWin_t;

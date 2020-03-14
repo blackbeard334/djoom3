@@ -1,17 +1,17 @@
 package neo.idlib.BV;
 
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Rotation.idRotation;
-import neo.idlib.math.Vector.idVec3;
-
-import java.util.Objects;
-
 import static neo.idlib.math.Plane.ON_EPSILON;
 import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Simd.SIMDProcessor;
+
+import java.util.Objects;
+
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Rotation.idRotation;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

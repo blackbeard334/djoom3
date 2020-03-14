@@ -1,31 +1,35 @@
 package neo.ui;
 
-import java.nio.ByteBuffer;
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.RenderSystem_init.r_skipGuiShaders;
 import static neo.TempDump.sizeof;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DeclManager.declType_t.DECL_MATERIAL;
-
-import neo.framework.DemoFile.idDemoFile;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.framework.File_h.idFile;
-import neo.framework.KeyInput.idKeyInput;
-import neo.idlib.Dict_h.idDict;
-import neo.idlib.Dict_h.idKeyValue;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWBACKSLASHSTRINGCONCAT;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWMULTICHARLITERALS;
 import static neo.idlib.Text.Lexer.LEXFL_NOFATALERRORS;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
+import static neo.idlib.Text.Str.va;
+import static neo.sys.sys_public.sysEventType_t.SE_KEY;
+import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
+import static neo.ui.UserInterface.uiManagerLocal;
+import static neo.ui.Window.WIN_DESKTOP;
+import static neo.ui.Window.WIN_MENUGUI;
+
+import java.nio.ByteBuffer;
+
+import neo.Renderer.Material.idMaterial;
+import neo.framework.DemoFile.idDemoFile;
+import neo.framework.File_h.idFile;
+import neo.framework.KeyInput.idKeyInput;
+import neo.idlib.Dict_h.idDict;
+import neo.idlib.Dict_h.idKeyValue;
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
-import static neo.idlib.Text.Str.va;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Vector.idVec4;
-import static neo.sys.sys_public.sysEventType_t.SE_KEY;
-import static neo.sys.sys_public.sysEventType_t.SE_MOUSE;
 import neo.sys.sys_public.sysEvent_s;
 import neo.ui.DeviceContext.idDeviceContext;
 import neo.ui.ListGUI.idListGUI;
@@ -33,9 +37,6 @@ import neo.ui.ListGUILocal.idListGUILocal;
 import neo.ui.Rectangle.idRectangle;
 import neo.ui.UserInterface.idUserInterface;
 import neo.ui.UserInterface.idUserInterface.idUserInterfaceManager;
-import static neo.ui.UserInterface.uiManagerLocal;
-import static neo.ui.Window.WIN_DESKTOP;
-import static neo.ui.Window.WIN_MENUGUI;
 import neo.ui.Window.idWindow;
 import neo.ui.Winvar.idWinStr;
 import neo.ui.Winvar.idWinVar;

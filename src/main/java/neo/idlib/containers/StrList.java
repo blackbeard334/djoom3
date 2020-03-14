@@ -3,7 +3,6 @@ package neo.idlib.containers;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.cmp_t;
 import neo.idlib.containers.List.idList;
-import neo.idlib.containers.StrList.idStrPtr;
 
 /**
  *

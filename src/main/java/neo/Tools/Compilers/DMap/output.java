@@ -1,6 +1,5 @@
 package neo.Tools.Compilers.DMap;
 
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.RenderWorld.PROC_FILE_EXT;
 import static neo.Renderer.RenderWorld.PROC_FILE_ID;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
@@ -15,15 +14,8 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.Tools.Compilers.DMap.dmap.PLANENUM_LEAF;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
-import neo.Tools.Compilers.DMap.dmap.mapLight_t;
-import neo.Tools.Compilers.DMap.dmap.mapTri_s;
-import neo.Tools.Compilers.DMap.dmap.node_s;
-import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
-import neo.Tools.Compilers.DMap.dmap.uArea_t;
-import neo.Tools.Compilers.DMap.dmap.uEntity_t;
 import static neo.Tools.Compilers.DMap.facebsp.FreeTreePortals_r;
 import static neo.Tools.Compilers.DMap.facebsp.FreeTree_r;
-import neo.Tools.Compilers.DMap.portals.interAreaPortal_t;
 import static neo.Tools.Compilers.DMap.portals.interAreaPortals;
 import static neo.Tools.Compilers.DMap.portals.numInterAreaPortals;
 import static neo.Tools.Compilers.DMap.tritools.CopyTriList;
@@ -32,13 +24,22 @@ import static neo.Tools.Compilers.DMap.tritools.FreeTriList;
 import static neo.Tools.Compilers.DMap.tritools.MergeTriLists;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
+import static neo.idlib.math.Vector.DotProduct;
+
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Tools.Compilers.DMap.dmap.mapLight_t;
+import neo.Tools.Compilers.DMap.dmap.mapTri_s;
+import neo.Tools.Compilers.DMap.dmap.node_s;
+import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
+import neo.Tools.Compilers.DMap.dmap.uArea_t;
+import neo.Tools.Compilers.DMap.dmap.uEntity_t;
+import neo.Tools.Compilers.DMap.portals.interAreaPortal_t;
 import neo.framework.File_h.idFile;
 import neo.idlib.MapFile.idMapEntity;
 import neo.idlib.geometry.DrawVert.idDrawVert;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.DotProduct;
 
 /**
  *

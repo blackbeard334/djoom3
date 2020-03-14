@@ -1,5 +1,21 @@
 package neo.Renderer;
 
+import static neo.Renderer.Image.MAX_IMAGE_NAME;
+import static neo.Renderer.Image.globalImages;
+import static neo.Renderer.Image.cubeFiles_t.CF_CAMERA;
+import static neo.Renderer.Image_process.R_HorizontalFlip;
+import static neo.Renderer.Image_process.R_ResampleTexture;
+import static neo.Renderer.Image_process.R_RotatePic;
+import static neo.Renderer.Image_process.R_VerticalFlip;
+import static neo.Renderer.Image_program.R_LoadImageProgram;
+import static neo.TempDump.NOT;
+import static neo.TempDump.ctos;
+import static neo.framework.FileSystem_h.FILE_NOT_FOUND_TIMESTAMP;
+import static neo.framework.FileSystem_h.fileSystem;
+import static neo.idlib.Lib.LittleLong;
+import static neo.idlib.Lib.LittleShort;
+import static neo.idlib.Lib.idLib.common;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
@@ -8,27 +24,15 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
-import static neo.Renderer.Image.MAX_IMAGE_NAME;
-import neo.Renderer.Image.cubeFiles_t;
-import static neo.Renderer.Image.cubeFiles_t.CF_CAMERA;
-import static neo.Renderer.Image.globalImages;
-import static neo.Renderer.Image_process.R_HorizontalFlip;
-import static neo.Renderer.Image_process.R_ResampleTexture;
-import static neo.Renderer.Image_process.R_RotatePic;
-import static neo.Renderer.Image_process.R_VerticalFlip;
-import static neo.Renderer.Image_program.R_LoadImageProgram;
-import static neo.TempDump.NOT;
-import neo.TempDump.TODO_Exception;
-import static neo.TempDump.ctos;
-import static neo.framework.FileSystem_h.FILE_NOT_FOUND_TIMESTAMP;
-import static neo.framework.FileSystem_h.fileSystem;
-import neo.framework.File_h.idFile;
-import static neo.idlib.Lib.LittleLong;
-import static neo.idlib.Lib.LittleShort;
-import static neo.idlib.Lib.idLib.common;
-import neo.idlib.Text.Str.idStr;
+
 import org.lwjgl.BufferUtils;
+
+import neo.TempDump.TODO_Exception;
+import neo.Renderer.Image.cubeFiles_t;
+import neo.framework.File_h.idFile;
+import neo.idlib.Text.Str.idStr;
 
 /**
  *

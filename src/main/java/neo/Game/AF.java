@@ -1,24 +1,36 @@
 package neo.Game;
 
-import java.util.Scanner;
-import java.util.stream.Stream;
-import neo.CM.CollisionModel.trace_s;
-import neo.Game.Animation.Anim.AFJointModType_t;
 import static neo.Game.Animation.Anim.AFJointModType_t.AF_JOINTMOD_AXIS;
 import static neo.Game.Animation.Anim.AFJointModType_t.AF_JOINTMOD_BOTH;
 import static neo.Game.Animation.Anim.AFJointModType_t.AF_JOINTMOD_ORIGIN;
-import neo.Game.Animation.Anim_Blend.idAnimator;
-import neo.Game.Animation.Anim_Blend.idDeclModelDef;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.Class.idClass;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
-
-import static neo.Game.GameEdit.*;
+import static neo.Game.GameEdit.gameEdit;
 import static neo.Game.GameSys.SysCvar.af_testSolid;
 import static neo.Game.Game_local.MAX_GENTITIES;
 import static neo.Game.Game_local.gameLocal;
 import static neo.Game.Physics.Clip.CLIPMODEL_ID_TO_JOINT_HANDLE;
+import static neo.Renderer.Model.INVALID_JOINT;
+import static neo.TempDump.NOT;
+import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_AXIS;
+import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_BOTH;
+import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_ORIGIN;
+import static neo.framework.DeclManager.declManager;
+import static neo.framework.DeclManager.declState_t.DS_DEFAULTED;
+import static neo.framework.DeclManager.declType_t.DECL_AF;
+import static neo.idlib.math.Math_h.MS2SEC;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import java.util.Scanner;
+import java.util.stream.Stream;
+
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.Entity.idEntity;
+import neo.Game.Animation.Anim.AFJointModType_t;
+import neo.Game.Animation.Anim_Blend.idAnimator;
+import neo.Game.Animation.Anim_Blend.idDeclModelDef;
+import neo.Game.GameSys.Class.idClass;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
 import neo.Game.Physics.Clip.idClipModel;
 import neo.Game.Physics.Physics.impactInfo_s;
 import neo.Game.Physics.Physics_AF.idAFBody;
@@ -30,23 +42,15 @@ import neo.Game.Physics.Physics_AF.idAFConstraint_Slider;
 import neo.Game.Physics.Physics_AF.idAFConstraint_Spring;
 import neo.Game.Physics.Physics_AF.idAFConstraint_UniversalJoint;
 import neo.Game.Physics.Physics_AF.idPhysics_AF;
-import static neo.Renderer.Model.INVALID_JOINT;
 import neo.Renderer.Model.idRenderModel;
 import neo.Renderer.RenderWorld.renderEntity_s;
-import static neo.TempDump.NOT;
-import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_AXIS;
-import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_BOTH;
-import static neo.framework.DeclAF.declAFJointMod_t.DECLAF_JOINTMOD_ORIGIN;
 import neo.framework.DeclAF.getJointTransform_t;
 import neo.framework.DeclAF.idDeclAF;
 import neo.framework.DeclAF.idDeclAF_Body;
 import neo.framework.DeclAF.idDeclAF_Constraint;
-import static neo.framework.DeclManager.declManager;
-import static neo.framework.DeclManager.declState_t.DS_DEFAULTED;
-import static neo.framework.DeclManager.declType_t.DECL_AF;
-import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.Dict_h.idKeyValue;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
@@ -54,13 +58,10 @@ import neo.idlib.containers.List.idList;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.TraceModel.idTraceModel;
 import neo.idlib.math.Angles.idAngles;
-import static neo.idlib.math.Math_h.MS2SEC;
 import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

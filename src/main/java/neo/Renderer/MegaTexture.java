@@ -1,45 +1,46 @@
 package neo.Renderer;
 
-import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.Arrays;
-import neo.Renderer.Image.GeneratorFunction;
 import static neo.Renderer.Image.globalImages;
-import neo.Renderer.Image.idImage;
 import static neo.Renderer.Image.textureDepth_t.TD_HIGH_QUALITY;
 import static neo.Renderer.Image_files.R_WriteTGA;
 import static neo.Renderer.Material.textureFilter_t.TF_DEFAULT;
 import static neo.Renderer.Material.textureRepeat_t.TR_REPEAT;
 import static neo.Renderer.MegaTexture.megaTextureHeader_t.ReadDdsFileHeader_t;
 import static neo.Renderer.MegaTexture.megaTextureHeader_t.WriteDdsFileHeader_t;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.qgl.qglProgramLocalParameter4fvARB;
 import static neo.Renderer.qgl.qglTexSubImage2D;
 import static neo.Renderer.tr_backend.GL_SelectTexture;
-import neo.TempDump.CPP_class.Pointer;
-
 import static neo.framework.CVarSystem.CVAR_BOOL;
 import static neo.framework.CVarSystem.CVAR_INTEGER;
 import static neo.framework.CVarSystem.CVAR_RENDERER;
-import neo.framework.CVarSystem.idCVar;
-import neo.framework.CmdSystem.cmdFunction_t;
 import static neo.framework.Common.common;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_CUR;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
-import neo.framework.File_h.idFile;
-
 import static neo.framework.Session.session;
-import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.geometry.DrawVert.idDrawVert;
-import neo.idlib.math.Vector.idVec3;
-import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.Arrays;
+
+import org.lwjgl.BufferUtils;
+
+import neo.TempDump.CPP_class.Pointer;
+import neo.Renderer.Image.GeneratorFunction;
+import neo.Renderer.Image.idImage;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.framework.CVarSystem.idCVar;
+import neo.framework.CmdSystem.cmdFunction_t;
+import neo.framework.File_h.idFile;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

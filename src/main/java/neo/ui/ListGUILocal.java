@@ -1,8 +1,9 @@
 package neo.ui;
 
 import static neo.framework.Common.com_frameTime;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Str.va;
+
+import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.ui.ListGUI.idListGUI;
 import neo.ui.UserInterface.idUserInterface;

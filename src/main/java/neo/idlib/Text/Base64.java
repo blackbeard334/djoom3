@@ -1,9 +1,11 @@
 package neo.idlib.Text;
 
-import java.nio.ByteBuffer;
-import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.IntForSixtets;
 import static neo.idlib.Lib.SixtetsForInt;
+
+import java.nio.ByteBuffer;
+
+import neo.framework.File_h.idFile;
 import neo.idlib.Text.Str.idStr;
 
 /**

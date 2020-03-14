@@ -1,16 +1,13 @@
 package neo.framework;
 
-import neo.Renderer.Material.idMaterial;
 import static neo.Renderer.RenderSystem.SMALLCHAR_WIDTH;
 import static neo.Renderer.RenderSystem.renderSystem;
 import static neo.TempDump.ctos;
 import static neo.TempDump.strLen;
-import neo.TempDump.void_callback;
 import static neo.framework.CVarSystem.cvarSystem;
 import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.com_ticNumber;
 import static neo.framework.Common.common;
-import neo.framework.EditField.FindMatches;
 import static neo.framework.KeyInput.K_ALT;
 import static neo.framework.KeyInput.K_BACKSPACE;
 import static neo.framework.KeyInput.K_CAPSLOCK;
@@ -23,13 +20,16 @@ import static neo.framework.KeyInput.K_KP_INS;
 import static neo.framework.KeyInput.K_LEFTARROW;
 import static neo.framework.KeyInput.K_RIGHTARROW;
 import static neo.framework.KeyInput.K_SHIFT;
+import static neo.idlib.Lib.colorWhite;
+import static neo.idlib.Text.Str.S_COLOR_WHITE;
+import static neo.sys.win_main.Sys_GetClipboardData;
+
+import neo.TempDump.void_callback;
+import neo.Renderer.Material.idMaterial;
 import neo.framework.KeyInput.idKeyInput;
 import neo.idlib.CmdArgs.idCmdArgs;
-import static neo.idlib.Lib.colorWhite;
 import neo.idlib.Lib.idException;
-import static neo.idlib.Text.Str.S_COLOR_WHITE;
 import neo.idlib.Text.Str.idStr;
-import static neo.sys.win_main.Sys_GetClipboardData;
 
 /**
  *

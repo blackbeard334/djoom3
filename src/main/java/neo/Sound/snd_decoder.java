@@ -1,19 +1,5 @@
 package neo.Sound;
 
-import neo.Sound.snd_cache.idSoundSample;
-import neo.Sound.snd_local.idSampleDecoder;
-import neo.TempDump.TODO_Exception;
-import neo.framework.File_h.idFile_Memory;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.PointerBuffer;
-import org.lwjgl.stb.STBVorbis;
-
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
 import static neo.Sound.snd_system.soundSystemLocal;
@@ -42,6 +28,21 @@ import static org.lwjgl.stb.STBVorbis.VORBIS_seek_invalid;
 import static org.lwjgl.stb.STBVorbis.VORBIS_seek_without_length;
 import static org.lwjgl.stb.STBVorbis.VORBIS_too_many_channels;
 import static org.lwjgl.stb.STBVorbis.VORBIS_unexpected_eof;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.stb.STBVorbis;
+
+import neo.TempDump.TODO_Exception;
+import neo.Sound.snd_cache.idSoundSample;
+import neo.Sound.snd_local.idSampleDecoder;
+import neo.framework.File_h.idFile_Memory;
 
 /**
  *

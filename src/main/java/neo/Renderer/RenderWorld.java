@@ -1,40 +1,42 @@
 package neo.Renderer;
 
+import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
+import static neo.Renderer.RenderSystem_init.r_materialOverride;
+import static neo.Renderer.tr_local.tr;
+import static neo.TempDump.isNotNullOrEmpty;
+import static neo.framework.DeclManager.declManager;
+import static neo.idlib.Lib.idLib.common;
+import static neo.idlib.math.Vector.getVec3_origin;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
+
+import neo.TempDump.Atomics;
+import neo.TempDump.SERiAL;
 import neo.Renderer.Interaction.idInteraction;
-import static neo.Renderer.Material.MAX_ENTITY_SHADER_PARMS;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Model.idRenderModel;
-import static neo.Renderer.RenderSystem_init.r_materialOverride;
 import neo.Renderer.tr_local.areaReference_s;
 import neo.Renderer.tr_local.idRenderEntityLocal;
 import neo.Renderer.tr_local.idRenderLightLocal;
-import static neo.Renderer.tr_local.tr;
 import neo.Sound.sound.idSoundEmitter;
-import neo.TempDump.Atomics;
-import neo.TempDump.SERiAL;
-import static neo.TempDump.isNotNullOrEmpty;
 import neo.framework.CmdSystem.cmdFunction_t;
-import static neo.framework.DeclManager.declManager;
 import neo.framework.DeclSkin.idDeclSkin;
 import neo.framework.DemoFile.idDemoFile;
+import neo.idlib.CmdArgs.idCmdArgs;
+import neo.idlib.Lib.idException;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.BV.Box.idBox;
 import neo.idlib.BV.Frustum.idFrustum;
 import neo.idlib.BV.Sphere.idSphere;
-import neo.idlib.CmdArgs.idCmdArgs;
-import neo.idlib.Lib.idException;
-import static neo.idlib.Lib.idLib.common;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.geometry.Winding.idFixedWinding;
 import neo.idlib.geometry.Winding.idWinding;
-import neo.idlib.math.Matrix.idMat3;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat3;
 import neo.ui.UserInterface.idUserInterface;
 
 /**

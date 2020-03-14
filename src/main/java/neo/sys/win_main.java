@@ -1,5 +1,75 @@
 package neo.sys;
 
+import static neo.TempDump.NOT;
+import static neo.TempDump.atobb;
+import static neo.TempDump.ctos;
+import static neo.TempDump.fopenOptions;
+import static neo.Tools.edit_public.AFEditorRun;
+import static neo.Tools.edit_public.DeclBrowserRun;
+import static neo.Tools.edit_public.GUIEditorRun;
+import static neo.Tools.edit_public.LightEditorRun;
+import static neo.Tools.edit_public.MaterialEditorRun;
+import static neo.Tools.edit_public.PDAEditorRun;
+import static neo.Tools.edit_public.ParticleEditorRun;
+import static neo.Tools.edit_public.RadiantRun;
+import static neo.Tools.edit_public.ScriptEditorRun;
+import static neo.Tools.edit_public.SoundEditorRun;
+import static neo.framework.BuildDefines.ID_ALLOW_TOOLS;
+import static neo.framework.CVarSystem.CVAR_SYSTEM;
+import static neo.framework.CmdSystem.CMD_FL_SYSTEM;
+import static neo.framework.CmdSystem.CMD_FL_TOOL;
+import static neo.framework.CmdSystem.cmdSystem;
+import static neo.framework.Common.EDITOR_AF;
+import static neo.framework.Common.EDITOR_DECL;
+import static neo.framework.Common.EDITOR_GUI;
+import static neo.framework.Common.EDITOR_LIGHT;
+import static neo.framework.Common.EDITOR_MATERIAL;
+import static neo.framework.Common.EDITOR_PARTICLE;
+import static neo.framework.Common.EDITOR_PDA;
+import static neo.framework.Common.EDITOR_RADIANT;
+import static neo.framework.Common.EDITOR_SCRIPT;
+import static neo.framework.Common.EDITOR_SOUND;
+import static neo.framework.Common.com_editors;
+import static neo.framework.Common.com_skipRenderer;
+import static neo.framework.Common.common;
+import static neo.idlib.Lib.MAX_STRING_CHARS;
+import static neo.idlib.Lib.idLib.cvarSystem;
+import static neo.sys.sys_public.CPUID_3DNOW;
+import static neo.sys.sys_public.CPUID_AMD;
+import static neo.sys.sys_public.CPUID_GENERIC;
+import static neo.sys.sys_public.CPUID_HTT;
+import static neo.sys.sys_public.CPUID_INTEL;
+import static neo.sys.sys_public.CPUID_MMX;
+import static neo.sys.sys_public.CPUID_NONE;
+import static neo.sys.sys_public.CPUID_SSE;
+import static neo.sys.sys_public.CPUID_SSE2;
+import static neo.sys.sys_public.CPUID_SSE3;
+import static neo.sys.sys_public.CPUID_UNSUPPORTED;
+import static neo.sys.sys_public.CRITICAL_SECTION_ZERO;
+import static neo.sys.sys_public.MAX_CRITICAL_SECTIONS;
+import static neo.sys.sys_public.MAX_THREADS;
+import static neo.sys.sys_public.TRIGGER_EVENT_ZERO;
+import static neo.sys.sys_public.sysEventType_t.SE_CONSOLE;
+import static neo.sys.sys_public.xthreadPriority.THREAD_ABOVE_NORMAL;
+import static neo.sys.sys_public.xthreadPriority.THREAD_HIGHEST;
+import static neo.sys.win_cpu.Sys_ClockTicksPerSecond;
+import static neo.sys.win_cpu.Sys_GetCPUId;
+import static neo.sys.win_glimp.GLimp_Shutdown;
+import static neo.sys.win_input.Sys_InitInput;
+import static neo.sys.win_input.Sys_ShutdownInput;
+import static neo.sys.win_local.win32;
+import static neo.sys.win_local.Win32Vars_t.win_viewlog;
+import static neo.sys.win_shared.Sys_GetCurrentUser;
+import static neo.sys.win_shared.Sys_GetSystemRam;
+import static neo.sys.win_shared.Sys_GetVideoRam;
+import static neo.sys.win_shared.Sys_Milliseconds;
+import static neo.sys.win_syscon.Conbuf_AppendText;
+import static neo.sys.win_syscon.Sys_ConsoleInput;
+import static neo.sys.win_syscon.Sys_CreateConsole;
+import static neo.sys.win_syscon.Sys_DestroyConsole;
+import static neo.sys.win_syscon.Sys_ShowConsole;
+import static neo.sys.win_syscon.Win_SetErrorText;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -18,115 +88,24 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static neo.TempDump.NOT;
-
 import neo.TempDump.TODO_Exception;
-
-import static neo.TempDump.atobb;
-import static neo.TempDump.ctos;
-import static neo.TempDump.fopenOptions;
-import static neo.Tools.edit_public.AFEditorRun;
-import static neo.Tools.edit_public.DeclBrowserRun;
-import static neo.Tools.edit_public.GUIEditorRun;
-import static neo.Tools.edit_public.LightEditorRun;
-import static neo.Tools.edit_public.MaterialEditorRun;
-import static neo.Tools.edit_public.PDAEditorRun;
-import static neo.Tools.edit_public.ParticleEditorRun;
-import static neo.Tools.edit_public.RadiantRun;
-import static neo.Tools.edit_public.ScriptEditorRun;
-import static neo.Tools.edit_public.SoundEditorRun;
-
-import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
-
-import static neo.framework.BuildDefines.ID_ALLOW_TOOLS;
-import static neo.framework.CVarSystem.CVAR_SYSTEM;
-
 import neo.framework.CVarSystem.idCVar;
-
-import static neo.framework.CmdSystem.CMD_FL_SYSTEM;
-import static neo.framework.CmdSystem.CMD_FL_TOOL;
-
 import neo.framework.CmdSystem.cmdFunction_t;
-
-import static neo.framework.CmdSystem.cmdSystem;
-import static neo.framework.Common.EDITOR_AF;
-import static neo.framework.Common.EDITOR_DECL;
-import static neo.framework.Common.EDITOR_GUI;
-import static neo.framework.Common.EDITOR_LIGHT;
-import static neo.framework.Common.EDITOR_MATERIAL;
-import static neo.framework.Common.EDITOR_PARTICLE;
-import static neo.framework.Common.EDITOR_PDA;
-import static neo.framework.Common.EDITOR_RADIANT;
-import static neo.framework.Common.EDITOR_SCRIPT;
-import static neo.framework.Common.EDITOR_SOUND;
-import static neo.framework.Common.com_editors;
-import static neo.framework.Common.com_skipRenderer;
-import static neo.framework.Common.common;
-
+import neo.framework.Async.AsyncNetwork.idAsyncNetwork;
 import neo.idlib.CmdArgs.idCmdArgs;
-
-import static neo.idlib.Lib.MAX_STRING_CHARS;
-
 import neo.idlib.Lib.idException;
-
-import static neo.idlib.Lib.idLib.cvarSystem;
-
 import neo.idlib.Text.Lexer.idLexer;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.StrList.idStrList;
-import neo.sys.RC.CreateResourceIDs_f;
-
-import static neo.sys.sys_public.CPUID_3DNOW;
-import static neo.sys.sys_public.CPUID_AMD;
-import static neo.sys.sys_public.CPUID_GENERIC;
-import static neo.sys.sys_public.CPUID_HTT;
-import static neo.sys.sys_public.CPUID_INTEL;
-import static neo.sys.sys_public.CPUID_MMX;
-import static neo.sys.sys_public.CPUID_NONE;
-import static neo.sys.sys_public.CPUID_SSE;
-import static neo.sys.sys_public.CPUID_SSE2;
-import static neo.sys.sys_public.CPUID_SSE3;
-import static neo.sys.sys_public.CPUID_UNSUPPORTED;
-import static neo.sys.sys_public.CRITICAL_SECTION_ZERO;
-import static neo.sys.sys_public.MAX_CRITICAL_SECTIONS;
-import static neo.sys.sys_public.MAX_THREADS;
-import static neo.sys.sys_public.TRIGGER_EVENT_ZERO;
-
 import neo.sys.sys_public.sysEventType_t;
-
-import static neo.sys.sys_public.sysEventType_t.SE_CONSOLE;
-
 import neo.sys.sys_public.sysEvent_s;
 import neo.sys.sys_public.sysMemoryStats_s;
 import neo.sys.sys_public.xthreadInfo;
 import neo.sys.sys_public.xthreadPriority;
-
-import static neo.sys.sys_public.xthreadPriority.THREAD_ABOVE_NORMAL;
-import static neo.sys.sys_public.xthreadPriority.THREAD_HIGHEST;
-
 import neo.sys.sys_public.xthread_t;
-
-import static neo.sys.win_cpu.Sys_ClockTicksPerSecond;
-import static neo.sys.win_cpu.Sys_GetCPUId;
-import static neo.sys.win_glimp.GLimp_Shutdown;
-import static neo.sys.win_input.Sys_InitInput;
-import static neo.sys.win_input.Sys_ShutdownInput;
-
 import neo.sys.win_local.Win32Vars_t;
-
-import static neo.sys.win_local.Win32Vars_t.win_viewlog;
-import static neo.sys.win_local.win32;
-import static neo.sys.win_shared.Sys_GetCurrentUser;
-import static neo.sys.win_shared.Sys_GetSystemRam;
-import static neo.sys.win_shared.Sys_GetVideoRam;
-import static neo.sys.win_shared.Sys_Milliseconds;
-import static neo.sys.win_syscon.Conbuf_AppendText;
-import static neo.sys.win_syscon.Sys_ConsoleInput;
-import static neo.sys.win_syscon.Sys_CreateConsole;
-import static neo.sys.win_syscon.Sys_DestroyConsole;
-import static neo.sys.win_syscon.Sys_ShowConsole;
-import static neo.sys.win_syscon.Win_SetErrorText;
+import neo.sys.RC.CreateResourceIDs_f;
 
 /**
  *

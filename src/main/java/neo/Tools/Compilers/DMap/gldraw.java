@@ -2,11 +2,7 @@ package neo.Tools.Compilers.DMap;
 
 import static neo.Renderer.qgl.qglVertex3fv;
 import static neo.Renderer.tr_backend.RB_SetGL2D;
-import neo.TempDump.TODO_Exception;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
-import neo.Tools.Compilers.DMap.dmap.mapTri_s;
-import neo.idlib.geometry.Winding.idWinding;
-import neo.idlib.math.Vector.idVec3;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_FILL;
@@ -33,6 +29,11 @@ import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL11.glVertex3f;
+
+import neo.TempDump.TODO_Exception;
+import neo.Tools.Compilers.DMap.dmap.mapTri_s;
+import neo.idlib.geometry.Winding.idWinding;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

@@ -1,12 +1,13 @@
 package neo.Tools.Compilers.AAS;
 
+import static neo.idlib.math.Plane.ON_EPSILON;
+import static neo.idlib.math.Vector.getVec3_origin;
+
 import neo.Tools.Compilers.AAS.BrushBSP.idBrushBSPNode;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.geometry.Winding.idWinding;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Plane.ON_EPSILON;
 import neo.idlib.math.Plane.idPlane;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
 
 /**

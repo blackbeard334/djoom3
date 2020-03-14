@@ -1,49 +1,16 @@
 package neo.Sound;
 
 import static java.lang.Math.atan;
-
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-
-import neo.Renderer.Cinematic.idSndWindow;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Material.shaderStage_t;
-import neo.Renderer.RenderWorld.exitPortal_t;
-import neo.Renderer.RenderWorld.idRenderWorld;
-
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_AIR;
 import static neo.Renderer.RenderWorld.portalConnection_t.PS_BLOCK_VIEW;
-
-import neo.Sound.snd_cache.idSoundSample;
-
 import static neo.Sound.snd_emitter.REMOVE_STATUS_ALIVE;
 import static neo.Sound.snd_emitter.REMOVE_STATUS_SAMPLEFINISHED;
-
-import neo.Sound.snd_emitter.idSlowChannel;
-import neo.Sound.snd_emitter.idSoundChannel;
-import neo.Sound.snd_emitter.idSoundEmitterLocal;
-import neo.Sound.snd_emitter.idSoundFade;
-
 import static neo.Sound.snd_local.SND_EPSILON;
 import static neo.Sound.snd_local.SOUND_MAX_CHANNELS;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
-
-import neo.Sound.snd_local.idSampleDecoder;
-import neo.Sound.snd_local.mminfo_s;
-import neo.Sound.snd_local.pcmwaveformat_s;
-import neo.Sound.snd_local.soundDemoCommand_t;
-
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_ALLOC_EMITTER;
-import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_FADE;
-import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_FREE;
-import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_MODIFY;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_PLACE_LISTENER;
-import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_START;
 import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_STATE;
-import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_STOP;
-import static neo.Sound.snd_local.soundDemoCommand_t.SCMD_UPDATE;
 import static neo.Sound.snd_shader.DOOM_TO_METERS;
 import static neo.Sound.snd_shader.SOUND_MAX_CLASSES;
 import static neo.Sound.snd_shader.SSF_ANTI_PRIVATE_SOUND;
@@ -54,68 +21,28 @@ import static neo.Sound.snd_shader.SSF_NO_OCCLUSION;
 import static neo.Sound.snd_shader.SSF_OMNIDIRECTIONAL;
 import static neo.Sound.snd_shader.SSF_PRIVATE_SOUND;
 import static neo.Sound.snd_shader.SSF_UNCLAMPED;
-
-import neo.Sound.snd_shader.idSoundShader;
-import neo.Sound.snd_shader.soundShaderParms_t;
-import neo.Sound.snd_system.idSoundSystemLocal;
-
-import static neo.Sound.snd_system.idSoundSystemLocal.s_showLevelMeter;
 import static neo.Sound.snd_system.soundSystemLocal;
+import static neo.Sound.snd_system.idSoundSystemLocal.s_showLevelMeter;
 import static neo.Sound.snd_wavefile.fourcc_riff;
 import static neo.Sound.snd_wavefile.mmioFOURCC;
 import static neo.Sound.sound.SCHANNEL_ANY;
 import static neo.Sound.sound.SCHANNEL_ONE;
-
-import neo.Sound.sound.idSoundEmitter;
-import neo.Sound.sound.idSoundWorld;
-
 import static neo.TempDump.NOT;
-
-import neo.TempDump.TODO_Exception;
-
 import static neo.TempDump.etoi;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.BuildDefines.MACOS_X;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.DemoFile.demoSystem_t.DS_SOUND;
-
-import neo.framework.DemoFile.idDemoFile;
-
 import static neo.framework.FileSystem_h.fileSystem;
-
-import neo.framework.File_h.idFile;
-
 import static neo.framework.Session.session;
-
-import neo.idlib.BV.Bounds.idBounds;
-
 import static neo.idlib.Lib.colorRed;
-
-import neo.idlib.Text.Str.idStr;
-
 import static neo.idlib.Text.Str.va;
-
-import neo.idlib.containers.List.idList;
-
 import static neo.idlib.math.Math_h.DEG2RAD;
-
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Random.idRandom;
-
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
 import static neo.idlib.math.Simd.SIMDProcessor;
-
-import neo.idlib.math.Vector.idVec3;
-import neo.idlib.math.Vector.idVec4;
-
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
-
-import org.lwjgl.BufferUtils;
-
 import static org.lwjgl.openal.AL10.AL_BUFFER;
 import static org.lwjgl.openal.AL10.AL_BUFFERS_PROCESSED;
 import static org.lwjgl.openal.AL10.AL_FALSE;
@@ -146,6 +73,45 @@ import static org.lwjgl.openal.AL10.alSourceStop;
 import static org.lwjgl.openal.AL10.alSourceUnqueueBuffers;
 import static org.lwjgl.openal.AL10.alSourcef;
 import static org.lwjgl.openal.AL10.alSourcei;
+
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
+
+import org.lwjgl.BufferUtils;
+
+import neo.TempDump.TODO_Exception;
+import neo.Renderer.Cinematic.idSndWindow;
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Material.shaderStage_t;
+import neo.Renderer.RenderWorld.exitPortal_t;
+import neo.Renderer.RenderWorld.idRenderWorld;
+import neo.Sound.snd_cache.idSoundSample;
+import neo.Sound.snd_emitter.idSlowChannel;
+import neo.Sound.snd_emitter.idSoundChannel;
+import neo.Sound.snd_emitter.idSoundEmitterLocal;
+import neo.Sound.snd_emitter.idSoundFade;
+import neo.Sound.snd_local.idSampleDecoder;
+import neo.Sound.snd_local.mminfo_s;
+import neo.Sound.snd_local.pcmwaveformat_s;
+import neo.Sound.snd_local.soundDemoCommand_t;
+import neo.Sound.snd_shader.idSoundShader;
+import neo.Sound.snd_shader.soundShaderParms_t;
+import neo.Sound.snd_system.idSoundSystemLocal;
+import neo.Sound.sound.idSoundEmitter;
+import neo.Sound.sound.idSoundWorld;
+import neo.framework.DemoFile.idDemoFile;
+import neo.framework.File_h.idFile;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.List.idList;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Random.idRandom;
+import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

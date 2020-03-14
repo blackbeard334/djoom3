@@ -1,29 +1,30 @@
 package neo.Game.Physics;
 
+import static neo.Game.AFEntity.EV_Gib;
+import static neo.Game.Game_local.MAX_GENTITIES;
+import static neo.Game.Game_local.gameLocal;
+import static neo.Game.Physics.Clip.CLIPMODEL_ID_TO_JOINT_HANDLE;
+import static neo.Game.Projectile.EV_Explode;
+import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
+import static neo.idlib.math.Vector.getVec3_origin;
+
 import neo.CM.CollisionModel.contactInfo_t;
 import neo.CM.CollisionModel.trace_s;
-import static neo.Game.AFEntity.EV_Gib;
 import neo.Game.AFEntity.idAFEntity_Base;
 import neo.Game.Actor.idActor;
 import neo.Game.Entity.idEntity;
-import static neo.Game.Game_local.MAX_GENTITIES;
-import static neo.Game.Game_local.gameLocal;
 import neo.Game.Item.idMoveableItem;
 import neo.Game.Moveable.idMoveable;
-import static neo.Game.Physics.Clip.CLIPMODEL_ID_TO_JOINT_HANDLE;
+import neo.Game.Player.idPlayer;
+import neo.Game.Projectile.idProjectile;
 import neo.Game.Physics.Clip.idClipModel;
 import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics_Actor.idPhysics_Actor;
-import neo.Game.Player.idPlayer;
-import static neo.Game.Projectile.EV_Explode;
-import neo.Game.Projectile.idProjectile;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Angles.idAngles;
-import neo.idlib.math.Matrix.idMat3;
-import static neo.idlib.math.Matrix.idMat3.getMat3_identity;
 import neo.idlib.math.Rotation.idRotation;
-import static neo.idlib.math.Vector.getVec3_origin;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

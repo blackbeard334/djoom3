@@ -1,17 +1,7 @@
 package neo.Renderer;
 
-import java.util.Arrays;
-import neo.Renderer.Material.idMaterial;
-import neo.Renderer.Model.dynamicModel_t;
 import static neo.Renderer.Model.dynamicModel_t.DM_CONTINUOUS;
-import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model.srfTriangles_s;
-import neo.Renderer.Model_local.idRenderModelStatic;
-import neo.Renderer.RenderWorld.renderEntity_s;
-import neo.Renderer.tr_local.deformInfo_s;
 import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_local.viewDef_s;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurf;
 import static neo.Renderer.tr_trisurf.R_AllocStaticTriSurfVerts;
 import static neo.Renderer.tr_trisurf.R_BoundTriSurf;
@@ -20,20 +10,32 @@ import static neo.Renderer.tr_trisurf.R_DeriveTangents;
 import static neo.TempDump.NOT;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.Lib.idException;
 import static neo.idlib.Text.Lexer.LEXFL_ALLOWPATHNAMES;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGESCAPECHARS;
+import static neo.idlib.containers.List.idSwap;
+import static neo.idlib.math.Math_h.SEC2MS;
+import static neo.idlib.math.Simd.SIMDProcessor;
+
+import java.util.Arrays;
+
+import neo.Renderer.Material.idMaterial;
+import neo.Renderer.Model.dynamicModel_t;
+import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.Model_local.idRenderModelStatic;
+import neo.Renderer.RenderWorld.renderEntity_s;
+import neo.Renderer.tr_local.deformInfo_s;
+import neo.Renderer.tr_local.viewDef_s;
+import neo.idlib.Lib.idException;
+import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.containers.List.idList;
-import static neo.idlib.containers.List.idSwap;
 import neo.idlib.geometry.DrawVert.idDrawVert;
-import static neo.idlib.math.Math_h.SEC2MS;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Random.idRandom;
-import static neo.idlib.math.Simd.SIMDProcessor;
 import neo.idlib.math.Vector.idVec3;
 
 /**

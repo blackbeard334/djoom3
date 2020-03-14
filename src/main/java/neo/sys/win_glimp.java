@@ -1,20 +1,5 @@
 package neo.sys;
 
-import neo.TempDump.TODO_Exception;
-import neo.framework.UsercmdGen;
-import neo.idlib.Text.Str.idStr;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
-
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.file.Paths;
-import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static neo.Renderer.RenderSystem_init.r_logFile;
 import static neo.Renderer.RenderSystem_init.r_swapInterval;
 import static neo.Renderer.tr_local.tr;
@@ -26,12 +11,7 @@ import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.UsercmdGen.usercmdGen;
 import static neo.idlib.Lib.idLib.common;
 import static neo.idlib.Lib.idLib.cvarSystem;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
@@ -51,7 +31,21 @@ import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
-import static org.lwjgl.opengl.GL11.GL_TRUE;
+
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.file.Paths;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+
+import neo.TempDump.TODO_Exception;
+import neo.idlib.Text.Str.idStr;
 
 //import org.lwjgl.LWJGLException;
 //import org.lwjgl.opengl.Display;

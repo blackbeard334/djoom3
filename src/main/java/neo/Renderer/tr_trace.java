@@ -1,7 +1,6 @@
 package neo.Renderer;
 
 import static neo.Renderer.Image.globalImages;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.RenderSystem_init.r_showTrace;
 import static neo.Renderer.qgl.qglBegin;
 import static neo.Renderer.qgl.qglColor4f;
@@ -15,22 +14,24 @@ import static neo.Renderer.tr_local.GLS_DEPTHFUNC_ALWAYS;
 import static neo.Renderer.tr_local.GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 import static neo.Renderer.tr_local.GLS_SRCBLEND_SRC_ALPHA;
 import static neo.Renderer.tr_local.backEnd;
-import neo.Renderer.tr_local.drawSurf_s;
-import neo.Renderer.tr_local.localTrace_t;
 import static neo.Renderer.tr_main.R_GlobalPointToLocal;
 import static neo.Renderer.tr_render.RB_DrawElementsImmediate;
 import static neo.Renderer.tr_rendertools.RB_DrawBounds;
 import static neo.Renderer.tr_trisurf.R_DeriveFacePlanes;
 import static neo.framework.Common.common;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.Timer.idTimer;
-import neo.idlib.math.Math_h;
-import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import neo.idlib.math.Vector.idVec3;
 import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
 import static org.lwjgl.opengl.GL11.GL_MODULATE;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_COORD_ARRAY;
+
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.Renderer.tr_local.localTrace_t;
+import neo.idlib.Timer.idTimer;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.math.Math_h;
+import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Vector.idVec3;
 
 /**
  *

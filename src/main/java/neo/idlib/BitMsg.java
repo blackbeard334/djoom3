@@ -1,19 +1,21 @@
 package neo.idlib;
 
-import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static neo.TempDump.ctos;
-import neo.idlib.Dict_h.idDict;
-import neo.idlib.Dict_h.idKeyValue;
-import neo.idlib.Lib.idException;
-import neo.idlib.Lib.idLib;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.math.Math_h.ANGLE2BYTE;
 import static neo.idlib.math.Math_h.ANGLE2SHORT;
 import static neo.idlib.math.Math_h.BYTE2ANGLE;
 import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
 import static neo.idlib.math.Math_h.SHORT2ANGLE;
+
+import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import neo.idlib.Dict_h.idDict;
+import neo.idlib.Dict_h.idKeyValue;
+import neo.idlib.Lib.idException;
+import neo.idlib.Lib.idLib;
+import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;
 import neo.sys.sys_public;

@@ -1,9 +1,11 @@
 package neo.Renderer;
 
+import static neo.framework.BuildDefines.__ppc__;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
 import neo.TempDump.TODO_Exception;
-import static neo.framework.BuildDefines.__ppc__;
 
 /**
  *

@@ -1,29 +1,30 @@
 package neo.Game.Physics;
 
-import neo.CM.CollisionModel.trace_s;
 import static neo.Game.Entity.TH_PHYSICS;
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.Game_local.gameLocal;
-import neo.Game.Physics.Clip.idClipModel;
-import neo.Game.Physics.Physics_Base.idPhysics_Base;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.BitMsg.idBitMsgDelta;
 import static neo.idlib.math.Angles.getAng_zero;
-import neo.idlib.math.Angles.idAngles;
-import neo.idlib.math.Curve.idCurve_Spline;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_LINEAR;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_NONE;
 import static neo.idlib.math.Extrapolate.EXTRAPOLATION_NOSTOP;
-import neo.idlib.math.Extrapolate.idExtrapolate;
-import neo.idlib.math.Interpolate.idInterpolateAccelDecelLinear;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Rotation.idRotation;
 import static neo.idlib.math.Vector.RAD2DEG;
 import static neo.idlib.math.Vector.getVec3_origin;
 import static neo.idlib.math.Vector.getVec3_zero;
+
+import neo.CM.CollisionModel.trace_s;
+import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Physics.Clip.idClipModel;
+import neo.Game.Physics.Physics_Base.idPhysics_Base;
+import neo.idlib.BitMsg.idBitMsgDelta;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.math.Angles.idAngles;
+import neo.idlib.math.Curve.idCurve_Spline;
+import neo.idlib.math.Extrapolate.idExtrapolate;
+import neo.idlib.math.Interpolate.idInterpolateAccelDecelLinear;
+import neo.idlib.math.Rotation.idRotation;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

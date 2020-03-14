@@ -1,9 +1,5 @@
 package neo.Renderer;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.FloatBuffer;
-import java.util.Arrays;
 import static neo.Renderer.RenderSystem.R_AddDrawViewCmd;
 import static neo.Renderer.RenderSystem.R_ClearCommandChain;
 import static neo.Renderer.RenderSystem_init.r_jitter;
@@ -12,24 +8,14 @@ import static neo.Renderer.RenderSystem_init.r_useCulling;
 import static neo.Renderer.RenderSystem_init.r_useDepthBoundsTest;
 import static neo.Renderer.RenderSystem_init.r_useFrustumFarDistance;
 import static neo.Renderer.RenderSystem_init.r_znear;
-import neo.Renderer.RenderWorld_local.idRenderWorldLocal;
 import static neo.Renderer.tr_light.R_AddLightSurfaces;
 import static neo.Renderer.tr_light.R_AddModelSurfaces;
 import static neo.Renderer.tr_light.R_RemoveUnecessaryViewLights;
-import neo.Renderer.tr_local.drawSurf_s;
 import static neo.Renderer.tr_local.frameData;
-import neo.Renderer.tr_local.frameData_t;
-import neo.Renderer.tr_local.frameMemoryBlock_s;
-import neo.Renderer.tr_local.idScreenRect;
 import static neo.Renderer.tr_local.tr;
-import neo.Renderer.tr_local.viewDef_s;
-import neo.Renderer.tr_local.viewEntity_s;
-import neo.Renderer.tr_local.viewLight_s;
 import static neo.Renderer.tr_trisurf.R_FreeDeferredTriSurfs;
-import neo.TempDump.TODO_Exception;
 import static neo.framework.Common.common;
 import static neo.framework.Session.session;
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.Lib.MAX_WORLD_SIZE;
 import static neo.idlib.Lib.colorBlue;
 import static neo.idlib.Lib.colorCyan;
@@ -39,17 +25,33 @@ import static neo.idlib.Lib.colorPurple;
 import static neo.idlib.Lib.colorRed;
 import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Lib.colorYellow;
-import neo.idlib.containers.List.cmp_t;
 import static neo.idlib.math.Math_h.DEG2RAD;
-import neo.idlib.math.Math_h.idMath;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Plane.idPlane;
-import neo.idlib.math.Random.idRandom;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorSubtract;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.FloatBuffer;
+import java.util.Arrays;
+
+import neo.TempDump.TODO_Exception;
+import neo.Renderer.RenderWorld_local.idRenderWorldLocal;
+import neo.Renderer.tr_local.drawSurf_s;
+import neo.Renderer.tr_local.frameData_t;
+import neo.Renderer.tr_local.frameMemoryBlock_s;
+import neo.Renderer.tr_local.idScreenRect;
+import neo.Renderer.tr_local.viewDef_s;
+import neo.Renderer.tr_local.viewEntity_s;
+import neo.Renderer.tr_local.viewLight_s;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.containers.List.cmp_t;
+import neo.idlib.math.Math_h.idMath;
+import neo.idlib.math.Plane.idPlane;
+import neo.idlib.math.Random.idRandom;
 import neo.idlib.math.Vector.idVec;
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

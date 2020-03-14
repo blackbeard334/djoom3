@@ -1,6 +1,7 @@
 package neo.idlib.containers;
 
 import java.util.Arrays;
+
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Vector.idVec3;

@@ -1,21 +1,22 @@
 package neo.Game.Physics;
 
-import neo.Game.Entity.idEntity;
-import neo.Game.GameSys.SaveGame.idRestoreGame;
-import neo.Game.GameSys.SaveGame.idSaveGame;
 import static neo.Game.Game_local.MAX_GENTITIES;
 import static neo.Game.Game_local.gameLocal;
-import neo.Game.Physics.Clip.idClipModel;
-import neo.Game.Physics.Force.idForce;
 import static neo.Game.Physics.Force_Field.forceFieldApplyType.FORCEFIELD_APPLY_FORCE;
 import static neo.Game.Physics.Force_Field.forceFieldType.FORCEFIELD_EXPLOSION;
 import static neo.Game.Physics.Force_Field.forceFieldType.FORCEFIELD_IMPLOSION;
 import static neo.Game.Physics.Force_Field.forceFieldType.FORCEFIELD_UNIFORM;
+import static neo.TempDump.NOT;
+import static neo.TempDump.etoi;
+
+import neo.Game.Entity.idEntity;
+import neo.Game.GameSys.SaveGame.idRestoreGame;
+import neo.Game.GameSys.SaveGame.idSaveGame;
+import neo.Game.Physics.Clip.idClipModel;
+import neo.Game.Physics.Force.idForce;
 import neo.Game.Physics.Physics.idPhysics;
 import neo.Game.Physics.Physics_Monster.idPhysics_Monster;
 import neo.Game.Physics.Physics_Player.idPhysics_Player;
-import static neo.TempDump.NOT;
-import static neo.TempDump.etoi;
 import neo.idlib.BV.Bounds.idBounds;
 import neo.idlib.math.Vector.idVec3;
 

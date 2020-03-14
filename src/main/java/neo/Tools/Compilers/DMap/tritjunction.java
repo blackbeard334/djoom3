@@ -2,34 +2,34 @@ package neo.Tools.Compilers.DMap;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
-import neo.Renderer.Model.idRenderModel;
-import neo.Renderer.Model.modelSurface_s;
-import neo.Renderer.Model.srfTriangles_s;
 import static neo.Renderer.ModelManager.renderModelManager;
 import static neo.TempDump.NOT;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
-import neo.Tools.Compilers.DMap.dmap.mapTri_s;
-import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
-import neo.Tools.Compilers.DMap.dmap.uEntity_t;
-import neo.Tools.Compilers.DMap.tritjunction.hashVert_s;
 import static neo.Tools.Compilers.DMap.tritools.CopyMapTri;
 import static neo.Tools.Compilers.DMap.tritools.CountTriList;
 import static neo.Tools.Compilers.DMap.tritools.FreeTri;
 import static neo.Tools.Compilers.DMap.tritools.FreeTriList;
 import static neo.Tools.Compilers.DMap.tritools.MergeTriLists;
 import static neo.framework.Common.common;
-import neo.idlib.BV.Bounds.idBounds;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.geometry.DrawVert.idDrawVert;
-import neo.idlib.math.Angles.idAngles;
-import neo.idlib.math.Matrix.idMat3;
-import neo.idlib.math.Plane.idPlane;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorCopy;
 import static neo.idlib.math.Vector.VectorMA;
 import static neo.idlib.math.Vector.VectorSubtract;
+
+import neo.Renderer.Model.idRenderModel;
+import neo.Renderer.Model.modelSurface_s;
+import neo.Renderer.Model.srfTriangles_s;
+import neo.Tools.Compilers.DMap.dmap.mapTri_s;
+import neo.Tools.Compilers.DMap.dmap.optimizeGroup_s;
+import neo.Tools.Compilers.DMap.dmap.uEntity_t;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.geometry.DrawVert.idDrawVert;
+import neo.idlib.math.Angles.idAngles;
+import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Vector.idVec3;
+import neo.idlib.math.Matrix.idMat3;
 
 /**
  *

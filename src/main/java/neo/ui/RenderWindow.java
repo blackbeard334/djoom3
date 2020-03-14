@@ -1,25 +1,25 @@
 package neo.ui;
 
-import neo.Game.Animation.Anim.idMD5Anim;
 import static neo.Game.GameEdit.gameEdit;
 import static neo.Renderer.RenderSystem.renderSystem;
 import static neo.Renderer.RenderWorld.SHADERPARM_BLUE;
 import static neo.Renderer.RenderWorld.SHADERPARM_GREEN;
 import static neo.Renderer.RenderWorld.SHADERPARM_RED;
+import static neo.TempDump.isNotNullOrEmpty;
+import static neo.framework.Common.common;
+import static neo.idlib.math.Vector.getVec3_origin;
+
+import neo.Game.Animation.Anim.idMD5Anim;
 import neo.Renderer.RenderWorld.idRenderWorld;
 import neo.Renderer.RenderWorld.renderEntity_s;
 import neo.Renderer.RenderWorld.renderLight_s;
 import neo.Renderer.RenderWorld.renderView_s;
-import static neo.TempDump.isNotNullOrEmpty;
-import static neo.framework.Common.common;
 import neo.idlib.Dict_h.idDict;
 import neo.idlib.Text.Parser.idParser;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.geometry.JointTransform.idJointMat;
 import neo.idlib.math.Angles.idAngles;
 import neo.idlib.math.Math_h.idMath;
-import static neo.idlib.math.Vector.getVec3_origin;
-
 import neo.idlib.math.Vector.idVec3;
 import neo.idlib.math.Vector.idVec4;
 import neo.ui.DeviceContext.idDeviceContext;

@@ -1,15 +1,9 @@
 package neo.idlib.Text;
 
-import java.nio.CharBuffer;
-import java.util.Arrays;
-import java.util.Date;
 import static neo.TempDump.NOT;
 import static neo.TempDump.atocb;
 import static neo.TempDump.ctos;
 import static neo.TempDump.isNotNullOrEmpty;
-import neo.idlib.Lib;
-import neo.idlib.Lib.idException;
-import neo.idlib.Lib.idLib;
 import static neo.idlib.Text.Lexer.LEXFL_NOBASEINCLUDES;
 import static neo.idlib.Text.Lexer.LEXFL_NODOLLARPRECOMPILE;
 import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
@@ -39,9 +33,6 @@ import static neo.idlib.Text.Lexer.P_PARENTHESESOPEN;
 import static neo.idlib.Text.Lexer.P_QUESTIONMARK;
 import static neo.idlib.Text.Lexer.P_RSHIFT;
 import static neo.idlib.Text.Lexer.P_SUB;
-import neo.idlib.Text.Lexer.idLexer;
-import neo.idlib.Text.Lexer.punctuation_t;
-import neo.idlib.Text.Str.idStr;
 import static neo.idlib.Text.Token.TT_BINARY;
 import static neo.idlib.Text.Token.TT_DECIMAL;
 import static neo.idlib.Text.Token.TT_FLOAT;
@@ -56,6 +47,17 @@ import static neo.idlib.Text.Token.TT_PUNCTUATION;
 import static neo.idlib.Text.Token.TT_STRING;
 import static neo.idlib.Text.Token.TT_UNSIGNED;
 import static neo.idlib.Text.Token.TT_VALUESVALID;
+
+import java.nio.CharBuffer;
+import java.util.Arrays;
+import java.util.Date;
+
+import neo.idlib.Lib;
+import neo.idlib.Lib.idException;
+import neo.idlib.Lib.idLib;
+import neo.idlib.Text.Lexer.idLexer;
+import neo.idlib.Text.Lexer.punctuation_t;
+import neo.idlib.Text.Str.idStr;
 import neo.idlib.Text.Token.idToken;
 import neo.idlib.math.Math_h.idMath;
 import neo.sys.sys_public;

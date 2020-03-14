@@ -1,21 +1,22 @@
 package neo.idlib.geometry;
 
-import neo.TempDump;
-import neo.TempDump.NiLLABLE;
-import neo.idlib.BV.Bounds.idBounds;
 import static neo.idlib.Lib.MAX_WORLD_COORD;
 import static neo.idlib.Lib.MAX_WORLD_SIZE;
 import static neo.idlib.Lib.MIN_WORLD_COORD;
-import neo.idlib.math.Math_h;
 import static neo.idlib.math.Math_h.FLOATSIGNBITNOTSET;
 import static neo.idlib.math.Math_h.FLOATSIGNBITSET;
-import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Plane.ON_EPSILON;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.idlib.math.Plane.SIDE_CROSS;
 import static neo.idlib.math.Plane.SIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_ON;
-import static neo.idlib.Lib.idLib;
+
+import neo.TempDump;
+import neo.TempDump.NiLLABLE;
+import neo.idlib.Lib.idLib;
+import neo.idlib.BV.Bounds.idBounds;
+import neo.idlib.math.Math_h;
+import neo.idlib.math.Math_h.idMath;
 import neo.idlib.math.Plane.idPlane;
 import neo.idlib.math.Pluecker.idPluecker;
 import neo.idlib.math.Vector.idVec3;

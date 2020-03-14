@@ -1,36 +1,38 @@
 package neo.Sound;
 
 import static java.lang.Math.sin;
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
-import neo.Sound.snd_cache.idSoundSample;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_OGG;
 import static neo.Sound.snd_local.WAVE_FORMAT_TAG_PCM;
-import neo.Sound.snd_local.idSampleDecoder;
-import neo.Sound.snd_local.waveformatex_s;
-import neo.Sound.snd_system.idSoundSystemLocal;
-import neo.Sound.snd_wavefile.idWaveFile;
 import static neo.TempDump.NOT;
 import static neo.framework.BuildDefines.MACOS_X;
-import neo.framework.Common.MemInfo_t;
 import static neo.framework.Common.com_purgeAll;
 import static neo.framework.Common.common;
 import static neo.framework.DeclManager.declManager;
 import static neo.framework.FileSystem_h.FILE_NOT_FOUND_TIMESTAMP;
 import static neo.framework.FileSystem_h.fileSystem;
-import neo.framework.File_h.idFile;
 import static neo.idlib.Lib.Min;
-import neo.idlib.Text.Str.idStr;
-import neo.idlib.containers.List.idList;
-import neo.idlib.math.Math_h.idMath;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
 import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
 import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
 import static org.lwjgl.openal.AL10.AL_NO_ERROR;
 import static org.lwjgl.openal.AL10.alGetError;
 import static org.lwjgl.openal.AL10.alIsExtensionPresent;
+
+import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
+
+import neo.Sound.snd_local.idSampleDecoder;
+import neo.Sound.snd_local.waveformatex_s;
+import neo.Sound.snd_system.idSoundSystemLocal;
+import neo.Sound.snd_wavefile.idWaveFile;
+import neo.framework.Common.MemInfo_t;
+import neo.framework.File_h.idFile;
+import neo.idlib.Text.Str.idStr;
+import neo.idlib.containers.List.idList;
+import neo.idlib.math.Math_h.idMath;
 
 /**
  *
