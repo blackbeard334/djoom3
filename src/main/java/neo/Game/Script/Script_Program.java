@@ -910,7 +910,7 @@ public class Script_Program {
             return this;
         }
 
-        public returnType _() {
+        public returnType operator() {
             // check if we attempt to access the object before it's been linked
             assert (data != null);
 
@@ -931,7 +931,7 @@ public class Script_Program {
             }
         }
 
-        public void _(returnType bla) {
+        public void operator(returnType bla) {
             this.oSet(bla);
         }
     };

@@ -1528,11 +1528,11 @@ public class AI {
             }
 
             talkTarget.oSet(actor);
-            AI_TALK._(actor != null);
+            AI_TALK.operator(actor != null);
         }
 
         public talkState_t GetTalkState() {
-            if ((talk_state != TALK_NEVER) && AI_DEAD._()) {
+            if ((talk_state != TALK_NEVER) && AI_DEAD.operator()) {
                 return TALK_DEAD;
             }
             if (IsHidden()) {
@@ -2211,9 +2211,9 @@ public class AI {
                 }
 
                 // clear pain flag so that we recieve any damage between now and the next time we run the script
-                AI_PAIN._(false);
-                AI_SPECIAL_DAMAGE._(0f);
-                AI_PUSHED._(false);
+                AI_PAIN.operator(false);
+                AI_SPECIAL_DAMAGE.operator(0f);
+                AI_PUSHED.operator(false);
             } else if ((thinkFlags & TH_PHYSICS) != 0) {
                 RunPhysics();
             }
@@ -2250,7 +2250,7 @@ public class AI {
         protected void Activate(idEntity activator) {
             idPlayer player;
 
-            if (AI_DEAD._()) {
+            if (AI_DEAD.operator()) {
                 // ignore it when they're dead
                 return;
             }
@@ -2261,7 +2261,7 @@ public class AI {
             if (num_cinematics != 0) {
                 PlayCinematic();
             } else {
-                AI_ACTIVATED._(true);
+                AI_ACTIVATED.operator(true);
                 if (NOT(activator) || !activator.IsType(idPlayer.class)) {
                     player = gameLocal.GetLocalPlayer();
                 } else {
@@ -2340,7 +2340,7 @@ public class AI {
 
         protected void EnemyDead() {
             ClearEnemy();
-            AI_ENEMY_DEAD._(true);
+            AI_ENEMY_DEAD.operator(true);
         }
 
         /*
@@ -2352,7 +2352,7 @@ public class AI {
          */
         @Override
         public boolean CanPlayChatterSounds() {
-            if (AI_DEAD._()) {
+            if (AI_DEAD.operator()) {
                 return false;
             }
 
@@ -2396,7 +2396,7 @@ public class AI {
 
         protected void PlayChatter() {
             // check if it's time to play a chat sound
-            if (AI_DEAD._() || NOT(chat_snd) || (chat_time > gameLocal.time)) {
+            if (AI_DEAD.operator() || NOT(chat_snd) || (chat_time > gameLocal.time)) {
                 return;
             }
 
@@ -2415,8 +2415,8 @@ public class AI {
             StopSound(etoi(SND_CHANNEL_AMBIENT), false);
             SetChatSound();
 
-            AI_ENEMY_IN_FOV._(false);
-            AI_ENEMY_VISIBLE._(false);
+            AI_ENEMY_IN_FOV.operator(false);
+            AI_ENEMY_VISIBLE.operator(false);
             StopMove(MOVE_STATUS_DONE);
         }
 
@@ -2645,7 +2645,7 @@ public class AI {
             final idVec3 origin = physicsObj.GetOrigin();
 
             obstacle = null;
-            AI_OBSTACLE_IN_PATH._(false);
+            AI_OBSTACLE_IN_PATH.operator(false);
             foundPath = FindPathAroundObstacles(physicsObj, aas, enemy.GetEntity(), origin, goalPos, path);
             if (ai_showObstacleAvoidance.GetBool()) {
                 gameRenderWorld.DebugLine(colorBlue, goalPos.oPlus(new idVec3(1.0f, 1.0f, 0.0f)), goalPos.oPlus(new idVec3(1.0f, 1.0f, 64.0f)), gameLocal.msec);
@@ -2655,12 +2655,12 @@ public class AI {
             if (!foundPath) {
                 // couldn't get around obstacles
                 if (path.firstObstacle != null) {
-                    AI_OBSTACLE_IN_PATH._(true);
+                    AI_OBSTACLE_IN_PATH.operator(true);
                     if (physicsObj.GetAbsBounds().Expand(2.0f).IntersectsBounds(path.firstObstacle.GetPhysics().GetAbsBounds())) {
                         obstacle = path.firstObstacle;
                     }
                 } else if (path.startPosObstacle != null) {
-                    AI_OBSTACLE_IN_PATH._(true);
+                    AI_OBSTACLE_IN_PATH.operator(true);
                     if (physicsObj.GetAbsBounds().Expand(2.0f).IntersectsBounds(path.startPosObstacle.GetPhysics().GetAbsBounds())) {
                         obstacle = path.startPosObstacle;
                     }
@@ -2682,7 +2682,7 @@ public class AI {
             } else if (path.seekPosObstacle != null) {
                 // if the AI is very close to the path.seekPos already and path.seekPosObstacle != NULL
                 // then we want to push the path.seekPosObstacle entity out of the way
-                AI_OBSTACLE_IN_PATH._(true);
+                AI_OBSTACLE_IN_PATH.operator(true);
 
                 // check if we're past where the goalPos was pushed out of the obstacle
                 dir = goalPos.oMinus(origin);
@@ -2727,7 +2727,7 @@ public class AI {
             RunPhysics();
 
             moveResult = physicsObj.GetMoveResult();
-            AI_ONGROUND._(physicsObj.OnGround());
+            AI_ONGROUND.operator(physicsObj.OnGround());
         }
 
         protected void AnimMove() {
@@ -2741,7 +2741,7 @@ public class AI {
             idVec3 oldOrigin = physicsObj.GetOrigin();
             idMat3 oldAxis = viewAxis;
 
-            AI_BLOCKED._(false);
+            AI_BLOCKED.operator(false);
 
             if (etoi(move.moveCommand) < etoi(NUM_NONMOVING_COMMANDS)) {
                 move.lastMoveOrigin.Zero();
@@ -2811,7 +2811,7 @@ public class AI {
 
             BlockedFailSafe();
 
-            AI_ONGROUND._(physicsObj.OnGround());
+            AI_ONGROUND.operator(physicsObj.OnGround());
 
             idVec3 org = physicsObj.GetOrigin();
             if (!oldOrigin.equals(org)) {//FIXME: so this checks value instead of refs which COULD go wrong!
@@ -2837,7 +2837,7 @@ public class AI {
             idVec3 oldOrigin = physicsObj.GetOrigin();
             idMat3 oldAxis = viewAxis;
 
-            AI_BLOCKED._(false);
+            AI_BLOCKED.operator(false);
 
             if (etoi(move.moveCommand) < etoi(NUM_NONMOVING_COMMANDS)) {
                 move.lastMoveOrigin.Zero();
@@ -2917,7 +2917,7 @@ public class AI {
 
             BlockedFailSafe();
 
-            AI_ONGROUND._(physicsObj.OnGround());
+            AI_ONGROUND.operator(physicsObj.OnGround());
 
             idVec3 org = physicsObj.GetOrigin();
             if (oldOrigin != org) {
@@ -3074,7 +3074,7 @@ public class AI {
             idVec3 oldorigin;
             idVec3 newDest = new idVec3();
 
-            AI_BLOCKED._(false);
+            AI_BLOCKED.operator(false);
             if ((move.moveCommand != MOVE_NONE) && ReachedPos(move.moveDest, move.moveCommand)) {
                 StopMove(MOVE_STATUS_DONE);
             }
@@ -3127,7 +3127,7 @@ public class AI {
                     KickObstacles(viewAxis.oGet(0), kickForce, blockEnt);
                 } else if (moveResult == MM_BLOCKED) {
                     move.blockTime = gameLocal.time + 500;
-                    AI_BLOCKED._(true);
+                    AI_BLOCKED.operator(true);
                 }
             }
 
@@ -3150,7 +3150,7 @@ public class AI {
         protected void StaticMove() {
             idActor enemyEnt = enemy.GetEntity();
 
-            if (AI_DEAD._()) {
+            if (AI_DEAD.operator()) {
                 return;
             }
 
@@ -3166,7 +3166,7 @@ public class AI {
             physicsObj.ForceDeltaMove(true); // disable gravity
             RunPhysics();
 
-            AI_ONGROUND._(false);
+            AI_ONGROUND.operator(false);
 
             if (!af_push_moveables && attack.Length() != 0 && TestMelee()) {
                 DirectDamage(attack, enemyEnt);
@@ -3185,8 +3185,8 @@ public class AI {
         public boolean Pain(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
             idActor actor;
 
-            AI_PAIN._(super.Pain(inflictor, attacker, damage, dir, location));
-            AI_DAMAGE._(true);
+            AI_PAIN.operator(super.Pain(inflictor, attacker, damage, dir, location));
+            AI_DAMAGE.operator(true);
 
             // force a blink
             blink_time = 0;
@@ -3194,9 +3194,9 @@ public class AI {
             // ignore damage from self
             if (attacker != this) {
                 if (inflictor != null) {
-                    AI_SPECIAL_DAMAGE._(inflictor.spawnArgs.GetInt("special_damage") * 1f);
+                    AI_SPECIAL_DAMAGE.operator(inflictor.spawnArgs.GetInt("special_damage") * 1f);
                 } else {
-                    AI_SPECIAL_DAMAGE._(0f);
+                    AI_SPECIAL_DAMAGE.operator(0f);
                 }
 
                 if (enemy.GetEntity() != attacker && attacker.IsType(idActor.class)) {
@@ -3208,7 +3208,7 @@ public class AI {
                 }
             }
 
-            return (AI_PAIN._() /*!= 0*/);
+            return (AI_PAIN.operator() /*!= 0*/);
         }
 
         @Override
@@ -3225,14 +3225,14 @@ public class AI {
             }
 
             if (inflictor != null) {
-                AI_SPECIAL_DAMAGE._(inflictor.spawnArgs.GetInt("special_damage") * 1f);
+                AI_SPECIAL_DAMAGE.operator(inflictor.spawnArgs.GetInt("special_damage") * 1f);
             } else {
-                AI_SPECIAL_DAMAGE._(0f);
+                AI_SPECIAL_DAMAGE.operator(0f);
             }
 
-            if (AI_DEAD._()) {
-                AI_PAIN._(true);
-                AI_DAMAGE._(true);
+            if (AI_DEAD.operator()) {
+                AI_PAIN.operator(true);
+                AI_DAMAGE.operator(true);
                 return;
             }
 
@@ -3265,7 +3265,7 @@ public class AI {
             StopMove(MOVE_STATUS_DONE);
 
             ClearEnemy();
-            AI_DEAD._(true);
+            AI_DEAD.operator(true);
 
             // make monster nonsolid
             physicsObj.SetContents(0);
@@ -3577,7 +3577,7 @@ public class AI {
                         result = true;
                         move.nextWanderTime = 0;
                     } else {
-                        AI_DEST_UNREACHABLE._(true);
+                        AI_DEST_UNREACHABLE.operator(true);
                     }
                 }
             }
@@ -3588,7 +3588,7 @@ public class AI {
                     result = NewWanderDir(move.moveDest);
                     if (!result) {
                         StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                        AI_DEST_UNREACHABLE._(true);
+                        AI_DEST_UNREACHABLE.operator(true);
                         seekPos.oSet(org);
                         return false;
                     }
@@ -3601,7 +3601,7 @@ public class AI {
                     gameRenderWorld.DebugLine(colorYellow, org, seekPos, gameLocal.msec, true);
                 }
             } else {
-                AI_DEST_UNREACHABLE._(false);
+                AI_DEST_UNREACHABLE.operator(false);
             }
 
             if (result && (ai_debugMove.GetBool())) {
@@ -3662,7 +3662,7 @@ public class AI {
             }
             if (move.lastMoveTime < gameLocal.time - blockedMoveTime) {
                 if (lastAttackTime < gameLocal.time - blockedAttackTime) {
-                    AI_BLOCKED._(true);
+                    AI_BLOCKED.operator(true);
                     move.lastMoveTime = gameLocal.time;
                 }
             }
@@ -3670,16 +3670,16 @@ public class AI {
 
         // movement control
         protected void StopMove(moveStatus_t status) {
-            AI_MOVE_DONE._(true);
-            AI_FORWARD._(false);
+            AI_MOVE_DONE.operator(true);
+            AI_FORWARD.operator(false);
             move.moveCommand = MOVE_NONE;
             move.moveStatus = status;
             move.toAreaNum = 0;
             move.goalEntity.oSet(null);
             move.moveDest = physicsObj.GetOrigin();
-            AI_DEST_UNREACHABLE._(false);
-            AI_OBSTACLE_IN_PATH._(false);
-            AI_BLOCKED._(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_OBSTACLE_IN_PATH.operator(false);
+            AI_BLOCKED.operator(false);
             move.startTime = gameLocal.time;
             move.duration = 0;
             move.range = 0.0f;
@@ -3711,9 +3711,9 @@ public class AI {
             move.moveStatus = MOVE_STATUS_WAITING;
             move.startTime = gameLocal.time;
             move.speed = 0.0f;
-            AI_MOVE_DONE._(true);
-            AI_FORWARD._(false);
-            AI_DEST_UNREACHABLE._(false);
+            AI_MOVE_DONE.operator(true);
+            AI_FORWARD.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
 
             return true;
         }
@@ -3739,9 +3739,9 @@ public class AI {
             move.moveStatus = MOVE_STATUS_WAITING;
             move.startTime = gameLocal.time;
             move.speed = 0.0f;
-            AI_MOVE_DONE._(true);
-            AI_FORWARD._(false);
-            AI_DEST_UNREACHABLE._(false);
+            AI_MOVE_DONE.operator(true);
+            AI_FORWARD.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
 
             return true;
         }
@@ -3758,9 +3758,9 @@ public class AI {
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
             move.speed = fly_speed;
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(true);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(true);
 
             if (move.moveType == MOVETYPE_FLY) {
                 idVec3 dir = pos.oMinus(physicsObj.GetOrigin());
@@ -3786,9 +3786,9 @@ public class AI {
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
             move.speed = 0.0f;
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(false);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(false);
 
             return true;
         }
@@ -3802,7 +3802,7 @@ public class AI {
 
             if (null == aas || null == ent) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE._(true);
+                AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
@@ -3821,7 +3821,7 @@ public class AI {
             idAASFindAreaOutOfRange findGoal = new idAASFindAreaOutOfRange(pos, range);
             if (!aas.FindNearestGoal(goal, areaNum, org, pos, travelFlags, obstacle, 1, findGoal)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE._(true);
+                AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
@@ -3838,9 +3838,9 @@ public class AI {
             move.range = range;
             move.speed = fly_speed;
             move.startTime = gameLocal.time;
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(true);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(true);
 
             return true;
         }
@@ -3854,7 +3854,7 @@ public class AI {
 
             if (null == aas || null == ent) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE._(true);
+                AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
@@ -3873,7 +3873,7 @@ public class AI {
             idAASFindAttackPosition findGoal = new idAASFindAttackPosition(this, physicsObj.GetGravityAxis(), ent, pos, missileLaunchOffset.oGet(attack_anim));
             if (!aas.FindNearestGoal(goal, areaNum, org, pos, travelFlags, obstacle, 1, findGoal)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE._(true);
+                AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
@@ -3885,9 +3885,9 @@ public class AI {
             move.speed = fly_speed;
             move.startTime = gameLocal.time;
             move.anim = attack_anim;
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(true);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(true);
 
             return true;
         }
@@ -3903,9 +3903,9 @@ public class AI {
             }
 
             if (ReachedPos(lastVisibleReachableEnemyPos, MOVE_TO_ENEMY)) {
-                if (!ReachedPos(lastVisibleEnemyPos, MOVE_TO_ENEMY) || !AI_ENEMY_VISIBLE._()) {
+                if (!ReachedPos(lastVisibleEnemyPos, MOVE_TO_ENEMY) || !AI_ENEMY_VISIBLE.operator()) {
                     StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                    AI_DEST_UNREACHABLE._(true);
+                    AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
                 StopMove(MOVE_STATUS_DONE);
@@ -3921,7 +3921,7 @@ public class AI {
 
                 areaNum = PointReachableAreaNum(physicsObj.GetOrigin());
                 if (!PathToGoal(path, areaNum, physicsObj.GetOrigin(), move.toAreaNum, pos)) {
-                    AI_DEST_UNREACHABLE._(true);
+                    AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
@@ -3938,7 +3938,7 @@ public class AI {
 
                 if (!NewWanderDir(pos)) {
                     StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                    AI_DEST_UNREACHABLE._(true);
+                    AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
@@ -3952,9 +3952,9 @@ public class AI {
             move.goalEntity.oSet(enemyEnt);
             move.speed = fly_speed;
             move.moveStatus = MOVE_STATUS_MOVING;
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(true);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(true);
 
             return true;
         }
@@ -3986,7 +3986,7 @@ public class AI {
 
                 areaNum = PointReachableAreaNum(physicsObj.GetOrigin());
                 if (!PathToGoal(path, areaNum, physicsObj.GetOrigin(), move.toAreaNum, pos)) {
-                    AI_DEST_UNREACHABLE._(true);
+                    AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
@@ -4003,7 +4003,7 @@ public class AI {
 
                 if (!NewWanderDir(pos)) {
                     StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                    AI_DEST_UNREACHABLE._(true);
+                    AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
@@ -4018,9 +4018,9 @@ public class AI {
             move.goalEntityOrigin = ent.GetPhysics().GetOrigin();
             move.moveStatus = MOVE_STATUS_MOVING;
             move.speed = fly_speed;
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(true);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(true);
 
             return true;
         }
@@ -4044,14 +4044,14 @@ public class AI {
                 areaNum = PointReachableAreaNum(physicsObj.GetOrigin());
                 if (!PathToGoal(path, areaNum, physicsObj.GetOrigin(), move.toAreaNum, org)) {
                     StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                    AI_DEST_UNREACHABLE._(true);
+                    AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
 
             if (0 == move.toAreaNum && !NewWanderDir(org)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE._(true);
+                AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
@@ -4061,9 +4061,9 @@ public class AI {
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
             move.speed = fly_speed;
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(true);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(true);
 
             return true;
         }
@@ -4076,7 +4076,7 @@ public class AI {
 
             if (null == aas || null == entity) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE._(true);
+                AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
@@ -4089,7 +4089,7 @@ public class AI {
             idAASFindCover findCover = new idAASFindCover(hideFromPos);
             if (!aas.FindNearestGoal(hideGoal, areaNum, org, hideFromPos, travelFlags, obstacle, 1, findCover)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE._(true);
+                AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
@@ -4105,9 +4105,9 @@ public class AI {
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
             move.speed = fly_speed;
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(true);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(true);
 
             return true;
         }
@@ -4121,9 +4121,9 @@ public class AI {
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
             move.duration = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time));
-            AI_MOVE_DONE._(false);
-            AI_DEST_UNREACHABLE._(false);
-            AI_FORWARD._(false);
+            AI_MOVE_DONE.operator(false);
+            AI_DEST_UNREACHABLE.operator(false);
+            AI_FORWARD.operator(false);
 
             if (move.duration > 0) {
                 move.moveDir = (pos.oMinus(physicsObj.GetOrigin())).oDivide(MS2SEC(move.duration));
@@ -4142,7 +4142,7 @@ public class AI {
             move.moveDest = physicsObj.GetOrigin().oPlus(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis().oMultiply(256.0f)));
             if (!NewWanderDir(move.moveDest)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE._(true);
+                AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
@@ -4150,8 +4150,8 @@ public class AI {
             move.moveStatus = MOVE_STATUS_MOVING;
             move.startTime = gameLocal.time;
             move.speed = fly_speed;
-            AI_MOVE_DONE._(false);
-            AI_FORWARD._(true);
+            AI_MOVE_DONE.operator(false);
+            AI_FORWARD.operator(true);
 
             return true;
         }
@@ -4475,9 +4475,9 @@ public class AI {
 
             enemyNode.Remove();
             enemy.oSet(null);
-            AI_ENEMY_IN_FOV._(false);
-            AI_ENEMY_VISIBLE._(false);
-            AI_ENEMY_DEAD._(true);
+            AI_ENEMY_IN_FOV.operator(false);
+            AI_ENEMY_VISIBLE.operator(false);
+            AI_ENEMY_DEAD.operator(true);
 
             SetChatSound();
         }
@@ -4491,7 +4491,7 @@ public class AI {
                 return false;
             }
 
-            if (AI_ENEMY_VISIBLE._()) {
+            if (AI_ENEMY_VISIBLE.operator()) {
                 return true;
             }
 
@@ -4532,7 +4532,7 @@ public class AI {
 
             if (!onGround) {
                 if (move.moveCommand == MOVE_TO_ENEMY) {
-                    AI_DEST_UNREACHABLE._(true);
+                    AI_DEST_UNREACHABLE.operator(true);
                 }
                 return;
             }
@@ -4542,7 +4542,7 @@ public class AI {
             if (NOT(aas)) {
                 lastVisibleReachableEnemyPos = lastVisibleEnemyPos;
                 if (move.moveCommand == MOVE_TO_ENEMY) {
-                    AI_DEST_UNREACHABLE._(false);
+                    AI_DEST_UNREACHABLE.operator(false);
                 }
                 enemyAreaNum = 0;
 //                areaNum = 0;
@@ -4555,7 +4555,7 @@ public class AI {
                 }
                 if (0 == enemyAreaNum) {
                     if (move.moveCommand == MOVE_TO_ENEMY) {
-                        AI_DEST_UNREACHABLE._(true);
+                        AI_DEST_UNREACHABLE.operator(true);
                     }
 //                    areaNum = 0;
                 } else {
@@ -4565,10 +4565,10 @@ public class AI {
                         lastVisibleReachableEnemyPos = pos;
                         lastVisibleReachableEnemyAreaNum = enemyAreaNum;
                         if (move.moveCommand == MOVE_TO_ENEMY) {
-                            AI_DEST_UNREACHABLE._(false);
+                            AI_DEST_UNREACHABLE.operator(false);
                         }
                     } else if (move.moveCommand == MOVE_TO_ENEMY) {
-                        AI_DEST_UNREACHABLE._(true);
+                        AI_DEST_UNREACHABLE.operator(true);
                     }
                 }
             }
@@ -4635,13 +4635,13 @@ public class AI {
                 }
             }
 
-            AI_ENEMY_IN_FOV._(false);
-            AI_ENEMY_VISIBLE._(false);
+            AI_ENEMY_IN_FOV.operator(false);
+            AI_ENEMY_VISIBLE.operator(false);
 
             if (CanSee(enemyEnt, false)) {
-                AI_ENEMY_VISIBLE._(true);
+                AI_ENEMY_VISIBLE.operator(true);
                 if (CheckFOV(enemyEnt.GetPhysics().GetOrigin())) {
-                    AI_ENEMY_IN_FOV._(true);
+                    AI_ENEMY_IN_FOV.operator(true);
                 }
 
                 SetEnemyPosition();
@@ -4664,12 +4664,12 @@ public class AI {
         protected void SetEnemy(idActor newEnemy) {
             int[] enemyAreaNum = {0};
 
-            if (AI_DEAD._()) {
+            if (AI_DEAD.operator()) {
                 ClearEnemy();
                 return;
             }
 
-            AI_ENEMY_DEAD._(false);
+            AI_ENEMY_DEAD.operator(false);
             if (null == newEnemy) {
                 ClearEnemy();
             } else if (enemy.GetEntity() != newEnemy) {
@@ -4870,7 +4870,7 @@ public class AI {
                 damage[0] = (damage[0] + 1) / 2;  // round up so we don't do 0 damage
 
             } else if (victim.equals(enemy.GetEntity())) {
-                AI_HIT_ENEMY._(true);
+                AI_HIT_ENEMY.operator(true);
             }
         }
 
@@ -5208,7 +5208,7 @@ public class AI {
             idAngles jointAng = new idAngles();
             float orientationJointYaw;
 
-            if (AI_DEAD._()) {
+            if (AI_DEAD.operator()) {
                 return super.UpdateAnimationControllers();
             }
 
@@ -5430,7 +5430,7 @@ public class AI {
             UpdateScript();
 
             // clear the hit enemy flag so we catch the next time we hit someone
-            AI_HIT_ENEMY._(false);
+            AI_HIT_ENEMY.operator(false);
 
             if (allowHiddenMovement || !IsHidden()) {
                 // update the animstate if we're not hidden
@@ -5450,7 +5450,7 @@ public class AI {
             if (null == enemy.GetEntity() && !other.fl.notarget && (ReactionTo(other) & ATTACK_ON_ACTIVATE) != 0) {
                 Activate(other);
             }
-            AI_PUSHED._(true);
+            AI_PUSHED.operator(true);
         }
 
         protected void Event_FindEnemy(idEventArg<Integer> useFOV) {
@@ -5881,9 +5881,9 @@ public class AI {
             health = newHealth.value.intValue();
             fl.takedamage = true;
             if (health > 0) {
-                AI_DEAD._(false);
+                AI_DEAD.operator(false);
             } else {
-                AI_DEAD._(true);
+                AI_DEAD.operator(true);
             }
         }
 
@@ -6181,9 +6181,9 @@ public class AI {
             }
             talkTarget.oSet((idActor) target);
             if (target != null) {
-                AI_TALK._(true);
+                AI_TALK.operator(true);
             } else {
-                AI_TALK._(false);
+                AI_TALK.operator(false);
             }
         }
 
@@ -6263,7 +6263,7 @@ public class AI {
             idEntity hit;
 
             idActor enemyEnt = enemy.GetEntity();
-            if (!AI_ENEMY_VISIBLE._() || NOT(enemyEnt)) {
+            if (!AI_ENEMY_VISIBLE.operator() || NOT(enemyEnt)) {
                 idThread.ReturnInt(false);
                 return;
             }
@@ -6309,7 +6309,7 @@ public class AI {
             float[] distance = {0};
 
             idActor enemyEnt = enemy.GetEntity();
-            if (!AI_ENEMY_VISIBLE._() || NOT(enemyEnt)) {
+            if (!AI_ENEMY_VISIBLE.operator() || NOT(enemyEnt)) {
                 idThread.ReturnInt(false);
                 return;
             }
@@ -6373,7 +6373,7 @@ public class AI {
             float[] distance = {0};
 
             idActor enemyEnt = enemy.GetEntity();
-            if (!AI_ENEMY_VISIBLE._() || null == enemyEnt) {
+            if (!AI_ENEMY_VISIBLE.operator() || null == enemyEnt) {
                 idThread.ReturnInt(false);
                 return;
             }
@@ -6771,7 +6771,7 @@ public class AI {
         }
 
         protected void Event_JumpFrame() {
-            AI_JUMP._(true);
+            AI_JUMP.operator(true);
         }
 
         protected void Event_EnableClip() {

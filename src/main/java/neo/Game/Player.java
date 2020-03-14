@@ -1890,7 +1890,7 @@ public class Player {
             }
 
             if (objectiveSystemOpen || gameLocal.inCinematic || influenceActive != 0) {
-                if (objectiveSystemOpen && AI_PAIN._()) {
+                if (objectiveSystemOpen && AI_PAIN.operator()) {
                     TogglePDA();
                 }
                 usercmd.forwardmove = 0;
@@ -1987,7 +1987,7 @@ public class Player {
                 }
 
                 // clear out our pain flag so we can tell if we recieve any damage between now and the next time we think
-                AI_PAIN._(false);
+                AI_PAIN.operator(false);
             }
 
             // calculate the exact bobbed view position, which is used to
@@ -2706,25 +2706,25 @@ public class Player {
             }
 
             // initialize the script variables
-            AI_FORWARD._(false);
-            AI_BACKWARD._(false);
-            AI_STRAFE_LEFT._(false);
-            AI_STRAFE_RIGHT._(false);
-            AI_ATTACK_HELD._(false);
-            AI_WEAPON_FIRED._(false);
-            AI_JUMP._(false);
-            AI_DEAD._(false);
-            AI_CROUCH._(false);
-            AI_ONGROUND._(false);
-            AI_ONLADDER._(false);
-            AI_HARDLANDING._(false);
-            AI_SOFTLANDING._(false);
-            AI_RUN._(false);
-            AI_PAIN._(false);
-            AI_RELOAD._(false);
-            AI_TELEPORT._(false);
-            AI_TURN_LEFT._(false);
-            AI_TURN_RIGHT._(false);
+            AI_FORWARD.operator(false);
+            AI_BACKWARD.operator(false);
+            AI_STRAFE_LEFT.operator(false);
+            AI_STRAFE_RIGHT.operator(false);
+            AI_ATTACK_HELD.operator(false);
+            AI_WEAPON_FIRED.operator(false);
+            AI_JUMP.operator(false);
+            AI_DEAD.operator(false);
+            AI_CROUCH.operator(false);
+            AI_ONGROUND.operator(false);
+            AI_ONLADDER.operator(false);
+            AI_HARDLANDING.operator(false);
+            AI_SOFTLANDING.operator(false);
+            AI_RUN.operator(false);
+            AI_PAIN.operator(false);
+            AI_RELOAD.operator(false);
+            AI_TELEPORT.operator(false);
+            AI_TURN_LEFT.operator(false);
+            AI_TURN_RIGHT.operator(false);
 
             // reset the script object
             ConstructScriptObject();
@@ -2961,9 +2961,9 @@ public class Player {
                         lastTeleFX = gameLocal.time;
                     }
                 }
-                AI_TELEPORT._(true);
+                AI_TELEPORT.operator(true);
             } else {
-                AI_TELEPORT._(false);
+                AI_TELEPORT.operator(false);
             }
 
             // kill anything at the new position
@@ -3117,7 +3117,7 @@ public class Player {
             UpdateSkinSetup(false);
 
             isChatting = userInfo.GetBool("ui_chat", "0");
-            if (canModify && isChatting && AI_DEAD._()) {
+            if (canModify && isChatting && AI_DEAD.operator()) {
                 // if dead, always force chat icon off.
                 isChatting = false;
                 userInfo.SetBool("ui_chat", false);
@@ -3196,26 +3196,26 @@ public class Player {
                 weapon.GetEntity().EnterCinematic();
             }
 
-            AI_FORWARD._(false);
-            AI_BACKWARD._(false);
-            AI_STRAFE_LEFT._(false);
-            AI_STRAFE_RIGHT._(false);
-            AI_RUN._(false);
-            AI_ATTACK_HELD._(false);
-            AI_WEAPON_FIRED._(false);
-            AI_JUMP._(false);
-            AI_CROUCH._(false);
-            AI_ONGROUND._(true);
-            AI_ONLADDER._(false);
-            AI_DEAD._(health <= 0);
-            AI_RUN._(false);
-            AI_PAIN._(false);
-            AI_HARDLANDING._(false);
-            AI_SOFTLANDING._(false);
-            AI_RELOAD._(false);
-            AI_TELEPORT._(false);
-            AI_TURN_LEFT._(false);
-            AI_TURN_RIGHT._(false);
+            AI_FORWARD.operator(false);
+            AI_BACKWARD.operator(false);
+            AI_STRAFE_LEFT.operator(false);
+            AI_STRAFE_RIGHT.operator(false);
+            AI_RUN.operator(false);
+            AI_ATTACK_HELD.operator(false);
+            AI_WEAPON_FIRED.operator(false);
+            AI_JUMP.operator(false);
+            AI_CROUCH.operator(false);
+            AI_ONGROUND.operator(true);
+            AI_ONLADDER.operator(false);
+            AI_DEAD.operator(health <= 0);
+            AI_RUN.operator(false);
+            AI_PAIN.operator(false);
+            AI_HARDLANDING.operator(false);
+            AI_SOFTLANDING.operator(false);
+            AI_RELOAD.operator(false);
+            AI_TELEPORT.operator(false);
+            AI_TURN_LEFT.operator(false);
+            AI_TURN_RIGHT.operator(false);
         }
 
         public void ExitCinematic() {
@@ -3258,31 +3258,31 @@ public class Player {
             fallspeed = velocity.oMultiply(physicsObj.GetGravityNormal());
 
             if (influenceActive != 0) {
-                AI_FORWARD._(false);
-                AI_BACKWARD._(false);
-                AI_STRAFE_LEFT._(false);
-                AI_STRAFE_RIGHT._(false);
+                AI_FORWARD.operator(false);
+                AI_BACKWARD.operator(false);
+                AI_STRAFE_LEFT.operator(false);
+                AI_STRAFE_RIGHT.operator(false);
             } else if (gameLocal.time - lastDmgTime < 500) {
                 forwardspeed = velocity.oMultiply(viewAxis.oGet(0));
                 sidespeed = velocity.oMultiply(viewAxis.oGet(1));
-                AI_FORWARD._(AI_ONGROUND._() && (forwardspeed > 20.01f));
-                AI_BACKWARD._(AI_ONGROUND._() && (forwardspeed < -20.01f));
-                AI_STRAFE_LEFT._(AI_ONGROUND._() && (sidespeed > 20.01f));
-                AI_STRAFE_RIGHT._(AI_ONGROUND._() && (sidespeed < -20.01f));
+                AI_FORWARD.operator(AI_ONGROUND.operator() && (forwardspeed > 20.01f));
+                AI_BACKWARD.operator(AI_ONGROUND.operator() && (forwardspeed < -20.01f));
+                AI_STRAFE_LEFT.operator(AI_ONGROUND.operator() && (sidespeed > 20.01f));
+                AI_STRAFE_RIGHT.operator(AI_ONGROUND.operator() && (sidespeed < -20.01f));
             } else if (xyspeed > MIN_BOB_SPEED) {
-                AI_FORWARD._(AI_ONGROUND._() && (usercmd.forwardmove > 0));
-                AI_BACKWARD._(AI_ONGROUND._() && (usercmd.forwardmove < 0));
-                AI_STRAFE_LEFT._(AI_ONGROUND._() && (usercmd.rightmove < 0));
-                AI_STRAFE_RIGHT._(AI_ONGROUND._() && (usercmd.rightmove > 0));
+                AI_FORWARD.operator(AI_ONGROUND.operator() && (usercmd.forwardmove > 0));
+                AI_BACKWARD.operator(AI_ONGROUND.operator() && (usercmd.forwardmove < 0));
+                AI_STRAFE_LEFT.operator(AI_ONGROUND.operator() && (usercmd.rightmove < 0));
+                AI_STRAFE_RIGHT.operator(AI_ONGROUND.operator() && (usercmd.rightmove > 0));
             } else {
-                AI_FORWARD._(false);
-                AI_BACKWARD._(false);
-                AI_STRAFE_LEFT._(false);
-                AI_STRAFE_RIGHT._(false);
+                AI_FORWARD.operator(false);
+                AI_BACKWARD.operator(false);
+                AI_STRAFE_LEFT.operator(false);
+                AI_STRAFE_RIGHT.operator(false);
             }
 
-            AI_RUN._(((usercmd.buttons & BUTTON_RUN) != 0) && ((NOT(pm_stamina.GetFloat())) || (stamina > pm_staminathreshold.GetFloat())));
-            AI_DEAD._(health <= 0);
+            AI_RUN.operator(((usercmd.buttons & BUTTON_RUN) != 0) && ((NOT(pm_stamina.GetFloat())) || (stamina > pm_staminathreshold.GetFloat())));
+            AI_DEAD.operator(health <= 0);
         }
 
         public void SetViewAngles(final idAngles angles) {
@@ -3638,7 +3638,7 @@ public class Player {
                     blink_time = 0;
 
                     // let the anim script know we took damage
-                    AI_PAIN._(Pain(inflictor, attacker, damage[0], dir, location));
+                    AI_PAIN.operator(Pain(inflictor, attacker, damage[0], dir, location));
                     if (!g_testDeath.GetBool()) {
                         lastDmgTime = gameLocal.time;
                     }
@@ -3735,8 +3735,8 @@ public class Player {
                 health = -999;
             }
 
-            if (AI_DEAD._()) {
-                AI_PAIN._(true);
+            if (AI_DEAD.operator()) {
+                AI_PAIN.operator(true);
                 return;
             }
 
@@ -3747,7 +3747,7 @@ public class Player {
                 playerView.Fade(colorBlack, 12000);
             }
 
-            AI_DEAD._(true);
+            AI_DEAD.operator(true);
             SetAnimState(ANIMCHANNEL_LEGS, "Legs_Death", 4);
             SetAnimState(ANIMCHANNEL_TORSO, "Torso_Death", 4);
             SetWaitState("");
@@ -3985,7 +3985,7 @@ public class Player {
             blink_time = 0;
 
             // play the fire animation
-            AI_WEAPON_FIRED._(true);
+            AI_WEAPON_FIRED.operator(true);
 
             // update view feedback
             playerView.WeaponFireFeedback(weaponDef);
@@ -4218,7 +4218,7 @@ public class Player {
         public boolean Give(final String statname, final String value) {
             int amount;
 
-            if (AI_DEAD._()) {
+            if (AI_DEAD.operator()) {
                 return false;
             }
 
@@ -4340,7 +4340,7 @@ public class Player {
          */
         public void GiveHealthPool(float amt) {
 
-            if (AI_DEAD._()) {
+            if (AI_DEAD.operator()) {
                 return;
             }
 
@@ -5123,7 +5123,7 @@ public class Player {
                 return;
             }
 
-            if (AI_DEAD._() && !force) {
+            if (AI_DEAD.operator() && !force) {
                 return;
             }
 
@@ -5969,7 +5969,7 @@ public class Player {
             }
 
             // clear out our pain flag so we can tell if we recieve any damage between now and the next time we think
-            AI_PAIN._(false);
+            AI_PAIN.operator(false);
 
             // calculate the exact bobbed view position, which is used to
             // position the view weapon, among other things
@@ -6110,7 +6110,7 @@ public class Player {
                     UpdateDeathSkin(true);
                 }
                 // die
-                AI_DEAD._(true);
+                AI_DEAD.operator(true);
                 ClearPowerUps();
                 SetAnimState(ANIMCHANNEL_LEGS, "Legs_Death", 4);
                 SetAnimState(ANIMCHANNEL_TORSO, "Torso_Death", 4);
@@ -6142,7 +6142,7 @@ public class Player {
                     final idDeclEntityDef def = (idDeclEntityDef) declManager.DeclByIndex(DECL_ENTITYDEF, lastDamageDef, false);
                     if (def != null) {
                         playerView.DamageImpulse(lastDamageDir.oMultiply(viewAxis.Transpose()), def.dict);
-                        AI_PAIN._(Pain(null, null, oldHealth - health, lastDamageDir, lastDamageLocation));
+                        AI_PAIN.operator(Pain(null, null, oldHealth - health, lastDamageDir, lastDamageLocation));
                         lastDmgTime = gameLocal.time;
                     } else {
                         common.Warning("NET: no damage def for damage feedback '%d'\n", lastDamageDef);
@@ -6499,9 +6499,9 @@ public class Player {
         }
 
         private void StopFiring() {
-            AI_ATTACK_HELD._(false);
-            AI_WEAPON_FIRED._(false);
-            AI_RELOAD._(false);
+            AI_ATTACK_HELD.operator(false);
+            AI_WEAPON_FIRED.operator(false);
+            AI_RELOAD.operator(false);
             if (weapon.GetEntity() != null) {
                 weapon.GetEntity().EndAttack();
             }
@@ -6524,7 +6524,7 @@ public class Player {
 
             if (!hiddenWeapon && weapon.GetEntity().IsReady()) {
                 if (weapon.GetEntity().AmmoInClip() != 0 || weapon.GetEntity().AmmoAvailable() != 0) {
-                    AI_ATTACK_HELD._(true);
+                    AI_ATTACK_HELD.operator(true);
                     weapon.GetEntity().BeginAttack();
                     if ((weapon_soulcube >= 0) && (currentWeapon == weapon_soulcube)) {
                         if (hud != null) {
@@ -6556,13 +6556,13 @@ public class Player {
 
             weapon.GetEntity().RaiseWeapon();
             if (weapon.GetEntity().IsReloading()) {
-                if (!AI_RELOAD._()) {
-                    AI_RELOAD._(true);
+                if (!AI_RELOAD.operator()) {
+                    AI_RELOAD.operator(true);
                     SetState("ReloadWeapon");
                     UpdateScript();
                 }
             } else {
-                AI_RELOAD._(false);
+                AI_RELOAD.operator(false);
             }
 
             if (idealWeapon == weapon_soulcube && soulCubeProjectile.GetEntity() != null) {
@@ -6624,12 +6624,12 @@ public class Player {
             }
 
             // check for attack
-            AI_WEAPON_FIRED._(false);
+            AI_WEAPON_FIRED.operator(false);
             if (0 == influenceActive) {
                 if (((usercmd.buttons & BUTTON_ATTACK) != 0) && !weaponGone) {
                     FireWeapon();
                 } else if ((oldButtons & BUTTON_ATTACK) != 0) {
-                    AI_ATTACK_HELD._(false);
+                    AI_ATTACK_HELD.operator(false);
                     weapon.GetEntity().EndAttack();
                 }
             }
@@ -6936,8 +6936,8 @@ public class Player {
             waterLevel_t waterLevel;
             boolean noDamage;
 
-            AI_SOFTLANDING._(false);
-            AI_HARDLANDING._(false);
+            AI_SOFTLANDING.operator(false);
+            AI_HARDLANDING.operator(false);
 
             // if the player is not on the ground
             if (!physicsObj.HasGroundContacts()) {
@@ -7012,7 +7012,7 @@ public class Player {
             }
 
             if (delta > fatalDelta) {
-                AI_HARDLANDING._(true);
+                AI_HARDLANDING.operator(true);
                 landChange = -32;
                 landTime = gameLocal.time;
                 if (!noDamage) {
@@ -7020,7 +7020,7 @@ public class Player {
                     Damage(null, null, new idVec3(0, 0, -1), "damage_fatalfall", 1.0f, 0);
                 }
             } else if (delta > hardDelta) {
-                AI_HARDLANDING._(true);
+                AI_HARDLANDING.operator(true);
                 landChange = -24;
                 landTime = gameLocal.time;
                 if (!noDamage) {
@@ -7028,7 +7028,7 @@ public class Player {
                     Damage(null, null, new idVec3(0, 0, -1), "damage_hardfall", 1.0f, 0);
                 }
             } else if (delta > 30) {
-                AI_HARDLANDING._(true);
+                AI_HARDLANDING.operator(true);
                 landChange = -16;
                 landTime = gameLocal.time;
                 if (!noDamage) {
@@ -7036,7 +7036,7 @@ public class Player {
                     Damage(null, null, new idVec3(0, 0, -1), "damage_softfall", 1.0f, 0);
                 }
             } else if (delta > 7) {
-                AI_SOFTLANDING._(true);
+                AI_SOFTLANDING.operator(true);
                 landChange = -8;
                 landTime = gameLocal.time;
             } else if (delta > 3) {
@@ -7367,15 +7367,15 @@ public class Player {
 
             oldViewYaw = viewAngles.yaw;
 
-            AI_TURN_LEFT._(false);
-            AI_TURN_RIGHT._(false);
+            AI_TURN_LEFT.operator(false);
+            AI_TURN_RIGHT.operator(false);
             if (idealLegsYaw < -45.0f) {
                 idealLegsYaw = 0;
-                AI_TURN_RIGHT._(true);
+                AI_TURN_RIGHT.operator(true);
                 blend = true;
             } else if (idealLegsYaw > 45.0f) {
                 idealLegsYaw = 0;
-                AI_TURN_LEFT._(true);
+                AI_TURN_LEFT.operator(true);
                 blend = true;
             }
 
@@ -7538,15 +7538,15 @@ public class Player {
             }
 
             if (noclip || gameLocal.inCinematic || (influenceActive == INFLUENCE_LEVEL2)) {
-                AI_CROUCH._(false);
-                AI_ONGROUND._(influenceActive == INFLUENCE_LEVEL2);
-                AI_ONLADDER._(false);
-                AI_JUMP._(false);
+                AI_CROUCH.operator(false);
+                AI_ONGROUND.operator(influenceActive == INFLUENCE_LEVEL2);
+                AI_ONLADDER.operator(false);
+                AI_JUMP.operator(false);
             } else {
-                AI_CROUCH._(physicsObj.IsCrouching());
-                AI_ONGROUND._(physicsObj.HasGroundContacts());
-                AI_ONLADDER._(physicsObj.OnLadder());
-                AI_JUMP._(physicsObj.HasJumped());
+                AI_CROUCH.operator(physicsObj.IsCrouching());
+                AI_ONGROUND.operator(physicsObj.HasGroundContacts());
+                AI_ONLADDER.operator(physicsObj.OnLadder());
+                AI_JUMP.operator(physicsObj.HasJumped());
 
                 // check if we're standing on top of a monster and give a push if we are
                 idEntity groundEnt = physicsObj.GetGroundEntity();
@@ -7564,7 +7564,7 @@ public class Player {
                 }
             }
 
-            if (AI_JUMP._()) {
+            if (AI_JUMP.operator()) {
                 // bounce the view weapon
                 loggedAccel_t acc = loggedAccel[currentLoggedAccel & (NUM_LOGGED_ACCELS - 1)];
                 currentLoggedAccel++;
@@ -7573,7 +7573,7 @@ public class Player {
                 acc.dir.oSet(0, acc.dir.oSet(1, 0));
             }
 
-            if (AI_ONLADDER._()) {
+            if (AI_ONLADDER.operator()) {
                 int old_rung = (int) (oldOrigin.z / LADDER_RUNG_DISTANCE);
                 int new_rung = (int) (physicsObj.GetOrigin().z / LADDER_RUNG_DISTANCE);
 
@@ -7605,7 +7605,7 @@ public class Player {
                 }
             }
 
-            if (healthPool != 0 && gameLocal.time > nextHealthPulse && !AI_DEAD._() && health > 0) {
+            if (healthPool != 0 && gameLocal.time > nextHealthPulse && !AI_DEAD.operator() && health > 0) {
                 assert (!gameLocal.isClient);	// healthPool never be set on client
                 int amt = (int) ((healthPool > 5) ? 5 : healthPool);
                 health += amt;
@@ -7619,7 +7619,7 @@ public class Player {
                 healthPulse = true;
             }
             if (BuildDefines.ID_DEMO_BUILD) {
-                if (!gameLocal.inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal.time > nextHealthTake && !AI_DEAD._() && health > g_healthTakeLimit.GetInteger()) {
+                if (!gameLocal.inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal.time > nextHealthTake && !AI_DEAD.operator() && health > g_healthTakeLimit.GetInteger()) {
                     assert (!gameLocal.isClient);	// healthPool never be set on client
                     health -= g_healthTakeAmt.GetInteger();
                     if (health < g_healthTakeLimit.GetInteger()) {

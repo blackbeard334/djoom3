@@ -1368,14 +1368,14 @@ public class Weapon {
 
         public void Raise() {
             if (isLinked) {
-                WEAPON_RAISEWEAPON._(true);
+                WEAPON_RAISEWEAPON.operator(true);
             }
         }
 
         public void PutAway() {
             hasBloodSplat = false;
             if (isLinked) {
-                WEAPON_LOWERWEAPON._(true);
+                WEAPON_LOWERWEAPON.operator(true);
             }
         }
 
@@ -1387,7 +1387,7 @@ public class Weapon {
          */
         public void Reload() {
             if (isLinked) {
-                WEAPON_RELOAD._(true);
+                WEAPON_RELOAD.operator(true);
             }
         }
 
@@ -1474,20 +1474,20 @@ public class Weapon {
                 return;
             }
 
-            if (!WEAPON_ATTACK._()) {
+            if (!WEAPON_ATTACK.operator()) {
                 if (sndHum != null) {
                     StopSound(etoi(SND_CHANNEL_BODY), false);
                 }
             }
-            WEAPON_ATTACK._(true);
+            WEAPON_ATTACK.operator(true);
         }
 
         public void EndAttack() {
             if (!WEAPON_ATTACK.IsLinked()) {
                 return;
             }
-            if (WEAPON_ATTACK._()) {
-                WEAPON_ATTACK._(false);
+            if (WEAPON_ATTACK.operator()) {
+                WEAPON_ATTACK.operator(false);
                 if (sndHum != null) {
                     StartSoundShader(sndHum, SND_CHANNEL_BODY, 0, false, null);
                 }
@@ -1672,7 +1672,7 @@ public class Weapon {
                 }
             }
 
-            WEAPON_RELOAD._(false);
+            WEAPON_RELOAD.operator(false);
         }
 
         public void EnterCinematic() {
@@ -1682,13 +1682,13 @@ public class Weapon {
                 SetState("EnterCinematic", 0);
                 thread.Execute();
 
-                WEAPON_ATTACK._(false);
-                WEAPON_RELOAD._(false);
-                WEAPON_NETRELOAD._(false);
-                WEAPON_NETENDRELOAD._(false);
-                WEAPON_NETFIRING._(false);
-                WEAPON_RAISEWEAPON._(false);
-                WEAPON_LOWERWEAPON._(false);
+                WEAPON_ATTACK.operator(false);
+                WEAPON_RELOAD.operator(false);
+                WEAPON_NETRELOAD.operator(false);
+                WEAPON_NETENDRELOAD.operator(false);
+                WEAPON_NETFIRING.operator(false);
+                WEAPON_RAISEWEAPON.operator(false);
+                WEAPON_LOWERWEAPON.operator(false);
             }
 
             disabled = true;
@@ -2054,16 +2054,16 @@ public class Weapon {
             if (owner != null && gameLocal.localClientNum != owner.entityNumber && WEAPON_NETFIRING.IsLinked()) {
 
                 // immediately go to the firing state so we don't skip fire animations
-                if (!WEAPON_NETFIRING._() && isFiring) {
+                if (!WEAPON_NETFIRING.operator() && isFiring) {
                     idealState.oSet("Fire");
                 }
 
                 // immediately switch back to idle
-                if (WEAPON_NETFIRING._() && !isFiring) {
+                if (WEAPON_NETFIRING.operator() && !isFiring) {
                     idealState.oSet("Idle");
                 }
 
-                WEAPON_NETFIRING._(isFiring);
+                WEAPON_NETFIRING.operator(isFiring);
             }
 
             if (snapLight != lightOn) {
@@ -2084,15 +2084,15 @@ public class Weapon {
                 case EVENT_RELOAD: {
                     if (gameLocal.time - time < 1000) {
                         if (WEAPON_NETRELOAD.IsLinked()) {
-                            WEAPON_NETRELOAD._(true);
-                            WEAPON_NETENDRELOAD._(false);
+                            WEAPON_NETRELOAD.operator(true);
+                            WEAPON_NETENDRELOAD.operator(false);
                         }
                     }
                     return true;
                 }
                 case EVENT_ENDRELOAD: {
                     if (WEAPON_NETENDRELOAD.IsLinked()) {
-                        WEAPON_NETENDRELOAD._(true);
+                        WEAPON_NETENDRELOAD.operator(true);
                     }
                     return true;
                 }
@@ -2374,7 +2374,7 @@ public class Weapon {
         private void Event_WeaponReady() {
             status = WP_READY;
             if (isLinked) {
-                WEAPON_RAISEWEAPON._(false);
+                WEAPON_RAISEWEAPON.operator(false);
             }
             if (sndHum != null) {
                 StartSoundShader(sndHum, SND_CHANNEL_BODY, 0, false, null);
@@ -2385,7 +2385,7 @@ public class Weapon {
         private void Event_WeaponOutOfAmmo() {
             status = WP_OUTOFAMMO;
             if (isLinked) {
-                WEAPON_RAISEWEAPON._(false);
+                WEAPON_RAISEWEAPON.operator(false);
             }
         }
 
@@ -2396,14 +2396,14 @@ public class Weapon {
         private void Event_WeaponHolstered() {
             status = WP_HOLSTERED;
             if (isLinked) {
-                WEAPON_LOWERWEAPON._(false);
+                WEAPON_LOWERWEAPON.operator(false);
             }
         }
 
         private void Event_WeaponRising() {
             status = WP_RISING;
             if (isLinked) {
-                WEAPON_LOWERWEAPON._(false);
+                WEAPON_LOWERWEAPON.operator(false);
             }
             owner.WeaponRisingCallback();
         }
@@ -2411,7 +2411,7 @@ public class Weapon {
         private void Event_WeaponLowering() {
             status = WP_LOWERING;
             if (isLinked) {
-                WEAPON_RAISEWEAPON._(false);
+                WEAPON_RAISEWEAPON.operator(false);
             }
             owner.WeaponLoweringCallback();
         }

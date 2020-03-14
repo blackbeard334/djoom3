@@ -3789,7 +3789,7 @@ public class Game_local {
 
             // this should fix going into a cinematic when dead.. rare but happens
             idPlayer client = GetLocalPlayer();
-            if (client.health <= 0 || client.AI_DEAD._()) {
+            if (client.health <= 0 || client.AI_DEAD.operator()) {
                 return;
             }
 
