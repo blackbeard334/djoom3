@@ -26,8 +26,8 @@ public class Base64 {
 
         public idBase64(final idStr s) {
             Init();
-            this.data = s.data.getBytes();
-            this.len = s.len;
+            this.data = s.getData().getBytes();
+            this.len = s.Length();
             this.alloced = s.alloced;
         }
 //public				~idBase64( void );
@@ -170,7 +170,7 @@ public class Base64 {
         public void oSet(final idStr s) {
             EnsureAlloced(s.Length() + 1); // trailing \0 - beware, this does a Release
 //	strcpy( (char *)data, s.c_str() );
-            this.data = s.data.getBytes();
+            this.data = s.getData().getBytes();
             len = s.Length();
         }
 //

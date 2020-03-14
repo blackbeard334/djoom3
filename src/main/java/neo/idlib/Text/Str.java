@@ -90,10 +90,10 @@ public class Str {
                 + (Char.SIZE * STR_ALLOC_BASE);//TODO:char size
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
-        protected int len;//TODO:data is a pointer in the original class.
-        protected String data = "";//i·ro·ny: when your program breaks because of two measly double quotes. stu·pid·i·ty: when it takes you 2 days to find said "bug".
+        //private int len;//TODO:data is a pointer in the original class.
+		private String data = "";//i·ro·ny: when your program breaks because of two measly double quotes. stu·pid·i·ty: when it takes you 2 days to find said "bug".
         protected int alloced;
-        protected final char baseBuffer[] = new char[STR_ALLOC_BASE];
+        //private final char baseBuffer[] = new char[STR_ALLOC_BASE];
         //
         //
 
@@ -112,8 +112,8 @@ public class Str {
             l = text.Length();
             EnsureAlloced(l + 1);
 //	strcpy( data, text.data );
-            data = text.data;
-            len = l;
+            setData(text.getData());
+            // // setLen(l);
         }
 
         public idStr(final idStr text, int start, int end) {
@@ -140,10 +140,10 @@ public class Str {
 //	for ( i = 0; i < l; i++ ) {
 //		data[ i ] = text.data[ start + i ];
 //	}
-            data = text.data.substring(start, end);
+            setData(text.getData().substring(start, end));
 
 //	data+= '\0';
-            len = l;
+            // // setLen(l);
         }
 
         public idStr(final String text) {
@@ -155,8 +155,8 @@ public class Str {
                 l = text.length();
                 EnsureAlloced(l + 1);
 //		strcpy( data, text );
-                data = text;
-                len = l;
+                setData(text);
+                // // setLen(l);
             }
         }
 
@@ -169,8 +169,8 @@ public class Str {
                 l = text.length;
                 EnsureAlloced(l + 1);
 //		strcpy( data, text );
-                data = ctos(text);
-                len = l;
+                setData(ctos(text));
+                // // setLen(l);
             }
         }
 
@@ -196,26 +196,26 @@ public class Str {
 
             EnsureAlloced(l + 1);
 
-            data = text.substring(start, end);
+            setData(text.substring(start, end));
 
 //	data += '\0';
-            len = l;
+            // // setLen(l);
         }
 
         public idStr(final boolean b) {
             Init();
             EnsureAlloced(2);
-            data = b ? "1" : "0";
+            setData(b ? "1" : "0");
 //	data+= '\0';
-            len = 1;
+            // // setLen(1);
         }
 
         public idStr(final char c) {
             Init();
             EnsureAlloced(2);
-            data = "" + c;
+            setData("" + c);
 //	data+= '\0';
-            len = 1;
+            // // setLen(1);
         }
 
         public idStr(final int i) {
@@ -229,8 +229,8 @@ public class Str {
 
             EnsureAlloced(l + 1);
 //	strcpy( data, text );
-            data = text;
-            len = l;
+            setData(text);
+            // // setLen(l);
         }
 
         public idStr(final long u) {
@@ -241,8 +241,8 @@ public class Str {
 //	l = sprintf( text, "%u", u );
             EnsureAlloced(l + 1);
             //	strcpy( data, text );
-            data = text;
-            len = l;
+            setData(text);
+            // // setLen(l);
         }
 
         public idStr(final float f) {
@@ -256,8 +256,8 @@ public class Str {
 //	while( l > 0 && text[l-1] == '.' ) text[--l] = '\0';
             EnsureAlloced(l + 1);
             //	strcpy( data, text );
-            data = text;
-            len = l;
+            setData(text);
+            // // setLen(l);
         }
 //public						~idStr( void ) {
 //	FreeData();
@@ -270,24 +270,24 @@ public class Str {
 
         @Deprecated
         public char[] c_str() {
-            return data.toCharArray();
+            return getData().toCharArray();
         }
 //public	operator			const char *( void ) const;
 //public	operator			const char *( void );
 //
 
         public char oGet(int index) {
-            assert ((index >= 0) && (index <= len));
-            return data.charAt(index);
+            assert ((index >= 0) && (index <= Length()));
+            return getData().charAt(index);
         }
 
         public char oSet(int index, final char value) {
-            assert ((index >= 0) && (index <= len));
-            if (index == len
-                    || 0 == len) {//just append if length == 0;
-                data += value;
+            assert ((index >= 0) && (index <= Length()));
+            if (index == Length()
+                    || 0 == Length()) {//just append if length == 0;
+                setData(getData() + value);
             } else {
-                data = data.substring(0, index) + value + data.substring(index + 1);
+                setData(getData().substring(0, index) + value + getData().substring(index + 1));
             }
             return value;
         }
@@ -302,8 +302,8 @@ public class Str {
             EnsureAlloced(l + 1, false);
 //	memcpy( data, text.data, l );
 //	data[l] = '\0';
-            data = text.data;
-            len = l;
+            setData(text.getData());
+            // // setLen(l);
         }
 
 //public	void				operator=( const char *text );
@@ -313,14 +313,14 @@ public class Str {
             if (text == null) {
                 // safe behaviour if NULL
                 EnsureAlloced(1, false);
-                len = 0;
+                // // setLen(0);
                 return this;
             }
 
             l = text.length();
             EnsureAlloced(l + 1, false);
-            data = text;
-            len = l;
+            setData(text);
+            // // setLen(l);
             return this;
         }
 
@@ -330,14 +330,14 @@ public class Str {
 
 //public	friend idStr		operator+( const idStr &a, const idStr &b );
         public idStr oPlus(final idStr b) {
-            idStr result = new idStr(this.data);
-            result.Append(b.data);
+            idStr result = new idStr(this.getData());
+            result.Append(b.getData());
             return result;
         }
 
 //public	friend idStr		operator+( const idStr &a, const char *b );
         public idStr oPlus(final String b) {
-            idStr result = new idStr(this.data);
+            idStr result = new idStr(this.getData());
             result.Append(b);
             return result;
         }
@@ -345,14 +345,14 @@ public class Str {
 //public	friend idStr		operator+( const char *a, const idStr &b );
         public static idStr oPlus(final String a, final idStr b) {
             idStr result = new idStr(a);
-            result.Append(b.data);
+            result.Append(b.getData());
             return result;
         }
 
 //public	friend idStr		operator+( const idStr &a, const float b );
         public idStr oPlus(final float b) {
             String text;
-            idStr result = new idStr(this.data);
+            idStr result = new idStr(this.getData());
 
             text = String.format("%f", b);
             result.Append(text);
@@ -364,7 +364,7 @@ public class Str {
 //public	friend idStr		operator+( const idStr &a, const unsigned b );
         public idStr oPlus(final long b) {
             String text;
-            idStr result = new idStr(this.data);
+            idStr result = new idStr(this.getData());
 
             text = String.format("%d", b);
             result.Append(text);
@@ -374,14 +374,14 @@ public class Str {
 //public	friend idStr		operator+( const idStr &a, const bool b );
 
         public idStr oPlus(final boolean b) {
-            idStr result = new idStr(this.data);
+            idStr result = new idStr(this.getData());
             result.Append(b ? "true" : "false");
             return result;
         }
 
 //public	friend idStr		operator+( const idStr &a, const char b );
         public idStr oPlus(final char b) {
-            idStr result = new idStr(this.data);
+            idStr result = new idStr(this.getData());
             result.Append(b);
             return result;
         }
@@ -436,7 +436,7 @@ public class Str {
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = 59 * hash + Objects.hashCode(this.data);
+            hash = 59 * hash + Objects.hashCode(this.getData());
             return hash;
         }
 
@@ -456,18 +456,18 @@ public class Str {
 
             if (obj.getClass() == String.class) {//when comparing pointers it's usually only about what they point to.
                 if (!((String) obj).isEmpty()) {
-                    return this.data.startsWith((String) obj);//TODO:should we check first character against first character only?
+                    return this.getData().startsWith((String) obj);//TODO:should we check first character against first character only?
                 }
             }
 
             if (obj.getClass() == idStr.class) {
                 if (!((idStr) obj).IsEmpty()) {
-                    return this.data.startsWith(((idStr) obj).data);
+                    return this.getData().startsWith(((idStr) obj).getData());
                 }
             }
 
             if (obj.getClass() == Character.class) {
-                return this.data.startsWith(((Character) obj).toString());
+                return this.getData().startsWith(((Character) obj).toString());
             }
 
             return false;
@@ -476,7 +476,7 @@ public class Str {
         // case sensitive compare
         public int Cmp(final String text) {
             assert (text != null);
-            return this.Cmp(data, text);
+            return this.Cmp(getData(), text);
         }
 
         public int Cmp(final idStr text) {
@@ -485,18 +485,18 @@ public class Str {
 
         public int Cmpn(final String text, int n) {
             assert (text != null);
-            return this.Cmpn(data, text, n);
+            return this.Cmpn(getData(), text, n);
         }
 
         public int CmpPrefix(final String text) {
             assert (null != text);
-            return this.Cmpn(data, text, /*strlen( text )*/ text.length());
+            return this.Cmpn(getData(), text, /*strlen( text )*/ text.length());
         }
 
         // case insensitive compare
         public int Icmp(final String text) {
             assert (text != null);
-            return this.Icmp(data, text);
+            return this.Icmp(getData(), text);
         }
 
         public int Icmp(final idStr text) {
@@ -505,18 +505,18 @@ public class Str {
 
         public int Icmpn(final String text, int n) {
             assert (text != null);
-            return this.Icmpn(data, text, n);
+            return this.Icmpn(getData(), text, n);
         }
 
         public int IcmpPrefix(final String text) {
             assert (text != null);
-            return this.Icmpn(data, text, text.length());
+            return this.Icmpn(getData(), text, text.length());
         }
 
         // case insensitive compare ignoring color
         public int IcmpNoColor(final String text) {
             assert (text != null);
-            return this.IcmpNoColor(data, text);
+            return this.IcmpNoColor(getData(), text);
         }
 
         public int IcmpNoColor(final idStr text) {
@@ -527,21 +527,24 @@ public class Str {
         // compares paths and makes sure folders come first
         public int IcmpPath(final String text) {
             assert (text != null);
-            return this.IcmpPath(data, text);
+            return this.IcmpPath(getData(), text);
         }
 
         public int IcmpnPath(final String text, int n) {
             assert (text != null);
-            return this.IcmpnPath(data, text, n);
+            return this.IcmpnPath(getData(), text, n);
         }
 
         public int IcmpPrefixPath(final String text) {
             assert (text != null);
-            return this.IcmpnPath(data, text, text.length());
+            return this.IcmpnPath(getData(), text, text.length());
         }
 
         public int Length() {
-            return len;
+        	if (getData() == null) {
+        		throw new IllegalStateException("Why null?");
+        	}
+            return getData().length();
         }
 
         public int Allocated() {
@@ -555,13 +558,13 @@ public class Str {
         public void Empty() {
             EnsureAlloced(1);
 //	data ="\0";
-            data = "";
-            len = 0;
+            setData("");
+            // // setLen(0);
         }
 
         public boolean IsEmpty() {
 //	return ( this.Cmp( data, "" ) == 0 );
-            return data.isEmpty();
+            return getData().isEmpty();
         }
 
         public void Clear() {
@@ -570,13 +573,13 @@ public class Str {
         }
 
         public void Append(final idStr a) {
-            Append(a.data);
+            Append(a.getData());
         }
 
         public void Append(final char a) {
-            EnsureAlloced(len + 2);
-            data += a;
-            len++;//TODO:remove \0
+            EnsureAlloced(Length() + 2);
+            setData(getData() + a);
+            // // setLen(Length());//TODO:remove \0
 //	data+= '\0';
         }
 
@@ -584,13 +587,13 @@ public class Str {
             int newLen;
             int i;
 
-            newLen = len + text.length();
+            newLen = Length() + text.length();
             EnsureAlloced(newLen + 1);
 //	for ( i = 0; i < text.length; i++ ) {
 //		data[ len + i ] = text[ i ];
 //	}
-            data += text;
-            len = newLen;
+            setData(getData() + text);
+            // setLen(newLen);
 //	data[ len ] = '\0';
         }
 
@@ -604,13 +607,13 @@ public class Str {
             int i;
 
             if (text != null && l > 0) {
-                newLen = len + l;
+                newLen = Length() + l;
                 EnsureAlloced(newLen + 1);
 //		for ( i = 0; text[ i ] && i < l; i++ ) {
 //			data[ len + i ] = text[ i ];
 //		}
-                data = data.substring(0, len) + text.substring(0, l);
-                len = newLen;
+                setData(getData().substring(0, Length()) + text.substring(0, l));
+                // setLen(newLen);
 //		data[ len ] = '\0';
             }
         }
@@ -620,18 +623,18 @@ public class Str {
 
             if (index < 0) {
                 index = 0;
-            } else if (index > len) {
-                index = len;
+            } else if (index > Length()) {
+                index = Length();
             }
 
             l = 1;
-            EnsureAlloced(len + l + 1);
+            EnsureAlloced(Length() + l + 1);
 //	for ( i = len; i >= index; i-- ) {
 //		data[i+l] = data[i];
 //	}
 //	data[index] = a;
-            data = data.substring(0, index) + a + data.substring(index, data.length());
-            len++;
+            setData(getData().substring(0, index) + a + getData().substring(index, getData().length()));
+            // setLen(getLen() + 1);
         }
 
         public void Insert(final String text, int index) {
@@ -639,21 +642,21 @@ public class Str {
 
             if (index < 0) {
                 index = 0;
-            } else if (index > len) {
-                index = len;
+            } else if (index > Length()) {
+                index = Length();
             }
 
 //	l = strlen( text );
             l = text.length();
-            EnsureAlloced(len + l + 1);
+            EnsureAlloced(Length() + l + 1);
 //	for ( i = len; i >= index; i-- ) {
 //		data[i+l] = data[i];
 //	}
 //	for ( i = 0; i < l; i++ ) {
 //		data[index+i] = text[i];
 //	}
-            data = data.substring(0, index) + text + data.substring(index, data.length());
-            len += l;
+            setData(getData().substring(0, index) + text + getData().substring(index, getData().length()));
+            // setLen(getLen() + l);
         }
 
         public void ToLower() {
@@ -662,7 +665,7 @@ public class Str {
 //			data[i] += ( 'a' - 'A' );
 //		}
 //	}
-            data = data.toLowerCase();
+            setData(getData().toLowerCase());
         }
 
         public void ToUpper() {
@@ -671,52 +674,52 @@ public class Str {
 //			data[i] -= ( 'a' - 'A' );
 //		}
 //	}
-            data = data.toUpperCase();
+            setData(getData().toUpperCase());
         }
 
         public boolean IsNumeric() {
-            return this.IsNumeric(data);
+            return this.IsNumeric(getData());
         }
 
         public boolean IsColor() {
-            return this.IsColor(data);
+            return this.IsColor(getData());
         }
 
         public boolean HasLower() {
-            return this.HasLower(data);
+            return this.HasLower(getData());
         }
 
         public boolean HasUpper() {
-            return this.HasUpper(data);
+            return this.HasUpper(getData());
         }
 
         public int LengthWithoutColors() {
-            return this.LengthWithoutColors(data);
+            return this.LengthWithoutColors(getData());
         }
 
         public idStr RemoveColors() {
-            data = this.RemoveColors(data);
+            setData(this.RemoveColors(getData()));
 //            len = Length( data );
-            len = data.length();
+            // setLen(getData().length());
             return this;
         }
 
         public void CapLength(int newlen) {
-            if (len <= newlen) {
+            if (Length() <= newlen) {
                 return;
             }
-            data = data.substring(0, newlen);
-            len = newlen;
+            setData(getData().substring(0, newlen));
+            // setLen(newlen);
         }
 
         public void Fill(final char ch, int newlen) {
             EnsureAlloced(newlen + 1);
-            len = newlen;
+            // setLen(newlen);
 //	memset( data, ch, len );
-            data = "";
+            setData("");
 //        Arrays.fill(data, ch);
             for (int a = 0; a < newlen; a++) {
-                data += ch;
+                setData(getData() + ch);
             }
 
 //	data[ len ] = 0;
@@ -732,9 +735,9 @@ public class Str {
 
         public int Find(final char c, int start, int end) {
             if (end == -1) {
-                end = len;
+                end = Length();
             }
-            return this.FindChar(data, c, start, end);
+            return this.FindChar(getData(), c, start, end);
         }
 
         public int Find(final String text) {
@@ -751,13 +754,13 @@ public class Str {
 
         public int Find(final String text, boolean casesensitive, int start, int end) {
             if (end == -1) {
-                end = len;
+                end = Length();
             }
-            return this.FindText(data, text, casesensitive, start, end);
+            return this.FindText(getData(), text, casesensitive, start, end);
         }
 
         public boolean Filter(final String filter, boolean casesensitive) {
-            return this.Filter(filter, data, casesensitive);
+            return this.Filter(filter, getData(), casesensitive);
         }
         /*
          ============
@@ -777,7 +780,7 @@ public class Str {
 //	}
 //
 //	return -1;
-            return data.lastIndexOf(c);
+            return getData().lastIndexOf(c);
         }
 
         public idStr Left(int len, idStr result) {// store the leftmost 'len' characters in the result
@@ -807,7 +810,7 @@ public class Str {
                 len = i - start;
             }
 
-            result.Append(data.substring(start), len);
+            result.Append(getData().substring(start), len);
             return result;
         }
 
@@ -837,7 +840,7 @@ public class Str {
 
 //	result.Append( &data[ start ], len );
 //	result.Append( &data[ start ], len );
-            result.Append(data.substring(start), len);
+            result.Append(getData().substring(start), len);
             return result;
         }
 
@@ -846,13 +849,13 @@ public class Str {
 //		memmove( &data[ 0 ], &data[ 1 ], len );
 //		len--;
 //	}
-            while (c == data.charAt(0)) {
-                len--;
-                if (data.length() == 1) {
-                    data = "";
+            while (c == getData().charAt(0)) {
+                // setLen(getLen() - 1);
+                if (getData().length() == 1) {
+                    setData("");
                     break;
                 }
-                data = data.substring(1);
+                setData(getData().substring(1));
             }
         }
 
@@ -862,14 +865,13 @@ public class Str {
 //	l = strlen( string );
             l = string.length();
             if (l > 0) {
-                while (data.startsWith(string)) {
+                while (getData().startsWith(string)) {
 //			memmove( data, data + l, len - l + 1 );
-                    len -= l;
-                    if (data.length() == l) {
-                        data = "";
+                    if (getData().length() == l) {
+                        setData("");
                         break;
                     }
-                    data = data.substring(l);
+                    setData(getData().substring(l));
                 }
             }
         }
@@ -880,10 +882,10 @@ public class Str {
 //	l = strlen( string );
             l = string.length();
 //	if ( ( l > 0 ) && !Cmpn( string, l ) ) {
-            if ((l > 0) && data.startsWith(string)) {
+            if ((l > 0) && getData().startsWith(string)) {
 //		memmove( data, data + l, len - l + 1 );
-                data = data.substring(l);
-                len -= l;
+                setData(getData().substring(l));
+                // // setLen(Length());
                 return true;
             }
             return false;
@@ -891,9 +893,9 @@ public class Str {
 
         public void StripTrailing(final char c) {// strip char from end as many times as the char occurs
 
-            for (int i = Length(); i > 0 && data.charAt(i - 1) == c; i--) {
-                len--;
-                data = data.substring(0, len - 1);
+            for (int i = Length(); i > 0 && getData().charAt(i - 1) == c; i--) {
+                // setLen(getLen() - 1);
+                setData(getData().substring(0, Length() - 1));
             }
         }
 
@@ -903,10 +905,10 @@ public class Str {
 //	l = strlen( string );
             l = string.length();
             if (l > 0) {
-                while ((len >= l) && data.endsWith(string)) {
-                    len -= l;
+                while ((Length() >= l) && getData().endsWith(string)) {
+                    setData(getData().substring(0, Length() - l));
+                    // // setLen(Length());
 //			data[len] = '\0';
-                    data = data.substring(00, len - 1);
                 }
             }
         }
@@ -916,10 +918,10 @@ public class Str {
 
 //	l = strlen( string );
             l = string.length();
-            if ((l > 0) && (len >= l) && data.endsWith(string)) {
-                len -= l;
+            if ((l > 0) && (Length() >= l) && getData().endsWith(string)) {
+                // setLen(getLen() - l);
 //		data[len] = '\0';
-                data = data.substring(0, len - 1);
+                setData(getData().substring(0, Length() - 1));
                 return true;
             }
             return false;
@@ -943,8 +945,8 @@ public class Str {
 //		data[ i - 1 ] = '\0';
 //		len--;
 //	}
-            data = data.trim();
-            len = data.length();
+            setData(getData().trim());
+            // setLen(getData().length());
         }
         /*
          ============
@@ -955,20 +957,20 @@ public class Str {
          */
 
         public idStr StripQuotes() {// strip quotes around string
-            if (data.charAt(0) != '\"') {
+            if (getData().charAt(0) != '\"') {
                 return this;
             }
 
             // Remove the trailing quote first
-            if (data.charAt(len - 1) == '\"') {
+            if (getData().charAt(Length() - 1) == '\"') {
 //		data[len-1] = '\0';
-                data = data.substring(0, len - 2);
-                len--;
+                setData(getData().substring(0, Length() - 2));
+                // setLen(getLen() - 1);
             }
 
             // Strip the leading quote now
-            len--;
-            data = data.substring(1);
+            // setLen(getLen() - 1);
+            setData(getData().substring(1));
 //	memmove( &data[ 0 ], &data[ 1 ], len );
 //	data[len] = '\0';
 
@@ -976,8 +978,8 @@ public class Str {
         }
 
         public void Replace(final String old, final String nw) {
-            data = data.replaceAll(old, nw);
-            len = data.length();
+            setData(getData().replaceAll(old, nw));
+            // setLen(getData().length());
 //	int		oldLen, newLen, i, j, count;
 //	idStr	oldString=new idStr( data );
 //
@@ -1031,8 +1033,8 @@ public class Str {
             hash = 0;
             i = 0;
 //	while( data[i] != '\0' ) {
-            while (i < data.length()) {
-                letter = this.ToLower(data.charAt(i));
+            while (i < getData().length()) {
+                letter = this.ToLower(getData().charAt(i));
                 if (letter == '.') {
                     break;				// don't include extension
                 }
@@ -1054,7 +1056,7 @@ public class Str {
 //			data[ i ] = '/';
 //		}
 //	}
-            data = data.replaceAll("\\\\", "/");
+            setData(getData().replaceAll("\\\\", "/"));
             return this;
         }
 
@@ -1083,10 +1085,10 @@ public class Str {
 //                    break;
 //                }
 //            }
-            i = data.lastIndexOf('.');
+            i = getData().lastIndexOf('.');
             if (i > -1) {
-                len = i;
-                data = data.substring(0, len);
+                setData(getData().substring(0, i));
+                // // setLen(Length());
             }
             return this;
         }
@@ -1094,11 +1096,11 @@ public class Str {
         public idStr StripAbsoluteFileExtension() {// remove any file extension looking from front (useful if there are multiple .'s)
             int i;
 
-            for (i = 0; i < len; i++) {
-                if (data.charAt(i) == '.') {
+            for (i = 0; i < Length(); i++) {
+                if (getData().charAt(i) == '.') {
 //			data[i] = '\0';
-                    len = i;
-                    data = data.substring(0, len - 1);
+                    // setLen(i);
+                    setData(getData().substring(0, Length() - 1));
                     break;
                 }
             }
@@ -1111,7 +1113,7 @@ public class Str {
 
             // do nothing if the string already has an extension
 //            for (i = len - 1; i >= 0; i--) {
-            if (data.contains(".")) {
+            if (getData().contains(".")) {
                 return this;
             }
 //            }
@@ -1124,24 +1126,24 @@ public class Str {
 
         public idStr DefaultPath(final char[] basepath) {// if there's no path use the default
 //	if ( ( ( *this )[ 0 ] == '/' ) || ( ( *this )[ 0 ] == '\\' ) ) {
-            if ((data.charAt(0) == '/') || (data.charAt(0) == '\\')) {
+            if ((getData().charAt(0) == '/') || (getData().charAt(0) == '\\')) {
                 // absolute path location
                 return this;
             }
 
 //	*this = basepath + *this;
-            data = basepath + data;//TODO:bad..where to put the extension?
+            setData(basepath + getData());//TODO:bad..where to put the extension?
             return this;
         }
 
         public void AppendPath(final String text) {// append a partial path
             int pos;
             int i = 0;
-            char[] dataArray = data.toCharArray();
+            char[] dataArray = getData().toCharArray();
 
             if (text != null && text.length() > 0) {
-                pos = len;
-                EnsureAlloced(len + text.length() + 2);
+                pos = Length();
+                EnsureAlloced(Length() + text.length() + 2);
 
                 if (pos != 0) {
                     if (dataArray[pos - 1] != '/') {
@@ -1159,9 +1161,9 @@ public class Str {
                         dataArray[pos++] = text.charAt(i);
                     }
                 }
-                len = pos;
+                // setLen(pos);
 //		data[ pos ] = '\0';
-                data = ctos(dataArray);
+                setData(ctos(dataArray));
             }
         }
 
@@ -1173,7 +1175,7 @@ public class Str {
             int pos;
 
             pos = Length() - 1;
-            while ((pos > 0) && (data.charAt(pos) != '/') && (data.charAt(pos) != '\\')) {
+            while ((pos > 0) && (getData().charAt(pos) != '/') && (getData().charAt(pos) != '\\')) {
                 pos--;
             }
 
@@ -1190,13 +1192,13 @@ public class Str {
             int pos;
 
             pos = Length();
-            while ((pos > 0) && (data.charAt(pos - 1) != '/') && (data.charAt(pos - 1) != '\\')) {
+            while ((pos > 0) && (getData().charAt(pos - 1) != '/') && (getData().charAt(pos - 1) != '\\')) {
                 pos--;
             }
 
             idStr temp = Right(Length() - pos);
-            data = temp.data;
-            len = data.length();
+            setData(temp.getData());
+            // setLen(getData().length());
             return this;
         }
 
@@ -1207,7 +1209,7 @@ public class Str {
             // back up until a \ or the start
             //
             pos = Length();
-            while ((pos > 0) && (data.charAt(pos - 1) != '/') && (data.charAt(pos - 1) != '\\')) {
+            while ((pos > 0) && (getData().charAt(pos - 1) != '/') && (getData().charAt(pos - 1) != '\\')) {
                 pos--;
             }
 
@@ -1221,7 +1223,7 @@ public class Str {
             // back up until a \ or the start
             //
             pos = Length() - 1;
-            while ((pos > 0) && (data.charAt(pos - 1) != '/') && (data.charAt(pos - 1) != '\\')) {
+            while ((pos > 0) && (getData().charAt(pos - 1) != '/') && (getData().charAt(pos - 1) != '\\')) {
                 pos--;
             }
 
@@ -1236,12 +1238,12 @@ public class Str {
             // back up until a \ or the start
             //
             pos = Length() - 1;
-            while ((pos > 0) && (data.charAt(pos - 1) != '/') && (data.charAt(pos - 1) != '\\')) {
+            while ((pos > 0) && (getData().charAt(pos - 1) != '/') && (getData().charAt(pos - 1) != '\\')) {
                 pos--;
             }
 
             start = pos;
-            while ((pos < Length()) && (data.charAt(pos) != '.')) {
+            while ((pos < Length()) && (getData().charAt(pos) != '.')) {
                 pos++;
             }
 
@@ -1256,7 +1258,7 @@ public class Str {
             // back up until a . or the start
             //
             pos = Length() - 1;
-            while ((pos > 0) && (data.charAt(pos - 1) != '.')) {
+            while ((pos > 0) && (getData().charAt(pos - 1) != '.')) {
                 pos--;
             }
 
@@ -1269,7 +1271,7 @@ public class Str {
         }
 
         public boolean CheckExtension(final String ext) {
-            return this.CheckExtension(data, ext);
+            return this.CheckExtension(getData(), ext);
         }
 
         // char * methods to replace library functions
@@ -1415,15 +1417,15 @@ public class Str {
         }
 
         public static int Icmp(final idToken t1, final String s2) {
-            return Icmp(t1.data, s2);
+            return Icmp(t1.getData(), s2);
         }
 
         public static int Icmp(final idStr t1, final String s2) {
-            return Icmp(t1.data, s2);
+            return Icmp(t1.getData(), s2);
         }
 
         public static int Icmp(final idStr t1, final idStr s2) {
-            return Icmp(t1.data, s2.data);
+            return Icmp(t1.getData(), s2.getData());
         }
 
         public static int Icmp(final char[] t1, final char[] s2) {
@@ -2286,7 +2288,7 @@ public class Str {
         }
 
         public void FreeData() {// free allocated string memory
-            if (data != null /*&& data != baseBuffer*/) {
+            if (getData() != null /*&& data != baseBuffer*/) {
 //#ifdef USE_STRING_DATA_ALLOCATOR
 //		stringDataAllocator.Free( data );
 //#else
@@ -2305,9 +2307,9 @@ public class Str {
             unit--;
             value /= 1 << (unit * 10);
 //	sprintf( *this, format, value );
-            data = String.format(format, value);
-            data += " ";
-            data += units[measure.ordinal()][unit];//TODO:ordinal??
+            setData(String.format(format, value));
+            setData(getData() + " ");
+            setData(getData() + units[measure.ordinal()][unit]);//TODO:ordinal??
             return unit;
         }
         // format value in the requested unit and measurement
@@ -2315,9 +2317,9 @@ public class Str {
         public void SetUnit(final String format, float value, int unit, Measure_t measure) {
             value /= 1 << (unit * 10);
             //	sprintf( *this, format, value );
-            data = String.format(format, value);
-            data += " ";
-            data += units[measure.ordinal()][unit];
+            setData(String.format(format, value));
+            setData(getData() + " ");
+            setData(getData() + units[measure.ordinal()][unit]);
         }
 
         public static void InitMemory() {
@@ -2345,10 +2347,12 @@ public class Str {
 
         @Override
         public void Read(ByteBuffer buffer) {
-            this.len = buffer.getInt();
+            int len = buffer.getInt();
             buffer.getInt();//skip
             this.alloced = buffer.getInt();
+            final char baseBuffer[] = new char[STR_ALLOC_BASE];
             buffer.asCharBuffer().get(baseBuffer);
+            setData(new String(baseBuffer));
         }
 
         @Override
@@ -2464,11 +2468,11 @@ public class Str {
         }
 
         protected void Init() {
-            len = 0;
             alloced = STR_ALLOC_BASE;
 //	data = baseBuffer;
 //	data[ 0 ] = '\0';
-            data = "";
+            setData("");
+            // // setLen(Length());
 //#ifdef ID_DEBUG_UNINITIALIZED_MEMORY
 //	memset( baseBuffer, 0, sizeof( baseBuffer ) );
 //#endif
@@ -2485,14 +2489,37 @@ public class Str {
         }
 
         public String substring(int beginIndex) {
-            return data.substring(beginIndex);
+            return getData().substring(beginIndex);
         }
 
         @Override
         @Deprecated
         public String toString() {
-            return data;
+            return getData();
         }
+
+        public String getData() {
+			return data;
+		}
+
+		protected void setData(String data) {
+			if (data == null) {
+				this.data = "";
+			} else {
+				this.data = data;
+			}
+		}
+
+//		protected int getLen() {
+//			return Length();
+//		}
+//
+//		protected void // setLen(int len) {
+//			if (len != Length()) {
+//				throw new IllegalStateException("Wrong length");
+//			}
+//			this.len = len;
+//		}
     }
 
     /*

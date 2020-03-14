@@ -1640,7 +1640,7 @@ public class Parser {
                         t2 = t.next.next;
                         if (t2 != null) {
                             if (!this.MergeTokens(t1, t2)) {
-                                this.Error("can't merge '%s' with '%s'", t1.data, t2.data);
+                                this.Error("can't merge '%s' with '%s'", t1.getData(), t2.getData());
                                 return false;
                             }
 //					delete t1.next;

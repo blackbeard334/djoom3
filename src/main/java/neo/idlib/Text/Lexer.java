@@ -504,8 +504,8 @@ public class Lexer {
             // save line counter
             lastline = line;
             // clear the token stuff
-            token.data = "";
-            token.len = 0;
+            token.setData("");
+            // token.setLen(0);
             // start of the white space
             whiteSpaceStart_p = token.whiteSpaceStart_p = script_p;
             // read white space before token
@@ -1971,7 +1971,7 @@ public class Lexer {
 //                        token.data[i] = p[i];
                         token.oSet(i, p[i]);
                     }
-                    token.len = l;
+                    // token.setLen(l);
                     //
                     this.script_p += l;
                     token.type = TT_PUNCTUATION;

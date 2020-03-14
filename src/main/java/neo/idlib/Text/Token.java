@@ -250,10 +250,10 @@ public class Token {
 
         // append character without adding trailing zero
         protected void AppendDirty(final char a) {
-            EnsureAlloced(len + 2, true);
+            EnsureAlloced(Length() + 2, true);
 //	data[len++] = a;
-            data += a;
-            len++;
+            setData(getData() + a);
+            // setLen(Length());
         }
 
         idToken oSet(final idToken token) {
@@ -288,7 +288,7 @@ public class Token {
             }
 
             final idToken other = (idToken) obj;
-            return this.data.startsWith(other.data);
+            return this.getData().startsWith(other.getData());
         }
 
     };
