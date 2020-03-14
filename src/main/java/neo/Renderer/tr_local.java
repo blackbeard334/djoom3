@@ -602,22 +602,26 @@ public class tr_local {
 
         @Override
         public void FreeRenderEntity() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
+        	//throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void UpdateRenderEntity(renderEntity_s re, boolean forceUpdate) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
+        	//throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void GetRenderEntity(renderEntity_s re) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
+        	//throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void ForceUpdate() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
+        	//throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
@@ -628,12 +632,14 @@ public class tr_local {
         // overlays are extra polygons that deform with animating models for blood and damage marks
         @Override
         public void ProjectOverlay(idPlane[] localTextureAxis, idMaterial material) {
-            throw new UnsupportedOperationException("Not supported yet.");
+            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
+        	//throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
         public void RemoveDecals() {
-            throw new UnsupportedOperationException("Not supported yet.");
+            // @see https://github.com/dhewm/dhewm3/blob/master/neo/renderer/RenderEntity.cpp Method is empty        	
+        	//throw new UnsupportedOperationException("Not supported yet.");
         }
     };
 
