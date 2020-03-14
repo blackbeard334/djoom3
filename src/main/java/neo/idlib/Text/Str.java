@@ -92,7 +92,7 @@ public class Str {
 
         //private int len;//TODO:data is a pointer in the original class.
 		private String data = "";//i·ro·ny: when your program breaks because of two measly double quotes. stu·pid·i·ty: when it takes you 2 days to find said "bug".
-		private int alloced;
+		//private int alloced;
         //private final char baseBuffer[] = new char[STR_ALLOC_BASE];
         //
         //
@@ -113,7 +113,7 @@ public class Str {
             EnsureAlloced(l + 1);
 //	strcpy( data, text.data );
             setData(text.getData());
-            // // setLen(l);
+            // setLen(l);
         }
 
         public idStr(final idStr text, int start, int end) {
@@ -143,7 +143,7 @@ public class Str {
             setData(text.getData().substring(start, end));
 
 //	data+= '\0';
-            // // setLen(l);
+            // setLen(l);
         }
 
         public idStr(final String text) {
@@ -156,7 +156,7 @@ public class Str {
                 EnsureAlloced(l + 1);
 //		strcpy( data, text );
                 setData(text);
-                // // setLen(l);
+                // setLen(l);
             }
         }
 
@@ -170,7 +170,7 @@ public class Str {
                 EnsureAlloced(l + 1);
 //		strcpy( data, text );
                 setData(ctos(text));
-                // // setLen(l);
+                // setLen(l);
             }
         }
 
@@ -199,7 +199,7 @@ public class Str {
             setData(text.substring(start, end));
 
 //	data += '\0';
-            // // setLen(l);
+            // setLen(l);
         }
 
         public idStr(final boolean b) {
@@ -207,7 +207,7 @@ public class Str {
             EnsureAlloced(2);
             setData(b ? "1" : "0");
 //	data+= '\0';
-            // // setLen(1);
+            // setLen(1);
         }
 
         public idStr(final char c) {
@@ -215,7 +215,7 @@ public class Str {
             EnsureAlloced(2);
             setData("" + c);
 //	data+= '\0';
-            // // setLen(1);
+            // setLen(1);
         }
 
         public idStr(final int i) {
@@ -230,7 +230,7 @@ public class Str {
             EnsureAlloced(l + 1);
 //	strcpy( data, text );
             setData(text);
-            // // setLen(l);
+            // setLen(l);
         }
 
         public idStr(final long u) {
@@ -242,7 +242,7 @@ public class Str {
             EnsureAlloced(l + 1);
             //	strcpy( data, text );
             setData(text);
-            // // setLen(l);
+            // setLen(l);
         }
 
         public idStr(final float f) {
@@ -257,7 +257,7 @@ public class Str {
             EnsureAlloced(l + 1);
             //	strcpy( data, text );
             setData(text);
-            // // setLen(l);
+            // setLen(l);
         }
 //public						~idStr( void ) {
 //	FreeData();
@@ -303,7 +303,7 @@ public class Str {
 //	memcpy( data, text.data, l );
 //	data[l] = '\0';
             setData(text.getData());
-            // // setLen(l);
+            // setLen(l);
         }
 
 //public	void				operator=( const char *text );
@@ -313,14 +313,14 @@ public class Str {
             if (text == null) {
                 // safe behaviour if NULL
                 EnsureAlloced(1, false);
-                // // setLen(0);
+                // setLen(0);
                 return this;
             }
 
             l = text.length();
             EnsureAlloced(l + 1, false);
             setData(text);
-            // // setLen(l);
+            // setLen(l);
             return this;
         }
 
@@ -545,8 +545,9 @@ public class Str {
         }
 
         public int Allocated() {
-            if ( /*data != baseBuffer*/true) {
-                return alloced;
+            if ( /*data != baseBuffer* /true*/ Length() > 0) {
+                //return alloced;
+            	return Length() + 1;
             } else {
                 return 0;
             }
@@ -556,7 +557,7 @@ public class Str {
             EnsureAlloced(1);
 //	data ="\0";
             setData("");
-            // // setLen(0);
+            // setLen(0);
         }
 
         public boolean IsEmpty() {
@@ -576,7 +577,7 @@ public class Str {
         public void Append(final char a) {
             EnsureAlloced(Length() + 2);
             setData(getData() + a);
-            // // setLen(Length());//TODO:remove \0
+            // setLen(Length());//TODO:remove \0
 //	data+= '\0';
         }
 
@@ -882,7 +883,7 @@ public class Str {
             if ((l > 0) && getData().startsWith(string)) {
 //		memmove( data, data + l, len - l + 1 );
                 setData(getData().substring(l));
-                // // setLen(Length());
+                // setLen(Length());
                 return true;
             }
             return false;
@@ -904,7 +905,7 @@ public class Str {
             if (l > 0) {
                 while ((Length() >= l) && getData().endsWith(string)) {
                     setData(getData().substring(0, Length() - l));
-                    // // setLen(Length());
+                    // setLen(Length());
 //			data[len] = '\0';
                 }
             }
@@ -1085,7 +1086,7 @@ public class Str {
             i = getData().lastIndexOf('.');
             if (i > -1) {
                 setData(getData().substring(0, i));
-                // // setLen(Length());
+                // setLen(Length());
             }
             return this;
         }
@@ -2249,39 +2250,39 @@ public class Str {
 
         // reallocate string data buffer
         public void ReAllocate(int amount, boolean keepold) {
-//            char[] newbuffer;
-            int newsize;
-            int mod;
-
-            //assert( data );
-            assert (amount > 0);
-
-            mod = amount % STR_ALLOC_GRAN;
-            if (0 != mod) {
-                newsize = amount;
-            } else {
-                newsize = amount + STR_ALLOC_GRAN - mod;
-            }
-            alloced = newsize;
-
-//#ifdef USE_STRING_DATA_ALLOCATOR
-//	newbuffer = stringDataAllocator.Alloc( alloced );
-//#else
-//            newbuffer = new char[alloced];
-//#endif
-//            if ( keepold && data ) {
-//		data[ len ] = '\0';
-//		strcpy( newbuffer, data );
-//            }
+////            char[] newbuffer;
+//            int newsize;
+//            int mod;
 //
-//            if ( data && data != baseBuffer ) {
-//#ifdef USE_STRING_DATA_ALLOCATOR
-//		stringDataAllocator.Free( data );
-//#else
-//		delete [] data;
-//#endif
+//            //assert( data );
+//            assert (amount > 0);
+//
+//            mod = amount % STR_ALLOC_GRAN;
+//            if (0 != mod) {
+//                newsize = amount;
+//            } else {
+//                newsize = amount + STR_ALLOC_GRAN - mod;
 //            }
-//	data = newbuffer;
+//            alloced = newsize;
+//
+////#ifdef USE_STRING_DATA_ALLOCATOR
+////	newbuffer = stringDataAllocator.Alloc( alloced );
+////#else
+////            newbuffer = new char[alloced];
+////#endif
+////            if ( keepold && data ) {
+////		data[ len ] = '\0';
+////		strcpy( newbuffer, data );
+////            }
+////
+////            if ( data && data != baseBuffer ) {
+////#ifdef USE_STRING_DATA_ALLOCATOR
+////		stringDataAllocator.Free( data );
+////#else
+////		delete [] data;
+////#endif
+////            }
+////	data = newbuffer;
         }
 
         public void FreeData() {// free allocated string memory
@@ -2346,7 +2347,7 @@ public class Str {
         public void Read(ByteBuffer buffer) {
             int len = buffer.getInt();
             buffer.getInt();//skip
-            this.alloced = buffer.getInt();
+//            this.alloced = buffer.getInt();
             final char baseBuffer[] = new char[STR_ALLOC_BASE];
             buffer.asCharBuffer().get(baseBuffer);
             setData(new String(baseBuffer));
@@ -2379,7 +2380,7 @@ public class Str {
 
         public int DynamicMemoryUsed() {
 //	return ( data == baseBuffer ) ? 0 : alloced;
-            return alloced;
+            return Allocated();
         }
 
         static class formatList_t {
@@ -2465,24 +2466,24 @@ public class Str {
         }
 
         protected void Init() {
-            alloced = STR_ALLOC_BASE;
+            //alloced = STR_ALLOC_BASE;
 //	data = baseBuffer;
 //	data[ 0 ] = '\0';
             setData("");
-            // // setLen(Length());
+            // setLen(Length());
 //#ifdef ID_DEBUG_UNINITIALIZED_MEMORY
 //	memset( baseBuffer, 0, sizeof( baseBuffer ) );
 //#endif
         }									// initialize string using base buffer
 
         protected void EnsureAlloced(int amount) {
-            EnsureAlloced(amount, true);
+//            EnsureAlloced(amount, true);
         }
 
         protected void EnsureAlloced(int amount, boolean keepold) {// ensure string data buffer is large anough
-            if (amount > alloced) {
-                ReAllocate(amount, keepold);
-            }
+//            if (amount > alloced) {
+//                ReAllocate(amount, keepold);
+//            }
         }
 
         public String substring(int beginIndex) {
