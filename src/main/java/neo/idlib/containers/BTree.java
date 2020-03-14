@@ -19,12 +19,12 @@ public class BTree {
 
         public keyType key;			// key used for sorting
         public objType object;			// if != NULL pointer to object stored in leaf node
-        public idBTreeNode parent;		// parent node
-        public idBTreeNode next;		// next sibling
-        public idBTreeNode prev;		// prev sibling
+        public idBTreeNode<objType, keyType> parent;		// parent node
+        public idBTreeNode<objType, keyType> next;		// next sibling
+        public idBTreeNode<objType, keyType> prev;		// prev sibling
         public int numChildren;                 // number of children
-        public idBTreeNode firstChild;		// first child
-        public idBTreeNode lastChild;		// last child
+        public idBTreeNode<objType, keyType> firstChild;		// first child
+        public idBTreeNode<objType, keyType> lastChild;		// last child
     };
 
     public static class idBTree<objType, keyType> {
