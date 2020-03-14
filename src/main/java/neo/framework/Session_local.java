@@ -1060,27 +1060,27 @@ public class Session_local {
 
         @Override
         public String MessageBox(msgBoxType_t type, String message) {
-            throw new UnsupportedOperationException("Not supported yet.");
+    		return MessageBox(type, message, "0", false, "0", "0", false);
         }
 
         @Override
         public String MessageBox(msgBoxType_t type, String message, String title) {
-            throw new UnsupportedOperationException("Not supported yet.");
+    		return MessageBox(type, message, title, false, "0", "0", false);
         }
 
         @Override
         public String MessageBox(msgBoxType_t type, String message, String title, boolean wait) {
-            throw new UnsupportedOperationException("Not supported yet.");
+    		return MessageBox(type, message, title, wait, "0", "0", false);
         }
 
         @Override
         public String MessageBox(msgBoxType_t type, String message, String title, boolean wait, String fire_yes) {
-            throw new UnsupportedOperationException("Not supported yet.");
+    		return MessageBox(type, message, title, wait, fire_yes, "0", false);
         }
 
         @Override
         public String MessageBox(msgBoxType_t type, String message, String title, boolean wait, String fire_yes, String fire_no) {
-            throw new UnsupportedOperationException("Not supported yet.");
+    		return MessageBox(type, message, title, wait, fire_yes, fire_no, false);
         }
 
         @Override
