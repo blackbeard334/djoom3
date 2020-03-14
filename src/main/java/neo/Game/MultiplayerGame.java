@@ -993,7 +993,7 @@ public class MultiplayerGame {
                 int n = str.indexOf(";");
                 if (n >= 0) {
                     skin = str.substring(0, n);
-                    str = str.substring(str.length() - n - 1);
+                    str = str.substring(/*str.length() - n - 1*/ n + 1);
                 } else {
                     skin = str;
                     str = "";
