@@ -3,6 +3,7 @@ package neo.framework;
 import java.nio.ByteBuffer;
 
 import neo.TempDump.void_callback;
+import neo.TempDump.TODO_Exception;
 import static neo.framework.CVarSystem.cvarSystem;
 import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_APPEND;
 import static neo.framework.CmdSystem.cmdExecution_t.CMD_EXEC_INSERT;
@@ -458,14 +459,15 @@ public class CmdSystem {
             commandDef_s cmd, last;
 
             for (last = commands, cmd = last; cmd != null; cmd = last) {
-                if ((cmd.flags & flags) != 0) {
+                //if ((cmd.flags & flags) != 0) {
                     commands = cmd.next;
 //                    cmd.name = cmd.description = null;
 //                    Mem_Free(cmd.name);
 //                    Mem_Free(cmd.description);
 //			delete cmd;
-                    continue;
-                }
+                	//throw new TODO_Exception(); // endless loop
+                    //continue;
+                //}
                 last = cmd.next;
             }
         }

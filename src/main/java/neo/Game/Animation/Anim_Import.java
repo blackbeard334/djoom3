@@ -54,7 +54,7 @@ public class Anim_Import {
      */
     public static class idModelExport {
 
-        private static boolean initialized;
+        //private static boolean initialized;
         //
         public         idStr   commandLine;
         public         idStr   src;
@@ -433,7 +433,6 @@ public class Anim_Import {
 //            Maya_ConvertModel = null;
 //            Maya_Error.Clear();
 //            initialized = false;
-            throw new TODO_Exception();
         }
 
         public int ExportDefFile(final String filename) {
