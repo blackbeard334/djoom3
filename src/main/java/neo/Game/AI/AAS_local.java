@@ -991,18 +991,20 @@ public class AAS_local {
                 // no need to check through the first area
                 if (areaNum != curAreaNum) {
                     if ((reach[0].start.oMinus(origin)).LengthSqr() > Square(maxFlyPathDistance)) {
-                        if (SUBSAMPLE_FLY_PATH != 0) {
+                        // There is no preprocessor in Java
+                    	//if (SUBSAMPLE_FLY_PATH != 0) {
                             path.moveGoal = SubSampleFlyPath(areaNum, origin, path.moveGoal, reach[0].start, travelFlags, moveAreaNum);
                             path.moveAreaNum = moveAreaNum[0];
-                        }
+                        //}
                         return true;
                     }
 
                     if (!this.FlyPathValid(areaNum, origin, 0, reach[0].start, travelFlags, endPos, endAreaNum)) {
-                        if (SUBSAMPLE_FLY_PATH != 0) {
+                        // There is no preprocessor in Java
+                        //if (SUBSAMPLE_FLY_PATH != 0) {
                             path.moveGoal = SubSampleFlyPath(areaNum, origin, path.moveGoal, reach[0].start, travelFlags, moveAreaNum);
                             path.moveAreaNum = moveAreaNum[0];
-                        }
+                        //}
                         return true;
                     }
                 }
@@ -1019,10 +1021,11 @@ public class AAS_local {
 
                 if (reach[0].toAreaNum == goalAreaNum) {
                     if (!this.FlyPathValid(areaNum, origin, 0, goalOrigin, travelFlags, endPos, endAreaNum)) {
-                        if (SUBSAMPLE_FLY_PATH != 0) {
+                        // There is no preprocessor in Java
+                        //if (SUBSAMPLE_FLY_PATH != 0) {
                             path.moveGoal = SubSampleFlyPath(areaNum, origin, path.moveGoal, goalOrigin, travelFlags, moveAreaNum);
                             path.moveAreaNum = moveAreaNum[0];
-                        }
+                        //}
                         return true;
                     }
                     path.moveGoal = goalOrigin;

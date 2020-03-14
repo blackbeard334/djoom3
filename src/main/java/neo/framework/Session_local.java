@@ -1960,7 +1960,7 @@ public class Session_local {
                 // but still load the map with the persistant playerInfo from the header
                 // so that the player doesn't lose too much progress.
                 if (savegameVersion != SAVEGAME_VERSION
-                        && !(savegameVersion == 16 && SAVEGAME_VERSION == 17)) {	// handle savegame v16 in v17
+                        && !(savegameVersion == 16 && SAVEGAME_VERSION == (savegameVersion+1))) {	// handle savegame v16 in v17
                     common.Warning("Savegame Version mismatch: aborting loadgame and starting level with persistent data");
                     loadingSaveGame = false;
                     fileSystem.CloseFile(savegameFile);
