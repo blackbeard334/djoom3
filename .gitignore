@@ -84,3 +84,10 @@ hs_err_pid*
 # Notepad++ backups #
 *.bak
 
+### eclipse
+.settings/
+.classpath
+.project
+
+### Doom3
+base/
