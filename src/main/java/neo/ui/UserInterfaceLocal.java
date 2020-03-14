@@ -572,7 +572,7 @@ public class UserInterfaceLocal {
 
         @Override
         public boolean GetStateboolean(String varName, String defaultString) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        	return state.GetBool(varName, defaultString);
         }
 
         @Override
