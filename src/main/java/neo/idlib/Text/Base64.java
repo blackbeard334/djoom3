@@ -21,14 +21,14 @@ public class Base64 {
     public static class idBase64 {
 
         public idBase64() {
-            Init();
+//            Init();
         }
 
         public idBase64(final idStr s) {
-            Init();
+//            Init();
             this.data = s.getData().getBytes();
-            this.len = s.Length();
-            this.alloced = s.alloced;
+//            this.len = s.Length();
+//            this.alloced = s.alloced;
         }
 //public				~idBase64( void );
 //
@@ -176,28 +176,28 @@ public class Base64 {
 //
         private byte[] data;
         private int len;
-        private int alloced;
+        //private int alloced;
 //
 
-        private void Init() {
-            len = 0;
-            alloced = 0;
-            data = null;
-        }
-
-        private void Release() {
-//	if ( data ) {
-//		delete[] data;
-//	}
-            Init();
-        }
+//        private void Init() {
+//            len = 0;
+//            //alloced = 0;
+//            data = null;
+//        }
+//
+//        private void Release() {
+////	if ( data ) {
+////		delete[] data;
+////	}
+//            Init();
+//        }
 
         private void EnsureAlloced(int size) {
-            if (size > alloced) {
-                Release();
-            }
+//            if (size > alloced) {
+//                Release();
+//            }
             data = new byte[size];
-            alloced = size;
+//            alloced = size;
         }
     };
 }

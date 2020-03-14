@@ -92,7 +92,7 @@ public class Str {
 
         //private int len;//TODO:data is a pointer in the original class.
 		private String data = "";//i·ro·ny: when your program breaks because of two measly double quotes. stu·pid·i·ty: when it takes you 2 days to find said "bug".
-        protected int alloced;
+		private int alloced;
         //private final char baseBuffer[] = new char[STR_ALLOC_BASE];
         //
         //
@@ -541,9 +541,6 @@ public class Str {
         }
 
         public int Length() {
-        	if (getData() == null) {
-        		throw new IllegalStateException("Why null?");
-        	}
             return getData().length();
         }
 
