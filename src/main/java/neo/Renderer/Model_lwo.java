@@ -3787,7 +3787,7 @@ public class Model_lwo {
             return true;
         }
 
-        Fail:
+        //Fail:
         if (buf != null) {
             buf = null;
         }
@@ -5369,7 +5369,7 @@ public class Model_lwo {
         vmap.nverts = npts;
         vmap.vindex = new int[npts];// Mem_ClearedAlloc(npts);
 
-        Fail:
+//        Fail:
         if (true) {
 //            if (null == vmap.vindex) {
 //                break Fail;
