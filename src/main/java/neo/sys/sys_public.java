@@ -240,7 +240,7 @@ public class sys_public {
             this.ip[1] = address.ip[1];
             this.ip[2] = address.ip[2];
             this.ip[3] = address.ip[3];
-            this.port = port;
+            this.port = address.port;
         }
     };
     public static final int PORT_ANY = -1;
