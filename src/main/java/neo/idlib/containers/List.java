@@ -41,7 +41,7 @@ public class List {
 
         private int num;
         private   int size;
-        protected int granularity = 16;
+        private int granularity = 16;
         private type[]      list;
         private Class<type> type;
         //

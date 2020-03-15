@@ -53,7 +53,7 @@ public class StrList {
             pointerList.Sort();
 
             other.SetNum(Num());
-            other.SetGranularity(granularity);
+            other.SetGranularity(GetGranularity());
             for (i = 0; i < other.Num(); i++) {
                 other.oSet(i, pointerList.oGet(i));
             }
