@@ -26,7 +26,12 @@ public class Queue {//TODO:test this
 //        //
 //        //
 
-        public idQueueTemplate() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public idQueueTemplate() {
 //            first = last = null;
         }
 

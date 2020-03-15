@@ -32,7 +32,12 @@ public class Bounds {
      ===============================================================================
      */
     public static class idBounds implements SERiAL {
-        public static final int BYTES = idVec3.BYTES * 2;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public static final int BYTES = idVec3.BYTES * 2;
 
         private idVec3[] b = {new idVec3(), new idVec3()};
         //

@@ -587,7 +587,11 @@ public class AI {
     };
 
     public static class idAI extends idActor {
-        // CLASS_PROTOTYPE( idAI );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idAI );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idActor.getEventCallBacks());

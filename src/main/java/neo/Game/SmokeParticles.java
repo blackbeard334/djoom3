@@ -440,7 +440,11 @@ public class SmokeParticles {
 
         private static class ModelCallback extends deferredEntityCallback_t {
 
-            public static final deferredEntityCallback_t instance = new ModelCallback();
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			public static final deferredEntityCallback_t instance = new ModelCallback();
 
             private ModelCallback() {
             }

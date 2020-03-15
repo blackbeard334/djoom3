@@ -59,7 +59,12 @@ public class Camera {
     public static abstract class idCamera extends idEntity {
         //public	ABSTRACT_PROTOTYPE( idCamera );
 
-        public abstract void GetViewParms(renderView_s view);
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public abstract void GetViewParms(renderView_s view);
 
         @Override
         public renderView_s GetRenderView() {
@@ -80,7 +85,11 @@ public class Camera {
      ===============================================================================
      */
     public static class idCameraView extends idCamera {
-//    public	CLASS_PROTOTYPE( idCameraView );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//    public	CLASS_PROTOTYPE( idCameraView );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idCamera.getEventCallBacks());
@@ -251,7 +260,11 @@ public class Camera {
     };
 
     public static class idCameraAnim extends idCamera {
-//        public 	CLASS_PROTOTYPE( idCameraAnim );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//        public 	CLASS_PROTOTYPE( idCameraAnim );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idCamera.getEventCallBacks());

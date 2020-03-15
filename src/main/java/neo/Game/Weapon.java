@@ -189,7 +189,11 @@ public class Weapon {
 	
      ***********************************************************************/
     public static class idWeapon extends idAnimatedEntity {
-        // CLASS_PROTOTYPE( idWeapon );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idWeapon );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idAnimatedEntity.getEventCallBacks());

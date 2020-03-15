@@ -24,7 +24,11 @@ public class DrawVert {
      */
     public static class idDrawVert implements SERiAL {
 
-        public static final transient int SIZE
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public static final transient int SIZE
                 = idVec3.SIZE
                 + idVec2.SIZE
                 + idVec3.SIZE

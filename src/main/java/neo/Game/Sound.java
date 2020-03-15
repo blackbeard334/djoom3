@@ -92,7 +92,11 @@ public class Sound {
      ===============================================================================
      */
     public static class idSound extends idEntity {
-        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idSound>) idSound::Event_Trigger);

@@ -49,7 +49,12 @@ public class Model_beam {
      */
     public static class idRenderModelBeam extends idRenderModelStatic {
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public dynamicModel_t IsDynamicModel() {
             return DM_CONTINUOUS;	// regenerate for every view
         }

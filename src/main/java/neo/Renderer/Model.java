@@ -259,7 +259,11 @@ public class Model {
     // the init methods may be called again on an already created model when
     // a reloadModels is issued
     public static abstract class idRenderModel implements SERiAL {
-        private static int DBG_counter = 0;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static int DBG_counter = 0;
         protected final int DBG_count = DBG_counter++;
 
         // public abstract						~idRenderModel() {};

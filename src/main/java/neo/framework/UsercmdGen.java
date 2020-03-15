@@ -208,7 +208,12 @@ public class UsercmdGen {
 
     public static class usercmd_t implements SERiAL {
 
-        public static final transient int BYTES = Integer.BYTES * 4 + 6 + 5 * Short.BYTES;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public static final transient int BYTES = Integer.BYTES * 4 + 6 + 5 * Short.BYTES;
 
         public int  gameFrame;              // frame number
         public int  gameTime;               // game time

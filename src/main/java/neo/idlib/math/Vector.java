@@ -137,7 +137,11 @@ public class Vector {
     //===============================================================
     public static class idVec2 implements idVec<idVec2>, SERiAL {
 
-        public static final transient int SIZE  = 2 * Float.SIZE;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public static final transient int SIZE  = 2 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -422,7 +426,11 @@ public class Vector {
     //===============================================================
     public static class idVec3 implements idVec<idVec3>, SERiAL {
 
-        public static final transient int SIZE  = 3 * Float.SIZE;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public static final transient int SIZE  = 3 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -1245,7 +1253,11 @@ public class Vector {
     //===============================================================
     public static class idVec4 implements idVec<idVec4>, SERiAL {
 
-        public static final transient int SIZE  = 4 * Float.SIZE;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public static final transient int SIZE  = 4 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -1601,7 +1613,11 @@ public class Vector {
     //===============================================================
     public static class idVec5 implements idVec<idVec5>, SERiAL {
 
-        public static final transient int SIZE  = 5 * Float.SIZE;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public static final transient int SIZE  = 5 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float x;
@@ -1794,7 +1810,11 @@ public class Vector {
     //===============================================================
     public static class idVec6 implements idVec<idVec6>, SERiAL {
 
-        public static final transient int SIZE  = 6 * Float.SIZE;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public static final transient int SIZE  = 6 * Float.SIZE;
         public static final transient int BYTES = SIZE / Byte.SIZE;
 
         public float p[] = new float[6];

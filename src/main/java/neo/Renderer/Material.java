@@ -659,7 +659,12 @@ public class Material {
 
     public static class idMaterial extends neo.framework.DeclManager.idDecl implements neo.TempDump.SERiAL {
 
-        public static final transient int SIZE
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public static final transient int SIZE
                 = idStr.SIZE
                 + idStr.SIZE
                 + Pointer.SIZE //idImage.SIZE //pointer

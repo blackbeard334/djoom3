@@ -237,7 +237,12 @@ public class MegaTexture {
 
     static class megaTextureHeader_t implements Serializable {
 
-        public static final transient int BYTES = Integer.BYTES * 3;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public static final transient int BYTES = Integer.BYTES * 3;
 
         int tileSize;
         int tilesWide;

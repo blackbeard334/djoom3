@@ -66,7 +66,11 @@ public class Trigger {
     public static final idEventDef EV_Timer         = new idEventDef("<timer>", null);
 
     public static class idTrigger extends idEntity {
-        // CLASS_PROTOTYPE( idTrigger );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTrigger );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -253,7 +257,11 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Multi extends idTrigger {
-        // CLASS_PROTOTYPE( idTrigger_Multi );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTrigger_Multi );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -526,7 +534,11 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_EntityName extends idTrigger {
-        //CLASS_PROTOTYPE(idTrigger_EntityName );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//CLASS_PROTOTYPE(idTrigger_EntityName );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -714,7 +726,11 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Timer extends idTrigger {
-        //	CLASS_PROTOTYPE(idTrigger_Timer );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//	CLASS_PROTOTYPE(idTrigger_Timer );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -859,7 +875,11 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Count extends idTrigger {
-        //	CLASS_PROTOTYPE(idTrigger_Count );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//	CLASS_PROTOTYPE(idTrigger_Count );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -951,7 +971,11 @@ public class Trigger {
      ===============================================================================
      */
     static class idTrigger_Hurt extends idTrigger {
-        //	CLASS_PROTOTYPE(idTrigger_Hurt );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//	CLASS_PROTOTYPE(idTrigger_Hurt );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -1048,7 +1072,11 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Fade extends idTrigger {
-        // CLASS_PROTOTYPE( idTrigger_Fade );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTrigger_Fade );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());
@@ -1095,7 +1123,11 @@ public class Trigger {
      ===============================================================================
      */
     public static class idTrigger_Touch extends idTrigger {
-        // CLASS_PROTOTYPE( idTrigger_Touch );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTrigger_Touch );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTrigger.getEventCallBacks());

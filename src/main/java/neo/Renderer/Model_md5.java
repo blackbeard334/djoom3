@@ -429,7 +429,12 @@ public class Model_md5 {
     };
 
     public static class idRenderModelMD5 extends idRenderModelStatic {
-        public static final int BYTES = Integer.BYTES * 3;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public static final int BYTES = Integer.BYTES * 3;
 
         private idList<idMD5Joint> joints;
         private idList<idJointQuat> defaultPose;

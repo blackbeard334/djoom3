@@ -76,7 +76,11 @@ public class GameEdit {
      */
     public static class idCursor3D extends idEntity {
 
-//    public 	CLASS_PROTOTYPE( idCursor3D );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//    public 	CLASS_PROTOTYPE( idCursor3D );
         public idCursor3D() {
             draggedPosition.Zero();
         }

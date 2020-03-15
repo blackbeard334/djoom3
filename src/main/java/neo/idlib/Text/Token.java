@@ -49,7 +49,11 @@ public class Token {
 //	friend class idParser;
 //	friend class idLexer;
 
-        public    int     type;                   // token type
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public    int     type;                   // token type
         public    int     subtype;                // token sub type
         public    int     line;                   // line in script the token was on
         public    int     linesCrossed;           // number of lines crossed in white space before token

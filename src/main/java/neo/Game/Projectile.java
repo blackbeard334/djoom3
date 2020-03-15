@@ -134,7 +134,11 @@ public class Projectile {
     public static final idEventDef EV_RemoveBeams            = new idEventDef("<removeBeams>", null);
 
     public static class idProjectile extends idEntity {
-        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Explode, (eventCallback_t0<idProjectile>) idProjectile::Event_Explode);
@@ -150,7 +154,11 @@ public class Projectile {
 
         public static class projectileFlags_s implements SERiAL {
 
-            public boolean detonate_on_world;//: 1;
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			public boolean detonate_on_world;//: 1;
             public boolean detonate_on_actor;//: 1;
             boolean randomShaderSpin;//: 1;
             public boolean isTracer;//: 1;
@@ -1298,7 +1306,11 @@ public class Projectile {
     public static class idGuidedProjectile extends idProjectile {
         // CLASS_PROTOTYPE( idGuidedProjectile );
 
-        private   idAngles              rndScale;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private   idAngles              rndScale;
         private   idAngles              rndAng;
         private   idAngles              angles;
         private   int                   rndUpdateTime;
@@ -1499,7 +1511,11 @@ public class Projectile {
     public static class idSoulCubeMissile extends idGuidedProjectile {
         // CLASS_PROTOTYPE ( idSoulCubeMissile );
 
-        private idVec3 startingVelocity;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private idVec3 startingVelocity;
         private idVec3 endingVelocity;
         private float accelTime;
         private int launchTime;
@@ -1694,7 +1710,11 @@ public class Projectile {
      ===============================================================================
      */
     public static class idBFGProjectile extends idProjectile {
-        // CLASS_PROTOTYPE( idBFGProjectile );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idBFGProjectile );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idProjectile.getEventCallBacks());
@@ -2064,7 +2084,11 @@ public class Projectile {
      ===============================================================================
      */
     public static class idDebris extends idEntity {
-        // CLASS_PROTOTYPE( idDebris );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idDebris );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());

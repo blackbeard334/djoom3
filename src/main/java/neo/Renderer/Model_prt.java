@@ -44,7 +44,11 @@ public class Model_prt {
      */
     public static class idRenderModelPrt extends idRenderModelStatic {
 
-        public idRenderModelPrt() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public idRenderModelPrt() {
             particleSystem = null;
         }
 

@@ -89,7 +89,11 @@ public class Light {
     public static final idEventDef EV_Light_FadeIn = new idEventDef("fadeInLight", "f");
 
     public static class idLight extends idEntity {
-        // public 	CLASS_PROTOTYPE( idLight );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public 	CLASS_PROTOTYPE( idLight );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
             eventCallbacks.putAll(idEntity.getEventCallBacks());

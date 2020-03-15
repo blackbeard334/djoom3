@@ -28,7 +28,12 @@ public class UserInterface {
      */
     public static abstract class idUserInterface implements SERiAL {
 
-        // virtual						~idUserInterface() {};
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		// virtual						~idUserInterface() {};
         // Returns the name of the gui.
         public abstract String Name();
 

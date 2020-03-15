@@ -97,7 +97,12 @@ public class Target {
     public static class idTarget extends idEntity {
 //	CLASS_PROTOTYPE( idTarget );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public idClass CreateInstance() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
@@ -116,7 +121,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_Remove extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_Remove );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_Remove );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -159,7 +168,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_Show extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_Show );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_Show );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -202,7 +215,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_Damage extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_Damage );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_Damage );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -244,7 +261,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SessionCommand extends idTarget {
-        //	CLASS_PROTOTYPE(idTarget_SessionCommand );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//	CLASS_PROTOTYPE(idTarget_SessionCommand );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -276,7 +297,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_EndLevel extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_EndLevel );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_EndLevel );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -334,7 +359,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_WaitForButton extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_WaitForButton );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_WaitForButton );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -387,7 +416,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetGlobalShaderTime extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_SetGlobalShaderTime );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_SetGlobalShaderTime );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -423,7 +456,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetShaderParm extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_SetShaderParm );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_SetShaderParm );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -487,7 +524,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetShaderTime extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_SetShaderTime );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_SetShaderTime );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -531,7 +572,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_FadeEntity extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_FadeEntity );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_FadeEntity );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -638,7 +683,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_LightFadeIn extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_LightFadeIn );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_LightFadeIn );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -691,7 +740,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_LightFadeOut extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_LightFadeOut );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_LightFadeOut );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -744,7 +797,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_Give extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_Give );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_Give );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -806,7 +863,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_GiveEmail extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_GiveEmail );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_GiveEmail );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -843,7 +904,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetModel extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_SetModel );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_SetModel );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -892,7 +957,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetInfluence extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_SetInfluence );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_SetInfluence );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1398,7 +1467,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetKeyVal extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_SetKeyVal );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_SetKeyVal );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1461,7 +1534,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetFov extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_SetFov );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_SetFov );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1541,7 +1618,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_SetPrimaryObjective extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_SetPrimaryObjective );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_SetPrimaryObjective );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1575,7 +1656,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_LockDoor extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_LockDoor );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_LockDoor );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1620,7 +1705,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_CallObjectFunction extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_CallObjectFunction );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_CallObjectFunction );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());
@@ -1677,7 +1766,11 @@ public class Target {
      ===============================================================================
      */
     public static class idTarget_EnableLevelWeapons extends idTarget {
-        // CLASS_PROTOTYPE( idTarget_EnableLevelWeapons );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTarget_EnableLevelWeapons );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idTarget.getEventCallBacks());

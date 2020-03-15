@@ -85,7 +85,11 @@ public class Str {
 
     public static class idStr implements SERiAL {
 
-        public static final transient int SIZE
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public static final transient int SIZE
                 = Integer.SIZE
                 + Pointer.SIZE//Character.SIZE //pointer.//TODO:ascertain a char pointer size. EDIT: done.
                 + Integer.SIZE

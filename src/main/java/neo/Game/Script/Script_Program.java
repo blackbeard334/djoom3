@@ -119,7 +119,11 @@ public class Script_Program {
      ***********************************************************************/
     public static class function_t implements SERiAL {
 
-        static final int SIZE
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		static final int SIZE
                                = idStr.SIZE
                 + CPP_class.Pointer.SIZE//eventdef
                 + CPP_class.Pointer.SIZE//def
@@ -640,7 +644,11 @@ public class Script_Program {
      ***********************************************************************/
     public static class idScriptObject implements SERiAL {
 
-        private idTypeDef  type;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private idTypeDef  type;
         //
         public  ByteBuffer data;
         public  int        offset;
@@ -986,7 +994,12 @@ public class Script_Program {
      ***********************************************************************/
     public static class idCompileError extends idException {
 
-        public idCompileError(final String text) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public idCompileError(final String text) {
             super(text);
         }
     }

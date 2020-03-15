@@ -163,6 +163,11 @@ public class StrList {
     }
 
     class idStrPtr extends idStr {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
     }
 
     /*

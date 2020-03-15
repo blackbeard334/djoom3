@@ -20,7 +20,11 @@ public class Rectangle {
 //extern void RotateVector(idVec3 &v, idVec3 origin, float a, float c, float s);
     public static class idRectangle implements SERiAL {
 
-        public float x;    // horiz position
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public float x;    // horiz position
         public float y;    // vert position
         public float w;    // width
         public float h;    // height;

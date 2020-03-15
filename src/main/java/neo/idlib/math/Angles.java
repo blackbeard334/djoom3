@@ -39,7 +39,11 @@ public class Angles {
 
     public static class idAngles implements SERiAL {
 
-        public float pitch;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public float pitch;
         public float yaw;
         public float roll;
 

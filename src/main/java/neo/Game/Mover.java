@@ -184,7 +184,11 @@ public class Mover {
      ===============================================================================
      */
     public static class idMover extends idEntity {
-        // CLASS_PROTOTYPE( idMover );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idMover );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -1465,7 +1469,12 @@ public class Mover {
     public static class idSplinePath extends idEntity {
 //	CLASS_PROTOTYPE( idSplinePath );
 
-        public idSplinePath() {//TODO:delete this class?
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public idSplinePath() {//TODO:delete this class?
         }
 
         @Override
@@ -1494,7 +1503,11 @@ public class Mover {
      ===============================================================================
      */
     public static class idElevator extends idMover {
-        // CLASS_PROTOTYPE( idElevator );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idElevator );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover.getEventCallBacks());
@@ -1954,7 +1967,11 @@ public class Mover {
      ===============================================================================
      */
     public static class idMover_Binary extends idEntity {
-        // CLASS_PROTOTYPE( idMover_Binary );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idMover_Binary );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -2883,7 +2900,11 @@ public class Mover {
      ===============================================================================
      */
     public static class idDoor extends idMover_Binary {
-        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover_Binary.getEventCallBacks());
             eventCallbacks.put(EV_TeamBlocked, (eventCallback_t2<idDoor>) idDoor::Event_TeamBlocked);
@@ -3671,7 +3692,11 @@ public class Mover {
      ===============================================================================
      */
     public static class idPlat extends idMover_Binary {
-        // CLASS_PROTOTYPE( idPlat );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idPlat );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover_Binary.getEventCallBacks());
@@ -3872,7 +3897,11 @@ public class Mover {
      ===============================================================================
      */
     public static class idMover_Periodic extends idEntity {
-        // CLASS_PROTOTYPE( idMover_Periodic );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idMover_Periodic );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -3979,7 +4008,11 @@ public class Mover {
      ===============================================================================
      */
     public static class idRotater extends idMover_Periodic {
-        // CLASS_PROTOTYPE( idRotater );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idRotater );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover_Periodic.getEventCallBacks());
@@ -4077,7 +4110,12 @@ public class Mover {
     public static class idBobber extends idMover_Periodic {
         // CLASS_PROTOTYPE( idBobber );
 
-        public idBobber() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public idBobber() {
         }
 
         @Override
@@ -4128,7 +4166,12 @@ public class Mover {
     public static class idPendulum extends idMover_Periodic {
         // CLASS_PROTOTYPE( idPendulum );
 
-//        public idPendulum() {//TODO:remove default constructor override
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		//        public idPendulum() {//TODO:remove default constructor override
 //        }
         @Override
         public void Spawn() {
@@ -4179,7 +4222,11 @@ public class Mover {
      ===============================================================================
      */
     public static class idRiser extends idMover_Periodic {
-        // CLASS_PROTOTYPE( idRiser );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idRiser );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idMover_Periodic.getEventCallBacks());

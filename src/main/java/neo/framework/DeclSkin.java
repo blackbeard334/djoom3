@@ -37,7 +37,11 @@ public class DeclSkin {
 
     public static class idDeclSkin extends idDecl implements SERiAL {
 
-        private idList<skinMapping_t> mappings = new idList<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private idList<skinMapping_t> mappings = new idList<>();
         private idStrList associatedModels = new idStrList();
         //
         //

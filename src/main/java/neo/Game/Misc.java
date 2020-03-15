@@ -145,7 +145,12 @@ public class Misc {
     public static class idSpawnableEntity extends idEntity {
         //public 	CLASS_PROTOTYPE( idSpawnableEntity );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public void Spawn() {
             // this just holds dict information
             super.Spawn();
@@ -183,7 +188,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idPlayerStart extends idEntity {
-// public 	CLASS_PROTOTYPE( idPlayerStart );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public 	CLASS_PROTOTYPE( idPlayerStart );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -385,7 +394,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idActivator extends idEntity {
-// public 	CLASS_PROTOTYPE( idActivator );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public 	CLASS_PROTOTYPE( idActivator );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -483,7 +496,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idPathCorner extends idEntity {
-// public 	CLASS_PROTOTYPE( idPathCorner );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public 	CLASS_PROTOTYPE( idPathCorner );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -575,7 +592,11 @@ public class Misc {
      */
 
     public static class idDamagable extends idEntity {
-        // CLASS_PROTOTYPE( idDamagable );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idDamagable );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -737,7 +758,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idExplodable extends idEntity {
-//	CLASS_PROTOTYPE( idExplodable );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//	CLASS_PROTOTYPE( idExplodable );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static{
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -803,7 +828,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idSpring extends idEntity {
-//	CLASS_PROTOTYPE( idSpring );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//	CLASS_PROTOTYPE( idSpring );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -930,7 +959,11 @@ public class Misc {
     public static final idEventDef EV_Toggle = new idEventDef("Toggle", null);
 
     public static class idForceField extends idEntity {
-        // CLASS_PROTOTYPE( idForceField );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idForceField );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1067,7 +1100,11 @@ public class Misc {
     public static final idEventDef EV_StartRagdoll         = new idEventDef("startRagdoll");
 
     public static class idAnimated extends idAFEntity_Gibbable {
-        // CLASS_PROTOTYPE( idAnimated );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idAnimated );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1477,7 +1514,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idStaticEntity extends idEntity {
-        // CLASS_PROTOTYPE( idStaticEntity );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idStaticEntity );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1721,7 +1762,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idFuncEmitter extends idStaticEntity {
-        // CLASS_PROTOTYPE( idFuncEmitter );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idFuncEmitter );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1808,7 +1853,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idFuncSmoke extends idEntity {
-        // CLASS_PROTOTYPE( idFuncSmoke );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idFuncSmoke );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1932,7 +1981,11 @@ public class Misc {
     public static final idEventDef EV_Splat = new idEventDef("<Splat>");
 
     public static class idFuncSplat extends idFuncEmitter {
-        // CLASS_PROTOTYPE( idFuncSplat );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idFuncSplat );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1991,7 +2044,11 @@ public class Misc {
     public static class idTextEntity extends idEntity {
         // CLASS_PROTOTYPE( idTextEntity );
 
-        private idStr text;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private idStr text;
         private boolean playerOriented;
         //
         //
@@ -2058,7 +2115,12 @@ public class Misc {
     public static class idLocationEntity extends idEntity {
         // CLASS_PROTOTYPE( idLocationEntity );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public void Spawn() {
             super.Spawn();
             
@@ -2096,7 +2158,12 @@ public class Misc {
     public static class idLocationSeparatorEntity extends idEntity {
         // CLASS_PROTOTYPE( idLocationSeparatorEntity );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public void Spawn() {
             super.Spawn();
             
@@ -2131,7 +2198,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idVacuumSeparatorEntity extends idEntity {
-        // CLASS_PROTOTYPE( idVacuumSeparatorEntity );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idVacuumSeparatorEntity );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -2217,7 +2288,12 @@ public class Misc {
 // public:
         // CLASS_PROTOTYPE( idVacuumEntity );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public void Spawn() {
             super.Spawn();
 
@@ -2250,7 +2326,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idBeam extends idEntity {
-        // CLASS_PROTOTYPE( idBeam );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idBeam );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -2421,7 +2501,11 @@ public class Misc {
      */
     @Deprecated
     public static class idLiquid extends idEntity {
-        // CLASS_PROTOTYPE( idLiquid );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idLiquid );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -2495,7 +2579,11 @@ public class Misc {
      ===============================================================================
      */
     public static class idShaking extends idEntity {
-        // CLASS_PROTOTYPE( idShaking );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idShaking );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {

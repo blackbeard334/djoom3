@@ -120,7 +120,11 @@ public class snd_local {
     /* specific waveform format structure for PCM data */
     static class pcmwaveformat_s implements SERiAL{
 
-        private static final int SIZE
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static final int SIZE
                 = waveformat_s.SIZE
                 + Short.SIZE;
         static final         int BYTES = SIZE / Byte.SIZE;
@@ -208,7 +212,11 @@ public class snd_local {
 
     /* RIFF chunk information data structure */
     static class mminfo_s implements SERiAL {
-        private static final int SIZE
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static final int SIZE
                 = Integer.SIZE
                 + Integer.SIZE
                 + Integer.SIZE

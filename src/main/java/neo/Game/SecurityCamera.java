@@ -65,7 +65,11 @@ public class SecurityCamera {
     public static final idEventDef EV_SecurityCam_AddLight      = new idEventDef("<addLight>");
 
     public static class idSecurityCamera extends idEntity {
-        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_SecurityCam_ReverseSweep, (eventCallback_t0<idSecurityCamera>) idSecurityCamera::Event_ReverseSweep);

@@ -56,7 +56,11 @@ public class Model_liquid {
      */
     public static class idRenderModelLiquid extends idRenderModelStatic {
 
-        private int verts_x;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private int verts_x;
         private int verts_y;
         private float scale_x;
         private float scale_y;

@@ -142,7 +142,11 @@ public class sys_public {
 
     public static class sysEvent_s implements SERiAL {
 
-        private static final transient int SIZE
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static final transient int SIZE
                 = CPP_class.Enum.SIZE
                 + Integer.SIZE
                 + Integer.SIZE

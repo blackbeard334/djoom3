@@ -39,7 +39,11 @@ public class AI_Vagary {
 //
 
     public static class idAI_Vagary extends idAI {
-        //CLASS_PROTOTYPE( idAI_Vagary );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//CLASS_PROTOTYPE( idAI_Vagary );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idAI.getEventCallBacks());

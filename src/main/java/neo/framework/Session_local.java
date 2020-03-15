@@ -199,7 +199,12 @@ public class Session_local {
 
     static class logCmd_t implements SERiAL {
 
-        private static final transient int BYTES = usercmd_t.BYTES + Integer.BYTES;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		private static final transient int BYTES = usercmd_t.BYTES + Integer.BYTES;
 
         usercmd_t cmd;
         int consistencyHash;

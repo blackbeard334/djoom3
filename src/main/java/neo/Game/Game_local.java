@@ -6242,7 +6242,12 @@ public class Game_local {
     //============================================================================
     public static class idGameError extends idException {
 
-        public idGameError(final String text) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public idGameError(final String text) {
             super(text);
         }
     };

@@ -91,7 +91,11 @@ public class Model_local {
      */
     public static class idRenderModelStatic extends idRenderModel {
 
-        public final idList<modelSurface_s> surfaces;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public final idList<modelSurface_s> surfaces;
         public       idBounds               bounds;
         public       int                    overlaysAdded;
         //

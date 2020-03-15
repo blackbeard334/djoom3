@@ -33,7 +33,12 @@ public class sound {
     public static abstract class idSoundEmitter implements SERiAL {
         // virtual					~idSoundEmitter() {}
 
-        // a non-immediate free will let all currently playing sounds complete
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		// a non-immediate free will let all currently playing sounds complete
         // soundEmitters are not actually deleted, they are just marked as
         // reusable by the soundWorld
         public abstract void Free(boolean immediate);
