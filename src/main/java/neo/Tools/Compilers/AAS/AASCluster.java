@@ -359,7 +359,8 @@ public class AASCluster {
             for (i = 1; i < file.areas.Num(); i++) {
                 // if the area is a cluster portal
                 if ((file.areas.oGet(i).contents & AREACONTENTS_CLUSTERPORTAL) != 0) {
-                    portal.areaNum = (short) i;
+                	portal = new aasPortal_s();
+                	portal.areaNum = (short) i;
                     portal.clusters[0] = portal.clusters[1] = 0;
                     portal.maxAreaTravelTime = 0;
                     file.portals.Append(portal);

@@ -1037,6 +1037,7 @@ public class Game {
                 angles.pitch = sscanf.nextFloat();
                 angles.yaw = sscanf.nextFloat();
                 angles.roll = sscanf.nextFloat();
+                sscanf.close();
 
                 if (fb.jointName.Icmp("origin") == 0) {
                     meshAxis = bodyAxis[i].Transpose().oMultiply(angles.ToMat3());

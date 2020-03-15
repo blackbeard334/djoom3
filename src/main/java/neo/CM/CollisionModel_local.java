@@ -1469,6 +1469,7 @@ public class CollisionModel_local {
             } else {
                 sscanf = new Scanner(cm_testOrigin.GetString());
                 start.Set(sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat());
+                sscanf.close();
 //		sscanf( cm_testOrigin.GetString(), "%f %f %f", &start[0], &start[1], &start[2] );
             }
 
@@ -1476,6 +1477,7 @@ public class CollisionModel_local {
             bounds.set(sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat());
 //	sscanf( cm_testBox.GetString(), "%f %f %f %f %f %f", &bounds[0][0], &bounds[0][1], &bounds[0][2],
 //										&bounds[1][0], &bounds[1][1], &bounds[1][2] );
+            sscanf.close();
             sscanf = new Scanner(cm_testBoxRotation.GetString());
             boxAngles.Set(sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat());
 //	sscanf( cm_testBoxRotation.GetString(), "%f %f %f", &boxAngles[0], &boxAngles[1], &boxAngles[2] );

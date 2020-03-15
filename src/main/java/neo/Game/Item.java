@@ -1017,6 +1017,7 @@ public class Item {
                         angles.pitch = sscanf.nextFloat();
                         angles.yaw = sscanf.nextFloat();
                         angles.roll = sscanf.nextFloat();
+                        sscanf.close();
                     } else {
                         key = kv.GetKey().toString() + 4;
                         key += "Rotation";
