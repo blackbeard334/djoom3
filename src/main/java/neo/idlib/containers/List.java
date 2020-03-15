@@ -39,7 +39,7 @@ public class List {
                 + Integer.SIZE
                 + CPP_class.Pointer.SIZE;//type
 
-        protected int num;
+        private int num;
         private   int size;
         protected int granularity = 16;
         private type[]      list;
@@ -136,7 +136,7 @@ public class List {
 
             if (list != null) {
                 // resize it to the closest level of granularity
-                newsize = num + granularity - 1;
+                newsize = Num() + granularity - 1;
                 newsize -= newsize % granularity;
                 if (newsize != size) {
                     Resize(newsize);
@@ -173,7 +173,7 @@ public class List {
 
         public /*size_t*/ int MemoryUsed() {					// returns size of the used elements in the list
 
-            return num /* sizeof( *list )*/;
+            return Num() /* sizeof( *list )*/;
         }
 
         /*
@@ -195,7 +195,7 @@ public class List {
 
             if (this.size != 0) {
                 this.list = (type[]) new Object[size];
-                for (i = 0; i < this.num; i++) {
+                for (i = 0; i < this.Num(); i++) {
                     this.list[i] = other.list[i];
                 }
             }
@@ -213,7 +213,7 @@ public class List {
          */
         public type oGet(int index) {
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
             
             return list[index];
         }
@@ -228,14 +228,14 @@ public class List {
 
         public type oSet(int index, Object value) {
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
 
             return list[index] = (type) value;
         }
 
         public type oPluSet(int index, type value) {
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
 
 //            if (list[index] instanceof Double) {
 //                return list[index] = (type) (Object) ((Double) list[index] + (Double) value);//TODO:test thsi shit
@@ -258,8 +258,8 @@ public class List {
          */
         public void Condense() {									// resizes list to exactly the number of elements it contains
             if (list != null) {
-                if (num != 0) {
-                    Resize(num);
+                if (Num() != 0) {
+                    Resize(Num());
                 } else {
                     Clear();
                 }
@@ -293,13 +293,13 @@ public class List {
 
             temp = list;
             size = newsize;
-            if (size < num) {
+            if (size < Num()) {
                 num = size;
             }
 
             // copy the old list into our new one
             list = (type[]) new Object[size];
-            for (i = 0; i < num; i++) {
+            for (i = 0; i < Num(); i++) {
                 list[i] = temp[i];
             }
 
@@ -334,13 +334,13 @@ public class List {
 
             temp = list;
             size = newsize;
-            if (size < num) {
+            if (size < Num()) {
                 num = size;
             }
 
             // copy the old list into our new one
             list = (type[]) new Object[size];
-            for (i = 0; i < num; i++) {
+            for (i = 0; i < Num(); i++) {
                 list[i] = temp[i];
             }
 
@@ -414,7 +414,7 @@ public class List {
                 num = size;
                 Resize(newSize);
 
-                for (int i = num; i < newSize; i++) {
+                for (int i = Num(); i < newSize; i++) {
                     list[i] = initValue;
                 }
             }
@@ -446,7 +446,7 @@ public class List {
                 num = size;
                 Resize(newSize);
 
-                for (int i = num; i < newSize; i++) {
+                for (int i = Num(); i < newSize; i++) {
                     try {
                         list[i] = /*( * allocator) ()*/ (type) allocator.newInstance();//TODO: check if any of this is necessary?
                     } catch (InstantiationException | IllegalAccessException ex) {
@@ -476,7 +476,7 @@ public class List {
         }
 
         public <T> T[] Ptr(final Class<? extends T[]> type) {
-            if (this.num == 0)
+            if (this.Num() == 0)
                 return null;
             
             // returns a pointer to the list
@@ -496,7 +496,7 @@ public class List {
                 Resize(granularity);
             }
 
-            if (num == size) {
+            if (Num() == size) {
                 Resize(size + granularity);
             }
             try {
@@ -522,7 +522,7 @@ public class List {
                 Resize(granularity);
             }
 
-            if (num == size) {
+            if (Num() == size) {
                 int newsize;
 
                 if (granularity == 0) {	// this is a hack to fix our memset classes
@@ -532,10 +532,10 @@ public class List {
                 Resize(newsize - newsize % granularity);
             }
 
-            list[num] = obj;
+            list[Num()] = obj;
             num++;
 
-            return num - 1;
+            return Num() - 1;
         }
 
         /**
@@ -611,7 +611,7 @@ public class List {
                 Resize(granularity);
             }
 
-            if (num == size) {
+            if (Num() == size) {
                 int newsize;
 
                 if (granularity == 0) {	// this is a hack to fix our memset classes
@@ -623,10 +623,10 @@ public class List {
 
             if (index < 0) {
                 index = 0;
-            } else if (index > num) {
-                index = num;
+            } else if (index > Num()) {
+                index = Num();
             }
-            for (int i = num; i > index; --i) {
+            for (int i = Num(); i > index; --i) {
                 list[i] = list[i - 1];
             }
             num++;
@@ -644,7 +644,7 @@ public class List {
         public int FindIndex(final type obj) {				// find the index for the given element
             int i;
 
-            for (i = 0; i < num; i++) {
+            for (i = 0; i < Num(); i++) {
                 if (Objects.equals(list[i], obj)) {
                     return i;
                 }
@@ -685,7 +685,7 @@ public class List {
         public int FindNull() {								// find the index for the first NULL pointer in the list
             int i;
 
-            for (i = 0; i < num; i++) {
+            for (i = 0; i < Num(); i++) {
                 if (NOT(list[i])) {
                     return i;
                 }
@@ -712,7 +712,7 @@ public class List {
             index = FindIndex(objptr);
 
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
 
             return index;
         }
@@ -731,14 +731,14 @@ public class List {
 
             assert (list != null);
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
 
-            if ((index < 0) || (index >= num)) {
+            if ((index < 0) || (index >= Num())) {
                 return false;
             }
 
             num--;
-            for (i = index; i < num; i++) {
+            for (i = index; i < Num(); i++) {
                 list[i] = list[i + 1];
             }
 
@@ -824,8 +824,8 @@ public class List {
             if (startIndex < 0) {
                 startIndex = 0;
             }
-            if (endIndex >= num) {
-                endIndex = num - 1;
+            if (endIndex >= Num()) {
+                endIndex = Num() - 1;
             }
             if (startIndex >= endIndex) {
                 return;
@@ -848,12 +848,12 @@ public class List {
             final int swap_num, swap_size, swap_granularity;
             final type[] swap_list;
 
-            swap_num = num;
+            swap_num = Num();
             swap_size = size;
             swap_granularity = granularity;
             swap_list = list;
 
-            num = other.num;
+            num = other.Num();
             size = other.size;
             granularity = other.granularity;
             list = other.list;
@@ -879,7 +879,7 @@ public class List {
         public void DeleteContents(boolean clear) {						// delete the contents of the list
             int i;
 
-            for (i = 0; i < num; i++) {
+            for (i = 0; i < Num(); i++) {
 //		delete list[i ];
                 list[i] = null;
             }

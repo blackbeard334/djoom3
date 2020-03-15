@@ -38,21 +38,21 @@ public class StrList {
         public void Sort(cmp_t compare) {
             int i;
 
-            if (0 == num) {
+            if (0 == Num()) {
                 return;
             }
 
             idList<idStr> other = new idList<>();
             idList<idStrPtr> pointerList = new idList<>();
 
-            pointerList.SetNum(num);
-            for (i = 0; i < num; i++) {
+            pointerList.SetNum(Num());
+            for (i = 0; i < Num(); i++) {
                 pointerList.oSet(i, this.oGet(i));
             }
 
             pointerList.Sort();
 
-            other.SetNum(num);
+            other.SetNum(Num());
             other.SetGranularity(granularity);
             for (i = 0; i < other.Num(); i++) {
                 other.oSet(i, pointerList.oGet(i));
@@ -72,14 +72,14 @@ public class StrList {
         public void SortSubSection(int startIndex, int endIndex, cmp_t compare) {
             int i, s;
 
-            if (0 == num) {
+            if (0 == Num()) {
                 return;
             }
             if (startIndex < 0) {
                 startIndex = 0;
             }
-            if (endIndex >= num) {
-                endIndex = num - 1;
+            if (endIndex >= Num()) {
+                endIndex = Num() - 1;
             }
             if (startIndex >= endIndex) {
                 return;
