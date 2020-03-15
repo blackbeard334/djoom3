@@ -635,7 +635,8 @@ public class GameEdit {
 
         result = scanner.findInLine(Pattern.compile(pattern));
         if (isNotNullOrEmpty(result)) {
-            scanner = new Scanner(result);
+        	scanner.close();
+        	scanner = new Scanner(result);
             scanner.findInLine("bind");
             a = scanner.nextInt();
         }
