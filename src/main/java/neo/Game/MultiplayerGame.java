@@ -472,6 +472,9 @@ public class MultiplayerGame {
                     }
                     break;
                 }
+			default:
+				// TODO check unused Enum case labels
+				break;
             }
         }
 
@@ -1714,6 +1717,8 @@ public class MultiplayerGame {
                 case VOTE_NEXTMAP:
                     cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "serverNextMap\n");
                     break;
+			default:
+				break;
             }
         }
 

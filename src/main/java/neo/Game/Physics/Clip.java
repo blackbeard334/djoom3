@@ -1323,6 +1323,9 @@ public class Clip {
 //                        collisionModelManager.GetModelPolygon(handle, contact.modelFeature, winding);//TODO:is this function necessary?
                         break;
                     }
+				default:
+    				// TODO check unused Enum case labels
+					break;
                 }
             }
 

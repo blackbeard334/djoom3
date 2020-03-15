@@ -488,6 +488,9 @@ public class FX {
                         }
                         break;
                     }
+				default:
+					// TODO check unused Enum case labels
+					break;
                 }
             }
         }

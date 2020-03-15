@@ -3870,6 +3870,9 @@ public class Image {
                     case TT_CUBIC:
                         texEnum = GL_TEXTURE_CUBE_MAP/*_EXT*/;
                         break;
+				default:
+					// TODO check unused Enum case labels
+					break;
                 }
 
                 // make sure we don't start a background load
