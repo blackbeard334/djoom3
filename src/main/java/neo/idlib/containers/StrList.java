@@ -47,7 +47,7 @@ public class StrList {
 
             pointerList.SetNum(Num());
             for (i = 0; i < Num(); i++) {
-                pointerList.oSet(i, this.oGet(i));
+                pointerList.oSetType(i, this.oGet(i));
             }
 
             pointerList.Sort();
@@ -68,40 +68,40 @@ public class StrList {
          Sorts a subsection of the list of strings alphabetically.
          ================
          */
-        @Override
-        public void SortSubSection(int startIndex, int endIndex, cmp_t compare) {
-            int i, s;
-
-            if (0 == Num()) {
-                return;
-            }
-            if (startIndex < 0) {
-                startIndex = 0;
-            }
-            if (endIndex >= Num()) {
-                endIndex = Num() - 1;
-            }
-            if (startIndex >= endIndex) {
-                return;
-            }
-
-            idList<idStr> other = new idList<>();
-            idList<idStrPtr> pointerList = new idList<>();
-
-            s = endIndex - startIndex + 1;
-            other.SetNum(s);
-            pointerList.SetNum(s);
-            for (i = 0; i < s; i++) {
-                other.oSet(i, this.oGet(startIndex + i));
-                pointerList.oSet(i, other.oGet(i));
-            }
-
-            pointerList.Sort();
-
-            for (i = 0; i < s; i++) {
-                this.oSet(startIndex + i, pointerList.oGet(i));
-            }
-        }
+//        @Override
+//        public void SortSubSection(int startIndex, int endIndex, cmp_t compare) {
+//            int i, s;
+//
+//            if (0 == Num()) {
+//                return;
+//            }
+//            if (startIndex < 0) {
+//                startIndex = 0;
+//            }
+//            if (endIndex >= Num()) {
+//                endIndex = Num() - 1;
+//            }
+//            if (startIndex >= endIndex) {
+//                return;
+//            }
+//
+//            idList<idStr> other = new idList<>();
+//            idList<idStrPtr> pointerList = new idList<>();
+//
+//            s = endIndex - startIndex + 1;
+//            other.SetNum(s);
+//            pointerList.SetNum(s);
+//            for (i = 0; i < s; i++) {
+//                other.oSet(i, this.oGet(startIndex + i));
+//                pointerList.oSetType(i, other.oGet(i));
+//            }
+//
+//            pointerList.Sort();
+//
+//            for (i = 0; i < s; i++) {
+//                this.oSet(startIndex + i, pointerList.oGet(i));
+//            }
+//        }
 
         @Override
         public int Size() {
@@ -135,7 +135,7 @@ public class StrList {
 
             pointerList.SetNum(list.Num());
             for (i = 0; i < list.Num(); i++) {
-                pointerList.oSet(i, list.oGet(i));
+                pointerList.oSetType(i, list.oGet(i));
             }
 
             pointerList.Sort(new idListSortComparePaths());

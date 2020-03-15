@@ -117,9 +117,9 @@ public class List {
          Returns the number of elements currently allocated for.
          ================
          */
-        public int NumAllocated() {							// returns number of elements allocated for
-            return size;
-        }
+//        public int NumAllocated() {							// returns number of elements allocated for
+//            return size;
+//        }
 
         /*
          ================
@@ -168,7 +168,7 @@ public class List {
         }
 
         public /*size_t*/ int Size() {						// returns total size of allocated memory including size of list type
-            return Allocated();
+            return size;
         }
 
         public /*size_t*/ int MemoryUsed() {					// returns size of the used elements in the list
@@ -226,7 +226,15 @@ public class List {
 //            return list[index] = value;
 //        }
 
-        public type oSet(int index, Object value) {
+        /**
+         * @deprecated use {@link idList}#oSet(int index, type value) instead
+         */
+        @SuppressWarnings("unchecked")
+		public type oSetType(int index, Object value) {
+        	return oSet(index, (type) value);
+        }
+
+        public type oSet(int index, type value) {
             assert (index >= 0);
             assert (index < Num());
 
@@ -813,29 +821,29 @@ public class List {
          Sorts a subsection of the list.
          ================
          */
-        public void SortSubSection(int startIndex, int endIndex) {
-            this.SortSubSection(startIndex, endIndex, new idListSortCompare<type>());
-        }
-
-        public void SortSubSection(int startIndex, int endIndex, cmp_t compare /*= ( cmp_t * )&idListSortCompare<type>*/) {
-            if (NOT(list)) {
-                return;
-            }
-            if (startIndex < 0) {
-                startIndex = 0;
-            }
-            if (endIndex >= Num()) {
-                endIndex = Num() - 1;
-            }
-            if (startIndex >= endIndex) {
-                return;
-            }
-//	typedef int cmp_c(const void *, const void *);
+//        public void SortSubSection(int startIndex, int endIndex) {
+//            this.SortSubSection(startIndex, endIndex, new idListSortCompare<type>());
+//        }
 //
-//	cmp_c *vCompare = (cmp_c *)compare;
-//	qsort( ( void * )( &list[startIndex] ), ( size_t )( endIndex - startIndex + 1 ), sizeof( type ), vCompare );
-            Arrays.sort(list, startIndex, endIndex, compare);
-        }
+//        public void SortSubSection(int startIndex, int endIndex, cmp_t compare /*= ( cmp_t * )&idListSortCompare<type>*/) {
+//            if (NOT(list)) {
+//                return;
+//            }
+//            if (startIndex < 0) {
+//                startIndex = 0;
+//            }
+//            if (endIndex >= Num()) {
+//                endIndex = Num() - 1;
+//            }
+//            if (startIndex >= endIndex) {
+//                return;
+//            }
+////	typedef int cmp_c(const void *, const void *);
+////
+////	cmp_c *vCompare = (cmp_c *)compare;
+////	qsort( ( void * )( &list[startIndex] ), ( size_t )( endIndex - startIndex + 1 ), sizeof( type ), vCompare );
+//            Arrays.sort(list, startIndex, endIndex, compare);
+//        }
 
         /*
          ================

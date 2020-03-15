@@ -238,7 +238,7 @@ public class Curve {
 
         public void Translate(final type translation) {
             for (int i = 0; i < values.Num(); i++) {
-                values.oSet(i, values.oGet(i).oPlus(translation));
+                values.oSetType(i, values.oGet(i).oPlus(translation));
             }
             changed = true;
         }                                   // set whenever the curve changes
@@ -1065,16 +1065,16 @@ public class Curve {
             c.AssureSize(this.values.Num());
             d.AssureSize(this.values.Num());
 
-            c.oSet(this.values.Num() - 1, this.values.oGet(0).oMinus(this.values.oGet(0)));
+            c.oSetType(this.values.Num() - 1, this.values.oGet(0).oMinus(this.values.oGet(0)));
 
             for (i = this.values.Num() - 2; i >= 0; i--) {
-                c.oSet(i, delta[i].oMinus(c.oGet(i + 1).oMultiply(gamma[i])));
+                c.oSetType(i, delta[i].oMinus(c.oGet(i + 1).oMultiply(gamma[i])));
                 inv = 1.0f / d0[i];
-                b.oSet(i, this.values.oGet(i + 1).oMinus(this.values.oGet(i)).oMultiply(inv)
+                b.oSetType(i, this.values.oGet(i + 1).oMinus(this.values.oGet(i)).oMultiply(inv)
                         .oMinus(
                                 c.oGet(i + 1).oPlus(c.oGet(i).oMultiply(2.0f))
                                         .oMultiply(1.0f / 3.0f * d0[i])));
-                d.oSet(i, c.oGet(i + 1).oMinus((c.oGet(i))).oMultiply((1.0f / 3.0f) * inv));
+                d.oSetType(i, c.oGet(i + 1).oMinus((c.oGet(i))).oMultiply((1.0f / 3.0f) * inv));
             }
         }
 
@@ -1136,11 +1136,11 @@ public class Curve {
             c.oSet(this.values.Num() - 1, delta[this.values.Num() - 1]);
 
             for (i = this.values.Num() - 2; i >= 0; i--) {
-                c.oSet(i, delta[i].oMinus(c.oGet(i + 1).oMultiply(gamma[i])));
+                c.oSetType(i, delta[i].oMinus(c.oGet(i + 1).oMultiply(gamma[i])));
                 inv = 1.0f / d0[i];
-                b.oSet(i, this.values.oGet(i + 1).oMinus(this.values.oGet(i)).oMultiply(inv)
+                b.oSetType(i, this.values.oGet(i + 1).oMinus(this.values.oGet(i)).oMultiply(inv)
                         .oMinus(c.oGet(i + 1).oPlus(c.oGet(i).oMultiply(2.0f)).oMultiply((1.0f / 3.0f) * d0[i])));
-                d.oSet(i, c.oGet(i + 1).oMinus(c.oGet(i)).oMultiply((1.0f / 3.0f) * inv));
+                d.oSetType(i, c.oGet(i + 1).oMinus(c.oGet(i)).oMultiply((1.0f / 3.0f) * inv));
             }
         }
 
@@ -1180,12 +1180,12 @@ public class Curve {
             for (i = 1; i <= this.values.Num() - 2; i++) {
                 c0 = 1.0f / d0[i];
                 c1 = 1.0f / d0[i - 1];
-                c.oSet(i, this.values.oGet(i + 1).oMinus(this.values.oGet(i)).oMultiply(c0)
+                c.oSetType(i, this.values.oGet(i + 1).oMinus(this.values.oGet(i)).oMultiply(c0)
                         .oMinus(this.values.oGet(i).oMinus(this.values.oGet(i - 1)).oMultiply(c1)).oMultiply(3.0f));
             }
             c0 = 1.0f / d0[0];
             c1 = 1.0f / d0[this.values.Num() - 2];
-            c.oSet(this.values.Num() - 1, this.values.oGet(1).oMinus(this.values.oGet(0)).oMultiply(c0)
+            c.oSetType(this.values.Num() - 1, this.values.oGet(1).oMinus(this.values.oGet(0)).oMultiply(c0)
                     .oMinus(this.values.oGet(0).oMinus(this.values.oGet(this.values.Num() - 2)).oMultiply(c1)).oMultiply(3.0f));
 
             // solve system for each dimension
@@ -1202,9 +1202,9 @@ public class Curve {
 
             for (i = 0; i < this.values.Num() - 1; i++) {
                 c0 = 1.0f / d0[i];
-                b.oSet(i, this.values.oGet(i + 1).oMinus(this.values.oGet(i)).oMultiply(c0)
+                b.oSetType(i, this.values.oGet(i + 1).oMinus(this.values.oGet(i)).oMultiply(c0)
                         .oMinus(c.oGet(i + 1).oPlus(c.oGet(i).oMultiply(2.0f)).oMultiply((1.0f / 3.0f)).oMultiply(d0[i])));
-                d.oSet(i, c.oGet(i + 1).oMinus(c.oGet(i)).oMultiply((1.0f / 3.0f) * c0));
+                d.oSetType(i, c.oGet(i + 1).oMinus(c.oGet(i)).oMultiply((1.0f / 3.0f) * c0));
             }
         }
     }

@@ -3412,7 +3412,7 @@ public class Misc {
             // calculate the relative times of all the objects
             time = 0.0f;
             for (i = 0; i < targetTime.Num(); i++) {
-                targetTime.oSet(i, SEC2MS(time));
+                targetTime.oSetType(i, SEC2MS(time));
                 lastTargetPos.oSet(i, toPos);
 
                 frac = 1.0f - (float) i / (float) targetTime.Num();
@@ -3422,7 +3422,7 @@ public class Misc {
             // scale up the times to fit within throw_time
             scale = throw_time / time;
             for (i = 0; i < targetTime.Num(); i++) {
-                targetTime.oSet(i, gameLocal.time + SEC2MS(shake_time) + targetTime.oGet(i) * scale);
+                targetTime.oSetType(i, gameLocal.time + SEC2MS(shake_time) + targetTime.oGet(i) * scale);
             }
 
             BecomeActive(TH_THINK);
