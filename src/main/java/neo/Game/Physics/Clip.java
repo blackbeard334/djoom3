@@ -273,7 +273,7 @@ public class Clip {
             contents = savefile.ReadInt();
             savefile.ReadString(collisionModelName);
             if (collisionModelName.Length() != 0) {
-                collisionModelHandle = collisionModelManager.LoadModel(collisionModelName.toString(), false);
+                collisionModelHandle = collisionModelManager.LoadModel(collisionModelName.getData(), false);
             } else {
                 collisionModelHandle = -1;
             }
@@ -517,7 +517,7 @@ public class Clip {
         }
 
         public static int/*cmHandle_t*/ CheckModel(final idStr name) {
-            return CheckModel(name.toString());
+            return CheckModel(name.getData());
         }
 
         public static void ClearTraceModelCache() {

@@ -1185,7 +1185,7 @@ public class AI {
             idStr projectileName = new idStr();
             savefile.ReadString(projectileName);
             if (projectileName.Length() != 0) {
-                projectileDef = gameLocal.FindEntityDefDict(projectileName.toString());
+                projectileDef = gameLocal.FindEntityDefDict(projectileName.getData());
             } else {
                 projectileDef = null;
             }
@@ -1369,7 +1369,7 @@ public class AI {
                 if (joint == INVALID_JOINT) {
                     gameLocal.Warning("Unknown look_joint '%s' on entity %s", jointName, name);
                 } else {
-                    jointScale = spawnArgs.GetAngles(kv.GetKey().toString(), "0 0 0");
+                    jointScale = spawnArgs.GetAngles(kv.GetKey().getData(), "0 0 0");
                     jointScale.roll = 0.0f;
 
                     // if no scale on any component, then don't bother adding it.  this may be done to
@@ -2072,7 +2072,7 @@ public class AI {
             idStr use_aas = new idStr();
 
             spawnArgs.GetString("use_aas", null, use_aas);
-            aas = gameLocal.GetAAS(use_aas.toString());
+            aas = gameLocal.GetAAS(use_aas.getData());
             if (aas != null) {
                 final idAASSettings settings = aas.GetSettings();
                 if (settings != null) {
@@ -2526,9 +2526,9 @@ public class AI {
                 if (anim != null) {
                     frame = anim.FindFrameForFrameCommand(FC_LAUNCHMISSILE, command);
                     if (frame >= 0) {
-                        joint = animator.GetJointHandle(command[0].string.toString());
+                        joint = animator.GetJointHandle(command[0].string.getData());
                         if (joint == INVALID_JOINT) {
-                            gameLocal.Error("Invalid joint '%s' on 'launch_missile' frame command on frame %d of model '%s'", command[0].string.toString(), frame, modelDef.GetName());
+                            gameLocal.Error("Invalid joint '%s' on 'launch_missile' frame command on frame %d of model '%s'", command[0].string.getData(), frame, modelDef.GetName());
                         }
                         GetJointTransformForAnim(joint, i, FRAME2MS(frame), missileLaunchOffset.oGet(i), axis);
                     }
@@ -4358,7 +4358,7 @@ public class AI {
                         jointName = jointName.Right(jointName.Length() - dash - 1);
                     }
 
-                    SpawnParticlesOnJoint(pe, particleName, jointName.toString());
+                    SpawnParticlesOnJoint(pe, particleName, jointName.getData());
                     particles.Append(pe);
                 }
 
@@ -4932,7 +4932,7 @@ public class AI {
         }
 
         protected void DirectDamage(final idStr meleeDefName, idEntity ent) {
-            DirectDamage(meleeDefName.toString(), ent);
+            DirectDamage(meleeDefName.getData(), ent);
         }
 
         protected boolean TestMelee() {
@@ -5101,7 +5101,7 @@ public class AI {
                     vel = ent.GetPhysics().GetAbsBounds().GetCenter().oMinus(touchList[i].touchedByBody.GetWorldOrigin());
                     vel.Normalize();
                     if (attack.Length() != 0 && ent.IsType(idActor.class)) {
-                        ent.Damage(this, this, vel, attack.toString(), 1.0f, INVALID_JOINT);
+                        ent.Damage(this, this, vel, attack.getData(), 1.0f, INVALID_JOINT);
                     } else {
                         ent.GetPhysics().SetLinearVelocity(vel.oMultiply(100.0f), touchList[ i].touchedClipModel.GetId());
                     }

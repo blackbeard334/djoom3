@@ -194,7 +194,7 @@ public class DemoFile {
             int[] index = new int[1];
 
             if (log && fLog != null) {
-                final String text = va("%s > Reading hash string\n", logStr.toString());
+                final String text = va("%s > Reading hash string\n", logStr.getData());
                 fLog.WriteString(text);
             }
 
@@ -210,7 +210,7 @@ public class DemoFile {
 
                 demoStrings.Append(str);
 
-                return str.toString();
+                return str.getData();
             }
 
             if (index[0] < -1 || index[0] >= demoStrings.Num()) {
@@ -218,17 +218,17 @@ public class DemoFile {
                 common.Error("demo hash index out of range");
             }
 
-            return demoStrings.oGet(index[0]).toString();//TODO:return c_str?
+            return demoStrings.oGet(index[0]).getData();//TODO:return c_str?
         }
 
         public void WriteHashString(final String str) {
             if (log && fLog != null) {
-                final String text = va("%s > Writing hash string\n", logStr.toString());
+                final String text = va("%s > Writing hash string\n", logStr.getData());
                 fLog.WriteString(text);
             }
             // see if it is already in the has table
             for (int i = 0; i < demoStrings.Num(); i++) {
-                if (demoStrings.oGet(i).toString().equals(str)) {
+                if (demoStrings.oGet(i).getData().equals(str)) {
                     WriteInt(i);
                     return;
                 }
@@ -263,8 +263,8 @@ public class DemoFile {
             c = dict.GetNumKeyVals();
             WriteInt(c);
             for (i = 0; i < c; i++) {
-                WriteHashString(dict.GetKeyVal(i).GetKey().toString());
-                WriteHashString(dict.GetKeyVal(i).GetValue().toString());
+                WriteHashString(dict.GetKeyVal(i).GetKey().getData());
+                WriteHashString(dict.GetKeyVal(i).GetValue().getData());
             }
         }
 

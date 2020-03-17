@@ -91,7 +91,7 @@ public class Base64 {
         }
 
         public void Encode(final idStr src) {
-            Encode(src.toString().getBytes(), src.Length());
+            Encode(src.getData().getBytes(), src.Length());
         }
 
         /*

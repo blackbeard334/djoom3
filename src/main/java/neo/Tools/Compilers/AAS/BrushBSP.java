@@ -682,7 +682,7 @@ public class BrushBSP {
 
             common.Printf("writing %s...\n", qpath);
 
-            lineFile = fileSystem.OpenFileWrite(qpath.toString(), "fs_devpath");
+            lineFile = fileSystem.OpenFileWrite(qpath.getData(), "fs_devpath");
             if (null == lineFile) {
                 common.Error("Couldn't open %s\n", qpath);
                 return;

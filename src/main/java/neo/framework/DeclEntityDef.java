@@ -65,7 +65,7 @@ public class DeclEntityDef {
                     break;
                 }
                 if (token.type != TT_STRING) {
-                    src.Warning("Expected quoted string, but found '%s'", token.toString());
+                    src.Warning("Expected quoted string, but found '%s'", token.getData());
                     MakeDefault();
                     return false;
                 }
@@ -76,8 +76,8 @@ public class DeclEntityDef {
                     return false;
                 }
 
-                if (dict.FindKey(token.toString()) != null) {
-                    src.Warning("'%s' already defined", token.toString());
+                if (dict.FindKey(token.getData()) != null) {
+                    src.Warning("'%s' already defined", token.getData());
                 }
                 dict.Set(token, token2);
             }
@@ -106,7 +106,7 @@ public class DeclEntityDef {
                 }
 
                 // delete this key/value pair
-                dict.Delete(kv.GetKey().toString());
+                dict.Delete(kv.GetKey().getData());
             }
 
             // now copy over the inherited key / value pairs

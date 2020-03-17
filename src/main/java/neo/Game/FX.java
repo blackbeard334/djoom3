@@ -409,7 +409,7 @@ public class FX {
                     case FX_DECAL: {
                         if (!useAction.decalDropped) {
                             useAction.decalDropped = true;
-                            gameLocal.ProjectDecal(GetPhysics().GetOrigin(), GetPhysics().GetGravity(), 8.0f, true, fxaction.size, fxaction.data.toString());
+                            gameLocal.ProjectDecal(GetPhysics().GetOrigin(), GetPhysics().GetGravity(), 8.0f, true, fxaction.size, fxaction.data.getData());
                         }
                         break;
                     }
@@ -450,7 +450,7 @@ public class FX {
                             useAction.renderEntity = new renderEntity_s();
                             useAction.renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(fxaction.offset));
                             useAction.renderEntity.axis.oSet((fxaction.explicitAxis) ? fxaction.axis : GetPhysics().GetAxis());
-                            useAction.renderEntity.hModel = renderModelManager.FindModel(fxaction.data.toString());
+                            useAction.renderEntity.hModel = renderModelManager.FindModel(fxaction.data.getData());
                             useAction.renderEntity.shaderParms[ SHADERPARM_RED] = 1.0f;
                             useAction.renderEntity.shaderParms[ SHADERPARM_GREEN] = 1.0f;
                             useAction.renderEntity.shaderParms[ SHADERPARM_BLUE] = 1.0f;
@@ -478,7 +478,7 @@ public class FX {
                             useAction.launched = true;
                             projectile = null;
                             // FIXME: may need to cache this if it is slow
-                            projectileDef = gameLocal.FindEntityDefDict(fxaction.data.toString(), false);
+                            projectileDef = gameLocal.FindEntityDefDict(fxaction.data.getData(), false);
                             if (null == projectileDef) {
                                 gameLocal.Warning("projectile \'%s\' not found", fxaction.data);
                             } else {
@@ -542,7 +542,7 @@ public class FX {
         }
 
         public String Joint() {
-            return (fxEffect != null ? fxEffect.joint.toString() : null);
+            return (fxEffect != null ? fxEffect.joint.getData() : null);
         }
 
         public boolean Done() {
@@ -625,7 +625,7 @@ public class FX {
         }
 
         public static idEntityFx StartFx(final idStr fx, final idVec3 useOrigin, final idMat3 useAxis, idEntity ent, boolean bind) {
-            return StartFx(fx.toString(), useOrigin, useAxis, ent, bind);
+            return StartFx(fx.getData(), useOrigin, useAxis, ent, bind);
         }
 
         protected void Event_Trigger(idEventArg<idEntity> activator) {

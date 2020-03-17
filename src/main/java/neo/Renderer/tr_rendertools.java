@@ -2014,7 +2014,7 @@ public class tr_rendertools {
         text = rb_debugText[text_index = 0];
         for (i = 0; i < rb_numDebugText; i++, text = rb_debugText[++text_index]) {
             if (!text.depthTest) {
-                RB_DrawText(text.text.toString(), text.origin, text.scale, text.color, text.viewAxis, text.align);
+                RB_DrawText(text.text.getData(), text.origin, text.scale, text.color, text.viewAxis, text.align);
             }
         }
 
@@ -2025,7 +2025,7 @@ public class tr_rendertools {
         text = rb_debugText[text_index = 0];
         for (i = 0; i < rb_numDebugText; i++, text = rb_debugText[++text_index]) {
             if (text.depthTest) {
-                RB_DrawText(text.text.toString(), text.origin, text.scale, text.color, text.viewAxis, text.align);
+                RB_DrawText(text.text.getData(), text.origin, text.scale, text.color, text.viewAxis, text.align);
             }
         }
 

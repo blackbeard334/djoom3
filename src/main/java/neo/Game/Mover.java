@@ -1570,9 +1570,9 @@ public class Mover {
             while (kv != null) {
                 str = kv.GetKey().Right(kv.GetKey().Length() - len1);
                 floorInfo_s fi = new floorInfo_s();
-                fi.floor = Integer.parseInt(str.toString());
+                fi.floor = Integer.parseInt(str.getData());
                 fi.door = new idStr(spawnArgs.GetString(va("floorDoor_%d", fi.floor)));
-                fi.pos = spawnArgs.GetVector(kv.GetKey().toString());
+                fi.pos = spawnArgs.GetVector(kv.GetKey().getData());
                 floorInfo.Append(fi);
                 kv = spawnArgs.MatchPrefix("floorPos_", kv);
             }
@@ -1592,7 +1592,7 @@ public class Mover {
             savefile.WriteInt(floorInfo.Num());
             for (i = 0; i < floorInfo.Num(); i++) {
                 savefile.WriteVec3(floorInfo.oGet(i).pos);
-                savefile.WriteString(floorInfo.oGet(i).door.toString());
+                savefile.WriteString(floorInfo.oGet(i).door.getData());
                 savefile.WriteInt(floorInfo.oGet(i).floor);
             }
 
@@ -1650,7 +1650,7 @@ public class Mover {
 
             if (token.Icmp("changefloor") == 0) {
                 if (src.ReadToken(token)) {
-                    int newFloor = Integer.parseInt(token.toString());
+                    int newFloor = Integer.parseInt(token.getData());
                     if (newFloor == currentFloor) {
                         // open currentFloor and interior doors
                         OpenInnerDoor();
@@ -1703,7 +1703,7 @@ public class Mover {
             EnableProperDoors();
             idKeyValue kv = spawnArgs.MatchPrefix("statusGui");
             while (kv != null) {
-                idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
+                idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
                 if (ent != null) {
                     for (int j = 0; j < MAX_RENDERENTITY_GUI; j++) {
                         if (ent.GetRenderEntity() != null && ent.GetRenderEntity().gui[ j] != null) {
@@ -1729,7 +1729,7 @@ public class Mover {
             DisableAllDoors();
             idKeyValue kv = spawnArgs.MatchPrefix("statusGui");
             while (kv != null) {
-                idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
+                idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
                 if (ent != null) {
                     for (int j = 0; j < MAX_RENDERENTITY_GUI; j++) {
                         if (ent.GetRenderEntity() != null && ent.GetRenderEntity().gui[ j] != null) {
@@ -1810,7 +1810,7 @@ public class Mover {
                     doorEnt.spawnArgs.Set("snd_opened", "");
                 }
                 for (int i = 0; i < floorInfo.Num(); i++) {
-                    idDoor door = GetDoor(floorInfo.oGet(i).door.toString());
+                    idDoor door = GetDoor(floorInfo.oGet(i).door.getData());
                     if (door != null) {
                         door.SetCompanion(doorEnt);
                     }
@@ -1848,7 +1848,7 @@ public class Mover {
         private void OpenFloorDoor(int floor) {
             floorInfo_s fi = GetFloorInfo(floor);
             if (fi != null) {
-                idDoor door = GetDoor(fi.door.toString());
+                idDoor door = GetDoor(fi.door.getData());
                 if (door != null) {
                     door.Open();
                 }
@@ -1861,7 +1861,7 @@ public class Mover {
                 door.Close();
             }
             for (int i = 0; i < floorInfo.Num(); i++) {
-                door = GetDoor(floorInfo.oGet(i).door.toString());
+                door = GetDoor(floorInfo.oGet(i).door.getData());
                 if (door != null) {
                     door.Close();
                 }
@@ -1874,7 +1874,7 @@ public class Mover {
                 door.Enable(false);
             }
             for (int i = 0; i < floorInfo.Num(); i++) {
-                door = GetDoor(floorInfo.oGet(i).door.toString());
+                door = GetDoor(floorInfo.oGet(i).door.getData());
                 if (door != null) {
                     door.Enable(false);
                 }
@@ -1888,7 +1888,7 @@ public class Mover {
             }
             for (int i = 0; i < floorInfo.Num(); i++) {
                 if (floorInfo.oGet(i).floor == currentFloor) {
-                    door = GetDoor(floorInfo.oGet(i).door.toString());
+                    door = GetDoor(floorInfo.oGet(i).door.getData());
                     if (door != null) {
                         door.Enable(true);
                         break;
@@ -2089,7 +2089,7 @@ public class Mover {
             } else {
                 // find the first entity spawned on this team (which could be us)
                 for (ent = gameLocal.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
-                    if (ent.IsType(idMover_Binary.class) && NOT(idStr.Icmp(((idMover_Binary) ent).team.toString(), temp[0]))) {
+                    if (ent.IsType(idMover_Binary.class) && NOT(idStr.Icmp(((idMover_Binary) ent).team.getData(), temp[0]))) {
                         break;
                     }
                 }
@@ -2531,7 +2531,7 @@ public class Mover {
                 if (b) {
                     idKeyValue kv = slave.spawnArgs.MatchPrefix("triggerBlocked");
                     while (kv != null) {
-                        idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
+                        idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
                         if (ent != null) {
                             ent.PostEventMS(EV_Activate, 0, moveMaster.GetActivator());
                         }
@@ -3367,7 +3367,7 @@ public class Mover {
                 SetBlocked(false);
                 idKeyValue kv = spawnArgs.MatchPrefix("triggerClosed");
                 while (kv != null) {
-                    idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
+                    idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
                     if (ent != null) {
                         ent.PostEventMS(EV_Activate, 0, moveMaster.GetActivator());
                     }
@@ -3376,7 +3376,7 @@ public class Mover {
             } else if (moverState == MOVER_1TO2) {
                 idKeyValue kv = spawnArgs.MatchPrefix("triggerOpened");
                 while (kv != null) {
-                    idEntity ent = gameLocal.FindEntity(kv.GetValue().toString());
+                    idEntity ent = gameLocal.FindEntity(kv.GetValue().getData());
                     if (ent != null) {
                         ent.PostEventMS(EV_Activate, 0, moveMaster.GetActivator());
                     }

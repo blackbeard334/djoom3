@@ -1566,7 +1566,7 @@ public class Common {
 
             for (int i = 0; i < currentLangList.Num(); i++) {
                 //common.Printf("%s\n", currentLangList[i].c_str());
-                languageDict.Load(currentLangList.oGet(i).toString(), false);
+                languageDict.Load(currentLangList.oGet(i).getData(), false);
             }
 
             fileSystem.FreeFileList(langFiles);
@@ -1610,7 +1610,7 @@ public class Common {
                                 // otherwise add this to the list and save the id to this position in this file
                                 src.GetLastWhiteSpace(ws);
                                 out.Append(ws);
-                                token.oSet(langDict.AddString(token.toString()));
+                                token.oSet(langDict.AddString(token.getData()));
                                 out.Append("\"");
                                 for (k = 0; k < token.Length(); k++) {
                                     ch = token.oGet(k);
@@ -1682,11 +1682,11 @@ public class Common {
                                 if (token2.equals("}")) {
                                     break;
                                 }
-                                replaceArgs.AddKeyVal(token.toString(), token2.toString());
+                                replaceArgs.AddKeyVal(token.getData(), token2.getData());
                             }
                         }
                         common.Printf("  localizing map %s...\n", mapFileName);
-                        LocalizeSpecificMapData(mapFileName.toString(), langDict, replaceArgs);
+                        LocalizeSpecificMapData(mapFileName.getData(), langDict, replaceArgs);
                     }
                 }
                 fileSystem.FreeFile(buffer);
@@ -1706,11 +1706,11 @@ public class Common {
                     if (ent != null) {
                         for (int j = 0; j < replaceArgs.GetNumKeyVals(); j++) {
                             final idLangKeyValue kv = replaceArgs.GetKeyVal(j);
-                            final String temp = ent.epairs.GetString(kv.key.toString());
+                            final String temp = ent.epairs.GetString(kv.key.getData());
                             if (temp != null && !temp.isEmpty()) {
                                 idStr val = kv.value;
-                                if (val.toString().equals(temp)) {
-                                    ent.epairs.Set(kv.key.toString(), langDict.AddString(temp));
+                                if (val.getData().equals(temp)) {
+                                    ent.epairs.Set(kv.key.getData(), langDict.AddString(temp));
                                 }
                             }
                         }
@@ -2603,7 +2603,7 @@ public class Common {
             filename = new idStr(args.Argv(1));
             filename.DefaultFileExtension(".cfg");
             commonLocal.Printf("Writing %s.\n", filename);
-            commonLocal.WriteConfigToFile(filename.toString());
+            commonLocal.WriteConfigToFile(filename.getData());
         }
     };
 
@@ -2896,7 +2896,7 @@ public class Common {
                 idStrList files = new idStrList();
                 GetFileList("z:/d3xp/d3xp/maps/game", "*.map", files);
                 for (int i = 0; i < files.Num(); i++) {
-                    String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
+                    String file = fileSystem.OSPathToRelativePath(files.oGet(i).getData());
                     strCount += LocalizeMap(file, strTable, listHash, excludeList, write);
                 }
             }
@@ -3000,7 +3000,7 @@ public class Common {
                 common.Printf("Testing Map '%s'\n", files.oGet(i));
                 idMapFile map = new idMapFile();
 
-                String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
+                String file = fileSystem.OSPathToRelativePath(files.oGet(i).getData());
                 if (map.Parse(file, false, false)) {
                     int count = map.GetNumEntities();
                     for (int j = 0; j < count; j++) {
@@ -3055,7 +3055,7 @@ public class Common {
                 common.Printf("Testing Map '%s'\n", files.oGet(i));
                 idMapFile map = new idMapFile();
 
-                String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
+                String file = fileSystem.OSPathToRelativePath(files.oGet(i).getData());
                 if (map.Parse(file, false, false)) {
                     int count = map.GetNumEntities();
                     for (int j = 0; j < count; j++) {
@@ -3083,7 +3083,7 @@ public class Common {
 
                                 for (int k = 0; k < list[0].Num(); k++) {
 
-                                    String val = ent.epairs.GetString(list[0].oGet(k).toString(), "");
+                                    String val = ent.epairs.GetString(list[0].oGet(k).getData(), "");
 
                                     if (/*static*/className.equals("info_location") && list[0].oGet(k).equals("location")) {
                                         hasLocation = true;
@@ -3102,7 +3102,7 @@ public class Common {
                             listHash.Get("all", list);
                             if (list[0] != null) {
                                 for (int k = 0; k < list[0].Num(); k++) {
-                                    String val = ent.epairs.GetString(list[0].oGet(k).toString(), "");
+                                    String val = ent.epairs.GetString(list[0].oGet(k).getData(), "");
                                     if (isNotNullOrEmpty(val) && TestMapVal(val)) {
                                         String out = va("%s,%s,%s\r\n", val, list[0].oGet(k), file);
                                         localizeFile.WriteString(out);
@@ -3313,7 +3313,7 @@ public class Common {
     }
 
     static boolean TestGuiParm(final idStr parm, final idStr value, idStrList excludeList) {
-        return TestGuiParm(parm.toString(), value.toString(), excludeList);
+        return TestGuiParm(parm.getData(), value.getData(), excludeList);
     }
 
     static void GetFileList(final String dir, final String ext, idStrList list) {

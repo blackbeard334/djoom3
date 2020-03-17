@@ -196,7 +196,7 @@ public final class idProgram {
         savefile.ReadInt(num);
         for (i = 0; i < num[0]; i++) {
             savefile.ReadString(scriptname);
-            CompileFile(scriptname.toString());
+            CompileFile(scriptname.getData());
         }
 
         savefile.ReadInt(index);
@@ -350,7 +350,7 @@ public final class idProgram {
         filenum = GetFilenum(ospath);
 
         try {
-            compiler.CompileFile(text, filename.toString(), console);
+            compiler.CompileFile(text, filename.getData(), console);
 
             // check to make sure all functions prototyped have code
             for (i = 0; i < varDefs.Num(); i++) {
@@ -569,7 +569,7 @@ public final class idProgram {
     }
 
     public String GetFilename(int num) {
-        return fileList.oGet(num).toString();
+        return fileList.oGet(num).getData();
     }
 
     public int GetFilenum(final String name) {
@@ -921,7 +921,7 @@ public final class idProgram {
                 break;
             }
 
-            String namespaceName = fullname.Mid(start, pos - start).toString();
+            String namespaceName = fullname.Mid(start, pos - start).getData();
             def = GetDef(null, namespaceName, namespaceDef);
             if (null == def) {
                 // couldn't find namespace
@@ -933,7 +933,7 @@ public final class idProgram {
             start = pos + 2;
         } while (def.Type() == ev_namespace);
 
-        String funcName = fullname.Right(fullname.Length() - start).toString();
+        String funcName = fullname.Right(fullname.Length() - start).getData();
         def = GetDef(null, funcName, namespaceDef);
         if (null == def) {
             // couldn't find function
@@ -949,7 +949,7 @@ public final class idProgram {
     }
 
     public function_t FindFunction(final idStr name) {
-        return FindFunction(name.toString());
+        return FindFunction(name.getData());
     }
 
     /*

@@ -103,7 +103,7 @@ public class DeclSkin {
                 }
 
                 if (0 == token.Icmp("model")) {
-                    associatedModels.Append(token2.toString());
+                    associatedModels.Append(token2.getData());
                     continue;
                 }
 
@@ -161,7 +161,7 @@ public class DeclSkin {
 
         public String GetAssociatedModel(int index) {
             if (index >= 0 && index < associatedModels.Num()) {
-                return associatedModels.oGet(index).toString();
+                return associatedModels.oGet(index).getData();
             }
             return "";
         }

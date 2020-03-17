@@ -588,7 +588,7 @@ public class RenderSystem_init {
             if (lastNumber[0] == 99999) {
                 break;
             }
-            int len = fileSystem.ReadFile(fileName.toString(), null, null);
+            int len = fileSystem.ReadFile(fileName.getData(), null, null);
             if (len <= 0) {
                 break;
             }
@@ -1007,7 +1007,7 @@ public class RenderSystem_init {
             // put the console away
             console.Close();
 
-            tr.TakeScreenshot(width, height, checkname.toString(), blends, null);
+            tr.TakeScreenshot(width, height, checkname.getData(), blends, null);
 
             common.Printf("Wrote %s\n", checkname);
         }
@@ -1623,7 +1623,7 @@ public class RenderSystem_init {
             idStr wavString = new idStr(args.Argv((args.Argc() == 2) ? 1 : 2));
             wavString.StripFileExtension();
             wavString.oPluSet(".wav");
-            session.sw.PlayShaderDirectly(wavString.toString());
+            session.sw.PlayShaderDirectly(wavString.getData());
         }
     };
 
@@ -1721,7 +1721,7 @@ public class RenderSystem_init {
                 }
                 int[] w1 = {0}, h1 = {0};
 
-                ByteBuffer data1 = R_LoadImageProgram(image1.imgName.toString(), w1, h1, null);
+                ByteBuffer data1 = R_LoadImageProgram(image1.imgName.getData(), w1, h1, null);
 
                 for (j = 0; j < i; j++) {
                     idImage image2 = globalImages.images.oGet(j);
@@ -1752,7 +1752,7 @@ public class RenderSystem_init {
 
                     int[] w2 = {0}, h2 = {0};
 
-                    ByteBuffer data2 = R_LoadImageProgram(image2.imgName.toString(), w2, h2, null);
+                    ByteBuffer data2 = R_LoadImageProgram(image2.imgName.getData(), w2, h2, null);
 
                     if (w2 != w1 || h2 != h1) {
 //                        R_StaticFree(data2);
@@ -2220,9 +2220,9 @@ public class RenderSystem_init {
         // put the console away
         console.Close();
 
-        tr.TakeScreenshot(width, height, checkName.toString(), blends, null);
+        tr.TakeScreenshot(width, height, checkName.getData(), blends, null);
 
-        common.Printf("Wrote %s\n", checkName.toString());
+        common.Printf("Wrote %s\n", checkName.getData());
     }
 
     /*

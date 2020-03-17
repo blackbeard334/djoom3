@@ -479,7 +479,7 @@ public class draw_arb2 {
 
         // load the program even if we don't support it, so
         // fs_copyfiles can generate cross-platform data dumps
-        fileSystem.ReadFile(fullPath.toString(), /*(void **)&*/ fileBuffer, null);
+        fileSystem.ReadFile(fullPath.getData(), /*(void **)&*/ fileBuffer, null);
         if (NOT(fileBuffer[0])) {
             common.Printf(": File not found\n");
             return;

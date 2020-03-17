@@ -451,7 +451,7 @@ public class win_main {//TODO: rename to plain "main" or something.
     }
 
     public static void Sys_Mkdir(final idStr path) {
-        Sys_Mkdir(path.toString());
+        Sys_Mkdir(path.getData());
     }
 
     /*
@@ -1101,7 +1101,7 @@ public class win_main {//TODO: rename to plain "main" or something.
             }
             string.StripTrailing(" & ");
             string.StripTrailing(" with ");
-            Win32Vars_t.sys_cpustring.SetString(string.toString());
+            Win32Vars_t.sys_cpustring.SetString(string.getData());
         } else {
             common.Printf("forcing CPU type to ");
             idLexer src = new idLexer(Win32Vars_t.sys_cpustring.GetString(), Win32Vars_t.sys_cpustring.GetString().length(), "sys_cpustring");
@@ -1579,7 +1579,7 @@ public class win_main {//TODO: rename to plain "main" or something.
     }
 
     public static boolean remove(final idStr path) {
-        return remove(path.toString());
+        return remove(path.getData());
     }
 
     public static FileChannel tmpfile() throws IOException {

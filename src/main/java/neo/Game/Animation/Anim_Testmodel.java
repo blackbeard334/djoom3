@@ -192,7 +192,7 @@ public class Anim_Testmodel {
             headModel = spawnArgs.GetString("def_head", "");
             if (isNotNullOrEmpty(headModel)) {
                 jointName.oSet(spawnArgs.GetString("head_joint"));
-                joint = animator.GetJointHandle(jointName.toString());
+                joint = animator.GetJointHandle(jointName.getData());
                 if (joint == INVALID_JOINT) {
                     gameLocal.Warning("Joint '%s' not found for 'head_joint'", jointName);
                 } else {
@@ -225,13 +225,13 @@ public class Anim_Testmodel {
                             copyJoint.mod = JOINTMOD_LOCAL_OVERRIDE;
                         }
 
-                        copyJoint.from[0] = animator.GetJointHandle(jointName.toString());
+                        copyJoint.from[0] = animator.GetJointHandle(jointName.getData());
                         if (copyJoint.from[0] == INVALID_JOINT) {
                             gameLocal.Warning("Unknown copy_joint '%s'", jointName);
                             continue;
                         }
 
-                        copyJoint.to[0] = headAnimator.GetJointHandle(jointName.toString());
+                        copyJoint.to[0] = headAnimator.GetJointHandle(jointName.getData());
                         if (copyJoint.to[0] == INVALID_JOINT) {
                             gameLocal.Warning("Unknown copy_joint '%s' on head", jointName);
                             continue;
@@ -280,7 +280,7 @@ public class Anim_Testmodel {
             headAnim = 0;
             if (headAnimator != null) {
                 headAnimator.ClearAllAnims(gameLocal.time, 0);
-                headAnim = headAnimator.GetAnim(animName.toString());
+                headAnim = headAnimator.GetAnim(animName.getData());
                 if (0 == headAnim) {
                     headAnim = headAnimator.GetAnim("idle");
                 }
@@ -317,7 +317,7 @@ public class Anim_Testmodel {
             headAnim = 0;
             if (headAnimator != null) {
                 headAnimator.ClearAllAnims(gameLocal.time, 0);
-                headAnim = headAnimator.GetAnim(animName.toString());
+                headAnim = headAnimator.GetAnim(animName.getData());
                 if (0 == headAnim) {
                     headAnim = headAnimator.GetAnim("idle");
                 }
@@ -411,7 +411,7 @@ public class Anim_Testmodel {
             headAnim = 0;
             if (headAnimator != null) {
                 headAnimator.ClearAllAnims(gameLocal.time, 0);
-                headAnim = headAnimator.GetAnim(animName.toString());
+                headAnim = headAnimator.GetAnim(animName.getData());
                 if (0 == headAnim) {
                     headAnim = headAnimator.GetAnim("idle");
                     if (0 == headAnim) {
@@ -425,7 +425,7 @@ public class Anim_Testmodel {
             }
 
             animName.oSet(name);
-            gameLocal.Printf("anim '%s', %d.%03d seconds, %d frames\n", animName.toString(), animator.AnimLength(anim) / 1000, animator.AnimLength(anim) % 1000, animator.NumFrames(anim));
+            gameLocal.Printf("anim '%s', %d.%03d seconds, %d frames\n", animName.getData(), animator.AnimLength(anim) / 1000, animator.AnimLength(anim) % 1000, animator.NumFrames(anim));
 
             // reset the anim
             mode = -1;
@@ -647,7 +647,7 @@ public class Anim_Testmodel {
 
                 name.oSet(args.Argv(1));
 
-                entityDef = gameLocal.FindEntityDefDict(name.toString(), false);
+                entityDef = gameLocal.FindEntityDefDict(name.getData(), false);
                 if (entityDef != null) {
                     dict = entityDef;
                 } else {
@@ -660,13 +660,13 @@ public class Anim_Testmodel {
                             name.DefaultFileExtension(".ase");
                         }
 
-                        if (name.toString().contains(".ma") || name.toString().contains(".mb")) {
+                        if (name.getData().contains(".ma") || name.getData().contains(".mb")) {
                             idModelExport exporter = new idModelExport();
-                            exporter.ExportModel(name.toString());
+                            exporter.ExportModel(name.getData());
                             name.SetFileExtension(MD5_MESH_EXT);
                         }
 
-                        if (NOT(renderModelManager.CheckModel(name.toString()))) {
+                        if (NOT(renderModelManager.CheckModel(name.getData()))) {
                             gameLocal.Printf("Can't register model\n");
                             return;
                         }

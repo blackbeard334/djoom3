@@ -95,7 +95,7 @@ public class ChoiceWindow {
                     // never affects the state, but we want to execute script handlers anyway
                     if (0 == event.evValue2) {
                         RunScript(etoi(ON_ACTIONRELEASE));
-                        return cmd.toString();
+                        return cmd.getData();
                     }
                     currentChoice++;
                     if (currentChoice >= choices.Num()) {
@@ -108,7 +108,7 @@ public class ChoiceWindow {
                     // never affects the state, but we want to execute script handlers anyway
                     if (0 == event.evValue2) {
                         RunScript(etoi(ON_ACTIONRELEASE));
-                        return cmd.toString();
+                        return cmd.getData();
                     }
                     currentChoice--;
                     if (currentChoice < 0) {
@@ -167,7 +167,7 @@ public class ChoiceWindow {
                 RunScript(etoi(ON_ACTIONRELEASE));
             }
 
-            return cmd.toString();
+            return cmd.getData();
         }
 
         @Override
@@ -315,7 +315,7 @@ public class ChoiceWindow {
                 int c = (values.Num() != 0) ? values.Num() : choices.Num();
                 int i;
                 for (i = 0; i < c; i++) {
-                    if (idStr.Icmp(cvarStr.c_str(), ((values.Num() != 0) ? values.oGet(i) : choices.oGet(i)).toString()) == 0) {
+                    if (idStr.Icmp(cvarStr.c_str(), ((values.Num() != 0) ? values.oGet(i) : choices.oGet(i)).getData()) == 0) {
                         break;
                     }
                 }

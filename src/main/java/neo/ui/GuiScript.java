@@ -173,7 +173,7 @@ public class GuiScript {
                 boolean precacheSounds = false;
                 idWinStr str = (idWinStr) parms.oGet(0).var;
                 assert (str != null);
-                idWinVar dest = win.GetWinVarByName(str.data.toString(), true);
+                idWinVar dest = win.GetWinVarByName(str.data.getData(), true);
                 if (dest != null) {
 //			delete parms[0].var;
                     parms.oGet(0).var = dest;
@@ -194,7 +194,7 @@ public class GuiScript {
                         //  FIXME: This creates duplicate variables, while not technically a problem since they
                         //  are all bound to the same guiDict, it does consume extra memory and is generally a bad thing
                         idWinStr defvar = new idWinStr();
-                        defvar.Init(str.data.toString(), win);
+                        defvar.Init(str.data.getData(), win);
                         win.AddDefinedVar(defvar);
 //				delete parms[i].var;
                         parms.oGet(0).var = defvar;
@@ -246,7 +246,7 @@ public class GuiScript {
 
                 // 
                 drawWin_t[] destOwner = {null};
-                idWinVar dest = win.GetWinVarByName(str.data.toString(), true, destOwner);
+                idWinVar dest = win.GetWinVarByName(str.data.getData(), true, destOwner);
                 // 
 
                 if (dest != null) {
@@ -483,7 +483,7 @@ public class GuiScript {
                         }
                         window.AddCommand(val);
                     } else {
-                        window.AddCommand(dest.data.toString());
+                        window.AddCommand(dest.data.getData());
                     }
                     return;
                 }
@@ -513,7 +513,7 @@ public class GuiScript {
         public void run(idWindow window, idList<idGSWinVar> src) {
             idWinStr parm = (idWinStr) src.oGet(0).var;
             if (parm != null) {
-                drawWin_t win = window.GetGui().GetDesktop().FindChildByName(parm.data.toString());
+                drawWin_t win = window.GetGui().GetDesktop().FindChildByName(parm.data.getData());
                 if (win != null && win.win != null) {
                     window.SetFocus(win.win);
                 }
@@ -541,7 +541,7 @@ public class GuiScript {
         public void run(idWindow window, idList<idGSWinVar> src) {
             idWinStr parm = (idWinStr) src.oGet(0).var;
             if (parm != null) {
-                if (Integer.parseInt(parm.data.toString()) != 0) {
+                if (Integer.parseInt(parm.data.getData()) != 0) {
                     window.GetGui().GetDesktop().ClearFlag(WIN_NOCURSOR);
                 } else {
                     window.GetGui().GetDesktop().SetFlag(WIN_NOCURSOR);
@@ -572,7 +572,7 @@ public class GuiScript {
         public void run(idWindow window, idList<idGSWinVar> src) {
             idWinStr parm = (idWinStr) src.oGet(0).var;
             if (parm != null) {
-                String str = window.cmd.toString();
+                String str = window.cmd.getData();
                 str += " ; runScript ";
                 str += parm.c_str();
                 window.cmd.oSet(str);
@@ -600,7 +600,7 @@ public class GuiScript {
         public void run(idWindow window, idList<idGSWinVar> src) {
             idWinStr parm = (idWinStr) src.oGet(0).var;
             if (parm != null) {
-                session.sw.PlayShaderDirectly(parm.data.toString());
+                session.sw.PlayShaderDirectly(parm.data.getData());
             }
         }
     };
@@ -671,14 +671,14 @@ public class GuiScript {
             idWinStr parm = (idWinStr) src.oGet(0).var;
             drawWin_t win = null;
             if (parm != null && src.Num() > 1) {
-                win = window.GetGui().GetDesktop().FindChildByName(parm.data.toString());
+                win = window.GetGui().GetDesktop().FindChildByName(parm.data.getData());
                 parm = (idWinStr) src.oGet(1).var;
             }
             if (win != null && win.win != null) {
-                win.win.ResetTime(Integer.parseInt(parm.data.toString()));
+                win.win.ResetTime(Integer.parseInt(parm.data.getData()));
                 win.win.EvalRegs(-1, true);
             } else {
-                window.ResetTime(Integer.parseInt(parm.data.toString()));
+                window.ResetTime(Integer.parseInt(parm.data.getData()));
                 window.EvalRegs(-1, true);
             }
         }
@@ -752,15 +752,15 @@ public class GuiScript {
                     common.Warning("Bad transition in gui %s in window %s\n", window.GetGui().GetSourceFile(), window.GetName());
                     return;
                 }
-                int time = atoi(timeStr.data.toString());
+                int time = atoi(timeStr.data.getData());
                 float ac = 0.0f;
                 float dc = 0.0f;
                 if (src.Num() > 4) {
                     idWinStr acv = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(4).var);
                     idWinStr dcv = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(5).var);
                     assert (acv != null && dcv != null);
-                    ac = Float.parseFloat(acv.data.toString());
-                    dc = Float.parseFloat(dcv.data.toString());
+                    ac = Float.parseFloat(acv.data.getData());
+                    dc = Float.parseFloat(dcv.data.getData());
                 }
 
                 if (vec4 != null) {

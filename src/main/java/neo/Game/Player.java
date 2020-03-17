@@ -1714,7 +1714,7 @@ public class Player {
                 if (gameLocal.isMultiplayer) {
                     hud = uiManager.FindGui("guis/mphud.gui", true, false, true);
                 } else if (spawnArgs.GetString("hud", "", temp)) {
-                    hud = uiManager.FindGui(temp.toString(), true, false, true);
+                    hud = uiManager.FindGui(temp.getData(), true, false, true);
                 }
                 if (hud != null) {
                     hud.Activate(true, gameLocal.time);
@@ -1722,7 +1722,7 @@ public class Player {
 
                 // load cursor
                 if (spawnArgs.GetString("cursor", "", temp)) {
-                    cursor = uiManager.FindGui(temp.toString(), true, gameLocal.isMultiplayer, gameLocal.isMultiplayer);
+                    cursor = uiManager.FindGui(temp.getData(), true, gameLocal.isMultiplayer, gameLocal.isMultiplayer);
                 }
                 if (cursor != null) {
                     cursor.Activate(true, gameLocal.time);
@@ -1805,7 +1805,7 @@ public class Player {
             if (GetPDA() != null) {
                 // Add any emails from the inventory
                 for (int i = 0; i < inventory.emails.Num(); i++) {
-                    GetPDA().AddEmail(inventory.emails.oGet(i).toString());
+                    GetPDA().AddEmail(inventory.emails.oGet(i).getData());
                 }
                 GetPDA().SetSecurity(common.GetLanguageDict().GetString("#str_00066"));
             }
@@ -2325,7 +2325,7 @@ public class Player {
             weapon.Restore(savefile);
 
             for (i = 0; i < inventory.emails.Num(); i++) {
-                GetPDA().AddEmail(inventory.emails.oGet(i).toString());
+                GetPDA().AddEmail(inventory.emails.oGet(i).getData());
             }
 
             savefile.ReadUserInterface(hud);
@@ -2520,7 +2520,7 @@ public class Player {
             idKeyValue kv;
             kv = spawnArgs.MatchPrefix("pm_", null);
             while (kv != null) {
-                cvarSystem.SetCVarString(kv.GetKey().toString(), kv.GetValue().toString());
+                cvarSystem.SetCVarString(kv.GetKey().getData(), kv.GetValue().getData());
                 kv = spawnArgs.MatchPrefix("pm_", kv);
             }
 
@@ -2638,7 +2638,7 @@ public class Player {
             if (!gameLocal.isMultiplayer || gameLocal.isServer) {
                 kv = spawnArgs.MatchPrefix("pm_", null);
                 while (kv != null) {
-                    cvarSystem.SetCVarString(kv.GetKey().toString(), kv.GetValue().toString());
+                    cvarSystem.SetCVarString(kv.GetKey().getData(), kv.GetValue().getData());
                     kv = spawnArgs.MatchPrefix("pm_", kv);
                 }
             }
@@ -4274,7 +4274,7 @@ public class Player {
         }
 
         public boolean Give(final idStr statname, final idStr value) {
-            return this.Give(statname.toString(), value.toString());
+            return this.Give(statname.getData(), value.getData());
         }
 
 
@@ -4372,7 +4372,7 @@ public class Player {
             info.icon.oSet(item.GetString("inv_icon"));
             inventory.pickupItemNames.Append(info);
             if (hud != null) {
-                hud.SetStateString("itemicon", info.icon.toString());
+                hud.SetStateString("itemicon", info.icon.getData());
                 hud.HandleNamedEvent("invPickup");
             }
             return true;
@@ -4412,7 +4412,7 @@ public class Player {
         }
 
         public idDict FindInventoryItem(final idStr name) {
-            return FindInventoryItem(name.toString());
+            return FindInventoryItem(name.getData());
         }
 
         public void GivePDA(final idStr pdaName, idDict item) {
@@ -4447,7 +4447,7 @@ public class Player {
                     pdaName.oSet(pda.GetPdaName());
                     pdaName.RemoveColors();
                     hud.SetStateString("pda", "1");
-                    hud.SetStateString("pda_text", pdaName.toString());
+                    hud.SetStateString("pda_text", pdaName.getData());
                     final String sec = pda.GetSecurity();
                     hud.SetStateString("pda_security", (sec != null && !sec.isEmpty()) ? "1" : "0");//TODO:!= null and !usEmpty, check that this combination isn't the wrong way around anywhere. null== instead of !=null
                     hud.HandleNamedEvent("pdaPickup");
@@ -4524,7 +4524,7 @@ public class Player {
         public void CompleteObjective(final String title) {
             int c = inventory.objectiveNames.Num();
             for (int i = 0; i < c; i++) {
-                if (idStr.Icmp(inventory.objectiveNames.oGet(i).title.toString(), title) == 0) {
+                if (idStr.Icmp(inventory.objectiveNames.oGet(i).title.getData(), title) == 0) {
                     inventory.objectiveNames.RemoveIndex(i);
                     break;
                 }
@@ -4902,10 +4902,10 @@ public class Player {
             // set the appropriate ammo in the dropped object
             final idKeyValue keyval = item.spawnArgs.MatchPrefix("inv_ammo_");
             if (keyval != null) {
-                item.spawnArgs.SetInt(keyval.GetKey().toString(), ammoavailable);
+                item.spawnArgs.SetInt(keyval.GetKey().getData(), ammoavailable);
                 idStr inclipKey = keyval.GetKey();
                 inclipKey.Insert("inclip_", 4);
-                item.spawnArgs.SetInt(inclipKey.toString(), inclip);
+                item.spawnArgs.SetInt(inclipKey.getData(), inclip);
             }
             if (!died) {
                 // remove from our local inventory completely
@@ -5521,7 +5521,7 @@ public class Player {
                         objectiveSystem.SetStateString(va("inv_text_%d", j), itext);
                         final idKeyValue kv = item.MatchPrefix("inv_id", null);
                         if (kv != null) {
-                            objectiveSystem.SetStateString(va("inv_id_%d", j), kv.GetValue().toString());
+                            objectiveSystem.SetStateString(va("inv_id_%d", j), kv.GetValue().getData());
                         }
                     }
                 }
@@ -5593,8 +5593,8 @@ public class Player {
                     }
                     int i;
                     for (i = 0; i < 5 && i < c; i++) {
-                        hud.SetStateString(va("itemtext%d", inventory.nextItemNum), inventory.pickupItemNames.oGet(0).name.toString());
-                        hud.SetStateString(va("itemicon%d", inventory.nextItemNum), inventory.pickupItemNames.oGet(0).icon.toString());
+                        hud.SetStateString(va("itemtext%d", inventory.nextItemNum), inventory.pickupItemNames.oGet(0).name.getData());
+                        hud.SetStateString(va("itemicon%d", inventory.nextItemNum), inventory.pickupItemNames.oGet(0).icon.getData());
                         hud.HandleNamedEvent(va("itemPickup%d", inventory.nextItemNum++));
                         inventory.pickupItemNames.RemoveIndex(0);
                         if (inventory.nextItemNum == 1) {
@@ -6580,7 +6580,7 @@ public class Player {
                     currentWeapon = idealWeapon;
                     weaponGone = false;
                     animPrefix.oSet(spawnArgs.GetString(va("def_weapon%d", currentWeapon)));
-                    weapon.GetEntity().GetWeaponDef(animPrefix.toString(), inventory.clip[ currentWeapon]);
+                    weapon.GetEntity().GetWeaponDef(animPrefix.getData(), inventory.clip[ currentWeapon]);
                     animPrefix.Strip("weapon_");
 
                     weapon.GetEntity().NetCatchup();
@@ -6605,7 +6605,7 @@ public class Player {
                         currentWeapon = idealWeapon;
                         weaponGone = false;
                         animPrefix.oSet(spawnArgs.GetString(va("def_weapon%d", currentWeapon)));
-                        weapon.GetEntity().GetWeaponDef(animPrefix.toString(), inventory.clip[ currentWeapon]);
+                        weapon.GetEntity().GetWeaponDef(animPrefix.getData(), inventory.clip[ currentWeapon]);
                         animPrefix.Strip("weapon_");
 
                         weapon.GetEntity().Raise();
@@ -6719,7 +6719,7 @@ public class Player {
             if (!weapon.GetEntity().IsLinked()) {
                 if (idealWeapon != -1) {
                     animPrefix.oSet(spawnArgs.GetString(va("def_weapon%d", idealWeapon)));
-                    weapon.GetEntity().GetWeaponDef(animPrefix.toString(), inventory.clip[ idealWeapon]);
+                    weapon.GetEntity().GetWeaponDef(animPrefix.getData(), inventory.clip[ idealWeapon]);
                     assert (weapon.GetEntity().IsLinked());
                 } else {
                     return;
@@ -7898,13 +7898,13 @@ public class Player {
                             focusUI.SetStateString(va("inv_text_%d", j), itext);
                             kv = item.MatchPrefix("inv_id", null);
                             if (kv != null) {
-                                focusUI.SetStateString(va("inv_id_%d", j), kv.GetValue().toString());
+                                focusUI.SetStateString(va("inv_id_%d", j), kv.GetValue().getData());
                             }
                             focusUI.SetStateInt(iname, 1);
                         }
 
                         for (j = 0; j < inventory.pdaSecurity.Num(); j++) {
-                            final String p = inventory.pdaSecurity.oGet(j).toString();
+                            final String p = inventory.pdaSecurity.oGet(j).getData();
                             if (isNotNullOrEmpty(p)) {
                                 focusUI.SetStateInt(p, 1);
                             }
@@ -7917,7 +7917,7 @@ public class Player {
 
                         kv = focusGUIent.spawnArgs.MatchPrefix("gui_parm", null);
                         while (kv != null) {
-                            focusUI.SetStateString(kv.GetKey().toString(), kv.GetValue().toString());
+                            focusUI.SetStateString(kv.GetKey().getData(), kv.GetValue().getData());
                             kv = focusGUIent.spawnArgs.MatchPrefix("gui_parm", kv);
                         }
                     }
@@ -8188,7 +8188,7 @@ public class Player {
                 for (i = 0; i < c; i++) {
                     final idDeclVideo video = GetVideo(i);
                     if (video == null) {
-                        work = va("Video CD %s not found", inventory.videos.oGet(i).toString());
+                        work = va("Video CD %s not found", inventory.videos.oGet(i).getData());
                     } else {
                         work = video.GetVideoName();
                     }
@@ -8211,9 +8211,9 @@ public class Player {
             objectiveSystem.SetStateString("objective3", "");
             for (int i = 0; i < inventory.objectiveNames.Num(); i++) {
                 objectiveSystem.SetStateString(va("objective%d", i + 1), "1");
-                objectiveSystem.SetStateString(va("objectivetitle%d", i + 1), inventory.objectiveNames.oGet(i).title.toString());
-                objectiveSystem.SetStateString(va("objectivetext%d", i + 1), inventory.objectiveNames.oGet(i).text.toString());
-                objectiveSystem.SetStateString(va("objectiveshot%d", i + 1), inventory.objectiveNames.oGet(i).screenshot.toString());
+                objectiveSystem.SetStateString(va("objectivetitle%d", i + 1), inventory.objectiveNames.oGet(i).title.getData());
+                objectiveSystem.SetStateString(va("objectivetext%d", i + 1), inventory.objectiveNames.oGet(i).text.getData());
+                objectiveSystem.SetStateString(va("objectiveshot%d", i + 1), inventory.objectiveNames.oGet(i).screenshot.getData());
             }
             objectiveSystem.StateChanged(gameLocal.time);
         }

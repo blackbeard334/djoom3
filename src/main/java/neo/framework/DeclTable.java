@@ -94,7 +94,7 @@ public class DeclTable {
                     }
 
                 } else {
-                    src.Warning("unknown token '%s'", token.toString());
+                    src.Warning("unknown token '%s'", token.getData());
                     MakeDefault();
                     return false;
                 }

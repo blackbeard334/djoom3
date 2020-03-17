@@ -97,7 +97,7 @@ public class GameBustOutWindow {
 
             savefile.WriteBool(visible);
 
-            game.WriteSaveGameString(materialName.toString(), savefile);
+            game.WriteSaveGameString(materialName.getData(), savefile);
 
             savefile.WriteFloat(width);
             savefile.WriteFloat(height);
@@ -117,7 +117,7 @@ public class GameBustOutWindow {
             visible = savefile.ReadBool();
 
             game.ReadSaveGameString(materialName, savefile);
-            SetMaterial(materialName.toString());
+            SetMaterial(materialName.getData());
 
             width = savefile.ReadFloat();
             height = savefile.ReadFloat();

@@ -481,10 +481,10 @@ public class BitMsg {
 
                 for (i = 0; i < dict.GetNumKeyVals(); i++) {
                     kv = dict.GetKeyVal(i);
-                    basekv = base.FindKey(kv.GetKey().toString());
-                    if (basekv == null || basekv.GetValue().Icmp(kv.GetValue().toString()) != 0) {
-                        WriteString(kv.GetKey().toString());
-                        WriteString(kv.GetValue().toString());
+                    basekv = base.FindKey(kv.GetKey().getData());
+                    if (basekv == null || basekv.GetValue().Icmp(kv.GetValue().getData()) != 0) {
+                        WriteString(kv.GetKey().getData());
+                        WriteString(kv.GetValue().getData());
                         changed = true;
                     }
                 }
@@ -493,9 +493,9 @@ public class BitMsg {
 
                 for (i = 0; i < base.GetNumKeyVals(); i++) {
                     basekv = base.GetKeyVal(i);
-                    kv = dict.FindKey(basekv.GetKey().toString());
+                    kv = dict.FindKey(basekv.GetKey().getData());
                     if (kv == null) {
-                        WriteString(basekv.GetKey().toString());
+                        WriteString(basekv.GetKey().getData());
                         changed = true;
                     }
                 }
@@ -506,8 +506,8 @@ public class BitMsg {
 
                 for (i = 0; i < dict.GetNumKeyVals(); i++) {
                     kv = dict.GetKeyVal(i);
-                    WriteString(kv.GetKey().toString());
-                    WriteString(kv.GetValue().toString());
+                    WriteString(kv.GetKey().getData());
+                    WriteString(kv.GetValue().getData());
                     changed = true;
                 }
                 WriteString("");

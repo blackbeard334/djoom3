@@ -577,7 +577,7 @@ public class Image {
         // May start a background image read.
         public void Bind() {
             if (tr.logFile != null) {
-                RB_LogComment("idImage::Bind( %s )\n", imgName.toString());
+                RB_LogComment("idImage::Bind( %s )\n", imgName.getData());
             }
             
             // if this is an image that we are caching, move it to the front of the LRU chain
@@ -678,7 +678,7 @@ public class Image {
         // for use with fragment programs, doesn't change any enable2D/3D/cube states
         public void BindFragment() {
             if (tr.logFile != null) {
-                RB_LogComment("idImage::BindFragment %s )\n", imgName.toString());
+                RB_LogComment("idImage::BindFragment %s )\n", imgName.getData());
             }
 
             // if this is an image that we are caching, move it to the front of the LRU chain
@@ -903,7 +903,7 @@ public class Image {
                 // Optionally write out the texture to a .tga
 //                String[] filename = {null};
                 String[] filename = new String[1];
-                ImageProgramStringToCompressedFileName(imgName.toString(), filename);
+                ImageProgramStringToCompressedFileName(imgName.getData(), filename);
                 final int ext = filename[0].lastIndexOf('.');
                 if (ext > -1) {
 //			strcpy( ext, ".tga" );
@@ -1628,7 +1628,7 @@ public class Image {
 
             common.Printf("%4dk ", StorageSize() / 1024);
 
-            common.Printf(" %s\n", imgName.toString());
+            common.Printf(" %s\n", imgName.getData());
         }
 
 //
@@ -1646,17 +1646,17 @@ public class Image {
                 long[]/*ID_TIME_T*/ current = {0};
 
                 if (cubeFiles != CF_2D) {
-                    R_LoadCubeImages(imgName.toString(), cubeFiles, null, null, current);
+                    R_LoadCubeImages(imgName.getData(), cubeFiles, null, null, current);
                 } else {
                     // get the current values
-                    R_LoadImageProgram(imgName.toString(), null, null, current);
+                    R_LoadImageProgram(imgName.getData(), null, null, current);
                 }
                 if (current[0] <= timestamp[0]) {
                     return;
                 }
             }
 
-            common.DPrintf("reloading %s.\n", imgName.toString());
+            common.DPrintf("reloading %s.\n", imgName.getData());
 
             PurgeImage();
 
@@ -1880,7 +1880,7 @@ public class Image {
 
             final String[] filename = {null};
             final String filename1;
-            ImageProgramStringToCompressedFileName(imgName.toString(), filename);
+            ImageProgramStringToCompressedFileName(imgName.getData(), filename);
             filename1 = filename[0];
 
             // get the file timestamp
@@ -1931,7 +1931,7 @@ public class Image {
             }
 
             final String[] filename0 = {null};
-            ImageProgramStringToCompressedFileName(imgName.toString(), filename0);
+            ImageProgramStringToCompressedFileName(imgName.getData(), filename0);
             final String filename = filename0[0];
 
             int numLevels = NumLevelsForImageSize(uploadWidth, uploadHeight);
@@ -2003,7 +2003,7 @@ public class Image {
                             break;
                     }
                 }
-                globalImages.AddDDSCommand(va("z:/d3xp/compressonator/thecompressonator -convert \"%s\" \"%s\" %s -mipmaps\n", inFile.toString(), outFile, format));
+                globalImages.AddDDSCommand(va("z:/d3xp/compressonator/thecompressonator -convert \"%s\" \"%s\" %s -mipmaps\n", inFile.getData(), outFile, format));
                 return;
             }
 
@@ -2173,8 +2173,8 @@ public class Image {
                 return false;//TODO:enable this by using openCL for the values above.
             }
 
-            if (imgName.toString().contains("mars")
-                    || imgName.toString().contains("planet")) {
+            if (imgName.getData().contains("mars")
+                    || imgName.getData().contains("planet")) {
 //                System.out.println(">>>>>>>>>>>" + DEBUG_CheckPrecompressedImage);
 //                return true;
             }
@@ -2182,7 +2182,7 @@ public class Image {
             DEBUG_CheckPrecompressedImage++;
 
             final String[] filename = {null};
-            ImageProgramStringToCompressedFileName(imgName.toString(), filename);
+            ImageProgramStringToCompressedFileName(imgName.getData(), filename);
 //            System.out.println("====" + filename[0]);
 
             // get the file timestamp
@@ -2233,7 +2233,7 @@ public class Image {
             int ddspf_dwFlags = LittleLong(_header.ddspf.dwFlags);
 
             if (magic != DDS_MAKEFOURCC('D', 'D', 'S', ' ')) {
-                common.Printf("CheckPrecompressedImage( %s ): magic != 'DDS '\n", imgName.toString());
+                common.Printf("CheckPrecompressedImage( %s ): magic != 'DDS '\n", imgName.getData());
 //                R_StaticFree(data);
                 return false;
             }
@@ -2461,10 +2461,10 @@ public class Image {
                 ByteBuffer[] pics = new ByteBuffer[6];//TODO:FIXME!
 
                 // we don't check for pre-compressed cube images currently
-                R_LoadCubeImages(imgName.toString(), cubeFiles, pics, width, timestamp);
+                R_LoadCubeImages(imgName.getData(), cubeFiles, pics, width, timestamp);
 
                 if (pics[0] == null) {
-                    common.Warning("Couldn't load cube image: %s", imgName.toString());
+                    common.Warning("Couldn't load cube image: %s", imgName.getData());
                     MakeDefault();
                     return;
                 }
@@ -2490,7 +2490,7 @@ public class Image {
 
                 {
                     textureDepth_t[] depth = {this.depth};
-                    pic = R_LoadImageProgram(imgName.toString(), width, height, timestamp, depth);
+                    pic = R_LoadImageProgram(imgName.getData(), width, height, timestamp, depth);
                     this.depth = depth[0];
                 }
 
@@ -2532,12 +2532,12 @@ public class Image {
                 return;
             }
             if (globalImages.image_showBackgroundLoads.GetBool()) {
-                common.Printf("idImage::StartBackgroundImageLoad: %s\n", imgName.toString());
+                common.Printf("idImage::StartBackgroundImageLoad: %s\n", imgName.getData());
             }
             backgroundLoadInProgress = true;
 
             if (!precompressedFile) {
-                common.Warning("idImageManager::StartBackgroundImageLoad: %s wasn't a precompressed file", imgName.toString());
+                common.Warning("idImageManager::StartBackgroundImageLoad: %s wasn't a precompressed file", imgName.getData());
                 return;
             }
 
@@ -2550,13 +2550,13 @@ public class Image {
             bgl.completed = false;
             bgl.f = fileSystem.OpenFileRead(filename[0]);
             if (null == bgl.f) {
-                common.Warning("idImageManager::StartBackgroundImageLoad: Couldn't load %s", imgName.toString());
+                common.Warning("idImageManager::StartBackgroundImageLoad: Couldn't load %s", imgName.getData());
                 return;
             }
             bgl.file.position = 0;
             bgl.file.length = bgl.f.Length();
             if (bgl.file.length < ddsFileHeader_t.BYTES) {
-                common.Warning("idImageManager::StartBackgroundImageLoad: %s had a bad file length", imgName.toString());
+                common.Warning("idImageManager::StartBackgroundImageLoad: %s had a bad file length", imgName.getData());
                 return;
             }
 
@@ -2579,7 +2579,7 @@ public class Image {
                 if (check.texNum != TEXTURE_NOT_LOADED) {
                     totalSize -= check.StorageSize();
                     if (globalImages.image_showBackgroundLoads.GetBool()) {
-                        common.Printf("purging %s\n", check.imgName.toString());
+                        common.Printf("purging %s\n", check.imgName.getData());
                     }
                     check.PurgeImage();
                 }
@@ -2928,7 +2928,7 @@ public class Image {
         }
 
         public void ImageProgramStringToCompressedFileName(final idStr imageProg, String[] fileName) {
-            ImageProgramStringToCompressedFileName(imageProg.toString(), fileName);
+            ImageProgramStringToCompressedFileName(imageProg.getData(), fileName);
         }
 
         public int NumLevelsForImageSize(int width, int height) {
@@ -3057,7 +3057,7 @@ public class Image {
             //
             hash = name.FileNameHash();
             for (image = imageHashTable[hash]; image != null; image = image.hashNext) {
-                if (name.Icmp(image.imgName.toString()) == 0) {
+                if (name.Icmp(image.imgName.getData()) == 0) {
                     // the built in's, like _white and _flat always match the other options
                     if (name.oGet(0) == '_') {
                         return image;
@@ -3107,7 +3107,7 @@ public class Image {
                     if (image_preload.GetBool() && !insideLevelLoad) {
                         image.referencedOutsideLevelLoad = true;
                         image.ActuallyLoadImage(true, false);    // check for precompressed, load is from front end
-                        declManager.MediaPrint("%dx%d %s (reload for mixed referneces)\n", image.uploadWidth, image.uploadHeight, image.imgName.toString());
+                        declManager.MediaPrint("%dx%d %s (reload for mixed referneces)\n", image.uploadWidth, image.uploadHeight, image.imgName.getData());
                     }
                     return image;
                 }
@@ -3116,7 +3116,7 @@ public class Image {
             //
             // create a new image
             //
-            image = AllocImage(name.toString());
+            image = AllocImage(name.getData());
 
             // HACK: to allow keep fonts from being mip'd, as new ones will be introduced with localization
             // this keeps us from having to make a material for each font tga
@@ -3158,9 +3158,9 @@ public class Image {
 
                 if (image_preload.GetBool() && !insideLevelLoad) {
                     image.partialImage.ActuallyLoadImage(true, false);    // check for precompressed, load is from front end
-                    declManager.MediaPrint("%dx%d %s\n", image.partialImage.uploadWidth, image.partialImage.uploadHeight, image.imgName.toString());
+                    declManager.MediaPrint("%dx%d %s\n", image.partialImage.uploadWidth, image.partialImage.uploadHeight, image.imgName.getData());
                 } else {
-                    declManager.MediaPrint("%s\n", image.imgName.toString());
+                    declManager.MediaPrint("%s\n", image.imgName.getData());
                 }
                 return image;
             }
@@ -3172,9 +3172,9 @@ public class Image {
 //                    return null;
                 }
                 image.ActuallyLoadImage(true, false);    // check for precompressed, load is from front end
-                declManager.MediaPrint("%dx%d %s\n", image.uploadWidth, image.uploadHeight, image.imgName.toString());
+                declManager.MediaPrint("%dx%d %s\n", image.uploadWidth, image.uploadHeight, image.imgName.getData());
             } else {
-                declManager.MediaPrint("%s\n", image.imgName.toString());
+                declManager.MediaPrint("%s\n", image.imgName.getData());
             }
 
             return image;
@@ -3215,7 +3215,7 @@ public class Image {
             //
             hash = name.FileNameHash();
             for (image = imageHashTable[hash]; image != null; image = image.hashNext) {
-                if (name.Icmp(image.imgName.toString()) == 0) {
+                if (name.Icmp(image.imgName.getData()) == 0) {
                     return image;
                 }
             }
@@ -3252,7 +3252,7 @@ public class Image {
             // see if the image already exists
             hash = name.FileNameHash();
             for (image = imageHashTable[hash]; image != null; image = image.hashNext) {
-                if (name.Icmp(image.imgName.toString()) == 0) {
+                if (name.Icmp(image.imgName.getData()) == 0) {
                     if (image.generatorFunction != generatorFunction) {
                         common.DPrintf("WARNING: reused image %s with mixed generators\n", name);
                     }
@@ -3261,7 +3261,7 @@ public class Image {
             }
 
             // create the image and issue the callback
-            image = AllocImage(name.toString());
+            image = AllocImage(name.getData());
 
             image.generatorFunction = generatorFunction;
 
@@ -3527,7 +3527,7 @@ public class Image {
                 int ddsNum = ddsList.Num();
 
                 for (i = 0; i < ddsNum; i++) {
-                    batchFile.WriteFloatString("%s", ddsList.oGet(i).toString());
+                    batchFile.WriteFloatString("%s", ddsList.oGet(i).getData());
                     batchFile.Printf("@echo Finished compressing %d of %d.  %.1f percent done.\n", i + 1, ddsNum, ((float) (i + 1) / (float) ddsNum) * 100.f);
                 }
                 fileSystem.CloseFile(batchFile);

@@ -342,7 +342,7 @@ public class tr_subview {
             stage.image[0] = globalImages.scratchImage;
         }
 
-        tr.CaptureRenderToImage(stage.image[0].imgName.toString());
+        tr.CaptureRenderToImage(stage.image[0].imgName.getData());
         tr.UnCrop();
     }
 
@@ -392,7 +392,7 @@ public class tr_subview {
         stage.dynamicFrameCount = tr.frameCount;
         stage.image[0] = globalImages.scratchImage;
 
-        tr.CaptureRenderToImage(stage.image[0].imgName.toString());
+        tr.CaptureRenderToImage(stage.image[0].imgName.getData());
         tr.UnCrop();
     }
 
@@ -442,7 +442,7 @@ public class tr_subview {
         stage.dynamicFrameCount = tr.frameCount;
         stage.image[0] = globalImages.scratchImage2;
 
-        tr.CaptureRenderToImage(stage.image[0].imgName.toString());
+        tr.CaptureRenderToImage(stage.image[0].imgName.getData());
         tr.UnCrop();
     }
 

@@ -72,7 +72,7 @@ public class RoqParam {
         //
 
         public String RoqFilename() {
-            return outputFilename.toString();
+            return outputFilename.getData();
         }
 
         public String RoqTempFilename() {
@@ -86,9 +86,9 @@ public class RoqParam {
                 }
             }
 
-            tempFilename = new idStr(String.format("/%s.temp", outputFilename.toString().substring(j + 1)));
+            tempFilename = new idStr(String.format("/%s.temp", outputFilename.getData().substring(j + 1)));
 
-            return tempFilename.toString();
+            return tempFilename.getData();
         }
 
         public String GetNextImageFilename() {
@@ -115,11 +115,11 @@ public class RoqParam {
                 }
             }
 
-            return currentFile.toString();
+            return currentFile.getData();
         }
 
         public String SoundFilename() {
-            return soundfile.toString();
+            return soundfile.getData();
         }
 
         public void InitFromFile(final String fileName) {
@@ -248,7 +248,7 @@ public class RoqParam {
 // starting palette
                 if (token.Icmp("start_palette") == 0) {
                     src.ReadToken(token);
-                    startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
+                    startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
 //			common.Error("  + starting palette is %s\n", startPal );
                     startPalette = true;
                     readarg++;
@@ -257,7 +257,7 @@ public class RoqParam {
 // ending palette
                 if (token.Icmp("end_palette") == 0) {
                     src.ReadToken(token);
-                    endPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
+                    endPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
 //			common.Printf("  + ending palette is %s\n", endPal );
                     endPalette = true;
                     readarg++;
@@ -266,7 +266,7 @@ public class RoqParam {
 // fixed palette
                 if (token.Icmp("fixed_palette") == 0) {
                     src.ReadToken(token);
-                    startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.toString()));
+                    startPal.oSet(String.format("/LocalLibrary/vdxPalettes/%s", token.getData()));
 //			common.Printf("  + fixed palette is %s\n", startPal );
                     fixedPalette = true;
                     readarg++;
@@ -384,10 +384,10 @@ public class RoqParam {
                                 if (arg1.oGet(0) == '[') {
                                     range[field] = 1;
                                     if (useTimecodeForRange) {
-                                        realnum += parseTimecodeRange(arg1.toString(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
+                                        realnum += parseTimecodeRange(arg1.getData(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
 //								common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
                                     } else {
-                                        realnum += parseRange(arg1.toString(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
+                                        realnum += parseRange(arg1.getData(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
 //								common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
                                     }
                                 } else if ((arg1.oGet(0) != '[') && (arg2.oGet(0) == '[') && (arg3.oGet(0) == '[')) {  //a double ranger...
@@ -395,9 +395,9 @@ public class RoqParam {
 
                                     file2.oSet(field, arg1);
                                     range[field] = 2;
-                                    files1 = parseRange(arg2.toString(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
+                                    files1 = parseRange(arg2.getData(), field, skipnum, startnum, endnum, numfiles, padding, numpadding);
 //							common.Printf("  + reading %s from %d to %d\n", file[field], startnum[field], endnum[field]);
-                                    files2 = parseRange(arg3.toString(), field, skipnum2, startnum2, endnum2, numfiles, padding2, numpadding2);
+                                    files2 = parseRange(arg3.getData(), field, skipnum2, startnum2, endnum2, numfiles, padding2, numpadding2);
 //							common.Printf("  + reading %s from %d to %d\n", file2[field], startnum2[field], endnum2[field]);
                                     if (files1 != files2) {
                                         common.Error("You had %d files for %s and %d for %s!", files1, arg1, files2, arg2);
@@ -448,7 +448,7 @@ public class RoqParam {
 
             if (range[myfield] == 1) {
 
-                left = file.oGet(myfield).toString();
+                left = file.oGet(myfield).getData();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
@@ -483,7 +483,7 @@ public class RoqParam {
                 }
             } else if (range[myfield] == 2) {
 
-                left = file.oGet(myfield).toString();
+                left = file.oGet(myfield).getData();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
@@ -501,7 +501,7 @@ public class RoqParam {
                     fileName.oSet(String.format("%s%d%s", left, index, right));
                 }
 
-                left = file2.oGet(myfield).toString();
+                left = file2.oGet(myfield).getData();
                 strp = left.indexOf("*");
                 strp++;
                 right = String.format("%s", left.substring(strp));
@@ -519,7 +519,7 @@ public class RoqParam {
                     fileName.oPluSet(va("\n%s%d%s", left, index, right));
                 }
             } else {
-                fileName.oSet(file.oGet(myfield).toString());
+                fileName.oSet(file.oGet(myfield).getData());
             }
         }
 

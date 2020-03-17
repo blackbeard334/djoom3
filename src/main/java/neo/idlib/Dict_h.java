@@ -333,7 +333,7 @@ public class Dict_h {
 
             n = args.Num();
             for (i = 0; i < n; i++) {
-                idLib.common.Printf("%s = %s\n", args.oGet(i).GetKey().toString(), args.oGet(i).GetValue().toString());
+                idLib.common.Printf("%s = %s\n", args.oGet(i).GetKey().getData(), args.oGet(i).GetValue().getData());
             }
         }
 
@@ -425,7 +425,7 @@ public class Dict_h {
         public String GetString(final String key, final String defaultString) throws idException {
             idKeyValue kv = FindKey(key);
             if (kv != null) {
-                return kv.GetValue().toString();
+                return kv.GetValue().getData();
             }
             return defaultString;
         }
@@ -511,7 +511,7 @@ public class Dict_h {
         public boolean GetString(final String key, final String defaultString, final String[] out) throws idException {
             idKeyValue kv = FindKey(key);
             if (kv != null) {
-                out[0] = kv.GetValue().toString();
+                out[0] = kv.GetValue().getData();
                 return true;
             }
             out[0] = defaultString;
@@ -690,7 +690,7 @@ public class Dict_h {
         }
 
         public idKeyValue FindKey(final idStr key) throws idException {
-            return FindKey(key.toString());
+            return FindKey(key.getData());
         }
 
         // returns the index to the key/value pair with the given key
@@ -737,7 +737,7 @@ public class Dict_h {
 
         public void Delete(final idStr key) {
             if (key != null) {
-                Delete(key.toString());
+                Delete(key.getData());
             }
         }
 
@@ -790,8 +790,8 @@ public class Dict_h {
             int c = LittleLong(args.Num());
             f.WriteInt(c);//, sizeof(c));
             for (int i = 0; i < args.Num(); i++) {	// don't loop on the swapped count use the original
-                WriteString(args.oGet(i).GetKey().toString(), f);
-                WriteString(args.oGet(i).GetValue().toString(), f);
+                WriteString(args.oGet(i).GetKey().getData(), f);
+                WriteString(args.oGet(i).GetValue().getData(), f);
             }
         }
 

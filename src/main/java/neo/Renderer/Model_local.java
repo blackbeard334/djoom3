@@ -149,16 +149,16 @@ public class Model_local {
             name.ExtractFileExtension(extension);
 
             if (extension.Icmp("ase") == 0) {
-                loaded = LoadASE(name.toString());
+                loaded = LoadASE(name.getData());
                 reloadable = true;
             } else if (extension.Icmp("lwo") == 0) {
-                loaded = LoadLWO(name.toString());
+                loaded = LoadLWO(name.getData());
                 reloadable = true;
             } else if (extension.Icmp("flt") == 0) {
-                loaded = LoadFLT(name.toString());
+                loaded = LoadFLT(name.getData());
                 reloadable = true;
             } else if (extension.Icmp("ma") == 0) {
-                loaded = LoadMA(name.toString());
+                loaded = LoadMA(name.getData());
                 reloadable = true;
             } else {
                 common.Warning("idRenderModelStatic::InitFromFile: unknown type for model: \'%s\'", name);
@@ -208,7 +208,7 @@ public class Model_local {
         @Override
         public void LoadModel() {
             PurgeModel();
-            InitFromFile(name.toString());
+            InitFromFile(name.getData());
         }
 
         @Override
@@ -450,7 +450,7 @@ public class Model_local {
 
         @Override
         public String Name() {
-            return name.toString();
+            return name.getData();
         }
 
         @Override
@@ -623,7 +623,7 @@ public class Model_local {
 //		delete cachedModel;
 //		cachedModel = NULL;
             }
-            common.Error("InstantiateDynamicModel called on static model '%s'", name.toString());
+            common.Error("InstantiateDynamicModel called on static model '%s'", name.getData());
             return null;
         }
 
@@ -878,7 +878,7 @@ public class Model_local {
                 idStr tgaName = new idStr(fileName);
                 tgaName.StripFileExtension();
                 tgaName.Append(".tga");
-                R_WriteTGA(tgaName.toString(), image, size, size, false);
+                R_WriteTGA(tgaName.getData(), image, size, size, false);
 //                R_StaticFree(image);
 //return false;
             }

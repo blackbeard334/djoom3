@@ -246,7 +246,7 @@ public class Anim {
         public boolean Reload() {
             String filename;
 
-            filename = name.toString();
+            filename = name.getData();
             Free();
 
             return LoadAnim(filename);
@@ -322,7 +322,7 @@ public class Anim {
             for (i = 0; i < numJoints; i++) {
                 parser.ReadToken(token);
                 final jointAnimInfo_t joint = jointInfo.oSet(i, new jointAnimInfo_t());
-                joint.nameIndex = animationLib.JointIndex(token.toString());
+                joint.nameIndex = animationLib.JointIndex(token.getData());
 
                 // parse parent num
                 joint.parentNum = parser.ParseInt();
@@ -441,7 +441,7 @@ public class Anim {
         }
 
         public boolean LoadAnim(final idStr filename) throws idException {
-            return LoadAnim(filename.toString());
+            return LoadAnim(filename.getData());
         }
 
         public void IncreaseRefs() {
@@ -756,7 +756,7 @@ public class Anim {
         }
 
         public String Name() {
-            return name.toString();
+            return name.getData();
         }
 
         public void GetFrameBlend(int framenum, frameBlend_t frame) {	// frame 1 is first frame
@@ -1090,7 +1090,7 @@ public class Anim {
 //                    delete anim;
                     anim = null;
                 }
-                animations.Set(filename.toString(), anim);
+                animations.Set(filename.getData(), anim);
             }
 
             return anim;
@@ -1155,7 +1155,7 @@ public class Anim {
         }
 
         public String JointName(int index) {
-            return jointnames.oGet(index).toString();
+            return jointnames.oGet(index).getData();
         }
 //
 //        public void ClearAnimsInUse();

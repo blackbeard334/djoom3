@@ -661,7 +661,7 @@ public class dmap {
         //
         start = Sys_Milliseconds();
 
-        if (!LoadDMapFile(passedName.toString())) {
+        if (!LoadDMapFile(passedName.getData())) {
             return;
         }
 

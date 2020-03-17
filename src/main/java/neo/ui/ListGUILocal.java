@@ -151,7 +151,7 @@ public class ListGUILocal {
             }
 
             for (i = 0; i < Num(); i++) {
-                m_pGUI.SetStateString(va("%s_item_%d", m_name, i), this.oGet(i).toString());
+                m_pGUI.SetStateString(va("%s_item_%d", m_name, i), this.oGet(i).getData());
             }
             for (i = Num(); i < m_water; i++) {
                 m_pGUI.SetStateString(va("%s_item_%d", m_name, i), "");

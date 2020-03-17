@@ -206,7 +206,7 @@ public class GameSSDWindow {
 
             type = SSD.values()[savefile.ReadInt()];
             game.ReadSaveGameString(materialName, savefile);
-            SetMaterial(materialName.toString());
+            SetMaterial(materialName.getData());
             savefile.Read(position);
             savefile.Read(size);
             radius = savefile.ReadFloat();
@@ -350,7 +350,7 @@ public class GameSSDWindow {
 
             if (text.Length() > 0) {
                 idRectangle rect = new idRectangle(x, y, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-                dc.DrawText(text.toString(), textScale, 0, foreColor, rect, false);
+                dc.DrawText(text.getData(), textScale, 0, foreColor, rect, false);
             }
 
         }
@@ -2020,7 +2020,7 @@ public class GameSSDWindow {
 
             idParser parser = new idParser();
             idToken token;
-            parser.LoadMemory(levelDataString.toString(), levelDataString.Length(), "LevelData");
+            parser.LoadMemory(levelDataString.getData(), levelDataString.Length(), "LevelData");
 
             levelData.oGet(level).spawnBuffer = parser.ParseFloat();
             levelData.oGet(level).needToWin = parser.ParseInt(); //Required Destroyed
@@ -2031,7 +2031,7 @@ public class GameSSDWindow {
 
             idParser parser = new idParser();
             idToken token;
-            parser.LoadMemory(asteroidDataString.toString(), asteroidDataString.Length(), "AsteroidData");
+            parser.LoadMemory(asteroidDataString.getData(), asteroidDataString.Length(), "AsteroidData");
 
             asteroidData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
             asteroidData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max
@@ -2054,7 +2054,7 @@ public class GameSSDWindow {
 
             idParser parser = new idParser();
             idToken token;
-            parser.LoadMemory(weaponDataString.toString(), weaponDataString.Length(), "WeaponData");
+            parser.LoadMemory(weaponDataString.getData(), weaponDataString.Length(), "WeaponData");
 
             weaponData.oGet(weapon).speed = parser.ParseFloat();
             weaponData.oGet(weapon).damage = (int) parser.ParseFloat();
@@ -2065,7 +2065,7 @@ public class GameSSDWindow {
 
             idParser parser = new idParser();
             idToken token;
-            parser.LoadMemory(astronautDataString.toString(), astronautDataString.Length(), "AstronautData");
+            parser.LoadMemory(astronautDataString.getData(), astronautDataString.Length(), "AstronautData");
 
             astronautData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
             astronautData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max
@@ -2085,7 +2085,7 @@ public class GameSSDWindow {
 
             idParser parser = new idParser();
             idToken token;
-            parser.LoadMemory(powerupDataString.toString(), powerupDataString.Length(), "PowerupData");
+            parser.LoadMemory(powerupDataString.getData(), powerupDataString.Length(), "PowerupData");
 
             powerupData.oGet(level).speedMin = parser.ParseFloat(); //Speed Min 
             powerupData.oGet(level).speedMax = parser.ParseFloat(); //Speed Max

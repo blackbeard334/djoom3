@@ -120,7 +120,7 @@ public class LangDict {
                 char tab = 't';
                 char nl = 'n';
                 for (int k = 0; k < l; k++) {
-                    char ch = args.oGet(j).value.toString().charAt(k);
+                    char ch = args.oGet(j).value.getData().charAt(k);
                     if (ch == '\t') {
                         outFile.WriteChar(slash);
                         outFile.WriteChar(tab);
@@ -145,8 +145,8 @@ public class LangDict {
 
             int c = args.Num();
             for (int j = 0; j < c; j++) {
-                if (idStr.Cmp(args.oGet(j).value.toString(), str) == 0) {
-                    return args.oGet(j).key.toString();
+                if (idStr.Cmp(args.oGet(j).value.getData(), str) == 0) {
+                    return args.oGet(j).key.getData();
                 }
             }
 
@@ -159,7 +159,7 @@ public class LangDict {
             c = args.Append(kv);
             assert (kv.key.Cmpn(STRTABLE_ID, STRTABLE_ID_LENGTH) == 0);
             hash.Add(GetHashKey(kv.key), c);
-            return args.oGet(c).key.toString();
+            return args.oGet(c).key.getData();
         }
 
         private static int DBG_GetString = 1;
@@ -180,7 +180,7 @@ public class LangDict {
             int hashKey = GetHashKey(str);
             for (int i = hash.First(hashKey); i != -1; i = hash.Next(i)) {
                 if (args.oGet(i).key.Cmp(str) == 0) {
-                    return args.oGet(i).value.toString();
+                    return args.oGet(i).value.getData();
                 }
             }
 
@@ -189,7 +189,7 @@ public class LangDict {
         }
 
         public String GetString(final idStr str) throws idException {
-            return GetString(str.toString());
+            return GetString(str.getData());
         }
 
         // adds the value and key as passed (doesn't generate a "#str_xxxxx" key or ensure the key/value pair is unique)
@@ -259,7 +259,7 @@ public class LangDict {
             for (int j = 0; j < c; j++) {
                 work = args.oGet(j).key;
                 work.StripLeading(STRTABLE_ID);
-                int test = Integer.parseInt(work.toString());
+                int test = Integer.parseInt(work.getData());
                 if (test > id) {
                     id = test;
                 }
@@ -268,7 +268,7 @@ public class LangDict {
         }
 
         private int GetHashKey(final idStr str) {
-            return GetHashKey(str.toString());
+            return GetHashKey(str.getData());
         }
 
         private int GetHashKey(final String str) {

@@ -451,7 +451,7 @@ public class KeyInput {
                 return "";
             }
 
-            return keys[keyNum].binding.toString();
+            return keys[keyNum].binding.getData();
         }
 
         public static boolean UnbindBinding(final String binding) {
@@ -491,7 +491,7 @@ public class KeyInput {
 
             // send the bound action
             if (keys[keyNum].binding.Length() != 0) {
-                cmdSystem.BufferCommandText(CMD_EXEC_APPEND, keys[keyNum].binding.toString());
+                cmdSystem.BufferCommandText(CMD_EXEC_APPEND, keys[keyNum].binding.getData());
                 cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "\n");
             }
             return true;
@@ -536,7 +536,7 @@ public class KeyInput {
             if (keyNum < 0 || keyNum >= MAX_KEYS) {
                 return null;
             }
-            return keys[keyNum].binding.toString();
+            return keys[keyNum].binding.getData();
         }
 
         public static boolean KeyIsBoundTo(int keyNum, final String binding) {
@@ -738,13 +738,13 @@ public class KeyInput {
     private static class idKey {
 
         public boolean down;
-        public int repeats;		// if > 1, it is autorepeating
+        //public int repeats;		// if > 1, it is autorepeating
         public idStr binding;
         public int usercmdAction;	// for testing by the asyncronous usercmd generation
 
         public idKey() {
             down = false;
-            repeats = 0;
+            //repeats = 0;
             binding = new idStr();
             usercmdAction = 0;
         }
@@ -874,7 +874,7 @@ public class KeyInput {
 
             if (c == 2) {
                 if (keys[b].binding.Length() != 0) {
-                    common.Printf("\"%s\" = \"%s\"\n", args.Argv(1), keys[b].binding.toString());
+                    common.Printf("\"%s\" = \"%s\"\n", args.Argv(1), keys[b].binding.getData());
                 } else {
                     common.Printf("\"%s\" is not bound\n", args.Argv(1));
                 }
@@ -946,7 +946,7 @@ public class KeyInput {
 
             for (i = 0; i < MAX_KEYS; i++) {
                 if (keys[i].binding.Length() != 0) {
-                    common.Printf("%s \"%s\"\n", idKeyInput.KeyNumToString(i, false), keys[i].binding.toString());
+                    common.Printf("%s \"%s\"\n", idKeyInput.KeyNumToString(i, false), keys[i].binding.getData());
                 }
             }
         }

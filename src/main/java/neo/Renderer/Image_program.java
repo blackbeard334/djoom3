@@ -289,7 +289,7 @@ public class Image_program {
         }
 
         // load it as an image
-        pic[0] = R_LoadImage(token.toString(), width, height, timestamp, true);
+        pic[0] = R_LoadImage(token.getData(), width, height, timestamp, true);
 
         if (timestamp[0] == -1) {
             return false;
@@ -316,8 +316,8 @@ public class Image_program {
 //            idStr.Append(parseBuffer, MAX_IMAGE_NAME, " ");
             parseBuffer.append(" ");
         }
-//        idStr.Append(parseBuffer, MAX_IMAGE_NAME, token.toString());
-        parseBuffer.append(token.toString());
+//        idStr.Append(parseBuffer, MAX_IMAGE_NAME, token.getData());
+        parseBuffer.append(token.getData());
     }
 
     /*

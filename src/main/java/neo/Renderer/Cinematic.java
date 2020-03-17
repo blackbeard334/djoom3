@@ -349,7 +349,7 @@ public class Cinematic {
                 fileName = new idStr(String.format("%s", qpath));
             }
 
-            iFile = fileSystem.OpenFileRead(fileName.toString());
+            iFile = fileSystem.OpenFileRead(fileName.getData());
 
             if (null == iFile) {
                 return false;

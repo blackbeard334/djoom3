@@ -1467,7 +1467,7 @@ public class AsyncClient {
                         valid[0] = (msg.ReadByte() == 1);
                         valid[1] = (msg.ReadByte() == 1);
                         idAsyncNetwork.BuildInvalidKeyMsg(auth_msg2, valid);
-                        auth_msg = auth_msg2.toString();
+                        auth_msg = auth_msg2.getData();
                         break;
                     case AUTHKEY_BAD_BANNED:
                         key_index = msg.ReadByte();
@@ -1506,7 +1506,7 @@ public class AsyncClient {
                             } else {
                                 // build a more precise message about the offline check failure
                                 idAsyncNetwork.BuildInvalidKeyMsg(auth_msg2, valid);
-                                auth_msg = auth_msg2.toString();
+                                auth_msg = auth_msg2.getData();
                                 session.MessageBox(MSG_OK, auth_msg, common.GetLanguageDict().GetString("#str_04327"), true);
                                 continue;
                             }
@@ -1979,15 +1979,15 @@ public class AsyncClient {
                 // only enter these if the download slot is free
                 if (updateState == UPDATE_READY) {
                     //
-                    if (session.MessageBox(MSG_YESNO, updateMSG.toString(), common.GetLanguageDict().GetString("#str_04330"), true, "yes").isEmpty() == false) {
+                    if (session.MessageBox(MSG_YESNO, updateMSG.getData(), common.GetLanguageDict().GetString("#str_04330"), true, "yes").isEmpty() == false) {
                         if (!updateDirectDownload) {
-                            sys.OpenURL(updateURL.toString(), true);
+                            sys.OpenURL(updateURL.getData(), true);
                             updateState = UPDATE_DONE;
                         } else {
 
                             // we're just creating the file at toplevel inside fs_savepath
                             updateURL.ExtractFileName(updateFile);
-                            idFile_Permanent f = (idFile_Permanent) fileSystem.OpenFileWrite(updateFile.toString());
+                            idFile_Permanent f = (idFile_Permanent) fileSystem.OpenFileWrite(updateFile.getData());
                             dltotal = 0;
                             dlnow = 0;
 
@@ -2010,9 +2010,9 @@ public class AsyncClient {
                                 fileSystem.CloseFile(f);
                                 if (session.MessageBox(MSG_YESNO, common.GetLanguageDict().GetString("#str_04331"), common.GetLanguageDict().GetString("#str_04332"), true, "yes").isEmpty() == false) {
                                     if (updateMime == FILE_EXEC) {
-                                        sys.StartProcess(fullPath.toString(), true);
+                                        sys.StartProcess(fullPath.getData(), true);
                                     } else {
-                                        sys.OpenURL(va("file://%s", fullPath.toString()), true);
+                                        sys.OpenURL(va("file://%s", fullPath.getData()), true);
                                     }
                                 } else {
                                     session.MessageBox(MSG_OK, va(common.GetLanguageDict().GetString("#str_04333"), fullPath), common.GetLanguageDict().GetString("#str_04334"), true);
@@ -2024,10 +2024,10 @@ public class AsyncClient {
                                 SendVersionDLUpdate(2);
                                 idStr name = new idStr(f.GetName());
                                 fileSystem.CloseFile(f);
-                                fileSystem.RemoveFile(name.toString());
+                                fileSystem.RemoveFile(name.getData());
                                 session.MessageBox(MSG_OK, common.GetLanguageDict().GetString("#str_04335"), common.GetLanguageDict().GetString("#str_04336"), true);
                                 if (updateFallback.Length() != 0) {
-                                    sys.OpenURL(updateFallback.toString(), true);
+                                    sys.OpenURL(updateFallback.getData(), true);
                                 } else {
                                     common.Printf("no fallback URL\n");
                                 }
@@ -2069,7 +2069,7 @@ public class AsyncClient {
                         fileSystem.BackgroundDownload(backgroundDownload);
                         String dltitle;
                         // "Downloading %s"
-                        dltitle = String.format(common.GetLanguageDict().GetString("#str_07213"), dlList.oGet(0).filename.toString());
+                        dltitle = String.format(common.GetLanguageDict().GetString("#str_07213"), dlList.oGet(0).filename.getData());
                         if (numPaks > 1) {
                             dltitle += va(" (%d/%d)", pakCount, numPaks);
                         }
@@ -2092,10 +2092,10 @@ public class AsyncClient {
 
                             common.Printf("file downloaded\n");
                             idStr finalPath = new idStr(cvarSystem.GetCVarString("fs_savepath"));
-                            finalPath.AppendPath(dlList.oGet(0).filename.toString());
-                            fileSystem.CreateOSPath(finalPath.toString());
+                            finalPath.AppendPath(dlList.oGet(0).filename.getData());
+                            fileSystem.CreateOSPath(finalPath.getData());
                             // do the final copy ourselves so we do by small chunks in case the file is big
-                            saveas = fileSystem.OpenExplicitFileWrite(finalPath.toString());
+                            saveas = fileSystem.OpenExplicitFileWrite(finalPath.getData());
                             buf = ByteBuffer.allocate(CHUNK_SIZE);// Mem_Alloc(CHUNK_SIZE);
                             f.Seek(0, FS_SEEK_END);
                             remainlen = f.Tell();
@@ -2118,13 +2118,13 @@ public class AsyncClient {
                             buf = null;//Mem_Free(buf);
 
                             // add that file to our paks list
-                            checksum = fileSystem.AddZipFile(dlList.oGet(0).filename.toString());
+                            checksum = fileSystem.AddZipFile(dlList.oGet(0).filename.getData());
 
                             // verify the checksum to be what the server says
                             if (0 == checksum || checksum != dlList.oGet(0).checksum) {
                                 // "pak is corrupted ( checksum 0x%x, expected 0x%x )"
                                 session.MessageBox(MSG_OK, va(common.GetLanguageDict().GetString("#str_07214"), checksum, dlList.oGet(0).checksum), "Download failed", true);
-                                fileSystem.RemoveFile(dlList.oGet(0).filename.toString());
+                                fileSystem.RemoveFile(dlList.oGet(0).filename.getData());
                                 dlList.Clear();
                                 return;
                             }
@@ -2284,7 +2284,7 @@ public class AsyncClient {
                     asked = true;
                     // "The server only offers to download some of the files required to connect ( %s ). Download anyway?"
                     // "Missing required files"
-                    if (NOT(session.MessageBox(MSG_YESNO, va(common.GetLanguageDict().GetString("#str_07222"), sizeStr.toString()),
+                    if (NOT(session.MessageBox(MSG_YESNO, va(common.GetLanguageDict().GetString("#str_07222"), sizeStr.getData()),
                             common.GetLanguageDict().GetString("#str_07218"), true, "yes"))) {//TODO:check whether a NOT on the whole string is the same as an empty string
                         dlList.Clear();
                         return;
@@ -2293,7 +2293,7 @@ public class AsyncClient {
                 if (!asked && idAsyncNetwork.clientDownload.GetInteger() == 1) {
                     // "You need to download some files to connect to this server ( %s ), proceed?"
                     // "Missing required files"
-                    if (NOT(session.MessageBox(MSG_YESNO, va(common.GetLanguageDict().GetString("#str_07224"), sizeStr.toString()),
+                    if (NOT(session.MessageBox(MSG_YESNO, va(common.GetLanguageDict().GetString("#str_07224"), sizeStr.getData()),
                             common.GetLanguageDict().GetString("#str_07218"), true, "yes"))) {
                         dlList.Clear();
                         return;

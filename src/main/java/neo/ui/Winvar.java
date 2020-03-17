@@ -95,7 +95,7 @@ public class Winvar {
             if (len > 5 && _name.startsWith("gui:")) {
                 DBG_Init++;
                 key = key.Right(len - VAR_GUIPREFIX_LEN);
-                SetGuiInfo(win.GetGui().GetStateDict(), key.toString());
+                SetGuiInfo(win.GetGui().GetStateDict(), key.getData());
                 win.AddUpdateVar(this);
             } else {
                 Set(_name);
@@ -105,7 +105,7 @@ public class Winvar {
         public abstract void Set(final String val);
 
         public void Set(final idStr val) {
-            Set(val.toString());
+            Set(val.getData());
         }
 
         public abstract void Update();
@@ -393,7 +393,7 @@ public class Winvar {
 
         @Override
         public String c_str() {
-            return data.toString();
+            return data.getData();
         }
 
         @Override
@@ -1336,7 +1336,7 @@ public class Winvar {
 
         @Override
         public String c_str() {
-            return data.toString();
+            return data.getData();
         }
 
         @Override

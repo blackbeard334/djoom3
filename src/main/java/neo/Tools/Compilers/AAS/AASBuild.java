@@ -169,7 +169,7 @@ public class AASBuild {
             name.SetFileExtension("map");
 
             mapFile = new idMapFile();
-            if (!mapFile.Parse(name.toString())) {
+            if (!mapFile.Parse(name.getData())) {
 //		delete mapFile;
                 common.Error("Couldn't load map file: '%s'", name);
                 return false;
@@ -196,7 +196,7 @@ public class AASBuild {
             brushList.Merge(MergeAllowed.INSTANCE);//TODO:like cmp_t
 
             // if there is a .proc file newer than the .map file
-            if (LoadProcBSP(fileName.toString(), mapFile.GetFileTime())) {
+            if (LoadProcBSP(fileName.getData(), mapFile.GetFileTime())) {
                 ClipBrushSidesWithProcBSP(brushList);
                 DeleteProcBSP();
             }
@@ -311,7 +311,7 @@ public class AASBuild {
             name.SetFileExtension("map");
 
             mapFile = new idMapFile();
-            if (!mapFile.Parse(name.toString())) {
+            if (!mapFile.Parse(name.getData())) {
 //		delete mapFile;
                 common.Error("Couldn't load map file: '%s'", name);
                 return false;
@@ -394,7 +394,7 @@ public class AASBuild {
             // load it
             fileName = new idStr(name);
             fileName.SetFileExtension(PROC_FILE_EXT);
-            src = new idLexer(fileName.toString(), LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
+            src = new idLexer(fileName.getData(), LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
             if (!src.IsLoaded()) {
                 common.Warning("idAASBuild::LoadProcBSP: couldn't load %s", fileName);
 //		delete src;
@@ -795,7 +795,7 @@ public class AASBuild {
                     continue;
                 }
 
-                if (aasSettings.ValidEntity(classname.toString())) {
+                if (aasSettings.ValidEntity(classname.getData())) {
                     entityClassNames.AddUnique(classname);
                 }
             }
@@ -2022,11 +2022,11 @@ public class AASBuild {
 
             idKeyValue kv = dict.MatchPrefix("type");
             while (kv != null) {
-                final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().toString(), false);
+                final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().getData(), false);
                 if (NOT(settingsDict)) {
                     common.Warning("Unable to find '%s' in def/aas.def", kv.GetValue());
                 } else {
-                    settings.FromDict(kv.GetValue().toString(), settingsDict);
+                    settings.FromDict(kv.GetValue().getData(), settingsDict);
                     i = ParseOptions(args, settings);
                     mapName = new idStr(args.Argv(i));
                     mapName.BackSlashesToSlashes();
@@ -2092,11 +2092,11 @@ public class AASBuild {
 
                 idKeyValue kv = dict.MatchPrefix("type");
                 while (kv != null) {
-                    final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().toString(), false);
+                    final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().getData(), false);
                     if (NOT(settingsDict)) {
                         common.Warning("Unable to find '%s' in def/aas.def", kv.GetValue());
                     } else {
-                        settings.FromDict(kv.GetValue().toString(), settingsDict);
+                        settings.FromDict(kv.GetValue().getData(), settingsDict);
                         aas.Build(new idStr("maps/" + args.Argv(1) + "/" + mapFiles.GetFile(i)), settings);
                     }
 
@@ -2150,11 +2150,11 @@ public class AASBuild {
 
             idKeyValue kv = dict.MatchPrefix("type");
             while (kv != null) {
-                final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().toString(), false);
+                final idDict settingsDict = GameEdit.gameEdit.FindEntityDefDict(kv.GetValue().getData(), false);
                 if (NOT(settingsDict)) {
                     common.Warning("Unable to find '%s' in def/aas.def", kv.GetValue());
                 } else {
-                    settings.FromDict(kv.GetValue().toString(), settingsDict);
+                    settings.FromDict(kv.GetValue().getData(), settingsDict);
                     i = ParseOptions(args, settings);
                     aas.BuildReachability(new idStr("maps/" + args.Argv(i)), settings);
                 }

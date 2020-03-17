@@ -151,27 +151,27 @@ public class DeclPDA {
 //
 
         public String GetFrom() {
-            return from.toString();
+            return from.getData();
         }
 
         public String GetBody() {
-            return text.toString();
+            return text.getData();
         }
 
         public String GetSubject() {
-            return subject.toString();
+            return subject.getData();
         }
 
         public String GetDate() {
-            return date.toString();
+            return date.getData();
         }
 
         public String GetTo() {
-            return to.toString();
+            return to.getData();
         }
 
         public String GetImage() {
-            return image.toString();
+            return image.getData();
         }
     };
 
@@ -279,23 +279,23 @@ public class DeclPDA {
         }
 
         public String GetRoq() {
-            return video.toString();
+            return video.getData();
         }
 
         public String GetWave() {
-            return audio.toString();
+            return audio.getData();
         }
 
         public String GetVideoName() {
-            return videoName.toString();
+            return videoName.getData();
         }
 
         public String GetInfo() {
-            return info.toString();
+            return info.getData();
         }
 
         public String GetPreview() {
-            return preview.toString();
+            return preview.getData();
         }
     };
 
@@ -395,19 +395,19 @@ public class DeclPDA {
         }
 
         public String GetAudioName() {
-            return audioName.toString();
+            return audioName.getData();
         }
 
         public String GetWave() {
-            return audio.toString();
+            return audio.getData();
         }
 
         public String GetInfo() {
-            return info.toString();
+            return info.getData();
         }
 
         public String GetPreview() {
-            return preview.toString();
+            return preview.getData();
         }
     };
 
@@ -519,21 +519,21 @@ public class DeclPDA {
 
                 if (0 == token.Icmp("pda_email")) {
                     src.ReadToken(token);
-                    emails.Append(token.toString());
+                    emails.Append(token.getData());
                     declManager.FindType(DECL_EMAIL, token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_audio")) {
                     src.ReadToken(token);
-                    audios.Append(token.toString());
+                    audios.Append(token.getData());
                     declManager.FindType(DECL_AUDIO, token);
                     continue;
                 }
 
                 if (0 == token.Icmp("pda_video")) {
                     src.ReadToken(token);
-                    videos.Append(token.toString());
+                    videos.Append(token.getData());
                     declManager.FindType(DECL_VIDEO, token);
                     continue;
                 }
@@ -665,31 +665,31 @@ public class DeclPDA {
         }
 
         public String GetPdaName() {
-            return pdaName.toString();
+            return pdaName.getData();
         }
 
         public String GetSecurity() {
-            return security.toString();
+            return security.getData();
         }
 
         public String GetFullName() {
-            return fullName.toString();
+            return fullName.getData();
         }
 
         public String GetIcon() {
-            return icon.toString();
+            return icon.getData();
         }
 
         public String GetPost() {
-            return post.toString();
+            return post.getData();
         }
 
         public String GetID() {
-            return id.toString();
+            return id.getData();
         }
 
         public String GetTitle() {
-            return title.toString();
+            return title.getData();
         }
     };
 }

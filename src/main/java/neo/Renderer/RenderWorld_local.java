@@ -1745,7 +1745,7 @@ public class RenderWorld_local {
             src.ExpectAnyToken(token);
 
             model = renderModelManager.AllocModel();
-            model.InitEmpty(token.toString());
+            model.InitEmpty(token.getData());
 
             int numSurfaces = src.ParseInt();
             if (numSurfaces < 0) {
@@ -1813,7 +1813,7 @@ public class RenderWorld_local {
             src.ExpectAnyToken(token);
 
             model = renderModelManager.AllocModel();
-            model.InitEmpty(token.toString());
+            model.InitEmpty(token.getData());
 
             surf.shader = tr.defaultMaterial;
 
@@ -2229,7 +2229,7 @@ public class RenderWorld_local {
             // if we are reloading the same map, check the timestamp
             // and try to skip all the work
             final long[] currentTimeStamp = new long[1];
-            fileSystem.ReadFile(filename.toString(), null, currentTimeStamp);
+            fileSystem.ReadFile(filename.getData(), null, currentTimeStamp);
 
             if (mapName.equals(name)) {
                 if (currentTimeStamp[0] != FILE_NOT_FOUND_TIMESTAMP && currentTimeStamp[0] == mapTimeStamp[0]) {
@@ -2245,7 +2245,7 @@ public class RenderWorld_local {
 
             FreeWorld();
 
-            src = new idLexer(filename.toString(), LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
+            src = new idLexer(filename.getData(), LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
             if (!src.IsLoaded()) {
                 common.Printf("idRenderWorldLocal::InitFromMap: %s not found\n", filename);
                 ClearWorld();

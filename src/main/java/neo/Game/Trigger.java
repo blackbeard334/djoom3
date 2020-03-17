@@ -121,7 +121,7 @@ public class Trigger {
 
                     gameRenderWorld.DebugBounds(colorOrange, ent.GetPhysics().GetAbsBounds());
                     if (viewTextBounds.IntersectsBounds(ent.GetPhysics().GetAbsBounds())) {
-                        gameRenderWorld.DrawText(ent.name.toString(), ent.GetPhysics().GetAbsBounds().GetCenter(), 0.1f, colorWhite, axis, 1);
+                        gameRenderWorld.DrawText(ent.name.getData(), ent.GetPhysics().GetAbsBounds().GetCenter(), 0.1f, colorWhite, axis, 1);
                         gameRenderWorld.DrawText(ent.GetEntityDefName(), ent.GetPhysics().GetAbsBounds().GetCenter().oPlus(up), 0.1f, colorWhite, axis, 1);
                         if (ent.IsType(idTrigger.class)) {
                             func = ((idTrigger) ent).GetScriptFunction();
@@ -140,7 +140,7 @@ public class Trigger {
                             gameRenderWorld.DebugArrow(colorYellow, ent.GetPhysics().GetAbsBounds().GetCenter(), target.GetPhysics().GetOrigin(), 10, 0);
                             gameRenderWorld.DebugBounds(colorGreen, box, target.GetPhysics().GetOrigin());
                             if (viewTextBounds.IntersectsBounds(target.GetPhysics().GetAbsBounds())) {
-                                gameRenderWorld.DrawText(target.name.toString(), target.GetPhysics().GetAbsBounds().GetCenter(), 0.1f, colorWhite, axis, 1);
+                                gameRenderWorld.DrawText(target.name.getData(), target.GetPhysics().GetAbsBounds().GetCenter(), 0.1f, colorWhite, axis, 1);
                             }
                         }
                     }
@@ -182,9 +182,9 @@ public class Trigger {
             idStr funcname = new idStr();
             savefile.ReadString(funcname);
             if (!funcname.IsEmpty()) {
-                scriptFunction = gameLocal.program.FindFunction(funcname.toString());
+                scriptFunction = gameLocal.program.FindFunction(funcname.getData());
                 if (scriptFunction == null) {
-                    gameLocal.Warning("idTrigger_Multi '%s' at (%s) calls unknown function '%s'", name, GetPhysics().GetOrigin().ToString(0), funcname.toString());
+                    gameLocal.Warning("idTrigger_Multi '%s' at (%s) calls unknown function '%s'", name, GetPhysics().GetOrigin().ToString(0), funcname.getData());
                 }
             } else {
                 scriptFunction = null;

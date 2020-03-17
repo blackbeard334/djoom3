@@ -1018,7 +1018,7 @@ public class snd_system {
             mapname.StripPath();
             efxname.oPluSet(mapname);
 
-            efxloaded = EFXDatabase.LoadFile(efxname.toString());
+            efxloaded = EFXDatabase.LoadFile(efxname.getData());
 
             if (efxloaded) {
                 common.Printf("sound: found %s\n", efxname);

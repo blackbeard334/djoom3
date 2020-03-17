@@ -196,12 +196,12 @@ public class EditWindow {
                 if ((key == K_ENTER || key == K_KP_ENTER) && event.evValue2 != 0) {
                     RunScript(etoi(ON_ACTION));
                     RunScript(etoi(ON_ENTER));
-                    return cmd.toString();
+                    return cmd.getData();
                 }
 
                 if (key == K_ESCAPE) {
                     RunScript(etoi(ON_ESC));
-                    return cmd.toString();
+                    return cmd.getData();
                 }
 
                 if (readonly) {
@@ -382,18 +382,18 @@ public class EditWindow {
                 if (key == K_ENTER || key == K_KP_ENTER) {
                     RunScript(etoi(ON_ACTION));
                     RunScript(etoi(ON_ENTER));
-                    return cmd.toString();
+                    return cmd.getData();
                 }
 
                 if (key == K_ESCAPE) {
                     RunScript(etoi(ON_ESC));
-                    return cmd.toString();
+                    return cmd.getData();
                 }
 
             } else if (event.evType == SE_KEY && 0 == event.evValue2) {
                 if (key == K_ENTER || key == K_KP_ENTER) {
                     RunScript(etoi(ON_ENTERRELEASE));
-                    return cmd.toString();
+                    return cmd.getData();
                 } else {
                     RunScript(etoi(ON_ACTIONRELEASE));
                 }
@@ -531,7 +531,7 @@ public class EditWindow {
                 return;
             }
 
-            cvar = cvarSystem.Find(cvarStr.data.toString());
+            cvar = cvarSystem.Find(cvarStr.data.getData());
             if (null == cvar) {
                 common.Warning("idEditWindow::InitCvar: gui '%s' window '%s' references undefined cvar '%s'", gui.GetSourceFile(), name, cvarStr.c_str());
                 return;
@@ -547,7 +547,7 @@ public class EditWindow {
                     if (read) {
                         text.data.oSet(cvar.GetString());
                     } else {
-                        cvar.SetString(text.data.toString());
+                        cvar.SetString(text.data.getData());
                         if (cvarMax != 0 && (cvar.GetInteger() > cvarMax)) {
                             cvar.SetInteger(cvarMax);
                         }

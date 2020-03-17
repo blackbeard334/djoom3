@@ -207,7 +207,7 @@ public class RegExp {
             for (int i = 0; i < 4; i++) {
                 f.WriteUnsignedShort(regs[i]);
             }
-            f.WriteHashString(name.toString());
+            f.WriteHashString(name.getData());
         }
 
         public void WriteToSaveGame(idFile savefile) {
@@ -266,13 +266,13 @@ public class RegExp {
                 reg = new idRegister(name, type);
                 reg.var = var;
                 if (type == idRegister.REGTYPE.STRING.ordinal()) {
-                    idToken tok = new idToken();
-                    if (src.ReadToken(tok)) {
-                        if("#str_07184".equals(tok.toString())){
+                    idToken token = new idToken();
+                    if (src.ReadToken(token)) {
+                        if("#str_07184".equals(token.getData())){
                             reg.DBG_D3_KEY = true;
                         }
-                        tok.oSet(common.GetLanguageDict().GetString(tok.toString()));
-                        var.Init(tok.toString(), win);
+                        token.oSet(common.GetLanguageDict().GetString(token.getData()));
+                        var.Init(token.getData(), win);
                     }
                 } else {
                     for (int i = 0; i < numRegs; i++) {
@@ -288,9 +288,9 @@ public class RegExp {
                 int numRegs = idRegister.REGCOUNT[type];
                 reg.var = var;
                 if (type == idRegister.REGTYPE.STRING.ordinal()) {
-                    idToken tok = new idToken();
-                    if (src.ReadToken(tok)) {
-                        var.Init(tok.toString(), win);
+                    idToken token = new idToken();
+                    if (src.ReadToken(token)) {
+                        var.Init(token.getData(), win);
                     }
                 } else {
                     for (int i = 0; i < numRegs; i++) {

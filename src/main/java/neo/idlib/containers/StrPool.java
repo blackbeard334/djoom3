@@ -140,13 +140,13 @@ public class StrPool {
                 hash = poolHash.GenerateKey(poolStr.c_str(), caseSensitive);
                 if (caseSensitive) {
                     for (i = poolHash.First(hash); i != -1; i = poolHash.Next(i)) {
-                        if (pool.oGet(i).Cmp(poolStr.toString()) == 0) {
+                        if (pool.oGet(i).Cmp(poolStr.getData()) == 0) {
                             break;
                         }
                     }
                 } else {
                     for (i = poolHash.First(hash); i != -1; i = poolHash.Next(i)) {
-                        if (pool.oGet(i).Icmp(poolStr.toString()) == 0) {
+                        if (pool.oGet(i).Icmp(poolStr.getData()) == 0) {
                             break;
                         }
                     }
@@ -169,7 +169,7 @@ public class StrPool {
                 return poolStr;
             } else {
                 // the string is from another pool so it needs to be re-allocated from this pool.
-                return AllocString(poolStr.toString());
+                return AllocString(poolStr.getData());
             }
         }
 

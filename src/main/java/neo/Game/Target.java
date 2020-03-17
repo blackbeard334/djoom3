@@ -827,7 +827,7 @@ public class Target {
             if (player != null) {
                 idKeyValue kv = spawnArgs.MatchPrefix("item", null);
                 while (kv != null) {
-                    final idDict dict = gameLocal.FindEntityDefDict(kv.GetValue().toString(), false);
+                    final idDict dict = gameLocal.FindEntityDefDict(kv.GetValue().getData(), false);
                     if (dict != null) {
                         idDict d2 = new idDict();
                         d2.Copy(dict);
@@ -1493,8 +1493,8 @@ public class Target {
                     while (kv != null) {
                         n = kv.GetValue().Find(";");
                         if (n > 0) {
-                            key = kv.GetValue().Left(n).toString();
-                            val = kv.GetValue().Right(kv.GetValue().Length() - n - 1).toString();
+                            key = kv.GetValue().Left(n).getData();
+                            val = kv.GetValue().Right(kv.GetValue().Length() - n - 1).getData();
                             ent.spawnArgs.Set(key, val);
                             for (int j = 0; j < MAX_RENDERENTITY_GUI; j++) {
                                 if (ent.GetRenderEntity().gui[j] != null) {
@@ -1950,7 +1950,7 @@ public class Target {
                     idPlayer player = (idPlayer) gameLocal.entities[i];
                     idKeyValue kv = spawnArgs.MatchPrefix("weapon", null);
                     while (kv != null) {
-                        player.RemoveWeapon(kv.GetValue().toString());
+                        player.RemoveWeapon(kv.GetValue().getData());
                         kv = spawnArgs.MatchPrefix("weapon", kv);
                     }
                     player.SelectWeapon(player.weapon_fists, true);

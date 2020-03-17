@@ -75,11 +75,11 @@ public class TypeInfo {
             int i;
 
             while (isNotNullOrEmpty(typeName)) {
-                if (idStr.Cmp(typeName.toString(), superType) == 0) {
+                if (idStr.Cmp(typeName.getData(), superType) == 0) {
                     return true;
                 }
                 for (i = 0; classTypeInfo[i].typeName != null; i++) {
-                    if (idStr.Cmp(typeName.toString(), classTypeInfo[i].typeName) == 0) {
+                    if (idStr.Cmp(typeName.getData(), classTypeInfo[i].typeName) == 0) {
                         typeName.oSet(classTypeInfo[i].superType);
                         break;
                     }
@@ -467,7 +467,7 @@ public class TypeInfo {
 //                typeSize = 0;
 //                for (i = 0; i < num; i++) {
 //                    String listVarName = va("%s[%d]", varName, i);
-//                    int size = WriteVariable_r(varPtr, listVarName, listVarType.toString(), scope, prefix, pointerDepth);
+//                    int size = WriteVariable_r(varPtr, listVarName, listVarType.getData(), scope, prefix, pointerDepth);
 //                    typeSize += size;
 //                    if (size == -1) {
 //                        break;
@@ -495,7 +495,7 @@ public class TypeInfo {
 //                return sizeof/*( void * )*/;
 //            }
 //
-//            typeSrc.LoadMemory(typeString.toString(), typeString.Length(), varName);
+//            typeSrc.LoadMemory(typeString.getData(), typeString.Length(), varName);
 //
 //            if (!typeSrc.ReadToken(token)) {
 //                Write.run(varName, varType, scope, prefix, "", va("<unknown type '%s'>", varType), varPtr, 0);
@@ -811,7 +811,7 @@ public class TypeInfo {
 //                typeSize = sizeof(idStr);
 //
 //                final idStr str = (/*(idStr *)*/varPtr);
-//                Write.run(varName, varType, scope, prefix, "", OutputString(str.toString()), str.c_str(), str.Length());
+//                Write.run(varName, varType, scope, prefix, "", OutputString(str.getData()), str.c_str(), str.Length());
 //
 //            } else if (token.equals("idStrList")) {
 //
@@ -1161,7 +1161,7 @@ public class TypeInfo {
             }
             fileName.SetFileExtension("gameState.txt");
 
-            idTypeInfoTools.WriteGameState(fileName.toString());
+            idTypeInfoTools.WriteGameState(fileName.getData());
         }
     };
 
@@ -1192,7 +1192,7 @@ public class TypeInfo {
             }
             fileName.SetFileExtension("gameState.txt");
 
-            idTypeInfoTools.CompareGameState(fileName.toString());
+            idTypeInfoTools.CompareGameState(fileName.getData());
         }
     };
 

@@ -196,7 +196,7 @@ public class Image_files {
     }
 
     public static void R_WriteTGA(final idStr filename, final ByteBuffer data, int width, int height) {
-        R_WriteTGA(filename.toString(), data, width, height);
+        R_WriteTGA(filename.getData(), data, width, height);
     }
 
     /*
@@ -968,18 +968,18 @@ public class Image_files {
         name.ExtractFileExtension(ext);
 
         if (ext.equals("tga")) {
-            pic = LoadTGA(name.toString(), width, height, timestamp);            // try tga first
+            pic = LoadTGA(name.getData(), width, height, timestamp);            // try tga first
             if ((pic != null && pic.capacity() == 0) || (timestamp != null && timestamp[0] == -1)) {
                 name.StripFileExtension();
                 name.DefaultFileExtension(".jpg");
-                pic = LoadJPG(name.toString(), width, height, timestamp);
+                pic = LoadJPG(name.getData(), width, height, timestamp);
             }
         } else if (ext.equals("pcx")) {
-            pic = LoadPCX32(name.toString(), width, height, timestamp);
+            pic = LoadPCX32(name.getData(), width, height, timestamp);
         } else if (ext.equals("bmp")) {
-            pic = LoadBMP(name.toString(), width, height, timestamp);
+            pic = LoadBMP(name.getData(), width, height, timestamp);
         } else if (ext.equals("jpg")) {
-            pic = LoadJPG(name.toString(), width, height, timestamp);
+            pic = LoadJPG(name.getData(), width, height, timestamp);
         }
 
         if ((width != null && width[0] < 1)

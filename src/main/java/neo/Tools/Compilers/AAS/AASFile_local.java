@@ -608,7 +608,7 @@ public class AASFile_local {
             name = fileName;
             crc = mapFileCRC;
 
-            aasFile = fileSystem.OpenFileWrite(fileName.toString(), "fs_devpath");
+            aasFile = fileSystem.OpenFileWrite(fileName.getData(), "fs_devpath");
             if (NOT(aasFile)) {
                 common.Error("Error opening %s", fileName);
                 return false;

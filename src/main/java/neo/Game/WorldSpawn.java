@@ -78,8 +78,8 @@ public class WorldSpawn {
             // load script
             scriptname = new idStr(gameLocal.GetMapName());
             scriptname.SetFileExtension(".script");
-            if (fileSystem.ReadFile(scriptname.toString(), null, null) > 0) {
-                gameLocal.program.CompileFile(scriptname.toString());
+            if (fileSystem.ReadFile(scriptname.getData(), null, null) > 0) {
+                gameLocal.program.CompileFile(scriptname.getData());
 
                 // call the main function by default
                 func = gameLocal.program.FindFunction("main");
@@ -92,7 +92,7 @@ public class WorldSpawn {
             // call any functions specified in worldspawn
             kv = spawnArgs.MatchPrefix("call");
             while (kv != null) {
-                func = gameLocal.program.FindFunction(kv.GetValue().toString());
+                func = gameLocal.program.FindFunction(kv.GetValue().getData());
                 if (func == null) {
                     gameLocal.Error("Function '%s' not found in script for '%s' key on worldspawn", kv.GetValue(), kv.GetKey());
                 }

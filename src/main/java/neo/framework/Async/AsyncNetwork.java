@@ -705,7 +705,7 @@ public class AsyncNetwork {
                     common.Printf("usage: kick <client number>\n");
                     return;
                 }
-                iclient = Integer.parseInt(clientId.toString());
+                iclient = Integer.parseInt(clientId.getData());
 
                 if (server.GetLocalClientNum() == iclient) {
                     common.Printf("can't kick the host\n");

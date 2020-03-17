@@ -318,7 +318,7 @@ public class Session {
             // make sure the level exists before trying to change, so that
             // a typo at the server console won't end the game
             // handle addon packs through reloadEngine
-            string = String.format("maps/%s.map", map.toString());
+            string = String.format("maps/%s.map", map.getData());
             ff = fileSystem.FindFile(string, true);
             switch (ff) {
                 case FIND_NO:
@@ -327,7 +327,7 @@ public class Session {
                 case FIND_ADDON:
                     common.Printf("map %s is in an addon pak - reloading\n", string);
                     rl_args.AppendArg("map");
-                    rl_args.AppendArg(map.toString());
+                    rl_args.AppendArg(map.getData());
                     cmdSystem.SetupReloadEngine(rl_args);
                     return;
                 default:
@@ -335,7 +335,7 @@ public class Session {
             }
 
             cvarSystem.SetCVarBool("developer", false);
-            sessLocal.StartNewGame(map.toString(), true);
+            sessLocal.StartNewGame(map.getData(), true);
         }
     };
 
@@ -370,7 +370,7 @@ public class Session {
             // make sure the level exists before trying to change, so that
             // a typo at the server console won't end the game
             // handle addon packs through reloadEngine
-            string = String.format("maps/%s.map", map.toString());
+            string = String.format("maps/%s.map", map.getData());
             ff = fileSystem.FindFile(string, true);
             switch (ff) {
                 case FIND_NO:
@@ -379,7 +379,7 @@ public class Session {
                 case FIND_ADDON:
                     common.Printf("map %s is in an addon pak - reloading\n", string);
                     rl_args.AppendArg("devmap");
-                    rl_args.AppendArg(map.toString());
+                    rl_args.AppendArg(map.getData());
                     cmdSystem.SetupReloadEngine(rl_args);
                     return;
                 default:
@@ -387,7 +387,7 @@ public class Session {
             }
 
             cvarSystem.SetCVarBool("developer", true);
-            sessLocal.StartNewGame(map.toString(), true);
+            sessLocal.StartNewGame(map.getData(), true);
         }
     };
 
@@ -417,7 +417,7 @@ public class Session {
 
             cmdSystem.BufferCommandText(CMD_EXEC_NOW, "disconnect");
 
-            string = String.format("dmap maps/%s.map", map.toString());
+            string = String.format("dmap maps/%s.map", map.getData());
             cmdSystem.BufferCommandText(CMD_EXEC_NOW, string);
 
             string = String.format("devmap %s", map);//TODO:can this shit format char*?
@@ -446,7 +446,7 @@ public class Session {
             }
             idStr str = new idStr(args.Argv(1));
             str.DefaultFileExtension(".cfg");
-            idFile f = fileSystem.OpenFileWrite(str.toString());
+            idFile f = fileSystem.OpenFileWrite(str.getData());
             declManager.WritePrecacheCommands(f);
             renderModelManager.WritePrecacheCommands(f);
             uiManager.WritePrecacheCommands(f);

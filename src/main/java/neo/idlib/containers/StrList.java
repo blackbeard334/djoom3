@@ -35,7 +35,7 @@ public class StrList {
          ================
          */
         @Override
-        public void Sort(cmp_t<idStr> compare) {
+        public void Sort(cmp_t compare) {
             int i;
 
             if (0 == Num()) {
@@ -47,7 +47,7 @@ public class StrList {
 
             pointerList.SetNum(Num());
             for (i = 0; i < Num(); i++) {
-                pointerList.oSet(i, this.oGet(i));
+                pointerList.oSetType(i, this.oGet(i));
             }
 
             pointerList.Sort();
@@ -135,7 +135,7 @@ public class StrList {
 
             pointerList.SetNum(list.Num());
             for (i = 0; i < list.Num(); i++) {
-                pointerList.oSet(i, list.oGet(i));
+                pointerList.oSetType(i, list.oGet(i));
             }
 
             pointerList.Sort(new idListSortComparePaths());
@@ -159,16 +159,16 @@ public class StrList {
 
     };
 
-    class idStrPtrList extends idList<idStr> {
-    }
-
-    class idStrPtr extends idStr {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-    }
+//    class idStrPtrList extends idList<idStr> {
+//    }
+//
+//    class idStrPtr extends idStr {
+//
+//		/**
+//		 * 
+//		 */
+//		private static final long serialVersionUID = 1L;
+//    }
 
     /*
      ===============================================================================

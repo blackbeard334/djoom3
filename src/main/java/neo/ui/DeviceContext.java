@@ -414,7 +414,7 @@ public class DeviceContext {
         static int bla = 0;
 
         public int DrawText(final idStr text, float textScale, int textAlign, idVec4 color, idRectangle rectDraw, boolean wrap, int cursor /*= -1*/, boolean calcOnly /*= false*/, idList<Integer> breaks /*= NULL*/) {
-            return DrawText(text.toString(), textScale, textAlign, color, rectDraw, wrap, cursor, calcOnly, breaks, 0);
+            return DrawText(text.getData(), textScale, textAlign, color, rectDraw, wrap, cursor, calcOnly, breaks, 0);
         }
 
         public int DrawText(final String text, float textScale, int textAlign, idVec4 color, idRectangle rectDraw, boolean wrap, int cursor) {
@@ -426,7 +426,7 @@ public class DeviceContext {
         }
 
         public int DrawText(final idStr text, float textScale, int textAlign, idVec4 color, idRectangle rectDraw, boolean wrap, int cursor) {
-            return DrawText(text.toString(), textScale, textAlign, color, rectDraw, wrap, cursor);
+            return DrawText(text.getData(), textScale, textAlign, color, rectDraw, wrap, cursor);
         }
 
         public void DrawMaterialRect(float x, float y, float w, float h, float size, final idMaterial mat, final idVec4 color) {
@@ -724,7 +724,7 @@ public class DeviceContext {
         }
 
         public int TextWidth(final idStr text, float scale, int limit) {
-            return TextWidth(text.toString(), scale, limit);
+            return TextWidth(text.getData(), scale, limit);
         }
 
         public int TextHeight(final String text, float scale, int limit) {
@@ -790,7 +790,7 @@ public class DeviceContext {
 
             fontInfoEx_t fontInfo = new fontInfoEx_t();
             int index = fonts.Append(fontInfo);
-            if (renderSystem.RegisterFont(fileName.toString(), fonts.oGet(index))) {
+            if (renderSystem.RegisterFont(fileName.getData(), fonts.oGet(index))) {
                 fonts.oGet(index).name = name;//idStr.Copynz(fonts.oGet(index).name, name, fonts.oGet(index).name.length());
                 return index;
             } else {
@@ -803,7 +803,7 @@ public class DeviceContext {
             fonts.SetGranularity(1);
 
             this.fontLang.oSet(cvarSystem.GetCVarString("sys_lang"));
-            String font = this.fontLang.toString();
+            String font = this.fontLang.getData();
 
             // western european languages can use the english font
             if ("french".equals(font) || "german".equals(font) || "spanish".equals(font) || "italian".equals(font)) {

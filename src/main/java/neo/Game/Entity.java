@@ -581,7 +581,7 @@ public class Entity {
             Unbind();
             QuitTeam();
 
-            gameLocal.RemoveEntityFromHash(name.toString(), this);
+            gameLocal.RemoveEntityFromHash(name.getData(), this);
 
 //            delete renderView;
             renderView = null;
@@ -852,7 +852,7 @@ public class Entity {
                         savefile.ReadString(funcname);
                         signals.signal[i].oGet(j).function = gameLocal.program.FindFunction(funcname);
                         if (null == signals.signal[i].oGet(j).function) {
-                            savefile.Error("Function '%s' not found", funcname.toString());
+                            savefile.Error("Function '%s' not found", funcname.getData());
                         }
                     }
                 }
@@ -875,8 +875,8 @@ public class Entity {
 
         public void SetName(final String newname) {
             if (name.Length() != 0) {
-                gameLocal.RemoveEntityFromHash(name.toString(), this);
-                gameLocal.program.SetEntity(name.toString(), null);
+                gameLocal.RemoveEntityFromHash(name.getData(), this);
+                gameLocal.program.SetEntity(name.getData(), null);
             }
 
             name.oSet(newname);
@@ -885,17 +885,17 @@ public class Entity {
                 if (("NULL".equals(newname)) || ("null_entity".equals(newname))) {
                     gameLocal.Error("Cannot name entity '%s'.  '%s' is reserved for script.", name, name);
                 }
-                gameLocal.AddEntityToHash(name.toString(), this);
-                gameLocal.program.SetEntity(name.toString(), this);
+                gameLocal.AddEntityToHash(name.getData(), this);
+                gameLocal.program.SetEntity(name.getData(), this);
             }
         }
 
         public void SetName(final idStr newname) {
-            SetName(newname.toString());
+            SetName(newname.getData());
         }
 
         public String GetName() {
-            return name.toString();
+            return name.getData();
         }
 
         /*
@@ -2173,7 +2173,7 @@ public class Entity {
                     part.physics.SaveState();
                 }
             }
-                                                      DBG_name = name.toString();
+                                                      DBG_name = name.getData();
             // move the whole team
             for (part = this; part != null; part = part.teamChain) {
 
@@ -2636,7 +2636,7 @@ public class Entity {
             if (constructor != null) {
                 // start a thread that will initialize after Spawn is done being called
                 thread = new idThread();
-                thread.SetThreadName(name.toString());
+                thread.SetThreadName(name.getData());
                 thread.CallFunction(this, constructor, true);
                 thread.DelayedStart(0);
             } else {
@@ -2672,7 +2672,7 @@ public class Entity {
             if (destructor != null) {
                 // start a thread that will run immediately and be destroyed
                 thread = new idThread();
-                thread.SetThreadName(name.toString());
+                thread.SetThreadName(name.getData());
                 thread.CallFunction(this, destructor, true);
                 thread.Execute();
 //		delete thread;
@@ -2881,7 +2881,7 @@ public class Entity {
                                 if (!src.ReadToken(token3)) {
                                     gameLocal.Error("Expecting function name following '::' in gui for entity '%s'", entityGui.name);
                                 }
-                                token2.Append("::" + token3.toString());
+                                token2.Append("::" + token3.getData());
                             }
                             final function_t func = gameLocal.program.FindFunction(token2);
                             if (null == func) {
@@ -2916,7 +2916,7 @@ public class Entity {
 
                     if (token.Icmp("setshaderparm") == 0) {
                         if (src.ReadToken(token2) && src.ReadToken(token3)) {
-                            entityGui.SetShaderParm(Integer.parseInt(token2.toString()), Float.parseFloat(token3.toString()));
+                            entityGui.SetShaderParm(Integer.parseInt(token2.getData()), Float.parseFloat(token3.getData()));
                             entityGui.UpdateVisuals();
                         }
                         continue;
@@ -2930,7 +2930,7 @@ public class Entity {
                     if (0 == token.Icmp("turkeyscore")) {
                         if (src.ReadToken(token2) && entityGui.renderEntity.gui[0] != null) {
                             int score = entityGui.renderEntity.gui[0].State().GetInt("score");
-                            score += Integer.parseInt(token2.toString());
+                            score += Integer.parseInt(token2.getData());
                             entityGui.renderEntity.gui[0].SetStateInt("score", score);
                             if (gameLocal.GetLocalPlayer() != null && score >= 25000 && !gameLocal.GetLocalPlayer().inventory.turkeyScore) {
                                 gameLocal.GetLocalPlayer().GiveEmail("highScore");
@@ -2948,7 +2948,7 @@ public class Entity {
                                 src.UnreadToken(token2);
                                 break;
                             }
-                            msg += token2.toString();
+                            msg += token2.getData();
                         }
                         common.Printf("ent gui 0x%x '%s': %s\n", entityNumber, name, msg);
                         continue;
@@ -3150,7 +3150,7 @@ public class Entity {
 
             spline.SetBoundaryType(idCurve_Spline.BT_CLAMPED);
 
-            lex.LoadMemory(kv.GetValue().toString(), kv.GetValue().Length(), curveTag);
+            lex.LoadMemory(kv.GetValue().getData(), kv.GetValue().Length(), curveTag);
             numPoints = lex.ParseInt();
             lex.ExpectTokenString("(");
             for (t = i = 0; i < numPoints; i++, t += 100) {
@@ -3403,7 +3403,7 @@ public class Entity {
         private void FixupLocalizedStrings() {
             for (int i = 0; i < spawnArgs.GetNumKeyVals(); i++) {
                 final idKeyValue kv = spawnArgs.GetKeyVal(i);
-                if (idStr.Cmpn(kv.GetValue().toString(), STRTABLE_ID, STRTABLE_ID_LENGTH) == 0) {
+                if (idStr.Cmpn(kv.GetValue().getData(), STRTABLE_ID, STRTABLE_ID_LENGTH) == 0) {
                     spawnArgs.Set(kv.GetKey(), common.GetLanguageDict().GetString(kv.GetValue()));
                 }
             }
@@ -3685,7 +3685,7 @@ public class Entity {
          ***********************************************************************/
         // events
         private void Event_GetName() {
-            idThread.ReturnString(name.toString());
+            idThread.ReturnString(name.getData());
         }
 
         private static void Event_SetName(idEntity e, final idEventArg<String> newName) {
@@ -4806,7 +4806,7 @@ public class Entity {
         }
         idKeyValue kv = args.MatchPrefix("gui_parm", null);
         while (kv != null) {
-            gui.SetStateString(kv.GetKey().toString(), kv.GetValue().toString());
+            gui.SetStateString(kv.GetKey().getData(), kv.GetValue().getData());
             kv = args.MatchPrefix("gui_parm", kv);
         }
         gui.SetStateBool("noninteractive", args.GetBool("gui_noninteractive"));

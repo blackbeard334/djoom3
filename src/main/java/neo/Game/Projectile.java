@@ -1839,7 +1839,7 @@ public class Projectile {
                         if (damageFreq != null && /*(const char *)*/ !damageFreq.IsEmpty() && beamTargets.oGet(i).target.GetEntity() != null && beamTargets.oGet(i).target.GetEntity().CanDamage(GetPhysics().GetOrigin(), org)) {
                             org = beamTargets.oGet(i).target.GetEntity().GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
                             org.Normalize();
-                            beamTargets.oGet(i).target.GetEntity().Damage(this, owner.GetEntity(), org, damageFreq.toString(), (damagePower != 0) ? damagePower : 1.0f, INVALID_JOINT);
+                            beamTargets.oGet(i).target.GetEntity().Damage(this, owner.GetEntity(), org, damageFreq.getData(), (damagePower != 0) ? damagePower : 1.0f, INVALID_JOINT);
                         } else {
                             beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_RED]
                                     = beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_GREEN]

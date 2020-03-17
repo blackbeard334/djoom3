@@ -59,7 +59,7 @@ public class UserInterface {
         }
 
         public final boolean InitFromFile(final idStr qpath) {
-            return InitFromFile(qpath.toString(), true);
+            return InitFromFile(qpath.getData(), true);
         }
 
         // handles an event, can return an action string, the caller interprets

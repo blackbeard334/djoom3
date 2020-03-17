@@ -162,7 +162,7 @@ public class DeclAF {
                 joint2.oSet(token);
                 src.ExpectTokenString(")");
             } else {
-                src.Error("unknown token %s in vector", token.toString());
+                src.Error("unknown token %s in vector", token.getData());
                 return false;
             }
 
@@ -179,18 +179,18 @@ public class DeclAF {
                 }
                 case VEC_JOINT: {
                     if (!GetJointTransform.run(model, frame, joint1, vec, axis)) {
-                        common.Warning("invalid joint %s in joint() in '%s'", joint1.toString(), fileName);
+                        common.Warning("invalid joint %s in joint() in '%s'", joint1.getData(), fileName);
                         vec.Zero();
                     }
                     break;
                 }
                 case VEC_BONECENTER: {
                     if (!GetJointTransform.run(model, frame, joint1, start, axis)) {
-                        common.Warning("invalid joint %s in bonecenter() in '%s'", joint1.toString(), fileName);
+                        common.Warning("invalid joint %s in bonecenter() in '%s'", joint1.getData(), fileName);
                         start.Zero();
                     }
                     if (!GetJointTransform.run(model, frame, joint2, end, axis)) {
-                        common.Warning("invalid joint %s in bonecenter() in '%s'", joint2.toString(), fileName);
+                        common.Warning("invalid joint %s in bonecenter() in '%s'", joint2.getData(), fileName);
                         end.Zero();
                     }
                     vec.oSet((start.oPlus(end)).oMultiply(0.5f));
@@ -198,11 +198,11 @@ public class DeclAF {
                 }
                 case VEC_BONEDIR: {
                     if (!GetJointTransform.run(model, frame, joint1, start, axis)) {
-                        common.Warning("invalid joint %s in bonedir() in '%s'", joint1.toString(), fileName);
+                        common.Warning("invalid joint %s in bonedir() in '%s'", joint1.getData(), fileName);
                         start.Zero();
                     }
                     if (!GetJointTransform.run(model, frame, joint2, end, axis)) {
-                        common.Warning("invalid joint %s in bonedir() in '%s'", joint2.toString(), fileName);
+                        common.Warning("invalid joint %s in bonedir() in '%s'", joint2.getData(), fileName);
                         end.Zero();
                     }
                     vec.oSet((end.oMinus(start)));
@@ -232,15 +232,15 @@ public class DeclAF {
                     break;
                 }
                 case VEC_JOINT: {
-                    f.WriteFloatString("joint( \"%s\" )", joint1.toString());
+                    f.WriteFloatString("joint( \"%s\" )", joint1.getData());
                     break;
                 }
                 case VEC_BONECENTER: {
-                    f.WriteFloatString("bonecenter( \"%s\", \"%s\" )", joint1.toString(), joint2.toString());
+                    f.WriteFloatString("bonecenter( \"%s\", \"%s\" )", joint1.getData(), joint2.getData());
                     break;
                 }
                 case VEC_BONEDIR: {
-                    f.WriteFloatString("bonedir( \"%s\", \"%s\" )", joint1.toString(), joint2.toString());
+                    f.WriteFloatString("bonedir( \"%s\", \"%s\" )", joint1.getData(), joint2.getData());
                     break;
                 }
                 default: {
@@ -260,15 +260,15 @@ public class DeclAF {
                     break;
                 }
                 case VEC_JOINT: {
-                    str.oSet(String.format("joint( \"%s\" )", joint1.toString()));
+                    str.oSet(String.format("joint( \"%s\" )", joint1.getData()));
                     break;
                 }
                 case VEC_BONECENTER: {
-                    str.oSet(String.format("bonecenter( \"%s\", \"%s\" )", joint1.toString(), joint2.toString()));
+                    str.oSet(String.format("bonecenter( \"%s\", \"%s\" )", joint1.getData(), joint2.getData()));
                     break;
                 }
                 case VEC_BONEDIR: {
-                    str.oSet(String.format("bonedir( \"%s\", \"%s\" )", joint1.toString(), joint2.toString()));
+                    str.oSet(String.format("bonedir( \"%s\", \"%s\" )", joint1.getData(), joint2.getData()));
                     break;
                 }
                 default: {
@@ -276,9 +276,9 @@ public class DeclAF {
                 }
             }
             if (negate) {
-                str.oSet("-" + str.toString());//TODO:don't set= idStr reference
+                str.oSet("-" + str.getData());//TODO:don't set= idStr reference
             }
-            return str.toString();
+            return str.getData();
         }
 
         public idVec3 ToVec3() {
@@ -768,7 +768,7 @@ public class DeclAF {
             if (str.IsEmpty()) {
                 str.oSet("none");
             }
-            return str.toString();
+            return str.getData();
         }
 // 
 
@@ -811,7 +811,7 @@ public class DeclAF {
                 }
                 str.Append(",");
             }
-            c[0] = ContentsFromString(str.toString());
+            c[0] = ContentsFromString(str.getData());
             return true;
         }
 
@@ -912,7 +912,7 @@ public class DeclAF {
                         src.Error("custom models not yet implemented");
                         return false;
                     } else {
-                        src.Error("unkown model type %s", token.toString());
+                        src.Error("unkown model type %s", token.getData());
                         return false;
                     }
                 } else if (0 == token.Icmp("origin")) {
@@ -934,7 +934,7 @@ public class DeclAF {
                     if (!src.ExpectAnyToken(token)) {
                         return false;
                     }
-                    body.jointMod = JointModFromString(token.toString());
+                    body.jointMod = JointModFromString(token.getData());
                 } else if (0 == token.Icmp("density")) {
                     body.density = src.ParseFloat();
                 } else if (0 == token.Icmp("inertiaScale")) {
@@ -967,7 +967,7 @@ public class DeclAF {
                 } else if (token.equals("}")) {
                     break;
                 } else {
-                    src.Error("unknown token %s in body", token.toString());
+                    src.Error("unknown token %s in body", token.getData());
                     return false;
                 }
             }
@@ -1013,7 +1013,7 @@ public class DeclAF {
                 } else if (token.equals("}")) {
                     break;
                 } else {
-                    src.Error("unknown token %s in ball and socket joint", token.toString());
+                    src.Error("unknown token %s in ball and socket joint", token.getData());
                     return false;
                 }
             }
@@ -1087,7 +1087,7 @@ public class DeclAF {
                 } else if (token.equals("}")) {
                     break;
                 } else {
-                    src.Error("unknown token %s in ball and socket joint", token.toString());
+                    src.Error("unknown token %s in ball and socket joint", token.getData());
                     return false;
                 }
             }
@@ -1160,7 +1160,7 @@ public class DeclAF {
                 } else if (token.equals("}")) {
                     break;
                 } else {
-                    src.Error("unknown token %s in universal joint", token.toString());
+                    src.Error("unknown token %s in universal joint", token.getData());
                     return false;
                 }
             }
@@ -1219,7 +1219,7 @@ public class DeclAF {
                 } else if (token.equals("}")) {
                     break;
                 } else {
-                    src.Error("unknown token %s in hinge", token.toString());
+                    src.Error("unknown token %s in hinge", token.getData());
                     return false;
                 }
             }
@@ -1261,7 +1261,7 @@ public class DeclAF {
                 } else if (token.equals("}")) {
                     break;
                 } else {
-                    src.Error("unknown token %s in slider", token.toString());
+                    src.Error("unknown token %s in slider", token.getData());
                     return false;
                 }
             }
@@ -1319,7 +1319,7 @@ public class DeclAF {
                 } else if (token.equals("}")) {
                     break;
                 } else {
-                    src.Error("unknown token %s in spring", token.toString());
+                    src.Error("unknown token %s in spring", token.getData());
                     return false;
                 }
             }
@@ -1404,7 +1404,7 @@ public class DeclAF {
                 } else if (token.equals("}")) {
                     break;
                 } else {
-                    src.Error("unknown token %s in settings", token.toString());
+                    src.Error("unknown token %s in settings", token.getData());
                     return false;
                 }
             }
@@ -1416,8 +1416,8 @@ public class DeclAF {
         private boolean WriteBody(idFile f, final idDeclAF_Body body) {
             idStr str = new idStr();
 
-            f.WriteFloatString("\nbody \"%s\" {\n", body.name.toString());
-            f.WriteFloatString("\tjoint \"%s\"\n", body.jointName.toString());
+            f.WriteFloatString("\nbody \"%s\" {\n", body.name.getData());
+            f.WriteFloatString("\tjoint \"%s\"\n", body.jointName.getData());
             f.WriteFloatString("\tmod %s\n", JointModToString(body.jointMod));
             switch (body.modelType) {
                 case TRM_BOX: {
@@ -1502,7 +1502,7 @@ public class DeclAF {
                 body.contactMotorDirection.Write(f);
                 f.WriteFloatString("\n");
             }
-            f.WriteFloatString("\tcontainedJoints \"%s\"\n", body.containedJoints.toString());
+            f.WriteFloatString("\tcontainedJoints \"%s\"\n", body.containedJoints.getData());
             f.WriteFloatString("}\n");
             return true;
         }

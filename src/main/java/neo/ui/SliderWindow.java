@@ -166,7 +166,7 @@ public class SliderWindow {
             if (buddyWin != null) {
                 buddyWin.HandleBuddyUpdate(this);
             } else {
-                gui.SetStateFloat(cvarStr.data.toString(), value.data);
+                gui.SetStateFloat(cvarStr.data.getData(), value.data);
                 UpdateCvar(false);
             }
 
@@ -321,7 +321,7 @@ public class SliderWindow {
             if (buddyWin != null) {
                 buddyWin.HandleBuddyUpdate(this);
             } else {
-                gui.SetStateFloat(cvarStr.data.toString(), value.data);
+                gui.SetStateFloat(cvarStr.data.getData(), value.data);
             }
             UpdateCvar(false);
 
@@ -422,7 +422,7 @@ public class SliderWindow {
                 return;
             }
 
-            cvar = cvarSystem.Find(cvarStr.data.toString());
+            cvar = cvarSystem.Find(cvarStr.data.getData());
             if (null == cvar) {
                 common.Warning("idSliderWindow.InitCvar: gui '%s' window '%s' references undefined cvar '%s'", gui.GetSourceFile(), name, cvarStr.c_str());
                 cvar_init = true;
@@ -439,11 +439,11 @@ public class SliderWindow {
             }
             if (force || liveUpdate.oCastBoolean()) {
                 value.data = cvar.GetFloat();
-                if (value.data != gui.State().GetFloat(cvarStr.data.toString())) {
+                if (value.data != gui.State().GetFloat(cvarStr.data.getData())) {
                     if (read) {
-                        gui.SetStateFloat(cvarStr.data.toString(), value.data);
+                        gui.SetStateFloat(cvarStr.data.getData(), value.data);
                     } else {
-                        value.data = gui.State().GetFloat(cvarStr.data.toString());
+                        value.data = gui.State().GetFloat(cvarStr.data.getData());
                         cvar.SetFloat(value.data);
                     }
                 }

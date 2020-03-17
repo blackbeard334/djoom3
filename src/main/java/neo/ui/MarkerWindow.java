@@ -239,7 +239,7 @@ public class MarkerWindow {
                 statData.oSet(gui.State().GetString("statData"));
                 numStats = 0;
                 if (statData.Length() != 0) {
-                    idFile file = fileSystem.OpenFileRead(statData.toString());
+                    idFile file = fileSystem.OpenFileRead(statData.getData());
                     if (file != null) {
                         numStats = file.ReadInt();
 //                        file->Read(loggedStats, numStats * sizeof(loggedStats[0]));
@@ -266,7 +266,7 @@ public class MarkerWindow {
                     idStr markerPath = statData;
                     markerPath.StripFilename();
                     idFileList markers;
-                    markers = fileSystem.ListFiles(markerPath.toString(), ".tga", false, true);
+                    markers = fileSystem.ListFiles(markerPath.getData(), ".tga", false, true);
                     idStr name;
                     for (i = 0; i < markers.GetNumFiles(); i++) {
                         name = new idStr(markers.GetFile(i));
@@ -275,7 +275,7 @@ public class MarkerWindow {
                         md.mat.SetSort(SS_GUI);
                         name.StripPath();
                         name.StripFileExtension();
-                        md.time = Integer.parseInt(name.toString());
+                        md.time = Integer.parseInt(name.getData());
                         markerTimes.Append(md);
                     }
                     fileSystem.FreeFileList(markers);

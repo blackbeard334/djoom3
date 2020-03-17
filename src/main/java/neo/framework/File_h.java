@@ -83,7 +83,7 @@ public class File_h {
                                 tmp = new idStr(String.format("%1.10f", f));
                                 tmp.StripTrailing('0');
                                 tmp.StripTrailing('.');
-                                temp = String.format("%s", tmp.toString());
+                                temp = String.format("%s", tmp.getData());
                                 System.arraycopy(temp.toCharArray(), 0, buf, index, temp.length());
                                 index += temp.length();
 //                                index += sprintf(buf + index, "%s", tmp.c_str());
@@ -535,7 +535,7 @@ public class File_h {
         }
 
         public int WriteString(final idStr value) {
-            return WriteString(value.toString());
+            return WriteString(value.getData());
         }
 
         public int ReadVec2(idVec2 vec) {
@@ -699,12 +699,12 @@ public class File_h {
 
         @Override
         public String GetName() {
-            return name.toString();
+            return name.getData();
         }
 
         @Override
         public String GetFullPath() {
-            return name.toString();
+            return name.getData();
         }
 
         @Override
@@ -913,12 +913,12 @@ public class File_h {
 
         @Override
         public String GetName() {
-            return name.toString();
+            return name.getData();
         }
 
         @Override
         public String GetFullPath() {
-            return name.toString();
+            return name.getData();
         }
 
         @Override
@@ -1021,12 +1021,12 @@ public class File_h {
 
         @Override
         public String GetName() {
-            return name.toString();
+            return name.getData();
         }
 
         @Override
         public String GetFullPath() {
-            return fullPath.toString();
+            return fullPath.getData();
         }
 
         @Override
@@ -1267,12 +1267,12 @@ public class File_h {
 // public	virtual					~idFile_InZip( void );
         @Override
         public String GetName() {
-            return name.toString();
+            return name.getData();
         }
 
         @Override
         public String GetFullPath() {
-            return fullPath.oPlus('/').oPlus(name).toString();
+            return fullPath.oPlus('/').oPlus(name).getData();
         }
 
         @Override
@@ -1287,7 +1287,7 @@ public class File_h {
 
             try {
                 if (null == inputStream) {
-                    inputStream = new ZipFile(fullPath.toString()).getInputStream(z);
+                    inputStream = new ZipFile(fullPath.getData()).getInputStream(z);
                 }
 
                 while (read > -1 && len != 0) {

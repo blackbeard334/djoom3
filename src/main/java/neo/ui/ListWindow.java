@@ -146,7 +146,7 @@ public class ListWindow {
 
                 if ((key == K_ENTER || key == K_KP_ENTER)) {
                     RunScript(etoi(ON_ENTER));
-                    return cmd.toString();
+                    return cmd.getData();
                 }
 
                 if (key == K_MWHEELUP) {
@@ -169,7 +169,7 @@ public class ListWindow {
                                 if (IsSelected(cur) && (gui.GetTime() < clickTime + doubleClickSpeed)) {
                                     // Double-click causes ON_ENTER to get run
                                     RunScript(etoi(ON_ENTER));
-                                    return cmd.toString();
+                                    return cmd.getData();
                                 }
                                 SetCurrentSel(cur);
 
@@ -277,76 +277,76 @@ public class ListWindow {
             idList<Integer> tabStops = new idList<>();
             idList<Integer> tabAligns = new idList<>();
             if (tabStopStr.Length() != 0) {
-                idParser src = new idParser(tabStopStr.toString(), tabStopStr.Length(), "tabstops", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                idParser src = new idParser(tabStopStr.getData(), tabStopStr.Length(), "tabstops", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabStops.Append(Integer.parseInt(tok.toString()));
+                    tabStops.Append(Integer.parseInt(token.getData()));
                 }
             }
             if (tabAlignStr.Length() != 0) {
-                idParser src = new idParser(tabAlignStr.toString(), tabAlignStr.Length(), "tabaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                idParser src = new idParser(tabAlignStr.getData(), tabAlignStr.Length(), "tabaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabAligns.Append(Integer.parseInt(tok.toString()));
+                    tabAligns.Append(Integer.parseInt(token.getData()));
                 }
             }
             idList<Integer> tabVAligns = new idList<>();
             if (tabVAlignStr.Length() != 0) {
-                idParser src = new idParser(tabVAlignStr.toString(), tabVAlignStr.Length(), "tabvaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                idParser src = new idParser(tabVAlignStr.getData(), tabVAlignStr.Length(), "tabvaligns", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabVAligns.Append(Integer.parseInt(tok.toString()));
+                    tabVAligns.Append(Integer.parseInt(token.getData()));
                 }
             }
 
             idList<Integer> tabTypes = new idList<>();
             if (tabTypeStr.Length() != 0) {
-                idParser src = new idParser(tabTypeStr.toString(), tabTypeStr.Length(), "tabtypes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                idParser src = new idParser(tabTypeStr.getData(), tabTypeStr.Length(), "tabtypes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabTypes.Append(Integer.parseInt(tok.toString()));
+                    tabTypes.Append(Integer.parseInt(token.getData()));
                 }
             }
             idList<idVec2> tabSizes = new idList<>();
             if (tabIconSizeStr.Length() != 0) {
-                idParser src = new idParser(tabIconSizeStr.toString(), tabIconSizeStr.Length(), "tabiconsizes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                idParser src = new idParser(tabIconSizeStr.getData(), tabIconSizeStr.Length(), "tabiconsizes", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
                     idVec2 size = new idVec2();
-                    size.x = Integer.parseInt(tok.toString());
+                    size.x = Integer.parseInt(token.getData());
 
-                    src.ReadToken(tok);	//","
-                    src.ReadToken(tok);
+                    src.ReadToken(token);	//","
+                    src.ReadToken(token);
 
-                    size.y = Integer.parseInt(tok.toString());
+                    size.y = Integer.parseInt(token.getData());
                     tabSizes.Append(size);
                 }
             }
 
             idList<Float> tabIconVOffsets = new idList<>();
             if (tabIconVOffsetStr.Length() != 0) {
-                idParser src = new idParser(tabIconVOffsetStr.toString(), tabIconVOffsetStr.Length(), "tabiconvoffsets", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
-                idToken tok = new idToken();
-                while (src.ReadToken(tok)) {
-                    if (tok.equals(",")) {
+                idParser src = new idParser(tabIconVOffsetStr.getData(), tabIconVOffsetStr.Length(), "tabiconvoffsets", LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS);
+                idToken token = new idToken();
+                while (src.ReadToken(token)) {
+                    if (token.equals(",")) {
                         continue;
                     }
-                    tabIconVOffsets.Append(Float.parseFloat(tok.toString()));
+                    tabIconVOffsets.Append(Float.parseFloat(token.getData()));
                 }
             }
 
@@ -452,7 +452,7 @@ public class ListWindow {
                             // leaving the icon name empty doesn't draw anything
                             if (isNotNullOrEmpty(work)) {
 
-                                if (iconMaterials.Get(work.toString(), hashMat) == false) {
+                                if (iconMaterials.Get(work.getData(), hashMat) == false) {
                                     iconMat = declManager.FindMaterial("_default");
                                 } else {
                                     iconMat = hashMat[0];

@@ -606,7 +606,7 @@ public class CmdSystem {
                 path.StripTrailing('/');
 
                 // list folders
-                names = fileSystem.ListFiles(path.toString(), "/", true, true);
+                names = fileSystem.ListFiles(path.getData(), "/", true, true);
                 for (i = 0; i < names.GetNumFiles(); i++) {
                     idStr name = new idStr(names.GetFile(i));
                     if (stripFolder) {
@@ -623,7 +623,7 @@ public class CmdSystem {
 //                va_start(argPtr, stripFolder);
 //                for (extension = va_arg(argPtr, String); extension != null; extension = va_arg(argPtr, String)) {
                 for (Object extension : objects) {
-                    names = fileSystem.ListFiles(path.toString(), extension.toString(), true, true);
+                    names = fileSystem.ListFiles(path.getData(), extension.toString(), true, true);
                     for (i = 0; i < names.GetNumFiles(); i++) {
                         idStr name = new idStr(names.GetFile(i));
                         if (stripFolder) {
@@ -639,7 +639,7 @@ public class CmdSystem {
 //                va_end(argPtr);
             }
             for (i = 0; i < completionParms.Num(); i++) {
-                callback.run(completionParms.oGet(i).toString());
+                callback.run(completionParms.oGet(i).getData());
             }
         }
 
@@ -976,7 +976,7 @@ public class CmdSystem {
 
                 filename = new idStr(args.Argv(1));
                 filename.DefaultFileExtension(".cfg");
-                len = fileSystem.ReadFile(filename.toString(),/*reinterpret_cast<void **>*/ f, null);
+                len = fileSystem.ReadFile(filename.getData(),/*reinterpret_cast<void **>*/ f, null);
                 if (null == f[0]) {
                     common.Printf("couldn't exec %s\n", args.Argv(1));
                     return;

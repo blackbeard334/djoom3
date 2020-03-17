@@ -310,7 +310,7 @@ public class FileSystem_h {
         }
 
         public String GetBasePath() {
-            return basePath.toString();
+            return basePath.getData();
         }
 
         public int GetNumFiles() {
@@ -318,7 +318,7 @@ public class FileSystem_h {
         }
 
         public String GetFile(int index) {
-            return list.oGet(index).toString();
+            return list.oGet(index).getData();
         }
 
         public idStrList GetList() {
@@ -344,11 +344,11 @@ public class FileSystem_h {
         }
 
         public String GetMod(int index) {
-            return mods.oGet(index).toString();
+            return mods.oGet(index).getData();
         }
 
         public String GetDescription(int index) {
-            return descriptions.oGet(index).toString();
+            return descriptions.oGet(index).getData();
         }
     }
 
@@ -415,7 +415,7 @@ public class FileSystem_h {
         }
 
         public String RelativePathToOSPath(final idStr relativePath) {
-            return RelativePathToOSPath(relativePath.toString());
+            return RelativePathToOSPath(relativePath.getData());
         }
 
         // Builds a full OS path from the given components.
@@ -425,7 +425,7 @@ public class FileSystem_h {
         public abstract void CreateOSPath(final String OSPath);
 
         public void CreateOSPath(final idStr OSPath) {
-            CreateOSPath(OSPath.toString());
+            CreateOSPath(OSPath.getData());
         }
 
         // Returns true if a file is in a pak file.
@@ -473,11 +473,11 @@ public class FileSystem_h {
         public abstract int ReadFile(final String relativePath, ByteBuffer[] buffer);
 
         public int ReadFile(idStr name, ByteBuffer[] buffer, long[] timeStamp) {
-            return ReadFile(name.toString(), buffer, timeStamp);
+            return ReadFile(name.getData(), buffer, timeStamp);
         }
 
         public int ReadFile(idStr name, ByteBuffer[] buffer) {
-            return ReadFile(name.toString(), buffer);
+            return ReadFile(name.getData(), buffer);
         }
 
         // Frees the memory allocated by ReadFile.
@@ -579,7 +579,7 @@ public class FileSystem_h {
         public abstract boolean FilenameCompare(final String s1, final String s2);
 
         public boolean FilenameCompare(final idStr s1, final idStr s2) {
-            return FilenameCompare(s1.toString(), s2.toString());
+            return FilenameCompare(s1.getData(), s2.getData());
         }
 
     };
@@ -737,7 +737,7 @@ public class FileSystem_h {
 
         @Override
         public boolean run(pureExclusion_s excl, int l, idStr name) {
-            if (l > excl.extLen && 0 == idStr.Icmp(name.toString().substring(l - excl.extLen), excl.ext)) {
+            if (l > excl.extLen && 0 == idStr.Icmp(name.getData().substring(l - excl.extLen), excl.ext)) {
                 return true;
             }
             return false;
@@ -754,7 +754,7 @@ public class FileSystem_h {
 
         @Override
         public boolean run(pureExclusion_s excl, int l, idStr name) {
-            if (l > excl.extLen && 0 == idStr.Icmp(name.toString().substring(l - excl.extLen), excl.ext) && 0 == name.IcmpPrefixPath(excl.name)) {
+            if (l > excl.extLen && 0 == idStr.Icmp(name.getData().substring(l - excl.extLen), excl.ext) && 0 == name.IcmpPrefixPath(excl.name)) {
                 return true;
             }
             return false;
@@ -1230,8 +1230,8 @@ public class FileSystem_h {
 
                 // see if there are any pk4 files in each directory
                 for (i = 0; i < dirs.Num(); i++) {
-                    idStr gamepath = new idStr(BuildOSPath(search[isearch], dirs.oGet(i).toString(), ""));
-                    ListOSFiles(gamepath.toString(), ".pk4", pk4s);
+                    idStr gamepath = new idStr(BuildOSPath(search[isearch], dirs.oGet(i).getData(), ""));
+                    ListOSFiles(gamepath.getData(), ".pk4", pk4s);
                     if (pk4s.Num() != 0) {
                         if (0 == list.mods.Find(dirs.oGet(i))) {
                             // D3 1.3 #31, only list d3xp if the pak is present
@@ -1250,8 +1250,8 @@ public class FileSystem_h {
 
                 for (isearch = 0; isearch < 4; isearch++) {
 
-                    idStr descfile = new idStr(BuildOSPath(search[isearch], list.mods.oGet(i).toString(), "description.txt"));
-                    FileChannel f = OpenOSFile(descfile.toString(), "r");
+                    idStr descfile = new idStr(BuildOSPath(search[isearch], list.mods.oGet(i).getData(), "description.txt"));
+                    FileChannel f = OpenOSFile(descfile.getData(), "r");
                     if (f != null) {
                         try {
                             if (f.read(desc) > 0) {
@@ -1259,7 +1259,7 @@ public class FileSystem_h {
                                 f.close();
                                 break;
                             } else {
-                                common.DWarning("Error reading %s", descfile.toString());
+                                common.DWarning("Error reading %s", descfile.getData());
                                 f.close();
                                 continue;
                             }
@@ -1466,7 +1466,7 @@ public class FileSystem_h {
             if (path.isEmpty()) {
                 path = fs_savepath.GetString();
             }
-            return BuildOSPath(path, gameFolder.toString(), relativePath);
+            return BuildOSPath(path, gameFolder.getData(), relativePath);
         }
 
         @Override
@@ -1495,7 +1495,7 @@ public class FileSystem_h {
                         newPath = new idStr(String.format("%s/%s/%s", base, testPath, fileName));
                         ReplaceSeparators(newPath);
                         common.DPrintf("Fixed up to %s\n", newPath);
-                        idStr.Copynz(OSPath, newPath.toString());
+                        idStr.Copynz(OSPath, newPath.getData());
                         return OSPath.toString();
                     }
                 }
@@ -1507,7 +1507,7 @@ public class FileSystem_h {
 //	sprintf( newPath, "%s/%s/%s", strBase.c_str(), game, relativePath );
             newPath = new idStr(String.format("%s/%s/%s", strBase, game, relativePath));
             ReplaceSeparators(newPath);
-            idStr.Copynz(OSPath, newPath.toString());
+            idStr.Copynz(OSPath, newPath.getData());
             return OSPath.toString();
         }
 
@@ -1592,7 +1592,7 @@ public class FileSystem_h {
                     pakFile = pak.hashTable[(int) hash];
                     do {
                         // case and separator insensitive comparisons
-                        if (FilenameCompare(pakFile.name.toString(), relativePath)) {
+                        if (FilenameCompare(pakFile.name.getData(), relativePath)) {
                             return true;
                         }
                         pakFile = (fileInPack_s) pakFile.next;
@@ -1655,7 +1655,7 @@ public class FileSystem_h {
                 }
                 search.pack.binary = BINARY_NO;
                 for (pakFile = search.pack.hashTable[confHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
-                    if (FilenameCompare(pakFile.name.toString(), BINARY_CONFIG)) {
+                    if (FilenameCompare(pakFile.name.getData(), BINARY_CONFIG)) {
                         search.pack.binary = BINARY_YES;
                         confFile = ReadFileFromZip(search.pack, pakFile, BINARY_CONFIG);
 //				buf = new char[ confFile.Length() + 1 ];
@@ -1664,7 +1664,7 @@ public class FileSystem_h {
                         lexConf = new idLexer(new String(buf.array()), confFile.Length(), confFile.GetFullPath());
                         while (lexConf.ReadToken(token)) {
                             if (token.IsNumeric()) {
-                                id = Integer.parseInt(token.toString());
+                                id = Integer.parseInt(token.getData());
                                 if (id < MAX_GAME_OS && 0 == gamePakForOS[id]) {
                                     if (fs_debug.GetBool()) {
                                         common.Printf("Adding game pak checksum for OS %d: %s 0x%x\n", id, confFile.GetFullPath(), search.pack.checksum);
@@ -1751,14 +1751,14 @@ public class FileSystem_h {
                         // this is an addon pack, and it's not on our current search list
                         // setting success to false meaning that a restart including this addon is required
                         if (fs_debug.GetBool()) {
-                            common.Printf("pak %s checksumed 0x%x is on addon list. Restart required.\n", pack.pakFilename.toString(), pack.checksum);
+                            common.Printf("pak %s checksumed 0x%x is on addon list. Restart required.\n", pack.pakFilename.getData(), pack.checksum);
                         }
                         success = false;
                     }
                     if (pack != null && pack.isNew) {
                         // that's a downloaded pack, we will need to restart
                         if (fs_debug.GetBool()) {
-                            common.Printf("pak %s checksumed 0x%x is a newly downloaded file. Restart required.\n", pack.pakFilename.toString(), pack.checksum);
+                            common.Printf("pak %s checksumed 0x%x is a newly downloaded file. Restart required.\n", pack.pakFilename.getData(), pack.checksum);
                         }
                         success = false;
                     }
@@ -1766,7 +1766,7 @@ public class FileSystem_h {
                         if (canPrepend) {
                             // we still have a chance
                             if (fs_debug.GetBool()) {
-                                common.Printf("prepend pak %s checksumed 0x%x at index %d\n", pack.pakFilename.toString(), pack.checksum, j);
+                                common.Printf("prepend pak %s checksumed 0x%x at index %d\n", pack.pakFilename.getData(), pack.checksum, j);
                             }
                             // NOTE: there is a light possibility this adds at the end of the list if UpdatePureServerChecksums didn't set anything
                             serverPaks.Insert(pack, j);
@@ -1777,9 +1777,9 @@ public class FileSystem_h {
                             if (fs_debug.GetBool()) {
                                 // verbose the situation
                                 if (serverPaks.Find(pack) != null) {
-                                    common.Printf("pak %s checksumed 0x%x is in the pure list at wrong index. Current index is %d, found at %d\n", pack.pakFilename.toString(), pack.checksum, j, serverPaks.FindIndex(pack));
+                                    common.Printf("pak %s checksumed 0x%x is in the pure list at wrong index. Current index is %d, found at %d\n", pack.pakFilename.getData(), pack.checksum, j, serverPaks.FindIndex(pack));
                                 } else {
-                                    common.Printf("pak %s checksumed 0x%x can't be added to pure list because of search order\n", pack.pakFilename.toString(), pack.checksum);
+                                    common.Printf("pak %s checksumed 0x%x can't be added to pure list because of search order\n", pack.pakFilename.getData(), pack.checksum);
                                 }
                             }
                             i++; // advance server checksums only
@@ -1799,7 +1799,7 @@ public class FileSystem_h {
             while (j < serverPaks.Num()) {
                 success = false; // just in case some extra pak files are referenced at the end of our local list
                 if (fs_debug.GetBool()) {
-                    common.Printf("pak %s checksumed 0x%x is an extra reference at the end of local pure list\n", serverPaks.oGet(j).pakFilename.toString(), serverPaks.oGet(j).checksum);
+                    common.Printf("pak %s checksumed 0x%x is an extra reference at the end of local pure list\n", serverPaks.oGet(j).pakFilename.getData(), serverPaks.oGet(j).checksum);
                 }
                 j++;
             }
@@ -1831,18 +1831,18 @@ public class FileSystem_h {
                 }
                 // we have a matching pak
                 if (fs_debug.GetBool()) {
-                    common.Printf("server's game code pak candidate is '%s' ( 0x%x )\n", pack.pakFilename.toString(), pack.checksum);
+                    common.Printf("server's game code pak candidate is '%s' ( 0x%x )\n", pack.pakFilename.getData(), pack.checksum);
                 }
                 // make sure there is a valid DLL for us
                 if (pack.hashTable[dllHash] != null) {
                     for (pakFile = pack.hashTable[dllHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
-                        if (FilenameCompare(pakFile.name.toString(), dllName[0])) {
+                        if (FilenameCompare(pakFile.name.getData(), dllName[0])) {
                             gamePakChecksum = _gamePakChecksum;        // this will be used to extract the DLL in pure mode FindDLL
                             return PURE_RESTART;
                         }
                     }
                 }
-                common.Warning("media is misconfigured. server claims pak '%s' ( 0x%x ) has media for us, but '%s' is not found\n", pack.pakFilename.toString(), pack.checksum, dllName[0]);
+                common.Warning("media is misconfigured. server claims pak '%s' ( 0x%x ) has media for us, but '%s' is not found\n", pack.pakFilename.getData(), pack.checksum, dllName[0]);
                 return PURE_NODLL;
             }
 
@@ -2092,11 +2092,11 @@ public class FileSystem_h {
             idStr OSPath;
 
             if (!fs_devpath.GetString().isEmpty()) {
-                OSPath = new idStr(BuildOSPath(fs_devpath.GetString(), gameFolder.toString(), relativePath));
+                OSPath = new idStr(BuildOSPath(fs_devpath.GetString(), gameFolder.getData(), relativePath));
                 remove(OSPath);
             }
 
-            OSPath = new idStr(BuildOSPath(fs_savepath.GetString(), gameFolder.toString(), relativePath));
+            OSPath = new idStr(BuildOSPath(fs_savepath.GetString(), gameFolder.getData(), relativePath));
             remove(OSPath);
 
             ClearDirCache();
@@ -2193,7 +2193,7 @@ public class FileSystem_h {
                         }
                     }
 
-                    netpath = new idStr(BuildOSPath(dir.path.toString(), dir.gamedir.toString(), relativePath));
+                    netpath = new idStr(BuildOSPath(dir.path.getData(), dir.gamedir.getData(), relativePath));
                     fp = OpenOSFileCorrectName(netpath, "rb");
                     if (NOT(fp)) {
                         continue;
@@ -2206,7 +2206,7 @@ public class FileSystem_h {
                     file.mode = (1 << etoi(FS_READ));
                     file.fileSize = (int) DirectFileLength(file.o);
                     if (fs_debug.GetInteger() != 0) {
-                        common.Printf("idFileSystem::OpenFileRead: %s (found in '%s/%s')\n", relativePath, dir.path.toString(), dir.gamedir.toString());
+                        common.Printf("idFileSystem::OpenFileRead: %s (found in '%s/%s')\n", relativePath, dir.path.getData(), dir.gamedir.getData());
                     }
 
                     if (!loadedFileFromDir && !FileAllowedFromDir(relativePath)) {
@@ -2222,7 +2222,7 @@ public class FileSystem_h {
 
                         idStr copypath;
                         idStr name = new idStr();
-                        copypath = new idStr(BuildOSPath(fs_savepath.GetString(), dir.gamedir.toString(), relativePath));
+                        copypath = new idStr(BuildOSPath(fs_savepath.GetString(), dir.gamedir.getData(), relativePath));
                         netpath.ExtractFileName(name);
                         copypath.StripFilename();
                         copypath.Append(PATHSEPERATOR_STR);
@@ -2236,31 +2236,31 @@ public class FileSystem_h {
                             case 1:
                                 // copy from cd path only
                                 if (isFromCDPath) {
-                                    CopyFile(netpath.toString(), copypath.toString());
+                                    CopyFile(netpath.getData(), copypath.getData());
                                 }
                                 break;
                             case 2:
                                 // from cd path + timestamps
                                 if (isFromCDPath) {
-                                    CopyFile(netpath.toString(), copypath.toString());
+                                    CopyFile(netpath.getData(), copypath.getData());
                                 } else if (isFromSavePath || isFromBasePath) {
                                     idStr sourcepath;
-                                    sourcepath = new idStr(BuildOSPath(fs_cdpath.GetString(), dir.gamedir.toString(), relativePath));
-                                    long t1 = Sys_FileTimeStamp(sourcepath.toString());
-                                    long t2 = Sys_FileTimeStamp(copypath.toString());
+                                    sourcepath = new idStr(BuildOSPath(fs_cdpath.GetString(), dir.gamedir.getData(), relativePath));
+                                    long t1 = Sys_FileTimeStamp(sourcepath.getData());
+                                    long t2 = Sys_FileTimeStamp(copypath.getData());
                                     if (t1 > t2) {
-                                        CopyFile(sourcepath.toString(), copypath.toString());
+                                        CopyFile(sourcepath.getData(), copypath.getData());
                                     }
                                 }
                                 break;
                             case 3:
                                 if (isFromCDPath || isFromBasePath) {
-                                    CopyFile(netpath.toString(), copypath.toString());
+                                    CopyFile(netpath.getData(), copypath.getData());
                                 }
                                 break;
                             case 4:
                                 if (isFromCDPath && !isFromBasePath) {
-                                    CopyFile(netpath.toString(), copypath.toString());
+                                    CopyFile(netpath.getData(), copypath.getData());
                                 }
                                 break;
                         }
@@ -2292,7 +2292,7 @@ public class FileSystem_h {
                             confHash = (int) HashFileName(BINARY_CONFIG);
                             pak.binary = BINARY_NO;
                             for (pakFile = search.pack.hashTable[confHash]; pakFile != null; pakFile = pakFile.next) {
-                                if (FilenameCompare(pakFile.name.toString(), BINARY_CONFIG)) {
+                                if (FilenameCompare(pakFile.name.getData(), BINARY_CONFIG)) {
                                     pak.binary = BINARY_YES;
                                     break;
                                 }
@@ -2305,7 +2305,7 @@ public class FileSystem_h {
 
                     for (pakFile = pak.hashTable[(int) hash]; pakFile != null; pakFile = pakFile.next) {
                         // case and separator insensitive comparisons
-                        if (FilenameCompare(pakFile.name.toString(), relativePath)) {
+                        if (FilenameCompare(pakFile.name.getData(), relativePath)) {
                             idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
 
                             if (foundInPak != null) {
@@ -2315,13 +2315,13 @@ public class FileSystem_h {
                             if (!pak.referenced && 0 == (searchFlags & FSFLAG_PURE_NOREF)) {
                                 // mark this pak referenced
                                 if (fs_debug.GetInteger() != 0) {
-                                    common.Printf("idFileSystem::OpenFileRead: %s . adding %s to referenced paks\n", relativePath, pak.pakFilename.toString());
+                                    common.Printf("idFileSystem::OpenFileRead: %s . adding %s to referenced paks\n", relativePath, pak.pakFilename.getData());
                                 }
                                 pak.referenced = true;
                             }
 
                             if (fs_debug.GetInteger() != 0) {
-                                common.Printf("idFileSystem::OpenFileRead: %s (found in '%s')\n", relativePath, pak.pakFilename.toString());
+                                common.Printf("idFileSystem::OpenFileRead: %s (found in '%s')\n", relativePath, pak.pakFilename.getData());
                             }
                             return file;
                         }
@@ -2335,14 +2335,14 @@ public class FileSystem_h {
 //			fileInPack_s	pakFile;
                     pak = search.pack;
                     for (pakFile = pak.hashTable[(int) hash]; pakFile != null; pakFile = pakFile.next) {
-                        if (FilenameCompare(pakFile.name.toString(), relativePath)) {
+                        if (FilenameCompare(pakFile.name.getData(), relativePath)) {
                             idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
                             if (foundInPak != null) {
                                 foundInPak[0] = pak;
                             }
                             // we don't toggle pure on paks found in addons - they can't be used without a reloadEngine anyway
                             if (fs_debug.GetInteger() != 0) {
-                                common.Printf("idFileSystem::OpenFileRead: %s (found in addon pk4 '%s')\n", relativePath, search.pack.pakFilename.toString());
+                                common.Printf("idFileSystem::OpenFileRead: %s (found in addon pk4 '%s')\n", relativePath, search.pack.pakFilename.getData());
                             }
                             return file;
                         }
@@ -2387,7 +2387,7 @@ public class FileSystem_h {
                 path = fs_savepath.GetString();
             }
 
-            OSpath = BuildOSPath(path, gameFolder.toString(), relativePath);
+            OSpath = BuildOSPath(path, gameFolder.getData(), relativePath);
 
             if (fs_debug.GetInteger() != 0) {
                 common.Printf("idFileSystem::OpenFileWrite: %s\n", OSpath);
@@ -2442,7 +2442,7 @@ public class FileSystem_h {
                 path = fs_savepath.GetString();
             }
 
-            OSpath = BuildOSPath(path, gameFolder.toString(), filename);
+            OSpath = BuildOSPath(path, gameFolder.getData(), filename);
             CreateOSPath(OSpath);
 
             if (fs_debug.GetInteger() != 0) {
@@ -2611,7 +2611,7 @@ public class FileSystem_h {
                 dllPath.oSet(Sys_EXEPath());
                 dllPath.StripFilename();
                 dllPath.AppendPath(dllName);
-                dllFile = OpenExplicitFileRead(dllPath.toString());
+                dllFile = OpenExplicitFileRead(dllPath.getData());
             }
             if (null == dllFile) {
                 if (0 == serverPaks.Num()) {
@@ -2620,7 +2620,7 @@ public class FileSystem_h {
                     if (dllFile != null) {
                         common.Printf("found DLL in pak file: %s\n", dllFile.GetFullPath());
                         dllPath = new idStr(RelativePathToOSPath(dllName, "fs_savepath"));
-                        CopyFile(dllFile, dllPath.toString());
+                        CopyFile(dllFile, dllPath.getData());
                         CloseFile(dllFile);
                         dllFile = OpenFileReadFlags(dllName, FSFLAG_SEARCH_DIRS);
                         if (null == dllFile) {
@@ -2656,11 +2656,11 @@ public class FileSystem_h {
                     } else {
                         // extract and copy
                         for (pakFile = pak.hashTable[(int) dllHash]; pakFile != null; pakFile = pakFile.next) {
-                            if (FilenameCompare(pakFile.name.toString(), dllName)) {
+                            if (FilenameCompare(pakFile.name.getData(), dllName)) {
                                 dllFile = ReadFileFromZip(pak, pakFile, dllName);
-                                common.Printf("found DLL in game pak file: %s\n", pak.pakFilename.toString());
+                                common.Printf("found DLL in game pak file: %s\n", pak.pakFilename.getData());
                                 dllPath = new idStr(RelativePathToOSPath(dllName, "fs_savepath"));
-                                CopyFile(dllFile, dllPath.toString());
+                                CopyFile(dllFile, dllPath.getData());
                                 CloseFile(dllFile);
                                 dllFile = OpenFileReadFlags(dllName, FSFLAG_SEARCH_DIRS);
                                 if (null == dllFile) {
@@ -2689,7 +2689,7 @@ public class FileSystem_h {
             } else {
                 dllPath = new idStr();
             }
-            idStr.snPrintf(_dllPath, MAX_OSPATH, dllPath.toString());
+            idStr.snPrintf(_dllPath, MAX_OSPATH, dllPath.getData());
         }
 
         @Override
@@ -2756,7 +2756,7 @@ public class FileSystem_h {
             for (i = 0; i < dirs.Num(); i++) {
                 if (dirs.oGet(i).Icmp("d3xp") == 0) {
 
-                    gamepath = BuildOSPath(fs_savepath.GetString(), dirs.oGet(i).toString(), "default.cfg");
+                    gamepath = BuildOSPath(fs_savepath.GetString(), dirs.oGet(i).getData(), "default.cfg");
                     idFile cfg = OpenExplicitFileRead(gamepath);
                     if (cfg != null) {
                         CloseFile(cfg);
@@ -2847,8 +2847,8 @@ public class FileSystem_h {
             // ignore pak*.pk4 for download. those are reserved to distribution and cannot be downloaded
             name = pak.pakFilename;
             name.StripPath();
-            if (name.toString().startsWith("pak")) {
-                common.DPrintf("%s is not a donwloadable pak\n", pak.pakFilename.toString());
+            if (name.getData().startsWith("pak")) {
+                common.DPrintf("%s is not a donwloadable pak\n", pak.pakFilename.getData());
                 return 0;
             }
             // check the binary
@@ -2856,7 +2856,7 @@ public class FileSystem_h {
             assert (pak.binary != BINARY_UNKNOWN);
             pakBinary = (pak.binary == BINARY_YES);
             if (isBinary != pakBinary) {
-                common.DPrintf("%s binary flag mismatch\n", pak.pakFilename.toString());
+                common.DPrintf("%s binary flag mismatch\n", pak.pakFilename.getData());
                 return 0;
             }
 
@@ -2867,13 +2867,13 @@ public class FileSystem_h {
             testList.Append(fs_cdpath.GetString());
             for (i = 0; i < testList.Num(); i++) {
                 if (testList.oGet(i).Length() != 0
-                        && NOT(testList.oGet(i).Icmpn(pak.pakFilename.toString(), testList.oGet(i).Length()))) {
-                    relativePath.oSet(pak.pakFilename.toString().substring(testList.oGet(i).Length() + 1));
+                        && NOT(testList.oGet(i).Icmpn(pak.pakFilename.getData(), testList.oGet(i).Length()))) {
+                    relativePath.oSet(pak.pakFilename.getData().substring(testList.oGet(i).Length() + 1));
                     break;
                 }
             }
             if (i == testList.Num()) {
-                common.Warning("idFileSystem::ValidateDownloadPak: failed to extract relative path for %s", pak.pakFilename.toString());
+                common.Warning("idFileSystem::ValidateDownloadPak: failed to extract relative path for %s", pak.pakFilename.getData());
                 return 0;
             }
             idStr.Copynz(path, relativePath.c_str(), MAX_STRING_CHARS);
@@ -2914,7 +2914,7 @@ public class FileSystem_h {
             searchpath_s search, last;
 
             fullpath.AppendPath(path);
-            pak = LoadZipFile(fullpath.toString());
+            pak = LoadZipFile(fullpath.getData());
             if (null == pak) {
                 common.Warning("AddZipFile %s failed\n", path);
                 return 0;
@@ -2930,7 +2930,7 @@ public class FileSystem_h {
                 last = (searchpath_s) last.next;
             }
             last.next = search;
-            common.Printf("Appended pk4 %s with checksum 0x%x\n", pak.pakFilename.toString() + pak.checksum);
+            common.Printf("Appended pk4 %s with checksum 0x%x\n", pak.pakFilename.getData() + pak.checksum);
             return pak.checksum;
         }
 
@@ -3042,7 +3042,7 @@ public class FileSystem_h {
             mapname.StripPath();
             mapname.StripFileExtension();
 
-            idStr.snPrintf(buf, len, "guis/assets/splash/%s.tga", mapname.toString());
+            idStr.snPrintf(buf, len, "guis/assets/splash/%s.tga", mapname.getData());
             if (ReadFile(buf[0], null, null) == -1) {
                 // try to extract from an addon
                 file = OpenFileReadFlags(buf[0], FSFLAG_SEARCH_ADDONS);
@@ -3052,7 +3052,7 @@ public class FileSystem_h {
                     ByteBuffer data = ByteBuffer.allocate(dlen);
                     file.Read(data, dlen);
                     CloseFile(file);
-                    idStr.snPrintf(buf, len, "guis/assets/splash/addon/%s.tga", mapname.toString());
+                    idStr.snPrintf(buf, len, "guis/assets/splash/addon/%s.tga", mapname.getData());
                     WriteFile(buf[0], data, dlen);
 //			delete[] data;
                 } else {
@@ -3109,10 +3109,10 @@ public class FileSystem_h {
                 relativePath.BackSlashesToSlashes();
                 relativePath.StripTrailing('/');
 
-                common.Printf("Listing of %s/*%s\n", relativePath.toString(), extension.toString());
+                common.Printf("Listing of %s/*%s\n", relativePath.getData(), extension.getData());
                 common.Printf("---------------\n");
 
-                fileList = fileSystemLocal.ListFiles(relativePath.toString(), extension.toString());
+                fileList = fileSystemLocal.ListFiles(relativePath.getData(), extension.getData());
 
                 for (i = 0; i < fileList.GetNumFiles(); i++) {
                     common.Printf("%s\n", fileList.GetFile(i));
@@ -3159,10 +3159,10 @@ public class FileSystem_h {
                 relativePath.BackSlashesToSlashes();
                 relativePath.StripTrailing('/');
 
-                common.Printf("Listing of %s/*%s /s\n", relativePath.toString(), extension.toString());
+                common.Printf("Listing of %s/*%s /s\n", relativePath.getData(), extension.getData());
                 common.Printf("---------------\n");
 
-                fileList = fileSystemLocal.ListFilesTree(relativePath.toString(), extension.toString());
+                fileList = fileSystemLocal.ListFilesTree(relativePath.getData(), extension.getData());
 
                 for (i = 0; i < fileList.GetNumFiles(); i++) {
                     common.Printf("%s\n", fileList.GetFile(i));
@@ -3304,9 +3304,9 @@ public class FileSystem_h {
                     if (src.IsLoaded()) {
                         idToken token = new idToken();
                         while (src.ReadToken(token)) {
-                            common.Printf("%s\n", token.toString());
+                            common.Printf("%s\n", token.getData());
                             session.UpdateScreen();
-                            idFile f = fileSystemLocal.OpenFileRead(token.toString());
+                            idFile f = fileSystemLocal.OpenFileRead(token.getData());
                             if (f != null) {
                                 fileSystemLocal.CloseFile(f);
                             }
@@ -3597,14 +3597,14 @@ public class FileSystem_h {
                 fpath = new idStr(fileName);
                 fpath.StripFilename();
                 fpath.StripTrailing(PATHSEPERATOR_CHAR);
-                if (ListOSFiles(fpath.toString(), null, list) == -1) {
+                if (ListOSFiles(fpath.getData(), null, list) == -1) {
                     return null;
                 }
 
                 for (i = 0; i < list.Num(); i++) {
-                    entry = new idStr(fpath.toString() + PATHSEPERATOR_CHAR + list.oGet(i).toString());
+                    entry = new idStr(fpath.getData() + PATHSEPERATOR_CHAR + list.oGet(i).getData());
                     if (0 == entry.Icmp(fileName)) {
-                        fp = Paths.get(entry.toString());//fp = fopen(entry, mode);
+                        fp = Paths.get(entry.getData());//fp = fopen(entry, mode);
                         if (Files.exists(fp, NOFOLLOW_LINKS)) {
                             if (caseSensitiveName != null) {
                                 caseSensitiveName.oSet(entry);
@@ -3638,7 +3638,7 @@ public class FileSystem_h {
 
         private FileChannel OpenOSFileCorrectName(idStr path, final String mode) {
             idStr caseName = new idStr();
-            FileChannel f = OpenOSFile(path.toString(), mode, caseName);
+            FileChannel f = OpenOSFile(path.getData(), mode, caseName);
             if (f != null) {
                 path.StripFilename();
                 path.Append(PATHSEPERATOR_STR);
@@ -3768,7 +3768,7 @@ public class FileSystem_h {
             for (search = searchPaths; search != null; search = search.next) {
                 if (search.dir != null) {
                     if (gamedir != null && !gamedir.isEmpty()) {
-                        if (!search.dir.gamedir.toString().equals(gamedir)) {
+                        if (!search.dir.gamedir.getData().equals(gamedir)) {
                             continue;
                         }
                     }
@@ -3776,12 +3776,12 @@ public class FileSystem_h {
                     idStrList sysFiles = new idStrList();
                     idStr netpath;
 
-                    netpath = new idStr(BuildOSPath(search.dir.path.toString(), search.dir.gamedir.toString(), relativePath));
+                    netpath = new idStr(BuildOSPath(search.dir.path.getData(), search.dir.gamedir.getData(), relativePath));
 
                     for (i = 0; i < extensions.Num(); i++) {
 
                         // scan for files in the filesystem
-                        ListOSFiles(netpath.toString(), extensions.oGet(i).toString(), sysFiles);
+                        ListOSFiles(netpath.getData(), extensions.oGet(i).getData(), sysFiles);
 
                         // if we are searching for directories, remove . and ..
                         if (extensions.oGet(i).equals("/")) {// && extensions.oGet(i).oGet(1) == 0) {//TODO:==0?????
@@ -3795,9 +3795,9 @@ public class FileSystem_h {
                                 work = new idStr(relativePath);
                                 work.Append("/");
                                 work.Append(sysFiles.oGet(j));
-                                AddUnique(work.toString(), list, hashIndex);
+                                AddUnique(work.getData(), list, hashIndex);
                             } else {
-                                AddUnique(sysFiles.oGet(j).toString(), list, hashIndex);
+                                AddUnique(sysFiles.oGet(j).getData(), list, hashIndex);
                             }
                         }
                     }
@@ -3823,7 +3823,7 @@ public class FileSystem_h {
                             continue;
                         }
 
-                        name = buildBuffer[i].name.toString();
+                        name = buildBuffer[i].name.getData();
 
                         // check for a path match without the trailing '/'
                         if (pathLength > 0 && idStr.Icmpn(name, relativePath, pathLength - 1) != 0) {
@@ -3861,11 +3861,11 @@ public class FileSystem_h {
                             work.Append("/");
                             work.Append(name.substring(pathLength));
                             work.StripTrailing('/');
-                            AddUnique(work.toString(), list, hashIndex);
+                            AddUnique(work.getData(), list, hashIndex);
                         } else {
                             work = new idStr(name.substring(pathLength));
                             work.StripTrailing('/');
-                            AddUnique(work.toString(), list, hashIndex);
+                            AddUnique(work.getData(), list, hashIndex);
                         }
                     }
                 }
@@ -3889,7 +3889,7 @@ public class FileSystem_h {
                 if (folders.oGet(i).Icmp(relativePath) == 0) {
                     continue;
                 }
-                GetFileListTree(folders.oGet(i).toString(), extensions, list, hashIndex, gamedir);
+                GetFileListTree(folders.oGet(i).getData(), extensions, list, hashIndex, gamedir);
             }
 
             // list files in the current directory
@@ -3941,15 +3941,15 @@ public class FileSystem_h {
             pakfile = new idStr(BuildOSPath(path, dir, ""));
 //            pakfile.oSet(pakfile.Length() - 1, (char) 0);	// strip the trailing slash
 
-            ListOSFiles(pakfile.toString(), ".pk4", pakfiles);
+            ListOSFiles(pakfile.getData(), ".pk4", pakfiles);
 
             // sort them so that later alphabetic matches override
             // earlier ones. This makes pak1.pk4 override pak0.pk4
             pakfiles.Sort();
 
             for (i = 0; i < pakfiles.Num(); i++) {
-                pakfile = new idStr(BuildOSPath(path, dir, pakfiles.oGet(i).toString()));
-                pak = LoadZipFile(pakfile.toString());
+                pakfile = new idStr(BuildOSPath(path, dir, pakfiles.oGet(i).getData()));
+                pak = LoadZipFile(pakfile.getData());
                 if (null == pak) {
                     continue;
                 }
@@ -3959,7 +3959,7 @@ public class FileSystem_h {
                 search.pack = pak;
                 search.next = searchPaths.next;
                 searchPaths.next = search;
-                common.Printf("Loaded pk4 %s with checksum 0x%x\n", pakfile.toString(), pak.checksum);
+                common.Printf("Loaded pk4 %s with checksum 0x%x\n", pakfile.getData(), pak.checksum);
             }
         }
 
@@ -4055,7 +4055,7 @@ public class FileSystem_h {
                 assert (null == search.dir);
                 pak = search.pack;
                 if (pak.addon_search) {
-                    common.Printf("Addon pk4 %s with checksum 0x%x is on the search list\n", pak.pakFilename.toString(), pak.checksum);
+                    common.Printf("Addon pk4 %s with checksum 0x%x is on the search list\n", pak.pakFilename.getData(), pak.checksum);
                     search = (searchpath_s) search.next;
                 } else {
                     // remove from search list, put in addons list
@@ -4063,7 +4063,7 @@ public class FileSystem_h {
                     search = (searchpath_s) search.next;
                     paksearch.next = addonPaks;
                     addonPaks = paksearch;
-                    common.Printf("Addon pk4 %s with checksum 0x%x is on addon list\n", pak.pakFilename.toString(), pak.checksum);
+                    common.Printf("Addon pk4 %s with checksum 0x%x is on addon list\n", pak.pakFilename.getData(), pak.checksum);
                 }
             }
 
@@ -4101,12 +4101,12 @@ public class FileSystem_h {
                                     for (i = 0; i < serverPaks.Num(); i++) {
                                         checks.Append(va("%p ", serverPaks.oGet(i)));
                                     }
-                                    common.Printf("%d pure paks - %s \n", serverPaks.Num(), checks.toString());
+                                    common.Printf("%d pure paks - %s \n", serverPaks.Num(), checks.getData());
                                     checks.Clear();
                                     for (i = 0; i < restartChecksums.Num(); i++) {
                                         checks.Append(va("%x ", restartChecksums.oGet(i)));
                                     }
-                                    common.Printf("%d paks left - %s\n", restartChecksums.Num(), checks.toString());
+                                    common.Printf("%d paks left - %s\n", restartChecksums.Num(), checks.getData());
                                 }
                                 common.FatalError("Failed to restart with pure mode restrictions for server connect");
                             }
@@ -4178,7 +4178,7 @@ public class FileSystem_h {
                     if (search.pack != null) {
                         // a tiny attempt to keep the checksum from being scannable from the exe
                         if ((search.pack.checksum ^ 0x84268436) != (DEMO_PAK_CHECKSUM ^ 0x84268436)) {
-                            common.FatalError("Corrupted %s: 0x%x", search.pack.pakFilename.toString(), search.pack.checksum);
+                            common.FatalError("Corrupted %s: 0x%x", search.pack.pakFilename.getData(), search.pack.checksum);
                         }
                     }
                 }
@@ -4263,11 +4263,11 @@ public class FileSystem_h {
                 if (search.pack != null && search.pack.hashTable[hash] != null) {
                     pak = search.pack;
                     for (pakFile = pak.hashTable[hash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
-                        if (FilenameCompare(pakFile.name.toString(), relativePath)) {
+                        if (FilenameCompare(pakFile.name.getData(), relativePath)) {
                             idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
                             if (findChecksum[0] == GetFileChecksum(file)) {
                                 if (fs_debug.GetBool()) {
-                                    common.Printf("found '%s' with checksum 0x%x in pak '%s'\n", relativePath, findChecksum[0], pak.pakFilename.toString());
+                                    common.Printf("found '%s' with checksum 0x%x in pak '%s'\n", relativePath, findChecksum[0], pak.pakFilename.getData());
                                 }
                                 if (bReference) {
                                     pak.referenced = true;
@@ -4384,7 +4384,7 @@ public class FileSystem_h {
                 pack.addon = false;
                 confHash = (int) HashFileName(ADDON_CONFIG);
                 for (pakFile = pack.hashTable[confHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
-                    if (FilenameCompare(pakFile.name.toString(), ADDON_CONFIG)) {
+                    if (FilenameCompare(pakFile.name.getData(), ADDON_CONFIG)) {
                         pack.addon = true;
                         idFile_InZip file = ReadFileFromZip(pack, pakFile, ADDON_CONFIG);
                         // may be just an empty file if you don't bother about the mapDef
@@ -4421,9 +4421,9 @@ public class FileSystem_h {
             idFile_InZip file = new idFile_InZip();
 
             // open a new file on the pakfile
-            fp = new File(pak.pakFilename.toString());//TODO: check this shit
+            fp = new File(pak.pakFilename.getData());//TODO: check this shit
             if (!fp.exists()) {
-                common.FatalError("Couldn't reopen %s", pak.pakFilename.toString());
+                common.FatalError("Couldn't reopen %s", pak.pakFilename.getData());
             }
             file.z = pakFile.entry;
             file.name.oSet(relativePath);
@@ -4474,7 +4474,7 @@ public class FileSystem_h {
                         }
                     }
                     if (abrt) {
-                        common.DPrintf("pak '%s' candidate for pure: '%s'\n", pak.pakFilename.toString(), file.name.toString());
+                        common.DPrintf("pak '%s' candidate for pure: '%s'\n", pak.pakFilename.getData(), file.name.getData());
                         break;
                     }
                     file = /*pak.buildBuffer =*/ (fileInPack_s) file.next;//TODO:check this assignment.
@@ -4526,15 +4526,15 @@ public class FileSystem_h {
                     break;
                 }
                 if (token.type != TT_STRING) {
-                    src.Warning("Expected quoted string, but found '%s'", token.toString());
+                    src.Warning("Expected quoted string, but found '%s'", token.getData());
 //			delete info;
                     return null;
                 }
                 int checksum;
 
 //		if ( sscanf( token.c_str(), "0x%x", checksum ) != 1 && sscanf( token.c_str(), "%x", checksum ) != 1 ) {
-                if ((checksum = Integer.parseInt(String.format("%x", token.toString()))) != 0) {
-                    src.Warning("Could not parse checksum '%s'", token.toString());
+                if ((checksum = Integer.parseInt(String.format("%x", token.getData()))) != 0) {
+                    src.Warning("Could not parse checksum '%s'", token.getData());
 //			delete info;
                     return null;
                 }
@@ -4552,7 +4552,7 @@ public class FileSystem_h {
                     return null;
                 }
                 idDict dict = new idDict();
-                dict.Set("path", token.toString());
+                dict.Set("path", token.getData());
                 if (!src.ReadToken(token)) {
                     src.Warning("Expected {");
                     info.mapDecls.DeleteContents(true);
@@ -4568,7 +4568,7 @@ public class FileSystem_h {
                         break;
                     }
                     if (token.type != TT_STRING) {
-                        src.Warning("Expected quoted string, but found '%s'", token.toString());
+                        src.Warning("Expected quoted string, but found '%s'", token.getData());
                         info.mapDecls.DeleteContents(true);
 //				delete dict;
 //				delete info;
@@ -4583,8 +4583,8 @@ public class FileSystem_h {
                         return null;
                     }
 
-                    if (dict.FindKey(token.toString()) != null) {
-                        src.Warning("'%s' already defined", token.toString());
+                    if (dict.FindKey(token.getData()) != null) {
+                        src.Warning("'%s' already defined", token.getData());
                     }
                     dict.Set(token, token2);
                 }
@@ -4611,11 +4611,11 @@ public class FileSystem_h {
                             addonChecksums.RemoveIndex(addon_index);
                         }
                         deppak.addon_search = true;
-                        common.Printf("Addon pk4 %s 0x%x depends on pak %s 0x%x, will be searched\n", pak.pakFilename.toString(), pak.checksum, deppak.pakFilename.toString(), deppak.checksum);
+                        common.Printf("Addon pk4 %s 0x%x depends on pak %s 0x%x, will be searched\n", pak.pakFilename.getData(), pak.checksum, deppak.pakFilename.getData(), deppak.checksum);
                         FollowAddonDependencies(deppak);
                     }
                 } else {
-                    common.Printf("Addon pk4 %s 0x%x depends on unknown pak 0x%x\n", pak.pakFilename.toString(), pak.checksum, pak.addon_info.depends.oGet(i));
+                    common.Printf("Addon pk4 %s 0x%x depends on unknown pak 0x%x\n", pak.pakFilename.getData(), pak.checksum, pak.addon_info.depends.oGet(i));
                 }
             }
         }

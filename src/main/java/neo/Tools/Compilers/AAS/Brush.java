@@ -1470,7 +1470,7 @@ public class Brush {
         //
 
         idBrushMap(final idStr fileName, final idStr ext) {
-            this(fileName.toString(), ext.toString());
+            this(fileName.getData(), ext.getData());
         }
 
         public idBrushMap(final String fileName, final String ext) {
@@ -1483,7 +1483,7 @@ public class Brush {
 
             common.Printf("writing %s...\n", qpath);
 
-            fp = fileSystem.OpenFileWrite(qpath.toString(), "fs_devpath");
+            fp = fileSystem.OpenFileWrite(qpath.getData(), "fs_devpath");
             if (NOT(fp)) {
                 common.Error("Couldn't open %s\n", qpath);
                 return;

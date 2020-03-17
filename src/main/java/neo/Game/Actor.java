@@ -291,7 +291,7 @@ public class Actor {
                 animBlendFrames = blendFrames;
                 lastAnimBlendFrames = blendFrames;
                 if (state.Length() != 0) {
-                    SetState(state.toString(), blendFrames);
+                    SetState(state.getData(), blendFrames);
                 }
             }
         }
@@ -898,12 +898,12 @@ public class Actor {
 
             savefile.ReadString(stateName);
             if (stateName.Length() > 0) {
-                state = GetScriptFunction(stateName.toString());
+                state = GetScriptFunction(stateName.getData());
             }
 
             savefile.ReadString(stateName);
             if (stateName.Length() > 0) {
-                idealState = GetScriptFunction(stateName.toString());
+                idealState = GetScriptFunction(stateName.getData());
             }
         }
 
@@ -1145,7 +1145,7 @@ public class Actor {
                 scriptThread = new idThread();
                 scriptThread.ManualDelete();
                 scriptThread.ManualControl();
-                scriptThread.SetThreadName(name.toString());
+                scriptThread.SetThreadName(name.getData());
             } else {
                 scriptThread.EndThread();
             }
@@ -1476,7 +1476,7 @@ public class Actor {
                 return "";
             }
 
-            return damageGroups.oGet(location).toString();
+            return damageGroups.oGet(location).getData();
         }
 
         public void ClearPain() {
@@ -1525,7 +1525,7 @@ public class Actor {
             painAnim.oSet("");
             if (animPrefix.Length() != 0) {
                 if (isNotNullOrEmpty(damageGroup) && !damageGroup.equals("legs")) {
-                    painAnim.oSet(String.format("%s_pain_%s", animPrefix.toString(), damageGroup));
+                    painAnim.oSet(String.format("%s_pain_%s", animPrefix.getData(), damageGroup));
                     if (!animator.HasAnim(painAnim)) {
                         painAnim.oSet(String.format("pain_%s", damageGroup));
                         if (!animator.HasAnim(painAnim)) {
@@ -1535,7 +1535,7 @@ public class Actor {
                 }
 
                 if (0 == painAnim.Length()) {
-                    painAnim.oSet(String.format("%s_pain", animPrefix.toString()));
+                    painAnim.oSet(String.format("%s_pain", animPrefix.getData()));
                     if (!animator.HasAnim(painAnim)) {
                         painAnim.oSet("");
                     }
@@ -1954,7 +1954,7 @@ public class Actor {
 
         public String WaitState() {
             if (waitState.Length() != 0) {
-                return waitState.toString();
+                return waitState.getData();
             } else {
                 return null;
             }
@@ -2302,9 +2302,9 @@ public class Actor {
             anim = GetAnim(channel, animName);
             if (0 == anim) {
                 if ((channel == ANIMCHANNEL_HEAD) && head.GetEntity() != null) {
-                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name.toString(), spawnArgs.GetString("def_head", ""));
+                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name.getData(), spawnArgs.GetString("def_head", ""));
                 } else {
-                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name.toString(), GetEntityDefName());
+                    gameLocal.DPrintf("missing '%s' animation on '%s' (%s)\n", animName, name.getData(), GetEntityDefName());
                 }
                 idThread.ReturnInt(0);
                 return;

@@ -199,7 +199,7 @@ public class snd_shader {
         }
 
         public String GetDescription() {
-            return desc.toString();
+            return desc.getData();
         }
 
         // so the editor can draw correct default sound spheres
@@ -238,11 +238,11 @@ public class snd_shader {
         public String GetSound(int index) {
             if (index >= 0) {
                 if (index < numLeadins) {
-                    return leadins[index].name.toString();
+                    return leadins[index].name.getData();
                 }
                 index -= numLeadins;
                 if (index < numEntries) {
-                    return entries[index].name.toString();
+                    return entries[index].name.getData();
                 }
             }
             return "";
@@ -439,8 +439,8 @@ public class snd_shader {
                             idStr work = new idStr(token);
                             work.ToLower();
                             work.StripLeading("sound/vo/");
-                            work.oSet(va("sound/vo/%s/%s", lang.toString(), work.toString()));
-                            if (fileSystem.ReadFile(work.toString(), null, null) > 0) {
+                            work.oSet(va("sound/vo/%s/%s", lang.getData(), work.getData()));
+                            if (fileSystem.ReadFile(work.getData(), null, null) > 0) {
                                 token.oSet(work);
                             } else {
                                 // also try to find it with the .ogg extension

@@ -89,7 +89,7 @@ public class GameBearShootWindow {
 
         public void WriteToSaveGame(idFile savefile) {
 
-            game.WriteSaveGameString(materialName.toString(), savefile);
+            game.WriteSaveGameString(materialName.getData(), savefile);
 
             savefile.WriteFloat(width);
             savefile.WriteFloat(height);
@@ -109,7 +109,7 @@ public class GameBearShootWindow {
             game = _game;
 
             game.ReadSaveGameString(materialName, savefile);
-            SetMaterial(materialName.toString());
+            SetMaterial(materialName.getData());
 
             width = savefile.ReadFloat();
             height = savefile.ReadFloat();

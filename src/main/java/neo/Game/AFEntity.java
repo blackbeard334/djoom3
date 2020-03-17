@@ -1294,7 +1294,7 @@ public class AFEntity {
                 jointName = spawnArgs.GetString("head_joint");
                 joint = animator.GetJointHandle(jointName);
                 if (joint == INVALID_JOINT) {
-                    gameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, name.toString());
+                    gameLocal.Error("Joint '%s' not found for 'head_joint' on '%s'", jointName, name.getData());
                 }
 
                 headEnt = (idAFAttachment) gameLocal.SpawnEntityType(idAFAttachment.class, null);

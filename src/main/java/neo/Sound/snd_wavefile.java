@@ -111,8 +111,8 @@ public class snd_wavefile {
 
             // note: used to only check for .wav when making a build
             name.SetFileExtension(".ogg");
-            if (fileSystem.ReadFile(name.toString(), null, null) != -1) {
-                return OpenOGG(name.toString(), pwfx);
+            if (fileSystem.ReadFile(name.getData(), null, null) != -1) {
+                return OpenOGG(name.getData(), pwfx);
             }
 
 //	memset( &mpwfx, 0, sizeof( waveformatextensible_t ) );

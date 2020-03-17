@@ -269,7 +269,7 @@ public class MapFile {
 
                 // we had an implicit 'textures/' in the old format...
                 if (version < 2.0f) {
-                    side.material = new idStr("textures/" + token.toString());
+                    side.material = new idStr("textures/" + token.getData());
                 } else {
                     side.material = new idStr(token);
                 }
@@ -339,7 +339,7 @@ public class MapFile {
                 }
 
                 // we have an implicit 'textures/' in the old format
-                side.material = new idStr("textures/" + token.toString());
+                side.material = new idStr("textures/" + token.getData());
 
                 // read the texture shift, rotate and scale
                 shift[0] = src.ParseInt();
@@ -419,7 +419,7 @@ public class MapFile {
                 for (j = 0; j < 4; j++) {
                     crc ^= FloatCRC(mapSide.GetPlane().oGet(j));
                 }
-                crc ^= StringCRC(mapSide.GetMaterial().toString());
+                crc ^= StringCRC(mapSide.GetMaterial().getData());
             }
 
             return (int) crc;
@@ -570,7 +570,7 @@ public class MapFile {
                 if (token.type == TT_STRING) {
                     idStr key = token;
                     src.ExpectTokenType(TT_STRING, 0, token);
-                    patch.epairs.Set(key.toString(), token.toString());
+                    patch.epairs.Set(key.getData(), token.getData());
                 }
             }
 
@@ -653,7 +653,7 @@ public class MapFile {
                 }
             }
 
-            crc ^= StringCRC(GetMaterial().toString());
+            crc ^= StringCRC(GetMaterial().getData());
 
             return crc;
         }
@@ -796,7 +796,7 @@ public class MapFile {
                         // scanf into doubles, then assign, so it is idVec size independent
                         v1 = v2 = v3 = 0;
 //                        sscanf(value, "%lf %lf %lf",  & v1,  & v2,  & v3);
-                        String[] values = value.toString().split(" ");
+                        String[] values = value.getData().split(" ");
                         origin.x = v1 = Float.parseFloat(values[0]);
                         origin.y = v2 = Float.parseFloat(values[1]);
                         origin.z = v3 = Float.parseFloat(values[2]);
@@ -924,13 +924,13 @@ public class MapFile {
             if (!ignoreRegion) {
                 // try loading a .reg file first
                 fullName.SetFileExtension("reg");
-                src.LoadFile(fullName.toString(), osPath);
+                src.LoadFile(fullName.getData(), osPath);
             }
 
             if (!src.IsLoaded()) {
                 // now try a .map file
                 fullName.SetFileExtension("map");
-                src.LoadFile(fullName.toString(), osPath);
+                src.LoadFile(fullName.getData(), osPath);
                 if (!src.IsLoaded()) {
                     // didn't get anything at all
                     return false;
@@ -962,7 +962,7 @@ public class MapFile {
                 // "removeEntities" "classname" can be set in the worldspawn to remove all entities with the given classname
                 idKeyValue removeEntities = entities.oGet(0).epairs.MatchPrefix("removeEntities", null);
                 while (removeEntities != null) {
-                    RemoveEntities(removeEntities.GetValue().toString());
+                    RemoveEntities(removeEntities.GetValue().getData());
                     removeEntities = entities.oGet(0).epairs.MatchPrefix("removeEntities", removeEntities);
                 }
 
@@ -977,7 +977,7 @@ public class MapFile {
                                 case TYPE_BRUSH: {
                                     idMapBrush mapBrush = (idMapBrush) mapPrimitive;
                                     for (k = 0; k < mapBrush.GetNumSides(); k++) {
-                                        mapBrush.GetSide(k).SetMaterial(material.toString());
+                                        mapBrush.GetSide(k).SetMaterial(material.getData());
                                     }
                                     break;
                                 }
@@ -1025,7 +1025,7 @@ public class MapFile {
         }
 
         public boolean Parse(final idStr filename) throws idException {
-            return Parse(filename.toString());
+            return Parse(filename.getData());
         }
 
         public boolean Write(final String fileName, final String ext) throws idException {
@@ -1043,9 +1043,9 @@ public class MapFile {
             idLib.common.Printf("writing %s...\n", qpath);
 
             if (fromBasePath) {
-                fp = idLib.fileSystem.OpenFileWrite(qpath.toString(), "fs_devpath");
+                fp = idLib.fileSystem.OpenFileWrite(qpath.getData(), "fs_devpath");
             } else {
-                fp = idLib.fileSystem.OpenExplicitFileWrite(qpath.toString());
+                fp = idLib.fileSystem.OpenExplicitFileWrite(qpath.getData());
             }
 
             if (null == fp) {
@@ -1076,7 +1076,7 @@ public class MapFile {
 
         // get the name without file extension
         public String GetName() {
-            return name.toString();
+            return name.getData();
         }
 
         public idStr GetNameStr() {
@@ -1099,7 +1099,7 @@ public class MapFile {
             if (name.Length() != 0) {
 //		ID_TIME_T time = (ID_TIME_T)-1;
                 long[] time = {Long.MAX_VALUE};
-                if (idLib.fileSystem.ReadFile(name.toString(), null, time) > 0) {
+                if (idLib.fileSystem.ReadFile(name.getData(), null, time) > 0) {
                     return (time[0] > fileTime);
                 }
             }
@@ -1123,7 +1123,7 @@ public class MapFile {
         }
 
         public idMapEntity FindEntity(final idStr name) throws idException {
-            return this.FindEntity(name.toString());
+            return this.FindEntity(name.getData());
         }
 
         public void RemoveEntity(idMapEntity mapEnt) {
