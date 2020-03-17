@@ -35,7 +35,7 @@ public class StrList {
          ================
          */
         @Override
-        public void Sort(cmp_t compare) {
+        public void Sort(cmp_t<idStr> compare) {
             int i;
 
             if (0 == Num()) {
@@ -43,11 +43,11 @@ public class StrList {
             }
 
             idList<idStr> other = new idList<>();
-            idList<idStrPtr> pointerList = new idList<>();
+            idList<idStr> pointerList = new idList<>();
 
             pointerList.SetNum(Num());
             for (i = 0; i < Num(); i++) {
-                pointerList.oSetType(i, this.oGet(i));
+                pointerList.oSet(i, this.oGet(i));
             }
 
             pointerList.Sort();
@@ -131,11 +131,11 @@ public class StrList {
             }
 
             idList<idStr> other = new idList<>();
-            idList<idStrPtr> pointerList = new idList<>();
+            idList<idStr> pointerList = new idList<>();
 
             pointerList.SetNum(list.Num());
             for (i = 0; i < list.Num(); i++) {
-                pointerList.oSetType(i, list.oGet(i));
+                pointerList.oSet(i, list.oGet(i));
             }
 
             pointerList.Sort(new idListSortComparePaths());
@@ -185,11 +185,11 @@ public class StrList {
      Compares two pointers to strings. Used to sort a list of string pointers alphabetically in idList<idStr>::Sort.
      ================
      */
-    static class idListSortComparePaths implements cmp_t<idStr> {
+    private static class idListSortComparePaths implements cmp_t<idStr> {
 
         @Override
         public int compare(idStr a, idStr b) {
-            return a.IcmpPath(b.toString());
+            return a.IcmpPath(b.getData());
         }
     }
 
