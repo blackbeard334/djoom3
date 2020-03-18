@@ -1916,6 +1916,9 @@ public class draw_common {
 //            case BE_R200:
 //                RB_R200_DrawInteractions();
 //                break;
+            default:
+				// TODO check unused Enum case labels
+                break;
         }
 
         // disable stencil shadow test

@@ -1202,6 +1202,9 @@ public class AF {
                     c.SetLimit(fc.minLength, fc.maxLength);
                     break;
                 }
+			default:
+				// TODO check unused Enum case labels
+				break;
             }
             return true;
         }

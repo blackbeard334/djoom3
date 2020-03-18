@@ -1809,6 +1809,9 @@ public class AsyncServer {
                             ProcessReliablePure(clientNum, msg);
                             break;
                         }
+                        default:
+            				// TODO check unused Enum case labels
+                            break;
                     }
                 } else {
 //                    default: {

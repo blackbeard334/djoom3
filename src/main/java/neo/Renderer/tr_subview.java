@@ -513,6 +513,9 @@ public class tr_subview {
                     case DI_XRAY_RENDER:
                         R_XrayRender(drawSurf, /*const_cast<textureStage_t *>*/ (stage.texture), scissor);
                         break;
+				default:
+					// TODO check unused Enum case labels
+					break;
                 }
             }
             return true;

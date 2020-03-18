@@ -1192,6 +1192,9 @@ public class tr_light {
             case TG_WOBBLESKY_CUBE:
                 R_WobbleskyTexGen(drawSurf, tr.viewDef.renderView.vieworg);
                 break;
+		default:
+			// TODO check unused Enum case labels
+			break;
         }
 
         // check for gui surfaces

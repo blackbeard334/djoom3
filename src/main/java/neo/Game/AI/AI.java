@@ -2207,6 +2207,9 @@ public class AI {
                             PlayChatter();
                             CheckBlink();
                             break;
+					default:
+						// TODO check unused Enum case labels
+						break;
                     }
                 }
 
@@ -3551,6 +3554,9 @@ public class AI {
                 case MOVE_SLIDE_TO_POSITION:
                     seekPos.oSet(org);
                     return false;
+			default:
+				// TODO check unused Enum case labels
+				break;
             }
 
             if (move.moveCommand == MOVE_TO_ENTITY) {
@@ -6759,6 +6765,9 @@ public class AI {
                 case MOVE_WANDER:
                     WanderAround();
                     break;
+			default:
+				// TODO check unused Enum case labels
+				break;
             }
 
             if (GetMovePos(goalPos)) {

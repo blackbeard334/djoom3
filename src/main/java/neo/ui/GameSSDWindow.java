@@ -1864,6 +1864,9 @@ public class GameSSDWindow {
                 case SSD_ENTITY_POWERUP:
                     ent = SSDPowerup.GetSpecificPowerup(id);
                     break;
+			default:
+				// TODO check unused Enum case labels
+				break;
             }
             return ent;
         }

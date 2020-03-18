@@ -1238,6 +1238,9 @@ public class AsyncClient {
                             cvarSystem.ClearModifiedFlags(CVAR_USERINFO);
                             break;
                         }
+					default:
+						// TODO check unused Enum case labels
+						break;
                     }
                 } else {
 //			default: {
