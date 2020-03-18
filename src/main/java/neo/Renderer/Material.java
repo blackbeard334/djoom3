@@ -2557,7 +2557,7 @@ public class Material {
                     a = ParseExpression(src);
                     MatchToken(src, ",");
                     if (DBG_ParseStage == 41) {
-                        int aa = aa = 0;
+                        int aa = 0;
                         b = ParseExpression(src);
                     } else {
                         b = ParseExpression(src);

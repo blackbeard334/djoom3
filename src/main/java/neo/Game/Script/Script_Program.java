@@ -1238,7 +1238,6 @@ public class Script_Program {
 
         public void SetObject(idScriptObject object) {
             assert (typeDef != null);
-            initialized = initialized;
             assert (typeDef.Inherits(type_object));
             value = new varEval_s();
             value.objectPtrPtr = object;

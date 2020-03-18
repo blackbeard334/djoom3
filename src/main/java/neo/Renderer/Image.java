@@ -2514,7 +2514,7 @@ public class Image {
                 imageHash = MD4_BlockChecksum(pic, width[0] * height[0] * 4);
 
                 GenerateImage(pic, width[0], height[0], filter, allowDownSize, repeat, depth);
-                timestamp = timestamp;//why, because we rock!
+                //why, because we rock!
                 precompressedFile = false;
 
 //                R_StaticFree(pic);
