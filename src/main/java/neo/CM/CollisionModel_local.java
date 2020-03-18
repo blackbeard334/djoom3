@@ -2041,8 +2041,23 @@ public class CollisionModel_local {
                 tw.trace.c.contents = poly.contents;
                 tw.trace.c.material = poly.material;
                 tw.trace.c.type = CONTACT_MODELVERTEX;
-                //                tw.trace.c.modelFeature =  * reinterpret_cast < int * > ( & poly);
-                tw.trace.c.trmFeature = Arrays.asList(tw.vertices).indexOf(v);
+    			// TODO convert following lines from cpp to Java 
+                // original cpp code from https://github.com/dhewm/dhewm3/blob/master/neo/cm/CollisionModel_translate.cpp#L493
+                // original cpp code: tw->trace.c.modelFeature = v - tw->model->vertices;
+        		// plain cpp2java does not work: tw.trace.c.modelFeature = v - tw.model.vertices;
+                {
+                	int trmFeature = -1;
+	                // TODO This seems to be a Bug:
+                	// Unlikely argument type CollisionModel_local.cm_vertex_s for indexOf(Object) on a List<CollisionModel_local.cm_trmVertex_s>
+                	// => indexOf returns always -1
+                	// replace analog cpp code
+                	trmFeature = Arrays.asList(tw.vertices).indexOf(v);
+                	tw.trace.c.trmFeature = trmFeature;
+        			// original cpp code: tw->trace.c.trmFeature = trmpoly - tw->polys;
+                    // plain cpp2java does not work: tw.trace.c.trmFeature = trmpoly - tw.polys;
+                }
+        		// original: tw->trace.c.point = v->p + tw->trace.fraction * ( endp - v->p );
+    			// cpp2java: tw.trace.c.point = v.p.add(tw.trace.fraction * endp.subtract(v.p));
                 tw.trace.c.point.oSet(v.p.oPlus((endp.oMinus(v.p)).oMultiply(tw.trace.fraction)));
                 // if retrieving contacts
                 if (tw.getContacts) {
