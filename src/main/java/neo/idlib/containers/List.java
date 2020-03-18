@@ -40,7 +40,7 @@ public class List {
                 + CPP_class.Pointer.SIZE;//type
 
         private int num;
-        private   int size;
+        private int size;
         private int granularity = 16;
         private type[]      list;
         private Class<type> type;
