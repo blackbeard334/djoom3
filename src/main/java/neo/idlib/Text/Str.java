@@ -1132,7 +1132,7 @@ public class Str {
             }
 
 //	*this = basepath + *this;
-            setData(basepath + getData());//TODO:bad..where to put the extension?
+            setData(new String(basepath) + getData());//TODO:bad..where to put the extension?
             return this;
         }
 
