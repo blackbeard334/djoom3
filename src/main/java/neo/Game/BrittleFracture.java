@@ -107,7 +107,11 @@ public class BrittleFracture {
 //
 
     public static class idBrittleFracture extends idEntity {
-        // public CLASS_PROTOTYPE( idBrittleFracture );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public CLASS_PROTOTYPE( idBrittleFracture );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -833,7 +837,11 @@ public class BrittleFracture {
 
         public static class ModelCallback extends deferredEntityCallback_t {
 
-            public static final deferredEntityCallback_t instance = new ModelCallback();
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			public static final deferredEntityCallback_t instance = new ModelCallback();
 
             private ModelCallback() {
             }

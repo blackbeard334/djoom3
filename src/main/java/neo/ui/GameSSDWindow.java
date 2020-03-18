@@ -1342,7 +1342,11 @@ public class GameSSDWindow {
 
     public static class SSDLevelData_t implements SERiAL {
 
-        float spawnBuffer;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		float spawnBuffer;
         int needToWin;
 
         @Override
@@ -1363,7 +1367,11 @@ public class GameSSDWindow {
 
     public static class SSDAsteroidData_t implements SERiAL {
 
-        float speedMin, speedMax;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		float speedMin, speedMax;
         float sizeMin, sizeMax;
         float rotateMin, rotateMax;
         int spawnMin, spawnMax;
@@ -1389,7 +1397,11 @@ public class GameSSDWindow {
 
     public static class SSDAstronautData_t implements SERiAL {
 
-        float speedMin, speedMax;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		float speedMin, speedMax;
         float rotateMin, rotateMax;
         int spawnMin, spawnMax;
         int health;
@@ -1414,7 +1426,11 @@ public class GameSSDWindow {
 
     public static class SSDPowerupData_t implements SERiAL {
 
-        float speedMin, speedMax;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		float speedMin, speedMax;
         float rotateMin, rotateMax;
         int spawnMin, spawnMax;
 
@@ -1436,7 +1452,11 @@ public class GameSSDWindow {
 
     public static class SSDWeaponData_t implements SERiAL {
 
-        float speed;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		float speed;
         int damage;
         int size;
 
@@ -1485,7 +1505,11 @@ public class GameSSDWindow {
      */
     public static class SSDGameStats_t implements SERiAL {
 
-        boolean gameRunning;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		boolean gameRunning;
 //
         int score;
         int prebonusscore;

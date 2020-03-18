@@ -678,7 +678,11 @@ public class Lib {
 
     public static class idException extends RuntimeException {//TODO:to exception or to runtimeException!!
 
-        public String error;//[MAX_STRING_CHARS];
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public String error;//[MAX_STRING_CHARS];
 
         public idException() {
             super();

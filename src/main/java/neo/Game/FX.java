@@ -88,7 +88,11 @@ public class FX {
 
     public static class idEntityFx extends idEntity {
 
-        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idEntityFx>) idEntityFx::Event_Trigger);
@@ -753,7 +757,11 @@ public class FX {
     public static class idTeleporter extends idEntityFx {
 //        public 	CLASS_PROTOTYPE( idTeleporter );
 
-        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTeleporter>) idTeleporter::Event_DoAction);

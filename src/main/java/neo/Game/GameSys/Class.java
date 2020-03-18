@@ -214,7 +214,12 @@ public class Class {
 
     public static class idAllocError extends neo.idlib.Lib.idException {
 
-        public idAllocError(final String text /*= ""*/) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public idAllocError(final String text /*= ""*/) {
             super(text);
         }
     };

@@ -1098,7 +1098,12 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      */
     public static final class TODO_Exception extends UnsupportedOperationException {
 
-        public TODO_Exception() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public TODO_Exception() {
             printStackTrace();
             System.err.println(
                     "Woe to you, Oh Earth and Sea, for the Devil sends the\n"
@@ -1112,7 +1117,12 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
     public static final class Deprecation_Exception extends UnsupportedOperationException {
 
-        public Deprecation_Exception() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public Deprecation_Exception() {
             printStackTrace();
             System.err.println(
                     "DARKNESS!!\n"
@@ -1128,7 +1138,12 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
     public static final class TypeErasure_Expection extends javax.swing.undo.CannotUndoException {
 
-        public TypeErasure_Expection() {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public TypeErasure_Expection() {
             printStackTrace();
             System.err.println("The future is always blank.\n" +
                     "Only your willpower can leave footsteps there.");

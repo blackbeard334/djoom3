@@ -41,7 +41,11 @@ public class WorldSpawn {
      ===============================================================================
      */
     public static class idWorldspawn extends idEntity {
-        //	CLASS_PROTOTYPE( idWorldspawn );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//	CLASS_PROTOTYPE( idWorldspawn );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());

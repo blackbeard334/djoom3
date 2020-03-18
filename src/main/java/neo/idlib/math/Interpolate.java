@@ -122,7 +122,11 @@ public class Interpolate {
      */
     public static class idInterpolateAccelDecelLinear<type> implements SERiAL {
 
-        private float startTime;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private float startTime;
         private float accelTime;
         private float linearTime;
         private float decelTime;

@@ -356,7 +356,11 @@ public class Actor {
     public static class idActor extends idAFEntity_Gibbable {
         //public	CLASS_PROTOTYPE( idActor );
 
-        //        public static idTypeInfo Type;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//        public static idTypeInfo Type;
 //
 //        public static idClass CreateInstance();
         //        public idTypeInfo GetType();

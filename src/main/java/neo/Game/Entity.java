@@ -277,7 +277,11 @@ public class Entity {
     }
 
     public static class idEntity extends neo.Game.GameSys.Class.idClass implements neo.TempDump.NiLLABLE<idEntity>, neo.TempDump.SERiAL {
-        //	ABSTRACT_PROTOTYPE( idEntity );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//	ABSTRACT_PROTOTYPE( idEntity );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(Class.idClass.getEventCallBacks());
@@ -426,7 +430,11 @@ public class Entity {
 
         public static class entityFlags_s implements TempDump.SERiAL {
 
-            public boolean notarget;            // if true never attack or target this entity
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			public boolean notarget;            // if true never attack or target this entity
             public boolean noknockback;         // if true no knockback from hits
             public boolean takedamage;          // if true this entity can be damaged
             public boolean hidden;              // if true this entity is not visible
@@ -1379,7 +1387,11 @@ public class Entity {
          */
         public static class ModelCallback extends deferredEntityCallback_t {
 
-            public static final deferredEntityCallback_t instance = new ModelCallback();
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			public static final deferredEntityCallback_t instance = new ModelCallback();
 
             private ModelCallback() {
             }
@@ -4251,7 +4263,11 @@ public class Entity {
      ===============================================================================
      */
     public static class idAnimatedEntity extends idEntity {
-        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
             eventCallbacks.put(EV_GetJointHandle, (eventCallback_t1<idAnimatedEntity>) idAnimatedEntity::Event_GetJointHandle);

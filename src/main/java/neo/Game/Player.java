@@ -1201,7 +1201,11 @@ public class Player {
     };
 
     public static class idPlayer extends idActor {
-        private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
             eventCallbacks.putAll(idActor.getEventCallBacks());

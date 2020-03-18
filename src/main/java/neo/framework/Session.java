@@ -58,7 +58,12 @@ public class Session {
     // needed by the gui system for the load game menu
     public static class logStats_t implements SERiAL {
 
-        public static final transient int SIZE = SERIAL_SIZE(new logStats_t());
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public static final transient int SIZE = SERIAL_SIZE(new logStats_t());
 
         public int health;
         public int heartRate;

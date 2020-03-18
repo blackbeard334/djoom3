@@ -294,7 +294,11 @@ public class Image {
 
     static class ddsFileHeader_t implements SERiAL {
 
-        private static final transient int SIZE
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private static final transient int SIZE
                                                   = CPP_class.Long.SIZE
                 + CPP_class.Long.SIZE
                 + CPP_class.Long.SIZE

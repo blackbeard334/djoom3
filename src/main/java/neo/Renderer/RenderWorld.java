@@ -90,7 +90,12 @@ public class RenderWorld {
 
     public static abstract class deferredEntityCallback_t implements SERiAL {
 
-        public abstract boolean run(renderEntity_s e, renderView_s v);
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public abstract boolean run(renderEntity_s e, renderView_s v);
     }
 
     public static class renderEntity_s {
@@ -549,7 +554,11 @@ public class RenderWorld {
         // player views will set this to a non-zero integer for model suppress / allow
         // subviews (mirrors, cameras, etc) will always clear it to zero
 
-        public int viewID;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public int viewID;
         //
         // sized from 0 to SCREEN_WIDTH / SCREEN_HEIGHT (640/480), not actual resolution
         public int x, y, width, height;

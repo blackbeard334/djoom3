@@ -120,7 +120,11 @@ public class AFEntity {
     public static class idMultiModelAF extends idEntity {
 //        public CLASS_PROTOTYPE(idMultiModelAF );//TODO:include this?
 
-        protected idPhysics_AF physicsObj;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected idPhysics_AF physicsObj;
         //
         private idList<idRenderModel> modelHandles;
         private idList<Integer> modelDefHandles;
@@ -198,7 +202,12 @@ public class AFEntity {
     public static class idChain extends idMultiModelAF {
 //public	CLASS_PROTOTYPE( idChain );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public void Spawn() {
             int[] numLinks = new int[1];
             float[] length = new float[1], linkWidth = new float[1], density = new float[1];
@@ -302,7 +311,11 @@ public class AFEntity {
     public static class idAFAttachment extends idAnimatedEntity {
 // public	CLASS_PROTOTYPE( idAFAttachment );
 
-        protected idEntity body;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected idEntity body;
         protected idClipModel combatModel;	// render model for hit detection of head
         protected int idleAnim;
         protected int/*jointHandle_t*/ attachJoint;
@@ -498,7 +511,11 @@ public class AFEntity {
 //
 
     public static class idAFEntity_Base extends idAnimatedEntity {
-// public	CLASS_PROTOTYPE( idAFEntity_Base );
+/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public	CLASS_PROTOTYPE( idAFEntity_Base );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -827,7 +844,11 @@ public class AFEntity {
      */
 
     public static class idAFEntity_Gibbable extends idAFEntity_Base {
-        // CLASS_PROTOTYPE( idAFEntity_Gibbable );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idAFEntity_Gibbable );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1081,7 +1102,11 @@ public class AFEntity {
      ===============================================================================
      */
     public static class idAFEntity_Generic extends idAFEntity_Gibbable {
-        // CLASS_PROTOTYPE( idAFEntity_Generic );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idAFEntity_Generic );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1187,7 +1212,11 @@ public class AFEntity {
      ===============================================================================
      */
     public static class idAFEntity_WithAttachedHead extends idAFEntity_Gibbable {
-        // CLASS_PROTOTYPE( idAFEntity_WithAttachedHead );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idAFEntity_WithAttachedHead );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 
         static {
@@ -1410,7 +1439,11 @@ public class AFEntity {
     public static class idAFEntity_Vehicle extends idAFEntity_Base {
         // CLASS_PROTOTYPE( idAFEntity_Vehicle );
 
-        protected idPlayer player;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected idPlayer player;
         protected int/*jointHandle_t*/ eyesJoint;
         protected int/*jointHandle_t*/ steeringWheelJoint;
         protected float wheelRadius;
@@ -1517,7 +1550,11 @@ public class AFEntity {
      */
     public static class idAFEntity_VehicleSimple extends idAFEntity_Vehicle {
 
-        protected idClipModel wheelModel;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected idClipModel wheelModel;
         protected final idAFConstraint_Suspension[] suspension = new idAFConstraint_Suspension[4];
         protected final int/*jointHandle_t*/[] wheelJoints = new int[4];
         protected final float[] wheelAngles = new float[4];
@@ -1703,7 +1740,11 @@ public class AFEntity {
      */
     public static class idAFEntity_VehicleFourWheels extends idAFEntity_Vehicle {
 
-        protected final idAFBody[] wheels = new idAFBody[4];
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected final idAFBody[] wheels = new idAFBody[4];
         protected final idAFConstraint_Hinge[] steering = new idAFConstraint_Hinge[2];
         protected final int/*jointHandle_t*/[] wheelJoints = new int[4];
         protected final float[] wheelAngles = new float[4];
@@ -1873,7 +1914,11 @@ public class AFEntity {
      */
     public static class idAFEntity_VehicleSixWheels extends idAFEntity_Vehicle {
 
-        private final idAFBody[] wheels = new idAFBody[6];
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private final idAFBody[] wheels = new idAFBody[6];
         private final idAFConstraint_Hinge[] steering = new idAFConstraint_Hinge[4];
         private final int/*jointHandle_t*/[] wheelJoints = new int[6];
         private final float[] wheelAngles = new float[6];
@@ -2059,7 +2104,11 @@ public class AFEntity {
     public static class idAFEntity_SteamPipe extends idAFEntity_Base {
         // CLASS_PROTOTYPE( idAFEntity_SteamPipe );
 
-        private int steamBody;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private int steamBody;
         private float steamForce;
         private float steamUpForce;
         private idForce_Constant force;
@@ -2182,7 +2231,11 @@ public class AFEntity {
      ===============================================================================
      */
     public static class idAFEntity_ClawFourFingers extends idAFEntity_Base {
-        // public:
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public:
         // CLASS_PROTOTYPE( idAFEntity_ClawFourFingers );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
 

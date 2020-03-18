@@ -20,7 +20,11 @@ public class StrPool {
 //	friend class idStrPool;
 //
 
-        private idStrPool pool;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private idStrPool pool;
         private int numUsers;
         //
         //

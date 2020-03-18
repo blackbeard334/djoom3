@@ -56,7 +56,11 @@ public class UserInterfaceLocal {
     public static class idUserInterfaceLocal extends idUserInterface {
         // friend class idUserInterfaceManagerLocal;
 
-        private boolean  active;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private boolean  active;
         private boolean  loading;
         private boolean  interactive;
         private boolean  uniqued;

@@ -63,6 +63,11 @@ public class TraceModel {
     public static final int MAX_TRACEMODEL_POLYEDGES = 16;
 
     public static class traceModelVert_t extends idVec3 {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
     }
 
     public static class traceModelEdge_t {

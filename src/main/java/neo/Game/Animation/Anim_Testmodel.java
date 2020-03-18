@@ -99,7 +99,11 @@ public class Anim_Testmodel {
      ==============================================================================================
      */
     public static class idTestModel extends idAnimatedEntity {
-        // CLASS_PROTOTYPE( idTestModel );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idTestModel );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idAnimatedEntity.getEventCallBacks());

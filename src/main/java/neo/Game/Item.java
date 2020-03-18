@@ -93,7 +93,11 @@ public class Item {
      ===============================================================================
      */
     public static class idItem extends idEntity {
-        // public	CLASS_PROTOTYPE( idItem );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public	CLASS_PROTOTYPE( idItem );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -470,7 +474,11 @@ public class Item {
 
         public static class ModelCallback extends deferredEntityCallback_t {
 
-            public static final deferredEntityCallback_t instance = new ModelCallback();
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			public static final deferredEntityCallback_t instance = new ModelCallback();
 
             private ModelCallback() {
             }
@@ -594,7 +602,11 @@ public class Item {
     public static class idItemPowerup extends idItem {
 // public 	CLASS_PROTOTYPE( idItemPowerup );
 
-        private final int[] time = {0};
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private final int[] time = {0};
         private final int[] type = {0};
         //
         //
@@ -643,7 +655,11 @@ public class Item {
      ===============================================================================
      */
     public static class idObjective extends idItem {
-        //public 	CLASS_PROTOTYPE( idObjective );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//public 	CLASS_PROTOTYPE( idObjective );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idItem.getEventCallBacks());
@@ -780,7 +796,12 @@ public class Item {
 
 //            public 	CLASS_PROTOTYPE( idVideoCDItem );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public boolean GiveToPlayer(idPlayer player) {
             String str = spawnArgs.GetString("video");
             if (player != null && str.length() != 0) {
@@ -800,7 +821,12 @@ public class Item {
     public static class idPDAItem extends idItem {
         //public 	CLASS_PROTOTYPE( idPDAItem );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public boolean GiveToPlayer(idPlayer player) {
             final idStr str = new idStr(spawnArgs.GetString("pda_name"));
 
@@ -819,7 +845,11 @@ public class Item {
      ===============================================================================
      */
     public static class idMoveableItem extends idItem {
-        // public 	CLASS_PROTOTYPE( idMoveableItem );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public 	CLASS_PROTOTYPE( idMoveableItem );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idItem.getEventCallBacks());
@@ -1130,7 +1160,12 @@ public class Item {
     public static class idMoveablePDAItem extends idMoveableItem {
 //public 	CLASS_PROTOTYPE( idMoveablePDAItem );
 
-        @Override
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
         public boolean GiveToPlayer(idPlayer player) {
             final idStr str = new idStr(spawnArgs.GetString("pda_name"));
             if (player != null) {
@@ -1155,7 +1190,11 @@ public class Item {
      ===============================================================================
      */
     public static class idItemRemover extends idEntity {
-        //public 	CLASS_PROTOTYPE( idItemRemover );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		//public 	CLASS_PROTOTYPE( idItemRemover );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -1205,7 +1244,11 @@ public class Item {
      ===============================================================================
      */
     public static class idObjectiveComplete extends idItemRemover {
-        // public 	CLASS_PROTOTYPE( idObjectiveComplete );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// public 	CLASS_PROTOTYPE( idObjectiveComplete );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idItemRemover.getEventCallBacks());

@@ -110,7 +110,11 @@ public class Moveable {
 //
 
     public static class idMoveable extends idEntity {
-        // CLASS_PROTOTYPE( idMoveable );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idMoveable );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idEntity.getEventCallBacks());
@@ -555,7 +559,11 @@ public class Moveable {
     public static class idBarrel extends idMoveable {
         // CLASS_PROTOTYPE( idBarrel );
 
-        private float  radius;              // radius of barrel
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private float  radius;              // radius of barrel
         private int    barrelAxis;          // one of the coordinate axes the barrel cylinder is parallel to
         private idVec3 lastOrigin;          // origin of the barrel the last think frame
         private idMat3 lastAxis;            // axis of the barrel the last think frame
@@ -725,7 +733,11 @@ public class Moveable {
      ===============================================================================
      */
     public static class idExplodingBarrel extends idBarrel {
-        // CLASS_PROTOTYPE( idExplodingBarrel );
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// CLASS_PROTOTYPE( idExplodingBarrel );
         private static Map<idEventDef, eventCallback_t> eventCallbacks = new HashMap<>();
         static {
             eventCallbacks.putAll(idBarrel.getEventCallBacks());

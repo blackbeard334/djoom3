@@ -147,7 +147,11 @@ public class Model_md3 {
 
     static class md3Header_s implements SERiAL {
 
-        int ident;
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		int ident;
         int version;
 //
 //	char		name[MAX_MD3PATH];	// model name
@@ -201,7 +205,11 @@ public class Model_md3 {
      */
     static class idRenderModelMD3 extends idRenderModelStatic {
 
-        private int index;		// model = tr.models[model->index]
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private int index;		// model = tr.models[model->index]
         private int dataSize;		// just for listing purposes
         private md3Header_s md3;	// only if type == MOD_MESH
         private int numLods;

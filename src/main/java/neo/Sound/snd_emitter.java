@@ -648,7 +648,11 @@ public class snd_emitter {
 
     static class idSoundEmitterLocal extends idSoundEmitter {
 
-        public idSoundWorldLocal     soundWorld;            // the world that holds this emitter
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public idSoundWorldLocal     soundWorld;            // the world that holds this emitter
         //
         public int                   index;                 // in world emitter list
         public int/*removeStatus_t*/ removeStatus;
