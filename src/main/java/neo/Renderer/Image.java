@@ -132,6 +132,7 @@ import java.nio.ByteOrder;
 import org.lwjgl.BufferUtils;
 
 import neo.TempDump.CPP_class;
+import neo.TempDump.NeoFixStrings;
 import neo.TempDump.CPP_class.Bool;
 import neo.TempDump.CPP_class.Pointer;
 import neo.TempDump.SERiAL;
@@ -644,7 +645,7 @@ public class Image {
                     tmu.current2DMap = texNum;
                     qglBindTexture(GL_TEXTURE_2D, texNum);
                     if (texNum == 25){
-                        System.out.println("Blaaaaaaasphemy!");
+                    	System.out.println(NeoFixStrings.BLAAAAAAASPHEMY);
             }
         }
     } else if (type == TT_CUBIC) {

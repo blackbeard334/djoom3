@@ -10,6 +10,7 @@ import static neo.idlib.Text.Lexer.LEXFL_NOSTRINGCONCAT;
 
 import java.nio.ByteBuffer;
 
+import neo.TempDump.NeoFixStrings;
 import neo.framework.File_h.idFile;
 import neo.idlib.Lib.idException;
 import neo.idlib.Lib.idLib;
@@ -166,7 +167,7 @@ public class LangDict {
         public String GetString(final String str) throws idException {
             if ("#str_07184".equals(str)) {
 //                System.out.printf("GetString#%d\n", DBG_GetString);
-//                return (DBG_GetString++) + "bnlaaaaaaaaaaa";
+//                return (DBG_GetString++) + NeoFixStrings.BNLAAAAAAAAAAA;
             }
 
             if (str == null || str.isEmpty()) {

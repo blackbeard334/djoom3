@@ -12,6 +12,7 @@ import static neo.idlib.Text.Str.va;
 
 import java.nio.ByteBuffer;
 
+import neo.TempDump.NeoFixStrings;
 import neo.TempDump.void_callback;
 import neo.framework.DeclManager.declType_t;
 import neo.framework.FileSystem_h.idFileList;
@@ -709,7 +710,7 @@ public class CmdSystem {
                 return;		// no tokens
             }
 
-            if (args.Argv(0).equals("bla1")) {
+            if (args.Argv(0).equals(NeoFixStrings.BLA1)) {
                 args.oSet("map game/alphalabs1");//HACKME::11
             }
 

@@ -66,6 +66,19 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         public abstract void load(final idCmdArgs args, void_callback<String> callback);
     }
 
+    public static class NeoFixStrings {
+
+    	public final static String AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    	public final static String BLA = "bla";
+    	public final static String BLA1 = "bla1";
+    	public final static String BLAAAAAAAAAAAAAAAAAA = "blaaaaaaaaaaaaaaaaaa!";
+    	public final static String BLAAAAAAAAAAAAAAAAAARRRGGGGHH = "BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!";
+    	public final static String BLAAAAAAASPHEMY = "Blaaaaaaasphemy!";
+    	public final static String BNLAAAAAAAAAAA = "bnlaaaaaaaaaaa";
+    	public final static String FAAAAAAAAAAAAAAAAAAR = "FAAAAAAAAAAAAAAAAAAR";
+
+   }
+
     /**
      * Our humble java implementation of the C++ strlen function, with NULL
      * checks.
