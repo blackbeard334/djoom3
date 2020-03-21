@@ -19,6 +19,7 @@ import static neo.ui.Window.WIN_MENUGUI;
 
 import java.nio.ByteBuffer;
 
+import neo.TempDump.NeoFixStrings;
 import neo.Renderer.Material.idMaterial;
 import neo.framework.DemoFile.idDemoFile;
 import neo.framework.File_h.idFile;
@@ -133,7 +134,7 @@ public class UserInterfaceLocal {
             if (rebuild || desktop == null) {
                 desktop = new idWindow(this);
             }
-//            System.out.println("FAAAAAAAAAAAAAAAAAAR " + desktop);
+//            System.out.println(NeoFixStrings.FAAAAAAAAAAAAAAAAAAR + " " + desktop);
 
             source.oSet(qpath);
             state.Set("text", "Test Text!");

@@ -44,6 +44,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
+import neo.TempDump.NeoFixStrings;
 import neo.TempDump.TODO_Exception;
 import neo.idlib.Text.Str.idStr;
 
@@ -150,7 +151,7 @@ public class win_glimp {
 //            Display.setDisplayModeAndFullscreen(dm);
 //            Display.setDisplayMode(dm);
 //            Display.setVSyncEnabled(true);
-//            Display.setTitle("BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!");
+//            Display.setTitle(NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH);
 
         glfwInit();
         glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
@@ -160,8 +161,8 @@ public class win_glimp {
 //        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 //        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 //        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//        window = GLFW.glfwCreateWindow(parms.width, parms.height, "BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!", glfwGetPrimaryMonitor(), 0);//HACKME::0 change this back to setDisplayModeAndFullscreen.
-        window = GLFW.glfwCreateWindow(parms.width, parms.height, "BLAAAAAAAAAAAAAAAAAArrrGGGGHH!!", 0, 0);
+//        window = GLFW.glfwCreateWindow(parms.width, parms.height, NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH, glfwGetPrimaryMonitor(), 0);//HACKME::0 change this back to setDisplayModeAndFullscreen.
+        window = GLFW.glfwCreateWindow(parms.width, parms.height, NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH, 0, 0);
         GLFWVidMode currentMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         glfwSetWindowPos(window, currentMode.width() / 2 - parms.width / 2, currentMode.height() / 2 - parms.height / 2);
         if (window != 0) {

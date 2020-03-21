@@ -197,6 +197,7 @@ import java.util.stream.Stream;
 
 import org.lwjgl.BufferUtils;
 
+import neo.TempDump.NeoFixStrings;
 import neo.Renderer.Material.idMaterial;
 import neo.Renderer.Material.newShaderStage_t;
 import neo.Renderer.Material.shaderStage_t;
@@ -522,7 +523,7 @@ public class draw_common {
             qglLoadIdentity();
             qglMatrixMode(GL_MODELVIEW);
             if(qglGetError()!=0){
-                System.err.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+            	System.err.println(NeoFixStrings.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA);
             }
         }
     }

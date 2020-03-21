@@ -88,6 +88,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import neo.TempDump.NeoFixStrings;
 import neo.TempDump.TODO_Exception;
 import neo.framework.CVarSystem.idCVar;
 import neo.framework.CmdSystem.cmdFunction_t;
@@ -881,7 +882,7 @@ public class win_main {//TODO: rename to plain "main" or something.
         @Override
         public void run() {
 
-            System.out.println("Blaaaaaaaaaaaaaaaaaa!");
+        	System.out.println(NeoFixStrings.BLAAAAAAAAAAAAAAAAAA);
 //            startTime = Sys_Milliseconds();
 //            wakeNumber = 0;
 //
@@ -923,9 +924,9 @@ public class win_main {//TODO: rename to plain "main" or something.
     public static void Sys_StartAsyncThread() {
 
         // create an auto-reset event that happens 60 times a second
-//        hTimer = Executors.newSingleThreadScheduledExecutor(r -> new Thread("bla" + (thread++)));
+//        hTimer = Executors.newSingleThreadScheduledExecutor(r -> new Thread(NeoFixStrings.BLA + (thread++)));
         hTimer = Executors.newSingleThreadScheduledExecutor(r -> {
-            final Thread thread = new Thread(r, "bla-" + (count++));
+            final Thread thread = new Thread(r, NeoFixStrings.BLA + "-" + (count++));
             thread.setPriority(Thread.MAX_PRIORITY);
             return thread;
         });
@@ -1584,7 +1585,7 @@ public class win_main {//TODO: rename to plain "main" or something.
 
     public static FileChannel tmpfile() throws IOException {
 
-        File tmp = File.createTempFile("bla", "bla");
+        File tmp = File.createTempFile(NeoFixStrings.BLA, NeoFixStrings.BLA);
         tmp.deleteOnExit();
 
         return FileChannel.open(tmp.toPath(), fopenOptions("wb+"));
