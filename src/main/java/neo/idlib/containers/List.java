@@ -3,6 +3,7 @@ package neo.idlib.containers;
 import static neo.TempDump.NOT;
 import static neo.TempDump.reflects._Minus;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
@@ -45,8 +46,8 @@ public class List {
         private type[]      list;
         private Class<type> type;
         //
-        private static int DBG_counter = 0;
-        private final  int DBG_count   = DBG_counter++;
+        //private static int DBG_counter = 0;
+        //private final  int DBG_count   = DBG_counter++;
         //
 
 //public	typedef int		cmp_t( const type *, const type * );
@@ -80,6 +81,41 @@ public class List {
         }
 //public					~idList<type>( );
 //
+
+		@SuppressWarnings("unchecked")
+		private type[] castArrayType(ArrayList<type> types) {
+			return (type[]) types.toArray();
+		}
+
+		private ArrayList<type> generateArray(int size) {
+			ArrayList<type> types = new ArrayList<type>();
+			addInitializedValues(types, size);
+			return types;
+		}
+
+		private ArrayList<type> addInitializedValues(ArrayList<type> types, int size) {
+			for (int i = 0; i < size; i++) {
+				types.add(instantiateType());// TODO: check if any of this is necessary?
+			}
+			return types;
+		}
+
+		private type instantiateType() {
+			return instantiateType(type);
+		}
+
+		private type instantiateType(Class<?> type) {
+			if (type != null) {
+	            try {
+	            	@SuppressWarnings("unchecked")
+					type instance = (type) type.newInstance();
+					return instance;//TODO: check if any of this is necessary?
+	            } catch (InstantiationException | IllegalAccessException ex) {
+	                Logger.getLogger(List2.class.getName()).log(Level.SEVERE, "could not initialize " + ((type==null) ? "null" : type), ex);
+	            }
+			}
+            return null;
+		}
 
         /*
          ================
@@ -194,7 +230,7 @@ public class List {
             this.type = other.type;
 
             if (this.size != 0) {
-                this.list = (type[]) new Object[size];
+                this.list = castArrayType(generateArray(size));
                 for (i = 0; i < this.Num(); i++) {
                     this.list[i] = other.list[i];
                 }
@@ -252,7 +288,9 @@ public class List {
 //                return list[index] = (type) (Object) ((Float) list[index] + (Float) value);//TODO:test thsi shit
 //            }
 //            if (list[index] instanceof Integer) {
-            return list[index] = (type) (Object) (((Number) list[index]).doubleValue() + ((Number) value).doubleValue());//TODO:test thsi shit
+            @SuppressWarnings("unchecked")
+            type element = (type) (Object) (((Number) list[index]).doubleValue() + ((Number) value).doubleValue());//TODO:test thsi shit
+            return list[index] = element;
 //            }
         }
 //
@@ -306,7 +344,7 @@ public class List {
             }
 
             // copy the old list into our new one
-            list = (type[]) new Object[size];
+            list = castArrayType(generateArray(size));
             for (i = 0; i < Num(); i++) {
                 list[i] = temp[i];
             }
@@ -347,7 +385,7 @@ public class List {
             }
 
             // copy the old list into our new one
-            list = (type[]) new Object[size];
+            list = castArrayType(generateArray(size));
             for (i = 0; i < Num(); i++) {
                 list[i] = temp[i];
             }
@@ -440,7 +478,7 @@ public class List {
          on non-pointer lists will cause a compiler error.
          ================
          */
-        public void AssureSizeAlloc(int newSize, /*new_t*/ Class allocator) {	// assure the pointer list has the given number of elements and allocate any new elements
+        public void AssureSizeAlloc(int newSize, /*new_t*/ Class<type> allocator) {	// assure the pointer list has the given number of elements and allocate any new elements
             int newNum = newSize;
 
             if (newSize > size) {
@@ -455,11 +493,7 @@ public class List {
                 Resize(newSize);
 
                 for (int i = Num(); i < newSize; i++) {
-                    try {
-                        list[i] = /*( * allocator) ()*/ (type) allocator.newInstance();//TODO: check if any of this is necessary?
-                    } catch (InstantiationException | IllegalAccessException ex) {
-                        Logger.getLogger(List.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    list[i] = /*( * allocator) ()*/ instantiateType(allocator);//TODO: check if any of this is necessary?
                 }
             }
 
@@ -507,10 +541,9 @@ public class List {
             if (Num() == size) {
                 Resize(size + granularity);
             }
-            try {
-                return list[num++] = type.newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
-//                Logger.getLogger(List.class.getName()).log(Level.SEVERE, null, ex);
+            type instance = instantiateType();
+            if (instance != null) {
+                return list[num++] = instance;
             }
 
             return null;
@@ -789,20 +822,26 @@ public class List {
             if (list[0] instanceof idStr
             		//|| list[0] instanceof idStrPtr
                     || list[0] instanceof idPoolStr) {
-                this.Sort(new StrList.idListSortCompare());
+            	@SuppressWarnings("unchecked")
+            	cmp_t<type> compare = (cmp_t<type>) new StrList.idListSortCompare();
+            	this.Sort(compare);
 
             } else if (list[0] instanceof idInternalCVar) {
-                this.Sort(new CVarSystem.idListSortCompare());
+            	@SuppressWarnings("unchecked")
+            	cmp_t<type> compare = (cmp_t<type>) new CVarSystem.idListSortCompare();
+                this.Sort(compare);
 
             } else if (list[0] instanceof commandDef_s) {
-                this.Sort(new CmdSystem.idListSortCompare());
+            	@SuppressWarnings("unchecked")
+            	cmp_t<type> compare = (cmp_t<type>) new CmdSystem.idListSortCompare();
+                this.Sort(compare);
 
             } else {
                 this.Sort(new idListSortCompare<type>());
             }
         }
 
-        public void Sort(cmp_t compare /*= ( cmp_t * )&idListSortCompare<type> */) {
+        public void Sort(cmp_t<type> compare /*= ( cmp_t * )&idListSortCompare<type> */) {
 
 //	typedef int cmp_c(const void *, const void *);
 //
@@ -896,7 +935,7 @@ public class List {
                 Clear();
             } else {
 //		memset( list, 0, size * sizeof( type ) );
-                list = (type[]) new Object[list.length];
+                list = castArrayType(generateArray(list.length));
             }
         }
     };
