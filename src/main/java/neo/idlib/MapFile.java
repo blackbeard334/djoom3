@@ -60,14 +60,14 @@ public class MapFile {
         public idDict epairs;
 
         public idMapPrimitive() {
-            type = TYPE_INVALID;
+            this.type = TYPE_INVALID;
         }
 //public	virtual					~idMapPrimitive( void ) { }
 
         public int GetType() {
-            return type;
+            return this.type;
         }
-    };
+    }
 
     public static class idMapBrushSide {
 //	friend class idMapBrush;
@@ -80,52 +80,52 @@ public class MapFile {
         //
 
         public idMapBrushSide() {
-            plane = new idPlane();
-            texMat[0] = new idVec3();
-            texMat[1] = new idVec3();
-            origin = new idVec3();
+            this.plane = new idPlane();
+            this.texMat[0] = new idVec3();
+            this.texMat[1] = new idVec3();
+            this.origin = new idVec3();
         }
 //public							~idMapBrushSide( void ) { }
 
         public idStr GetMaterial() {
-            return material;
+            return this.material;
         }
 
         public void SetMaterial(final String p) {
-            material = new idStr(p);
+            this.material = new idStr(p);
         }
 
         public idPlane GetPlane() {
-            return plane;
+            return this.plane;
         }
 
         public void SetPlane(final idPlane p) {
-            plane = p;
+            this.plane = p;
         }
 
         public void SetTextureMatrix(final idVec3[] mat) {
-            texMat[0] = mat[0];
-            texMat[1] = mat[1];
+            this.texMat[0] = mat[0];
+            this.texMat[1] = mat[1];
         }
 
         public void GetTextureMatrix(idVec3[] mat1, idVec3[] mat2) {
-            mat1[0] = texMat[0];
-            mat2[0] = texMat[1];
+            mat1[0] = this.texMat[0];
+            mat2[0] = this.texMat[1];
         }
 
         public void GetTextureVectors(idVec4[] v) {
             int i;
-            idVec3 texX = new idVec3(), texY = new idVec3();
+            final idVec3 texX = new idVec3(), texY = new idVec3();
 
-            ComputeAxisBase(plane.Normal(), texX, texY);
+            ComputeAxisBase(this.plane.Normal(), texX, texY);
             for (i = 0; i < 2; i++) {
-                v[i].oSet(0, texX.oGet(0) * texMat[i].oGet(0) + texY.oGet(0) * texMat[i].oGet(1));
-                v[i].oSet(1, texX.oGet(1) * texMat[i].oGet(0) + texY.oGet(1) * texMat[i].oGet(1));
-                v[i].oSet(2, texX.oGet(2) * texMat[i].oGet(0) + texY.oGet(2) * texMat[i].oGet(1));
-                v[i].oSet(3, texMat[i].oGet(2) + (origin.oMultiply(v[i].ToVec3())));
+                v[i].oSet(0, (texX.oGet(0) * this.texMat[i].oGet(0)) + (texY.oGet(0) * this.texMat[i].oGet(1)));
+                v[i].oSet(1, (texX.oGet(1) * this.texMat[i].oGet(0)) + (texY.oGet(1) * this.texMat[i].oGet(1)));
+                v[i].oSet(2, (texX.oGet(2) * this.texMat[i].oGet(0)) + (texY.oGet(2) * this.texMat[i].oGet(1)));
+                v[i].oSet(3, this.texMat[i].oGet(2) + (this.origin.oMultiply(v[i].ToVec3())));
             }
         }
-    };
+    }
 
     /*
      =================
@@ -137,14 +137,14 @@ public class MapFile {
      */
     static void ComputeAxisBase(final idVec3 normal, idVec3 texS, idVec3 texT) {
         double RotY, RotZ;
-        idVec3 n = new idVec3();
+        final idVec3 n = new idVec3();
 
         // do some cleaning
         n.oSet(0, (idMath.Fabs(normal.oGet(0)) < 1e-6f) ? 0.0f : normal.oGet(0));
         n.oSet(1, (idMath.Fabs(normal.oGet(1)) < 1e-6f) ? 0.0f : normal.oGet(1));
         n.oSet(2, (idMath.Fabs(normal.oGet(2)) < 1e-6f) ? 0.0f : normal.oGet(2));
 
-        RotY = -Math.atan2(n.oGet(2), idMath.Sqrt(n.oGet(1) * n.oGet(1) + n.oGet(0) * n.oGet(0)));
+        RotY = -Math.atan2(n.oGet(2), idMath.Sqrt((n.oGet(1) * n.oGet(1)) + (n.oGet(0) * n.oGet(0))));
         RotZ = Math.atan2(n.oGet(1), n.oGet(0));
         // rotate (0,1,0) and (0,0,1) to compute texS and texT
         texS.oSet(0, (float) -Math.sin(RotZ));
@@ -163,20 +163,20 @@ public class MapFile {
         //
 
         public idMapBrush() {
-            type = TYPE_BRUSH;
-            sides = new idList<>();
-            sides.Resize(8, 4);
+            this.type = TYPE_BRUSH;
+            this.sides = new idList<>();
+            this.sides.Resize(8, 4);
         }
 //public							~idMapBrush( void ) { sides.DeleteContents( true ); }
 
 //public	static idMapBrush *		Parse( idLexer &src, const idVec3 &origin, bool newFormat = true, float version = CURRENT_MAP_VERSION );
         public static idMapBrush Parse(idLexer src, final idVec3 origin, boolean newFormat, float version) throws idException {
             int i;
-            idVec3[] planepts = new idVec3[3];
-            idToken token = new idToken();
-            idList<idMapBrushSide> sides = new idList<>();
+            final idVec3[] planepts = new idVec3[3];
+            final idToken token = new idToken();
+            final idList<idMapBrushSide> sides = new idList<>();
             idMapBrushSide side;
-            idDict epairs = new idDict();
+            final idDict epairs = new idDict();
 
             if (!src.ExpectTokenString("{")) {
                 return null;
@@ -205,9 +205,9 @@ public class MapFile {
                         return null;
                     }
 
-                    idStr key = token;
+                    final idStr key = token;
 
-                    if (!src.ReadTokenOnLine(token) || token.type != TT_STRING) {
+                    if (!src.ReadTokenOnLine(token) || (token.type != TT_STRING)) {
                         src.Error("idMapBrush::Parse: expected epair value string not found");
                         sides.DeleteContents(true);
                         return null;
@@ -288,7 +288,7 @@ public class MapFile {
                 return null;
             }
 
-            idMapBrush brush = new idMapBrush();
+            final idMapBrush brush = new idMapBrush();
             for (i = 0; i < sides.Num(); i++) {
                 brush.AddSide(sides.oGet(i));
             }
@@ -300,13 +300,13 @@ public class MapFile {
 
         public static idMapBrush ParseQ3(idLexer src, final idVec3 origin) throws idException {
             int i, rotate;
-            int[] shift = new int[2];
-            float[] scale = new float[2];
-            idVec3[] planepts = new idVec3[3];
-            idToken token = new idToken();
-            idList<idMapBrushSide> sides = new idList<>();
+            final int[] shift = new int[2];
+            final float[] scale = new float[2];
+            final idVec3[] planepts = new idVec3[3];
+            final idToken token = new idToken();
+            final idList<idMapBrushSide> sides = new idList<>();
             idMapBrushSide side;
-            idDict epairs = new idDict();
+            final idDict epairs = new idDict();
 
             do {
                 if (src.CheckTokenString("}")) {
@@ -360,7 +360,7 @@ public class MapFile {
                 }
             } while (true);
 
-            idMapBrush brush = new idMapBrush();
+            final idMapBrush brush = new idMapBrush();
             for (i = 0; i < sides.Num(); i++) {
                 brush.AddSide(sides.oGet(i));
             }
@@ -377,8 +377,8 @@ public class MapFile {
             fp.WriteFloatString("// primitive %d\n{\n brushDef3\n {\n", primitiveNum);
 
             // write brush epairs
-            for (i = 0; i < epairs.GetNumKeyVals(); i++) {
-                fp.WriteFloatString("  \"%s\" \"%s\"\n", epairs.GetKeyVal(i).GetKey(), epairs.GetKeyVal(i).GetValue());
+            for (i = 0; i < this.epairs.GetNumKeyVals(); i++) {
+                fp.WriteFloatString("  \"%s\" \"%s\"\n", this.epairs.GetKeyVal(i).GetKey(), this.epairs.GetKeyVal(i).GetValue());
             }
 
             // write brush sides
@@ -397,15 +397,15 @@ public class MapFile {
         }
 
         public int GetNumSides() {
-            return sides.Num();
+            return this.sides.Num();
         }
 
         public int AddSide(idMapBrushSide side) {
-            return sides.Append(side);
+            return this.sides.Append(side);
         }
 
         public idMapBrushSide GetSide(int i) {
-            return sides.oGet(i);
+            return this.sides.oGet(i);
         }
 
         public int GetGeometryCRC() {
@@ -424,7 +424,7 @@ public class MapFile {
 
             return (int) crc;
         }
-    };
+    }
 
     private static long FloatCRC(float f) {
         return Integer.toUnsignedLong(Float.floatToIntBits(f));
@@ -450,23 +450,23 @@ public class MapFile {
         //
 
         public idMapPatch() {
-            type = TYPE_PATCH;
-            horzSubdivisions = vertSubdivisions = 0;
-            explicitSubdivisions = false;
-            width = height = 0;
-            maxWidth = maxHeight = 0;
-            expanded = false;
+            this.type = TYPE_PATCH;
+            this.horzSubdivisions = this.vertSubdivisions = 0;
+            this.explicitSubdivisions = false;
+            this.width = this.height = 0;
+            this.maxWidth = this.maxHeight = 0;
+            this.expanded = false;
         }
 
         public idMapPatch(int maxPatchWidth, int maxPatchHeight) {
-            type = TYPE_PATCH;
-            horzSubdivisions = vertSubdivisions = 0;
-            explicitSubdivisions = false;
-            width = height = 0;
-            maxWidth = maxPatchWidth;
-            maxHeight = maxPatchHeight;
-            verts.SetNum(maxWidth * maxHeight);
-            expanded = false;
+            this.type = TYPE_PATCH;
+            this.horzSubdivisions = this.vertSubdivisions = 0;
+            this.explicitSubdivisions = false;
+            this.width = this.height = 0;
+            this.maxWidth = maxPatchWidth;
+            this.maxHeight = maxPatchHeight;
+            this.verts.SetNum(this.maxWidth * this.maxHeight);
+            this.expanded = false;
         }
 
         @Deprecated
@@ -478,9 +478,9 @@ public class MapFile {
 //public							~idMapPatch( void ) { }
 //public	static idMapPatch *		Parse( idLexer &src, const idVec3 &origin, bool patchDef3 = true, float version = CURRENT_MAP_VERSION );
         public static idMapPatch Parse(idLexer src, final idVec3 origin, boolean patchDef3, float version) throws idException {
-            float[] info = new float[7];
+            final float[] info = new float[7];
             idDrawVert vert;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             int i, j;
 
             if (!src.ExpectTokenString("{")) {
@@ -506,7 +506,7 @@ public class MapFile {
                 }
             }
 
-            idMapPatch patch = new idMapPatch((int) info[0], (int) info[1]);
+            final idMapPatch patch = new idMapPatch((int) info[0], (int) info[1]);
             patch.SetSize((int) info[0], (int) info[1]);
             if (version < 2.0f) {
                 patch.SetMaterial("textures/" + token);
@@ -520,7 +520,7 @@ public class MapFile {
                 patch.SetExplicitlySubdivided(true);
             }
 
-            if (patch.GetWidth() < 0 || patch.GetHeight() < 0) {
+            if ((patch.GetWidth() < 0) || (patch.GetHeight() < 0)) {
                 src.Error("idMapPatch::Parse: bad size");
                 return null;
             }
@@ -536,7 +536,7 @@ public class MapFile {
                     return null;
                 }
                 for (i = 0; i < patch.GetHeight(); i++) {
-                    float[] v = new float[5];
+                    final float[] v = new float[5];
 
                     if (!src.Parse1DMatrix(5, v)) {
                         src.Error("idMapPatch::Parse: bad vertex column data");
@@ -544,7 +544,7 @@ public class MapFile {
                     }
 
 //                    vert = patch.oGet(i * patch.GetWidth() + j);
-                    vert = patch.verts.oSet(i * patch.GetWidth() + j, new idDrawVert());
+                    vert = patch.verts.oSet((i * patch.GetWidth()) + j, new idDrawVert());
                     vert.xyz.oSet(0, v[0] - origin.oGet(0));
                     vert.xyz.oSet(1, v[1] - origin.oGet(1));
                     vert.xyz.oSet(2, v[2] - origin.oGet(2));
@@ -568,7 +568,7 @@ public class MapFile {
                     break;
                 }
                 if (token.type == TT_STRING) {
-                    idStr key = token;
+                    final idStr key = token;
                     src.ExpectTokenType(TT_STRING, 0, token);
                     patch.epairs.Set(key.getData(), token.getData());
                 }
@@ -593,7 +593,7 @@ public class MapFile {
             for (i = 0; i < GetWidth(); i++) {
                 fp.WriteFloatString("   ( ");
                 for (j = 0; j < GetHeight(); j++) {
-                    v = verts.oGet(j * GetWidth() + i);
+                    v = this.verts.oGet((j * GetWidth()) + i);
                     fp.WriteFloatString(" ( %f %f %f %f %f )",
                             v.xyz.oGet(0) + origin.oGet(0),
                             v.xyz.oGet(1) + origin.oGet(1),
@@ -609,35 +609,35 @@ public class MapFile {
         }
 
         public idStr GetMaterial() {
-            return material;
+            return this.material;
         }
 
         public void SetMaterial(final String p) {
-            material = new idStr(p);
+            this.material = new idStr(p);
         }
 
         public int GetHorzSubdivisions() {
-            return horzSubdivisions;
+            return this.horzSubdivisions;
         }
 
         public int GetVertSubdivisions() {
-            return vertSubdivisions;
+            return this.vertSubdivisions;
         }
 
         public boolean GetExplicitlySubdivided() {
-            return explicitSubdivisions;
+            return this.explicitSubdivisions;
         }
 
         public void SetHorzSubdivisions(int n) {
-            horzSubdivisions = n;
+            this.horzSubdivisions = n;
         }
 
         public void SetVertSubdivisions(int n) {
-            vertSubdivisions = n;
+            this.vertSubdivisions = n;
         }
 
         public void SetExplicitlySubdivided(boolean b) {
-            explicitSubdivisions = b;
+            this.explicitSubdivisions = b;
         }
 
         public int GetGeometryCRC() {
@@ -647,9 +647,9 @@ public class MapFile {
             crc = GetHorzSubdivisions() ^ GetVertSubdivisions();
             for (i = 0; i < GetWidth(); i++) {
                 for (j = 0; j < GetHeight(); j++) {
-                    crc ^= FloatCRC(verts.oGet(j * GetWidth() + i).xyz.x);
-                    crc ^= FloatCRC(verts.oGet(j * GetWidth() + i).xyz.y);
-                    crc ^= FloatCRC(verts.oGet(j * GetWidth() + i).xyz.z);
+                    crc ^= FloatCRC(this.verts.oGet((j * GetWidth()) + i).xyz.x);
+                    crc ^= FloatCRC(this.verts.oGet((j * GetWidth()) + i).xyz.y);
+                    crc ^= FloatCRC(this.verts.oGet((j * GetWidth()) + i).xyz.z);
                 }
             }
 
@@ -669,25 +669,25 @@ public class MapFile {
         protected idList<idDrawVert> verts = new idList<>();	// vertices
 
         public int GetWidth() {
-            return width;
+            return this.width;
         }
 
         public int GetHeight() {
-            return height;
+            return this.height;
         }
 
         public void SetSize(int patchWidth, int patchHeight) throws idException {
-            if (patchWidth < 1 || patchWidth > maxWidth) {
+            if ((patchWidth < 1) || (patchWidth > this.maxWidth)) {
                 idLib.common.FatalError("idSurface_Patch::SetSize: invalid patchWidth");
             }
-            if (patchHeight < 1 || patchHeight > maxHeight) {
+            if ((patchHeight < 1) || (patchHeight > this.maxHeight)) {
                 idLib.common.FatalError("idSurface_Patch::SetSize: invalid patchHeight");
             }
-            width = patchWidth;
-            height = patchHeight;
-            verts.SetNum(width * height, false);
+            this.width = patchWidth;
+            this.height = patchHeight;
+            this.verts.SetNum(this.width * this.height, false);
         }
-    };
+    }
 
     public static class idMapEntity {
 //	friend class			idMapFile;
@@ -701,20 +701,20 @@ public class MapFile {
         //
 
         public idMapEntity() {
-            epairs = new idDict();
-            epairs.SetHashSize(64);
-            primitives = new idList<>();
+            this.epairs = new idDict();
+            this.epairs.SetHashSize(64);
+            this.primitives = new idList<>();
         }
 //public							~idMapEntity( void ) { primitives.DeleteContents( true ); }
 //public	static idMapEntity *	Parse( idLexer &src, bool worldSpawn = false, float version = CURRENT_MAP_VERSION );
 
         public static idMapEntity Parse(idLexer src, boolean worldSpawn, float version) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idMapEntity mapEnt;
             idMapPatch mapPatch;
             idMapBrush mapBrush;
             boolean worldent;
-            idVec3 origin = new idVec3();
+            final idVec3 origin = new idVec3();
             float v1, v2, v3;
 
             if (!src.ReadToken(token)) {
@@ -756,7 +756,7 @@ public class MapFile {
 
                     // if is it a brush: brush, brushDef, brushDef2, brushDef3
                     if (token.Icmpn("brush", 5) == 0) {
-                        mapBrush = idMapBrush.Parse(src, origin, (0 == token.Icmp("brushDef2") || 0 == token.Icmp("brushDef3")), version);
+                        mapBrush = idMapBrush.Parse(src, origin, ((0 == token.Icmp("brushDef2")) || (0 == token.Icmp("brushDef3"))), version);
                         if (null == mapBrush) {
                             return null;
                         }
@@ -796,11 +796,11 @@ public class MapFile {
                         // scanf into doubles, then assign, so it is idVec size independent
                         v1 = v2 = v3 = 0;
 //                        sscanf(value, "%lf %lf %lf",  & v1,  & v2,  & v3);
-                        String[] values = value.getData().split(" ");
+                        final String[] values = value.getData().split(" ");
                         origin.x = v1 = Float.parseFloat(values[0]);
                         origin.y = v2 = Float.parseFloat(values[1]);
                         origin.z = v3 = Float.parseFloat(values[2]);
-                    } else if (0 == idStr.Icmp(key, "classname") && 0 == idStr.Icmp(value, "worldspawn")) {
+                    } else if ((0 == idStr.Icmp(key, "classname")) && (0 == idStr.Icmp(value, "worldspawn"))) {
                         worldent = true;
                     }
                 }
@@ -812,16 +812,16 @@ public class MapFile {
         public boolean Write(idFile fp, int entityNum) throws idException {
             int i;
             idMapPrimitive mapPrim;
-            idVec3 origin = new idVec3();
+            final idVec3 origin = new idVec3();
 
             fp.WriteFloatString("// entity %d\n{\n", entityNum);
 
             // write entity epairs
-            for (i = 0; i < epairs.GetNumKeyVals(); i++) {
-                fp.WriteFloatString("\"%s\" \"%s\"\n", epairs.GetKeyVal(i).GetKey(), epairs.GetKeyVal(i).GetValue());
+            for (i = 0; i < this.epairs.GetNumKeyVals(); i++) {
+                fp.WriteFloatString("\"%s\" \"%s\"\n", this.epairs.GetKeyVal(i).GetKey(), this.epairs.GetKeyVal(i).GetValue());
             }
 
-            epairs.GetVector("origin", "0 0 0", origin);
+            this.epairs.GetVector("origin", "0 0 0", origin);
 
             // write pritimives
             for (i = 0; i < GetNumPrimitives(); i++) {
@@ -843,15 +843,15 @@ public class MapFile {
         }
 
         public int GetNumPrimitives() {
-            return primitives.Num();
+            return this.primitives.Num();
         }
 
         public idMapPrimitive GetPrimitive(int i) {
-            return primitives.oGet(i);
+            return this.primitives.oGet(i);
         }
 
         public void AddPrimitive(idMapPrimitive p) {
-            primitives.Append(p);
+            this.primitives.Append(p);
         }
 
         public int GetGeometryCRC() {
@@ -877,10 +877,10 @@ public class MapFile {
         }
 
         public void RemovePrimitiveData() {
-            primitives.DeleteContents(true);
+            this.primitives.DeleteContents(true);
         }
 
-    };
+    }
 
     public static class idMapFile {
 
@@ -894,12 +894,12 @@ public class MapFile {
 //
 
         public idMapFile() {
-            version = CURRENT_MAP_VERSION;
-            fileTime = 0;
-            geometryCRC = 0;
-            entities = new idList<>();
-            entities.Resize(1024, 256);
-            hasPrimitiveData = false;
+            this.version = CURRENT_MAP_VERSION;
+            this.fileTime = 0;
+            this.geometryCRC = 0;
+            this.entities = new idList<>();
+            this.entities.Resize(1024, 256);
+            this.hasPrimitiveData = false;
         }
 //public							~idMapFile( void ) { entities.DeleteContents( true ); }
 //
@@ -910,16 +910,16 @@ public class MapFile {
         // load a .map file
         public boolean Parse(final String filename, boolean ignoreRegion/*= false*/, boolean osPath/*= false*/) throws idException {
             // no string concatenation for epairs and allow path names for materials
-            idLexer src = new idLexer(LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS | LEXFL_ALLOWPATHNAMES);
-            idToken token = new idToken();
+            final idLexer src = new idLexer(LEXFL_NOSTRINGCONCAT | LEXFL_NOSTRINGESCAPECHARS | LEXFL_ALLOWPATHNAMES);
+            final idToken token = new idToken();
             idStr fullName;
             idMapEntity mapEnt;
             int i, j, k;
 
-            name = new idStr(filename);
-            name.StripFileExtension();
-            fullName = name;
-            hasPrimitiveData = false;
+            this.name = new idStr(filename);
+            this.name.StripFileExtension();
+            fullName = this.name;
+            this.hasPrimitiveData = false;
 
             if (!ignoreRegion) {
                 // try loading a .reg file first
@@ -937,45 +937,45 @@ public class MapFile {
                 }
             }
 
-            version = OLD_MAP_VERSION;
-            fileTime = src.GetFileTime();
-            entities.DeleteContents(true);
+            this.version = OLD_MAP_VERSION;
+            this.fileTime = src.GetFileTime();
+            this.entities.DeleteContents(true);
 
             if (src.CheckTokenString("Version")) {
                 src.ReadTokenOnLine(token);
-                version = token.GetFloatValue();
+                this.version = token.GetFloatValue();
             }
 
             while (true) {
-                mapEnt = idMapEntity.Parse(src, (entities.Num() == 0), version);
+                mapEnt = idMapEntity.Parse(src, (this.entities.Num() == 0), this.version);
                 if (null == mapEnt) {
                     break;
                 }
-                entities.Append(mapEnt);
+                this.entities.Append(mapEnt);
             }
 
             SetGeometryCRC();
 
             // if the map has a worldspawn
-            if (entities.Num() != 0) {
+            if (this.entities.Num() != 0) {
 
                 // "removeEntities" "classname" can be set in the worldspawn to remove all entities with the given classname
-                idKeyValue removeEntities = entities.oGet(0).epairs.MatchPrefix("removeEntities", null);
+                idKeyValue removeEntities = this.entities.oGet(0).epairs.MatchPrefix("removeEntities", null);
                 while (removeEntities != null) {
                     RemoveEntities(removeEntities.GetValue().getData());
-                    removeEntities = entities.oGet(0).epairs.MatchPrefix("removeEntities", removeEntities);
+                    removeEntities = this.entities.oGet(0).epairs.MatchPrefix("removeEntities", removeEntities);
                 }
 
                 // "overrideMaterial" "material" can be set in the worldspawn to reset all materials
-                idStr material = new idStr();
-                if (entities.oGet(0).epairs.GetString("overrideMaterial", "", material)) {
-                    for (i = 0; i < entities.Num(); i++) {
-                        mapEnt = entities.oGet(i);
+                final idStr material = new idStr();
+                if (this.entities.oGet(0).epairs.GetString("overrideMaterial", "", material)) {
+                    for (i = 0; i < this.entities.Num(); i++) {
+                        mapEnt = this.entities.oGet(i);
                         for (j = 0; j < mapEnt.GetNumPrimitives(); j++) {
-                            idMapPrimitive mapPrimitive = mapEnt.GetPrimitive(j);
+                            final idMapPrimitive mapPrimitive = mapEnt.GetPrimitive(j);
                             switch (mapPrimitive.GetType()) {
                                 case TYPE_BRUSH: {
-                                    idMapBrush mapBrush = (idMapBrush) mapPrimitive;
+                                    final idMapBrush mapBrush = (idMapBrush) mapPrimitive;
                                     for (k = 0; k < mapBrush.GetNumSides(); k++) {
                                         mapBrush.GetSide(k).SetMaterial(material.getData());
                                     }
@@ -991,9 +991,9 @@ public class MapFile {
                 }
 
                 // force all entities to have a name key/value pair
-                if (entities.oGet(0).epairs.GetBool("forceEntityNames")) {
-                    for (i = 1; i < entities.Num(); i++) {
-                        mapEnt = entities.oGet(i);
+                if (this.entities.oGet(0).epairs.GetBool("forceEntityNames")) {
+                    for (i = 1; i < this.entities.Num(); i++) {
+                        mapEnt = this.entities.oGet(i);
                         if (null == mapEnt.epairs.FindKey("name")) {
                             mapEnt.epairs.Set("name", va("%s%d", mapEnt.epairs.GetString("classname", "forcedName"), i));
                         }
@@ -1001,18 +1001,18 @@ public class MapFile {
                 }
 
                 // move the primitives of any func_group entities to the worldspawn
-                if (entities.oGet(0).epairs.GetBool("moveFuncGroups")) {
-                    for (i = 1; i < entities.Num(); i++) {
-                        mapEnt = entities.oGet(i);
+                if (this.entities.oGet(0).epairs.GetBool("moveFuncGroups")) {
+                    for (i = 1; i < this.entities.Num(); i++) {
+                        mapEnt = this.entities.oGet(i);
                         if (idStr.Icmp(mapEnt.epairs.GetString("classname"), "func_group") == 0) {
-                            entities.oGet(0).primitives.Append(mapEnt.primitives);
+                            this.entities.oGet(0).primitives.Append(mapEnt.primitives);
                             mapEnt.primitives.Clear();
                         }
                     }
                 }
             }
 
-            hasPrimitiveData = true;
+            this.hasPrimitiveData = true;
             return true;
         }
 
@@ -1055,8 +1055,8 @@ public class MapFile {
 
             fp.WriteFloatString("Version %f\n", CURRENT_MAP_VERSION);
 
-            for (i = 0; i < entities.Num(); i++) {
-                entities.oGet(i).Write(fp, i);
+            for (i = 0; i < this.entities.Num(); i++) {
+                this.entities.oGet(i).Write(fp, i);
             }
 
             idLib.fileSystem.CloseFile(fp);
@@ -1066,41 +1066,41 @@ public class MapFile {
         // get the number of entities in the map
 
         public int GetNumEntities() {
-            return entities.Num();
+            return this.entities.Num();
         }
 
         // get the specified entity
         public idMapEntity GetEntity(int i) {
-            return entities.oGet(i);
+            return this.entities.oGet(i);
         }
 
         // get the name without file extension
         public String GetName() {
-            return name.getData();
+            return this.name.getData();
         }
 
         public idStr GetNameStr() {
-            return name;
+            return this.name;
         }
 
         // get the file time
         public long GetFileTime() {
-            return fileTime;
+            return this.fileTime;
         }
 
         // get CRC for the map geometry
         // texture coordinates and entity key/value pairs are not taken into account
         public int GetGeometryCRC() {
-            return geometryCRC;
+            return this.geometryCRC;
         }
 
         // returns true if the file on disk changed
         public boolean NeedsReload() {
-            if (name.Length() != 0) {
+            if (this.name.Length() != 0) {
 //		ID_TIME_T time = (ID_TIME_T)-1;
-                long[] time = {Long.MAX_VALUE};
-                if (idLib.fileSystem.ReadFile(name.getData(), null, time) > 0) {
-                    return (time[0] > fileTime);
+                final long[] time = {Long.MAX_VALUE};
+                if (idLib.fileSystem.ReadFile(this.name.getData(), null, time) > 0) {
+                    return (time[0] > this.fileTime);
                 }
             }
             return true;
@@ -1108,13 +1108,13 @@ public class MapFile {
 //
 
         public int AddEntity(idMapEntity mapentity) {
-            int ret = entities.Append(mapentity);
+            final int ret = this.entities.Append(mapentity);
             return ret;
         }
 
         public idMapEntity FindEntity(final String name) throws idException {
-            for (int i = 0; i < entities.Num(); i++) {
-                idMapEntity ent = entities.oGet(i);
+            for (int i = 0; i < this.entities.Num(); i++) {
+                final idMapEntity ent = this.entities.oGet(i);
                 if (idStr.Icmp(ent.epairs.GetString("name"), name) == 0) {
                     return ent;
                 }
@@ -1127,46 +1127,46 @@ public class MapFile {
         }
 
         public void RemoveEntity(idMapEntity mapEnt) {
-            entities.Remove(mapEnt);
+            this.entities.Remove(mapEnt);
 //	delete mapEnt;
         }
 
         public void RemoveEntities(final String classname) throws idException {
-            for (int i = 0; i < entities.Num(); i++) {
-                idMapEntity ent = entities.oGet(i);
+            for (int i = 0; i < this.entities.Num(); i++) {
+                final idMapEntity ent = this.entities.oGet(i);
                 if (idStr.Icmp(ent.epairs.GetString("classname"), classname) == 0) {
 //			delete entities[i];
-                    entities.RemoveIndex(i);
+                    this.entities.RemoveIndex(i);
                     i--;
                 }
             }
         }
 
         public void RemoveAllEntities() {
-            entities.DeleteContents(true);
-            hasPrimitiveData = false;
+            this.entities.DeleteContents(true);
+            this.hasPrimitiveData = false;
         }
 
         public void RemovePrimitiveData() {
-            for (int i = 0; i < entities.Num(); i++) {
-                idMapEntity ent = entities.oGet(i);
+            for (int i = 0; i < this.entities.Num(); i++) {
+                final idMapEntity ent = this.entities.oGet(i);
                 ent.RemovePrimitiveData();
             }
-            hasPrimitiveData = false;
+            this.hasPrimitiveData = false;
         }
 
         public boolean HasPrimitiveData() {
-            return hasPrimitiveData;
+            return this.hasPrimitiveData;
         }
 
         private void SetGeometryCRC() {
             int i;
 
-            geometryCRC = 0;
-            for (i = 0; i < entities.Num(); i++) {
-                geometryCRC ^= entities.oGet(i).GetGeometryCRC();
+            this.geometryCRC = 0;
+            for (i = 0; i < this.entities.Num(); i++) {
+                this.geometryCRC ^= this.entities.oGet(i).GetGeometryCRC();
 //                System.out.println(">>"+geometryCRC);
             }
         }
-    };
+    }
 }

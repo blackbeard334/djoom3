@@ -80,37 +80,37 @@ public class snd_cache {
 
         public idSoundSample() {
 //	memset( &objectInfo, 0, sizeof(waveformatex_t) );
-            objectInfo = new waveformatex_s();
-            objectSize = 0;
-            objectMemSize = 0;
-            nonCacheData = null;
-            amplitudeData = null;
-            openalBuffer = 0;
-            hardwareBuffer = false;
-            defaultSound = false;
-            onDemand = false;
-            purged = false;
-            levelLoadReferenced = false;
+            this.objectInfo = new waveformatex_s();
+            this.objectSize = 0;
+            this.objectMemSize = 0;
+            this.nonCacheData = null;
+            this.amplitudeData = null;
+            this.openalBuffer = 0;
+            this.hardwareBuffer = false;
+            this.defaultSound = false;
+            this.onDemand = false;
+            this.purged = false;
+            this.levelLoadReferenced = false;
         }
         // ~idSoundSample();
 
         public int LengthIn44kHzSamples() {
             // objectSize is samples
-            if (objectInfo.nSamplesPerSec == 11025) {
-                return objectSize << 2;
-            } else if (objectInfo.nSamplesPerSec == 22050) {
-                return objectSize << 1;
+            if (this.objectInfo.nSamplesPerSec == 11025) {
+                return this.objectSize << 2;
+            } else if (this.objectInfo.nSamplesPerSec == 22050) {
+                return this.objectSize << 1;
             } else {
-                return objectSize << 0;
+                return this.objectSize << 0;
             }
         }
 
         public long/*ID_TIME_T*/ GetNewTimeStamp() {
-            long[] timestamp = {0};
+            final long[] timestamp = {0};
 
-            fileSystem.ReadFile(name.getData(), null, timestamp);
+            fileSystem.ReadFile(this.name.getData(), null, timestamp);
             if (timestamp[0] == FILE_NOT_FOUND_TIMESTAMP) {
-                idStr oggName = new idStr(name);
+                final idStr oggName = new idStr(this.name);
                 oggName.SetFileExtension(".ogg");
                 fileSystem.ReadFile(oggName.getData(), null, timestamp);
             }
@@ -124,45 +124,45 @@ public class snd_cache {
             short sample;
 
 //	memset( &objectInfo, 0, sizeof( objectInfo ) );
-            objectInfo = new waveformatex_s();
+            this.objectInfo = new waveformatex_s();
 
-            objectInfo.nChannels = 1;
-            objectInfo.wBitsPerSample = 16;
-            objectInfo.nSamplesPerSec = 44100;
+            this.objectInfo.nChannels = 1;
+            this.objectInfo.wBitsPerSample = 16;
+            this.objectInfo.nSamplesPerSec = 44100;
 
-            objectSize = MIXBUFFER_SAMPLES * 2;
-            objectMemSize = objectSize * 2;//* sizeof(short);
+            this.objectSize = MIXBUFFER_SAMPLES * 2;
+            this.objectMemSize = this.objectSize * 2;//* sizeof(short);
 
-            nonCacheData = BufferUtils.createByteBuffer(objectMemSize);//soundCacheAllocator.Alloc(objectMemSize);
+            this.nonCacheData = BufferUtils.createByteBuffer(this.objectMemSize);//soundCacheAllocator.Alloc(objectMemSize);
 
-            ShortBuffer ncd = nonCacheData.asShortBuffer();
+            final ShortBuffer ncd = this.nonCacheData.asShortBuffer();
 
             for (i = 0; i < MIXBUFFER_SAMPLES; i++) {
-                v = (float) sin(idMath.PI * 2 * i / 64);
+                v = (float) sin((idMath.PI * 2 * i) / 64);
                 sample = (short) (v * 0x4000);
-                ncd.put(i * 2 + 0, sample);
-                ncd.put(i * 2 + 1, sample);
+                ncd.put((i * 2) + 0, sample);
+                ncd.put((i * 2) + 1, sample);
             }
 
             if (idSoundSystemLocal.useOpenAL) {
                 alGetError();
 //                alGenBuffers(1, openalBuffer);
-                openalBuffer = AL10.alGenBuffers();
+                this.openalBuffer = AL10.alGenBuffers();
                 if (alGetError() != AL_NO_ERROR) {
                     common.Error("idSoundCache: error generating OpenAL hardware buffer");
                 }
 
                 alGetError();
 //                alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, objectMemSize, objectInfo.nSamplesPerSec);
-                AL10.alBufferData(openalBuffer/*  <<TODO>>   */, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, (int) objectInfo.nSamplesPerSec);
+                AL10.alBufferData(this.openalBuffer/*  <<TODO>>   */, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, this.nonCacheData, this.objectInfo.nSamplesPerSec);
                 if (alGetError() != AL_NO_ERROR) {
                     common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                 } else {
-                    hardwareBuffer = true;
+                    this.hardwareBuffer = true;
                 }
             }
 
-            defaultSound = true;
+            this.defaultSound = true;
         }
 
         /*
@@ -174,57 +174,57 @@ public class snd_cache {
          */
         // loads the current sound based on name
         public void Load() {
-            defaultSound = false;
-            purged = false;
-            hardwareBuffer = false;
+            this.defaultSound = false;
+            this.purged = false;
+            this.hardwareBuffer = false;
 
-            timestamp = GetNewTimeStamp();
+            this.timestamp = GetNewTimeStamp();
 
-            if (timestamp == FILE_NOT_FOUND_TIMESTAMP) {
-                common.Warning("Couldn't load sound '%s' using default", name);
+            if (this.timestamp == FILE_NOT_FOUND_TIMESTAMP) {
+                common.Warning("Couldn't load sound '%s' using default", this.name);
                 MakeDefault();
                 return;
             }
 
             // load it
-            idWaveFile fh = new idWaveFile();
-            waveformatex_s[] info = {null};
+            final idWaveFile fh = new idWaveFile();
+            final waveformatex_s[] info = {null};
 
-            if (fh.Open(name.getData(), info) == -1) {
-                common.Warning("Couldn't load sound '%s' using default", name);
+            if (fh.Open(this.name.getData(), info) == -1) {
+                common.Warning("Couldn't load sound '%s' using default", this.name);
                 MakeDefault();
                 return;
             }
 
-            if (info[0].nChannels != 1 && info[0].nChannels != 2) {
-                common.Warning("idSoundSample: %s has %d channels, using default", name, info[0].nChannels);
+            if ((info[0].nChannels != 1) && (info[0].nChannels != 2)) {
+                common.Warning("idSoundSample: %s has %d channels, using default", this.name, info[0].nChannels);
                 fh.Close();
                 MakeDefault();
                 return;
             }
 
             if (info[0].wBitsPerSample != 16) {
-                common.Warning("idSoundSample: %s is %dbits, expected 16bits using default", name, info[0].wBitsPerSample);
+                common.Warning("idSoundSample: %s is %dbits, expected 16bits using default", this.name, info[0].wBitsPerSample);
                 fh.Close();
                 MakeDefault();
                 return;
             }
 
-            if (info[0].nSamplesPerSec != 44100 && info[0].nSamplesPerSec != 22050 && info[0].nSamplesPerSec != 11025) {
-                common.Warning("idSoundCache: %s is %dHz, expected 11025, 22050 or 44100 Hz. Using default", name, info[0].nSamplesPerSec);
+            if ((info[0].nSamplesPerSec != 44100) && (info[0].nSamplesPerSec != 22050) && (info[0].nSamplesPerSec != 11025)) {
+                common.Warning("idSoundCache: %s is %dHz, expected 11025, 22050 or 44100 Hz. Using default", this.name, info[0].nSamplesPerSec);
                 fh.Close();
                 MakeDefault();
                 return;
             }
 
-            objectInfo = info[0];
-            objectSize = fh.GetOutputSize();
-            objectMemSize = fh.GetMemorySize();
+            this.objectInfo = info[0];
+            this.objectSize = fh.GetOutputSize();
+            this.objectMemSize = fh.GetMemorySize();
 
-            nonCacheData = BufferUtils.createByteBuffer(objectMemSize);//soundCacheAllocator.Alloc( objectMemSize );
-            ByteBuffer temp = ByteBuffer.allocate(objectMemSize);
-            fh.Read(temp, objectMemSize, null);
-            nonCacheData.put(temp).rewind();
+            this.nonCacheData = BufferUtils.createByteBuffer(this.objectMemSize);//soundCacheAllocator.Alloc( objectMemSize );
+            final ByteBuffer temp = ByteBuffer.allocate(this.objectMemSize);
+            fh.Read(temp, this.objectMemSize, null);
+            this.nonCacheData.put(temp).rewind();
 
             // optionally convert it to 22kHz to save memory
             CheckForDownSample();
@@ -232,68 +232,68 @@ public class snd_cache {
             // create hardware audio buffers 
             if (idSoundSystemLocal.useOpenAL) {
                 // PCM loads directly;
-                if (objectInfo.wFormatTag == WAVE_FORMAT_TAG_PCM) {
+                if (this.objectInfo.wFormatTag == WAVE_FORMAT_TAG_PCM) {
                     alGetError();
 //                    alGenBuffers(1, openalBuffer);
-                    openalBuffer = AL10.alGenBuffers();
+                    this.openalBuffer = AL10.alGenBuffers();
                     if (alGetError() != AL_NO_ERROR) {
                         common.Error("idSoundCache: error generating OpenAL hardware buffer");
                     }
 //                    if (alIsBuffer(openalBuffer)) {
-                    if (AL10.alIsBuffer(openalBuffer)) {
+                    if (AL10.alIsBuffer(this.openalBuffer)) {
                         alGetError();
 //                        alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, objectMemSize, objectInfo.nSamplesPerSec);
-                        AL10.alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, (int) objectInfo.nSamplesPerSec);
+                        AL10.alBufferData(this.openalBuffer, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, this.nonCacheData, this.objectInfo.nSamplesPerSec);
                         if (alGetError() != AL_NO_ERROR) {
                             common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                         } else {
                             // Compute amplitude block size
-                            int blockSize = (int) (512 * objectInfo.nSamplesPerSec / 44100);
+                            final int blockSize = (512 * this.objectInfo.nSamplesPerSec) / 44100;
 
                             // Allocate amplitude data array
-                            amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
+                            this.amplitudeData = BufferUtils.createByteBuffer(((this.objectSize / blockSize) + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short) );
 
                             // Creating array of min/max amplitude pairs per blockSize samples
-                            final ShortBuffer ncd = nonCacheData.asShortBuffer();
+                            final ShortBuffer ncd = this.nonCacheData.asShortBuffer();
                             int i;
-                            for (i = 0; i < objectSize; i += blockSize) {
+                            for (i = 0; i < this.objectSize; i += blockSize) {
                                 short min = 32767;
                                 short max = -32768;
 
                                 int j;
-                                for (j = 0; j < Min(objectSize - i, blockSize); j++) {
+                                for (j = 0; j < Min(this.objectSize - i, blockSize); j++) {
                                     min = (short) Math.min(ncd.get(i + j), min);
                                     max = (short) Math.max(ncd.get(i + j), max);
                                 }
 
-                                amplitudeData.putShort((i / blockSize) * 2, min);
-                                amplitudeData.putShort((i / blockSize) * 2 + 1, max);
+                                this.amplitudeData.putShort((i / blockSize) * 2, min);
+                                this.amplitudeData.putShort(((i / blockSize) * 2) + 1, max);
                             }
 
-                            hardwareBuffer = true;
+                            this.hardwareBuffer = true;
                         }
                     }
                 }
 
                 // OGG decompressed at load time (when smaller than s_decompressionLimit seconds, 6 seconds by default)
-                if (objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
-                    if ((MACOS_X && (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))
-                            || (alIsExtensionPresent("EAX-RAM") &&  (objectSize < (objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))) {
+                if (this.objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
+                    if ((MACOS_X && (this.objectSize < (this.objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))
+                            || (alIsExtensionPresent("EAX-RAM") &&  (this.objectSize < (this.objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))) {
                         alGetError();
-                        openalBuffer = AL10.alGenBuffers();
+                        this.openalBuffer = AL10.alGenBuffers();
                         if (alGetError() != AL_NO_ERROR) {
                             common.Error("idSoundCache: error generating OpenAL hardware buffer");
                         }
-                        if (AL10.alIsBuffer(openalBuffer)) {
-                            idSampleDecoder decoder = idSampleDecoder.Alloc();
+                        if (AL10.alIsBuffer(this.openalBuffer)) {
+                            final idSampleDecoder decoder = idSampleDecoder.Alloc();
                             ByteBuffer destData = BufferUtils.createByteBuffer((LengthIn44kHzSamples() + 1) * Float.BYTES);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
 
                             // Decoder *always* outputs 44 kHz data
                             decoder.Decode(this, 0, LengthIn44kHzSamples(), destData.asFloatBuffer());
 
                             // Downsample back to original frequency (save memory)
-                            if (objectInfo.nSamplesPerSec == 11025) {
-                                for (int i = 0; i < objectSize; i++) {
+                            if (this.objectInfo.nSamplesPerSec == 11025) {
+                                for (int i = 0; i < this.objectSize; i++) {
                                     if (destData.getFloat(i * 4) < -32768.0f) {
                                         destData.putShort(i, Short.MIN_VALUE);
                                     } else if (destData.getFloat(i * 4) > 32767.0f) {
@@ -302,8 +302,8 @@ public class snd_cache {
                                         destData.putShort(i, (short) idMath.FtoiFast(destData.getFloat(i * 4)));
                                     }
                                 }
-                            } else if (objectInfo.nSamplesPerSec == 22050) {
-                                for (int i = 0; i < objectSize; i++) {
+                            } else if (this.objectInfo.nSamplesPerSec == 22050) {
+                                for (int i = 0; i < this.objectSize; i++) {
                                     if (destData.getFloat(i * 2) < -32768.0f) {
                                         destData.putShort(i, Short.MIN_VALUE);
                                     } else if (destData.getFloat(i * 2) > 32767.0f) {
@@ -313,7 +313,7 @@ public class snd_cache {
                                     }
                                 }
                             } else {
-                                for (int i = 0; i < objectSize; i++) {
+                                for (int i = 0; i < this.objectSize; i++) {
                                     if (destData.getFloat(i) < -32768.0f) {
                                         destData.putShort(i, Short.MIN_VALUE);
                                     } else if (destData.getFloat(i) > 32767.0f) {
@@ -326,33 +326,33 @@ public class snd_cache {
 
                             alGetError();
 //                            alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, objectSize * sizeof(short), objectInfo.nSamplesPerSec);
-                            AL10.alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, (int) objectInfo.nSamplesPerSec);
+                            AL10.alBufferData(this.openalBuffer, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, this.objectInfo.nSamplesPerSec);
                             if (alGetError() != AL_NO_ERROR) {
                                 common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                             } else {
                                 // Compute amplitude block size
-                                int blockSize = (int) (512 * objectInfo.nSamplesPerSec / 44100);
+                                final int blockSize = (512 * this.objectInfo.nSamplesPerSec) / 44100;
 
                                 // Allocate amplitude data array
-                                amplitudeData = BufferUtils.createByteBuffer((objectSize / blockSize + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short ) );
+                                this.amplitudeData = BufferUtils.createByteBuffer(((this.objectSize / blockSize) + 1) * 2 * Short.BYTES);//soundCacheAllocator.Alloc( ( objectSize / blockSize + 1 ) * 2 * sizeof( short ) );
 
                                 // Creating array of min/max amplitude pairs per blockSize samples
                                 int i;
-                                for (i = 0; i < objectSize; i += blockSize) {
+                                for (i = 0; i < this.objectSize; i += blockSize) {
                                     short min = 32767;
                                     short max = -32768;
 
                                     int j;
-                                    for (j = 0; j < Min(objectSize - i, blockSize); j++) {
+                                    for (j = 0; j < Min(this.objectSize - i, blockSize); j++) {
                                         min = destData.getShort(i + j) < min ? destData.getShort(i + j) : min;
                                         max = destData.getShort(i + j) > max ? destData.getShort(i + j) : max;
                                     }
 
-                                    amplitudeData.putShort((i / blockSize) * 2, min);
-                                    amplitudeData.putShort((i / blockSize) * 2 + 1, max);
+                                    this.amplitudeData.putShort((i / blockSize) * 2, min);
+                                    this.amplitudeData.putShort(((i / blockSize) * 2) + 1, max);
                                 }
 
-                                hardwareBuffer = true;
+                                this.hardwareBuffer = true;
                             }
 
 //					soundCacheAllocator.Free( (byte *)destData );
@@ -363,9 +363,9 @@ public class snd_cache {
                 }
 
                 // Free memory if sample was loaded into hardware
-                if (hardwareBuffer) {
+                if (this.hardwareBuffer) {
 //			soundCacheAllocator.Free( nonCacheData );
-                    nonCacheData = null;
+                    this.nonCacheData = null;
                 }
             }
 
@@ -381,45 +381,45 @@ public class snd_cache {
                 newTimestamp = GetNewTimeStamp();
 
                 if (newTimestamp == FILE_NOT_FOUND_TIMESTAMP) {
-                    if (!defaultSound) {
-                        common.Warning("Couldn't load sound '%s' using default", name);
+                    if (!this.defaultSound) {
+                        common.Warning("Couldn't load sound '%s' using default", this.name);
                         MakeDefault();
                     }
                     return;
                 }
-                if (newTimestamp == timestamp) {
+                if (newTimestamp == this.timestamp) {
                     return;	// don't need to reload it
                 }
             }
 
-            common.Printf("reloading %s\n", name);
+            common.Printf("reloading %s\n", this.name);
             PurgeSoundSample();
             Load();
         }
 
         public void PurgeSoundSample() {			// frees all data
-            purged = true;
+            this.purged = true;
 
-            if (hardwareBuffer && idSoundSystemLocal.useOpenAL) {
+            if (this.hardwareBuffer && idSoundSystemLocal.useOpenAL) {
                 alGetError();
 //                alDeleteBuffers(1, openalBuffer);
-                AL10.alDeleteBuffers(openalBuffer);
+                AL10.alDeleteBuffers(this.openalBuffer);
                 if (alGetError() != AL_NO_ERROR) {
                     common.Error("idSoundCache: error unloading data from OpenAL hardware buffer");
                 } else {
-                    openalBuffer = 0;
-                    hardwareBuffer = false;
+                    this.openalBuffer = 0;
+                    this.hardwareBuffer = false;
                 }
             }
 
-            if (amplitudeData != null) {
+            if (this.amplitudeData != null) {
 //                soundCacheAllocator.Free(amplitudeData);
-                amplitudeData = null;
+                this.amplitudeData = null;
             }
 
-            if (nonCacheData != null) {
+            if (this.nonCacheData != null) {
 //                soundCacheAllocator.Free(nonCacheData);
-                nonCacheData = null;
+                this.nonCacheData = null;
             }
         }
 
@@ -427,28 +427,28 @@ public class snd_cache {
             if (!idSoundSystemLocal.s_force22kHz.GetBool()) {
                 return;
             }
-            if (objectInfo.wFormatTag != WAVE_FORMAT_TAG_PCM || objectInfo.nSamplesPerSec != 44100) {
+            if ((this.objectInfo.wFormatTag != WAVE_FORMAT_TAG_PCM) || (this.objectInfo.nSamplesPerSec != 44100)) {
                 return;
             }
-            int shortSamples = objectSize >> 1;
-            ByteBuffer converted = BufferUtils.createByteBuffer(shortSamples * 2);// soundCacheAllocator.Alloc(shortSamples);
+            final int shortSamples = this.objectSize >> 1;
+            final ByteBuffer converted = BufferUtils.createByteBuffer(shortSamples * 2);// soundCacheAllocator.Alloc(shortSamples);
 
-            if (objectInfo.nChannels == 1) {
+            if (this.objectInfo.nChannels == 1) {
                 for (int i = 0; i < shortSamples; i++) {
-                    converted.putShort(i, nonCacheData.getShort(i * 2));
+                    converted.putShort(i, this.nonCacheData.getShort(i * 2));
                 }
             } else {
                 for (int i = 0; i < shortSamples; i += 2) {
-                    converted.putShort(i + 0, nonCacheData.getShort(i * 2 + 0));
-                    converted.putShort(i + 1, nonCacheData.getShort(i * 2 + 1));
+                    converted.putShort(i + 0, this.nonCacheData.getShort((i * 2) + 0));
+                    converted.putShort(i + 1, this.nonCacheData.getShort((i * 2) + 1));
                 }
             }
 //            soundCacheAllocator.Free(nonCacheData);
-            nonCacheData = converted;
-            objectSize >>= 1;
-            objectMemSize >>= 1;
-            objectInfo.nAvgBytesPerSec >>= 1;
-            objectInfo.nSamplesPerSec >>= 1;
+            this.nonCacheData = converted;
+            this.objectSize >>= 1;
+            this.objectMemSize >>= 1;
+            this.objectInfo.nAvgBytesPerSec >>= 1;
+            this.objectInfo.nSamplesPerSec >>= 1;
         }
 
         /*
@@ -461,30 +461,30 @@ public class snd_cache {
         public boolean FetchFromCache(int offset, final ByteBuffer output, int[] position, int[] size, final boolean allowIO) {
             offset &= 0xfffffffe;
 
-            if (objectSize == 0 || offset < 0 || offset > objectSize * 2/*(int) sizeof(short)*/ || NOT(nonCacheData)) {
+            if ((this.objectSize == 0) || (offset < 0) || (offset > (this.objectSize * 2/*(int) sizeof(short)*/)) || NOT(this.nonCacheData)) {
                 return false;
             }
 
             if (output != null) {
-                nonCacheData.mark();
-                nonCacheData.position(offset);
+                this.nonCacheData.mark();
+                this.nonCacheData.position(offset);
 
-                output.put(nonCacheData);
+                output.put(this.nonCacheData);
 
-                nonCacheData.reset();
+                this.nonCacheData.reset();
             }
             if (position != null) {
                 position[0] = 0;
             }
             if (size != null) {
-                size[0] = objectSize * 2/*sizeof(short)*/ - offset;
+                size[0] = (this.objectSize * 2/*sizeof(short)*/) - offset;
                 if (size[0] > SCACHE_SIZE) {
                     size[0] = SCACHE_SIZE;
                 }
             }
             return true;
         }
-    };
+    }
 
     /*
      ===================================================================================
@@ -496,7 +496,7 @@ public class snd_cache {
     public static class idSoundCache {
 
         private boolean insideLevelLoad;
-        private idList<idSoundSample> listCache;
+        private final idList<idSoundSample> listCache;
         //
         //
 
@@ -504,9 +504,9 @@ public class snd_cache {
             this.listCache = new idList<>();
 //            soundCacheAllocator.Init();
 //            soundCacheAllocator.SetLockMemory(true);
-            listCache.AssureSize(1024, null);
-            listCache.SetGranularity(256);
-            insideLevelLoad = false;
+            this.listCache.AssureSize(1024, null);
+            this.listCache.SetGranularity(256);
+            this.insideLevelLoad = false;
         }
         // ~idSoundCache();
 
@@ -527,9 +527,9 @@ public class snd_cache {
             declManager.MediaPrint("%s\n", fname);
 
             // check to see if object is already in cache
-            for (int i = 0; i < listCache.Num(); i++) {
-                idSoundSample def = listCache.oGet(i);
-                if (def != null && def.name.equals(fname)) {
+            for (int i = 0; i < this.listCache.Num(); i++) {
+                final idSoundSample def = this.listCache.oGet(i);
+                if ((def != null) && def.name.equals(fname)) {
                     def.levelLoadReferenced = true;
                     if (def.purged && !loadOnDemandOnly) {
                         def.Load();
@@ -539,13 +539,13 @@ public class snd_cache {
             }
 
             // create a new entry
-            idSoundSample def = new idSoundSample();
+            final idSoundSample def = new idSoundSample();
 
-            int shandle = listCache.FindNull();
+            int shandle = this.listCache.FindNull();
             if (shandle != -1) {
-                listCache.oSet(shandle, def);
+                this.listCache.oSet(shandle, def);
             } else {
-                shandle = listCache.Append(def);
+                shandle = this.listCache.Append(def);
             }
 
             def.name = fname;
@@ -562,7 +562,7 @@ public class snd_cache {
         }
 
         public int GetNumObjects() {
-            return listCache.Num();
+            return this.listCache.Num();
         }
 
         /*
@@ -573,10 +573,10 @@ public class snd_cache {
          ===================
          */
         public idSoundSample GetObject(final int index) {
-            if (index < 0 || index > listCache.Num()) {
+            if ((index < 0) || (index > this.listCache.Num())) {
                 return null;
             }
-            return listCache.oGet(index);
+            return this.listCache.oGet(index);
         }
 
         /*
@@ -589,8 +589,8 @@ public class snd_cache {
         public void ReloadSounds(boolean force) {
             int i;
 
-            for (i = 0; i < listCache.Num(); i++) {
-                idSoundSample def = listCache.oGet(i);
+            for (i = 0; i < this.listCache.Num(); i++) {
+                final idSoundSample def = this.listCache.oGet(i);
                 if (def != null) {
                     def.Reload(force);
                 }
@@ -609,10 +609,10 @@ public class snd_cache {
          ====================
          */
         public void BeginLevelLoad() {
-            insideLevelLoad = true;
+            this.insideLevelLoad = true;
 
-            for (int i = 0; i < listCache.Num(); i++) {
-                idSoundSample sample = listCache.oGet(i);
+            for (int i = 0; i < this.listCache.Num(); i++) {
+                final idSoundSample sample = this.listCache.oGet(i);
                 if (null == sample) {
                     continue;
                 }
@@ -638,13 +638,13 @@ public class snd_cache {
             int useCount, purgeCount;
             common.Printf("----- idSoundCache::EndLevelLoad -----\n");
 
-            insideLevelLoad = false;
+            this.insideLevelLoad = false;
 
             // purge the ones we don't need
             useCount = 0;
             purgeCount = 0;
-            for (int i = 0; i < listCache.Num(); i++) {
-                idSoundSample sample = listCache.oGet(i);
+            for (int i = 0; i < this.listCache.Num(); i++) {
+                final idSoundSample sample = this.listCache.oGet(i);
                 if (null == sample) {
                     continue;
                 }
@@ -677,8 +677,8 @@ public class snd_cache {
             }
 
             // count
-            for (i = 0; i < listCache.Num(); i++, num++) {
-                if (null == listCache.oGet(i)) {
+            for (i = 0; i < this.listCache.Num(); i++, num++) {
+                if (null == this.listCache.oGet(i)) {
                     break;
                 }
             }
@@ -690,10 +690,10 @@ public class snd_cache {
                 sortIndex[i] = i;
             }
 
-            for (i = 0; i < num - 1; i++) {
+            for (i = 0; i < (num - 1); i++) {
                 for (j = i + 1; j < num; j++) {
-                    if (listCache.oGet(sortIndex[i]).objectMemSize < listCache.oGet(sortIndex[j]).objectMemSize) {
-                        int temp = sortIndex[i];
+                    if (this.listCache.oGet(sortIndex[i]).objectMemSize < this.listCache.oGet(sortIndex[j]).objectMemSize) {
+                        final int temp = sortIndex[i];
                         sortIndex[i] = sortIndex[j];
                         sortIndex[j] = temp;
                     }
@@ -702,7 +702,7 @@ public class snd_cache {
 
             // print next
             for (i = 0; i < num; i++) {
-                idSoundSample sample = listCache.oGet(sortIndex[i]);
+                final idSoundSample sample = this.listCache.oGet(sortIndex[i]);
 
                 // this is strange
                 if (null == sample) {
@@ -718,5 +718,5 @@ public class snd_cache {
             f.Printf("\nTotal sound bytes allocated: %s\n", idStr.FormatNumber(total).getData());
             fileSystem.CloseFile(f);
         }
-    };
+    }
 }

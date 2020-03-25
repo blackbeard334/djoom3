@@ -81,7 +81,7 @@ public class Angles {
          */
         @Deprecated
         public idAngles Zero() {
-            pitch = yaw = roll = 0.0f;
+            this.pitch = this.yaw = this.roll = 0.0f;
             return this;
         }
 //
@@ -91,11 +91,11 @@ public class Angles {
             assert ((index >= 0) && (index < 3));
             switch (index) {
                 default:
-                    return pitch;
+                    return this.pitch;
                 case 1:
-                    return yaw;
+                    return this.yaw;
                 case 2:
-                    return roll;
+                    return this.roll;
             }
         }
 
@@ -103,13 +103,13 @@ public class Angles {
         public void oSet(int index, final float value) {
             switch (index) {
                 default:
-                    pitch = value;
+                    this.pitch = value;
                     break;
                 case 1:
-                    yaw = value;
+                    this.yaw = value;
                     break;
                 case 2:
-                    roll = value;
+                    this.roll = value;
                     break;
             }
         }
@@ -117,87 +117,87 @@ public class Angles {
         public float oPluSet(int index, final float value) {
             switch (index) {
                 default:
-                    return pitch += value;
+                    return this.pitch += value;
                 case 1:
-                    return yaw += value;
+                    return this.yaw += value;
                 case 2:
-                    return roll += value;
+                    return this.roll += value;
             }
         }
 
         public float oMinSet(int index, final float value) {
             switch (index) {
                 default:
-                    return pitch -= value;
+                    return this.pitch -= value;
                 case 1:
-                    return yaw -= value;
+                    return this.yaw -= value;
                 case 2:
-                    return roll -= value;
+                    return this.roll -= value;
             }
         }
 
         public idAngles oNegative() {// negate angles, in general not the inverse rotation
-            return new idAngles(-pitch, -yaw, -roll);
+            return new idAngles(-this.pitch, -this.yaw, -this.roll);
         }
 
 //public	idAngles &		operator=( final  idAngles &a );
         public idAngles oSet(idAngles a) {
-            pitch = a.pitch;
-            yaw = a.yaw;
-            roll = a.roll;
+            this.pitch = a.pitch;
+            this.yaw = a.yaw;
+            this.roll = a.roll;
             return this;
         }
 
         public idAngles oPlus(final idAngles a) {
-            return new idAngles(pitch + a.pitch, yaw + a.yaw, roll + a.roll);
+            return new idAngles(this.pitch + a.pitch, this.yaw + a.yaw, this.roll + a.roll);
         }
 
         public idAngles oPlus(final idVec3 a) {
-            return new idAngles(pitch + a.x, yaw + a.y, roll + a.z);
+            return new idAngles(this.pitch + a.x, this.yaw + a.y, this.roll + a.z);
         }
 
         public idAngles oPluSet(final idAngles a) {
-            pitch += a.pitch;
-            yaw += a.yaw;
-            roll += a.roll;
+            this.pitch += a.pitch;
+            this.yaw += a.yaw;
+            this.roll += a.roll;
 
             return this;
         }
 
         public idAngles oMinus(final idAngles a) {
-            return new idAngles(pitch - a.pitch, yaw - a.yaw, roll - a.roll);
+            return new idAngles(this.pitch - a.pitch, this.yaw - a.yaw, this.roll - a.roll);
         }
 
         public idAngles oMinSet(final idAngles a) {
-            pitch -= a.pitch;
-            yaw -= a.yaw;
-            roll -= a.roll;
+            this.pitch -= a.pitch;
+            this.yaw -= a.yaw;
+            this.roll -= a.roll;
 
             return this;
         }
 
         public idAngles oMultiply(final float a) {
-            return new idAngles(pitch * a, yaw * a, roll * a);
+            return new idAngles(this.pitch * a, this.yaw * a, this.roll * a);
         }
 
         public idAngles oMulSet(final float a) {
-            pitch *= a;
-            yaw *= a;
-            roll *= a;
+            this.pitch *= a;
+            this.yaw *= a;
+            this.roll *= a;
 
             return this;
         }
 
         public idAngles oDivide(final float a) {
-            float inva = 1.0f / a;
-            return new idAngles(pitch * inva, yaw * inva, roll * inva);
+            final float inva = 1.0f / a;
+            return new idAngles(this.pitch * inva, this.yaw * inva, this.roll * inva);
         }
 
         public idAngles oDivSet(final float a) {
-            float inva = 1.0f / a;
-            pitch *= inva;
-            yaw *= inva;
-            roll *= inva;
+            final float inva = 1.0f / a;
+            this.pitch *= inva;
+            this.yaw *= inva;
+            this.roll *= inva;
 
             return this;
         }
@@ -209,19 +209,19 @@ public class Angles {
 //
 
         public boolean Compare(final idAngles a) {// exact compare, no epsilon
-            return ((a.pitch == pitch) && (a.yaw == yaw) && (a.roll == roll));
+            return ((a.pitch == this.pitch) && (a.yaw == this.yaw) && (a.roll == this.roll));
         }
 
         public boolean Compare(final idAngles a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(pitch - a.pitch) > epsilon) {
+            if (idMath.Fabs(this.pitch - a.pitch) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(yaw - a.yaw) > epsilon) {
+            if (idMath.Fabs(this.yaw - a.yaw) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(roll - a.roll) > epsilon) {
+            if (idMath.Fabs(this.roll - a.roll) > epsilon) {
                 return false;
             }
 
@@ -233,9 +233,9 @@ public class Angles {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 73 * hash + Float.floatToIntBits(this.pitch);
-            hash = 73 * hash + Float.floatToIntBits(this.yaw);
-            hash = 73 * hash + Float.floatToIntBits(this.roll);
+            hash = (73 * hash) + Float.floatToIntBits(this.pitch);
+            hash = (73 * hash) + Float.floatToIntBits(this.yaw);
+            hash = (73 * hash) + Float.floatToIntBits(this.roll);
             return hash;
         }
 
@@ -295,36 +295,36 @@ public class Angles {
         public idAngles Normalize180() {// normalizes 'this'
             Normalize360();
 
-            if (pitch > 180.0f) {
-                pitch -= 360.0f;
+            if (this.pitch > 180.0f) {
+                this.pitch -= 360.0f;
             }
 
-            if (yaw > 180.0f) {
-                yaw -= 360.0f;
+            if (this.yaw > 180.0f) {
+                this.yaw -= 360.0f;
             }
 
-            if (roll > 180.0f) {
-                roll -= 360.0f;
+            if (this.roll > 180.0f) {
+                this.roll -= 360.0f;
             }
             return this;
         }
 //
 
         public void Clamp(final idAngles min, final idAngles max) {
-            if (pitch < min.pitch) {
-                pitch = min.pitch;
-            } else if (pitch > max.pitch) {
-                pitch = max.pitch;
+            if (this.pitch < min.pitch) {
+                this.pitch = min.pitch;
+            } else if (this.pitch > max.pitch) {
+                this.pitch = max.pitch;
             }
-            if (yaw < min.yaw) {
-                yaw = min.yaw;
-            } else if (yaw > max.yaw) {
-                yaw = max.yaw;
+            if (this.yaw < min.yaw) {
+                this.yaw = min.yaw;
+            } else if (this.yaw > max.yaw) {
+                this.yaw = max.yaw;
             }
-            if (roll < min.roll) {
-                roll = min.roll;
-            } else if (roll > max.roll) {
-                roll = max.roll;
+            if (this.roll < min.roll) {
+                this.roll = min.roll;
+            } else if (this.roll > max.roll) {
+                this.roll = max.roll;
             }
         }
 //
@@ -343,80 +343,80 @@ public class Angles {
         }
 
         public void ToVectors(idVec3 forward, idVec3 right, idVec3 up) {
-            float[] sr = new float[1], sp = new float[1], sy = new float[1], cr = new float[1], cp = new float[1], cy = new float[1];
+            final float[] sr = new float[1], sp = new float[1], sy = new float[1], cr = new float[1], cp = new float[1], cy = new float[1];
 
-            idMath.SinCos((float) Math_h.DEG2RAD(yaw), sy, cy);
-            idMath.SinCos((float) Math_h.DEG2RAD(pitch), sp, cp);
-            idMath.SinCos((float) Math_h.DEG2RAD(roll), sr, cr);
+            idMath.SinCos(Math_h.DEG2RAD(this.yaw), sy, cy);
+            idMath.SinCos(Math_h.DEG2RAD(this.pitch), sp, cp);
+            idMath.SinCos(Math_h.DEG2RAD(this.roll), sr, cr);
 
             if (forward != null) {
                 forward.Set(cp[0] * cy[0], cp[0] * sy[0], -sp[0]);
             }
 
             if (right != null) {
-                right.Set(-sr[0] * sp[0] * cy[0] + cr[0] * sy[0], -sr[0] * sp[0] * sy[0] + -cr[0] * cy[0], -sr[0] * cp[0]);
+                right.Set((-sr[0] * sp[0] * cy[0]) + (cr[0] * sy[0]), (-sr[0] * sp[0] * sy[0]) + (-cr[0] * cy[0]), -sr[0] * cp[0]);
             }
 
             if (up != null) {
-                up.Set(cr[0] * sp[0] * cy[0] + -sr[0] * -sy[0], cr[0] * sp[0] * sy[0] + -sr[0] * cy[0], cr[0] * cp[0]);
+                up.Set((cr[0] * sp[0] * cy[0]) + (-sr[0] * -sy[0]), (cr[0] * sp[0] * sy[0]) + (-sr[0] * cy[0]), cr[0] * cp[0]);
             }
         }
 
         public idVec3 ToForward() {
-            float[] sp = new float[1], sy = new float[1], cp = new float[1], cy = new float[1];
+            final float[] sp = new float[1], sy = new float[1], cp = new float[1], cy = new float[1];
 
-            idMath.SinCos((float) Math_h.DEG2RAD(yaw), sy, cy);
-            idMath.SinCos((float) Math_h.DEG2RAD(pitch), sp, cp);
+            idMath.SinCos(Math_h.DEG2RAD(this.yaw), sy, cy);
+            idMath.SinCos(Math_h.DEG2RAD(this.pitch), sp, cp);
 
             return new idVec3(cp[0] * cy[0], cp[0] * sy[0], -sp[0]);
         }
 
         public idQuat ToQuat() {
-            float[] sx = new float[1], cx = new float[1], sy = new float[1], cy = new float[1], sz = new float[1], cz = new float[1];
+            final float[] sx = new float[1], cx = new float[1], sy = new float[1], cy = new float[1], sz = new float[1], cz = new float[1];
             float sxcy, cxcy, sxsy, cxsy;
 
-            idMath.SinCos((float) Math_h.DEG2RAD(yaw) * 0.5f, sz, cz);
-            idMath.SinCos((float) Math_h.DEG2RAD(pitch) * 0.5f, sy, cy);
-            idMath.SinCos((float) Math_h.DEG2RAD(roll) * 0.5f, sx, cx);
+            idMath.SinCos(Math_h.DEG2RAD(this.yaw) * 0.5f, sz, cz);
+            idMath.SinCos(Math_h.DEG2RAD(this.pitch) * 0.5f, sy, cy);
+            idMath.SinCos(Math_h.DEG2RAD(this.roll) * 0.5f, sx, cx);
 
             sxcy = sx[0] * cy[0];
             cxcy = cx[0] * cy[0];
             sxsy = sx[0] * sy[0];
             cxsy = cx[0] * sy[0];
 
-            return new idQuat(cxsy * sz[0] - sxcy * cz[0], -cxsy * cz[0] - sxcy * sz[0], sxsy * cz[0] - cxcy * sz[0], cxcy * cz[0] + sxsy * sz[0]);
+            return new idQuat((cxsy * sz[0]) - (sxcy * cz[0]), (-cxsy * cz[0]) - (sxcy * sz[0]), (sxsy * cz[0]) - (cxcy * sz[0]), (cxcy * cz[0]) + (sxsy * sz[0]));
         }
 
         public idRotation ToRotation() {
-            idVec3 vec = new idVec3();
+            final idVec3 vec = new idVec3();
             float angle, w;
-            float[] sx = new float[1], cx = new float[1], sy = new float[1], cy = new float[1], sz = new float[1], cz = new float[1];
+            final float[] sx = new float[1], cx = new float[1], sy = new float[1], cy = new float[1], sz = new float[1], cz = new float[1];
             float sxcy, cxcy, sxsy, cxsy;
 
-            if (pitch == 0.0f) {
-                if (yaw == 0.0f) {
-                    return new idRotation(Vector.getVec3_origin(), new idVec3(-1.0f, 0.0f, 0.0f), roll);
+            if (this.pitch == 0.0f) {
+                if (this.yaw == 0.0f) {
+                    return new idRotation(Vector.getVec3_origin(), new idVec3(-1.0f, 0.0f, 0.0f), this.roll);
                 }
-                if (roll == 0.0f) {
-                    return new idRotation(Vector.getVec3_origin(), new idVec3(0.0f, 0.0f, -1.0f), yaw);
+                if (this.roll == 0.0f) {
+                    return new idRotation(Vector.getVec3_origin(), new idVec3(0.0f, 0.0f, -1.0f), this.yaw);
                 }
-            } else if (yaw == 0.0f && roll == 0.0f) {
-                return new idRotation(Vector.getVec3_origin(), new idVec3(0.0f, -1.0f, 0.0f), pitch);
+            } else if ((this.yaw == 0.0f) && (this.roll == 0.0f)) {
+                return new idRotation(Vector.getVec3_origin(), new idVec3(0.0f, -1.0f, 0.0f), this.pitch);
             }
 
-            idMath.SinCos((float) Math_h.DEG2RAD(yaw) * 0.5f, sz, cz);
-            idMath.SinCos((float) Math_h.DEG2RAD(pitch) * 0.5f, sy, cy);
-            idMath.SinCos((float) Math_h.DEG2RAD(roll) * 0.5f, sx, cx);
+            idMath.SinCos(Math_h.DEG2RAD(this.yaw) * 0.5f, sz, cz);
+            idMath.SinCos(Math_h.DEG2RAD(this.pitch) * 0.5f, sy, cy);
+            idMath.SinCos(Math_h.DEG2RAD(this.roll) * 0.5f, sx, cx);
 
             sxcy = sx[0] * cy[0];
             cxcy = cx[0] * cy[0];
             sxsy = sx[0] * sy[0];
             cxsy = cx[0] * sy[0];
 
-            vec.x = cxsy * sz[0] - sxcy * cz[0];
-            vec.y = -cxsy * cz[0] - sxcy * sz[0];
-            vec.z = sxsy * cz[0] - cxcy * sz[0];
-            w = cxcy * cz[0] + sxsy * sz[0];
+            vec.x = (cxsy * sz[0]) - (sxcy * cz[0]);
+            vec.y = (-cxsy * cz[0]) - (sxcy * sz[0]);
+            vec.z = (sxsy * cz[0]) - (cxcy * sz[0]);
+            w = (cxcy * cz[0]) + (sxsy * sz[0]);
             angle = idMath.ACos(w);
             if (angle == 0.0f) {
                 vec.Set(0.0f, 0.0f, 1.0f);
@@ -430,16 +430,16 @@ public class Angles {
         }
 
         public idMat3 ToMat3() {
-            idMat3 mat = new idMat3();
-            float[] sr = new float[1], sp = new float[1], sy = new float[1], cr = new float[1], cp = new float[1], cy = new float[1];
+            final idMat3 mat = new idMat3();
+            final float[] sr = new float[1], sp = new float[1], sy = new float[1], cr = new float[1], cp = new float[1], cy = new float[1];
 
-            idMath.SinCos((float) Math_h.DEG2RAD(yaw), sy, cy);
-            idMath.SinCos((float) Math_h.DEG2RAD(pitch), sp, cp);
-            idMath.SinCos((float) Math_h.DEG2RAD(roll), sr, cr);
+            idMath.SinCos(Math_h.DEG2RAD(this.yaw), sy, cy);
+            idMath.SinCos(Math_h.DEG2RAD(this.pitch), sp, cp);
+            idMath.SinCos(Math_h.DEG2RAD(this.roll), sr, cr);
 
             mat.setRow(0, cp[0] * cy[0], cp[0] * sy[0], -sp[0]);
-            mat.setRow(1, sr[0] * sp[0] * cy[0] + cr[0] * -sy[0], sr[0] * sp[0] * sy[0] + cr[0] * cy[0], sr[0] * cp[0]);
-            mat.setRow(2, cr[0] * sp[0] * cy[0] + -sr[0] * -sy[0], cr[0] * sp[0] * sy[0] + -sr[0] * cy[0], cr[0] * cp[0]);
+            mat.setRow(1, (sr[0] * sp[0] * cy[0]) + (cr[0] * -sy[0]), (sr[0] * sp[0] * sy[0]) + (cr[0] * cy[0]), sr[0] * cp[0]);
+            mat.setRow(2, (cr[0] * sp[0] * cy[0]) + (-sr[0] * -sy[0]), (cr[0] * sp[0] * sy[0]) + (-sr[0] * cy[0]), cr[0] * cp[0]);
 
             return mat;
         }
@@ -449,8 +449,8 @@ public class Angles {
         }
 
         public idVec3 ToAngularVelocity() {
-            idRotation rotation = this.ToRotation();
-            return rotation.GetVec().oMultiply((float) Math_h.DEG2RAD(rotation.GetAngle()));
+            final idRotation rotation = this.ToRotation();
+            return rotation.GetVec().oMultiply(Math_h.DEG2RAD(rotation.GetAngle()));
         }
 
         public float[] ToFloatPtr() {
@@ -469,9 +469,9 @@ public class Angles {
         @Override
         public String toString() {
             return "idAngles{" +
-                    "pitch=" + pitch +
-                    ", yaw=" + yaw +
-                    ", roll=" + roll +
+                    "pitch=" + this.pitch +
+                    ", yaw=" + this.yaw +
+                    ", roll=" + this.roll +
                     '}';
         }
 
@@ -489,5 +489,5 @@ public class Angles {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 }

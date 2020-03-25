@@ -112,52 +112,52 @@ public class SecurityCamera {
         public void Spawn() {
             idStr str;
 
-            sweepAngle = spawnArgs.GetFloat("sweepAngle", "90");
-            health = spawnArgs.GetInt("health", "100");
-            scanFov = spawnArgs.GetFloat("scanFov", "90");
-            scanDist = spawnArgs.GetFloat("scanDist", "200");
-            flipAxis = spawnArgs.GetBool("flipAxis");
+            this.sweepAngle = this.spawnArgs.GetFloat("sweepAngle", "90");
+            this.health = this.spawnArgs.GetInt("health", "100");
+            this.scanFov = this.spawnArgs.GetFloat("scanFov", "90");
+            this.scanDist = this.spawnArgs.GetFloat("scanDist", "200");
+            this.flipAxis = this.spawnArgs.GetBool("flipAxis");
 
-            modelAxis = spawnArgs.GetInt("modelAxis");
-            if (modelAxis < 0 || modelAxis > 2) {
-                modelAxis = 0;
+            this.modelAxis = this.spawnArgs.GetInt("modelAxis");
+            if ((this.modelAxis < 0) || (this.modelAxis > 2)) {
+                this.modelAxis = 0;
             }
 
-            spawnArgs.GetVector("viewOffset", "0 0 0", viewOffset);
+            this.spawnArgs.GetVector("viewOffset", "0 0 0", this.viewOffset);
 
-            if (spawnArgs.GetBool("spotLight")) {
+            if (this.spawnArgs.GetBool("spotLight")) {
                 PostEventMS(EV_SecurityCam_AddLight, 0);
             }
 
-            negativeSweep = (sweepAngle < 0);
-            sweepAngle = Math.abs(sweepAngle);
+            this.negativeSweep = (this.sweepAngle < 0);
+            this.sweepAngle = Math.abs(this.sweepAngle);
 
-            scanFovCos = (float) Math.cos(scanFov * idMath.PI / 360.0f);
+            this.scanFovCos = (float) Math.cos((this.scanFov * idMath.PI) / 360.0f);
 
-            angle = GetPhysics().GetAxis().ToAngles().yaw;
+            this.angle = GetPhysics().GetAxis().ToAngles().yaw;
             StartSweep();
             SetAlertMode(SCANNING);
             BecomeActive(TH_THINK);
 
-            if (health != 0) {
-                fl.takedamage = true;
+            if (this.health != 0) {
+                this.fl.takedamage = true;
             }
 
-            pvsArea = gameLocal.pvs.GetPVSArea(GetPhysics().GetOrigin());
+            this.pvsArea = gameLocal.pvs.GetPVSArea(GetPhysics().GetOrigin());
             // if no target specified use ourself
-            str = new idStr(spawnArgs.GetString("cameraTarget"));
+            str = new idStr(this.spawnArgs.GetString("cameraTarget"));
             if (str.Length() == 0) {
-                spawnArgs.Set("cameraTarget", spawnArgs.GetString("name"));
+                this.spawnArgs.Set("cameraTarget", this.spawnArgs.GetString("name"));
             }
 
             // check if a clip model is set
-            spawnArgs.GetString("clipmodel", "", str);
+            this.spawnArgs.GetString("clipmodel", "", str);
             if (!isNotNullOrEmpty(str)) {
-                str.oSet(spawnArgs.GetString("model"));		// use the visual model
+                str.oSet(this.spawnArgs.GetString("model"));		// use the visual model
             }
 
-            if (!CollisionModel_local.collisionModelManager.TrmFromModel(str, trm)) {
-                gameLocal.Error("idSecurityCamera '%s': cannot load collision model %s", name, str);
+            if (!CollisionModel_local.collisionModelManager.TrmFromModel(str, this.trm)) {
+                gameLocal.Error("idSecurityCamera '%s': cannot load collision model %s", this.name, str);
                 return;
             }
 
@@ -169,50 +169,50 @@ public class SecurityCamera {
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteFloat(angle);
-            savefile.WriteFloat(sweepAngle);
-            savefile.WriteInt(modelAxis);
-            savefile.WriteBool(flipAxis);
-            savefile.WriteFloat(scanDist);
-            savefile.WriteFloat(scanFov);
+            savefile.WriteFloat(this.angle);
+            savefile.WriteFloat(this.sweepAngle);
+            savefile.WriteInt(this.modelAxis);
+            savefile.WriteBool(this.flipAxis);
+            savefile.WriteFloat(this.scanDist);
+            savefile.WriteFloat(this.scanFov);
 
-            savefile.WriteFloat(sweepStart);
-            savefile.WriteFloat(sweepEnd);
-            savefile.WriteBool(negativeSweep);
-            savefile.WriteBool(sweeping);
-            savefile.WriteInt(alertMode);
-            savefile.WriteFloat(stopSweeping);
-            savefile.WriteFloat(scanFovCos);
+            savefile.WriteFloat(this.sweepStart);
+            savefile.WriteFloat(this.sweepEnd);
+            savefile.WriteBool(this.negativeSweep);
+            savefile.WriteBool(this.sweeping);
+            savefile.WriteInt(this.alertMode);
+            savefile.WriteFloat(this.stopSweeping);
+            savefile.WriteFloat(this.scanFovCos);
 
-            savefile.WriteVec3(viewOffset);
+            savefile.WriteVec3(this.viewOffset);
 
-            savefile.WriteInt(pvsArea);
-            savefile.WriteStaticObject(physicsObj);
-            savefile.WriteTraceModel(trm);
+            savefile.WriteInt(this.pvsArea);
+            savefile.WriteStaticObject(this.physicsObj);
+            savefile.WriteTraceModel(this.trm);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            angle = savefile.ReadFloat();
-            sweepAngle = savefile.ReadFloat();
-            modelAxis = savefile.ReadInt();
-            flipAxis = savefile.ReadBool();
-            scanDist = savefile.ReadFloat();
-            scanFov = savefile.ReadFloat();
+            this.angle = savefile.ReadFloat();
+            this.sweepAngle = savefile.ReadFloat();
+            this.modelAxis = savefile.ReadInt();
+            this.flipAxis = savefile.ReadBool();
+            this.scanDist = savefile.ReadFloat();
+            this.scanFov = savefile.ReadFloat();
 
-            sweepStart = savefile.ReadFloat();
-            sweepEnd = savefile.ReadFloat();
-            negativeSweep = savefile.ReadBool();
-            sweeping = savefile.ReadBool();
-            alertMode = savefile.ReadInt();
-            stopSweeping = savefile.ReadFloat();
-            scanFovCos = savefile.ReadFloat();
+            this.sweepStart = savefile.ReadFloat();
+            this.sweepEnd = savefile.ReadFloat();
+            this.negativeSweep = savefile.ReadBool();
+            this.sweeping = savefile.ReadBool();
+            this.alertMode = savefile.ReadInt();
+            this.stopSweeping = savefile.ReadFloat();
+            this.scanFovCos = savefile.ReadFloat();
 
-            savefile.ReadVec3(viewOffset);
+            savefile.ReadVec3(this.viewOffset);
 
-            pvsArea = savefile.ReadInt();
-            savefile.ReadStaticObject(physicsObj);
-            savefile.ReadTraceModel(trm);
+            this.pvsArea = savefile.ReadInt();
+            savefile.ReadStaticObject(this.physicsObj);
+            savefile.ReadTraceModel(this.trm);
         }
 
         @Override
@@ -220,12 +220,12 @@ public class SecurityCamera {
             float pct;
             float travel;
 
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 if (g_showEntityInfo.GetBool()) {
                     DrawFov();
                 }
 
-                if (health <= 0) {
+                if (this.health <= 0) {
                     BecomeInactive(TH_THINK);
                     return;
                 }
@@ -234,45 +234,45 @@ public class SecurityCamera {
             // run physics
             RunPhysics();
 
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 if (CanSeePlayer()) {
-                    if (alertMode == SCANNING) {
+                    if (this.alertMode == SCANNING) {
                         float sightTime;
 
                         SetAlertMode(ALERT);
-                        stopSweeping = gameLocal.time;
-                        if (sweeping) {
+                        this.stopSweeping = gameLocal.time;
+                        if (this.sweeping) {
                             CancelEvents(EV_SecurityCam_Pause);
                         } else {
                             CancelEvents(EV_SecurityCam_ReverseSweep);
                         }
-                        sweeping = false;
+                        this.sweeping = false;
                         StopSound(etoi(SND_CHANNEL_ANY), false);
                         StartSound("snd_sight", SND_CHANNEL_BODY, 0, false, null);
 
-                        sightTime = spawnArgs.GetFloat("sightTime", "5");
+                        sightTime = this.spawnArgs.GetFloat("sightTime", "5");
                         PostEventSec(EV_SecurityCam_Alert, sightTime);
                     }
                 } else {
-                    if (alertMode == ALERT) {
+                    if (this.alertMode == ALERT) {
                         float sightResume;
 
                         SetAlertMode(LOSINGINTEREST);
                         CancelEvents(EV_SecurityCam_Alert);
 
-                        sightResume = spawnArgs.GetFloat("sightResume", "1.5");
+                        sightResume = this.spawnArgs.GetFloat("sightResume", "1.5");
                         PostEventSec(EV_SecurityCam_ContinueSweep, sightResume);
                     }
 
-                    if (sweeping) {
-                        idAngles a = GetPhysics().GetAxis().ToAngles();
+                    if (this.sweeping) {
+                        final idAngles a = GetPhysics().GetAxis().ToAngles();
 
-                        pct = (gameLocal.time - sweepStart) / (sweepEnd - sweepStart);
-                        travel = pct * sweepAngle;
-                        if (negativeSweep) {
-                            a.yaw = angle + travel;
+                        pct = (gameLocal.time - this.sweepStart) / (this.sweepEnd - this.sweepStart);
+                        travel = pct * this.sweepAngle;
+                        if (this.negativeSweep) {
+                            a.yaw = this.angle + travel;
                         } else {
-                            a.yaw = angle - travel;
+                            a.yaw = this.angle - travel;
                         }
 
                         SetAngles(a);
@@ -284,39 +284,39 @@ public class SecurityCamera {
 
         @Override
         public renderView_s GetRenderView() {
-            renderView_s rv = super.GetRenderView();
-            rv.fov_x = scanFov;
-            rv.fov_y = scanFov;
+            final renderView_s rv = super.GetRenderView();
+            rv.fov_x = this.scanFov;
+            rv.fov_y = this.scanFov;
             rv.viewaxis = GetAxis().ToAngles().ToMat3();
-            rv.vieworg = GetPhysics().GetOrigin().oPlus(viewOffset);
+            rv.vieworg = GetPhysics().GetOrigin().oPlus(this.viewOffset);
             return rv;
         }
 
         @Override
         public void Killed(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            sweeping = false;
+            this.sweeping = false;
             StopSound(etoi(SND_CHANNEL_ANY), false);
-            final String fx = spawnArgs.GetString("fx_destroyed");
+            final String fx = this.spawnArgs.GetString("fx_destroyed");
             if (isNotNullOrEmpty(fx)) {//fx[0] != '\0' ) {
                 idEntityFx.StartFx(fx, null, null, this, true);
             }
 
-            physicsObj.SetSelf(this);
-            physicsObj.SetClipModel(new idClipModel(trm), 0.02f);
-            physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            physicsObj.SetAxis(GetPhysics().GetAxis());
-            physicsObj.SetBouncyness(0.2f);
-            physicsObj.SetFriction(0.6f, 0.6f, 0.2f);
-            physicsObj.SetGravity(gameLocal.GetGravity());
-            physicsObj.SetContents(CONTENTS_SOLID);
-            physicsObj.SetClipMask(MASK_SOLID | CONTENTS_BODY | CONTENTS_CORPSE | CONTENTS_MOVEABLECLIP);
-            SetPhysics(physicsObj);
-            physicsObj.DropToFloor();
+            this.physicsObj.SetSelf(this);
+            this.physicsObj.SetClipModel(new idClipModel(this.trm), 0.02f);
+            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            this.physicsObj.SetAxis(GetPhysics().GetAxis());
+            this.physicsObj.SetBouncyness(0.2f);
+            this.physicsObj.SetFriction(0.6f, 0.6f, 0.2f);
+            this.physicsObj.SetGravity(gameLocal.GetGravity());
+            this.physicsObj.SetContents(CONTENTS_SOLID);
+            this.physicsObj.SetClipMask(MASK_SOLID | CONTENTS_BODY | CONTENTS_CORPSE | CONTENTS_MOVEABLECLIP);
+            SetPhysics(this.physicsObj);
+            this.physicsObj.DropToFloor();
         }
 
         @Override
         public boolean Pain(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            final String fx = spawnArgs.GetString("fx_damage");
+            final String fx = this.spawnArgs.GetString("fx_damage");
             if (isNotNullOrEmpty(fx)) {//fx[0] != '\0' ) {
                 idEntityFx.StartFx(fx, null, null, this, true);
             }
@@ -333,37 +333,37 @@ public class SecurityCamera {
         @Override
         public void Present() {
             // don't present to the renderer if the entity hasn't changed
-            if (0 == (thinkFlags & TH_UPDATEVISUALS)) {
+            if (0 == (this.thinkFlags & TH_UPDATEVISUALS)) {
                 return;
             }
             BecomeInactive(TH_UPDATEVISUALS);
 
             // camera target for remote render views
-            if (cameraTarget != null) {
-                renderEntity.remoteRenderView = cameraTarget.GetRenderView();
+            if (this.cameraTarget != null) {
+                this.renderEntity.remoteRenderView = this.cameraTarget.GetRenderView();
             }
 
             // if set to invisible, skip
-            if (null == renderEntity.hModel || IsHidden()) {
+            if ((null == this.renderEntity.hModel) || IsHidden()) {
                 return;
             }
 
             // add to refresh list
-            if (modelDefHandle == -1) {
-                modelDefHandle = gameRenderWorld.AddEntityDef(renderEntity);
-                int a = 0;
+            if (this.modelDefHandle == -1) {
+                this.modelDefHandle = gameRenderWorld.AddEntityDef(this.renderEntity);
+                final int a = 0;
             } else {
-                gameRenderWorld.UpdateEntityDef(modelDefHandle, renderEntity);
+                gameRenderWorld.UpdateEntityDef(this.modelDefHandle, this.renderEntity);
             }
         }
 
         private void StartSweep() {
             int speed;
 
-            sweeping = true;
-            sweepStart = gameLocal.time;
+            this.sweeping = true;
+            this.sweepStart = gameLocal.time;
             speed = (int) SEC2MS(SweepSpeed());
-            sweepEnd = sweepStart + speed;
+            this.sweepEnd = this.sweepStart + speed;
             PostEventMS(EV_SecurityCam_Pause, speed);
             StartSound("snd_moving", SND_CHANNEL_BODY, 0, false, null);
         }
@@ -372,11 +372,11 @@ public class SecurityCamera {
             int i;
             float dist;
             idPlayer ent;
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
             idVec3 dir;
             pvsHandle_t handle;
 
-            handle = gameLocal.pvs.SetupCurrentPVS(pvsArea);
+            handle = gameLocal.pvs.SetupCurrentPVS(this.pvsArea);
 
             for (i = 0; i < gameLocal.numClients; i++) {
                 ent = (idPlayer) gameLocal.entities[i];
@@ -393,11 +393,11 @@ public class SecurityCamera {
                 dir = ent.GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
                 dist = dir.Normalize();
 
-                if (dist > scanDist) {
+                if (dist > this.scanDist) {
                     continue;
                 }
 
-                if (dir.oMultiply(GetAxis()) < scanFovCos) {
+                if (dir.oMultiply(GetAxis()) < this.scanFovCos) {
                     continue;
                 }
 
@@ -406,7 +406,7 @@ public class SecurityCamera {
                 eye = ent.EyeOffset();
 
                 gameLocal.clip.TracePoint(tr, GetPhysics().GetOrigin(), ent.GetPhysics().GetOrigin().oPlus(eye), MASK_OPAQUE, this);
-                if (tr[0].fraction == 1.0f || (gameLocal.GetTraceEntity(tr[0]).equals(ent))) {
+                if ((tr[0].fraction == 1.0f) || (gameLocal.GetTraceEntity(tr[0]).equals(ent))) {
                     gameLocal.pvs.FreeCurrentPVS(handle);
                     return true;
                 }
@@ -418,46 +418,46 @@ public class SecurityCamera {
         }
 
         private void SetAlertMode(int alert) {
-            if (alert >= SCANNING && alert <= ACTIVATED) {
-                alertMode = alert;
+            if ((alert >= SCANNING) && (alert <= ACTIVATED)) {
+                this.alertMode = alert;
             }
-            renderEntity.shaderParms[SHADERPARM_MODE] = alertMode;
+            this.renderEntity.shaderParms[SHADERPARM_MODE] = this.alertMode;
             UpdateVisuals();
         }
 
         private void DrawFov() {
             int i;
             float radius, a, halfRadius;
-            float[] s = new float[1], c = new float[1];
-            idVec3 right = new idVec3(), up = new idVec3();
-            idVec4 color = new idVec4(1, 0, 0, 1), color2 = new idVec4(0, 0, 1, 1);
+            final float[] s = new float[1], c = new float[1];
+            final idVec3 right = new idVec3(), up = new idVec3();
+            final idVec4 color = new idVec4(1, 0, 0, 1), color2 = new idVec4(0, 0, 1, 1);
             idVec3 lastPoint, point, lastHalfPoint, halfPoint, center;
 
-            idVec3 dir = GetAxis();
+            final idVec3 dir = GetAxis();
             dir.NormalVectors(right, up);
 
-            radius = (float) Math.tan(scanFov * idMath.PI / 360.0f);
+            radius = (float) Math.tan((this.scanFov * idMath.PI) / 360.0f);
             halfRadius = radius * 0.5f;
             lastPoint = dir.oPlus(up.oMultiply(radius));
             lastPoint.Normalize();
-            lastPoint = GetPhysics().GetOrigin().oPlus(lastPoint.oMultiply(scanDist));
+            lastPoint = GetPhysics().GetOrigin().oPlus(lastPoint.oMultiply(this.scanDist));
             lastHalfPoint = dir.oPlus(up.oMultiply(halfRadius));
             lastHalfPoint.Normalize();
-            lastHalfPoint = GetPhysics().GetOrigin().oPlus(lastHalfPoint.oMultiply(scanDist));
-            center = GetPhysics().GetOrigin().oPlus(dir.oMultiply(scanDist));
+            lastHalfPoint = GetPhysics().GetOrigin().oPlus(lastHalfPoint.oMultiply(this.scanDist));
+            center = GetPhysics().GetOrigin().oPlus(dir.oMultiply(this.scanDist));
             for (i = 1; i < 12; i++) {
-                a = idMath.TWO_PI * i / 12.0f;
+                a = (idMath.TWO_PI * i) / 12.0f;
                 idMath.SinCos(a, s, c);
                 point = dir.oPlus(right.oMultiply(s[0] * radius).oPlus(up.oMultiply(c[0] * radius)));
                 point.Normalize();
-                point = GetPhysics().GetOrigin().oPlus(point.oMultiply(scanDist));
+                point = GetPhysics().GetOrigin().oPlus(point.oMultiply(this.scanDist));
                 gameRenderWorld.DebugLine(color, lastPoint, point);
                 gameRenderWorld.DebugLine(color, GetPhysics().GetOrigin(), point);
                 lastPoint = point;
 
                 halfPoint = dir.oPlus(right.oMultiply(s[0] * halfRadius).oPlus(up.oMultiply(c[0] * halfRadius)));
                 halfPoint.Normalize();
-                halfPoint = GetPhysics().GetOrigin().oPlus(halfPoint.oMultiply(scanDist));
+                halfPoint = GetPhysics().GetOrigin().oPlus(halfPoint.oMultiply(this.scanDist));
                 gameRenderWorld.DebugLine(color2, point, halfPoint);
                 gameRenderWorld.DebugLine(color2, lastHalfPoint, halfPoint);
                 lastHalfPoint = halfPoint;
@@ -467,38 +467,38 @@ public class SecurityCamera {
         }
 
         private idVec3 GetAxis() {
-            return (flipAxis) ? GetPhysics().GetAxis().oGet(modelAxis).oNegative() : GetPhysics().GetAxis().oGet(modelAxis);
+            return (this.flipAxis) ? GetPhysics().GetAxis().oGet(this.modelAxis).oNegative() : GetPhysics().GetAxis().oGet(this.modelAxis);
         }
 
         private float SweepSpeed() {
-            return spawnArgs.GetFloat("sweepSpeed", "5");
+            return this.spawnArgs.GetFloat("sweepSpeed", "5");
         }
 
         private void Event_ReverseSweep() {
-            angle = GetPhysics().GetAxis().ToAngles().yaw;
-            negativeSweep = !negativeSweep;
+            this.angle = GetPhysics().GetAxis().ToAngles().yaw;
+            this.negativeSweep = !this.negativeSweep;
             StartSweep();
         }
 
         private void Event_ContinueSweep() {
-            float pct = (stopSweeping - sweepStart) / (sweepEnd - sweepStart);
-            float f = gameLocal.time - (sweepEnd - sweepStart) * pct;
+            final float pct = (this.stopSweeping - this.sweepStart) / (this.sweepEnd - this.sweepStart);
+            final float f = gameLocal.time - ((this.sweepEnd - this.sweepStart) * pct);
             int speed;
 
-            sweepStart = f;
+            this.sweepStart = f;
             speed = (int) MS2SEC(SweepSpeed());
-            sweepEnd = sweepStart + speed;
+            this.sweepEnd = this.sweepStart + speed;
             PostEventMS(EV_SecurityCam_Pause, (int) (speed * (1.0f - pct)));
             StartSound("snd_moving", SND_CHANNEL_BODY, 0, false, null);
             SetAlertMode(SCANNING);
-            sweeping = true;
+            this.sweeping = true;
         }
 
         private void Event_Pause() {
             float sweepWait;
 
-            sweepWait = spawnArgs.GetFloat("sweepWait", "0.5");
-            sweeping = false;
+            sweepWait = this.spawnArgs.GetFloat("sweepWait", "0.5");
+            this.sweeping = false;
             StopSound(etoi(SND_CHANNEL_ANY), false);
             StartSound("snd_stop", SND_CHANNEL_BODY, 0, false, null);
             PostEventSec(EV_SecurityCam_ReverseSweep, sweepWait);
@@ -513,34 +513,35 @@ public class SecurityCamera {
             ActivateTargets(this);
             CancelEvents(EV_SecurityCam_ContinueSweep);
 
-            wait = spawnArgs.GetFloat("wait", "20");
+            wait = this.spawnArgs.GetFloat("wait", "20");
             PostEventSec(EV_SecurityCam_ContinueSweep, wait);
         }
 
         private void Event_AddLight() {
-            idDict args = new idDict();
-            idVec3 right = new idVec3(), up = new idVec3(), target, temp;
+            final idDict args = new idDict();
+            idVec3 right = new idVec3(), up = new idVec3(), target;
+			final idVec3 temp;
             idVec3 dir;
             float radius;
-            idVec3 lightOffset = new idVec3();
+            final idVec3 lightOffset = new idVec3();
             idLight spotLight;
 
             dir = GetAxis();
             dir.NormalVectors(right, up);
-            target = GetPhysics().GetOrigin().oPlus(dir.oMultiply(scanDist));
+            target = GetPhysics().GetOrigin().oPlus(dir.oMultiply(this.scanDist));
 
-            radius = (float) Math.tan(scanFov * idMath.PI / 360.0f);
+            radius = (float) Math.tan((this.scanFov * idMath.PI) / 360.0f);
             up = dir.oPlus(up.oMultiply(radius));
             up.Normalize();
-            up = GetPhysics().GetOrigin().oPlus(up.oMultiply(scanDist));
+            up = GetPhysics().GetOrigin().oPlus(up.oMultiply(this.scanDist));
             up.oMinSet(target);
 
             right = dir.oPlus(right.oMultiply(radius));
             right.Normalize();
-            right = GetPhysics().GetOrigin().oPlus(right.oMultiply(scanDist));
+            right = GetPhysics().GetOrigin().oPlus(right.oMultiply(this.scanDist));
             right.oMinSet(target);
 
-            spawnArgs.GetVector("lightOffset", "0 0 0", lightOffset);
+            this.spawnArgs.GetVector("lightOffset", "0 0 0", lightOffset);
 
             args.Set("origin", (GetPhysics().GetOrigin().oPlus(lightOffset)).ToString());
             args.Set("light_target", target.ToString());
@@ -562,5 +563,5 @@ public class SecurityCamera {
             return eventCallbacks;
         }
 
-    };
+    }
 }

@@ -247,7 +247,7 @@ public class RenderWorld {
         }
 
         public void clear() {
-            renderEntity_s newEntity = new renderEntity_s();
+            final renderEntity_s newEntity = new renderEntity_s();
 
             this.hModel = newEntity.hModel;
             this.entityNum = newEntity.entityNum;
@@ -281,35 +281,35 @@ public class RenderWorld {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 71 * hash + Objects.hashCode(this.hModel);
-            hash = 71 * hash + this.entityNum;
-            hash = 71 * hash + this.bodyId;
-            hash = 71 * hash + Objects.hashCode(this.bounds);
-            hash = 71 * hash + Objects.hashCode(this.callback);
-            hash = 71 * hash + Objects.hashCode(this.callbackData);
-            hash = 71 * hash + this.suppressSurfaceInViewID;
-            hash = 71 * hash + this.suppressShadowInViewID;
-            hash = 71 * hash + this.suppressShadowInLightID;
-            hash = 71 * hash + this.allowSurfaceInViewID;
-            hash = 71 * hash + Objects.hashCode(this.origin);
-            hash = 71 * hash + Objects.hashCode(this.axis);
-            hash = 71 * hash + Objects.hashCode(this.customShader);
-            hash = 71 * hash + Objects.hashCode(this.referenceShader);
-            hash = 71 * hash + Objects.hashCode(this.customSkin);
-            hash = 71 * hash + Objects.hashCode(this.referenceSound);
-            hash = 71 * hash + Arrays.hashCode(this.shaderParms);
-            hash = 71 * hash + Arrays.deepHashCode(this.gui);
-            hash = 71 * hash + Objects.hashCode(this.remoteRenderView);
-            hash = 71 * hash + this.numJoints;
-            hash = 71 * hash + Arrays.deepHashCode(this.joints);
-            hash = 71 * hash + Float.floatToIntBits(this.modelDepthHack);
-            hash = 71 * hash + (this.noSelfShadow ? 1 : 0);
-            hash = 71 * hash + (this.noShadow ? 1 : 0);
-            hash = 71 * hash + (this.noDynamicInteractions ? 1 : 0);
-            hash = 71 * hash + (this.weaponDepthHack ? 1 : 0);
-            hash = 71 * hash + this.forceUpdate;
-            hash = 71 * hash + this.timeGroup;
-            hash = 71 * hash + this.xrayIndex;
+            hash = (71 * hash) + Objects.hashCode(this.hModel);
+            hash = (71 * hash) + this.entityNum;
+            hash = (71 * hash) + this.bodyId;
+            hash = (71 * hash) + Objects.hashCode(this.bounds);
+            hash = (71 * hash) + Objects.hashCode(this.callback);
+            hash = (71 * hash) + Objects.hashCode(this.callbackData);
+            hash = (71 * hash) + this.suppressSurfaceInViewID;
+            hash = (71 * hash) + this.suppressShadowInViewID;
+            hash = (71 * hash) + this.suppressShadowInLightID;
+            hash = (71 * hash) + this.allowSurfaceInViewID;
+            hash = (71 * hash) + Objects.hashCode(this.origin);
+            hash = (71 * hash) + Objects.hashCode(this.axis);
+            hash = (71 * hash) + Objects.hashCode(this.customShader);
+            hash = (71 * hash) + Objects.hashCode(this.referenceShader);
+            hash = (71 * hash) + Objects.hashCode(this.customSkin);
+            hash = (71 * hash) + Objects.hashCode(this.referenceSound);
+            hash = (71 * hash) + Arrays.hashCode(this.shaderParms);
+            hash = (71 * hash) + Arrays.deepHashCode(this.gui);
+            hash = (71 * hash) + Objects.hashCode(this.remoteRenderView);
+            hash = (71 * hash) + this.numJoints;
+            hash = (71 * hash) + Arrays.deepHashCode(this.joints);
+            hash = (71 * hash) + Float.floatToIntBits(this.modelDepthHack);
+            hash = (71 * hash) + (this.noSelfShadow ? 1 : 0);
+            hash = (71 * hash) + (this.noShadow ? 1 : 0);
+            hash = (71 * hash) + (this.noDynamicInteractions ? 1 : 0);
+            hash = (71 * hash) + (this.weaponDepthHack ? 1 : 0);
+            hash = (71 * hash) + this.forceUpdate;
+            hash = (71 * hash) + this.timeGroup;
+            hash = (71 * hash) + this.xrayIndex;
             return hash;
         }
 
@@ -411,7 +411,7 @@ public class RenderWorld {
             }
             return true;
         }
-    };
+    }
 
     public static class renderLight_s {
 
@@ -548,7 +548,7 @@ public class RenderWorld {
             this.shader = shadow.shader;
             this.referenceSound = shadow.referenceSound;
         }
-    };
+    }
 
     public static class renderView_s implements SERiAL {
         // player views will set this to a non-zero integer for model suppress / allow
@@ -634,7 +634,7 @@ public class RenderWorld {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 
     // exitPortal_t is returned by idRenderWorld::GetPortal()
     public static class exitPortal_t {
@@ -643,14 +643,14 @@ public class RenderWorld {
         public idWinding w;			// winding points have counter clockwise ordering seen from areas[0]
         public int blockingBits;               // PS_BLOCK_VIEW, PS_BLOCK_AIR, etc
         public int/*qhandle_t */ portalHandle;
-    };
+    }
 
     // guiPoint_t is returned by idRenderWorld::GuiTrace()
     public static class guiPoint_t {
 
         public float x, y;			// 0.0 to 1.0 range if trace hit a gui, otherwise -1
         public int guiId;			// id of gui ( 0, 1, or 2 ) that the trace happened against
-    };
+    }
 
     // modelTrace_t is for tracing vs. visual geometry
     public static class modelTrace_s {
@@ -670,7 +670,7 @@ public class RenderWorld {
             this.fraction = this.jointNumber = 0;
         }
 
-    };
+    }
     static final int NUM_PORTAL_ATTRIBUTES = 3;//PS_BLOCK_ALL needs to be changed manually if this value is changed.
 
     public enum portalConnection_t {
@@ -685,7 +685,7 @@ public class RenderWorld {
         /** padding */ __5,
         /** padding */ __6,
         PS_BLOCK_ALL;//= (1 << NUM_PORTAL_ATTRIBUTES) - 1
-    };
+    }
 
     public static abstract class idRenderWorld {
 
@@ -940,7 +940,7 @@ public class RenderWorld {
         public void DrawText(final String text, final idVec3 origin, float scale, final idVec4 color, final idMat3 viewAxis) {
             DrawText(text, origin, scale, color, viewAxis, 1);
         }
-    };
+    }
 
     /*
      ===================
@@ -997,7 +997,7 @@ public class RenderWorld {
 
             common.Printf("%d lightDefs, %d interactions, %d areaRefs\n", active, totalIntr, totalRef);
         }
-    };
+    }
 
     /*
      ===================
@@ -1054,7 +1054,7 @@ public class RenderWorld {
 
             common.Printf("total active: %d\n", active);
         }
-    };
+    }
 
     /*
      ===============

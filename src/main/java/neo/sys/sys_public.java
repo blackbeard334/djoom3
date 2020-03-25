@@ -87,8 +87,6 @@ public class sys_public {
         FPU_PRECISION_DOUBLE_EXTENDED
     }
 
-    ;
-
     enum fpuRounding_t {
 
         FPU_ROUNDING_TO_NEAREST,
@@ -96,8 +94,6 @@ public class sys_public {
         FPU_ROUNDING_UP,
         FPU_ROUNDING_TO_ZERO
     }
-
-    ;
 
     public enum joystickAxis_t {
 
@@ -108,7 +104,7 @@ public class sys_public {
         AXIS_YAW,
         AXIS_PITCH,
         MAX_JOYSTICK_AXIS
-    };
+    }
 
     public enum sysEventType_t {
 
@@ -118,7 +114,7 @@ public class sys_public {
         SE_MOUSE, // evValue and evValue2 are reletive signed x / y moves
         SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
         SE_CONSOLE        // evPtr is a char*, from typing something at a non-game console
-    };
+    }
 
     public enum sys_mEvents {
 
@@ -133,7 +129,7 @@ public class sys_public {
         M_DELTAX,
         M_DELTAY,
         M_DELTAZ
-    };
+    }
 
     public static <T> T __id_attribute__(T input) {
 //        DebugPrintf( final String...fmt)id_attribute((format(printf,2,3)));
@@ -187,12 +183,12 @@ public class sys_public {
         @Override
         public ByteBuffer Write() {
 
-            ByteBuffer buffer = AllocBuffer();
+            final ByteBuffer buffer = AllocBuffer();
 
-            buffer.putInt(evType.ordinal());
-            buffer.putInt(evValue);
-            buffer.putInt(evValue2);
-            buffer.putInt(evPtrLength);
+            buffer.putInt(this.evType.ordinal());
+            buffer.putInt(this.evValue);
+            buffer.putInt(this.evValue2);
+            buffer.putInt(this.evPtrLength);
             buffer.putInt(0x50);//P for pointer
 
             return buffer;
@@ -209,7 +205,7 @@ public class sys_public {
         int totalVirtual;
         int availVirtual;
         int availExtendedVirtual;
-    };
+    }
 
     // use fs_debug to verbose Sys_ListFiles
     // returns -1 if directory was not found (the list is cleared)
@@ -230,7 +226,7 @@ public class sys_public {
         NA_LOOPBACK,
         NA_BROADCAST,
         NA_IP
-    };
+    }
 
     public static class netadr_t {
 
@@ -246,7 +242,7 @@ public class sys_public {
             this.ip[3] = address.ip[3];
             this.port = address.port;
         }
-    };
+    }
     public static final int PORT_ANY = -1;
 
     static final idUDPLag[] udpPorts = new idUDPLag[65536];
@@ -267,8 +263,8 @@ public class sys_public {
 
         // this just zeros netSocket and port
         public idPort() {
-            netSocket = 0;
-            bound_to = new netadr_t();
+            this.netSocket = 0;
+            this.bound_to = new netadr_t();
         }
         // virtual		~idPort();
 
@@ -276,10 +272,10 @@ public class sys_public {
         public boolean InitForPort(int portNumber) {
 //            int len = sizeof(struct     sockaddr_in );
 
-            netSocket = NET_IPSocket(net_ip.GetString(), portNumber, bound_to);
-            if (netSocket <= 0) {
-                netSocket = 0;
-                bound_to = new netadr_t();// memset( &bound_to, 0, sizeof( bound_to ) );
+            this.netSocket = NET_IPSocket(net_ip.GetString(), portNumber, this.bound_to);
+            if (this.netSocket <= 0) {
+                this.netSocket = 0;
+                this.bound_to = new netadr_t();// memset( &bound_to, 0, sizeof( bound_to ) );
                 return false;
             }
 
@@ -289,27 +285,27 @@ public class sys_public {
                 }
             }
 
-            udpPorts[bound_to.port] = new idUDPLag();
+            udpPorts[this.bound_to.port] = new idUDPLag();
 
             return true;
         }
 
         public int GetPort() {
-            return bound_to.port;
+            return this.bound_to.port;
         }
 
         public netadr_t GetAdr() {
-            return bound_to;
+            return this.bound_to;
         }
 
         public void Close() {
-            if (netSocket != 0) {
-                if (udpPorts[bound_to.port] != null) {
-                    udpPorts[bound_to.port] = null;// delete udpPorts[bound_to.port ];
+            if (this.netSocket != 0) {
+                if (udpPorts[this.bound_to.port] != null) {
+                    udpPorts[this.bound_to.port] = null;// delete udpPorts[bound_to.port ];
                 }
 //                closesocket(netSocket); //TODO:
-                netSocket = 0;
-                bound_to = new netadr_t();// memset(bound_to, 0, sizeof(bound_to));
+                this.netSocket = 0;
+                this.bound_to = new netadr_t();// memset(bound_to, 0, sizeof(bound_to));
             }
         }
 
@@ -377,7 +373,7 @@ public class sys_public {
 
         public boolean GetPacketBlocking(netadr_t[] from, Object data, int[] size, int maxSize, int timeout) {
 
-            Net_WaitForUDPPacket(netSocket, timeout);
+            Net_WaitForUDPPacket(this.netSocket, timeout);
 
             if (GetPacket(from, data, size, maxSize)) {
                 return true;
@@ -433,7 +429,7 @@ public class sys_public {
 //                Net_SendUDPPacket(netSocket, size, data, to);
 //            }
         }
-    };
+    }
 
 
     /*
@@ -456,14 +452,14 @@ public class sys_public {
         THREAD_NORMAL,
         THREAD_ABOVE_NORMAL,
         THREAD_HIGHEST
-    };
+    }
 
     public static class xthreadInfo {
 
         public String name;
         public Thread/*int*/ threadHandle;
         public /*unsigned*/ long threadId;
-    };
+    }
     static final        int           MAX_THREADS            = 10;
     //
     public static final xthreadInfo[] g_threads              = new xthreadInfo[MAX_THREADS];

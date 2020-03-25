@@ -21,6 +21,6 @@ public class AAS_pathing {
         public int edgeNum;
         public int[] verts = new int[2];
         public wallEdge_s next;
-    };
+    }
 
 }

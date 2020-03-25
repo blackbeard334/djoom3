@@ -70,21 +70,21 @@ public class DeclAF {
         DECLAF_CONSTRAINT_HINGE,
         DECLAF_CONSTRAINT_SLIDER,
         DECLAF_CONSTRAINT_SPRING
-    };
+    }
 
     public enum declAFJointMod_t {
 
         DECLAF_JOINTMOD_AXIS,
         DECLAF_JOINTMOD_ORIGIN,
         DECLAF_JOINTMOD_BOTH
-    };
+    }
 
     public static abstract class getJointTransform_t {
 
         public abstract boolean run(Object model, final idJointMat[] frame, final String jointName, idVec3 origin, idMat3 axis);
 
         public abstract boolean run(Object model, final idJointMat[] frame, final idStr jointName, idVec3 origin, idMat3 axis);//TODO:phase out overload
-    };
+    }
 
     public static class idAFVector {
 
@@ -94,11 +94,11 @@ public class DeclAF {
             VEC_JOINT,
             VEC_BONECENTER,
             VEC_BONEDIR
-        };
+        }
         public  type    type;
         public  idStr   joint1;
         public  idStr   joint2;
-        private idVec3  vec;
+        private final idVec3  vec;
         private boolean negate;
         //
         //
@@ -106,60 +106,60 @@ public class DeclAF {
         private final  int DBG_count = DBG_counter++;
 
         public idAFVector() {
-            type = VEC_COORDS;
-            joint1 = new idStr();
-            joint2 = new idStr();
-            vec = new idVec3();
-            negate = false;
+            this.type = VEC_COORDS;
+            this.joint1 = new idStr();
+            this.joint2 = new idStr();
+            this.vec = new idVec3();
+            this.negate = false;
         }
 
         public boolean Parse(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             if (!src.ReadToken(token)) {
                 return false;
             }
 
             if (token.equals("-")) {
-                negate = true;
+                this.negate = true;
                 if (!src.ReadToken(token)) {
                     return false;
                 }
             } else {
-                negate = false;
+                this.negate = false;
             }
 
             if (token.equals("(")) {
-                type = VEC_COORDS;
-                vec.x = src.ParseFloat();
+                this.type = VEC_COORDS;
+                this.vec.x = src.ParseFloat();
                 src.ExpectTokenString(",");
-                vec.y = src.ParseFloat();
+                this.vec.y = src.ParseFloat();
                 src.ExpectTokenString(",");
-                vec.z = src.ParseFloat();
+                this.vec.z = src.ParseFloat();
                 src.ExpectTokenString(")");
             } else if (token.equals("joint")) {
-                type = VEC_JOINT;
+                this.type = VEC_JOINT;
                 src.ExpectTokenString("(");
                 src.ReadToken(token);
-                joint1.oSet(token);
+                this.joint1.oSet(token);
                 src.ExpectTokenString(")");
             } else if (token.equals("bonecenter")) {
-                type = VEC_BONECENTER;
+                this.type = VEC_BONECENTER;
                 src.ExpectTokenString("(");
                 src.ReadToken(token);
-                joint1.oSet(token);
+                this.joint1.oSet(token);
                 src.ExpectTokenString(",");
                 src.ReadToken(token);
-                joint2.oSet(token);
+                this.joint2.oSet(token);
                 src.ExpectTokenString(")");
             } else if (token.equals("bonedir")) {
-                type = VEC_BONEDIR;
+                this.type = VEC_BONEDIR;
                 src.ExpectTokenString("(");
                 src.ReadToken(token);
-                joint1.oSet(token);
+                this.joint1.oSet(token);
                 src.ExpectTokenString(",");
                 src.ReadToken(token);
-                joint2.oSet(token);
+                this.joint2.oSet(token);
                 src.ExpectTokenString(")");
             } else {
                 src.Error("unknown token %s in vector", token.getData());
@@ -170,52 +170,52 @@ public class DeclAF {
         }
 
         public boolean Finish(final String fileName, final getJointTransform_t GetJointTransform, final idJointMat[] frame, Object model) throws idException {
-            idMat3 axis = new idMat3();
-            idVec3 start = new idVec3(), end = new idVec3();
+            final idMat3 axis = new idMat3();
+            final idVec3 start = new idVec3(), end = new idVec3();
 
-            switch (type) {
+            switch (this.type) {
                 case VEC_COORDS: {
                     break;
                 }
                 case VEC_JOINT: {
-                    if (!GetJointTransform.run(model, frame, joint1, vec, axis)) {
-                        common.Warning("invalid joint %s in joint() in '%s'", joint1.getData(), fileName);
-                        vec.Zero();
+                    if (!GetJointTransform.run(model, frame, this.joint1, this.vec, axis)) {
+                        common.Warning("invalid joint %s in joint() in '%s'", this.joint1.getData(), fileName);
+                        this.vec.Zero();
                     }
                     break;
                 }
                 case VEC_BONECENTER: {
-                    if (!GetJointTransform.run(model, frame, joint1, start, axis)) {
-                        common.Warning("invalid joint %s in bonecenter() in '%s'", joint1.getData(), fileName);
+                    if (!GetJointTransform.run(model, frame, this.joint1, start, axis)) {
+                        common.Warning("invalid joint %s in bonecenter() in '%s'", this.joint1.getData(), fileName);
                         start.Zero();
                     }
-                    if (!GetJointTransform.run(model, frame, joint2, end, axis)) {
-                        common.Warning("invalid joint %s in bonecenter() in '%s'", joint2.getData(), fileName);
+                    if (!GetJointTransform.run(model, frame, this.joint2, end, axis)) {
+                        common.Warning("invalid joint %s in bonecenter() in '%s'", this.joint2.getData(), fileName);
                         end.Zero();
                     }
-                    vec.oSet((start.oPlus(end)).oMultiply(0.5f));
+                    this.vec.oSet((start.oPlus(end)).oMultiply(0.5f));
                     break;
                 }
                 case VEC_BONEDIR: {
-                    if (!GetJointTransform.run(model, frame, joint1, start, axis)) {
-                        common.Warning("invalid joint %s in bonedir() in '%s'", joint1.getData(), fileName);
+                    if (!GetJointTransform.run(model, frame, this.joint1, start, axis)) {
+                        common.Warning("invalid joint %s in bonedir() in '%s'", this.joint1.getData(), fileName);
                         start.Zero();
                     }
-                    if (!GetJointTransform.run(model, frame, joint2, end, axis)) {
-                        common.Warning("invalid joint %s in bonedir() in '%s'", joint2.getData(), fileName);
+                    if (!GetJointTransform.run(model, frame, this.joint2, end, axis)) {
+                        common.Warning("invalid joint %s in bonedir() in '%s'", this.joint2.getData(), fileName);
                         end.Zero();
                     }
-                    vec.oSet((end.oMinus(start)));
+                    this.vec.oSet((end.oMinus(start)));
                     break;
                 }
                 default: {
-                    vec.Zero();
+                    this.vec.Zero();
                     break;
                 }
             }
 
-            if (negate) {
-                vec.oSet(vec.oNegative());
+            if (this.negate) {
+                this.vec.oSet(this.vec.oNegative());
             }
 
             return true;
@@ -223,24 +223,24 @@ public class DeclAF {
 
         public boolean Write(idFile f) {
 
-            if (negate) {
+            if (this.negate) {
                 f.WriteFloatString("-");
             }
-            switch (type) {
+            switch (this.type) {
                 case VEC_COORDS: {
-                    f.WriteFloatString("( %f, %f, %f )", vec.x, vec.y, vec.z);
+                    f.WriteFloatString("( %f, %f, %f )", this.vec.x, this.vec.y, this.vec.z);
                     break;
                 }
                 case VEC_JOINT: {
-                    f.WriteFloatString("joint( \"%s\" )", joint1.getData());
+                    f.WriteFloatString("joint( \"%s\" )", this.joint1.getData());
                     break;
                 }
                 case VEC_BONECENTER: {
-                    f.WriteFloatString("bonecenter( \"%s\", \"%s\" )", joint1.getData(), joint2.getData());
+                    f.WriteFloatString("bonecenter( \"%s\", \"%s\" )", this.joint1.getData(), this.joint2.getData());
                     break;
                 }
                 case VEC_BONEDIR: {
-                    f.WriteFloatString("bonedir( \"%s\", \"%s\" )", joint1.getData(), joint2.getData());
+                    f.WriteFloatString("bonedir( \"%s\", \"%s\" )", this.joint1.getData(), this.joint2.getData());
                     break;
                 }
                 default: {
@@ -252,40 +252,40 @@ public class DeclAF {
 
         public String ToString(idStr str, final int precision /*= 8*/) {
 
-            switch (type) {
+            switch (this.type) {
                 case VEC_COORDS: {
                     String format;//[128];
                     format = String.format("( %%.%df, %%.%df, %%.%df )", precision, precision, precision);
-                    str.oSet(String.format(format, vec.x, vec.y, vec.z));
+                    str.oSet(String.format(format, this.vec.x, this.vec.y, this.vec.z));
                     break;
                 }
                 case VEC_JOINT: {
-                    str.oSet(String.format("joint( \"%s\" )", joint1.getData()));
+                    str.oSet(String.format("joint( \"%s\" )", this.joint1.getData()));
                     break;
                 }
                 case VEC_BONECENTER: {
-                    str.oSet(String.format("bonecenter( \"%s\", \"%s\" )", joint1.getData(), joint2.getData()));
+                    str.oSet(String.format("bonecenter( \"%s\", \"%s\" )", this.joint1.getData(), this.joint2.getData()));
                     break;
                 }
                 case VEC_BONEDIR: {
-                    str.oSet(String.format("bonedir( \"%s\", \"%s\" )", joint1.getData(), joint2.getData()));
+                    str.oSet(String.format("bonedir( \"%s\", \"%s\" )", this.joint1.getData(), this.joint2.getData()));
                     break;
                 }
                 default: {
                     break;
                 }
             }
-            if (negate) {
+            if (this.negate) {
                 str.oSet("-" + str.getData());//TODO:don't set= idStr reference
             }
             return str.getData();
         }
 
         public idVec3 ToVec3() {
-            return vec;
+            return this.vec;
         }
 //public	idVec3 &				ToVec3( void ) { return vec; }
-    };
+    }
 
     public static class idDeclAF_Body {
 
@@ -318,30 +318,30 @@ public class DeclAF {
         }
 
         public void SetDefault(final idDeclAF file) {
-            name.oSet("noname");
-            modelType = TRM_BOX;
-            v1 = new idAFVector();
-            v1.ToVec3().x = v1.ToVec3().y = v1.ToVec3().z = -10.0f;
-            v2 = new idAFVector();
-            v2.ToVec3().x = v2.ToVec3().y = v2.ToVec3().z = 10.0f;
-            numSides = 3;
-            origin = new idAFVector();
-            angles = new idAngles();
-            density = 0.2f;
-            inertiaScale = getMat3_identity();
-            linearFriction = file.defaultLinearFriction;
-            angularFriction = file.defaultAngularFriction;
-            contactFriction = file.defaultContactFriction;
-            contents = file.contents;
-            clipMask = file.clipMask;
-            selfCollision = file.selfCollision;
-            frictionDirection = new idAFVector();
-            contactMotorDirection = new idAFVector();
-            jointName.oSet("origin");
-            jointMod = DECLAF_JOINTMOD_AXIS;
-            containedJoints.oSet("origin");
+            this.name.oSet("noname");
+            this.modelType = TRM_BOX;
+            this.v1 = new idAFVector();
+            this.v1.ToVec3().x = this.v1.ToVec3().y = this.v1.ToVec3().z = -10.0f;
+            this.v2 = new idAFVector();
+            this.v2.ToVec3().x = this.v2.ToVec3().y = this.v2.ToVec3().z = 10.0f;
+            this.numSides = 3;
+            this.origin = new idAFVector();
+            this.angles = new idAngles();
+            this.density = 0.2f;
+            this.inertiaScale = getMat3_identity();
+            this.linearFriction = file.defaultLinearFriction;
+            this.angularFriction = file.defaultAngularFriction;
+            this.contactFriction = file.defaultContactFriction;
+            this.contents = file.contents;
+            this.clipMask = file.clipMask;
+            this.selfCollision = file.selfCollision;
+            this.frictionDirection = new idAFVector();
+            this.contactMotorDirection = new idAFVector();
+            this.jointName.oSet("origin");
+            this.jointMod = DECLAF_JOINTMOD_AXIS;
+            this.containedJoints.oSet("origin");
         }
-    };
+    }
 
     public static class idDeclAF_Constraint {
 
@@ -372,25 +372,25 @@ public class DeclAF {
         //
 
         public void SetDefault(final idDeclAF file) {
-            name.oSet("noname");
-            type = DECLAF_CONSTRAINT_UNIVERSALJOINT;
+            this.name.oSet("noname");
+            this.type = DECLAF_CONSTRAINT_UNIVERSALJOINT;
             if (file.bodies.Num() != 0) {
-                body1.oSet(file.bodies.oGet(0).name);
+                this.body1.oSet(file.bodies.oGet(0).name);
             } else {
-                body1.oSet("world");
+                this.body1.oSet("world");
             }
-            body2.oSet("world");
-            friction = file.defaultConstraintFriction;
-            anchor = new idAFVector();
-            anchor2 = new idAFVector();
-            axis.ToVec3().Set(1.0f, 0.0f, 0.0f);
-            shaft[0].ToVec3().Set(0.0f, 0.0f, -1.0f);
-            shaft[1].ToVec3().Set(0.0f, 0.0f, 1.0f);
-            limit = LIMIT_NONE;
-            limitAngles[0] = limitAngles[1] = limitAngles[2] = 0.0f;
-            limitAxis.ToVec3().Set(0.0f, 0.0f, -1.0f);
+            this.body2.oSet("world");
+            this.friction = file.defaultConstraintFriction;
+            this.anchor = new idAFVector();
+            this.anchor2 = new idAFVector();
+            this.axis.ToVec3().Set(1.0f, 0.0f, 0.0f);
+            this.shaft[0].ToVec3().Set(0.0f, 0.0f, -1.0f);
+            this.shaft[1].ToVec3().Set(0.0f, 0.0f, 1.0f);
+            this.limit = LIMIT_NONE;
+            this.limitAngles[0] = this.limitAngles[1] = this.limitAngles[2] = 0.0f;
+            this.limitAxis.ToVec3().Set(0.0f, 0.0f, -1.0f);
         }
-    };
+    }
 
     public static class idDeclAF extends idDecl {
 
@@ -465,8 +465,8 @@ public class DeclAF {
         @Override
         public boolean Parse(String text, int textLength) throws idException {
             int i, j;
-            idLexer src = new idLexer();
-            idToken token = new idToken();
+            final idLexer src = new idLexer();
+            final idToken token = new idToken();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
@@ -514,38 +514,38 @@ public class DeclAF {
                 }
             }
 
-            for (i = 0; i < bodies.Num(); i++) {
+            for (i = 0; i < this.bodies.Num(); i++) {
                 // check for multiple bodies with the same name
-                for (j = i + 1; j < bodies.Num(); j++) {
-                    if (bodies.oGet(i).name == bodies.oGet(j).name) {
-                        src.Error("two bodies with the same name \"%s\"", bodies.oGet(i).name);
+                for (j = i + 1; j < this.bodies.Num(); j++) {
+                    if (this.bodies.oGet(i).name == this.bodies.oGet(j).name) {
+                        src.Error("two bodies with the same name \"%s\"", this.bodies.oGet(i).name);
                     }
                 }
             }
 
-            for (i = 0; i < constraints.Num(); i++) {
+            for (i = 0; i < this.constraints.Num(); i++) {
                 // check for multiple constraints with the same name
-                for (j = i + 1; j < constraints.Num(); j++) {
-                    if (constraints.oGet(i).name == constraints.oGet(j).name) {
-                        src.Error("two constraints with the same name \"%s\"", constraints.oGet(i).name);
+                for (j = i + 1; j < this.constraints.Num(); j++) {
+                    if (this.constraints.oGet(i).name == this.constraints.oGet(j).name) {
+                        src.Error("two constraints with the same name \"%s\"", this.constraints.oGet(i).name);
                     }
                 }
                 // check if there are two valid bodies set
-                if (constraints.oGet(i).body1.IsEmpty()) {
-                    src.Error("no valid body1 specified for constraint '%s'", constraints.oGet(i).name);
+                if (this.constraints.oGet(i).body1.IsEmpty()) {
+                    src.Error("no valid body1 specified for constraint '%s'", this.constraints.oGet(i).name);
                 }
-                if (constraints.oGet(i).body2.IsEmpty()) {
-                    src.Error("no valid body2 specified for constraint '%s'", constraints.oGet(i).name);
+                if (this.constraints.oGet(i).body2.IsEmpty()) {
+                    src.Error("no valid body2 specified for constraint '%s'", this.constraints.oGet(i).name);
                 }
             }
 
             // make sure the body which modifies the origin comes first
-            for (i = 0; i < bodies.Num(); i++) {
-                if (bodies.oGet(i).jointName.equals("origin")) {
+            for (i = 0; i < this.bodies.Num(); i++) {
+                if (this.bodies.oGet(i).jointName.equals("origin")) {
                     if (i != 0) {
-                        idDeclAF_Body b = bodies.oGet(0);
-                        bodies.oSet(0, bodies.oGet(i));
-                        bodies.oSet(i, b);
+                        final idDeclAF_Body b = this.bodies.oGet(0);
+                        this.bodies.oSet(0, this.bodies.oGet(i));
+                        this.bodies.oSet(i, b);
                     }
                     break;
                 }
@@ -557,40 +557,40 @@ public class DeclAF {
 
         @Override
         public void FreeData() {
-            modified = false;
-            defaultLinearFriction = 0.01f;
-            defaultAngularFriction = 0.01f;
-            defaultContactFriction = 0.8f;
-            defaultConstraintFriction = 0.5f;
-            totalMass = -1;
-            suspendVelocity.Set(20.0f, 30.0f);
-            suspendAcceleration.Set(40.0f, 60.0f);
-            noMoveTime = 1.0f;
-            noMoveTranslation = 10.0f;
-            noMoveRotation = 10.0f;
-            minMoveTime = -1.0f;
-            maxMoveTime = -1.0f;
-            selfCollision = true;
-            contents[0] = CONTENTS_CORPSE;
-            clipMask[0] = CONTENTS_SOLID | CONTENTS_CORPSE;
-            bodies.DeleteContents(true);
-            constraints.DeleteContents(true);
+            this.modified = false;
+            this.defaultLinearFriction = 0.01f;
+            this.defaultAngularFriction = 0.01f;
+            this.defaultContactFriction = 0.8f;
+            this.defaultConstraintFriction = 0.5f;
+            this.totalMass = -1;
+            this.suspendVelocity.Set(20.0f, 30.0f);
+            this.suspendAcceleration.Set(40.0f, 60.0f);
+            this.noMoveTime = 1.0f;
+            this.noMoveTranslation = 10.0f;
+            this.noMoveRotation = 10.0f;
+            this.minMoveTime = -1.0f;
+            this.maxMoveTime = -1.0f;
+            this.selfCollision = true;
+            this.contents[0] = CONTENTS_CORPSE;
+            this.clipMask[0] = CONTENTS_SOLID | CONTENTS_CORPSE;
+            this.bodies.DeleteContents(true);
+            this.constraints.DeleteContents(true);
         }
 
         public /*virtual */ void Finish(final getJointTransform_t GetJointTransform, final idJointMat[] frame, Object model) throws idException {
             int i;
 
             final String name = GetName();
-            for (i = 0; i < bodies.Num(); i++) {
-                idDeclAF_Body body = bodies.oGet(i);
+            for (i = 0; i < this.bodies.Num(); i++) {
+                final idDeclAF_Body body = this.bodies.oGet(i);
                 body.v1.Finish(name, GetJointTransform, frame, model);
                 body.v2.Finish(name, GetJointTransform, frame, model);
                 body.origin.Finish(name, GetJointTransform, frame, model);
                 body.frictionDirection.Finish(name, GetJointTransform, frame, model);
                 body.contactMotorDirection.Finish(name, GetJointTransform, frame, model);
             }
-            for (i = 0; i < constraints.Num(); i++) {
-                idDeclAF_Constraint constraint = constraints.oGet(i);
+            for (i = 0; i < this.constraints.Num(); i++) {
+                final idDeclAF_Constraint constraint = this.constraints.oGet(i);
                 constraint.anchor.Finish(name, GetJointTransform, frame, model);
                 constraint.anchor2.Finish(name, GetJointTransform, frame, model);
                 constraint.shaft[0].Finish(name, GetJointTransform, frame, model);
@@ -603,7 +603,7 @@ public class DeclAF {
         public boolean Save() throws idException {
             RebuildTextSource();
             ReplaceSourceFileText();
-            modified = false;
+            this.modified = false;
             return true;
         }
 // 
@@ -614,7 +614,7 @@ public class DeclAF {
             body = new idDeclAF_Body();
             body.SetDefault(this);
             body.name.oSet(name);
-            bodies.Append(body);
+            this.bodies.Append(body);
         }
 
         /*
@@ -628,17 +628,17 @@ public class DeclAF {
         public void RenameBody(final String oldName, final String newName) {
             int i;
 
-            for (i = 0; i < bodies.Num(); i++) {
-                if (bodies.oGet(i).name.Icmp(oldName) == 0) {
-                    bodies.oGet(i).name.oSet(newName);
+            for (i = 0; i < this.bodies.Num(); i++) {
+                if (this.bodies.oGet(i).name.Icmp(oldName) == 0) {
+                    this.bodies.oGet(i).name.oSet(newName);
                     break;
                 }
             }
-            for (i = 0; i < constraints.Num(); i++) {
-                if (constraints.oGet(i).body1.Icmp(oldName) == 0) {
-                    constraints.oGet(i).body1.oSet(newName);
-                } else if (constraints.oGet(i).body2.Icmp(oldName) == 0) {
-                    constraints.oGet(i).body2.oSet(newName);
+            for (i = 0; i < this.constraints.Num(); i++) {
+                if (this.constraints.oGet(i).body1.Icmp(oldName) == 0) {
+                    this.constraints.oGet(i).body1.oSet(newName);
+                } else if (this.constraints.oGet(i).body2.Icmp(oldName) == 0) {
+                    this.constraints.oGet(i).body2.oSet(newName);
                 }
             }
         }
@@ -654,18 +654,18 @@ public class DeclAF {
         public void DeleteBody(final String name) {
             int i;
 
-            for (i = 0; i < bodies.Num(); i++) {
-                if (bodies.oGet(i).name.Icmp(name) == 0) {
+            for (i = 0; i < this.bodies.Num(); i++) {
+                if (this.bodies.oGet(i).name.Icmp(name) == 0) {
 //			delete bodies.oGet(i);
-                    bodies.RemoveIndex(i);
+                    this.bodies.RemoveIndex(i);
                     break;
                 }
             }
-            for (i = 0; i < constraints.Num(); i++) {
-                if (constraints.oGet(i).body1.Icmp(name) == 0
-                        || constraints.oGet(i).body2.Icmp(name) == 0) {
+            for (i = 0; i < this.constraints.Num(); i++) {
+                if ((this.constraints.oGet(i).body1.Icmp(name) == 0)
+                        || (this.constraints.oGet(i).body2.Icmp(name) == 0)) {
 //			delete constraints.oGet(i);
-                    constraints.RemoveIndex(i);
+                    this.constraints.RemoveIndex(i);
                     i--;
                 }
             }
@@ -678,15 +678,15 @@ public class DeclAF {
             constraint = new idDeclAF_Constraint();
             constraint.SetDefault(this);
             constraint.name.oSet(name);
-            constraints.Append(constraint);
+            this.constraints.Append(constraint);
         }
 
         public void RenameConstraint(final String oldName, final String newName) {
             int i;
 
-            for (i = 0; i < constraints.Num(); i++) {
-                if (constraints.oGet(i).name.Icmp(oldName) == 0) {
-                    constraints.oGet(i).name.oSet(newName);
+            for (i = 0; i < this.constraints.Num(); i++) {
+                if (this.constraints.oGet(i).name.Icmp(oldName) == 0) {
+                    this.constraints.oGet(i).name.oSet(newName);
                     return;
                 }
             }
@@ -695,10 +695,10 @@ public class DeclAF {
         public void DeleteConstraint(final String name) {
             int i;
 
-            for (i = 0; i < constraints.Num(); i++) {
-                if (constraints.oGet(i).name.Icmp(name) == 0) {
+            for (i = 0; i < this.constraints.Num(); i++) {
+                if (this.constraints.oGet(i).name.Icmp(name) == 0) {
 //			delete constraints.oGet(i);
-                    constraints.RemoveIndex(i);
+                    this.constraints.RemoveIndex(i);
                     return;
                 }
             }
@@ -707,8 +707,8 @@ public class DeclAF {
 
         public static int ContentsFromString(final String str) throws idException {
             int c;
-            idToken token = new idToken();
-            idLexer src = new idLexer(str, str.length(), "idDeclAF::ContentsFromString");
+            final idToken token = new idToken();
+            final idLexer src = new idLexer(str, str.length(), "idDeclAF::ContentsFromString");
 
             c = 0;
             while (src.ReadToken(token)) {
@@ -801,8 +801,8 @@ public class DeclAF {
         }
 
         private boolean ParseContents(idLexer src, int[] c) throws idException {
-            idToken token = new idToken();
-            idStr str = new idStr();
+            final idToken token = new idToken();
+            final idStr str = new idStr();
 
             while (src.ReadToken(token)) {
                 str.Append(token);
@@ -817,21 +817,21 @@ public class DeclAF {
 
         private boolean ParseBody(idLexer src) throws idException {
             boolean hasJoint = false;
-            idToken token = new idToken();
-            idAFVector angles = new idAFVector();
+            final idToken token = new idToken();
+            final idAFVector angles = new idAFVector();
             idDeclAF_Body body;// = new idDeclAF_Body();
 
-            body = bodies.Alloc();
+            body = this.bodies.Alloc();
 
             body.SetDefault(this);
 
-            if (0 == src.ExpectTokenType(TT_STRING, 0, token)
+            if ((0 == src.ExpectTokenType(TT_STRING, 0, token))
                     || !src.ExpectTokenString("{")) {
                 return false;
             }
 
             body.name.oSet(token);
-            if (0 == body.name.Icmp("origin") || 0 == body.name.Icmp("world")) {
+            if ((0 == body.name.Icmp("origin")) || (0 == body.name.Icmp("world"))) {
                 src.Error("a body may not be named \"origin\" or \"world\"");
                 return false;
             }
@@ -988,13 +988,13 @@ public class DeclAF {
         }
 
         private boolean ParseFixed(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idDeclAF_Constraint constraint;
 
-            constraint = constraints.Alloc();
+            constraint = this.constraints.Alloc();
             constraint.SetDefault(this);//TODO:make sure this order is correct.
 
-            if (0 == src.ExpectTokenType(TT_STRING, 0, token)
+            if ((0 == src.ExpectTokenType(TT_STRING, 0, token))
                     || !src.ExpectTokenString("{")) {
                 return false;
             }
@@ -1022,13 +1022,13 @@ public class DeclAF {
         }
 
         private boolean ParseBallAndSocketJoint(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idDeclAF_Constraint constraint;//= new idDeclAF_Constraint();
 
-            constraint = constraints.Alloc();
+            constraint = this.constraints.Alloc();
             constraint.SetDefault(this);
 
-            if (0 == src.ExpectTokenType(TT_STRING, 0, token)
+            if ((0 == src.ExpectTokenType(TT_STRING, 0, token))
                     || !src.ExpectTokenString("{")) {
                 return false;
             }
@@ -1096,13 +1096,13 @@ public class DeclAF {
         }
 
         private boolean ParseUniversalJoint(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idDeclAF_Constraint constraint;// = new idDeclAF_Constraint;
 
-            constraint = constraints.Alloc();
+            constraint = this.constraints.Alloc();
             constraint.SetDefault(this);
 
-            if (0 == src.ExpectTokenType(TT_STRING, 0, token)
+            if ((0 == src.ExpectTokenType(TT_STRING, 0, token))
                     || !src.ExpectTokenString("{")) {
                 return false;
             }
@@ -1169,13 +1169,13 @@ public class DeclAF {
         }
 
         private boolean ParseHinge(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idDeclAF_Constraint constraint;// = new idDeclAF_Constraint;
 
-            constraint = constraints.Alloc();
+            constraint = this.constraints.Alloc();
             constraint.SetDefault(this);
 
-            if (0 == src.ExpectTokenType(TT_STRING, 0, token)
+            if ((0 == src.ExpectTokenType(TT_STRING, 0, token))
                     || !src.ExpectTokenString("{")) {
                 return false;
             }
@@ -1228,13 +1228,13 @@ public class DeclAF {
         }
 
         private boolean ParseSlider(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idDeclAF_Constraint constraint;// = new idDeclAF_Constraint;
 
-            constraint = constraints.Alloc();
+            constraint = this.constraints.Alloc();
             constraint.SetDefault(this);
 
-            if (0 == src.ExpectTokenType(TT_STRING, 0, token)
+            if ((0 == src.ExpectTokenType(TT_STRING, 0, token))
                     || !src.ExpectTokenString("{")) {
                 return false;
             }
@@ -1270,13 +1270,13 @@ public class DeclAF {
         }
 
         private boolean ParseSpring(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idDeclAF_Constraint constraint;// = new idDeclAF_Constraint;
 
-            constraint = constraints.Alloc();
+            constraint = this.constraints.Alloc();
             constraint.SetDefault(this);
 
-            if (0 == src.ExpectTokenType(TT_STRING, 0, token)
+            if ((0 == src.ExpectTokenType(TT_STRING, 0, token))
                     || !src.ExpectTokenString("{")) {
                 return false;
             }
@@ -1328,7 +1328,7 @@ public class DeclAF {
         }
 
         private boolean ParseSettings(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             if (!src.ExpectTokenString("{")) {
                 return false;
@@ -1348,59 +1348,59 @@ public class DeclAF {
                     if (0 == src.ExpectTokenType(TT_STRING, 0, token)) {
                         return false;
                     }
-                    model = token;
+                    this.model = token;
                 } else if (0 == token.Icmp("skin")) {
                     if (0 == src.ExpectTokenType(TT_STRING, 0, token)) {
                         return false;
                     }
-                    skin = token;
+                    this.skin = token;
                 } else if (0 == token.Icmp("friction")) {
 
-                    defaultLinearFriction = src.ParseFloat();
+                    this.defaultLinearFriction = src.ParseFloat();
                     if (!src.ExpectTokenString(",")) {
                         return false;
                     }
-                    defaultAngularFriction = src.ParseFloat();
+                    this.defaultAngularFriction = src.ParseFloat();
                     if (!src.ExpectTokenString(",")) {
                         return false;
                     }
-                    defaultContactFriction = src.ParseFloat();
+                    this.defaultContactFriction = src.ParseFloat();
                     if (src.CheckTokenString(",")) {
-                        defaultConstraintFriction = src.ParseFloat();
+                        this.defaultConstraintFriction = src.ParseFloat();
                     }
                 } else if (0 == token.Icmp("totalMass")) {
-                    totalMass = src.ParseFloat();
+                    this.totalMass = src.ParseFloat();
                 } else if (0 == token.Icmp("suspendSpeed")) {
 
-                    suspendVelocity.oSet(0, src.ParseFloat());
+                    this.suspendVelocity.oSet(0, src.ParseFloat());
                     if (!src.ExpectTokenString(",")) {
                         return false;
                     }
-                    suspendVelocity.oSet(1, src.ParseFloat());
+                    this.suspendVelocity.oSet(1, src.ParseFloat());
                     if (!src.ExpectTokenString(",")) {
                         return false;
                     }
-                    suspendAcceleration.oSet(0, src.ParseFloat());
+                    this.suspendAcceleration.oSet(0, src.ParseFloat());
                     if (!src.ExpectTokenString(",")) {
                         return false;
                     }
-                    suspendAcceleration.oSet(1, src.ParseFloat());
+                    this.suspendAcceleration.oSet(1, src.ParseFloat());
                 } else if (0 == token.Icmp("noMoveTime")) {
-                    noMoveTime = src.ParseFloat();
+                    this.noMoveTime = src.ParseFloat();
                 } else if (0 == token.Icmp("noMoveTranslation")) {
-                    noMoveTranslation = src.ParseFloat();
+                    this.noMoveTranslation = src.ParseFloat();
                 } else if (0 == token.Icmp("noMoveRotation")) {
-                    noMoveRotation = src.ParseFloat();
+                    this.noMoveRotation = src.ParseFloat();
                 } else if (0 == token.Icmp("minMoveTime")) {
-                    minMoveTime = src.ParseFloat();
+                    this.minMoveTime = src.ParseFloat();
                 } else if (0 == token.Icmp("maxMoveTime")) {
-                    maxMoveTime = src.ParseFloat();
+                    this.maxMoveTime = src.ParseFloat();
                 } else if (0 == token.Icmp("contents")) {
-                    ParseContents(src, contents);
+                    ParseContents(src, this.contents);
                 } else if (0 == token.Icmp("clipMask")) {
-                    ParseContents(src, clipMask);
+                    ParseContents(src, this.clipMask);
                 } else if (0 == token.Icmp("selfCollision")) {
-                    selfCollision = src.ParseBool();
+                    this.selfCollision = src.ParseBool();
                 } else if (token.equals("}")) {
                     break;
                 } else {
@@ -1414,7 +1414,7 @@ public class DeclAF {
 //
 
         private boolean WriteBody(idFile f, final idDeclAF_Body body) {
-            idStr str = new idStr();
+            final idStr str = new idStr();
 
             f.WriteFloatString("\nbody \"%s\" {\n", body.name.getData());
             f.WriteFloatString("\tjoint \"%s\"\n", body.jointName.getData());
@@ -1640,22 +1640,22 @@ public class DeclAF {
         }
 
         private boolean WriteSettings(idFile f) {
-            idStr str = new idStr();
+            final idStr str = new idStr();
 
             f.WriteFloatString("\nsettings {\n");
-            f.WriteFloatString("\tmodel \"%s\"\n", model);
-            f.WriteFloatString("\tskin \"%s\"\n", skin);
-            f.WriteFloatString("\tfriction %f, %f, %f, %f\n", defaultLinearFriction, defaultAngularFriction, defaultContactFriction, defaultConstraintFriction);
-            f.WriteFloatString("\tsuspendSpeed %f, %f, %f, %f\n", suspendVelocity.oGet(0), suspendVelocity.oGet(1), suspendAcceleration.oGet(0), suspendAcceleration.oGet(1));
-            f.WriteFloatString("\tnoMoveTime %f\n", noMoveTime);
-            f.WriteFloatString("\tnoMoveTranslation %f\n", noMoveTranslation);
-            f.WriteFloatString("\tnoMoveRotation %f\n", noMoveRotation);
-            f.WriteFloatString("\tminMoveTime %f\n", minMoveTime);
-            f.WriteFloatString("\tmaxMoveTime %f\n", maxMoveTime);
-            f.WriteFloatString("\ttotalMass %f\n", totalMass);
-            f.WriteFloatString("\tcontents %s\n", ContentsToString(contents[0], str));
-            f.WriteFloatString("\tclipMask %s\n", ContentsToString(clipMask[0], str));
-            f.WriteFloatString("\tselfCollision %d\n", selfCollision);
+            f.WriteFloatString("\tmodel \"%s\"\n", this.model);
+            f.WriteFloatString("\tskin \"%s\"\n", this.skin);
+            f.WriteFloatString("\tfriction %f, %f, %f, %f\n", this.defaultLinearFriction, this.defaultAngularFriction, this.defaultContactFriction, this.defaultConstraintFriction);
+            f.WriteFloatString("\tsuspendSpeed %f, %f, %f, %f\n", this.suspendVelocity.oGet(0), this.suspendVelocity.oGet(1), this.suspendAcceleration.oGet(0), this.suspendAcceleration.oGet(1));
+            f.WriteFloatString("\tnoMoveTime %f\n", this.noMoveTime);
+            f.WriteFloatString("\tnoMoveTranslation %f\n", this.noMoveTranslation);
+            f.WriteFloatString("\tnoMoveRotation %f\n", this.noMoveRotation);
+            f.WriteFloatString("\tminMoveTime %f\n", this.minMoveTime);
+            f.WriteFloatString("\tmaxMoveTime %f\n", this.maxMoveTime);
+            f.WriteFloatString("\ttotalMass %f\n", this.totalMass);
+            f.WriteFloatString("\tcontents %s\n", ContentsToString(this.contents[0], str));
+            f.WriteFloatString("\tclipMask %s\n", ContentsToString(this.clipMask[0], str));
+            f.WriteFloatString("\tselfCollision %d\n", this.selfCollision);
             f.WriteFloatString("}\n");
             return true;
         }
@@ -1663,7 +1663,7 @@ public class DeclAF {
 
         private boolean RebuildTextSource() {
             int i;
-            idFile_Memory f = new idFile_Memory();
+            final idFile_Memory f = new idFile_Memory();
 
             f.WriteFloatString("\n\n/*\n"
                     + "\tGenerated by the Articulated Figure Editor.\n"
@@ -1676,14 +1676,14 @@ public class DeclAF {
                 return false;
             }
 
-            for (i = 0; i < bodies.Num(); i++) {
-                if (!WriteBody(f, bodies.oGet(i))) {
+            for (i = 0; i < this.bodies.Num(); i++) {
+                if (!WriteBody(f, this.bodies.oGet(i))) {
                     return false;
                 }
             }
 
-            for (i = 0; i < constraints.Num(); i++) {
-                if (!WriteConstraint(f, constraints.oGet(i))) {
+            for (i = 0; i < this.constraints.Num(); i++) {
+                if (!WriteConstraint(f, this.constraints.oGet(i))) {
                     return false;
                 }
             }
@@ -1694,5 +1694,5 @@ public class DeclAF {
 
             return true;
         }
-    };
+    }
 }

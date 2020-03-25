@@ -140,7 +140,7 @@ public class ubrush {
      */
     static uBrush_t CopyBrush(uBrush_t brush) {
         uBrush_t newBrush;
-        int size;
+        final int size;
         int i;
 //
 //        size = BrushSizeForSides(brush.numsides);
@@ -223,8 +223,8 @@ public class ubrush {
         }
 
         for (i = 0; i < 3; i++) {
-            if (brush.bounds.oGet(0, i) < MIN_WORLD_COORD || brush.bounds.oGet(1, i) > MAX_WORLD_COORD
-                    || brush.bounds.oGet(0, i) >= brush.bounds.oGet(1, i)) {
+            if ((brush.bounds.oGet(0, i) < MIN_WORLD_COORD) || (brush.bounds.oGet(1, i) > MAX_WORLD_COORD)
+                    || (brush.bounds.oGet(0, i) >= brush.bounds.oGet(1, i))) {
                 return false;
             }
         }
@@ -250,7 +250,7 @@ public class ubrush {
             side = brush.sides[i];
             plane = dmapGlobals.mapPlanes.oGet(side.planenum);
             w = new idWinding(plane);
-            for (j = 0; j < brush.numsides && w != null; j++) {
+            for (j = 0; (j < brush.numsides) && (w != null); j++) {
                 if (i == j) {
                     continue;
                 }
@@ -280,7 +280,7 @@ public class ubrush {
     static uBrush_t BrushFromBounds(final idBounds bounds) {
         uBrush_t b;
         int i;
-        idPlane plane = new idPlane();
+        final idPlane plane = new idPlane();
 
         b = new uBrush_t();//AllocBrush(6);
         c_active_brushes++;
@@ -310,7 +310,7 @@ public class ubrush {
     static float BrushVolume(uBrush_t brush) {
         int i;
         idWinding w;
-        idVec3 corner = new idVec3();
+        final idVec3 corner = new idVec3();
         float d, area, volume;
         idPlane plane;
 
@@ -400,7 +400,7 @@ public class ubrush {
      ====================
      */
     static int FilterBrushIntoTree_r(uBrush_t b, node_s node) {
-        uBrush_t front = new uBrush_t(), back = new uBrush_t();
+        final uBrush_t front = new uBrush_t(), back = new uBrush_t();
         int c;
 
         if (NOT(b)) {
@@ -540,15 +540,15 @@ public class ubrush {
      ================
      */
     static void SplitBrush(uBrush_t brush, int planenum, uBrush_t front, uBrush_t back) {
-        uBrush_t[] b = new uBrush_t[2];
+        final uBrush_t[] b = new uBrush_t[2];
         int i, j;
         idWinding w, midwinding;
-        idWinding[] cw = new idWinding[2];
+        final idWinding[] cw = new idWinding[2];
         side_s s, cs;
         float d, d_front, d_back;
 
 //        front[0] = back[0] = null;
-        idPlane plane = dmapGlobals.mapPlanes.oGet(planenum);
+        final idPlane plane = dmapGlobals.mapPlanes.oGet(planenum);
 
         // check all points
         d_front = d_back = 0;
@@ -559,10 +559,10 @@ public class ubrush {
             }
             for (j = 0; j < w.GetNumPoints(); j++) {
                 d = plane.Distance(w.oGet(j).ToVec3());
-                if (d > 0 && d > d_front) {
+                if ((d > 0) && (d > d_front)) {
                     d_front = d;
                 }
-                if (d < 0 && d < d_back) {
+                if ((d < 0) && (d < d_back)) {
                     d_back = d;
                 }
             }
@@ -580,8 +580,8 @@ public class ubrush {
 
         // create a new winding from the split plane
         w = new idWinding(plane);
-        for (i = 0; i < brush.numsides && w != null; i++) {
-            idPlane plane2 = dmapGlobals.mapPlanes.oGet(brush.sides[i].planenum ^ 1);
+        for (i = 0; (i < brush.numsides) && (w != null); i++) {
+            final idPlane plane2 = dmapGlobals.mapPlanes.oGet(brush.sides[i].planenum ^ 1);
             w = w.Clip(plane2, 0); // PLANESIDE_EPSILON);
         }
 
@@ -653,7 +653,7 @@ public class ubrush {
             }
         }
 
-        if (!(b[0] != null && b[1] != null)) {
+        if (!((b[0] != null) && (b[1] != null))) {
             if (NOT(b[0]) && NOT(b[1])) {
                 common.Printf("split removed brush\n");
             } else {

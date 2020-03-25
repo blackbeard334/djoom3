@@ -80,8 +80,8 @@ public class BrushBSP {
         private idPlane   plane;                                    // portal plane
         private int       planeNum;                                 // number of plane this portal is on
         private idWinding winding;                                  // portal winding
-        private idBrushBSPNode[]   nodes = new idBrushBSPNode[2];   // nodes this portal seperates
-        private idBrushBSPPortal[] next  = new idBrushBSPPortal[2]; // next portal in list for both nodes
+        private final idBrushBSPNode[]   nodes = new idBrushBSPNode[2];   // nodes this portal seperates
+        private final idBrushBSPPortal[] next  = new idBrushBSPPortal[2]; // next portal in list for both nodes
         private int flags;                                          // portal flags
         private int faceNum;                                        // number of the face created for this portal
         //
@@ -90,28 +90,28 @@ public class BrushBSP {
         // friend class idBrushBSPNode;
 
         public idBrushBSPPortal() {
-            planeNum = -1;
-            winding = null;
-            nodes[0] = nodes[1] = null;
-            next[0] = next[1] = null;
-            faceNum = 0;
-            flags = 0;
+            this.planeNum = -1;
+            this.winding = null;
+            this.nodes[0] = this.nodes[1] = null;
+            this.next[0] = this.next[1] = null;
+            this.faceNum = 0;
+            this.flags = 0;
         }
 
         // ~idBrushBSPPortal();
         public void AddToNodes(idBrushBSPNode front, idBrushBSPNode back) {
-            if (nodes[0] != null || nodes[1] != null) {
+            if ((this.nodes[0] != null) || (this.nodes[1] != null)) {
                 common.Error("AddToNode: allready included");
             }
 
-            assert (front != null && back != null);
+            assert ((front != null) && (back != null));
 
-            nodes[0] = front;
-            next[0] = front.portals;
+            this.nodes[0] = front;
+            this.next[0] = front.portals;
             front.portals = this;
 
-            nodes[1] = back;
-            next[1] = back.portals;
+            this.nodes[1] = back;
+            this.next[1] = back.portals;
             back.portals = this;
         }
 
@@ -139,12 +139,12 @@ public class BrushBSP {
                 }
             }
 
-            if (nodes[0] == l) {
-                pp.oSet(next[0]);
-                nodes[0] = null;
-            } else if (nodes[1] == l) {
-                pp.oSet(next[1]);
-                nodes[1] = null;
+            if (this.nodes[0] == l) {
+                pp.oSet(this.next[0]);
+                this.nodes[0] = null;
+            } else if (this.nodes[1] == l) {
+                pp.oSet(this.next[1]);
+                this.nodes[1] = null;
             } else {
                 common.Error("idBrushBSPPortal::RemoveFromNode: mislinked portal");
             }
@@ -153,8 +153,8 @@ public class BrushBSP {
         public void Flip() {
             idBrushBSPNode frontNode, backNode;
 
-            frontNode = nodes[0];
-            backNode = nodes[1];
+            frontNode = this.nodes[0];
+            backNode = this.nodes[1];
 
             if (frontNode != null) {
                 RemoveFromNode(frontNode);
@@ -164,28 +164,28 @@ public class BrushBSP {
             }
             AddToNodes(frontNode, backNode);
 
-            plane = plane.oNegative();
-            planeNum ^= 1;
-            winding.ReverseSelf();
+            this.plane = this.plane.oNegative();
+            this.planeNum ^= 1;
+            this.winding.ReverseSelf();
         }
 
         public int Split(final idPlane splitPlane, idBrushBSPPortal front, idBrushBSPPortal back) {
-            idWinding frontWinding = new idWinding(), backWinding = new idWinding();
+            final idWinding frontWinding = new idWinding(), backWinding = new idWinding();
 
 //            front[0] = back[0] = null;
-            winding.Split(splitPlane, 0.1f, frontWinding, backWinding);
+            this.winding.Split(splitPlane, 0.1f, frontWinding, backWinding);
             if (!frontWinding.isNULL()) {
                 front.oSet(new idBrushBSPPortal());
-                front.plane = plane;
-                front.planeNum = planeNum;
-                front.flags = flags;
+                front.plane = this.plane;
+                front.planeNum = this.planeNum;
+                front.flags = this.flags;
                 front.winding = frontWinding;
             }
             if (!backWinding.isNULL()) {
                 back.oSet(new idBrushBSPPortal());
-                back.plane = plane;
-                back.planeNum = planeNum;
-                back.flags = flags;
+                back.plane = this.plane;
+                back.planeNum = this.planeNum;
+                back.flags = this.flags;
                 back.winding = backWinding;
             }
 
@@ -199,45 +199,45 @@ public class BrushBSP {
         }
 
         public idWinding GetWinding() {
-            return winding;
+            return this.winding;
         }
 
         public idPlane GetPlane() {
-            return plane;
+            return this.plane;
         }
 
         public void SetFaceNum(int num) {
-            faceNum = num;
+            this.faceNum = num;
         }
 
         public int GetFaceNum() {
-            return faceNum;
+            return this.faceNum;
         }
 
         public int GetFlags() {
-            return flags;
+            return this.flags;
         }
 
         public void SetFlag(int flag) {
-            flags |= flag;
+            this.flags |= flag;
         }
 
         public void RemoveFlag(int flag) {
-            flags &= ~flag;
+            this.flags &= ~flag;
         }
 
         public idBrushBSPPortal Next(int side) {
-            return next[side];
+            return this.next[side];
         }
 
         public idBrushBSPNode GetNode(int side) {
-            return nodes[side];
+            return this.nodes[side];
         }
 
         private void oSet(idBrushBSPPortal idBrushBSPPortal) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 
     //===============================================================
     //
@@ -253,7 +253,7 @@ public class BrushBSP {
         private int            contents;                            // node contents
         private idBrushList    brushList;                           // list with brushes for this node
         private idBrushBSPNode parent;                              // parent of this node
-        private idBrushBSPNode[] children = new idBrushBSPNode[2];  // both are NULL if this is a leaf node
+        private final idBrushBSPNode[] children = new idBrushBSPNode[2];  // both are NULL if this is a leaf node
         private idBrushBSPPortal portals;                           // portals of this node
         private int              flags;                             // node flags
         private int              areaNum;                           // number of the area created for this node
@@ -262,33 +262,33 @@ public class BrushBSP {
         //
 
         public idBrushBSPNode() {
-            brushList.Clear();
-            contents = 0;
-            flags = 0;
-            volume = null;
-            portals = null;
-            children[0] = children[1] = null;
-            areaNum = 0;
-            occupied = 0;
+            this.brushList.Clear();
+            this.contents = 0;
+            this.flags = 0;
+            this.volume = null;
+            this.portals = null;
+            this.children[0] = this.children[1] = null;
+            this.areaNum = 0;
+            this.occupied = 0;
         }
         // ~idBrushBSPNode();
 
         public void SetContentsFromBrushes() {
             idBrush brush;
 
-            contents = 0;
-            for (brush = brushList.Head(); brush != null; brush = brush.Next()) {
-                contents |= brush.GetContents();
+            this.contents = 0;
+            for (brush = this.brushList.Head(); brush != null; brush = brush.Next()) {
+                this.contents |= brush.GetContents();
             }
         }
 
         public idBounds GetPortalBounds() {
             int s, i;
             idBrushBSPPortal p;
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
 
             bounds.Clear();
-            for (p = portals; p != null; p = p.next[s]) {
+            for (p = this.portals; p != null; p = p.next[s]) {
                 s = (p.nodes[1].equals(this)) ? 1 : 0;
 
                 for (i = 0; i < p.winding.GetNumPoints(); i++) {
@@ -299,11 +299,11 @@ public class BrushBSP {
         }
 
         public idBrushBSPNode GetChild(int index) {
-            return children[index];
+            return this.children[index];
         }
 
         public idBrushBSPNode GetParent() {
-            return parent;
+            return this.parent;
         }
 
         public void SetContents(int contents) {
@@ -311,35 +311,35 @@ public class BrushBSP {
         }
 
         public int GetContents() {
-            return contents;
+            return this.contents;
         }
 
         public idPlane GetPlane() {
-            return plane;
+            return this.plane;
         }
 
         public idBrushBSPPortal GetPortals() {
-            return portals;
+            return this.portals;
         }
 
         public void SetAreaNum(int num) {
-            areaNum = num;
+            this.areaNum = num;
         }
 
         public int GetAreaNum() {
-            return areaNum;
+            return this.areaNum;
         }
 
         public int GetFlags() {
-            return flags;
+            return this.flags;
         }
 
         public void SetFlag(int flag) {
-            flags |= flag;
+            this.flags |= flag;
         }
 
         public void RemoveFlag(int flag) {
-            flags &= ~flag;
+            this.flags &= ~flag;
         }
 
         public boolean TestLeafNode() {
@@ -351,7 +351,7 @@ public class BrushBSP {
 
             n = 0;
             center = getVec3_origin();
-            for (p = portals; p != null; p = p.next[s]) {
+            for (p = this.portals; p != null; p = p.next[s]) {
                 s = (p.nodes[1] == this) ? 1 : 0;
                 center.oPluSet(p.winding.GetCenter());
                 n++;
@@ -359,7 +359,7 @@ public class BrushBSP {
 
             center.oDivSet(n);
 
-            for (p = portals; p != null; p = p.next[s]) {
+            for (p = this.portals; p != null; p = p.next[s]) {
                 s = (p.nodes[1].equals(this)) ? 1 : 0;
                 if (s != 0) {
                     plane = p.GetPlane().oNegative();
@@ -395,25 +395,25 @@ public class BrushBSP {
         // recurse down the tree and remove the flag from all visited nodes
         public void RemoveFlagRecurse(int flag) {
             RemoveFlag(flag);
-            if (children[0] != null) {
-                children[0].RemoveFlagRecurse(flag);
+            if (this.children[0] != null) {
+                this.children[0].RemoveFlagRecurse(flag);
             }
-            if (children[1] != null) {
-                children[1].RemoveFlagRecurse(flag);
+            if (this.children[1] != null) {
+                this.children[1].RemoveFlagRecurse(flag);
             }
         }
 
         // first recurse down the tree and flood from there
         public void RemoveFlagRecurseFlood(int flag) {
             RemoveFlag(flag);
-            if (NOT(children[0]) && NOT(children[1])) {
+            if (NOT(this.children[0]) && NOT(this.children[1])) {
                 RemoveFlagFlood(flag);
             } else {
-                if (children[0] != null) {
-                    children[0].RemoveFlagRecurseFlood(flag);
+                if (this.children[0] != null) {
+                    this.children[0].RemoveFlagRecurseFlood(flag);
                 }
-                if (children[1] != null) {
-                    children[1].RemoveFlagRecurseFlood(flag);
+                if (this.children[1] != null) {
+                    this.children[1].RemoveFlagRecurseFlood(flag);
                 }
             }
         }
@@ -425,11 +425,11 @@ public class BrushBSP {
             boolean front, back;
 
             front = back = false;
-            for (p = portals; p != null; p = p.next[s]) {
+            for (p = this.portals; p != null; p = p.next[s]) {
                 s = (p.nodes[1].equals(this)) ? 1 : 0;
 
                 side = p.winding.PlaneSide(plane, epsilon);
-                if (side == SIDE_CROSS || side == SIDE_ON) {
+                if ((side == SIDE_CROSS) || (side == SIDE_ON)) {
                     return side;
                 }
                 if (side == SIDE_FRONT) {
@@ -457,12 +457,12 @@ public class BrushBSP {
             int s, i;
             idWinding mid;
             idBrushBSPPortal p, midPortal;
-            idBrushBSPPortal[] newPortals = new idBrushBSPPortal[2];
-            idBrushBSPNode[] newNodes = new idBrushBSPNode[2];
+            final idBrushBSPPortal[] newPortals = new idBrushBSPPortal[2];
+            final idBrushBSPNode[] newNodes = new idBrushBSPNode[2];
 
             mid = new idWinding(splitPlane.Normal(), splitPlane.Dist());
 
-            for (p = portals; p != null && mid != null; p = p.next[s]) {
+            for (p = this.portals; (p != null) && (mid != null); p = p.next[s]) {
                 s = (p.nodes[1].equals(this)) ? 1 : 0;
                 if (s != 0) {
                     mid = mid.Clip(p.plane.oNegative(), 0.1f, false);
@@ -478,13 +478,13 @@ public class BrushBSP {
             // allocate two new nodes
             for (i = 0; i < 2; i++) {
                 newNodes[i] = new idBrushBSPNode();
-                newNodes[i].flags = flags;
-                newNodes[i].contents = contents;
+                newNodes[i].flags = this.flags;
+                newNodes[i].contents = this.contents;
                 newNodes[i].parent = this;
             }
 
             // split all portals of the node
-            for (p = portals; p != null; p = portals) {
+            for (p = this.portals; p != null; p = this.portals) {
                 s = (p.nodes[1].equals(this)) ? 1 : 0;
                 p.Split(splitPlane, newPortals[0], newPortals[1]);
                 for (i = 0; i < 2; i++) {
@@ -509,15 +509,13 @@ public class BrushBSP {
             midPortal.AddToNodes(newNodes[0], newNodes[1]);
 
             // set new child nodes
-            children[0] = newNodes[0];
-            children[1] = newNodes[1];
-            plane = splitPlane;
+            this.children[0] = newNodes[0];
+            this.children[1] = newNodes[1];
+            this.plane = splitPlane;
 
             return true;
         }
     }
-
-    ;
 
     //===============================================================
     //
@@ -561,13 +559,13 @@ public class BrushBSP {
             int numSplits;	// number of brush sides split by the splitter
             int numFacing;	// number of brushes facing this splitter
             int epsilonBrushes;	// number of tiny brushes this splitter would create
-        };
+        }
 
         public idBrushBSP() {
-            root = outside = null;
-            numSplits = numPrunedSplits = 0;
-            brushMapContents = 0;
-            brushMap = null;
+            this.root = this.outside = null;
+            this.numSplits = this.numPrunedSplits = 0;
+            this.brushMapContents = 0;
+            this.brushMap = null;
         }
         // ~idBrushBSP();
 
@@ -577,23 +575,23 @@ public class BrushBSP {
                 Allowance MergeAllowed) /*boolean (*MergeAllowed)( idBrush *b1, idBrush *b2 ) )*/ {
 
             int i;
-            idList<idBrushBSPNode> gridCells = new idList<>();
+            final idList<idBrushBSPNode> gridCells = new idList<>();
 
             common.Printf("[Brush BSP]\n");
             common.Printf("%6d brushes\n", brushList.Num());
 
-            BrushChopAllowed = ChopAllowed;
-            BrushMergeAllowed = MergeAllowed;
+            this.BrushChopAllowed = ChopAllowed;
+            this.BrushMergeAllowed = MergeAllowed;
 
-            numGridCells = 0;
-            treeBounds = brushList.GetBounds();
-            root = new idBrushBSPNode();
-            root.brushList = brushList;
-            root.volume = new idBrush();
-            root.volume.FromBounds(treeBounds);
-            root.parent = null;
+            this.numGridCells = 0;
+            this.treeBounds = brushList.GetBounds();
+            this.root = new idBrushBSPNode();
+            this.root.brushList = brushList;
+            this.root.volume = new idBrush();
+            this.root.volume.FromBounds(this.treeBounds);
+            this.root.parent = null;
 
-            BuildGrid_r(gridCells, root);
+            BuildGrid_r(gridCells, this.root);
 
             common.Printf("\r%6d grid cells\n", gridCells.Num());
 
@@ -604,53 +602,53 @@ public class BrushBSP {
             } else {
                 common.Printf("\r%6d %%", 0);
                 for (i = 0; i < gridCells.Num(); i++) {
-                    DisplayRealTimeString("\r%6d", i * 100 / gridCells.Num());
+                    DisplayRealTimeString("\r%6d", (i * 100) / gridCells.Num());
                     ProcessGridCell(gridCells.oGet(i), skipContents);
                 }
                 common.Printf("\r%6d %%\n", 100);
             }
 
-            common.Printf("\r%6d splits\n", numSplits);
+            common.Printf("\r%6d splits\n", this.numSplits);
 
-            if (brushMap != null) {
+            if (this.brushMap != null) {
 //		delete brushMap;
-                brushMap = null;
+                this.brushMap = null;
             }
         }
 
         // remove splits in subspaces with the given contents
         public void PruneTree(int contents) {
-            numPrunedSplits = 0;
+            this.numPrunedSplits = 0;
             common.Printf("[Prune BSP]\n");
-            PruneTree_r(root, contents);
-            common.Printf("%6d splits pruned\n", numPrunedSplits);
+            PruneTree_r(this.root, contents);
+            common.Printf("%6d splits pruned\n", this.numPrunedSplits);
         }
 
         // portalize the bsp tree
         public void Portalize() {
             common.Printf("[Portalize BSP]\n");
-            common.Printf("%6d nodes\n", (numSplits - numPrunedSplits) * 2 + 1);
-            numPortals = 0;
+            common.Printf("%6d nodes\n", ((this.numSplits - this.numPrunedSplits) * 2) + 1);
+            this.numPortals = 0;
             MakeOutsidePortals();
-            MakeTreePortals_r(root);
-            common.Printf("\r%6d nodes portalized\n", numPortals);
+            MakeTreePortals_r(this.root);
+            common.Printf("\r%6d nodes portalized\n", this.numPortals);
         }
 
         // remove subspaces outside the map not reachable by entities
         public boolean RemoveOutside(final idMapFile mapFile, int contents, final idStrList classNames) {
             common.Printf("[Remove Outside]\n");
 
-            solidLeafNodes = outsideLeafNodes = insideLeafNodes = 0;
+            this.solidLeafNodes = this.outsideLeafNodes = this.insideLeafNodes = 0;
 
             if (!FloodFromEntities(mapFile, contents, classNames)) {
                 return false;
             }
 
-            RemoveOutside_r(root, contents);
+            RemoveOutside_r(this.root, contents);
 
-            common.Printf("%6d solid leaf nodes\n", solidLeafNodes);
-            common.Printf("%6d outside leaf nodes\n", outsideLeafNodes);
-            common.Printf("%6d inside leaf nodes\n", insideLeafNodes);
+            common.Printf("%6d solid leaf nodes\n", this.solidLeafNodes);
+            common.Printf("%6d outside leaf nodes\n", this.outsideLeafNodes);
+            common.Printf("%6d inside leaf nodes\n", this.insideLeafNodes);
 
             //PruneTree( contents );
             return true;
@@ -671,9 +669,10 @@ public class BrushBSP {
             idFile lineFile;
             idBrushBSPNode node, nextNode = new idBrushBSPNode();
             idBrushBSPPortal p, nextPortal = new idBrushBSPPortal();
-            idStr qpath, name;
+            idStr qpath;
+			final idStr name;
 
-            if (0 == outside.occupied) {
+            if (0 == this.outside.occupied) {
                 return;
             }
 
@@ -689,14 +688,14 @@ public class BrushBSP {
             }
 
             count = 0;
-            node = outside;
+            node = this.outside;
             while (node.occupied > 1) {
 
                 // find the best portal exit
                 next = node.occupied;
                 for (p = node.portals; p != null; p = p.next[/*!s*/SNOT(s)]) {
                     s = (p.nodes[0].equals(node)) ? 1 : 0;
-                    if (p.nodes[s].occupied != 0 && p.nodes[s].occupied < next) {
+                    if ((p.nodes[s].occupied != 0) && (p.nodes[s].occupied < next)) {
                         nextPortal = p;
                         nextNode = p.nodes[s];
                         next = nextNode.occupied;
@@ -709,18 +708,18 @@ public class BrushBSP {
             }
 
             // add the origin of the entity from which the leak was found
-            lineFile.Printf("%f %f %f\n", leakOrigin.oGet(0), leakOrigin.oGet(1), leakOrigin.oGet(2));
+            lineFile.Printf("%f %f %f\n", this.leakOrigin.oGet(0), this.leakOrigin.oGet(1), this.leakOrigin.oGet(2));
 
             fileSystem.CloseFile(lineFile);
         }
 
         // try to merge portals
         public void MergePortals(int skipContents) {
-            numMergedPortals = 0;
+            this.numMergedPortals = 0;
             common.Printf("[Merge Portals]\n");
             SetPortalPlanes();
-            MergePortals_r(root, skipContents);
-            common.Printf("%6d portals merged\n", numMergedPortals);
+            MergePortals_r(this.root, skipContents);
+            common.Printf("%6d portals merged\n", this.numMergedPortals);
         }
 
         /*
@@ -734,11 +733,11 @@ public class BrushBSP {
         public boolean TryMergeLeafNodes(idBrushBSPPortal portal, int side) {
             int i, j, k, s1, s2, s;
             idBrushBSPNode node1, node2;
-            idBrushBSPNode[] nodes = new idBrushBSPNode[2];
+            final idBrushBSPNode[] nodes = new idBrushBSPNode[2];
             idBrushBSPPortal p1, p2, p, nextp;
             idPlane plane;
             idWinding w;
-            idBounds bounds = new idBounds(), b = new idBounds();
+            final idBounds bounds = new idBounds(), b = new idBounds();
 
             nodes[0] = node1 = portal.nodes[side];
             nodes[1] = node2 = portal.nodes[/*!side*/ SNOT(side)];
@@ -811,7 +810,7 @@ public class BrushBSP {
             }
 
             // replace every reference to node2 by a reference to node1
-            UpdateTreeAfterMerge_r(root, bounds, node2, node1);
+            UpdateTreeAfterMerge_r(this.root, bounds, node2, node1);
 
 //	delete node2;
             return true;
@@ -831,7 +830,7 @@ public class BrushBSP {
             for (i = 0; i < 2; i++) {
                 if (node.children[i] != null) {
                     leafNode = node.children[i].children[0];
-                    if (leafNode != null && leafNode.equals(node.children[i].children[1])) {
+                    if ((leafNode != null) && leafNode.equals(node.children[i].children[1])) {
                         if (leafNode.parent.equals(node.children[i])) {
                             leafNode.parent = node;
                         }
@@ -844,30 +843,30 @@ public class BrushBSP {
 
         // melt portal windings
         public void MeltPortals(int skipContents) {
-            idVectorSet<idVec3> vertexList = new idVectorSet(3);
+            final idVectorSet<idVec3> vertexList = new idVectorSet(3);
 
-            numInsertedPoints = 0;
+            this.numInsertedPoints = 0;
             common.Printf("[Melt Portals]\n");
-            RemoveColinearPoints_r(root, skipContents);
-            MeltPortals_r(root, skipContents, vertexList);
-            root.RemoveFlagRecurse(NODE_DONE);
-            common.Printf("\r%6d points inserted\n", numInsertedPoints);
+            RemoveColinearPoints_r(this.root, skipContents);
+            MeltPortals_r(this.root, skipContents, vertexList);
+            this.root.RemoveFlagRecurse(NODE_DONE);
+            common.Printf("\r%6d points inserted\n", this.numInsertedPoints);
         }
 
         // write a map file with a brush for every leaf node that has the given contents
         public void WriteBrushMap(final idStr fileName, final idStr ext, int contents) {
-            brushMap = new idBrushMap(fileName, ext);
-            brushMapContents = contents;
+            this.brushMap = new idBrushMap(fileName, ext);
+            this.brushMapContents = contents;
         }
 
         // bounds for the whole tree
         public idBounds GetTreeBounds() {
-            return treeBounds;
+            return this.treeBounds;
         }
 
         // root node of the tree
         public idBrushBSPNode GetRootNode() {
-            return root;
+            return this.root;
         }
 
         private void RemoveMultipleLeafNodeReferences_r(idBrushBSPNode node) {
@@ -972,7 +971,7 @@ public class BrushBSP {
                         d_back = d;
                     }
                 }
-                if (d_front > SPLITTER_EPSILON && d_back < -SPLITTER_EPSILON) {
+                if ((d_front > SPLITTER_EPSILON) && (d_back < -SPLITTER_EPSILON)) {
                     stats.numSplits++;
                 }
                 if (d_front > brush_front) {
@@ -983,7 +982,7 @@ public class BrushBSP {
             }
 
             // if brush sides are split and the brush only pokes one unit through the plane
-            if (stats.numSplits > lastNumSplits && (brush_front < 1.0f || brush_back > -1.0f)) {
+            if ((stats.numSplits > lastNumSplits) && ((brush_front < 1.0f) || (brush_back > -1.0f))) {
                 stats.epsilonBrushes++;
             }
 
@@ -1039,7 +1038,7 @@ public class BrushBSP {
 
                         numBrushSides -= b.GetNumSides();
                         // best value we can get using this plane as a splitter
-                        value = f * (stats.numFacing + numBrushSides) - 10 * stats.numSplits - stats.epsilonBrushes * 1000;
+                        value = (f * (stats.numFacing + numBrushSides)) - (10 * stats.numSplits) - (stats.epsilonBrushes * 1000);
                         // if the best value for this plane can't get any better than the best value we have
                         if (value < bestValue) {
                             break;
@@ -1050,7 +1049,7 @@ public class BrushBSP {
                         continue;
                     }
 
-                    value = f * stats.numFacing - 10 * stats.numSplits - abs(stats.numFront - stats.numBack) - stats.epsilonBrushes * 1000;
+                    value = (f * stats.numFacing) - (10 * stats.numSplits) - abs(stats.numFront - stats.numBack) - (stats.epsilonBrushes * 1000);
 
                     if (value > bestValue) {
                         bestValue = value;
@@ -1092,7 +1091,7 @@ public class BrushBSP {
 
         private idBrushBSPNode BuildBrushBSP_r(idBrushBSPNode node, final idPlaneSet planeList, boolean[] testedPlanes, int skipContents) {
             int planeNum;
-            splitterStats_s[] bestStats = {null};
+            final splitterStats_s[] bestStats = {null};
 
             planeNum = FindSplitter(node, planeList, testedPlanes, bestStats);
 
@@ -1101,8 +1100,8 @@ public class BrushBSP {
 
                 node.SetContentsFromBrushes();
 
-                if (brushMap != null && (node.contents & brushMapContents) != 0) {
-                    brushMap.WriteBrush(node.volume);
+                if ((this.brushMap != null) && ((node.contents & this.brushMapContents) != 0)) {
+                    this.brushMap.WriteBrush(node.volume);
                 }
 
                 // free node memory
@@ -1113,8 +1112,8 @@ public class BrushBSP {
                 return node;
             }
 
-            numSplits++;
-            numGridCellSplits++;
+            this.numSplits++;
+            this.numGridCellSplits++;
 
             // mark all brush sides on the split plane as used
             SetSplitterUsed(node, planeNum);
@@ -1143,26 +1142,26 @@ public class BrushBSP {
             if ((node.children[0].contents & node.children[1].contents & skipContents) != 0) {
                 node.contents = node.children[0].contents | node.children[1].contents;
                 node.children[0] = node.children[1] = null;//delete node.children[0];delete node.children[1];
-                numSplits--;
-                numGridCellSplits--;
+                this.numSplits--;
+                this.numGridCellSplits--;
             }
 
             return node;
         }
 
         private idBrushBSPNode ProcessGridCell(idBrushBSPNode node, int skipContents) {
-            idPlaneSet planeList = new idPlaneSet();
+            final idPlaneSet planeList = new idPlaneSet();
             boolean[] testedPlanes;
 
             if (OUPUT_BSP_STATS_PER_GRID_CELL) {
-                common.Printf("[Grid Cell %d]\n", ++numGridCells);
+                common.Printf("[Grid Cell %d]\n", ++this.numGridCells);
                 common.Printf("%6d brushes\n", node.brushList.Num());
             }
 
-            numGridCellSplits = 0;
+            this.numGridCellSplits = 0;
 
             // chop away all brush overlap
-            node.brushList.Chop(BrushChopAllowed);
+            node.brushList.Chop(this.BrushChopAllowed);
 
             // merge brushes if possible
             //node->brushList.Merge( BrushMergeAllowed );
@@ -1179,7 +1178,7 @@ public class BrushBSP {
 
 //            testedPlanes = null;//delete testedPlanes;
             if (OUPUT_BSP_STATS_PER_GRID_CELL) {
-                common.Printf("\r%6d splits\n", numGridCellSplits);
+                common.Printf("\r%6d splits\n", this.numGridCellSplits);
             }
 
             return node;
@@ -1206,7 +1205,7 @@ public class BrushBSP {
                 } else {
                     dist = (float) (BSP_GRID_SIZE * (floor(bounds.oGet(0, axis) / BSP_GRID_SIZE) + 1));
                 }
-                if (dist > bounds.oGet(0, axis) + 1.0f && dist < bounds.oGet(1, axis) - 1.0f) {
+                if ((dist > (bounds.oGet(0, axis) + 1.0f)) && (dist < (bounds.oGet(1, axis) - 1.0f))) {
                     break;
                 }
             }
@@ -1215,7 +1214,7 @@ public class BrushBSP {
                 return;
             }
 
-            numSplits++;
+            this.numSplits++;
 
             normal = getVec3_origin();
             normal.oSet(axis, 1.0f);
@@ -1245,7 +1244,7 @@ public class BrushBSP {
 
         private void PruneTree_r(idBrushBSPNode node, int contents) {
             int i, s;
-            idBrushBSPNode[] nodes = new idBrushBSPNode[2];
+            final idBrushBSPNode[] nodes = new idBrushBSPNode[2];
             idBrushBSPPortal p, nextp;
 
             if (NOT(node.children[0]) || NOT(node.children[1])) {
@@ -1280,7 +1279,7 @@ public class BrushBSP {
 //		delete node.children[1];
                 node.children[0] = node.children[1] = null;
 
-                numPrunedSplits++;
+                this.numPrunedSplits++;
             }
         }
 
@@ -1288,12 +1287,12 @@ public class BrushBSP {
             int i, j, n;
             idBounds bounds;
             idBrushBSPPortal p;
-            idBrushBSPPortal[] portals = new idBrushBSPPortal[6];
+            final idBrushBSPPortal[] portals = new idBrushBSPPortal[6];
             idVec3 normal;
 //            idPlane[] planes = new idPlane[6];
 
             // pad with some space so there will never be null volume leaves
-            bounds = treeBounds.Expand(32);
+            bounds = this.treeBounds.Expand(32);
 
             for (i = 0; i < 3; i++) {
                 if (bounds.oGet(0, i) > bounds.oGet(1, i)) {
@@ -1301,12 +1300,12 @@ public class BrushBSP {
                 }
             }
 
-            outside = new idBrushBSPNode();
-            outside.parent
-                    = outside.children[0] = outside.children[1] = null;
-            outside.brushList.Clear();
-            outside.portals = null;
-            outside.contents = 0;
+            this.outside = new idBrushBSPNode();
+            this.outside.parent
+                    = this.outside.children[0] = this.outside.children[1] = null;
+            this.outside.brushList.Clear();
+            this.outside.portals = null;
+            this.outside.contents = 0;
 
             for (i = 0; i < 3; i++) {
                 for (j = 0; j < 2; j++) {
@@ -1317,9 +1316,9 @@ public class BrushBSP {
                     p.plane.SetNormal(normal);
                     p.plane.SetDist(j != 0 ? -bounds.oGet(j, i) : bounds.oGet(j, i));
                     p.winding = new idWinding(p.plane.Normal(), p.plane.Dist());
-                    p.AddToNodes(root, outside);
+                    p.AddToNodes(this.root, this.outside);
 
-                    n = j * 3 + i;
+                    n = (j * 3) + i;
                     portals[n] = p;
                 }
             }
@@ -1342,7 +1341,7 @@ public class BrushBSP {
             w = new idWinding(node.plane.Normal(), node.plane.Dist());
 
             // clip by all the parents
-            for (n = node.parent; n != null && w != null; n = n.parent) {
+            for (n = node.parent; (n != null) && (w != null); n = n.parent) {
 
                 if (n.children[0].equals(node)) {
                     // take front
@@ -1373,7 +1372,7 @@ public class BrushBSP {
             w = BaseWindingForNode(node);
 
             // clip the portal by all the other portals in the node
-            for (p = node.portals; p != null && w != null; p = p.next[side]) {
+            for (p = node.portals; (p != null) && (w != null); p = p.next[side]) {
                 if (p.nodes[0] == node) {
                     side = 0;
                     w = w.Clip(p.plane, 0.1f);
@@ -1494,8 +1493,8 @@ public class BrushBSP {
             int i;
             idBounds bounds;
 
-            numPortals++;
-            DisplayRealTimeString("\r%6d", numPortals);
+            this.numPortals++;
+            DisplayRealTimeString("\r%6d", this.numPortals);
 
             bounds = node.GetPortalBounds();
 
@@ -1503,7 +1502,7 @@ public class BrushBSP {
 //		//common.Warning( "node without volume" );
 //	}
             for (i = 0; i < 3; i++) {
-                if (bounds.oGet(0, i) < MIN_WORLD_COORD || bounds.oGet(1, i) > MAX_WORLD_COORD) {
+                if ((bounds.oGet(0, i) < MIN_WORLD_COORD) || (bounds.oGet(1, i) > MAX_WORLD_COORD)) {
                     common.Warning("node with unbounded volume");
                     break;
                 }
@@ -1560,8 +1559,8 @@ public class BrushBSP {
             idBrushBSPNode node;
 
             //find the leaf to start in
-            node = root;
-            while (node.children[0] != null && node.children[1] != null) {
+            node = this.root;
+            while ((node.children[0] != null) && (node.children[1] != null)) {
 
                 if (node.plane.Side(origin) == PLANESIDE_BACK) {
                     node = node.children[1];
@@ -1599,12 +1598,12 @@ public class BrushBSP {
         private boolean FloodFromEntities(final idMapFile mapFile, int contents, final idStrList classNames) {
             int i, j;
             boolean inside;
-            idVec3 origin = new idVec3();
+            final idVec3 origin = new idVec3();
             idMapEntity mapEnt;
-            idStr classname = new idStr();
+            final idStr classname = new idStr();
 
             inside = false;
-            outside.occupied = 0;
+            this.outside.occupied = 0;
 
             // skip the first entity which is assumed to be the worldspawn
             for (i = 1; i < mapFile.GetNumEntities(); i++) {
@@ -1636,19 +1635,19 @@ public class BrushBSP {
                     inside = true;
                 }
 
-                if (outside.occupied != 0) {
-                    leakOrigin = origin;
+                if (this.outside.occupied != 0) {
+                    this.leakOrigin = origin;
                     break;
                 }
             }
 
             if (!inside) {
                 common.Warning("no entities inside");
-            } else if (outside.occupied != 0) {
+            } else if (this.outside.occupied != 0) {
                 common.Warning("reached outside from entity %d (%s)", i, classname);
             }
 
-            return (inside && 0 == outside.occupied);
+            return (inside && (0 == this.outside.occupied));
         }
 
         private void RemoveOutside_r(idBrushBSPNode node, int contents) {
@@ -1657,7 +1656,7 @@ public class BrushBSP {
                 return;
             }
 
-            if (node.children[0] != null || node.children[1] != null) {
+            if ((node.children[0] != null) || (node.children[1] != null)) {
                 RemoveOutside_r(node.children[0], contents);
                 RemoveOutside_r(node.children[1], contents);
                 return;
@@ -1665,13 +1664,13 @@ public class BrushBSP {
 
             if (0 == node.occupied) {
                 if (0 == (node.contents & contents)) {
-                    outsideLeafNodes++;
+                    this.outsideLeafNodes++;
                     node.contents |= contents;
                 } else {
-                    solidLeafNodes++;
+                    this.solidLeafNodes++;
                 }
             } else {
-                insideLeafNodes++;
+                this.insideLeafNodes++;
             }
         }
 
@@ -1701,7 +1700,7 @@ public class BrushBSP {
          ============
          */
         private void SetPortalPlanes() {
-            SetPortalPlanes_r(root, portalPlanes);
+            SetPortalPlanes_r(this.root, this.portalPlanes);
         }
 
         private void MergePortals_r(idBrushBSPNode node, int skipContents) {
@@ -1749,7 +1748,7 @@ public class BrushBSP {
                         p2.RemoveFromNode(p2.nodes[1]);
 //				delete p2;
 
-                        numMergedPortals++;
+                        this.numMergedPortals++;
 
                         nextp1 = node.GetPortals();
                         break;
@@ -1772,7 +1771,7 @@ public class BrushBSP {
                     s2 = (p2.GetNode(1).equals(node)) ? 1 : 0;
                     nextp2 = p2.Next(s2);
 
-                    if (p2 == p1 || (p2.planeNum & ~1) != (p1.planeNum & ~1)) {
+                    if ((p2 == p1) || ((p2.planeNum & ~1) != (p1.planeNum & ~1))) {
                         continue;
                     }
                     foundPortal = true;
@@ -1787,7 +1786,7 @@ public class BrushBSP {
                         s2 = (p2.GetNode(1).equals(node)) ? 1 : 0;
                         nextp2 = p2.Next(s2);
 
-                        if (p2 == p1 || (p2.planeNum & ~1) != (p1.planeNum & ~1)) {
+                        if ((p2 == p1) || ((p2.planeNum & ~1) != (p1.planeNum & ~1))) {
                             continue;
                         }
 
@@ -1799,7 +1798,7 @@ public class BrushBSP {
                         p2.RemoveFromNode(p2.nodes[1]);
 //				delete p2;
 
-                        numMergedPortals++;
+                        this.numMergedPortals++;
                     }
                     nextp1 = node.GetPortals();
                 }
@@ -1847,7 +1846,7 @@ public class BrushBSP {
                         p2.RemoveFromNode(p2.nodes[1]);
 //				delete p2;
 
-                        numMergedPortals++;
+                        this.numMergedPortals++;
 
                         nextp1 = node.GetPortals();
                         break;
@@ -1926,7 +1925,7 @@ public class BrushBSP {
         private void MeltFlood_r(idBrushBSPNode node, int skipContents, idBounds bounds, idVectorSet<idVec3/*,3*/> vertexList) {
             int s1, i;
             idBrushBSPPortal p1;
-            idBounds b = new idBounds();
+            final idBounds b = new idBounds();
             idWinding w;
 
             node.SetFlag(NODE_VISITED);
@@ -1974,7 +1973,7 @@ public class BrushBSP {
         private void MeltLeafNodePortals(idBrushBSPNode node, int skipContents, idVectorSet<idVec3/*,3*/> vertexList) {
             int s1, i;
             idBrushBSPPortal p1;
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
 
             if ((node.GetFlags() & NODE_DONE) != 0) {
                 return;
@@ -2000,11 +1999,11 @@ public class BrushBSP {
 
                 for (i = 0; i < vertexList.Num(); i++) {
                     if (p1.winding.InsertPointIfOnEdge(vertexList.oGet(i), p1.plane, 0.1f)) {
-                        numInsertedPoints++;
+                        this.numInsertedPoints++;
                     }
                 }
             }
-            DisplayRealTimeString("\r%6d", numInsertedPoints);
+            DisplayRealTimeString("\r%6d", this.numInsertedPoints);
         }
 
         private void MeltPortals_r(idBrushBSPNode node, int skipContents, idVectorSet<idVec3/*,3*/> vertexList) {
@@ -2024,5 +2023,5 @@ public class BrushBSP {
             MeltPortals_r(node.children[0], skipContents, vertexList);
             MeltPortals_r(node.children[1], skipContents, vertexList);
         }
-    };
+    }
 }

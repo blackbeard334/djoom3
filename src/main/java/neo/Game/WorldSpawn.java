@@ -68,10 +68,10 @@ public class WorldSpawn {
             assert (gameLocal.world == null);
             gameLocal.world = this;
 
-            g_gravity.SetFloat(spawnArgs.GetFloat("gravity", va("%f", DEFAULT_GRAVITY)));
+            g_gravity.SetFloat(this.spawnArgs.GetFloat("gravity", va("%f", DEFAULT_GRAVITY)));
 
             // disable stamina on hell levels
-            if (spawnArgs.GetBool("no_stamina")) {
+            if (this.spawnArgs.GetBool("no_stamina")) {
                 pm_stamina.SetFloat(0.0f);
             }
 
@@ -90,7 +90,7 @@ public class WorldSpawn {
             }
 
             // call any functions specified in worldspawn
-            kv = spawnArgs.MatchPrefix("call");
+            kv = this.spawnArgs.MatchPrefix("call");
             while (kv != null) {
                 func = gameLocal.program.FindFunction(kv.GetValue().getData());
                 if (func == null) {
@@ -99,7 +99,7 @@ public class WorldSpawn {
 
                 thread = new idThread(func);
                 thread.DelayedStart(0);
-                kv = spawnArgs.MatchPrefix("call", kv);
+                kv = this.spawnArgs.MatchPrefix("call", kv);
             }
         }
 
@@ -110,10 +110,10 @@ public class WorldSpawn {
         public void Restore(idRestoreGame savefile) {
             assert (gameLocal.world.equals(this));
 
-            g_gravity.SetFloat(spawnArgs.GetFloat("gravity", va("%f", DEFAULT_GRAVITY)));
+            g_gravity.SetFloat(this.spawnArgs.GetFloat("gravity", va("%f", DEFAULT_GRAVITY)));
 
             // disable stamina on hell levels
-            if (spawnArgs.GetBool("no_stamina")) {
+            if (this.spawnArgs.GetBool("no_stamina")) {
                 pm_stamina.SetFloat(0.0f);
             }
         }
@@ -147,5 +147,5 @@ public class WorldSpawn {
             return eventCallbacks;
         }
 
-    };
+    }
 }

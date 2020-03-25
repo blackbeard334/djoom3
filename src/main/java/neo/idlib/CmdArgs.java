@@ -40,12 +40,12 @@ public class CmdArgs {
         public void oSet(final idCmdArgs args) {
             int i;
 
-            argc = args.argc;
+            this.argc = args.argc;
 //	memcpy( tokenized, args.tokenized, MAX_COMMAND_STRING );
-            tokenized = new StringBuilder(args.tokenized);
-            for (i = 0; i < argc; i++) {
+            this.tokenized = new StringBuilder(args.tokenized);
+            for (i = 0; i < this.argc; i++) {
 //		argv[ i ] = tokenized + ( args.argv[ i ] - args.tokenized );//TODO:what the hell does this do??????
-                argv[i] = args.argv[i];
+                this.argv[i] = args.argv[i];
             }
         }
 
@@ -55,12 +55,12 @@ public class CmdArgs {
 
         // The functions that execute commands get their parameters with these functions.
         public final int Argc() {
-            return argc;
+            return this.argc;
         }
 
         // Argv() will return an empty string, not NULL if arg >= argc.
         public String Argv(int arg) {
-            return (arg >= 0 && arg < argc) ? argv[arg] : "";
+            return ((arg >= 0) && (arg < this.argc)) ? this.argv[arg] : "";
         }
 
         // Returns a single string containing argv(start) to argv(end)
@@ -83,9 +83,9 @@ public class CmdArgs {
             int i;
 
             if (end < 0) {
-                end = argc - 1;
-            } else if (end >= argc) {
-                end = argc - 1;
+                end = this.argc - 1;
+            } else if (end >= this.argc) {
+                end = this.argc - 1;
             }
 //	cmd_args[0] = '\0';
             if (escapeArgs) {
@@ -103,16 +103,16 @@ public class CmdArgs {
                     }
                 }
 //		if ( escapeArgs && strchr( argv[i], '\\' ) ) {
-                if (escapeArgs && argv[i].contains("\\")) {
+                if (escapeArgs && this.argv[i].contains("\\")) {
 //			char *p = argv[i];
                     int p = i;
-                    while (p < argv[i].length()) {
-                        if (argv[i].charAt(p) == '\\') {
+                    while (p < this.argv[i].length()) {
+                        if (this.argv[i].charAt(p) == '\\') {
 //					strcat( cmd_args, "\\\\" );
                             cmd_args += "\\\\";
                         } else {
-                            int l = cmd_args.length();
-                            cmd_args += argv[i].charAt(p);
+                            final int l = cmd_args.length();
+                            cmd_args += this.argv[i].charAt(p);
 //					cmd_args[ l ] = *p;
 //					cmd_args[ l+1 ] = '\0';
                         }
@@ -120,7 +120,7 @@ public class CmdArgs {
                     }
                 } else {
 //			strcat( cmd_args, argv[i] );
-                    cmd_args += argv[i];
+                    cmd_args += this.argv[i];
                 }
             }
             if (escapeArgs) {
@@ -145,13 +145,13 @@ public class CmdArgs {
          // Set keepAsStrings to true to only seperate tokens from whitespace and comments, ignoring punctuation
          */
         public void TokenizeString(final String text, boolean keepAsStrings) throws idException {
-            idLexer lex = new idLexer();
-            idToken token = new idToken();
-            idToken number = new idToken();
+            final idLexer lex = new idLexer();
+            final idToken token = new idToken();
+            final idToken number = new idToken();
             int len, totalLen;
 
             // clear previous args
-            argc = 0;
+            this.argc = 0;
 
             if (null == text) {
                 return;
@@ -168,7 +168,7 @@ public class CmdArgs {
             totalLen = 0;
 
             while (true) {
-                if (argc == MAX_COMMAND_ARGS) {
+                if (this.argc == MAX_COMMAND_ARGS) {
                     return;			// this is usually something malicious
                 }
 
@@ -197,14 +197,14 @@ public class CmdArgs {
 
                 len = token.Length();
 
-                if (totalLen + len + 1 > /*sizeof(*/ tokenized.capacity()) {
+                if ((totalLen + len + 1) > /*sizeof(*/ this.tokenized.capacity()) {
                     return;			// this is usually something malicious
                 }
 
 //                tokenized.append(token);//damn pointers!
                 // regular token
-                argv[argc] = tokenized.replace(totalLen, tokenized.capacity(), token.getData()).substring(totalLen);
-                argc++;
+                this.argv[this.argc] = this.tokenized.replace(totalLen, this.tokenized.capacity(), token.getData()).substring(totalLen);
+                this.argc++;
 
 //                idStr::Copynz( tokenized + totalLen, token.c_str(), sizeof( tokenized ) - totalLen );
 //                tokenized.replace(totalLen, tokenized.capacity() - token.Length(), token.toString());
@@ -213,25 +213,25 @@ public class CmdArgs {
         }
 
         public void AppendArg(final String text) {
-            if (0 == argc) {
-                argc = 1;
-                argv[0] = text;
+            if (0 == this.argc) {
+                this.argc = 1;
+                this.argv[0] = text;
 //		idStr::Copynz( tokenized, text, sizeof( tokenized ) );
-                tokenized = new StringBuilder(tokenized.capacity()).append(text);
+                this.tokenized = new StringBuilder(this.tokenized.capacity()).append(text);
             } else {
 //              argv[ argc ] = argv[ argc-1 ] + strlen( argv[ argc-1 ] ) + 1;
 //              idStr::Copynz( argv[ argc ], text, sizeof( tokenized ) - ( argv[ argc ] - tokenized ) );
-                argv[argc++] = text;
+                this.argv[this.argc++] = text;
             }
         }
 
         public void Clear() {
-            argc = 0;
+            this.argc = 0;
         }
 
         public final String[] GetArgs(int[] _argc) {
-            _argc[0] = argc;
-            return argv;
+            _argc[0] = this.argc;
+            return this.argv;
         }
     }
 }

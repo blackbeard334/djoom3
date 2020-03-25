@@ -79,7 +79,7 @@ public class ServerScan {
         netadr_t adr;
         int      id;
         int      time;
-    };
+    }
 
     // the menu gui uses a hard-coded control type to display a list of network games
     static class networkServer_t {
@@ -94,7 +94,7 @@ public class ServerScan {
         int[]    rate     = new int[MAX_ASYNC_CLIENTS];
         int OSMask;
         int challenge;
-    };
+    }
 
     public enum serverSort_t {
 
@@ -104,7 +104,7 @@ public class ServerScan {
         SORT_GAMETYPE,
         SORT_MAP,
         SORT_GAME
-    };
+    }
 
     public enum scan_state_t {
 
@@ -112,7 +112,7 @@ public class ServerScan {
         WAIT_ON_INIT,
         LAN_SCAN,
         NET_SCAN
-    };
+    }
 
     /*
      ================
@@ -137,9 +137,9 @@ public class ServerScan {
         // servers we're waiting for a reply from
         // won't exceed MAX_PINGREQUESTS elements
         // holds index of net_servers elements, indexed by 'from' string
-        private idDict             net_info;
+        private final idDict             net_info;
         //
-        private idList<inServer_t> net_servers;
+        private final idList<inServer_t> net_servers;
         // where we are in net_servers list for getInfo emissions ( NET_SCAN only )
         // we may either be waiting on MAX_PINGREQUESTS, or for net_servers to grow some more ( through AddServer )
         private int cur_info;
@@ -149,9 +149,9 @@ public class ServerScan {
         //
         private serverSort_t m_sort;
         private boolean m_sortAscending;
-        private idList<Integer> m_sortedServers;            // use ascending for the walking order
+        private final idList<Integer> m_sortedServers;            // use ascending for the walking order
         //
-        private idStr screenshot;
+        private final idStr screenshot;
         private int challenge;                              // challenge for current scan
         //	
         private int endWaitTime;                            // when to stop waiting on a port init
@@ -159,10 +159,10 @@ public class ServerScan {
         //
 
         public idServerScan() {
-            m_pGUI = null;
-            m_sort = SORT_PING;
-            m_sortAscending = true;
-            challenge = 0;
+            this.m_pGUI = null;
+            this.m_sort = SORT_PING;
+            this.m_sortAscending = true;
+            this.challenge = 0;
 
             this.net_info = new idDict();
             this.net_servers = new idList<inServer_t>();
@@ -172,30 +172,30 @@ public class ServerScan {
         }
 
         public int InfoResponse(networkServer_t server) throws idException {
-            if (scan_state == IDLE) {
+            if (this.scan_state == IDLE) {
                 return 0;
             }
 
-            idStr serv = new idStr(Sys_NetAdrToString(server.adr));
+            final idStr serv = new idStr(Sys_NetAdrToString(server.adr));
 
-            if (server.challenge != challenge) {
+            if (server.challenge != this.challenge) {
                 common.DPrintf("idServerScan::InfoResponse - ignoring response from %s, wrong challenge %d.", serv.getData(), server.challenge);
                 return 0;
             }
 
-            if (scan_state == NET_SCAN) {
-                final idKeyValue info = net_info.FindKey(serv.getData());
+            if (this.scan_state == NET_SCAN) {
+                final idKeyValue info = this.net_info.FindKey(serv.getData());
                 if (null == info) {
                     common.DPrintf("idServerScan::InfoResponse NET_SCAN: reply from unknown %s\n", serv.getData());
                     return 0;
                 }
-                int id = Integer.parseInt(info.GetValue().getData());
-                net_info.Delete(serv.getData());
-                inServer_t iserv = net_servers.oGet(id);
+                final int id = Integer.parseInt(info.GetValue().getData());
+                this.net_info.Delete(serv.getData());
+                final inServer_t iserv = this.net_servers.oGet(id);
                 server.ping = Sys_Milliseconds() - iserv.time;
                 server.id = iserv.id;
             } else {
-                server.ping = Sys_Milliseconds() - lan_pingtime;
+                server.ping = Sys_Milliseconds() - this.lan_pingtime;
                 server.id = 0;
 
                 // check for duplicate servers
@@ -218,13 +218,13 @@ public class ServerScan {
                 server.serverInfo.Set("si_mapName", si_map);
             }
 
-            int index = Append(server);
+            final int index = Append(server);
             // for now, don't maintain sorting when adding new info response servers
-            m_sortedServers.Append(Num() - 1);
-            if (listGUI.IsConfigured() && !IsFiltered(server)) {
+            this.m_sortedServers.Append(Num() - 1);
+            if (this.listGUI.IsConfigured() && !IsFiltered(server)) {
                 GUIAdd(Num() - 1, server);
             }
-            if (listGUI.GetSelection(null, 0) == (Num() - 1)) {
+            if (this.listGUI.GetSelection(null, 0) == (Num() - 1)) {
                 GUIUpdateSelected();
             }
 
@@ -234,10 +234,10 @@ public class ServerScan {
         // add an internet server - ( store a numeric id along with it )
 
         public void AddServer(int id, final String srv) {
-            inServer_t s = new inServer_t();
+            final inServer_t s = new inServer_t();
 
-            incoming_net = true;
-            incoming_lastTime = Sys_Milliseconds() + INCOMING_TIMEOUT;
+            this.incoming_net = true;
+            this.incoming_lastTime = Sys_Milliseconds() + INCOMING_TIMEOUT;
             s.id = id;
 
             // using IPs, not hosts
@@ -249,23 +249,23 @@ public class ServerScan {
                 s.adr.port = PORT_SERVER;
             }
 
-            net_servers.Append(s);
+            this.net_servers.Append(s);
         }
 //
         // we are going to feed server entries to be pinged
         // if timeout is true, use a timeout once we start AddServer to trigger EndServers and decide the scan is done
 
         public void StartServers(boolean timeout) {
-            incoming_net = true;
-            incoming_useTimeout = timeout;
-            incoming_lastTime = Sys_Milliseconds() + REFRESH_START;
+            this.incoming_net = true;
+            this.incoming_useTimeout = timeout;
+            this.incoming_lastTime = Sys_Milliseconds() + REFRESH_START;
         }
 
         // we are done filling up the list of server entries
         public void EndServers() {
-            incoming_net = false;
+            this.incoming_net = false;
             l_serverScan = this;
-            m_sortedServers.Sort(new Cmp());
+            this.m_sortedServers.Sort(new Cmp());
             ApplyFilter();
         }
 //
@@ -277,31 +277,31 @@ public class ServerScan {
                 // time to let the OS do whatever magic things it needs to do...
                 idAsyncNetwork.client.InitPort();
                 // start the scan one second from now...
-                scan_state = WAIT_ON_INIT;
-                endWaitTime = Sys_Milliseconds() + 1000;
+                this.scan_state = WAIT_ON_INIT;
+                this.endWaitTime = Sys_Milliseconds() + 1000;
                 return;
             }
 
             // make sure the client port is open
             idAsyncNetwork.client.InitPort();
 
-            scan_state = NET_SCAN;
-            challenge++;
+            this.scan_state = NET_SCAN;
+            this.challenge++;
 
             super.Clear();
-            m_sortedServers.Clear();
-            cur_info = 0;
-            net_info.Clear();
-            listGUI.Clear();
+            this.m_sortedServers.Clear();
+            this.cur_info = 0;
+            this.net_info.Clear();
+            this.listGUI.Clear();
             GUIUpdateSelected();
-            common.DPrintf("NetScan with challenge %d\n", challenge);
+            common.DPrintf("NetScan with challenge %d\n", this.challenge);
 
-            while (cur_info < Min(net_servers.Num(), MAX_PINGREQUESTS)) {
-                netadr_t serv = net_servers.oGet(cur_info).adr;
+            while (this.cur_info < Min(this.net_servers.Num(), MAX_PINGREQUESTS)) {
+                final netadr_t serv = this.net_servers.oGet(this.cur_info).adr;
                 EmitGetInfo(serv);
-                net_servers.oGet(cur_info).time = Sys_Milliseconds();
-                net_info.SetInt(Sys_NetAdrToString(serv), cur_info);
-                cur_info++;
+                this.net_servers.oGet(this.cur_info).time = Sys_Milliseconds();
+                this.net_info.SetInt(Sys_NetAdrToString(serv), this.cur_info);
+                this.cur_info++;
             }
         }
 
@@ -314,24 +314,24 @@ public class ServerScan {
 
         // called each game frame. Updates the scanner state, takes care of ongoing scans
         public void RunFrame() {
-            if (scan_state == IDLE) {
+            if (this.scan_state == IDLE) {
                 return;
             }
 
-            if (scan_state == WAIT_ON_INIT) {
-                if (Sys_Milliseconds() >= endWaitTime) {
-                    scan_state = IDLE;
+            if (this.scan_state == WAIT_ON_INIT) {
+                if (Sys_Milliseconds() >= this.endWaitTime) {
+                    this.scan_state = IDLE;
                     NetScan();
                 }
                 return;
             }
 
-            int timeout_limit = Sys_Milliseconds() - REPLY_TIMEOUT;
+            final int timeout_limit = Sys_Milliseconds() - REPLY_TIMEOUT;
 
-            if (scan_state == LAN_SCAN) {
-                if (timeout_limit > lan_pingtime) {
+            if (this.scan_state == LAN_SCAN) {
+                if (timeout_limit > this.lan_pingtime) {
                     common.Printf("Scanned for servers on the LAN\n");
-                    scan_state = IDLE;
+                    this.scan_state = IDLE;
                 }
                 return;
             }
@@ -339,35 +339,35 @@ public class ServerScan {
             // if scan_state == NET_SCAN
             // check for timeouts
             int i = 0;
-            while (i < net_info.GetNumKeyVals()) {
-                if (timeout_limit > net_servers.oGet(Integer.parseInt(net_info.GetKeyVal(i).GetValue().getData())).time) {
-                    common.DPrintf("timeout %s\n", net_info.GetKeyVal(i).GetKey().getData());
-                    net_info.Delete(net_info.GetKeyVal(i).GetKey().getData());
+            while (i < this.net_info.GetNumKeyVals()) {
+                if (timeout_limit > this.net_servers.oGet(Integer.parseInt(this.net_info.GetKeyVal(i).GetValue().getData())).time) {
+                    common.DPrintf("timeout %s\n", this.net_info.GetKeyVal(i).GetKey().getData());
+                    this.net_info.Delete(this.net_info.GetKeyVal(i).GetKey().getData());
                 } else {
                     i++;
                 }
             }
 
             // possibly send more queries
-            while (cur_info < net_servers.Num() && net_info.GetNumKeyVals() < MAX_PINGREQUESTS) {
-                netadr_t serv = net_servers.oGet(cur_info).adr;
+            while ((this.cur_info < this.net_servers.Num()) && (this.net_info.GetNumKeyVals() < MAX_PINGREQUESTS)) {
+                final netadr_t serv = this.net_servers.oGet(this.cur_info).adr;
                 EmitGetInfo(serv);
-                net_servers.oGet(cur_info).time = Sys_Milliseconds();
-                net_info.SetInt(Sys_NetAdrToString(serv), cur_info);
-                cur_info++;
+                this.net_servers.oGet(this.cur_info).time = Sys_Milliseconds();
+                this.net_info.SetInt(Sys_NetAdrToString(serv), this.cur_info);
+                this.cur_info++;
             }
 
             // update state
-            if ((!incoming_net || (incoming_useTimeout && Sys_Milliseconds() > incoming_lastTime)) && net_info.GetNumKeyVals() == 0) {
+            if ((!this.incoming_net || (this.incoming_useTimeout && (Sys_Milliseconds() > this.incoming_lastTime))) && (this.net_info.GetNumKeyVals() == 0)) {
                 EndServers();
                 // the list is complete, we are no longer waiting for any getInfo replies
-                common.Printf("Scanned %d servers.\n", cur_info);
-                scan_state = IDLE;
+                common.Printf("Scanned %d servers.\n", this.cur_info);
+                this.scan_state = IDLE;
             }
         }
 
         public scan_state_t GetState() {
-            return scan_state;
+            return this.scan_state;
         }
 
         public void SetState(scan_state_t scan_state) {
@@ -395,126 +395,126 @@ public class ServerScan {
         public void SetupLANScan() {
             Clear();
             GUIUpdateSelected();
-            scan_state = LAN_SCAN;
-            challenge++;
-            lan_pingtime = Sys_Milliseconds();
-            common.DPrintf("SetupLANScan with challenge %d\n", challenge);
+            this.scan_state = LAN_SCAN;
+            this.challenge++;
+            this.lan_pingtime = Sys_Milliseconds();
+            common.DPrintf("SetupLANScan with challenge %d\n", this.challenge);
         }
 //
 
         public void GUIConfig(idUserInterface pGUI, final String name) {
-            m_pGUI = pGUI;
-            if (listGUI == null) {
-                listGUI = uiManager.AllocListGUI();
+            this.m_pGUI = pGUI;
+            if (this.listGUI == null) {
+                this.listGUI = uiManager.AllocListGUI();
             }
-            listGUI.Config(pGUI, name);
+            this.listGUI.Config(pGUI, name);
         }
 
         // update the GUI fields with information about the currently selected server
         public void GUIUpdateSelected() throws idException {
-            String[] screenshot = {null};//new char[MAX_STRING_CHARS];
+            final String[] screenshot = {null};//new char[MAX_STRING_CHARS];
 
-            if (NOT(m_pGUI)) {
+            if (NOT(this.m_pGUI)) {
                 return;
             }
-            int i = listGUI.GetSelection(null, 0);
-            if (i == -1 || i >= Num()) {
-                m_pGUI.SetStateString("server_name", "");
-                m_pGUI.SetStateString("player1", "");
-                m_pGUI.SetStateString("player2", "");
-                m_pGUI.SetStateString("player3", "");
-                m_pGUI.SetStateString("player4", "");
-                m_pGUI.SetStateString("player5", "");
-                m_pGUI.SetStateString("player6", "");
-                m_pGUI.SetStateString("player7", "");
-                m_pGUI.SetStateString("player8", "");
-                m_pGUI.SetStateString("server_map", "");
-                m_pGUI.SetStateString("browser_levelshot", "");
-                m_pGUI.SetStateString("server_gameType", "");
-                m_pGUI.SetStateString("server_IP", "");
-                m_pGUI.SetStateString("server_passworded", "");
+            final int i = this.listGUI.GetSelection(null, 0);
+            if ((i == -1) || (i >= Num())) {
+                this.m_pGUI.SetStateString("server_name", "");
+                this.m_pGUI.SetStateString("player1", "");
+                this.m_pGUI.SetStateString("player2", "");
+                this.m_pGUI.SetStateString("player3", "");
+                this.m_pGUI.SetStateString("player4", "");
+                this.m_pGUI.SetStateString("player5", "");
+                this.m_pGUI.SetStateString("player6", "");
+                this.m_pGUI.SetStateString("player7", "");
+                this.m_pGUI.SetStateString("player8", "");
+                this.m_pGUI.SetStateString("server_map", "");
+                this.m_pGUI.SetStateString("browser_levelshot", "");
+                this.m_pGUI.SetStateString("server_gameType", "");
+                this.m_pGUI.SetStateString("server_IP", "");
+                this.m_pGUI.SetStateString("server_passworded", "");
             } else {
-                m_pGUI.SetStateString("server_name", this.oGet(i).serverInfo.GetString("si_name"));
+                this.m_pGUI.SetStateString("server_name", this.oGet(i).serverInfo.GetString("si_name"));
                 for (int j = 0; j < 8; j++) {
                     if (this.oGet(i).clients > j) {
-                        m_pGUI.SetStateString(va("player%d", j + 1), ctos(this.oGet(i).nickname[j]));
+                        this.m_pGUI.SetStateString(va("player%d", j + 1), ctos(this.oGet(i).nickname[j]));
                     } else {
-                        m_pGUI.SetStateString(va("player%d", j + 1), "");
+                        this.m_pGUI.SetStateString(va("player%d", j + 1), "");
                     }
                 }
-                m_pGUI.SetStateString("server_map", this.oGet(i).serverInfo.GetString("si_mapName"));
+                this.m_pGUI.SetStateString("server_map", this.oGet(i).serverInfo.GetString("si_mapName"));
                 fileSystem.FindMapScreenshot(this.oGet(i).serverInfo.GetString("si_map"), screenshot, MAX_STRING_CHARS);
-                m_pGUI.SetStateString("browser_levelshot", screenshot[0]);
-                m_pGUI.SetStateString("server_gameType", this.oGet(i).serverInfo.GetString("si_gameType"));
-                m_pGUI.SetStateString("server_IP", Sys_NetAdrToString(this.oGet(i).adr));
+                this.m_pGUI.SetStateString("browser_levelshot", screenshot[0]);
+                this.m_pGUI.SetStateString("server_gameType", this.oGet(i).serverInfo.GetString("si_gameType"));
+                this.m_pGUI.SetStateString("server_IP", Sys_NetAdrToString(this.oGet(i).adr));
                 if (this.oGet(i).serverInfo.GetBool("si_usePass")) {
-                    m_pGUI.SetStateString("server_passworded", "PASSWORD REQUIRED");
+                    this.m_pGUI.SetStateString("server_passworded", "PASSWORD REQUIRED");
                 } else {
-                    m_pGUI.SetStateString("server_passworded", "");
+                    this.m_pGUI.SetStateString("server_passworded", "");
                 }
             }
         }
 
         public void Shutdown() {
-            m_pGUI = null;
-            if (listGUI != null) {
-                listGUI.Config(null, null);
-                uiManager.FreeListGUI(listGUI);
-                listGUI = null;
+            this.m_pGUI = null;
+            if (this.listGUI != null) {
+                this.listGUI.Config(null, null);
+                uiManager.FreeListGUI(this.listGUI);
+                this.listGUI = null;
             }
-            screenshot.Clear();
+            this.screenshot.Clear();
         }
 
         public void ApplyFilter() throws idException {
             int i;
             networkServer_t serv;
-            idStr s;
+            final idStr s;
 
-            listGUI.SetStateChanges(false);
-            listGUI.Clear();
-            for (i = m_sortAscending ? 0 : m_sortedServers.Num() - 1;
-                    m_sortAscending ? i < m_sortedServers.Num() : i >= 0;
-                    i += m_sortAscending ? 1 : -1) {
-                serv = this.oGet(m_sortedServers.oGet(i));
+            this.listGUI.SetStateChanges(false);
+            this.listGUI.Clear();
+            for (i = this.m_sortAscending ? 0 : this.m_sortedServers.Num() - 1;
+                    this.m_sortAscending ? i < this.m_sortedServers.Num() : i >= 0;
+                    i += this.m_sortAscending ? 1 : -1) {
+                serv = this.oGet(this.m_sortedServers.oGet(i));
                 if (!IsFiltered(serv)) {
-                    GUIAdd(m_sortedServers.oGet(i), serv);
+                    GUIAdd(this.m_sortedServers.oGet(i), serv);
                 }
             }
             GUIUpdateSelected();
-            listGUI.SetStateChanges(true);
+            this.listGUI.SetStateChanges(true);
         }
 
         // there is an internal toggle, call twice with same sort to switch
         public void SetSorting(serverSort_t sort) {
             l_serverScan = this;
-            if (sort == m_sort) {
-                m_sortAscending = !m_sortAscending;
+            if (sort == this.m_sort) {
+                this.m_sortAscending = !this.m_sortAscending;
             } else {
-                m_sort = sort;
-                m_sortAscending = true; // is the default for any new sort
-                m_sortedServers.Sort(new Cmp());
+                this.m_sort = sort;
+                this.m_sortAscending = true; // is the default for any new sort
+                this.m_sortedServers.Sort(new Cmp());
             }
             // trigger a redraw
             ApplyFilter();
         }
 
         public int GetChallenge() {
-            return challenge;
+            return this.challenge;
         }
 
         // we need to clear some internal data as well
         private void LocalClear() {
-            scan_state = IDLE;
-            incoming_net = false;
-            lan_pingtime = -1;
-            net_info.Clear();
-            net_servers.Clear();
-            cur_info = 0;
-            if (listGUI != null) {
-                listGUI.Clear();
+            this.scan_state = IDLE;
+            this.incoming_net = false;
+            this.lan_pingtime = -1;
+            this.net_info.Clear();
+            this.net_servers.Clear();
+            this.cur_info = 0;
+            if (this.listGUI != null) {
+                this.listGUI.Clear();
             }
-            incoming_useTimeout = false;
-            m_sortedServers.Clear();
+            this.incoming_useTimeout = false;
+            this.m_sortedServers.Clear();
         }
 
         private void EmitGetInfo(netadr_t serv) {
@@ -526,8 +526,8 @@ public class ServerScan {
             boolean d3xp = false;
             boolean mod = false;
 
-            if (0 == idStr.Icmp(server.serverInfo.GetString("fs_game"), "d3xp")
-                    || 0 == idStr.Icmp(server.serverInfo.GetString("fs_game_base"), "d3xp")) {
+            if ((0 == idStr.Icmp(server.serverInfo.GetString("fs_game"), "d3xp"))
+                    || (0 == idStr.Icmp(server.serverInfo.GetString("fs_game_base"), "d3xp"))) {
                 d3xp = true;
             }
             if (server.serverInfo.GetString("fs_game").charAt(0) != '\0') {
@@ -556,7 +556,7 @@ public class ServerScan {
             name += "\t";
             name += server.serverInfo.GetString("si_mapName");
             name += "\t";
-            listGUI.Add(id, new idStr(name));
+            this.listGUI.Add(id, new idStr(name));
         }
 
         private boolean IsFiltered(final networkServer_t server) throws idException {
@@ -580,12 +580,12 @@ public class ServerScan {
             }
             // password filter
             keyval = server.serverInfo.FindKey("si_usePass");
-            if (keyval != null && gui_filter_password.GetInteger() == 1) {
+            if ((keyval != null) && (gui_filter_password.GetInteger() == 1)) {
                 // show passworded only
                 if (keyval.GetValue().oGet(0) == '0') {
                     return true;
                 }
-            } else if (keyval != null && gui_filter_password.GetInteger() == 2) {
+            } else if ((keyval != null) && (gui_filter_password.GetInteger() == 2)) {
                 // show no password only
                 if (keyval.GetValue().oGet(0) != '0') {
                     return true;
@@ -594,15 +594,15 @@ public class ServerScan {
             // players filter
             keyval = server.serverInfo.FindKey("si_maxPlayers");
             if (keyval != null) {
-                if (gui_filter_players.GetInteger() == 1 && server.clients == Integer.parseInt(keyval.GetValue().getData())) {
+                if ((gui_filter_players.GetInteger() == 1) && (server.clients == Integer.parseInt(keyval.GetValue().getData()))) {
                     return true;
-                } else if (gui_filter_players.GetInteger() == 2 && (0 == server.clients || server.clients == Integer.parseInt(keyval.GetValue().getData()))) {
+                } else if ((gui_filter_players.GetInteger() == 2) && ((0 == server.clients) || (server.clients == Integer.parseInt(keyval.GetValue().getData())))) {
                     return true;
                 }
             }
             // gametype filter
             keyval = server.serverInfo.FindKey("si_gameType");
-            if (keyval != null && gui_filter_gameType.GetInteger() != 0) {
+            if ((keyval != null) && (gui_filter_gameType.GetInteger() != 0)) {
                 i = 0;
                 while (l_gameTypes[i] != null) {
                     if (0 == keyval.GetValue().Icmp(l_gameTypes[i])) {
@@ -610,20 +610,20 @@ public class ServerScan {
                     }
                     i++;
                 }
-                if (l_gameTypes[i] != null && i != gui_filter_gameType.GetInteger() - 1) {
+                if ((l_gameTypes[i] != null) && (i != (gui_filter_gameType.GetInteger() - 1))) {
                     return true;
                 }
             }
             // idle server filter
             keyval = server.serverInfo.FindKey("si_idleServer");
-            if (keyval != null && 0 == gui_filter_idle.GetInteger()) {
+            if ((keyval != null) && (0 == gui_filter_idle.GetInteger())) {
                 if (0 == keyval.GetValue().Icmp("1")) {
                     return true;
                 }
             }
 
             // autofilter D3XP games if the user does not has the XP installed
-            if (!fileSystem.HasD3XP() && 0 == idStr.Icmp(server.serverInfo.GetString("fs_game"), "d3xp")) {
+            if (!fileSystem.HasD3XP() && (0 == idStr.Icmp(server.serverInfo.GetString("fs_game"), "d3xp"))) {
                 return true;
             }
 
@@ -646,7 +646,7 @@ public class ServerScan {
             @Override
             public int compare(final Integer a, final Integer b) {
                 networkServer_t serv1, serv2;
-                idStr s1 = new idStr(), s2 = new idStr();
+                final idStr s1 = new idStr(), s2 = new idStr();
                 int ret;
 
                 serv1 = l_serverScan.oGet(a);
@@ -677,6 +677,6 @@ public class ServerScan {
                 }
                 return 0;
             }
-        };
-    };
+        }
+    }
 }

@@ -82,14 +82,14 @@ public class AF {
         AFJointModType_t jointMod;        // modify joint axis, origin or both
         idVec3           jointBodyOrigin; // origin of body relative to joint
         idMat3           jointBodyAxis;   // axis of body relative to joint
-    };
+    }
 
     public static class afTouch_s {
 
         public idEntity    touchedEnt;
         public idClipModel touchedClipModel;
         public idAFBody    touchedByBody;
-    };
+    }
 //    
     public static final String ARTICULATED_FIGURE_ANIM = "af_pose";
     public static final float  POSE_BOUNDS_EXPANSION   = 5.0f;
@@ -115,76 +115,76 @@ public class AF {
         //
 
         public idAF() {
-            name = new idStr();
-            physicsObj = new idPhysics_AF();
-            self = null;
-            animator = null;
-            modifiedAnim = 0;
-            baseOrigin = new idVec3();
-            baseAxis = getMat3_identity();
-            jointMods = new idList<>();
-            jointBody = new idList<>();
-            poseTime = -1;
-            restStartTime = -1;
-            isLoaded = false;
-            isActive = false;
-            hasBindConstraints = false;
+            this.name = new idStr();
+            this.physicsObj = new idPhysics_AF();
+            this.self = null;
+            this.animator = null;
+            this.modifiedAnim = 0;
+            this.baseOrigin = new idVec3();
+            this.baseAxis = getMat3_identity();
+            this.jointMods = new idList<>();
+            this.jointBody = new idList<>();
+            this.poseTime = -1;
+            this.restStartTime = -1;
+            this.isLoaded = false;
+            this.isActive = false;
+            this.hasBindConstraints = false;
         }
         // ~idAF( void );
 
         public void Save(idSaveGame savefile) {
-            savefile.WriteObject(self);
+            savefile.WriteObject(this.self);
             savefile.WriteString(GetName());
-            savefile.WriteBool(hasBindConstraints);
-            savefile.WriteVec3(baseOrigin);
-            savefile.WriteMat3(baseAxis);
-            savefile.WriteInt(poseTime);
-            savefile.WriteInt(restStartTime);
-            savefile.WriteBool(isLoaded);
-            savefile.WriteBool(isActive);
-            savefile.WriteStaticObject(physicsObj);
+            savefile.WriteBool(this.hasBindConstraints);
+            savefile.WriteVec3(this.baseOrigin);
+            savefile.WriteMat3(this.baseAxis);
+            savefile.WriteInt(this.poseTime);
+            savefile.WriteInt(this.restStartTime);
+            savefile.WriteBool(this.isLoaded);
+            savefile.WriteBool(this.isActive);
+            savefile.WriteStaticObject(this.physicsObj);
         }
 
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadObject((idClass) self);
-            savefile.ReadString(name);
-            hasBindConstraints = savefile.ReadBool();
-            savefile.ReadVec3(baseOrigin);
-            savefile.ReadMat3(baseAxis);
-            poseTime = savefile.ReadInt();
-            restStartTime = savefile.ReadInt();
-            isLoaded = savefile.ReadBool();
-            isActive = savefile.ReadBool();
+            savefile.ReadObject(this.self);
+            savefile.ReadString(this.name);
+            this.hasBindConstraints = savefile.ReadBool();
+            savefile.ReadVec3(this.baseOrigin);
+            savefile.ReadMat3(this.baseAxis);
+            this.poseTime = savefile.ReadInt();
+            this.restStartTime = savefile.ReadInt();
+            this.isLoaded = savefile.ReadBool();
+            this.isActive = savefile.ReadBool();
 
-            animator = null;
-            modifiedAnim = 0;
+            this.animator = null;
+            this.modifiedAnim = 0;
 
-            if (self != null) {
-                SetAnimator(self.GetAnimator());
-                Load(self, name.getData());
-                if (hasBindConstraints) {
+            if (this.self != null) {
+                SetAnimator(this.self.GetAnimator());
+                Load(this.self, this.name.getData());
+                if (this.hasBindConstraints) {
                     AddBindConstraints();
                 }
             }
 
-            savefile.ReadStaticObject(physicsObj);
+            savefile.ReadStaticObject(this.physicsObj);
 
-            if (self != null) {
-                if (isActive) {
+            if (this.self != null) {
+                if (this.isActive) {
                     // clear all animations
-                    animator.ClearAllAnims(gameLocal.time, 0);
-                    animator.ClearAllJoints();
+                    this.animator.ClearAllAnims(gameLocal.time, 0);
+                    this.animator.ClearAllJoints();
 
                     // switch to articulated figure physics
-                    self.RestorePhysics(physicsObj);
-                    physicsObj.EnableClip();
+                    this.self.RestorePhysics(this.physicsObj);
+                    this.physicsObj.EnableClip();
                 }
                 UpdateAnimation();
             }
         }
 
         public void SetAnimator(idAnimator a) {
-            animator = a;
+            this.animator = a;
         }
 
         public boolean Load(idEntity ent, final String fileName) {
@@ -197,102 +197,102 @@ public class AF {
 
             assert (ent != null);
 
-            self = ent;
-            physicsObj.SetSelf(self);
+            this.self = ent;
+            this.physicsObj.SetSelf(this.self);
 
-            if (animator == null) {
-                gameLocal.Warning("Couldn't load af '%s' for entity '%s' at (%s): NULL animator\n", name, ent.name, ent.GetPhysics().GetOrigin().ToString(0));
+            if (this.animator == null) {
+                gameLocal.Warning("Couldn't load af '%s' for entity '%s' at (%s): NULL animator\n", this.name, ent.name, ent.GetPhysics().GetOrigin().ToString(0));
                 return false;
             }
 
-            name.oSet(fileName);
-            name.StripFileExtension();
+            this.name.oSet(fileName);
+            this.name.StripFileExtension();
 
-            file = (idDeclAF) declManager.FindType(DECL_AF, name);
+            file = (idDeclAF) declManager.FindType(DECL_AF, this.name);
             if (null == file) {
-                gameLocal.Warning("Couldn't load af '%s' for entity '%s' at (%s)\n", name, ent.name, ent.GetPhysics().GetOrigin().ToString(0));
+                gameLocal.Warning("Couldn't load af '%s' for entity '%s' at (%s)\n", this.name, ent.name, ent.GetPhysics().GetOrigin().ToString(0));
                 return false;
             }
 
-            if (file.bodies.Num() == 0 || !file.bodies.oGet(0).jointName.equals("origin")) {
+            if ((file.bodies.Num() == 0) || !file.bodies.oGet(0).jointName.equals("origin")) {
                 gameLocal.Warning("idAF::Load: articulated figure '%s' for entity '%s' at (%s) has no body which modifies the origin joint.",
-                        name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0));
+                        this.name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0));
                 return false;
             }
 
-            modelDef = animator.ModelDef();
-            if (modelDef == null || modelDef.GetState() == DS_DEFAULTED) {
+            modelDef = this.animator.ModelDef();
+            if ((modelDef == null) || (modelDef.GetState() == DS_DEFAULTED)) {
                 gameLocal.Warning("idAF::Load: articulated figure '%s' for entity '%s' at (%s) has no or defaulted modelDef '%s'",
-                        name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0), modelDef != null ? modelDef.GetName() : "");
+                        this.name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0), modelDef != null ? modelDef.GetName() : "");
                 return false;
             }
 
-            model = animator.ModelHandle();
-            if (model == null || model.IsDefaultModel()) {
+            model = this.animator.ModelHandle();
+            if ((model == null) || model.IsDefaultModel()) {
                 gameLocal.Warning("idAF::Load: articulated figure '%s' for entity '%s' at (%s) has no or defaulted model '%s'",
-                        name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0), model != null ? model.Name() : "");
+                        this.name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0), model != null ? model.Name() : "");
                 return false;
             }
 
             // get the modified animation
-            modifiedAnim = animator.GetAnim(ARTICULATED_FIGURE_ANIM);
-            if (0 == modifiedAnim) {
+            this.modifiedAnim = this.animator.GetAnim(ARTICULATED_FIGURE_ANIM);
+            if (0 == this.modifiedAnim) {
                 gameLocal.Warning("idAF::Load: articulated figure '%s' for entity '%s' at (%s) has no modified animation '%s'",
-                        name, ent.name, ent.GetPhysics().GetOrigin().ToString(0), ARTICULATED_FIGURE_ANIM);
+                        this.name, ent.name, ent.GetPhysics().GetOrigin().ToString(0), ARTICULATED_FIGURE_ANIM);
                 return false;
             }
 
             // create the animation frame used to setup the articulated figure
-            numJoints = animator.NumJoints();
+            numJoints = this.animator.NumJoints();
             joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
-            gameEdit.ANIM_CreateAnimFrame(model, animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
+            gameEdit.ANIM_CreateAnimFrame(model, this.animator.GetAnim(this.modifiedAnim).MD5Anim(0), numJoints, joints, 1, this.animator.ModelDef().GetVisualOffset(), this.animator.RemoveOrigin());
 
             // set all vector positions from model joints
-            file.Finish(GetJointTransform.INSTANCE, joints, animator);
+            file.Finish(GetJointTransform.INSTANCE, joints, this.animator);
 
             // initialize articulated figure physics
-            physicsObj.SetGravity(gameLocal.GetGravity());
-            physicsObj.SetClipMask(file.clipMask[0]);
-            physicsObj.SetDefaultFriction(file.defaultLinearFriction, file.defaultAngularFriction, file.defaultContactFriction);
-            physicsObj.SetSuspendSpeed(file.suspendVelocity, file.suspendAcceleration);
-            physicsObj.SetSuspendTolerance(file.noMoveTime, file.noMoveTranslation, file.noMoveRotation);
-            physicsObj.SetSuspendTime(file.minMoveTime, file.maxMoveTime);
-            physicsObj.SetSelfCollision(file.selfCollision);
+            this.physicsObj.SetGravity(gameLocal.GetGravity());
+            this.physicsObj.SetClipMask(file.clipMask[0]);
+            this.physicsObj.SetDefaultFriction(file.defaultLinearFriction, file.defaultAngularFriction, file.defaultContactFriction);
+            this.physicsObj.SetSuspendSpeed(file.suspendVelocity, file.suspendAcceleration);
+            this.physicsObj.SetSuspendTolerance(file.noMoveTime, file.noMoveTranslation, file.noMoveRotation);
+            this.physicsObj.SetSuspendTime(file.minMoveTime, file.maxMoveTime);
+            this.physicsObj.SetSelfCollision(file.selfCollision);
 
             // clear the list with transforms from joints to bodies
-            jointMods.SetNum(0, false);
+            this.jointMods.SetNum(0, false);
 
             // clear the joint to body conversion list
-            jointBody.AssureSize(animator.NumJoints());
-            for (i = 0; i < jointBody.Num(); i++) {
-                jointBody.oSet(i, -1);
+            this.jointBody.AssureSize(this.animator.NumJoints());
+            for (i = 0; i < this.jointBody.Num(); i++) {
+                this.jointBody.oSet(i, -1);
             }
 
             // delete any bodies in the physicsObj that are no longer in the idDeclAF
-            for (i = 0; i < physicsObj.GetNumBodies(); i++) {
-                idAFBody body = physicsObj.GetBody(i);
+            for (i = 0; i < this.physicsObj.GetNumBodies(); i++) {
+                final idAFBody body = this.physicsObj.GetBody(i);
                 for (j = 0; j < file.bodies.Num(); j++) {
                     if (file.bodies.oGet(j).name.Icmp(body.GetName()) == 0) {
                         break;
                     }
                 }
                 if (j >= file.bodies.Num()) {
-                    physicsObj.DeleteBody(i);
+                    this.physicsObj.DeleteBody(i);
                     i--;
                 }
             }
 
             // delete any constraints in the physicsObj that are no longer in the idDeclAF
-            for (i = 0; i < physicsObj.GetNumConstraints(); i++) {
-                idAFConstraint constraint = physicsObj.GetConstraint(i);
+            for (i = 0; i < this.physicsObj.GetNumConstraints(); i++) {
+                final idAFConstraint constraint = this.physicsObj.GetConstraint(i);
                 for (j = 0; j < file.constraints.Num(); j++) {
-                    if (file.constraints.oGet(j).name.Icmp(constraint.GetName()) == 0
-                            && file.constraints.oGet(j).type.ordinal() == constraint.GetType().ordinal()) {
+                    if ((file.constraints.oGet(j).name.Icmp(constraint.GetName()) == 0)
+                            && (file.constraints.oGet(j).type.ordinal() == constraint.GetType().ordinal())) {
                         break;
                     }
                 }
                 if (j >= file.constraints.Num()) {
-                    physicsObj.DeleteConstraint(i);
+                    this.physicsObj.DeleteConstraint(i);
                     i--;
                 }
             }
@@ -307,23 +307,23 @@ public class AF {
                 LoadConstraint(file.constraints.oGet(i));
             }
 
-            physicsObj.UpdateClipModels();
+            this.physicsObj.UpdateClipModels();
 
             // check if each joint is contained by a body
-            for (i = 0; i < animator.NumJoints(); i++) {
-                if (jointBody.oGet(i) == -1) {
+            for (i = 0; i < this.animator.NumJoints(); i++) {
+                if (this.jointBody.oGet(i) == -1) {
                     gameLocal.Warning("idAF::Load: articulated figure '%s' for entity '%s' at (%s) joint '%s' is not contained by a body",
-                            name, self.name, self.GetPhysics().GetOrigin().ToString(0), animator.GetJointName((int/*jointHandle_t*/) i));
+                            this.name, this.self.name, this.self.GetPhysics().GetOrigin().ToString(0), this.animator.GetJointName(i));
                 }
             }
 
-            physicsObj.SetMass(file.totalMass);
-            physicsObj.SetChanged();
+            this.physicsObj.SetMass(file.totalMass);
+            this.physicsObj.SetChanged();
 
             // disable the articulated figure for collision detection until activated
-            physicsObj.DisableClip();
+            this.physicsObj.DisableClip();
 
-            isLoaded = true;
+            this.isLoaded = true;
 
             return true;
         }
@@ -333,11 +333,11 @@ public class AF {
         }
 
         public boolean IsLoaded() {
-            return isLoaded && self != null;
+            return this.isLoaded && (this.self != null);
         }
 
         public String GetName() {
-            return name.getData();
+            return this.name.getData();
         }
 
 
@@ -351,12 +351,12 @@ public class AF {
         public void SetupPose(idEntity ent, int time) {
             int i;
             idAFBody body;
-            idVec3 origin = new idVec3();
-            idMat3 axis = new idMat3();
+            final idVec3 origin = new idVec3();
+            final idMat3 axis = new idMat3();
             idAnimator animatorPtr;
             renderEntity_s renderEntity;
 
-            if (!IsLoaded() || null == ent) {
+            if (!IsLoaded() || (null == ent)) {
                 return;
             }
 
@@ -371,25 +371,25 @@ public class AF {
             }
 
             // if the animation is driven by the physics
-            if (self.GetPhysics() == physicsObj) {
+            if (this.self.GetPhysics() == this.physicsObj) {
                 return;
             }
 
             // if the pose was already updated this frame
-            if (poseTime == time) {
+            if (this.poseTime == time) {
                 return;
             }
-            poseTime = time;
+            this.poseTime = time;
 
-            for (i = 0; i < jointMods.Num(); i++) {
-                body = physicsObj.GetBody(jointMods.oGet(i).bodyId);
-                animatorPtr.GetJointTransform(jointMods.oGet(i).jointHandle, time, origin, axis);
-                body.SetWorldOrigin(renderEntity.origin.oPlus((origin.oPlus(jointMods.oGet(i).jointBodyOrigin.oMultiply(axis))).oMultiply(renderEntity.axis)));
-                body.SetWorldAxis(jointMods.oGet(i).jointBodyAxis.oMultiply(axis).oMultiply(renderEntity.axis));
+            for (i = 0; i < this.jointMods.Num(); i++) {
+                body = this.physicsObj.GetBody(this.jointMods.oGet(i).bodyId);
+                animatorPtr.GetJointTransform(this.jointMods.oGet(i).jointHandle, time, origin, axis);
+                body.SetWorldOrigin(renderEntity.origin.oPlus((origin.oPlus(this.jointMods.oGet(i).jointBodyOrigin.oMultiply(axis))).oMultiply(renderEntity.axis)));
+                body.SetWorldAxis(this.jointMods.oGet(i).jointBodyAxis.oMultiply(axis).oMultiply(renderEntity.axis));
             }
 
-            if (isActive) {
-                physicsObj.UpdateClipModels();
+            if (this.isActive) {
+                this.physicsObj.UpdateClipModels();
             }
         }
 
@@ -406,8 +406,9 @@ public class AF {
             int i;
             float invDelta;
             idAFBody body;
-            idVec3 origin = new idVec3(), lastOrigin;
-            idMat3 axis = new idMat3();
+            final idVec3 origin = new idVec3();
+			idVec3 lastOrigin;
+            final idMat3 axis = new idMat3();
             idAnimator animatorPtr;
             renderEntity_s renderEntity;
 
@@ -426,34 +427,34 @@ public class AF {
             }
 
             // if the animation is driven by the physics
-            if (self.GetPhysics() == physicsObj) {
+            if (this.self.GetPhysics() == this.physicsObj) {
                 return;
             }
 
             // if the pose was already updated this frame
-            if (poseTime == time) {
+            if (this.poseTime == time) {
                 return;
             }
-            invDelta = 1.0f / MS2SEC(time - poseTime);
-            poseTime = time;
+            invDelta = 1.0f / MS2SEC(time - this.poseTime);
+            this.poseTime = time;
 
-            for (i = 0; i < jointMods.Num(); i++) {
-                body = physicsObj.GetBody(jointMods.oGet(i).bodyId);
-                animatorPtr.GetJointTransform(jointMods.oGet(i).jointHandle, time, origin, axis);
+            for (i = 0; i < this.jointMods.Num(); i++) {
+                body = this.physicsObj.GetBody(this.jointMods.oGet(i).bodyId);
+                animatorPtr.GetJointTransform(this.jointMods.oGet(i).jointHandle, time, origin, axis);
                 lastOrigin = body.GetWorldOrigin();
-                body.SetWorldOrigin(renderEntity.origin.oPlus((origin.oPlus(jointMods.oGet(i).jointBodyOrigin.oMultiply(axis))).oMultiply(renderEntity.axis)));
-                body.SetWorldAxis(jointMods.oGet(i).jointBodyAxis.oMultiply(axis).oMultiply(renderEntity.axis));
+                body.SetWorldOrigin(renderEntity.origin.oPlus((origin.oPlus(this.jointMods.oGet(i).jointBodyOrigin.oMultiply(axis))).oMultiply(renderEntity.axis)));
+                body.SetWorldAxis(this.jointMods.oGet(i).jointBodyAxis.oMultiply(axis).oMultiply(renderEntity.axis));
                 body.SetLinearVelocity((body.GetWorldOrigin().oMinus(lastOrigin)).oMultiply(invDelta));
             }
 
-            physicsObj.UpdateClipModels();
+            this.physicsObj.UpdateClipModels();
         }
 
         public int EntitiesTouchingAF(afTouch_s[] touchList/*[ MAX_GENTITIES ]*/) {
             int i, j, numClipModels;
             idAFBody body;
             idClipModel cm;
-            idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
+            final idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
             int numTouching;
 
             if (!IsLoaded()) {
@@ -461,15 +462,15 @@ public class AF {
             }
 
             numTouching = 0;
-            numClipModels = gameLocal.clip.ClipModelsTouchingBounds(physicsObj.GetAbsBounds(), -1, clipModels, MAX_GENTITIES);
+            numClipModels = gameLocal.clip.ClipModelsTouchingBounds(this.physicsObj.GetAbsBounds(), -1, clipModels, MAX_GENTITIES);
 
-            for (i = 0; i < jointMods.Num(); i++) {
-                body = physicsObj.GetBody(jointMods.oGet(i).bodyId);
+            for (i = 0; i < this.jointMods.Num(); i++) {
+                body = this.physicsObj.GetBody(this.jointMods.oGet(i).bodyId);
 
                 for (j = 0; j < numClipModels; j++) {
                     cm = clipModels[j];
 
-                    if (NOT(cm) || cm.GetEntity().equals(self)) {
+                    if (NOT(cm) || cm.GetEntity().equals(this.self)) {
                         continue;
                     }
 
@@ -499,14 +500,14 @@ public class AF {
                 return;
             }
             // clear all animations
-            animator.ClearAllAnims(gameLocal.time, 0);
-            animator.ClearAllJoints();
+            this.animator.ClearAllAnims(gameLocal.time, 0);
+            this.animator.ClearAllJoints();
             // switch to articulated figure physics
-            self.SetPhysics(physicsObj);
+            this.self.SetPhysics(this.physicsObj);
             // start the articulated figure physics simulation
-            physicsObj.EnableClip();
-            physicsObj.Activate();
-            isActive = true;
+            this.physicsObj.EnableClip();
+            this.physicsObj.Activate();
+            this.isActive = true;
         }
 
         public void StartFromCurrentPose(int inheritVelocityTime) {
@@ -519,19 +520,19 @@ public class AF {
             if (inheritVelocityTime > 0) {
 
                 // make sure the ragdoll is at rest
-                physicsObj.PutToRest();
+                this.physicsObj.PutToRest();
 
                 // set the pose for some time back
-                SetupPose(self, gameLocal.time - inheritVelocityTime);
+                SetupPose(this.self, gameLocal.time - inheritVelocityTime);
 
                 // change the pose for the current time and set velocities
-                ChangePose(self, gameLocal.time);
+                ChangePose(this.self, gameLocal.time);
             } else {
                 // transform the articulated figure to reflect the current animation pose
-                SetupPose(self, gameLocal.time);
+                SetupPose(this.self, gameLocal.time);
             }
 
-            physicsObj.UpdateClipModels();
+            this.physicsObj.UpdateClipModels();
 
             TestSolid();
 
@@ -540,24 +541,24 @@ public class AF {
             UpdateAnimation();
 
             // update the render entity origin and axis
-            self.UpdateModel();
+            this.self.UpdateModel();
 
             // make sure the renderer gets the updated origin and axis
-            self.Present();
+            this.self.Present();
         }
 
         public void Stop() {
             // disable the articulated figure for collision detection
-            physicsObj.UnlinkClip();
-            isActive = false;
+            this.physicsObj.UnlinkClip();
+            this.isActive = false;
         }
 
         public void Rest() {
-            physicsObj.PutToRest();
+            this.physicsObj.PutToRest();
         }
 
         public boolean IsActive() {
-            return isActive;
+            return this.isActive;
         }
 
         /*
@@ -584,17 +585,17 @@ public class AF {
 
             switch (constraint.GetType()) {
                 case CONSTRAINT_BALLANDSOCKETJOINT: {
-                    idAFConstraint_BallAndSocketJoint bs = (idAFConstraint_BallAndSocketJoint) constraint;
+                    final idAFConstraint_BallAndSocketJoint bs = (idAFConstraint_BallAndSocketJoint) constraint;
                     bs.Translate(pos.oMinus(bs.GetAnchor()));
                     break;
                 }
                 case CONSTRAINT_UNIVERSALJOINT: {
-                    idAFConstraint_UniversalJoint uj = (idAFConstraint_UniversalJoint) constraint;
+                    final idAFConstraint_UniversalJoint uj = (idAFConstraint_UniversalJoint) constraint;
                     uj.Translate(pos.oMinus(uj.GetAnchor()));
                     break;
                 }
                 case CONSTRAINT_HINGE: {
-                    idAFConstraint_Hinge hinge = (idAFConstraint_Hinge) constraint;
+                    final idAFConstraint_Hinge hinge = (idAFConstraint_Hinge) constraint;
                     hinge.Translate(pos.oMinus(hinge.GetAnchor()));
                     break;
                 }
@@ -606,7 +607,7 @@ public class AF {
         }
 
         public idPhysics_AF GetPhysics() {
-            return physicsObj;
+            return this.physicsObj;
         }
 
         /*
@@ -621,20 +622,20 @@ public class AF {
             idAFBody body;
             idVec3 origin, entityOrigin;
             idMat3 axis, entityAxis;
-            idBounds bounds = new idBounds(), b = new idBounds();
+            final idBounds bounds = new idBounds(), b = new idBounds();
 
             bounds.Clear();
 
             // get model base transform
-            origin = physicsObj.GetOrigin(0);
-            axis = physicsObj.GetAxis(0);
+            origin = this.physicsObj.GetOrigin(0);
+            axis = this.physicsObj.GetAxis(0);
 
-            entityAxis = baseAxis.Transpose().oMultiply(axis);
-            entityOrigin = origin.oMinus(baseOrigin.oMultiply(entityAxis));
+            entityAxis = this.baseAxis.Transpose().oMultiply(axis);
+            entityOrigin = origin.oMinus(this.baseOrigin.oMultiply(entityAxis));
 
             // get bounds relative to base
-            for (i = 0; i < jointMods.Num(); i++) {
-                body = physicsObj.GetBody(jointMods.oGet(i).bodyId);
+            for (i = 0; i < this.jointMods.Num(); i++) {
+                body = this.physicsObj.GetBody(this.jointMods.oGet(i).bodyId);
                 origin = (body.GetWorldOrigin().oMinus(entityOrigin)).oMultiply(entityAxis.Transpose());
                 axis = body.GetWorldAxis().oMultiply(entityAxis.Transpose());
                 b.FromTransformedBounds(body.GetClipModel().GetBounds(), origin, axis);
@@ -659,61 +660,61 @@ public class AF {
                 return false;
             }
 
-            renderEntity = self.GetRenderEntity();
+            renderEntity = this.self.GetRenderEntity();
             if (null == renderEntity) {
                 return false;
             }
 
-            if (physicsObj.IsAtRest()) {
-                if (restStartTime == physicsObj.GetRestStartTime()) {
+            if (this.physicsObj.IsAtRest()) {
+                if (this.restStartTime == this.physicsObj.GetRestStartTime()) {
                     return false;
                 }
-                restStartTime = physicsObj.GetRestStartTime();
+                this.restStartTime = this.physicsObj.GetRestStartTime();
             }
 
             // get the render position
-            origin = physicsObj.GetOrigin(0);
-            axis = physicsObj.GetAxis(0);
-            renderAxis = baseAxis.Transpose().oMultiply(axis);
-            renderOrigin = origin.oMinus(baseOrigin.oMultiply(renderAxis));
+            origin = this.physicsObj.GetOrigin(0);
+            axis = this.physicsObj.GetAxis(0);
+            renderAxis = this.baseAxis.Transpose().oMultiply(axis);
+            renderOrigin = origin.oMinus(this.baseOrigin.oMultiply(renderAxis));
 
             // create an animation frame which reflects the current pose of the articulated figure
-            animator.InitAFPose();
-            for (i = 0; i < jointMods.Num(); i++) {
+            this.animator.InitAFPose();
+            for (i = 0; i < this.jointMods.Num(); i++) {
                 // check for the origin joint
-                if (jointMods.oGet(i).jointHandle == 0) {
+                if (this.jointMods.oGet(i).jointHandle == 0) {
                     continue;
                 }
-                bodyOrigin = physicsObj.GetOrigin(jointMods.oGet(i).bodyId);
-                bodyAxis = physicsObj.GetAxis(jointMods.oGet(i).bodyId);
-                axis = jointMods.oGet(i).jointBodyAxis.Transpose().oMultiply(bodyAxis.oMultiply(renderAxis.Transpose()));
-                origin = (bodyOrigin.oMinus(jointMods.oGet(i).jointBodyOrigin.oMultiply(axis).oMinus(renderOrigin))).oMultiply(renderAxis.Transpose());
-                animator.SetAFPoseJointMod(jointMods.oGet(i).jointHandle, jointMods.oGet(i).jointMod, axis, origin);
+                bodyOrigin = this.physicsObj.GetOrigin(this.jointMods.oGet(i).bodyId);
+                bodyAxis = this.physicsObj.GetAxis(this.jointMods.oGet(i).bodyId);
+                axis = this.jointMods.oGet(i).jointBodyAxis.Transpose().oMultiply(bodyAxis.oMultiply(renderAxis.Transpose()));
+                origin = (bodyOrigin.oMinus(this.jointMods.oGet(i).jointBodyOrigin.oMultiply(axis).oMinus(renderOrigin))).oMultiply(renderAxis.Transpose());
+                this.animator.SetAFPoseJointMod(this.jointMods.oGet(i).jointHandle, this.jointMods.oGet(i).jointMod, axis, origin);
             }
-            animator.FinishAFPose(modifiedAnim, GetBounds().Expand(POSE_BOUNDS_EXPANSION), gameLocal.time);
-            animator.SetAFPoseBlendWeight(1.0f);
+            this.animator.FinishAFPose(this.modifiedAnim, GetBounds().Expand(POSE_BOUNDS_EXPANSION), gameLocal.time);
+            this.animator.SetAFPoseBlendWeight(1.0f);
 
             return true;
         }
 
         public void GetPhysicsToVisualTransform(idVec3 origin, idMat3 axis) {
-            origin.oSet(baseOrigin.oNegative());
-            axis.oSet(baseAxis.Transpose());
+            origin.oSet(this.baseOrigin.oNegative());
+            axis.oSet(this.baseAxis.Transpose());
         }
 
         public impactInfo_s GetImpactInfo(idEntity ent, int id, final idVec3 point) {
-            SetupPose(self, gameLocal.time);
-            return physicsObj.GetImpactInfo(BodyForClipModelId(id), point);
+            SetupPose(this.self, gameLocal.time);
+            return this.physicsObj.GetImpactInfo(BodyForClipModelId(id), point);
         }
 
         public void ApplyImpulse(idEntity ent, int id, final idVec3 point, final idVec3 impulse) {
-            SetupPose(self, gameLocal.time);
-            physicsObj.ApplyImpulse(BodyForClipModelId(id), point, impulse);
+            SetupPose(this.self, gameLocal.time);
+            this.physicsObj.ApplyImpulse(BodyForClipModelId(id), point, impulse);
         }
 
         public void AddForce(idEntity ent, int id, final idVec3 point, final idVec3 force) {
-            SetupPose(self, gameLocal.time);
-            physicsObj.AddForce(BodyForClipModelId(id), point, force);
+            SetupPose(this.self, gameLocal.time);
+            this.physicsObj.AddForce(BodyForClipModelId(id), point, force);
         }
 
         public int BodyForClipModelId(int id) {
@@ -721,8 +722,8 @@ public class AF {
                 return id;
             } else {
                 id = CLIPMODEL_ID_TO_JOINT_HANDLE(id);
-                if (id < jointBody.Num()) {
-                    return jointBody.oGet(id);
+                if (id < this.jointBody.Num()) {
+                    return this.jointBody.oGet(id);
                 } else {
                     return 0;
                 }
@@ -734,8 +735,8 @@ public class AF {
             idAFBody body;
             String key, value;
 
-            for (i = 0; i < jointMods.Num(); i++) {
-                body = physicsObj.GetBody(jointMods.oGet(i).bodyId);
+            for (i = 0; i < this.jointMods.Num(); i++) {
+                body = this.physicsObj.GetBody(this.jointMods.oGet(i).bodyId);
 
                 key = "body " + body.GetName();
                 value = body.GetWorldOrigin().ToString(8);
@@ -747,19 +748,19 @@ public class AF {
 
         public void LoadState(final idDict args) {
             idKeyValue kv;
-            idStr name = new idStr();
+            final idStr name = new idStr();
             idAFBody body;
-            idVec3 origin = new idVec3();
-            idAngles angles = new idAngles();
+            final idVec3 origin = new idVec3();
+            final idAngles angles = new idAngles();
 
             kv = args.MatchPrefix("body ", null);
             while (kv != null) {
 
                 name.oSet(kv.GetKey());
                 name.Strip("body ");
-                body = physicsObj.GetBody(name.getData());
+                body = this.physicsObj.GetBody(name.getData());
                 if (body != null) {
-                    Scanner sscanf = new Scanner(kv.GetValue().getData());
+                    final Scanner sscanf = new Scanner(kv.GetValue().getData());
 //			sscanf( kv.GetValue(), "%f %f %f %f %f %f", &origin.x, &origin.y, &origin.z, &angles.pitch, &angles.yaw, &angles.roll );
                     origin.x = sscanf.nextFloat();
                     origin.y = sscanf.nextFloat();
@@ -777,15 +778,15 @@ public class AF {
                 kv = args.MatchPrefix("body ", kv);
             }
 
-            physicsObj.UpdateClipModels();
+            this.physicsObj.UpdateClipModels();
         }
 
         public void AddBindConstraints() {
             idKeyValue kv;
-            idStr name = new idStr();
+            final idStr name = new idStr();
             idAFBody body;
-            idLexer lexer = new idLexer();
-            idToken type = new idToken(), bodyName = new idToken(), jointName = new idToken();
+            final idLexer lexer = new idLexer();
+            final idToken type = new idToken(), bodyName = new idToken(), jointName = new idToken();
             idVec3 origin, renderOrigin;
             idMat3 axis, renderAxis;
 
@@ -793,13 +794,13 @@ public class AF {
                 return;
             }
 
-            final idDict args = self.spawnArgs;
+            final idDict args = this.self.spawnArgs;
 
             // get the render position
-            origin = physicsObj.GetOrigin(0);
-            axis = physicsObj.GetAxis(0);
-            renderAxis = baseAxis.Transpose().oMultiply(axis);
-            renderOrigin = origin.oMinus(baseOrigin.oMultiply(renderAxis));
+            origin = this.physicsObj.GetOrigin(0);
+            axis = this.physicsObj.GetAxis(0);
+            renderAxis = this.baseAxis.Transpose().oMultiply(axis);
+            renderOrigin = origin.oMinus(this.baseOrigin.oMultiply(renderAxis));
 
             // parse all the bind constraints
             for (kv = args.MatchPrefix("bindConstraint ", null); kv != null; kv = args.MatchPrefix("bindConstraint ", kv)) {
@@ -810,9 +811,9 @@ public class AF {
                 lexer.ReadToken(type);
 
                 lexer.ReadToken(bodyName);
-                body = physicsObj.GetBody(bodyName);
+                body = this.physicsObj.GetBody(bodyName);
                 if (NOT(body)) {
-                    gameLocal.Warning("idAF::AddBindConstraints: body '%s' not found on entity '%s'", bodyName, self.name);
+                    gameLocal.Warning("idAF::AddBindConstraints: body '%s' not found on entity '%s'", bodyName, this.self.name);
                     lexer.FreeSource();
                     continue;
                 }
@@ -821,43 +822,43 @@ public class AF {
                     idAFConstraint_Fixed c;
 
                     c = new idAFConstraint_Fixed(name, body, null);
-                    physicsObj.AddConstraint(c);
+                    this.physicsObj.AddConstraint(c);
                 } else if (type.Icmp("ballAndSocket") == 0) {
                     idAFConstraint_BallAndSocketJoint c;
 
                     c = new idAFConstraint_BallAndSocketJoint(name, body, null);
-                    physicsObj.AddConstraint(c);
+                    this.physicsObj.AddConstraint(c);
                     lexer.ReadToken(jointName);
 
-                    int/*jointHandle_t*/ joint = animator.GetJointHandle(jointName.getData());
+                    final int/*jointHandle_t*/ joint = this.animator.GetJointHandle(jointName.getData());
                     if (joint == INVALID_JOINT) {
                         gameLocal.Warning("idAF::AddBindConstraints: joint '%s' not found", jointName);
                     }
 
-                    animator.GetJointTransform(joint, gameLocal.time, origin, axis);
+                    this.animator.GetJointTransform(joint, gameLocal.time, origin, axis);
                     c.SetAnchor(renderOrigin.oPlus(origin.oMultiply(renderAxis)));
                 } else if (type.Icmp("universal") == 0) {
                     idAFConstraint_UniversalJoint c;
 
                     c = new idAFConstraint_UniversalJoint(name, body, null);
-                    physicsObj.AddConstraint(c);
+                    this.physicsObj.AddConstraint(c);
                     lexer.ReadToken(jointName);
 
-                    int/*jointHandle_t*/ joint = animator.GetJointHandle(jointName);
+                    final int/*jointHandle_t*/ joint = this.animator.GetJointHandle(jointName);
                     if (joint == INVALID_JOINT) {
                         gameLocal.Warning("idAF::AddBindConstraints: joint '%s' not found", jointName);
                     }
-                    animator.GetJointTransform(joint, gameLocal.time, origin, axis);
+                    this.animator.GetJointTransform(joint, gameLocal.time, origin, axis);
                     c.SetAnchor(renderOrigin.oPlus(origin.oMultiply(renderAxis)));
                     c.SetShafts(new idVec3(0, 0, 1), new idVec3(0, 0, -1));
                 } else {
-                    gameLocal.Warning("idAF::AddBindConstraints: unknown constraint type '%s' on entity '%s'", type, self.name);
+                    gameLocal.Warning("idAF::AddBindConstraints: unknown constraint type '%s' on entity '%s'", type, this.self.name);
                 }
 
                 lexer.FreeSource();
             }
 
-            hasBindConstraints = true;
+            this.hasBindConstraints = true;
         }
 
         public void RemoveBindConstraints() {
@@ -867,22 +868,22 @@ public class AF {
                 return;
             }
 
-            final idDict args = self.spawnArgs;
-            idStr name = new idStr();
+            final idDict args = this.self.spawnArgs;
+            final idStr name = new idStr();
 
             kv = args.MatchPrefix("bindConstraint ", null);
             while (kv != null) {
                 name.oSet(kv.GetKey());
                 name.Strip("bindConstraint ");
 
-                if (physicsObj.GetConstraint(name.getData()) != null) {
-                    physicsObj.DeleteConstraint(name.getData());
+                if (this.physicsObj.GetConstraint(name.getData()) != null) {
+                    this.physicsObj.DeleteConstraint(name.getData());
                 }
 
                 kv = args.MatchPrefix("bindConstraint ", kv);
             }
 
-            hasBindConstraints = false;
+            this.hasBindConstraints = false;
         }
 
         /*
@@ -893,10 +894,10 @@ public class AF {
          ================
          */
         protected void SetBase(idAFBody body, final idJointMat[] joints) {
-            physicsObj.ForceBodyId(body, 0);
-            baseOrigin.oSet(body.GetWorldOrigin());
-            baseAxis.oSet(body.GetWorldAxis());
-            AddBody(body, joints, animator.GetJointName(animator.GetFirstChild("origin")), AF_JOINTMOD_AXIS);
+            this.physicsObj.ForceBodyId(body, 0);
+            this.baseOrigin.oSet(body.GetWorldOrigin());
+            this.baseAxis.oSet(body.GetWorldAxis());
+            AddBody(body, joints, this.animator.GetJointName(this.animator.GetFirstChild("origin")), AF_JOINTMOD_AXIS);
         }
 
         /*
@@ -912,38 +913,40 @@ public class AF {
             idVec3 origin;
             idMat3 axis;
 
-            handle = animator.GetJointHandle(jointName);
+            handle = this.animator.GetJointHandle(jointName);
             if (handle == INVALID_JOINT) {
-                gameLocal.Error("idAF for entity '%s' at (%s) modifies unknown joint '%s'", self.name, self.GetPhysics().GetOrigin().ToString(0), jointName);
+                gameLocal.Error("idAF for entity '%s' at (%s) modifies unknown joint '%s'", this.self.name, this.self.GetPhysics().GetOrigin().ToString(0), jointName);
             }
 
-            assert (handle < animator.NumJoints());
+            assert (handle < this.animator.NumJoints());
             origin = joints[handle].ToVec3();
             axis = joints[handle].ToMat3();
 
-            index = jointMods.Num();
-            jointMods.SetNum(index + 1, false);
-            jointMods.oSet(index, new jointConversion_s());
-            jointMods.oGet(index).bodyId = physicsObj.GetBodyId(body);
-            jointMods.oGet(index).jointHandle = handle;
-            jointMods.oGet(index).jointMod = mod;
+            index = this.jointMods.Num();
+            this.jointMods.SetNum(index + 1, false);
+            this.jointMods.oSet(index, new jointConversion_s());
+            this.jointMods.oGet(index).bodyId = this.physicsObj.GetBodyId(body);
+            this.jointMods.oGet(index).jointHandle = handle;
+            this.jointMods.oGet(index).jointMod = mod;
             
-            jointMods.oGet(index).jointBodyOrigin = (body.GetWorldOrigin().oMinus(origin)).oMultiply(axis.Transpose());
-            jointMods.oGet(index).jointBodyAxis = body.GetWorldAxis().oMultiply(axis.Transpose());
+            this.jointMods.oGet(index).jointBodyOrigin = (body.GetWorldOrigin().oMinus(origin)).oMultiply(axis.Transpose());
+            this.jointMods.oGet(index).jointBodyAxis = body.GetWorldAxis().oMultiply(axis.Transpose());
         }
 
         private static int DBG_LoadBody = 0;
         protected boolean LoadBody(final idDeclAF_Body fb, final idJointMat[] joints) {
             int id, i;DBG_LoadBody++;
             float length;
-            float[] candleMass = {0};
-            idTraceModel trm = new idTraceModel();
+            final float[] candleMass = {0};
+            final idTraceModel trm = new idTraceModel();
             idClipModel clip;
             idAFBody body;
-            idMat3 axis, inertiaTensor = new idMat3();
-            idVec3 centerOfMass = new idVec3(), origin;
-            idBounds bounds = new idBounds();
-            idList<Integer/*jointHandle_t*/> jointList = new idList<>();
+            idMat3 axis;
+			final idMat3 inertiaTensor = new idMat3();
+            final idVec3 centerOfMass = new idVec3();
+			idVec3 origin;
+            final idBounds bounds = new idBounds();
+            final idList<Integer/*jointHandle_t*/> jointList = new idList<>();
 
             origin = new idVec3(fb.origin.ToVec3());
             axis = fb.angles.ToMat3();
@@ -993,29 +996,29 @@ public class AF {
             trm.Translate(centerOfMass.oNegative());
             origin.oPluSet(centerOfMass.oMultiply(axis));
 
-            body = physicsObj.GetBody(fb.name.getData());
+            body = this.physicsObj.GetBody(fb.name.getData());
             if (body != null) {
                 clip = body.GetClipModel();
                 if (!clip.IsEqual(trm)) {
                     clip = new idClipModel(trm);
                     clip.SetContents(fb.contents[0]);
-                    clip.Link(gameLocal.clip, self, 0, origin, axis);
+                    clip.Link(gameLocal.clip, this.self, 0, origin, axis);
                     body.SetClipModel(clip);
                 }
                 clip.SetContents(fb.contents[0]);
                 body.SetDensity(fb.density, fb.inertiaScale);
                 body.SetWorldOrigin(origin);
                 body.SetWorldAxis(axis);
-                id = physicsObj.GetBodyId(body);
+                id = this.physicsObj.GetBodyId(body);
             } else {
                 clip = new idClipModel(trm);
                 clip.SetContents(fb.contents[0]);
-                clip.Link(gameLocal.clip, self, 0, origin, axis);
+                clip.Link(gameLocal.clip, this.self, 0, origin, axis);
                 body = new idAFBody(fb.name, clip, fb.density);
                 if (!fb.inertiaScale.equals(getMat3_identity())) {
                     body.SetDensity(fb.density, fb.inertiaScale);
                 }
-                id = physicsObj.AddBody(body);
+                id = this.physicsObj.AddBody(body);
             }
             if (fb.linearFriction != -1.0f) {
                 body.SetFriction(fb.linearFriction, fb.angularFriction, fb.contactFriction);
@@ -1047,14 +1050,14 @@ public class AF {
             }
 
             // update table to find the nearest articulated figure body for a joint of the skeletal model
-            animator.GetJointList(fb.containedJoints.getData(), jointList);
+            this.animator.GetJointList(fb.containedJoints.getData(), jointList);
             for (i = 0; i < jointList.Num(); i++) {
-                if (jointBody.oGet(jointList.oGet(i)) != -1) {
+                if (this.jointBody.oGet(jointList.oGet(i)) != -1) {
                     gameLocal.Warning("%s: joint '%s' is already contained by body '%s'",
-                            name, animator.GetJointName((int/*jointHandle_t*/) jointList.oGet(i)),
-                            physicsObj.GetBody(jointBody.oGet(jointList.oGet(i))).GetName());
+                            this.name, this.animator.GetJointName(jointList.oGet(i)),
+                            this.physicsObj.GetBody(this.jointBody.oGet(jointList.oGet(i))).GetName());
                 }
-                jointBody.oSet(jointList.oGet(i), id);
+                this.jointBody.oSet(jointList.oGet(i), id);
             }
 
             return true;
@@ -1065,31 +1068,31 @@ public class AF {
             idAngles angles;
             idMat3 axis;
 
-            body1 = physicsObj.GetBody(fc.body1.getData());
-            body2 = physicsObj.GetBody(fc.body2.getData());
+            body1 = this.physicsObj.GetBody(fc.body1.getData());
+            body2 = this.physicsObj.GetBody(fc.body2.getData());
 
             switch (fc.type) {
                 case DECLAF_CONSTRAINT_FIXED: {
                     idAFConstraint_Fixed c;
-                    c = (idAFConstraint_Fixed) physicsObj.GetConstraint(fc.name.getData());
+                    c = (idAFConstraint_Fixed) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
                     } else {
                         c = new idAFConstraint_Fixed(fc.name, body1, body2);
-                        physicsObj.AddConstraint(c);
+                        this.physicsObj.AddConstraint(c);
                     }
                     break;
                 }
                 case DECLAF_CONSTRAINT_BALLANDSOCKETJOINT: {
                     idAFConstraint_BallAndSocketJoint c;
-                    c = (idAFConstraint_BallAndSocketJoint) physicsObj.GetConstraint(fc.name.getData());
+                    c = (idAFConstraint_BallAndSocketJoint) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
                     } else {
                         c = new idAFConstraint_BallAndSocketJoint(fc.name, body1, body2);
-                        physicsObj.AddConstraint(c);
+                        this.physicsObj.AddConstraint(c);
                     }
                     c.SetAnchor(fc.anchor.ToVec3());
                     c.SetFriction(fc.friction);
@@ -1114,13 +1117,13 @@ public class AF {
                 }
                 case DECLAF_CONSTRAINT_UNIVERSALJOINT: {
                     idAFConstraint_UniversalJoint c;
-                    c = (idAFConstraint_UniversalJoint) physicsObj.GetConstraint(fc.name.getData());
+                    c = (idAFConstraint_UniversalJoint) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
                     } else {
                         c = new idAFConstraint_UniversalJoint(fc.name, body1, body2);
-                        physicsObj.AddConstraint(c);
+                        this.physicsObj.AddConstraint(c);
                     }
                     c.SetAnchor(fc.anchor.ToVec3());
                     c.SetShafts(fc.shaft[0].ToVec3(), fc.shaft[1].ToVec3());
@@ -1146,20 +1149,20 @@ public class AF {
                 }
                 case DECLAF_CONSTRAINT_HINGE: {
                     idAFConstraint_Hinge c;
-                    c = (idAFConstraint_Hinge) physicsObj.GetConstraint(fc.name.getData());
+                    c = (idAFConstraint_Hinge) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
                     } else {
                         c = new idAFConstraint_Hinge(fc.name, body1, body2);
-                        physicsObj.AddConstraint(c);
+                        this.physicsObj.AddConstraint(c);
                     }
                     c.SetAnchor(fc.anchor.ToVec3());
                     c.SetAxis(fc.axis.ToVec3());
                     c.SetFriction(fc.friction);
                     switch (fc.limit) {
                         case idDeclAF_Constraint.LIMIT_CONE: {
-                            idVec3 left = new idVec3(), up = new idVec3();
+                            final idVec3 left = new idVec3(), up = new idVec3();
                             idVec3 axis2, shaft;
                             fc.axis.ToVec3().OrthogonalBasis(left, up);
                             axis2 = left.oMultiply(new idRotation(getVec3_origin(), fc.axis.ToVec3(), fc.limitAngles[0]));
@@ -1176,26 +1179,26 @@ public class AF {
                 }
                 case DECLAF_CONSTRAINT_SLIDER: {
                     idAFConstraint_Slider c;
-                    c = (idAFConstraint_Slider) physicsObj.GetConstraint(fc.name.getData());
+                    c = (idAFConstraint_Slider) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
                     } else {
                         c = new idAFConstraint_Slider(fc.name, body1, body2);
-                        physicsObj.AddConstraint(c);
+                        this.physicsObj.AddConstraint(c);
                     }
                     c.SetAxis(fc.axis.ToVec3());
                     break;
                 }
                 case DECLAF_CONSTRAINT_SPRING: {
                     idAFConstraint_Spring c;
-                    c = (idAFConstraint_Spring) physicsObj.GetConstraint(fc.name.getData());
+                    c = (idAFConstraint_Spring) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
                     } else {
                         c = new idAFConstraint_Spring(fc.name, body1, body2);
-                        physicsObj.AddConstraint(c);
+                        this.physicsObj.AddConstraint(c);
                     }
                     c.SetAnchor(fc.anchor.ToVec3(), fc.anchor2.ToVec3());
                     c.SetSpring(fc.stretch, fc.compress, fc.damping, fc.restLength);
@@ -1212,7 +1215,7 @@ public class AF {
         protected boolean TestSolid() {
             int i;
             idAFBody body;
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
 //	idStr str;
             boolean solid;
 
@@ -1226,14 +1229,14 @@ public class AF {
 
             solid = false;
 
-            for (i = 0; i < physicsObj.GetNumBodies(); i++) {
-                body = physicsObj.GetBody(i);
-                if (gameLocal.clip.Translation(trace, body.GetWorldOrigin(), body.GetWorldOrigin(), body.GetClipModel(), body.GetWorldAxis(), body.GetClipMask(), self)) {
-                    float depth = idMath.Fabs(trace[0].c.point.oMultiply(trace[0].c.normal) - trace[0].c.dist);
+            for (i = 0; i < this.physicsObj.GetNumBodies(); i++) {
+                body = this.physicsObj.GetBody(i);
+                if (gameLocal.clip.Translation(trace, body.GetWorldOrigin(), body.GetWorldOrigin(), body.GetClipModel(), body.GetWorldAxis(), body.GetClipMask(), this.self)) {
+                    final float depth = idMath.Fabs(trace[0].c.point.oMultiply(trace[0].c.normal) - trace[0].c.dist);
 
                     body.SetWorldOrigin(body.GetWorldOrigin().oPlus(trace[0].c.normal.oMultiply(depth + 8.0f)));
 
-                    gameLocal.DWarning("%s: body '%s' stuck in %d (normal = %.2f %.2f %.2f, depth = %.2f)", self.name,
+                    gameLocal.DWarning("%s: body '%s' stuck in %d (normal = %.2f %.2f %.2f, depth = %.2f)", this.self.name,
                             body.GetName(), trace[0].c.contents, trace[0].c.normal.x, trace[0].c.normal.y, trace[0].c.normal.z, depth);
                     solid = true;
 
@@ -1241,7 +1244,7 @@ public class AF {
             }
             return solid;
         }
-    };
+    }
 
     /*
      ================
@@ -1275,5 +1278,5 @@ public class AF {
         public boolean run(Object model, idJointMat[] frame, idStr jointName, idVec3 origin, idMat3 axis) {
             return run(model, frame, jointName.getData(), origin, axis);
         }
-    };
+    }
 }

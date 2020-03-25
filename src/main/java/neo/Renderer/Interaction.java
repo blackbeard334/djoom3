@@ -158,13 +158,13 @@ public class Interaction {
                     limit(length).
                     toArray(surfaceInteraction_t[]::new);
         }
-    };
+    }
 
     static class areaNumRef_s {
 
         areaNumRef_s next;
         int areaNum;
-    };
+    }
 
     /*
      ===========================================================================
@@ -200,7 +200,7 @@ public class Interaction {
             FRUSTUM_INVALID,
             FRUSTUM_VALID,
             FRUSTUM_VALIDAREAS
-        };
+        }
         private frustumStates frustumState;
         private final idFrustum frustum;		// frustum which contains the interaction
         private areaNumRef_s frustumAreas;		// numbers of the areas the frustum touches
@@ -212,18 +212,18 @@ public class Interaction {
         private final  int DBG_count   = DBG_counter++;
 
         public idInteraction() {
-            numSurfaces = 0;
-            surfaces = null;
-            entityDef = null;
-            lightDef = null;
-            lightNext = null;
-            lightPrev = null;
-            entityNext = null;
-            entityPrev = null;
-            dynamicModelFrameCount = 0;
-            frustumState = FRUSTUM_UNINITIALIZED;
-            frustum = new idFrustum();
-            frustumAreas = null;
+            this.numSurfaces = 0;
+            this.surfaces = null;
+            this.entityDef = null;
+            this.lightDef = null;
+            this.lightNext = null;
+            this.lightPrev = null;
+            this.entityNext = null;
+            this.entityPrev = null;
+            this.dynamicModelFrameCount = 0;
+            this.frustumState = FRUSTUM_UNINITIALIZED;
+            this.frustum = new idFrustum();
+            this.frustumAreas = null;
         }
 
         // because these are generated and freed each game tic for active elements all
@@ -234,9 +234,9 @@ public class Interaction {
                 common.Error("idInteraction::AllocAndLink: null parm");
             }
 
-            idRenderWorldLocal renderWorld = eDef.world;
+            final idRenderWorldLocal renderWorld = eDef.world;
 
-            idInteraction interaction = new idInteraction();//renderWorld.interactionAllocator.Alloc();
+            final idInteraction interaction = new idInteraction();//renderWorld.interactionAllocator.Alloc();
 
             // link and initialize
             interaction.dynamicModelFrameCount = 0;
@@ -272,7 +272,7 @@ public class Interaction {
 
             // update the interaction table
             if (renderWorld.interactionTable != null) {
-                int index = lDef.index * renderWorld.interactionTableWidth + eDef.index;
+                final int index = (lDef.index * renderWorld.interactionTableWidth) + eDef.index;
                 if (renderWorld.interactionTable[index] != null) {
                     common.Error("idInteraction::AllocAndLink: non null table entry");
                 }
@@ -294,9 +294,9 @@ public class Interaction {
         public void UnlinkAndFree() {
 
             // clear the table pointer
-            idRenderWorldLocal renderWorld = this.lightDef.world;
+            final idRenderWorldLocal renderWorld = this.lightDef.world;
             if (renderWorld.interactionTable != null) {
-                int index = this.lightDef.index * renderWorld.interactionTableWidth + this.entityDef.index;
+                final int index = (this.lightDef.index * renderWorld.interactionTableWidth) + this.entityDef.index;
                 if (renderWorld.interactionTable[index] != this) {
                     common.Error("idInteraction::UnlinkAndFree: interactionTable wasn't set");
                 }
@@ -309,7 +309,7 @@ public class Interaction {
 
             // free the interaction area references
             areaNumRef_s area, nextArea;
-            for (area = frustumAreas; area != null; area = nextArea) {
+            for (area = this.frustumAreas; area != null; area = nextArea) {
                 nextArea = area.next;
 //                renderWorld.areaNumRefAllocator.Free(area);
             }
@@ -330,7 +330,7 @@ public class Interaction {
         public void FreeSurfaces() {
             if (this.surfaces != null) {
                 for (int i = 0; i < this.numSurfaces; i++) {
-                    surfaceInteraction_t sint = this.surfaces[i];
+                    final surfaceInteraction_t sint = this.surfaces[i];
 
                     if (sint.lightTris != null) {
                         if (sint.lightTris != LIGHT_TRIS_DEFERRED) {
@@ -367,7 +367,7 @@ public class Interaction {
         public void MakeEmpty() {
 
             // an empty interaction has no surfaces
-            numSurfaces = 0;
+            this.numSurfaces = 0;
 
             Unlink();
 
@@ -394,17 +394,17 @@ public class Interaction {
 
         // returns true if the interaction is empty
         public boolean IsEmpty() {
-            return (numSurfaces == 0);
+            return (this.numSurfaces == 0);
         }
 
         // returns true if the interaction is not yet completely created
         public boolean IsDeferred() {
-            return (numSurfaces == -1);
+            return (this.numSurfaces == -1);
         }
 
         // returns true if the interaction has shadows
         public boolean HasShadows() {
-            return (!lightDef.parms.noShadows && !entityDef.parms.noShadow && lightDef.lightShader.LightCastsShadows());
+            return (!this.lightDef.parms.noShadows && !this.entityDef.parms.noShadow && this.lightDef.lightShader.LightCastsShadows());
         }
 
         /*
@@ -420,8 +420,8 @@ public class Interaction {
         public int MemoryUsed() {
             int total = 0;
 
-            for (int i = 0; i < numSurfaces; i++) {
-                surfaceInteraction_t inter = surfaces[i];
+            for (int i = 0; i < this.numSurfaces; i++) {
+                final surfaceInteraction_t inter = this.surfaces[i];
 
                 total += R_TriSurfMemory(inter.lightTris);
                 total += R_TriSurfMemory(inter.shadowTris);
@@ -448,11 +448,11 @@ public class Interaction {
             viewEntity_s vEntity;
             idScreenRect shadowScissor;
             idScreenRect lightScissor;
-            idVec3 localLightOrigin = new idVec3();
-            idVec3 localViewOrigin = new idVec3();
+            final idVec3 localLightOrigin = new idVec3();
+            final idVec3 localViewOrigin = new idVec3();
 
-            vLight = lightDef.viewLight;
-            vEntity = entityDef.viewEntity;
+            vLight = this.lightDef.viewLight;
+            vEntity = this.entityDef.viewEntity;
 
             // do not waste time culling the interaction frustum if there will be no shadows
             if (!HasShadows()) {
@@ -461,7 +461,7 @@ public class Interaction {
                 shadowScissor = new idScreenRect(vEntity.scissorRect);
 
                 // culling does not seem to be worth it for static world models
-            } else if (entityDef.parms.hModel.IsStaticWorldModel()) {
+            } else if (this.entityDef.parms.hModel.IsStaticWorldModel()) {
 
                 // use the light scissor rectangle
                 shadowScissor = new idScreenRect(vLight.scissorRect);
@@ -487,16 +487,16 @@ public class Interaction {
             // We will need the dynamic surface created to make interactions, even if the
             // model itself wasn't visible.  This just returns a cached value after it
             // has been generated once in the view.
-            idRenderModel model = R_EntityDefDynamicModel(entityDef);
-            if (model == null || model.NumSurfaces() <= 0) {
+            final idRenderModel model = R_EntityDefDynamicModel(this.entityDef);
+            if ((model == null) || (model.NumSurfaces() <= 0)) {
                 return;
             }
 
             // the dynamic model may have changed since we built the surface list
-            if (!IsDeferred() && entityDef.dynamicModelFrameCount != dynamicModelFrameCount) {
+            if (!IsDeferred() && (this.entityDef.dynamicModelFrameCount != this.dynamicModelFrameCount)) {
                 FreeSurfaces();
             }
-            dynamicModelFrameCount = entityDef.dynamicModelFrameCount;
+            this.dynamicModelFrameCount = this.entityDef.dynamicModelFrameCount;
 
             // actually create the interaction if needed, building light and shadow surfaces as needed
             if (IsDeferred()) {
@@ -504,7 +504,7 @@ public class Interaction {
                 CreateInteraction(model);
             }
 
-            R_GlobalPointToLocal(vEntity.modelMatrix, lightDef.globalLightOrigin, localLightOrigin);
+            R_GlobalPointToLocal(vEntity.modelMatrix, this.lightDef.globalLightOrigin, localLightOrigin);
             R_GlobalPointToLocal(vEntity.modelMatrix, tr.viewDef.renderView.vieworg, localViewOrigin);
 
             // calculate the scissor as the intersection of the light and model rects
@@ -512,14 +512,14 @@ public class Interaction {
             lightScissor = new idScreenRect(vLight.scissorRect);
             lightScissor.Intersect(vEntity.scissorRect);
 
-            boolean lightScissorsEmpty = lightScissor.IsEmpty();
+            final boolean lightScissorsEmpty = lightScissor.IsEmpty();
 
             // for each surface of this entity / light interaction
-            for (int i = 0; i < numSurfaces; i++) {
-                surfaceInteraction_t sint = surfaces[i];
+            for (int i = 0; i < this.numSurfaces; i++) {
+                final surfaceInteraction_t sint = this.surfaces[i];
 
                 // see if the base surface is visible, we may still need to add shadows even if empty
-                if (!lightScissorsEmpty && sint.ambientTris != null && sint.ambientTris.ambientViewCount == tr.viewCount) {
+                if (!lightScissorsEmpty && (sint.ambientTris != null) && (sint.ambientTris.ambientViewCount == tr.viewCount)) {
 
                     // make sure we have created this interaction, which may have been deferred
                     // on a previous use that only needed the shadow
@@ -528,7 +528,7 @@ public class Interaction {
                         R_FreeInteractionCullInfo(sint.cullInfo);
                     }
 
-                    srfTriangles_s lightTris = sint.lightTris;
+                    final srfTriangles_s lightTris = sint.lightTris;
 
                     if (lightTris != null) {
 
@@ -538,7 +538,7 @@ public class Interaction {
                         if (!R_CullLocalBox(lightTris.bounds, vEntity.modelMatrix, 5, tr.viewDef.frustum)) {
 
                             // make sure the original surface has its ambient cache created
-                            srfTriangles_s tri = sint.ambientTris;
+                            final srfTriangles_s tri = sint.ambientTris;
                             if (NOT(tri.ambientCache)) {
                                 if (!R_CreateAmbientCache(tri, sint.shader.ReceivesLighting())) {
                                     // skip if we were out of vertex memory
@@ -554,7 +554,7 @@ public class Interaction {
 
                             // regenerate the lighting cache (for non-vertex program cards) if it has been purged
                             if (NOT(lightTris.lightingCache)) {
-                                if (!R_CreateLightingCache(entityDef, lightDef, lightTris)) {
+                                if (!R_CreateLightingCache(this.entityDef, this.lightDef, lightTris)) {
                                     // skip if we are out of vertex memory
                                     continue;
                                 }
@@ -580,17 +580,17 @@ public class Interaction {
                             // there will only be localSurfaces if the light casts shadows and
                             // there are surfaces with NOSELFSHADOW
                             if (sint.shader.Coverage() == MC_TRANSLUCENT) {
-                                R_LinkLightSurf(vLight.translucentInteractions, lightTris, vEntity, lightDef, shader[0], lightScissor, false);
-                            } else if (!lightDef.parms.noShadows && sint.shader.TestMaterialFlag(MF_NOSELFSHADOW)) {
-                                R_LinkLightSurf(vLight.localInteractions, lightTris, vEntity, lightDef, shader[0], lightScissor, false);
+                                R_LinkLightSurf(vLight.translucentInteractions, lightTris, vEntity, this.lightDef, shader[0], lightScissor, false);
+                            } else if (!this.lightDef.parms.noShadows && sint.shader.TestMaterialFlag(MF_NOSELFSHADOW)) {
+                                R_LinkLightSurf(vLight.localInteractions, lightTris, vEntity, this.lightDef, shader[0], lightScissor, false);
                             } else {
-                                R_LinkLightSurf(vLight.globalInteractions, lightTris, vEntity, lightDef, shader[0], lightScissor, false);
+                                R_LinkLightSurf(vLight.globalInteractions, lightTris, vEntity, this.lightDef, shader[0], lightScissor, false);
                             }
                         }
                     }
                 }
 
-                srfTriangles_s shadowTris = sint.shadowTris;
+                final srfTriangles_s shadowTris = sint.shadowTris;
 
                 // the shadows will always have to be added, unless we can tell they
                 // are from a surface in an unconnected area
@@ -598,12 +598,12 @@ public class Interaction {
 
                     // check for view specific shadow suppression (player shadows, etc)
                     if (!r_skipSuppress.GetBool()) {
-                        if (entityDef.parms.suppressShadowInViewID != 0
-                                && entityDef.parms.suppressShadowInViewID == tr.viewDef.renderView.viewID) {
+                        if ((this.entityDef.parms.suppressShadowInViewID != 0)
+                                && (this.entityDef.parms.suppressShadowInViewID == tr.viewDef.renderView.viewID)) {
                             continue;
                         }
-                        if (entityDef.parms.suppressShadowInLightID != 0
-                                && entityDef.parms.suppressShadowInLightID == lightDef.parms.lightId) {
+                        if ((this.entityDef.parms.suppressShadowInLightID != 0)
+                                && (this.entityDef.parms.suppressShadowInLightID == this.lightDef.parms.lightId)) {
                             continue;
                         }
                     }
@@ -650,12 +650,12 @@ public class Interaction {
                     }
 
                     // see if we can avoid using the shadow volume caps
-                    boolean inside = R_PotentiallyInsideInfiniteShadow(sint.ambientTris, localViewOrigin, localLightOrigin);
+                    final boolean inside = R_PotentiallyInsideInfiniteShadow(sint.ambientTris, localViewOrigin, localLightOrigin);
 
                     if (sint.shader.TestMaterialFlag(MF_NOSELFSHADOW)) {
-                        R_LinkLightSurf(vLight.localShadows, shadowTris, vEntity, lightDef, null, shadowScissor, inside);
+                        R_LinkLightSurf(vLight.localShadows, shadowTris, vEntity, this.lightDef, null, shadowScissor, inside);
                     } else {
-                        R_LinkLightSurf(vLight.globalShadows, shadowTris, vEntity, lightDef, null, shadowScissor, inside);
+                        R_LinkLightSurf(vLight.globalShadows, shadowTris, vEntity, this.lightDef, null, shadowScissor, inside);
                     }
                 }
             }
@@ -677,17 +677,17 @@ public class Interaction {
          */
         // actually create the interaction
         private void CreateInteraction(final idRenderModel model) {
-            final idMaterial lightShader = lightDef.lightShader;
+            final idMaterial lightShader = this.lightDef.lightShader;
             idMaterial shader;
             boolean interactionGenerated;
             idBounds bounds;
 
             tr.pc.c_createInteractions++;
 
-            bounds = model.Bounds(entityDef.parms);
+            bounds = model.Bounds(this.entityDef.parms);
 
             // if it doesn't contact the light frustum, none of the surfaces will
-            if (R_CullLocalBox(bounds, entityDef.modelMatrix, 6, lightDef.frustum)) {
+            if (R_CullLocalBox(bounds, this.entityDef.modelMatrix, 6, this.lightDef.frustum)) {
                 MakeEmpty();
                 return;
             }
@@ -698,15 +698,15 @@ public class Interaction {
             // really large models, like outside terrain meshes, should use
             // the more exactly culled static shadow path instead of the turbo shadow path.
             // FIXME: this is a HACK, we should probably have a material flag.
-            if (bounds.oGet(1).oGet(0) - bounds.oGet(0).oGet(0) > 3000) {
+            if ((bounds.oGet(1).oGet(0) - bounds.oGet(0).oGet(0)) > 3000) {
                 shadowGen = SG_STATIC;
             }
 
             //
             // create slots for each of the model's surfaces
             //
-            numSurfaces = model.NumSurfaces();
-            surfaces = surfaceInteraction_t.generateArray(numSurfaces);
+            this.numSurfaces = model.NumSurfaces();
+            this.surfaces = surfaceInteraction_t.generateArray(this.numSurfaces);
 
             interactionGenerated = false;
 
@@ -724,18 +724,18 @@ public class Interaction {
 
                 // determine the shader for this surface, possibly by skinning
                 shader = surf.shader;
-                shader = R_RemapShaderBySkin(shader, entityDef.parms.customSkin, entityDef.parms.customShader);
+                shader = R_RemapShaderBySkin(shader, this.entityDef.parms.customSkin, this.entityDef.parms.customShader);
 
                 if (null == shader) {
                     continue;
                 }
 
                 // try to cull each surface
-                if (R_CullLocalBox(tri.bounds, entityDef.modelMatrix, 6, lightDef.frustum)) {
+                if (R_CullLocalBox(tri.bounds, this.entityDef.modelMatrix, 6, this.lightDef.frustum)) {
                     continue;
                 }
 
-                surfaceInteraction_t sint = surfaces[c];
+                final surfaceInteraction_t sint = this.surfaces[c];
 
                 sint.shader = shader;
 
@@ -752,7 +752,7 @@ public class Interaction {
                 // generate a lighted surface and add it
                 if (shader.ReceivesLighting()) {
                     if (tri.ambientViewCount == tr.viewCount) {
-                        sint.lightTris = R_CreateLightTris(entityDef, tri, lightDef, shader, sint.cullInfo);
+                        sint.lightTris = R_CreateLightTris(this.entityDef, tri, this.lightDef, shader, sint.cullInfo);
                     } else {
                         // this will be calculated when sint.ambientTris is actually in view
                         sint.lightTris = LIGHT_TRIS_DEFERRED;//HACKME::1:this throws a null pointer after the planet goes out of the screen, hitting you in the head!
@@ -761,15 +761,15 @@ public class Interaction {
                 }
 
                 // if the interaction has shadows and this surface casts a shadow
-                if (HasShadows() && shader.SurfaceCastsShadow() && tri.silEdges != null) {
+                if (HasShadows() && shader.SurfaceCastsShadow() && (tri.silEdges != null)) {
 
                     // if the light has an optimized shadow volume, don't create shadows for any models that are part of the base areas
-                    if (lightDef.parms.prelightModel == null || !model.IsStaticWorldModel() || !r_useOptimizedShadows.GetBool()) {
+                    if ((this.lightDef.parms.prelightModel == null) || !model.IsStaticWorldModel() || !r_useOptimizedShadows.GetBool()) {
 
                         // this is the only place during gameplay (outside the utilities) that R_CreateShadowVolume() is called
-                        sint.shadowTris = R_CreateShadowVolume(entityDef, tri, lightDef, shadowGen, sint.cullInfo);
+                        sint.shadowTris = R_CreateShadowVolume(this.entityDef, tri, this.lightDef, shadowGen, sint.cullInfo);
                         if (sint.shadowTris != null) {
-                            if (shader.Coverage() != MC_OPAQUE || (!r_skipSuppress.GetBool() && entityDef.parms.suppressSurfaceInViewID != 0)) {
+                            if ((shader.Coverage() != MC_OPAQUE) || (!r_skipSuppress.GetBool() && (this.entityDef.parms.suppressSurfaceInViewID != 0))) {
                                 // if any surface is a shadow-casting perforated or translucent surface, or the
                                 // base surface is suppressed in the view (world weapon shadows) we can't use
                                 // the external shadow optimizations because we can see through some of the faces
@@ -831,36 +831,36 @@ public class Interaction {
                 return false;
             }
 
-            if (frustumState == FRUSTUM_INVALID) {
+            if (this.frustumState == FRUSTUM_INVALID) {
                 return false;
             }
 
-            if (frustumState == FRUSTUM_UNINITIALIZED) {
+            if (this.frustumState == FRUSTUM_UNINITIALIZED) {
 
-                frustum.FromProjection(new idBox(entityDef.referenceBounds, entityDef.parms.origin, entityDef.parms.axis), lightDef.globalLightOrigin, MAX_WORLD_SIZE);
+                this.frustum.FromProjection(new idBox(this.entityDef.referenceBounds, this.entityDef.parms.origin, this.entityDef.parms.axis), this.lightDef.globalLightOrigin, MAX_WORLD_SIZE);
 
-                if (!frustum.IsValid()) {
-                    frustumState = FRUSTUM_INVALID;
+                if (!this.frustum.IsValid()) {
+                    this.frustumState = FRUSTUM_INVALID;
                     return false;
                 }
 
-                if (lightDef.parms.pointLight) {
-                    frustum.ConstrainToBox(new idBox(lightDef.parms.origin, lightDef.parms.lightRadius, lightDef.parms.axis));
+                if (this.lightDef.parms.pointLight) {
+                    this.frustum.ConstrainToBox(new idBox(this.lightDef.parms.origin, this.lightDef.parms.lightRadius, this.lightDef.parms.axis));
                 } else {
-                    frustum.ConstrainToBox(new idBox(lightDef.frustumTris.bounds));
+                    this.frustum.ConstrainToBox(new idBox(this.lightDef.frustumTris.bounds));
                 }
 
-                frustumState = FRUSTUM_VALID;
+                this.frustumState = FRUSTUM_VALID;
             }
 
-            if (!viewFrustum.IntersectsFrustum(frustum)) {
+            if (!viewFrustum.IntersectsFrustum(this.frustum)) {
                 return true;
             }
 
             if (r_showInteractionFrustums.GetInteger() != 0) {
-                tr.viewDef.renderWorld.DebugFrustum(colors[lightDef.index & 7], frustum, (r_showInteractionFrustums.GetInteger() > 1));
+                tr.viewDef.renderWorld.DebugFrustum(colors[this.lightDef.index & 7], this.frustum, (r_showInteractionFrustums.GetInteger() > 1));
                 if (r_showInteractionFrustums.GetInteger() > 2) {
-                    tr.viewDef.renderWorld.DebugBox(colorWhite, new idBox(entityDef.referenceBounds, entityDef.parms.origin, entityDef.parms.axis));
+                    tr.viewDef.renderWorld.DebugBox(colorWhite, new idBox(this.entityDef.referenceBounds, this.entityDef.parms.origin, this.entityDef.parms.axis));
                 }
             }
 
@@ -871,48 +871,48 @@ public class Interaction {
         // determine the minimum scissor rect that will include the interaction shadows
         // projected to the bounds of the light
         private idScreenRect CalcInteractionScissorRectangle(final idFrustum viewFrustum) {
-            idBounds projectionBounds = new idBounds();
+            final idBounds projectionBounds = new idBounds();
             idScreenRect portalRect = new idScreenRect();
             idScreenRect scissorRect;
 
             if (r_useInteractionScissors.GetInteger() == 0) {
-                return lightDef.viewLight.scissorRect;
+                return this.lightDef.viewLight.scissorRect;
             }
 
             if (r_useInteractionScissors.GetInteger() < 0) {
                 // this is the code from Cass at nvidia, it is more precise, but slower
-                return R_CalcIntersectionScissor(lightDef, entityDef, tr.viewDef);
+                return R_CalcIntersectionScissor(this.lightDef, this.entityDef, tr.viewDef);
             }
 
             // the following is Mr.E's code
             // frustum must be initialized and valid
-            if (frustumState == FRUSTUM_UNINITIALIZED || frustumState == FRUSTUM_INVALID) {
-                return lightDef.viewLight.scissorRect;
+            if ((this.frustumState == FRUSTUM_UNINITIALIZED) || (this.frustumState == FRUSTUM_INVALID)) {
+                return this.lightDef.viewLight.scissorRect;
             }
 
             // calculate scissors for the portals through which the interaction is visible
             if (r_useInteractionScissors.GetInteger() > 1) {
                 areaNumRef_s area;
 
-                if (frustumState == FRUSTUM_VALID) {
+                if (this.frustumState == FRUSTUM_VALID) {
                     // retrieve all the areas the interaction frustum touches
-                    for (areaReference_s ref = entityDef.entityRefs; ref != null; ref = ref.ownerNext) {
+                    for (areaReference_s ref = this.entityDef.entityRefs; ref != null; ref = ref.ownerNext) {
                         area = new areaNumRef_s();//entityDef.world.areaNumRefAllocator.Alloc();
                         area.areaNum = ref.area.areaNum;
-                        area.next = frustumAreas;
-                        frustumAreas = area;
+                        area.next = this.frustumAreas;
+                        this.frustumAreas = area;
                     }
-                    frustumAreas = tr.viewDef.renderWorld.FloodFrustumAreas(frustum, frustumAreas);
-                    frustumState = FRUSTUM_VALIDAREAS;
+                    this.frustumAreas = tr.viewDef.renderWorld.FloodFrustumAreas(this.frustum, this.frustumAreas);
+                    this.frustumState = FRUSTUM_VALIDAREAS;
                 }
 
                 portalRect.Clear();
-                for (area = frustumAreas; area != null; area = area.next) {
-                    portalRect.Union(entityDef.world.GetAreaScreenRect(area.areaNum));
+                for (area = this.frustumAreas; area != null; area = area.next) {
+                    portalRect.Union(this.entityDef.world.GetAreaScreenRect(area.areaNum));
                 }
-                portalRect.Intersect(lightDef.viewLight.scissorRect);
+                portalRect.Intersect(this.lightDef.viewLight.scissorRect);
             } else {
-                portalRect = lightDef.viewLight.scissorRect;
+                portalRect = this.lightDef.viewLight.scissorRect;
             }
 
             // early out if the interaction is not visible through any portals
@@ -921,10 +921,10 @@ public class Interaction {
             }
 
             // calculate bounds of the interaction frustum projected into the view frustum
-            if (lightDef.parms.pointLight) {
-                viewFrustum.ClippedProjectionBounds(frustum, new idBox(lightDef.parms.origin, lightDef.parms.lightRadius, lightDef.parms.axis), projectionBounds);
+            if (this.lightDef.parms.pointLight) {
+                viewFrustum.ClippedProjectionBounds(this.frustum, new idBox(this.lightDef.parms.origin, this.lightDef.parms.lightRadius, this.lightDef.parms.axis), projectionBounds);
             } else {
-                viewFrustum.ClippedProjectionBounds(frustum, new idBox(lightDef.frustumTris.bounds), projectionBounds);
+                viewFrustum.ClippedProjectionBounds(this.frustum, new idBox(this.lightDef.frustumTris.bounds), projectionBounds);
             }
 
             if (projectionBounds.IsCleared()) {
@@ -938,12 +938,12 @@ public class Interaction {
             scissorRect.Intersect(portalRect);
 
             if (r_showInteractionScissors.GetInteger() > 0) {
-                R_ShowColoredScreenRect(scissorRect, lightDef.index);
+                R_ShowColoredScreenRect(scissorRect, this.lightDef.index);
             }
 
             return scissorRect;
         }
-    };
+    }
 
     /**
      *
@@ -972,7 +972,7 @@ public class Interaction {
      ================
      */
     static void R_CalcInteractionFacing(final idRenderEntityLocal ent, final srfTriangles_s tri, final idRenderLightLocal light, srfCullInfo_t cullInfo) {
-        idVec3 localLightOrigin = new idVec3();
+        final idVec3 localLightOrigin = new idVec3();
 
         if (cullInfo.facing != null) {
             return;
@@ -980,7 +980,7 @@ public class Interaction {
 
         R_GlobalPointToLocal(ent.modelMatrix, light.globalLightOrigin, localLightOrigin);
 
-        int numFaces = tri.numIndexes / 3;
+        final int numFaces = tri.numIndexes / 3;
 
         if (NOT(tri.facePlanes) || !tri.facePlanesCalculated) {
             R_DeriveFacePlanes( /*const_cast<srfTriangles_s *>*/(tri));
@@ -989,7 +989,7 @@ public class Interaction {
         cullInfo.facing = new byte[numFaces + 1];// R_StaticAlloc((numFaces + 1) * sizeof(cullInfo.facing[0]));
 
         // calculate back face culling
-        float[] planeSide = new float[numFaces];
+        final float[] planeSide = new float[numFaces];
 
         // exact geometric cull against face
         SIMDProcessor.Dot(planeSide, localLightOrigin, tri.facePlanes, numFaces);
@@ -1037,7 +1037,7 @@ public class Interaction {
         cullInfo.cullBits = new byte[tri.numVerts];// R_StaticAlloc(tri.numVerts /* sizeof(cullInfo.cullBits[0])*/);
         SIMDProcessor.Memset(cullInfo.cullBits, 0, tri.numVerts /* sizeof(cullInfo.cullBits[0])*/);
 
-        float[] planeSide = new float[tri.numVerts];
+        final float[] planeSide = new float[tri.numVerts];
 
         for (i = 0; i < 6; i++) {
             // if completely infront of this clipping plane
@@ -1072,7 +1072,7 @@ public class Interaction {
 
         int numVerts;
         idVec3[] verts = new idVec3[MAX_CLIPPED_POINTS];
-    };
+    }
 
     /*
      =============
@@ -1088,12 +1088,12 @@ public class Interaction {
      */
     static int R_ChopWinding(clipTri_t[] clipTris/*[2]*/, int inNum, final idPlane plane) {
         clipTri_t in, out;
-        float[] dists = new float[MAX_CLIPPED_POINTS];
-        int[] sides = new int[MAX_CLIPPED_POINTS];
-        int[] counts = new int[3];
+        final float[] dists = new float[MAX_CLIPPED_POINTS];
+        final int[] sides = new int[MAX_CLIPPED_POINTS];
+        final int[] counts = new int[3];
         float dot;
         int i, j;
-        idVec3 mid = new idVec3();
+        final idVec3 mid = new idVec3();
         boolean front;
 
         in = clipTris[inNum];
@@ -1132,7 +1132,7 @@ public class Interaction {
 
         out.numVerts = 0;
         for (i = 0; i < in.numVerts; i++) {
-            idVec3 p1 = in.verts[i];
+            final idVec3 p1 = in.verts[i];
 
             if (sides[i] == SIDE_FRONT) {
                 out.verts[out.numVerts] = p1;
@@ -1144,11 +1144,11 @@ public class Interaction {
             }
 
             // generate a split point
-            idVec3 p2 = in.verts[i + 1];
+            final idVec3 p2 = in.verts[i + 1];
 
             dot = dists[i] / (dists[i] - dists[i + 1]);
             for (j = 0; j < 3; j++) {
-                mid.oSet(j, p1.oGet(j) + dot * (p2.oGet(j) - p1.oGet(j)));
+                mid.oSet(j, p1.oGet(j) + (dot * (p2.oGet(j) - p1.oGet(j))));
             }
 
             out.verts[out.numVerts] = mid;
@@ -1168,7 +1168,7 @@ public class Interaction {
      */
     static boolean R_ClipTriangleToLight(final idVec3 a, final idVec3 b, final idVec3 c, int planeBits, final idPlane[] frustum/*[6]*/) {
         int i;
-        clipTri_t[] pingPong = new clipTri_t[2];
+        final clipTri_t[] pingPong = new clipTri_t[2];
         int p;
 
         pingPong[0].numVerts = 3;
@@ -1319,7 +1319,7 @@ public class Interaction {
                     // do a precise clipped cull if none of the points is completely inside the frustum
                     // note that we do not actually use the clipped triangle, which would have Z fighting issues.
                     if ((cullBits[i1] & cullBits[i2] & cullBits[i3]) != 0) {
-                        int cull = cullBits[i1] | cullBits[i2] | cullBits[i3];
+                        final int cull = cullBits[i1] | cullBits[i2] | cullBits[i3];
                         if (!R_ClipTriangleToLight(tri.verts[i1].xyz, tri.verts[i2].xyz, tri.verts[i3].xyz, cull, cullInfo.localClipPlanes)) {
                             continue;
                         }
@@ -1383,7 +1383,7 @@ public class Interaction {
             int shadowTriIndexes = 0;
 
             for (int i = 0; i < tr.primaryWorld.entityDefs.Num(); i++) {
-                idRenderEntityLocal def = tr.primaryWorld.entityDefs.oGet(i);
+                final idRenderEntityLocal def = tr.primaryWorld.entityDefs.oGet(i);
                 if (NOT(def)) {
                     continue;
                 }
@@ -1406,9 +1406,9 @@ public class Interaction {
                     }
 
                     for (int j = 0; j < inter.numSurfaces; j++) {
-                        surfaceInteraction_t srf = inter.surfaces[j];
+                        final surfaceInteraction_t srf = inter.surfaces[j];
 
-                        if (srf.lightTris != null && srf.lightTris != LIGHT_TRIS_DEFERRED) {
+                        if ((srf.lightTris != null) && (srf.lightTris != LIGHT_TRIS_DEFERRED)) {
                             lightTris++;
                             lightTriVerts += srf.lightTris.numVerts;
                             lightTriIndexes += srf.lightTris.numIndexes;
@@ -1427,7 +1427,7 @@ public class Interaction {
             common.Printf("%5d indexes %5d verts in %5d light tris\n", lightTriIndexes, lightTriVerts, lightTris);
             common.Printf("%5d indexes %5d verts in %5d shadow tris\n", shadowTriIndexes, shadowTriVerts, shadowTris);
         }
-    };
+    }
 
     /*
      ======================
@@ -1438,7 +1438,7 @@ public class Interaction {
      ======================
      */
     static boolean R_PotentiallyInsideInfiniteShadow(final srfTriangles_s occluder, final idVec3 localView, final idVec3 localLight) {
-        idBounds exp = new idBounds();
+        final idBounds exp = new idBounds();
 
         // expand the bounds to account for the near clip plane, because the
         // view could be mathematically outside, but if the near clip plane
@@ -1447,7 +1447,7 @@ public class Interaction {
         if (tr.viewDef.renderView.cramZNear) {
             znear *= 0.25f;
         }
-        float stretch = znear * 2;	// in theory, should vary with FOV
+        final float stretch = znear * 2;	// in theory, should vary with FOV
         exp.oSet(0, 0, occluder.bounds.oGet(0, 0) - stretch);
         exp.oSet(0, 1, occluder.bounds.oGet(0, 1) - stretch);
         exp.oSet(0, 2, occluder.bounds.oGet(0, 2) - stretch);
@@ -1464,7 +1464,7 @@ public class Interaction {
 
         // if the ray from localLight to localView intersects a face of the
         // expanded bounds, we will be inside the projection
-        idVec3 ray = localView.oMinus(localLight);
+        final idVec3 ray = localView.oMinus(localLight);
 
         // intersect the ray from the view to the light with the near side of the bounds
         for (int axis = 0; axis < 3; axis++) {

@@ -223,14 +223,14 @@ public class Session_local {
         public ByteBuffer Write() {
             throw new TODO_Exception();
         }
-    };
+    }
 
     static class fileTIME_T {
 
         int index;
         long/*ID_TIME_T*/ timeStamp;
 //					operator int() const { return timeStamp; }
-    };
+    }
 
     public static class mapSpawnData_t {
 
@@ -242,19 +242,19 @@ public class Session_local {
 
         public mapSpawnData_t() {
             for (int a = 0; a < MAX_ASYNC_CLIENTS; a++) {
-                userInfo[a] = new idDict();
-                persistentPlayerInfo[a] = new idDict();
-                mapSpawnUsercmd[a] = new usercmd_t();
+                this.userInfo[a] = new idDict();
+                this.persistentPlayerInfo[a] = new idDict();
+                this.mapSpawnUsercmd[a] = new usercmd_t();
             }
         }
-    };
+    }
 
     enum timeDemo_t {
 
         TD_NO,
         TD_YES,
         TD_YES_THEN_QUIT
-    };
+    }
 //
     static int USERCMD_PER_DEMO_FRAME = 2;
     static int CONNECT_TRANSMIT_TIME  = 1000;
@@ -383,7 +383,7 @@ public class Session_local {
             CDKEY_OK,      // valid
             CDKEY_CHECKING,// sent a check request ( gameAuth only )
             CDKEY_NA	   // does not apply, xp key when xp is not present
-        };
+        }
         //
         private static final int    CDKEY_BUF_LEN      = 17;
         private static final int    CDKEY_AUTH_TIMEOUT = 5000;
@@ -400,13 +400,13 @@ public class Session_local {
         //=====================================
 
         public idSessionLocal() {
-            guiInGame = guiMainMenu = guiIntro
-                    = guiRestartMenu = guiLoading = guiGameOver = guiActive
-                    = guiTest = guiMsg = guiMsgRestore = guiTakeNotes = null;
+            this.guiInGame = this.guiMainMenu = this.guiIntro
+                    = this.guiRestartMenu = this.guiLoading = this.guiGameOver = this.guiActive
+                    = this.guiTest = this.guiMsg = this.guiMsgRestore = this.guiTakeNotes = null;
 
-            menuSoundWorld = null;
-            loggedUsercmds = Stream.generate(logCmd_t::new).limit(MAX_LOGGED_USERCMDS).toArray(logCmd_t[]::new);
-            loggedStats = Stream.generate(logStats_t::new).limit(MAX_LOGGED_STATS).toArray(logStats_t[]::new);
+            this.menuSoundWorld = null;
+            this.loggedUsercmds = Stream.generate(logCmd_t::new).limit(MAX_LOGGED_USERCMDS).toArray(logCmd_t[]::new);
+            this.loggedStats = Stream.generate(logStats_t::new).limit(MAX_LOGGED_STATS).toArray(logStats_t[]::new);
 
             Clear();
         }
@@ -473,33 +473,33 @@ public class Session_local {
             // the same idRenderWorld will be used for all games
             // and demos, insuring that level specific models
             // will be freed
-            rw = renderSystem.AllocRenderWorld();
-            sw = soundSystem.AllocSoundWorld(rw);
+            this.rw = renderSystem.AllocRenderWorld();
+            this.sw = soundSystem.AllocSoundWorld(this.rw);
 
-            menuSoundWorld = soundSystem.AllocSoundWorld(rw);
+            this.menuSoundWorld = soundSystem.AllocSoundWorld(this.rw);
 
             // we have a single instance of the main menu
             if (ID_DEMO_BUILD) {//#ifndef
-                guiMainMenu = uiManager.FindGui("guis/demo_mainmenu.gui", true, false, true);
+                this.guiMainMenu = uiManager.FindGui("guis/demo_mainmenu.gui", true, false, true);
             } else {
-                guiMainMenu = uiManager.FindGui("guis/mainmenu.gui", true, false, true);
+                this.guiMainMenu = uiManager.FindGui("guis/mainmenu.gui", true, false, true);
             }
-            guiMainMenu_MapList = uiManager.AllocListGUI();
-            guiMainMenu_MapList.Config(guiMainMenu, "mapList");
-            idAsyncNetwork.client.serverList.GUIConfig(guiMainMenu, "serverList");
-            guiRestartMenu = uiManager.FindGui("guis/restart.gui", true, false, true);
-            guiGameOver = uiManager.FindGui("guis/gameover.gui", true, false, true);
-            guiMsg = uiManager.FindGui("guis/msg.gui", true, false, true);
-            guiTakeNotes = uiManager.FindGui("guis/takeNotes.gui", true, false, true);
-            guiIntro = uiManager.FindGui("guis/intro.gui", true, false, true);
+            this.guiMainMenu_MapList = uiManager.AllocListGUI();
+            this.guiMainMenu_MapList.Config(this.guiMainMenu, "mapList");
+            idAsyncNetwork.client.serverList.GUIConfig(this.guiMainMenu, "serverList");
+            this.guiRestartMenu = uiManager.FindGui("guis/restart.gui", true, false, true);
+            this.guiGameOver = uiManager.FindGui("guis/gameover.gui", true, false, true);
+            this.guiMsg = uiManager.FindGui("guis/msg.gui", true, false, true);
+            this.guiTakeNotes = uiManager.FindGui("guis/takeNotes.gui", true, false, true);
+            this.guiIntro = uiManager.FindGui("guis/intro.gui", true, false, true);
 
-            whiteMaterial = declManager.FindMaterial("_white");
+            this.whiteMaterial = declManager.FindMaterial("_white");
 
-            guiInGame = null;
-            guiTest = null;
+            this.guiInGame = null;
+            this.guiTest = null;
 
-            guiActive = null;
-            guiHandle = null;
+            this.guiActive = null;
+            this.guiHandle = null;
 
             ReadCDKey();
 
@@ -511,38 +511,38 @@ public class Session_local {
         public void Shutdown() {
             int i;
 
-            if (aviCaptureMode) {
+            if (this.aviCaptureMode) {
                 EndAVICapture();
             }
 
             Stop();
 
-            if (rw != null) {
+            if (this.rw != null) {
 //		delete rw;
-                rw = null;
+                this.rw = null;
             }
 
-            if (sw != null) {
+            if (this.sw != null) {
 //		delete sw;
-                sw = null;
+                this.sw = null;
             }
 
-            if (menuSoundWorld != null) {
+            if (this.menuSoundWorld != null) {
 //		delete menuSoundWorld;
-                menuSoundWorld = null;
+                this.menuSoundWorld = null;
             }
 
-            mapSpawnData.serverInfo.Clear();
-            mapSpawnData.syncedCVars.Clear();
+            this.mapSpawnData.serverInfo.Clear();
+            this.mapSpawnData.syncedCVars.Clear();
             for (i = 0; i < MAX_ASYNC_CLIENTS; i++) {
-                mapSpawnData.userInfo[i].Clear();
-                mapSpawnData.persistentPlayerInfo[i].Clear();
+                this.mapSpawnData.userInfo[i].Clear();
+                this.mapSpawnData.persistentPlayerInfo[i].Clear();
             }
 
-            if (guiMainMenu_MapList != null) {
-                guiMainMenu_MapList.Shutdown();
-                uiManager.FreeListGUI(guiMainMenu_MapList);
-                guiMainMenu_MapList = null;
+            if (this.guiMainMenu_MapList != null) {
+                this.guiMainMenu_MapList.Shutdown();
+                uiManager.FreeListGUI(this.guiMainMenu_MapList);
+                this.guiMainMenu_MapList = null;
             }
 
             Clear();
@@ -568,12 +568,12 @@ public class Session_local {
             // kill async server
             idAsyncNetwork.server.Kill();
 
-            if (sw != null) {
-                sw.StopAllSounds();
+            if (this.sw != null) {
+                this.sw.StopAllSounds();
             }
 
-            insideUpdateScreen = false;
-            insideExecuteMapChange = false;
+            this.insideUpdateScreen = false;
+            this.insideExecuteMapChange = false;
 
             // drop all guis
             SetGUI(null, null);
@@ -598,12 +598,12 @@ public class Session_local {
                 }
             }
 
-            if (insideUpdateScreen) {
+            if (this.insideUpdateScreen) {
                 common.FatalError("idSessionLocal::UpdateScreen: recursively called");
                 return;
             }
 
-            insideUpdateScreen = true;
+            this.insideUpdateScreen = true;
 
             // if this is a long-operation update and we are in windowed mode,
             // release the mouse capture back to the desktop
@@ -618,7 +618,7 @@ public class Session_local {
 
             DBG_EndFrame++;
             if (com_speeds.GetBool()) {
-                int[] time_frontend = {0}, time_backend = {0};
+                final int[] time_frontend = {0}, time_backend = {0};
                 renderSystem.EndFrame(time_frontend, time_backend);
                 Common.time_frontend = time_frontend[0];
                 Common.time_backend = time_backend[0];
@@ -626,34 +626,34 @@ public class Session_local {
                 renderSystem.EndFrame(null, null);
             }
 
-            insideUpdateScreen = false;
+            this.insideUpdateScreen = false;
         }
 
         @Override
         public void PacifierUpdate() {
-            if (!insideExecuteMapChange) {
+            if (!this.insideExecuteMapChange) {
                 return;
             }
 
             // never do pacifier screen updates while inside the
             // drawing code, or we can have various recursive problems
-            if (insideUpdateScreen) {
+            if (this.insideUpdateScreen) {
                 return;
             }
 
-            int time = eventLoop.Milliseconds();
+            final int time = eventLoop.Milliseconds();
 
-            if (time - lastPacifierTime < 100) {
+            if ((time - this.lastPacifierTime) < 100) {
                 return;
             }
-            lastPacifierTime = time;
+            this.lastPacifierTime = time;
 
-            if (guiLoading != null && bytesNeededForMapLoad != 0) {
-                float n = fileSystem.GetReadCount();
-                float pct = (n / bytesNeededForMapLoad);
+            if ((this.guiLoading != null) && (this.bytesNeededForMapLoad != 0)) {
+                final float n = fileSystem.GetReadCount();
+                final float pct = (n / this.bytesNeededForMapLoad);
                 // pct = idMath::ClampFloat( 0.0f, 100.0f, pct );
-                guiLoading.SetStateFloat("map_loading", pct);
-                guiLoading.StateChanged(com_frameTime);
+                this.guiLoading.SetStateFloat("map_loading", pct);
+                this.guiLoading.StateChanged(com_frameTime);
             }
 
             Sys_GenerateEvents();
@@ -672,7 +672,7 @@ public class Session_local {
             }
 
             // Editors that completely take over the game
-            if (com_editorActive && (com_editors & (EDITOR_RADIANT | EDITOR_GUI)) != 0) {
+            if (com_editorActive && ((com_editors & (EDITOR_RADIANT | EDITOR_GUI)) != 0)) {
                 return;
             }
 
@@ -685,22 +685,22 @@ public class Session_local {
             }
 
             // save the screenshot and audio from the last draw if needed
-            if (aviCaptureMode) {
+            if (this.aviCaptureMode) {
                 idStr name;
 
-                name = new idStr(va("demos/%s/%s_%05i.tga", aviDemoShortName.getData(), aviDemoShortName.getData(), aviTicStart));
+                name = new idStr(va("demos/%s/%s_%05i.tga", this.aviDemoShortName.getData(), this.aviDemoShortName.getData(), this.aviTicStart));
 
-                float ratio = 30.0f / (1000.0f / USERCMD_MSEC / com_aviDemoTics.GetInteger());
-                aviDemoFrameCount += ratio;
-                if (aviTicStart + 1 != (int) aviDemoFrameCount) {
+                final float ratio = 30.0f / (1000.0f / USERCMD_MSEC / com_aviDemoTics.GetInteger());
+                this.aviDemoFrameCount += ratio;
+                if ((this.aviTicStart + 1) != (int) this.aviDemoFrameCount) {
                     // skipped frames so write them out
-                    int c = (int) (aviDemoFrameCount - aviTicStart);
+                    int c = (int) (this.aviDemoFrameCount - this.aviTicStart);
                     while (c-- != 0) {
                         renderSystem.TakeScreenshot(com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name.getData(), com_aviDemoSamples.GetInteger(), null);
-                        name.oSet(va("demos/%s/%s_%05i.tga", aviDemoShortName.getData(), aviDemoShortName.getData(), ++aviTicStart));
+                        name.oSet(va("demos/%s/%s_%05i.tga", this.aviDemoShortName.getData(), this.aviDemoShortName.getData(), ++this.aviTicStart));
                     }
                 }
-                aviTicStart = (int) aviDemoFrameCount;
+                this.aviTicStart = (int) this.aviDemoFrameCount;
 
                 // remove any printed lines at the top before taking the screenshot
                 console.ClearNotifyLines();
@@ -710,31 +710,31 @@ public class Session_local {
             }
 
             // at startup, we may be backwards
-            if (latchedTicNumber > com_ticNumber) {
-                latchedTicNumber = com_ticNumber;
+            if (this.latchedTicNumber > com_ticNumber) {
+                this.latchedTicNumber = com_ticNumber;
             }
 
             // se how many tics we should have before continuing
-            int minTic = latchedTicNumber + 1;
+            int minTic = this.latchedTicNumber + 1;
             if (com_minTics.GetInteger() > 1) {
-                minTic = lastGameTic + com_minTics.GetInteger();
+                minTic = this.lastGameTic + com_minTics.GetInteger();
             }
 
-            if (readDemo != null) {
-                if (null == timeDemo && numDemoFrames != 1) {
-                    minTic = lastDemoTic + USERCMD_PER_DEMO_FRAME;
+            if (this.readDemo != null) {
+                if ((null == this.timeDemo) && (this.numDemoFrames != 1)) {
+                    minTic = this.lastDemoTic + USERCMD_PER_DEMO_FRAME;
                 } else {
                     // timedemos and demoshots will run as fast as they can, other demos
                     // will not run more than 30 hz
-                    minTic = latchedTicNumber;
+                    minTic = this.latchedTicNumber;
                 }
-            } else if (writeDemo != null) {
-                minTic = lastGameTic + USERCMD_PER_DEMO_FRAME;		// demos are recorded at 30 hz
+            } else if (this.writeDemo != null) {
+                minTic = this.lastGameTic + USERCMD_PER_DEMO_FRAME;		// demos are recorded at 30 hz
             }
 
             // fixedTic lets us run a forced number of usercmd each frame without timing
             if (com_fixedTic.GetInteger() != 0) {
-                minTic = latchedTicNumber;
+                minTic = this.latchedTicNumber;
             }
 
             // FIXME: deserves a cleanup and abstraction
@@ -743,9 +743,9 @@ public class Session_local {
                 // it is running over 60 hz, because there is fundamentally
                 // nothing useful for it to do.
                 while (true) {
-                    latchedTicNumber = com_ticNumber;
+                    this.latchedTicNumber = com_ticNumber;
 //                    System.out.printf("Frame(%d, %d)\n", latchedTicNumber, minTic);
-                    if (latchedTicNumber >= minTic) {
+                    if (this.latchedTicNumber >= minTic) {
                         break;
                     }
                     Sys_Sleep(1);
@@ -757,34 +757,34 @@ public class Session_local {
                 }
             } else {
                 while (true) {
-                    latchedTicNumber = com_ticNumber;
-                    if (latchedTicNumber >= minTic) {
+                    this.latchedTicNumber = com_ticNumber;
+                    if (this.latchedTicNumber >= minTic) {
                         break;
                     }
                     Sys_WaitForEvent(TRIGGER_EVENT_ONE);
                 }
             }
 
-            if (authEmitTimeout != 0) {
+            if (this.authEmitTimeout != 0) {
                 // waiting for a game auth
-                if (Sys_Milliseconds() > authEmitTimeout) {
+                if (Sys_Milliseconds() > this.authEmitTimeout) {
                     // expired with no reply
                     // means that if a firewall is blocking the master, we will let through
                     common.DPrintf("no reply from auth\n");
-                    if (authWaitBox) {
+                    if (this.authWaitBox) {
                         // close the wait box
                         StopBox();
-                        authWaitBox = false;
+                        this.authWaitBox = false;
                     }
-                    if (cdkey_state == CDKEY_CHECKING) {
-                        cdkey_state = CDKEY_OK;
+                    if (this.cdkey_state == CDKEY_CHECKING) {
+                        this.cdkey_state = CDKEY_OK;
                     }
-                    if (xpkey_state == CDKEY_CHECKING) {
-                        xpkey_state = CDKEY_OK;
+                    if (this.xpkey_state == CDKEY_CHECKING) {
+                        this.xpkey_state = CDKEY_OK;
                     }
                     // maintain this empty as it's set by auth denials
-                    authMsg.Empty();
-                    authEmitTimeout = 0;
+                    this.authMsg.Empty();
+                    this.authEmitTimeout = 0;
                     SetCDKeyGuiVars();
                 }
             }
@@ -793,25 +793,25 @@ public class Session_local {
             GuiFrameEvents();
 
             // advance demos
-            if (readDemo != null) {
+            if (this.readDemo != null) {
                 AdvanceRenderDemo(false);
                 return;
             }
 
             //------------ single player game tics --------------
-            if (!mapSpawned || guiActive != null) {
+            if (!this.mapSpawned || (this.guiActive != null)) {
                 if (!com_asyncInput.GetBool()) {
                     // early exit, won't do RunGameTic .. but still need to update mouse position for GUIs
                     usercmdGen.GetDirectUsercmd();
                 }
             }
 
-            if (!mapSpawned) {
+            if (!this.mapSpawned) {
                 return;
             }
 
-            if (guiActive != null) {
-                lastGameTic = latchedTicNumber;
+            if (this.guiActive != null) {
+                this.lastGameTic = this.latchedTicNumber;
                 return;
             }
 
@@ -823,68 +823,68 @@ public class Session_local {
 
             // check for user info changes
             if ((cvarSystem.GetModifiedFlags() & CVAR_USERINFO) != 0) {
-                mapSpawnData.userInfo[0] = cvarSystem.MoveCVarsToDict(CVAR_USERINFO);
-                game.SetUserInfo(0, mapSpawnData.userInfo[0], false, false);
+                this.mapSpawnData.userInfo[0] = cvarSystem.MoveCVarsToDict(CVAR_USERINFO);
+                game.SetUserInfo(0, this.mapSpawnData.userInfo[0], false, false);
                 cvarSystem.ClearModifiedFlags(CVAR_USERINFO);
             }
 
             // see how many usercmds we are going to run
-            int numCmdsToRun = latchedTicNumber - lastGameTic;
+            int numCmdsToRun = this.latchedTicNumber - this.lastGameTic;
 
             // don't let a long onDemand sound load unsync everything
-            if (timeHitch != 0) {
-                int skip = timeHitch / USERCMD_MSEC;
-                lastGameTic += skip;
+            if (this.timeHitch != 0) {
+                final int skip = this.timeHitch / USERCMD_MSEC;
+                this.lastGameTic += skip;
                 numCmdsToRun -= skip;
-                timeHitch = 0;
+                this.timeHitch = 0;
             }
 
             // don't get too far behind after a hitch
             if (numCmdsToRun > 10) {
-                lastGameTic = latchedTicNumber - 10;
+                this.lastGameTic = this.latchedTicNumber - 10;
             }
 
             // never use more than USERCMD_PER_DEMO_FRAME,
             // which makes it go into slow motion when recording
-            if (writeDemo != null) {
-                int fixedTic = USERCMD_PER_DEMO_FRAME;
+            if (this.writeDemo != null) {
+                final int fixedTic = USERCMD_PER_DEMO_FRAME;
                 // we should have waited long enough
                 if (numCmdsToRun < fixedTic) {
                     common.Error("idSessionLocal::Frame: numCmdsToRun < fixedTic");
                 }
                 // we may need to dump older commands
-                lastGameTic = latchedTicNumber - fixedTic;
+                this.lastGameTic = this.latchedTicNumber - fixedTic;
             } else if (com_fixedTic.GetInteger() > 0) {
                 // this may cause commands run in a previous frame to
                 // be run again if we are going at above the real time rate
-                lastGameTic = latchedTicNumber - com_fixedTic.GetInteger();
-            } else if (aviCaptureMode) {
-                lastGameTic = latchedTicNumber - com_aviDemoTics.GetInteger();
+                this.lastGameTic = this.latchedTicNumber - com_fixedTic.GetInteger();
+            } else if (this.aviCaptureMode) {
+                this.lastGameTic = this.latchedTicNumber - com_aviDemoTics.GetInteger();
             }
 
             // force only one game frame update this frame.  the game code requests this after skipping cinematics
             // so we come back immediately after the cinematic is done instead of a few frames later which can
             // cause sounds played right after the cinematic to not play.
-            if (syncNextGameFrame) {
-                lastGameTic = latchedTicNumber - 1;
-                syncNextGameFrame = false;
+            if (this.syncNextGameFrame) {
+                this.lastGameTic = this.latchedTicNumber - 1;
+                this.syncNextGameFrame = false;
             }
 
             // create client commands, which will be sent directly
             // to the game
             if (com_showTics.GetBool()) {
-                common.Printf("%d ", latchedTicNumber - lastGameTic);
+                common.Printf("%d ", this.latchedTicNumber - this.lastGameTic);
             }
 
-            int gameTicsToRun = latchedTicNumber - lastGameTic;
+            final int gameTicsToRun = this.latchedTicNumber - this.lastGameTic;
             int i;
             for (i = 0; i < gameTicsToRun; i++) {
                 RunGameTic();
-                if (!mapSpawned) {
+                if (!this.mapSpawned) {
                     // exited game play
                     break;
                 }
-                if (syncNextGameFrame) {
+                if (this.syncNextGameFrame) {
                     // long game frame, so break out and continue executing as if there was no hitch
                     break;
                 }
@@ -899,10 +899,10 @@ public class Session_local {
         @Override
         public boolean ProcessEvent(sysEvent_s event) throws idException {
             // hitting escape anywhere brings up the menu
-            if (NOT(guiActive) && event.evType == SE_KEY && event.evValue2 == 1 && event.evValue == K_ESCAPE) {
+            if (NOT(this.guiActive) && (event.evType == SE_KEY) && (event.evValue2 == 1) && (event.evValue == K_ESCAPE)) {
                 console.Close();
                 if (game != null) {
-                    idUserInterface[] gui = {null};
+                    final idUserInterface[] gui = {null};
                     escReply_t op;
                     op = game.HandleESC(gui);
                     if (op == ESC_IGNORE) {
@@ -922,34 +922,34 @@ public class Session_local {
             }
 
             // if we are testing a GUI, send all events to it
-            if (guiTest != null) {
+            if (this.guiTest != null) {
                 // hitting escape exits the testgui
-                if (event.evType == SE_KEY && event.evValue2 == 1 && event.evValue == K_ESCAPE) {
-                    guiTest = null;
+                if ((event.evType == SE_KEY) && (event.evValue2 == 1) && (event.evValue == K_ESCAPE)) {
+                    this.guiTest = null;
                     return true;
                 }
 
-                cmd = guiTest.HandleEvent(event, com_frameTime).toCharArray();
-                if (cmd != null && cmd[0] != '\0') {
+                cmd = this.guiTest.HandleEvent(event, com_frameTime).toCharArray();
+                if ((cmd != null) && (cmd[0] != '\0')) {
                     common.Printf("testGui event returned: '%s'\n", cmd);
                 }
                 return true;
             }
 
             // menus / etc
-            if (guiActive != null) {
+            if (this.guiActive != null) {
                 MenuEvent(event);
                 return true;
             }
 
             // if we aren't in a game, force the console to take it
-            if (!mapSpawned) {
+            if (!this.mapSpawned) {
                 console.ProcessEvent(event, true);
                 return true;
             }
 
             // in game, exec bindings for all key downs
-            if (event.evType == SE_KEY && event.evValue2 == 1) {
+            if ((event.evType == SE_KEY) && (event.evValue2 == 1)) {
                 idKeyInput.ExecKeyBinding(event.evValue);
                 return true;
             }
@@ -960,30 +960,30 @@ public class Session_local {
 
         @Override
         public void StartMenu(boolean playIntro) throws idException {
-            if (guiActive == guiMainMenu) {
+            if (this.guiActive == this.guiMainMenu) {
                 return;
             }
 
-            if (readDemo != null) {
+            if (this.readDemo != null) {
                 // if we're playing a demo, esc kills it
                 UnloadMap();
             }
 
             // pause the game sound world
-            if (sw != null && !sw.IsPaused()) {
-                sw.Pause();
+            if ((this.sw != null) && !this.sw.IsPaused()) {
+                this.sw.Pause();
             }
 
             // start playing the menu sounds
-            soundSystem.SetPlayingSoundWorld(menuSoundWorld);
+            soundSystem.SetPlayingSoundWorld(this.menuSoundWorld);
 
-            SetGUI(guiMainMenu, null);
-            guiMainMenu.HandleNamedEvent(playIntro ? "playIntro" : "noIntro");
+            SetGUI(this.guiMainMenu, null);
+            this.guiMainMenu.HandleNamedEvent(playIntro ? "playIntro" : "noIntro");
 
             if (fileSystem.HasD3XP()) {
-                guiMainMenu.SetStateString("game_list", common.GetLanguageDict().GetString("#str_07202"));
+                this.guiMainMenu.SetStateString("game_list", common.GetLanguageDict().GetString("#str_07202"));
             } else {
-                guiMainMenu.SetStateString("game_list", common.GetLanguageDict().GetString("#str_07212"));
+                this.guiMainMenu.SetStateString("game_list", common.GetLanguageDict().GetString("#str_07212"));
             }
 
             console.Close();
@@ -991,14 +991,14 @@ public class Session_local {
         }
 
         public void ExitMenu() {
-            guiActive = null;
+            this.guiActive = null;
 
             // go back to the game sounds
-            soundSystem.SetPlayingSoundWorld(sw);
+            soundSystem.SetPlayingSoundWorld(this.sw);
 
             // unpause the game sound world
-            if (sw != null && sw.IsPaused()) {
-                sw.UnPause();
+            if ((this.sw != null) && this.sw.IsPaused()) {
+                this.sw.UnPause();
             }
         }
 
@@ -1006,20 +1006,20 @@ public class Session_local {
         public void SetGUI(idUserInterface gui, HandleGuiCommand_t handle) {
             String cmd;
 
-            guiActive = gui;
-            guiHandle = handle;
-            if (guiMsgRestore != null) {
+            this.guiActive = gui;
+            this.guiHandle = handle;
+            if (this.guiMsgRestore != null) {
                 common.DPrintf("idSessionLocal::SetGUI: cleared an active message box\n");
-                guiMsgRestore = null;
+                this.guiMsgRestore = null;
             }
-            if (NOT(guiActive)) {
+            if (NOT(this.guiActive)) {
                 return;
             }
 
-            if (guiActive == guiMainMenu) {
+            if (this.guiActive == this.guiMainMenu) {
                 SetSaveGameGuiVars();
                 SetMainMenuGuiVars();
-            } else if (guiActive == guiRestartMenu) {
+            } else if (this.guiActive == this.guiRestartMenu) {
                 SetSaveGameGuiVars();
             }
 
@@ -1027,8 +1027,8 @@ public class Session_local {
             ev = new sysEvent_s();//memset( ev, 0, sizeof( ev ) );
             ev.evType = SE_NONE;
 
-            cmd = guiActive.HandleEvent(ev, com_frameTime);
-            guiActive.Activate(true, com_frameTime);
+            cmd = this.guiActive.HandleEvent(ev, com_frameTime);
+            this.guiActive.Activate(true, com_frameTime);
         }
         static int frameEvents = 0;
 
@@ -1041,16 +1041,16 @@ public class Session_local {
 
             // stop generating move and button commands when a local console or menu is active
             // running here so SP, async networking and no game all go through it
-            if (console.Active() || guiActive != null) {
+            if (console.Active() || (this.guiActive != null)) {
                 usercmdGen.InhibitUsercmd(INHIBIT_SESSION, true);
             } else {
                 usercmdGen.InhibitUsercmd(INHIBIT_SESSION, false);
             }
 
-            if (guiTest != null) {
-                gui = guiTest;
-            } else if (guiActive != null) {
-                gui = guiActive;
+            if (this.guiTest != null) {
+                gui = this.guiTest;
+            } else if (this.guiActive != null) {
+                gui = this.guiActive;
             } else {
                 return;
             }
@@ -1061,7 +1061,7 @@ public class Session_local {
 //            System.out.println(System.nanoTime()+"com_frameTime="+com_frameTime+" "+Common.com_ticNumber);
             cmd = gui.HandleEvent(ev, com_frameTime);
             if (isNotNullOrEmpty(cmd)) {
-                DispatchCommand(guiActive, cmd, false);
+                DispatchCommand(this.guiActive, cmd, false);
             }
         }
 
@@ -1098,135 +1098,135 @@ public class Session_local {
                 return null;
             }
 
-            guiMsg.SetStateString("title", "" + title);
-            guiMsg.SetStateString("message", "" + message);
+            this.guiMsg.SetStateString("title", "" + title);
+            this.guiMsg.SetStateString("message", "" + message);
             if (type == MSG_WAIT) {
-                guiMsg.SetStateString("visible_msgbox", "0");
-                guiMsg.SetStateString("visible_waitbox", "1");
+                this.guiMsg.SetStateString("visible_msgbox", "0");
+                this.guiMsg.SetStateString("visible_waitbox", "1");
             } else {
-                guiMsg.SetStateString("visible_msgbox", "1");
-                guiMsg.SetStateString("visible_waitbox", "0");
+                this.guiMsg.SetStateString("visible_msgbox", "1");
+                this.guiMsg.SetStateString("visible_waitbox", "0");
             }
 
-            guiMsg.SetStateString("visible_entry", "0");
-            guiMsg.SetStateString("visible_cdkey", "0");
+            this.guiMsg.SetStateString("visible_entry", "0");
+            this.guiMsg.SetStateString("visible_cdkey", "0");
             switch (type) {
                 case MSG_INFO:
-                    guiMsg.SetStateString("mid", "");
-                    guiMsg.SetStateString("visible_mid", "0");
-                    guiMsg.SetStateString("visible_left", "0");
-                    guiMsg.SetStateString("visible_right", "0");
+                    this.guiMsg.SetStateString("mid", "");
+                    this.guiMsg.SetStateString("visible_mid", "0");
+                    this.guiMsg.SetStateString("visible_left", "0");
+                    this.guiMsg.SetStateString("visible_right", "0");
                     break;
                 case MSG_OK:
-                    guiMsg.SetStateString("mid", common.GetLanguageDict().GetString("#str_04339"));
-                    guiMsg.SetStateString("visible_mid", "1");
-                    guiMsg.SetStateString("visible_left", "0");
-                    guiMsg.SetStateString("visible_right", "0");
+                    this.guiMsg.SetStateString("mid", common.GetLanguageDict().GetString("#str_04339"));
+                    this.guiMsg.SetStateString("visible_mid", "1");
+                    this.guiMsg.SetStateString("visible_left", "0");
+                    this.guiMsg.SetStateString("visible_right", "0");
                     break;
                 case MSG_ABORT:
-                    guiMsg.SetStateString("mid", common.GetLanguageDict().GetString("#str_04340"));
-                    guiMsg.SetStateString("visible_mid", "1");
-                    guiMsg.SetStateString("visible_left", "0");
-                    guiMsg.SetStateString("visible_right", "0");
+                    this.guiMsg.SetStateString("mid", common.GetLanguageDict().GetString("#str_04340"));
+                    this.guiMsg.SetStateString("visible_mid", "1");
+                    this.guiMsg.SetStateString("visible_left", "0");
+                    this.guiMsg.SetStateString("visible_right", "0");
                     break;
                 case MSG_OKCANCEL:
-                    guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
-                    guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
-                    guiMsg.SetStateString("visible_mid", "0");
-                    guiMsg.SetStateString("visible_left", "1");
-                    guiMsg.SetStateString("visible_right", "1");
+                    this.guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
+                    this.guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
+                    this.guiMsg.SetStateString("visible_mid", "0");
+                    this.guiMsg.SetStateString("visible_left", "1");
+                    this.guiMsg.SetStateString("visible_right", "1");
                     break;
                 case MSG_YESNO:
-                    guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04341"));
-                    guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04342"));
-                    guiMsg.SetStateString("visible_mid", "0");
-                    guiMsg.SetStateString("visible_left", "1");
-                    guiMsg.SetStateString("visible_right", "1");
+                    this.guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04341"));
+                    this.guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04342"));
+                    this.guiMsg.SetStateString("visible_mid", "0");
+                    this.guiMsg.SetStateString("visible_left", "1");
+                    this.guiMsg.SetStateString("visible_right", "1");
                     break;
                 case MSG_PROMPT:
-                    guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
-                    guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
-                    guiMsg.SetStateString("visible_mid", "0");
-                    guiMsg.SetStateString("visible_left", "1");
-                    guiMsg.SetStateString("visible_right", "1");
-                    guiMsg.SetStateString("visible_entry", "1");
-                    guiMsg.HandleNamedEvent("Prompt");
+                    this.guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
+                    this.guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
+                    this.guiMsg.SetStateString("visible_mid", "0");
+                    this.guiMsg.SetStateString("visible_left", "1");
+                    this.guiMsg.SetStateString("visible_right", "1");
+                    this.guiMsg.SetStateString("visible_entry", "1");
+                    this.guiMsg.HandleNamedEvent("Prompt");
                     break;
                 case MSG_CDKEY:
-                    guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
-                    guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
-                    guiMsg.SetStateString("visible_msgbox", "0");
-                    guiMsg.SetStateString("visible_cdkey", "1");
-                    guiMsg.SetStateString("visible_hasxp", fileSystem.HasD3XP() ? "1" : "0");
+                    this.guiMsg.SetStateString("left", common.GetLanguageDict().GetString("#str_04339"));
+                    this.guiMsg.SetStateString("right", common.GetLanguageDict().GetString("#str_04340"));
+                    this.guiMsg.SetStateString("visible_msgbox", "0");
+                    this.guiMsg.SetStateString("visible_cdkey", "1");
+                    this.guiMsg.SetStateString("visible_hasxp", fileSystem.HasD3XP() ? "1" : "0");
 		    // the current cdkey / xpkey values may have bad/random data in them
                     // it's best to avoid printing them completely, unless the key is good
-                    if (cdkey_state == CDKEY_OK) {
-                        guiMsg.SetStateString("str_cdkey", new String(cdkey));
-                        guiMsg.SetStateString("visible_cdchk", "0");
+                    if (this.cdkey_state == CDKEY_OK) {
+                        this.guiMsg.SetStateString("str_cdkey", new String(this.cdkey));
+                        this.guiMsg.SetStateString("visible_cdchk", "0");
                     } else {
-                        guiMsg.SetStateString("str_cdkey", "");
-                        guiMsg.SetStateString("visible_cdchk", "1");
+                        this.guiMsg.SetStateString("str_cdkey", "");
+                        this.guiMsg.SetStateString("visible_cdchk", "1");
                     }
-                    guiMsg.SetStateString("str_cdchk", "");
-                    if (xpkey_state == CDKEY_OK) {
-                        guiMsg.SetStateString("str_xpkey", new String(xpkey));
-                        guiMsg.SetStateString("visible_xpchk", "0");
+                    this.guiMsg.SetStateString("str_cdchk", "");
+                    if (this.xpkey_state == CDKEY_OK) {
+                        this.guiMsg.SetStateString("str_xpkey", new String(this.xpkey));
+                        this.guiMsg.SetStateString("visible_xpchk", "0");
                     } else {
-                        guiMsg.SetStateString("str_xpkey", "");
-                        guiMsg.SetStateString("visible_xpchk", "1");
+                        this.guiMsg.SetStateString("str_xpkey", "");
+                        this.guiMsg.SetStateString("visible_xpchk", "1");
                     }
-                    guiMsg.SetStateString("str_xpchk", "");
-                    guiMsg.HandleNamedEvent("CDKey");
+                    this.guiMsg.SetStateString("str_xpchk", "");
+                    this.guiMsg.HandleNamedEvent("CDKey");
                     break;
                 case MSG_WAIT:
                     break;
                 default:
                     common.Printf("idSessionLocal::MessageBox: unknown msg box type\n");
             }
-            msgFireBack[0].oSet("" + fire_yes);
-            msgFireBack[1].oSet("" + fire_no);
-            guiMsgRestore = guiActive;
-            guiActive = guiMsg;
-            guiMsg.SetCursor(325, 290);
-            guiActive.Activate(true, com_frameTime);
-            msgRunning = true;
-            msgRetIndex = -1;
+            this.msgFireBack[0].oSet("" + fire_yes);
+            this.msgFireBack[1].oSet("" + fire_no);
+            this.guiMsgRestore = this.guiActive;
+            this.guiActive = this.guiMsg;
+            this.guiMsg.SetCursor(325, 290);
+            this.guiActive.Activate(true, com_frameTime);
+            this.msgRunning = true;
+            this.msgRetIndex = -1;
 
             if (wait) {
                 // play one frame ignoring events so we don't get confused by parasite button releases
-                msgIgnoreButtons = true;
+                this.msgIgnoreButtons = true;
                 common.GUIFrame(true, network);
-                msgIgnoreButtons = false;
-                while (msgRunning) {
+                this.msgIgnoreButtons = false;
+                while (this.msgRunning) {
                     common.GUIFrame(true, network);
                 }
-                if (msgRetIndex < 0) {
+                if (this.msgRetIndex < 0) {
                     // MSG_WAIT and other StopBox calls
                     return null;
                 }
                 if (type == MSG_PROMPT) {
-                    if (msgRetIndex == 0) {
-                        guiMsg.State().GetString("str_entry", "", msgFireBack[0]);
-                        return msgFireBack[0].getData();
+                    if (this.msgRetIndex == 0) {
+                        this.guiMsg.State().GetString("str_entry", "", this.msgFireBack[0]);
+                        return this.msgFireBack[0].getData();
                     } else {
                         return null;
                     }
                 } else if (type == MSG_CDKEY) {
-                    if (msgRetIndex == 0) {
+                    if (this.msgRetIndex == 0) {
                         // the visible_ values distinguish looking at a valid key, or editing it
-                        msgFireBack[0].oSet(String.format("%1s;%16s;%2s;%1s;%16s;%2s",
-                                guiMsg.State().GetString("visible_cdchk"),
-                                guiMsg.State().GetString("str_cdkey"),
-                                guiMsg.State().GetString("str_cdchk"),
-                                guiMsg.State().GetString("visible_xpchk"),
-                                guiMsg.State().GetString("str_xpkey"),
-                                guiMsg.State().GetString("str_xpchk")));
-                        return msgFireBack[0].getData();
+                        this.msgFireBack[0].oSet(String.format("%1s;%16s;%2s;%1s;%16s;%2s",
+                                this.guiMsg.State().GetString("visible_cdchk"),
+                                this.guiMsg.State().GetString("str_cdkey"),
+                                this.guiMsg.State().GetString("str_cdchk"),
+                                this.guiMsg.State().GetString("visible_xpchk"),
+                                this.guiMsg.State().GetString("str_xpkey"),
+                                this.guiMsg.State().GetString("str_xpchk")));
+                        return this.msgFireBack[0].getData();
                     } else {
                         return null;
                     }
                 } else {
-                    return msgFireBack[msgRetIndex].getData();
+                    return this.msgFireBack[this.msgRetIndex].getData();
                 }
             }
             return null;
@@ -1234,7 +1234,7 @@ public class Session_local {
 
         @Override
         public void StopBox() {
-            if (guiActive == guiMsg) {
+            if (this.guiActive == this.guiMsg) {
                 HandleMsgCommands("stop");
             }
         }
@@ -1252,41 +1252,42 @@ public class Session_local {
         @Override
         public void DownloadProgressBox(backgroundDownload_s bgl, String title, int progress_start, int progress_end) {
             int dlnow = 0, dltotal = 0;
-            int startTime = Sys_Milliseconds();
+            final int startTime = Sys_Milliseconds();
             int lapsed;
-            idStr sNow = new idStr(), sTotal = new idStr(), sBW = new idStr();
+            final idStr sNow = new idStr(), sTotal = new idStr();
+			idStr sBW = new idStr();
             String sETA, sMsg;
 
             if (!BoxDialogSanityCheck()) {
                 return;
             }
 
-            guiMsg.SetStateString("visible_msgbox", "1");
-            guiMsg.SetStateString("visible_waitbox", "0");
+            this.guiMsg.SetStateString("visible_msgbox", "1");
+            this.guiMsg.SetStateString("visible_waitbox", "0");
 
-            guiMsg.SetStateString("visible_entry", "0");
-            guiMsg.SetStateString("visible_cdkey", "0");
+            this.guiMsg.SetStateString("visible_entry", "0");
+            this.guiMsg.SetStateString("visible_cdkey", "0");
 
-            guiMsg.SetStateString("mid", "Cancel");
-            guiMsg.SetStateString("visible_mid", "1");
-            guiMsg.SetStateString("visible_left", "0");
-            guiMsg.SetStateString("visible_right", "0");
+            this.guiMsg.SetStateString("mid", "Cancel");
+            this.guiMsg.SetStateString("visible_mid", "1");
+            this.guiMsg.SetStateString("visible_left", "0");
+            this.guiMsg.SetStateString("visible_right", "0");
 
-            guiMsg.SetStateString("title", title);
-            guiMsg.SetStateString("message", "Connecting..");
+            this.guiMsg.SetStateString("title", title);
+            this.guiMsg.SetStateString("message", "Connecting..");
 
-            guiMsgRestore = guiActive;
-            guiActive = guiMsg;
-            msgRunning = true;
+            this.guiMsgRestore = this.guiActive;
+            this.guiActive = this.guiMsg;
+            this.msgRunning = true;
 
             while (true) {
-                while (msgRunning) {
+                while (this.msgRunning) {
                     common.GUIFrame(true, false);
                     if (bgl.completed) {
-                        guiActive = guiMsgRestore;
-                        guiMsgRestore = null;
+                        this.guiActive = this.guiMsgRestore;
+                        this.guiMsgRestore = null;
                         return;
-                    } else if (bgl.url.dltotal != dltotal || bgl.url.dlnow != dlnow) {
+                    } else if ((bgl.url.dltotal != dltotal) || (bgl.url.dlnow != dlnow)) {
                         dltotal = bgl.url.dltotal;
                         dlnow = bgl.url.dlnow;
                         lapsed = Sys_Milliseconds() - startTime;
@@ -1301,7 +1302,7 @@ public class Session_local {
                             if (lapsed < 2000) {
                                 sMsg = String.format("%s / %s", sNow.getData(), sTotal.getData());
                             } else {
-                                sETA = String.format("%.0f sec", ((float) dltotal / (float) dlnow - 1.0f) * lapsed / 1000);
+                                sETA = String.format("%.0f sec", ((((float) dltotal / (float) dlnow) - 1.0f) * lapsed) / 1000);
                                 sMsg = String.format("%s / %s ( %s - %s )", sNow.getData(), sTotal.getData(), sBW.getData(), sETA);
                             }
                         } else {
@@ -1312,30 +1313,30 @@ public class Session_local {
                             }
                         }
                         if (dltotal != 0) {
-                            guiMsg.SetStateString("progress", va("%d", progress_start + dlnow * (progress_end - progress_start) / dltotal));
+                            this.guiMsg.SetStateString("progress", va("%d", progress_start + ((dlnow * (progress_end - progress_start)) / dltotal)));
                         } else {
-                            guiMsg.SetStateString("progress", "0");
+                            this.guiMsg.SetStateString("progress", "0");
                         }
-                        guiMsg.SetStateString("message", sMsg);
+                        this.guiMsg.SetStateString("message", sMsg);
                     }
                 }
                 // abort was used - tell the downloader and wait till final stop
                 bgl.url.status = DL_ABORTING;
-                guiMsg.SetStateString("title", "Aborting..");
-                guiMsg.SetStateString("visible_mid", "0");
+                this.guiMsg.SetStateString("title", "Aborting..");
+                this.guiMsg.SetStateString("visible_mid", "0");
                 // continue looping
-                guiMsgRestore = guiActive;
-                guiActive = guiMsg;
-                msgRunning = true;
+                this.guiMsgRestore = this.guiActive;
+                this.guiActive = this.guiMsg;
+                this.msgRunning = true;
             }
         }
 
         @Override
         public void SetPlayingSoundWorld() {
-            if ((guiActive != null) && (guiActive.equals(guiMainMenu) || guiActive.equals(guiIntro) || guiActive.equals(guiLoading != null) || (guiActive.equals(guiMsg) && !mapSpawned))) {
-                soundSystem.SetPlayingSoundWorld(menuSoundWorld);
+            if ((this.guiActive != null) && (this.guiActive.equals(this.guiMainMenu) || this.guiActive.equals(this.guiIntro) || this.guiActive.equals(this.guiLoading != null) || (this.guiActive.equals(this.guiMsg) && !this.mapSpawned))) {
+                soundSystem.SetPlayingSoundWorld(this.menuSoundWorld);
             } else {
-                soundSystem.SetPlayingSoundWorld(sw);
+                soundSystem.SetPlayingSoundWorld(this.sw);
             }
         }
 
@@ -1350,42 +1351,42 @@ public class Session_local {
          */
         @Override
         public void TimeHitch(int msec) {
-            timeHitch += msec;
+            this.timeHitch += msec;
         }
 
         @Override
         public void ReadCDKey() {
             String filename;
             idFile f;
-            ByteBuffer buffer = ByteBuffer.allocate(32 * 2);//=new char[32];
+            final ByteBuffer buffer = ByteBuffer.allocate(32 * 2);//=new char[32];
 
-            cdkey_state = CDKEY_UNKNOWN;
+            this.cdkey_state = CDKEY_UNKNOWN;
 
             filename = "../" + BASE_GAMEDIR + "/" + CDKEY_FILE;
             f = fileSystem.OpenExplicitFileRead(fileSystem.RelativePathToOSPath(filename, "fs_savepath"));
             if (null == f) {
                 common.Printf("Couldn't read %s.\n", filename);
-                cdkey[0] = '\0';
+                this.cdkey[0] = '\0';
             } else {
 //		memset( buffer, 0, sizeof(buffer) );
                 f.Read(buffer, CDKEY_BUF_LEN - 1);
                 fileSystem.CloseFile(f);
-                idStr.Copynz(cdkey, new String(buffer.array()), CDKEY_BUF_LEN);
+                idStr.Copynz(this.cdkey, new String(buffer.array()), CDKEY_BUF_LEN);
             }
 
-            xpkey_state = CDKEY_UNKNOWN;
+            this.xpkey_state = CDKEY_UNKNOWN;
 
             filename = "../" + BASE_GAMEDIR + "/" + XPKEY_FILE;
             f = fileSystem.OpenExplicitFileRead(fileSystem.RelativePathToOSPath(filename, "fs_savepath"));
             if (null == f) {
                 common.Printf("Couldn't read %s.\n", filename);
-                xpkey[0] = '\0';
+                this.xpkey[0] = '\0';
             } else {
 //		memset( buffer, 0, sizeof(buffer) );
                 buffer.clear();
                 f.Read(buffer, CDKEY_BUF_LEN - 1);
                 fileSystem.CloseFile(f);
-                idStr.Copynz(xpkey, new String(buffer.array()), CDKEY_BUF_LEN);
+                idStr.Copynz(this.xpkey, new String(buffer.array()), CDKEY_BUF_LEN);
             }
         }
 
@@ -1405,7 +1406,7 @@ public class Session_local {
                 common.Printf("Couldn't write %s.\n", filename);
                 return;
             }
-            f.Printf("%s%s", cdkey, CDKEY_TEXT);
+            f.Printf("%s%s", this.cdkey, CDKEY_TEXT);
             fileSystem.CloseFile(f);
 
             filename = "../" + BASE_GAMEDIR + "/" + XPKEY_FILE;
@@ -1414,17 +1415,17 @@ public class Session_local {
                 common.Printf("Couldn't write %s.\n", filename);
                 return;
             }
-            f.Printf("%s%s", xpkey, CDKEY_TEXT);
+            f.Printf("%s%s", this.xpkey, CDKEY_TEXT);
             fileSystem.CloseFile(f);
         }
 
         @Override
         public String GetCDKey(boolean xp) {
             if (!xp) {
-                return ctos(cdkey);
+                return ctos(this.cdkey);
             }
-            if (xpkey_state == CDKEY_OK || xpkey_state == CDKEY_CHECKING) {
-                return ctos(cdkey);
+            if ((this.xpkey_state == CDKEY_OK) || (this.xpkey_state == CDKEY_CHECKING)) {
+                return ctos(this.cdkey);
             }
             return null;
         }
@@ -1440,15 +1441,15 @@ public class Session_local {
          */
         @Override
         public boolean CheckKey(String key, boolean netConnect, boolean[] offline_valid) {
-            char[][] lkey = new char[2][CDKEY_BUF_LEN];
-            char[][] l_chk = new char[2][3];
-            char[] s_chk = new char[3];
+            final char[][] lkey = new char[2][CDKEY_BUF_LEN];
+            final char[][] l_chk = new char[2][3];
+            final char[] s_chk = new char[3];
             int imax, i_key;
             /*unsigned*/ int checksum, chk8;//TODO:bitwise ops on longs!?
-            boolean[] edited_key = new boolean[2];
+            final boolean[] edited_key = new boolean[2];
 
             // make sure have a right input string
-            assert (key.length() == (CDKEY_BUF_LEN - 1) * 2 + 4 + 3 + 4);
+            assert (key.length() == (((CDKEY_BUF_LEN - 1) * 2) + 4 + 3 + 4));
 
             edited_key[0] = (key.charAt(0) == '1');
             idStr.Copynz(lkey[0], key + 2, CDKEY_BUF_LEN);
@@ -1458,7 +1459,7 @@ public class Session_local {
             edited_key[1] = (key.charAt(CDKEY_BUF_LEN + 2 + 3) == '1');
             idStr.Copynz(lkey[1], key + CDKEY_BUF_LEN + 7, CDKEY_BUF_LEN);
             idStr.ToUpper(lkey[1]);
-            idStr.Copynz(l_chk[1], key + CDKEY_BUF_LEN * 2 + 7, 3);
+            idStr.Copynz(l_chk[1], key + (CDKEY_BUF_LEN * 2) + 7, 3);
             idStr.ToUpper(l_chk[1]);
 
             if (fileSystem.HasD3XP()) {
@@ -1470,7 +1471,7 @@ public class Session_local {
             for (i_key = 0; i_key < imax; i_key++) {
                 // check that the characters are from the valid set
                 int i;
-                for (i = 0; i < CDKEY_BUF_LEN - 1; i++) {
+                for (i = 0; i < (CDKEY_BUF_LEN - 1); i++) {
                     if (-1 == CDKEY_DIGITS.indexOf(lkey[i_key][i])) {
                         offline_valid[i_key] = false;
                         continue;
@@ -1496,13 +1497,13 @@ public class Session_local {
             // offline checks passed, we'll return true and optionally emit key check requests
             // the function should only modify the key states if the offline checks passed successfully
             // set the keys, don't send a game auth if we are net connecting
-            idStr.Copynz(cdkey, lkey[0], CDKEY_BUF_LEN);
-            cdkey_state = netConnect ? CDKEY_OK : CDKEY_CHECKING;
+            idStr.Copynz(this.cdkey, lkey[0], CDKEY_BUF_LEN);
+            this.cdkey_state = netConnect ? CDKEY_OK : CDKEY_CHECKING;
             if (fileSystem.HasD3XP()) {
-                idStr.Copynz(xpkey, lkey[1], CDKEY_BUF_LEN);
-                xpkey_state = netConnect ? CDKEY_OK : CDKEY_CHECKING;
+                idStr.Copynz(this.xpkey, lkey[1], CDKEY_BUF_LEN);
+                this.xpkey_state = netConnect ? CDKEY_OK : CDKEY_CHECKING;
             } else {
-                xpkey_state = CDKEY_NA;
+                this.xpkey_state = CDKEY_NA;
             }
             if (!netConnect) {
                 EmitGameAuth();
@@ -1525,39 +1526,39 @@ public class Session_local {
             int i;
             boolean emitAuth = false;
 
-            if (cdkey_state == CDKEY_UNKNOWN) {
-                if (cdkey.length != CDKEY_BUF_LEN - 1) {
-                    cdkey_state = CDKEY_INVALID;
+            if (this.cdkey_state == CDKEY_UNKNOWN) {
+                if (this.cdkey.length != (CDKEY_BUF_LEN - 1)) {
+                    this.cdkey_state = CDKEY_INVALID;
                 } else {
-                    for (i = 0; i < CDKEY_BUF_LEN - 1; i++) {
-                        if (-1 == CDKEY_DIGITS.indexOf(cdkey[i])) {
-                            cdkey_state = CDKEY_INVALID;
+                    for (i = 0; i < (CDKEY_BUF_LEN - 1); i++) {
+                        if (-1 == CDKEY_DIGITS.indexOf(this.cdkey[i])) {
+                            this.cdkey_state = CDKEY_INVALID;
                             break;
                         }
                     }
                 }
-                if (cdkey_state == CDKEY_UNKNOWN) {
-                    cdkey_state = CDKEY_CHECKING;
+                if (this.cdkey_state == CDKEY_UNKNOWN) {
+                    this.cdkey_state = CDKEY_CHECKING;
                     emitAuth = true;
                 }
             }
-            if (xpkey_state == CDKEY_UNKNOWN) {
+            if (this.xpkey_state == CDKEY_UNKNOWN) {
                 if (fileSystem.HasD3XP()) {
-                    if (ctos(xpkey).length() != CDKEY_BUF_LEN - 1) {
-                        xpkey_state = CDKEY_INVALID;
+                    if (ctos(this.xpkey).length() != (CDKEY_BUF_LEN - 1)) {
+                        this.xpkey_state = CDKEY_INVALID;
                     } else {
-                        for (i = 0; i < CDKEY_BUF_LEN - 1; i++) {
-                            if (-1 == CDKEY_DIGITS.indexOf(xpkey[i])) {
-                                xpkey_state = CDKEY_INVALID;
+                        for (i = 0; i < (CDKEY_BUF_LEN - 1); i++) {
+                            if (-1 == CDKEY_DIGITS.indexOf(this.xpkey[i])) {
+                                this.xpkey_state = CDKEY_INVALID;
                             }
                         }
                     }
-                    if (xpkey_state == CDKEY_UNKNOWN) {
-                        xpkey_state = CDKEY_CHECKING;
+                    if (this.xpkey_state == CDKEY_UNKNOWN) {
+                        this.xpkey_state = CDKEY_CHECKING;
                         emitAuth = true;
                     }
                 } else {
-                    xpkey_state = CDKEY_NA;
+                    this.xpkey_state = CDKEY_NA;
                 }
             }
             if (emitAuth) {
@@ -1566,9 +1567,9 @@ public class Session_local {
             // make sure to keep the mainmenu gui up to date in case we made state changes
             SetCDKeyGuiVars();
             if (strict) {
-                return cdkey_state == CDKEY_OK && (xpkey_state == CDKEY_OK || xpkey_state == CDKEY_NA);
+                return (this.cdkey_state == CDKEY_OK) && ((this.xpkey_state == CDKEY_OK) || (this.xpkey_state == CDKEY_NA));
             } else {
-                return (cdkey_state == CDKEY_OK || cdkey_state == CDKEY_CHECKING) && (xpkey_state == CDKEY_OK || xpkey_state == CDKEY_CHECKING || xpkey_state == CDKEY_NA);
+                return ((this.cdkey_state == CDKEY_OK) || (this.cdkey_state == CDKEY_CHECKING)) && ((this.xpkey_state == CDKEY_OK) || (this.xpkey_state == CDKEY_CHECKING) || (this.xpkey_state == CDKEY_NA));
             }
         }
 
@@ -1576,74 +1577,74 @@ public class Session_local {
         public void ClearCDKey(boolean[] valid) {
             if (!valid[0]) {
 //		memset( cdkey, 0, CDKEY_BUF_LEN );
-                Arrays.fill(cdkey, '0');//TODO:is '0' the same as 0????
-                cdkey_state = CDKEY_UNKNOWN;
-            } else if (cdkey_state == CDKEY_CHECKING) {
+                Arrays.fill(this.cdkey, '0');//TODO:is '0' the same as 0????
+                this.cdkey_state = CDKEY_UNKNOWN;
+            } else if (this.cdkey_state == CDKEY_CHECKING) {
                 // if a key was in checking and not explicitely asked for clearing, put it back to ok
-                cdkey_state = CDKEY_OK;
+                this.cdkey_state = CDKEY_OK;
             }
             if (!valid[1]) {
 //		memset( xpkey, 0, CDKEY_BUF_LEN );
-                Arrays.fill(cdkey, '0');
-                xpkey_state = CDKEY_UNKNOWN;
-            } else if (xpkey_state == CDKEY_CHECKING) {
-                xpkey_state = CDKEY_OK;
+                Arrays.fill(this.cdkey, '0');
+                this.xpkey_state = CDKEY_UNKNOWN;
+            } else if (this.xpkey_state == CDKEY_CHECKING) {
+                this.xpkey_state = CDKEY_OK;
             }
             WriteCDKey();
         }
 
         @Override
         public void SetCDKeyGuiVars() {
-            if (NOT(guiMainMenu)) {
+            if (NOT(this.guiMainMenu)) {
                 return;
             }
-            guiMainMenu.SetStateString("str_d3key_state", common.GetLanguageDict().GetString(va("#str_071%d", 86 + cdkey_state.ordinal())));
-            guiMainMenu.SetStateString("str_xpkey_state", common.GetLanguageDict().GetString(va("#str_071%d", 86 + xpkey_state.ordinal())));
+            this.guiMainMenu.SetStateString("str_d3key_state", common.GetLanguageDict().GetString(va("#str_071%d", 86 + this.cdkey_state.ordinal())));
+            this.guiMainMenu.SetStateString("str_xpkey_state", common.GetLanguageDict().GetString(va("#str_071%d", 86 + this.xpkey_state.ordinal())));
         }
 
         @Override
         public boolean WaitingForGameAuth() {
-            return authEmitTimeout != 0;
+            return this.authEmitTimeout != 0;
         }
 
         @Override
         public void CDKeysAuthReply(boolean valid, String auth_msg) {
-            assert (authEmitTimeout > 0);
-            if (authWaitBox) {
+            assert (this.authEmitTimeout > 0);
+            if (this.authWaitBox) {
                 // close the wait box
                 StopBox();
-                authWaitBox = false;
+                this.authWaitBox = false;
             }
             if (!valid) {
                 common.DPrintf("auth key is invalid\n");
-                authMsg = new idStr(auth_msg);
-                if (cdkey_state == CDKEY_CHECKING) {
-                    cdkey_state = CDKEY_INVALID;
+                this.authMsg = new idStr(auth_msg);
+                if (this.cdkey_state == CDKEY_CHECKING) {
+                    this.cdkey_state = CDKEY_INVALID;
                 }
-                if (xpkey_state == CDKEY_CHECKING) {
-                    xpkey_state = CDKEY_INVALID;
+                if (this.xpkey_state == CDKEY_CHECKING) {
+                    this.xpkey_state = CDKEY_INVALID;
                 }
             } else {
                 common.DPrintf("client is authed in\n");
-                if (cdkey_state == CDKEY_CHECKING) {
-                    cdkey_state = CDKEY_OK;
+                if (this.cdkey_state == CDKEY_CHECKING) {
+                    this.cdkey_state = CDKEY_OK;
                 }
-                if (xpkey_state == CDKEY_CHECKING) {
-                    xpkey_state = CDKEY_OK;
+                if (this.xpkey_state == CDKEY_CHECKING) {
+                    this.xpkey_state = CDKEY_OK;
                 }
             }
-            authEmitTimeout = 0;
+            this.authEmitTimeout = 0;
             SetCDKeyGuiVars();
         }
 
         @Override
         public String GetCurrentMapName() {
-            return currentMapName.getData();
+            return this.currentMapName.getData();
         }
 
         @Override
         public int GetSaveGameVersion() {
-            return savegameVersion;
+            return this.savegameVersion;
         }
 //        
 //        
@@ -1676,11 +1677,11 @@ public class Session_local {
          ===============
          */
         public void MoveToNewMap(final String mapName) {
-            mapSpawnData.serverInfo.Set("si_map", mapName);
+            this.mapSpawnData.serverInfo.Set("si_map", mapName);
 
             ExecuteMapChange();
 
-            if (!mapSpawnData.serverInfo.GetBool("devmap")) {
+            if (!this.mapSpawnData.serverInfo.GetBool("devmap")) {
                 // Autosave at the beginning of the level
                 SaveGame(GetAutoSaveName(mapName), true);
             }
@@ -1725,22 +1726,22 @@ public class Session_local {
                 }
 
                 // clear the userInfo so the player starts out with the defaults
-                mapSpawnData.userInfo[0].Clear();
-                mapSpawnData.persistentPlayerInfo[0].Clear();
-                mapSpawnData.userInfo[0] = cvarSystem.MoveCVarsToDict(CVAR_USERINFO);
+                this.mapSpawnData.userInfo[0].Clear();
+                this.mapSpawnData.persistentPlayerInfo[0].Clear();
+                this.mapSpawnData.userInfo[0] = cvarSystem.MoveCVarsToDict(CVAR_USERINFO);
 
-                mapSpawnData.serverInfo.Clear();
-                mapSpawnData.serverInfo = cvarSystem.MoveCVarsToDict(CVAR_SERVERINFO);
-                mapSpawnData.serverInfo.Set("si_gameType", "singleplayer");
+                this.mapSpawnData.serverInfo.Clear();
+                this.mapSpawnData.serverInfo = cvarSystem.MoveCVarsToDict(CVAR_SERVERINFO);
+                this.mapSpawnData.serverInfo.Set("si_gameType", "singleplayer");
 
                 // set the devmap key so any play testing items will be given at
                 // spawn time to set approximately the right weapons and ammo
                 if (devmap) {
-                    mapSpawnData.serverInfo.Set("devmap", "1");
+                    this.mapSpawnData.serverInfo.Set("devmap", "1");
                 }
 
-                mapSpawnData.syncedCVars.Clear();
-                mapSpawnData.syncedCVars = cvarSystem.MoveCVarsToDict(CVAR_NETWORKSYNC);
+                this.mapSpawnData.syncedCVars.Clear();
+                this.mapSpawnData.syncedCVars = cvarSystem.MoveCVarsToDict(CVAR_NETWORKSYNC);
 
                 MoveToNewMap(mapName);
             }
@@ -1763,19 +1764,19 @@ public class Session_local {
          */
         // called by Draw when the scene to scene wipe is still running
         public void DrawWipeModel() {
-            int latchedTic = com_ticNumber;
+            final int latchedTic = com_ticNumber;
 
-            if (wipeStartTic >= wipeStopTic) {
+            if (this.wipeStartTic >= this.wipeStopTic) {
                 return;
             }
 
-            if (!wipeHold && latchedTic >= wipeStopTic) {
+            if (!this.wipeHold && (latchedTic >= this.wipeStopTic)) {
                 return;
             }
 
-            float fade = (float) (latchedTic - wipeStartTic) / (wipeStopTic - wipeStartTic);
+            final float fade = (float) (latchedTic - this.wipeStartTic) / (this.wipeStopTic - this.wipeStartTic);
             renderSystem.SetColor4(1, 1, 1, fade);
-            renderSystem.DrawStretchPic(0, 0, 640, 480, 0, 0, 1, 1, wipeMaterial);
+            renderSystem.DrawStretchPic(0, 0, 640, 480, 0, 0, 1, 1, this.wipeMaterial);
         }
 
         /*
@@ -1800,32 +1801,32 @@ public class Session_local {
             renderSystem.CaptureRenderToImage("_scratch");
             renderSystem.UnCrop();
 
-            wipeMaterial = declManager.FindMaterial(_wipeMaterial, false);
+            this.wipeMaterial = declManager.FindMaterial(_wipeMaterial, false);
 
-            wipeStartTic = com_ticNumber;
-            wipeStopTic = (int) (wipeStartTic + 1000.0f / USERCMD_MSEC * com_wipeSeconds.GetFloat());
-            wipeHold = hold;
+            this.wipeStartTic = com_ticNumber;
+            this.wipeStopTic = (int) (this.wipeStartTic + ((1000.0f / USERCMD_MSEC) * com_wipeSeconds.GetFloat()));
+            this.wipeHold = hold;
         }
 
         public void CompleteWipe() {
             if (com_ticNumber == 0) {
                 // if the async thread hasn't started, we would hang here
-                wipeStopTic = 0;
+                this.wipeStopTic = 0;
                 UpdateScreen(true);
                 return;
             }
-            while (com_ticNumber < wipeStopTic) {
+            while (com_ticNumber < this.wipeStopTic) {
                 if (ID_CONSOLE_LOCK) {
-                    emptyDrawCount = 0;
+                    this.emptyDrawCount = 0;
                 }
                 UpdateScreen(true);
             }
         }
 
         public void ClearWipe() {
-            wipeHold = false;
-            wipeStopTic = 0;
-            wipeStartTic = wipeStopTic + 1;
+            this.wipeHold = false;
+            this.wipeStopTic = 0;
+            this.wipeStartTic = this.wipeStopTic + 1;
         }
 
         public void ShowLoadingGui() {
@@ -1837,15 +1838,15 @@ public class Session_local {
             // introduced in D3XP code. don't think it actually fixes anything, but doesn't hurt either
             if (true) {
                 // Try and prevent the while loop from being skipped over (long hitch on the main thread?)
-                int stop = Sys_Milliseconds() + 1000;
+                final int stop = Sys_Milliseconds() + 1000;
                 int force = 10;
-                while (Sys_Milliseconds() < stop || force-- > 0) {
+                while ((Sys_Milliseconds() < stop) || (force-- > 0)) {
                     com_frameTime = com_ticNumber * USERCMD_MSEC;
                     session.Frame();
                     session.UpdateScreen(false);
                 }
             } else {
-                final int stop = (int) (com_ticNumber + 1000.0f / USERCMD_MSEC * 1.0f);
+                final int stop = (int) (com_ticNumber + ((1000.0f / USERCMD_MSEC) * 1.0f));
                 while (com_ticNumber < stop) {
                     com_frameTime = com_ticNumber * USERCMD_MSEC;
                     session.Frame();
@@ -1871,7 +1872,7 @@ public class Session_local {
 
             saveFileName.Clear();
 
-            int len = inFileName.Length();
+            final int len = inFileName.Length();
             for (i = 0; i < len; i++) {
                 if ("',.~!@#$%^&*()[]{}<>\\|/=?+;:-\'\"".indexOf(inFileName.oGet(i)) > -1) {
                     // random junk
@@ -1903,7 +1904,8 @@ public class Session_local {
                 return false;
             } else {
                 int i;
-                idStr in, loadFile, saveMap = new idStr(), gamename = new idStr();
+                idStr in, loadFile;
+				final idStr saveMap = new idStr(), gamename = new idStr();
 
                 if (IsMultiplayer()) {
                     common.Printf("Can't load during net play.\n");
@@ -1922,84 +1924,84 @@ public class Session_local {
 
                 // Open savegame file
                 // only allow loads from the game directory because we don't want a base game to load
-                idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
-                savegameFile = fileSystem.OpenFileRead(in.getData(), true, game.Length() != 0 ? game.getData() : null);
+                final idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
+                this.savegameFile = fileSystem.OpenFileRead(in.getData(), true, game.Length() != 0 ? game.getData() : null);
 
-                if (savegameFile == null) {
+                if (this.savegameFile == null) {
                     common.Warning("Couldn't open savegame file %s", in.getData());
                     return false;
                 }
 
-                loadingSaveGame = true;
+                this.loadingSaveGame = true;
 
                 // Read in save game header
                 // Game Name / Version / Map Name / Persistant Player Info
                 // game
-                savegameFile.ReadString(gamename);
+                this.savegameFile.ReadString(gamename);
 
                 // if this isn't a savegame for the correct game, abort loadgame
                 if (!gamename.getData().equals(GAME_NAME)) {
                     common.Warning("Attempted to load an invalid savegame: %s", in.getData());
 
-                    loadingSaveGame = false;
-                    fileSystem.CloseFile(savegameFile);
-                    savegameFile = null;
+                    this.loadingSaveGame = false;
+                    fileSystem.CloseFile(this.savegameFile);
+                    this.savegameFile = null;
                     return false;
                 }
 
                 {// version
-                    int[] savegameVersion = {0};
-                    savegameFile.ReadInt(savegameVersion);
+                    final int[] savegameVersion = {0};
+                    this.savegameFile.ReadInt(savegameVersion);
                     this.savegameVersion = savegameVersion[0];
                 }
 
                 // map
-                savegameFile.ReadString(saveMap);
+                this.savegameFile.ReadString(saveMap);
 
                 // persistent player info
                 for (i = 0; i < MAX_ASYNC_CLIENTS; i++) {
-                    mapSpawnData.persistentPlayerInfo[i].ReadFromFileHandle(savegameFile);
+                    this.mapSpawnData.persistentPlayerInfo[i].ReadFromFileHandle(this.savegameFile);
                 }
 
                 // check the version, if it doesn't match, cancel the loadgame,
                 // but still load the map with the persistant playerInfo from the header
                 // so that the player doesn't lose too much progress.
-                if (savegameVersion != SAVEGAME_VERSION
-                        && !(savegameVersion == 16 && SAVEGAME_VERSION == (savegameVersion+1))) {	// handle savegame v16 in v17
+                if ((this.savegameVersion != SAVEGAME_VERSION)
+                        && !((this.savegameVersion == 16) && (SAVEGAME_VERSION == (this.savegameVersion+1)))) {	// handle savegame v16 in v17
                     common.Warning("Savegame Version mismatch: aborting loadgame and starting level with persistent data");
-                    loadingSaveGame = false;
-                    fileSystem.CloseFile(savegameFile);
-                    savegameFile = null;
+                    this.loadingSaveGame = false;
+                    fileSystem.CloseFile(this.savegameFile);
+                    this.savegameFile = null;
                 }
 
-                common.DPrintf("loading a v%d savegame\n", savegameVersion);
+                common.DPrintf("loading a v%d savegame\n", this.savegameVersion);
 
                 if (saveMap.Length() > 0) {
 
                     // Start loading map
-                    mapSpawnData.serverInfo.Clear();
+                    this.mapSpawnData.serverInfo.Clear();
 
-                    mapSpawnData.serverInfo = cvarSystem.MoveCVarsToDict(CVAR_SERVERINFO);
-                    mapSpawnData.serverInfo.Set("si_gameType", "singleplayer");
+                    this.mapSpawnData.serverInfo = cvarSystem.MoveCVarsToDict(CVAR_SERVERINFO);
+                    this.mapSpawnData.serverInfo.Set("si_gameType", "singleplayer");
 
-                    mapSpawnData.serverInfo.Set("si_map", saveMap.getData());
+                    this.mapSpawnData.serverInfo.Set("si_map", saveMap.getData());
 
-                    mapSpawnData.syncedCVars.Clear();
-                    mapSpawnData.syncedCVars = cvarSystem.MoveCVarsToDict(CVAR_NETWORKSYNC);
+                    this.mapSpawnData.syncedCVars.Clear();
+                    this.mapSpawnData.syncedCVars = cvarSystem.MoveCVarsToDict(CVAR_NETWORKSYNC);
 
-                    mapSpawnData.mapSpawnUsercmd[0] = usercmdGen.TicCmd(latchedTicNumber);
+                    this.mapSpawnData.mapSpawnUsercmd[0] = usercmdGen.TicCmd(this.latchedTicNumber);
                     // make sure no buttons are pressed
-                    mapSpawnData.mapSpawnUsercmd[0].buttons = 0;
+                    this.mapSpawnData.mapSpawnUsercmd[0].buttons = 0;
 
                     ExecuteMapChange();
 
                     SetGUI(null, null);
                 }
 
-                if (loadingSaveGame) {
-                    fileSystem.CloseFile(savegameFile);
-                    loadingSaveGame = false;
-                    savegameFile = null;
+                if (this.loadingSaveGame) {
+                    fileSystem.CloseFile(this.savegameFile);
+                    this.loadingSaveGame = false;
+                    this.savegameFile = null;
                 }
 
                 return true;
@@ -2153,59 +2155,59 @@ public class Session_local {
         }
 
         public String GetAuthMsg() {
-            return authMsg.getData();
+            return this.authMsg.getData();
         }
 
         public void Clear() {
 
-            insideUpdateScreen = false;
-            insideExecuteMapChange = false;
+            this.insideUpdateScreen = false;
+            this.insideExecuteMapChange = false;
 
-            loadingSaveGame = false;
-            savegameFile = null;
-            savegameVersion = 0;
+            this.loadingSaveGame = false;
+            this.savegameFile = null;
+            this.savegameVersion = 0;
 
-            currentMapName.Clear();
-            aviDemoShortName.Clear();
-            msgFireBack[0].Clear();
-            msgFireBack[1].Clear();
+            this.currentMapName.Clear();
+            this.aviDemoShortName.Clear();
+            this.msgFireBack[0].Clear();
+            this.msgFireBack[1].Clear();
 
-            timeHitch = 0;
+            this.timeHitch = 0;
 
-            rw = null;
-            sw = null;
-            menuSoundWorld = null;
-            readDemo = null;
-            writeDemo = null;
-            renderdemoVersion = 0;
-            cmdDemoFile = null;
+            this.rw = null;
+            this.sw = null;
+            this.menuSoundWorld = null;
+            this.readDemo = null;
+            this.writeDemo = null;
+            this.renderdemoVersion = 0;
+            this.cmdDemoFile = null;
 
-            syncNextGameFrame = false;
-            mapSpawned = false;
-            guiActive = null;
-            aviCaptureMode = false;
-            timeDemo = TD_NO;
-            waitingOnBind = false;
-            lastPacifierTime = 0;
+            this.syncNextGameFrame = false;
+            this.mapSpawned = false;
+            this.guiActive = null;
+            this.aviCaptureMode = false;
+            this.timeDemo = TD_NO;
+            this.waitingOnBind = false;
+            this.lastPacifierTime = 0;
 
-            msgRunning = false;
-            guiMsgRestore = null;
-            msgIgnoreButtons = false;
+            this.msgRunning = false;
+            this.guiMsgRestore = null;
+            this.msgIgnoreButtons = false;
 
-            bytesNeededForMapLoad = 0;
+            this.bytesNeededForMapLoad = 0;
 
             if (ID_CONSOLE_LOCK) {
-                emptyDrawCount = 0;
+                this.emptyDrawCount = 0;
             }
             ClearWipe();
 
-            loadGameList.Clear();
-            modsList.Clear();
+            this.loadGameList.Clear();
+            this.modsList.Clear();
 
-            authEmitTimeout = 0;
-            authWaitBox = false;
+            this.authEmitTimeout = 0;
+            this.authWaitBox = false;
 
-            authMsg.Clear();
+            this.authMsg.Clear();
         }
 //
         static final int ANGLE_GRAPH_HEIGHT = 128;
@@ -2223,14 +2225,14 @@ public class Session_local {
                 return;
             }
             renderSystem.SetColor4(0.1f, 0.1f, 0.1f, 1.0f);
-            renderSystem.DrawStretchPic(0, 480 - ANGLE_GRAPH_HEIGHT, MAX_BUFFERED_USERCMD * ANGLE_GRAPH_STRETCH, ANGLE_GRAPH_HEIGHT, 0, 0, 1, 1, whiteMaterial);
+            renderSystem.DrawStretchPic(0, 480 - ANGLE_GRAPH_HEIGHT, MAX_BUFFERED_USERCMD * ANGLE_GRAPH_STRETCH, ANGLE_GRAPH_HEIGHT, 0, 0, 1, 1, this.whiteMaterial);
             renderSystem.SetColor4(0.9f, 0.9f, 0.9f, 1.0f);
-            for (int i = 0; i < MAX_BUFFERED_USERCMD - 4; i++) {
-                usercmd_t cmd = usercmdGen.TicCmd(latchedTicNumber - (MAX_BUFFERED_USERCMD - 4) + i);
+            for (int i = 0; i < (MAX_BUFFERED_USERCMD - 4); i++) {
+                final usercmd_t cmd = usercmdGen.TicCmd((this.latchedTicNumber - (MAX_BUFFERED_USERCMD - 4)) + i);
                 int h = cmd.angles[1];
                 h >>= 8;
                 h &= (ANGLE_GRAPH_HEIGHT - 1);
-                renderSystem.DrawStretchPic(i * ANGLE_GRAPH_STRETCH, 480 - h, 1, h, 0, 0, 1, 1, whiteMaterial);
+                renderSystem.DrawStretchPic(i * ANGLE_GRAPH_STRETCH, 480 - h, 1, h, 0, 0, 1, 1, this.whiteMaterial);
             }
         }
 
@@ -2238,45 +2240,45 @@ public class Session_local {
         public void Draw() throws idException {
             boolean fullConsole = false;
 
-            if (insideExecuteMapChange) {
-                if (guiLoading != null) {
-                    guiLoading.Redraw(com_frameTime);
+            if (this.insideExecuteMapChange) {
+                if (this.guiLoading != null) {
+                    this.guiLoading.Redraw(com_frameTime);
                 }
-                if (guiActive == guiMsg) {
-                    guiMsg.Redraw(com_frameTime);
+                if (this.guiActive == this.guiMsg) {
+                    this.guiMsg.Redraw(com_frameTime);
                 }
-            } else if (guiTest != null) {
+            } else if (this.guiTest != null) {
                 // if testing a gui, clear the screen and draw it
                 // clear the background, in case the tested gui is transparent
                 // NOTE that you can't use this for aviGame recording, it will tick at real com_frameTime between screenshots..
                 renderSystem.SetColor(colorBlack);
                 renderSystem.DrawStretchPic(0, 0, 640, 480, 0, 0, 1, 1, declManager.FindMaterial("_white"));
-                guiTest.Redraw(com_frameTime);
-            } else if (guiActive != null && !guiActive.State().GetBool("gameDraw")) {
+                this.guiTest.Redraw(com_frameTime);
+            } else if ((this.guiActive != null) && !this.guiActive.State().GetBool("gameDraw")) {
 
                 // draw the frozen gui in the background
-                if (guiActive == guiMsg && guiMsgRestore != null) {
-                    guiMsgRestore.Redraw(com_frameTime);
+                if ((this.guiActive == this.guiMsg) && (this.guiMsgRestore != null)) {
+                    this.guiMsgRestore.Redraw(com_frameTime);
                 }
 
                 // draw the menus full screen
-                if (guiActive == guiTakeNotes && !com_skipGameDraw.GetBool()) {
+                if ((this.guiActive == this.guiTakeNotes) && !com_skipGameDraw.GetBool()) {
                     game.Draw(GetLocalClientNum());
                 }
 
                 DBG_Draw++;
-                guiActive.Redraw(com_frameTime);
-            } else if (readDemo != null) {
-                rw.RenderScene(currentDemoRenderView);
+                this.guiActive.Redraw(com_frameTime);
+            } else if (this.readDemo != null) {
+                this.rw.RenderScene(this.currentDemoRenderView);
                 renderSystem.DrawDemoPics();
-            } else if (mapSpawned) {
+            } else if (this.mapSpawned) {
                 boolean gameDraw = false;
                 // normal drawing for both single and multi player
-                if (!com_skipGameDraw.GetBool() && GetLocalClientNum() >= 0) {
+                if (!com_skipGameDraw.GetBool() && (GetLocalClientNum() >= 0)) {
                     // draw the game view
-                    int start = Sys_Milliseconds();
+                    final int start = Sys_Milliseconds();
                     gameDraw = game.Draw(GetLocalClientNum());
-                    int end = Sys_Milliseconds();
+                    final int end = Sys_Milliseconds();
                     time_gameDraw += (end - start);	// note time used for com_speeds
                 }
                 if (!gameDraw) {
@@ -2285,7 +2287,7 @@ public class Session_local {
                 }
 
                 // save off the 2D drawing from the game
-                if (writeDemo != null) {
+                if (this.writeDemo != null) {
                     renderSystem.WriteDemoPics();
                 }
             } else {
@@ -2293,12 +2295,12 @@ public class Session_local {
                     if (com_allowConsole.GetBool()) {
                         console.Draw(true);
                     } else {
-                        emptyDrawCount++;
-                        if (emptyDrawCount > 5) {
+                        this.emptyDrawCount++;
+                        if (this.emptyDrawCount > 5) {
                             // it's best if you can avoid triggering the watchgod by doing the right thing somewhere else
                             assert (false);
                             common.Warning("idSession: triggering mainmenu watchdog");
-                            emptyDrawCount = 0;
+                            this.emptyDrawCount = 0;
                             StartMenu();
                         }
                         renderSystem.SetColor4(0, 0, 0, 1);
@@ -2312,9 +2314,9 @@ public class Session_local {
             }
 
             if (ID_CONSOLE_LOCK) {
-                if (!fullConsole && emptyDrawCount != 0) {
-                    common.DPrintf("idSession: %d empty frame draws\n", emptyDrawCount);
-                    emptyDrawCount = 0;
+                if (!fullConsole && (this.emptyDrawCount != 0)) {
+                    common.DPrintf("idSession: %d empty frame draws\n", this.emptyDrawCount);
+                    this.emptyDrawCount = 0;
                 }
                 fullConsole = false;
             }
@@ -2356,7 +2358,7 @@ public class Session_local {
 
             common.Printf("writing save data to %s\n", demoName);
 
-            idFile cmdDemoFile = fileSystem.OpenFileWrite(demoName);
+            final idFile cmdDemoFile = fileSystem.OpenFileWrite(demoName);
             if (null == cmdDemoFile) {
                 common.Printf("Couldn't open for writing %s\n", demoName);
                 return;
@@ -2364,17 +2366,17 @@ public class Session_local {
 
             if (save) {
 
-                cmdDemoFile.WriteInt(logIndex);//cmdDemoFile->Write( &logIndex, sizeof( logIndex ) );//TODO
+                cmdDemoFile.WriteInt(this.logIndex);//cmdDemoFile->Write( &logIndex, sizeof( logIndex ) );//TODO
             }
 
             SaveCmdDemoToFile(cmdDemoFile);
 
             if (save) {
-                idFile statsFile = fileSystem.OpenFileWrite(statsName.getData());
+                final idFile statsFile = fileSystem.OpenFileWrite(statsName.getData());
                 if (statsFile != null) {
-                    statsFile.WriteInt(statIndex);//statsFile->Write( &statIndex, sizeof( statIndex ) );//TODO
-                    for (int i = 0; i < numClients * statIndex; i++) {
-                        statsFile.Write(loggedStats[i].Write());
+                    statsFile.WriteInt(this.statIndex);//statsFile->Write( &statIndex, sizeof( statIndex ) );//TODO
+                    for (int i = 0; i < (this.numClients * this.statIndex); i++) {
+                        statsFile.Write(this.loggedStats[i].Write());
                     }
                     fileSystem.CloseFile(statsFile);
                 }
@@ -2391,28 +2393,28 @@ public class Session_local {
             // exit any current game
             Stop();
 
-            idStr fullDemoName = new idStr("demos/");
+            final idStr fullDemoName = new idStr("demos/");
             fullDemoName.Append(demoName);
             fullDemoName.DefaultFileExtension(".cdemo");
-            cmdDemoFile = fileSystem.OpenFileRead(fullDemoName.getData());
+            this.cmdDemoFile = fileSystem.OpenFileRead(fullDemoName.getData());
 
-            if (cmdDemoFile == null) {
+            if (this.cmdDemoFile == null) {
                 common.Printf("Couldn't open %s\n", fullDemoName.getData());
                 return;
             }
 
-            guiLoading = uiManager.FindGui("guis/map/loading.gui", true, false, true);
+            this.guiLoading = uiManager.FindGui("guis/map/loading.gui", true, false, true);
             //cmdDemoFile.Read(&loadGameTime, sizeof(loadGameTime));
 
-            LoadCmdDemoFromFile(cmdDemoFile);
+            LoadCmdDemoFromFile(this.cmdDemoFile);
 
             // start the map
             ExecuteMapChange();
 
-            cmdDemoFile = fileSystem.OpenFileRead(fullDemoName.getData());
+            this.cmdDemoFile = fileSystem.OpenFileRead(fullDemoName.getData());
 
             // have to do this twice as the execmapchange clears the cmddemofile
-            LoadCmdDemoFromFile(cmdDemoFile);
+            LoadCmdDemoFromFile(this.cmdDemoFile);
 
             // run one frame to get the view angles correct
             RunGameTic();
@@ -2423,7 +2425,7 @@ public class Session_local {
             ClearWipe();
             UpdateScreen();
 
-            int startTime = Sys_Milliseconds();
+            final int startTime = Sys_Milliseconds();
             int count = 0;
             int minuteStart, minuteEnd;
             float sec;
@@ -2431,11 +2433,11 @@ public class Session_local {
             // run all the frames in sequence
             minuteStart = startTime;
 
-            while (cmdDemoFile != null) {
+            while (this.cmdDemoFile != null) {
                 RunGameTic();
                 count++;
 
-                if (count / 3600 != (count - 1) / 3600) {
+                if ((count / 3600) != ((count - 1) / 3600)) {
                     minuteEnd = Sys_Milliseconds();
                     sec = (float) ((minuteEnd - minuteStart) / 1000.0);//divide by double and roundup to float
                     minuteStart = minuteEnd;
@@ -2444,47 +2446,47 @@ public class Session_local {
                 }
             }
 
-            int endTime = Sys_Milliseconds();
+            final int endTime = Sys_Milliseconds();
             sec = (float) ((endTime - startTime) / 1000.0);
             common.Printf("%d seconds of game, replayed in %5.1f seconds\n", count / 60, sec);
         }
 
         public void SaveCmdDemoToFile(idFile file) throws idException {
 
-            mapSpawnData.serverInfo.WriteToFileHandle(file);
+            this.mapSpawnData.serverInfo.WriteToFileHandle(file);
 
             for (int i = 0; i < MAX_ASYNC_CLIENTS; i++) {
-                mapSpawnData.userInfo[i].WriteToFileHandle(file);
-                mapSpawnData.persistentPlayerInfo[i].WriteToFileHandle(file);
+                this.mapSpawnData.userInfo[i].WriteToFileHandle(file);
+                this.mapSpawnData.persistentPlayerInfo[i].WriteToFileHandle(file);
             }
 
-            for (usercmd_t t : mapSpawnData.mapSpawnUsercmd) {
+            for (final usercmd_t t : this.mapSpawnData.mapSpawnUsercmd) {
                 file.Write(t.Write()/*, sizeof( mapSpawnData.mapSpawnUsercmd )*/);
             }
 
-            if (numClients < 1) {
-                numClients = 1;
+            if (this.numClients < 1) {
+                this.numClients = 1;
             }
-            for (int i = 0; i < numClients * logIndex; i++) {
-                file.Write(loggedUsercmds[i].Write() /* sizeof(loggedUsercmds[0])*/);
+            for (int i = 0; i < (this.numClients * this.logIndex); i++) {
+                file.Write(this.loggedUsercmds[i].Write() /* sizeof(loggedUsercmds[0])*/);
             }
         }
 
         public void LoadCmdDemoFromFile(idFile file) throws idException {
 
-            mapSpawnData.serverInfo.ReadFromFileHandle(file);
+            this.mapSpawnData.serverInfo.ReadFromFileHandle(file);
 
             for (int i = 0; i < MAX_ASYNC_CLIENTS; i++) {
-                mapSpawnData.userInfo[i].ReadFromFileHandle(file);
-                mapSpawnData.persistentPlayerInfo[i].ReadFromFileHandle(file);
+                this.mapSpawnData.userInfo[i].ReadFromFileHandle(file);
+                this.mapSpawnData.persistentPlayerInfo[i].ReadFromFileHandle(file);
             }
-            for (usercmd_t t : mapSpawnData.mapSpawnUsercmd) {
+            for (final usercmd_t t : this.mapSpawnData.mapSpawnUsercmd) {
                 file.Read(t.Write()/*, sizeof( mapSpawnData.mapSpawnUsercmd )*/);
             }
         }
 
         public void StartRecordingRenderDemo(final String demoName) {
-            if (writeDemo != null) {
+            if (this.writeDemo != null) {
                 // allow it to act like a toggle
                 StopRecordingRenderDemo();
                 return;
@@ -2497,36 +2499,36 @@ public class Session_local {
 
             console.Close();
 
-            writeDemo = new idDemoFile();
-            if (!writeDemo.OpenForWriting(demoName)) {
+            this.writeDemo = new idDemoFile();
+            if (!this.writeDemo.OpenForWriting(demoName)) {
                 common.Printf("error opening %s\n", demoName);
 //		delete writeDemo;
-                writeDemo = null;
+                this.writeDemo = null;
                 return;
             }
 
-            common.Printf("recording to %s\n", writeDemo.GetName());
+            common.Printf("recording to %s\n", this.writeDemo.GetName());
 
-            writeDemo.WriteInt(DS_VERSION.ordinal());
-            writeDemo.WriteInt(RENDERDEMO_VERSION);
+            this.writeDemo.WriteInt(DS_VERSION.ordinal());
+            this.writeDemo.WriteInt(RENDERDEMO_VERSION);
 
             // if we are in a map already, dump the current state
-            sw.StartWritingDemo(writeDemo);
-            rw.StartWritingDemo(writeDemo);
+            this.sw.StartWritingDemo(this.writeDemo);
+            this.rw.StartWritingDemo(this.writeDemo);
         }
 
         public void StopRecordingRenderDemo() {
-            if (NOT(writeDemo)) {
+            if (NOT(this.writeDemo)) {
                 common.Printf("idSessionLocal::StopRecordingRenderDemo: not recording\n");
                 return;
             }
-            sw.StopWritingDemo();
-            rw.StopWritingDemo();
+            this.sw.StopWritingDemo();
+            this.rw.StopWritingDemo();
 
-            writeDemo.Close();
-            common.Printf("stopped recording %s.\n", writeDemo.GetName());
+            this.writeDemo.Close();
+            common.Printf("stopped recording %s.\n", this.writeDemo.GetName());
 //	delete writeDemo;
-            writeDemo = null;
+            this.writeDemo = null;
         }
 
         public void StartPlayingRenderDemo(idStr demoName) throws idException {
@@ -2536,10 +2538,10 @@ public class Session_local {
             }
 
             // make sure localSound / GUI intro music shuts up
-            sw.StopAllSounds();
-            sw.PlayShaderDirectly("", 0);
-            menuSoundWorld.StopAllSounds();
-            menuSoundWorld.PlayShaderDirectly("", 0);
+            this.sw.StopAllSounds();
+            this.sw.PlayShaderDirectly("", 0);
+            this.menuSoundWorld.StopAllSounds();
+            this.menuSoundWorld.PlayShaderDirectly("", 0);
 
             // exit any current game
             Stop();
@@ -2549,36 +2551,36 @@ public class Session_local {
 
             // bring up the loading screen manually, since demos won't
             // call ExecuteMapChange()
-            guiLoading = uiManager.FindGui("guis/map/loading.gui", true, false, true);
-            guiLoading.SetStateString("demo", common.GetLanguageDict().GetString("#str_02087"));
-            readDemo = new idDemoFile();
+            this.guiLoading = uiManager.FindGui("guis/map/loading.gui", true, false, true);
+            this.guiLoading.SetStateString("demo", common.GetLanguageDict().GetString("#str_02087"));
+            this.readDemo = new idDemoFile();
             demoName.DefaultFileExtension(".demo");
-            if (!readDemo.OpenForReading(demoName.getData())) {
+            if (!this.readDemo.OpenForReading(demoName.getData())) {
                 common.Printf("couldn't open %s\n", demoName);
 //		delete readDemo;
-                readDemo = null;
+                this.readDemo = null;
                 Stop();
                 StartMenu();
                 soundSystem.SetMute(false);
                 return;
             }
 
-            insideExecuteMapChange = true;
+            this.insideExecuteMapChange = true;
             UpdateScreen();
-            insideExecuteMapChange = false;
-            guiLoading.SetStateString("demo", "");
+            this.insideExecuteMapChange = false;
+            this.guiLoading.SetStateString("demo", "");
 
             // setup default render demo settings
             // that's default for <= Doom3 v1.1
-            renderdemoVersion = 1;
-            savegameVersion = 16;
+            this.renderdemoVersion = 1;
+            this.savegameVersion = 16;
 
             AdvanceRenderDemo(true);
 
-            numDemoFrames = 1;
+            this.numDemoFrames = 1;
 
-            lastDemoTic = -1;
-            timeDemoStartTime = Sys_Milliseconds();
+            this.lastDemoTic = -1;
+            this.timeDemoStartTime = Sys_Milliseconds();
         }
 
         public void StartPlayingRenderDemo(String demoName) throws idException {
@@ -2586,33 +2588,33 @@ public class Session_local {
         }
 
         public void StopPlayingRenderDemo() {
-            if (NOT(writeDemo)) {
+            if (NOT(this.writeDemo)) {
                 common.Printf("idSessionLocal::StopRecordingRenderDemo: not recording\n");
                 return;
             }
-            sw.StopWritingDemo();
-            rw.StopWritingDemo();
+            this.sw.StopWritingDemo();
+            this.rw.StopWritingDemo();
 
-            writeDemo.Close();
-            common.Printf("stopped recording %s.\n", writeDemo.GetName());
+            this.writeDemo.Close();
+            common.Printf("stopped recording %s.\n", this.writeDemo.GetName());
 //	delete writeDemo;
-            writeDemo = null;
+            this.writeDemo = null;
         }
 
         public void CompressDemoFile(final String scheme, final String demoName) {
-            idStr fullDemoName = new idStr("demos/");
+            final idStr fullDemoName = new idStr("demos/");
             fullDemoName.Append(demoName);
             fullDemoName.DefaultFileExtension(".demo");
-            idStr compressedName = fullDemoName;
+            final idStr compressedName = fullDemoName;
             compressedName.StripFileExtension();
             compressedName.Append("_compressed.demo");
 
-            int savedCompression = cvarSystem.GetCVarInteger("com_compressDemos");
-            boolean savedPreload = cvarSystem.GetCVarBool("com_preloadDemos");
+            final int savedCompression = cvarSystem.GetCVarInteger("com_compressDemos");
+            final boolean savedPreload = cvarSystem.GetCVarBool("com_preloadDemos");
             cvarSystem.SetCVarBool("com_preloadDemos", false);
             cvarSystem.SetCVarInteger("com_compressDemos", Integer.parseInt(scheme));
 
-            idDemoFile demoread = new idDemoFile(), demowrite = new idDemoFile();
+            final idDemoFile demoread = new idDemoFile(), demowrite = new idDemoFile();
             if (!demoread.OpenForReading(fullDemoName.getData())) {
                 common.Printf("Could not open %s for reading\n", fullDemoName.getData());
                 return;
@@ -2627,7 +2629,7 @@ public class Session_local {
             common.SetRefreshOnPrint(true);
             common.Printf("Compressing %s to %s...\n", fullDemoName, compressedName);
 
-            ByteBuffer buffer = ByteBuffer.allocate(bufferSize * 2);
+            final ByteBuffer buffer = ByteBuffer.allocate(bufferSize * 2);
             int bytesRead;
             while (0 != (bytesRead = demoread.Read(buffer))) {
                 demowrite.Write(buffer, bytesRead);
@@ -2647,32 +2649,32 @@ public class Session_local {
         static final int bufferSize = 65535;
 
         public void TimeRenderDemo(final String demoName, boolean twice /*= false*/) throws idException {
-            idStr demo = new idStr(demoName);
+            final idStr demo = new idStr(demoName);
 
             // no sound in time demos
             soundSystem.SetMute(true);
 
             StartPlayingRenderDemo(demo);
 
-            if (twice && readDemo != null) {
+            if (twice && (this.readDemo != null)) {
                 // cycle through once to precache everything
-                guiLoading.SetStateString("demo", common.GetLanguageDict().GetString("#str_04852"));
-                guiLoading.StateChanged(com_frameTime);
-                while (readDemo != null) {
-                    insideExecuteMapChange = true;
+                this.guiLoading.SetStateString("demo", common.GetLanguageDict().GetString("#str_04852"));
+                this.guiLoading.StateChanged(com_frameTime);
+                while (this.readDemo != null) {
+                    this.insideExecuteMapChange = true;
                     UpdateScreen();
-                    insideExecuteMapChange = false;
+                    this.insideExecuteMapChange = false;
                     AdvanceRenderDemo(true);
                 }
-                guiLoading.SetStateString("demo", "");
+                this.guiLoading.SetStateString("demo", "");
                 StartPlayingRenderDemo(demo);
             }
 
-            if (null == readDemo) {
+            if (null == this.readDemo) {
                 return;
             }
 
-            timeDemo = TD_YES;
+            this.timeDemo = TD_YES;
         }
 
         public void TimeRenderDemo(final String demoName) throws idException {
@@ -2680,10 +2682,10 @@ public class Session_local {
         }
 
         public void AVIRenderDemo(final String _demoName) {
-            idStr demoName = new idStr(_demoName);	// copy off from va() buffer
+            final idStr demoName = new idStr(_demoName);	// copy off from va() buffer
 
             StartPlayingRenderDemo(demoName);
-            if (null == readDemo) {
+            if (null == this.readDemo) {
                 return;
             }
 
@@ -2709,17 +2711,17 @@ public class Session_local {
          ================
          */
         public void AVIGame(final String[] demoName) {
-            if (aviCaptureMode) {
+            if (this.aviCaptureMode) {
                 EndAVICapture();
                 return;
             }
 
-            if (!mapSpawned) {
+            if (!this.mapSpawned) {
                 common.Printf("No map spawned.\n");
             }
 
             if (!isNotNullOrEmpty(demoName[0])) {
-                String filename = FindUnusedFileName("demos/game%03i.game");
+                final String filename = FindUnusedFileName("demos/game%03i.game");
                 demoName[0] = filename;
 
                 // write a one byte stub .game file just so the FindUnusedFileName works,
@@ -2730,61 +2732,61 @@ public class Session_local {
         }
 
         public void BeginAVICapture(final String demoName) {
-            idStr name = new idStr(demoName);
-            name.ExtractFileBase(aviDemoShortName);
-            aviCaptureMode = true;
-            aviDemoFrameCount = 0;
-            aviTicStart = 0;
-            sw.AVIOpen(va("demos/%s/", aviDemoShortName), aviDemoShortName.getData());
+            final idStr name = new idStr(demoName);
+            name.ExtractFileBase(this.aviDemoShortName);
+            this.aviCaptureMode = true;
+            this.aviDemoFrameCount = 0;
+            this.aviTicStart = 0;
+            this.sw.AVIOpen(va("demos/%s/", this.aviDemoShortName), this.aviDemoShortName.getData());
         }
 
         public void EndAVICapture() {
-            if (!aviCaptureMode) {
+            if (!this.aviCaptureMode) {
                 return;
             }
 
-            sw.AVIClose();
+            this.sw.AVIClose();
 
             // write a .roqParam file so the demo can be converted to a roq file
-            idFile f = fileSystem.OpenFileWrite(va("demos/%s/%s.roqParam", aviDemoShortName, aviDemoShortName));
-            f.Printf("INPUT_DIR demos/%s\n", aviDemoShortName);
-            f.Printf("FILENAME demos/%s/%s.RoQ\n", aviDemoShortName, aviDemoShortName);
+            final idFile f = fileSystem.OpenFileWrite(va("demos/%s/%s.roqParam", this.aviDemoShortName, this.aviDemoShortName));
+            f.Printf("INPUT_DIR demos/%s\n", this.aviDemoShortName);
+            f.Printf("FILENAME demos/%s/%s.RoQ\n", this.aviDemoShortName, this.aviDemoShortName);
             f.Printf("\nINPUT\n");
-            f.Printf("%s_*.tga [00000-%05i]\n", aviDemoShortName, (int) (aviDemoFrameCount - 1));
+            f.Printf("%s_*.tga [00000-%05i]\n", this.aviDemoShortName, (int) (this.aviDemoFrameCount - 1));
             f.Printf("END_INPUT\n");
 //	delete f;
 
-            common.Printf("captured %d frames for %s.\n", (int) aviDemoFrameCount, aviDemoShortName);
+            common.Printf("captured %d frames for %s.\n", (int) this.aviDemoFrameCount, this.aviDemoShortName);
 
-            aviCaptureMode = false;
+            this.aviCaptureMode = false;
         }
 //
 
         public void AdvanceRenderDemo(boolean singleFrameOnly) throws idException {
-            if (lastDemoTic == -1) {
-                lastDemoTic = latchedTicNumber - 1;
+            if (this.lastDemoTic == -1) {
+                this.lastDemoTic = this.latchedTicNumber - 1;
             }
 
             int skipFrames = 0;
 
-            if (!aviCaptureMode && null == timeDemo && !singleFrameOnly) {
-                skipFrames = ((latchedTicNumber - lastDemoTic) / USERCMD_PER_DEMO_FRAME) - 1;
+            if (!this.aviCaptureMode && (null == this.timeDemo) && !singleFrameOnly) {
+                skipFrames = ((this.latchedTicNumber - this.lastDemoTic) / USERCMD_PER_DEMO_FRAME) - 1;
                 // never skip too many frames, just let it go into slightly slow motion
                 if (skipFrames > 4) {
                     skipFrames = 4;
                 }
-                lastDemoTic = latchedTicNumber - latchedTicNumber % USERCMD_PER_DEMO_FRAME;
+                this.lastDemoTic = this.latchedTicNumber - (this.latchedTicNumber % USERCMD_PER_DEMO_FRAME);
             } else {
                 // always advance a single frame with avidemo and timedemo
-                lastDemoTic = latchedTicNumber;
+                this.lastDemoTic = this.latchedTicNumber;
             }
 
             while (skipFrames > -1) {
-                int[] ds = {DS_FINISHED.ordinal()};
+                final int[] ds = {DS_FINISHED.ordinal()};
 
-                readDemo.ReadInt(ds);
+                this.readDemo.ReadInt(ds);
                 if (ds[0] == DS_FINISHED.ordinal()) {
-                    if (numDemoFrames != 1) {
+                    if (this.numDemoFrames != 1) {
                         // if the demo has a single frame (a demoShot), continuously replay
                         // the renderView that has already been read
                         Stop();
@@ -2793,49 +2795,49 @@ public class Session_local {
                     break;
                 }
                 if (ds[0] == DS_RENDER.ordinal()) {
-                    int[] demoTimeOffset = {0};
-                    if (rw.ProcessDemoCommand(readDemo, currentDemoRenderView, demoTimeOffset)) {
+                    final int[] demoTimeOffset = {0};
+                    if (this.rw.ProcessDemoCommand(this.readDemo, this.currentDemoRenderView, demoTimeOffset)) {
                         // a view is ready to render
                         skipFrames--;
-                        numDemoFrames++;
+                        this.numDemoFrames++;
                     }
                     this.demoTimeOffset = demoTimeOffset[0];
                     continue;
                 }
                 if (ds[0] == DS_SOUND.ordinal()) {
-                    sw.ProcessDemoCommand(readDemo);
+                    this.sw.ProcessDemoCommand(this.readDemo);
                     continue;
                 }
                 // appears in v1.2, with savegame format 17
                 if (ds[0] == DS_VERSION.ordinal()) {
-                    int[] renderdemoVersion = {0};
-                    readDemo.ReadInt(renderdemoVersion);
+                    final int[] renderdemoVersion = {0};
+                    this.readDemo.ReadInt(renderdemoVersion);
                     this.renderdemoVersion = renderdemoVersion[0];
                     common.Printf("reading a v%d render demo\n", renderdemoVersion[0]);
                     // set the savegameVersion to current for render demo paths that share the savegame paths
-                    savegameVersion = SAVEGAME_VERSION;
+                    this.savegameVersion = SAVEGAME_VERSION;
                     continue;
                 }
                 common.Error("Bad render demo token");
             }
 
             if (com_showDemo.GetBool()) {
-                common.Printf("frame:%d DemoTic:%d latched:%d skip:%d\n", numDemoFrames, lastDemoTic, latchedTicNumber, skipFrames);
+                common.Printf("frame:%d DemoTic:%d latched:%d skip:%d\n", this.numDemoFrames, this.lastDemoTic, this.latchedTicNumber, skipFrames);
             }
 
         }
 
         public void RunGameTic() throws idException {
-            logCmd_t logCmd = new logCmd_t();
-            usercmd_t[] cmd = {null};
+            final logCmd_t logCmd = new logCmd_t();
+            final usercmd_t[] cmd = {null};
 
             // if we are doing a command demo, read or write from the file
-            if (cmdDemoFile != null) {
-                if (0 == cmdDemoFile.Read(logCmd/*, sizeof( logCmd )*/)) {
-                    common.Printf("Command demo completed at logIndex %d\n", logIndex);
-                    fileSystem.CloseFile(cmdDemoFile);
-                    cmdDemoFile = null;
-                    if (aviCaptureMode) {
+            if (this.cmdDemoFile != null) {
+                if (0 == this.cmdDemoFile.Read(logCmd/*, sizeof( logCmd )*/)) {
+                    common.Printf("Command demo completed at logIndex %d\n", this.logIndex);
+                    fileSystem.CloseFile(this.cmdDemoFile);
+                    this.cmdDemoFile = null;
+                    if (this.aviCaptureMode) {
                         EndAVICapture();
                         Shutdown();
                     }
@@ -2850,72 +2852,72 @@ public class Session_local {
             }
 
             // if we didn't get one from the file, get it locally
-            if (null == cmdDemoFile) {
+            if (null == this.cmdDemoFile) {
                 // get a locally created command
                 if (com_asyncInput.GetBool()) {
-                    cmd[0] = usercmdGen.TicCmd(lastGameTic);
+                    cmd[0] = usercmdGen.TicCmd(this.lastGameTic);
                 } else {
                     cmd[0] = usercmdGen.GetDirectUsercmd();
                 }
-                lastGameTic++;
+                this.lastGameTic++;
             }
 
             // run the game logic every player move
-            int start = Sys_Milliseconds();
-            gameReturn_t ret = game.RunFrame(cmd);
+            final int start = Sys_Milliseconds();
+            final gameReturn_t ret = game.RunFrame(cmd);
 
-            int end = Sys_Milliseconds();
+            final int end = Sys_Milliseconds();
             time_gameFrame += end - start;	// note time used for com_speeds
 
             // check for constency failure from a recorded command
-            if (cmdDemoFile != null) {
+            if (this.cmdDemoFile != null) {
                 if (ret.consistencyHash != logCmd.consistencyHash) {
-                    common.Printf("Consistency failure on logIndex %d\n", logIndex);
+                    common.Printf("Consistency failure on logIndex %d\n", this.logIndex);
                     Stop();
                     return;
                 }
             }
 
             // save the cmd for cmdDemo archiving
-            if (logIndex < MAX_LOGGED_USERCMDS) {
-                loggedUsercmds[logIndex].cmd = cmd[0];
+            if (this.logIndex < MAX_LOGGED_USERCMDS) {
+                this.loggedUsercmds[this.logIndex].cmd = cmd[0];
                 // save the consistencyHash for demo playback verification
-                loggedUsercmds[logIndex].consistencyHash = ret.consistencyHash;
-                if (logIndex % 30 == 0 && statIndex < MAX_LOGGED_STATS) {
-                    loggedStats[statIndex].health = ret.health;
-                    loggedStats[statIndex].heartRate = ret.heartRate;
-                    loggedStats[statIndex].stamina = ret.stamina;
-                    loggedStats[statIndex].combat = ret.combat;
-                    statIndex++;
+                this.loggedUsercmds[this.logIndex].consistencyHash = ret.consistencyHash;
+                if (((this.logIndex % 30) == 0) && (this.statIndex < MAX_LOGGED_STATS)) {
+                    this.loggedStats[this.statIndex].health = ret.health;
+                    this.loggedStats[this.statIndex].heartRate = ret.heartRate;
+                    this.loggedStats[this.statIndex].stamina = ret.stamina;
+                    this.loggedStats[this.statIndex].combat = ret.combat;
+                    this.statIndex++;
                 }
-                logIndex++;
+                this.logIndex++;
             }
 
-            syncNextGameFrame = ret.syncNextGameFrame;
+            this.syncNextGameFrame = ret.syncNextGameFrame;
 
             if (ret.sessionCommand[0] != 0) {
-                idCmdArgs args = new idCmdArgs();
+                final idCmdArgs args = new idCmdArgs();
 
                 args.TokenizeString(ctos(ret.sessionCommand), false);
 
                 if (0 == idStr.Icmp(args.Argv(0), "map")) {
                     // get current player states
-                    for (int i = 0; i < numClients; i++) {
-                        mapSpawnData.persistentPlayerInfo[i] = game.GetPersistentPlayerInfo(i);
+                    for (int i = 0; i < this.numClients; i++) {
+                        this.mapSpawnData.persistentPlayerInfo[i] = game.GetPersistentPlayerInfo(i);
                     }
                     // clear the devmap key on serverinfo, so player spawns
                     // won't get the map testing items
-                    mapSpawnData.serverInfo.Delete("devmap");
+                    this.mapSpawnData.serverInfo.Delete("devmap");
 
                     // go to the next map
                     MoveToNewMap(args.Argv(1));
                 } else if (0 == idStr.Icmp(args.Argv(0), "devmap")) {
-                    mapSpawnData.serverInfo.Set("devmap", "1");
+                    this.mapSpawnData.serverInfo.Set("devmap", "1");
                     MoveToNewMap(args.Argv(1));
                 } else if (0 == idStr.Icmp(args.Argv(0), "died")) {
                     // restart on the same map
                     UnloadMap();
-                    SetGUI(guiRestartMenu, null);
+                    SetGUI(this.guiRestartMenu, null);
                 } else if (0 == idStr.Icmp(args.Argv(0), "disconnect")) {
                     cmdSystem.BufferCommandText(CMD_EXEC_INSERT, "stoprecording ; disconnect");
                 } else if (0 == idStr.Icmp(args.Argv(0), "endOfDemo")) {
@@ -2929,18 +2931,18 @@ public class Session_local {
 
         public void LoadLoadingGui(final String mapName) {
             // load / program a gui to stay up on the screen while loading
-            idStr stripped = new idStr(mapName).StripFileExtension().StripPath();
+            final idStr stripped = new idStr(mapName).StripFileExtension().StripPath();
 
             final String guiMap = va("guis/map/%." + MAX_STRING_CHARS + "s.gui", stripped.getData());//char guiMap[ MAX_STRING_CHARS ];
             // give the gamecode a chance to override
             game.GetMapLoadingGUI(guiMap.toCharArray());
 
             if (uiManager.CheckGui(guiMap)) {
-                guiLoading = uiManager.FindGui(guiMap, true, false, true);
+                this.guiLoading = uiManager.FindGui(guiMap, true, false, true);
             } else {
-                guiLoading = uiManager.FindGui("guis/map/loading.gui", true, false, true);
+                this.guiLoading = uiManager.FindGui("guis/map/loading.gui", true, false, true);
             }
-            guiLoading.SetStateFloat("map_loading", 0.0f);
+            this.guiLoading.SetStateFloat("map_loading", 0.0f);
         }
 
 //
@@ -2963,9 +2965,9 @@ public class Session_local {
 
         public void TestGUI(final String guiName) {
             if (guiName != null) {
-                guiTest = uiManager.FindGui(guiName, true, false, true);
+                this.guiTest = uiManager.FindGui(guiName, true, false, true);
             } else {
-                guiTest = null;
+                this.guiTest = null;
             }
         }
 //
@@ -2985,20 +2987,20 @@ public class Session_local {
         }
 
         public void SetBytesNeededForMapLoad(final String mapName, int bytesNeeded) throws idException {
-            idDecl mapDecl = /*const_cast<idDecl *>*/ (declManager.FindType(DECL_MAPDEF, mapName, false));
-            idDeclEntityDef mapDef = (idDeclEntityDef) mapDecl;
+            final idDecl mapDecl = /*const_cast<idDecl *>*/ (declManager.FindType(DECL_MAPDEF, mapName, false));
+            final idDeclEntityDef mapDef = (idDeclEntityDef) mapDecl;
 
-            if (com_updateLoadSize.GetBool() && mapDef != null) {
+            if (com_updateLoadSize.GetBool() && (mapDef != null)) {
                 // we assume that if com_updateLoadSize is true then the file is writable
 
                 mapDef.dict.SetInt(va("size%d", com_machineSpec.GetInteger()), bytesNeeded);
 
-                idStr declText = new idStr("\nmapDef ");
+                final idStr declText = new idStr("\nmapDef ");
                 declText.Append(mapDef.GetName());
                 declText.Append(" {\n");
                 for (int i = 0; i < mapDef.dict.GetNumKeyVals(); i++) {
                     final idKeyValue kv = mapDef.dict.GetKeyVal(i);
-                    if (kv != null && (kv.GetKey().Cmp("classname") != 0)) {
+                    if ((kv != null) && (kv.GetKey().Cmp("classname") != 0)) {
                         declText.Append("\t\"" + kv.GetKey() + "\"\t\t\"" + kv.GetValue() + "\"\n");
                     }
                 }
@@ -3040,12 +3042,12 @@ public class Session_local {
             soundSystem.SetMute(true);
 
             // clear all menu sounds
-            menuSoundWorld.ClearAllSoundEmitters();
+            this.menuSoundWorld.ClearAllSoundEmitters();
 
             // unpause the game sound world
             // NOTE: we UnPause again later down. not sure this is needed
-            if (sw.IsPaused()) {
-                sw.UnPause();
+            if (this.sw.IsPaused()) {
+                this.sw.UnPause();
             }
 
             if (!noFadeWipe) {
@@ -3058,9 +3060,9 @@ public class Session_local {
             }
 
             // extract the map name from serverinfo
-            idStr mapString = new idStr(mapSpawnData.serverInfo.GetString("si_map"));
+            final idStr mapString = new idStr(this.mapSpawnData.serverInfo.GetString("si_map"));
 
-            idStr fullMapName = new idStr("maps/");
+            final idStr fullMapName = new idStr("maps/");
             fullMapName.Append(mapString);
             fullMapName.StripFileExtension();
 
@@ -3068,11 +3070,11 @@ public class Session_local {
             UnloadMap();
 
             // don't do the deferred caching if we are reloading the same map
-            if (fullMapName == currentMapName) {
+            if (fullMapName == this.currentMapName) {
                 reloadingSameMap = true;
             } else {
                 reloadingSameMap = false;
-                currentMapName = fullMapName;
+                this.currentMapName = fullMapName;
             }
 
             // note which media we are going to need to load
@@ -3090,15 +3092,15 @@ public class Session_local {
 
             // cause prints to force screen updates as a pacifier,
             // and draw the loading gui instead of game draws
-            insideExecuteMapChange = true;
+            this.insideExecuteMapChange = true;
 
             // if this works out we will probably want all the sizes in a def file although this solution will 
             // work for new maps etc. after the first load. we can also drop the sizes into the default.cfg
             fileSystem.ResetReadCount();
             if (!reloadingSameMap) {
-                bytesNeededForMapLoad = GetBytesNeededForMapLoad(mapString.getData());
+                this.bytesNeededForMapLoad = GetBytesNeededForMapLoad(mapString.getData());
             } else {
-                bytesNeededForMapLoad = 30 * 1024 * 1024;
+                this.bytesNeededForMapLoad = 30 * 1024 * 1024;
             }
 
             ClearWipe();
@@ -3115,16 +3117,16 @@ public class Session_local {
 
             // if net play, we get the number of clients during mapSpawnInfo processing
             if (!idAsyncNetwork.IsActive()) {
-                numClients = 1;
+                this.numClients = 1;
             }
 
-            int start = Sys_Milliseconds();
+            final int start = Sys_Milliseconds();
 
             common.Printf("--------- Map Initialization ---------\n");
             common.Printf("Map: %s\n", mapString);
 
             // let the renderSystem load all the geometry
-            if (!rw.InitFromMap(fullMapName.getData())) {
+            if (!this.rw.InitFromMap(fullMapName.getData())) {
                 common.Error("couldn't load %s", fullMapName);
             }
 
@@ -3132,33 +3134,33 @@ public class Session_local {
             // level to level, but now we can just clear everything
             usercmdGen.InitForNewMap();
 //	memset( mapSpawnData.mapSpawnUsercmd, 0, sizeof( mapSpawnData.mapSpawnUsercmd ) );
-            mapSpawnData.mapSpawnUsercmd = Stream.generate(usercmd_t::new).limit(mapSpawnData.mapSpawnUsercmd.length).toArray(usercmd_t[]::new);
+            this.mapSpawnData.mapSpawnUsercmd = Stream.generate(usercmd_t::new).limit(this.mapSpawnData.mapSpawnUsercmd.length).toArray(usercmd_t[]::new);
 
             // set the user info
-            for (i = 0; i < numClients; i++) {
-                game.SetUserInfo(i, mapSpawnData.userInfo[i], idAsyncNetwork.client.IsActive(), false);
-                game.SetPersistentPlayerInfo(i, mapSpawnData.persistentPlayerInfo[i]);
+            for (i = 0; i < this.numClients; i++) {
+                game.SetUserInfo(i, this.mapSpawnData.userInfo[i], idAsyncNetwork.client.IsActive(), false);
+                game.SetPersistentPlayerInfo(i, this.mapSpawnData.persistentPlayerInfo[i]);
             }
 
             // load and spawn all other entities ( from a savegame possibly )
-            if (loadingSaveGame && savegameFile != null) {
-                if (game.InitFromSaveGame(fullMapName + ".map", rw, sw, savegameFile) == false) {
+            if (this.loadingSaveGame && (this.savegameFile != null)) {
+                if (game.InitFromSaveGame(fullMapName + ".map", this.rw, this.sw, this.savegameFile) == false) {
                     // If the loadgame failed, restart the map with the player persistent data
-                    loadingSaveGame = false;
-                    fileSystem.CloseFile(savegameFile);
-                    savegameFile = null;
+                    this.loadingSaveGame = false;
+                    fileSystem.CloseFile(this.savegameFile);
+                    this.savegameFile = null;
 
-                    game.SetServerInfo(mapSpawnData.serverInfo);
-                    game.InitFromNewMap(fullMapName + ".map", rw, sw, idAsyncNetwork.server.IsActive(), idAsyncNetwork.client.IsActive(), Sys_Milliseconds());
+                    game.SetServerInfo(this.mapSpawnData.serverInfo);
+                    game.InitFromNewMap(fullMapName + ".map", this.rw, this.sw, idAsyncNetwork.server.IsActive(), idAsyncNetwork.client.IsActive(), Sys_Milliseconds());
                 }
             } else {
-                game.SetServerInfo(mapSpawnData.serverInfo);
-                game.InitFromNewMap(fullMapName + ".map", rw, sw, idAsyncNetwork.server.IsActive(), idAsyncNetwork.client.IsActive(), Sys_Milliseconds());
+                game.SetServerInfo(this.mapSpawnData.serverInfo);
+                game.InitFromNewMap(fullMapName + ".map", this.rw, this.sw, idAsyncNetwork.server.IsActive(), idAsyncNetwork.client.IsActive(), Sys_Milliseconds());
             }
 
-            if (!idAsyncNetwork.IsActive() && !loadingSaveGame) {
+            if (!idAsyncNetwork.IsActive() && !this.loadingSaveGame) {
                 // spawn players
-                for (i = 0; i < numClients; i++) {
+                for (i = 0; i < this.numClients; i++) {
                     game.SpawnPlayer(i);
                 }
             }
@@ -3172,31 +3174,31 @@ public class Session_local {
             }
             uiManager.EndLevelLoad();
 
-            if (!idAsyncNetwork.IsActive() && !loadingSaveGame) {
+            if (!idAsyncNetwork.IsActive() && !this.loadingSaveGame) {
                 // run a few frames to allow everything to settle
                 for (i = 0; i < 10; i++) {
-                    game.RunFrame(mapSpawnData.mapSpawnUsercmd/*[0]*/);
+                    game.RunFrame(this.mapSpawnData.mapSpawnUsercmd/*[0]*/);
                 }
             }
 
             common.Printf("-----------------------------------\n");
 
-            int msec = Sys_Milliseconds() - start;
+            final int msec = Sys_Milliseconds() - start;
             common.Printf("%6d msec to load %s\n", msec, mapString);
 
             // let the renderSystem generate interactions now that everything is spawned
-            rw.GenerateAllInteractions();
+            this.rw.GenerateAllInteractions();
 
             common.PrintWarnings();
 
-            if (guiLoading != null && bytesNeededForMapLoad != 0) {
-                float pct = guiLoading.State().GetFloat("map_loading");
+            if ((this.guiLoading != null) && (this.bytesNeededForMapLoad != 0)) {
+                float pct = this.guiLoading.State().GetFloat("map_loading");
                 if (pct < 0.0f) {
                     pct = 0.0f;
                 }
                 while (pct < 1.0f) {
-                    guiLoading.SetStateFloat("map_loading", pct);
-                    guiLoading.StateChanged(com_frameTime);
+                    this.guiLoading.SetStateFloat("map_loading", pct);
+                    this.guiLoading.StateChanged(com_frameTime);
                     Sys_GenerateEvents();
                     UpdateScreen();
                     pct += 0.05f;
@@ -3209,35 +3211,35 @@ public class Session_local {
             usercmdGen.Clear();
 
             // start saving commands for possible writeCmdDemo usage
-            logIndex = 0;
-            statIndex = 0;
-            lastSaveIndex = 0;
+            this.logIndex = 0;
+            this.statIndex = 0;
+            this.lastSaveIndex = 0;
 
             // don't bother spinning over all the tics we spent loading
-            lastGameTic = latchedTicNumber = com_ticNumber;
+            this.lastGameTic = this.latchedTicNumber = com_ticNumber;
 
             // remove any prints from the notify lines
             console.ClearNotifyLines();
 
             // stop drawing the laoding screen
-            insideExecuteMapChange = false;
+            this.insideExecuteMapChange = false;
 
 //            Sys_SetPhysicalWorkMemory(-1, -1);
 
             // set the game sound world for playback
-            soundSystem.SetPlayingSoundWorld(sw);
+            soundSystem.SetPlayingSoundWorld(this.sw);
 
             // when loading a save game the sound is paused
-            if (sw.IsPaused()) {
+            if (this.sw.IsPaused()) {
                 // unpause the game sound world
-                sw.UnPause();
+                this.sw.UnPause();
             }
 
             // restart entity sound playback
             soundSystem.SetMute(false);
 
             // we are valid for game draws now
-            mapSpawned = true;
+            this.mapSpawned = true;
             Sys_ClearEvents();
         }
 
@@ -3258,23 +3260,23 @@ public class Session_local {
                 game.MapShutdown();
             }
 
-            if (cmdDemoFile != null) {
-                fileSystem.CloseFile(cmdDemoFile);
-                cmdDemoFile = null;
+            if (this.cmdDemoFile != null) {
+                fileSystem.CloseFile(this.cmdDemoFile);
+                this.cmdDemoFile = null;
             }
 
-            if (writeDemo != null) {
+            if (this.writeDemo != null) {
                 StopRecordingRenderDemo();
             }
 
-            mapSpawned = false;
+            this.mapSpawned = false;
         }
 //
 
         // return true if we actually waiting on an auth reply
         public boolean MaybeWaitOnCDKey() {
-            if (authEmitTimeout > 0) {
-                authWaitBox = true;
+            if (this.authEmitTimeout > 0) {
+                this.authWaitBox = true;
                 sessLocal.MessageBox(MSG_WAIT, common.GetLanguageDict().GetString("#str_07191"), null, true, null, null, true);
                 return true;
             }
@@ -3289,38 +3291,38 @@ public class Session_local {
 //
 
         public idUserInterface GetActiveMenu() {
-            return guiActive;
+            return this.guiActive;
         }
 //
 
         public void DispatchCommand(idUserInterface gui, final String menuCommand, boolean doIngame /*= true*/) throws idException {
 
             if (NOT(gui)) {
-                gui = guiActive;
+                gui = this.guiActive;
             }
 
-            if (gui == guiMainMenu) {
+            if (gui == this.guiMainMenu) {
                 HandleMainMenuCommands(menuCommand);
                 return;
-            } else if (gui == guiIntro) {
+            } else if (gui == this.guiIntro) {
                 HandleIntroMenuCommands(menuCommand);
-            } else if (gui == guiMsg) {
+            } else if (gui == this.guiMsg) {
                 HandleMsgCommands(menuCommand);
-            } else if (gui == guiTakeNotes) {
+            } else if (gui == this.guiTakeNotes) {
                 HandleNoteCommands(menuCommand);
-            } else if (gui == guiRestartMenu) {
+            } else if (gui == this.guiRestartMenu) {
                 HandleRestartMenuCommands(menuCommand);
-            } else if ((game != null) && (guiActive != null) && guiActive.State().GetBool("gameDraw")) {
+            } else if ((game != null) && (this.guiActive != null) && this.guiActive.State().GetBool("gameDraw")) {
                 final String cmd = game.HandleGuiCommands(menuCommand);
                 if (null == cmd) {
-                    guiActive = null;
+                    this.guiActive = null;
                 } else if (idStr.Icmp(cmd, "main") == 0) {
                     StartMenu();
                 } else if (cmd.startsWith("sound ")) {
                     // pipe the GUI sound commands not handled by the game to the main menu code
                     HandleMainMenuCommands(cmd);
                 }
-            } else if (guiHandle != null) {
+            } else if (this.guiHandle != null) {
                 if ( /*(*guiHandle)*/(menuCommand) != null) {
                     return;
                 }
@@ -3347,21 +3349,21 @@ public class Session_local {
         public void MenuEvent(final sysEvent_s event) {
             final String menuCommand;
 
-            if (guiActive == null) {
+            if (this.guiActive == null) {
                 return;
             }
 
-            menuCommand = guiActive.HandleEvent(event, com_frameTime);
+            menuCommand = this.guiActive.HandleEvent(event, com_frameTime);
 
-            if (null == menuCommand || menuCommand.isEmpty()) {
+            if ((null == menuCommand) || menuCommand.isEmpty()) {
                 // If the menu didn't handle the event, and it's a key down event for an F key, run the bind
-                if (event.evType == SE_KEY && event.evValue2 == 1 && event.evValue >= K_F1 && event.evValue <= K_F12) {
+                if ((event.evType == SE_KEY) && (event.evValue2 == 1) && (event.evValue >= K_F1) && (event.evValue <= K_F12)) {
                     idKeyInput.ExecKeyBinding(event.evValue);
                 }
                 return;
             }
 
-            DispatchCommand(guiActive, menuCommand);
+            DispatchCommand(this.guiActive, menuCommand);
         }
 
         public boolean HandleSaveGameMenuCommand(idCmdArgs args, int icmd) throws idException {
@@ -3369,25 +3371,25 @@ public class Session_local {
             final String cmd = args.Argv(icmd - 1);
 
             if (0 == idStr.Icmp(cmd, "loadGame")) {
-                int choice = guiActive.State().GetInt("loadgame_sel_0");
-                if (choice >= 0 && choice < loadGameList.Num()) {
-                    sessLocal.LoadGame(loadGameList.oGet(choice).getData());
+                final int choice = this.guiActive.State().GetInt("loadgame_sel_0");
+                if ((choice >= 0) && (choice < this.loadGameList.Num())) {
+                    sessLocal.LoadGame(this.loadGameList.oGet(choice).getData());
                 }
                 return true;
             }
 
             if (0 == idStr.Icmp(cmd, "saveGame")) {
-                final String saveGameName = guiActive.State().GetString("saveGameName");
-                if (saveGameName != null && saveGameName.isEmpty()) {
+                final String saveGameName = this.guiActive.State().GetString("saveGameName");
+                if ((saveGameName != null) && saveGameName.isEmpty()) {
 
                     // First see if the file already exists unless they pass '1' to authorize the overwrite
-                    if (icmd == args.Argc() || Integer.parseInt(args.Argv(icmd++)) == 0) {
+                    if ((icmd == args.Argc()) || (Integer.parseInt(args.Argv(icmd++)) == 0)) {
                         idStr saveFileName = new idStr(saveGameName);
                         sessLocal.ScrubSaveGameFileName(saveFileName);
                         saveFileName = new idStr("savegames/" + saveFileName);
                         saveFileName.SetFileExtension(".save");
 
-                        idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
+                        final idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
                         idFile file;
                         if (game.Length() != 0) {
                             file = fileSystem.OpenFileRead(saveFileName.getData(), true, game.getData());
@@ -3400,52 +3402,52 @@ public class Session_local {
 
                             // The file exists, see if it's an autosave
                             saveFileName.SetFileExtension(".txt");
-                            idLexer src = new idLexer(LEXFL_NOERRORS | LEXFL_NOSTRINGCONCAT);
+                            final idLexer src = new idLexer(LEXFL_NOERRORS | LEXFL_NOSTRINGCONCAT);
                             if (src.LoadFile(saveFileName.getData())) {
-                                idToken tok = new idToken();
+                                final idToken tok = new idToken();
                                 src.ReadToken(tok); // Name
                                 src.ReadToken(tok); // Map
                                 src.ReadToken(tok); // Screenshot
                                 if (!tok.IsEmpty()) {
                                     // NOTE: base/ gui doesn't handle that one
-                                    guiActive.HandleNamedEvent("autosaveOverwriteError");
+                                    this.guiActive.HandleNamedEvent("autosaveOverwriteError");
                                     return true;
                                 }
                             }
-                            guiActive.HandleNamedEvent("saveGameOverwrite");
+                            this.guiActive.HandleNamedEvent("saveGameOverwrite");
                             return true;
                         }
                     }
 
                     sessLocal.SaveGame(saveGameName);
                     SetSaveGameGuiVars();
-                    guiActive.StateChanged(com_frameTime);
+                    this.guiActive.StateChanged(com_frameTime);
                 }
                 return true;
             }
 
             if (0 == idStr.Icmp(cmd, "deleteGame")) {
-                int choice = guiActive.State().GetInt("loadgame_sel_0");
-                if (choice >= 0 && choice < loadGameList.Num()) {
-                    fileSystem.RemoveFile(va("savegames/%s.save", loadGameList.oGet(choice).getData()));
-                    fileSystem.RemoveFile(va("savegames/%s.tga", loadGameList.oGet(choice).getData()));
-                    fileSystem.RemoveFile(va("savegames/%s.txt", loadGameList.oGet(choice).getData()));
+                final int choice = this.guiActive.State().GetInt("loadgame_sel_0");
+                if ((choice >= 0) && (choice < this.loadGameList.Num())) {
+                    fileSystem.RemoveFile(va("savegames/%s.save", this.loadGameList.oGet(choice).getData()));
+                    fileSystem.RemoveFile(va("savegames/%s.tga", this.loadGameList.oGet(choice).getData()));
+                    fileSystem.RemoveFile(va("savegames/%s.txt", this.loadGameList.oGet(choice).getData()));
                     SetSaveGameGuiVars();
-                    guiActive.StateChanged(com_frameTime);
+                    this.guiActive.StateChanged(com_frameTime);
                 }
                 return true;
             }
 
             if (0 == idStr.Icmp(cmd, "updateSaveGameInfo")) {
-                int choice = guiActive.State().GetInt("loadgame_sel_0");
-                if (choice >= 0 && choice < loadGameList.Num()) {
+                final int choice = this.guiActive.State().GetInt("loadgame_sel_0");
+                if ((choice >= 0) && (choice < this.loadGameList.Num())) {
                     final idMaterial material;
 
                     idStr saveName, description;
                     String screenshot;
-                    idLexer src = new idLexer(LEXFL_NOERRORS | LEXFL_NOSTRINGCONCAT);
-                    if (src.LoadFile(va("savegames/%s.txt", loadGameList.oGet(choice).getData()))) {
-                        idToken tok = new idToken();
+                    final idLexer src = new idLexer(LEXFL_NOERRORS | LEXFL_NOSTRINGCONCAT);
+                    if (src.LoadFile(va("savegames/%s.txt", this.loadGameList.oGet(choice).getData()))) {
+                        final idToken tok = new idToken();
 
                         src.ReadToken(tok);
                         saveName = tok;
@@ -3457,30 +3459,30 @@ public class Session_local {
                         screenshot = tok.getData();
 
                     } else {
-                        saveName = loadGameList.oGet(choice);
-                        description = loadGameList.oGet(choice);
+                        saveName = this.loadGameList.oGet(choice);
+                        description = this.loadGameList.oGet(choice);
                         screenshot = "";
                     }
                     if (screenshot.length() == 0) {
-                        screenshot = va("savegames/%s.tga", loadGameList.oGet(choice).getData());
+                        screenshot = va("savegames/%s.tga", this.loadGameList.oGet(choice).getData());
                     }
                     material = declManager.FindMaterial(screenshot);
                     if (material != null) {
                         material.ReloadImages(false);
                     }
-                    guiActive.SetStateString("loadgame_shot", screenshot);
+                    this.guiActive.SetStateString("loadgame_shot", screenshot);
 
                     saveName.RemoveColors();
-                    guiActive.SetStateString("saveGameName", saveName.getData());
-                    guiActive.SetStateString("saveGameDescription", description.getData());
+                    this.guiActive.SetStateString("saveGameName", saveName.getData());
+                    this.guiActive.SetStateString("saveGameDescription", description.getData());
 
-                    long[] timeStamp = {0};
-                    fileSystem.ReadFile(va("savegames/%s.save", loadGameList.oGet(choice).getData()), null, timeStamp);
-                    idStr date = new idStr(Sys_TimeStampToStr(timeStamp[0]));
-                    int tab = date.Find('\t');
-                    idStr time = date.Right(date.Length() - tab - 1);
-                    guiActive.SetStateString("saveGameDate", date.Left(tab).getData());
-                    guiActive.SetStateString("saveGameTime", time.getData());
+                    final long[] timeStamp = {0};
+                    fileSystem.ReadFile(va("savegames/%s.save", this.loadGameList.oGet(choice).getData()), null, timeStamp);
+                    final idStr date = new idStr(Sys_TimeStampToStr(timeStamp[0]));
+                    final int tab = date.Find('\t');
+                    final idStr time = date.Right(date.Length() - tab - 1);
+                    this.guiActive.SetStateString("saveGameDate", date.Left(tab).getData());
+                    this.guiActive.SetStateString("saveGameTime", time.getData());
                 }
                 return true;
             }
@@ -3497,19 +3499,19 @@ public class Session_local {
          */
         public void HandleInGameCommands(final String menuCommand) {
             // execute the command from the menu
-            idCmdArgs args = new idCmdArgs();
+            final idCmdArgs args = new idCmdArgs();
 
             args.TokenizeString(menuCommand, false);
 
-            /*final*/ String cmd = args.Argv(0);
+            /*final*/ final String cmd = args.Argv(0);
             if (0 == idStr.Icmp(cmd, "close")) {
-                if (guiActive != null) {
-                    sysEvent_s ev = new sysEvent_s();
+                if (this.guiActive != null) {
+                    final sysEvent_s ev = new sysEvent_s();
                     ev.evType = SE_NONE;
 //			final String cmd;
-                    args.oSet(guiActive.HandleEvent(ev, com_frameTime));
-                    guiActive.Activate(false, com_frameTime);
-                    guiActive = null;
+                    args.oSet(this.guiActive.HandleEvent(ev, com_frameTime));
+                    this.guiActive.Activate(false, com_frameTime);
+                    this.guiActive = null;
                 }
             }
         }
@@ -3524,7 +3526,7 @@ public class Session_local {
         public void HandleMainMenuCommands(final String menuCommand) throws idException {
             // execute the command from the menu
             int icmd;
-            idCmdArgs args = new idCmdArgs();
+            final idCmdArgs args = new idCmdArgs();
 
             args.TokenizeString(menuCommand, false);
 
@@ -3537,11 +3539,11 @@ public class Session_local {
 
                 // always let the game know the command is being run
                 if (game != null) {
-                    game.HandleMainMenuCommands(cmd, guiActive);
+                    game.HandleMainMenuCommands(cmd, this.guiActive);
                 }
 
                 if (0 == idStr.Icmp(cmd, "startGame")) {
-                    cvarSystem.SetCVarInteger("g_skill", guiMainMenu.State().GetInt("skill"));
+                    cvarSystem.SetCVarInteger("g_skill", this.guiMainMenu.State().GetInt("skill"));
                     if (icmd < args.Argc()) {
                         StartNewGame(args.Argv(icmd++));
                     } else {
@@ -3554,10 +3556,10 @@ public class Session_local {
                     // need to do this here to make sure com_frameTime is correct or the gui activates with a time that 
                     // is "however long map load took" time in the past
                     common.GUIFrame(false, false);
-                    SetGUI(guiIntro, null);
-                    guiIntro.StateChanged(com_frameTime, true);
+                    SetGUI(this.guiIntro, null);
+                    this.guiIntro.StateChanged(com_frameTime, true);
                     // stop playing the game sounds
-                    soundSystem.SetPlayingSoundWorld(menuSoundWorld);
+                    soundSystem.SetPlayingSoundWorld(this.menuSoundWorld);
 
                     continue;
                 }
@@ -3569,15 +3571,15 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "loadMod")) {
-                    int choice = guiActive.State().GetInt("modsList_sel_0");
-                    if (choice >= 0 && choice < modsList.Num()) {
-                        cvarSystem.SetCVarString("fs_game", modsList.oGet(choice).getData());
+                    final int choice = this.guiActive.State().GetInt("modsList_sel_0");
+                    if ((choice >= 0) && (choice < this.modsList.Num())) {
+                        cvarSystem.SetCVarString("fs_game", this.modsList.oGet(choice).getData());
                         cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "reloadEngine menu\n");
                     }
                 }
 
                 if (0 == idStr.Icmp(cmd, "UpdateServers")) {
-                    if (guiActive.State().GetBool("lanSet")) {
+                    if (this.guiActive.State().GetBool("lanSet")) {
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "LANScan");
                     } else {
                         idAsyncNetwork.GetNETServers();
@@ -3586,7 +3588,7 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "RefreshServers")) {
-                    if (guiActive.State().GetBool("lanSet")) {
+                    if (this.guiActive.State().GetBool("lanSet")) {
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "LANScan");
                     } else {
                         idAsyncNetwork.client.serverList.NetScan();
@@ -3635,39 +3637,39 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "LANConnect")) {
-                    int sel = guiActive.State().GetInt("serverList_selid_0");
+                    final int sel = this.guiActive.State().GetInt("serverList_selid_0");
                     cmdSystem.BufferCommandText(CMD_EXEC_NOW, va("Connect %d\n", sel));
                     return;
                 }
 
                 if (0 == idStr.Icmp(cmd, "MAPScan")) {
                     /*final*/ String gametype = cvarSystem.GetCVarString("si_gameType");
-                    if (gametype == null || gametype.isEmpty() || idStr.Icmp(gametype, "singleplayer") == 0) {
+                    if ((gametype == null) || gametype.isEmpty() || (idStr.Icmp(gametype, "singleplayer") == 0)) {
                         gametype = "Deathmatch";
                     }
 
                     int i, num;
-                    idStr si_map = new idStr(cvarSystem.GetCVarString("si_map"));
+                    final idStr si_map = new idStr(cvarSystem.GetCVarString("si_map"));
                     idDict dict;
 
-                    guiMainMenu_MapList.Clear();
-                    guiMainMenu_MapList.SetSelection(0);
+                    this.guiMainMenu_MapList.Clear();
+                    this.guiMainMenu_MapList.SetSelection(0);
                     num = fileSystem.GetNumMaps();
                     for (i = 0; i < num; i++) {
                         dict = fileSystem.GetMapDecl(i);
-                        if (dict != null && dict.GetBool(gametype)) {
+                        if ((dict != null) && dict.GetBool(gametype)) {
                             /*final*/ String mapName = dict.GetString("name");
                             if (!isNotNullOrEmpty(mapName)) {
                                 mapName = dict.GetString("path");
                             }
                             mapName = common.GetLanguageDict().GetString(mapName);
-                            guiMainMenu_MapList.Add(i, new idStr(mapName));
+                            this.guiMainMenu_MapList.Add(i, new idStr(mapName));
                             if (0 == si_map.Icmp(dict.GetString("path"))) {
-                                guiMainMenu_MapList.SetSelection(guiMainMenu_MapList.Num() - 1);
+                                this.guiMainMenu_MapList.SetSelection(this.guiMainMenu_MapList.Num() - 1);
                             }
                         }
                     }
-                    i = guiMainMenu_MapList.GetSelection(null, 0);
+                    i = this.guiMainMenu_MapList.GetSelection(null, 0);
                     if (i >= 0) {
                         dict = fileSystem.GetMapDecl(i);
                     } else {
@@ -3681,7 +3683,7 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "click_mapList")) {
-                    int mapNum = guiMainMenu_MapList.GetSelection(null, 0);
+                    final int mapNum = this.guiMainMenu_MapList.GetSelection(null, 0);
                     final idDict dict = fileSystem.GetMapDecl(mapNum);
                     if (dict != null) {
                         cvarSystem.SetCVarString("si_map", dict.GetString("path"));
@@ -3691,9 +3693,9 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "inetConnect")) {
-                    final String s = guiMainMenu.State().GetString("inetGame");
+                    final String s = this.guiMainMenu.State().GetString("inetGame");
 
-                    if (null == s || s.isEmpty()) {
+                    if ((null == s) || s.isEmpty()) {
                         // don't put the menu away if there isn't a valid selection
                         continue;
                     }
@@ -3703,11 +3705,11 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "startMultiplayer")) {
-                    int dedicated = guiActive.State().GetInt("dedicated");
-                    cvarSystem.SetCVarBool("net_LANServer", guiActive.State().GetBool("server_type"));
+                    final int dedicated = this.guiActive.State().GetInt("dedicated");
+                    cvarSystem.SetCVarBool("net_LANServer", this.guiActive.State().GetBool("server_type"));
                     if (gui_configServerRate.GetInteger() > 0) {
                         // guess the best rate for upstream, number of internet clients
-                        if (gui_configServerRate.GetInteger() == 5 || cvarSystem.GetCVarBool("net_LANServer")) {
+                        if ((gui_configServerRate.GetInteger() == 5) || cvarSystem.GetCVarBool("net_LANServer")) {
                             cvarSystem.SetCVarInteger("net_serverMaxClientRate", 25600);
                         } else {
                             // internet players
@@ -3747,7 +3749,7 @@ public class Session_local {
                         }
                     }
 
-                    if (0 == dedicated && !cvarSystem.GetCVarBool("net_LANServer") && cvarSystem.GetCVarInteger("si_maxPlayers") > 4) {
+                    if ((0 == dedicated) && !cvarSystem.GetCVarBool("net_LANServer") && (cvarSystem.GetCVarInteger("si_maxPlayers") > 4)) {
                         // "Dedicated server mode is recommended for internet servers with more than 4 players. Continue in listen mode?"
 //				if ( !MessageBox( MSG_YESNO, common.GetLanguageDict().GetString ( "#str_00100625" ), common.GetLanguageDict().GetString ( "#str_00100626" ), true, "yes" )[0] ) {
                         if (MessageBox(MSG_YESNO, common.GetLanguageDict().GetString("#str_00100625"), common.GetLanguageDict().GetString("#str_00100626"), true, "yes").isEmpty()) {
@@ -3769,7 +3771,7 @@ public class Session_local {
 
                 if (0 == idStr.Icmp(cmd, "mpSkin")) {
                     idStr skin;
-                    if (args.Argc() - icmd >= 1) {
+                    if ((args.Argc() - icmd) >= 1) {
                         skin = new idStr(args.Argv(icmd++));
                         cvarSystem.SetCVarString("ui_skin", skin.getData());
                         SetMainMenuSkin();
@@ -3779,7 +3781,7 @@ public class Session_local {
 
                 if (0 == idStr.Icmp(cmd, "close")) {
                     // if we aren't in a game, the menu can't be closed
-                    if (mapSpawned) {
+                    if (this.mapSpawned) {
                         ExitMenu();
                     }
                     continue;
@@ -3787,41 +3789,41 @@ public class Session_local {
 
                 if (0 == idStr.Icmp(cmd, "resetdefaults")) {
                     cmdSystem.BufferCommandText(CMD_EXEC_NOW, "exec default.cfg");
-                    guiMainMenu.SetKeyBindingNames();
+                    this.guiMainMenu.SetKeyBindingNames();
                     continue;
                 }
 
                 if (0 == idStr.Icmp(cmd, "bind")) {
-                    if (args.Argc() - icmd >= 2) {
-                        int key = Integer.parseInt(args.Argv(icmd++));
-                        String bind = args.Argv(icmd++);
-                        if (idKeyInput.NumBinds(bind) >= 2 && !idKeyInput.KeyIsBoundTo(key, bind)) {
+                    if ((args.Argc() - icmd) >= 2) {
+                        final int key = Integer.parseInt(args.Argv(icmd++));
+                        final String bind = args.Argv(icmd++);
+                        if ((idKeyInput.NumBinds(bind) >= 2) && !idKeyInput.KeyIsBoundTo(key, bind)) {
                             idKeyInput.UnbindBinding(bind);
                         }
                         idKeyInput.SetBinding(key, bind);
-                        guiMainMenu.SetKeyBindingNames();
+                        this.guiMainMenu.SetKeyBindingNames();
                     }
                     continue;
                 }
 
                 if (0 == idStr.Icmp(cmd, "play")) {
-                    if (args.Argc() - icmd >= 1) {
+                    if ((args.Argc() - icmd) >= 1) {
                         idStr snd = new idStr(args.Argv(icmd++));
                         int channel = 1;
                         if (snd.Length() == 1) {
                             channel = Integer.parseInt(snd.getData());
                             snd = new idStr(args.Argv(icmd++));
                         }
-                        menuSoundWorld.PlayShaderDirectly(snd.getData(), channel);
+                        this.menuSoundWorld.PlayShaderDirectly(snd.getData(), channel);
 
                     }
                     continue;
                 }
 
                 if (0 == idStr.Icmp(cmd, "music")) {
-                    if (args.Argc() - icmd >= 1) {
-                        idStr snd = new idStr(args.Argv(icmd++));
-                        menuSoundWorld.PlayShaderDirectly(snd.getData(), 2);
+                    if ((args.Argc() - icmd) >= 1) {
+                        final idStr snd = new idStr(args.Argv(icmd++));
+                        this.menuSoundWorld.PlayShaderDirectly(snd.getData(), 2);
                     }
                     continue;
                 }
@@ -3829,11 +3831,11 @@ public class Session_local {
                 // triggered from mainmenu or mpmain
                 if (0 == idStr.Icmp(cmd, "sound")) {
                     idStr vcmd = new idStr();
-                    if (args.Argc() - icmd >= 1) {
+                    if ((args.Argc() - icmd) >= 1) {
                         vcmd = new idStr(args.Argv(icmd++));
                     }
-                    if (0 == vcmd.Length() || 0 == vcmd.Icmp("speakers")) {
-                        int old = cvarSystem.GetCVarInteger("s_numberOfSpeakers");
+                    if ((0 == vcmd.Length()) || (0 == vcmd.Icmp("speakers"))) {
+                        final int old = cvarSystem.GetCVarInteger("s_numberOfSpeakers");
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "s_restart\n");
                         if (old != cvarSystem.GetCVarInteger("s_numberOfSpeakers")) {
                             if (_WIN32) {
@@ -3846,7 +3848,7 @@ public class Session_local {
                     }
                     if (0 == vcmd.Icmp("eax")) {
                         if (cvarSystem.GetCVarBool("s_useEAXReverb")) {
-                            int eax = soundSystem.IsEAXAvailable();
+                            final int eax = soundSystem.IsEAXAvailable();
                             switch (eax) {
                                 case 2:
                                     // OpenAL subsystem load failed
@@ -3882,11 +3884,11 @@ public class Session_local {
 
                 if (0 == idStr.Icmp(cmd, "video")) {
                     idStr vcmd = new idStr();
-                    if (args.Argc() - icmd >= 1) {
+                    if ((args.Argc() - icmd) >= 1) {
                         vcmd = new idStr(args.Argv(icmd++));
                     }
 
-                    int oldSpec = com_machineSpec.GetInteger();
+                    final int oldSpec = com_machineSpec.GetInteger();
 
                     if (idStr.Icmp(vcmd.getData(), "low") == 0) {
                         com_machineSpec.SetInteger(0);
@@ -3901,13 +3903,13 @@ public class Session_local {
                     }
 
                     if (oldSpec != com_machineSpec.GetInteger()) {
-                        guiActive.SetStateInt("com_machineSpec", com_machineSpec.GetInteger());
-                        guiActive.StateChanged(com_frameTime);
+                        this.guiActive.SetStateInt("com_machineSpec", com_machineSpec.GetInteger());
+                        this.guiActive.StateChanged(com_frameTime);
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "execMachineSpec\n");
                     }
 
                     if (idStr.Icmp(vcmd.getData(), "restart") == 0) {
-                        guiActive.HandleNamedEvent("cvar write render");
+                        this.guiActive.HandleNamedEvent("cvar write render");
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "vid_restart\n");
                     }
 
@@ -3915,25 +3917,25 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "clearBind")) {
-                    if (args.Argc() - icmd >= 1) {
+                    if ((args.Argc() - icmd) >= 1) {
                         idKeyInput.UnbindBinding(args.Argv(icmd++));
-                        guiMainMenu.SetKeyBindingNames();
+                        this.guiMainMenu.SetKeyBindingNames();
                     }
                     continue;
                 }
 
                 // FIXME: obsolete
                 if (0 == idStr.Icmp(cmd, "chatdone")) {
-                    idStr temp = new idStr(guiActive.State().GetString("chattext"));
+                    final idStr temp = new idStr(this.guiActive.State().GetString("chattext"));
                     temp.Append("\r");
-                    guiActive.SetStateString("chattext", "");
+                    this.guiActive.SetStateString("chattext", "");
                     continue;
                 }
 
                 if (0 == idStr.Icmp(cmd, "exec")) {
 
                     //Backup the language so we can restore it after defaults.
-                    idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
+                    final idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
 
                     cmdSystem.BufferCommandText(CMD_EXEC_NOW, args.Argv(icmd++));
                     if (idStr.Icmp("cvar_restart", args.Argv(icmd - 1)) == 0) {
@@ -3941,14 +3943,14 @@ public class Session_local {
                         cmdSystem.BufferCommandText(CMD_EXEC_NOW, "setMachineSpec\n");
 
                         //Make sure that any r_brightness changes take effect
-                        float bright = cvarSystem.GetCVarFloat("r_brightness");
+                        final float bright = cvarSystem.GetCVarFloat("r_brightness");
                         cvarSystem.SetCVarFloat("r_brightness", 0.0f);
                         cvarSystem.SetCVarFloat("r_brightness", bright);
 
                         //Force user info modified after a reset to defaults
                         cvarSystem.SetModifiedFlags(CVAR_USERINFO);
 
-                        guiActive.SetStateInt("com_machineSpec", com_machineSpec.GetInteger());
+                        this.guiActive.SetStateInt("com_machineSpec", com_machineSpec.GetInteger());
 
                         //Restore the language
                         cvarSystem.SetCVarString("sys_lang", lang.getData());
@@ -3958,13 +3960,13 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "loadBinds")) {
-                    guiMainMenu.SetKeyBindingNames();
+                    this.guiMainMenu.SetKeyBindingNames();
                     continue;
                 }
 
                 if (0 == idStr.Icmp(cmd, "systemCvars")) {
-                    guiActive.HandleNamedEvent("cvar read render");
-                    guiActive.HandleNamedEvent("cvar read sound");
+                    this.guiActive.HandleNamedEvent("cvar read render");
+                    this.guiActive.HandleNamedEvent("cvar read sound");
                     continue;
                 }
 
@@ -3998,7 +4000,7 @@ public class Session_local {
                 // triggered from mainmenu or mpmain
                 if (0 == idStr.Icmp(cmd, "punkbuster")) {
                     idStr vcmd;
-                    if (args.Argc() - icmd >= 1) {
+                    if ((args.Argc() - icmd) >= 1) {
                         vcmd = new idStr(args.Argv(icmd++));
                     }
                     // filtering PB based on enabled/disabled
@@ -4019,7 +4021,7 @@ public class Session_local {
         public void HandleChatMenuCommands(final String menuCommand) {
             // execute the command from the menu
             int i;
-            idCmdArgs args = new idCmdArgs();
+            final idCmdArgs args = new idCmdArgs();
 
             args.TokenizeString(menuCommand, false);
 
@@ -4035,7 +4037,7 @@ public class Session_local {
                     continue;
                 }
                 if (idStr.Icmp(cmd, "netready") == 0) {
-                    boolean b = cvarSystem.GetCVarBool("ui_ready");
+                    final boolean b = cvarSystem.GetCVarBool("ui_ready");
                     cvarSystem.SetCVarBool("ui_ready", !b);
                     continue;
                 }
@@ -4057,7 +4059,7 @@ public class Session_local {
         public void HandleIntroMenuCommands(final String menuCommand) {
             // execute the command from the menu
             int i;
-            idCmdArgs args = new idCmdArgs();
+            final idCmdArgs args = new idCmdArgs();
 
             args.TokenizeString(menuCommand, false);
 
@@ -4065,15 +4067,15 @@ public class Session_local {
                 final String cmd = args.Argv(i++);
 
                 if (0 == idStr.Icmp(cmd, "startGame")) {
-                    menuSoundWorld.ClearAllSoundEmitters();
+                    this.menuSoundWorld.ClearAllSoundEmitters();
                     ExitMenu();
                     continue;
                 }
 
                 if (0 == idStr.Icmp(cmd, "play")) {
-                    if (args.Argc() - i >= 1) {
-                        String snd = args.Argv(i++);
-                        menuSoundWorld.PlayShaderDirectly(snd);
+                    if ((args.Argc() - i) >= 1) {
+                        final String snd = args.Argv(i++);
+                        this.menuSoundWorld.PlayShaderDirectly(snd);
                     }
                     continue;
                 }
@@ -4090,7 +4092,7 @@ public class Session_local {
         public void HandleRestartMenuCommands(final String menuCommand) throws idException {
             // execute the command from the menu
             int icmd;
-            idCmdArgs args = new idCmdArgs();
+            final idCmdArgs args = new idCmdArgs();
 
             args.TokenizeString(menuCommand, false);
 
@@ -4102,9 +4104,9 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "restart")) {
-                    if (!LoadGame(GetAutoSaveName(mapSpawnData.serverInfo.GetString("si_map")))) {
+                    if (!LoadGame(GetAutoSaveName(this.mapSpawnData.serverInfo.GetString("si_map")))) {
                         // If we can't load the autosave then just restart the map
-                        MoveToNewMap(mapSpawnData.serverInfo.GetString("si_map"));
+                        MoveToNewMap(this.mapSpawnData.serverInfo.GetString("si_map"));
                     }
                     continue;
                 }
@@ -4121,9 +4123,9 @@ public class Session_local {
                 }
 
                 if (0 == idStr.Icmp(cmd, "play")) {
-                    if (args.Argc() - icmd >= 1) {
-                        String snd = args.Argv(icmd++);
-                        sw.PlayShaderDirectly(snd);
+                    if ((args.Argc() - icmd) >= 1) {
+                        final String snd = args.Argv(icmd++);
+                        this.sw.PlayShaderDirectly(snd);
                     }
                     continue;
                 }
@@ -4131,39 +4133,39 @@ public class Session_local {
         }
 
         public void HandleMsgCommands(final String menuCommand) {
-            assert (guiActive == guiMsg);
+            assert (this.guiActive == this.guiMsg);
             // "stop" works even on first frame
             if (idStr.Icmp(menuCommand, "stop") == 0) {
                 // force hiding the current dialog
-                guiActive = guiMsgRestore;
-                guiMsgRestore = null;
-                msgRunning = false;
-                msgRetIndex = -1;
+                this.guiActive = this.guiMsgRestore;
+                this.guiMsgRestore = null;
+                this.msgRunning = false;
+                this.msgRetIndex = -1;
             }
-            if (msgIgnoreButtons) {
+            if (this.msgIgnoreButtons) {
                 common.DPrintf("MessageBox HandleMsgCommands 1st frame ignore\n");
                 return;
             }
-            if (idStr.Icmp(menuCommand, "mid") == 0 || idStr.Icmp(menuCommand, "left") == 0) {
-                guiActive = guiMsgRestore;
-                guiMsgRestore = null;
-                msgRunning = false;
-                msgRetIndex = 0;
-                DispatchCommand(guiActive, msgFireBack[0].getData());
+            if ((idStr.Icmp(menuCommand, "mid") == 0) || (idStr.Icmp(menuCommand, "left") == 0)) {
+                this.guiActive = this.guiMsgRestore;
+                this.guiMsgRestore = null;
+                this.msgRunning = false;
+                this.msgRetIndex = 0;
+                DispatchCommand(this.guiActive, this.msgFireBack[0].getData());
             } else if (idStr.Icmp(menuCommand, "right") == 0) {
-                guiActive = guiMsgRestore;
-                guiMsgRestore = null;
-                msgRunning = false;
-                msgRetIndex = 1;
-                DispatchCommand(guiActive, msgFireBack[1].getData());
+                this.guiActive = this.guiMsgRestore;
+                this.guiMsgRestore = null;
+                this.msgRunning = false;
+                this.msgRetIndex = 1;
+                DispatchCommand(this.guiActive, this.msgFireBack[1].getData());
             }
         }
         static final String NOTEDATFILE = "C:/notenumber.dat";
 
         public void HandleNoteCommands(final String menuCommand) throws idException {
-            guiActive = null;
+            this.guiActive = null;
 
-            if (idStr.Icmp(menuCommand, "note") == 0 && mapSpawned) {
+            if ((idStr.Icmp(menuCommand, "note") == 0) && this.mapSpawned) {
 
                 idFile file = null;
                 for (int tries = 0; tries < 10; tries++) {
@@ -4173,78 +4175,81 @@ public class Session_local {
                     }
                     Sys_Sleep(500);
                 }
-                int[] noteNumber = {1000};
+                final int[] noteNumber = {1000};
                 if (file != null) {
                     file.ReadInt(noteNumber);//4);
                     fileSystem.CloseFile(file);
                 }
 
                 int i;
-                idStr str, noteNum, shotName = new idStr(), workName, fileName = new idStr("viewnotes/");
-                idStrList fileList = new idStrList();
+                idStr str, noteNum;
+				final idStr shotName = new idStr();
+				idStr workName;
+				final idStr fileName = new idStr("viewnotes/");
+                final idStrList fileList = new idStrList();
 
                 String severity = null;
-                String p = guiTakeNotes.State().GetString("notefile");
-                if (p == null || p.isEmpty()) {
+                String p = this.guiTakeNotes.State().GetString("notefile");
+                if ((p == null) || p.isEmpty()) {
                     p = cvarSystem.GetCVarString("ui_name");
                 }
 
-                boolean extended = guiTakeNotes.State().GetBool("extended");
+                final boolean extended = this.guiTakeNotes.State().GetBool("extended");
                 if (extended) {
-                    if (guiTakeNotes.State().GetInt("severity") == 1) {
+                    if (this.guiTakeNotes.State().GetInt("severity") == 1) {
                         severity = "WishList_Viewnotes/";
                     } else {
                         severity = "MustFix_Viewnotes/";
                     }
                     fileName.Append(severity);
 
-                    final idDecl mapDecl = declManager.FindType(DECL_ENTITYDEF, mapSpawnData.serverInfo.GetString("si_map"), false);
+                    final idDecl mapDecl = declManager.FindType(DECL_ENTITYDEF, this.mapSpawnData.serverInfo.GetString("si_map"), false);
                     final idDeclEntityDef mapInfo = (idDeclEntityDef) mapDecl;
 
                     if (mapInfo != null) {
                         fileName.Append(mapInfo.dict.GetString("devname"));
                     } else {
-                        fileName.Append(mapSpawnData.serverInfo.GetString("si_map"));
+                        fileName.Append(this.mapSpawnData.serverInfo.GetString("si_map"));
                         fileName.StripFileExtension();
                     }
 
-                    int count = guiTakeNotes.State().GetInt("person_numsel");
+                    final int count = this.guiTakeNotes.State().GetInt("person_numsel");
                     if (count == 0) {
                         fileList.Append(new idStr(fileName.getData() + "/Nobody"));
                     } else {
                         for (i = 0; i < count; i++) {
-                            int person = guiTakeNotes.State().GetInt(va("person_sel_%d", i));
+                            final int person = this.guiTakeNotes.State().GetInt(va("person_sel_%d", i));
                             workName = new idStr(fileName + "/");
-                            workName.oPluSet(guiTakeNotes.State().GetString(va("person_item_%d", person), "Nobody"));
+                            workName.oPluSet(this.guiTakeNotes.State().GetString(va("person_item_%d", person), "Nobody"));
                             fileList.Append(workName);
                         }
                     }
                 } else {
                     fileName.Append("maps/");
-                    fileName.Append(mapSpawnData.serverInfo.GetString("si_map"));
+                    fileName.Append(this.mapSpawnData.serverInfo.GetString("si_map"));
                     fileName.StripFileExtension();
                     fileList.Append(fileName);
                 }
 
-                boolean bCon = cvarSystem.GetCVarBool("con_noPrint");
+                final boolean bCon = cvarSystem.GetCVarBool("con_noPrint");
                 cvarSystem.SetCVarBool("con_noPrint", true);
                 for (i = 0; i < fileList.Num(); i++) {
                     workName = fileList.oGet(i);
                     workName.Append("/");
                     workName.Append(p);
-                    int[] workNote = {noteNumber[0]};
+                    final int[] workNote = {noteNumber[0]};
                     R_ScreenshotFilename(workNote, workName.getData(), shotName);
 
                     noteNum = shotName;
                     noteNum.StripPath();
                     noteNum.StripFileExtension();
 
-                    if (severity != null && !severity.isEmpty()) {
+                    if ((severity != null) && !severity.isEmpty()) {
                         workName = new idStr(severity);
                         workName.Append("viewNotes");
                     }
 
-                    str = new idStr(String.format("recordViewNotes \"%s\" \"%s\" \"%s\"\n", workName.getData(), noteNum.getData(), guiTakeNotes.State().GetString("note")));
+                    str = new idStr(String.format("recordViewNotes \"%s\" \"%s\" \"%s\"\n", workName.getData(), noteNum.getData(), this.guiTakeNotes.State().GetString("note")));
 
                     cmdSystem.BufferCommandText(CMD_EXEC_NOW, str.getData());
                     cmdSystem.ExecuteCommandBuffer();
@@ -4276,7 +4281,7 @@ public class Session_local {
             idFileList files;
 
             // NOTE: no fs_game_base for savegames
-            idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
+            final idStr game = new idStr(cvarSystem.GetCVarString("fs_game"));
             if (game.Length() != 0) {
                 files = fileSystem.ListFiles("savegames", ".save", false, false, game.getData());
             } else {
@@ -4287,13 +4292,13 @@ public class Session_local {
             fileSystem.FreeFileList(files);
 
             for (i = 0; i < fileList.Num(); i++) {
-                long[] timeStamp = {0};
+                final long[] timeStamp = {0};
 
                 fileSystem.ReadFile("savegames/" + fileList.oGet(i), null, timeStamp);
                 fileList.oGet(i).StripLeading('/');
                 fileList.oGet(i).StripFileExtension();
 
-                fileTIME_T ft = new fileTIME_T();
+                final fileTIME_T ft = new fileTIME_T();
                 ft.index = i;
                 ft.timeStamp = timeStamp[0];
                 fileTimes.Append(ft);
@@ -4312,13 +4317,13 @@ public class Session_local {
         private static final int NUM_PEOPLE = PEOPLE.length;
 
         public void TakeNotes(final String p, boolean extended /*= false*/) {
-            if (!mapSpawned) {
+            if (!this.mapSpawned) {
                 common.Printf("No map loaded!\n");
                 return;
             }
 
             if (extended) {
-                guiTakeNotes = uiManager.FindGui("guis/takeNotes2.gui", true, false, true);
+                this.guiTakeNotes = uiManager.FindGui("guis/takeNotes2.gui", true, false, true);
 
 //                final String[] people;
 //                if (false) {
@@ -4337,22 +4342,22 @@ public class Session_local {
 //                
 //                final int numPeople = PEOPLE.length;
 //
-                idListGUI guiList_people = uiManager.AllocListGUI();
-                guiList_people.Config(guiTakeNotes, "person");
+                final idListGUI guiList_people = uiManager.AllocListGUI();
+                guiList_people.Config(this.guiTakeNotes, "person");
                 for (int i = 0; i < NUM_PEOPLE; i++) {
                     guiList_people.Push(new idStr(PEOPLE[i]));
                 }
                 uiManager.FreeListGUI(guiList_people);
 
             } else {
-                guiTakeNotes = uiManager.FindGui("guis/takeNotes.gui", true, false, true);
+                this.guiTakeNotes = uiManager.FindGui("guis/takeNotes.gui", true, false, true);
             }
 
-            SetGUI(guiTakeNotes, null);
-            guiActive.SetStateString("note", "");
-            guiActive.SetStateString("notefile", p);
-            guiActive.SetStateBool("extended", extended);
-            guiActive.Activate(true, com_frameTime);
+            SetGUI(this.guiTakeNotes, null);
+            this.guiActive.SetStateString("note", "");
+            this.guiActive.SetStateString("notefile", p);
+            this.guiActive.SetStateBool("extended", extended);
+            this.guiActive.Activate(true, com_frameTime);
         }
 
         public void TakeNotes(final String p) {
@@ -4361,88 +4366,88 @@ public class Session_local {
 
         public void UpdateMPLevelShot() {
 //            char[] screenshot = new char[MAX_STRING_CHARS];
-            String[] screenshot = {null};
+            final String[] screenshot = {null};
             fileSystem.FindMapScreenshot(cvarSystem.GetCVarString("si_map"), screenshot, MAX_STRING_CHARS);
-            guiMainMenu.SetStateString("current_levelshot", screenshot[0]);
+            this.guiMainMenu.SetStateString("current_levelshot", screenshot[0]);
         }
 
         public void SetSaveGameGuiVars() {
             int i;
             idStr name;
-            idStrList fileList = new idStrList();
-            idList<fileTIME_T> fileTimes = new idList<fileTIME_T>();
+            final idStrList fileList = new idStrList();
+            final idList<fileTIME_T> fileTimes = new idList<fileTIME_T>();
 
-            loadGameList.Clear();
+            this.loadGameList.Clear();
             fileList.Clear();
             fileTimes.Clear();
 
             GetSaveGameList(fileList, fileTimes);
 
-            loadGameList.SetNum(fileList.Num());
+            this.loadGameList.SetNum(fileList.Num());
             for (i = 0; i < fileList.Num(); i++) {
-                loadGameList.oSet(i, fileList.oGet(fileTimes.oGet(i).index));
+                this.loadGameList.oSet(i, fileList.oGet(fileTimes.oGet(i).index));
 
-                idLexer src = new idLexer(LEXFL_NOERRORS | LEXFL_NOSTRINGCONCAT);
-                if (src.LoadFile(va("savegames/%s.txt", loadGameList.oGet(i)))) {
-                    idToken tok = new idToken();
+                final idLexer src = new idLexer(LEXFL_NOERRORS | LEXFL_NOSTRINGCONCAT);
+                if (src.LoadFile(va("savegames/%s.txt", this.loadGameList.oGet(i)))) {
+                    final idToken tok = new idToken();
                     src.ReadToken(tok);
                     name = tok;
                 } else {
-                    name = loadGameList.oGet(i);
+                    name = this.loadGameList.oGet(i);
                 }
 
                 name.Append("\t");
 
-                String date = Sys_TimeStampToStr(fileTimes.oGet(i).timeStamp);
+                final String date = Sys_TimeStampToStr(fileTimes.oGet(i).timeStamp);
                 name.Append(date);
 
-                guiActive.SetStateString(va("loadgame_item_%d", i), name.getData());
+                this.guiActive.SetStateString(va("loadgame_item_%d", i), name.getData());
             }
-            guiActive.DeleteStateVar(va("loadgame_item_%d", fileList.Num()));
+            this.guiActive.DeleteStateVar(va("loadgame_item_%d", fileList.Num()));
 
-            guiActive.SetStateString("loadgame_sel_0", "-1");
-            guiActive.SetStateString("loadgame_shot", "guis/assets/blankLevelShot");
+            this.guiActive.SetStateString("loadgame_sel_0", "-1");
+            this.guiActive.SetStateString("loadgame_shot", "guis/assets/blankLevelShot");
 
         }
 
         public void SetMainMenuGuiVars() {
 
-            guiMainMenu.SetStateString("serverlist_sel_0", "-1");
-            guiMainMenu.SetStateString("serverlist_selid_0", "-1");
+            this.guiMainMenu.SetStateString("serverlist_sel_0", "-1");
+            this.guiMainMenu.SetStateString("serverlist_selid_0", "-1");
 
-            guiMainMenu.SetStateInt("com_machineSpec", com_machineSpec.GetInteger());
+            this.guiMainMenu.SetStateInt("com_machineSpec", com_machineSpec.GetInteger());
 
             // "inetGame" will hold a hand-typed inet address, which is not archived to a cvar
-            guiMainMenu.SetStateString("inetGame", "");
+            this.guiMainMenu.SetStateString("inetGame", "");
 
             // key bind names
-            guiMainMenu.SetKeyBindingNames();
+            this.guiMainMenu.SetKeyBindingNames();
 
             // flag for in-game menu
-            if (mapSpawned) {
-                guiMainMenu.SetStateString("inGame", IsMultiplayer() ? "2" : "1");
+            if (this.mapSpawned) {
+                this.guiMainMenu.SetStateString("inGame", IsMultiplayer() ? "2" : "1");
             } else {
-                guiMainMenu.SetStateString("inGame", "0");
+                this.guiMainMenu.SetStateString("inGame", "0");
             }
 
             SetCDKeyGuiVars();
             if (ID_DEMO_BUILD) {
-                guiMainMenu.SetStateString("nightmare", "0");
+                this.guiMainMenu.SetStateString("nightmare", "0");
             } else {
-                guiMainMenu.SetStateString("nightmare", cvarSystem.GetCVarBool("g_nightmare") ? "1" : "0");
+                this.guiMainMenu.SetStateString("nightmare", cvarSystem.GetCVarBool("g_nightmare") ? "1" : "0");
             }
-            guiMainMenu.SetStateString("browser_levelshot", "guis/assets/splash/pdtempa");
+            this.guiMainMenu.SetStateString("browser_levelshot", "guis/assets/splash/pdtempa");
 
             SetMainMenuSkin();
             // Mods Menu
             SetModsMenuGuiVars();
 
-            guiMsg.SetStateString("visible_hasxp", fileSystem.HasD3XP() ? "1" : "0");
+            this.guiMsg.SetStateString("visible_hasxp", fileSystem.HasD3XP() ? "1" : "0");
 
             if (__linux__) {
-                guiMainMenu.SetStateString("driver_prompt", "1");
+                this.guiMainMenu.SetStateString("driver_prompt", "1");
             } else {
-                guiMainMenu.SetStateString("driver_prompt", "0");
+                this.guiMainMenu.SetStateString("driver_prompt", "0");
             }
 
             SetPbMenuGuiVars();
@@ -4450,17 +4455,17 @@ public class Session_local {
 
         public void SetModsMenuGuiVars() {
             int i;
-            idModList list = fileSystem.ListMods();
+            final idModList list = fileSystem.ListMods();
 
-            modsList.SetNum(list.GetNumMods());
+            this.modsList.SetNum(list.GetNumMods());
 
             // Build the gui list
             for (i = 0; i < list.GetNumMods(); i++) {
-                guiActive.SetStateString(va("modsList_item_%d", i), list.GetDescription(i));
-                modsList.oSetType(i, list.GetMod(i));
+                this.guiActive.SetStateString(va("modsList_item_%d", i), list.GetDescription(i));
+                this.modsList.oSetType(i, list.GetMod(i));
             }
-            guiActive.DeleteStateVar(va("modsList_item_%d", list.GetNumMods()));
-            guiActive.SetStateString("modsList_sel_0", "-1");
+            this.guiActive.DeleteStateVar(va("modsList_item_%d", list.GetNumMods()));
+            this.guiActive.SetStateString("modsList_sel_0", "-1");
 
             fileSystem.FreeModList(list);
         }
@@ -4468,12 +4473,12 @@ public class Session_local {
         public void SetMainMenuSkin() {
             // skins
             idStr str = new idStr(cvarSystem.GetCVarString("mod_validSkins"));
-            idStr uiSkin = new idStr(cvarSystem.GetCVarString("ui_skin"));
+            final idStr uiSkin = new idStr(cvarSystem.GetCVarString("ui_skin"));
             idStr skin;
             int skinId = 1;
             int count = 1;
             while (str.Length() != 0) {
-                int n = str.Find(";");
+                final int n = str.Find(";");
                 if (n >= 0) {
                     skin = str.Left(n);
                     str = str.Right(str.Length() - n - 1);
@@ -4488,9 +4493,9 @@ public class Session_local {
             }
 
             for (int i = 0; i < count; i++) {
-                guiMainMenu.SetStateInt(va("skin%d", i + 1), 0);
+                this.guiMainMenu.SetStateInt(va("skin%d", i + 1), 0);
             }
-            guiMainMenu.SetStateInt(va("skin%d", skinId), 1);
+            this.guiMainMenu.SetStateInt(va("skin%d", skinId), 1);
         }
 
         public void SetPbMenuGuiVars() {
@@ -4501,10 +4506,10 @@ public class Session_local {
                 common.DPrintf("message box sanity check: !common.IsInitialized()\n");
                 return false;
             }
-            if (NOT(guiMsg)) {
+            if (NOT(this.guiMsg)) {
                 return false;
             }
-            if (guiMsgRestore != null) {
+            if (this.guiMsgRestore != null) {
                 common.DPrintf("message box sanity check: recursed\n");
                 return false;
             }
@@ -4523,20 +4528,20 @@ public class Session_local {
          */
         private void EmitGameAuth() {
             // make sure the auth reply is empty, we use it to indicate an auth reply
-            authMsg.Empty();
-            if (idAsyncNetwork.client.SendAuthCheck(cdkey_state == CDKEY_CHECKING ? ctos(cdkey) : null, xpkey_state == CDKEY_CHECKING ? ctos(xpkey) : null)) {
-                authEmitTimeout = Sys_Milliseconds() + CDKEY_AUTH_TIMEOUT;
+            this.authMsg.Empty();
+            if (idAsyncNetwork.client.SendAuthCheck(this.cdkey_state == CDKEY_CHECKING ? ctos(this.cdkey) : null, this.xpkey_state == CDKEY_CHECKING ? ctos(this.xpkey) : null)) {
+                this.authEmitTimeout = Sys_Milliseconds() + CDKEY_AUTH_TIMEOUT;
                 common.DPrintf("authing with the master..\n");
             } else {
                 // net is not available
                 common.DPrintf("sendAuthCheck failed\n");
-                if (cdkey_state == CDKEY_CHECKING) {
-                    cdkey_state = CDKEY_OK;
+                if (this.cdkey_state == CDKEY_CHECKING) {
+                    this.cdkey_state = CDKEY_OK;
                 }
-                if (xpkey_state == CDKEY_CHECKING) {
-                    xpkey_state = CDKEY_OK;
+                if (this.xpkey_state == CDKEY_CHECKING) {
+                    this.xpkey_state = CDKEY_OK;
                 }
             }
         }
-    };
+    }
 }

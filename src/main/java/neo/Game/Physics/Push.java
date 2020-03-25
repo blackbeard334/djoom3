@@ -66,10 +66,11 @@ public class Push {
         public float ClipTranslationalPush(trace_s[] results, idEntity pusher, final int flags, final idVec3 newOrigin, final idVec3 translation) {
             int i, listedEntities, res;
             idEntity check;
-            idEntity[] entityList = new idEntity[MAX_GENTITIES];
-            idBounds bounds, pushBounds = new idBounds();
+            final idEntity[] entityList = new idEntity[MAX_GENTITIES];
+            idBounds bounds;
+			final idBounds pushBounds = new idBounds();
             idVec3 clipMove, clipOrigin, oldOrigin, dir, impulse = new idVec3();
-            trace_s[] pushResults = {new trace_s()};
+            final trace_s[] pushResults = {new trace_s()};
             boolean wasEnabled;
             float totalMass;
             idClipModel clipModel;
@@ -153,7 +154,7 @@ public class Push {
 
                 check = entityList[ i];
 
-                idPhysics physics = check.GetPhysics();
+                final idPhysics physics = check.GetPhysics();
 
                 // disable the entity for collision detection
                 physics.DisableClip();
@@ -245,11 +246,12 @@ public class Push {
         public float ClipRotationalPush(trace_s[] results, idEntity pusher, final int flags, final idMat3 newAxis, final idRotation rotation) {
             int i, listedEntities, res;
             idEntity check;
-            idEntity[] entityList = new idEntity[MAX_GENTITIES];
-            idBounds bounds, pushBounds = new idBounds();
+            final idEntity[] entityList = new idEntity[MAX_GENTITIES];
+            idBounds bounds;
+			final idBounds pushBounds = new idBounds();
             idRotation clipRotation;
             idMat3 clipAxis, oldAxis;
-            trace_s[] pushResults = {new trace_s()};
+            final trace_s[] pushResults = {new trace_s()};
             boolean wasEnabled;
             float totalMass;
             idClipModel clipModel;
@@ -327,7 +329,7 @@ public class Push {
 
                 check = entityList[ i];
 
-                idPhysics physics = check.GetPhysics();
+                final idPhysics physics = check.GetPhysics();
 
                 // disable the entity for collision detection
                 physics.DisableClip();
@@ -466,35 +468,35 @@ public class Push {
 
         // initialize saving the positions of entities being pushed
         public void InitSavingPushedEntityPositions() {
-            numPushed = 0;
+            this.numPushed = 0;
         }
 
         // move all pushed entities back to their previous position
         public void RestorePushedEntityPositions() {
             int i;
 
-            for (i = 0; i < numPushed; i++) {
+            for (i = 0; i < this.numPushed; i++) {
 
                 // if the entity is an actor
-                if (pushed[i].ent.IsType(idActor.class)) {
+                if (this.pushed[i].ent.IsType(idActor.class)) {
                     // set back the delta view angles
-                    ((idActor) pushed[i].ent).SetDeltaViewAngles(pushed[i].deltaViewAngles);
+                    ((idActor) this.pushed[i].ent).SetDeltaViewAngles(this.pushed[i].deltaViewAngles);
                 }
 
                 // restore the physics state
-                pushed[i].ent.GetPhysics().RestoreState();
+                this.pushed[i].ent.GetPhysics().RestoreState();
             }
         }
 
         // returns the number of pushed entities
         public int GetNumPushedEntities() {
-            return numPushed;
+            return this.numPushed;
         }
 
         // get the ith pushed entity
         public idEntity GetPushedEntity(int i) {
-            assert (i >= 0 && i < numPushed);
-            return pushed[i].ent;
+            assert ((i >= 0) && (i < this.numPushed));
+            return this.pushed[i].ent;
         }
 
 //
@@ -503,7 +505,7 @@ public class Push {
 
             idEntity ent;					// pushed entity
             idAngles deltaViewAngles;		// actor delta view angles
-        };
+        }
         private final pushed_s[] pushed = new pushed_s[MAX_GENTITIES];	// pushed entities
         private int numPushed;				// number of pushed entities
 //
@@ -514,8 +516,8 @@ public class Push {
             float fraction;
             boolean groundContact;
             boolean test;
-        };
-        private pushedGroup_s[] pushedGroup = new pushedGroup_s[MAX_GENTITIES];
+        }
+        private final pushedGroup_s[] pushedGroup = new pushedGroup_s[MAX_GENTITIES];
         int pushedGroupSize;
 //
 //
@@ -524,36 +526,36 @@ public class Push {
             int i;
 
             // if already saved the physics state for this entity
-            for (i = 0; i < numPushed; i++) {
-                if (pushed[i].ent == ent) {
+            for (i = 0; i < this.numPushed; i++) {
+                if (this.pushed[i].ent == ent) {
                     return;
                 }
             }
 
             // don't overflow
-            if (numPushed >= MAX_GENTITIES) {
+            if (this.numPushed >= MAX_GENTITIES) {
                 gameLocal.Error("more than MAX_GENTITIES pushed entities");
                 return;
             }
 
-            pushed[numPushed] = new pushed_s();
-            pushed[numPushed].ent = ent;
+            this.pushed[this.numPushed] = new pushed_s();
+            this.pushed[this.numPushed].ent = ent;
 
             // if the entity is an actor
             if (ent.IsType(idActor.class)) {
                 // save the delta view angles
-                pushed[numPushed].deltaViewAngles = ((idActor) ent).GetDeltaViewAngles();
+                this.pushed[this.numPushed].deltaViewAngles = ((idActor) ent).GetDeltaViewAngles();
             }
 
             // save the physics state
             ent.GetPhysics().SaveState();
 
-            numPushed++;
+            this.numPushed++;
         }
 
         private boolean RotateEntityToAxial(idEntity ent, idVec3 rotationPoint) {
             int i;
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
             idRotation rotation;
             idMat3 axis;
             idPhysics physics;
@@ -632,7 +634,7 @@ public class Push {
         }
 
         private int TryTranslatePushEntity(trace_s[] results, idEntity check, idClipModel clipModel, final int flags, final idVec3 newOrigin, final idVec3 move) {
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
             idVec3 checkMove;
 //            idVec3 oldOrigin;
             idPhysics physics;
@@ -748,7 +750,7 @@ public class Push {
         }
 
         private int TryRotatePushEntity(trace_s[] results, idEntity check, idClipModel clipModel, final int flags, final idMat3 newAxis, final idRotation rotation) {
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
             idVec3 rotationPoint;
             idRotation newRotation = new idRotation();
             float checkAngle;
@@ -878,8 +880,8 @@ public class Push {
                 // if the entity is standing ontop of the pusher
                 if (physics.IsGroundClipModel(clipModel.GetEntity().entityNumber, clipModel.GetId())) {
                     // rotate actor view
-                    idActor actor = (idActor) check;
-                    idAngles delta = actor.GetDeltaViewAngles();
+                    final idActor actor = (idActor) check;
+                    final idAngles delta = actor.GetDeltaViewAngles();
                     delta.yaw += newRotation.ToMat3().oGet(0).ToYaw();
                     actor.SetDeltaViewAngles(delta);
                 }
@@ -930,5 +932,5 @@ public class Push {
             return num;
         }
 // #endif
-    };
+    }
 }

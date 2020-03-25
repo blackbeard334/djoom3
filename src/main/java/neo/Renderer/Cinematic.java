@@ -50,7 +50,7 @@ public class Cinematic {
         FMV_ID_IDLE,
         FMV_LOOPED,
         FMV_ID_WAIT
-    };
+    }
 
     // a cinematic stream generates an image buffer, which the caller will upload to a texture
     public static class cinData_t {
@@ -58,7 +58,7 @@ public class Cinematic {
         public int imageWidth, imageHeight;    // will be a power of 2
         public ByteBuffer  image;                // RGBA format, alpha will be 255
         public cinStatus_t status;
-    };
+    }
     //
     static final int        CIN_system         = 1;
     static final int        CIN_loop           = 2;
@@ -102,12 +102,12 @@ public class Cinematic {
             int i;
 
             // generate YUV tables
-            t_ub = (1.77200f / 2.0f) * (float) (1 << 6) + 0.5f;
-            t_vr = (1.40200f / 2.0f) * (float) (1 << 6) + 0.5f;
-            t_ug = (0.34414f / 2.0f) * (float) (1 << 6) + 0.5f;
-            t_vg = (0.71414f / 2.0f) * (float) (1 << 6) + 0.5f;
+            t_ub = ((1.77200f / 2.0f) * (1 << 6)) + 0.5f;
+            t_vr = ((1.40200f / 2.0f) * (1 << 6)) + 0.5f;
+            t_ug = ((0.34414f / 2.0f) * (1 << 6)) + 0.5f;
+            t_vg = ((0.71414f / 2.0f) * (1 << 6)) + 0.5f;
             for (i = 0; i < 256; i++) {
-                float x = (float) (2 * i - 255);
+                final float x = (2 * i) - 255;
 
                 ROQ_UB_tab[i] = (long) ((t_ub * x) + (1 << 5));
                 ROQ_VR_tab[i] = (long) ((t_vr * x) + (1 << 5));
@@ -162,7 +162,7 @@ public class Cinematic {
 
         // the pointers in cinData_t will remain valid until the next UpdateForTime() call
         public cinData_t ImageForTime(int milliseconds) {
-            cinData_t c = new cinData_t();
+            final cinData_t c = new cinData_t();
 //	memset( &c, 0, sizeof( c ) );
             return c;
         }
@@ -179,7 +179,7 @@ public class Cinematic {
         @Deprecated//remove if not used.
         protected abstract idCinematic clone() throws CloneNotSupportedException;
 
-    };
+    }
 
     /*
      ===============================================
@@ -195,7 +195,7 @@ public class Cinematic {
         //
 
         public idSndWindow() {
-            showWaveform = false;
+            this.showWaveform = false;
         }
 //						~idSndWindow() {}
 
@@ -205,20 +205,20 @@ public class Cinematic {
 
         @Override
         public boolean InitFromFile(final String qpath, boolean looping) {
-            idStr fname = new idStr(qpath);
+            final idStr fname = new idStr(qpath);
 
             fname.ToLower();
             if (0 == fname.Icmp("waveform")) {
-                showWaveform = true;
+                this.showWaveform = true;
             } else {
-                showWaveform = false;
+                this.showWaveform = false;
             }
             return true;
         }
 
         @Override
         public cinData_t ImageForTime(int milliseconds) {
-            return soundSystem.ImageForTime(milliseconds, showWaveform);
+            return soundSystem.ImageForTime(milliseconds, this.showWaveform);
         }
 
         @Override
@@ -231,7 +231,7 @@ public class Cinematic {
 
             return new idSndWindow(this);
         }
-    };
+    }
 
     static class idCinematicLocal extends idCinematic {
 
@@ -277,13 +277,13 @@ public class Cinematic {
         //
 
         public idCinematicLocal() {
-            image = null;
-            status = FMV_EOF;
-            buf = null;
-            iFile = null;
+            this.image = null;
+            this.status = FMV_EOF;
+            this.buf = null;
+            this.iFile = null;
 
-            qStatus[0] = new ByteBuffer[32768];// Mem_Alloc(32768);
-            qStatus[1] = new ByteBuffer[32768];// Mem_Alloc(32768);
+            this.qStatus[0] = new ByteBuffer[32768];// Mem_Alloc(32768);
+            this.qStatus[1] = new ByteBuffer[32768];// Mem_Alloc(32768);
         }
 
         private idCinematicLocal(idCinematicLocal local) {
@@ -306,7 +306,7 @@ public class Cinematic {
             this.roq_id = local.roq_id;
             this.screenDelta = local.screenDelta;
             this.buf = local.buf;//pointer
-            samplesPerPixel = local.samplesPerPixel;
+            this.samplesPerPixel = local.samplesPerPixel;
             this.xSize = local.xSize;
             this.ySize = local.ySize;
             this.maxSize = local.maxSize;
@@ -340,47 +340,47 @@ public class Cinematic {
 
             Close();
 
-            inMemory = false;
-            animationLength = 100000;
+            this.inMemory = false;
+            this.animationLength = 100000;
 
             if (!qpath.contains("/") && !qpath.contains("\\")) {
-                fileName = new idStr(String.format("video/%s", qpath));
+                this.fileName = new idStr(String.format("video/%s", qpath));
             } else {
-                fileName = new idStr(String.format("%s", qpath));
+                this.fileName = new idStr(String.format("%s", qpath));
             }
 
-            iFile = fileSystem.OpenFileRead(fileName.getData());
+            this.iFile = fileSystem.OpenFileRead(this.fileName.getData());
 
-            if (null == iFile) {
+            if (null == this.iFile) {
                 return false;
             }
 
-            ROQSize = iFile.Length();
+            this.ROQSize = this.iFile.Length();
 
-            looping = amilooping;
+            this.looping = amilooping;
 
-            CIN_HEIGHT = DEFAULT_CIN_HEIGHT;
-            CIN_WIDTH = DEFAULT_CIN_WIDTH;
-            samplesPerPixel = 4;
-            startTime = 0;    //Sys_Milliseconds();
-            buf = null;
+            this.CIN_HEIGHT = DEFAULT_CIN_HEIGHT;
+            this.CIN_WIDTH = DEFAULT_CIN_WIDTH;
+            this.samplesPerPixel = 4;
+            this.startTime = 0;    //Sys_Milliseconds();
+            this.buf = null;
 
             tempFile = ByteBuffer.allocate(file.length);
-            iFile.Read(tempFile, 16);
+            this.iFile.Read(tempFile, 16);
             file = expandBuffer(tempFile);
 
             RoQID = file[0] + (file[1] << 8);
 
-            frameRate = file[6];
-            if (frameRate == 32.0f) {
-                frameRate = 1000.0f / 32.0f;
+            this.frameRate = file[6];
+            if (this.frameRate == 32.0f) {
+                this.frameRate = 1000.0f / 32.0f;
             }
 
             if (RoQID == ROQ_FILE) {
                 RoQ_init();
-                status = FMV_PLAY;
+                this.status = FMV_PLAY;
                 ImageForTime(0);
-                status = (looping) ? FMV_PLAY : FMV_IDLE;
+                this.status = (this.looping) ? FMV_PLAY : FMV_IDLE;
                 return true;
             }
 
@@ -404,68 +404,68 @@ public class Cinematic {
                 return cinData;
             }
 
-            if (status == FMV_EOF || status == FMV_IDLE) {
+            if ((this.status == FMV_EOF) || (this.status == FMV_IDLE)) {
                 return cinData;
             }
 
-            if (null == buf || startTime == -1) {
-                if (startTime == -1) {
+            if ((null == this.buf) || (this.startTime == -1)) {
+                if (this.startTime == -1) {
                     RoQReset();
                 }
-                startTime = thisTime;
+                this.startTime = thisTime;
             }
 
-            tfps = (long) (((thisTime - startTime) * frameRate) / 1000);
+            this.tfps = (long) (((thisTime - this.startTime) * this.frameRate) / 1000);
 
-            if (tfps < 0) {
-                tfps = 0;
+            if (this.tfps < 0) {
+                this.tfps = 0;
             }
 
-            if (tfps < numQuads) {
+            if (this.tfps < this.numQuads) {
                 RoQReset();
-                buf = null;
-                status = FMV_PLAY;
+                this.buf = null;
+                this.status = FMV_PLAY;
             }
 
-            if (null == buf) {
-                while (null == buf) {
+            if (null == this.buf) {
+                while (null == this.buf) {
                     RoQInterrupt();
                 }
             } else {
-                while ((tfps != numQuads && status == FMV_PLAY)) {
+                while (((this.tfps != this.numQuads) && (this.status == FMV_PLAY))) {
                     RoQInterrupt();
                 }
             }
 
-            if (status == FMV_LOOPED) {
-                status = FMV_PLAY;
-                while (null == buf && status == FMV_PLAY) {
+            if (this.status == FMV_LOOPED) {
+                this.status = FMV_PLAY;
+                while ((null == this.buf) && (this.status == FMV_PLAY)) {
                     RoQInterrupt();
                 }
-                startTime = thisTime;
+                this.startTime = thisTime;
             }
 
-            if (status == FMV_EOF) {
-                if (looping) {
+            if (this.status == FMV_EOF) {
+                if (this.looping) {
                     RoQReset();
-                    buf = null;
-                    if (status == FMV_LOOPED) {
-                        status = FMV_PLAY;
+                    this.buf = null;
+                    if (this.status == FMV_LOOPED) {
+                        this.status = FMV_PLAY;
                     }
-                    while (null == buf && status == FMV_PLAY) {
+                    while ((null == this.buf) && (this.status == FMV_PLAY)) {
                         RoQInterrupt();
                     }
-                    startTime = thisTime;
+                    this.startTime = thisTime;
                 } else {
-                    status = FMV_IDLE;
+                    this.status = FMV_IDLE;
                     RoQShutdown();
                 }
             }
 
-            cinData.imageWidth = CIN_WIDTH;
-            cinData.imageHeight = CIN_HEIGHT;
-            cinData.status = status;
-            cinData.image = wrapToNativeBuffer(buf.slice().array());
+            cinData.imageWidth = this.CIN_WIDTH;
+            cinData.imageHeight = this.CIN_HEIGHT;
+            cinData.status = this.status;
+            cinData.image = wrapToNativeBuffer(this.buf.slice().array());
 //            if (tr_render.variable >= 189) {
 //            flushBufferToDisk(buf);
 //            }
@@ -475,42 +475,42 @@ public class Cinematic {
 
         @Override
         public int AnimationLength() {
-            return animationLength;
+            return this.animationLength;
         }
 
         @Override
         public void Close() {
-            if (image != null) {
+            if (this.image != null) {
 //                Mem_Free(image);
-                image = null;
-                buf = null;
-                status = FMV_EOF;
+                this.image = null;
+                this.buf = null;
+                this.status = FMV_EOF;
             }
             RoQShutdown();
         }
 
         @Override
         public void ResetTime(int time) {
-            startTime = (int) ((backEnd.viewDef != null) ? 1000 * backEnd.viewDef.floatTime : -1);
-            status = FMV_PLAY;
+            this.startTime = (int) ((backEnd.viewDef != null) ? 1000 * backEnd.viewDef.floatTime : -1);
+            this.status = FMV_PLAY;
         }
 
         private void RoQ_init() {
 
-            RoQPlayed = 24;
+            this.RoQPlayed = 24;
 
             /*	get frame rate */
-            roqFPS = file[6] + file[7] * 256;
+            this.roqFPS = file[6] + (file[7] * 256);
 
-            if (0 == roqFPS) {
-                roqFPS = 30;
+            if (0 == this.roqFPS) {
+                this.roqFPS = 30;
             }
 
-            numQuads = -1;
+            this.numQuads = -1;
 
-            roq_id = file[8] + file[9] * 256;
-            RoQFrameSize = file[10] + file[11] * 256 + file[12] * 65536;
-            roq_flags = file[14] + file[15] * 256;
+            this.roq_id = file[8] + (file[9] * 256);
+            this.RoQFrameSize = file[10] + (file[11] * 256) + (file[12] * 65536);
+            this.roq_flags = file[14] + (file[15] * 256);
         }
 
         private void blitVQQuad32fs(ByteBuffer[] status, int[] data) {
@@ -543,7 +543,7 @@ public class Cinematic {
 
                 switch (code) {
                     case 0x8000:			// vq code
-                        blit8_32(vqPoint(vq8, data[offset + d_index] * 128), status[index], samplesPerLine);
+                        blit8_32(vqPoint(vq8, data[offset + d_index] * 128), status[index], this.samplesPerLine);
                         d_index++;
                         index += 5;
                         break;
@@ -552,7 +552,7 @@ public class Cinematic {
                         for (i = 0; i < 4; i++) {
                             if (0 == newd) {
                                 newd = 7;
-                                celdata = data[offset + d_index + 0] + data[offset + d_index + 1] * 256;
+                                celdata = data[offset + d_index + 0] + (data[offset + d_index + 1] * 256);
                                 d_index += 2;
                             } else {
                                 newd--;
@@ -563,21 +563,21 @@ public class Cinematic {
 
                             switch (code) {		// code in top two bits of code
                                 case 0x8000:		// 4x4 vq code
-                                    blit4_32(vqPoint(vq4, data[offset + d_index] * 32), status[index], samplesPerLine);
+                                    blit4_32(vqPoint(vq4, data[offset + d_index] * 32), status[index], this.samplesPerLine);
                                     d_index++;
                                     break;
                                 case 0xc000:		// 2x2 vq code
-                                    blit2_32(vqPoint(vq2, data[offset + d_index] * 8), status[index], samplesPerLine);
+                                    blit2_32(vqPoint(vq2, data[offset + d_index] * 8), status[index], this.samplesPerLine);
                                     d_index++;
-                                    blit2_32(vqPoint(vq2, data[offset + d_index] * 8), point(status[index], 8), samplesPerLine);
+                                    blit2_32(vqPoint(vq2, data[offset + d_index] * 8), point(status[index], 8), this.samplesPerLine);
                                     d_index++;
-                                    blit2_32(vqPoint(vq2, data[offset + d_index] * 8), point(status[index], samplesPerLine * 2), samplesPerLine);
+                                    blit2_32(vqPoint(vq2, data[offset + d_index] * 8), point(status[index], this.samplesPerLine * 2), this.samplesPerLine);
                                     d_index++;
-                                    blit2_32(vqPoint(vq2, data[offset + d_index] * 8), point(status[index], samplesPerLine * 2 + 8), samplesPerLine);
+                                    blit2_32(vqPoint(vq2, data[offset + d_index] * 8), point(status[index], (this.samplesPerLine * 2) + 8), this.samplesPerLine);
                                     d_index++;
                                     break;
                                 case 0x4000:		// motion compensation
-                                    move4_32(point(status[index], mComp[data[offset + d_index]]), status[index], samplesPerLine);
+                                    move4_32(point(status[index], this.mComp[data[offset + d_index]]), status[index], this.samplesPerLine);
                                     d_index++;
                                     break;
                             }
@@ -585,7 +585,7 @@ public class Cinematic {
                         }
                         break;
                     case 0x4000:			// motion compensation
-                        move8_32(point(status[index], mComp[data[offset + d_index]]), status[index], samplesPerLine);
+                        move8_32(point(status[index], this.mComp[data[offset + d_index]]), status[index], this.samplesPerLine);
                         d_index++;
                         index += 5;
                         break;
@@ -597,17 +597,17 @@ public class Cinematic {
         }
 
         private void RoQShutdown() {
-            if (status == FMV_IDLE) {
+            if (this.status == FMV_IDLE) {
                 return;
             }
-            status = FMV_IDLE;
+            this.status = FMV_IDLE;
 
-            if (iFile != null) {
-                fileSystem.CloseFile(iFile);
-                iFile = null;
+            if (this.iFile != null) {
+                fileSystem.CloseFile(this.iFile);
+                this.iFile = null;
             }
 
-            fileName = new idStr("");
+            this.fileName = new idStr("");
         }
 
         static int debugRoQInterrupt = 0;
@@ -618,13 +618,13 @@ public class Cinematic {
             boolean redump;
 
             tempFile = ByteBuffer.allocate(file.length);
-            iFile.Read(tempFile, RoQFrameSize + 8);
+            this.iFile.Read(tempFile, this.RoQFrameSize + 8);
             file = expandBuffer(tempFile);
-            if (RoQPlayed >= ROQSize) {
-                if (looping) {
+            if (this.RoQPlayed >= this.ROQSize) {
+                if (this.looping) {
                     RoQReset();
                 } else {
-                    status = FMV_EOF;
+                    this.status = FMV_EOF;
                 }
                 return;
             }
@@ -635,93 +635,93 @@ public class Cinematic {
 //
             do {
                 redump = false;
-                switch (roq_id) {
+                switch (this.roq_id) {
                     case ROQ_QUAD_VQ:
-                        if ((numQuads & 1) == 1) {
-                            normalBuffer0 = t[1];
-                            RoQPrepMcomp(roqF0, roqF1);
-                            blitVQQuad32fs(qStatus[1], file, framedata);
-                            buf = point(image, screenDelta);
+                        if ((this.numQuads & 1) == 1) {
+                            this.normalBuffer0 = this.t[1];
+                            RoQPrepMcomp(this.roqF0, this.roqF1);
+                            blitVQQuad32fs(this.qStatus[1], file, framedata);
+                            this.buf = point(this.image, this.screenDelta);
                         } else {
-                            normalBuffer0 = t[0];
-                            RoQPrepMcomp(roqF0, roqF1);
-                            blitVQQuad32fs(qStatus[0], file, framedata);
-                            buf = image;
+                            this.normalBuffer0 = this.t[0];
+                            RoQPrepMcomp(this.roqF0, this.roqF1);
+                            blitVQQuad32fs(this.qStatus[0], file, framedata);
+                            this.buf = this.image;
                         }
-                        if (numQuads == 0) {		// first frame
+                        if (this.numQuads == 0) {		// first frame
 //				memcpy(image+screenDelta, image, samplesPerLine*ysize);
-                            System.arraycopy(image.array(), 0, image.array(), (int) screenDelta, (int) samplesPerLine * ySize);
+                            System.arraycopy(this.image.array(), 0, this.image.array(), this.screenDelta, (int) this.samplesPerLine * this.ySize);
                         }
-                        numQuads++;
-                        dirty = true;
+                        this.numQuads++;
+                        this.dirty = true;
                         break;
                     case ROQ_CODEBOOK:
                         debugRoQInterrupt++;
-                        decodeCodeBook(file, framedata, roq_flags);
+                        decodeCodeBook(file, framedata, this.roq_flags);
                         break;
                     case ZA_SOUND_MONO:
                         break;
                     case ZA_SOUND_STEREO:
                         break;
                     case ROQ_QUAD_INFO:
-                        if (numQuads == -1) {
+                        if (this.numQuads == -1) {
                             readQuadInfo(file, framedata);
                             setupQuad(0, 0);
                         }
-                        if (numQuads != 1) {
-                            numQuads = 0;
+                        if (this.numQuads != 1) {
+                            this.numQuads = 0;
                         }
                         break;
                     case ROQ_PACKET:
-                        inMemory = (roq_flags != 0);
-                        RoQFrameSize = 0;           // for header
+                        this.inMemory = (this.roq_flags != 0);
+                        this.RoQFrameSize = 0;           // for header
                         break;
                     case ROQ_QUAD_HANG:
-                        RoQFrameSize = 0;
+                        this.RoQFrameSize = 0;
                         break;
                     case ROQ_QUAD_JPEG:
-                        if (0 == numQuads) {
-                            normalBuffer0 = t[0];
-                            JPEGBlit(image, file, framedata, RoQFrameSize);
+                        if (0 == this.numQuads) {
+                            this.normalBuffer0 = this.t[0];
+                            JPEGBlit(this.image, file, framedata, this.RoQFrameSize);
 //				memcpy(image+screenDelta, image, samplesPerLine*ysize);
-                            System.arraycopy(image, 0, image, (int) screenDelta, (int) samplesPerLine * ySize);
-                            numQuads++;
+                            System.arraycopy(this.image, 0, this.image, this.screenDelta, (int) this.samplesPerLine * this.ySize);
+                            this.numQuads++;
                         }
                         break;
                     default:
-                        status = FMV_EOF;
+                        this.status = FMV_EOF;
                         break;
                 }
 //
 // read in next frame data
 //
-                if (RoQPlayed >= ROQSize) {
-                    if (looping) {
+                if (this.RoQPlayed >= this.ROQSize) {
+                    if (this.looping) {
                         RoQReset();
                     } else {
-                        status = FMV_EOF;
+                        this.status = FMV_EOF;
                     }
                     return;
                 }
 
-                framedata += RoQFrameSize;
-                roq_id = file[framedata + 0] + file[framedata + 1] * 256;
-                RoQFrameSize = file[framedata + 2] + file[framedata + 3] * 256 + file[framedata + 4] * 65536;
-                roq_flags = file[framedata + 6] + file[framedata + 7] * 256;
-                roqF0 = (byte) file[framedata + 7];
-                roqF1 = (byte) file[framedata + 6];
+                framedata += this.RoQFrameSize;
+                this.roq_id = file[framedata + 0] + (file[framedata + 1] * 256);
+                this.RoQFrameSize = file[framedata + 2] + (file[framedata + 3] * 256) + (file[framedata + 4] * 65536);
+                this.roq_flags = file[framedata + 6] + (file[framedata + 7] * 256);
+                this.roqF0 = (byte) file[framedata + 7];
+                this.roqF1 = (byte) file[framedata + 6];
 //                System.out.printf("roq_id=%d, roqF0=%d, roqF1=%d\n", roq_id, roqF0, roqF1);
 
-                if (RoQFrameSize > 65536 || roq_id == 0x1084) {
+                if ((this.RoQFrameSize > 65536) || (this.roq_id == 0x1084)) {
                     common.DPrintf("roq_size>65536||roq_id==0x1084\n");
-                    status = FMV_EOF;
-                    if (looping) {
+                    this.status = FMV_EOF;
+                    if (this.looping) {
                         RoQReset();
                     }
                     return;
                 }
-                if (inMemory && (status != FMV_EOF)) {
-                    inMemory = false;
+                if (this.inMemory && (this.status != FMV_EOF)) {
+                    this.inMemory = false;
                     framedata += 8;
                     redump = true;//goto redump; 
                 }
@@ -732,7 +732,7 @@ public class Cinematic {
 //
 //	assert(RoQFrameSize <= 65536);
 //	r = Sys_StreamedRead( file, RoQFrameSize+8, 1, iFile );
-            RoQPlayed += RoQFrameSize + 8;
+            this.RoQPlayed += this.RoQFrameSize + 8;
         }
 
         private void move8_32(ByteBuffer src, ByteBuffer dst, long spl) {
@@ -744,77 +744,77 @@ public class Cinematic {
             ddst = dst.asIntBuffer();
             dspl = (int) spl >> 2;
 
-            ddst.put(0 * dspl + 0, dsrc.get(0 * dspl + 0));
-            ddst.put(0 * dspl + 1, dsrc.get(0 * dspl + 1));
-            ddst.put(0 * dspl + 2, dsrc.get(0 * dspl + 2));
-            ddst.put(0 * dspl + 3, dsrc.get(0 * dspl + 3));
-            ddst.put(0 * dspl + 4, dsrc.get(0 * dspl + 4));
-            ddst.put(0 * dspl + 5, dsrc.get(0 * dspl + 5));
-            ddst.put(0 * dspl + 6, dsrc.get(0 * dspl + 6));
-            ddst.put(0 * dspl + 7, dsrc.get(0 * dspl + 7));
+            ddst.put((0 * dspl) + 0, dsrc.get((0 * dspl) + 0));
+            ddst.put((0 * dspl) + 1, dsrc.get((0 * dspl) + 1));
+            ddst.put((0 * dspl) + 2, dsrc.get((0 * dspl) + 2));
+            ddst.put((0 * dspl) + 3, dsrc.get((0 * dspl) + 3));
+            ddst.put((0 * dspl) + 4, dsrc.get((0 * dspl) + 4));
+            ddst.put((0 * dspl) + 5, dsrc.get((0 * dspl) + 5));
+            ddst.put((0 * dspl) + 6, dsrc.get((0 * dspl) + 6));
+            ddst.put((0 * dspl) + 7, dsrc.get((0 * dspl) + 7));
 
-            ddst.put(1 * dspl + 0, dsrc.get(1 * dspl + 0));
-            ddst.put(1 * dspl + 1, dsrc.get(1 * dspl + 1));
-            ddst.put(1 * dspl + 2, dsrc.get(1 * dspl + 2));
-            ddst.put(1 * dspl + 3, dsrc.get(1 * dspl + 3));
-            ddst.put(1 * dspl + 4, dsrc.get(1 * dspl + 4));
-            ddst.put(1 * dspl + 5, dsrc.get(1 * dspl + 5));
-            ddst.put(1 * dspl + 6, dsrc.get(1 * dspl + 6));
-            ddst.put(1 * dspl + 7, dsrc.get(1 * dspl + 7));
+            ddst.put((1 * dspl) + 0, dsrc.get((1 * dspl) + 0));
+            ddst.put((1 * dspl) + 1, dsrc.get((1 * dspl) + 1));
+            ddst.put((1 * dspl) + 2, dsrc.get((1 * dspl) + 2));
+            ddst.put((1 * dspl) + 3, dsrc.get((1 * dspl) + 3));
+            ddst.put((1 * dspl) + 4, dsrc.get((1 * dspl) + 4));
+            ddst.put((1 * dspl) + 5, dsrc.get((1 * dspl) + 5));
+            ddst.put((1 * dspl) + 6, dsrc.get((1 * dspl) + 6));
+            ddst.put((1 * dspl) + 7, dsrc.get((1 * dspl) + 7));
 
-            ddst.put(2 * dspl + 0, dsrc.get(2 * dspl + 0));
-            ddst.put(2 * dspl + 1, dsrc.get(2 * dspl + 1));
-            ddst.put(2 * dspl + 2, dsrc.get(2 * dspl + 2));
-            ddst.put(2 * dspl + 3, dsrc.get(2 * dspl + 3));
-            ddst.put(2 * dspl + 4, dsrc.get(2 * dspl + 4));
-            ddst.put(2 * dspl + 5, dsrc.get(2 * dspl + 5));
-            ddst.put(2 * dspl + 6, dsrc.get(2 * dspl + 6));
-            ddst.put(2 * dspl + 7, dsrc.get(2 * dspl + 7));
+            ddst.put((2 * dspl) + 0, dsrc.get((2 * dspl) + 0));
+            ddst.put((2 * dspl) + 1, dsrc.get((2 * dspl) + 1));
+            ddst.put((2 * dspl) + 2, dsrc.get((2 * dspl) + 2));
+            ddst.put((2 * dspl) + 3, dsrc.get((2 * dspl) + 3));
+            ddst.put((2 * dspl) + 4, dsrc.get((2 * dspl) + 4));
+            ddst.put((2 * dspl) + 5, dsrc.get((2 * dspl) + 5));
+            ddst.put((2 * dspl) + 6, dsrc.get((2 * dspl) + 6));
+            ddst.put((2 * dspl) + 7, dsrc.get((2 * dspl) + 7));
 
-            ddst.put(3 * dspl + 0, dsrc.get(3 * dspl + 0));
-            ddst.put(3 * dspl + 1, dsrc.get(3 * dspl + 1));
-            ddst.put(3 * dspl + 2, dsrc.get(3 * dspl + 2));
-            ddst.put(3 * dspl + 3, dsrc.get(3 * dspl + 3));
-            ddst.put(3 * dspl + 4, dsrc.get(3 * dspl + 4));
-            ddst.put(3 * dspl + 5, dsrc.get(3 * dspl + 5));
-            ddst.put(3 * dspl + 6, dsrc.get(3 * dspl + 6));
-            ddst.put(3 * dspl + 7, dsrc.get(3 * dspl + 7));
+            ddst.put((3 * dspl) + 0, dsrc.get((3 * dspl) + 0));
+            ddst.put((3 * dspl) + 1, dsrc.get((3 * dspl) + 1));
+            ddst.put((3 * dspl) + 2, dsrc.get((3 * dspl) + 2));
+            ddst.put((3 * dspl) + 3, dsrc.get((3 * dspl) + 3));
+            ddst.put((3 * dspl) + 4, dsrc.get((3 * dspl) + 4));
+            ddst.put((3 * dspl) + 5, dsrc.get((3 * dspl) + 5));
+            ddst.put((3 * dspl) + 6, dsrc.get((3 * dspl) + 6));
+            ddst.put((3 * dspl) + 7, dsrc.get((3 * dspl) + 7));
 
-            ddst.put(4 * dspl + 0, dsrc.get(4 * dspl + 0));
-            ddst.put(4 * dspl + 1, dsrc.get(4 * dspl + 1));
-            ddst.put(4 * dspl + 2, dsrc.get(4 * dspl + 2));
-            ddst.put(4 * dspl + 3, dsrc.get(4 * dspl + 3));
-            ddst.put(4 * dspl + 4, dsrc.get(4 * dspl + 4));
-            ddst.put(4 * dspl + 5, dsrc.get(4 * dspl + 5));
-            ddst.put(4 * dspl + 6, dsrc.get(4 * dspl + 6));
-            ddst.put(4 * dspl + 7, dsrc.get(4 * dspl + 7));
+            ddst.put((4 * dspl) + 0, dsrc.get((4 * dspl) + 0));
+            ddst.put((4 * dspl) + 1, dsrc.get((4 * dspl) + 1));
+            ddst.put((4 * dspl) + 2, dsrc.get((4 * dspl) + 2));
+            ddst.put((4 * dspl) + 3, dsrc.get((4 * dspl) + 3));
+            ddst.put((4 * dspl) + 4, dsrc.get((4 * dspl) + 4));
+            ddst.put((4 * dspl) + 5, dsrc.get((4 * dspl) + 5));
+            ddst.put((4 * dspl) + 6, dsrc.get((4 * dspl) + 6));
+            ddst.put((4 * dspl) + 7, dsrc.get((4 * dspl) + 7));
 
-            ddst.put(5 * dspl + 0, dsrc.get(5 * dspl + 0));
-            ddst.put(5 * dspl + 1, dsrc.get(5 * dspl + 1));
-            ddst.put(5 * dspl + 2, dsrc.get(5 * dspl + 2));
-            ddst.put(5 * dspl + 3, dsrc.get(5 * dspl + 3));
-            ddst.put(5 * dspl + 4, dsrc.get(5 * dspl + 4));
-            ddst.put(5 * dspl + 5, dsrc.get(5 * dspl + 5));
-            ddst.put(5 * dspl + 6, dsrc.get(5 * dspl + 6));
-            ddst.put(5 * dspl + 7, dsrc.get(5 * dspl + 7));
+            ddst.put((5 * dspl) + 0, dsrc.get((5 * dspl) + 0));
+            ddst.put((5 * dspl) + 1, dsrc.get((5 * dspl) + 1));
+            ddst.put((5 * dspl) + 2, dsrc.get((5 * dspl) + 2));
+            ddst.put((5 * dspl) + 3, dsrc.get((5 * dspl) + 3));
+            ddst.put((5 * dspl) + 4, dsrc.get((5 * dspl) + 4));
+            ddst.put((5 * dspl) + 5, dsrc.get((5 * dspl) + 5));
+            ddst.put((5 * dspl) + 6, dsrc.get((5 * dspl) + 6));
+            ddst.put((5 * dspl) + 7, dsrc.get((5 * dspl) + 7));
 
-            ddst.put(6 * dspl + 0, dsrc.get(6 * dspl + 0));
-            ddst.put(6 * dspl + 1, dsrc.get(6 * dspl + 1));
-            ddst.put(6 * dspl + 2, dsrc.get(6 * dspl + 2));
-            ddst.put(6 * dspl + 3, dsrc.get(6 * dspl + 3));
-            ddst.put(6 * dspl + 4, dsrc.get(6 * dspl + 4));
-            ddst.put(6 * dspl + 5, dsrc.get(6 * dspl + 5));
-            ddst.put(6 * dspl + 6, dsrc.get(6 * dspl + 6));
-            ddst.put(6 * dspl + 7, dsrc.get(6 * dspl + 7));
+            ddst.put((6 * dspl) + 0, dsrc.get((6 * dspl) + 0));
+            ddst.put((6 * dspl) + 1, dsrc.get((6 * dspl) + 1));
+            ddst.put((6 * dspl) + 2, dsrc.get((6 * dspl) + 2));
+            ddst.put((6 * dspl) + 3, dsrc.get((6 * dspl) + 3));
+            ddst.put((6 * dspl) + 4, dsrc.get((6 * dspl) + 4));
+            ddst.put((6 * dspl) + 5, dsrc.get((6 * dspl) + 5));
+            ddst.put((6 * dspl) + 6, dsrc.get((6 * dspl) + 6));
+            ddst.put((6 * dspl) + 7, dsrc.get((6 * dspl) + 7));
 
-            ddst.put(7 * dspl + 0, dsrc.get(7 * dspl + 0));
-            ddst.put(7 * dspl + 1, dsrc.get(7 * dspl + 1));
-            ddst.put(7 * dspl + 2, dsrc.get(7 * dspl + 2));
-            ddst.put(7 * dspl + 3, dsrc.get(7 * dspl + 3));
-            ddst.put(7 * dspl + 4, dsrc.get(7 * dspl + 4));
-            ddst.put(7 * dspl + 5, dsrc.get(7 * dspl + 5));
-            ddst.put(7 * dspl + 6, dsrc.get(7 * dspl + 6));
-            ddst.put(7 * dspl + 7, dsrc.get(7 * dspl + 7));
+            ddst.put((7 * dspl) + 0, dsrc.get((7 * dspl) + 0));
+            ddst.put((7 * dspl) + 1, dsrc.get((7 * dspl) + 1));
+            ddst.put((7 * dspl) + 2, dsrc.get((7 * dspl) + 2));
+            ddst.put((7 * dspl) + 3, dsrc.get((7 * dspl) + 3));
+            ddst.put((7 * dspl) + 4, dsrc.get((7 * dspl) + 4));
+            ddst.put((7 * dspl) + 5, dsrc.get((7 * dspl) + 5));
+            ddst.put((7 * dspl) + 6, dsrc.get((7 * dspl) + 6));
+            ddst.put((7 * dspl) + 7, dsrc.get((7 * dspl) + 7));
 //}else{
 //	// double *dsrc, *ddst;
 //	int dspl;
@@ -850,25 +850,25 @@ public class Cinematic {
             ddst = dst.asIntBuffer();
             dspl = (int) spl >> 2;
 
-            ddst.put(0 * dspl + 0, dsrc.get(0 * dspl + 0));
-            ddst.put(0 * dspl + 1, dsrc.get(0 * dspl + 1));
-            ddst.put(0 * dspl + 2, dsrc.get(0 * dspl + 2));
-            ddst.put(0 * dspl + 3, dsrc.get(0 * dspl + 3));
+            ddst.put((0 * dspl) + 0, dsrc.get((0 * dspl) + 0));
+            ddst.put((0 * dspl) + 1, dsrc.get((0 * dspl) + 1));
+            ddst.put((0 * dspl) + 2, dsrc.get((0 * dspl) + 2));
+            ddst.put((0 * dspl) + 3, dsrc.get((0 * dspl) + 3));
 
-            ddst.put(1 * dspl + 0, dsrc.get(1 * dspl + 0));
-            ddst.put(1 * dspl + 1, dsrc.get(1 * dspl + 1));
-            ddst.put(1 * dspl + 2, dsrc.get(1 * dspl + 2));
-            ddst.put(1 * dspl + 3, dsrc.get(1 * dspl + 3));
+            ddst.put((1 * dspl) + 0, dsrc.get((1 * dspl) + 0));
+            ddst.put((1 * dspl) + 1, dsrc.get((1 * dspl) + 1));
+            ddst.put((1 * dspl) + 2, dsrc.get((1 * dspl) + 2));
+            ddst.put((1 * dspl) + 3, dsrc.get((1 * dspl) + 3));
 
-            ddst.put(2 * dspl + 0, dsrc.get(2 * dspl + 0));
-            ddst.put(2 * dspl + 1, dsrc.get(2 * dspl + 1));
-            ddst.put(2 * dspl + 2, dsrc.get(2 * dspl + 2));
-            ddst.put(2 * dspl + 3, dsrc.get(2 * dspl + 3));
+            ddst.put((2 * dspl) + 0, dsrc.get((2 * dspl) + 0));
+            ddst.put((2 * dspl) + 1, dsrc.get((2 * dspl) + 1));
+            ddst.put((2 * dspl) + 2, dsrc.get((2 * dspl) + 2));
+            ddst.put((2 * dspl) + 3, dsrc.get((2 * dspl) + 3));
 
-            ddst.put(3 * dspl + 0, dsrc.get(3 * dspl + 0));
-            ddst.put(3 * dspl + 1, dsrc.get(3 * dspl + 1));
-            ddst.put(3 * dspl + 2, dsrc.get(3 * dspl + 2));
-            ddst.put(3 * dspl + 3, dsrc.get(3 * dspl + 3));
+            ddst.put((3 * dspl) + 0, dsrc.get((3 * dspl) + 0));
+            ddst.put((3 * dspl) + 1, dsrc.get((3 * dspl) + 1));
+            ddst.put((3 * dspl) + 2, dsrc.get((3 * dspl) + 2));
+            ddst.put((3 * dspl) + 3, dsrc.get((3 * dspl) + 3));
 //}else{
 //	// double *dsrc, *ddst;
 //	int dspl;
@@ -896,77 +896,77 @@ public class Cinematic {
             ddst = dst.asIntBuffer();
             dspl = (int) spl >> 2;
 
-            ddst.put(0 * dspl + 0, dsrc.get());
-            ddst.put(0 * dspl + 1, dsrc.get());
-            ddst.put(0 * dspl + 2, dsrc.get());
-            ddst.put(0 * dspl + 3, dsrc.get());
-            ddst.put(0 * dspl + 4, dsrc.get());
-            ddst.put(0 * dspl + 5, dsrc.get());
-            ddst.put(0 * dspl + 6, dsrc.get());
-            ddst.put(0 * dspl + 7, dsrc.get());
+            ddst.put((0 * dspl) + 0, dsrc.get());
+            ddst.put((0 * dspl) + 1, dsrc.get());
+            ddst.put((0 * dspl) + 2, dsrc.get());
+            ddst.put((0 * dspl) + 3, dsrc.get());
+            ddst.put((0 * dspl) + 4, dsrc.get());
+            ddst.put((0 * dspl) + 5, dsrc.get());
+            ddst.put((0 * dspl) + 6, dsrc.get());
+            ddst.put((0 * dspl) + 7, dsrc.get());
 
-            ddst.put(1 * dspl + 0, dsrc.get());
-            ddst.put(1 * dspl + 1, dsrc.get());
-            ddst.put(1 * dspl + 2, dsrc.get());
-            ddst.put(1 * dspl + 3, dsrc.get());
-            ddst.put(1 * dspl + 4, dsrc.get());
-            ddst.put(1 * dspl + 5, dsrc.get());
-            ddst.put(1 * dspl + 6, dsrc.get());
-            ddst.put(1 * dspl + 7, dsrc.get());
+            ddst.put((1 * dspl) + 0, dsrc.get());
+            ddst.put((1 * dspl) + 1, dsrc.get());
+            ddst.put((1 * dspl) + 2, dsrc.get());
+            ddst.put((1 * dspl) + 3, dsrc.get());
+            ddst.put((1 * dspl) + 4, dsrc.get());
+            ddst.put((1 * dspl) + 5, dsrc.get());
+            ddst.put((1 * dspl) + 6, dsrc.get());
+            ddst.put((1 * dspl) + 7, dsrc.get());
 
-            ddst.put(2 * dspl + 0, dsrc.get());
-            ddst.put(2 * dspl + 1, dsrc.get());
-            ddst.put(2 * dspl + 2, dsrc.get());
-            ddst.put(2 * dspl + 3, dsrc.get());
-            ddst.put(2 * dspl + 4, dsrc.get());
-            ddst.put(2 * dspl + 5, dsrc.get());
-            ddst.put(2 * dspl + 6, dsrc.get());
-            ddst.put(2 * dspl + 7, dsrc.get());
+            ddst.put((2 * dspl) + 0, dsrc.get());
+            ddst.put((2 * dspl) + 1, dsrc.get());
+            ddst.put((2 * dspl) + 2, dsrc.get());
+            ddst.put((2 * dspl) + 3, dsrc.get());
+            ddst.put((2 * dspl) + 4, dsrc.get());
+            ddst.put((2 * dspl) + 5, dsrc.get());
+            ddst.put((2 * dspl) + 6, dsrc.get());
+            ddst.put((2 * dspl) + 7, dsrc.get());
 
-            ddst.put(3 * dspl + 0, dsrc.get());
-            ddst.put(3 * dspl + 1, dsrc.get());
-            ddst.put(3 * dspl + 2, dsrc.get());
-            ddst.put(3 * dspl + 3, dsrc.get());
-            ddst.put(3 * dspl + 4, dsrc.get());
-            ddst.put(3 * dspl + 5, dsrc.get());
-            ddst.put(3 * dspl + 6, dsrc.get());
-            ddst.put(3 * dspl + 7, dsrc.get());
+            ddst.put((3 * dspl) + 0, dsrc.get());
+            ddst.put((3 * dspl) + 1, dsrc.get());
+            ddst.put((3 * dspl) + 2, dsrc.get());
+            ddst.put((3 * dspl) + 3, dsrc.get());
+            ddst.put((3 * dspl) + 4, dsrc.get());
+            ddst.put((3 * dspl) + 5, dsrc.get());
+            ddst.put((3 * dspl) + 6, dsrc.get());
+            ddst.put((3 * dspl) + 7, dsrc.get());
 
-            ddst.put(4 * dspl + 0, dsrc.get());
-            ddst.put(4 * dspl + 1, dsrc.get());
-            ddst.put(4 * dspl + 2, dsrc.get());
-            ddst.put(4 * dspl + 3, dsrc.get());
-            ddst.put(4 * dspl + 4, dsrc.get());
-            ddst.put(4 * dspl + 5, dsrc.get());
-            ddst.put(4 * dspl + 6, dsrc.get());
-            ddst.put(4 * dspl + 7, dsrc.get());
+            ddst.put((4 * dspl) + 0, dsrc.get());
+            ddst.put((4 * dspl) + 1, dsrc.get());
+            ddst.put((4 * dspl) + 2, dsrc.get());
+            ddst.put((4 * dspl) + 3, dsrc.get());
+            ddst.put((4 * dspl) + 4, dsrc.get());
+            ddst.put((4 * dspl) + 5, dsrc.get());
+            ddst.put((4 * dspl) + 6, dsrc.get());
+            ddst.put((4 * dspl) + 7, dsrc.get());
 
-            ddst.put(5 * dspl + 0, dsrc.get());
-            ddst.put(5 * dspl + 1, dsrc.get());
-            ddst.put(5 * dspl + 2, dsrc.get());
-            ddst.put(5 * dspl + 3, dsrc.get());
-            ddst.put(5 * dspl + 4, dsrc.get());
-            ddst.put(5 * dspl + 5, dsrc.get());
-            ddst.put(5 * dspl + 6, dsrc.get());
-            ddst.put(5 * dspl + 7, dsrc.get());
+            ddst.put((5 * dspl) + 0, dsrc.get());
+            ddst.put((5 * dspl) + 1, dsrc.get());
+            ddst.put((5 * dspl) + 2, dsrc.get());
+            ddst.put((5 * dspl) + 3, dsrc.get());
+            ddst.put((5 * dspl) + 4, dsrc.get());
+            ddst.put((5 * dspl) + 5, dsrc.get());
+            ddst.put((5 * dspl) + 6, dsrc.get());
+            ddst.put((5 * dspl) + 7, dsrc.get());
 
-            ddst.put(6 * dspl + 0, dsrc.get());
-            ddst.put(6 * dspl + 1, dsrc.get());
-            ddst.put(6 * dspl + 2, dsrc.get());
-            ddst.put(6 * dspl + 3, dsrc.get());
-            ddst.put(6 * dspl + 4, dsrc.get());
-            ddst.put(6 * dspl + 5, dsrc.get());
-            ddst.put(6 * dspl + 6, dsrc.get());
-            ddst.put(6 * dspl + 7, dsrc.get());
+            ddst.put((6 * dspl) + 0, dsrc.get());
+            ddst.put((6 * dspl) + 1, dsrc.get());
+            ddst.put((6 * dspl) + 2, dsrc.get());
+            ddst.put((6 * dspl) + 3, dsrc.get());
+            ddst.put((6 * dspl) + 4, dsrc.get());
+            ddst.put((6 * dspl) + 5, dsrc.get());
+            ddst.put((6 * dspl) + 6, dsrc.get());
+            ddst.put((6 * dspl) + 7, dsrc.get());
 
-            ddst.put(7 * dspl + 0, dsrc.get());
-            ddst.put(7 * dspl + 1, dsrc.get());
-            ddst.put(7 * dspl + 2, dsrc.get());
-            ddst.put(7 * dspl + 3, dsrc.get());
-            ddst.put(7 * dspl + 4, dsrc.get());
-            ddst.put(7 * dspl + 5, dsrc.get());
-            ddst.put(7 * dspl + 6, dsrc.get());
-            ddst.put(7 * dspl + 7, dsrc.get());
+            ddst.put((7 * dspl) + 0, dsrc.get());
+            ddst.put((7 * dspl) + 1, dsrc.get());
+            ddst.put((7 * dspl) + 2, dsrc.get());
+            ddst.put((7 * dspl) + 3, dsrc.get());
+            ddst.put((7 * dspl) + 4, dsrc.get());
+            ddst.put((7 * dspl) + 5, dsrc.get());
+            ddst.put((7 * dspl) + 6, dsrc.get());
+            ddst.put((7 * dspl) + 7, dsrc.get());
 //}else{
 //	// double *dsrc, *ddst;
 //	int dspl;
@@ -1002,22 +1002,22 @@ public class Cinematic {
             ddst = dst.asIntBuffer();
             dspl = (int) spl >> 2;
 
-            ddst.put(0 * dspl + 0, dsrc.get());
-            ddst.put(0 * dspl + 1, dsrc.get());
-            ddst.put(0 * dspl + 2, dsrc.get());
-            ddst.put(0 * dspl + 3, dsrc.get());
-            ddst.put(1 * dspl + 0, dsrc.get());
-            ddst.put(1 * dspl + 1, dsrc.get());
-            ddst.put(1 * dspl + 2, dsrc.get());
-            ddst.put(1 * dspl + 3, dsrc.get());
-            ddst.put(2 * dspl + 0, dsrc.get());
-            ddst.put(2 * dspl + 1, dsrc.get());
-            ddst.put(2 * dspl + 2, dsrc.get());
-            ddst.put(2 * dspl + 3, dsrc.get());
-            ddst.put(3 * dspl + 0, dsrc.get());
-            ddst.put(3 * dspl + 1, dsrc.get());
-            ddst.put(3 * dspl + 2, dsrc.get());
-            ddst.put(3 * dspl + 3, dsrc.get());
+            ddst.put((0 * dspl) + 0, dsrc.get());
+            ddst.put((0 * dspl) + 1, dsrc.get());
+            ddst.put((0 * dspl) + 2, dsrc.get());
+            ddst.put((0 * dspl) + 3, dsrc.get());
+            ddst.put((1 * dspl) + 0, dsrc.get());
+            ddst.put((1 * dspl) + 1, dsrc.get());
+            ddst.put((1 * dspl) + 2, dsrc.get());
+            ddst.put((1 * dspl) + 3, dsrc.get());
+            ddst.put((2 * dspl) + 0, dsrc.get());
+            ddst.put((2 * dspl) + 1, dsrc.get());
+            ddst.put((2 * dspl) + 2, dsrc.get());
+            ddst.put((2 * dspl) + 3, dsrc.get());
+            ddst.put((3 * dspl) + 0, dsrc.get());
+            ddst.put((3 * dspl) + 1, dsrc.get());
+            ddst.put((3 * dspl) + 2, dsrc.get());
+            ddst.put((3 * dspl) + 3, dsrc.get());
 //}else{
 //	// double *dsrc, *ddst;
 //	int dspl;
@@ -1045,10 +1045,10 @@ public class Cinematic {
             ddst = dst.asIntBuffer();
             dspl = (int) spl >> 2;
 
-            ddst.put(0 * dspl + 0, dsrc.get());
-            ddst.put(0 * dspl + 1, dsrc.get());
-            ddst.put(1 * dspl + 0, dsrc.get());
-            ddst.put(1 * dspl + 1, dsrc.get());
+            ddst.put((0 * dspl) + 0, dsrc.get());
+            ddst.put((0 * dspl) + 1, dsrc.get());
+            ddst.put((1 * dspl) + 0, dsrc.get());
+            ddst.put((1 * dspl) + 1, dsrc.get());
 //}else{
 //	// double *dsrc, *ddst;
 //	int dspl;
@@ -1064,7 +1064,8 @@ public class Cinematic {
 //
 
         private short yuv_to_rgb(long y, long u, long v) {
-            long r, g, b, YY = (ROQ_YY_tab[(int) y]);
+            long r, g, b;
+			final long YY = (ROQ_YY_tab[(int) y]);
 
             r = (YY + ROQ_VR_tab[(int) v]) >> 9;
             g = (YY + ROQ_UG_tab[(int) u] + ROQ_VG_tab[(int) v]) >> 8;
@@ -1094,7 +1095,8 @@ public class Cinematic {
         }
 
         private int yuv_to_rgb24(long y, long u, long v) {
-            long r, g, b, YY = (long) (ROQ_YY_tab[(int) y]);
+            long r, g, b;
+			final long YY = (ROQ_YY_tab[(int) y]);
 
             r = (YY + ROQ_VR_tab[(int) v]) >> 6;
             g = (YY + ROQ_UG_tab[(int) u] + ROQ_VG_tab[(int) v]) >> 6;
@@ -1146,12 +1148,12 @@ public class Cinematic {
             bptr = vq2.duplicate().order(ByteOrder.LITTLE_ENDIAN);
             i_ptr = offset;
 
-            if (!half) {
-                if (!smoothedDouble) {
+            if (!this.half) {
+                if (!this.smoothedDouble) {
 ////////////////////////////////////////////////////////////////////////////////
 // normal height
 ////////////////////////////////////////////////////////////////////////////////
-                    if (samplesPerPixel == 2) {
+                    if (this.samplesPerPixel == 2) {
                         for (i = 0; i < two; i++) {
                             y0 = input[i_ptr++];
                             y1 = input[i_ptr++];
@@ -1174,7 +1176,7 @@ public class Cinematic {
                                 VQ2TO4(aptr, bptr, cptr, dptr);
                             }
                         }
-                    } else if (samplesPerPixel == 4) {
+                    } else if (this.samplesPerPixel == 4) {
                         ibptr = bptr.asIntBuffer();
                         int x0, x1, x2, x3;
                         for (i = 0; i < two; i++) {
@@ -1204,7 +1206,7 @@ public class Cinematic {
 ////////////////////////////////////////////////////////////////////////////////
 // double height, smoothed
 ////////////////////////////////////////////////////////////////////////////////
-                    if (samplesPerPixel == 2) {
+                    if (this.samplesPerPixel == 2) {
                         for (i = 0; i < two; i++) {
                             y0 = input[i_ptr++];
                             y1 = input[i_ptr++];
@@ -1232,7 +1234,7 @@ public class Cinematic {
                                 VQ2TO4(aptr, bptr, cptr, dptr);
                             }
                         }
-                    } else if (samplesPerPixel == 4) {
+                    } else if (this.samplesPerPixel == 4) {
                         ibptr = bptr.asIntBuffer();
                         for (i = 0; i < two; i++) {
                             y0 = input[i_ptr++];
@@ -1267,7 +1269,7 @@ public class Cinematic {
 ////////////////////////////////////////////////////////////////////////////////
 // 1/4 screen
 ////////////////////////////////////////////////////////////////////////////////
-                if (samplesPerPixel == 2) {
+                if (this.samplesPerPixel == 2) {
                     for (i = 0; i < two; i++) {
                         y0 = input[i_ptr];
                         i_ptr += 2;
@@ -1288,7 +1290,7 @@ public class Cinematic {
                             VQ2TO2(aptr, bptr, cptr, dptr);
                         }
                     }
-                } else if (samplesPerPixel == 4) {
+                } else if (this.samplesPerPixel == 4) {
                     ibptr = bptr.asIntBuffer();
                     for (i = 0; i < two; i++) {
                         y0 = input[i_ptr];
@@ -1319,26 +1321,26 @@ public class Cinematic {
             long bigX, bigY, lowX, lowY, useY;
             int offset;
 
-            offset = screenDelta;
+            offset = this.screenDelta;
 
             lowX = lowY = 0;
-            bigX = xSize;
-            bigY = ySize;
+            bigX = this.xSize;
+            bigY = this.ySize;
 
-            if (bigX > CIN_WIDTH) {
-                bigX = CIN_WIDTH;
+            if (bigX > this.CIN_WIDTH) {
+                bigX = this.CIN_WIDTH;
             }
-            if (bigY > CIN_HEIGHT) {
-                bigY = CIN_HEIGHT;
+            if (bigY > this.CIN_HEIGHT) {
+                bigY = this.CIN_HEIGHT;
             }
 
-            if ((startX >= lowX) && (startX + quadSize <= bigX) && (startY + quadSize <= bigY) && (startY >= lowY) && quadSize <= MAXSIZE) {
+            if ((startX >= lowX) && ((startX + quadSize) <= bigX) && ((startY + quadSize) <= bigY) && (startY >= lowY) && (quadSize <= MAXSIZE)) {
                 useY = startY;
-                final int offering = (int) ((useY + ((CIN_HEIGHT - bigY) >> 1) + yOff) * samplesPerLine + ((startX + xOff) * samplesPerPixel));
-                scrOff = point(image, offering);
+                final int offering = (int) (((useY + ((this.CIN_HEIGHT - bigY) >> 1) + yOff) * this.samplesPerLine) + ((startX + xOff) * this.samplesPerPixel));
+                scrOff = point(this.image, offering);
 
-                qStatus[0][(int) onQuad] = scrOff;
-                qStatus[1][(int) onQuad++] = point(scrOff, offset);
+                this.qStatus[0][(int) this.onQuad] = scrOff;
+                this.qStatus[1][(int) this.onQuad++] = point(scrOff, offset);
             }
 
             if (quadSize != MINSIZE) {
@@ -1355,71 +1357,71 @@ public class Cinematic {
             int i;
             ByteBuffer temp;
 
-            numQuadCels = (CIN_WIDTH * CIN_HEIGHT) / 16;
-            numQuadCels += numQuadCels / 4 + numQuadCels / 16;
+            numQuadCels = (this.CIN_WIDTH * this.CIN_HEIGHT) / 16;
+            numQuadCels += (numQuadCels / 4) + (numQuadCels / 16);
             numQuadCels += 64;				// for overflow
 
-            numQuadCels = (xSize * ySize) / 16;
+            numQuadCels = (this.xSize * this.ySize) / 16;
             numQuadCels += numQuadCels / 4;
             numQuadCels += 64;				// for overflow
 
-            onQuad = 0;
+            this.onQuad = 0;
 
-            for (y = 0; y < (long) ySize; y += 16) {
-                for (x = 0; x < (long) xSize; x += 16) {
+            for (y = 0; y < this.ySize; y += 16) {
+                for (x = 0; x < this.xSize; x += 16) {
                     recurseQuad(x, y, 16, xOff, yOff);
                 }
             }
 
             temp = null;
             for (i = (int) (numQuadCels - 64); i < numQuadCels; i++) {
-                qStatus[0][i] = //temp;			// eoq
-                        qStatus[1][i] = temp;           // eoq
+                this.qStatus[0][i] = //temp;			// eoq
+                        this.qStatus[1][i] = temp;           // eoq
             }
         }
 
         private void readQuadInfo(int[] qData, int offset) {
-            xSize = qData[offset + 0] + qData[offset + 1] * 256;
-            ySize = qData[offset + 2] + qData[offset + 3] * 256;
-            maxSize = qData[offset + 4] + qData[offset + 5] * 256;
-            minSize = qData[offset + 6] + qData[offset + 7] * 256;
+            this.xSize = qData[offset + 0] + (qData[offset + 1] * 256);
+            this.ySize = qData[offset + 2] + (qData[offset + 3] * 256);
+            this.maxSize = qData[offset + 4] + (qData[offset + 5] * 256);
+            this.minSize = qData[offset + 6] + (qData[offset + 7] * 256);
 
-            CIN_HEIGHT = ySize;
-            CIN_WIDTH = xSize;
+            this.CIN_HEIGHT = this.ySize;
+            this.CIN_WIDTH = this.xSize;
 
-            samplesPerLine = CIN_WIDTH * samplesPerPixel;
-            screenDelta = (int) (CIN_HEIGHT * samplesPerLine);
+            this.samplesPerLine = this.CIN_WIDTH * this.samplesPerPixel;
+            this.screenDelta = (int) (this.CIN_HEIGHT * this.samplesPerLine);
 
-            if (NOT(image)) {
-                image = ByteBuffer.allocate((int) (CIN_WIDTH * CIN_HEIGHT * samplesPerPixel * 2)).order(ByteOrder.LITTLE_ENDIAN);//Mem_Alloc((int) (CIN_WIDTH * CIN_HEIGHT * samplesPerPixel * 2));
+            if (NOT(this.image)) {
+                this.image = ByteBuffer.allocate((int) (this.CIN_WIDTH * this.CIN_HEIGHT * this.samplesPerPixel * 2)).order(ByteOrder.LITTLE_ENDIAN);//Mem_Alloc((int) (CIN_WIDTH * CIN_HEIGHT * samplesPerPixel * 2));
             }
 
-            half = false;
-            smoothedDouble = false;
+            this.half = false;
+            this.smoothedDouble = false;
 
-            t[0] = screenDelta;//t[0] = (0 - (unsigned int)image)+(unsigned int)image+screenDelta;
-            t[1] = -screenDelta;//t[1] = (0 - ((unsigned int)image + screenDelta))+(unsigned int)image;
+            this.t[0] = this.screenDelta;//t[0] = (0 - (unsigned int)image)+(unsigned int)image+screenDelta;
+            this.t[1] = -this.screenDelta;//t[1] = (0 - ((unsigned int)image + screenDelta))+(unsigned int)image;
 
-            drawX = CIN_WIDTH;
-            drawY = CIN_HEIGHT;
+            this.drawX = this.CIN_WIDTH;
+            this.drawY = this.CIN_HEIGHT;
         }
 
         private void RoQPrepMcomp(long xOff, long yOff) {
             int x, y;
             long i, j, temp, temp2;
 
-            i = samplesPerLine;
-            j = samplesPerPixel;
-            if (xSize == (ySize * 4) && !half) {
+            i = this.samplesPerLine;
+            j = this.samplesPerPixel;
+            if ((this.xSize == (this.ySize * 4)) && !this.half) {
                 j = j + j;
                 i = i + i;
             }
 
             for (y = 0; y < 16; y++) {
-                temp2 = (y + yOff - 8) * i;
+                temp2 = ((y + yOff) - 8) * i;
                 for (x = 0; x < 16; x++) {
-                    temp = (x + xOff - 8) * j;
-                    mComp[(x * 16) + y] = (normalBuffer0 - (temp2 + temp)) & 0xFFFF_FFFFL;
+                    temp = ((x + xOff) - 8) * j;
+                    this.mComp[(x * 16) + y] = (this.normalBuffer0 - (temp2 + temp)) & 0xFFFF_FFFFL;
                 }
             }
         }
@@ -1428,11 +1430,11 @@ public class Cinematic {
             ByteBuffer tempFile;
 
             tempFile = ByteBuffer.allocate(file.length);
-            iFile.Seek(0, FS_SEEK_SET);
-            iFile.Read(tempFile, 16);
+            this.iFile.Seek(0, FS_SEEK_SET);
+            this.iFile.Read(tempFile, 16);
             file = expandBuffer(tempFile);
             RoQ_init();
-            status = FMV_LOOPED;
+            this.status = FMV_LOOPED;
         }
 
         @Override
@@ -1440,7 +1442,7 @@ public class Cinematic {
             return new idCinematicLocal(this);
         }
 
-    };
+    }
 
     private static void VQ2TO4(ByteBuffer a, ByteBuffer b, ByteBuffer c, ByteBuffer d) {
         final int aPos = a.position();
@@ -1558,7 +1560,7 @@ public class Cinematic {
 
         try {
             return ((ByteBuffer) src.duplicate().position((int) (pos + offset))).order(src.order());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err.printf("point---> %d, %d, %d\n", src.capacity(), src.remaining(), offset);
             throw e;
         }

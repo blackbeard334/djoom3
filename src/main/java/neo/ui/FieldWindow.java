@@ -42,56 +42,56 @@ public class FieldWindow {
 
         @Override
         public void Draw(int time, float x, float y) {
-            float scale = textScale.oCastFloat();
-            int len = text.Length();
-            cursorPos = gui.State().GetInt(cursorVar.getData());
-            if (len != lastTextLength || cursorPos != lastCursorPos) {
+            final float scale = this.textScale.oCastFloat();
+            final int len = this.text.Length();
+            this.cursorPos = this.gui.State().GetInt(this.cursorVar.getData());
+            if ((len != this.lastTextLength) || (this.cursorPos != this.lastCursorPos)) {
                 CalcPaintOffset(len);
             }
-            idRectangle rect = textRect;
-            if (paintOffset >= len) {
-                paintOffset = 0;
+            final idRectangle rect = this.textRect;
+            if (this.paintOffset >= len) {
+                this.paintOffset = 0;
             }
-            if (cursorPos > len) {
-                cursorPos = len;
+            if (this.cursorPos > len) {
+                this.cursorPos = len;
             }
 //            dc->DrawText(&text[paintOffset], scale, 0, foreColor, rect, false, ((flags & WIN_FOCUS) || showCursor) ? cursorPos - paintOffset : -1);
-            dc.DrawText(text.data.getData().substring(paintOffset), scale, 0, foreColor.data, rect, false, (itob(flags & WIN_FOCUS) || showCursor) ? cursorPos - paintOffset : -1);
+            this.dc.DrawText(this.text.data.getData().substring(this.paintOffset), scale, 0, this.foreColor.data, rect, false, (itob(this.flags & WIN_FOCUS) || this.showCursor) ? this.cursorPos - this.paintOffset : -1);
         }
 
         @Override
         protected boolean ParseInternalVar(final String _name, idParser src) {
             if (idStr.Icmp(_name, "cursorvar") == 0) {
-                ParseString(src, cursorVar);
+                ParseString(src, this.cursorVar);
                 return true;
             }
             if (idStr.Icmp(_name, "showcursor") == 0) {
-                showCursor = src.ParseBool();
+                this.showCursor = src.ParseBool();
                 return true;
             }
             return super.ParseInternalVar(_name, src);
         }
 
         private void CommonInit() {
-            cursorPos = 0;
-            lastTextLength = 0;
-            lastCursorPos = 0;
-            paintOffset = 0;
-            showCursor = false;
+            this.cursorPos = 0;
+            this.lastTextLength = 0;
+            this.lastCursorPos = 0;
+            this.paintOffset = 0;
+            this.showCursor = false;
         }
 
         private void CalcPaintOffset(int len) {
-            lastCursorPos = cursorPos;
-            lastTextLength = len;
-            paintOffset = 0;
-            int tw = dc.TextWidth(text.data, textScale.data, -1);
-            if (tw < textRect.w) {
+            this.lastCursorPos = this.cursorPos;
+            this.lastTextLength = len;
+            this.paintOffset = 0;
+            int tw = this.dc.TextWidth(this.text.data, this.textScale.data, -1);
+            if (tw < this.textRect.w) {
                 return;
             }
-            while (tw > textRect.w && len > 0) {
-                tw = dc.TextWidth(text.data, textScale.data, --len);
-                paintOffset++;
+            while ((tw > this.textRect.w) && (len > 0)) {
+                tw = this.dc.TextWidth(this.text.data, this.textScale.data, --len);
+                this.paintOffset++;
             }
         }
-    };
+    }
 }

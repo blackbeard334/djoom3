@@ -70,19 +70,19 @@ import neo.idlib.math.Vector.idVec3;
 public final class idProgram {
     public static final int BYTES = Integer.BYTES * 20;//TODO:
 
-    private idStrList fileList = new idStrList();
-    private idStr     filename = new idStr();
+    private final idStrList fileList = new idStrList();
+    private final idStr     filename = new idStr();
     private int filenum;
     //
     private int numVariables;
     private byte[]                    variables        = new byte[MAX_GLOBALS];
-    private idStaticList<Byte>        variableDefaults = new idStaticList<>(MAX_GLOBALS);
-    private idStaticList<function_t>  functions        = new idStaticList<>(MAX_FUNCS, function_t.class);
-    private idStaticList<statement_s> statements       = new idStaticList<>(MAX_STATEMENTS, statement_s.class);
-    private idList<idTypeDef>         types            = new idList<>();
-    private idList<idVarDefName>      varDefNames      = new idList<>();
-    private idHashIndex               varDefNameHash   = new idHashIndex();
-    private idList<idVarDef>          varDefs          = new idList<>();
+    private final idStaticList<Byte>        variableDefaults = new idStaticList<>(MAX_GLOBALS);
+    private final idStaticList<function_t>  functions        = new idStaticList<>(MAX_FUNCS, function_t.class);
+    private final idStaticList<statement_s> statements       = new idStaticList<>(MAX_STATEMENTS, statement_s.class);
+    private final idList<idTypeDef>         types            = new idList<>();
+    private final idList<idVarDefName>      varDefNames      = new idList<>();
+    private final idHashIndex               varDefNameHash   = new idHashIndex();
+    private final idList<idVarDef>          varDefs          = new idList<>();
     //
     private idVarDef sysDef;
     //
@@ -116,37 +116,37 @@ public final class idProgram {
         gameLocal.DPrintf("Files loaded:\n");
 
         stringspace = 0;
-        for (i = 0; i < fileList.Num(); i++) {
-            gameLocal.DPrintf("   %s\n", fileList.oGet(i));
-            stringspace += fileList.oGet(i).Allocated();
+        for (i = 0; i < this.fileList.Num(); i++) {
+            gameLocal.DPrintf("   %s\n", this.fileList.oGet(i));
+            stringspace += this.fileList.oGet(i).Allocated();
         }
-        stringspace += fileList.Size();
+        stringspace += this.fileList.Size();
 
-        numdefs = varDefs.Num();
-        memused = varDefs.Num() * idVarDef.BYTES;
-        memused += types.Num() * idTypeDef.BYTES;
+        numdefs = this.varDefs.Num();
+        memused = this.varDefs.Num() * idVarDef.BYTES;
+        memused += this.types.Num() * idTypeDef.BYTES;
         memused += stringspace;
 
-        for (i = 0; i < types.Num(); i++) {
-            memused += types.oGet(i).Allocated();
+        for (i = 0; i < this.types.Num(); i++) {
+            memused += this.types.oGet(i).Allocated();
         }
 
-        funcMem = functions.MemoryUsed();
-        for (i = 0; i < functions.Num(); i++) {
-            funcMem += functions.oGet(i).Allocated();
+        funcMem = this.functions.MemoryUsed();
+        for (i = 0; i < this.functions.Num(); i++) {
+            funcMem += this.functions.oGet(i).Allocated();
         }
 
         memallocated = funcMem + memused + idProgram.BYTES;
 
-        memused += statements.MemoryUsed();
-        memused += functions.MemoryUsed();    // name and filename of functions are shared, so no need to include them
-        memused += variables.length;
+        memused += this.statements.MemoryUsed();
+        memused += this.functions.MemoryUsed();    // name and filename of functions are shared, so no need to include them
+        memused += this.variables.length;
 
         gameLocal.Printf("\nMemory usage:\n");
-        gameLocal.Printf("     Strings: %d, %d bytes\n", fileList.Num(), stringspace);
-        gameLocal.Printf("  Statements: %d, %d bytes\n", statements.Num(), statements.MemoryUsed());
-        gameLocal.Printf("   Functions: %d, %d bytes\n", functions.Num(), funcMem);
-        gameLocal.Printf("   Variables: %d bytes\n", numVariables);
+        gameLocal.Printf("     Strings: %d, %d bytes\n", this.fileList.Num(), stringspace);
+        gameLocal.Printf("  Statements: %d, %d bytes\n", this.statements.Num(), this.statements.MemoryUsed());
+        gameLocal.Printf("   Functions: %d, %d bytes\n", this.functions.Num(), funcMem);
+        gameLocal.Printf("   Variables: %d bytes\n", this.numVariables);
         gameLocal.Printf("    Mem used: %d bytes\n", memused);
         gameLocal.Printf(" Static data: %d bytes\n", idProgram.BYTES);
         gameLocal.Printf("   Allocated: %d bytes\n", memallocated);
@@ -161,37 +161,37 @@ public final class idProgram {
     // save games
     public void Save(idSaveGame savefile) {
         int i;
-        int currentFileNum = top_files;
+        int currentFileNum = this.top_files;
 
-        savefile.WriteInt((fileList.Num() - currentFileNum));
-        while (currentFileNum < fileList.Num()) {
-            savefile.WriteString(fileList.oGet(currentFileNum));
+        savefile.WriteInt((this.fileList.Num() - currentFileNum));
+        while (currentFileNum < this.fileList.Num()) {
+            savefile.WriteString(this.fileList.oGet(currentFileNum));
             currentFileNum++;
         }
 
-        for (i = 0; i < variableDefaults.Num(); i++) {
-            if (variables[i] != variableDefaults.oGet(i)) {
+        for (i = 0; i < this.variableDefaults.Num(); i++) {
+            if (this.variables[i] != this.variableDefaults.oGet(i)) {
                 savefile.WriteInt(i);
-                savefile.WriteByte(variables[i]);
+                savefile.WriteByte(this.variables[i]);
             }
         }
         // Mark the end of the diff with default variables with -1
         savefile.WriteInt(-1);
 
-        savefile.WriteInt(numVariables);
-        for (i = variableDefaults.Num(); i < numVariables; i++) {
-            savefile.WriteByte(variables[i]);
+        savefile.WriteInt(this.numVariables);
+        for (i = this.variableDefaults.Num(); i < this.numVariables; i++) {
+            savefile.WriteByte(this.variables[i]);
         }
 
-        int checksum = CalculateChecksum();
+        final int checksum = CalculateChecksum();
         savefile.WriteInt(checksum);
     }
 
     public boolean Restore(idRestoreGame savefile) {
         int i;
-        int[] num = {0}, index = {0};
+        final int[] num = {0}, index = {0};
         boolean result = true;
-        idStr scriptname = new idStr();
+        final idStr scriptname = new idStr();
 
         savefile.ReadInt(num);
         for (i = 0; i < num[0]; i++) {
@@ -201,16 +201,16 @@ public final class idProgram {
 
         savefile.ReadInt(index);
         while (index[0] >= 0) {
-            variables[index[0]] = savefile.ReadByte();
+            this.variables[index[0]] = savefile.ReadByte();
             savefile.ReadInt(index);
         }
 
         savefile.ReadInt(num);
-        for (i = variableDefaults.Num(); i < num[0]; i++) {
-            variables[i] = savefile.ReadByte();
+        for (i = this.variableDefaults.Num(); i < num[0]; i++) {
+            this.variables[i] = savefile.ReadByte();
         }
 
-        int[] saved_checksum = {0};
+        final int[] saved_checksum = {0};
         int checksum;
 
         savefile.ReadInt(saved_checksum);
@@ -237,42 +237,42 @@ public final class idProgram {
             int file;
 
             int[] toArray() {
-                return new int[]{op, a, b, c, lineNumber, file};
+                return new int[]{this.op, this.a, this.b, this.c, this.lineNumber, this.file};
             }
-        };
+        }
 
-        statementBlock_t[] statementList = new statementBlock_t[statements.Num()];
-        int[] statementIntArray = new int[statements.Num() * 6];
+        final statementBlock_t[] statementList = new statementBlock_t[this.statements.Num()];
+        final int[] statementIntArray = new int[this.statements.Num() * 6];
 
 //	memset( statementList, 0, ( sizeof(statementBlock_t) * statements.Num() ) );
         // Copy info into new list, using the variable numbers instead of a pointer to the variable
-        for (i = 0; i < statements.Num(); i++) {
+        for (i = 0; i < this.statements.Num(); i++) {
             statementList[i] = new statementBlock_t();
-            statementList[i].op = statements.oGet(i).op;
+            statementList[i].op = this.statements.oGet(i).op;
 
-            if (statements.oGet(i).a != null) {
-                statementList[i].a = statements.oGet(i).a.num;
+            if (this.statements.oGet(i).a != null) {
+                statementList[i].a = this.statements.oGet(i).a.num;
             } else {
                 statementList[i].a = -1;
             }
-            if (statements.oGet(i).b != null) {
-                statementList[i].b = statements.oGet(i).b.num;
+            if (this.statements.oGet(i).b != null) {
+                statementList[i].b = this.statements.oGet(i).b.num;
             } else {
                 statementList[i].b = -1;
             }
-            if (statements.oGet(i).c != null) {
-                statementList[i].c = statements.oGet(i).c.num;
+            if (this.statements.oGet(i).c != null) {
+                statementList[i].c = this.statements.oGet(i).c.num;
             } else {
                 statementList[i].c = -1;
             }
 
-            statementList[i].lineNumber = statements.oGet(i).linenumber;
-            statementList[i].file = statements.oGet(i).file;
+            statementList[i].lineNumber = this.statements.oGet(i).linenumber;
+            statementList[i].file = this.statements.oGet(i).file;
 
             System.arraycopy(statementList[i].toArray(), 0, statementIntArray, i * 6, 6);
         }
 
-        result = new BigInteger(MD4_BlockChecksum(statementIntArray, /*sizeof(statementBlock_t)*/ statements.Num())).intValue();
+        result = new BigInteger(MD4_BlockChecksum(statementIntArray, /*sizeof(statementBlock_t)*/ this.statements.Num())).intValue();
 
 //	delete [] statementList;
         return result;
@@ -316,59 +316,59 @@ public final class idProgram {
 //	for( i = top_types; i < types.Num(); i++ ) {
 //		delete types[ i ];
 //	}
-        types.SetNum(top_types, false);
+        this.types.SetNum(this.top_types, false);
 
 //	for( i = top_defs; i < varDefs.Num(); i++ ) {
 //		delete varDefs[ i ];
 //	}
-        varDefs.SetNum(top_defs, false);
+        this.varDefs.SetNum(this.top_defs, false);
 
-        for (i = top_functions; i < functions.Num(); i++) {
-            functions.oGet(i).Clear();
+        for (i = this.top_functions; i < this.functions.Num(); i++) {
+            this.functions.oGet(i).Clear();
         }
-        functions.SetNum(top_functions);
+        this.functions.SetNum(this.top_functions);
 
-        statements.SetNum(top_statements);
-        fileList.SetNum(top_files, false);
-        filename.Clear();
+        this.statements.SetNum(this.top_statements);
+        this.fileList.SetNum(this.top_files, false);
+        this.filename.Clear();
 
         // reset the variables to their default values
-        numVariables = variableDefaults.Num();
-        for (i = 0; i < numVariables; i++) {
-            variables[ i] = variableDefaults.oGet(i);
+        this.numVariables = this.variableDefaults.Num();
+        for (i = 0; i < this.numVariables; i++) {
+            this.variables[ i] = this.variableDefaults.oGet(i);
         }
     }
 
     public boolean CompileText(final String source, final String text, boolean console) {
-        idCompiler compiler = new idCompiler();
+        final idCompiler compiler = new idCompiler();
         int i;
         idVarDef def;
         String ospath;
 
         // use a full os path for GetFilenum since it calls OSPathToRelativePath to convert filenames from the parser
         ospath = fileSystem.RelativePathToOSPath(source);
-        filenum = GetFilenum(ospath);
+        this.filenum = GetFilenum(ospath);
 
         try {
-            compiler.CompileFile(text, filename.getData(), console);
+            compiler.CompileFile(text, this.filename.getData(), console);
 
             // check to make sure all functions prototyped have code
-            for (i = 0; i < varDefs.Num(); i++) {
-                def = varDefs.oGet(i);
+            for (i = 0; i < this.varDefs.Num(); i++) {
+                def = this.varDefs.oGet(i);
                 if ((def.Type() == ev_function) && ((def.scope.Type() == ev_namespace) || def.scope.TypeDef().Inherits(type_object))) {
-                    if (null == def.value.functionPtr.eventdef && 0 == def.value.functionPtr.firstStatement) {
+                    if ((null == def.value.functionPtr.eventdef) && (0 == def.value.functionPtr.firstStatement)) {
                         throw new idCompileError(va("function %s was not defined\n", def.GlobalName()));
                     }
                 }
             }
-        } catch (idCompileError err) {
+        } catch (final idCompileError err) {
             if (console) {
                 gameLocal.Printf("%s\n", err.error);
                 return false;
             } else {
                 gameLocal.Error("%s\n", err.error);
             }
-        };
+        }
 
         if (!console) {
             CompileStats();
@@ -394,7 +394,7 @@ public final class idProgram {
     }
 
     public void CompileFile(final String filename) {
-        ByteBuffer[] src = {null};
+        final ByteBuffer[] src = {null};
         boolean result;
 
         if (fileSystem.ReadFile(filename, src, null) < 0) {
@@ -439,14 +439,14 @@ public final class idProgram {
             // define NULL
             //AllocDef( &type_void, "<NULL>", &def_namespace, true );
             // define the return def
-            returnDef = AllocDef(type_vector, "<RETURN>", def_namespace, false);
+            this.returnDef = AllocDef(type_vector, "<RETURN>", def_namespace, false);
 
             // define the return def for strings
-            returnStringDef = AllocDef(type_string, "<RETURN>", def_namespace, false);
+            this.returnStringDef = AllocDef(type_string, "<RETURN>", def_namespace, false);
 
             // define the sys object
-            sysDef = AllocDef(type_void, "sys", def_namespace, true);
-        } catch (idCompileError err) {
+            this.sysDef = AllocDef(type_void, "sys", def_namespace, true);
+        } catch (final idCompileError err) {
             gameLocal.Error("%s", err.error);
         }
     }
@@ -461,17 +461,17 @@ public final class idProgram {
     public void FinishCompilation() {
         int i;
 
-        top_functions = functions.Num();
-        top_statements = statements.Num();
-        top_types = types.Num();
-        top_defs = varDefs.Num();
-        top_files = fileList.Num();
+        this.top_functions = this.functions.Num();
+        this.top_statements = this.statements.Num();
+        this.top_types = this.types.Num();
+        this.top_defs = this.varDefs.Num();
+        this.top_files = this.fileList.Num();
 
-        variableDefaults.Clear();
-        variableDefaults.SetNum(numVariables);
+        this.variableDefaults.Clear();
+        this.variableDefaults.SetNum(this.numVariables);
 
-        for (i = 0; i < numVariables; i++) {
-            variableDefaults.oSet(i, variables[i]);
+        for (i = 0; i < this.numVariables; i++) {
+            this.variableDefaults.oSet(i, this.variables[i]);
         }
     }
 
@@ -479,9 +479,9 @@ public final class idProgram {
         opcode_s op;
         statement_s statement;
 
-        statement = statements.oGet(instructionPointer);
+        statement = this.statements.oGet(instructionPointer);
         op = idCompiler.opcodes[ statement.op];
-        file.Printf("%20s(%d):\t%6d: %15s\t", fileList.oGet(statement.file), statement.linenumber, instructionPointer, op.opname);
+        file.Printf("%20s(%d):\t%6d: %15s\t", this.fileList.oGet(statement.file), statement.linenumber, instructionPointer, op.opname);
 
         if (statement.a != null) {
             file.Printf("\ta: ");
@@ -509,8 +509,8 @@ public final class idProgram {
 
         file = fileSystem.OpenFileByMode("script/disasm.txt", FS_WRITE);
 
-        for (i = 0; i < functions.Num(); i++) {
-            func = functions.oGet(i);
+        for (i = 0; i < this.functions.Num(); i++) {
+            func = this.functions.oGet(i);
             if (func.eventdef != null) {
                 // skip eventdefs
                 continue;
@@ -532,79 +532,79 @@ public final class idProgram {
         int i;
 
         // free the defs
-        varDefs.DeleteContents(true);
-        varDefNames.DeleteContents(true);
-        varDefNameHash.Free();
+        this.varDefs.DeleteContents(true);
+        this.varDefNames.DeleteContents(true);
+        this.varDefNameHash.Free();
 
-        returnDef = null;
-        returnStringDef = null;
-        sysDef = null;
+        this.returnDef = null;
+        this.returnStringDef = null;
+        this.sysDef = null;
 
         // free any special types we've created
-        types.DeleteContents(true);
+        this.types.DeleteContents(true);
 
-        filenum = 0;
+        this.filenum = 0;
 
-        numVariables = 0;
+        this.numVariables = 0;
 //	memset( variables, 0, sizeof( variables ) );
-        variables = new byte[variables.length];
+        this.variables = new byte[this.variables.length];
 
         // clear all the strings in the functions so that it doesn't look like we're leaking memory.
-        for (i = 0; i < functions.Num(); i++) {
-            functions.oGet(i).Clear();
+        for (i = 0; i < this.functions.Num(); i++) {
+            this.functions.oGet(i).Clear();
         }
 
-        filename.Clear();
-        fileList.Clear();
-        statements.Clear();
-        functions.Clear();
+        this.filename.Clear();
+        this.fileList.Clear();
+        this.statements.Clear();
+        this.functions.Clear();
 
-        top_functions = 0;
-        top_statements = 0;
-        top_types = 0;
-        top_defs = 0;
-        top_files = 0;
+        this.top_functions = 0;
+        this.top_statements = 0;
+        this.top_types = 0;
+        this.top_defs = 0;
+        this.top_files = 0;
 
-        filename.oSet("");
+        this.filename.oSet("");
     }
 
     public String GetFilename(int num) {
-        return fileList.oGet(num).getData();
+        return this.fileList.oGet(num).getData();
     }
 
     public int GetFilenum(final String name) {
-        if (filename.equals(name)) {
-            return filenum;
+        if (this.filename.equals(name)) {
+            return this.filenum;
         }
 
         String strippedName;
         strippedName = fileSystem.OSPathToRelativePath(name);
         if (isNotNullOrEmpty(strippedName)) {
             // not off the base path so just use the full path
-            filenum = fileList.AddUnique(name);
+            this.filenum = this.fileList.AddUnique(name);
         } else {
-            filenum = fileList.AddUnique(strippedName);
+            this.filenum = this.fileList.AddUnique(strippedName);
         }
 
         // save the unstripped name so that we don't have to strip the incoming name every time we call GetFilenum
-        filename.oSet(name);
+        this.filename.oSet(name);
 
-        return filenum;
+        return this.filenum;
     }
 
     public int GetLineNumberForStatement(int index) {
-        return statements.oGet(index).linenumber;
+        return this.statements.oGet(index).linenumber;
     }
 
     public String GetFilenameForStatement(int index) {
-        return GetFilename(statements.oGet(index).file);
+        return GetFilename(this.statements.oGet(index).file);
     }
 
     public idTypeDef AllocType(idTypeDef type) {
         idTypeDef newtype;
 
         newtype = new idTypeDef(type);
-        types.Append(newtype);
+        this.types.Append(newtype);
 
         return newtype;
     }
@@ -613,7 +613,7 @@ public final class idProgram {
         idTypeDef newtype;
 
         newtype = new idTypeDef(etype, edef, ename, esize, aux);
-        types.Append(newtype);
+        this.types.Append(newtype);
 
         return newtype;
     }
@@ -630,9 +630,9 @@ public final class idProgram {
         int i;
 
         //FIXME: linear search == slow
-        for (i = types.Num() - 1; i >= 0; i--) {
-            if (types.oGet(i).MatchesType(type) && types.oGet(i).Name().equals(type.Name())) {
-                return types.oGet(i);
+        for (i = this.types.Num() - 1; i >= 0; i--) {
+            if (this.types.oGet(i).MatchesType(type) && this.types.oGet(i).Name().equals(type.Name())) {
+                return this.types.oGet(i);
             }
         }
 
@@ -655,8 +655,8 @@ public final class idProgram {
         idTypeDef check;
         int i;
 
-        for (i = types.Num() - 1; i >= 0; i--) {
-            check = types.oGet(i);
+        for (i = this.types.Num() - 1; i >= 0; i--) {
+            check = this.types.oGet(i);
             if (check.Name().equals(name)) {
                 return check;
             }
@@ -676,7 +676,7 @@ public final class idProgram {
         def = new idVarDef(type);
         def.scope = scope;
         def.numUsers = 1;
-        def.num = varDefs.Append(def);
+        def.num = this.varDefs.Append(def);
         def.value = new varEval_s();
 
         // add the def to the list with defs with this name and set the name pointer
@@ -693,8 +693,8 @@ public final class idProgram {
                 def.initialized = stackVariable;
                 scope.value.functionPtr.locals += type.Size();
             } else if (scope.TypeDef().Inherits(type_object)) {
-                idTypeDef newtype = new idTypeDef(ev_field, null, "float field", 0, type_float);
-                idTypeDef type2 = GetType(newtype, true);
+                final idTypeDef newtype = new idTypeDef(ev_field, null, "float field", 0, type_float);
+                final idTypeDef type2 = GetType(newtype, true);
 
                 // set the value to the variable's position in the object
                 def.value.setPtrOffset(scope.TypeDef().Size());
@@ -752,14 +752,14 @@ public final class idProgram {
             //
             // global variable
             //
-            def.value.setBytePtr(variables, numVariables);
-            numVariables += def.TypeDef().Size();
+            def.value.setBytePtr(this.variables, this.numVariables);
+            this.numVariables += def.TypeDef().Size();
 //            System.out.println(def.TypeDef().Name());
-            if (numVariables > variables.length) {
-                throw new idCompileError(va("Exceeded global memory size (%d bytes)", variables.length));
+            if (this.numVariables > this.variables.length) {
+                throw new idCompileError(va("Exceeded global memory size (%d bytes)", this.variables.length));
             }
 
-            Arrays.fill(variables, numVariables, variables.length, (byte) 0);
+            Arrays.fill(this.variables, this.numVariables, this.variables.length, (byte) 0);
 //                memset(def.value.bytePtr, 0, def.TypeDef().Size());
         }
 
@@ -795,14 +795,14 @@ public final class idProgram {
                 depth = 1;
             }
 
-            if (null == bestDef || (depth < bestDepth)) {
+            if ((null == bestDef) || (depth < bestDepth)) {
                 bestDepth = depth;
                 bestDef = def;
             }
         }
 
         // see if the name is already in use for another type
-        if (bestDef != null && type != null && (!bestDef.TypeDef().equals(type))) {
+        if ((bestDef != null) && (type != null) && (!bestDef.TypeDef().equals(type))) {
             throw new idCompileError(va("Type mismatch on redeclaration of %s", name));
         }
 
@@ -835,9 +835,9 @@ public final class idProgram {
             }
         }
 
-        varDefs.RemoveIndex(def.num);
-        for (i = def.num; i < varDefs.Num(); i++) {
-            varDefs.oGet(i).num = i;
+        this.varDefs.RemoveIndex(def.num);
+        for (i = def.num; i < this.varDefs.Num(); i++) {
+            this.varDefs.oGet(i).num = i;
         }
 
         def.close();
@@ -868,10 +868,10 @@ public final class idProgram {
     public idVarDef GetDefList(final String name) {
         int i, hash;
 
-        hash = varDefNameHash.GenerateKey(name, true);
-        for (i = varDefNameHash.First(hash); i != -1; i = varDefNameHash.Next(i)) {
-            if (idStr.Cmp(varDefNames.oGet(i).Name(), name) == 0) {
-                return varDefNames.oGet(i).GetDefs();
+        hash = this.varDefNameHash.GenerateKey(name, true);
+        for (i = this.varDefNameHash.First(hash); i != -1; i = this.varDefNameHash.Next(i)) {
+            if (idStr.Cmp(this.varDefNames.oGet(i).Name(), name) == 0) {
+                return this.varDefNames.oGet(i).GetDefs();
             }
         }
         return null;
@@ -880,17 +880,17 @@ public final class idProgram {
     public void AddDefToNameList(idVarDef def, final String name) {
         int i, hash;
 
-        hash = varDefNameHash.GenerateKey(name, true);
-        for (i = varDefNameHash.First(hash); i != -1; i = varDefNameHash.Next(i)) {
-            if (idStr.Cmp(varDefNames.oGet(i).Name(), name) == 0) {
+        hash = this.varDefNameHash.GenerateKey(name, true);
+        for (i = this.varDefNameHash.First(hash); i != -1; i = this.varDefNameHash.Next(i)) {
+            if (idStr.Cmp(this.varDefNames.oGet(i).Name(), name) == 0) {
                 break;
             }
         }
         if (i == -1) {
-            i = varDefNames.Append(new idVarDefName(name));
-            varDefNameHash.Add(hash, i);
+            i = this.varDefNames.Append(new idVarDefName(name));
+            this.varDefNameHash.Add(hash, i);
         }
-        varDefNames.oGet(i).AddDef(def);
+        this.varDefNames.oGet(i).AddDef(def);
     }
 
     /*
@@ -912,7 +912,7 @@ public final class idProgram {
 
         assert (name != null);
 
-        idStr fullname = new idStr(name);
+        final idStr fullname = new idStr(name);
         start = 0;
         namespaceDef = def_namespace;
         do {
@@ -921,7 +921,7 @@ public final class idProgram {
                 break;
             }
 
-            String namespaceName = fullname.Mid(start, pos - start).getData();
+            final String namespaceName = fullname.Mid(start, pos - start).getData();
             def = GetDef(null, namespaceName, namespaceDef);
             if (null == def) {
                 // couldn't find namespace
@@ -933,7 +933,7 @@ public final class idProgram {
             start = pos + 2;
         } while (def.Type() == ev_namespace);
 
-        String funcName = fullname.Right(fullname.Length() - start).getData();
+        final String funcName = fullname.Right(fullname.Length() - start).getData();
         def = GetDef(null, funcName, namespaceDef);
         if (null == def) {
             // couldn't find function
@@ -979,12 +979,12 @@ public final class idProgram {
     }
 
     public function_t AllocFunction(idVarDef def) {
-        if (functions.Num() >= functions.Max()) {
-            throw new idCompileError(va("Exceeded maximum allowed number of functions (%d)", functions.Max()));
+        if (this.functions.Num() >= this.functions.Max()) {
+            throw new idCompileError(va("Exceeded maximum allowed number of functions (%d)", this.functions.Max()));
         }
 
         // fill in the dfunction
-        function_t func = functions.Alloc();
+        final function_t func = this.functions.Alloc();
         func.eventdef = null;
         func.def = def;
         func.type = def.TypeDef();
@@ -992,7 +992,7 @@ public final class idProgram {
         func.numStatements = 0;
         func.parmTotal = 0;
         func.locals = 0;
-        func.filenum = filenum;
+        func.filenum = this.filenum;
         func.parmSize.SetGranularity(1);
         func.SetName(def.GlobalName());
 
@@ -1002,11 +1002,11 @@ public final class idProgram {
     }
 
     public function_t GetFunction(int index) {
-        return functions.oGet(index);
+        return this.functions.oGet(index);
     }
 
     public int GetFunctionIndex(final function_t func) {
-        return indexOf(func, functions.Ptr());
+        return indexOf(func, this.functions.Ptr());
     }
 
     public void SetEntity(final String name, idEntity ent) {
@@ -1016,7 +1016,7 @@ public final class idProgram {
         defName += name;
 
         def = GetDef(type_entity, defName, def_namespace);
-        if (def != null && (def.initialized != stackVariable)) {
+        if ((def != null) && (def.initialized != stackVariable)) {
             // 0 is reserved for NULL entity
             if (null == ent) {
                 def.value.setEntityNumberPtr(0);
@@ -1027,55 +1027,55 @@ public final class idProgram {
     }
 
     public statement_s AllocStatement() {
-        if (statements.Num() == 61960) {
-            int a = 0;
+        if (this.statements.Num() == 61960) {
+            final int a = 0;
         }
-        if (statements.Num() >= statements.Max()) {
-            throw new idCompileError(va("Exceeded maximum allowed number of statements (%d)", statements.Max()));
+        if (this.statements.Num() >= this.statements.Max()) {
+            throw new idCompileError(va("Exceeded maximum allowed number of statements (%d)", this.statements.Max()));
         }
-        return statements.Alloc();
+        return this.statements.Alloc();
     }
 
     public statement_s GetStatement(int index) {
         if (index == 61961) {
-            int a = 0;
+            final int a = 0;
         }
-        return statements.oGet(index);
+        return this.statements.oGet(index);
     }
 
     public int NumStatements() {
-        return statements.Num();
+        return this.statements.Num();
     }
 
     public int GetReturnedInteger() {
-        return returnDef.value.getIntPtr();
+        return this.returnDef.value.getIntPtr();
     }
 
     public void ReturnFloat(float value) {
-        returnDef.value.setFloatPtr(value);
+        this.returnDef.value.setFloatPtr(value);
     }
 
     public void ReturnInteger(int value) {
-        returnDef.value.setIntPtr(value);
+        this.returnDef.value.setIntPtr(value);
     }
 
     public void ReturnVector(idVec3 vec) {
-        returnDef.value.setVectorPtr(vec);
+        this.returnDef.value.setVectorPtr(vec);
     }
 
     public void ReturnString(final String string) {
-        returnStringDef.value.stringPtr = string;//idStr.Copynz(returnStringDef.value.stringPtr, string, MAX_STRING_LEN);
+        this.returnStringDef.value.stringPtr = string;//idStr.Copynz(returnStringDef.value.stringPtr, string, MAX_STRING_LEN);
     }
 
     public void ReturnEntity(idEntity ent) {
         if (ent != null) {
-            returnDef.value.setEntityNumberPtr(ent.entityNumber + 1);
+            this.returnDef.value.setEntityNumberPtr(ent.entityNumber + 1);
         } else {
-            returnDef.value.setEntityNumberPtr(0);
+            this.returnDef.value.setEntityNumberPtr(0);
         }
     }
 
     public int NumFilenames() {
-        return fileList.Num();
+        return this.fileList.Num();
     }
-};
+}

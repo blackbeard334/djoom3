@@ -167,24 +167,24 @@ public class Vector {
 
         @Override
         public void Zero() {
-            x = y = 0.0f;
+            this.x = this.y = 0.0f;
         }
 
         //public	float			operator[]( int index ) const;
         @Override
         public float oSet(final int index, final float value) {
             if (index == 1) {
-                return y = value;
+                return this.y = value;
             } else {
-                return x = value;
+                return this.x = value;
             }
         }
 
         public float oPluSet(final int index, final float value) {
             if (index == 1) {
-                return y += value;
+                return this.y += value;
             } else {
-                return x += value;
+                return this.x += value;
             }
         }
 //public	float &			operator[]( int index );
@@ -192,16 +192,16 @@ public class Vector {
         @Override
         public float oGet(final int index) {//TODO:rename you lazy sod
             if (index == 1) {
-                return y;
+                return this.y;
             }
-            return x;
+            return this.x;
         }
 //public	idVec2			operator-() const;
 
         //public	float			operator*( const idVec2 &a ) const;
         @Override
         public float oMultiply(final idVec2 a) {
-            return this.x * a.x + this.y * a.y;
+            return (this.x * a.x) + (this.y * a.y);
         }
 
         //public	idVec2			operator*( const float a ) const;
@@ -213,8 +213,8 @@ public class Vector {
 
         @Override
         public idVec2 oDivide(final float a) {
-            float inva = 1.0f / a;
-            return new idVec2(x * inva, y * inva);
+            final float inva = 1.0f / a;
+            return new idVec2(this.x * inva, this.y * inva);
         }
 
         //public	idVec2			operator+( const idVec2 &a ) const;
@@ -262,15 +262,15 @@ public class Vector {
         }
 
         public boolean Compare(final idVec2 a) {// exact compare, no epsilon
-            return ((x == a.x) && (y == a.y));
+            return ((this.x == a.x) && (this.y == a.y));
         }
 
         public boolean Compare(final idVec2 a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(x - a.x) > epsilon) {
+            if (idMath.Fabs(this.x - a.x) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(y - a.y) > epsilon) {
+            if (idMath.Fabs(this.y - a.y) > epsilon) {
                 return false;
             }
 
@@ -280,37 +280,37 @@ public class Vector {
 //public	bool			operator!=(	const idVec2 &a ) const;						// exact compare, no epsilon
 
         public float Length() {
-            return (float) idMath.Sqrt(x * x + y * y);
+            return idMath.Sqrt((this.x * this.x) + (this.y * this.y));
         }
 
         public float LengthFast() {
             float sqrLength;
 
-            sqrLength = x * x + y * y;
+            sqrLength = (this.x * this.x) + (this.y * this.y);
             return sqrLength * idMath.RSqrt(sqrLength);
         }
 
         public float LengthSqr() {
-            return (x * x + y * y);
+            return ((this.x * this.x) + (this.y * this.y));
         }
 
         public float Normalize() {// returns length
             float sqrLength, invLength;
 
-            sqrLength = x * x + y * y;
+            sqrLength = (this.x * this.x) + (this.y * this.y);
             invLength = idMath.InvSqrt(sqrLength);
-            x *= invLength;
-            y *= invLength;
+            this.x *= invLength;
+            this.y *= invLength;
             return invLength * sqrLength;
         }
 
         public float NormalizeFast() {// returns length
             float lengthSqr, invLength;
 
-            lengthSqr = x * x + y * y;
+            lengthSqr = (this.x * this.x) + (this.y * this.y);
             invLength = idMath.RSqrt(lengthSqr);
-            x *= invLength;
-            y *= invLength;
+            this.x *= invLength;
+            this.y *= invLength;
             return invLength * lengthSqr;
         }
 
@@ -322,10 +322,10 @@ public class Vector {
                 Zero();
             } else {
                 length2 = LengthSqr();
-                if (length2 > length * length) {
+                if (length2 > (length * length)) {
                     ilength = length * idMath.InvSqrt(length2);
-                    x *= ilength;
-                    y *= ilength;
+                    this.x *= ilength;
+                    this.y *= ilength;
                 }
             }
 
@@ -333,27 +333,27 @@ public class Vector {
         }
 
         public void Clamp(final idVec2 min, final idVec2 max) {
-            if (x < min.x) {
-                x = min.x;
-            } else if (x > max.x) {
-                x = max.x;
+            if (this.x < min.x) {
+                this.x = min.x;
+            } else if (this.x > max.x) {
+                this.x = max.x;
             }
-            if (y < min.y) {
-                y = min.y;
-            } else if (y > max.y) {
-                y = max.y;
+            if (this.y < min.y) {
+                this.y = min.y;
+            } else if (this.y > max.y) {
+                this.y = max.y;
             }
         }
 
         public void Snap() {// snap to closest integer value
 //            x = floor(x + 0.5f);
-            x = (float) Math.floor(x + 0.5f);
-            y = (float) Math.floor(y + 0.5f);
+            this.x = (float) Math.floor(this.x + 0.5f);
+            this.y = (float) Math.floor(this.y + 0.5f);
         }
 
         public void SnapInt() {// snap towards integer (floor)
-            x = (float) (int) x;
-            y = (float) (int) y;
+            this.x = (int) this.x;
+            this.y = (int) this.y;
         }
 
         @Override
@@ -362,7 +362,7 @@ public class Vector {
         }
 
         public float[] ToFloatPtr() {
-            return new float[]{x, y};
+            return new float[]{this.x, this.y};
         }
 //public	float *			ToFloatPtr( void );
 
@@ -376,7 +376,7 @@ public class Vector {
 
         @Override
         public String toString() {
-            return x + " " + y;
+            return this.x + " " + this.y;
         }
 
         /*
@@ -470,14 +470,14 @@ public class Vector {
 
         @Override
         public void Zero() {
-            x = y = z = 0.0f;
+            this.x = this.y = this.z = 0.0f;
         }
 
         //public	float			operator[]( final  int index ) final ;
 //public	float &			operator[]( final  int index );
 //public	idVec3			operator-() final ;
         public idVec3 oNegative() {
-            return new idVec3(-x, -y, -z);
+            return new idVec3(-this.x, -this.y, -this.z);
         }
 
         //public	idVec3 &		operator=( final  idVec3 &a );		// required because of a msvc 6 & 7 bug
@@ -498,7 +498,7 @@ public class Vector {
         //public	float			operator*( final  idVec3 &a ) final ;
         @Override
         public float oMultiply(final idVec3 a) {
-            return a.x * this.x + a.y * this.y + a.z * this.z;
+            return (a.x * this.x) + (a.y * this.y) + (a.z * this.z);
         }
 
         //public	idVec3			operator*( final  float a ) final ;
@@ -509,9 +509,9 @@ public class Vector {
 
         public idVec3 oMultiply(final idMat3 a) {
             return new idVec3(
-                    a.getRow(0).oGet(0) * x + a.getRow(1).oGet(0) * y + a.getRow(2).oGet(0) * z,
-                    a.getRow(0).oGet(1) * x + a.getRow(1).oGet(1) * y + a.getRow(2).oGet(1) * z,
-                    a.getRow(0).oGet(2) * x + a.getRow(1).oGet(2) * y + a.getRow(2).oGet(2) * z);
+                    (a.getRow(0).oGet(0) * this.x) + (a.getRow(1).oGet(0) * this.y) + (a.getRow(2).oGet(0) * this.z),
+                    (a.getRow(0).oGet(1) * this.x) + (a.getRow(1).oGet(1) * this.y) + (a.getRow(2).oGet(1) * this.z),
+                    (a.getRow(0).oGet(2) * this.x) + (a.getRow(1).oGet(2) * this.y) + (a.getRow(2).oGet(2) * this.z));
         }
 
         public idVec3 oMultiply(final idRotation a) {
@@ -525,8 +525,8 @@ public class Vector {
         //public	idVec3			operator/( final  float a ) final ;
         @Override
         public idVec3 oDivide(final float a) {
-            float inva = 1.0f / a;
-            return new idVec3(x * inva, y * inva, z * inva);
+            final float inva = 1.0f / a;
+            return new idVec3(this.x * inva, this.y * inva, this.z * inva);
         }
 
         //public	idVec3			operator+( final  idVec3 &a ) final ;F
@@ -590,19 +590,19 @@ public class Vector {
         }
 
         public boolean Compare(final idVec3 a) {// exact compare, no epsilon
-            return ((x == a.x) && (y == a.y) && (z == a.z));
+            return ((this.x == a.x) && (this.y == a.y) && (this.z == a.z));
         }
 
         public boolean Compare(final idVec3 a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(x - a.x) > epsilon) {
+            if (idMath.Fabs(this.x - a.x) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(y - a.y) > epsilon) {
+            if (idMath.Fabs(this.y - a.y) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(z - a.z) > epsilon) {
+            if (idMath.Fabs(this.z - a.z) > epsilon) {
                 return false;
             }
 
@@ -627,65 +627,65 @@ public class Vector {
         }
 
         public boolean FixDegenerateNormal() {// fix degenerate axial cases
-            if (x == 0.0f) {
-                if (y == 0.0f) {
-                    if (z > 0.0f) {
-                        if (z != 1.0f) {
-                            z = 1.0f;
+            if (this.x == 0.0f) {
+                if (this.y == 0.0f) {
+                    if (this.z > 0.0f) {
+                        if (this.z != 1.0f) {
+                            this.z = 1.0f;
                             return true;
                         }
                     } else {
-                        if (z != -1.0f) {
-                            z = -1.0f;
+                        if (this.z != -1.0f) {
+                            this.z = -1.0f;
                             return true;
                         }
                     }
                     return false;
-                } else if (z == 0.0f) {
-                    if (y > 0.0f) {
-                        if (y != 1.0f) {
-                            y = 1.0f;
+                } else if (this.z == 0.0f) {
+                    if (this.y > 0.0f) {
+                        if (this.y != 1.0f) {
+                            this.y = 1.0f;
                             return true;
                         }
                     } else {
-                        if (y != -1.0f) {
-                            y = -1.0f;
+                        if (this.y != -1.0f) {
+                            this.y = -1.0f;
                             return true;
                         }
                     }
                     return false;
                 }
-            } else if (y == 0.0f) {
-                if (z == 0.0f) {
-                    if (x > 0.0f) {
-                        if (x != 1.0f) {
-                            x = 1.0f;
+            } else if (this.y == 0.0f) {
+                if (this.z == 0.0f) {
+                    if (this.x > 0.0f) {
+                        if (this.x != 1.0f) {
+                            this.x = 1.0f;
                             return true;
                         }
                     } else {
-                        if (x != -1.0f) {
-                            x = -1.0f;
+                        if (this.x != -1.0f) {
+                            this.x = -1.0f;
                             return true;
                         }
                     }
                     return false;
                 }
             }
-            if (idMath.Fabs(x) == 1.0f) {
-                if (y != 0.0f || z != 0.0f) {
-                    y = z = 0.0f;
+            if (idMath.Fabs(this.x) == 1.0f) {
+                if ((this.y != 0.0f) || (this.z != 0.0f)) {
+                    this.y = this.z = 0.0f;
                     return true;
                 }
                 return false;
-            } else if (idMath.Fabs(y) == 1.0f) {
-                if (x != 0.0f || z != 0.0f) {
-                    x = z = 0.0f;
+            } else if (idMath.Fabs(this.y) == 1.0f) {
+                if ((this.x != 0.0f) || (this.z != 0.0f)) {
+                    this.x = this.z = 0.0f;
                     return true;
                 }
                 return false;
-            } else if (idMath.Fabs(z) == 1.0f) {
-                if (x != 0.0f || y != 0.0f) {
-                    x = y = 0.0f;
+            } else if (idMath.Fabs(this.z) == 1.0f) {
+                if ((this.x != 0.0f) || (this.y != 0.0f)) {
+                    this.x = this.y = 0.0f;
                     return true;
                 }
                 return false;
@@ -695,67 +695,67 @@ public class Vector {
 
         public boolean FixDenormals() {// change tiny numbers to zero
             boolean denormal = false;
-            if (Math.abs(x) < 1e-30f) {
-                x = 0.0f;
+            if (Math.abs(this.x) < 1e-30f) {
+                this.x = 0.0f;
                 denormal = true;
             }
-            if (Math.abs(y) < 1e-30f) {
-                y = 0.0f;
+            if (Math.abs(this.y) < 1e-30f) {
+                this.y = 0.0f;
                 denormal = true;
             }
-            if (Math.abs(z) < 1e-30f) {
-                z = 0.0f;
+            if (Math.abs(this.z) < 1e-30f) {
+                this.z = 0.0f;
                 denormal = true;
             }
             return denormal;
         }
 
         public idVec3 Cross(final idVec3 a) {
-            return new idVec3(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x);
+            return new idVec3((this.y * a.z) - (this.z * a.y), (this.z * a.x) - (this.x * a.z), (this.x * a.y) - (this.y * a.x));
         }
 
         public idVec3 Cross(final idVec3 a, final idVec3 b) {
-            x = a.y * b.z - a.z * b.y;
-            y = a.z * b.x - a.x * b.z;
-            z = a.x * b.y - a.y * b.x;
+            this.x = (a.y * b.z) - (a.z * b.y);
+            this.y = (a.z * b.x) - (a.x * b.z);
+            this.z = (a.x * b.y) - (a.y * b.x);
 
             return this;
         }
 
         public float Length() {
-            return idMath.Sqrt(x * x + y * y + z * z);
+            return idMath.Sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
         }
 
         public float LengthSqr() {
-            return (x * x + y * y + z * z);
+            return ((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
         }
 
         public float LengthFast() {
             float sqrLength;
 
-            sqrLength = x * x + y * y + z * z;
+            sqrLength = (this.x * this.x) + (this.y * this.y) + (this.z * this.z);
             return sqrLength * idMath.RSqrt(sqrLength);
         }
 
         public float Normalize() {// returns length
             float sqrLength, invLength;
 
-            sqrLength = x * x + y * y + z * z;
+            sqrLength = (this.x * this.x) + (this.y * this.y) + (this.z * this.z);
             invLength = idMath.InvSqrt(sqrLength);
-            x *= invLength;
-            y *= invLength;
-            z *= invLength;
+            this.x *= invLength;
+            this.y *= invLength;
+            this.z *= invLength;
             return invLength * sqrLength;
         }
 
         public float NormalizeFast() {// returns length
             float sqrLength, invLength;
 
-            sqrLength = x * x + y * y + z * z;
+            sqrLength = (this.x * this.x) + (this.y * this.y) + (this.z * this.z);
             invLength = idMath.RSqrt(sqrLength);
-            x *= invLength;
-            y *= invLength;
-            z *= invLength;
+            this.x *= invLength;
+            this.y *= invLength;
+            this.z *= invLength;
             return invLength * sqrLength;
         }
 
@@ -767,11 +767,11 @@ public class Vector {
                 Zero();
             } else {
                 length2 = LengthSqr();
-                if (length2 > length * length) {
+                if (length2 > (length * length)) {
                     ilength = length * idMath.InvSqrt(length2);
-                    x *= ilength;
-                    y *= ilength;
-                    z *= ilength;
+                    this.x *= ilength;
+                    this.y *= ilength;
+                    this.z *= ilength;
                 }
             }
 
@@ -779,33 +779,33 @@ public class Vector {
         }
 
         public void Clamp(final idVec3 min, final idVec3 max) {
-            if (x < min.x) {
-                x = min.x;
-            } else if (x > max.x) {
-                x = max.x;
+            if (this.x < min.x) {
+                this.x = min.x;
+            } else if (this.x > max.x) {
+                this.x = max.x;
             }
-            if (y < min.y) {
-                y = min.y;
-            } else if (y > max.y) {
-                y = max.y;
+            if (this.y < min.y) {
+                this.y = min.y;
+            } else if (this.y > max.y) {
+                this.y = max.y;
             }
-            if (z < min.z) {
-                z = min.z;
-            } else if (z > max.z) {
-                z = max.z;
+            if (this.z < min.z) {
+                this.z = min.z;
+            } else if (this.z > max.z) {
+                this.z = max.z;
             }
         }
 
         public void Snap() {// snap to closest integer value
-            x = (float) Math.floor(x + 0.5f);
-            y = (float) Math.floor(y + 0.5f);
-            z = (float) Math.floor(z + 0.5f);
+            this.x = (float) Math.floor(this.x + 0.5f);
+            this.y = (float) Math.floor(this.y + 0.5f);
+            this.z = (float) Math.floor(this.z + 0.5f);
         }
 
         public void SnapInt() {// snap towards integer (floor)
-            x = (int) x;
-            y = (int) y;
-            z = (int) z;
+            this.x = (int) this.x;
+            this.y = (int) this.y;
+            this.z = (int) this.z;
         }
 
         @Override
@@ -816,10 +816,10 @@ public class Vector {
         public float ToYaw() {
             float yaw;
 
-            if ((y == 0.0f) && (x == 0.0f)) {
+            if ((this.y == 0.0f) && (this.x == 0.0f)) {
                 yaw = 0.0f;
             } else {
-                yaw = RAD2DEG(Math.atan2(y, x));
+                yaw = RAD2DEG(Math.atan2(this.y, this.x));
                 if (yaw < 0.0f) {
                     yaw += 360.0f;
                 }
@@ -832,15 +832,15 @@ public class Vector {
             float forward;
             float pitch;
 
-            if ((x == 0.0f) && (y == 0.0f)) {
-                if (z > 0.0f) {
+            if ((this.x == 0.0f) && (this.y == 0.0f)) {
+                if (this.z > 0.0f) {
                     pitch = 90.0f;
                 } else {
                     pitch = 270.0f;
                 }
             } else {
-                forward = (float) idMath.Sqrt(x * x + y * y);
-                pitch = RAD2DEG(Math.atan2(z, forward));
+                forward = idMath.Sqrt((this.x * this.x) + (this.y * this.y));
+                pitch = RAD2DEG(Math.atan2(this.z, forward));
                 if (pitch < 0.0f) {
                     pitch += 360.0f;
                 }
@@ -854,21 +854,21 @@ public class Vector {
             float yaw;
             float pitch;
 
-            if ((x == 0.0f) && (y == 0.0f)) {
+            if ((this.x == 0.0f) && (this.y == 0.0f)) {
                 yaw = 0.0f;
-                if (z > 0.0f) {
+                if (this.z > 0.0f) {
                     pitch = 90.0f;
                 } else {
                     pitch = 270.0f;
                 }
             } else {
-                yaw = RAD2DEG(Math.atan2(y, x));
+                yaw = RAD2DEG(Math.atan2(this.y, this.x));
                 if (yaw < 0.0f) {
                     yaw += 360.0f;
                 }
 
-                forward = idMath.Sqrt(x * x + y * y);
-                pitch = RAD2DEG(Math.atan2(z, forward));
+                forward = idMath.Sqrt((this.x * this.x) + (this.y * this.y));
+                pitch = RAD2DEG(Math.atan2(this.z, forward));
                 if (pitch < 0.0f) {
                     pitch += 360.0f;
                 }
@@ -882,35 +882,35 @@ public class Vector {
             float yaw;
             float pitch;
 
-            if ((x == 0.0f) && (y == 0.0f)) {
+            if ((this.x == 0.0f) && (this.y == 0.0f)) {
                 yaw = 0.0f;
-                if (z > 0.0f) {
+                if (this.z > 0.0f) {
                     pitch = 90.0f;
                 } else {
                     pitch = 270.0f;
                 }
             } else {
-                yaw = RAD2DEG(Math.atan2(y, x));
+                yaw = RAD2DEG(Math.atan2(this.y, this.x));
                 if (yaw < 0.0f) {
                     yaw += 360.0f;
                 }
 
-                forward = idMath.Sqrt(x * x + y * y);
-                pitch = RAD2DEG(Math.atan2(z, forward));
+                forward = idMath.Sqrt((this.x * this.x) + (this.y * this.y));
+                pitch = RAD2DEG(Math.atan2(this.z, forward));
                 if (pitch < 0.0f) {
                     pitch += 360.0f;
                 }
             }
-            return new idPolar3(idMath.Sqrt(x * x + y * y + z * z), yaw, -pitch);
+            return new idPolar3(idMath.Sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z)), yaw, -pitch);
         }
 
         // vector should be normalized
         public idMat3 ToMat3() {
-            idMat3 mat = new idMat3();
+            final idMat3 mat = new idMat3();
             float d;
 
-            mat.setRow(0, x, y, z);
-            d = x * x + y * y;
+            mat.setRow(0, this.x, this.y, this.z);
+            d = (this.x * this.x) + (this.y * this.y);
             if (d == 0) {
 //		mat[1][0] = 1.0f;
 //		mat[1][1] = 0.0f;
@@ -921,7 +921,7 @@ public class Vector {
 //		mat[1][0] = -y * d;
 //		mat[1][1] = x * d;
 //		mat[1][2] = 0.0f;
-                mat.setRow(1, -y * d, x * d, 0.0f);
+                mat.setRow(1, -this.y * d, this.x * d, 0.0f);
             }
 //        mat[2] = Cross( mat[1] );
             mat.setRow(2, Cross(mat.getRow(1)));
@@ -931,12 +931,12 @@ public class Vector {
 
         public final idVec2 ToVec2() {
 //	return *reinterpret_cast<const idVec2 *>(this);
-            return new idVec2(x, y);
+            return new idVec2(this.x, this.y);
         }
 //public	idVec2 &		ToVec2( void );
 
         public float[] ToFloatPtr() {
-            return new float[]{x, y, z};
+            return new float[]{this.x, this.y, this.z};
         }
 //public	float *			ToFloatPtr( void );
 
@@ -950,22 +950,22 @@ public class Vector {
 
         @Override
         public String toString() {
-            return x + " " + y + " " + z;
+            return this.x + " " + this.y + " " + this.z;
         }
 
         // vector should be normalized
         public void NormalVectors(idVec3 left, idVec3 down) {
             float d;
 
-            d = x * x + y * y;
+            d = (this.x * this.x) + (this.y * this.y);
             if (d == 0) {
                 left.x = 1;
                 left.y = 0;
                 left.z = 0;
             } else {
                 d = idMath.InvSqrt(d);
-                left.x = -y * d;
-                left.y = x * d;
+                left.x = -this.y * d;
+                left.y = this.x * d;
                 left.z = 0;
             }
             down.oSet(left.Cross(this));
@@ -974,23 +974,23 @@ public class Vector {
         public void OrthogonalBasis(idVec3 left, idVec3 up) {
             float l, s;
 
-            if (idMath.Fabs(z) > 0.7f) {
-                l = y * y + z * z;
+            if (idMath.Fabs(this.z) > 0.7f) {
+                l = (this.y * this.y) + (this.z * this.z);
                 s = idMath.InvSqrt(l);
                 up.x = 0;
-                up.y = z * s;
-                up.z = -y * s;
+                up.y = this.z * s;
+                up.z = -this.y * s;
                 left.x = l * s;
-                left.y = -x * up.z;
-                left.z = x * up.y;
+                left.y = -this.x * up.z;
+                left.z = this.x * up.y;
             } else {
-                l = x * x + y * y;
+                l = (this.x * this.x) + (this.y * this.y);
                 s = idMath.InvSqrt(l);
-                left.x = -y * s;
-                left.y = x * s;
+                left.x = -this.y * s;
+                left.y = this.x * s;
                 left.z = 0;
-                up.x = -z * left.y;
-                up.y = z * left.x;
+                up.x = -this.z * left.y;
+                up.y = this.z * left.x;
                 up.z = l * s;
             }
         }
@@ -1030,7 +1030,7 @@ public class Vector {
             if (idMath.Fabs(len) < epsilon) {
                 return false;
             }
-            cross.oMulSet(overBounce * normal.oMultiply(this) / len);//	cross *= overBounce * ( normal * (*this) ) / len;
+            cross.oMulSet((overBounce * normal.oMultiply(this)) / len);//	cross *= overBounce * ( normal * (*this) ) / len;
             this.oMinSet(cross);//(*this) -= cross;
             return true;
         }
@@ -1043,12 +1043,12 @@ public class Vector {
          */
 
         public void ProjectSelfOntoSphere(final float radius) {
-            float rsqr = radius * radius;
-            float len = Length();
-            if (len < rsqr * 0.5f) {
-                z = (float) Math.sqrt(rsqr - len);
+            final float rsqr = radius * radius;
+            final float len = Length();
+            if (len < (rsqr * 0.5f)) {
+                this.z = (float) Math.sqrt(rsqr - len);
             } else {
-                z = (float) (rsqr / (2.0f * Math.sqrt(len)));
+                this.z = (float) (rsqr / (2.0f * Math.sqrt(len)));
             }
         }
 
@@ -1110,52 +1110,52 @@ public class Vector {
         @Override
         public float oGet(final int i) {//TODO:rename you lazy ass
             if (i == 1) {
-                return y;
+                return this.y;
             } else if (i == 2) {
-                return z;
+                return this.z;
             }
-            return x;
+            return this.x;
         }
 
         @Override
         public float oSet(final int i, final float value) {
             if (i == 1) {
-                y = value;
+                this.y = value;
             } else if (i == 2) {
-                z = value;
+                this.z = value;
             } else {
-                x = value;
+                this.x = value;
             }
             return value;
         }
 
         public void oPluSet(final int i, final float value) {
             if (i == 1) {
-                y += value;
+                this.y += value;
             } else if (i == 2) {
-                z += value;
+                this.z += value;
             } else {
-                x += value;
+                this.x += value;
             }
         }
 
         public void oMinSet(final int i, final float value) {
             if (i == 1) {
-                y -= value;
+                this.y -= value;
             } else if (i == 2) {
-                z -= value;
+                this.z -= value;
             } else {
-                x -= value;
+                this.x -= value;
             }
         }
 
         public void oMulSet(final int i, final float value) {
             if (i == 1) {
-                y *= value;
+                this.y *= value;
             } else if (i == 2) {
-                z *= value;
+                this.z *= value;
             } else {
-                x *= value;
+                this.x *= value;
             }
         }
 
@@ -1166,16 +1166,16 @@ public class Vector {
 
         @Override
         public void Read(ByteBuffer buffer) {
-            x = buffer.getFloat();
-            y = buffer.getFloat();
-            z = buffer.getFloat();
+            this.x = buffer.getFloat();
+            this.y = buffer.getFloat();
+            this.z = buffer.getFloat();
         }
 
         @Override
         public ByteBuffer Write() {
-            ByteBuffer buffer = ByteBuffer.allocate(BYTES);
+            final ByteBuffer buffer = ByteBuffer.allocate(BYTES);
 
-            buffer.putFloat(x).putFloat(y).putFloat(z).flip();
+            buffer.putFloat(this.x).putFloat(this.y).putFloat(this.z).flip();
 
             return buffer;
         }
@@ -1183,16 +1183,16 @@ public class Vector {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = (int) (53 * hash + this.x);
-            hash = (int) (53 * hash + this.y);
-            hash = (int) (53 * hash + this.z);
+            hash = (int) ((53 * hash) + this.x);
+            hash = (int) ((53 * hash) + this.y);
+            hash = (int) ((53 * hash) + this.z);
             return hash;
         }
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null
-                    || getClass() != obj.getClass()) {
+            if ((obj == null)
+                    || (getClass() != obj.getClass())) {
                 return false;
             }
 
@@ -1224,21 +1224,21 @@ public class Vector {
         }
 
         public void ToVec2_Normalize() {
-            idVec2 v = ToVec2();
+            final idVec2 v = ToVec2();
             v.Normalize();
             this.oSet(v);
         }
 
         public void ToVec2_NormalizeFast() {
-            idVec2 v = ToVec2();
+            final idVec2 v = ToVec2();
             v.NormalizeFast();
             this.oSet(v);
         }
 
         public static ByteBuffer toByteBuffer(idVec3[] vecs) {
-            ByteBuffer data = BufferUtils.createByteBuffer(idVec3.BYTES * vecs.length);
+            final ByteBuffer data = BufferUtils.createByteBuffer(idVec3.BYTES * vecs.length);
 
-            for (idVec3 vec : vecs) {
+            for (final idVec3 vec : vecs) {
                 data.put((ByteBuffer) vec.Write().rewind());
             }
 
@@ -1294,7 +1294,7 @@ public class Vector {
 
         @Override
         public void Zero() {
-            x = y = z = w = 0.0f;
+            this.x = this.y = this.z = this.w = 0.0f;
         }
 
         //public	float			operator[]( final  int index ) final ;
@@ -1302,7 +1302,7 @@ public class Vector {
 //public	idVec4			operator-() final ;
         @Override
         public float oMultiply(final idVec4 a) {
-            return x * a.x + y * a.y + z * a.z + w * a.w;
+            return (this.x * a.x) + (this.y * a.y) + (this.z * a.z) + (this.w * a.w);
         }
 
         @Override
@@ -1333,16 +1333,16 @@ public class Vector {
         public void oMinSet(final int i, final float value) {//TODO:rename you lazy ass          
             switch (i) {
                 default:
-                    x -= value;
+                    this.x -= value;
                     break;
                 case 1:
-                    y -= value;
+                    this.y -= value;
                     break;
                 case 2:
-                    z -= value;
+                    this.z -= value;
                     break;
                 case 3:
-                    w -= value;
+                    this.w -= value;
                     break;
             }
         }
@@ -1350,16 +1350,16 @@ public class Vector {
         public void oMulSet(final int i, final float value) {//TODO:rename you lazy ass          
             switch (i) {
                 default:
-                    x *= value;
+                    this.x *= value;
                     break;
                 case 1:
-                    y *= value;
+                    this.y *= value;
                     break;
                 case 2:
-                    z *= value;
+                    this.z *= value;
                     break;
                 case 3:
-                    w *= value;
+                    this.w *= value;
                     break;
             }
         }
@@ -1381,23 +1381,23 @@ public class Vector {
 //
 //public	friend idVec4	operator*( final  float a, final  idVec4 b );
         public boolean Compare(final idVec4 a) {// exact compare, no epsilon
-            return ((x == a.x) && (y == a.y) && (z == a.z) && w == a.w);
+            return ((this.x == a.x) && (this.y == a.y) && (this.z == a.z) && (this.w == a.w));
         }
 
         public boolean Compare(final idVec4 a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(x - a.x) > epsilon) {
+            if (idMath.Fabs(this.x - a.x) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(y - a.y) > epsilon) {
+            if (idMath.Fabs(this.y - a.y) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(z - a.z) > epsilon) {
+            if (idMath.Fabs(this.z - a.z) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(w - a.w) > epsilon) {
+            if (idMath.Fabs(this.w - a.w) > epsilon) {
                 return false;
             }
 
@@ -1407,34 +1407,34 @@ public class Vector {
 //public	bool			operator!=(	final  idVec4 &a ) final ;						// exact compare, no epsilon
 
         public float Length() {
-            return idMath.Sqrt(x * x + y * y + z * z + w * w);
+            return idMath.Sqrt((this.x * this.x) + (this.y * this.y) + (this.z * this.z) + (this.w * this.w));
         }
 
         public float LengthSqr() {
-            return (x * x + y * y + z * z + w * w);
+            return ((this.x * this.x) + (this.y * this.y) + (this.z * this.z) + (this.w * this.w));
         }
 
         public float Normalize() {// returns length
             float sqrLength, invLength;
 
-            sqrLength = x * x + y * y + z * z + w * w;
+            sqrLength = (this.x * this.x) + (this.y * this.y) + (this.z * this.z) + (this.w * this.w);
             invLength = idMath.InvSqrt(sqrLength);
-            x *= invLength;
-            y *= invLength;
-            z *= invLength;
-            w *= invLength;
+            this.x *= invLength;
+            this.y *= invLength;
+            this.z *= invLength;
+            this.w *= invLength;
             return invLength * sqrLength;
         }
 
         public float NormalizeFast() {// returns length
             float sqrLength, invLength;
 
-            sqrLength = x * x + y * y + z * z + w * w;
+            sqrLength = (this.x * this.x) + (this.y * this.y) + (this.z * this.z) + (this.w * this.w);
             invLength = idMath.RSqrt(sqrLength);
-            x *= invLength;
-            y *= invLength;
-            z *= invLength;
-            w *= invLength;
+            this.x *= invLength;
+            this.y *= invLength;
+            this.z *= invLength;
+            this.w *= invLength;
             return invLength * sqrLength;
         }
 
@@ -1446,19 +1446,19 @@ public class Vector {
         @Deprecated
         public final idVec2 ToVec2() {
 //	return *reinterpret_cast<const idVec2 *>(this);
-            return new idVec2(x, y);
+            return new idVec2(this.x, this.y);
         }
 //public	idVec2 &		ToVec2( void );
 
         @Deprecated
         public final idVec3 ToVec3() {
 //	return *reinterpret_cast<const idVec3 *>(this);
-            return new idVec3(x, y, z);
+            return new idVec3(this.x, this.y, this.z);
         }
 //public	idVec3 &		ToVec3( void );
 
         public final float[] ToFloatPtr() {
-            return new float[]{x, y, z, w};//TODO:put shit in array si we can referef it
+            return new float[]{this.x, this.y, this.z, this.w};//TODO:put shit in array si we can referef it
         }
 //public	float *			ToFloatPtr( void );
 
@@ -1472,7 +1472,7 @@ public class Vector {
 
         @Override
         public String toString() {
-            return x + " " + y + " " + z + " " + w;
+            return this.x + " " + this.y + " " + this.z + " " + this.w;
         }
 
         /*
@@ -1485,22 +1485,22 @@ public class Vector {
         public void Lerp(final idVec4 v1, final idVec4 v2, final float l) {
             if (l <= 0.0f) {
 //		(*this) = v1;
-                x = v1.x;
-                y = v1.y;
-                z = v1.z;
-                w = v1.w;
+                this.x = v1.x;
+                this.y = v1.y;
+                this.z = v1.z;
+                this.w = v1.w;
             } else if (l >= 1.0f) {
 //		(*this) = v2;
-                x = v2.x;
-                y = v2.y;
-                z = v2.z;
-                w = v2.w;
+                this.x = v2.x;
+                this.y = v2.y;
+                this.z = v2.z;
+                this.w = v2.w;
             } else {
 //		(*this) = v1 + l * ( v2 - v1 );
-                w = v1.w + l * (v2.w - v1.w);
-                x = v1.x + l * (v2.x - v1.x);
-                y = v1.y + l * (v2.y - v1.y);
-                z = v1.z + l * (v2.z - v1.z);
+                this.w = v1.w + (l * (v2.w - v1.w));
+                this.x = v1.x + (l * (v2.x - v1.x));
+                this.y = v1.y + (l * (v2.y - v1.y));
+                this.z = v1.z + (l * (v2.z - v1.z));
             }
         }
 
@@ -1524,13 +1524,13 @@ public class Vector {
         public float oGet(final int i) {//TODO:rename you lazy ass          
             switch (i) {
                 default:
-                    return x;
+                    return this.x;
                 case 1:
-                    return y;
+                    return this.y;
                 case 2:
-                    return z;
+                    return this.z;
                 case 3:
-                    return w;
+                    return this.w;
             }
         }
 
@@ -1538,26 +1538,26 @@ public class Vector {
         public float oSet(final int i, final float value) {//TODO:rename you lazy ass          
             switch (i) {
                 default:
-                    return x = value;
+                    return this.x = value;
                 case 1:
-                    return y = value;
+                    return this.y = value;
                 case 2:
-                    return z = value;
+                    return this.z = value;
                 case 3:
-                    return w = value;
+                    return this.w = value;
             }
         }
 
         public float oPluSet(final int i, final float value) {
             switch (i) {
                 default:
-                    return x += value;
+                    return this.x += value;
                 case 1:
-                    return y += value;
+                    return this.y += value;
                 case 2:
-                    return z += value;
+                    return this.z += value;
                 case 3:
-                    return w += value;
+                    return this.w += value;
             }
         }
 
@@ -1568,17 +1568,17 @@ public class Vector {
 
         @Override
         public void Read(ByteBuffer buffer) {
-            x = buffer.getFloat();
-            y = buffer.getFloat();
-            z = buffer.getFloat();
-            w = buffer.getFloat();
+            this.x = buffer.getFloat();
+            this.y = buffer.getFloat();
+            this.z = buffer.getFloat();
+            this.w = buffer.getFloat();
         }
 
         @Override
         public ByteBuffer Write() {
-            ByteBuffer buffer = AllocBuffer();
+            final ByteBuffer buffer = AllocBuffer();
 
-            buffer.putFloat(x).putFloat(y).putFloat(z).putFloat(w).flip();
+            buffer.putFloat(this.x).putFloat(this.y).putFloat(this.z).putFloat(this.w).flip();
 
             return buffer;
         }
@@ -1596,9 +1596,9 @@ public class Vector {
         }
 
         public static ByteBuffer toByteBuffer(idVec4[] vecs) {
-            ByteBuffer data = BufferUtils.createByteBuffer(idVec4.BYTES * vecs.length);
+            final ByteBuffer data = BufferUtils.createByteBuffer(idVec4.BYTES * vecs.length);
 
-            for (idVec4 vec : vecs) {
+            for (final idVec4 vec : vecs) {
                 data.put((ByteBuffer) vec.Write().rewind());
             }
 
@@ -1630,13 +1630,13 @@ public class Vector {
         }
 
         public idVec5(final idVec3 xyz, final idVec2 st) {
-            x = xyz.x;
-            y = xyz.y;
-            z = xyz.z;
+            this.x = xyz.x;
+            this.y = xyz.y;
+            this.z = xyz.z;
 //	s = st[0];
-            s = st.x;
+            this.s = st.x;
 //	t = st[1];
-            t = st.y;
+            this.t = st.y;
         }
 
         public idVec5(final float x, final float y, final float z, final float s, final float t) {
@@ -1667,15 +1667,15 @@ public class Vector {
         public float oGet(final int i) {//TODO:rename you lazy sod          
             switch (i) {
                 default:
-                    return x;
+                    return this.x;
                 case 1:
-                    return y;
+                    return this.y;
                 case 2:
-                    return z;
+                    return this.z;
                 case 3:
-                    return s;
+                    return this.s;
                 case 4:
-                    return t;
+                    return this.t;
             }
         }
 
@@ -1683,15 +1683,15 @@ public class Vector {
         public float oSet(final int i, final float value) {
             switch (i) {
                 default:
-                    return x = value;
+                    return this.x = value;
                 case 1:
-                    return y = value;
+                    return this.y = value;
                 case 2:
-                    return z = value;
+                    return this.z = value;
                 case 3:
-                    return s = value;
+                    return this.s = value;
                 case 4:
-                    return t = value;
+                    return this.t = value;
             }
         }
 
@@ -1721,12 +1721,12 @@ public class Vector {
 
         public final idVec3 ToVec3() {
 //	return *reinterpret_cast<const idVec3 *>(this);
-            return new idVec3(x, y, z);
+            return new idVec3(this.x, this.y, this.z);
         }
 
         //public	idVec3 &		ToVec3( void );
         public final float[] ToFloatPtr() {
-            return new float[]{x, y, z};//TODO:array!?
+            return new float[]{this.x, this.y, this.z};//TODO:array!?
         }
 //public	float *			ToFloatPtr( void );
 
@@ -1744,11 +1744,11 @@ public class Vector {
             } else if (l >= 1.0f) {
                 this.oSet(v2);//(*this) = v2;
             } else {
-                x = v1.x + l * (v2.x - v1.x);
-                y = v1.y + l * (v2.y - v1.y);
-                z = v1.z + l * (v2.z - v1.z);
-                s = v1.s + l * (v2.s - v1.s);
-                t = v1.t + l * (v2.t - v1.t);
+                this.x = v1.x + (l * (v2.x - v1.x));
+                this.y = v1.y + (l * (v2.y - v1.y));
+                this.z = v1.z + (l * (v2.z - v1.z));
+                this.s = v1.s + (l * (v2.s - v1.s));
+                this.t = v1.t + (l * (v2.t - v1.t));
             }
         }
 
@@ -1828,62 +1828,62 @@ public class Vector {
 
         public idVec6() {
             DBG_idVec6++;
-            int a = 0;
+            final int a = 0;
         }
 
         public idVec6(final float[] a) {
 //	memcpy( p, a, 6 * sizeof( float ) );
-            System.arraycopy(a, 0, p, 0, 6);
+            System.arraycopy(a, 0, this.p, 0, 6);
         }
 
         public idVec6(final idVec6 v) {
-            System.arraycopy(v.p, 0, p, 0, 6);
+            System.arraycopy(v.p, 0, this.p, 0, 6);
         }
 
         public idVec6(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {
-            p[0] = a1;
-            p[1] = a2;
-            p[2] = a3;
-            p[3] = a4;
-            p[4] = a5;
-            p[5] = a6;
+            this.p[0] = a1;
+            this.p[1] = a2;
+            this.p[2] = a3;
+            this.p[3] = a4;
+            this.p[4] = a5;
+            this.p[5] = a6;
         }
 
         public void Set(final float a1, final float a2, final float a3, final float a4, final float a5, final float a6) {
-            p[0] = a1;
-            p[1] = a2;
-            p[2] = a3;
-            p[3] = a4;
-            p[4] = a5;
-            p[5] = a6;
+            this.p[0] = a1;
+            this.p[1] = a2;
+            this.p[2] = a3;
+            this.p[3] = a4;
+            this.p[4] = a5;
+            this.p[5] = a6;
         }
 
         @Override
         public void Zero() {
-            p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = 0.0f;
+            this.p[0] = this.p[1] = this.p[2] = this.p[3] = this.p[4] = this.p[5] = 0.0f;
         }
 
         //public 	float			operator[]( final  int index ) final ;
 //public 	float &			operator[]( final  int index );
         public idVec6 oNegative() {
-            return new idVec6(-p[0], -p[1], -p[2], -p[3], -p[4], -p[5]);
+            return new idVec6(-this.p[0], -this.p[1], -this.p[2], -this.p[3], -this.p[4], -this.p[5]);
         }
 
         @Override
         public idVec6 oMultiply(final float a) {
-            return new idVec6(p[0] * a, p[1] * a, p[2] * a, p[3] * a, p[4] * a, p[5] * a);
+            return new idVec6(this.p[0] * a, this.p[1] * a, this.p[2] * a, this.p[3] * a, this.p[4] * a, this.p[5] * a);
         }
 
         //public 	idVec6			operator/( final  float a ) final ;
         @Override
         public float oMultiply(final idVec6 a) {
-            return p[0] * a.p[0] + p[1] * a.p[1] + p[2] * a.p[2] + p[3] * a.p[3] + p[4] * a.p[4] + p[5] * a.p[5];
+            return (this.p[0] * a.p[0]) + (this.p[1] * a.p[1]) + (this.p[2] * a.p[2]) + (this.p[3] * a.p[3]) + (this.p[4] * a.p[4]) + (this.p[5] * a.p[5]);
         }
 //public 	idVec6			operator-( final  idVec6 &a ) final ;
 
         @Override
         public idVec6 oPlus(final idVec6 a) {
-            return new idVec6(p[0] + a.p[0], p[1] + a.p[1], p[2] + a.p[2], p[3] + a.p[3], p[4] + a.p[4], p[5] + a.p[5]);
+            return new idVec6(this.p[0] + a.p[0], this.p[1] + a.p[1], this.p[2] + a.p[2], this.p[3] + a.p[3], this.p[4] + a.p[4], this.p[5] + a.p[5]);
         }
 //public 	idVec6 &		operator*=( final  float a );
 //public 	idVec6 &		operator/=( final  float a );
@@ -1903,32 +1903,32 @@ public class Vector {
 //public 	friend idVec6	operator*( final  float a, final  idVec6 b );
 
         public boolean Compare(final idVec6 a) {// exact compare, no epsilon
-            return ((p[0] == a.p[0]) && (p[1] == a.p[1]) && (p[2] == a.p[2])
-                    && (p[3] == a.p[3]) && (p[4] == a.p[4]) && (p[5] == a.p[5]));
+            return ((this.p[0] == a.p[0]) && (this.p[1] == a.p[1]) && (this.p[2] == a.p[2])
+                    && (this.p[3] == a.p[3]) && (this.p[4] == a.p[4]) && (this.p[5] == a.p[5]));
         }
 
         public boolean Compare(final idVec6 a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(p[0] - a.p[0]) > epsilon) {
+            if (idMath.Fabs(this.p[0] - a.p[0]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(p[1] - a.p[1]) > epsilon) {
+            if (idMath.Fabs(this.p[1] - a.p[1]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(p[2] - a.p[2]) > epsilon) {
+            if (idMath.Fabs(this.p[2] - a.p[2]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(p[3] - a.p[3]) > epsilon) {
+            if (idMath.Fabs(this.p[3] - a.p[3]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(p[4] - a.p[4]) > epsilon) {
+            if (idMath.Fabs(this.p[4] - a.p[4]) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(p[5] - a.p[5]) > epsilon) {
+            if (idMath.Fabs(this.p[5] - a.p[5]) > epsilon) {
                 return false;
             }
 
@@ -1938,38 +1938,38 @@ public class Vector {
 //public 	bool			operator!=(	final  idVec6 &a ) final ;						// exact compare, no epsilon
 
         public float Length() {
-            return idMath.Sqrt(p[0] * p[0] + p[1] * p[1] + p[2] * p[2] + p[3] * p[3] + p[4] * p[4] + p[5] * p[5]);
+            return idMath.Sqrt((this.p[0] * this.p[0]) + (this.p[1] * this.p[1]) + (this.p[2] * this.p[2]) + (this.p[3] * this.p[3]) + (this.p[4] * this.p[4]) + (this.p[5] * this.p[5]));
         }
 
         public float LengthSqr() {
-            return (p[0] * p[0] + p[1] * p[1] + p[2] * p[2] + p[3] * p[3] + p[4] * p[4] + p[5] * p[5]);
+            return ((this.p[0] * this.p[0]) + (this.p[1] * this.p[1]) + (this.p[2] * this.p[2]) + (this.p[3] * this.p[3]) + (this.p[4] * this.p[4]) + (this.p[5] * this.p[5]));
         }
 
         public float Normalize() {// returns length
             float sqrLength, invLength;
 
-            sqrLength = p[0] * p[0] + p[1] * p[1] + p[2] * p[2] + p[3] * p[3] + p[4] * p[4] + p[5] * p[5];
+            sqrLength = (this.p[0] * this.p[0]) + (this.p[1] * this.p[1]) + (this.p[2] * this.p[2]) + (this.p[3] * this.p[3]) + (this.p[4] * this.p[4]) + (this.p[5] * this.p[5]);
             invLength = idMath.InvSqrt(sqrLength);
-            p[0] *= invLength;
-            p[1] *= invLength;
-            p[2] *= invLength;
-            p[3] *= invLength;
-            p[4] *= invLength;
-            p[5] *= invLength;
+            this.p[0] *= invLength;
+            this.p[1] *= invLength;
+            this.p[2] *= invLength;
+            this.p[3] *= invLength;
+            this.p[4] *= invLength;
+            this.p[5] *= invLength;
             return invLength * sqrLength;
         }
 
         public float NormalizeFast() {// returns length
             float sqrLength, invLength;
 
-            sqrLength = p[0] * p[0] + p[1] * p[1] + p[2] * p[2] + p[3] * p[3] + p[4] * p[4] + p[5] * p[5];
+            sqrLength = (this.p[0] * this.p[0]) + (this.p[1] * this.p[1]) + (this.p[2] * this.p[2]) + (this.p[3] * this.p[3]) + (this.p[4] * this.p[4]) + (this.p[5] * this.p[5]);
             invLength = idMath.RSqrt(sqrLength);
-            p[0] *= invLength;
-            p[1] *= invLength;
-            p[2] *= invLength;
-            p[3] *= invLength;
-            p[4] *= invLength;
-            p[5] *= invLength;
+            this.p[0] *= invLength;
+            this.p[1] *= invLength;
+            this.p[2] *= invLength;
+            this.p[3] *= invLength;
+            this.p[4] *= invLength;
+            this.p[5] *= invLength;
             return invLength * sqrLength;
         }
 
@@ -1982,12 +1982,12 @@ public class Vector {
         @Deprecated
         public final idVec3 SubVec3(int index) {
 //	return *reinterpret_cast<const idVec3 *>(p + index * 3);
-            return new idVec3(p[index *= 3], p[index + 1], p[index + 2]);
+            return new idVec3(this.p[index *= 3], this.p[index + 1], this.p[index + 2]);
         }
 //public 	idVec3 &		SubVec3( int index );
 
         public final float[] ToFloatPtr() {
-            return p;
+            return this.p;
         }
 //public 	float *			ToFloatPtr( void );
 
@@ -2012,12 +2012,12 @@ public class Vector {
 
         @Override
         public float oGet(final int index) {
-            return p[index];
+            return this.p[index];
         }
 
         @Override
         public float oSet(final int index, final float value) {
-            return p[index] = value;
+            return this.p[index] = value;
         }
 //
 //        public void setP(final int index, final float value) {
@@ -2050,16 +2050,16 @@ public class Vector {
         }
 
         public void SubVec3_oSet(final int i, final idVec3 v) {
-            System.arraycopy(v.ToFloatPtr(), 0, p, i * 3, 3);
+            System.arraycopy(v.ToFloatPtr(), 0, this.p, i * 3, 3);
         }
 
         public idVec3 SubVec3_oPluSet(final int i, final idVec3 v) {
             final int off = i * 3;
-            p[off + 0] += v.x;
-            p[off + 1] += v.y;
-            p[off + 2] += v.z;
+            this.p[off + 0] += v.x;
+            this.p[off + 1] += v.y;
+            this.p[off + 2] += v.z;
 
-            return new idVec3(p, off);
+            return new idVec3(this.p, off);
         }
 
         public idVec3 SubVec3_oMinSet(final int i, final idVec3 v) {
@@ -2068,13 +2068,13 @@ public class Vector {
 
         public void SubVec3_oMulSet(final int i, final float v) {
             final int off = i * 3;
-            p[off + 0] *= v;
-            p[off + 1] *= v;
-            p[off + 2] *= v;
+            this.p[off + 0] *= v;
+            this.p[off + 1] *= v;
+            this.p[off + 2] *= v;
         }
 
         public float SubVec3_Normalize(final int i) {
-            idVec3 v = this.SubVec3(i);
+            final idVec3 v = this.SubVec3(i);
             final float normalize = v.Normalize();
 
             this.SubVec3_oSet(i, v);
@@ -2084,23 +2084,27 @@ public class Vector {
 
         @Override
         public int hashCode() {
-            return Arrays.hashCode(p);
+            return Arrays.hashCode(this.p);
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+				return true;
+			}
+            if ((o == null) || (getClass() != o.getClass())) {
+				return false;
+			}
 
-            idVec6 idVec6 = (idVec6) o;
+            final idVec6 idVec6 = (idVec6) o;
 
-            return Arrays.equals(p, idVec6.p);
+            return Arrays.equals(this.p, idVec6.p);
         }
 
         @Override
         public String toString() {
             return "idVec6{" +
-                    "p=" + Arrays.toString(p) +
+                    "p=" + Arrays.toString(this.p) +
                     '}';
         }
     }
@@ -2135,10 +2139,10 @@ public class Vector {
 
         @Deprecated
         void VECX_CLEAREND() {//TODO:is this function need for Java?
-            int s = size;
+            int s = this.size;
 ////            while (s < ((s + 3) & ~3)) {
-            while (s < p.length) {
-                p[s++] = 0.0f;
+            while (s < this.p.length) {
+                this.p[s++] = 0.0f;
             }
         }
 
@@ -2156,41 +2160,41 @@ public class Vector {
         boolean VECX_SIMD;
 
         public idVecX() {
-            size = alloced = 0;
-            p = null;
+            this.size = this.alloced = 0;
+            this.p = null;
         }
 
         public idVecX(int length) {
-            size = alloced = 0;
-            p = null;
+            this.size = this.alloced = 0;
+            this.p = null;
             SetSize(length);
         }
 
         public idVecX(int length, float[] data) {
-            size = alloced = 0;
-            p = null;
+            this.size = this.alloced = 0;
+            this.p = null;
             SetData(length, data);
         }
 //public					~idVecX( void );
 
         //public	float			operator[]( const int index ) const;
         public float oGet(final int index) {
-            return p[index];
+            return this.p[index];
         }
 
         public float oSet(final int index, final float value) {
-            return p[index] = value;
+            return this.p[index] = value;
         }
 
         //public	float &			operator[]( const int index );
 //public	idVecX			operator-() const;
         public idVecX oNegative() {
             int i;
-            idVecX m = new idVecX();
+            final idVecX m = new idVecX();
 
-            m.SetTempSize(size);
-            for (i = 0; i < size; i++) {
-                m.p[i] = -p[i];
+            m.SetTempSize(this.size);
+            for (i = 0; i < this.size; i++) {
+                m.p[i] = -this.p[i];
             }
             return m;
         }
@@ -2209,15 +2213,15 @@ public class Vector {
         }
 
         public idVecX oMultiply(final float a) {
-            idVecX m = new idVecX();
+            final idVecX m = new idVecX();
 
-            m.SetTempSize(size);
-            if (VECX_SIMD) {
-                SIMDProcessor.Mul16(m.p, p, a, size);
+            m.SetTempSize(this.size);
+            if (this.VECX_SIMD) {
+                SIMDProcessor.Mul16(m.p, this.p, a, this.size);
             } else {
                 int i;
-                for (i = 0; i < size; i++) {
-                    m.p[i] = p[i] * a;
+                for (i = 0; i < this.size; i++) {
+                    m.p[i] = this.p[i] * a;
                 }
             }
             return m;
@@ -2229,9 +2233,9 @@ public class Vector {
             int i;
             float sum = 0.0f;
 
-            assert (size == a.size);
-            for (i = 0; i < size; i++) {
-                sum += p[i] * a.p[i];
+            assert (this.size == a.size);
+            for (i = 0; i < this.size; i++) {
+                sum += this.p[i] * a.p[i];
             }
             return sum;
         }
@@ -2239,16 +2243,16 @@ public class Vector {
 //public	idVecX			operator+( const idVecX &a ) const;
 
         public idVecX oPlus(final idVecX a) {
-            idVecX m = new idVecX();
+            final idVecX m = new idVecX();
 
-            assert (size == a.size);
-            m.SetTempSize(size);
+            assert (this.size == a.size);
+            m.SetTempSize(this.size);
 //#ifdef VECX_SIMD
 //	SIMDProcessor->Add16( m.p, p, a.p, size );
 //#else
             int i;
-            for (i = 0; i < size; i++) {
-                m.p[i] = p[i] + a.p[i];
+            for (i = 0; i < this.size; i++) {
+                m.p[i] = this.p[i] + a.p[i];
             }
 //#endif
             return m;
@@ -2260,8 +2264,8 @@ public class Vector {
 //	SIMDProcessor->MulAssign16( p, a, size );
 //#else
             int i;
-            for (i = 0; i < size; i++) {
-                p[i] *= a;
+            for (i = 0; i < this.size; i++) {
+                this.p[i] *= a;
             }
 //#endif
             return this;
@@ -2274,9 +2278,9 @@ public class Vector {
         public boolean Compare(final idVecX a) {// exact compare, no epsilon
             int i;
 
-            assert (size == a.size);
-            for (i = 0; i < size; i++) {
-                if (p[i] != a.p[i]) {
+            assert (this.size == a.size);
+            for (i = 0; i < this.size; i++) {
+                if (this.p[i] != a.p[i]) {
                     return false;
                 }
             }
@@ -2286,9 +2290,9 @@ public class Vector {
         public boolean Compare(final idVecX a, final float epsilon) {// compare with epsilon
             int i;
 
-            assert (size == a.size);
-            for (i = 0; i < size; i++) {
-                if (idMath.Fabs(p[i] - a.p[i]) > epsilon) {
+            assert (this.size == a.size);
+            for (i = 0; i < this.size; i++) {
+                if (idMath.Fabs(this.p[i] - a.p[i]) > epsilon) {
                     return false;
                 }
             }
@@ -2298,17 +2302,17 @@ public class Vector {
 //public	bool			operator!=(	const idVecX &a ) const;						// exact compare, no epsilon
 
         public void SetSize(int newSize) {
-            int alloc = (newSize + 3) & ~3;
-            if (alloc > alloced && alloced != -1) {
-                if (p != null) {
+            final int alloc = (newSize + 3) & ~3;
+            if ((alloc > this.alloced) && (this.alloced != -1)) {
+                if (this.p != null) {
 //			Mem_Free16( p );
-                    p = null;
+                    this.p = null;
                 }
 //		p = (float *) Mem_Alloc16( alloc * sizeof( float ) );
-                p = new float[alloc];
-                alloced = alloc;
+                this.p = new float[alloc];
+                this.alloced = alloc;
             }
-            size = newSize;
+            this.size = newSize;
             VECX_CLEAREND();
         }
 
@@ -2317,40 +2321,40 @@ public class Vector {
         }
 
         public void ChangeSize(int newSize, boolean makeZero) {
-            int alloc = (newSize + 3) & ~3;
-            if (alloc > alloced && alloced != -1) {
-                float[] oldVec = p;
+            final int alloc = (newSize + 3) & ~3;
+            if ((alloc > this.alloced) && (this.alloced != -1)) {
+                final float[] oldVec = this.p;
 //		p = (float *) Mem_Alloc16( alloc * sizeof( float ) );
-                p = new float[alloc];
-                alloced = alloc;
+                this.p = new float[alloc];
+                this.alloced = alloc;
                 if (oldVec != null) {
-                    System.arraycopy(oldVec, 0, p, 0, size);
+                    System.arraycopy(oldVec, 0, this.p, 0, this.size);
 //			Mem_Free16( oldVec );//garbage collect me!
                 }//TODO:ifelse
                 if (makeZero) {
                     // zero any new elements
-                    for (int i = size; i < newSize; i++) {
-                        p[i] = 0.0f;
+                    for (int i = this.size; i < newSize; i++) {
+                        this.p[i] = 0.0f;
                     }
                 }
             }
-            size = newSize;
+            this.size = newSize;
             VECX_CLEAREND();
         }
 
         public int GetSize() {
-            return size;
+            return this.size;
         }
 
         public void SetData(int length, float[] data) {
-            if (p != null && (p[0] < idVecX.tempPtr[0] || p[0] >= idVecX.tempPtr[0] + VECX_MAX_TEMP) && alloced != -1) {
+            if ((this.p != null) && ((this.p[0] < idVecX.tempPtr[0]) || (this.p[0] >= (idVecX.tempPtr[0] + VECX_MAX_TEMP))) && (this.alloced != -1)) {
 //		Mem_Free16( p );
-                p = null;
+                this.p = null;
             }
 //	assert( ( ( (int) data ) & 15 ) == 0 ); // data must be 16 byte aligned
-            p = data;
-            size = length;
-            alloced = -1;
+            this.p = data;
+            this.size = length;
+            this.alloced = -1;
             VECX_CLEAREND();
         }
 
@@ -2360,7 +2364,7 @@ public class Vector {
 //#else
 //	memset( p, 0, size * sizeof( float ) );
 //#endif
-            Arrays.fill(p, 0, size, 0);
+            Arrays.fill(this.p, 0, this.size, 0);
         }
 
         public void Zero(int length) {
@@ -2370,7 +2374,7 @@ public class Vector {
 //#else
 //	memset( p, 0, size * sizeof( float ) );
 //#endif
-            Arrays.fill(p, 0, size, 0);
+            Arrays.fill(this.p, 0, this.size, 0);
         }
 
         public void Random(int seed) {
@@ -2385,11 +2389,11 @@ public class Vector {
         public void Random(int seed, float l, float u) {
             int i;
             float c;
-            idRandom rnd = new idRandom(seed);
+            final idRandom rnd = new idRandom(seed);
 
             c = u - l;
-            for (i = 0; i < size; i++) {
-                p[i] = l + rnd.RandomFloat() * c;
+            for (i = 0; i < this.size; i++) {
+                this.p[i] = l + (rnd.RandomFloat() * c);
             }
         }
 
@@ -2404,15 +2408,15 @@ public class Vector {
         public void Random(int length, int seed, float l, float u) {
             int i;
             float c;
-            idRandom rnd = new idRandom(seed);
+            final idRandom rnd = new idRandom(seed);
 
             SetSize(length);
             c = u - l;
-            for (i = 0; i < size; i++) {
+            for (i = 0; i < this.size; i++) {
                 if (idMatX.DISABLE_RANDOM_TEST) {//for testing.
-                    p[i] = i;
+                    this.p[i] = i;
                 } else {
-                    p[i] = l + rnd.RandomFloat() * c;
+                    this.p[i] = l + (rnd.RandomFloat() * c);
                 }
             }
         }
@@ -2422,28 +2426,28 @@ public class Vector {
 //	SIMDProcessor.Negate16( p, size );
 //#else
             int oGet;
-            for (oGet = 0; oGet < size; oGet++) {
-                p[oGet] = -p[oGet];
+            for (oGet = 0; oGet < this.size; oGet++) {
+                this.p[oGet] = -this.p[oGet];
             }
 //#endif
         }
 
         public void Clamp(float min, float max) {
             int i;
-            for (i = 0; i < size; i++) {
-                if (p[i] < min) {
-                    p[i] = min;
-                } else if (p[i] > max) {
-                    p[i] = max;
+            for (i = 0; i < this.size; i++) {
+                if (this.p[i] < min) {
+                    this.p[i] = min;
+                } else if (this.p[i] > max) {
+                    this.p[i] = max;
                 }
             }
         }
 
         public idVecX SwapElements(int e1, int e2) {
             float tmp;
-            tmp = p[e1];
-            p[e1] = p[e2];
-            p[e2] = tmp;
+            tmp = this.p[e1];
+            this.p[e1] = this.p[e2];
+            this.p[e2] = tmp;
             return this;
         }
 
@@ -2451,8 +2455,8 @@ public class Vector {
             int i;
             float sum = 0.0f;
 
-            for (i = 0; i < size; i++) {
-                sum += p[i] * p[i];
+            for (i = 0; i < this.size; i++) {
+                sum += this.p[i] * this.p[i];
             }
             return idMath.Sqrt(sum);
         }
@@ -2461,24 +2465,24 @@ public class Vector {
             int i;
             float sum = 0.0f;
 
-            for (i = 0; i < size; i++) {
-                sum += p[i] * p[i];
+            for (i = 0; i < this.size; i++) {
+                sum += this.p[i] * this.p[i];
             }
             return sum;
         }
 
         public idVecX Normalize() {
             int i;
-            idVecX m = new idVecX();
+            final idVecX m = new idVecX();
             float invSqrt, sum = 0.0f;
 
-            m.SetTempSize(size);
-            for (i = 0; i < size; i++) {
-                sum += p[i] * p[i];
+            m.SetTempSize(this.size);
+            for (i = 0; i < this.size; i++) {
+                sum += this.p[i] * this.p[i];
             }
             invSqrt = idMath.InvSqrt(sum);
-            for (i = 0; i < size; i++) {
-                m.p[i] = p[i] * invSqrt;
+            for (i = 0; i < this.size; i++) {
+                m.p[i] = this.p[i] * invSqrt;
             }
             return m;
         }
@@ -2486,40 +2490,40 @@ public class Vector {
         public float NormalizeSelf() {
             float invSqrt, sum = 0.0f;
             int i;
-            for (i = 0; i < size; i++) {
-                sum += p[i] * p[i];
+            for (i = 0; i < this.size; i++) {
+                sum += this.p[i] * this.p[i];
             }
             invSqrt = idMath.InvSqrt(sum);
-            for (i = 0; i < size; i++) {
-                p[i] *= invSqrt;
+            for (i = 0; i < this.size; i++) {
+                this.p[i] *= invSqrt;
             }
             return invSqrt * sum;
         }
 
         public int GetDimension() {
-            return size;
+            return this.size;
         }
 
         /** @deprecated readonly */
         @Deprecated
         public idVec3 SubVec3(int index) {
-            assert (index >= 0 && index * 3 + 3 <= size);
+            assert ((index >= 0) && (((index * 3) + 3) <= this.size));
 //	return *reinterpret_cast<idVec3 *>(p + index * 3);
-            return new idVec3(p[index *= 3], p[index + 1], p[index + 2]);
+            return new idVec3(this.p[index *= 3], this.p[index + 1], this.p[index + 2]);
         }
 //public	idVec3 &		SubVec3( int index );
 
         /** @deprecated readonly */
         @Deprecated
         public idVec6 SubVec6(int index) {
-            assert (index >= 0 && index * 6 + 6 <= size);
+            assert ((index >= 0) && (((index * 6) + 6) <= this.size));
 //	return *reinterpret_cast<idVec6 *>(p + index * 6);
-            return new idVec6(p[index *= 6], p[index + 1], p[index + 2], p[index + 3], p[index + 4], p[index + 5]);
+            return new idVec6(this.p[index *= 6], this.p[index + 1], this.p[index + 2], this.p[index + 3], this.p[index + 4], this.p[index + 5]);
         }
 //public	idVec6 &		SubVec6( int index );
 
         public float[] ToFloatPtr() {
-            return p;
+            return this.p;
         }
 //public	float *			ToFloatPtr( void );
 
@@ -2533,49 +2537,49 @@ public class Vector {
 
         public void SetTempSize(int newSize) {
 
-            size = newSize;
-            alloced = (newSize + 3) & ~3;
-            assert (alloced < VECX_MAX_TEMP);
-            if (idVecX.tempIndex + alloced > VECX_MAX_TEMP) {
+            this.size = newSize;
+            this.alloced = (newSize + 3) & ~3;
+            assert (this.alloced < VECX_MAX_TEMP);
+            if ((idVecX.tempIndex + this.alloced) > VECX_MAX_TEMP) {
                 idVecX.tempIndex = 0;
             }
 //            p = idVecX.tempPtr + idVecX.tempIndex;
 //            for (int a = 0; a < idVecX.tempIndex; a++) {//TODO:trippple check
 //                p[a] = idVecX.tempPtr[a + idVecX.tempIndex];
 //            }
-            p = new float[alloced];
-            idVecX.tempIndex += alloced;
+            this.p = new float[this.alloced];
+            idVecX.tempIndex += this.alloced;
             VECX_CLEAREND();
         }
 
         public void SubVec3_Normalize(int i) {
-            idVec3 vec3 = new idVec3(p, i * 3);
+            final idVec3 vec3 = new idVec3(this.p, i * 3);
             vec3.Normalize();
             this.SubVec3_oSet(i, vec3);
         }
 
         public void SubVec3_oSet(int i, idVec3 v) {
-            p[i * 3 + 0] = v.oGet(0);
-            p[i * 3 + 1] = v.oGet(1);
-            p[i * 3 + 2] = v.oGet(2);
+            this.p[(i * 3) + 0] = v.oGet(0);
+            this.p[(i * 3) + 1] = v.oGet(1);
+            this.p[(i * 3) + 2] = v.oGet(2);
         }
 
         public void SubVec6_oSet(int i, idVec6 v) {
-            p[i * 6 + 0] = v.oGet(0);
-            p[i * 6 + 1] = v.oGet(1);
-            p[i * 6 + 2] = v.oGet(2);
-            p[i * 6 + 3] = v.oGet(3);
-            p[i * 6 + 4] = v.oGet(4);
-            p[i * 6 + 5] = v.oGet(5);
+            this.p[(i * 6) + 0] = v.oGet(0);
+            this.p[(i * 6) + 1] = v.oGet(1);
+            this.p[(i * 6) + 2] = v.oGet(2);
+            this.p[(i * 6) + 3] = v.oGet(3);
+            this.p[(i * 6) + 4] = v.oGet(4);
+            this.p[(i * 6) + 5] = v.oGet(5);
         }
 
         public void SubVec6_oPluSet(int i, idVec6 v) {
-            p[i * 6 + 0] += v.oGet(0);
-            p[i * 6 + 1] += v.oGet(1);
-            p[i * 6 + 2] += v.oGet(2);
-            p[i * 6 + 3] += v.oGet(3);
-            p[i * 6 + 4] += v.oGet(4);
-            p[i * 6 + 5] += v.oGet(5);
+            this.p[(i * 6) + 0] += v.oGet(0);
+            this.p[(i * 6) + 1] += v.oGet(1);
+            this.p[(i * 6) + 2] += v.oGet(2);
+            this.p[(i * 6) + 3] += v.oGet(3);
+            this.p[(i * 6) + 4] += v.oGet(4);
+            this.p[(i * 6) + 5] += v.oGet(5);
         }
     }
 
@@ -2610,11 +2614,11 @@ public class Vector {
 //public	idPolar3		operator-() const;
 //public	idPolar3 &		operator=( const idPolar3 &a );
         public idVec3 ToVec3() {
-            float[] sp = new float[1], cp = new float[1], st = new float[1], ct = new float[1];
+            final float[] sp = new float[1], cp = new float[1], st = new float[1], ct = new float[1];
 //            sp = cp = st = ct = 0.0f;
-            idMath.SinCos(phi, sp, cp);
-            idMath.SinCos(theta, st, ct);
-            return new idVec3(cp[0] * radius * ct[0], cp[0] * radius * st[0], radius * sp[0]);
+            idMath.SinCos(this.phi, sp, cp);
+            idMath.SinCos(this.theta, st, ct);
+            return new idVec3(cp[0] * this.radius * ct[0], cp[0] * this.radius * st[0], this.radius * sp[0]);
         }
     }
 
@@ -2626,17 +2630,17 @@ public class Vector {
      ===============================================================================
      */
     public static double DotProduct(double[] a, double[] b) {
-        return (a[0] * b[0] + a[1] * b[1] + a[2] * b[2]);
+        return ((a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]));
     }
 
     public static float DotProduct(float[] a, float[] b) {
-        return (a[0] * b[0] + a[1] * b[1] + a[2] * b[2]);
+        return ((a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]));
     }
 
     public static float DotProduct(idVec3 a, idVec3 b) {
-        return (a.oGet(0) * b.oGet(0)
-                + a.oGet(1) * b.oGet(1)
-                + a.oGet(2) * b.oGet(2));
+        return ((a.oGet(0) * b.oGet(0))
+                + (a.oGet(1) * b.oGet(1))
+                + (a.oGet(2) * b.oGet(2)));
     }
 
     public static float DotProduct(idVec3 a, idVec4 b) {
@@ -2648,9 +2652,9 @@ public class Vector {
     }
 
     public static float DotProduct(idPlane a, idPlane b) {
-        return (a.oGet(0) * b.oGet(0)
-                + a.oGet(1) * b.oGet(1)
-                + a.oGet(2) * b.oGet(2));
+        return ((a.oGet(0) * b.oGet(0))
+                + (a.oGet(1) * b.oGet(1))
+                + (a.oGet(2) * b.oGet(2)));
     }
 
     public static double[] VectorSubtract(double[] a, double[] b, double[] c) {
@@ -2694,15 +2698,15 @@ public class Vector {
     }
 
     public static void VectorMA(double[] v, double s, double[] b, Double[] o) {
-        o[0] = v[0] + b[0] * s;
-        o[1] = v[1] + b[1] * s;
-        o[2] = v[2] + b[2] * s;
+        o[0] = v[0] + (b[0] * s);
+        o[1] = v[1] + (b[1] * s);
+        o[2] = v[2] + (b[2] * s);
     }
 
     public static void VectorMA(final idVec3 v, final float s, final idVec3 b, idVec3 o) {
-        o.oSet(0, v.oGet(0) + b.oGet(0) * s);
-        o.oSet(1, v.oGet(1) + b.oGet(1) * s);
-        o.oSet(2, v.oGet(2) + b.oGet(2) * s);
+        o.oSet(0, v.oGet(0) + (b.oGet(0) * s));
+        o.oSet(1, v.oGet(1) + (b.oGet(1) * s));
+        o.oSet(2, v.oGet(2) + (b.oGet(2) * s));
     }
 
     static void VectorCopy(double[] a, Double[] b) {

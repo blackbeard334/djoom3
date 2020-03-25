@@ -29,7 +29,9 @@ public class qgl {
 
     private static final boolean GL_DEBUG = false;
     static {
-        if (GL_DEBUG) qglEnable(GL43.GL_DEBUG_OUTPUT);
+        if (GL_DEBUG) {
+			qglEnable(GL43.GL_DEBUG_OUTPUT);
+		}
     }
 
     static final boolean qGL_FALSE = false;

@@ -53,9 +53,9 @@ public class idMatX {
     }
 
     void MATX_CLEAREND() {
-        int s = numRows * numColumns;
+        int s = this.numRows * this.numColumns;
         while (s < ((s + 3) & ~3)) {
-            mat[s++] = 0.0f;
+            this.mat[s++] = 0.0f;
         }
     }
 
@@ -65,19 +65,19 @@ public class idMatX {
 //#define MATX_SIMD
 
     public idMatX() {
-        numRows = numColumns = alloced = 0;
-        mat = null;
+        this.numRows = this.numColumns = this.alloced = 0;
+        this.mat = null;
     }
 
     public idMatX(int rows, int columns) {
-        numRows = numColumns = alloced = 0;
-        mat = null;
+        this.numRows = this.numColumns = this.alloced = 0;
+        this.mat = null;
         SetSize(rows, columns);
     }
 
     public idMatX(int rows, int columns, float[] src) {
-        numRows = numColumns = alloced = 0;
-        mat = null;
+        this.numRows = this.numColumns = this.alloced = 0;
+        this.mat = null;
         SetData(rows, columns, src);
     }
 
@@ -89,7 +89,7 @@ public class idMatX {
     public void Set(int rows, int columns, final float[] src) {
         SetSize(rows, columns);
 //	memcpy( this->mat, src, rows * columns * sizeof( float ) );
-        System.arraycopy(src, 0, mat, 0, src.length);
+        System.arraycopy(src, 0, this.mat, 0, src.length);
     }
 
     public void Set(final idMat3 m1, final idMat3 m2) {
@@ -98,8 +98,8 @@ public class idMatX {
         SetSize(3, 6);
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                mat[(i + 0) * numColumns + (j + 0)] = m1.mat[i].oGet(j);
-                mat[(i + 0) * numColumns + (j + 3)] = m2.mat[i].oGet(j);
+                this.mat[((i + 0) * this.numColumns) + (j + 0)] = m1.mat[i].oGet(j);
+                this.mat[((i + 0) * this.numColumns) + (j + 3)] = m2.mat[i].oGet(j);
             }
         }
     }
@@ -110,10 +110,10 @@ public class idMatX {
         SetSize(6, 6);
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 3; j++) {
-                mat[(i + 0) * numColumns + (j + 0)] = m1.mat[i].oGet(j);
-                mat[(i + 0) * numColumns + (j + 3)] = m2.mat[i].oGet(j);
-                mat[(i + 3) * numColumns + (j + 0)] = m3.mat[i].oGet(j);
-                mat[(i + 3) * numColumns + (j + 3)] = m4.mat[i].oGet(j);
+                this.mat[((i + 0) * this.numColumns) + (j + 0)] = m1.mat[i].oGet(j);
+                this.mat[((i + 0) * this.numColumns) + (j + 3)] = m2.mat[i].oGet(j);
+                this.mat[((i + 3) * this.numColumns) + (j + 0)] = m3.mat[i].oGet(j);
+                this.mat[((i + 3) * this.numColumns) + (j + 3)] = m4.mat[i].oGet(j);
             }
         }
     }
@@ -122,7 +122,7 @@ public class idMatX {
 //public	float *			operator[]( int index );
     @Deprecated
     public float[] oGet(int index) {////TODO:by sub array by reference
-        return Arrays.copyOfRange(mat, index * numColumns, mat.length);
+        return Arrays.copyOfRange(this.mat, index * this.numColumns, this.mat.length);
     }
 
 //public	idMatX &		operator=( const idMatX &a );
@@ -134,22 +134,22 @@ public class idMatX {
 //	memcpy( mat, a.mat, a.numRows * a.numColumns * sizeof( float ) );
 //#endif
         idMatX.tempIndex = 0;
-        System.arraycopy(a.mat, 0, mat, 0, a.numRows * a.numColumns);
+        System.arraycopy(a.mat, 0, this.mat, 0, a.numRows * a.numColumns);
         return this;
     }
 //public	idMatX			operator*( const float a ) const;
 
     public idMatX oMultiply(final float a) {
-        idMatX m = new idMatX();
+        final idMatX m = new idMatX();
 
-        m.SetTempSize(numRows, numColumns);
+        m.SetTempSize(this.numRows, this.numColumns);
         if (MATX_SIMD) {
-            SIMDProcessor.Mul16(m.mat, mat, a, numRows * numColumns);
+            SIMDProcessor.Mul16(m.mat, this.mat, a, this.numRows * this.numColumns);
         } else {
             int i, s;
-            s = numRows * numColumns;
+            s = this.numRows * this.numColumns;
             for (i = 0; i < s; i++) {
-                m.mat[i] = mat[i] * a;
+                m.mat[i] = this.mat[i] * a;
             }
         }
         return m;
@@ -157,11 +157,11 @@ public class idMatX {
 //public	idVecX			operator*( const idVecX &vec ) const;
 
     public idVecX oMultiply(final idVecX vec) {
-        idVecX dst = new idVecX();
+        final idVecX dst = new idVecX();
 
-        assert (numColumns == vec.GetSize());
+        assert (this.numColumns == vec.GetSize());
 
-        dst.SetTempSize(numRows);
+        dst.SetTempSize(this.numRows);
         if (MATX_SIMD) {
             SIMDProcessor.MatX_MultiplyVecX(dst, this, vec);
         } else {
@@ -172,11 +172,11 @@ public class idMatX {
 //public	idMatX			operator*( const idMatX &a ) const;
 
     public idMatX oMultiply(final idMatX a) {
-        idMatX dst = new idMatX();
+        final idMatX dst = new idMatX();
 
-        assert (numColumns == a.numRows);
+        assert (this.numColumns == a.numRows);
 
-        dst.SetTempSize(numRows, a.numColumns);
+        dst.SetTempSize(this.numRows, a.numColumns);
         if (MATX_SIMD) {
             SIMDProcessor.MatX_MultiplyMatX(dst, this, a);
         } else {
@@ -187,17 +187,17 @@ public class idMatX {
 //public	idMatX			operator+( const idMatX &a ) const;
 
     public idMatX oPlus(final idMatX a) {
-        idMatX m = new idMatX();
+        final idMatX m = new idMatX();
 
-        assert (numRows == a.numRows && numColumns == a.numColumns);
-        m.SetTempSize(numRows, numColumns);
+        assert ((this.numRows == a.numRows) && (this.numColumns == a.numColumns));
+        m.SetTempSize(this.numRows, this.numColumns);
         if (MATX_SIMD) {
-            SIMDProcessor.Add16(m.mat, mat, a.mat, numRows * numColumns);
+            SIMDProcessor.Add16(m.mat, this.mat, a.mat, this.numRows * this.numColumns);
         } else {
             int i, s;
-            s = numRows * numColumns;
+            s = this.numRows * this.numColumns;
             for (i = 0; i < s; i++) {
-                m.mat[i] = mat[i] + a.mat[i];
+                m.mat[i] = this.mat[i] + a.mat[i];
             }
         }
         return m;
@@ -205,17 +205,17 @@ public class idMatX {
 //public	idMatX			operator-( const idMatX &a ) const;
 
     public idMatX oMinus(final idMatX a) {
-        idMatX m = new idMatX();
+        final idMatX m = new idMatX();
 
-        assert (numRows == a.numRows && numColumns == a.numColumns);
-        m.SetTempSize(numRows, numColumns);
+        assert ((this.numRows == a.numRows) && (this.numColumns == a.numColumns));
+        m.SetTempSize(this.numRows, this.numColumns);
         if (MATX_SIMD) {
-            SIMDProcessor.Sub16(m.mat, mat, a.mat, numRows * numColumns);
+            SIMDProcessor.Sub16(m.mat, this.mat, a.mat, this.numRows * this.numColumns);
         } else {
             int i, s;
-            s = numRows * numColumns;
+            s = this.numRows * this.numColumns;
             for (i = 0; i < s; i++) {
-                m.mat[i] = mat[i] - a.mat[i];
+                m.mat[i] = this.mat[i] - a.mat[i];
             }
         }
         return m;
@@ -224,12 +224,12 @@ public class idMatX {
 
     public idMatX oMulSet(final float a) {
         if (MATX_SIMD) {
-            SIMDProcessor.MulAssign16(mat, a, numRows * numColumns);
+            SIMDProcessor.MulAssign16(this.mat, a, this.numRows * this.numColumns);
         } else {
             int i, s;
-            s = numRows * numColumns;
+            s = this.numRows * this.numColumns;
             for (i = 0; i < s; i++) {
-                mat[i] *= a;
+                this.mat[i] *= a;
             }
         }
         idMatX.tempIndex = 0;
@@ -245,14 +245,14 @@ public class idMatX {
 //public	idMatX &		operator+=( const idMatX &a );
 
     public idMatX oPluSet(final idMatX a) {
-        assert (numRows == a.numRows && numColumns == a.numColumns);
+        assert ((this.numRows == a.numRows) && (this.numColumns == a.numColumns));
         if (MATX_SIMD) {
-            SIMDProcessor.AddAssign16(mat, a.mat, numRows * numColumns);
+            SIMDProcessor.AddAssign16(this.mat, a.mat, this.numRows * this.numColumns);
         } else {
             int i, s;
-            s = numRows * numColumns;
+            s = this.numRows * this.numColumns;
             for (i = 0; i < s; i++) {
-                mat[i] += a.mat[i];
+                this.mat[i] += a.mat[i];
             }
         }
         idMatX.tempIndex = 0;
@@ -261,14 +261,14 @@ public class idMatX {
 
 //public	idMatX &		operator-=( const idMatX &a );
     public idMatX oMinSet(final idMatX a) {
-        assert (numRows == a.numRows && numColumns == a.numColumns);
+        assert ((this.numRows == a.numRows) && (this.numColumns == a.numColumns));
         if (MATX_SIMD) {
-            SIMDProcessor.SubAssign16(mat, a.mat, numRows * numColumns);
+            SIMDProcessor.SubAssign16(this.mat, a.mat, this.numRows * this.numColumns);
         } else {
             int i, s;
-            s = numRows * numColumns;
+            s = this.numRows * this.numColumns;
             for (i = 0; i < s; i++) {
-                mat[i] -= a.mat[i];
+                this.mat[i] -= a.mat[i];
             }
         }
         idMatX.tempIndex = 0;
@@ -294,11 +294,11 @@ public class idMatX {
     public boolean Compare(final idMatX a) {
         int i, s;
 
-        assert (numRows == a.numRows && numColumns == a.numColumns);
+        assert ((this.numRows == a.numRows) && (this.numColumns == a.numColumns));
 
-        s = numRows * numColumns;
+        s = this.numRows * this.numColumns;
         for (i = 0; i < s; i++) {
-            if (mat[i] != a.mat[i]) {
+            if (this.mat[i] != a.mat[i]) {
                 return false;
             }
         }
@@ -309,11 +309,11 @@ public class idMatX {
     public boolean Compare(final idMatX a, final float epsilon) {
         int i, s;
 
-        assert (numRows == a.numRows && numColumns == a.numColumns);
+        assert ((this.numRows == a.numRows) && (this.numColumns == a.numColumns));
 
-        s = numRows * numColumns;
+        s = this.numRows * this.numColumns;
         for (i = 0; i < s; i++) {
-            if (idMath.Fabs(mat[i] - a.mat[i]) > epsilon) {
+            if (idMath.Fabs(this.mat[i] - a.mat[i]) > epsilon) {
                 return false;
             }
         }
@@ -325,7 +325,7 @@ public class idMatX {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 53 * hash + Arrays.hashCode(this.mat);
+        hash = (53 * hash) + Arrays.hashCode(this.mat);
         return hash;
     }
 
@@ -347,18 +347,18 @@ public class idMatX {
     // set the number of rows/columns
     public void SetSize(int rows, int columns) {
 //            assert (mat < idMatX.tempPtr || mat > idMatX.tempPtr + MATX_MAX_TEMP);
-        int alloc = (rows * columns + 3) & ~3;
-        if (alloc > alloced && alloced != -1) {
-            if (mat != null) {
+        final int alloc = ((rows * columns) + 3) & ~3;
+        if ((alloc > this.alloced) && (this.alloced != -1)) {
+            if (this.mat != null) {
 //			Mem_Free16( mat );
-                mat = null;//useless, but gives you a feeling of superiority.
+                this.mat = null;//useless, but gives you a feeling of superiority.
             }
 //		mat = (float *) Mem_Alloc16( alloc * sizeof( float ) );
-            mat = new float[alloc];
-            alloced = alloc;
+            this.mat = new float[alloc];
+            this.alloced = alloc;
         }
-        numRows = rows;
-        numColumns = columns;
+        this.numRows = rows;
+        this.numColumns = columns;
 //	MATX_CLEAREND();
     }
 
@@ -368,95 +368,95 @@ public class idMatX {
 
     // change the size keeping data intact where possible
     public void ChangeSize(int rows, int columns, boolean makeZero) {
-        int alloc = (rows * columns + 3) & ~3;
-        if (alloc > alloced && alloced != -1) {
-            float[] oldMat = mat;
-            mat = new float[alloc];
+        final int alloc = ((rows * columns) + 3) & ~3;
+        if ((alloc > this.alloced) && (this.alloced != -1)) {
+            final float[] oldMat = this.mat;
+            this.mat = new float[alloc];
             if (makeZero) {
 //			memset( mat, 0, alloc * sizeof( float ) );
-                Arrays.fill(mat, 0, alloc, 0);
+                Arrays.fill(this.mat, 0, alloc, 0);
             }
-            alloced = alloc;
+            this.alloced = alloc;
             if (oldMat != null) {//TODO:wthfuck?
-                int minRow = Lib.Min(numRows, rows);
-                int minColumn = Lib.Min(numColumns, columns);
+                final int minRow = Lib.Min(this.numRows, rows);
+                final int minColumn = Lib.Min(this.numColumns, columns);
                 for (int i = 0; i < minRow; i++) {
-                    System.arraycopy(oldMat, i * numColumns + 0, mat, i * columns + 0, minColumn);
+                    System.arraycopy(oldMat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, minColumn);
                 }
 //			Mem_Free16( oldMat );
             }
         } else {
-            if (columns < numColumns) {
-                int minRow = Lib.Min(numRows, rows);
+            if (columns < this.numColumns) {
+                final int minRow = Lib.Min(this.numRows, rows);
                 for (int i = 0; i < minRow; i++) {
-                    System.arraycopy(mat, i * numColumns + 0, mat, i * columns + 0, columns);
+                    System.arraycopy(this.mat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, columns);
                 }
-            } else if (columns > numColumns) {
-                for (int i = Lib.Min(numRows, rows) - 1; i >= 0; i--) {
+            } else if (columns > this.numColumns) {
+                for (int i = Lib.Min(this.numRows, rows) - 1; i >= 0; i--) {
                     if (makeZero) {
-                        for (int j = columns - 1; j >= numColumns; j--) {
-                            mat[ i * columns + j] = 0.0f;
+                        for (int j = columns - 1; j >= this.numColumns; j--) {
+                            this.mat[ (i * columns) + j] = 0.0f;
                         }
                     }
-                    System.arraycopy(mat, i * numColumns + 0, mat, i * columns + 0, numColumns - 1 + 1);
+                    System.arraycopy(this.mat, (i * this.numColumns) + 0, this.mat, (i * columns) + 0, (this.numColumns - 1) + 1);
                 }
             }
-            if (makeZero && rows > numRows) {
+            if (makeZero && (rows > this.numRows)) {
 //			memset( mat + numRows * columns, 0, ( rows - numRows ) * columns * sizeof( float ) );
-                int from = numRows * columns;
-                int length = (rows - numRows) * columns;
-                int to = from + length;
-                Arrays.fill(mat, from, to, 0);
+                final int from = this.numRows * columns;
+                final int length = (rows - this.numRows) * columns;
+                final int to = from + length;
+                Arrays.fill(this.mat, from, to, 0);
             }
         }
-        numRows = rows;
-        numColumns = columns;
+        this.numRows = rows;
+        this.numColumns = columns;
 //	MATX_CLEAREND();
     }
 
     public int GetNumRows() {
-        return numRows;
+        return this.numRows;
     }					// get the number of rows
 
     public int GetNumColumns() {
-        return numColumns;
+        return this.numColumns;
     }				// get the number of columns
 
     public void SetData(int rows, int columns, float[] data) {// set float array pointer
 //            assert (mat < idMatX.tempPtr || mat > idMatX.tempPtr + MATX_MAX_TEMP);
-        if (mat != null && alloced != -1) {
+        if ((this.mat != null) && (this.alloced != -1)) {
 //		Mem_Free16( mat );
         }
         assert ((data.length & 15) == 0); // data must be 16 byte aligned
-        mat = data;
-        alloced = -1;
-        numRows = rows;
-        numColumns = columns;
+        this.mat = data;
+        this.alloced = -1;
+        this.numRows = rows;
+        this.numColumns = columns;
 //	MATX_CLEAREND();
     }
 
     // clear matrix
     public void Zero() {
-        Arrays.fill(mat, 0);
+        Arrays.fill(this.mat, 0);
     }
 
     // set size and clear matrix
     public void Zero(int rows, int columns) {
         SetSize(rows, columns);
-        Arrays.fill(mat, 0, rows * columns, 0);
+        Arrays.fill(this.mat, 0, rows * columns, 0);
     }
 
     // clear to identity matrix
     public void Identity() {
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 //#ifdef MATX_SIMD
 //	SIMDProcessor->Zero16( mat, numRows * numColumns );
 //#else
 //	memset( mat, 0, numRows * numColumns * sizeof( float ) );
-        Arrays.fill(mat, 0, numRows * numColumns, 0);
+        Arrays.fill(this.mat, 0, this.numRows * this.numColumns, 0);
 //#endif
-        for (int i = 0; i < numRows; i++) {
-            mat[i * numColumns + i] = 1.0f;
+        for (int i = 0; i < this.numRows; i++) {
+            this.mat[(i * this.numColumns) + i] = 1.0f;
         }
     }
 
@@ -470,7 +470,7 @@ public class idMatX {
     public void Diag(final idVecX v) {
         Zero(v.GetSize(), v.GetSize());
         for ( int i = 0; i < v.GetSize(); i++ ) {
-            mat[i * numColumns + i] = v.oGet(i);
+            this.mat[(i * this.numColumns) + i] = v.oGet(i);
         }
     }
 
@@ -485,12 +485,12 @@ public class idMatX {
     public void Random(int seed, float l, float u) {// fill matrix with random values
         int i, s;
         float c;
-        idRandom rnd = new Random.idRandom(seed);
+        final idRandom rnd = new Random.idRandom(seed);
 
         c = u - l;
-        s = numRows * numColumns;
+        s = this.numRows * this.numColumns;
         for (i = 0; i < s; i++) {
-            mat[i] = l + rnd.RandomFloat() * c;
+            this.mat[i] = l + (rnd.RandomFloat() * c);
         }
     }
 
@@ -505,54 +505,54 @@ public class idMatX {
     public void Random(int rows, int columns, int seed, float l, float u) {
         int i, s;
         float c;
-        idRandom rnd = new Random.idRandom(seed);
+        final idRandom rnd = new Random.idRandom(seed);
 
         SetSize(rows, columns);
         c = u - l;
-        s = numRows * numColumns;
+        s = this.numRows * this.numColumns;
         for (i = 0; i < s; i++) {
             if (DISABLE_RANDOM_TEST) {//for testing.
-                mat[i] = i;
+                this.mat[i] = i;
             } else {
-                mat[i] = l + rnd.RandomFloat() * c;
+                this.mat[i] = l + (rnd.RandomFloat() * c);
             }
         }
     }
 
     public void Negate() {// (*this) = - (*this)
         if (MATX_SIMD) {
-            SIMDProcessor.Negate16(mat, numRows * numColumns);
+            SIMDProcessor.Negate16(this.mat, this.numRows * this.numColumns);
         } else {
             int i, s;
-            s = numRows * numColumns;
+            s = this.numRows * this.numColumns;
             for (i = 0; i < s; i++) {
-                mat[i] = -mat[i];
+                this.mat[i] = -this.mat[i];
             }
         }
     }
 
     public void Clamp(float min, float max) {// clamp all values
         int i, s;
-        s = numRows * numColumns;
+        s = this.numRows * this.numColumns;
         for (i = 0; i < s; i++) {
-            if (mat[i] < min) {
-                mat[i] = min;
-            } else if (mat[i] > max) {
-                mat[i] = max;
+            if (this.mat[i] < min) {
+                this.mat[i] = min;
+            } else if (this.mat[i] > max) {
+                this.mat[i] = max;
             }
         }
     }
 
     public idMatX SwapRows(int r1, int r2) {// swap rows
-        float[] ptr = new float[numColumns];
+        final float[] ptr = new float[this.numColumns];
 
 //	ptr = (float *) _alloca16( numColumns * sizeof( float ) );
 //	memcpy( ptr, mat + r1 * numColumns, numColumns * sizeof( float ) );
-        System.arraycopy(mat, r1 * numColumns, ptr, 0, numColumns);
+        System.arraycopy(this.mat, r1 * this.numColumns, ptr, 0, this.numColumns);
 //	memcpy( mat + r1 * numColumns, mat + r2 * numColumns, numColumns * sizeof( float ) );
-        System.arraycopy(mat, r2 * numColumns, mat, r1 * numColumns, numColumns);
+        System.arraycopy(this.mat, r2 * this.numColumns, this.mat, r1 * this.numColumns, this.numColumns);
 //	memcpy( mat + r2 * numColumns, ptr, numColumns * sizeof( float ) );
-        System.arraycopy(ptr, 0, mat, r2 * numColumns, numColumns);
+        System.arraycopy(ptr, 0, this.mat, r2 * this.numColumns, this.numColumns);
 
         return this;
     }
@@ -561,11 +561,11 @@ public class idMatX {
         int i, ptr;
         float tmp;
 
-        for (i = 0; i < numRows; i++) {
-            ptr = i * numColumns;
-            tmp = mat[ptr + r1];
-            mat[ptr + r1] = mat[ptr + r2];
-            mat[ptr + r2] = tmp;
+        for (i = 0; i < this.numRows; i++) {
+            ptr = i * this.numColumns;
+            tmp = this.mat[ptr + r1];
+            this.mat[ptr + r1] = this.mat[ptr + r2];
+            this.mat[ptr + r2] = tmp;
         }
 
         return this;
@@ -580,14 +580,14 @@ public class idMatX {
     public idMatX RemoveRow(int r) {// remove a row
         int i;
 
-        assert (r < numRows);
+        assert (r < this.numRows);
 
-        numRows--;
+        this.numRows--;
 
 //        this.SetSize(numRows, numColumns);
-        for (i = r; i < numRows; i++) {//TODO:create new array to save memory?
+        for (i = r; i < this.numRows; i++) {//TODO:create new array to save memory?
 //		memcpy( &mat[i * numColumns], &mat[( i + 1 ) * numColumns], numColumns * sizeof( float ) );
-            System.arraycopy(mat, (i + 1) * numColumns, mat, i * numColumns, numColumns);
+            System.arraycopy(this.mat, (i + 1) * this.numColumns, this.mat, i * this.numColumns, this.numColumns);
         }
 
         return this;
@@ -596,16 +596,16 @@ public class idMatX {
     public idMatX RemoveColumn(int r) {// remove a column
         int i;
 
-        assert (r < numColumns);
+        assert (r < this.numColumns);
 
-        numColumns--;
+        this.numColumns--;
 
-        for (i = 0; i < numRows - 1; i++) {
+        for (i = 0; i < (this.numRows - 1); i++) {
 //		memmove( &mat[i * numColumns + r], &mat[i * ( numColumns + 1 ) + r + 1], numColumns * sizeof( float ) );
-            System.arraycopy(mat, 1 + r + (1 + numColumns) * i, mat, r + numColumns * i, numColumns);
+            System.arraycopy(this.mat, 1 + r + ((1 + this.numColumns) * i), this.mat, r + (this.numColumns * i), this.numColumns);
         }
 //	memmove( &mat[i * numColumns + r], &mat[i * ( numColumns + 1 ) + r + 1], ( numColumns - r ) * sizeof( float ) );
-        System.arraycopy(mat, 1 + r + (1 + numColumns) * i, mat, r + numColumns * i, numColumns - r);
+        System.arraycopy(this.mat, 1 + r + ((1 + this.numColumns) * i), this.mat, r + (this.numColumns * i), this.numColumns - r);
 
         return this;
     }
@@ -644,32 +644,32 @@ public class idMatX {
 
     // clear the upper triangle
     public void ClearUpperTriangle() {
-        assert (numRows == numColumns);
-        for (int i = numRows - 2; i >= 0; i--) {
+        assert (this.numRows == this.numColumns);
+        for (int i = this.numRows - 2; i >= 0; i--) {
 //		memset( mat + i * numColumns + i + 1, 0, (numColumns - 1 - i) * sizeof(float) );
-            int start = i * numColumns + i + 1;
-            int end = start + (numColumns - 1 - i);
-            Arrays.fill(mat, start, end, 0);
+            final int start = (i * this.numColumns) + i + 1;
+            final int end = start + (this.numColumns - 1 - i);
+            Arrays.fill(this.mat, start, end, 0);
         }
     }
 
     public void ClearLowerTriangle() {// clear the lower triangle
-        assert (numRows == numColumns);
-        for (int i = 1; i < numRows; i++) {
+        assert (this.numRows == this.numColumns);
+        for (int i = 1; i < this.numRows; i++) {
 //		memset( mat + i * numColumns, 0, i * sizeof(float) );
-            int start = i * numColumns;
-            int end = start + i;
-            Arrays.fill(mat, start, end, 0);
+            final int start = i * this.numColumns;
+            final int end = start + i;
+            Arrays.fill(this.mat, start, end, 0);
         }
     }
 
     public void SquareSubMatrix(final idMatX m, int size) {// get square sub-matrix from 0,0 to size,size
         int i;
-        assert (size <= m.numRows && size <= m.numColumns);
+        assert ((size <= m.numRows) && (size <= m.numColumns));
         SetSize(size, size);
         for (i = 0; i < size; i++) {
 //		memcpy( mat + i * numColumns, m.mat + i * m.numColumns, size * sizeof( float ) );
-            System.arraycopy(m.mat, i * m.numColumns, mat, i * numColumns, size);
+            System.arraycopy(m.mat, i * m.numColumns, this.mat, i * this.numColumns, size);
         }
     }
 
@@ -677,13 +677,13 @@ public class idMatX {
         int i, j;
         float diff, maxDiff;
 
-        assert (numRows == m.numRows && numColumns == m.numColumns);
+        assert ((this.numRows == m.numRows) && (this.numColumns == m.numColumns));
 
         maxDiff = -1.0f;
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
-                diff = idMath.Fabs(mat[ i * numColumns + j] - m.mat[i + j * m.numRows]);
-                if (maxDiff < 0.0f || diff > maxDiff) {
+        for (i = 0; i < this.numRows; i++) {
+            for (j = 0; j < this.numColumns; j++) {
+                diff = idMath.Fabs(this.mat[ (i * this.numColumns) + j] - m.mat[i + (j * m.numRows)]);
+                if ((maxDiff < 0.0f) || (diff > maxDiff)) {
                     maxDiff = diff;
                 }
             }
@@ -692,7 +692,7 @@ public class idMatX {
     }
 
     public boolean IsSquare() {
-        return (numRows == numColumns);
+        return (this.numRows == this.numColumns);
     }
 
     public boolean IsZero() {
@@ -701,9 +701,9 @@ public class idMatX {
 
     public boolean IsZero(final float epsilon) {
         // returns true if (*this) == Zero
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numColumns; j++) {
-                if (idMath.Fabs(mat[i * numColumns + j]) > epsilon) {
+        for (int i = 0; i < this.numRows; i++) {
+            for (int j = 0; j < this.numColumns; j++) {
+                if (idMath.Fabs(this.mat[(i * this.numColumns) + j]) > epsilon) {
                     return false;
                 }
             }
@@ -717,10 +717,10 @@ public class idMatX {
 
     public boolean IsIdentity(final float epsilon) {
         // returns true if (*this) == Identity
-        assert (numRows == numColumns);
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numColumns; j++) {
-                if (idMath.Fabs(mat[i * numColumns + j]
+        assert (this.numRows == this.numColumns);
+        for (int i = 0; i < this.numRows; i++) {
+            for (int j = 0; j < this.numColumns; j++) {
+                if (idMath.Fabs(this.mat[(i * this.numColumns) + j]
                         - (i == j ? 1.0f : 0.0f)) > epsilon) {//TODO:i==j??
                     return false;
                 }
@@ -735,10 +735,10 @@ public class idMatX {
 
     public boolean IsDiagonal(final float epsilon) {
         // returns true if all elements are zero except for the elements on the diagonal
-        assert (numRows == numColumns);
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numColumns; j++) {
-                if (i != j && idMath.Fabs(oGet(i, j)) > epsilon) {
+        assert (this.numRows == this.numColumns);
+        for (int i = 0; i < this.numRows; i++) {
+            for (int j = 0; j < this.numColumns; j++) {
+                if ((i != j) && (idMath.Fabs(oGet(i, j)) > epsilon)) {
                     return false;
                 }
             }
@@ -753,11 +753,11 @@ public class idMatX {
     public boolean IsTriDiagonal(final float epsilon) {
         // returns true if all elements are zero except for the elements on the diagonal plus or minus one column
 
-        if (numRows != numColumns) {
+        if (this.numRows != this.numColumns) {
             return false;
         }
-        for (int i = 0; i < numRows - 2; i++) {
-            for (int j = i + 2; j < numColumns; j++) {
+        for (int i = 0; i < (this.numRows - 2); i++) {
+            for (int j = i + 2; j < this.numColumns; j++) {
                 if (idMath.Fabs(oGet(i, j)) > epsilon) {
                     return false;
                 }
@@ -775,12 +775,12 @@ public class idMatX {
 
     public boolean IsSymmetric(final float epsilon) {
         // (*this)[i][j] == (*this)[j][i]
-        if (numRows != numColumns) {
+        if (this.numRows != this.numColumns) {
             return false;
         }
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numColumns; j++) {
-                if (idMath.Fabs(mat[ i * numColumns + j] - mat[ j * numColumns + i]) > epsilon) {
+        for (int i = 0; i < this.numRows; i++) {
+            for (int j = 0; j < this.numColumns; j++) {
+                if (idMath.Fabs(this.mat[ (i * this.numColumns) + j] - this.mat[ (j * this.numColumns) + i]) > epsilon) {
                     return false;
                 }
             }
@@ -806,19 +806,19 @@ public class idMatX {
         }
 
         ptr1 = 0;
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numColumns; j++) {
+        for (int i = 0; i < this.numRows; i++) {
+            for (int j = 0; j < this.numColumns; j++) {
                 ptr2 = j;
-                sum = mat[ptr1] * mat[ptr2] - (i == j ? 1 : 0);
-                for (int n = 1; n < numColumns; n++) {
-                    ptr2 += numColumns;
-                    sum += mat[ptr1 + n] * mat[ptr2];
+                sum = (this.mat[ptr1] * this.mat[ptr2]) - (i == j ? 1 : 0);
+                for (int n = 1; n < this.numColumns; n++) {
+                    ptr2 += this.numColumns;
+                    sum += this.mat[ptr1 + n] * this.mat[ptr2];
                 }
                 if (idMath.Fabs(sum) > epsilon) {
                     return false;
                 }
             }
-            ptr1 += numColumns;
+            ptr1 += this.numColumns;
         }
         return true;
     }
@@ -843,25 +843,25 @@ public class idMatX {
         }
 
         ptr1 = 0;
-        for (int i = 0; i < numRows; i++) {
-            for (int j = 0; j < numColumns; j++) {
+        for (int i = 0; i < this.numRows; i++) {
+            for (int j = 0; j < this.numColumns; j++) {
                 ptr2 = j;
-                sum = mat[ptr1] * mat[ptr2] - (i == j ? 1 : 0);
-                for (int n = 1; n < numColumns; n++) {
-                    ptr2 += numColumns;
-                    sum += mat[ptr1 + n] * mat[ptr2];
+                sum = (this.mat[ptr1] * this.mat[ptr2]) - (i == j ? 1 : 0);
+                for (int n = 1; n < this.numColumns; n++) {
+                    ptr2 += this.numColumns;
+                    sum += this.mat[ptr1 + n] * this.mat[ptr2];
                 }
                 if (idMath.Fabs(sum) > epsilon) {
                     return false;
                 }
             }
-            ptr1 += numColumns;
+            ptr1 += this.numColumns;
 
             ptr2 = i;
-            sum = mat[ptr2] * mat[ptr2] - 1.0f;
-            for (i = 1; i < numRows; i++) {
-                ptr2 += numColumns;
-                sum += mat[ptr2 + i] * mat[ptr2 + i];
+            sum = (this.mat[ptr2] * this.mat[ptr2]) - 1.0f;
+            for (i = 1; i < this.numRows; i++) {
+                ptr2 += this.numColumns;
+                sum += this.mat[ptr2 + i] * this.mat[ptr2 + i];
             }
             if (idMath.Fabs(sum) > epsilon) {
                 return false;
@@ -883,13 +883,13 @@ public class idMatX {
     public boolean IsPMatrix(final float epsilon) {
         int i, j;
         float d;
-        idMatX m = new idMatX();
+        final idMatX m = new idMatX();
 
         if (!IsSquare()) {
             return false;
         }
 
-        if (numRows <= 0) {
+        if (this.numRows <= 0) {
             return true;
         }
 
@@ -897,15 +897,15 @@ public class idMatX {
             return false;
         }
 
-        if (numRows <= 1) {
+        if (this.numRows <= 1) {
             return true;
         }
 
 //	m.SetData( numRows - 1, numColumns - 1, MATX_ALLOCA( ( numRows - 1 ) * ( numColumns - 1 ) ) );
-        m.SetSize(numRows - 1, numColumns - 1);
+        m.SetSize(this.numRows - 1, this.numColumns - 1);
 
-        for (i = 1; i < numRows; i++) {
-            for (j = 1; j < numColumns; j++) {
+        for (i = 1; i < this.numRows; i++) {
+            for (j = 1; j < this.numColumns; j++) {
                 m.oSet(i - 1, j - 1, oGet(i, j));
             }
         }
@@ -914,10 +914,10 @@ public class idMatX {
             return false;
         }
 
-        for (i = 1; i < numRows; i++) {
+        for (i = 1; i < this.numRows; i++) {
             d = oGet(i, 0) / oGet(0, 0);
-            for (j = 1; j < numColumns; j++) {
-                m.oSet(i - 1, j - 1, oGet(i, j) - d * oGet(0, j));
+            for (j = 1; j < this.numColumns; j++) {
+                m.oSet(i - 1, j - 1, oGet(i, j) - (d * oGet(0, j)));
             }
         }
 
@@ -945,9 +945,9 @@ public class idMatX {
             return false;
         }
 
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
-                if (oGet(i, j) > epsilon && i != j) {
+        for (i = 0; i < this.numRows; i++) {
+            for (j = 0; j < this.numColumns; j++) {
+                if ((oGet(i, j) > epsilon) && (i != j)) {
                     return false;
                 }
             }
@@ -970,7 +970,7 @@ public class idMatX {
     public boolean IsPositiveDefinite(final float epsilon) {
         int i, j, k;
         float d, s;
-        idMatX m = new idMatX();
+        final idMatX m = new idMatX();
 
         // the matrix must be square
         if (!IsSquare()) {
@@ -980,29 +980,29 @@ public class idMatX {
         // copy matrix
 //	m.SetData( numRows, numColumns, MATX_ALLOCA( numRows * numColumns ) );
 //	m = *this;
-        m.SetData(numRows, numColumns, m.mat);
+        m.SetData(this.numRows, this.numColumns, m.mat);
 
         // add transpose
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
+        for (i = 0; i < this.numRows; i++) {
+            for (j = 0; j < this.numColumns; j++) {
                 m.oPluSet(i, j, oGet(j, i));
             }
         }
 
         // test Positive Definiteness with Gaussian pivot steps
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
-            for (j = i; j < numColumns; j++) {
+            for (j = i; j < this.numColumns; j++) {
                 if (oGet(j, j) <= epsilon) {
                     return false;
                 }
             }
 
             d = 1.0f / m.oGet(i, i);
-            for (j = i + 1; j < numColumns; j++) {
+            for (j = i + 1; j < this.numColumns; j++) {
                 s = d * m.oGet(j, i);
                 m.oSet(i, j, 0.0f);
-                for (k = i + 1; k < numRows; k++) {
+                for (k = i + 1; k < this.numRows; k++) {
                     m.oMinSet(j, k, s * m.oGet(i, k));
                 }
             }
@@ -1022,7 +1022,7 @@ public class idMatX {
     }
 
     public boolean IsSymmetricPositiveDefinite(final float epsilon) {
-        idMatX m = new idMatX();
+        final idMatX m = new idMatX();
 
         // the matrix must be symmetric
         if (!IsSymmetric(epsilon)) {
@@ -1032,7 +1032,7 @@ public class idMatX {
         // copy matrix
 //	m.SetData( numRows, numColumns, MATX_ALLOCA( numRows * numColumns ) );
 //	m = *this;
-        m.SetData(numRows, numColumns, this.mat);
+        m.SetData(this.numRows, this.numColumns, this.mat);
 
         // being able to obtain Cholesky factors is both a necessary and sufficient condition for positive definiteness
         return m.Cholesky_Factor();
@@ -1052,7 +1052,7 @@ public class idMatX {
     public boolean IsPositiveSemiDefinite(final float epsilon) {
         int i, j, k;
         float d, s;
-        idMatX m = new idMatX();
+        final idMatX m = new idMatX();
 
         // the matrix must be square
         if (!IsSquare()) {
@@ -1062,26 +1062,26 @@ public class idMatX {
         // copy original matrix
 //	m.SetData( numRows, numColumns, MATX_ALLOCA( numRows * numColumns ) );
 //	m = *this;
-        m.SetData(numRows, numColumns, this.mat);
+        m.SetData(this.numRows, this.numColumns, this.mat);
 
         // add transpose
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
+        for (i = 0; i < this.numRows; i++) {
+            for (j = 0; j < this.numColumns; j++) {
                 m.oPluSet(i, j, this.oGet(j, i));
             }
         }
 
         // test Positive Semi Definiteness with Gaussian pivot steps
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
-            for (j = i; j < numColumns; j++) {
+            for (j = i; j < this.numColumns; j++) {
                 if (m.oGet(j, j) < -epsilon) {
                     return false;
                 }
                 if (m.oGet(j, j) > epsilon) {
                     continue;
                 }
-                for (k = 0; k < numRows; k++) {
+                for (k = 0; k < this.numRows; k++) {
                     if (idMath.Fabs(m.oGet(k, j)) > epsilon) {
                         return false;
                     }
@@ -1096,10 +1096,10 @@ public class idMatX {
             }
 
             d = 1.0f / m.oGet(i, i);
-            for (j = i + 1; j < numColumns; j++) {
+            for (j = i + 1; j < this.numColumns; j++) {
                 s = d * m.oGet(j, i);
                 m.oSet(j, i, 0.0f);
-                for (k = i + 1; k < numRows; k++) {
+                for (k = i + 1; k < this.numRows; k++) {
                     m.oMinSet(j, k, s * m.oGet(i, k));
                 }
             }
@@ -1124,37 +1124,37 @@ public class idMatX {
     public float Trace() {// returns product of diagonal elements
         float trace = 0.0f;
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
         // sum of elements on the diagonal
-        for (int i = 0; i < numRows; i++) {
-            trace += mat[i * numRows + i];
+        for (int i = 0; i < this.numRows; i++) {
+            trace += this.mat[(i * this.numRows) + i];
         }
         return trace;
     }
 
     public float Determinant() {// returns determinant of matrix
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        switch (numRows) {
+        switch (this.numRows) {
             case 1:
-                return mat[0];
+                return this.mat[0];
             case 2:
 //			return reinterpret_cast<const idMat2 *>(mat)->Determinant();
-                return mat[0] + mat[3];
+                return this.mat[0] + this.mat[3];
             case 3:
 //			return reinterpret_cast<const idMat3 *>(mat)->Determinant();
-                return mat[0] + mat[4] + mat[8];
+                return this.mat[0] + this.mat[4] + this.mat[8];
             case 4:
 //			return reinterpret_cast<const idMat4 *>(mat)->Determinant();
-                return mat[0] + mat[5] + mat[10] + mat[15];
+                return this.mat[0] + this.mat[5] + this.mat[10] + this.mat[15];
             case 5:
 //			return reinterpret_cast<const idMat5 *>(mat)->Determinant();
-                return mat[0] + mat[6] + mat[12] + mat[18] + mat[24];
+                return this.mat[0] + this.mat[6] + this.mat[12] + this.mat[18] + this.mat[24];
             case 6:
 //			return reinterpret_cast<const idMat6 *>(mat)->Determinant();
-                return mat[0] + mat[7] + mat[14] + mat[21] + mat[28] + mat[35];
+                return this.mat[0] + this.mat[7] + this.mat[14] + this.mat[21] + this.mat[28] + this.mat[35];
             default:
                 return DeterminantGeneric();
         }
@@ -1162,14 +1162,14 @@ public class idMatX {
     }
 
     public idMatX Transpose() {// returns transpose
-        idMatX transpose = new idMatX();
+        final idMatX transpose = new idMatX();
         int i, j;
 
-        transpose.SetTempSize(numColumns, numRows);
+        transpose.SetTempSize(this.numColumns, this.numRows);
 
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
-                transpose.mat[j * transpose.numColumns + i] = mat[i * numColumns + j];
+        for (i = 0; i < this.numRows; i++) {
+            for (j = 0; j < this.numColumns; j++) {
+                transpose.mat[(j * transpose.numColumns) + i] = this.mat[(i * this.numColumns) + j];
             }
         }
 
@@ -1183,68 +1183,68 @@ public class idMatX {
     }
 
     public idMatX Inverse() {// returns the inverse ( m * m.Inverse() = identity )
-        idMatX invMat = new idMatX();
+        final idMatX invMat = new idMatX();
 
 //	invMat.SetTempSize( numRows, numColumns );
 //	memcpy( invMat.mat, mat, numRows * numColumns * sizeof( float ) );
-        invMat.SetData(numRows, numColumns, mat);
-        boolean r = invMat.InverseSelf();
+        invMat.SetData(this.numRows, this.numColumns, this.mat);
+        final boolean r = invMat.InverseSelf();
         assert (r);
         return invMat;
     }
 
     public boolean InverseSelf() {// returns false if determinant is zero
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
         boolean result;
-        switch (numRows) {
+        switch (this.numRows) {
             case 1:
-                if (idMath.Fabs(mat[0]) < MATRIX_INVERSE_EPSILON) {
+                if (idMath.Fabs(this.mat[0]) < MATRIX_INVERSE_EPSILON) {
                     return false;
                 }
-                mat[0] = 1.0f / mat[0];
+                this.mat[0] = 1.0f / this.mat[0];
                 return true;
             case 2:
-                idMat2 mat2 = new idMat2(
-                        mat[0], mat[1],
-                        mat[2], mat[3]);
+                final idMat2 mat2 = new idMat2(
+                        this.mat[0], this.mat[1],
+                        this.mat[2], this.mat[3]);
                 result = mat2.InverseSelf();
                 this.mat = mat2.reinterpret_cast();
                 return result;
             case 3:
-                idMat3 mat3 = new idMat3(
-                        mat[0], mat[1], mat[2],
-                        mat[3], mat[4], mat[5],
-                        mat[6], mat[7], mat[8]);
+                final idMat3 mat3 = new idMat3(
+                        this.mat[0], this.mat[1], this.mat[2],
+                        this.mat[3], this.mat[4], this.mat[5],
+                        this.mat[6], this.mat[7], this.mat[8]);
                 result = mat3.InverseSelf();
                 this.mat = mat3.reinterpret_cast();
                 return result;
             case 4:
-                idMat4 mat4 = new idMat4(
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3],
-                        mat[0], mat[1], mat[2], mat[3]);
+                final idMat4 mat4 = new idMat4(
+                        this.mat[0], this.mat[1], this.mat[2], this.mat[3],
+                        this.mat[0], this.mat[1], this.mat[2], this.mat[3],
+                        this.mat[0], this.mat[1], this.mat[2], this.mat[3],
+                        this.mat[0], this.mat[1], this.mat[2], this.mat[3]);
                 result = mat4.InverseSelf();
                 this.mat = mat4.reinterpret_cast();
                 return result;
             case 5:
-                idMat5 mat5 = new idMat5(
-                        new idVec5(mat[0], mat[1], mat[2], mat[3], mat[4]),
-                        new idVec5(mat[5], mat[6], mat[2], mat[3], mat[4]),
-                        new idVec5(mat[10], mat[11], mat[12], mat[13], mat[14]),
-                        new idVec5(mat[15], mat[16], mat[17], mat[18], mat[19]),
-                        new idVec5(mat[20], mat[21], mat[22], mat[23], mat[24]));
+                final idMat5 mat5 = new idMat5(
+                        new idVec5(this.mat[0], this.mat[1], this.mat[2], this.mat[3], this.mat[4]),
+                        new idVec5(this.mat[5], this.mat[6], this.mat[2], this.mat[3], this.mat[4]),
+                        new idVec5(this.mat[10], this.mat[11], this.mat[12], this.mat[13], this.mat[14]),
+                        new idVec5(this.mat[15], this.mat[16], this.mat[17], this.mat[18], this.mat[19]),
+                        new idVec5(this.mat[20], this.mat[21], this.mat[22], this.mat[23], this.mat[24]));
                 result = mat5.InverseSelf();
                 this.mat = mat5.reinterpret_cast();
                 return result;
             case 6:
-                idMat6 mat6 = new idMat6(
-                        new idVec6(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5]),
-                        new idVec6(mat[6], mat[7], mat[8], mat[9], mat[10], mat[11]),
-                        new idVec6(mat[12], mat[13], mat[14], mat[15], mat[16], mat[17]),
-                        new idVec6(mat[18], mat[19], mat[20], mat[21], mat[22], mat[23]),
-                        new idVec6(mat[24], mat[25], mat[26], mat[27], mat[28], mat[29]),
-                        new idVec6(mat[30], mat[31], mat[32], mat[33], mat[34], mat[35]));
+                final idMat6 mat6 = new idMat6(
+                        new idVec6(this.mat[0], this.mat[1], this.mat[2], this.mat[3], this.mat[4], this.mat[5]),
+                        new idVec6(this.mat[6], this.mat[7], this.mat[8], this.mat[9], this.mat[10], this.mat[11]),
+                        new idVec6(this.mat[12], this.mat[13], this.mat[14], this.mat[15], this.mat[16], this.mat[17]),
+                        new idVec6(this.mat[18], this.mat[19], this.mat[20], this.mat[21], this.mat[22], this.mat[23]),
+                        new idVec6(this.mat[24], this.mat[25], this.mat[26], this.mat[27], this.mat[28], this.mat[29]),
+                        new idVec6(this.mat[30], this.mat[31], this.mat[32], this.mat[33], this.mat[34], this.mat[35]));
                 result = mat6.InverseSelf();
                 this.mat = mat6.reinterpret_cast();
                 return result;
@@ -1254,68 +1254,68 @@ public class idMatX {
     }
 
     public idMatX InverseFast() {// returns the inverse ( m * m.Inverse() = identity )
-        idMatX invMat = new idMatX();
+        final idMatX invMat = new idMatX();
 
-	    invMat.SetTempSize( numRows, numColumns );
-        System.arraycopy(mat, 0, invMat.mat, 0, numRows * numColumns);
-        boolean r = invMat.InverseFastSelf();
+	    invMat.SetTempSize( this.numRows, this.numColumns );
+        System.arraycopy(this.mat, 0, invMat.mat, 0, this.numRows * this.numColumns);
+        final boolean r = invMat.InverseFastSelf();
         assert (r);
         return invMat;
     }
 
     public boolean InverseFastSelf() {// returns false if determinant is zero
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
         boolean result;
-        switch (numRows) {
+        switch (this.numRows) {
             case 1:
-                if (idMath.Fabs(mat[0]) < MATRIX_INVERSE_EPSILON) {
+                if (idMath.Fabs(this.mat[0]) < MATRIX_INVERSE_EPSILON) {
                     return false;
                 }
-                mat[0] = 1.0f / mat[0];
+                this.mat[0] = 1.0f / this.mat[0];
                 return true;
             case 2:
-                idMat2 mat2 = new idMat2(
-                        mat[0], mat[1],
-                        mat[2], mat[3]);
+                final idMat2 mat2 = new idMat2(
+                        this.mat[0], this.mat[1],
+                        this.mat[2], this.mat[3]);
                 result = mat2.InverseFastSelf();
                 this.mat = mat2.reinterpret_cast();
                 return result;
             case 3:
-                idMat3 mat3 = new idMat3(
-                        mat[0], mat[1], mat[2],
-                        mat[3], mat[4], mat[5],
-                        mat[6], mat[7], mat[8]);
+                final idMat3 mat3 = new idMat3(
+                        this.mat[0], this.mat[1], this.mat[2],
+                        this.mat[3], this.mat[4], this.mat[5],
+                        this.mat[6], this.mat[7], this.mat[8]);
                 result = mat3.InverseFastSelf();
                 this.mat = mat3.reinterpret_cast();
                 return result;
             case 4:
-                idMat4 mat4 = new idMat4(
-                        mat[ 0], mat[ 1], mat[ 2], mat[ 3],
-                        mat[ 4], mat[ 5], mat[ 6], mat[ 7],
-                        mat[ 8], mat[ 9], mat[10], mat[11],
-                        mat[12], mat[13], mat[14], mat[15]);
+                final idMat4 mat4 = new idMat4(
+                        this.mat[ 0], this.mat[ 1], this.mat[ 2], this.mat[ 3],
+                        this.mat[ 4], this.mat[ 5], this.mat[ 6], this.mat[ 7],
+                        this.mat[ 8], this.mat[ 9], this.mat[10], this.mat[11],
+                        this.mat[12], this.mat[13], this.mat[14], this.mat[15]);
                 result = mat4.InverseFastSelf();
                 this.mat = mat4.reinterpret_cast();
                 return result;
             case 5:
-                idMat5 mat5 = new idMat5(
-                        new idVec5(mat[ 0], mat[ 1], mat[ 2], mat[ 3], mat[ 4]),
-                        new idVec5(mat[ 5], mat[ 6], mat[ 7], mat[ 8], mat[ 9]),
-                        new idVec5(mat[10], mat[11], mat[12], mat[13], mat[14]),
-                        new idVec5(mat[15], mat[16], mat[17], mat[18], mat[19]),
-                        new idVec5(mat[20], mat[21], mat[22], mat[23], mat[24]));
+                final idMat5 mat5 = new idMat5(
+                        new idVec5(this.mat[ 0], this.mat[ 1], this.mat[ 2], this.mat[ 3], this.mat[ 4]),
+                        new idVec5(this.mat[ 5], this.mat[ 6], this.mat[ 7], this.mat[ 8], this.mat[ 9]),
+                        new idVec5(this.mat[10], this.mat[11], this.mat[12], this.mat[13], this.mat[14]),
+                        new idVec5(this.mat[15], this.mat[16], this.mat[17], this.mat[18], this.mat[19]),
+                        new idVec5(this.mat[20], this.mat[21], this.mat[22], this.mat[23], this.mat[24]));
                 result = mat5.InverseFastSelf();
                 this.mat = mat5.reinterpret_cast();
                 return result;
             case 6:
-                idMat6 mat6 = new idMat6(
-                        new idVec6(mat[ 0], mat[ 1], mat[ 2], mat[ 3], mat[ 4], mat[ 5]),
-                        new idVec6(mat[ 6], mat[ 7], mat[ 8], mat[ 9], mat[10], mat[11]),
-                        new idVec6(mat[12], mat[13], mat[14], mat[15], mat[16], mat[17]),
-                        new idVec6(mat[18], mat[19], mat[20], mat[21], mat[22], mat[23]),
-                        new idVec6(mat[24], mat[25], mat[26], mat[27], mat[28], mat[29]),
-                        new idVec6(mat[30], mat[31], mat[32], mat[33], mat[34], mat[35]));
+                final idMat6 mat6 = new idMat6(
+                        new idVec6(this.mat[ 0], this.mat[ 1], this.mat[ 2], this.mat[ 3], this.mat[ 4], this.mat[ 5]),
+                        new idVec6(this.mat[ 6], this.mat[ 7], this.mat[ 8], this.mat[ 9], this.mat[10], this.mat[11]),
+                        new idVec6(this.mat[12], this.mat[13], this.mat[14], this.mat[15], this.mat[16], this.mat[17]),
+                        new idVec6(this.mat[18], this.mat[19], this.mat[20], this.mat[21], this.mat[22], this.mat[23]),
+                        new idVec6(this.mat[24], this.mat[25], this.mat[26], this.mat[27], this.mat[28], this.mat[29]),
+                        new idVec6(this.mat[30], this.mat[31], this.mat[32], this.mat[33], this.mat[34], this.mat[35]));
                 result = mat6.InverseFastSelf();//TODO: merge fast and slow
                 this.mat = mat6.reinterpret_cast();
                 return result;
@@ -1334,7 +1334,7 @@ public class idMatX {
         int i, j, k;
         double d, sum;
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             d = this.oGet(i, i);
 //                System.out.println("1:" + d);
             if (d == 0.0f) {
@@ -1364,14 +1364,14 @@ public class idMatX {
         int i, j, k;
         double d, sum;
 
-        for (i = numRows - 1; i >= 0; i--) {
+        for (i = this.numRows - 1; i >= 0; i--) {
             d = this.oGet(i, i);
             if (d == 0.0f) {
                 return false;
             }
             this.oSet(i, i, (float) (d = 1.0f / d));
 
-            for (j = numRows - 1; j > i; j--) {
+            for (j = this.numRows - 1; j > i; j--) {
                 sum = 0.0f;
                 for (k = j; k > i; k--) {
                     sum -= this.oGet(i, k) * this.oGet(k, j);
@@ -1383,11 +1383,11 @@ public class idMatX {
     }
 
     public idVecX Multiply(final idVecX vec) {// (*this) * vec
-        idVecX dst = new idVecX();
+        final idVecX dst = new idVecX();
 
-        assert (numColumns == vec.GetSize());
+        assert (this.numColumns == vec.GetSize());
 
-        dst.SetTempSize(numRows);
+        dst.SetTempSize(this.numRows);
         if (MATX_SIMD) {
             SIMDProcessor.MatX_MultiplyVecX(dst, this, vec);
         } else {
@@ -1397,11 +1397,11 @@ public class idMatX {
     }
 
     public idVecX TransposeMultiply(final idVecX vec) {// this->Transpose() * vec
-        idVecX dst = new idVecX();
+        final idVecX dst = new idVecX();
 
-        assert (numRows == vec.GetSize());
+        assert (this.numRows == vec.GetSize());
 
-        dst.SetTempSize(numColumns);
+        dst.SetTempSize(this.numColumns);
         if (MATX_SIMD) {
             SIMDProcessor.MatX_TransposeMultiplyVecX(dst, this, vec);
         } else {
@@ -1411,11 +1411,11 @@ public class idMatX {
     }
 
     public idMatX Multiply(final idMatX a) {// (*this) * a
-        idMatX dst = new idMatX();
+        final idMatX dst = new idMatX();
 
-        assert (numColumns == a.numRows);
+        assert (this.numColumns == a.numRows);
 
-        dst.SetTempSize(numRows, a.numColumns);
+        dst.SetTempSize(this.numRows, a.numColumns);
         if (MATX_SIMD) {
             SIMDProcessor.MatX_MultiplyMatX(dst, this, a);
         } else {
@@ -1425,11 +1425,11 @@ public class idMatX {
     }
 
     public idMatX TransposeMultiply(final idMatX a) {// this->Transpose() * a
-        idMatX dst = new idMatX();
+        final idMatX dst = new idMatX();
 
-        assert (numRows == a.numRows);
+        assert (this.numRows == a.numRows);
 
-        dst.SetTempSize(numColumns, a.numColumns);
+        dst.SetTempSize(this.numColumns, a.numColumns);
         if (MATX_SIMD) {
             SIMDProcessor.MatX_TransposeMultiplyMatX(dst, this, a);
         } else {
@@ -1445,16 +1445,16 @@ public class idMatX {
             int i, j, m = 0;
             final float[] mPtr, vPtr, dstPtr;
 
-            mPtr = mat;
+            mPtr = this.mat;
             vPtr = vec.ToFloatPtr();
             dstPtr = dst.ToFloatPtr();
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 float sum = mPtr[m + 0] * vPtr[0];
-                for (j = 1; j < numColumns; j++) {
+                for (j = 1; j < this.numColumns; j++) {
                     sum += mPtr[m + j] * vPtr[j];
                 }
                 dstPtr[i] = sum;
-                m += numColumns;
+                m += this.numColumns;
             }
         }
     }
@@ -1466,16 +1466,16 @@ public class idMatX {
             int i, j, m = 0;
             final float[] mPtr, vPtr, dstPtr;
 
-            mPtr = mat;
+            mPtr = this.mat;
             vPtr = vec.ToFloatPtr();
             dstPtr = dst.ToFloatPtr();
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 float sum = mPtr[0 + m] * vPtr[0];
-                for (j = 1; j < numColumns; j++) {
+                for (j = 1; j < this.numColumns; j++) {
                     sum += mPtr[j + m] * vPtr[j];
                 }
                 dstPtr[i] += sum;
-                m += numColumns;
+                m += this.numColumns;
             }
         }
     }
@@ -1487,16 +1487,16 @@ public class idMatX {
             int i, j, m = 0;
             final float[] mPtr, vPtr, dstPtr;
 
-            mPtr = mat;
+            mPtr = this.mat;
             vPtr = vec.ToFloatPtr();
             dstPtr = dst.ToFloatPtr();
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 float sum = mPtr[0 + m] * vPtr[0];
-                for (j = 1; j < numColumns; j++) {
+                for (j = 1; j < this.numColumns; j++) {
                     sum += mPtr[j + m] * vPtr[j];
                 }
                 dstPtr[i] -= sum;
-                m += numColumns;
+                m += this.numColumns;
             }
         }
     }
@@ -1510,12 +1510,12 @@ public class idMatX {
 
             vPtr = vec.ToFloatPtr();
             dstPtr = dst.ToFloatPtr();
-            for (i = 0; i < numColumns; i++) {
+            for (i = 0; i < this.numColumns; i++) {
                 mPtr = i;
-                float sum = mat[mPtr] * vPtr[0];
-                for (j = 1; j < numRows; j++) {
-                    mPtr += numColumns;
-                    sum += mat[mPtr] * vPtr[j];
+                float sum = this.mat[mPtr] * vPtr[0];
+                for (j = 1; j < this.numRows; j++) {
+                    mPtr += this.numColumns;
+                    sum += this.mat[mPtr] * vPtr[j];
                 }
                 dstPtr[i] = sum;
             }
@@ -1531,12 +1531,12 @@ public class idMatX {
 
             vPtr = vec.ToFloatPtr();
             dstPtr = dst.ToFloatPtr();
-            for (i = 0; i < numColumns; i++) {
+            for (i = 0; i < this.numColumns; i++) {
                 mPtr = i;
-                float sum = mat[mPtr] * vPtr[0];
-                for (j = 1; j < numRows; j++) {
-                    mPtr += numColumns;
-                    sum += mat[mPtr] * vPtr[j];
+                float sum = this.mat[mPtr] * vPtr[0];
+                for (j = 1; j < this.numRows; j++) {
+                    mPtr += this.numColumns;
+                    sum += this.mat[mPtr] * vPtr[j];
                 }
                 dstPtr[i] += sum;
             }
@@ -1552,12 +1552,12 @@ public class idMatX {
 
             vPtr = vec.ToFloatPtr();
             dstPtr = dst.ToFloatPtr();
-            for (i = 0; i < numColumns; i++) {
+            for (i = 0; i < this.numColumns; i++) {
                 mPtr = i;
-                float sum = mat[mPtr] * vPtr[0];
-                for (j = 1; j < numRows; j++) {
-                    mPtr += numColumns;
-                    sum += mat[mPtr] * vPtr[j];
+                float sum = this.mat[mPtr] * vPtr[0];
+                for (j = 1; j < this.numRows; j++) {
+                    mPtr += this.numColumns;
+                    sum += this.mat[mPtr] * vPtr[j];
                 }
                 dstPtr[i] -= sum;
             }
@@ -1574,19 +1574,19 @@ public class idMatX {
             double sum;//double, the difference between life and death.
             int m1 = 0, m2 = 0, d0 = 0;//indices
 
-            assert (numColumns == a.numRows);
+            assert (this.numColumns == a.numRows);
 
             dstPtr = dst.ToFloatPtr();
             m1Ptr = ToFloatPtr();
             m2Ptr = a.ToFloatPtr();
-            k = numRows;
+            k = this.numRows;
             l = a.GetNumColumns();
 
             for (i = 0; i < k; i++) {
                 for (j = 0; j < l; j++) {
                     m2 = j;
                     sum = m1Ptr[0 + m1] * m2Ptr[0 + m2];
-                    for (n = 1; n < numColumns; n++) {
+                    for (n = 1; n < this.numColumns; n++) {
                         m2 += l;
                         sum += m1Ptr[n + m1] * m2Ptr[0 + m2];
 //                    System.out.printf("%f %f\n", m1Ptr[n + m1], m2Ptr[0 + m2]);
@@ -1594,7 +1594,7 @@ public class idMatX {
                     dstPtr[d0++] = (float) sum;
 //                System.out.printf("%f\n", sum);
                 }
-                m1 += numColumns;
+                m1 += this.numColumns;
             }
         }
     }
@@ -1609,12 +1609,12 @@ public class idMatX {
             double sum;
             int m1 = 0, m2 = 0, d0 = 0;//indices
 
-            assert (numRows == a.numRows);//TODO:check if these pseudo indices work like the pointers
+            assert (this.numRows == a.numRows);//TODO:check if these pseudo indices work like the pointers
 
             dstPtr = dst.ToFloatPtr();
             m1Ptr = ToFloatPtr();
             m2Ptr = a.ToFloatPtr();
-            k = numColumns;
+            k = this.numColumns;
             l = a.numColumns;
 
             for (i = 0; i < k; i++) {
@@ -1622,8 +1622,8 @@ public class idMatX {
                     m1 = i;
                     m2 = j;
                     sum = m1Ptr[0 + m1] * m2Ptr[0 + m2];
-                    for (n = 1; n < numRows; n++) {
-                        m1 += numColumns;
+                    for (n = 1; n < this.numRows; n++) {
+                        m1 += this.numColumns;
                         m2 += a.numColumns;
                         sum += m1Ptr[0 + m1] * m2Ptr[0 + m2];
                     }
@@ -1634,32 +1634,32 @@ public class idMatX {
     }
 
     public int GetDimension() {// returns total number of values in matrix
-        return numRows * numColumns;
+        return this.numRows * this.numColumns;
     }
 
     /** @deprecated returns readonly vector */
     @Deprecated
     public idVec6 SubVec6(int row) {// interpret beginning of row as a const idVec6
-        assert (numColumns >= 6 && row >= 0 && row < numRows);
+        assert ((this.numColumns >= 6) && (row >= 0) && (row < this.numRows));
 //	return *reinterpret_cast<const idVec6 *>(mat + row * numColumns);
-        float[] temp = new float[6];
-        System.arraycopy(mat, (row * numColumns), temp, 0, 6);
+        final float[] temp = new float[6];
+        System.arraycopy(this.mat, (row * this.numColumns), temp, 0, 6);
         return new idVec6(temp);
     }
 //public	idVec6 &		SubVec6( int row );												// interpret beginning of row as an idVec6
 
     public idVecX SubVecX(int row) {// interpret complete row as a const idVecX
-        idVecX v = new idVecX();
-        assert (row >= 0 && row < numRows);
-        float[] temp = new float[numColumns];
-        System.arraycopy(mat, (row * numColumns), temp, 0, numColumns);
-        v.SetData(numColumns, temp);
+        final idVecX v = new idVecX();
+        assert ((row >= 0) && (row < this.numRows));
+        final float[] temp = new float[this.numColumns];
+        System.arraycopy(this.mat, (row * this.numColumns), temp, 0, this.numColumns);
+        v.SetData(this.numColumns, temp);
         return v;
     }
 //public	idVecX			SubVecX( int row );												// interpret complete row as an idVecX
 
     public float[] ToFloatPtr() {// pointer to const matrix float array
-        return mat;
+        return this.mat;
     }
 
     public FloatBuffer ToFloatBufferPtr() {
@@ -1667,11 +1667,11 @@ public class idMatX {
     }
 
     public FloatBuffer ToFloatBufferPtr(final int offset) {
-        return ((FloatBuffer) FloatBuffer.wrap(mat).position(offset)).slice();
+        return ((FloatBuffer) FloatBuffer.wrap(this.mat).position(offset)).slice();
     }
 
     public FloatBuffer GetRowPtr(final int row) {
-        final int start = row * numColumns;
+        final int start = row * this.numColumns;
 //        final int end = start + numColumns;
 //        return ((FloatBuffer)FloatBuffer.wrap(mat).position(start).limit(end)).slice();
         return ToFloatBufferPtr(start);
@@ -1695,12 +1695,12 @@ public class idMatX {
         int i, j;
         float s;
 
-        assert (v.GetSize() >= numRows);
-        assert (w.GetSize() >= numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert (w.GetSize() >= this.numColumns);
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             s = alpha * v.p[i];
-            for (j = 0; j < numColumns; j++) {
+            for (j = 0; j < this.numColumns; j++) {
                 this.oPluSet(i, j, s * w.p[j]);
             }
         }
@@ -1717,12 +1717,12 @@ public class idMatX {
         int i, j;
         float s;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             s = alpha * v.p[i];
-            for (j = 0; j < numColumns; j++) {
+            for (j = 0; j < this.numColumns; j++) {
                 this.oPluSet(i, j, s * v.p[j]);
             }
         }
@@ -1744,13 +1744,13 @@ public class idMatX {
         int i;
 
         assert (w.p[r] == 0.0f);
-        assert (v.GetSize() >= numColumns);
-        assert (w.GetSize() >= numRows);
+        assert (v.GetSize() >= this.numColumns);
+        assert (w.GetSize() >= this.numRows);
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             this.oPluSet(i, r, v.p[i]);
         }
-        for (i = 0; i < numColumns; i++) {
+        for (i = 0; i < this.numColumns; i++) {
             this.oPluSet(r, i, w.p[i]);
         }
     }
@@ -1769,15 +1769,15 @@ public class idMatX {
     public void Update_RowColumnSymmetric(final idVecX v, int r) {
         int i;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
 
         for (i = 0; i < r; i++) {
             this.oPluSet(i, r, v.p[i]);
             this.oPluSet(r, i, v.p[i]);
         }
         this.oSet(r, r, this.oGet(r, r) + v.p[r]);
-        for (i = r + 1; i < numRows; i++) {
+        for (i = r + 1; i < this.numRows; i++) {
             this.oPluSet(i, r, v.p[i]);
             this.oPluSet(r, i, v.p[i]);
         }
@@ -1797,17 +1797,17 @@ public class idMatX {
     public void Update_Increment(final idVecX v, final idVecX w) {
         int i;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows + 1);
-        assert (w.GetSize() >= numColumns + 1);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= (this.numRows + 1));
+        assert (w.GetSize() >= (this.numColumns + 1));
 
-        ChangeSize(numRows + 1, numColumns + 1, false);
+        ChangeSize(this.numRows + 1, this.numColumns + 1, false);
 
-        for (i = 0; i < numRows; i++) {
-            this.oSet(i, numColumns - 1, v.p[i]);
+        for (i = 0; i < this.numRows; i++) {
+            this.oSet(i, this.numColumns - 1, v.p[i]);
         }
-        for (i = 0; i < numColumns - 1; i++) {
-            this.oSet(numRows - 1, i, w.p[i]);
+        for (i = 0; i < (this.numColumns - 1); i++) {
+            this.oSet(this.numRows - 1, i, w.p[i]);
         }
     }
 
@@ -1824,16 +1824,16 @@ public class idMatX {
     public void Update_IncrementSymmetric(final idVecX v) {
         int i;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows + 1);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= (this.numRows + 1));
 
-        ChangeSize(numRows + 1, numColumns + 1, false);
+        ChangeSize(this.numRows + 1, this.numColumns + 1, false);
 
-        for (i = 0; i < numRows - 1; i++) {
-            this.oSet(i, numColumns - 1, v.p[i]);
+        for (i = 0; i < (this.numRows - 1); i++) {
+            this.oSet(i, this.numColumns - 1, v.p[i]);
         }
-        for (i = 0; i < numColumns; i++) {
-            this.oSet(numRows - 1, i, v.p[i]);
+        for (i = 0; i < this.numColumns; i++) {
+            this.oSet(this.numRows - 1, i, v.p[i]);
         }
     }
 
@@ -1859,21 +1859,21 @@ public class idMatX {
         int i, j, k, r, c;
         float d, max;
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        int[] columnIndex = new int[numRows];
-        int[] rowIndex = new int[numRows];
-        boolean[] pivot = new boolean[numRows];//memset( pivot, 0, numRows * sizeof( bool ) );
+        final int[] columnIndex = new int[this.numRows];
+        final int[] rowIndex = new int[this.numRows];
+        final boolean[] pivot = new boolean[this.numRows];//memset( pivot, 0, numRows * sizeof( bool ) );
 
         // elimination with full pivoting
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             // search the whole matrix except for pivoted rows for the maximum absolute value
             max = 0.0f;
             r = c = 0;
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 if (!pivot[j]) {
-                    for (k = 0; k < numRows; k++) {
+                    for (k = 0; k < this.numRows; k++) {
                         if (!pivot[k]) {
                             d = idMath.Fabs(this.oGet(j, k));
                             if (d > max) {
@@ -1905,16 +1905,16 @@ public class idMatX {
             // scale the row to make the pivot entry equal to 1
             d = 1.0f / this.oGet(c, c);
             this.oSet(c, c, 1.0f);
-            for (k = 0; k < numRows; k++) {
+            for (k = 0; k < this.numRows; k++) {
                 this.oMulSet(c, k, d);
             }
 
             // zero out the pivot column entries in the other rows
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 if (j != c) {
                     d = this.oGet(j, c);
                     this.oSet(j, c, 0.0f);
-                    for (k = 0; k < numRows; k++) {
+                    for (k = 0; k < this.numRows; k++) {
                         this.oMinSet(j, k, this.oGet(c, k) * d);
                     }
                 }
@@ -1922,9 +1922,9 @@ public class idMatX {
         }
 
         // reorder rows to store the inverse of the original matrix
-        for (j = numRows - 1; j >= 0; j--) {
+        for (j = this.numRows - 1; j >= 0; j--) {
             if (rowIndex[j] != columnIndex[j]) {
-                for (k = 0; k < numRows; k++) {
+                for (k = 0; k < this.numRows; k++) {
                     d = this.oGet(k, rowIndex[j]);
                     this.oSet(k, rowIndex[j], this.oGet(k, columnIndex[j]));
                     this.oSet(k, columnIndex[j], d);
@@ -1945,14 +1945,14 @@ public class idMatX {
     public boolean Inverse_UpdateRankOne(final idVecX v, final idVecX w, float alpha) {
         int i, j;
         float beta, s;
-        idVecX y = new idVecX(), z = new idVecX();
+        final idVecX y = new idVecX(), z = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numColumns);
-        assert (w.GetSize() >= numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numColumns);
+        assert (w.GetSize() >= this.numRows);
 
-        y.SetData(numRows, VECX_ALLOCA(numRows));
-        z.SetData(numRows, VECX_ALLOCA(numRows));
+        y.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        z.SetData(this.numRows, VECX_ALLOCA(this.numRows));
 
         Multiply(y, v);
         TransposeMultiply(z, w);
@@ -1964,9 +1964,9 @@ public class idMatX {
 
         alpha /= beta;
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             s = y.p[i] * alpha;
-            for (j = 0; j < numColumns; j++) {
+            for (j = 0; j < this.numColumns; j++) {
                 this.oMinSet(i, j, s * z.p[j]);
             }
         }
@@ -1986,15 +1986,15 @@ public class idMatX {
      * 0.0f, e = w[r+1,numColumns-1] ============
      */
     public boolean Inverse_UpdateRowColumn(final idVecX v, final idVecX w, int r) {
-        idVecX s = new idVecX();
+        final idVecX s = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numColumns);
-        assert (w.GetSize() >= numRows);
-        assert (r >= 0 && r < numRows && r < numColumns);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numColumns);
+        assert (w.GetSize() >= this.numRows);
+        assert ((r >= 0) && (r < this.numRows) && (r < this.numColumns));
         assert (w.p[r] == 0.0f);
 
-        s.SetData(Lib.Max(numRows, numColumns), VECX_ALLOCA(Lib.Max(numRows, numColumns)));
+        s.SetData(Lib.Max(this.numRows, this.numColumns), VECX_ALLOCA(Lib.Max(this.numRows, this.numColumns)));
         s.Zero();
         s.p[r] = 1.0f;
 
@@ -2021,18 +2021,18 @@ public class idMatX {
     public boolean Inverse_UpdateIncrement(final idVecX v, final idVecX w) {
         idVecX v2 = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows + 1);
-        assert (w.GetSize() >= numColumns + 1);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= (this.numRows + 1));
+        assert (w.GetSize() >= (this.numColumns + 1));
 
-        ChangeSize(numRows + 1, numColumns + 1, true);
-        this.oSet(numRows - 1, numRows - 1, 1.0f);
+        ChangeSize(this.numRows + 1, this.numColumns + 1, true);
+        this.oSet(this.numRows - 1, this.numRows - 1, 1.0f);
 
-        v2.SetData(numRows, VECX_ALLOCA(numRows));
+        v2.SetData(this.numRows, VECX_ALLOCA(this.numRows));
         v2 = v;
-        v2.p[numRows - 1] -= 1.0f;
+        v2.p[this.numRows - 1] -= 1.0f;
 
-        return Inverse_UpdateRowColumn(v2, w, numRows - 1);
+        return Inverse_UpdateRowColumn(v2, w, this.numRows - 1);
     }
 
     /**
@@ -2043,15 +2043,15 @@ public class idMatX {
      * original matrix respectively. ============
      */
     public boolean Inverse_UpdateDecrement(final idVecX v, final idVecX w, int r) {
-        idVecX v1 = new idVecX(), w1 = new idVecX();
+        final idVecX v1 = new idVecX(), w1 = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
-        assert (w.GetSize() >= numColumns);
-        assert (r >= 0 && r < numRows && r < numColumns);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert (w.GetSize() >= this.numColumns);
+        assert ((r >= 0) && (r < this.numRows) && (r < this.numColumns));
 
-        v1.SetData(numRows, VECX_ALLOCA(numRows));
-        w1.SetData(numRows, VECX_ALLOCA(numRows));
+        v1.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        w1.SetData(this.numRows, VECX_ALLOCA(this.numRows));
 
         // update the row and column to identity
         v1.oSet(v.oNegative());
@@ -2101,13 +2101,13 @@ public class idMatX {
 
         // if partial pivoting should be used
         if (index != null) {
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 index[i] = i;
             }
         }
 
         w = 1.0f;
-        min = Lib.Min(numRows, numColumns);
+        min = Lib.Min(this.numRows, this.numColumns);
         for (i = 0; i < min; i++) {
 
             newi = i;
@@ -2115,7 +2115,7 @@ public class idMatX {
 
             if (index != null) {
                 // find the largest absolute pivot
-                for (j = i + 1; j < numRows; j++) {
+                for (j = i + 1; j < this.numRows; j++) {
                     t = idMath.Fabs(this.oGet(j, i));
 //                    System.out.println(t);
                     if (t > s) {
@@ -2139,24 +2139,24 @@ public class idMatX {
                 index[newi] = k;
 
                 // swap rows
-                for (j = 0; j < numColumns; j++) {
+                for (j = 0; j < this.numColumns; j++) {
                     t = this.oGet(newi, j);
                     this.oSet(newi, j, this.oGet(i, j));
                     this.oSet(i, j, (float) t);
                 }
             }
 
-            if (i < numRows) {
+            if (i < this.numRows) {
                 d = 1.0f / this.oGet(i, i);
-                for (j = i + 1; j < numRows; j++) {
+                for (j = i + 1; j < this.numRows; j++) {
                     this.oMulSet(j, i, d);
                 }
             }
 
-            if (i < min - 1) {
-                for (j = i + 1; j < numRows; j++) {
+            if (i < (min - 1)) {
+                for (j = i + 1; j < this.numRows; j++) {
                     d = this.oGet(j, i);
-                    for (k = i + 1; k < numColumns; k++) {
+                    for (k = i + 1; k < this.numColumns; k++) {
                         this.oMinSet(j, k, d * this.oGet(i, k));
                     }
                 }
@@ -2164,7 +2164,7 @@ public class idMatX {
         }
 
         if (det != null) {
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 w *= this.oGet(i, i);
             }
             det[0] = (float) w;//TODO:check back ref
@@ -2185,8 +2185,8 @@ public class idMatX {
         float[] y, z;
         double diag, beta, p0, p1, d;
 
-        assert (v.GetSize() >= numColumns);
-        assert (w.GetSize() >= numRows);
+        assert (v.GetSize() >= this.numColumns);
+        assert (w.GetSize() >= this.numRows);
 
 //	y = (float *) _alloca16( v.GetSize() * sizeof( float ) );
 //	z = (float *) _alloca16( w.GetSize() * sizeof( float ) );
@@ -2194,11 +2194,11 @@ public class idMatX {
         z = new float[w.GetSize()];
 
         if (index != null) {
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 y[i] = alpha * v.p[index[i]];
             }
         } else {
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 y[i] = alpha * v.p[i];
             }
         }
@@ -2206,7 +2206,7 @@ public class idMatX {
 //	memcpy( z, w.ToFloatPtr(), w.GetSize() * sizeof( float ) );
         System.arraycopy(w.ToFloatPtr(), 0, z, 0, w.GetSize());
 
-        max = Lib.Min(numRows, numColumns);
+        max = Lib.Min(this.numRows, this.numColumns);
         for (i = 0; i < max; i++) {
             diag = this.oGet(i, i);
 
@@ -2222,7 +2222,7 @@ public class idMatX {
 
             this.oSet(i, i, (float) diag);
 
-            for (j = i + 1; j < numColumns; j++) {
+            for (j = i + 1; j < this.numColumns; j++) {
 
                 d = this.oGet(i, j);
 
@@ -2232,7 +2232,7 @@ public class idMatX {
                 this.oSet(i, j, (float) d);
             }
 
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
 
                 d = this.oGet(j, i);
 
@@ -2264,9 +2264,9 @@ public class idMatX {
         float[] y0, y1, z0, z1;
         double diag, beta0, beta1, p0, p1, q0, q1, d;
 
-        assert (v.GetSize() >= numColumns);
-        assert (w.GetSize() >= numRows);
-        assert (r >= 0 && r < numColumns && r < numRows);
+        assert (v.GetSize() >= this.numColumns);
+        assert (w.GetSize() >= this.numRows);
+        assert ((r >= 0) && (r < this.numColumns) && (r < this.numRows));
         assert (w.p[r] == 0.0f);
 
         y0 = new float[v.GetSize()];
@@ -2275,11 +2275,11 @@ public class idMatX {
         z1 = new float[w.GetSize()];
 
         if (index != null) {
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 y0[i] = v.p[index[i]];
             }
             rp = r;
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 if (index[i] == r) {
                     rp = i;
                     break;
@@ -2306,17 +2306,17 @@ public class idMatX {
             beta1 = z1[i] / this.oGet(i, i);
 
             this.oPluSet(i, r, p0);
-            for (j = i + 1; j < numColumns; j++) {
+            for (j = i + 1; j < this.numColumns; j++) {
                 z1[j] -= beta1 * this.oGet(i, j);
             }
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
                 y0[j] -= p0 * this.oGet(j, i);
             }
             this.oPluSet(rp, i, beta1);
         }
 
         // update the lower right corner starting at r,r
-        max = Lib.Min(numRows, numColumns);
+        max = Lib.Min(this.numRows, this.numColumns);
         for (i = min; i < max; i++) {
             diag = this.oGet(i, i);
 
@@ -2342,7 +2342,7 @@ public class idMatX {
 
             this.oSet(i, i, (float) diag);
 
-            for (j = i + 1; j < numColumns; j++) {
+            for (j = i + 1; j < this.numColumns; j++) {
 
                 d = this.oGet(i, j);
 
@@ -2355,7 +2355,7 @@ public class idMatX {
                 this.oSet(i, j, (float) d);
             }
 
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
 
                 d = this.oGet(j, i);
 
@@ -2388,37 +2388,37 @@ public class idMatX {
         int i, j;
         float sum;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows + 1);
-        assert (w.GetSize() >= numColumns + 1);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= (this.numRows + 1));
+        assert (w.GetSize() >= (this.numColumns + 1));
 
-        ChangeSize(numRows + 1, numColumns + 1, true);
+        ChangeSize(this.numRows + 1, this.numColumns + 1, true);
 
         // add row to L
-        for (i = 0; i < numRows - 1; i++) {
+        for (i = 0; i < (this.numRows - 1); i++) {
             sum = w.p[i];
             for (j = 0; j < i; j++) {
-                sum -= this.oGet(numRows - 1, j) * this.oGet(j, i);
+                sum -= this.oGet(this.numRows - 1, j) * this.oGet(j, i);
             }
-            this.oSet(numRows - 1, i, sum / this.oGet(i, i));
+            this.oSet(this.numRows - 1, i, sum / this.oGet(i, i));
         }
 
         // add row to the permutation index
         if (index != null) {
-            index[numRows - 1] = numRows - 1;//TODO:check back reference, non final array
+            index[this.numRows - 1] = this.numRows - 1;//TODO:check back reference, non final array
         }
 
         // add column to U
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             if (index != null) {
                 sum = v.p[index[i]];
             } else {
                 sum = v.p[i];
             }
             for (j = 0; j < i; j++) {
-                sum -= this.oGet(i, j) * this.oGet(j, numRows - 1);
+                sum -= this.oGet(i, j) * this.oGet(j, this.numRows - 1);
             }
-            this.oSet(i, numRows - 1, sum);
+            this.oSet(i, this.numRows - 1, sum);
         }
 
         return true;
@@ -2437,18 +2437,18 @@ public class idMatX {
         int i, p;
         idVecX v1 = new idVecX(), w1 = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numColumns);
-        assert (w.GetSize() >= numRows);
-        assert (r >= 0 && r < numRows && r < numColumns);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numColumns);
+        assert (w.GetSize() >= this.numRows);
+        assert ((r >= 0) && (r < this.numRows) && (r < this.numColumns));
 
-        v1.SetData(numRows, VECX_ALLOCA(numRows));
-        w1.SetData(numRows, VECX_ALLOCA(numRows));
+        v1.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        w1.SetData(this.numRows, VECX_ALLOCA(this.numRows));
 
         if (index != null) {
 
             // find the pivot row
-            for (p = i = 0; i < numRows; i++) {
+            for (p = i = 0; i < this.numRows; i++) {
                 if (index[i] == r) {
                     p = i;
                     break;
@@ -2488,10 +2488,10 @@ public class idMatX {
             }
 
             // remove the row from the permutation index
-            for (i = r; i < numRows - 1; i++) {
+            for (i = r; i < (this.numRows - 1); i++) {
                 index[i] = index[i + 1];
             }
-            for (i = 0; i < numRows - 1; i++) {
+            for (i = 0; i < (this.numRows - 1); i++) {
                 if (index[i] > r) {
                     index[i]--;
                 }
@@ -2526,10 +2526,10 @@ public class idMatX {
         int i, j;
         double sum;
 
-        assert (x.GetSize() == numColumns && b.GetSize() == numRows);
+        assert ((x.GetSize() == this.numColumns) && (b.GetSize() == this.numRows));
 
         // solve L
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             if (index != null) {
                 sum = b.p[index[i]];
             } else {
@@ -2542,9 +2542,9 @@ public class idMatX {
         }
 
         // solve U
-        for (i = numRows - 1; i >= 0; i--) {
+        for (i = this.numRows - 1; i >= 0; i--) {
             sum = x.p[i];
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
                 sum -= this.oGet(i, j) * x.p[j];
             }
             x.p[i] = (float) (sum / this.oGet(i, i));
@@ -2559,20 +2559,20 @@ public class idMatX {
      */
     public void LU_Inverse(idMatX inv, final int[] index) {
         int i, j;
-        idVecX x = new idVecX(), b = new idVecX();
+        final idVecX x = new idVecX(), b = new idVecX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        x.SetData(numRows, VECX_ALLOCA(numRows));
-        b.SetData(numRows, VECX_ALLOCA(numRows));
+        x.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        b.SetData(this.numRows, VECX_ALLOCA(this.numRows));
         b.Zero();
-        inv.SetSize(numRows, numColumns);
+        inv.SetSize(this.numRows, this.numColumns);
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             b.p[i] = 1.0f;
             LU_Solve(x, b, index);
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 inv.oSet(j, i, x.p[j]);
             }
             b.p[i] = 0.0f;
@@ -2587,14 +2587,14 @@ public class idMatX {
     public void LU_UnpackFactors(idMatX L, idMatX U) {
         int i, j;
 
-        L.Zero(numRows, numColumns);
-        U.Zero(numRows, numColumns);
-        for (i = 0; i < numRows; i++) {
+        L.Zero(this.numRows, this.numColumns);
+        U.Zero(this.numRows, this.numColumns);
+        for (i = 0; i < this.numRows; i++) {
             for (j = 0; j < i; j++) {
                 L.oSet(i, j, this.oGet(i, j));
             }
             L.oSet(i, i, 1.0f);
-            for (j = i; j < numColumns; j++) {
+            for (j = i; j < this.numColumns; j++) {
                 U.oSet(i, j, this.oGet(i, j));
             }
         }
@@ -2610,9 +2610,9 @@ public class idMatX {
         int r, rp, i, j;
         double sum;
 
-        m.SetSize(numRows, numColumns);
+        m.SetSize(this.numRows, this.numColumns);
 
-        for (r = 0; r < numRows; r++) {
+        for (r = 0; r < this.numRows; r++) {
 
             if (index != null) {
                 rp = index[r];
@@ -2621,13 +2621,13 @@ public class idMatX {
             }
 
             // calculate row of matrix
-            for (i = 0; i < numColumns; i++) {
+            for (i = 0; i < this.numColumns; i++) {
                 if (i >= r) {
                     sum = this.oGet(r, i);
                 } else {
                     sum = 0.0f;
                 }
-                for (j = 0; j <= i && j < r; j++) {
+                for (j = 0; (j <= i) && (j < r); j++) {
                     sum += this.oGet(r, j) * this.oGet(j, i);
                 }
                 m.oSet(rp, i, (float) sum);
@@ -2649,13 +2649,13 @@ public class idMatX {
         double scale, s, t, sum;
         boolean singular = false;
 
-        assert (numRows == numColumns);
-        assert (c.GetSize() >= numRows && d.GetSize() >= numRows);
+        assert (this.numRows == this.numColumns);
+        assert ((c.GetSize() >= this.numRows) && (d.GetSize() >= this.numRows));
 
-        for (k = 0; k < numRows - 1; k++) {
+        for (k = 0; k < (this.numRows - 1); k++) {
 
             scale = 0.0f;
-            for (i = k; i < numRows; i++) {
+            for (i = k; i < this.numRows; i++) {
                 s = idMath.Fabs(this.oGet(i, k));
                 if (s > scale) {
                     scale = s;
@@ -2667,12 +2667,12 @@ public class idMatX {
             } else {
 
                 s = 1.0f / scale;
-                for (i = k; i < numRows; i++) {
+                for (i = k; i < this.numRows; i++) {
                     this.oMulSet(i, k, s);
                 }
 
                 sum = 0.0f;
-                for (i = k; i < numRows; i++) {
+                for (i = k; i < this.numRows; i++) {
                     s = this.oGet(i, k);
                     sum += s * s;
                 }
@@ -2685,21 +2685,21 @@ public class idMatX {
                 c.p[k] = (float) (s * this.oGet(k, k));
                 d.p[k] = (float) (-scale * s);
 
-                for (j = k + 1; j < numRows; j++) {
+                for (j = k + 1; j < this.numRows; j++) {
 
                     sum = 0.0f;
-                    for (i = k; i < numRows; i++) {
+                    for (i = k; i < this.numRows; i++) {
                         sum += this.oGet(i, k) * this.oGet(i, j);
                     }
                     t = sum / c.p[k];
-                    for (i = k; i < numRows; i++) {
+                    for (i = k; i < this.numRows; i++) {
                         this.oMinSet(i, j, t * this.oGet(i, k));
                     }
                 }
             }
         }
-        d.p[numRows - 1] = this.oGet(numRows - 1, numRows - 1);
-        if (d.p[numRows - 1] == 0.0f) {
+        d.p[this.numRows - 1] = this.oGet(this.numRows - 1, this.numRows - 1);
+        if (d.p[this.numRows - 1] == 0.0f) {
             singular = true;
         }
 
@@ -2715,10 +2715,10 @@ public class idMatX {
     public boolean QR_UpdateRankOne(idMatX R, final idVecX v, final idVecX w, float alpha) {
         int i, k;
         float f;
-        idVecX u = new idVecX();
+        final idVecX u = new idVecX();
 
-        assert (v.GetSize() >= numColumns);
-        assert (w.GetSize() >= numRows);
+        assert (v.GetSize() >= this.numColumns);
+        assert (w.GetSize() >= this.numRows);
 
         u.SetData(v.GetSize(), VECX_ALLOCA(v.GetSize()));
         TransposeMultiply(u, v);
@@ -2735,10 +2735,10 @@ public class idMatX {
                 u.p[i] = idMath.Fabs(u.p[i + 1]);
             } else if (idMath.Fabs(u.p[i]) > idMath.Fabs(u.p[i + 1])) {
                 f = u.p[i + 1] / u.p[i];
-                u.p[i] = idMath.Fabs(u.p[i]) * idMath.Sqrt(1.0f + f * f);
+                u.p[i] = idMath.Fabs(u.p[i]) * idMath.Sqrt(1.0f + (f * f));
             } else {
                 f = u.p[i] / u.p[i + 1];
-                u.p[i] = idMath.Fabs(u.p[i + 1]) * idMath.Sqrt(1.0f + f * f);
+                u.p[i] = idMath.Fabs(u.p[i + 1]) * idMath.Sqrt(1.0f + (f * f));
             }
         }
         for (i = 0; i < v.GetSize(); i++) {
@@ -2763,14 +2763,14 @@ public class idMatX {
      * 0.0f, e = w[r+1,numColumns-1] ============
      */
     public boolean QR_UpdateRowColumn(idMatX R, final idVecX v, final idVecX w, int r) {
-        idVecX s = new idVecX();
+        final idVecX s = new idVecX();
 
-        assert (v.GetSize() >= numColumns);
-        assert (w.GetSize() >= numRows);
-        assert (r >= 0 && r < numRows && r < numColumns);
+        assert (v.GetSize() >= this.numColumns);
+        assert (w.GetSize() >= this.numRows);
+        assert ((r >= 0) && (r < this.numRows) && (r < this.numColumns));
         assert (w.p[r] == 0.0f);
 
-        s.SetData(Lib.Max(numRows, numColumns), VECX_ALLOCA(Lib.Max(numRows, numColumns)));
+        s.SetData(Lib.Max(this.numRows, this.numColumns), VECX_ALLOCA(Lib.Max(this.numRows, this.numColumns)));
         s.Zero();
         s.p[r] = 1.0f;
 
@@ -2798,21 +2798,21 @@ public class idMatX {
     public boolean QR_UpdateIncrement(idMatX R, final idVecX v, final idVecX w) {
         idVecX v2 = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows + 1);
-        assert (w.GetSize() >= numColumns + 1);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= (this.numRows + 1));
+        assert (w.GetSize() >= (this.numColumns + 1));
 
-        ChangeSize(numRows + 1, numColumns + 1, true);
-        this.oSet(numRows - 1, numRows - 1, 1.0f);
+        ChangeSize(this.numRows + 1, this.numColumns + 1, true);
+        this.oSet(this.numRows - 1, this.numRows - 1, 1.0f);
 
         R.ChangeSize(R.numRows + 1, R.numColumns + 1, true);
         R.oSet(R.numRows - 1, R.numRows - 1, 1.0f);
 
-        v2.SetData(numRows, VECX_ALLOCA(numRows));
+        v2.SetData(this.numRows, VECX_ALLOCA(this.numRows));
         v2 = v;
-        v2.p[numRows - 1] -= 1.0f;
+        v2.p[this.numRows - 1] -= 1.0f;
 
-        return QR_UpdateRowColumn(R, v2, w, numRows - 1);
+        return QR_UpdateRowColumn(R, v2, w, this.numRows - 1);
     }
 
     /**
@@ -2825,13 +2825,13 @@ public class idMatX {
     public boolean QR_UpdateDecrement(idMatX R, final idVecX v, final idVecX w, int r) {
         idVecX v1 = new idVecX(), w1 = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
-        assert (w.GetSize() >= numColumns);
-        assert (r >= 0 && r < numRows && r < numColumns);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert (w.GetSize() >= this.numColumns);
+        assert ((r >= 0) && (r < this.numRows) && (r < this.numColumns));
 
-        v1.SetData(numRows, VECX_ALLOCA(numRows));
-        w1.SetData(numRows, VECX_ALLOCA(numRows));
+        v1.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        w1.SetData(this.numRows, VECX_ALLOCA(this.numRows));
 
         // update the row and column to identity
         v1 = v.oNegative();
@@ -2854,32 +2854,32 @@ public class idMatX {
         int i, j;
         double sum, t;
 
-        assert (numRows == numColumns);
-        assert (x.GetSize() >= numRows && b.GetSize() >= numRows);
-        assert (c.GetSize() >= numRows && d.GetSize() >= numRows);
+        assert (this.numRows == this.numColumns);
+        assert ((x.GetSize() >= this.numRows) && (b.GetSize() >= this.numRows));
+        assert ((c.GetSize() >= this.numRows) && (d.GetSize() >= this.numRows));
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             x.p[i] = b.p[i];
         }
 
         // multiply b with transpose of Q
-        for (i = 0; i < numRows - 1; i++) {
+        for (i = 0; i < (this.numRows - 1); i++) {
 
             sum = 0.0f;
-            for (j = i; j < numRows; j++) {
+            for (j = i; j < this.numRows; j++) {
                 sum += this.oGet(j, i) * x.p[j];
             }
             t = sum / c.p[i];
-            for (j = i; j < numRows; j++) {
+            for (j = i; j < this.numRows; j++) {
                 x.p[j] -= t * this.oGet(j, i);
             }
         }
 
         // backsubstitution with R
-        for (i = numRows - 1; i >= 0; i--) {
+        for (i = this.numRows - 1; i >= 0; i--) {
 
             sum = x.p[i];
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
                 sum -= this.oGet(i, j) * x.p[j];
             }
             x.p[i] = (float) (sum / d.p[i]);
@@ -2895,16 +2895,16 @@ public class idMatX {
         int i, j;
         double sum;
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
         // multiply b with transpose of Q
         TransposeMultiply(x, b);
 
         // backsubstitution with R
-        for (i = numRows - 1; i >= 0; i--) {
+        for (i = this.numRows - 1; i >= 0; i--) {
 
             sum = x.p[i];
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
                 sum -= R.oGet(i, j) * x.p[j];
             }
             x.p[i] = (float) (sum / R.oGet(i, i));
@@ -2919,20 +2919,20 @@ public class idMatX {
      */
     public void QR_Inverse(idMatX inv, final idVecX c, final idVecX d) {
         int i, j;
-        idVecX x = new idVecX(), b = new idVecX();
+        final idVecX x = new idVecX(), b = new idVecX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        x.SetData(numRows, VECX_ALLOCA(numRows));
-        b.SetData(numRows, VECX_ALLOCA(numRows));
+        x.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        b.SetData(this.numRows, VECX_ALLOCA(this.numRows));
         b.Zero();
-        inv.SetSize(numRows, numColumns);
+        inv.SetSize(this.numRows, this.numColumns);
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             b.p[i] = 1.0f;
             QR_Solve(x, b, c, d);
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 inv.oSet(j, i, x.p[j]);
             }
             b.p[i] = 0.0f;
@@ -2948,27 +2948,27 @@ public class idMatX {
         int i, j, k;
         double sum;
 
-        Q.Identity(numRows, numColumns);
-        for (i = 0; i < numColumns - 1; i++) {
+        Q.Identity(this.numRows, this.numColumns);
+        for (i = 0; i < (this.numColumns - 1); i++) {
             if (c.p[i] == 0.0f) {
                 continue;
             }
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 sum = 0.0f;
-                for (k = i; k < numColumns; k++) {
+                for (k = i; k < this.numColumns; k++) {
                     sum += this.oGet(k, i) * Q.oGet(j, k);
                 }
                 sum /= c.p[i];
-                for (k = i; k < numColumns; k++) {
+                for (k = i; k < this.numColumns; k++) {
                     Q.oMinSet(j, k, sum * this.oGet(k, i));
                 }
             }
         }
 
-        R.Zero(numRows, numColumns);
-        for (i = 0; i < numRows; i++) {
+        R.Zero(this.numRows, this.numColumns);
+        for (i = 0; i < this.numRows; i++) {
             R.oSet(i, i, d.p[i]);
-            for (j = i + 1; j < numColumns; j++) {
+            for (j = i + 1; j < this.numColumns; j++) {
                 R.oSet(i, j, this.oGet(i, j));
             }
         }
@@ -2983,27 +2983,27 @@ public class idMatX {
     public void QR_MultiplyFactors(idMatX m, final idVecX c, final idVecX d) {
         int i, j, k;
         double sum;
-        idMatX Q = new idMatX();
+        final idMatX Q = new idMatX();
 
-        Q.Identity(numRows, numColumns);
-        for (i = 0; i < numColumns - 1; i++) {
+        Q.Identity(this.numRows, this.numColumns);
+        for (i = 0; i < (this.numColumns - 1); i++) {
             if (c.p[i] == 0.0f) {
                 continue;
             }
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 sum = 0.0f;
-                for (k = i; k < numColumns; k++) {
+                for (k = i; k < this.numColumns; k++) {
                     sum += this.oGet(k, i) * Q.oGet(j, k);
                 }
                 sum /= c.p[i];
-                for (k = i; k < numColumns; k++) {
+                for (k = i; k < this.numColumns; k++) {
                     Q.oMinSet(j, k, sum * this.oGet(k, i));
                 }
             }
         }
 
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
+        for (i = 0; i < this.numRows; i++) {
+            for (j = 0; j < this.numColumns; j++) {
                 sum = Q.oGet(i, j) * d.p[i];
                 for (k = 0; k < i; k++) {
                     sum += Q.oGet(i, k) * this.oGet(j, k);
@@ -3026,22 +3026,22 @@ public class idMatX {
     {
         int flag, i, its, j, jj, k, l, nm;
         double c, f, h, s, x, y, z, r, g = 0.0f;
-        float[] anorm = {0};
-        idVecX rv1 = new idVecX();
+        final float[] anorm = {0};
+        final idVecX rv1 = new idVecX();
 
-        if (numRows < numColumns) {
+        if (this.numRows < this.numColumns) {
             return false;
         }
 
-        rv1.SetData(numColumns, VECX_ALLOCA(numColumns));
+        rv1.SetData(this.numColumns, VECX_ALLOCA(this.numColumns));
         rv1.Zero();
-        w.Zero(numColumns);
-        V.Zero(numColumns, numColumns);
+        w.Zero(this.numColumns);
+        V.Zero(this.numColumns, this.numColumns);
 
         SVD_BiDiag(w, rv1, anorm);
         SVD_InitialWV(w, V, rv1);
 
-        for (k = numColumns - 1; k >= 0; k--) {
+        for (k = this.numColumns - 1; k >= 0; k--) {
             for (its = 1; its <= 30; its++) {
                 flag = 1;
                 nm = 0;
@@ -3068,11 +3068,11 @@ public class idMatX {
                             h = 1.0f / h;
                             c = g * h;
                             s = -f * h;
-                            for (j = 0; j < numRows; j++) {
+                            for (j = 0; j < this.numRows; j++) {
                                 y = this.oGet(j, nm);
                                 z = this.oGet(j, i);
-                                this.oSet(j, nm, (float) (y * c + z * s));
-                                this.oSet(j, i, (float) (z * c - y * s));
+                                this.oSet(j, nm, (float) ((y * c) + (z * s)));
+                                this.oSet(j, i, (float) ((z * c) - (y * s)));
                             }
                         }
                     }
@@ -3081,7 +3081,7 @@ public class idMatX {
                 if (l == k) {
                     if (z < 0.0f) {
                         w.p[k] = (float) -z;
-                        for (j = 0; j < numColumns; j++) {
+                        for (j = 0; j < this.numColumns; j++) {
                             V.oNegative(j, k);
                         }
                     }
@@ -3095,10 +3095,10 @@ public class idMatX {
                 y = w.p[nm];
                 g = rv1.p[nm];
                 h = rv1.p[k];
-                f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2.0f * h * y);
+                f = (((y - z) * (y + z)) + ((g - h) * (g + h))) / (2.0f * h * y);
                 g = Pythag((float) f, 1.0f);
                 r = (f >= 0.0f ? g : -g);
-                f = ((x - z) * (x + z) + h * ((y / (f + r)) - h)) / x;
+                f = (((x - z) * (x + z)) + (h * ((y / (f + r)) - h))) / x;
                 c = s = 1.0f;
                 for (j = l; j <= nm; j++) {
                     i = j + 1;
@@ -3110,15 +3110,15 @@ public class idMatX {
                     rv1.p[j] = (float) z;
                     c = f / z;
                     s = h / z;
-                    f = x * c + g * s;
-                    g = g * c - x * s;
+                    f = (x * c) + (g * s);
+                    g = (g * c) - (x * s);
                     h = y * s;
                     y = y * c;
-                    for (jj = 0; jj < numColumns; jj++) {
+                    for (jj = 0; jj < this.numColumns; jj++) {
                         x = V.oGet(jj, j);
                         z = V.oGet(jj, i);
-                        V.oSet(jj, j, (float) (x * c + z * s));
-                        V.oSet(jj, i, (float) (z * c - x * s));
+                        V.oSet(jj, j, (float) ((x * c) + (z * s)));
+                        V.oSet(jj, i, (float) ((z * c) - (x * s)));
                     }
                     z = Pythag((float) f, (float) h);
                     w.p[j] = (float) z;
@@ -3129,11 +3129,11 @@ public class idMatX {
                     }
                     f = (c * g) + (s * y);
                     x = (c * y) - (s * g);
-                    for (jj = 0; jj < numRows; jj++) {
+                    for (jj = 0; jj < this.numRows; jj++) {
                         y = this.oGet(jj, j);
                         z = this.oGet(jj, i);
-                        this.oSet(jj, j, (float) (y * c + z * s));
-                        this.oSet(jj, i, (float) (z * c - y * s));
+                        this.oSet(jj, j, (float) ((y * c) + (z * s)));
+                        this.oSet(jj, i, (float) ((z * c) - (y * s)));
                     }
                 }
                 rv1.p[l] = 0.0f;
@@ -3152,28 +3152,28 @@ public class idMatX {
     public void SVD_Solve(idVecX x, final idVecX b, final idVecX w, final idMatX V) {
         int i, j;
         double sum;
-        idVecX tmp = new idVecX();
+        final idVecX tmp = new idVecX();
 
-        assert (x.GetSize() >= numColumns);
-        assert (b.GetSize() >= numColumns);
-        assert (w.GetSize() == numColumns);
-        assert (V.GetNumRows() == numColumns && V.GetNumColumns() == numColumns);
+        assert (x.GetSize() >= this.numColumns);
+        assert (b.GetSize() >= this.numColumns);
+        assert (w.GetSize() == this.numColumns);
+        assert ((V.GetNumRows() == this.numColumns) && (V.GetNumColumns() == this.numColumns));
 
-        tmp.SetData(numColumns, VECX_ALLOCA(numColumns));
+        tmp.SetData(this.numColumns, VECX_ALLOCA(this.numColumns));
 
-        for (i = 0; i < numColumns; i++) {
+        for (i = 0; i < this.numColumns; i++) {
             sum = 0.0f;
             if (w.p[i] >= idMath.FLT_EPSILON) {
-                for (j = 0; j < numRows; j++) {
+                for (j = 0; j < this.numRows; j++) {
                     sum += this.oGet(j, i) * b.p[j];
                 }
                 sum /= w.p[i];
             }
             tmp.p[i] = (float) sum;
         }
-        for (i = 0; i < numColumns; i++) {
+        for (i = 0; i < this.numColumns; i++) {
             sum = 0.0f;
-            for (j = 0; j < numColumns; j++) {
+            for (j = 0; j < this.numColumns; j++) {
                 sum += V.oGet(i, j) * tmp.p[j];
             }
             x.p[i] = (float) sum;
@@ -3192,24 +3192,24 @@ public class idMatX {
         double wi, sum;
         idMatX V2;//= new idMatX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
         V2 = V;
 
         // V * [diag(1/w[i])]
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             wi = w.p[i];
             wi = (wi < idMath.FLT_EPSILON) ? 0.0f : 1.0f / wi;
-            for (j = 0; j < numColumns; j++) {
+            for (j = 0; j < this.numColumns; j++) {
                 V2.oMulSet(j, i, wi);
             }
         }
 
         // V * [diag(1/w[i])] * Ut
-        for (i = 0; i < numRows; i++) {
-            for (j = 0; j < numColumns; j++) {
+        for (i = 0; i < this.numRows; i++) {
+            for (j = 0; j < this.numColumns; j++) {
                 sum = V2.oGet(i, 0) * this.oGet(j, 0);
-                for (k = 1; k < numColumns; k++) {
+                for (k = 1; k < this.numColumns; k++) {
                     sum += V2.oGet(i, k) * this.oGet(j, k);
                 }
                 inv.oSet(i, j, (float) sum);
@@ -3227,14 +3227,14 @@ public class idMatX {
         int r, i, j;
         double sum;
 
-        m.SetSize(numRows, V.GetNumRows());
+        m.SetSize(this.numRows, V.GetNumRows());
 
-        for (r = 0; r < numRows; r++) {
+        for (r = 0; r < this.numRows; r++) {
             // calculate row of matrix
             if (w.p[r] >= idMath.FLT_EPSILON) {
                 for (i = 0; i < V.GetNumRows(); i++) {
                     sum = 0.0f;
-                    for (j = 0; j < numColumns; j++) {
+                    for (j = 0; j < this.numColumns; j++) {
                         sum += this.oGet(r, j) * V.oGet(i, j);
                     }
                     m.oSet(r, i, (float) (sum * w.p[r]));
@@ -3256,13 +3256,13 @@ public class idMatX {
      */
     public boolean Cholesky_Factor() {// factor in-place: L * L.Transpose()
         int i, j, k;
-        float[] invSqrt = new float[numRows];
+        final float[] invSqrt = new float[this.numRows];
         double sum;
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
 //	invSqrt = (float *) _alloca16( numRows * sizeof( float ) );
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             for (j = 0; j < i; j++) {
 
@@ -3304,20 +3304,20 @@ public class idMatX {
         float[] y;
         double diag, invDiag, diagSqr, newDiag, newDiagSqr, beta, p, d;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
-        assert (offset >= 0 && offset < numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert ((offset >= 0) && (offset < this.numRows));
 
 //	y = (float *) _alloca16( v.GetSize() * sizeof( float ) );
 //	memcpy( y, v.ToFloatPtr(), v.GetSize() * sizeof( float ) );
         y = v.ToFloatPtr();
 
-        for (i = offset; i < numColumns; i++) {
+        for (i = offset; i < this.numColumns; i++) {
             p = y[i];
             diag = this.oGet(i, i);
             invDiag = 1.0f / diag;
             diagSqr = diag * diag;
-            newDiagSqr = diagSqr + alpha * p * p;
+            newDiagSqr = diagSqr + (alpha * p * p);
 
             if (newDiagSqr <= 0.0f) {
                 return false;
@@ -3329,7 +3329,7 @@ public class idMatX {
             beta = p * alpha;
             alpha *= diagSqr;
 
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
 
                 d = this.oGet(j, i) * invDiag;
 
@@ -3359,19 +3359,19 @@ public class idMatX {
         int i, j;
         double sum;
         float[] original, y;
-        idVecX addSub = new idVecX();
+        final idVecX addSub = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
-        assert (r >= 0 && r < numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert ((r >= 0) && (r < this.numRows));
 
 //	addSub.SetData( numColumns, (float *) _alloca16( numColumns * sizeof( float ) ) );
-        addSub.SetData(numColumns, new float[numColumns]);
+        addSub.SetData(this.numColumns, new float[this.numColumns]);
 
         if (r == 0) {
 
-            if (numColumns == 1) {
-                float v0 = v.p[0];
+            if (this.numColumns == 1) {
+                final float v0 = v.p[0];
                 sum = this.oGet(0, 0);
                 sum = sum * sum;
                 sum = sum + v0;
@@ -3381,7 +3381,7 @@ public class idMatX {
                 this.oSet(0, 0, idMath.Sqrt((float) sum));
                 return true;
             }
-            for (i = 0; i < numColumns; i++) {
+            for (i = 0; i < this.numColumns; i++) {
                 addSub.p[i] = v.p[i];
             }
 
@@ -3389,11 +3389,11 @@ public class idMatX {
 
 //		original = (float *) _alloca16( numColumns * sizeof( float ) );
 //		y = (float *) _alloca16( numColumns * sizeof( float ) );
-            original = new float[numColumns];
-            y = new float[numColumns];
+            original = new float[this.numColumns];
+            y = new float[this.numColumns];
 
             // calculate original row/column of matrix
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 sum = 0.0f;
                 for (j = 0; j <= i; j++) {
                     sum += this.oGet(r, j) * this.oGet(i, j);
@@ -3411,7 +3411,7 @@ public class idMatX {
             }
 
             // if the last row/column of the matrix is updated
-            if (r == numColumns - 1) {
+            if (r == (this.numColumns - 1)) {
                 // only calculate new diagonal
                 sum = original[r] + v.p[r];
                 for (j = 0; j < r; j++) {
@@ -3425,7 +3425,7 @@ public class idMatX {
             }
 
             // calculate the row/column to be added to the lower right sub matrix starting at (r, r)
-            for (i = r; i < numColumns; i++) {
+            for (i = r; i < this.numColumns; i++) {
                 sum = 0.0f;
                 for (j = 0; j <= r; j++) {
                     sum += this.oGet(r, j) * this.oGet(i, j);
@@ -3442,13 +3442,13 @@ public class idMatX {
 
 //	v1 = (float *) _alloca16( numColumns * sizeof( float ) );
 //	v2 = (float *) _alloca16( numColumns * sizeof( float ) );
-        v1 = new float[numColumns];
-        v2 = new float[numColumns];
+        v1 = new float[this.numColumns];
+        v2 = new float[this.numColumns];
 
         d = idMath.SQRT_1OVER2;
-        v1[r] = (float) ((0.5f * addSub.p[r] + 1.0f) * d);
-        v2[r] = (float) ((0.5f * addSub.p[r] - 1.0f) * d);
-        for (i = r + 1; i < numColumns; i++) {
+        v1[r] = (float) (((0.5f * addSub.p[r]) + 1.0f) * d);
+        v2[r] = (float) (((0.5f * addSub.p[r]) - 1.0f) * d);
+        for (i = r + 1; i < this.numColumns; i++) {
             v1[i] = v2[i] = (float) (addSub.p[i] * d);
         }
 
@@ -3456,12 +3456,12 @@ public class idMatX {
         alpha2 = -1.0f;
 
         // simultaneous update/downdate of the sub matrix starting at (r, r)
-        for (i = r; i < numColumns; i++) {
+        for (i = r; i < this.numColumns; i++) {
             p1 = v1[i];
             diag = this.oGet(i, i);
             invDiag = 1.0f / diag;
             diagSqr = diag * diag;
-            newDiagSqr = diagSqr + alpha1 * p1 * p1;
+            newDiagSqr = diagSqr + (alpha1 * p1 * p1);
 
             if (newDiagSqr <= 0.0f) {
                 return false;
@@ -3473,7 +3473,7 @@ public class idMatX {
 
             p2 = v2[i];
             diagSqr = newDiagSqr;
-            newDiagSqr = diagSqr + alpha2 * p2 * p2;
+            newDiagSqr = diagSqr + (alpha2 * p2 * p2);
 
             if (newDiagSqr <= 0.0f) {
                 return false;
@@ -3485,7 +3485,7 @@ public class idMatX {
             beta2 = p2 * alpha2;
             alpha2 *= diagSqr;
 
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
 
                 d = this.oGet(j, i) * invDiag;
 
@@ -3519,16 +3519,16 @@ public class idMatX {
         float[] x;
         double sum;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows + 1);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= (this.numRows + 1));
 
-        ChangeSize(numRows + 1, numColumns + 1, false);
+        ChangeSize(this.numRows + 1, this.numColumns + 1, false);
 
 //	x = (float *) _alloca16( numRows * sizeof( float ) );
-        x = new float[numRows];
+        x = new float[this.numRows];
 
         // solve for x in L * x = v
-        for (i = 0; i < numRows - 1; i++) {
+        for (i = 0; i < (this.numRows - 1); i++) {
             sum = v.p[i];
             for (j = 0; j < i; j++) {
                 sum -= this.oGet(i, j) * x[j];
@@ -3537,9 +3537,9 @@ public class idMatX {
         }
 
         // calculate new row of L and calculate the square of the diagonal entry
-        sum = v.p[numRows - 1];
-        for (i = 0; i < numRows - 1; i++) {
-            this.oSet(numRows - 1, i, x[i]);
+        sum = v.p[this.numRows - 1];
+        for (i = 0; i < (this.numRows - 1); i++) {
+            this.oSet(this.numRows - 1, i, x[i]);
             sum -= x[i] * x[i];
         }
 
@@ -3548,7 +3548,7 @@ public class idMatX {
         }
 
         // store the diagonal entry
-        this.oSet(numRows - 1, numRows - 1, idMath.Sqrt((float) sum));
+        this.oSet(this.numRows - 1, this.numRows - 1, idMath.Sqrt((float) sum));
 
         return true;
     }
@@ -3563,11 +3563,11 @@ public class idMatX {
     public boolean Cholesky_UpdateDecrement(final idVecX v, int r) {
         idVecX v1 = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
-        assert (r >= 0 && r < numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert ((r >= 0) && (r < this.numRows));
 
-        v1.SetData(numRows, VECX_ALLOCA(numRows));
+        v1.SetData(this.numRows, VECX_ALLOCA(this.numRows));
 
         // update the row and column to identity
         v1 = v.oNegative();
@@ -3578,7 +3578,7 @@ public class idMatX {
 //#if 0
 //	if ( !Cholesky_UpdateRowColumn( v1, r ) ) {
 //#else
-        boolean ret = Cholesky_UpdateRowColumn(v1, r);
+        final boolean ret = Cholesky_UpdateRowColumn(v1, r);
         if (!ret) {
 //#endif
             return false;
@@ -3599,11 +3599,11 @@ public class idMatX {
         int i, j;
         double sum;
 
-        assert (numRows == numColumns);
-        assert (x.GetSize() >= numRows && b.GetSize() >= numRows);
+        assert (this.numRows == this.numColumns);
+        assert ((x.GetSize() >= this.numRows) && (b.GetSize() >= this.numRows));
 
         // solve L
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             sum = b.p[i];
             for (j = 0; j < i; j++) {
                 sum -= this.oGet(i, j) * x.p[j];
@@ -3612,9 +3612,9 @@ public class idMatX {
         }
 
         // solve Lt
-        for (i = numRows - 1; i >= 0; i--) {
+        for (i = this.numRows - 1; i >= 0; i--) {
             sum = x.p[i];
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
                 sum -= this.oGet(j, i) * x.p[j];
             }
             x.p[i] = (float) (sum / this.oGet(i, i));
@@ -3629,20 +3629,20 @@ public class idMatX {
      */
     public void Cholesky_Inverse(idMatX inv) {
         int i, j;
-        idVecX x = new idVecX(), b = new idVecX();
+        final idVecX x = new idVecX(), b = new idVecX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        x.SetData(numRows, VECX_ALLOCA(numRows));
-        b.SetData(numRows, VECX_ALLOCA(numRows));
+        x.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        b.SetData(this.numRows, VECX_ALLOCA(this.numRows));
         b.Zero();
-        inv.SetSize(numRows, numColumns);
+        inv.SetSize(this.numRows, this.numColumns);
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             b.p[i] = 1.0f;
             Cholesky_Solve(x, b);
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 inv.oSet(j, i, x.p[j]);
             }
             b.p[i] = 0.0f;
@@ -3659,14 +3659,14 @@ public class idMatX {
         int r, i, j;
         double sum;
 
-        m.SetSize(numRows, numColumns);
+        m.SetSize(this.numRows, this.numColumns);
 
-        for (r = 0; r < numRows; r++) {
+        for (r = 0; r < this.numRows; r++) {
 
             // calculate row of matrix
-            for (i = 0; i < numRows; i++) {
+            for (i = 0; i < this.numRows; i++) {
                 sum = 0.0f;
-                for (j = 0; j <= i && j <= r; j++) {
+                for (j = 0; (j <= i) && (j <= r); j++) {
                     sum += this.oGet(r, j) * this.oGet(i, j);
                 }
                 m.oSet(r, i, (float) sum);
@@ -3691,12 +3691,12 @@ public class idMatX {
         float[] v;
         double d, sum;
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
 //	v = (float *) _alloca16( numRows * sizeof( float ) );
-        v = new float[numRows];
+        v = new float[this.numRows];
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             sum = this.oGet(i, i);
             for (j = 0; j < i; j++) {
@@ -3712,7 +3712,7 @@ public class idMatX {
             this.oSet(i, i, (float) sum);
             d = 1.0f / sum;
 
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
                 sum = this.oGet(j, i);
                 for (k = 0; k < i; k++) {
                     sum -= this.oGet(j, k) * v[k];
@@ -3737,18 +3737,18 @@ public class idMatX {
         float[] y;
         double diag, newDiag, beta, p, d;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
-        assert (offset >= 0 && offset < numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert ((offset >= 0) && (offset < this.numRows));
 
 //	y = (float *) _alloca16( v.GetSize() * sizeof( float ) );
 //	memcpy( y, v.ToFloatPtr(), v.GetSize() * sizeof( float ) );
         y = v.ToFloatPtr();
 
-        for (i = offset; i < numColumns; i++) {
+        for (i = offset; i < this.numColumns; i++) {
             p = y[i];
             diag = this.oGet(i, i);
-            this.oSet(i, i, (float) (newDiag = diag + alpha * p * p));
+            this.oSet(i, i, (float) (newDiag = diag + (alpha * p * p)));
 
             if (newDiag == 0.0f) {
                 return false;
@@ -3758,7 +3758,7 @@ public class idMatX {
             beta = p * alpha;
             alpha *= diag;
 
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
 
                 d = this.oGet(j, i);
 
@@ -3789,34 +3789,34 @@ public class idMatX {
         int i, j;
         double sum;
         float[] original, y;
-        idVecX addSub = new idVecX();
+        final idVecX addSub = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
-        assert (r >= 0 && r < numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert ((r >= 0) && (r < this.numRows));
 
-        addSub.SetData(numColumns, new float[numColumns]);
+        addSub.SetData(this.numColumns, new float[this.numColumns]);
 
         if (r == 0) {
 
-            if (numColumns == 1) {
+            if (this.numColumns == 1) {
                 this.oPluSet(0, 0, v.p[0]);
                 return true;
             }
-            for (i = 0; i < numColumns; i++) {
+            for (i = 0; i < this.numColumns; i++) {
                 addSub.p[i] = v.p[i];
             }
 
         } else {
 
-            original = new float[numColumns];
-            y = new float[numColumns];
+            original = new float[this.numColumns];
+            y = new float[this.numColumns];
 
             // calculate original row/column of matrix
             for (i = 0; i < r; i++) {
                 y[i] = this.oGet(r, i) * this.oGet(i, i);
             }
-            for (i = 0; i < numColumns; i++) {
+            for (i = 0; i < this.numColumns; i++) {
                 if (i < r) {
                     sum = this.oGet(i, i) * this.oGet(r, i);
                 } else if (i == r) {
@@ -3824,7 +3824,7 @@ public class idMatX {
                 } else {
                     sum = this.oGet(r, r) * this.oGet(i, r);
                 }
-                for (j = 0; j < i && j < r; j++) {
+                for (j = 0; (j < i) && (j < r); j++) {
                     sum += this.oGet(i, j) * y[j];
                 }
                 original[i] = (float) sum;
@@ -3845,7 +3845,7 @@ public class idMatX {
             }
 
             // if the last row/column of the matrix is updated
-            if (r == numColumns - 1) {
+            if (r == (this.numColumns - 1)) {
                 // only calculate new diagonal
                 sum = original[r] + v.p[r];
                 for (j = 0; j < r; j++) {
@@ -3862,7 +3862,7 @@ public class idMatX {
             for (i = 0; i < r; i++) {
                 y[i] = this.oGet(r, i) * this.oGet(i, i);
             }
-            for (i = r; i < numColumns; i++) {
+            for (i = r; i < this.numColumns; i++) {
                 if (i == r) {
                     sum = this.oGet(r, r);
                 } else {
@@ -3880,13 +3880,13 @@ public class idMatX {
         float[] v1, v2;
         double d, diag, newDiag, p1, p2, alpha1, alpha2, beta1, beta2;
 
-        v1 = new float[numColumns];
-        v2 = new float[numColumns];
+        v1 = new float[this.numColumns];
+        v2 = new float[this.numColumns];
 
         d = idMath.SQRT_1OVER2;
-        v1[r] = (float) ((0.5f * addSub.p[r] + 1.0f) * d);
-        v2[r] = (float) ((0.5f * addSub.p[r] - 1.0f) * d);
-        for (i = r + 1; i < numColumns; i++) {
+        v1[r] = (float) (((0.5f * addSub.p[r]) + 1.0f) * d);
+        v2[r] = (float) (((0.5f * addSub.p[r]) - 1.0f) * d);
+        for (i = r + 1; i < this.numColumns; i++) {
             v1[i] = v2[i] = (float) (addSub.p[i] * d);
         }
 
@@ -3894,11 +3894,11 @@ public class idMatX {
         alpha2 = -1.0f;
 
         // simultaneous update/downdate of the sub matrix starting at (r, r)
-        for (i = r; i < numColumns; i++) {
+        for (i = r; i < this.numColumns; i++) {
 
             diag = this.oGet(i, i);
             p1 = v1[i];
-            newDiag = diag + alpha1 * p1 * p1;
+            newDiag = diag + (alpha1 * p1 * p1);
 
             if (newDiag == 0.0f) {
                 return false;
@@ -3910,7 +3910,7 @@ public class idMatX {
 
             diag = newDiag;
             p2 = v2[i];
-            newDiag = diag + alpha2 * p2 * p2;
+            newDiag = diag + (alpha2 * p2 * p2);
 
             if (newDiag == 0.0f) {
                 return false;
@@ -3922,7 +3922,7 @@ public class idMatX {
 
             this.oSet(i, i, (float) newDiag);
 
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
 
                 d = this.oGet(j, i);
 
@@ -3957,15 +3957,15 @@ public class idMatX {
         float[] x;
         double sum, d;
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows + 1);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= (this.numRows + 1));
 
-        ChangeSize(numRows + 1, numColumns + 1, false);
+        ChangeSize(this.numRows + 1, this.numColumns + 1, false);
 
-        x = new float[numRows];
+        x = new float[this.numRows];
 
         // solve for x in L * x = v
-        for (i = 0; i < numRows - 1; i++) {
+        for (i = 0; i < (this.numRows - 1); i++) {
             sum = v.p[i];
             for (j = 0; j < i; j++) {
                 sum -= this.oGet(i, j) * x[j];
@@ -3974,9 +3974,9 @@ public class idMatX {
         }
 
         // calculate new row of L and calculate the diagonal entry
-        sum = v.p[numRows - 1];
-        for (i = 0; i < numRows - 1; i++) {
-            this.oSet(numRows - 1, i, (float) (d = x[i] / this.oGet(i, i)));
+        sum = v.p[this.numRows - 1];
+        for (i = 0; i < (this.numRows - 1); i++) {
+            this.oSet(this.numRows - 1, i, (float) (d = x[i] / this.oGet(i, i)));
             sum -= d * x[i];
         }
 
@@ -3985,7 +3985,7 @@ public class idMatX {
         }
 
         // store the diagonal entry
-        this.oSet(numRows - 1, numRows - 1, (float) sum);
+        this.oSet(this.numRows - 1, this.numRows - 1, (float) sum);
 
         return true;
     }
@@ -4000,11 +4000,11 @@ public class idMatX {
     public boolean LDLT_UpdateDecrement(final idVecX v, int r) {
         idVecX v1 = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (v.GetSize() >= numRows);
-        assert (r >= 0 && r < numRows);
+        assert (this.numRows == this.numColumns);
+        assert (v.GetSize() >= this.numRows);
+        assert ((r >= 0) && (r < this.numRows));
 
-        v1.SetData(numRows, VECX_ALLOCA(numRows));
+        v1.SetData(this.numRows, VECX_ALLOCA(this.numRows));
 
         // update the row and column to identity
         v1 = v.oNegative();
@@ -4015,7 +4015,7 @@ public class idMatX {
 //#if 0
 //	if ( !LDLT_UpdateRowColumn( v1, r ) ) {
 //#else
-        boolean ret = LDLT_UpdateRowColumn(v1, r);
+        final boolean ret = LDLT_UpdateRowColumn(v1, r);
         if (!ret) {
 //#endif
             return false;
@@ -4036,11 +4036,11 @@ public class idMatX {
         int i, j;
         double sum;
 
-        assert (numRows == numColumns);
-        assert (x.GetSize() >= numRows && b.GetSize() >= numRows);
+        assert (this.numRows == this.numColumns);
+        assert ((x.GetSize() >= this.numRows) && (b.GetSize() >= this.numRows));
 
         // solve L
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             sum = b.p[i];
             for (j = 0; j < i; j++) {
                 sum -= this.oGet(i, j) * x.p[j];
@@ -4049,14 +4049,14 @@ public class idMatX {
         }
 
         // solve D
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
             x.p[i] /= this.oGet(i, i);
         }
 
         // solve Lt
-        for (i = numRows - 2; i >= 0; i--) {
+        for (i = this.numRows - 2; i >= 0; i--) {
             sum = x.p[i];
-            for (j = i + 1; j < numRows; j++) {
+            for (j = i + 1; j < this.numRows; j++) {
                 sum -= this.oGet(j, i) * x.p[j];
             }
             x.p[i] = (float) sum;
@@ -4071,20 +4071,20 @@ public class idMatX {
      */
     public void LDLT_Inverse(idMatX inv) {
         int i, j;
-        idVecX x = new idVecX(), b = new idVecX();
+        final idVecX x = new idVecX(), b = new idVecX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        x.SetData(numRows, VECX_ALLOCA(numRows));
-        b.SetData(numRows, VECX_ALLOCA(numRows));
+        x.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        b.SetData(this.numRows, VECX_ALLOCA(this.numRows));
         b.Zero();
-        inv.SetSize(numRows, numColumns);
+        inv.SetSize(this.numRows, this.numColumns);
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             b.p[i] = 1.0f;
             LDLT_Solve(x, b);
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 inv.oSet(j, i, x.p[j]);
             }
             b.p[i] = 0.0f;
@@ -4101,9 +4101,9 @@ public class idMatX {
     public void LDLT_UnpackFactors(idMatX L, idMatX D) {
         int i, j;
 
-        L.Zero(numRows, numColumns);
-        D.Zero(numRows, numColumns);
-        for (i = 0; i < numRows; i++) {
+        L.Zero(this.numRows, this.numColumns);
+        D.Zero(this.numRows, this.numColumns);
+        for (i = 0; i < this.numRows; i++) {
             for (j = 0; j < i; j++) {
                 L.oSet(i, j, this.oGet(i, j));
             }
@@ -4124,16 +4124,16 @@ public class idMatX {
         float[] v;
         double sum;
 
-        v = new float[numRows];
-        m.SetSize(numRows, numColumns);
+        v = new float[this.numRows];
+        m.SetSize(this.numRows, this.numColumns);
 
-        for (r = 0; r < numRows; r++) {
+        for (r = 0; r < this.numRows; r++) {
 
             // calculate row of matrix
             for (i = 0; i < r; i++) {
                 v[i] = this.oGet(r, i) * this.oGet(i, i);
             }
-            for (i = 0; i < numColumns; i++) {
+            for (i = 0; i < this.numColumns; i++) {
                 if (i < r) {
                     sum = this.oGet(i, i) * this.oGet(r, i);
                 } else if (i == r) {
@@ -4141,7 +4141,7 @@ public class idMatX {
                 } else {
                     sum = this.oGet(r, r) * this.oGet(i, r);
                 }
-                for (j = 0; j < i && j < r; j++) {
+                for (j = 0; (j < i) && (j < r); j++) {
                     sum += this.oGet(i, j) * v[j];
                 }
                 m.oSet(r, i, (float) sum);
@@ -4152,9 +4152,9 @@ public class idMatX {
     public void TriDiagonal_ClearTriangles() {
         int i, j;
 
-        assert (numRows == numColumns);
-        for (i = 0; i < numRows - 2; i++) {
-            for (j = i + 2; j < numColumns; j++) {
+        assert (this.numRows == this.numColumns);
+        for (i = 0; i < (this.numRows - 2); i++) {
+            for (j = i + 2; j < this.numColumns; j++) {
                 this.oSet(i, j, 0.0f);
                 this.oSet(j, i, 0.0f);
             }
@@ -4169,12 +4169,12 @@ public class idMatX {
     public boolean TriDiagonal_Solve(idVecX x, final idVecX b) {
         int i;
         float d;
-        idVecX tmp = new idVecX();
+        final idVecX tmp = new idVecX();
 
-        assert (numRows == numColumns);
-        assert (x.GetSize() >= numRows && b.GetSize() >= numRows);
+        assert (this.numRows == this.numColumns);
+        assert ((x.GetSize() >= this.numRows) && (b.GetSize() >= this.numRows));
 
-        tmp.SetData(numRows, VECX_ALLOCA(numRows));
+        tmp.SetData(this.numRows, VECX_ALLOCA(this.numRows));
 
         d = this.oGet(0, 0);
         if (d == 0.0f) {
@@ -4182,16 +4182,16 @@ public class idMatX {
         }
         d = 1.0f / d;
         x.p[0] = b.p[0] * d;
-        for (i = 1; i < numRows; i++) {
+        for (i = 1; i < this.numRows; i++) {
             tmp.p[i] = this.oGet(i - 1, i) * d;
-            d = this.oGet(i, i) - this.oGet(i, i - 1) * tmp.p[i];
+            d = this.oGet(i, i) - (this.oGet(i, i - 1) * tmp.p[i]);
             if (d == 0.0f) {
                 return false;
             }
             d = 1.0f / d;
-            x.p[i] = (b.p[i] - this.oGet(i, i - 1) * x.p[i - 1]) * d;
+            x.p[i] = (b.p[i] - (this.oGet(i, i - 1) * x.p[i - 1])) * d;
         }
-        for (i = numRows - 2; i >= 0; i--) {
+        for (i = this.numRows - 2; i >= 0; i--) {
             x.p[i] -= tmp.p[i + 1] * x.p[i + 1];
         }
         return true;
@@ -4204,20 +4204,20 @@ public class idMatX {
      */
     public void TriDiagonal_Inverse(idMatX inv) {
         int i, j;
-        idVecX x = new idVecX(), b = new idVecX();
+        final idVecX x = new idVecX(), b = new idVecX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        x.SetData(numRows, VECX_ALLOCA(numRows));
-        b.SetData(numRows, VECX_ALLOCA(numRows));
+        x.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        b.SetData(this.numRows, VECX_ALLOCA(this.numRows));
         b.Zero();
-        inv.SetSize(numRows, numColumns);
+        inv.SetSize(this.numRows, this.numColumns);
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             b.p[i] = 1.0f;
             TriDiagonal_Solve(x, b);
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 inv.oSet(j, i, x.p[j]);
             }
             b.p[i] = 0.0f;
@@ -4235,18 +4235,18 @@ public class idMatX {
      */
     public boolean Eigen_SolveSymmetricTriDiagonal(idVecX eigenValues) {
         int i;
-        idVecX subd = new idVecX();
+        final idVecX subd = new idVecX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        subd.SetData(numRows, VECX_ALLOCA(numRows));
-        eigenValues.SetSize(numRows);
+        subd.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        eigenValues.SetSize(this.numRows);
 
-        for (i = 0; i < numRows - 1; i++) {
+        for (i = 0; i < (this.numRows - 1); i++) {
             eigenValues.p[i] = this.oGet(i, i);
             subd.p[i] = this.oGet(i + 1, i);
         }
-        eigenValues.p[numRows - 1] = this.oGet(numRows - 1, numRows - 1);
+        eigenValues.p[this.numRows - 1] = this.oGet(this.numRows - 1, this.numRows - 1);
 
         Identity();
 
@@ -4264,12 +4264,12 @@ public class idMatX {
      */
 
     public boolean Eigen_SolveSymmetric(idVecX eigenValues) {
-        idVecX subd = new idVecX();
+        final idVecX subd = new idVecX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        subd.SetData(numRows, VECX_ALLOCA(numRows));
-        eigenValues.SetSize(numRows);
+        subd.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        eigenValues.SetSize(this.numRows);
 
         HouseholderReduction(eigenValues, subd);
         return QL(eigenValues, subd);
@@ -4284,12 +4284,12 @@ public class idMatX {
      * realEigenValues[i] and imaginaryEigenValues[i]. ============
      */
     public boolean Eigen_Solve(idVecX realEigenValues, idVecX imaginaryEigenValues) {
-        idMatX H = new idMatX();
+        final idMatX H = new idMatX();
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        realEigenValues.SetSize(numRows);
-        imaginaryEigenValues.SetSize(numRows);
+        realEigenValues.SetSize(this.numRows);
+        imaginaryEigenValues.SetSize(this.numRows);
 
         H.oSet(this);
 
@@ -4304,10 +4304,10 @@ public class idMatX {
         int i, j, k;
         float min;
 
-        for (i = j = 0; i <= numRows - 2; i++) {
+        for (i = j = 0; i <= (this.numRows - 2); i++) {
             j = i;
             min = eigenValues.p[j];
-            for (k = i + 1; k < numRows; k++) {
+            for (k = i + 1; k < this.numRows; k++) {
                 if (eigenValues.p[k] < min) {
                     j = k;
                     min = eigenValues.p[j];
@@ -4324,10 +4324,10 @@ public class idMatX {
         int i, j, k;
         float max;
 
-        for (i = j = 0; i <= numRows - 2; i++) {
+        for (i = j = 0; i <= (this.numRows - 2); i++) {
             j = i;
             max = eigenValues.p[j];
-            for (k = i + 1; k < numRows; k++) {
+            for (k = i + 1; k < this.numRows; k++) {
                 if (eigenValues.p[k] > max) {
                     j = k;
                     max = eigenValues.p[j];
@@ -4342,8 +4342,8 @@ public class idMatX {
 
     public static void Test() {
         idMatX original = new idMatX(), m1 = new idMatX(), m2 = new idMatX(), m3 = new idMatX();
-        idMatX q1 = new idMatX(), q2 = new idMatX(), r1 = new idMatX(), r2 = new idMatX();
-        idVecX v = new idVecX(), w = new idVecX(), u = new idVecX(), c = new idVecX(), d = new idVecX();
+        final idMatX q1 = new idMatX(), q2 = new idMatX(), r1 = new idMatX(), r2 = new idMatX();
+        final idVecX v = new idVecX(), w = new idVecX(), u = new idVecX(), c = new idVecX(), d = new idVecX();
         int offset, size;
         int[] index1, index2;
 
@@ -4911,7 +4911,7 @@ public class idMatX {
             m1.Cholesky_Factor();
             m1.ClearUpperTriangle();
 
-            int pdtable[] = {1, 0, 1, 0, 0, 0};
+            final int pdtable[] = {1, 0, 1, 0, 0, 0};
             w.Random(size, pdtable[offset]);
             w.oMulSet(0.1f);
 
@@ -4940,7 +4940,7 @@ public class idMatX {
         m2.oSet(m1);
 
         w.SetSize(size + 1);
-        for (int i = 0; i < size + 1; i++) {
+        for (int i = 0; i < (size + 1); i++) {
             w.p[i] = m3.oGet(size, i);
         }
 
@@ -5088,7 +5088,7 @@ public class idMatX {
         m2.oSet(m1);
 
         w.SetSize(size + 1);
-        for (int i = 0; i < size + 1; i++) {
+        for (int i = 0; i < (size + 1); i++) {
             w.p[i] = m3.oGet(size, i);
         }
 
@@ -5225,27 +5225,27 @@ public class idMatX {
     private void SetTempSize(int rows, int columns) {
         int newSize;
 
-        newSize = (rows * columns + 3) & ~3;
+        newSize = ((rows * columns) + 3) & ~3;
         assert (newSize < MATX_MAX_TEMP);
-        if (idMatX.tempIndex + newSize > MATX_MAX_TEMP) {
+        if ((idMatX.tempIndex + newSize) > MATX_MAX_TEMP) {
             idMatX.tempIndex = 0;
         }
 //            mat = idMatX::tempPtr + idMatX::tempIndex;
-        mat = new float[newSize];
+        this.mat = new float[newSize];
         idMatX.tempIndex += newSize;
-        alloced = newSize;
-        numRows = rows;
-        numColumns = columns;
+        this.alloced = newSize;
+        this.numRows = rows;
+        this.numColumns = columns;
         MATX_CLEAREND();
     }
 
     private float DeterminantGeneric() {
         int[] index;
-        float[] det = new float[1];
+        final float[] det = new float[1];
         idMatX tmp = new idMatX();
 
-        index = new int[numRows];
-        tmp.SetData(numRows, numColumns, MATX_ALLOCA(numRows * numColumns));
+        index = new int[this.numRows];
+        tmp.SetData(this.numRows, this.numColumns, MATX_ALLOCA(this.numRows * this.numColumns));
         tmp = this;
 
         if (!tmp.LU_Factor(index, det)) {
@@ -5259,25 +5259,25 @@ public class idMatX {
         int i, j;
         int[] index;
         idMatX tmp = new idMatX();
-        idVecX x = new idVecX(), b = new idVecX();
+        final idVecX x = new idVecX(), b = new idVecX();
 
-        index = new int[numRows];
-        tmp.SetData(numRows, numColumns, MATX_ALLOCA(numRows * numColumns));
+        index = new int[this.numRows];
+        tmp.SetData(this.numRows, this.numColumns, MATX_ALLOCA(this.numRows * this.numColumns));
         tmp = this;
 
         if (!tmp.LU_Factor(index)) {
             return false;
         }
 
-        x.SetData(numRows, VECX_ALLOCA(numRows));
-        b.SetData(numRows, VECX_ALLOCA(numRows));
+        x.SetData(this.numRows, VECX_ALLOCA(this.numRows));
+        b.SetData(this.numRows, VECX_ALLOCA(this.numRows));
         b.Zero();
 
-        for (i = 0; i < numRows; i++) {
+        for (i = 0; i < this.numRows; i++) {
 
             b.p[i] = 1.0f;
             tmp.LU_Solve(x, b, index);
-            for (j = 0; j < numRows; j++) {
+            for (j = 0; j < this.numRows; j++) {
                 this.oSet(j, i, x.p[j]);
             }
             b.p[i] = 0.0f;
@@ -5300,30 +5300,30 @@ public class idMatX {
             s = (b >= 0.0f) ? 1.0f : -1.0f;
         } else if (idMath.Fabs(a) > idMath.Fabs(b)) {
             f = b / a;
-            c = idMath.Fabs(1.0f / idMath.Sqrt(1.0f + f * f));
+            c = idMath.Fabs(1.0f / idMath.Sqrt(1.0f + (f * f)));
             if (a < 0.0f) {
                 c = -c;
             }
             s = f * c;
         } else {
             f = a / b;
-            s = idMath.Fabs(1.0f / idMath.Sqrt(1.0f + f * f));
+            s = idMath.Fabs(1.0f / idMath.Sqrt(1.0f + (f * f)));
             if (b < 0.0f) {
                 s = -s;
             }
             c = f * s;
         }
-        for (j = i; j < numRows; j++) {
+        for (j = i; j < this.numRows; j++) {
             y = R.oGet(i, j);
             w = R.oGet(i + 1, j);
-            R.oSet(i, j, c * y - s * w);
-            R.oSet(i + 1, j, s * y + c * w);
+            R.oSet(i, j, (c * y) - (s * w));
+            R.oSet(i + 1, j, (s * y) + (c * w));
         }
-        for (j = 0; j < numRows; j++) {
+        for (j = 0; j < this.numRows; j++) {
             y = this.oGet(j, i);
             w = this.oGet(j, i + 1);
-            this.oSet(j, i, c * y - s * w);
-            this.oSet(j, i + 1, s * y + c * w);
+            this.oSet(j, i, (c * y) - (s * w));
+            this.oSet(j, i + 1, (s * y) + (c * w));
         }
     }
 
@@ -5339,11 +5339,11 @@ public class idMatX {
         bt = idMath.Fabs(b);
         if (at > bt) {
             ct = bt / at;
-            return (float) (at * idMath.Sqrt((float) (1.0f + ct * ct)));
+            return (float) (at * idMath.Sqrt((float) (1.0f + (ct * ct))));
         } else {
             if (bt != 0) {
                 ct = at / bt;
-                return (float) (bt * idMath.Sqrt((float) (1.0f + ct * ct)));
+                return (float) (bt * idMath.Sqrt((float) (1.0f + (ct * ct))));
             } else {
                 return 0.0f;
             }
@@ -5356,16 +5356,16 @@ public class idMatX {
 
         anorm[0] = 0.0f;
         g = s = scale = 0.0f;
-        for (i = 0; i < numColumns; i++) {
+        for (i = 0; i < this.numColumns; i++) {
             l = i + 1;
             rv1.p[i] = (float) (scale * g);
             g = s = scale = 0.0f;
-            if (i < numRows) {
-                for (k = i; k < numRows; k++) {
+            if (i < this.numRows) {
+                for (k = i; k < this.numRows; k++) {
                     scale += idMath.Fabs(this.oGet(k, i));
                 }
                 if (scale != 0.0f) {
-                    for (k = i; k < numRows; k++) {
+                    for (k = i; k < this.numRows; k++) {
                         this.oDivSet(k, i, scale);
                         s += this.oGet(k, i) * this.oGet(k, i);
                     }
@@ -5374,32 +5374,32 @@ public class idMatX {
                     if (f >= 0.0f) {
                         g = -g;
                     }
-                    h = f * g - s;
+                    h = (f * g) - s;
                     this.oSet(i, i, (float) (f - g));
-                    if (i != (numColumns - 1)) {
-                        for (j = l; j < numColumns; j++) {
-                            for (s = 0.0f, k = i; k < numRows; k++) {
+                    if (i != (this.numColumns - 1)) {
+                        for (j = l; j < this.numColumns; j++) {
+                            for (s = 0.0f, k = i; k < this.numRows; k++) {
                                 s += this.oGet(k, i) * this.oGet(k, j);
                             }
                             f = s / h;
-                            for (k = i; k < numRows; k++) {
+                            for (k = i; k < this.numRows; k++) {
                                 this.oPluSet(k, j, f * this.oGet(k, i));
                             }
                         }
                     }
-                    for (k = i; k < numRows; k++) {
+                    for (k = i; k < this.numRows; k++) {
                         this.oMulSet(k, i, scale);
                     }
                 }
             }
             w.p[i] = (float) (scale * g);
             g = s = scale = 0.0f;
-            if (i < numRows && i != (numColumns - 1)) {
-                for (k = l; k < numColumns; k++) {
+            if ((i < this.numRows) && (i != (this.numColumns - 1))) {
+                for (k = l; k < this.numColumns; k++) {
                     scale += idMath.Fabs(this.oGet(i, k));
                 }
                 if (scale != 0.0f) {
-                    for (k = l; k < numColumns; k++) {
+                    for (k = l; k < this.numColumns; k++) {
                         this.oDivSet(i, k, scale);//TODO:add oDivSit
                         s += this.oGet(i, k) * this.oGet(i, k);
                     }
@@ -5408,22 +5408,22 @@ public class idMatX {
                     if (f >= 0.0f) {
                         g = -g;
                     }
-                    h = 1.0f / (f * g - s);
+                    h = 1.0f / ((f * g) - s);
                     this.oSet(i, l, (float) (f - g));
-                    for (k = l; k < numColumns; k++) {
+                    for (k = l; k < this.numColumns; k++) {
                         rv1.p[k] = (float) (this.oGet(i, k) * h);
                     }
-                    if (i != (numRows - 1)) {
-                        for (j = l; j < numRows; j++) {
-                            for (s = 0.0f, k = l; k < numColumns; k++) {
+                    if (i != (this.numRows - 1)) {
+                        for (j = l; j < this.numRows; j++) {
+                            for (s = 0.0f, k = l; k < this.numColumns; k++) {
                                 s += this.oGet(j, k) * this.oGet(i, k);
                             }
-                            for (k = l; k < numColumns; k++) {
+                            for (k = l; k < this.numColumns; k++) {
                                 this.oPluSet(j, k, s * rv1.p[k]);
                             }
                         }
                     }
-                    for (k = l; k < numColumns; k++) {
+                    for (k = l; k < this.numColumns; k++) {
                         this.oMulSet(i, k, scale);
                     }
                 }
@@ -5440,56 +5440,56 @@ public class idMatX {
         double f, g, s;
 
         g = 0.0f;
-        for (i = (numColumns - 1); i >= 0; i--) {
+        for (i = (this.numColumns - 1); i >= 0; i--) {
             l = i + 1;
-            if (i < (numColumns - 1)) {
+            if (i < (this.numColumns - 1)) {
                 if (g != 0) {
-                    for (j = l; j < numColumns; j++) {
+                    for (j = l; j < this.numColumns; j++) {
                         V.oSet(j, i, (float) ((this.oGet(i, j) / this.oGet(i, l)) / g));
                     }
                     // double division to reduce underflow
-                    for (j = l; j < numColumns; j++) {
-                        for (s = 0.0f, k = l; k < numColumns; k++) {
+                    for (j = l; j < this.numColumns; j++) {
+                        for (s = 0.0f, k = l; k < this.numColumns; k++) {
                             s += this.oGet(i, k) * V.oGet(k, j);
                         }
-                        for (k = l; k < numColumns; k++) {
+                        for (k = l; k < this.numColumns; k++) {
                             V.oPluSet(k, j, s * V.oGet(k, i));
                         }
                     }
                 }
-                for (j = l; j < numColumns; j++) {
+                for (j = l; j < this.numColumns; j++) {
                     V.oSet(j, i, V.oSet(i, j, 0.0f));
                 }
             }
             V.oSet(i, i, 1.0f);
             g = rv1.p[i];
         }
-        for (i = numColumns - 1; i >= 0; i--) {
+        for (i = this.numColumns - 1; i >= 0; i--) {
             l = i + 1;
             g = w.p[i];
-            if (i < (numColumns - 1)) {
-                for (j = l; j < numColumns; j++) {
+            if (i < (this.numColumns - 1)) {
+                for (j = l; j < this.numColumns; j++) {
                     this.oSet(i, j, 0.0f);
                 }
             }
             if (g != 0) {
                 g = 1.0f / g;
-                if (i != (numColumns - 1)) {
-                    for (j = l; j < numColumns; j++) {
-                        for (s = 0.0f, k = l; k < numRows; k++) {
+                if (i != (this.numColumns - 1)) {
+                    for (j = l; j < this.numColumns; j++) {
+                        for (s = 0.0f, k = l; k < this.numRows; k++) {
                             s += this.oGet(k, i) * this.oGet(k, j);
                         }
-                        f = (s / this.oGet(i, i) * g);
-                        for (k = i; k < numRows; k++) {
+                        f = ((s / this.oGet(i, i)) * g);
+                        for (k = i; k < this.numRows; k++) {
                             this.oPluSet(k, j, f * this.oGet(k, i));
                         }
                     }
                 }
-                for (j = i; j < numRows; j++) {
+                for (j = i; j < this.numRows; j++) {
                     this.oMulSet(j, i, g);
                 }
             } else {
-                for (j = i; j < numRows; j++) {
+                for (j = i; j < this.numRows; j++) {
                     this.oSet(j, i, 0.0f);
                 }
             }
@@ -5510,12 +5510,12 @@ public class idMatX {
         int i0, i1, i2, i3;
         float h, f, g, invH, halfFdivH, scale, invScale, sum;
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        diag.SetSize(numRows);
-        subd.SetSize(numRows);
+        diag.SetSize(this.numRows);
+        subd.SetSize(this.numRows);
 
-        for (i0 = numRows - 1, i3 = numRows - 2; i0 >= 1; i0--, i3--) {
+        for (i0 = this.numRows - 1, i3 = this.numRows - 2; i0 >= 1; i0--, i3--) {
             h = 0.0f;
             scale = 0.0f;
 
@@ -5556,10 +5556,10 @@ public class idMatX {
                     halfFdivH = 0.5f * f * invH;
                     for (i1 = 0; i1 <= i3; i1++) {
                         f = this.oGet(i0, i1);
-                        g = subd.p[i1] - halfFdivH * f;
+                        g = subd.p[i1] - (halfFdivH * f);
                         subd.p[i1] = g;
                         for (i2 = 0; i2 <= i1; i2++) {
-                            this.oMinSet(i1, i2, f * subd.p[i2] + g * this.oGet(i0, i2));
+                            this.oMinSet(i1, i2, (f * subd.p[i2]) + (g * this.oGet(i0, i2)));
                         }
                     }
                 }
@@ -5572,7 +5572,7 @@ public class idMatX {
 
         diag.p[0] = 0.0f;
         subd.p[0] = 0.0f;
-        for (i0 = 0, i3 = -1; i0 <= numRows - 1; i0++, i3++) {
+        for (i0 = 0, i3 = -1; i0 <= (this.numRows - 1); i0++, i3++) {
             if (diag.p[i0] != 0) {
                 for (i1 = 0; i1 <= i3; i1++) {
                     sum = 0.0f;
@@ -5593,10 +5593,10 @@ public class idMatX {
         }
 
         // re-order
-        for (i0 = 1, i3 = 0; i0 < numRows; i0++, i3++) {
+        for (i0 = 1, i3 = 0; i0 < this.numRows; i0++, i3++) {
             subd.p[i3] = subd.p[i0];
         }
-        subd.p[numRows - 1] = 0.0f;
+        subd.p[this.numRows - 1] = 0.0f;
     }
 
     /**
@@ -5617,13 +5617,13 @@ public class idMatX {
         int i0, i1, i2, i3;
         float a, b, f, g, r, p, s, c;
 
-        assert (numRows == numColumns);
+        assert (this.numRows == this.numColumns);
 
-        for (i0 = 0; i0 < numRows; i0++) {
+        for (i0 = 0; i0 < this.numRows; i0++) {
             for (i1 = 0; i1 < maxIter; i1++) {
-                for (i2 = i0; i2 <= numRows - 2; i2++) {
+                for (i2 = i0; i2 <= (this.numRows - 2); i2++) {
                     a = idMath.Fabs(diag.p[i2]) + idMath.Fabs(diag.p[i2 + 1]);
-                    if (idMath.Fabs(subd.p[i2]) + a == a) {
+                    if ((idMath.Fabs(subd.p[i2]) + a) == a) {
                         break;
                     }
                 }
@@ -5632,11 +5632,11 @@ public class idMatX {
                 }
 
                 g = (diag.p[i0 + 1] - diag.p[i0]) / (2.0f * subd.p[i0]);
-                r = idMath.Sqrt(g * g + 1.0f);
+                r = idMath.Sqrt((g * g) + 1.0f);
                 if (g < 0.0f) {
-                    g = diag.p[i2] - diag.p[i0] + subd.p[i0] / (g - r);
+                    g = (diag.p[i2] - diag.p[i0]) + (subd.p[i0] / (g - r));
                 } else {
-                    g = diag.p[i2] - diag.p[i0] + subd.p[i0] / (g + r);
+                    g = (diag.p[i2] - diag.p[i0]) + (subd.p[i0] / (g + r));
                 }
                 s = 1.0f;
                 c = 1.0f;
@@ -5646,27 +5646,27 @@ public class idMatX {
                     b = c * subd.p[i3];
                     if (idMath.Fabs(f) >= idMath.Fabs(g)) {
                         c = g / f;
-                        r = idMath.Sqrt(c * c + 1.0f);
+                        r = idMath.Sqrt((c * c) + 1.0f);
                         subd.p[i3 + 1] = f * r;
                         s = 1.0f / r;
                         c *= s;
                     } else {
                         s = f / g;
-                        r = idMath.Sqrt(s * s + 1.0f);
+                        r = idMath.Sqrt((s * s) + 1.0f);
                         subd.p[i3 + 1] = g * r;
                         c = 1.0f / r;
                         s *= c;
                     }
                     g = diag.p[i3 + 1] - p;
-                    r = (diag.p[i3] - g) * s + 2.0f * b * c;
+                    r = ((diag.p[i3] - g) * s) + (2.0f * b * c);
                     p = s * r;
                     diag.p[i3 + 1] = g + p;
-                    g = c * r - b;
+                    g = (c * r) - b;
 
-                    for (int i4 = 0; i4 < numRows; i4++) {
+                    for (int i4 = 0; i4 < this.numRows; i4++) {
                         f = this.oGet(i4, i3 + 1);
-                        this.oSet(i4, i3 + 1, s * this.oGet(i4, i3) + c * f);
-                        this.oSet(i4, i3, c * this.oGet(i4, i3) - s * f);
+                        this.oSet(i4, i3 + 1, (s * this.oGet(i4, i3)) + (c * f));
+                        this.oSet(i4, i3, (c * this.oGet(i4, i3)) - (s * f));
                     }
                 }
                 diag.p[i0] -= p;
@@ -5689,14 +5689,14 @@ public class idMatX {
      */
     private void HessenbergReduction(idMatX H) {
         int i, j, m;
-        int low = 0;
-        int high = numRows - 1;
+        final int low = 0;
+        final int high = this.numRows - 1;
         float scale, f, g, h;
-        idVecX v = new idVecX();
+        final idVecX v = new idVecX();
 
-        v.SetData(numRows, VECX_ALLOCA(numRows));
+        v.SetData(this.numRows, VECX_ALLOCA(this.numRows));
 
-        for (m = low + 1; m <= high - 1; m++) {
+        for (m = low + 1; m <= (high - 1); m++) {
 
             scale = 0.0f;
             for (i = m; i <= high; i++) {
@@ -5714,12 +5714,12 @@ public class idMatX {
                 if (v.p[m] > 0.0f) {
                     g = -g;
                 }
-                h = h - v.p[m] * g;
+                h = h - (v.p[m] * g);
                 v.p[m] = v.p[m] - g;
 
                 // apply Householder similarity transformation
                 // H = (I-u*u'/h)*H*(I-u*u')/h)
-                for (j = m; j < numRows; j++) {
+                for (j = m; j < this.numRows; j++) {
                     f = 0.0f;
                     for (i = high; i >= m; i--) {
                         f += v.p[i] * H.oGet(i, j);
@@ -5747,7 +5747,7 @@ public class idMatX {
 
         // accumulate transformations
         Identity();
-        for (m = high - 1; m >= low + 1; m--) {
+        for (m = high - 1; m >= (low + 1); m--) {
             if (H.oGet(m, m - 1) != 0.0f) {
                 for (i = m + 1; i <= high; i++) {
                     v.p[i] = H.oGet(i, m - 1);
@@ -5776,14 +5776,14 @@ public class idMatX {
         float r, d;
         if (idMath.Fabs(yr) > idMath.Fabs(yi)) {
             r = yi / yr;
-            d = yr + r * yi;
-            cdivr[0] = (xr + r * xi) / d;
-            cdivi[0] = (xi - r * xr) / d;
+            d = yr + (r * yi);
+            cdivr[0] = (xr + (r * xi)) / d;
+            cdivi[0] = (xi - (r * xr)) / d;
         } else {
             r = yr / yi;
-            d = yi + r * yr;
-            cdivr[0] = (r * xr + xi) / d;
-            cdivi[0] = (r * xi - xr) / d;
+            d = yi + (r * yr);
+            cdivr[0] = ((r * xr) + xi) / d;
+            cdivi[0] = ((r * xi) - xr) / d;
         }
     }
 
@@ -5794,20 +5794,21 @@ public class idMatX {
      */
     private boolean HessenbergToRealSchur(idMatX H, idVecX realEigenValues, idVecX imaginaryEigenValues) {
         int i, j, k;
-        int n = numRows - 1;
-        int low = 0;
-        int high = numRows - 1;
-        float eps = 2e-16f, exshift = 0.0f;
+        int n = this.numRows - 1;
+        final int low = 0;
+        final int high = this.numRows - 1;
+        final float eps = 2e-16f;
+		float exshift = 0.0f;
         float p = 0.0f, q = 0.0f, r = 0.0f, s = 0.0f, z = 0.0f, t, w, x, y;
 
         // store roots isolated by balanc and compute matrix norm
         float norm = 0.0f;
-        for (i = 0; i < numRows; i++) {
-            if (i < low || i > high) {
+        for (i = 0; i < this.numRows; i++) {
+            if ((i < low) || (i > high)) {
                 realEigenValues.p[i] = H.oGet(i, i);
                 imaginaryEigenValues.p[i] = 0.0f;
             }
-            for (j = Lib.Max(i - 1, 0); j < numRows; j++) {
+            for (j = Lib.Max(i - 1, 0); j < this.numRows; j++) {
                 norm = norm + idMath.Fabs(H.oGet(i, j));
             }
         }
@@ -5822,7 +5823,7 @@ public class idMatX {
                 if (s == 0.0f) {
                     s = norm;
                 }
-                if (idMath.Fabs(H.oGet(l, l - 1)) < eps * s) {
+                if (idMath.Fabs(H.oGet(l, l - 1)) < (eps * s)) {
                     break;
                 }
                 l--;
@@ -5835,10 +5836,10 @@ public class idMatX {
                 imaginaryEigenValues.p[n] = 0.0f;
                 n--;
                 iter = 0;
-            } else if (l == n - 1) {	// two roots found
+            } else if (l == (n - 1)) {	// two roots found
                 w = H.oGet(n, n - 1) * H.oGet(n - 1, n);
                 p = (H.oGet(n - 1, n - 1) - H.oGet(n, n)) / 2.0f;
-                q = p * p + w;
+                q = (p * p) + w;
                 z = idMath.Sqrt(idMath.Fabs(q));
                 H.oPluSet(n, n, exshift);
                 H.oPluSet(n - 1, n - 1, exshift);
@@ -5853,7 +5854,7 @@ public class idMatX {
                     realEigenValues.p[n - 1] = x + z;
                     realEigenValues.p[n] = realEigenValues.p[n - 1];
                     if (z != 0.0f) {
-                        realEigenValues.p[n] = x - w / z;
+                        realEigenValues.p[n] = x - (w / z);
                     }
                     imaginaryEigenValues.p[n - 1] = 0.0f;
                     imaginaryEigenValues.p[n] = 0.0f;
@@ -5861,29 +5862,29 @@ public class idMatX {
                     s = idMath.Fabs(x) + idMath.Fabs(z);
                     p = x / s;
                     q = z / s;
-                    r = idMath.Sqrt(p * p + q * q);
+                    r = idMath.Sqrt((p * p) + (q * q));
                     p = p / r;
                     q = q / r;
 
                     // modify row
-                    for (j = n - 1; j < numRows; j++) {
+                    for (j = n - 1; j < this.numRows; j++) {
                         z = H.oGet(n - 1, j);
-                        H.oSet(n - 1, j, q * z + p * H.oGet(n, j));
-                        H.oSet(n, j, q * H.oGet(n, j) - p * z);
+                        H.oSet(n - 1, j, (q * z) + (p * H.oGet(n, j)));
+                        H.oSet(n, j, (q * H.oGet(n, j)) - (p * z));
                     }
 
                     // modify column
                     for (i = 0; i <= n; i++) {
                         z = H.oGet(i, n - 1);
-                        H.oSet(i, n - 1, q * z + p * H.oGet(i, n));
-                        H.oSet(i, n, q * H.oGet(i, n) - p * z);
+                        H.oSet(i, n - 1, (q * z) + (p * H.oGet(i, n)));
+                        H.oSet(i, n, (q * H.oGet(i, n)) - (p * z));
                     }
 
                     // accumulate transformations
                     for (i = low; i <= high; i++) {
                         z = this.oGet(i, n - 1);
-                        this.oSet(i, n - 1, q * z + p * this.oGet(i, n));
-                        this.oSet(i, n, q * this.oGet(i, n) - p * z);
+                        this.oSet(i, n - 1, (q * z) + (p * this.oGet(i, n)));
+                        this.oSet(i, n, (q * this.oGet(i, n)) - (p * z));
                     }
                 } else {		// complex pair
                     realEigenValues.p[n - 1] = x + p;
@@ -5919,13 +5920,13 @@ public class idMatX {
                 // new ad hoc shift
                 if (iter == 30) {
                     s = (y - x) / 2.0f;
-                    s = s * s + w;
+                    s = (s * s) + w;
                     if (s > 0) {
                         s = idMath.Sqrt(s);
                         if (y < x) {
                             s = -s;
                         }
-                        s = x - w / ((y - x) / 2.0f + s);
+                        s = x - (w / (((y - x) / 2.0f) + s));
                         for (i = low; i <= n; i++) {
                             H.oPluSet(i, i, -s);
                         }
@@ -5942,7 +5943,7 @@ public class idMatX {
                     z = H.oGet(m, m);
                     r = x - z;
                     s = y - z;
-                    p = (r * s - w) / H.oGet(m + 1, m) + H.oGet(m, m + 1);
+                    p = (((r * s) - w) / H.oGet(m + 1, m)) + H.oGet(m, m + 1);
                     q = H.oGet(m + 1, m + 1) - z - r - s;
                     r = H.oGet(m + 2, m + 1);
                     s = idMath.Fabs(p) + idMath.Fabs(q) + idMath.Fabs(r);
@@ -5952,22 +5953,22 @@ public class idMatX {
                     if (m == l) {
                         break;
                     }
-                    if (idMath.Fabs(H.oGet(m, m - 1)) * (idMath.Fabs(q) + idMath.Fabs(r))
-                            < eps * (idMath.Fabs(p) * (idMath.Fabs(H.oGet(m - 1, m - 1)) + idMath.Fabs(z) + idMath.Fabs(H.oGet(m + 1, m + 1))))) {
+                    if ((idMath.Fabs(H.oGet(m, m - 1)) * (idMath.Fabs(q) + idMath.Fabs(r)))
+                            < (eps * (idMath.Fabs(p) * (idMath.Fabs(H.oGet(m - 1, m - 1)) + idMath.Fabs(z) + idMath.Fabs(H.oGet(m + 1, m + 1)))))) {
                         break;
                     }
                 }
 
                 for (i = m + 2; i <= n; i++) {
                     H.oSet(i, i - 2, 0.0f);
-                    if (i > m + 2) {
+                    if (i > (m + 2)) {
                         H.oSet(i, i - 3, 0.0f);
                     }
                 }
 
                 // double QR step involving rows l:n and columns m:n
-                for (k = m; k <= n - 1; k++) {
-                    boolean notlast = (k != n - 1);
+                for (k = m; k <= (n - 1); k++) {
+                    final boolean notlast = (k != (n - 1));
                     if (k != m) {
                         p = H.oGet(k, k - 1);
                         q = H.oGet(k + 1, k - 1);
@@ -5982,7 +5983,7 @@ public class idMatX {
                     if (x == 0.0f) {
                         break;
                     }
-                    s = idMath.Sqrt(p * p + q * q + r * r);
+                    s = idMath.Sqrt((p * p) + (q * q) + (r * r));
                     if (p < 0.0f) {
                         s = -s;
                     }
@@ -6000,10 +6001,10 @@ public class idMatX {
                         r = r / p;
 
                         // modify row
-                        for (j = k; j < numRows; j++) {
-                            p = H.oGet(k, j) + q * H.oGet(k + 1, j);
+                        for (j = k; j < this.numRows; j++) {
+                            p = H.oGet(k, j) + (q * H.oGet(k + 1, j));
                             if (notlast) {
-                                p = p + r * H.oGet(k + 2, j);
+                                p = p + (r * H.oGet(k + 2, j));
                                 H.oMinSet(k + 2, j, p * z);
                             }
                             H.oPluSet(k, j, -p * x);
@@ -6012,9 +6013,9 @@ public class idMatX {
 
                         // modify column
                         for (i = 0; i <= Lib.Min(n, k + 3); i++) {
-                            p = x * H.oGet(i, k) + y * H.oGet(i, k + 1);
+                            p = (x * H.oGet(i, k)) + (y * H.oGet(i, k + 1));
                             if (notlast) {
-                                p = p + z * H.oGet(i, k + 2);
+                                p = p + (z * H.oGet(i, k + 2));
                                 H.oMinSet(i, k + 2, p * r);
                             }
                             H.oMinSet(i, k, p);
@@ -6023,9 +6024,9 @@ public class idMatX {
 
                         // accumulate transformations
                         for (i = low; i <= high; i++) {
-                            p = x * this.oGet(i, k) + y * this.oGet(i, k + 1);
+                            p = (x * this.oGet(i, k)) + (y * this.oGet(i, k + 1));
                             if (notlast) {
-                                p = p + z * this.oGet(i, k + 2);
+                                p = p + (z * this.oGet(i, k + 2));
                                 this.oMinSet(i, k + 2, p * r);
                             }
                             this.oMinSet(i, k, p);
@@ -6041,7 +6042,7 @@ public class idMatX {
             return false;
         }
 
-        for (n = numRows - 1; n >= 0; n--) {
+        for (n = this.numRows - 1; n >= 0; n--) {
             p = realEigenValues.p[n];
             q = imaginaryEigenValues.p[n];
 
@@ -6052,7 +6053,7 @@ public class idMatX {
                     w = H.oGet(i, i) - p;
                     r = 0.0f;
                     for (j = l; j <= n; j++) {
-                        r = r + H.oGet(i, j) * H.oGet(j, n);
+                        r = r + (H.oGet(i, j) * H.oGet(j, n));
                     }
                     if (imaginaryEigenValues.p[i] < 0.0f) {
                         z = w;
@@ -6068,19 +6069,19 @@ public class idMatX {
                         } else {		// solve real equations
                             x = H.oGet(i, i + 1);
                             y = H.oGet(i + 1, i);
-                            q = (realEigenValues.p[i] - p) * (realEigenValues.p[i] - p) + imaginaryEigenValues.p[i] * imaginaryEigenValues.p[i];
-                            t = (x * s - z * r) / q;
+                            q = ((realEigenValues.p[i] - p) * (realEigenValues.p[i] - p)) + (imaginaryEigenValues.p[i] * imaginaryEigenValues.p[i]);
+                            t = ((x * s) - (z * r)) / q;
                             H.oSet(i, n, t);
                             if (idMath.Fabs(x) > idMath.Fabs(z)) {
-                                H.oSet(i + 1, n, (-r - w * t) / x);
+                                H.oSet(i + 1, n, (-r - (w * t)) / x);
                             } else {
-                                H.oSet(i + 1, n, (-s - y * t) / z);
+                                H.oSet(i + 1, n, (-s - (y * t)) / z);
                             }
                         }
 
                         // overflow control
                         t = idMath.Fabs(H.oGet(i, n));
-                        if ((eps * t) * t > 1) {
+                        if (((eps * t) * t) > 1) {
                             for (j = i; j <= n; j++) {
                                 H.oSet(j, n, H.oGet(j, n) / t);
                             }
@@ -6089,7 +6090,7 @@ public class idMatX {
                 }
             } else if (q < 0.0f) {	// complex vector
                 int l = n - 1;
-                float []cr = {0}, ci = {0};
+                final float []cr = {0}, ci = {0};
 
                 // last vector component imaginary so matrix is triangular
                 if (idMath.Fabs(H.oGet(n, n - 1)) > idMath.Fabs(H.oGet(n - 1, n))) {
@@ -6107,8 +6108,8 @@ public class idMatX {
                     ra = 0.0f;
                     sa = 0.0f;
                     for (j = l; j <= n; j++) {
-                        ra = ra + H.oGet(i, j) * H.oGet(j, n - 1);
-                        sa = sa + H.oGet(i, j) * H.oGet(j, n);
+                        ra = ra + (H.oGet(i, j) * H.oGet(j, n - 1));
+                        sa = sa + (H.oGet(i, j) * H.oGet(j, n));
                     }
                     w = H.oGet(i, i) - p;
 
@@ -6126,27 +6127,27 @@ public class idMatX {
                             // solve complex equations
                             x = H.oGet(i, i + 1);
                             y = H.oGet(i + 1, i);
-                            vr = (realEigenValues.p[i] - p) * (realEigenValues.p[i] - p) + imaginaryEigenValues.p[i] * imaginaryEigenValues.p[i] - q * q;
+                            vr = (((realEigenValues.p[i] - p) * (realEigenValues.p[i] - p)) + (imaginaryEigenValues.p[i] * imaginaryEigenValues.p[i])) - (q * q);
                             vi = (realEigenValues.p[i] - p) * 2.0f * q;
-                            if (vr == 0.0f && vi == 0.0f) {
+                            if ((vr == 0.0f) && (vi == 0.0f)) {
                                 vr = eps * norm * (idMath.Fabs(w) + idMath.Fabs(q) + idMath.Fabs(x) + idMath.Fabs(y) + idMath.Fabs(z));
                             }
-                            ComplexDivision(x * r - z * ra + q * sa, x * s - z * sa - q * ra, vr, vi, cr, ci);
+                            ComplexDivision(((x * r) - (z * ra)) + (q * sa), (x * s) - (z * sa) - (q * ra), vr, vi, cr, ci);
                             H.oSet(i, n - 1, cr[0]);
                             H.oSet(i, n, ci[0]);
                             if (idMath.Fabs(x) > (idMath.Fabs(z) + idMath.Fabs(q))) {
-                                H.oSet(i + 1, n - 1, (-ra - w * H.oGet(i, n - 1) + q * H.oGet(i, n)) / x);
-                                H.oSet(i + 1, n, (-sa - w * H.oGet(i, n) - q * H.oGet(i, n - 1)) / x);
+                                H.oSet(i + 1, n - 1, ((-ra - (w * H.oGet(i, n - 1))) + (q * H.oGet(i, n))) / x);
+                                H.oSet(i + 1, n, (-sa - (w * H.oGet(i, n)) - (q * H.oGet(i, n - 1))) / x);
                             } else {
-                                ComplexDivision(-r - y * H.oGet(i, n - 1), -s - y * H.oGet(i, n), z, q, cr, ci);
+                                ComplexDivision(-r - (y * H.oGet(i, n - 1)), -s - (y * H.oGet(i, n)), z, q, cr, ci);
                                 H.oSet(i + 1, n - 1, cr[0]);
                                 H.oSet(i + 1, n, ci[0]);
                             }
                         }
 
                         // overflow control
-                        t = (float) Lib.Max(idMath.Fabs(H.oGet(i, n - 1)), idMath.Fabs(H.oGet(i, n)));
-                        if ((eps * t) * t > 1) {
+                        t = Lib.Max(idMath.Fabs(H.oGet(i, n - 1)), idMath.Fabs(H.oGet(i, n)));
+                        if (((eps * t) * t) > 1) {
                             for (j = i; j <= n; j++) {
                                 H.oSet(j, n - 1, H.oGet(j, n - 1) / t);
                                 H.oSet(j, n, H.oGet(j, n) / t);
@@ -6158,20 +6159,20 @@ public class idMatX {
         }
 
         // vectors of isolated roots
-        for (i = 0; i < numRows; i++) {
-            if (i < low || i > high) {
-                for (j = i; j < numRows; j++) {
+        for (i = 0; i < this.numRows; i++) {
+            if ((i < low) || (i > high)) {
+                for (j = i; j < this.numRows; j++) {
                     this.oSet(i, j, H.oGet(i, j));
                 }
             }
         }
 
         // back transformation to get eigenvectors of original matrix
-        for (j = numRows - 1; j >= low; j--) {
+        for (j = this.numRows - 1; j >= low; j--) {
             for (i = low; i <= high; i++) {
                 z = 0.0f;
                 for (k = low; k <= Lib.Min(j, high); k++) {
-                    z = z + this.oGet(i, k) * H.oGet(k, j);
+                    z = z + (this.oGet(i, k) * H.oGet(k, j));
                 }
                 this.oSet(i, j, z);
             }
@@ -6181,55 +6182,55 @@ public class idMatX {
     }
 
     float oGet(final int row, final int column) {
-        return mat[column + (row * numColumns)];
+        return this.mat[column + (row * this.numColumns)];
     }
 
     public float oSet(final int row, final int column, final float value) {
-        return mat[column + (row * numColumns)] = value;
+        return this.mat[column + (row * this.numColumns)] = value;
     }
 
     @Deprecated
     public void oPluSet(final int row, final int column, final double value) {
-        mat[column + (row * numColumns)] += (float) value;
+        this.mat[column + (row * this.numColumns)] += (float) value;
     }
 
     @Deprecated
     public void oMinSet(final int row, final int column, final double value) {
-        mat[column + (row * numColumns)] -= (float) value;
+        this.mat[column + (row * this.numColumns)] -= (float) value;
     }
 
     @Deprecated
     public void oMulSet(final int row, final int column, final double value) {
-        mat[column + (row * numColumns)] *= (float) value;
+        this.mat[column + (row * this.numColumns)] *= (float) value;
     }
 
     @Deprecated
     public void oDivSet(final int row, final int column, final double value) {
-        mat[column + (row * numColumns)] /= (float) value;
+        this.mat[column + (row * this.numColumns)] /= (float) value;
     }
 
     public void oPluSet(final int row, final int column, final float value) {
-        mat[column + (row * numColumns)] += value;
+        this.mat[column + (row * this.numColumns)] += value;
     }
 
     public void oMinSet(final int row, final int column, final float value) {
-        mat[column + (row * numColumns)] -= value;
+        this.mat[column + (row * this.numColumns)] -= value;
     }
 
     public void oMulSet(final int row, final int column, final float value) {
-        mat[column + (row * numColumns)] *= value;
+        this.mat[column + (row * this.numColumns)] *= value;
     }
 
     public void oDivSet(final int row, final int column, final float value) {
-        mat[column + (row * numColumns)] /= value;
+        this.mat[column + (row * this.numColumns)] /= value;
     }
 
     private void oNegative(final int row, final int column) {
-        mat[column + (row * numColumns)] = (-mat[column + (row * numColumns)]);
+        this.mat[column + (row * this.numColumns)] = (-this.mat[column + (row * this.numColumns)]);
     }
 
     public void arraycopy(final float[] src, final int srcPos, final int destPos, final int length) {
-        System.arraycopy(src, srcPos, mat, destPos * numColumns, length);
+        System.arraycopy(src, srcPos, this.mat, destPos * this.numColumns, length);
     }
 
     public void arraycopy(final float[] src, final int destPos, final int length) {
@@ -6241,18 +6242,18 @@ public class idMatX {
     }
 
     public void SubVec63_oSet(final int vec6, final int vec3, final idVec3 v) {
-        assert (numColumns >= 6 && vec6 >= 0 && vec6 < numRows);
+        assert ((this.numColumns >= 6) && (vec6 >= 0) && (vec6 < this.numRows));
 
-        final int offset = vec6 * 6 + vec3 * 3;
-        mat[offset + 0] = v.x;
-        mat[offset + 1] = v.y;
-        mat[offset + 2] = v.z;
+        final int offset = (vec6 * 6) + (vec3 * 3);
+        this.mat[offset + 0] = v.x;
+        this.mat[offset + 1] = v.y;
+        this.mat[offset + 2] = v.z;
     }
 
     public void SubVec63_Zero(final int vec6, final int vec3) {
-        assert (numColumns >= 6 && vec6 >= 0 && vec6 < numRows);
+        assert ((this.numColumns >= 6) && (vec6 >= 0) && (vec6 < this.numRows));
 
-        final int offset = vec6 * 6 + vec3 * 3;
-        mat[offset + 0] = mat[offset + 1] = mat[offset + 2] = 0;
+        final int offset = (vec6 * 6) + (vec3 * 3);
+        this.mat[offset + 0] = this.mat[offset + 1] = this.mat[offset + 2] = 0;
     }
-};
+}

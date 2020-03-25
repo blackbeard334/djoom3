@@ -65,8 +65,8 @@ public class File_h {
                 case '%':
                     format = "";
                     format += fmt[fmt_ptr++];
-                    while ((fmt[fmt_ptr] >= '0' && fmt[fmt_ptr] <= '9')
-                            || fmt[fmt_ptr] == '.' || fmt[fmt_ptr] == '-' || fmt[fmt_ptr] == '+' || fmt[fmt_ptr] == '#') {
+                    while (((fmt[fmt_ptr] >= '0') && (fmt[fmt_ptr] <= '9'))
+                            || (fmt[fmt_ptr] == '.') || (fmt[fmt_ptr] == '-') || (fmt[fmt_ptr] == '+') || (fmt[fmt_ptr] == '#')) {
                         format += fmt[fmt_ptr++];
                     }
                     format += fmt[fmt_ptr];
@@ -235,16 +235,16 @@ public class File_h {
         }
 
         public final int Read(SERiAL object) {
-            ByteBuffer buffer = object.AllocBuffer();
-            int reads = Read(buffer, buffer.capacity());
+            final ByteBuffer buffer = object.AllocBuffer();
+            final int reads = Read(buffer, buffer.capacity());
             object.Read(buffer);
 
             return reads;
         }
 
         public final int Read(SERiAL object, int len) {
-            ByteBuffer buffer = object.AllocBuffer();
-            int reads = Read(buffer, len);
+            final ByteBuffer buffer = object.AllocBuffer();
+            final int reads = Read(buffer, len);
             buffer.position(len).flip();
             object.Read(buffer);
 
@@ -309,7 +309,7 @@ public class File_h {
 
         // Like fprintf.
         public int Printf(final String fmt, Object... args)/* id_attribute((format(printf,2,3)))*/ {
-            String[] buf = {null};// new char[MAX_PRINT_MSG];
+            final String[] buf = {null};// new char[MAX_PRINT_MSG];
             int length;
 //            va_list argptr;
 
@@ -318,7 +318,7 @@ public class File_h {
 //            va_end(argptr);
 
             // so notepad formats the lines correctly
-            idStr work = new idStr(buf[0]);
+            final idStr work = new idStr(buf[0]);
             work.Replace("\n", "\r\n");
 
             return Write(atobb(work));
@@ -326,7 +326,7 @@ public class File_h {
 
         // Like fprintf but with argument pointer
         public int VPrintf(final String fmt, Object... args/*, va_list arg*/) {
-            String[] buf = {null};//new char[MAX_PRINT_MSG];
+            final String[] buf = {null};//new char[MAX_PRINT_MSG];
             int length;
 
             length = idStr.vsnPrintf(buf, MAX_PRINT_MSG - 1, fmt, args/*, args*/);
@@ -335,9 +335,9 @@ public class File_h {
 
         // Write a string with high precision floating point numbers to the file.
         public int WriteFloatString(final String fmt, final Object... args)/* id_attribute((format(printf,2,3)))*/ {
-            char[] buf = new char[MAX_PRINT_MSG];
+            final char[] buf = new char[MAX_PRINT_MSG];
             int len;
-            Object[] argPtr = new Object[args.length];
+            final Object[] argPtr = new Object[args.length];
             System.arraycopy(args, 0, argPtr, 0, argPtr.length);
 
 //            va_start(argPtr, fmt);
@@ -349,14 +349,14 @@ public class File_h {
 
         // Endian portable alternatives to Read(...)
         public int ReadInt(int[] value) {
-            ByteBuffer intBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
-            int result = Read(intBytes);
+            final ByteBuffer intBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+            final int result = Read(intBytes);
             value[0] = LittleLong(intBytes.getInt(0));
             return result;
         }
 
         public int ReadInt() {
-            int[] value = {0};
+            final int[] value = {0};
             this.ReadInt(value);
 
             return value[0];
@@ -364,8 +364,8 @@ public class File_h {
 
         // Endian portable alternatives to Write(...)
         public int WriteInt(final int value) {
-            ByteBuffer intBytes = ByteBuffer.allocate(4);
-            int v = LittleLong(value);
+            final ByteBuffer intBytes = ByteBuffer.allocate(4);
+            final int v = LittleLong(value);
             intBytes.putInt(v);
             return Write(intBytes);
         }
@@ -375,77 +375,77 @@ public class File_h {
         }
 
         public int ReadUnsignedInt(long[] value) {
-            ByteBuffer uintBytes = ByteBuffer.allocate(4);
-            int result = Read(uintBytes);
+            final ByteBuffer uintBytes = ByteBuffer.allocate(4);
+            final int result = Read(uintBytes);
             value[0] = LittleLong(uintBytes.getInt()) & 0xFFFF_FFFFL;
             return result;
         }
 
         public int WriteUnsignedInt(final long value) {
-            ByteBuffer uintBytes = ByteBuffer.allocate(2);
-            long v = LittleLong((int) value);
+            final ByteBuffer uintBytes = ByteBuffer.allocate(2);
+            final long v = LittleLong((int) value);
             uintBytes.putInt((int) v);
             return Write(uintBytes);
         }
 
         public int ReadShort(short[] value) {
-            ByteBuffer shortBytes = ByteBuffer.allocate(2);
-            int result = Read(shortBytes);
+            final ByteBuffer shortBytes = ByteBuffer.allocate(2);
+            final int result = Read(shortBytes);
             value[0] = LittleShort(shortBytes.getShort());
             return result;
         }
 
         public short ReadShort() {
-            short[] value = {0};
+            final short[] value = {0};
             this.ReadShort(value);
 
             return value[0];
         }
 
         public int WriteShort(final short value) {
-            ByteBuffer shortBytes = ByteBuffer.allocate(2);
-            short v = LittleShort(value);
+            final ByteBuffer shortBytes = ByteBuffer.allocate(2);
+            final short v = LittleShort(value);
             shortBytes.putShort(v);
             return Write(shortBytes);
         }
 
         public int ReadUnsignedShort(int[] value) {
-            ByteBuffer ushortBytes = ByteBuffer.allocate(2);
-            int result = Read(ushortBytes);
+            final ByteBuffer ushortBytes = ByteBuffer.allocate(2);
+            final int result = Read(ushortBytes);
             value[0] = LittleShort(ushortBytes.getShort()) & 0xFFFF;
             return result;
         }
 
         public int ReadUnsignedShort() {
-            int[] value = {0};
+            final int[] value = {0};
             ReadUnsignedShort(value);
 
             return value[0];
         }
 
         public int WriteUnsignedShort(final int value) {
-            ByteBuffer ushortBytes = ByteBuffer.allocate(2);
-            short v = LittleShort((short) value);
+            final ByteBuffer ushortBytes = ByteBuffer.allocate(2);
+            final short v = LittleShort((short) value);
             ushortBytes.putShort(v);
             return Write(ushortBytes);
         }
 
         public int ReadChar(short[] value) {
-            ByteBuffer charBytes = ByteBuffer.allocate(2);
-            int result = Read(charBytes);
+            final ByteBuffer charBytes = ByteBuffer.allocate(2);
+            final int result = Read(charBytes);
             value[0] = charBytes.getShort();
             return result;
         }
 
         public short ReadChar() {
-            short[] value = {0};
+            final short[] value = {0};
             this.ReadChar(value);
 
             return value[0];
         }
 
         public int WriteChar(final short value) {
-            ByteBuffer charBytes = ByteBuffer.allocate(2);
+            final ByteBuffer charBytes = ByteBuffer.allocate(2);
             charBytes.putShort(value);
             return Write(charBytes);
         }
@@ -455,60 +455,60 @@ public class File_h {
         }
 
         public int ReadUnsignedChar(char[] value) {
-            ByteBuffer ucharBytes = ByteBuffer.allocate(2);
-            int result = Read(ucharBytes);
+            final ByteBuffer ucharBytes = ByteBuffer.allocate(2);
+            final int result = Read(ucharBytes);
             value[0] = ucharBytes.getChar();
             return result;
         }
 
         public int WriteUnsignedChar(final char value) {
-            ByteBuffer ucharBytes = ByteBuffer.allocate(2);
+            final ByteBuffer ucharBytes = ByteBuffer.allocate(2);
             ucharBytes.putChar(value);
             return Write(ucharBytes);
         }
 
         public int ReadFloat(float[] value) {
-            ByteBuffer floatBytes = ByteBuffer.allocate(4);
-            int result = Read(floatBytes);
+            final ByteBuffer floatBytes = ByteBuffer.allocate(4);
+            final int result = Read(floatBytes);
             value[0] = LittleFloat(floatBytes.getFloat());
             return result;
         }
 
         public float ReadFloat() {
-            float[] value = {0};
+            final float[] value = {0};
             ReadFloat(value);
 
             return value[0];
         }
 
         public int WriteFloat(final float value) {
-            ByteBuffer floatBytes = ByteBuffer.allocate(4);
-            float v = LittleFloat(value);
+            final ByteBuffer floatBytes = ByteBuffer.allocate(4);
+            final float v = LittleFloat(value);
             floatBytes.putFloat(v);
             return Write(floatBytes);
         }
 
         public int ReadBool(boolean[] value) {
-            char[] c = new char[1];
-            int result = ReadUnsignedChar(c);
+            final char[] c = new char[1];
+            final int result = ReadUnsignedChar(c);
             value[0] = (c[0] != '\0');
             return result;
         }
 
         public boolean ReadBool() {
-            boolean[] value = {false};
+            final boolean[] value = {false};
             ReadBool(value);
 
             return value[0];
         }
 
         public int WriteBool(final boolean value) {
-            char c = value ? 'c' : '\0';
+            final char c = value ? 'c' : '\0';
             return WriteUnsignedChar(c);
         }
 
         public int ReadString(idStr string) {
-            int[] len = new int[1];
+            final int[] len = new int[1];
             int result = 0;
             ByteBuffer stringBytes;
 
@@ -539,8 +539,8 @@ public class File_h {
         }
 
         public int ReadVec2(idVec2 vec) {
-            ByteBuffer buffer = ByteBuffer.allocate(idVec2.SIZE);
-            int result = Read(buffer);
+            final ByteBuffer buffer = ByteBuffer.allocate(idVec2.SIZE);
+            final int result = Read(buffer);
 //            LittleRevBytes(vec.ToFloatPtr(), vec.GetDimension());//TODO:is this necessary?
             vec.oSet(new idVec2(buffer.getFloat(), buffer.getFloat()));
             return result;
@@ -549,7 +549,7 @@ public class File_h {
         public int WriteVec2(final idVec2 vec) {
 //            idVec2 v = vec;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            ByteBuffer buffer = ByteBuffer.allocate(idVec2.BYTES);
+            final ByteBuffer buffer = ByteBuffer.allocate(idVec2.BYTES);
             buffer.asFloatBuffer()
                     .put(vec.ToFloatPtr())
                     .flip();
@@ -557,8 +557,8 @@ public class File_h {
         }
 
         public int ReadVec3(idVec3 vec) {
-            ByteBuffer buffer = ByteBuffer.allocate(idVec3.SIZE);
-            int result = Read(buffer);
+            final ByteBuffer buffer = ByteBuffer.allocate(idVec3.SIZE);
+            final int result = Read(buffer);
 //            LittleRevBytes(vec.ToFloatPtr(), vec.GetDimension());
             vec.oSet(new idVec3(buffer.getFloat(), buffer.getFloat(), buffer.getFloat()));
             return result;
@@ -567,7 +567,7 @@ public class File_h {
         public int WriteVec3(final idVec3 vec) {
 //            idVec3 v = vec;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            ByteBuffer buffer = ByteBuffer.allocate(idVec3.BYTES);
+            final ByteBuffer buffer = ByteBuffer.allocate(idVec3.BYTES);
             buffer.asFloatBuffer()
                     .put(vec.ToFloatPtr())
                     .flip();
@@ -575,8 +575,8 @@ public class File_h {
         }
 
         public int ReadVec4(idVec4 vec) {
-            ByteBuffer buffer = ByteBuffer.allocate(idVec4.SIZE);
-            int result = Read(buffer);
+            final ByteBuffer buffer = ByteBuffer.allocate(idVec4.SIZE);
+            final int result = Read(buffer);
 //            LittleRevBytes(vec.ToFloatPtr(), vec.GetDimension());
             vec.oSet(new idVec4(buffer.getFloat(), buffer.getFloat(), buffer.getFloat(), buffer.getFloat()));
             return result;
@@ -585,7 +585,7 @@ public class File_h {
         public int WriteVec4(final idVec4 vec) {
 //            idVec4 v = vec;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            ByteBuffer buffer = ByteBuffer.allocate(idVec4.BYTES);
+            final ByteBuffer buffer = ByteBuffer.allocate(idVec4.BYTES);
             buffer.asFloatBuffer()
                     .put(vec.ToFloatPtr())
                     .flip();
@@ -593,8 +593,8 @@ public class File_h {
         }
 
         public int ReadVec6(idVec6 vec) {
-            ByteBuffer buffer = ByteBuffer.allocate(idVec6.SIZE);
-            int result = Read(buffer);
+            final ByteBuffer buffer = ByteBuffer.allocate(idVec6.SIZE);
+            final int result = Read(buffer);
 //            LittleRevBytes(vec.ToFloatPtr(), vec.GetDimension());
             vec.oSet(new idVec6(
                     buffer.getFloat(), buffer.getFloat(), buffer.getFloat(),
@@ -605,7 +605,7 @@ public class File_h {
         public int WriteVec6(final idVec6 vec) {
 //            idVec6 v = vec;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            ByteBuffer buffer = ByteBuffer.allocate(idVec6.BYTES);
+            final ByteBuffer buffer = ByteBuffer.allocate(idVec6.BYTES);
             buffer.asFloatBuffer()
                     .put(vec.ToFloatPtr())
                     .flip();
@@ -613,8 +613,8 @@ public class File_h {
         }
 
         public int ReadMat3(idMat3 mat) {
-            ByteBuffer buffer = ByteBuffer.allocate(idMat3.BYTES);
-            int result = Read(buffer);
+            final ByteBuffer buffer = ByteBuffer.allocate(idMat3.BYTES);
+            final int result = Read(buffer);
 //            LittleRevBytes(mat.ToFloatPtr(), mat.GetDimension());
             mat.oSet(new idMat3(
                     buffer.getFloat(), buffer.getFloat(), buffer.getFloat(),
@@ -626,7 +626,7 @@ public class File_h {
         public int WriteMat3(final idMat3 mat) {
 //            idMat3 v = mat;
 //            LittleRevBytes(v.ToFloatPtr(), v.GetDimension());
-            ByteBuffer buffer = ByteBuffer.allocate(idMat3.BYTES);
+            final ByteBuffer buffer = ByteBuffer.allocate(idMat3.BYTES);
             buffer.asFloatBuffer()
                     .put(mat.oGet(0).ToFloatPtr())
                     .put(mat.oGet(1).ToFloatPtr())
@@ -635,7 +635,7 @@ public class File_h {
             return Write(buffer);
         }
 
-    };
+    }
 
     /*
      =================================================================================
@@ -647,7 +647,7 @@ public class File_h {
     public static class idFile_Memory extends idFile {
         // friend class			idFileSystemLocal;
 
-        private idStr      name;        // name of the file
+        private final idStr      name;        // name of the file
         private int        mode;        // open mode
         private int        maxSize;     // maximum size of file
         private int        fileSize;    // size of the file
@@ -659,39 +659,39 @@ public class File_h {
         //
 
         public idFile_Memory() {	// file for writing without name
-            name = new idStr("*unknown*");
-            maxSize = 0;
-            fileSize = 0;
-            allocated = 0;
-            granularity = 16384;
+            this.name = new idStr("*unknown*");
+            this.maxSize = 0;
+            this.fileSize = 0;
+            this.allocated = 0;
+            this.granularity = 16384;
 
-            mode = (1 << FS_WRITE.ordinal());
-            filePtr = null;
-            curPtr = 0;
+            this.mode = (1 << FS_WRITE.ordinal());
+            this.filePtr = null;
+            this.curPtr = 0;
         }
 
         public idFile_Memory(final String name) {	// file for writing
             this.name = new idStr(name);
-            maxSize = 0;
-            fileSize = 0;
-            allocated = 0;
-            granularity = 16384;
+            this.maxSize = 0;
+            this.fileSize = 0;
+            this.allocated = 0;
+            this.granularity = 16384;
 
-            mode = (1 << FS_WRITE.ordinal());
-            filePtr = null;
-            curPtr = 0;
+            this.mode = (1 << FS_WRITE.ordinal());
+            this.filePtr = null;
+            this.curPtr = 0;
         }
 
         public idFile_Memory(final String name, ByteBuffer data, int length) {	// file for writing
             this.name = new idStr(name);
-            maxSize = length;
-            fileSize = 0;
-            allocated = length;
-            granularity = 16384;
+            this.maxSize = length;
+            this.fileSize = 0;
+            this.allocated = length;
+            this.granularity = 16384;
 
-            mode = (1 << FS_WRITE.ordinal());
-            filePtr = data;
-            curPtr = 0;
+            this.mode = (1 << FS_WRITE.ordinal());
+            this.filePtr = data;
+            this.curPtr = 0;
         }
 //public							idFile_Memory( const char *name, const char *data, int length );	// file for reading
 //public						~idFile_Memory( void );
@@ -699,12 +699,12 @@ public class File_h {
 
         @Override
         public String GetName() {
-            return name.getData();
+            return this.name.getData();
         }
 
         @Override
         public String GetFullPath() {
-            return name.getData();
+            return this.name.getData();
         }
 
         @Override
@@ -715,63 +715,63 @@ public class File_h {
         @Override
         public int Read(ByteBuffer buffer, int len) {
 
-            if (0 == (mode & (1 << etoi(FS_READ)))) {
-                common.FatalError("idFile_Memory::Read: %s not opened in read mode", name);
+            if (0 == (this.mode & (1 << etoi(FS_READ)))) {
+                common.FatalError("idFile_Memory::Read: %s not opened in read mode", this.name);
                 return 0;
             }
 
-            if (curPtr + len > fileSize) {
-                len = fileSize - curPtr;
+            if ((this.curPtr + len) > this.fileSize) {
+                len = this.fileSize - this.curPtr;
             }
 //            memcpy(buffer, curPtr, len);
-            filePtr.get(buffer.array(), curPtr, len);
-            curPtr += len;
+            this.filePtr.get(buffer.array(), this.curPtr, len);
+            this.curPtr += len;
             return len;
         }
 
         @Override
         public int Write(final ByteBuffer buffer/*, int len*/) {
-            int len = buffer.capacity();
+            final int len = buffer.capacity();
 
-            if (0 == (mode & (1 << etoi(FS_WRITE)))) {
-                common.FatalError("idFile_Memory::Write: %s not opened in write mode", name);
+            if (0 == (this.mode & (1 << etoi(FS_WRITE)))) {
+                common.FatalError("idFile_Memory::Write: %s not opened in write mode", this.name);
                 return 0;
             }
 
-            int alloc = curPtr + len + 1 - allocated; // need room for len+1
+            final int alloc = (this.curPtr + len + 1) - this.allocated; // need room for len+1
             if (alloc > 0) {
-                if (maxSize != 0) {
-                    common.Error("idFile_Memory::Write: exceeded maximum size %d", maxSize);
+                if (this.maxSize != 0) {
+                    common.Error("idFile_Memory::Write: exceeded maximum size %d", this.maxSize);
                     return 0;
                 }
-                int extra = granularity * (1 + alloc / granularity);
-                ByteBuffer newPtr = ByteBuffer.allocate(allocated + extra);// Heap.Mem_Alloc(allocated + extra);
-                if (allocated != 0) {
+                final int extra = this.granularity * (1 + (alloc / this.granularity));
+                final ByteBuffer newPtr = ByteBuffer.allocate(this.allocated + extra);// Heap.Mem_Alloc(allocated + extra);
+                if (this.allocated != 0) {
 //                    memcpy(newPtr, filePtr, allocated);
                     //copy old data to new array
-                    newPtr.put(filePtr);
+                    newPtr.put(this.filePtr);
                 }
-                allocated += extra;
+                this.allocated += extra;
 //                curPtr = newPtr + (curPtr - filePtr);
 //                if (filePtr != null) {
 //                    Mem_Free(filePtr);
 //                    filePtr = null;
 //                }
                 //copy new (resized) array to old one
-                filePtr = newPtr;
+                this.filePtr = newPtr;
             }
 //            memcpy(curPtr, buffer, len);
-            filePtr.position(curPtr);
-            filePtr.put(buffer);
-            curPtr += len;
-            fileSize += len;
-            filePtr.put(fileSize, (byte) 0); // len + 1
+            this.filePtr.position(this.curPtr);
+            this.filePtr.put(buffer);
+            this.curPtr += len;
+            this.fileSize += len;
+            this.filePtr.put(this.fileSize, (byte) 0); // len + 1
             return len;
         }
 
         @Override
         public int Length() {
-            return fileSize;
+            return this.fileSize;
         }
 
         @Override
@@ -781,7 +781,7 @@ public class File_h {
 
         @Override
         public int Tell() {
-            return curPtr;
+            return this.curPtr;
         }
 
         @Override
@@ -804,30 +804,30 @@ public class File_h {
 
             switch (origin) {
                 case FS_SEEK_CUR: {
-                    curPtr += offset;
+                    this.curPtr += offset;
                     break;
                 }
                 case FS_SEEK_END: {
-                    curPtr = (int) (fileSize - offset);
+                    this.curPtr = (int) (this.fileSize - offset);
                     break;
                 }
                 case FS_SEEK_SET: {
-                    curPtr = (int) offset;
+                    this.curPtr = (int) offset;
                     break;
                 }
                 default: {
-                    common.FatalError("idFile_Memory::Seek: bad origin for %s\n", name);
+                    common.FatalError("idFile_Memory::Seek: bad origin for %s\n", this.name);
                     return false;//-1;
                 }
             }
-            if (curPtr < /*filePtr*/ 0) {
+            if (this.curPtr < /*filePtr*/ 0) {
 //		curPtr = filePtr;
-                curPtr = 0;
+                this.curPtr = 0;
                 return false;//-1;
             }
-            if (curPtr > /*filePtr +*/ fileSize) {
+            if (this.curPtr > this./*filePtr +*/ fileSize) {
 //		curPtr = filePtr + fileSize;
-                curPtr = fileSize;//TODO:-1
+                this.curPtr = this.fileSize;//TODO:-1
                 return false;//-1;
             }
             return true;//0;
@@ -836,7 +836,7 @@ public class File_h {
 
         // changes memory file to read only
         public void MakeReadOnly() {
-            mode = (1 << FS_READ.ordinal());
+            this.mode = (1 << FS_READ.ordinal());
             Rewind();
         }
 
@@ -846,41 +846,41 @@ public class File_h {
 
         // clear the file
         public void Clear(boolean freeMemory /*= true*/) {
-            fileSize = 0;
-            granularity = 16384;
+            this.fileSize = 0;
+            this.granularity = 16384;
             if (freeMemory) {
-                allocated = 0;
+                this.allocated = 0;
 //		Mem_Free( filePtr );
-                filePtr = null;
-                curPtr = 0;
+                this.filePtr = null;
+                this.curPtr = 0;
             } else {
-                curPtr = 0;
+                this.curPtr = 0;
             }
         }
 
         // set data for reading
         public void SetData(final ByteBuffer data, final int length) {
-            maxSize = 0;
-            fileSize = length;
-            allocated = 0;
-            granularity = 16384;
+            this.maxSize = 0;
+            this.fileSize = length;
+            this.allocated = 0;
+            this.granularity = 16384;
 
-            mode = (1 << etoi(FS_READ));
-            filePtr = data.duplicate();
-            curPtr = 0;
+            this.mode = (1 << etoi(FS_READ));
+            this.filePtr = data.duplicate();
+            this.curPtr = 0;
         }
 
         // returns const pointer to the memory buffer
         public ByteBuffer GetDataPtr() {
-            return filePtr;
+            return this.filePtr;
         }
 
         // set the file granularity
         public void SetGranularity(int g) {
             assert (g > 0);
-            granularity = g;
+            this.granularity = g;
         }
-    };
+    }
 
     /*
      =================================================================================
@@ -892,33 +892,33 @@ public class File_h {
     public static class idFile_BitMsg extends idFile {
         // friend class			idFileSystemLocal;
 
-        private idStr    name;            // name of the file
-        private int      mode;            // open mode
-        private idBitMsg msg;
+        private final idStr    name;            // name of the file
+        private final int      mode;            // open mode
+        private final idBitMsg msg;
         //
         //
 
         public idFile_BitMsg(idBitMsg msg) {
-            name = new idStr("*unknown*");
-            mode = (1 << FS_WRITE.ordinal());
+            this.name = new idStr("*unknown*");
+            this.mode = (1 << FS_WRITE.ordinal());
             this.msg = msg;
         }
 
         public idFile_BitMsg(final idBitMsg msg, boolean readOnly) {
-            name = new idStr("*unknown*");
-            mode = (1 << FS_READ.ordinal());
+            this.name = new idStr("*unknown*");
+            this.mode = (1 << FS_READ.ordinal());
             this.msg = msg;
         }
 // public	virtual					~idFile_BitMsg( void );
 
         @Override
         public String GetName() {
-            return name.getData();
+            return this.name.getData();
         }
 
         @Override
         public String GetFullPath() {
-            return name.getData();
+            return this.name.getData();
         }
 
         @Override
@@ -929,30 +929,30 @@ public class File_h {
         @Override
         public int Read(ByteBuffer buffer, int len) {
 
-            if (0 == (mode & (1 << FS_READ.ordinal()))) {
-                common.FatalError("idFile_BitMsg::Read: %s not opened in read mode", name);
+            if (0 == (this.mode & (1 << FS_READ.ordinal()))) {
+                common.FatalError("idFile_BitMsg::Read: %s not opened in read mode", this.name);
                 return 0;
             }
 
-            return msg.ReadData(buffer, len);//TODO:cast self to self???????
+            return this.msg.ReadData(buffer, len);//TODO:cast self to self???????
         }
 
         @Override
         public int Write(final ByteBuffer buffer/*, int len*/) {
-            int len = buffer.capacity();
+            final int len = buffer.capacity();
 
-            if (0 == (mode & (1 << FS_WRITE.ordinal()))) {
-                common.FatalError("idFile_Memory::Write: %s not opened in write mode", name);
+            if (0 == (this.mode & (1 << FS_WRITE.ordinal()))) {
+                common.FatalError("idFile_Memory::Write: %s not opened in write mode", this.name);
                 return 0;
             }
 
-            msg.WriteData(buffer, len);
+            this.msg.WriteData(buffer, len);
             return len;
         }
 
         @Override
         public int Length() {
-            return msg.GetSize();
+            return this.msg.GetSize();
         }
 
         @Override
@@ -962,10 +962,10 @@ public class File_h {
 
         @Override
         public int Tell() {
-            if ((mode & FS_READ.ordinal()) != 0) {
-                return msg.GetReadCount();
+            if ((this.mode & FS_READ.ordinal()) != 0) {
+                return this.msg.GetReadCount();
             } else {
-                return msg.GetSize();
+                return this.msg.GetSize();
             }
         }
 
@@ -988,7 +988,7 @@ public class File_h {
         public boolean Seek(long offset, fsOrigin_t origin) {
             return false;//-1;
         }
-    };
+    }
 
     /*
      =================================================================================
@@ -1010,23 +1010,23 @@ public class File_h {
         //
 
         public idFile_Permanent() {
-            name = new idStr("invalid");
-            fullPath = new idStr();
-            o = null;
-            mode = 0;
-            fileSize = 0;
-            handleSync = false;
+            this.name = new idStr("invalid");
+            this.fullPath = new idStr();
+            this.o = null;
+            this.mode = 0;
+            this.fileSize = 0;
+            this.handleSync = false;
         }
 // public	virtual					~idFile_Permanent( void );
 
         @Override
         public String GetName() {
-            return name.getData();
+            return this.name.getData();
         }
 
         @Override
         public String GetFullPath() {
-            return fullPath.getData();
+            return this.fullPath.getData();
         }
 
         @Override
@@ -1043,17 +1043,18 @@ public class File_h {
          */
         @Override
         public int Read(ByteBuffer buffer, int len) {
-            int block, remaining;
+            final int block;
+			int remaining;
             int read;
 //            byte[] buf;
             boolean tries;
 
-            if (0 == (mode & (1 << FS_READ.ordinal()))) {
-                common.FatalError("idFile_Permanent::Read: %s not opened in read mode", name);
+            if (0 == (this.mode & (1 << FS_READ.ordinal()))) {
+                common.FatalError("idFile_Permanent::Read: %s not opened in read mode", this.name);
                 return 0;
             }
 
-            if (null == o) {
+            if (null == this.o) {
                 return 0;
             }
 
@@ -1064,7 +1065,7 @@ public class File_h {
                 while (remaining != 0) {
 //                block = remaining;
 //                read = fread(buf, 1, block, o);
-                    read = o.read(buffer);
+                    read = this.o.read(buffer);
                     if (read == 0) {
                         // we might have been trying to read from a CD, which
                         // sometimes returns a 0 read on windows
@@ -1077,13 +1078,13 @@ public class File_h {
                     }
 
                     if (read == -1) {
-                        common.FatalError("idFile_Permanent::Read: -1 bytes read from %s", name);
+                        common.FatalError("idFile_Permanent::Read: -1 bytes read from %s", this.name);
                     }
 
                     remaining -= read;
 //                buf += read;
                 }
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
             }
             fileSystem.AddToReadCount(len);
@@ -1109,12 +1110,12 @@ public class File_h {
 //            byte[] buf;
             int tries;
 
-            if (0 == (mode & (1 << FS_WRITE.ordinal()))) {
-                common.FatalError("idFile_Permanent::Write: %s not opened in write mode", name);
+            if (0 == (this.mode & (1 << FS_WRITE.ordinal()))) {
+                common.FatalError("idFile_Permanent::Write: %s not opened in write mode", this.name);
                 return 0;
             }
 
-            if (NOT(o)) {
+            if (NOT(this.o)) {
                 return 0;
             }
 
@@ -1126,29 +1127,29 @@ public class File_h {
                 while (remaining != 0) {
                     block = remaining;
                     //                written = fwrite(buf, 1, block, o);
-                    written = o.write(buffer);
+                    written = this.o.write(buffer);
                     if (written == 0) {
                         if (0 == tries) {
                             tries = 1;
                         } else {
-                            common.Printf("idFile_Permanent::Write: 0 bytes written to %s\n", name);
+                            common.Printf("idFile_Permanent::Write: 0 bytes written to %s\n", this.name);
                             return 0;
                         }
                     }
 
                     if (written == -1) {
-                        common.Printf("idFile_Permanent::Write: -1 bytes written to %s\n", name);
+                        common.Printf("idFile_Permanent::Write: -1 bytes written to %s\n", this.name);
                         return 0;
                     }
 
                     remaining -= written;
 //                buf += written;
-                    fileSize += written;
+                    this.fileSize += written;
                 }
-                if (handleSync) {
-                    o.force(false);
+                if (this.handleSync) {
+                    this.o.force(false);
                 }
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
             }
             return len;
@@ -1156,7 +1157,7 @@ public class File_h {
 
         @Override
         public int Length() {
-            return fileSize;
+            return this.fileSize;
         }
 
         @Override
@@ -1167,8 +1168,8 @@ public class File_h {
         @Override
         public int Tell() {
             try {
-                return (int) o.position();//return ftell(o);
-            } catch (IOException ex) {
+                return (int) this.o.position();//return ftell(o);
+            } catch (final IOException ex) {
                 Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
             }
             return -1;
@@ -1182,8 +1183,8 @@ public class File_h {
         @Override
         public void Flush() {
             try {
-                o.force(false);
-            } catch (IOException ex) {
+                this.o.force(false);
+            } catch (final IOException ex) {
                 Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -1202,26 +1203,26 @@ public class File_h {
             try {
                 switch (origin) {
                     case FS_SEEK_CUR:
-                        _origin = o.position();//SEEK_CUR;
+                        _origin = this.o.position();//SEEK_CUR;
                         break;
                     case FS_SEEK_END:
-                        _origin = o.size();//SEEK_END;
+                        _origin = this.o.size();//SEEK_END;
                         break;
                     case FS_SEEK_SET:
                         _origin = 0;//SEEK_SET;
                         break;
                     default:
-                        _origin = o.position();//SEEK_CUR;
-                        common.FatalError("idFile_Permanent::Seek: bad origin for %s\n", name);
+                        _origin = this.o.position();//SEEK_CUR;
+                        common.FatalError("idFile_Permanent::Seek: bad origin for %s\n", this.name);
                         break;
                 }
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
             }
             try {
                 //            return fseek(o, offset, _origin);
-                return o.position(_origin) != null;
-            } catch (IOException ex) {
+                return this.o.position(_origin) != null;
+            } catch (final IOException ex) {
                 Logger.getLogger(File_h.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -1230,10 +1231,10 @@ public class File_h {
 
         // returns file pointer
         public FileChannel GetFilePtr() {
-            return o;
+            return this.o;
         }
 
-    };
+    }
 
     /*
      =================================================================================
@@ -1256,23 +1257,23 @@ public class File_h {
         //
 
         public idFile_InZip() {
-            name = new idStr("invalid");
-            fullPath = new idStr();
-            zipFilePos = 0;
-            fileSize = 0;
-            byteCounter = 0;
+            this.name = new idStr("invalid");
+            this.fullPath = new idStr();
+            this.zipFilePos = 0;
+            this.fileSize = 0;
+            this.byteCounter = 0;
             // memset( &z, 0, sizeof( z ) );//TODO:size of void ptr
         }
 
 // public	virtual					~idFile_InZip( void );
         @Override
         public String GetName() {
-            return name.getData();
+            return this.name.getData();
         }
 
         @Override
         public String GetFullPath() {
-            return fullPath.oPlus('/').oPlus(name).getData();
+            return this.fullPath.oPlus('/').oPlus(this.name).getData();
         }
 
         @Override
@@ -1286,33 +1287,33 @@ public class File_h {
             int read = 0;
 
             try {
-                if (null == inputStream) {
-                    inputStream = new ZipFile(fullPath.getData()).getInputStream(z);
+                if (null == this.inputStream) {
+                    this.inputStream = new ZipFile(this.fullPath.getData()).getInputStream(this.z);
                 }
 
-                while (read > -1 && len != 0) {
-                    read = inputStream.read(buffer.array(), l, len);
+                while ((read > -1) && (len != 0)) {
+                    read = this.inputStream.read(buffer.array(), l, len);
                     l += read;
                     len -= read;
                 }
-            } catch (IOException ex) {
-                common.FatalError("idFile_InZip::Read: error whilest reading from %s", name);
+            } catch (final IOException ex) {
+                common.FatalError("idFile_InZip::Read: error whilest reading from %s", this.name);
             }
 
             fileSystem.AddToReadCount(l);
-            byteCounter += l;
+            this.byteCounter += l;
             return l;
         }
 
         @Override
         public int Write(final ByteBuffer buffer/*, int len*/) {
-            common.FatalError("idFile_InZip::Write: cannot write to the zipped file %s", name);
+            common.FatalError("idFile_InZip::Write: cannot write to the zipped file %s", this.name);
             return 0;
         }
 
         @Override
         public int Length() {
-            return fileSize;
+            return this.fileSize;
         }
 
         @Override
@@ -1322,17 +1323,17 @@ public class File_h {
 
         @Override
         public int Tell() {
-            return byteCounter;
+            return this.byteCounter;
         }
 
         @Override
         public void ForceFlush() {
-            common.FatalError("idFile_InZip::ForceFlush: cannot flush the zipped file %s", name);
+            common.FatalError("idFile_InZip::ForceFlush: cannot flush the zipped file %s", this.name);
         }
 
         @Override
         public void Flush() {
-            common.FatalError("idFile_InZip::Flush: cannot flush the zipped file %s", name);
+            common.FatalError("idFile_InZip::Flush: cannot flush the zipped file %s", this.name);
         }
 
         /*
@@ -1351,7 +1352,7 @@ public class File_h {
 
             switch (origin) {
                 case FS_SEEK_END:
-                    offset = fileSize - offset;
+                    offset = this.fileSize - offset;
 
                 case FS_SEEK_SET: {
                     // set the file position in the zip file (also sets the current file info)
@@ -1374,7 +1375,7 @@ public class File_h {
                     return (res == offset);//? 0 : -1;
                 }
                 default: {
-                    common.FatalError("idFile_InZip::Seek: bad origin for %s\n", name);
+                    common.FatalError("idFile_InZip::Seek: bad origin for %s\n", this.name);
                     break;
                 }
             }
@@ -1383,14 +1384,14 @@ public class File_h {
 
         private void unzOpenCurrentFile() {
             try {
-                byteCounter = 0;        //reset counter.
-                if (inputStream != null) {//FS_SEEK_SET -> FS_SEEK_CUR
-                    inputStream.close();
+                this.byteCounter = 0;        //reset counter.
+                if (this.inputStream != null) {//FS_SEEK_SET -> FS_SEEK_CUR
+                    this.inputStream.close();
                 }
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 common.FatalError("idFile_InZip::unzOpenCurrentFile: we're in deep shit bub \n");
             }
-            inputStream = null; //reload inputStream.
+            this.inputStream = null; //reload inputStream.
         }
-    };
+    }
 }

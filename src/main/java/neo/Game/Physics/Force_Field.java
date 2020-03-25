@@ -46,7 +46,7 @@ public class Force_Field {
                 return values()[index];
             }
         }
-    };
+    }
 
     public enum forceFieldApplyType {
 
@@ -62,7 +62,7 @@ public class Force_Field {
                 return values()[index];
             }
         }
-    };
+    }
 
     public static class idForce_Field extends idForce {
 //	CLASS_PROTOTYPE( idForce_Field );
@@ -81,82 +81,82 @@ public class Force_Field {
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteInt(etoi(type));
-            savefile.WriteInt(applyType.ordinal());
-            savefile.WriteFloat(magnitude);
-            savefile.WriteVec3(dir);
-            savefile.WriteFloat(randomTorque);
-            savefile.WriteBool(playerOnly);
-            savefile.WriteBool(monsterOnly);
-            savefile.WriteClipModel(clipModel);
+            savefile.WriteInt(etoi(this.type));
+            savefile.WriteInt(this.applyType.ordinal());
+            savefile.WriteFloat(this.magnitude);
+            savefile.WriteVec3(this.dir);
+            savefile.WriteFloat(this.randomTorque);
+            savefile.WriteBool(this.playerOnly);
+            savefile.WriteBool(this.monsterOnly);
+            savefile.WriteClipModel(this.clipModel);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            type = forceFieldType.values()[savefile.ReadInt()];
-            applyType = forceFieldApplyType.values()[savefile.ReadInt()];
-            magnitude = savefile.ReadFloat();
-            savefile.ReadVec3(dir);
-            randomTorque = savefile.ReadFloat();
-            playerOnly = savefile.ReadBool();
-            monsterOnly = savefile.ReadBool();
-            savefile.ReadClipModel(clipModel);
+            this.type = forceFieldType.values()[savefile.ReadInt()];
+            this.applyType = forceFieldApplyType.values()[savefile.ReadInt()];
+            this.magnitude = savefile.ReadFloat();
+            savefile.ReadVec3(this.dir);
+            this.randomTorque = savefile.ReadFloat();
+            this.playerOnly = savefile.ReadBool();
+            this.monsterOnly = savefile.ReadBool();
+            savefile.ReadClipModel(this.clipModel);
         }
 
         public idForce_Field() {
-            type = FORCEFIELD_UNIFORM;
-            applyType = FORCEFIELD_APPLY_FORCE;
-            magnitude = 0.0f;
-            dir = new idVec3(0, 0, 1);
-            randomTorque = 0.0f;
-            playerOnly = false;
-            monsterOnly = false;
-            clipModel = null;
+            this.type = FORCEFIELD_UNIFORM;
+            this.applyType = FORCEFIELD_APPLY_FORCE;
+            this.magnitude = 0.0f;
+            this.dir = new idVec3(0, 0, 1);
+            this.randomTorque = 0.0f;
+            this.playerOnly = false;
+            this.monsterOnly = false;
+            this.clipModel = null;
         }
 
 //	virtual				~idForce_Field( void );
         // uniform constant force
         public void Uniform(final idVec3 force) {
-            dir = force;
-            magnitude = dir.Normalize();
-            type = FORCEFIELD_UNIFORM;
+            this.dir = force;
+            this.magnitude = this.dir.Normalize();
+            this.type = FORCEFIELD_UNIFORM;
         }
 
         // explosion from clip model origin	
         public void Explosion(float force) {
-            magnitude = force;
-            type = FORCEFIELD_EXPLOSION;
+            this.magnitude = force;
+            this.type = FORCEFIELD_EXPLOSION;
         }
 
         // implosion towards clip model origin	
         public void Implosion(float force) {
-            magnitude = force;
-            type = FORCEFIELD_IMPLOSION;
+            this.magnitude = force;
+            this.type = FORCEFIELD_IMPLOSION;
         }
 
         // add random torque	
         public void RandomTorque(float force) {
-            randomTorque = force;
+            this.randomTorque = force;
         }
 
         // should the force field apply a force, velocity or impulse	
         public void SetApplyType(final forceFieldApplyType type) {
-            applyType = type;
+            this.applyType = type;
         }
 
         // make the force field only push players	
         public void SetPlayerOnly(boolean set) {
-            playerOnly = set;
+            this.playerOnly = set;
         }
 
         // make the force field only push monsters	
         public void SetMonsterOnly(boolean set) {
-            monsterOnly = set;
+            this.monsterOnly = set;
         }
 
         // clip model describing the extents of the force field	
         public void SetClipModel(idClipModel clipModel) {
-            if (this.clipModel != null && clipModel != this.clipModel) {
+            if ((this.clipModel != null) && (clipModel != this.clipModel)) {
                 idClipModel.delete(this.clipModel);
             }
             this.clipModel = clipModel;
@@ -166,14 +166,16 @@ public class Force_Field {
         @Override
         public void Evaluate(int time) {
             int numClipModels, i;
-            idBounds bounds = new idBounds();
-            idVec3 force = new idVec3(), torque = new idVec3(), angularVelocity;
+            final idBounds bounds = new idBounds();
+            idVec3 force = new idVec3();
+			final idVec3 torque = new idVec3();
+			idVec3 angularVelocity;
             idClipModel cm;
-            idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
+            final idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
 
-            assert (clipModel != null);
+            assert (this.clipModel != null);
 
-            bounds.FromTransformedBounds(clipModel.GetBounds(), clipModel.GetOrigin(), clipModel.GetAxis());
+            bounds.FromTransformedBounds(this.clipModel.GetBounds(), this.clipModel.GetOrigin(), this.clipModel.GetAxis());
             numClipModels = gameLocal.clip.ClipModelsTouchingBounds(bounds, -1, clipModelList, MAX_GENTITIES);
 
             for (i = 0; i < numClipModels; i++) {
@@ -183,40 +185,40 @@ public class Force_Field {
                     continue;
                 }
 
-                idEntity entity = cm.GetEntity();
+                final idEntity entity = cm.GetEntity();
 
                 if (null == entity) {
                     continue;
                 }
 
-                idPhysics physics = entity.GetPhysics();
+                final idPhysics physics = entity.GetPhysics();
 
-                if (playerOnly) {
+                if (this.playerOnly) {
                     if (!physics.IsType(idPhysics_Player.class)) {
                         continue;
                     }
-                } else if (monsterOnly) {
+                } else if (this.monsterOnly) {
                     if (!physics.IsType(idPhysics_Monster.class)) {
                         continue;
                     }
                 }
 
-                if (NOT(gameLocal.clip.ContentsModel(cm.GetOrigin(), cm, cm.GetAxis(), -1, clipModel.Handle(), clipModel.GetOrigin(), clipModel.GetAxis()))) {
+                if (NOT(gameLocal.clip.ContentsModel(cm.GetOrigin(), cm, cm.GetAxis(), -1, this.clipModel.Handle(), this.clipModel.GetOrigin(), this.clipModel.GetAxis()))) {
                     continue;
                 }
 
-                switch (type) {
+                switch (this.type) {
                     case FORCEFIELD_UNIFORM: {
-                        force = dir;
+                        force = this.dir;
                         break;
                     }
                     case FORCEFIELD_EXPLOSION: {
-                        force = cm.GetOrigin().oMinus(clipModel.GetOrigin());
+                        force = cm.GetOrigin().oMinus(this.clipModel.GetOrigin());
                         force.Normalize();
                         break;
                     }
                     case FORCEFIELD_IMPLOSION: {
-                        force = clipModel.GetOrigin().oMinus(cm.GetOrigin());
+                        force = this.clipModel.GetOrigin().oMinus(cm.GetOrigin());
                         force.Normalize();
                         break;
                     }
@@ -226,7 +228,7 @@ public class Force_Field {
                     }
                 }
 
-                if (randomTorque != 0.0f) {
+                if (this.randomTorque != 0.0f) {
                     torque.oSet(0, gameLocal.random.CRandomFloat());
                     torque.oSet(1, gameLocal.random.CRandomFloat());
                     torque.oSet(2, gameLocal.random.CRandomFloat());
@@ -235,28 +237,28 @@ public class Force_Field {
                     }
                 }
 
-                switch (applyType) {
+                switch (this.applyType) {
                     case FORCEFIELD_APPLY_FORCE: {
-                        if (randomTorque != 0.0f) {
-                            entity.AddForce(gameLocal.world, cm.GetId(), cm.GetOrigin().oPlus(torque.Cross(dir).oMultiply(randomTorque)), dir.oMultiply(magnitude));
+                        if (this.randomTorque != 0.0f) {
+                            entity.AddForce(gameLocal.world, cm.GetId(), cm.GetOrigin().oPlus(torque.Cross(this.dir).oMultiply(this.randomTorque)), this.dir.oMultiply(this.magnitude));
                         } else {
-                            entity.AddForce(gameLocal.world, cm.GetId(), cm.GetOrigin(), force.oMultiply(magnitude));
+                            entity.AddForce(gameLocal.world, cm.GetId(), cm.GetOrigin(), force.oMultiply(this.magnitude));
                         }
                         break;
                     }
                     case FORCEFIELD_APPLY_VELOCITY: {
-                        physics.SetLinearVelocity(force.oMultiply(magnitude), cm.GetId());
-                        if (randomTorque != 0.0f) {
+                        physics.SetLinearVelocity(force.oMultiply(this.magnitude), cm.GetId());
+                        if (this.randomTorque != 0.0f) {
                             angularVelocity = physics.GetAngularVelocity(cm.GetId());
-                            physics.SetAngularVelocity((angularVelocity.oPlus(torque.oMultiply(randomTorque))).oMultiply(0.5f), cm.GetId());
+                            physics.SetAngularVelocity((angularVelocity.oPlus(torque.oMultiply(this.randomTorque))).oMultiply(0.5f), cm.GetId());
                         }
                         break;
                     }
                     case FORCEFIELD_APPLY_IMPULSE: {
-                        if (randomTorque != 0.0f) {
-                            entity.ApplyImpulse(gameLocal.world, cm.GetId(), cm.GetOrigin().oPlus(torque.Cross(dir).oMultiply(randomTorque)), dir.oMultiply(magnitude));
+                        if (this.randomTorque != 0.0f) {
+                            entity.ApplyImpulse(gameLocal.world, cm.GetId(), cm.GetOrigin().oPlus(torque.Cross(this.dir).oMultiply(this.randomTorque)), this.dir.oMultiply(this.magnitude));
                         } else {
-                            entity.ApplyImpulse(gameLocal.world, cm.GetId(), cm.GetOrigin(), force.oMultiply(magnitude));
+                            entity.ApplyImpulse(gameLocal.world, cm.GetId(), cm.GetOrigin(), force.oMultiply(this.magnitude));
                         }
                         break;
                     }
@@ -267,5 +269,5 @@ public class Force_Field {
                 }
             }
         }
-    };
+    }
 }

@@ -64,11 +64,11 @@ public class Physics {
         idVec3 velocity;        // velocity at the impact position
 
         public impactInfo_s() {
-            invInertiaTensor = new idMat3();
-            position = new idVec3();
-            velocity = new idVec3();
+            this.invInertiaTensor = new idMat3();
+            this.position = new idVec3();
+            this.velocity = new idVec3();
         }
-    };
+    }
 
     public static abstract class idPhysics extends idClass {
         // ABSTRACT_PROTOTYPE( idPhysics );
@@ -83,8 +83,8 @@ public class Physics {
 
         public static int SnapTimeToPhysicsFrame(int t) {
             int s;
-            s = t + USERCMD_MSEC - 1;
-            return (s - s % USERCMD_MSEC);
+            s = (t + USERCMD_MSEC) - 1;
+            return (s - (s % USERCMD_MSEC));
         }
 
         // Must not be virtual
@@ -344,5 +344,5 @@ public class Physics {
         public eventCallback_t getEventCallBack(idEventDef event) {
             return null;
         }
-    };
+    }
 }

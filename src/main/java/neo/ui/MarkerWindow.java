@@ -40,7 +40,7 @@ public class MarkerWindow {
         int time;
         idMaterial mat;
         idRectangle rect;
-    };
+    }
 
     public static class idMarkerWindow extends idWindow {
 
@@ -85,49 +85,49 @@ public class MarkerWindow {
 
         public String HandleEvent(final sysEvent_s event, boolean updateVisuals) {
 
-            if (!(event.evType == SE_KEY && event.evValue2 != 0)) {
+            if (!((event.evType == SE_KEY) && (event.evValue2 != 0))) {
                 return "";
             }
 
-            int key = event.evValue;
-            if (event.evValue2 != 0 && key == K_MOUSE1) {
-                gui.GetDesktop().SetChildWinVarVal("markerText", "text", "");
-                idRectangle r;
-                int c = markerTimes.Num();
+            final int key = event.evValue;
+            if ((event.evValue2 != 0) && (key == K_MOUSE1)) {
+                this.gui.GetDesktop().SetChildWinVarVal("markerText", "text", "");
+                final idRectangle r;
+                final int c = this.markerTimes.Num();
                 int i;
                 for (i = 0; i < c; i++) {
-                    markerData_t md = markerTimes.oGet(i);
-                    if (md.rect.Contains(gui.CursorX(), gui.CursorY())) {
-                        currentMarker = i;
-                        gui.SetStateInt("currentMarker", md.time);
-                        stopTime = md.time;
-                        gui.GetDesktop().SetChildWinVarVal("markerText", "text", va("Marker set at %.2i:%.2i", md.time / 60 / 60, (md.time / 60) % 60));
-                        gui.GetDesktop().SetChildWinVarVal("markerText", "visible", "1");
-                        gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "1 1 1 1");
-                        gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "");
-                        gui.GetDesktop().SetChildWinVarVal("markerBackground", "background", md.mat.GetName());
+                    final markerData_t md = this.markerTimes.oGet(i);
+                    if (md.rect.Contains(this.gui.CursorX(), this.gui.CursorY())) {
+                        this.currentMarker = i;
+                        this.gui.SetStateInt("currentMarker", md.time);
+                        this.stopTime = md.time;
+                        this.gui.GetDesktop().SetChildWinVarVal("markerText", "text", va("Marker set at %.2i:%.2i", md.time / 60 / 60, (md.time / 60) % 60));
+                        this.gui.GetDesktop().SetChildWinVarVal("markerText", "visible", "1");
+                        this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "1 1 1 1");
+                        this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "");
+                        this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "background", md.mat.GetName());
                         break;
                     }
                 }
                 if (i == c) {
                     // no marker selected;
-                    currentMarker = -1;
-                    gui.SetStateInt("currentMarker", currentTime);
-                    stopTime = currentTime;
-                    gui.GetDesktop().SetChildWinVarVal("markerText", "text", va("Marker set at %.2i:%.2i", currentTime / 60 / 60, (currentTime / 60) % 60));
-                    gui.GetDesktop().SetChildWinVarVal("markerText", "visible", "1");
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "0 0 0 0");
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "No Preview");
+                    this.currentMarker = -1;
+                    this.gui.SetStateInt("currentMarker", this.currentTime);
+                    this.stopTime = this.currentTime;
+                    this.gui.GetDesktop().SetChildWinVarVal("markerText", "text", va("Marker set at %.2i:%.2i", this.currentTime / 60 / 60, (this.currentTime / 60) % 60));
+                    this.gui.GetDesktop().SetChildWinVarVal("markerText", "visible", "1");
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "0 0 0 0");
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "No Preview");
                 }
-                float pct = gui.State().GetFloat("loadPct");
-                int len = gui.State().GetInt("loadLength");
-                if (stopTime > len * pct) {
+                final float pct = this.gui.State().GetFloat("loadPct");
+                final int len = this.gui.State().GetInt("loadLength");
+                if (this.stopTime > (len * pct)) {
                     return "cmdDemoGotoMarker";
                 }
             } else if (key == K_MOUSE2) {
-                stopTime = -1;
-                gui.GetDesktop().SetChildWinVarVal("markerText", "text", "");
-                gui.SetStateInt("currentMarker", -1);
+                this.stopTime = -1;
+                this.gui.GetDesktop().SetChildWinVarVal("markerText", "text", "");
+                this.gui.SetStateInt("currentMarker", -1);
                 return "cmdDemoGotoMarker";
             } else if (key == K_SPACE) {
                 return "cmdDemoPauseFrame";
@@ -149,45 +149,45 @@ public class MarkerWindow {
         @Override
         public void Draw(int time, float x, float y) {
             float pct;
-            idRectangle r = new idRectangle(clientRect);
-            int len = gui.State().GetInt("loadLength");
+            idRectangle r = new idRectangle(this.clientRect);
+            int len = this.gui.State().GetInt("loadLength");
             if (len == 0) {
                 len = 1;
             }
-            if (numStats > 1) {
-                int c = markerTimes.Num();
+            if (this.numStats > 1) {
+                final int c = this.markerTimes.Num();
                 if (c > 0) {
                     for (int i = 0; i < c; i++) {
-                        markerData_t md = markerTimes.oGet(i);
+                        final markerData_t md = this.markerTimes.oGet(i);
                         if (md.rect.w == 0) {
-                            md.rect.x = (r.x + r.w * ((float) md.time / len)) - 8;
-                            md.rect.y = r.y + r.h - 20;
+                            md.rect.x = (r.x + (r.w * ((float) md.time / len))) - 8;
+                            md.rect.y = (r.y + r.h) - 20;
                             md.rect.w = 16;
                             md.rect.h = 16;
                         }
-                        dc.DrawMaterial(md.rect.x, md.rect.y, md.rect.w, md.rect.h, markerMat, markerColor);
+                        this.dc.DrawMaterial(md.rect.x, md.rect.y, md.rect.w, md.rect.h, this.markerMat, this.markerColor);
                     }
                 }
             }
 
             r.y += 10;
-            if (r.w > 0 && r.Contains(gui.CursorX(), gui.CursorY())) {
-                pct = (gui.CursorX() - r.x) / r.w;
-                currentTime = (int) (len * pct);
-                r.x = (gui.CursorX() > r.x + r.w - 40) ? gui.CursorX() - 40 : gui.CursorX();
-                r.y = gui.CursorY() - 15;
+            if ((r.w > 0) && r.Contains(this.gui.CursorX(), this.gui.CursorY())) {
+                pct = (this.gui.CursorX() - r.x) / r.w;
+                this.currentTime = (int) (len * pct);
+                r.x = (this.gui.CursorX() > ((r.x + r.w) - 40)) ? this.gui.CursorX() - 40 : this.gui.CursorX();
+                r.y = this.gui.CursorY() - 15;
                 r.w = 40;
                 r.h = 20;
-                dc.DrawText(va("%.2i:%.2i", currentTime / 60 / 60, (currentTime / 60) % 60), 0.25f, 0, idDeviceContext.colorWhite, r, false);
+                this.dc.DrawText(va("%.2i:%.2i", this.currentTime / 60 / 60, (this.currentTime / 60) % 60), 0.25f, 0, idDeviceContext.colorWhite, r, false);
             }
 
-            if (stopTime >= 0 && markerStop != null) {
-                r = new idRectangle(clientRect);
+            if ((this.stopTime >= 0) && (this.markerStop != null)) {
+                r = new idRectangle(this.clientRect);
                 r.y += (r.h - 32) / 2;
-                pct = (float) stopTime / len;
+                pct = (float) this.stopTime / len;
                 r.x += (r.w * pct) - 16;
-                idVec4 color = new idVec4(1, 1, 1, 0.65f);
-                dc.DrawMaterial(r.x, r.y, 32, 32, markerStop, color);
+                final idVec4 color = new idVec4(1, 1, 1, 0.65f);
+                this.dc.DrawMaterial(r.x, r.y, 32, 32, this.markerStop, color);
             }
 
         }
@@ -195,31 +195,32 @@ public class MarkerWindow {
         @Override
         public String RouteMouseCoords(float xd, float yd) {
             final String ret = super.RouteMouseCoords(xd, yd);
-            idRectangle r;
-            int i, c = markerTimes.Num();
-            int len = gui.State().GetInt("loadLength");
+            final idRectangle r;
+            int i;
+			final int c = this.markerTimes.Num();
+            int len = this.gui.State().GetInt("loadLength");
             if (len == 0) {
                 len = 1;
             }
             for (i = 0; i < c; i++) {
-                markerData_t md = markerTimes.oGet(i);
-                if (md.rect.Contains(gui.CursorY(), gui.CursorX())) {
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "background", md.mat.GetName());
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "1 1 1 1");
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "");
+                final markerData_t md = this.markerTimes.oGet(i);
+                if (md.rect.Contains(this.gui.CursorY(), this.gui.CursorX())) {
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "background", md.mat.GetName());
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "1 1 1 1");
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "");
                     break;
                 }
             }
 
             if (i >= c) {
-                if (currentMarker == -1) {
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "0 0 0 0");
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "No Preview");
+                if (this.currentMarker == -1) {
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "0 0 0 0");
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "No Preview");
                 } else {
-                    markerData_t md = markerTimes.oGet(currentMarker);
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "background", md.mat.GetName());
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "1 1 1 1");
-                    gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "");
+                    final markerData_t md = this.markerTimes.oGet(this.currentMarker);
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "background", md.mat.GetName());
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "matcolor", "1 1 1 1");
+                    this.gui.GetDesktop().SetChildWinVarVal("markerBackground", "text", "");
                 }
             }
             return ret;
@@ -230,84 +231,84 @@ public class MarkerWindow {
             super.Activate(activate, act);
             if (activate) {
                 int i;
-                gui.GetDesktop().SetChildWinVarVal("markerText", "text", "");
-                imageBuff = new int[512 * 64 * 4];// Mem_Alloc(512 * 64 * 4);
-                markerTimes.Clear();
-                currentMarker = -1;
-                currentTime = -1;
-                stopTime = -1;
-                statData.oSet(gui.State().GetString("statData"));
-                numStats = 0;
-                if (statData.Length() != 0) {
-                    idFile file = fileSystem.OpenFileRead(statData.getData());
+                this.gui.GetDesktop().SetChildWinVarVal("markerText", "text", "");
+                this.imageBuff = new int[512 * 64 * 4];// Mem_Alloc(512 * 64 * 4);
+                this.markerTimes.Clear();
+                this.currentMarker = -1;
+                this.currentTime = -1;
+                this.stopTime = -1;
+                this.statData.oSet(this.gui.State().GetString("statData"));
+                this.numStats = 0;
+                if (this.statData.Length() != 0) {
+                    final idFile file = fileSystem.OpenFileRead(this.statData.getData());
                     if (file != null) {
-                        numStats = file.ReadInt();
+                        this.numStats = file.ReadInt();
 //                        file->Read(loggedStats, numStats * sizeof(loggedStats[0]));
-                        for (i = 0; i < numStats; i++) {
-                            file.Read(loggedStats[i]);
-                            if (loggedStats[i].health < 0) {
-                                loggedStats[i].health = 0;
+                        for (i = 0; i < this.numStats; i++) {
+                            file.Read(this.loggedStats[i]);
+                            if (this.loggedStats[i].health < 0) {
+                                this.loggedStats[i].health = 0;
                             }
-                            if (loggedStats[i].stamina < 0) {
-                                loggedStats[i].stamina = 0;
+                            if (this.loggedStats[i].stamina < 0) {
+                                this.loggedStats[i].stamina = 0;
                             }
-                            if (loggedStats[i].heartRate < 0) {
-                                loggedStats[i].heartRate = 0;
+                            if (this.loggedStats[i].heartRate < 0) {
+                                this.loggedStats[i].heartRate = 0;
                             }
-                            if (loggedStats[i].combat < 0) {
-                                loggedStats[i].combat = 0;
+                            if (this.loggedStats[i].combat < 0) {
+                                this.loggedStats[i].combat = 0;
                             }
                         }
                         fileSystem.CloseFile(file);
                     }
                 }
 
-                if (numStats > 1 && background != null) {
-                    idStr markerPath = statData;
+                if ((this.numStats > 1) && (this.background != null)) {
+                    final idStr markerPath = this.statData;
                     markerPath.StripFilename();
                     idFileList markers;
                     markers = fileSystem.ListFiles(markerPath.getData(), ".tga", false, true);
                     idStr name;
                     for (i = 0; i < markers.GetNumFiles(); i++) {
                         name = new idStr(markers.GetFile(i));
-                        markerData_t md = new markerData_t();
+                        final markerData_t md = new markerData_t();
                         md.mat = declManager.FindMaterial(name);
                         md.mat.SetSort(SS_GUI);
                         name.StripPath();
                         name.StripFileExtension();
                         md.time = Integer.parseInt(name.getData());
-                        markerTimes.Append(md);
+                        this.markerTimes.Append(md);
                     }
                     fileSystem.FreeFileList(markers);
 //                    memset(imageBuff, 0, 512 * 64 * 4);
-                    Arrays.fill(imageBuff, 0, 512 * 64 * 4, 0);
-                    float step = 511.0f / (numStats - 1);
-                    float startX = 0;
+                    Arrays.fill(this.imageBuff, 0, 512 * 64 * 4, 0);
+                    final float step = 511.0f / (this.numStats - 1);
+                    final float startX = 0;
                     float x1, y1, x2, y2;
                     x1 = 0 - step;
-                    for (i = 0; i < numStats - 1; i++) {
+                    for (i = 0; i < (this.numStats - 1); i++) {
                         x1 += step;
                         x2 = x1 + step;
-                        y1 = 63 * ((float) loggedStats[i].health / HEALTH_MAX);
-                        y2 = 63 * ((float) loggedStats[i + 1].health / HEALTH_MAX);
-                        Line(x1, y1, x2, y2, imageBuff, 0xff0000ff);
-                        y1 = 63 * ((float) loggedStats[i].heartRate / RATE_MAX);
-                        y2 = 63 * ((float) loggedStats[i + 1].heartRate / RATE_MAX);
-                        Line(x1, y1, x2, y2, imageBuff, 0xff00ff00);
+                        y1 = 63 * ((float) this.loggedStats[i].health / HEALTH_MAX);
+                        y2 = 63 * ((float) this.loggedStats[i + 1].health / HEALTH_MAX);
+                        Line(x1, y1, x2, y2, this.imageBuff, 0xff0000ff);
+                        y1 = 63 * ((float) this.loggedStats[i].heartRate / RATE_MAX);
+                        y2 = 63 * ((float) this.loggedStats[i + 1].heartRate / RATE_MAX);
+                        Line(x1, y1, x2, y2, this.imageBuff, 0xff00ff00);
                         // stamina not quite as high on graph so health does not get obscured with both at 100%
-                        y1 = 62 * ((float) loggedStats[i].stamina / STAMINA_MAX);
-                        y2 = 62 * ((float) loggedStats[i + 1].stamina / STAMINA_MAX);
-                        Line(x1, y1, x2, y2, imageBuff, 0xffff0000);
-                        y1 = 63 * ((float) loggedStats[i].combat / COMBAT_MAX);
-                        y2 = 63 * ((float) loggedStats[i + 1].combat / COMBAT_MAX);
-                        Line(x1, y1, x2, y2, imageBuff, 0xff00ffff);
+                        y1 = 62 * ((float) this.loggedStats[i].stamina / STAMINA_MAX);
+                        y2 = 62 * ((float) this.loggedStats[i + 1].stamina / STAMINA_MAX);
+                        Line(x1, y1, x2, y2, this.imageBuff, 0xffff0000);
+                        y1 = 63 * ((float) this.loggedStats[i].combat / COMBAT_MAX);
+                        y2 = 63 * ((float) this.loggedStats[i + 1].combat / COMBAT_MAX);
+                        Line(x1, y1, x2, y2, this.imageBuff, 0xff00ffff);
                     }
-                    final shaderStage_t stage = background.GetStage(0);
+                    final shaderStage_t stage = this.background.GetStage(0);
                     if (stage != null) {//TODO: check the wrapToNativeBuffer below.
-                        stage.texture.image[0].UploadScratch(wrapToNativeBuffer(itob(imageBuff)), 512, 64);
+                        stage.texture.image[0].UploadScratch(wrapToNativeBuffer(itob(this.imageBuff)), 512, 64);
                     }
 //                    Mem_Free(imageBuff);
-                    imageBuff = null;
+                    this.imageBuff = null;
                 }
             }
         }
@@ -325,45 +326,45 @@ public class MarkerWindow {
         @Override
         protected boolean ParseInternalVar(final String _name, idParser src) {
             if (idStr.Icmp(_name, "markerMat") == 0) {
-                idStr str = new idStr();
+                final idStr str = new idStr();
                 ParseString(src, str);
-                markerMat = declManager.FindMaterial(str);
-                markerMat.SetSort(SS_GUI);
+                this.markerMat = declManager.FindMaterial(str);
+                this.markerMat.SetSort(SS_GUI);
                 return true;
             }
             if (idStr.Icmp(_name, "markerStop") == 0) {
-                idStr str = new idStr();
+                final idStr str = new idStr();
                 ParseString(src, str);
-                markerStop = declManager.FindMaterial(str);
-                markerStop.SetSort(SS_GUI);
+                this.markerStop = declManager.FindMaterial(str);
+                this.markerStop.SetSort(SS_GUI);
                 return true;
             }
             if (idStr.Icmp(_name, "markerColor") == 0) {
-                ParseVec4(src, markerColor);
+                ParseVec4(src, this.markerColor);
                 return true;
             }
             return super.ParseInternalVar(_name, src);
         }
 
         private void CommonInit() {
-            numStats = 0;
-            currentTime = -1;
-            currentMarker = -1;
-            stopTime = -1;
-            imageBuff = null;
-            markerMat = null;
-            markerStop = null;
+            this.numStats = 0;
+            this.currentTime = -1;
+            this.currentMarker = -1;
+            this.stopTime = -1;
+            this.imageBuff = null;
+            this.markerMat = null;
+            this.markerStop = null;
         }
 
         private void Line(int x1, int y1, int x2, int y2, int[] out, int color) {
             int deltax = Math.abs(x2 - x1);
             int deltay = Math.abs(y2 - y1);
-            int incx = (x1 > x2) ? -1 : 1;
-            int incy = (y1 > y2) ? -1 : 1;
+            final int incx = (x1 > x2) ? -1 : 1;
+            final int incy = (y1 > y2) ? -1 : 1;
             int right, up, dir;
             if (deltax > deltay) {
                 right = deltay * 2;
-                up = right - deltax * 2;
+                up = right - (deltax * 2);
                 dir = right - deltax;
                 while (deltax-- >= 0) {
                     Point(x1, y1, out, color);
@@ -373,7 +374,7 @@ public class MarkerWindow {
                 }
             } else {
                 right = deltax * 2;
-                up = right - deltay * 2;
+                up = right - (deltay * 2);
                 dir = right - deltay;
                 while (deltay-- >= 0) {
                     Point(x1, y1, out, color);
@@ -389,12 +390,12 @@ public class MarkerWindow {
         }
 
         private void Point(int x, int y, int[] out, int color) {
-            int index = (63 - y) * 512 + x;
-            if (index >= 0 && index < 512 * 64) {
+            final int index = ((63 - y) * 512) + x;
+            if ((index >= 0) && (index < (512 * 64))) {
                 out[index] = color;
             } else {
                 common.Warning("Out of bounds on point %d : %d", x, y);
             }
         }
-    };
+    }
 }

@@ -67,7 +67,7 @@ public class DeclParticle {
             this.count = count;
             this.desc = desc;
         }
-    };
+    }
     static final ParticleParmDesc ParticleDistributionDesc[] = {
         new ParticleParmDesc("rect", 3, ""),
         new ParticleParmDesc("cylinder", 4, ""),
@@ -109,25 +109,25 @@ public class DeclParticle {
         //
 
         public idParticleParm() {
-            table = null;
-            from = to = 0.0f;
+            this.table = null;
+            this.from = this.to = 0.0f;
         }
 
         public float Eval(float frac, idRandom rand) {
-            if (table != null) {
-                return table.TableLookup(frac);
+            if (this.table != null) {
+                return this.table.TableLookup(frac);
             }
-            return from + frac * (to - from);
+            return this.from + (frac * (this.to - this.from));
         }
 
         public float Integrate(float frac, idRandom rand) throws idException {
-            if (table != null) {
+            if (this.table != null) {
                 common.Printf("idParticleParm::Integrate: can't integrate tables\n");
                 return 0;
             }
-            return (from + frac * (to - from) * 0.5f) * frac;
+            return (this.from + (frac * (this.to - this.from) * 0.5f)) * frac;
         }
-    };
+    }
 
     enum prtDistribution_t {
 
@@ -136,13 +136,13 @@ public class DeclParticle {
         PDIST_SPHERE	// ( sizeX sizeY sizeZ ringFraction )
                         // a ringFraction of zero allows the entire sphere, 0.9 would only
                         // allow the outer 10% of the sphere
-    };
+    }
 
     enum prtDirection_t {
 
         PDIR_CONE,      // parm0 is the solid cone angle
         PDIR_OUTWARD	// direction is relative to offset from origin, parm0 is an upward bias
-    };
+    }
 
     enum prtCustomPth_t {
 
@@ -151,7 +151,7 @@ public class DeclParticle {
         PPATH_FLIES,
         PPATH_ORBIT,
         PPATH_DRIP
-    };
+    }
 
     enum prtOrientation_t {
 
@@ -160,7 +160,7 @@ public class DeclParticle {
         POR_X,
         POR_Y,
         POR_Z
-    };
+    }
 
     public static class particleGen_t {
 
@@ -181,7 +181,7 @@ public class DeclParticle {
             this.origin = new idVec3();
             this.axis = new idMat3();
         }
-    };
+    }
 
     //
     // single particle stage
@@ -252,44 +252,44 @@ public class DeclParticle {
         //
 
         public idParticleStage() {
-            material = null;
-            totalParticles = 0;
-            cycles = 0.0f;
-            cycleMsec = 0;
-            spawnBunching = 0.0f;
-            particleLife = 0.0f;
-            timeOffset = 0.0f;
-            deadTime = 0.0f;
-            distributionType = PDIST_RECT;
-            distributionParms[0] = distributionParms[1] = distributionParms[2] = distributionParms[3] = 0.0f;
-            directionType = PDIR_CONE;
-            directionParms[0] = directionParms[1] = directionParms[2] = directionParms[3] = 0.0f;
-            speed = new idParticleParm();
-            gravity = 0.0f;
-            worldGravity = false;
-            customPathType = PPATH_STANDARD;
-            customPathParms[0] = customPathParms[1] = customPathParms[2] = customPathParms[3] = 0.0f;
-            customPathParms[4] = customPathParms[5] = customPathParms[6] = customPathParms[7] = 0.0f;
-            offset = new idVec3();
-            animationFrames = 0;
-            animationRate = 0.0f;
-            randomDistribution = true;
-            entityColor = false;
-            initialAngle = 0.0f;
-            rotationSpeed = new idParticleParm(); 
-            orientation = POR_VIEW;
-            orientationParms[0] = orientationParms[1] = orientationParms[2] = orientationParms[3] = 0.0f;
-            size = new idParticleParm();
-            aspect = new idParticleParm();
-            color = new idVec4();
-            fadeColor = new idVec4();
-            fadeInFraction = 0.0f;
-            fadeOutFraction = 0.0f;
-            fadeIndexFraction = 0.0f;
-            hidden = false;
-            boundsExpansion = 0.0f;
-            bounds = new idBounds();
-            bounds.Clear();
+            this.material = null;
+            this.totalParticles = 0;
+            this.cycles = 0.0f;
+            this.cycleMsec = 0;
+            this.spawnBunching = 0.0f;
+            this.particleLife = 0.0f;
+            this.timeOffset = 0.0f;
+            this.deadTime = 0.0f;
+            this.distributionType = PDIST_RECT;
+            this.distributionParms[0] = this.distributionParms[1] = this.distributionParms[2] = this.distributionParms[3] = 0.0f;
+            this.directionType = PDIR_CONE;
+            this.directionParms[0] = this.directionParms[1] = this.directionParms[2] = this.directionParms[3] = 0.0f;
+            this.speed = new idParticleParm();
+            this.gravity = 0.0f;
+            this.worldGravity = false;
+            this.customPathType = PPATH_STANDARD;
+            this.customPathParms[0] = this.customPathParms[1] = this.customPathParms[2] = this.customPathParms[3] = 0.0f;
+            this.customPathParms[4] = this.customPathParms[5] = this.customPathParms[6] = this.customPathParms[7] = 0.0f;
+            this.offset = new idVec3();
+            this.animationFrames = 0;
+            this.animationRate = 0.0f;
+            this.randomDistribution = true;
+            this.entityColor = false;
+            this.initialAngle = 0.0f;
+            this.rotationSpeed = new idParticleParm(); 
+            this.orientation = POR_VIEW;
+            this.orientationParms[0] = this.orientationParms[1] = this.orientationParms[2] = this.orientationParms[3] = 0.0f;
+            this.size = new idParticleParm();
+            this.aspect = new idParticleParm();
+            this.color = new idVec4();
+            this.fadeColor = new idVec4();
+            this.fadeInFraction = 0.0f;
+            this.fadeOutFraction = 0.0f;
+            this.fadeIndexFraction = 0.0f;
+            this.hidden = false;
+            this.boundsExpansion = 0.0f;
+            this.bounds = new idBounds();
+            this.bounds.Clear();
         }
 //	virtual					~idParticleStage( void ) {}
 //
@@ -302,69 +302,69 @@ public class DeclParticle {
          ================
          */
         public void Default() throws idException {
-            material = declManager.FindMaterial("_default");
-            totalParticles = 100;
-            spawnBunching = 1.0f;
-            particleLife = 1.5f;
-            timeOffset = 0.0f;
-            deadTime = 0.0f;
-            distributionType = PDIST_RECT;
-            distributionParms[0] = 8.0f;
-            distributionParms[1] = 8.0f;
-            distributionParms[2] = 8.0f;
-            distributionParms[3] = 0.0f;
-            directionType = PDIR_CONE;
-            directionParms[0] = 90.0f;
-            directionParms[1] = 0.0f;
-            directionParms[2] = 0.0f;
-            directionParms[3] = 0.0f;
-            orientation = POR_VIEW;
-            orientationParms[0] = 0.0f;
-            orientationParms[1] = 0.0f;
-            orientationParms[2] = 0.0f;
-            orientationParms[3] = 0.0f;
-            speed.from = 150.0f;
-            speed.to = 150.0f;
-            speed.table = null;
-            gravity = 1.0f;
-            worldGravity = false;
-            customPathType = PPATH_STANDARD;
-            customPathParms[0] = 0.0f;
-            customPathParms[1] = 0.0f;
-            customPathParms[2] = 0.0f;
-            customPathParms[3] = 0.0f;
-            customPathParms[4] = 0.0f;
-            customPathParms[5] = 0.0f;
-            customPathParms[6] = 0.0f;
-            customPathParms[7] = 0.0f;
-            offset.Zero();
-            animationFrames = 0;
-            animationRate = 0.0f;
-            initialAngle = 0.0f;
-            rotationSpeed.from = 0.0f;
-            rotationSpeed.to = 0.0f;
-            rotationSpeed.table = null;
-            size.from = 4.0f;
-            size.to = 4.0f;
-            size.table = null;
-            aspect.from = 1.0f;
-            aspect.to = 1.0f;
-            aspect.table = null;
-            color.x = 1.0f;
-            color.y = 1.0f;
-            color.z = 1.0f;
-            color.w = 1.0f;
-            fadeColor.x = 0.0f;
-            fadeColor.y = 0.0f;
-            fadeColor.z = 0.0f;
-            fadeColor.w = 0.0f;
-            fadeInFraction = 0.1f;
-            fadeOutFraction = 0.25f;
-            fadeIndexFraction = 0.0f;
-            boundsExpansion = 0.0f;
-            randomDistribution = true;
-            entityColor = false;
-            cycleMsec = (int) ((particleLife + deadTime) * 1000);
+            this.material = declManager.FindMaterial("_default");
+            this.totalParticles = 100;
+            this.spawnBunching = 1.0f;
+            this.particleLife = 1.5f;
+            this.timeOffset = 0.0f;
+            this.deadTime = 0.0f;
+            this.distributionType = PDIST_RECT;
+            this.distributionParms[0] = 8.0f;
+            this.distributionParms[1] = 8.0f;
+            this.distributionParms[2] = 8.0f;
+            this.distributionParms[3] = 0.0f;
+            this.directionType = PDIR_CONE;
+            this.directionParms[0] = 90.0f;
+            this.directionParms[1] = 0.0f;
+            this.directionParms[2] = 0.0f;
+            this.directionParms[3] = 0.0f;
+            this.orientation = POR_VIEW;
+            this.orientationParms[0] = 0.0f;
+            this.orientationParms[1] = 0.0f;
+            this.orientationParms[2] = 0.0f;
+            this.orientationParms[3] = 0.0f;
+            this.speed.from = 150.0f;
+            this.speed.to = 150.0f;
+            this.speed.table = null;
+            this.gravity = 1.0f;
+            this.worldGravity = false;
+            this.customPathType = PPATH_STANDARD;
+            this.customPathParms[0] = 0.0f;
+            this.customPathParms[1] = 0.0f;
+            this.customPathParms[2] = 0.0f;
+            this.customPathParms[3] = 0.0f;
+            this.customPathParms[4] = 0.0f;
+            this.customPathParms[5] = 0.0f;
+            this.customPathParms[6] = 0.0f;
+            this.customPathParms[7] = 0.0f;
+            this.offset.Zero();
+            this.animationFrames = 0;
+            this.animationRate = 0.0f;
+            this.initialAngle = 0.0f;
+            this.rotationSpeed.from = 0.0f;
+            this.rotationSpeed.to = 0.0f;
+            this.rotationSpeed.table = null;
+            this.size.from = 4.0f;
+            this.size.to = 4.0f;
+            this.size.table = null;
+            this.aspect.from = 1.0f;
+            this.aspect.to = 1.0f;
+            this.aspect.table = null;
+            this.color.x = 1.0f;
+            this.color.y = 1.0f;
+            this.color.z = 1.0f;
+            this.color.w = 1.0f;
+            this.fadeColor.x = 0.0f;
+            this.fadeColor.y = 0.0f;
+            this.fadeColor.z = 0.0f;
+            this.fadeColor.w = 0.0f;
+            this.fadeInFraction = 0.1f;
+            this.fadeOutFraction = 0.25f;
+            this.fadeIndexFraction = 0.0f;
+            this.boundsExpansion = 0.0f;
+            this.randomDistribution = true;
+            this.entityColor = false;
+            this.cycleMsec = (int) ((this.particleLife + this.deadTime) * 1000);
         }
 
         /*
@@ -377,14 +377,14 @@ public class DeclParticle {
         public int NumQuadsPerParticle() {  // includes trails and cross faded animations
             int count = 1;
 
-            if (orientation == POR_AIMED) {
-                int trails = idMath.Ftoi(orientationParms[0]);
+            if (this.orientation == POR_AIMED) {
+                final int trails = idMath.Ftoi(this.orientationParms[0]);
                 // each trail stage will add an extra quad
                 count *= (1 + trails);
             }
 
             // if we are doing strip-animation, we need to double the number and cross fade them
-            if (animationFrames > 1) {
+            if (this.animationFrames > 1) {
                 count *= 2;
             }
 
@@ -407,7 +407,7 @@ public class DeclParticle {
          */
         // returns the number of verts created, which will range from 0 to 4*NumQuadsPerParticle()
         public int CreateParticle(particleGen_t g, idDrawVert[] verts) throws idException {
-            idVec3 origin = new idVec3();
+            final idVec3 origin = new idVec3();
 
             verts[0].Clear();
             verts[1].Clear();
@@ -417,8 +417,8 @@ public class DeclParticle {
             ParticleColors(g, verts);
 
             // if we are completely faded out, kill the particle
-            if (verts[0].color[0] == 0 && verts[0].color[1] == 0
-                    && verts[0].color[2] == 0 && verts[0].color[3] == 0) {
+            if ((verts[0].color[0] == 0) && (verts[0].color[1] == 0)
+                    && (verts[0].color[2] == 0) && (verts[0].color[3] == 0)) {
                 return 0;
             }
 
@@ -426,16 +426,16 @@ public class DeclParticle {
 
             ParticleTexCoords(g, verts);
 
-            int numVerts = ParticleVerts(g, origin, verts);
+            final int numVerts = ParticleVerts(g, origin, verts);
 
-            if (animationFrames <= 1) {
+            if (this.animationFrames <= 1) {
                 return numVerts;
             }
 
             // if we are doing strip-animation, we need to double the quad and cross fade it
-            float width = 1.0f / animationFrames;
-            float frac = g.animationFrameFrac;
-            float iFrac = 1.0f - frac;
+            final float width = 1.0f / this.animationFrames;
+            final float frac = g.animationFrameFrac;
+            final float iFrac = 1.0f - frac;
             for (int i = 0; i < numVerts; i++) {
                 verts[numVerts + i].oSet(verts[i]);
 
@@ -456,99 +456,99 @@ public class DeclParticle {
         }
 
         public void ParticleOrigin(particleGen_t g, idVec3 origin) throws idException {
-            if (customPathType == PPATH_STANDARD) {
+            if (this.customPathType == PPATH_STANDARD) {
                 //
                 // find intial origin distribution
                 //
                 float radiusSqr, angle1, angle2;
 
-                switch (distributionType) {
+                switch (this.distributionType) {
                     case PDIST_RECT: {	// ( sizeX sizeY sizeZ )
-                        origin.oSet(0, (randomDistribution ? g.random.CRandomFloat() : 1.0f) * distributionParms[0]);
-                        origin.oSet(1, (randomDistribution ? g.random.CRandomFloat() : 1.0f) * distributionParms[1]);
-                        origin.oSet(2, (randomDistribution ? g.random.CRandomFloat() : 1.0f) * distributionParms[2]);
+                        origin.oSet(0, (this.randomDistribution ? g.random.CRandomFloat() : 1.0f) * this.distributionParms[0]);
+                        origin.oSet(1, (this.randomDistribution ? g.random.CRandomFloat() : 1.0f) * this.distributionParms[1]);
+                        origin.oSet(2, (this.randomDistribution ? g.random.CRandomFloat() : 1.0f) * this.distributionParms[2]);
                         break;
                     }
                     case PDIST_CYLINDER: {	// ( sizeX sizeY sizeZ ringFraction )
-                        angle1 = ((randomDistribution) ? g.random.CRandomFloat() : 1.0f) * idMath.TWO_PI;
+                        angle1 = ((this.randomDistribution) ? g.random.CRandomFloat() : 1.0f) * idMath.TWO_PI;
 
-                        float[] origin2 = new float[1];
-                        float[] origin3 = new float[1];
+                        final float[] origin2 = new float[1];
+                        final float[] origin3 = new float[1];
                         idMath.SinCos16(angle1, origin2, origin3);
                         origin.oSet(0, origin2[0]);
                         origin.oSet(1, origin3[0]);
-                        origin.oSet(2, (randomDistribution ? g.random.CRandomFloat() : 1.0f));
+                        origin.oSet(2, (this.randomDistribution ? g.random.CRandomFloat() : 1.0f));
 
                         // reproject points that are inside the ringFraction to the outer band
-                        if (distributionParms[3] > 0.0f) {
-                            radiusSqr = origin.oGet(0) * origin.oGet(0) + origin.oGet(1) * origin.oGet(1);
-                            if (radiusSqr < distributionParms[3] * distributionParms[3]) {
+                        if (this.distributionParms[3] > 0.0f) {
+                            radiusSqr = (origin.oGet(0) * origin.oGet(0)) + (origin.oGet(1) * origin.oGet(1));
+                            if (radiusSqr < (this.distributionParms[3] * this.distributionParms[3])) {
                                 // if we are inside the inner reject zone, rescale to put it out into the good zone
-                                float f = (float) (Math.sqrt(radiusSqr) / distributionParms[3]);
-                                float invf = 1.0f / f;
-                                float newRadius = distributionParms[3] + f * (1.0f - distributionParms[3]);
-                                float rescale = invf * newRadius;
+                                final float f = (float) (Math.sqrt(radiusSqr) / this.distributionParms[3]);
+                                final float invf = 1.0f / f;
+                                final float newRadius = this.distributionParms[3] + (f * (1.0f - this.distributionParms[3]));
+                                final float rescale = invf * newRadius;
 
                                 origin.oMulSet(0, rescale);
                                 origin.oMulSet(1, rescale);
                             }
                         }
-                        origin.oMulSet(0, distributionParms[0]);
-                        origin.oMulSet(1, distributionParms[1]);
-                        origin.oMulSet(2, distributionParms[2]);
+                        origin.oMulSet(0, this.distributionParms[0]);
+                        origin.oMulSet(1, this.distributionParms[1]);
+                        origin.oMulSet(2, this.distributionParms[2]);
                         break;
                     }
                     case PDIST_SPHERE: {	// ( sizeX sizeY sizeZ ringFraction )
                         // iterating with rejection is the only way to get an even distribution over a sphere
-                        if (randomDistribution) {
+                        if (this.randomDistribution) {
                             do {
                                 origin.oSet(0, g.random.CRandomFloat());
                                 origin.oSet(1, g.random.CRandomFloat());
                                 origin.oSet(2, g.random.CRandomFloat());
-                                radiusSqr = origin.oGet(0) * origin.oGet(0) + origin.oGet(1) * origin.oGet(1) + origin.oGet(2) * origin.oGet(2);
+                                radiusSqr = (origin.oGet(0) * origin.oGet(0)) + (origin.oGet(1) * origin.oGet(1)) + (origin.oGet(2) * origin.oGet(2));
                             } while (radiusSqr > 1.0f);
                         } else {
                             origin.Set(1.0f, 1.0f, 1.0f);
                             radiusSqr = 3.0f;
                         }
 
-                        if (distributionParms[3] > 0.0f) {
+                        if (this.distributionParms[3] > 0.0f) {
                             // we could iterate until we got something that also satisfied ringFraction,
                             // but for narrow rings that could be a lot of work, so reproject inside points instead
-                            if (radiusSqr < distributionParms[3] * distributionParms[3]) {
+                            if (radiusSqr < (this.distributionParms[3] * this.distributionParms[3])) {
                                 // if we are inside the inner reject zone, rescale to put it out into the good zone
-                                float f = (float) (Math.sqrt(radiusSqr) / distributionParms[3]);
-                                float invf = 1.0f / f;
-                                float newRadius = distributionParms[3] + f * (1.0f - distributionParms[3]);
-                                float rescale = invf * newRadius;
+                                final float f = (float) (Math.sqrt(radiusSqr) / this.distributionParms[3]);
+                                final float invf = 1.0f / f;
+                                final float newRadius = this.distributionParms[3] + (f * (1.0f - this.distributionParms[3]));
+                                final float rescale = invf * newRadius;
 
                                 origin.oMulSet(rescale);
                             }
                         }
-                        origin.oMulSet(0, distributionParms[0]);
-                        origin.oMulSet(1, distributionParms[1]);
-                        origin.oMulSet(2, distributionParms[2]);
+                        origin.oMulSet(0, this.distributionParms[0]);
+                        origin.oMulSet(1, this.distributionParms[1]);
+                        origin.oMulSet(2, this.distributionParms[2]);
                         break;
                     }
                 }
 
                 // offset will effect all particle origin types
                 // add this before the velocity and gravity additions
-                origin.oPluSet(offset);
+                origin.oPluSet(this.offset);
 
                 //
                 // add the velocity over time
                 //
-                idVec3 dir = new idVec3();
+                final idVec3 dir = new idVec3();
 
-                switch (directionType) {
+                switch (this.directionType) {
                     case PDIR_CONE: {
                         // angle is the full angle, so 360 degrees is any spherical direction
-                        angle1 = g.random.CRandomFloat() * directionParms[0] * idMath.M_DEG2RAD;
+                        angle1 = g.random.CRandomFloat() * this.directionParms[0] * idMath.M_DEG2RAD;
                         angle2 = g.random.CRandomFloat() * idMath.PI;
 
-                        float[] s1 = new float[1], s2 = new float[1];
-                        float[] c1 = new float[1], c2 = new float[1];
+                        final float[] s1 = new float[1], s2 = new float[1];
+                        final float[] c1 = new float[1], c2 = new float[1];
                         idMath.SinCos16(angle1, s1, c1);
                         idMath.SinCos16(angle2, s2, c2);
 
@@ -560,14 +560,14 @@ public class DeclParticle {
                     case PDIR_OUTWARD: {
                         dir.oSet(origin);
                         dir.Normalize();
-                        dir.oPluSet(2, directionParms[0]);
+                        dir.oPluSet(2, this.directionParms[0]);
                         break;
                     }
                 }
 
                 // add speed
-                float iSpeed = speed.Integrate(g.frac, g.random);
-                origin.oPluSet(dir.oMultiply(iSpeed).oMultiply(particleLife));
+                final float iSpeed = this.speed.Integrate(g.frac, g.random);
+                origin.oPluSet(dir.oMultiply(iSpeed).oMultiply(this.particleLife));
 
             } else {
                 //
@@ -575,53 +575,53 @@ public class DeclParticle {
                 // use the standard gravity
                 //
                 float angle1, angle2, speed1, speed2;
-                switch (customPathType) {
+                switch (this.customPathType) {
                     case PPATH_HELIX: {		// ( sizeX sizeY sizeZ radialSpeed axialSpeed )
                         speed1 = g.random.CRandomFloat();
                         speed2 = g.random.CRandomFloat();
-                        angle1 = g.random.RandomFloat() * idMath.TWO_PI + customPathParms[3] * speed1 * g.age;
+                        angle1 = (g.random.RandomFloat() * idMath.TWO_PI) + (this.customPathParms[3] * speed1 * g.age);
 
-                        float[] s1 = new float[1];
-                        float[] c1 = new float[1];
+                        final float[] s1 = new float[1];
+                        final float[] c1 = new float[1];
                         idMath.SinCos16(angle1, s1, c1);
 
-                        origin.oSet(0, c1[0] * customPathParms[0]);
-                        origin.oSet(1, s1[0] * customPathParms[1]);
-                        origin.oSet(2, g.random.RandomFloat() * customPathParms[2] + customPathParms[4] * speed2 * g.age);
+                        origin.oSet(0, c1[0] * this.customPathParms[0]);
+                        origin.oSet(1, s1[0] * this.customPathParms[1]);
+                        origin.oSet(2, (g.random.RandomFloat() * this.customPathParms[2]) + (this.customPathParms[4] * speed2 * g.age));
                         break;
                     }
                     case PPATH_FLIES: {		// ( radialSpeed axialSpeed size )
                         speed1 = idMath.ClampFloat(0.4f, 1.0f, g.random.CRandomFloat());
 //				speed2 = idMath.ClampFloat( 0.4f, 1.0f, g.random.CRandomFloat() );
-                        angle1 = g.random.RandomFloat() * idMath.PI * 2 + customPathParms[0] * speed1 * g.age;
-                        angle2 = g.random.RandomFloat() * idMath.PI * 2 + customPathParms[1] * speed1 * g.age;
+                        angle1 = (g.random.RandomFloat() * idMath.PI * 2) + (this.customPathParms[0] * speed1 * g.age);
+                        angle2 = (g.random.RandomFloat() * idMath.PI * 2) + (this.customPathParms[1] * speed1 * g.age);
 
-                        float[] s1 = new float[1], s2 = new float[1];
-                        float[] c1 = new float[1], c2 = new float[1];
+                        final float[] s1 = new float[1], s2 = new float[1];
+                        final float[] c1 = new float[1], c2 = new float[1];
                         idMath.SinCos16(angle1, s1, c1);
                         idMath.SinCos16(angle2, s2, c2);
 
                         origin.oSet(0, c1[0] * c2[0]);
                         origin.oSet(1, s1[0] * c2[0]);
                         origin.oSet(2, -s2[0]);
-                        origin.oMultiply(customPathParms[2]);
+                        origin.oMultiply(this.customPathParms[2]);
                         break;
                     }
                     case PPATH_ORBIT: {		// ( radius speed axis )
-                        angle1 = g.random.RandomFloat() * idMath.TWO_PI + customPathParms[1] * g.age;
+                        angle1 = (g.random.RandomFloat() * idMath.TWO_PI) + (this.customPathParms[1] * g.age);
 
-                        float[] s1 = new float[1], c1 = new float[1];
+                        final float[] s1 = new float[1], c1 = new float[1];
                         idMath.SinCos16(angle1, s1, c1);
 
-                        origin.oSet(0, c1[0] * customPathParms[0]);
-                        origin.oSet(1, s1[0] * customPathParms[0]);
-                        origin.ProjectSelfOntoSphere(customPathParms[0]);
+                        origin.oSet(0, c1[0] * this.customPathParms[0]);
+                        origin.oSet(1, s1[0] * this.customPathParms[0]);
+                        origin.ProjectSelfOntoSphere(this.customPathParms[0]);
                         break;
                     }
                     case PPATH_DRIP: {		// ( speed )
                         origin.oSet(0, 0.0f);
                         origin.oSet(1, 0.0f);
-                        origin.oSet(2, -(g.age * customPathParms[0]));
+                        origin.oSet(2, -(g.age * this.customPathParms[0]));
                         break;
                     }
                     default: {
@@ -629,7 +629,7 @@ public class DeclParticle {
                     }
                 }
 
-                origin.oPluSet(offset);
+                origin.oPluSet(this.offset);
             }
 
             // adjust for the per-particle smoke offset
@@ -637,35 +637,35 @@ public class DeclParticle {
             origin.oPluSet(g.origin);
 
             // add gravity after adjusting for axis
-            if (worldGravity) {
-                idVec3 gra = new idVec3(0, 0, -gravity);
+            if (this.worldGravity) {
+                final idVec3 gra = new idVec3(0, 0, -this.gravity);
                 gra.oMulSet(g.renderEnt.axis.Transpose());
                 origin.oPluSet(gra.oMultiply(g.age * g.age));
             } else {
-                origin.oMinSet(2, gravity * g.age * g.age);
+                origin.oMinSet(2, this.gravity * g.age * g.age);
             }
         }
 
         public int ParticleVerts(particleGen_t g, final idVec3 origin, idDrawVert[] verts) throws idException {
-            float psize = size.Eval(g.frac, g.random);
-            float paspect = aspect.Eval(g.frac, g.random);
+            final float psize = this.size.Eval(g.frac, g.random);
+            final float paspect = this.aspect.Eval(g.frac, g.random);
 
-            float width = psize;
+            final float width = psize;
             float height = psize * paspect;
 
             idVec3 left = new idVec3(), up = new idVec3();
 
-            if (orientation == POR_AIMED) {
+            if (this.orientation == POR_AIMED) {
                 // reset the values to an earlier time to get a previous origin
-                idRandom currentRandom = new idRandom(g.random);
-                float currentAge = g.age;
-                float currentFrac = g.frac;
+                final idRandom currentRandom = new idRandom(g.random);
+                final float currentAge = g.age;
+                final float currentFrac = g.frac;
 //		idDrawVert []verts_p = verts[verts_p;
                 int verts_p = 0;
                 idVec3 stepOrigin = origin;
                 idVec3 stepLeft = new idVec3();
-                int numTrails = idMath.Ftoi(orientationParms[0]);
-                float trailTime = orientationParms[1];
+                final int numTrails = idMath.Ftoi(this.orientationParms[0]);
+                float trailTime = this.orientationParms[1];
 
                 if (trailTime == 0) {
                     trailTime = 0.5f;
@@ -676,15 +676,15 @@ public class DeclParticle {
 
                 for (int i = 0; i <= numTrails; i++) {
                     g.random = new idRandom(g.originalRandom);
-                    g.age = currentAge - (i + 1) * trailTime / (numTrails + 1);	// time to back up
-                    g.frac = g.age / particleLife;
+                    g.age = currentAge - (((i + 1) * trailTime) / (numTrails + 1));	// time to back up
+                    g.frac = g.age / this.particleLife;
 
-                    idVec3 oldOrigin = new idVec3();
+                    final idVec3 oldOrigin = new idVec3();
                     ParticleOrigin(g, oldOrigin);
 
                     up = stepOrigin.oMinus(oldOrigin);	// along the direction of travel
 
-                    idVec3 forwardDir = new idVec3();
+                    final idVec3 forwardDir = new idVec3();
                     g.renderEnt.axis.ProjectVector(g.renderView.viewaxis.oGet(0), forwardDir);
 
                     up.oMinSet(forwardDir.oMultiply(up.oMultiply(forwardDir)));
@@ -742,9 +742,9 @@ public class DeclParticle {
             //
             float angle;
 
-            angle = (initialAngle != 0) ? initialAngle : 360 * g.random.RandomFloat();
+            angle = (this.initialAngle != 0) ? this.initialAngle : 360 * g.random.RandomFloat();
 
-            float angleMove = rotationSpeed.Integrate(g.frac, g.random) * particleLife;
+            final float angleMove = this.rotationSpeed.Integrate(g.frac, g.random) * this.particleLife;
             // have hald the particles rotate each way
             if ((g.index & 1) != 0) {
                 angle += angleMove;
@@ -752,11 +752,11 @@ public class DeclParticle {
                 angle -= angleMove;
             }
 
-            angle = angle / 180 * idMath.PI;
-            float c = idMath.Cos16(angle);
-            float s = idMath.Sin16(angle);
+            angle = (angle / 180) * idMath.PI;
+            final float c = idMath.Cos16(angle);
+            final float s = idMath.Sin16(angle);
 
-            if (orientation == POR_Z) {
+            if (this.orientation == POR_Z) {
                 // oriented in entity space
                 left.x = s;
                 left.y = c;
@@ -764,7 +764,7 @@ public class DeclParticle {
                 up.x = c;
                 up.y = -s;
                 up.z = 0;
-            } else if (orientation == POR_X) {
+            } else if (this.orientation == POR_X) {
                 // oriented in entity space
                 left.x = 0;
                 left.y = c;
@@ -772,7 +772,7 @@ public class DeclParticle {
                 up.x = 0;
                 up.y = -s;
                 up.z = c;
-            } else if (orientation == POR_Y) {
+            } else if (this.orientation == POR_Y) {
                 // oriented in entity space
                 left.x = c;
                 left.y = 0;
@@ -782,7 +782,7 @@ public class DeclParticle {
                 up.z = c;
             } else {
                 // oriented in viewer space
-                idVec3 entityLeft = new idVec3(), entityUp = new idVec3();
+                final idVec3 entityLeft = new idVec3(), entityUp = new idVec3();
 
                 g.renderEnt.axis.ProjectVector(g.renderView.viewaxis.oGet(1), entityLeft);
                 g.renderEnt.axis.ProjectVector(g.renderView.viewaxis.oGet(2), entityUp);
@@ -806,17 +806,17 @@ public class DeclParticle {
             float s, width;
             float t, height;
 
-            if (animationFrames > 1) {
-                width = 1.0f / animationFrames;
+            if (this.animationFrames > 1) {
+                width = 1.0f / this.animationFrames;
                 float floatFrame;
-                if (animationRate != 0.0f) {
+                if (this.animationRate != 0.0f) {
                     // explicit, cycling animation
-                    floatFrame = g.age * animationRate;
+                    floatFrame = g.age * this.animationRate;
                 } else {
                     // single animation cycle over the life of the particle
-                    floatFrame = g.frac * animationFrames;
+                    floatFrame = g.frac * this.animationFrames;
                 }
-                int intFrame = (int) floatFrame;
+                final int intFrame = (int) floatFrame;
                 g.animationFrameFrac = floatFrame - intFrame;
                 s = width * intFrame;
             } else {
@@ -844,24 +844,24 @@ public class DeclParticle {
             float fadeFraction = 1.0f;
 
             // most particles fade in at the beginning and fade out at the end
-            if (g.frac < fadeInFraction) {
-                fadeFraction *= (g.frac / fadeInFraction);
+            if (g.frac < this.fadeInFraction) {
+                fadeFraction *= (g.frac / this.fadeInFraction);
             }
-            if (1.0f - g.frac < fadeOutFraction) {
-                fadeFraction *= ((1.0f - g.frac) / fadeOutFraction);
+            if ((1.0f - g.frac) < this.fadeOutFraction) {
+                fadeFraction *= ((1.0f - g.frac) / this.fadeOutFraction);
             }
 
             // individual gun smoke particles get more and more faded as the
             // cycle goes on (note that totalParticles won't be correct for a surface-particle deform)
-            if (fadeIndexFraction != 0.0f) {
-                float indexFrac = (totalParticles - g.index) / (float) totalParticles;
-                if (indexFrac < fadeIndexFraction) {
-                    fadeFraction *= indexFrac / fadeIndexFraction;
+            if (this.fadeIndexFraction != 0.0f) {
+                final float indexFrac = (this.totalParticles - g.index) / (float) this.totalParticles;
+                if (indexFrac < this.fadeIndexFraction) {
+                    fadeFraction *= indexFrac / this.fadeIndexFraction;
                 }
             }
 
             for (int i = 0; i < 4; i++) {
-                float fcolor = (entityColor ? g.renderEnt.shaderParms[i] : color.oGet(i)) * fadeFraction + fadeColor.oGet(i) * (1.0f - fadeFraction);
+                final float fcolor = ((this.entityColor ? g.renderEnt.shaderParms[i] : this.color.oGet(i)) * fadeFraction) + (this.fadeColor.oGet(i) * (1.0f - fadeFraction));
                 int icolor = idMath.FtoiFast(fcolor * 255.0f);
                 if (icolor < 0) {
                     icolor = 0;
@@ -877,26 +877,26 @@ public class DeclParticle {
 //
 
         public String GetCustomPathName() {
-            int index = (customPathType.ordinal() < CustomParticleCount) ? customPathType.ordinal() : 0;
+            final int index = (this.customPathType.ordinal() < CustomParticleCount) ? this.customPathType.ordinal() : 0;
             return ParticleCustomDesc[index].name;
         }
 
         public String GetCustomPathDesc() {
-            int index = (customPathType.ordinal() < CustomParticleCount) ? customPathType.ordinal() : 0;
+            final int index = (this.customPathType.ordinal() < CustomParticleCount) ? this.customPathType.ordinal() : 0;
             return ParticleCustomDesc[index].desc;
         }
 
         public int NumCustomPathParms() {
-            int index = (customPathType.ordinal() < CustomParticleCount) ? customPathType.ordinal() : 0;
+            final int index = (this.customPathType.ordinal() < CustomParticleCount) ? this.customPathType.ordinal() : 0;
             return ParticleCustomDesc[index].count;
         }
 
         public void SetCustomPathType(final String p) {
-            customPathType = PPATH_STANDARD;
-            prtCustomPth_t[] values = prtCustomPth_t.values();
-            for (int i = 0; i < CustomParticleCount && i < values.length; i++) {
+            this.customPathType = PPATH_STANDARD;
+            final prtCustomPth_t[] values = prtCustomPth_t.values();
+            for (int i = 0; (i < CustomParticleCount) && (i < values.length); i++) {
                 if (idStr.Icmp(p, ParticleCustomDesc[i].name) == 0) {
-                    customPathType = /*static_cast<prtCustomPth_t>*/ values[i];
+                    this.customPathType = /*static_cast<prtCustomPth_t>*/ values[i];
                     break;
                 }
             }
@@ -905,60 +905,60 @@ public class DeclParticle {
 
         public void oSet(final idParticleStage src) {
 
-            material = src.material;
-            totalParticles = src.totalParticles;
-            cycles = src.cycles;
-            cycleMsec = src.cycleMsec;
-            spawnBunching = src.spawnBunching;
-            particleLife = src.particleLife;
-            timeOffset = src.timeOffset;
-            deadTime = src.deadTime;
-            distributionType = src.distributionType;
-            distributionParms[0] = src.distributionParms[0];
-            distributionParms[1] = src.distributionParms[1];
-            distributionParms[2] = src.distributionParms[2];
-            distributionParms[3] = src.distributionParms[3];
-            directionType = src.directionType;
-            directionParms[0] = src.directionParms[0];
-            directionParms[1] = src.directionParms[1];
-            directionParms[2] = src.directionParms[2];
-            directionParms[3] = src.directionParms[3];
-            speed = src.speed;
-            gravity = src.gravity;
-            worldGravity = src.worldGravity;
-            randomDistribution = src.randomDistribution;
-            entityColor = src.entityColor;
-            customPathType = src.customPathType;
-            customPathParms[0] = src.customPathParms[0];
-            customPathParms[1] = src.customPathParms[1];
-            customPathParms[2] = src.customPathParms[2];
-            customPathParms[3] = src.customPathParms[3];
-            customPathParms[4] = src.customPathParms[4];
-            customPathParms[5] = src.customPathParms[5];
-            customPathParms[6] = src.customPathParms[6];
-            customPathParms[7] = src.customPathParms[7];
-            offset = src.offset;
-            animationFrames = src.animationFrames;
-            animationRate = src.animationRate;
-            initialAngle = src.initialAngle;
-            rotationSpeed = src.rotationSpeed;
-            orientation = src.orientation;
-            orientationParms[0] = src.orientationParms[0];
-            orientationParms[1] = src.orientationParms[1];
-            orientationParms[2] = src.orientationParms[2];
-            orientationParms[3] = src.orientationParms[3];
-            size = src.size;
-            aspect = src.aspect;
-            color = src.color;
-            fadeColor = src.fadeColor;
-            fadeInFraction = src.fadeInFraction;
-            fadeOutFraction = src.fadeOutFraction;
-            fadeIndexFraction = src.fadeIndexFraction;
-            hidden = src.hidden;
-            boundsExpansion = src.boundsExpansion;
-            bounds = src.bounds;
+            this.material = src.material;
+            this.totalParticles = src.totalParticles;
+            this.cycles = src.cycles;
+            this.cycleMsec = src.cycleMsec;
+            this.spawnBunching = src.spawnBunching;
+            this.particleLife = src.particleLife;
+            this.timeOffset = src.timeOffset;
+            this.deadTime = src.deadTime;
+            this.distributionType = src.distributionType;
+            this.distributionParms[0] = src.distributionParms[0];
+            this.distributionParms[1] = src.distributionParms[1];
+            this.distributionParms[2] = src.distributionParms[2];
+            this.distributionParms[3] = src.distributionParms[3];
+            this.directionType = src.directionType;
+            this.directionParms[0] = src.directionParms[0];
+            this.directionParms[1] = src.directionParms[1];
+            this.directionParms[2] = src.directionParms[2];
+            this.directionParms[3] = src.directionParms[3];
+            this.speed = src.speed;
+            this.gravity = src.gravity;
+            this.worldGravity = src.worldGravity;
+            this.randomDistribution = src.randomDistribution;
+            this.entityColor = src.entityColor;
+            this.customPathType = src.customPathType;
+            this.customPathParms[0] = src.customPathParms[0];
+            this.customPathParms[1] = src.customPathParms[1];
+            this.customPathParms[2] = src.customPathParms[2];
+            this.customPathParms[3] = src.customPathParms[3];
+            this.customPathParms[4] = src.customPathParms[4];
+            this.customPathParms[5] = src.customPathParms[5];
+            this.customPathParms[6] = src.customPathParms[6];
+            this.customPathParms[7] = src.customPathParms[7];
+            this.offset = src.offset;
+            this.animationFrames = src.animationFrames;
+            this.animationRate = src.animationRate;
+            this.initialAngle = src.initialAngle;
+            this.rotationSpeed = src.rotationSpeed;
+            this.orientation = src.orientation;
+            this.orientationParms[0] = src.orientationParms[0];
+            this.orientationParms[1] = src.orientationParms[1];
+            this.orientationParms[2] = src.orientationParms[2];
+            this.orientationParms[3] = src.orientationParms[3];
+            this.size = src.size;
+            this.aspect = src.aspect;
+            this.color = src.color;
+            this.fadeColor = src.fadeColor;
+            this.fadeInFraction = src.fadeInFraction;
+            this.fadeOutFraction = src.fadeOutFraction;
+            this.fadeIndexFraction = src.fadeIndexFraction;
+            this.hidden = src.hidden;
+            this.boundsExpansion = src.boundsExpansion;
+            this.bounds = src.bounds;
         }
-    };
+    }
 
     //
     // group of particle stages
@@ -972,8 +972,8 @@ public class DeclParticle {
         //
         
         public idDeclParticle(){
-            stages = new idList<idParticleStage>();
-            bounds = new idBounds();
+            this.stages = new idList<idParticleStage>();
+            this.bounds = new idBounds();
         }
 
         @Override
@@ -995,14 +995,14 @@ public class DeclParticle {
 
         @Override
         public boolean Parse(String text, int textLength) throws idException {
-            idLexer src = new idLexer();
-            idToken token = new idToken();
+            final idLexer src = new idLexer();
+            final idToken token = new idToken();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
             src.SkipUntilString("{");
 
-            depthHack = 0.0f;
+            this.depthHack = 0.0f;
 
             while (true) {
                 if (!src.ReadToken(token)) {
@@ -1014,18 +1014,18 @@ public class DeclParticle {
                 }
 
                 if (0 == token.Icmp("{")) {
-                    idParticleStage stage = ParseParticleStage(src);
+                    final idParticleStage stage = ParseParticleStage(src);
                     if (null == stage) {
                         src.Warning("Particle stage parse failed");
                         MakeDefault();
                         return false;
                     }
-                    stages.Append(stage);
+                    this.stages.Append(stage);
                     continue;
                 }
 
                 if (0 == token.Icmp("depthHack")) {
-                    depthHack = src.ParseFloat();
+                    this.depthHack = src.ParseFloat();
                     continue;
                 }
 
@@ -1037,14 +1037,14 @@ public class DeclParticle {
             //
             // calculate the bounds
             //
-            bounds.Clear();
-            for (int i = 0; i < stages.Num(); i++) {
-                GetStageBounds(stages.oGet(i));
-                bounds.AddBounds(stages.oGet(i).bounds);
+            this.bounds.Clear();
+            for (int i = 0; i < this.stages.Num(); i++) {
+                GetStageBounds(this.stages.oGet(i));
+                this.bounds.AddBounds(this.stages.oGet(i).bounds);
             }
 
-            if (bounds.GetVolume() <= 0.1f) {
-                bounds = new idBounds(Vector.getVec3_origin()).Expand(8.0f);
+            if (this.bounds.GetVolume() <= 0.1f) {
+                this.bounds = new idBounds(Vector.getVec3_origin()).Expand(8.0f);
             }
 
             return true;
@@ -1052,7 +1052,7 @@ public class DeclParticle {
 
         @Override
         public void FreeData() {
-            stages.DeleteContents(true);
+            this.stages.DeleteContents(true);
         }
 
         public boolean Save() throws idException {
@@ -1069,7 +1069,7 @@ public class DeclParticle {
         }
 
         private boolean RebuildTextSource() {
-            idFile_Memory f = new idFile_Memory();
+            final idFile_Memory f = new idFile_Memory();
 
             f.WriteFloatString("\n\n/*\n"
                     + "\tGenerated by the Particle Editor.\n"
@@ -1078,12 +1078,12 @@ public class DeclParticle {
 
             f.WriteFloatString("particle %s {\n", GetName());
 
-            if (depthHack != 0.0f) {
-                f.WriteFloatString("\tdepthHack\t%f\n", depthHack);
+            if (this.depthHack != 0.0f) {
+                f.WriteFloatString("\tdepthHack\t%f\n", this.depthHack);
             }
 
-            for (int i = 0; i < stages.Num(); i++) {
-                WriteStage(f, stages.oGet(i));
+            for (int i = 0; i < this.stages.Num(); i++) {
+                WriteStage(f, this.stages.oGet(i));
             }
 
             f.WriteFloatString("}");
@@ -1098,12 +1098,12 @@ public class DeclParticle {
             stage.bounds.Clear();
 
             // this isn't absolutely guaranteed, but it should be close
-            particleGen_t g = new particleGen_t();
+            final particleGen_t g = new particleGen_t();
 
-            renderEntity_s renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
+            final renderEntity_s renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
             renderEntity.axis.oSet(getMat3_identity());
 
-            renderView_s renderView = new renderView_s();//memset( &renderView, 0, sizeof( renderView ) );
+            final renderView_s renderView = new renderView_s();//memset( &renderView, 0, sizeof( renderView ) );
             renderView.viewaxis.oSet(getMat3_identity());
 
             g.renderEnt = renderEntity;
@@ -1111,27 +1111,27 @@ public class DeclParticle {
             g.origin.oSet(new idVec3());
             g.axis.oSet(getMat3_identity());
 
-            idRandom steppingRandom = new idRandom();
+            final idRandom steppingRandom = new idRandom();
             steppingRandom.SetSeed(0);
 
             // just step through a lot of possible particles as a representative sampling
             for (int i = 0; i < 1000; i++) {
                 g.random = new idRandom(g.originalRandom = new idRandom(steppingRandom));
 
-                int maxMsec = (int) (stage.particleLife * 1000);
+                final int maxMsec = (int) (stage.particleLife * 1000);
                 for (int inCycleTime = 0; inCycleTime < maxMsec; inCycleTime += 16) {
 
                     // make sure we get the very last tic, which may make up an extreme edge
-                    if (inCycleTime + 16 > maxMsec) {
+                    if ((inCycleTime + 16) > maxMsec) {
                         inCycleTime = maxMsec - 1;
                     }
 
-                    g.frac = (float) inCycleTime / (stage.particleLife * 1000);
+                    g.frac = inCycleTime / (stage.particleLife * 1000);
                     g.age = inCycleTime * 0.001f;
 
                     // if the particle doesn't get drawn because it is faded out or beyond a kill region,
                     // don't increment the verts
-                    idVec3 origin = new idVec3();
+                    final idVec3 origin = new idVec3();
                     stage.ParticleOrigin(g, origin);
                     stage.bounds.AddPoint(origin);
                 }
@@ -1142,7 +1142,7 @@ public class DeclParticle {
 
             for (float f = 0; f <= 1.0f; f += 1.0f / 64) {
                 float size = stage.size.Eval(f, steppingRandom);
-                float aspect = stage.aspect.Eval(f, steppingRandom);
+                final float aspect = stage.aspect.Eval(f, steppingRandom);
                 if (aspect > 1) {
                     size *= aspect;
                 }
@@ -1157,9 +1157,9 @@ public class DeclParticle {
         }
 
         private idParticleStage ParseParticleStage(idLexer src) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
-            idParticleStage stage = new idParticleStage();
+            final idParticleStage stage = new idParticleStage();
             stage.Default();
 
             while (true) {
@@ -1366,7 +1366,7 @@ public class DeclParticle {
          ================
          */
         private void ParseParms(idLexer src, float[] parms, int maxParms) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             Arrays.fill(parms, 0, maxParms, 0);//memset( parms, 0, maxParms * sizeof( *parms ) );
             int count = 0;
@@ -1385,7 +1385,7 @@ public class DeclParticle {
         }
 
         private void ParseParametric(idLexer src, idParticleParm parm) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             parm.table = null;
             parm.from = parm.to = 0.0f;
@@ -1518,5 +1518,5 @@ public class DeclParticle {
         public void oSet(idDeclParticle idDeclParticle) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
-    };
+    }
 }

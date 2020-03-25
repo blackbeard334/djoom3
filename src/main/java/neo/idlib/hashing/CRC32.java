@@ -147,7 +147,7 @@ public class CRC32 {
     }
 
     public static long CRC32_BlockChecksum(final char[] data, int length) {
-        long[] crc = new long[1];
+        final long[] crc = new long[1];
 
         CRC32_InitChecksum(crc);
         CRC32_UpdateChecksum(crc, data, length);

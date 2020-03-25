@@ -111,7 +111,7 @@ public class Target {
         public java.lang.Class /*idTypeInfo*/ GetType() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 
     /*
      ===============================================================================
@@ -137,8 +137,8 @@ public class Target {
             int i;
             idEntity ent;
 
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (ent != null) {
                     ent.PostEventMS(EV_Remove, 0);
                 }
@@ -157,7 +157,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -184,8 +184,8 @@ public class Target {
             int i;
             idEntity ent;
 
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (ent != null) {
                     ent.Show();
                 }
@@ -204,7 +204,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -232,9 +232,9 @@ public class Target {
             String damage;
             idEntity ent;
 
-            damage = spawnArgs.GetString("def_damage", "damage_generic");
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            damage = this.spawnArgs.GetString("def_damage", "damage_generic");
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (ent != null) {
                     ent.Damage(this, this, getVec3_origin(), damage, 1.0f, INVALID_JOINT);
                 }
@@ -250,7 +250,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -273,7 +273,7 @@ public class Target {
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            gameLocal.sessionCommand.oSet(spawnArgs.GetString("command"));
+            gameLocal.sessionCommand.oSet(this.spawnArgs.GetString("command"));
         }
 
         @Override
@@ -285,7 +285,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -310,27 +310,27 @@ public class Target {
 
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            String[] nextMap = {null};
+            final String[] nextMap = {null};
 
             if (ID_DEMO_BUILD) {
-                if (spawnArgs.GetBool("endOfGame")) {
+                if (this.spawnArgs.GetBool("endOfGame")) {
                     cvarSystem.SetCVarBool("g_nightmare", true);
                     gameLocal.sessionCommand.oSet("endofDemo");
                     return;
                 }
             } else {
-                if (spawnArgs.GetBool("endOfGame")) {
+                if (this.spawnArgs.GetBool("endOfGame")) {
                     cvarSystem.SetCVarBool("g_nightmare", true);
                     gameLocal.sessionCommand.oSet("disconnect");
                     return;
                 }
             }
-            if (!spawnArgs.GetString("nextMap", "", nextMap)) {
+            if (!this.spawnArgs.GetString("nextMap", "", nextMap)) {
                 gameLocal.Printf("idTarget_SessionCommand::Event_Activate: no nextMap key\n");
                 return;
             }
 
-            if (spawnArgs.GetInt("devmap", "0") != 0) {
+            if (this.spawnArgs.GetInt("devmap", "0") != 0) {
                 gameLocal.sessionCommand.oSet("devmap ");	// only for special demos
             } else {
                 gameLocal.sessionCommand.oSet("map ");
@@ -348,7 +348,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -375,9 +375,9 @@ public class Target {
         public void Think() {
             idPlayer player;
 
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 player = gameLocal.GetLocalPlayer();
-                if (player != null && (NOT(player.oldButtons) & BUTTON_ATTACK != 0) && ((player.usercmd.buttons & BUTTON_ATTACK) != 0)) {
+                if ((player != null) && (NOT(player.oldButtons) & (BUTTON_ATTACK != 0)) && ((player.usercmd.buttons & BUTTON_ATTACK) != 0)) {
                     player.usercmd.buttons &= ~BUTTON_ATTACK;
                     BecomeInactive(TH_THINK);
                     ActivateTargets(player);
@@ -388,11 +388,11 @@ public class Target {
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 BecomeInactive(TH_THINK);
             } else {
                 // always allow during cinematics
-                cinematic = true;
+                this.cinematic = true;
                 BecomeActive(TH_THINK);
             }
         }
@@ -406,7 +406,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -429,9 +429,9 @@ public class Target {
 
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            int parm = spawnArgs.GetInt("globalParm");
-            float time = -MS2SEC(gameLocal.time);
-            if (parm >= 0 && parm < MAX_GLOBAL_SHADER_PARMS) {
+            final int parm = this.spawnArgs.GetInt("globalParm");
+            final float time = -MS2SEC(gameLocal.time);
+            if ((parm >= 0) && (parm < MAX_GLOBAL_SHADER_PARMS)) {
                 gameLocal.globalShaderParms[parm] = time;
             }
         }
@@ -445,7 +445,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -471,14 +471,14 @@ public class Target {
         private void Event_Activate(idEventArg<idEntity> activator) {
             int i;
             idEntity ent;
-            float[] value = {0};
-            idVec3 color = new idVec3();
+            final float[] value = {0};
+            final idVec3 color = new idVec3();
             int parmnum;
 
             // set the color on the targets
-            if (spawnArgs.GetVector("_color", "1 1 1", color)) {
-                for (i = 0; i < targets.Num(); i++) {
-                    ent = targets.oGet(i).GetEntity();
+            if (this.spawnArgs.GetVector("_color", "1 1 1", color)) {
+                for (i = 0; i < this.targets.Num(); i++) {
+                    ent = this.targets.oGet(i).GetEntity();
                     if (ent != null) {
                         ent.SetColor(color.oGet(0), color.oGet(1), color.oGet(2));
                     }
@@ -487,18 +487,18 @@ public class Target {
 
             // set any shader parms on the targets
             for (parmnum = 0; parmnum < MAX_ENTITY_SHADER_PARMS; parmnum++) {
-                if (spawnArgs.GetFloat(va("shaderParm%d", parmnum), "0", value)) {
-                    for (i = 0; i < targets.Num(); i++) {
-                        ent = targets.oGet(i).GetEntity();
+                if (this.spawnArgs.GetFloat(va("shaderParm%d", parmnum), "0", value)) {
+                    for (i = 0; i < this.targets.Num(); i++) {
+                        ent = this.targets.oGet(i).GetEntity();
                         if (ent != null) {
                             ent.SetShaderParm(parmnum, value[0]);
                         }
                     }
-                    if (spawnArgs.GetBool("toggle") && (value[0] == 0 || value[0] == 1)) {
+                    if (this.spawnArgs.GetBool("toggle") && ((value[0] == 0) || (value[0] == 1))) {
                         int val = (int) value[0];
                         val ^= 1;
                         value[0] = val;
-                        spawnArgs.SetFloat(va("shaderParm%d", parmnum), value[0]);
+                        this.spawnArgs.SetFloat(va("shaderParm%d", parmnum), value[0]);
                     }
                 }
             }
@@ -513,7 +513,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -542,8 +542,8 @@ public class Target {
             float time;
 
             time = -MS2SEC(gameLocal.time);
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (ent != null) {
                     ent.SetShaderParm(SHADERPARM_TIMEOFFSET, time);
                     if (ent.IsType(idLight.class)) {
@@ -562,7 +562,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -583,30 +583,30 @@ public class Target {
             eventCallbacks.put(EV_Activate, (eventCallback_t1<idTarget_FadeEntity>) idTarget_FadeEntity::Event_Activate);
         }
 
-        private idVec4 fadeFrom;
+        private final idVec4 fadeFrom;
         private int    fadeStart;
         private int    fadeEnd;
         //
         //
 
         public idTarget_FadeEntity() {
-            fadeFrom = new idVec4();
-            fadeStart = 0;
-            fadeEnd = 0;
+            this.fadeFrom = new idVec4();
+            this.fadeStart = 0;
+            this.fadeEnd = 0;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteVec4(fadeFrom);
-            savefile.WriteInt(fadeStart);
-            savefile.WriteInt(fadeEnd);
+            savefile.WriteVec4(this.fadeFrom);
+            savefile.WriteInt(this.fadeStart);
+            savefile.WriteInt(this.fadeEnd);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadVec4(fadeFrom);
-            fadeStart = savefile.ReadInt();
-            fadeEnd = savefile.ReadInt();
+            savefile.ReadVec4(this.fadeFrom);
+            this.fadeStart = savefile.ReadInt();
+            this.fadeEnd = savefile.ReadInt();
         }
 
         @Override
@@ -614,22 +614,22 @@ public class Target {
             int i;
             idEntity ent;
             idVec4 color = new idVec4();
-            idVec4 fadeTo = new idVec4();
+            final idVec4 fadeTo = new idVec4();
             float frac;
 
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 GetColor(fadeTo);
-                if (gameLocal.time >= fadeEnd) {
+                if (gameLocal.time >= this.fadeEnd) {
                     color = fadeTo;
                     BecomeInactive(TH_THINK);
                 } else {
-                    frac = (float) (gameLocal.time - fadeStart) / (float) (fadeEnd - fadeStart);
-                    color.Lerp(fadeFrom, fadeTo, frac);
+                    frac = (float) (gameLocal.time - this.fadeStart) / (float) (this.fadeEnd - this.fadeStart);
+                    color.Lerp(this.fadeFrom, fadeTo, frac);
                 }
 
                 // set the color on the targets
-                for (i = 0; i < targets.Num(); i++) {
-                    ent = targets.oGet(i).GetEntity();
+                for (i = 0; i < this.targets.Num(); i++) {
+                    ent = this.targets.oGet(i).GetEntity();
                     if (ent != null) {
                         ent.SetColor(color);
                     }
@@ -643,25 +643,25 @@ public class Target {
             idEntity ent;
             int i;
 
-            if (0 == targets.Num()) {
+            if (0 == this.targets.Num()) {
                 return;
             }
 
             // always allow during cinematics
-            cinematic = true;
+            this.cinematic = true;
             BecomeActive(TH_THINK);
 
 //	ent = this;
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (ent != null) {
-                    ent.GetColor(fadeFrom);
+                    ent.GetColor(this.fadeFrom);
                     break;
                 }
             }
 
-            fadeStart = gameLocal.time;
-            fadeEnd = (int) (gameLocal.time + SEC2MS(spawnArgs.GetFloat("fadetime")));
+            this.fadeStart = gameLocal.time;
+            this.fadeEnd = (int) (gameLocal.time + SEC2MS(this.spawnArgs.GetFloat("fadetime")));
         }
 
         @Override
@@ -673,7 +673,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -701,14 +701,14 @@ public class Target {
             int i;
             float time;
 
-            if (0 == targets.Num()) {
+            if (0 == this.targets.Num()) {
                 return;
             }
 
-            time = spawnArgs.GetFloat("fadetime");
+            time = this.spawnArgs.GetFloat("fadetime");
 //	ent = this;
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (null == ent) {
                     continue;
                 }
@@ -716,7 +716,7 @@ public class Target {
                     light = (idLight) ent;
                     light.FadeIn(time);
                 } else {
-                    gameLocal.Printf("'%s' targets non-light '%s'", name, ent.GetName());
+                    gameLocal.Printf("'%s' targets non-light '%s'", this.name, ent.GetName());
                 }
             }
         }
@@ -730,7 +730,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -758,14 +758,14 @@ public class Target {
             int i;
             float time;
 
-            if (0 == targets.Num()) {
+            if (0 == this.targets.Num()) {
                 return;
             }
 
-            time = spawnArgs.GetFloat("fadetime");
+            time = this.spawnArgs.GetFloat("fadetime");
 //	ent = this;
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (null == ent) {
                     continue;
                 }
@@ -773,7 +773,7 @@ public class Target {
                     light = (idLight) ent;
                     light.FadeOut(time);
                 } else {
-                    gameLocal.Printf("'%s' targets non-light '%s'", name, ent.GetName());
+                    gameLocal.Printf("'%s' targets non-light '%s'", this.name, ent.GetName());
                 }
             }
         }
@@ -787,7 +787,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -811,7 +811,7 @@ public class Target {
 
         @Override
         public void Spawn() {
-            if (spawnArgs.GetBool("onSpawn")) {
+            if (this.spawnArgs.GetBool("onSpawn")) {
                 PostEventMS(EV_Activate, 50);
             }
         }
@@ -819,26 +819,26 @@ public class Target {
 
         private void Event_Activate(idEventArg<idEntity> activator) {
 
-            if (spawnArgs.GetBool("development") && developer.GetInteger() == 0) {
+            if (this.spawnArgs.GetBool("development") && (developer.GetInteger() == 0)) {
                 return;
             }
 
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
-                idKeyValue kv = spawnArgs.MatchPrefix("item", null);
+                idKeyValue kv = this.spawnArgs.MatchPrefix("item", null);
                 while (kv != null) {
                     final idDict dict = gameLocal.FindEntityDefDict(kv.GetValue().getData(), false);
                     if (dict != null) {
-                        idDict d2 = new idDict();
+                        final idDict d2 = new idDict();
                         d2.Copy(dict);
                         d2.Set("name", va("givenitem_%d", giveNum++));
-                        idEntity[] ent = {null};
-                        if (gameLocal.SpawnEntityDef(d2, ent) && ent[0] != null && ent[0].IsType(idItem.class)) {
-                            idItem item = (idItem) ent[0];
+                        final idEntity[] ent = {null};
+                        if (gameLocal.SpawnEntityDef(d2, ent) && (ent[0] != null) && ent[0].IsType(idItem.class)) {
+                            final idItem item = (idItem) ent[0];
                             item.GiveToPlayer(gameLocal.GetLocalPlayer());
                         }
                     }
-                    kv = spawnArgs.MatchPrefix("item", kv);
+                    kv = this.spawnArgs.MatchPrefix("item", kv);
                 }
             }
         }
@@ -852,7 +852,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -876,12 +876,12 @@ public class Target {
 
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            idPlayer player = gameLocal.GetLocalPlayer();
-            idDeclPDA pda = player.GetPDA();
+            final idPlayer player = gameLocal.GetLocalPlayer();
+            final idDeclPDA pda = player.GetPDA();
             if (pda != null) {
-                player.GiveEmail(spawnArgs.GetString("email"));
+                player.GiveEmail(this.spawnArgs.GetString("email"));
             } else {
-                player.ShowTip(spawnArgs.GetString("text_infoTitle"), spawnArgs.GetString("text_PDANeeded"), true);
+                player.ShowTip(this.spawnArgs.GetString("text_infoTitle"), this.spawnArgs.GetString("text_PDANeeded"), true);
             }
         }
 
@@ -894,7 +894,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -920,7 +920,7 @@ public class Target {
         public void Spawn() {
             idStr model;
 
-            model = new idStr(spawnArgs.GetString("newmodel"));
+            model = new idStr(this.spawnArgs.GetString("newmodel"));
             if (declManager.FindType(DECL_MODELDEF, model, false) == null) {
                 // precache the render model
                 renderModelManager.FindModel(model);
@@ -930,10 +930,10 @@ public class Target {
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            for (int i = 0; i < targets.Num(); i++) {
-                idEntity ent = targets.oGet(i).GetEntity();
+            for (int i = 0; i < this.targets.Num(); i++) {
+                final idEntity ent = this.targets.oGet(i).GetEntity();
                 if (ent != null) {
-                    ent.SetModel(spawnArgs.GetString("newmodel"));
+                    ent.SetModel(this.spawnArgs.GetString("newmodel"));
                 }
             }
         }
@@ -947,7 +947,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -973,131 +973,131 @@ public class Target {
         }
 
 
-        private idList<Integer>      lightList;
-        private idList<Integer>      guiList;
-        private idList<Integer>      soundList;
-        private idList<Integer>      genericList;
+        private final idList<Integer>      lightList;
+        private final idList<Integer>      guiList;
+        private final idList<Integer>      soundList;
+        private final idList<Integer>      genericList;
         private float                flashIn;
         private float                flashOut;
         private float                delay;
         private idStr                flashInSound;
         private idStr                flashOutSound;
         private idEntity             switchToCamera;
-        private idInterpolate<Float> fovSetting;
+        private final idInterpolate<Float> fovSetting;
         private boolean              soundFaded;
         private boolean              restoreOnTrigger;
         //
         //
 
         public idTarget_SetInfluence() {
-            lightList = new idList<>();
-            guiList = new idList<>();
-            soundList = new idList<>();
-            genericList = new idList<>();
-            flashIn = 0.0f;
-            flashOut = 0.0f;
-            delay = 0.0f;
-            switchToCamera = null;
-            fovSetting = new idInterpolate<>();
-            soundFaded = false;
-            restoreOnTrigger = false;
+            this.lightList = new idList<>();
+            this.guiList = new idList<>();
+            this.soundList = new idList<>();
+            this.genericList = new idList<>();
+            this.flashIn = 0.0f;
+            this.flashOut = 0.0f;
+            this.delay = 0.0f;
+            this.switchToCamera = null;
+            this.fovSetting = new idInterpolate<>();
+            this.soundFaded = false;
+            this.restoreOnTrigger = false;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteInt(lightList.Num());
-            for (i = 0; i < lightList.Num(); i++) {
-                savefile.WriteInt(lightList.oGet(i));
+            savefile.WriteInt(this.lightList.Num());
+            for (i = 0; i < this.lightList.Num(); i++) {
+                savefile.WriteInt(this.lightList.oGet(i));
             }
 
-            savefile.WriteInt(guiList.Num());
-            for (i = 0; i < guiList.Num(); i++) {
-                savefile.WriteInt(guiList.oGet(i));
+            savefile.WriteInt(this.guiList.Num());
+            for (i = 0; i < this.guiList.Num(); i++) {
+                savefile.WriteInt(this.guiList.oGet(i));
             }
 
-            savefile.WriteInt(soundList.Num());
-            for (i = 0; i < soundList.Num(); i++) {
-                savefile.WriteInt(soundList.oGet(i));
+            savefile.WriteInt(this.soundList.Num());
+            for (i = 0; i < this.soundList.Num(); i++) {
+                savefile.WriteInt(this.soundList.oGet(i));
             }
 
-            savefile.WriteInt(genericList.Num());
-            for (i = 0; i < genericList.Num(); i++) {
-                savefile.WriteInt(genericList.oGet(i));
+            savefile.WriteInt(this.genericList.Num());
+            for (i = 0; i < this.genericList.Num(); i++) {
+                savefile.WriteInt(this.genericList.oGet(i));
             }
 
-            savefile.WriteFloat(flashIn);
-            savefile.WriteFloat(flashOut);
+            savefile.WriteFloat(this.flashIn);
+            savefile.WriteFloat(this.flashOut);
 
-            savefile.WriteFloat(delay);
+            savefile.WriteFloat(this.delay);
 
-            savefile.WriteString(flashInSound);
-            savefile.WriteString(flashOutSound);
+            savefile.WriteString(this.flashInSound);
+            savefile.WriteString(this.flashOutSound);
 
-            savefile.WriteObject(switchToCamera);
+            savefile.WriteObject(this.switchToCamera);
 
-            savefile.WriteFloat(fovSetting.GetStartTime());
-            savefile.WriteFloat(fovSetting.GetDuration());
-            savefile.WriteFloat(fovSetting.GetStartValue());
-            savefile.WriteFloat(fovSetting.GetEndValue());
+            savefile.WriteFloat(this.fovSetting.GetStartTime());
+            savefile.WriteFloat(this.fovSetting.GetDuration());
+            savefile.WriteFloat(this.fovSetting.GetStartValue());
+            savefile.WriteFloat(this.fovSetting.GetEndValue());
 
-            savefile.WriteBool(soundFaded);
-            savefile.WriteBool(restoreOnTrigger);
+            savefile.WriteBool(this.soundFaded);
+            savefile.WriteBool(this.restoreOnTrigger);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
             int i;
-            int[] num = {0};
-            int[] itemNum = new int[1];
-            float[] set = new float[1];
+            final int[] num = {0};
+            final int[] itemNum = new int[1];
+            final float[] set = new float[1];
 
             savefile.ReadInt(num);
             for (i = 0; i < num[0]; i++) {
                 savefile.ReadInt(itemNum);
-                lightList.Append(itemNum[0]);
+                this.lightList.Append(itemNum[0]);
             }
 
             savefile.ReadInt(num);
             for (i = 0; i < num[0]; i++) {
                 savefile.ReadInt(itemNum);
-                guiList.Append(itemNum[0]);
+                this.guiList.Append(itemNum[0]);
             }
 
             savefile.ReadInt(num);
             for (i = 0; i < num[0]; i++) {
                 savefile.ReadInt(itemNum);
-                soundList.Append(itemNum[0]);
+                this.soundList.Append(itemNum[0]);
             }
 
             savefile.ReadInt(num);
             for (i = 0; i < num[0]; i++) {
                 savefile.ReadInt(itemNum);
-                genericList.Append(itemNum[0]);
+                this.genericList.Append(itemNum[0]);
             }
 
-            flashIn = savefile.ReadFloat();
-            flashOut = savefile.ReadFloat();
+            this.flashIn = savefile.ReadFloat();
+            this.flashOut = savefile.ReadFloat();
 
-            delay = savefile.ReadFloat();
+            this.delay = savefile.ReadFloat();
 
-            savefile.ReadString(flashInSound);
-            savefile.ReadString(flashOutSound);
+            savefile.ReadString(this.flashInSound);
+            savefile.ReadString(this.flashOutSound);
 
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/switchToCamera);
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/switchToCamera);
 
             savefile.ReadFloat(set);
-            fovSetting.SetStartTime(set[0]);
+            this.fovSetting.SetStartTime(set[0]);
             savefile.ReadFloat(set);
-            fovSetting.SetDuration(set[0]);
+            this.fovSetting.SetDuration(set[0]);
             savefile.ReadFloat(set);
-            fovSetting.SetStartValue(set[0]);
+            this.fovSetting.SetStartValue(set[0]);
             savefile.ReadFloat(set);
-            fovSetting.SetEndValue(set[0]);
+            this.fovSetting.SetEndValue(set[0]);
 
-            soundFaded = savefile.ReadBool();
-            restoreOnTrigger = savefile.ReadBool();
+            this.soundFaded = savefile.ReadBool();
+            this.restoreOnTrigger = savefile.ReadBool();
         }
 
         @Override
@@ -1105,16 +1105,16 @@ public class Target {
             super.Spawn();
 
             PostEventMS(EV_GatherEntities, 0);
-            flashIn = spawnArgs.GetFloat("flashIn", "0");
-            flashOut = spawnArgs.GetFloat("flashOut", "0");
-            flashInSound = new idStr(spawnArgs.GetString("snd_flashin"));
-            flashOutSound = new idStr(spawnArgs.GetString("snd_flashout"));
-            delay = spawnArgs.GetFloat("delay");
-            soundFaded = false;
-            restoreOnTrigger = false;
+            this.flashIn = this.spawnArgs.GetFloat("flashIn", "0");
+            this.flashOut = this.spawnArgs.GetFloat("flashOut", "0");
+            this.flashInSound = new idStr(this.spawnArgs.GetString("snd_flashin"));
+            this.flashOutSound = new idStr(this.spawnArgs.GetString("snd_flashout"));
+            this.delay = this.spawnArgs.GetFloat("delay");
+            this.soundFaded = false;
+            this.restoreOnTrigger = false;
 
             // always allow during cinematics
-            cinematic = true;
+            this.cinematic = true;
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
@@ -1127,73 +1127,73 @@ public class Target {
             String skin;
             boolean update;
             idVec3 color;
-            idVec4 colorTo = new idVec4();
+            final idVec4 colorTo = new idVec4();
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
 
-            if (spawnArgs.GetBool("triggerActivate")) {
-                if (restoreOnTrigger) {
+            if (this.spawnArgs.GetBool("triggerActivate")) {
+                if (this.restoreOnTrigger) {
                     ProcessEvent(EV_RestoreInfluence);
-                    restoreOnTrigger = false;
+                    this.restoreOnTrigger = false;
                     return;
                 }
-                restoreOnTrigger = true;
+                this.restoreOnTrigger = true;
             }
 
-            float fadeTime = spawnArgs.GetFloat("fadeWorldSounds");
+            final float fadeTime = this.spawnArgs.GetFloat("fadeWorldSounds");
 
-            if (delay > 0.0f) {
-                PostEventSec(EV_Activate, delay, activator.value);
-                delay = 0.0f;
+            if (this.delay > 0.0f) {
+                PostEventSec(EV_Activate, this.delay, activator.value);
+                this.delay = 0.0f;
                 // start any sound fading now
                 if (fadeTime != 0) {
                     gameSoundWorld.FadeSoundClasses(0, -40.0f, fadeTime);
-                    soundFaded = true;
+                    this.soundFaded = true;
                 }
                 return;
-            } else if (fadeTime != 0 && !soundFaded) {
+            } else if ((fadeTime != 0) && !this.soundFaded) {
                 gameSoundWorld.FadeSoundClasses(0, -40.0f, fadeTime);
-                soundFaded = true;
+                this.soundFaded = true;
             }
 
-            if (spawnArgs.GetBool("triggerTargets")) {
+            if (this.spawnArgs.GetBool("triggerTargets")) {
                 ActivateTargets(activator.value);
             }
 
-            if (flashIn != 0) {
-                PostEventSec(EV_Flash, 0.0f, flashIn, 0);
+            if (this.flashIn != 0) {
+                PostEventSec(EV_Flash, 0.0f, this.flashIn, 0);
             }
 
-            parm = spawnArgs.GetString("snd_influence");
+            parm = this.spawnArgs.GetString("snd_influence");
             if (isNotNullOrEmpty(parm)) {
-                PostEventSec(EV_StartSoundShader, flashIn, parm, SND_CHANNEL_ANY);
+                PostEventSec(EV_StartSoundShader, this.flashIn, parm, SND_CHANNEL_ANY);
             }
 
-            if (switchToCamera != null) {
-                switchToCamera.PostEventSec(EV_Activate, flashIn + 0.05f, this);
+            if (this.switchToCamera != null) {
+                this.switchToCamera.PostEventSec(EV_Activate, this.flashIn + 0.05f, this);
             }
 
-            float fov = spawnArgs.GetInt("fov");
+            final float fov = this.spawnArgs.GetInt("fov");
             if (fov != 0) {
-                fovSetting.Init(gameLocal.time, (float) SEC2MS(spawnArgs.GetFloat("fovTime")), player.DefaultFov(), fov);
+                this.fovSetting.Init(gameLocal.time, SEC2MS(this.spawnArgs.GetFloat("fovTime")), player.DefaultFov(), fov);
                 BecomeActive(TH_THINK);
             }
 
-            for (i = 0; i < genericList.Num(); i++) {
-                ent = gameLocal.entities[genericList.oGet(i)];
+            for (i = 0; i < this.genericList.Num(); i++) {
+                ent = gameLocal.entities[this.genericList.oGet(i)];
                 if (ent == null) {
                     continue;
                 }
                 generic = (idStaticEntity) ent;
                 color = generic.spawnArgs.GetVector("color_demonic");
                 colorTo.Set(color.x, color.y, color.z, 1.0f);
-                generic.Fade(colorTo, spawnArgs.GetFloat("fade_time", "0.25"));
+                generic.Fade(colorTo, this.spawnArgs.GetFloat("fade_time", "0.25"));
             }
 
-            for (i = 0; i < lightList.Num(); i++) {
-                ent = gameLocal.entities[lightList.oGet(i)];
-                if (ent == null || !ent.IsType(idLight.class)) {
+            for (i = 0; i < this.lightList.Num(); i++) {
+                ent = gameLocal.entities[this.lightList.oGet(i)];
+                if ((ent == null) || !ent.IsType(idLight.class)) {
                     continue;
                 }
                 light = (idLight) ent;
@@ -1205,12 +1205,12 @@ public class Target {
                 color = light.spawnArgs.GetVector("_color");
                 color = light.spawnArgs.GetVector("color_demonic", color.ToString());
                 colorTo.Set(color.x, color.y, color.z, 1.0f);
-                light.Fade(colorTo, spawnArgs.GetFloat("fade_time", "0.25"));
+                light.Fade(colorTo, this.spawnArgs.GetFloat("fade_time", "0.25"));
             }
 
-            for (i = 0; i < soundList.Num(); i++) {
-                ent = gameLocal.entities[soundList.oGet(i)];
-                if (ent == null || !ent.IsType(idSound.class)) {
+            for (i = 0; i < this.soundList.Num(); i++) {
+                ent = gameLocal.entities[this.soundList.oGet(i)];
+                if ((ent == null) || !ent.IsType(idSound.class)) {
                     continue;
                 }
                 sound = (idSound) ent;
@@ -1225,15 +1225,15 @@ public class Target {
                 }
             }
 
-            for (i = 0; i < guiList.Num(); i++) {
-                ent = gameLocal.entities[guiList.oGet(i)];
-                if (ent == null || ent.GetRenderEntity() == null) {
+            for (i = 0; i < this.guiList.Num(); i++) {
+                ent = gameLocal.entities[this.guiList.oGet(i)];
+                if ((ent == null) || (ent.GetRenderEntity() == null)) {
                     continue;
                 }
                 update = false;
                 for (j = 0; j < MAX_RENDERENTITY_GUI; j++) {
-                    if (ent.GetRenderEntity().gui[j] != null
-                            && ent.spawnArgs.FindKey(j == 0 ? "gui_demonic" : va("gui_demonic%d", j + 1)) != null) {
+                    if ((ent.GetRenderEntity().gui[j] != null)
+                            && (ent.spawnArgs.FindKey(j == 0 ? "gui_demonic" : va("gui_demonic%d", j + 1)) != null)) {
                         ent.GetRenderEntity().gui[j] = uiManager.FindGui(ent.spawnArgs.GetString(j == 0 ? "gui_demonic" : va("gui_demonic%d", j + 1)), true);
                         update = true;
                     }
@@ -1245,28 +1245,28 @@ public class Target {
                 }
             }
 
-            player.SetInfluenceLevel(spawnArgs.GetInt("influenceLevel"));
+            player.SetInfluenceLevel(this.spawnArgs.GetInt("influenceLevel"));
 
-            int snapAngle = spawnArgs.GetInt("snapAngle");
+            final int snapAngle = this.spawnArgs.GetInt("snapAngle");
             if (snapAngle != 0) {
-                idAngles ang = new idAngles(0, snapAngle, 0);
+                final idAngles ang = new idAngles(0, snapAngle, 0);
                 player.SetViewAngles(ang);
                 player.SetAngles(ang);
             }
 
-            if (spawnArgs.GetBool("effect_vision")) {
-                parm = spawnArgs.GetString("mtrVision");
-                skin = spawnArgs.GetString("skinVision");
-                player.SetInfluenceView(parm, skin, spawnArgs.GetInt("visionRadius"), this);
+            if (this.spawnArgs.GetBool("effect_vision")) {
+                parm = this.spawnArgs.GetString("mtrVision");
+                skin = this.spawnArgs.GetString("skinVision");
+                player.SetInfluenceView(parm, skin, this.spawnArgs.GetInt("visionRadius"), this);
             }
 
-            parm = spawnArgs.GetString("mtrWorld");
+            parm = this.spawnArgs.GetString("mtrWorld");
             if (isNotNullOrEmpty(parm)) {
                 gameLocal.SetGlobalMaterial(declManager.FindMaterial(parm));
             }
 
-            if (!restoreOnTrigger) {
-                PostEventMS(EV_RestoreInfluence, (int) SEC2MS(spawnArgs.GetFloat("time")));
+            if (!this.restoreOnTrigger) {
+                PostEventMS(EV_RestoreInfluence, (int) SEC2MS(this.spawnArgs.GetFloat("time")));
             }
         }
 
@@ -1278,29 +1278,29 @@ public class Target {
             idStaticEntity generic;
             boolean update;
             idVec3 color;
-            idVec4 colorTo = new idVec4();
+            final idVec4 colorTo = new idVec4();
 
-            if (flashOut != 0) {
-                PostEventSec(EV_Flash, 0.0f, flashOut, 1);
+            if (this.flashOut != 0) {
+                PostEventSec(EV_Flash, 0.0f, this.flashOut, 1);
             }
 
-            if (switchToCamera != null) {
-                switchToCamera.PostEventMS(EV_Activate, 0.0f, this);
+            if (this.switchToCamera != null) {
+                this.switchToCamera.PostEventMS(EV_Activate, 0.0f, this);
             }
 
-            for (i = 0; i < genericList.Num(); i++) {
-                ent = gameLocal.entities[genericList.oGet(i)];
+            for (i = 0; i < this.genericList.Num(); i++) {
+                ent = gameLocal.entities[this.genericList.oGet(i)];
                 if (ent == null) {
                     continue;
                 }
                 generic = (idStaticEntity) ent;
                 colorTo.Set(1.0f, 1.0f, 1.0f, 1.0f);
-                generic.Fade(colorTo, spawnArgs.GetFloat("fade_time", "0.25"));
+                generic.Fade(colorTo, this.spawnArgs.GetFloat("fade_time", "0.25"));
             }
 
-            for (i = 0; i < lightList.Num(); i++) {
-                ent = gameLocal.entities[lightList.oGet(i)];
-                if (ent == null || !ent.IsType(idLight.class)) {
+            for (i = 0; i < this.lightList.Num(); i++) {
+                ent = gameLocal.entities[this.lightList.oGet(i)];
+                if ((ent == null) || !ent.IsType(idLight.class)) {
                     continue;
                 }
                 light = (idLight) ent;
@@ -1310,12 +1310,12 @@ public class Target {
                 }
                 color = light.spawnArgs.GetVector("_color");
                 colorTo.Set(color.x, color.y, color.z, 1.0f);
-                light.Fade(colorTo, spawnArgs.GetFloat("fade_time", "0.25"));
+                light.Fade(colorTo, this.spawnArgs.GetFloat("fade_time", "0.25"));
             }
 
-            for (i = 0; i < soundList.Num(); i++) {
-                ent = gameLocal.entities[soundList.oGet(i)];
-                if (ent == null || !ent.IsType(idSound.class)) {
+            for (i = 0; i < this.soundList.Num(); i++) {
+                ent = gameLocal.entities[this.soundList.oGet(i)];
+                if ((ent == null) || !ent.IsType(idSound.class)) {
                     continue;
                 }
                 sound = (idSound) ent;
@@ -1323,9 +1323,9 @@ public class Target {
                 sound.SetSound(sound.spawnArgs.GetString("s_shader"));
             }
 
-            for (i = 0; i < guiList.Num(); i++) {
-                ent = gameLocal.entities[guiList.oGet(i)];
-                if (ent == null || GetRenderEntity() == null) {
+            for (i = 0; i < this.guiList.Num(); i++) {
+                ent = gameLocal.entities[this.guiList.oGet(i)];
+                if ((ent == null) || (GetRenderEntity() == null)) {
                     continue;
                 }
                 update = false;
@@ -1341,12 +1341,12 @@ public class Target {
                 }
             }
 
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             player.SetInfluenceLevel(0);
             player.SetInfluenceView(null, null, 0.0f, null);
             player.SetInfluenceFov(0);
             gameLocal.SetGlobalMaterial(null);
-            float fadeTime = spawnArgs.GetFloat("fadeWorldSounds");
+            final float fadeTime = this.spawnArgs.GetFloat("fadeWorldSounds");
             if (fadeTime != 0) {
                 gameSoundWorld.FadeSoundClasses(0, 0.0f, fadeTime / 2.0f);
             }
@@ -1355,89 +1355,89 @@ public class Target {
 
         private void Event_GatherEntities() {
             int i, listedEntities;
-            idEntity[] entityList = new idEntity[MAX_GENTITIES];
+            final idEntity[] entityList = new idEntity[MAX_GENTITIES];
 
-            boolean demonicOnly = spawnArgs.GetBool("effect_demonic");
-            boolean lights = spawnArgs.GetBool("effect_lights");
-            boolean sounds = spawnArgs.GetBool("effect_sounds");
-            boolean guis = spawnArgs.GetBool("effect_guis");
-            boolean models = spawnArgs.GetBool("effect_models");
-            boolean vision = spawnArgs.GetBool("effect_vision");
-            boolean targetsOnly = spawnArgs.GetBool("targetsOnly");
+            final boolean demonicOnly = this.spawnArgs.GetBool("effect_demonic");
+            boolean lights = this.spawnArgs.GetBool("effect_lights");
+            boolean sounds = this.spawnArgs.GetBool("effect_sounds");
+            boolean guis = this.spawnArgs.GetBool("effect_guis");
+            boolean models = this.spawnArgs.GetBool("effect_models");
+            boolean vision = this.spawnArgs.GetBool("effect_vision");
+            final boolean targetsOnly = this.spawnArgs.GetBool("targetsOnly");
 
-            lightList.Clear();
-            guiList.Clear();
-            soundList.Clear();
+            this.lightList.Clear();
+            this.guiList.Clear();
+            this.soundList.Clear();
 
-            if (spawnArgs.GetBool("effect_all")) {
+            if (this.spawnArgs.GetBool("effect_all")) {
                 lights = sounds = guis = models = vision = true;
             }
 
             if (targetsOnly) {
-                listedEntities = targets.Num();
+                listedEntities = this.targets.Num();
                 for (i = 0; i < listedEntities; i++) {
-                    entityList[i] = targets.oGet(i).GetEntity();
+                    entityList[i] = this.targets.oGet(i).GetEntity();
                 }
             } else {
-                float radius = spawnArgs.GetFloat("radius");
+                final float radius = this.spawnArgs.GetFloat("radius");
                 listedEntities = gameLocal.EntitiesWithinRadius(GetPhysics().GetOrigin(), radius, entityList, MAX_GENTITIES);
             }
 
             for (i = 0; i < listedEntities; i++) {
-                idEntity ent = entityList[i];
+                final idEntity ent = entityList[i];
                 if (ent != null) {
-                    if (lights && ent.IsType(idLight.class) && ent.spawnArgs.FindKey("color_demonic") != null) {
-                        lightList.Append(ent.entityNumber);
+                    if (lights && ent.IsType(idLight.class) && (ent.spawnArgs.FindKey("color_demonic") != null)) {
+                        this.lightList.Append(ent.entityNumber);
                         continue;
                     }
-                    if (sounds && ent.IsType(idSound.class) && ent.spawnArgs.FindKey("snd_demonic") != null) {
-                        soundList.Append(ent.entityNumber);
+                    if (sounds && ent.IsType(idSound.class) && (ent.spawnArgs.FindKey("snd_demonic") != null)) {
+                        this.soundList.Append(ent.entityNumber);
                         continue;
                     }
-                    if (guis && ent.GetRenderEntity() != null && ent.GetRenderEntity().gui[0] != null && ent.spawnArgs.FindKey("gui_demonic") != null) {
-                        guiList.Append(ent.entityNumber);
+                    if (guis && (ent.GetRenderEntity() != null) && (ent.GetRenderEntity().gui[0] != null) && (ent.spawnArgs.FindKey("gui_demonic") != null)) {
+                        this.guiList.Append(ent.entityNumber);
                         continue;
                     }
-                    if (ent.IsType(idStaticEntity.class) && ent.spawnArgs.FindKey("color_demonic") != null) {
-                        genericList.Append(ent.entityNumber);
+                    if (ent.IsType(idStaticEntity.class) && (ent.spawnArgs.FindKey("color_demonic") != null)) {
+                        this.genericList.Append(ent.entityNumber);
 //                        continue;
                     }
                 }
             }
             String temp;
-            temp = spawnArgs.GetString("switchToView");
-            switchToCamera = (temp.length() != 0) ? gameLocal.FindEntity(temp) : null;
+            temp = this.spawnArgs.GetString("switchToView");
+            this.switchToCamera = (temp.length() != 0) ? gameLocal.FindEntity(temp) : null;
 
         }
 
         private void Event_Flash(idEventArg<Float> _flash, idEventArg<Integer> _out) {
-            float flash = _flash.value;
-            int out = _out.value;
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final float flash = _flash.value;
+            final int out = _out.value;
+            final idPlayer player = gameLocal.GetLocalPlayer();
             player.playerView.Fade(new idVec4(1, 1, 1, 1), (int) flash);
             idSoundShader shader;
-            if (0 == out && flashInSound.Length() != 0) {
-                shader = declManager.FindSound(flashInSound);
+            if ((0 == out) && (this.flashInSound.Length() != 0)) {
+                shader = declManager.FindSound(this.flashInSound);
                 player.StartSoundShader(shader, SND_CHANNEL_VOICE, 0, false, null);
-            } else if (out != 0 && (flashOutSound.Length() != 0 || flashInSound.Length() != 0)) {
-                shader = declManager.FindSound(flashOutSound.Length() != 0 ? flashOutSound : flashInSound);
+            } else if ((out != 0) && ((this.flashOutSound.Length() != 0) || (this.flashInSound.Length() != 0))) {
+                shader = declManager.FindSound(this.flashOutSound.Length() != 0 ? this.flashOutSound : this.flashInSound);
                 player.StartSoundShader(shader, SND_CHANNEL_VOICE, 0, false, null);
             }
             PostEventSec(EV_ClearFlash, flash, flash);
         }
 
         private void Event_ClearFlash(idEventArg<Float> flash) {
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             player.playerView.Fade(getVec4_zero(), flash.value.intValue());
         }
 
         @Override
         public void Think() {
-            if ((thinkFlags & TH_THINK) != 0) {
-                idPlayer player = gameLocal.GetLocalPlayer();
-                player.SetInfluenceFov(fovSetting.GetCurrentValue(gameLocal.time));
-                if (fovSetting.IsDone(gameLocal.time)) {
-                    if (!spawnArgs.GetBool("leaveFOV")) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
+                final idPlayer player = gameLocal.GetLocalPlayer();
+                player.SetInfluenceFov(this.fovSetting.GetCurrentValue(gameLocal.time));
+                if (this.fovSetting.IsDone(gameLocal.time)) {
+                    if (!this.spawnArgs.GetBool("leaveFOV")) {
                         player.SetInfluenceFov(0);
                     }
                     BecomeInactive(TH_THINK);
@@ -1456,7 +1456,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -1486,10 +1486,10 @@ public class Target {
             idKeyValue kv;
             int n;
 
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (ent != null) {
-                    kv = spawnArgs.MatchPrefix("keyval");
+                    kv = this.spawnArgs.MatchPrefix("keyval");
                     while (kv != null) {
                         n = kv.GetValue().Find(";");
                         if (n > 0) {
@@ -1505,7 +1505,7 @@ public class Target {
                                 }
                             }
                         }
-                        kv = spawnArgs.MatchPrefix("keyval", kv);
+                        kv = this.spawnArgs.MatchPrefix("keyval", kv);
                     }
                     ent.UpdateChangeableSpawnArgs(null);
                     ent.UpdateVisuals();
@@ -1523,7 +1523,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -1553,34 +1553,34 @@ public class Target {
         @Override
         public void Save(idSaveGame savefile) {
 
-            savefile.WriteFloat(fovSetting.GetStartTime());
-            savefile.WriteFloat(fovSetting.GetDuration());
-            savefile.WriteFloat(fovSetting.GetStartValue());
-            savefile.WriteFloat(fovSetting.GetEndValue());
+            savefile.WriteFloat(this.fovSetting.GetStartTime());
+            savefile.WriteFloat(this.fovSetting.GetDuration());
+            savefile.WriteFloat(this.fovSetting.GetStartValue());
+            savefile.WriteFloat(this.fovSetting.GetEndValue());
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            float[] setting = new float[1];
+            final float[] setting = new float[1];
 
             savefile.ReadFloat(setting);
-            fovSetting.SetStartTime(setting[0]);
+            this.fovSetting.SetStartTime(setting[0]);
             savefile.ReadFloat(setting);
-            fovSetting.SetDuration(setting[0]);
+            this.fovSetting.SetDuration(setting[0]);
             savefile.ReadFloat(setting);
-            fovSetting.SetStartValue((int) setting[0]);
+            this.fovSetting.SetStartValue((int) setting[0]);
             savefile.ReadFloat(setting);
-            fovSetting.SetEndValue((int) setting[0]);
+            this.fovSetting.SetEndValue((int) setting[0]);
 
-            fovSetting.GetCurrentValue(gameLocal.time);
+            this.fovSetting.GetCurrentValue(gameLocal.time);
         }
 
         @Override
         public void Think() {
-            if ((thinkFlags & TH_THINK) != 0) {
-                idPlayer player = gameLocal.GetLocalPlayer();
-                player.SetInfluenceFov(fovSetting.GetCurrentValue(gameLocal.time));
-                if (fovSetting.IsDone(gameLocal.time)) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
+                final idPlayer player = gameLocal.GetLocalPlayer();
+                player.SetInfluenceFov(this.fovSetting.GetCurrentValue(gameLocal.time));
+                if (this.fovSetting.IsDone(gameLocal.time)) {
                     player.SetInfluenceFov(0.0f);
                     BecomeInactive(TH_THINK);
                 }
@@ -1591,10 +1591,10 @@ public class Target {
 
         private void Event_Activate(idEventArg<idEntity> activator) {
             // always allow during cinematics
-            cinematic = true;
+            this.cinematic = true;
 
-            idPlayer player = gameLocal.GetLocalPlayer();
-            fovSetting.Init(gameLocal.time, (float) SEC2MS(spawnArgs.GetFloat("time")), (int) (player != null ? player.DefaultFov() : g_fov.GetFloat()), (int) spawnArgs.GetFloat("fov"));
+            final idPlayer player = gameLocal.GetLocalPlayer();
+            this.fovSetting.Init(gameLocal.time, SEC2MS(this.spawnArgs.GetFloat("time")), (int) (player != null ? player.DefaultFov() : g_fov.GetFloat()), (int) this.spawnArgs.GetFloat("fov"));
             BecomeActive(TH_THINK);
         }
 
@@ -1607,7 +1607,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -1631,9 +1631,9 @@ public class Target {
 
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            idPlayer player = gameLocal.GetLocalPlayer();
-            if (player != null && player.objectiveSystem != null) {
-                player.objectiveSystem.SetStateString("missionobjective", spawnArgs.GetString("text", common.GetLanguageDict().GetString("#str_04253")));
+            final idPlayer player = gameLocal.GetLocalPlayer();
+            if ((player != null) && (player.objectiveSystem != null)) {
+                player.objectiveSystem.SetStateString("missionobjective", this.spawnArgs.GetString("text", common.GetLanguageDict().GetString("#str_04253")));
             }
         }
 
@@ -1646,7 +1646,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -1673,10 +1673,10 @@ public class Target {
             idEntity ent;
             int lock;
 
-            lock = spawnArgs.GetInt("locked", "1");
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
-                if (ent != null && ent.IsType(idDoor.class)) {
+            lock = this.spawnArgs.GetInt("locked", "1");
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
+                if ((ent != null) && ent.IsType(idDoor.class)) {
                     if (((idDoor) ent).IsLocked() != 0) {
                         ((idDoor) ent).Lock(0);
                     } else {
@@ -1695,7 +1695,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -1724,19 +1724,19 @@ public class Target {
             String funcName;
             idThread thread;
 
-            funcName = spawnArgs.GetString("call");
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
-                if (ent != null && ent.scriptObject.HasObject()) {
+            funcName = this.spawnArgs.GetString("call");
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
+                if ((ent != null) && ent.scriptObject.HasObject()) {
                     func = ent.scriptObject.GetFunction(funcName);
                     if (NOT(func)) {
-                        gameLocal.Error("Function '%s' not found on entity '%s' for function call from '%s'", funcName, ent.name, name);
+                        gameLocal.Error("Function '%s' not found on entity '%s' for function call from '%s'", funcName, ent.name, this.name);
                     }
                     if (func.type.NumParameters() != 1) {
-                        gameLocal.Error("Function '%s' on entity '%s' has the wrong number of parameters for function call from '%s'", funcName, ent.name, name);
+                        gameLocal.Error("Function '%s' on entity '%s' has the wrong number of parameters for function call from '%s'", funcName, ent.name, this.name);
                     }
                     if (!ent.scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
-                        gameLocal.Error("Function '%s' on entity '%s' is the wrong type for function call from '%s'", funcName, ent.name, name);
+                        gameLocal.Error("Function '%s' on entity '%s' is the wrong type for function call from '%s'", funcName, ent.name, this.name);
                     }
                     // create a thread and call the function
                     thread = new idThread();
@@ -1755,7 +1755,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -1782,16 +1782,16 @@ public class Target {
             int i;
             String weap;
 
-            gameLocal.world.spawnArgs.SetBool("no_Weapons", spawnArgs.GetBool("disable"));
+            gameLocal.world.spawnArgs.SetBool("no_Weapons", this.spawnArgs.GetBool("disable"));
 
-            if (spawnArgs.GetBool("disable")) {
+            if (this.spawnArgs.GetBool("disable")) {
                 for (i = 0; i < gameLocal.numClients; i++) {
                     if (gameLocal.entities[ i] != null) {
                         gameLocal.entities[ i].ProcessEvent(EV_Player_DisableWeapon);
                     }
                 }
             } else {
-                weap = spawnArgs.GetString("weapon");
+                weap = this.spawnArgs.GetString("weapon");
                 for (i = 0; i < gameLocal.numClients; i++) {
                     if (gameLocal.entities[ i] != null) {
                         gameLocal.entities[ i].ProcessEvent(EV_Player_EnableWeapon);
@@ -1812,7 +1812,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
     
     /*
      ===============================================================================
@@ -1837,35 +1837,35 @@ public class Target {
         //
 
         public idTarget_Tip() {
-            playerPos = new idVec3();
+            this.playerPos = new idVec3();
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteVec3(playerPos);
+            savefile.WriteVec3(this.playerPos);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadVec3(playerPos);
+            savefile.ReadVec3(this.playerPos);
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
                 if (player.IsTipVisible()) {
                     PostEventSec(EV_Activate, 5.1f, activator.value);
                     return;
                 }
-                player.ShowTip(spawnArgs.GetString("text_title"), spawnArgs.GetString("text_tip"), false);
+                player.ShowTip(this.spawnArgs.GetString("text_title"), this.spawnArgs.GetString("text_tip"), false);
                 PostEventMS(EV_GetPlayerPos, 2000);
             }
         }
 
         private void Event_TipOff() {
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
-                idVec3 v = player.GetPhysics().GetOrigin().oMinus(playerPos);
+                final idVec3 v = player.GetPhysics().GetOrigin().oMinus(this.playerPos);
                 if (v.Length() > 96.0f) {
                     player.HideTip();
                 } else {
@@ -1875,9 +1875,9 @@ public class Target {
         }
 
         private void Event_GetPlayerPos() {
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
-                playerPos = player.GetPhysics().GetOrigin();
+                this.playerPos = player.GetPhysics().GetOrigin();
                 PostEventMS(EV_TipOff, 100);
             }
         }
@@ -1891,7 +1891,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -1910,9 +1910,9 @@ public class Target {
 
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
-                player.GiveSecurity(spawnArgs.GetString("text_security"));
+                player.GiveSecurity(this.spawnArgs.GetString("text_security"));
             }
         }
 
@@ -1925,7 +1925,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -1947,11 +1947,11 @@ public class Target {
         private void Event_Activate(idEventArg<idEntity> activator) {
             for (int i = 0; i < gameLocal.numClients; i++) {
                 if (gameLocal.entities[ i] != null) {
-                    idPlayer player = (idPlayer) gameLocal.entities[i];
-                    idKeyValue kv = spawnArgs.MatchPrefix("weapon", null);
+                    final idPlayer player = (idPlayer) gameLocal.entities[i];
+                    idKeyValue kv = this.spawnArgs.MatchPrefix("weapon", null);
                     while (kv != null) {
                         player.RemoveWeapon(kv.GetValue().getData());
-                        kv = spawnArgs.MatchPrefix("weapon", kv);
+                        kv = this.spawnArgs.MatchPrefix("weapon", kv);
                     }
                     player.SelectWeapon(player.weapon_fists, true);
                 }
@@ -1967,7 +1967,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
 
     /*
@@ -1989,8 +1989,8 @@ public class Target {
         private void Event_Activate(idEventArg<idEntity> activator) {
             for (int i = 0; i < gameLocal.numClients; i++) {
                 if (gameLocal.entities[ i] != null) {
-                    idPlayer player = (idPlayer) gameLocal.entities[i];
-                    player.SetLevelTrigger(spawnArgs.GetString("levelName"), spawnArgs.GetString("triggerName"));
+                    final idPlayer player = (idPlayer) gameLocal.entities[i];
+                    player.SetLevelTrigger(this.spawnArgs.GetString("levelName"), this.spawnArgs.GetString("triggerName"));
                 }
             }
         }
@@ -2004,7 +2004,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -2025,8 +2025,8 @@ public class Target {
         private void Event_Activate(idEventArg<idEntity> activator) {
             for (int i = 0; i < gameLocal.numClients; i++) {
                 if (gameLocal.entities[ i] != null) {
-                    idPlayer player = (idPlayer) gameLocal.entities[i];
-                    if (spawnArgs.GetBool("enable")) {
+                    final idPlayer player = (idPlayer) gameLocal.entities[i];
+                    if (this.spawnArgs.GetBool("enable")) {
                         pm_stamina.SetFloat(player.spawnArgs.GetFloat("pm_stamina"));
                     } else {
                         pm_stamina.SetFloat(0.0f);
@@ -2044,7 +2044,7 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -2064,13 +2064,13 @@ public class Target {
 
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            float fadeTime = spawnArgs.GetFloat("fadeTime");
-            float fadeDB = spawnArgs.GetFloat("fadeDB");
-            float fadeDuration = spawnArgs.GetFloat("fadeDuration");
-            int fadeClass = spawnArgs.GetInt("fadeClass");
+            final float fadeTime = this.spawnArgs.GetFloat("fadeTime");
+            final float fadeDB = this.spawnArgs.GetFloat("fadeDB");
+            final float fadeDuration = this.spawnArgs.GetFloat("fadeDuration");
+            final int fadeClass = this.spawnArgs.GetInt("fadeClass");
             // start any sound fading now
             if (fadeTime != 0) {
-                gameSoundWorld.FadeSoundClasses(fadeClass, spawnArgs.GetBool("fadeIn") ? fadeDB : /*0.0f */ -fadeDB, fadeTime);
+                gameSoundWorld.FadeSoundClasses(fadeClass, this.spawnArgs.GetBool("fadeIn") ? fadeDB : /*0.0f */ -fadeDB, fadeTime);
                 if (fadeDuration != 0) {
                     PostEventSec(EV_RestoreVolume, fadeDuration);
                 }
@@ -2078,9 +2078,9 @@ public class Target {
         }
 
         private void Event_RestoreVolume() {
-            float fadeTime = spawnArgs.GetFloat("fadeTime");
-            float fadeDB = spawnArgs.GetFloat("fadeDB");
-            int fadeClass = spawnArgs.GetInt("fadeClass");
+            final float fadeTime = this.spawnArgs.GetFloat("fadeTime");
+            final float fadeDB = this.spawnArgs.GetFloat("fadeDB");
+            final int fadeClass = this.spawnArgs.GetInt("fadeClass");
             // restore volume
             gameSoundWorld.FadeSoundClasses(0, fadeDB, fadeTime);
         }
@@ -2094,5 +2094,5 @@ public class Target {
             return eventCallbacks;
         }
 
-    };
+    }
 }

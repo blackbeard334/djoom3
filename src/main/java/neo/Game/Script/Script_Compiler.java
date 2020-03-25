@@ -108,7 +108,7 @@ public class Script_Compiler {
             this.type_b = type_b;
             this.type_c = type_c;
         }
-    };
+    }
     // These opcodes are no longer necessary:
 // OP_PUSH_OBJ:
 // OP_PUSH_OBJENT:
@@ -282,7 +282,7 @@ public class Script_Compiler {
         //
         private final        idParser  parser           = new idParser();
         private idParser parserPtr;
-        private idToken token = new idToken();
+        private final idToken token = new idToken();
         //
         private idTypeDef immediateType;
         private eval_s    immediate;
@@ -294,7 +294,7 @@ public class Script_Compiler {
         private int       loopDepth;
         private int       currentLineNumber;
         private int       currentFileNumber;
-        private int       errorCount;
+        private final int       errorCount;
         //
         private idVarDef  scope;                // the function being parsed, or NULL
         private idVarDef  basetype;            // for accessing fields
@@ -501,7 +501,7 @@ public class Script_Compiler {
 //            vsprintf(string, message, argptr);
 //            va_end(argptr);
 //
-            parserPtr.Warning("%s", String.format(fmt, args));
+            this.parserPtr.Warning("%s", String.format(fmt, args));
         }
 
         /*
@@ -515,10 +515,10 @@ public class Script_Compiler {
             final eval_s c;
             idTypeDef type;
 
-            if (var_a != null && var_a.initialized != initializedConstant) {
+            if ((var_a != null) && (var_a.initialized != initializedConstant)) {
                 return null;
             }
-            if (var_b != null && var_b.initialized != initializedConstant) {
+            if ((var_b != null) && (var_b.initialized != initializedConstant)) {
                 return null;
             }
 
@@ -593,11 +593,11 @@ public class Script_Compiler {
                     type = type_float;
                     break;
                 case OP_AND:
-                    float_c = btoi(var_a.value.getFloatPtr() != 0 && var_b.value.getFloatPtr() != 0);
+                    float_c = btoi((var_a.value.getFloatPtr() != 0) && (var_b.value.getFloatPtr() != 0));
                     type = type_float;
                     break;
                 case OP_OR:
-                    float_c = btoi(var_a.value.getFloatPtr() != 0 || var_b.value.getFloatPtr() != 0);
+                    float_c = btoi((var_a.value.getFloatPtr() != 0) || (var_b.value.getFloatPtr() != 0));
                     type = type_float;
                     break;
                 case OP_NOT_BOOL:
@@ -609,9 +609,9 @@ public class Script_Compiler {
                     type = type_float;
                     break;
                 case OP_NOT_V:
-                    float_c = btoi(0 == vectorPtr.x
-                            && 0 == vectorPtr.y
-                            && 0 == vectorPtr.z);
+                    float_c = btoi((0 == vectorPtr.x)
+                            && (0 == vectorPtr.y)
+                            && (0 == vectorPtr.z));
                     type = type_float;
                     break;
                 case OP_NEG_F:
@@ -687,7 +687,7 @@ public class Script_Compiler {
                     type = type_float;
                     break;
                 case OP_COMP_F:
-                    float_c = (float) ~(int) var_a.value.getFloatPtr();
+                    float_c = ~(int) var_a.value.getFloatPtr();
                     type = type_float;
                     break;
                 default:
@@ -739,16 +739,16 @@ public class Script_Compiler {
                 return var_c;
             }
 
-            if (var_a != null && var_a.Name().equals(RESULT_STRING)) {
+            if ((var_a != null) && var_a.Name().equals(RESULT_STRING)) {
                 var_a.numUsers++;
             }
-            if (var_b != null && var_b.Name().equals(RESULT_STRING)) {
+            if ((var_b != null) && var_b.Name().equals(RESULT_STRING)) {
                 var_b.numUsers++;
             }
 
             statement = gameLocal.program.AllocStatement();
-            statement.linenumber = currentLineNumber;
-            statement.file = currentFileNumber;
+            statement.linenumber = this.currentLineNumber;
+            statement.file = this.currentFileNumber;
 
             if ((op.type_c == def_void) || op.rightAssociative) {
                 // ifs, gotos, and assignments don't need vars allocated
@@ -756,7 +756,7 @@ public class Script_Compiler {
             } else {
                 // allocate result space
                 // try to reuse result defs as much as possible
-                var_c = gameLocal.program.FindFreeResultDef(op.type_c.TypeDef(), RESULT_STRING, scope, var_a, var_b);
+                var_c = gameLocal.program.FindFreeResultDef(op.type_c.TypeDef(), RESULT_STRING, this.scope, var_a, var_b);
                 // set user count back to 1, a result def needs to be used twice before it can be reused
                 var_c.numUsers = 1;
             }
@@ -797,7 +797,7 @@ public class Script_Compiler {
             int op_ptr;
 
             out = null;
-            for (op = opcodes[ op_ptr = OP_PUSH_F]; op.name != null && op.name.equals("<PUSH>"); op = opcodes[ ++op_ptr]) {
+            for (op = opcodes[ op_ptr = OP_PUSH_F]; (op.name != null) && op.name.equals("<PUSH>"); op = opcodes[ ++op_ptr]) {
                 if ((funcArg.Type() == op.type_a.Type()) && (expression.Type() == op.type_b.Type())) {
                     out = op;
                     break;
@@ -830,99 +830,99 @@ public class Script_Compiler {
             int i;
 
             // reset our type
-            immediateType = null;
+            this.immediateType = null;
 
             // Save the token's line number and filename since when we emit opcodes the current 
             // token is always the next one to be read 
-            currentLineNumber = token.line;
-            currentFileNumber = gameLocal.program.GetFilenum(parserPtr.GetFileName().getData());
+            this.currentLineNumber = this.token.line;
+            this.currentFileNumber = gameLocal.program.GetFilenum(this.parserPtr.GetFileName().getData());
 
             bla2++;
-            if (!parserPtr.ReadToken(token)) {
-                eof = true;
+            if (!this.parserPtr.ReadToken(this.token)) {
+                this.eof = true;
                 return;
             }
 
-            if (currentFileNumber != gameLocal.program.GetFilenum(parserPtr.GetFileName().getData())) {
-                if ((braceDepth > 0) && !token.equals("}")) {
+            if (this.currentFileNumber != gameLocal.program.GetFilenum(this.parserPtr.GetFileName().getData())) {
+                if ((this.braceDepth > 0) && !this.token.equals("}")) {
                     // missing a closing brace.  try to give as much info as possible.
-                    if (scope.Type() == ev_function) {
-                        Error("Unexpected end of file inside function '%s'.  Missing closing braces.", scope.Name());
-                    } else if (scope.Type() == ev_object) {
-                        Error("Unexpected end of file inside object '%s'.  Missing closing braces.", scope.Name());
-                    } else if (scope.Type() == ev_namespace) {
-                        Error("Unexpected end of file inside namespace '%s'.  Missing closing braces.", scope.Name());
+                    if (this.scope.Type() == ev_function) {
+                        Error("Unexpected end of file inside function '%s'.  Missing closing braces.", this.scope.Name());
+                    } else if (this.scope.Type() == ev_object) {
+                        Error("Unexpected end of file inside object '%s'.  Missing closing braces.", this.scope.Name());
+                    } else if (this.scope.Type() == ev_namespace) {
+                        Error("Unexpected end of file inside namespace '%s'.  Missing closing braces.", this.scope.Name());
                     } else {
                         Error("Unexpected end of file inside braced section");
                     }
                 }
             }
 
-            switch (token.type) {
+            switch (this.token.type) {
                 case TT_STRING:
                     // handle quoted strings as a unit
-                    immediateType = type_string;
+                    this.immediateType = type_string;
                     return;
 
                 case TT_LITERAL: {
                     // handle quoted vectors as a unit
-                    immediateType = type_vector;
-                    idLexer lex = new idLexer(token.getData(), token.Length(), parserPtr.GetFileName().getData(), LEXFL_NOERRORS);
-                    idToken token2 = new idToken();
-                    immediate = new eval_s(new float[3]);
+                    this.immediateType = type_vector;
+                    final idLexer lex = new idLexer(this.token.getData(), this.token.Length(), this.parserPtr.GetFileName().getData(), LEXFL_NOERRORS);
+                    final idToken token2 = new idToken();
+                    this.immediate = new eval_s(new float[3]);
                     for (i = 0; i < 3; i++) {
                         if (!lex.ReadToken(token2)) {
-                            Error("Couldn't read vector. '%s' is not in the form of 'x y z'", token);
+                            Error("Couldn't read vector. '%s' is not in the form of 'x y z'", this.token);
                         }
-                        if (token2.type == TT_PUNCTUATION && token2.equals("-")) {
+                        if ((token2.type == TT_PUNCTUATION) && token2.equals("-")) {
                             if (NOT(lex.CheckTokenType(TT_NUMBER, 0, token2))) {
-                                Error("expected a number following '-' but found '%s' in vector '%s'", token2, token);
+                                Error("expected a number following '-' but found '%s' in vector '%s'", token2, this.token);
                             }
-                            immediate.vector[i] = -token2.GetFloatValue();
+                            this.immediate.vector[i] = -token2.GetFloatValue();
                         } else if (token2.type == TT_NUMBER) {
-                            immediate.vector[i] = token2.GetFloatValue();
+                            this.immediate.vector[i] = token2.GetFloatValue();
                         } else {
-                            Error("vector '%s' is not in the form of 'x y z'.  expected float value, found '%s'", token, token2);
+                            Error("vector '%s' is not in the form of 'x y z'.  expected float value, found '%s'", this.token, token2);
                         }
                     }
                     return;
                 }
 
                 case TT_NUMBER:
-                    immediateType = type_float;
-                    immediate = new eval_s(token.GetFloatValue());
+                    this.immediateType = type_float;
+                    this.immediate = new eval_s(this.token.GetFloatValue());
                     return;
 
                 case TT_PUNCTUATION:
                     // entity names
-                    if (token.equals("$")) {
-                        immediateType = type_entity;
-                        parserPtr.ReadToken(token);
+                    if (this.token.equals("$")) {
+                        this.immediateType = type_entity;
+                        this.parserPtr.ReadToken(this.token);
                         return;
                     }
 
-                    if (token.equals("{")) {
-                        braceDepth++;
+                    if (this.token.equals("{")) {
+                        this.braceDepth++;
                         return;
                     }
 
-                    if (token.equals("}")) {
-                        braceDepth--;
+                    if (this.token.equals("}")) {
+                        this.braceDepth--;
                         return;
                     }
 
-                    if (punctuationValid[ token.subtype]) {
+                    if (punctuationValid[ this.token.subtype]) {
                         return;
                     }
 
-                    Error("Unknown punctuation '%s'", token);
+                    Error("Unknown punctuation '%s'", this.token);
                     break;
 
                 case TT_NAME:
                     return;
 
                 default:
-                    Error("Unknown token '%s'", token);
+                    Error("Unknown token '%s'", this.token);
             }
         }
 
@@ -935,8 +935,8 @@ public class Script_Compiler {
          =============
          */
         private void ExpectToken(final String string) {
-            if (!token.equals(string)) {
-                Error("expected '%s', found '%s'", string, token);
+            if (!this.token.equals(string)) {
+                Error("expected '%s', found '%s'", string, this.token);
             }
 
             NextToken();
@@ -951,7 +951,7 @@ public class Script_Compiler {
          =============
          */
         private boolean CheckToken(final String string) {
-            if (!token.getData().equals(string)) {//TODO:try to use the idStr::Cmp in the overridden token.equals() method.
+            if (!this.token.getData().equals(string)) {//TODO:try to use the idStr::Cmp in the overridden token.equals() method.
                 return false;
             }
 
@@ -968,11 +968,11 @@ public class Script_Compiler {
          ============
          */
         private void ParseName(idStr name) {
-            if (token.type != TT_NAME) {
-                Error("'%s' is not a name", token);
+            if (this.token.type != TT_NAME) {
+                Error("'%s' is not a name", this.token);
             }
 
-            name.oSet(token);
+            name.oSet(this.token);
             NextToken();
         }
 
@@ -984,9 +984,9 @@ public class Script_Compiler {
          ============
          */
         private void SkipOutOfFunction() {
-            while (braceDepth != 0) {
-                parserPtr.SkipBracedSection(false);
-                braceDepth--;
+            while (this.braceDepth != 0) {
+                this.parserPtr.SkipBracedSection(false);
+                this.braceDepth--;
             }
             NextToken();
         }
@@ -1005,7 +1005,7 @@ public class Script_Compiler {
                 }
 
                 NextToken();
-            } while (!eof);
+            } while (!this.eof);
         }
         /*
          ============
@@ -1018,27 +1018,27 @@ public class Script_Compiler {
         private idTypeDef CheckType() {
             idTypeDef type;
 
-            if (token.equals("float")) {
+            if (this.token.equals("float")) {
                 type = type_float;
-            } else if (token.equals("vector")) {
+            } else if (this.token.equals("vector")) {
                 type = type_vector;
-            } else if (token.equals("entity")) {
+            } else if (this.token.equals("entity")) {
                 type = type_entity;
-            } else if (token.equals("string")) {
+            } else if (this.token.equals("string")) {
                 type = type_string;
-            } else if (token.equals("void")) {
+            } else if (this.token.equals("void")) {
                 type = type_void;
-            } else if (token.equals("object")) {
+            } else if (this.token.equals("object")) {
                 type = type_object;
-            } else if (token.equals("boolean")) {
+            } else if (this.token.equals("boolean")) {
                 type = type_boolean;
-            } else if (token.equals("namespace")) {
+            } else if (this.token.equals("namespace")) {
                 type = type_namespace;
-            } else if (token.equals("scriptEvent")) {
+            } else if (this.token.equals("scriptEvent")) {
                 type = type_scriptevent;
             } else {
-                type = gameLocal.program.FindType(token.getData());
-                if (type != null && !type.Inherits(type_object)) {
+                type = gameLocal.program.FindType(this.token.getData());
+                if ((type != null) && !type.Inherits(type_object)) {
                     type = null;
                 }
             }
@@ -1058,14 +1058,14 @@ public class Script_Compiler {
 
             type = CheckType();
             if (null == type) {
-                Error("\"%s\" is not a type", token.getData());
+                Error("\"%s\" is not a type", this.token.getData());
             }
 
-            if ((type == type_scriptevent) && (scope != def_namespace)) {
+            if ((type == type_scriptevent) && (this.scope != def_namespace)) {
                 Error("scriptEvents can only defined in the global namespace");
             }
 
-            if ((type == type_namespace) && (scope.Type() != ev_namespace)) {
+            if ((type == type_namespace) && (this.scope.Type() != ev_namespace)) {
                 Error("A namespace may only be defined globally, or within another namespace");
             }
 
@@ -1273,7 +1273,7 @@ public class Script_Compiler {
             idVarDef def;
 
             blaaaa++;
-            def = GetImmediate(immediateType, immediate, token.getData());
+            def = GetImmediate(this.immediateType, this.immediate, this.token.getData());
             NextToken();
 
             return def;
@@ -1333,7 +1333,7 @@ public class Script_Compiler {
                 EmitOpcode(op, object, VirtualFunctionConstant(func));
 
                 // need arg size seperate since script object may be NULL
-                statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
+                final statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
                 statement.c = SizeConstant(func.value.functionPtr.parmTotal);
             } else {
                 EmitOpcode(op, func, SizeConstant(size));
@@ -1388,8 +1388,8 @@ public class Script_Compiler {
 
             // allocate result space
             // try to reuse result defs as much as possible
-            statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
-            idVarDef resultDef = gameLocal.program.FindFreeResultDef(returnType, RESULT_STRING, scope, statement.a, statement.b);
+            final statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
+            final idVarDef resultDef = gameLocal.program.FindFreeResultDef(returnType, RESULT_STRING, this.scope, statement.a, statement.b);
             // set user count back to 0, a result def needs to be used twice before it can be reused
             resultDef.numUsers = 0;
 
@@ -1410,17 +1410,17 @@ public class Script_Compiler {
             }
 
             assert (funcDef.value.functionPtr != null);
-            if (callthread) {
-                if ((funcDef.initialized != uninitialized) && funcDef.value.functionPtr.eventdef != null) {
+            if (this.callthread) {
+                if ((funcDef.initialized != uninitialized) && (funcDef.value.functionPtr.eventdef != null)) {
                     Error("Built-in functions cannot be called as threads");
                 }
-                callthread = false;
+                this.callthread = false;
                 return EmitFunctionParms(OP_THREAD, funcDef, 0, 0, null);
             } else {
-                if ((funcDef.initialized != uninitialized) && funcDef.value.functionPtr.eventdef != null) {
-                    if ((scope.Type() != ev_namespace) && (scope.scope.Type() == ev_object)) {
+                if ((funcDef.initialized != uninitialized) && (funcDef.value.functionPtr.eventdef != null)) {
+                    if ((this.scope.Type() != ev_namespace) && (this.scope.scope.Type() == ev_object)) {
                         // get the local object pointer
-                        idVarDef thisdef = gameLocal.program.GetDef(scope.scope.TypeDef(), "self", scope);
+                        final idVarDef thisdef = gameLocal.program.GetDef(this.scope.scope.TypeDef(), "self", this.scope);
                         if (NOT(thisdef)) {
                             Error("No 'self' within scope");
                         }
@@ -1437,8 +1437,8 @@ public class Script_Compiler {
 
         private idVarDef ParseObjectCall(idVarDef object, idVarDef func) {
             EmitPush(object, object.TypeDef());
-            if (callthread) {
-                callthread = false;
+            if (this.callthread) {
+                this.callthread = false;
                 return EmitFunctionParms(OP_OBJTHREAD, func, 1, type_object.Size(), object);
             } else {
                 return EmitFunctionParms(OP_OBJECTCALL, func, 1, 0, object);
@@ -1446,7 +1446,7 @@ public class Script_Compiler {
         }
 
         private idVarDef ParseEventCall(idVarDef object, idVarDef funcDef) {
-            if (callthread) {
+            if (this.callthread) {
                 Error("Cannot call built-in functions as a thread");
             }
 
@@ -1468,7 +1468,7 @@ public class Script_Compiler {
         }
 
         private idVarDef ParseSysObjectCall(idVarDef funcDef) {
-            if (callthread) {
+            if (this.callthread) {
                 Error("Cannot call built-in functions as a thread");
             }
 
@@ -1500,7 +1500,7 @@ public class Script_Compiler {
             bla++;
 
             // check if we're accessing a field
-            if (baseobj != null && (baseobj.Type() == ev_object)) {
+            if ((baseobj != null) && (baseobj.Type() == ev_object)) {
                 idVarDef tdef;
 
                 def = null;
@@ -1512,14 +1512,14 @@ public class Script_Compiler {
                 }
             } else {
                 // first look through the defs in our scope
-                def = gameLocal.program.GetDef(null, name, scope);
+                def = gameLocal.program.GetDef(null, name, this.scope);
                 if (NOT(def)) {
                     // if we're in a member function, check types local to the object
-                    if ((scope.Type() != ev_namespace) && (scope.scope.Type() == ev_object)) {
+                    if ((this.scope.Type() != ev_namespace) && (this.scope.scope.Type() == ev_object)) {
                         // get the local object pointer
-                        idVarDef thisdef = gameLocal.program.GetDef(scope.scope.TypeDef(), "self", scope);
+                        final idVarDef thisdef = gameLocal.program.GetDef(this.scope.scope.TypeDef(), "self", this.scope);
 
-                        field = LookupDef(name, scope.scope.TypeDef().def);
+                        field = LookupDef(name, this.scope.scope.TypeDef().def);
                         if (NOT(field)) {
                             Error("Unknown value \"%s\"", name);
                         }
@@ -1554,7 +1554,7 @@ public class Script_Compiler {
                                 break;
                             }
                             op = opcodes[++op_i];
-                            if (null == op.name || !op.name.equals(".")) {
+                            if ((null == op.name) || !op.name.equals(".")) {
                                 Error("no valid opcode to access type '%s'", field.TypeDef().SuperClass().Name());
                             }
                         }
@@ -1587,27 +1587,27 @@ public class Script_Compiler {
         private idVarDef ParseValue() {           DBG_ParseValue++;
             idVarDef def;
             idVarDef namespaceDef;
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
-            if (immediateType == type_entity) {
+            if (this.immediateType == type_entity) {
                 // if an immediate entity ($-prefaced name) then create or lookup a def for it.
                 // when entities are spawned, they'll lookup the def and point it to them.
-                def = gameLocal.program.GetDef(type_entity, "$" + token, def_namespace);
+                def = gameLocal.program.GetDef(type_entity, "$" + this.token, def_namespace);
                 if (NOT(def)) {
-                    def = gameLocal.program.AllocDef(type_entity, "$" + token, def_namespace, true);
+                    def = gameLocal.program.AllocDef(type_entity, "$" + this.token, def_namespace, true);
                 }
                 NextToken();
                 return def;
-            } else if (immediateType != null) {
+            } else if (this.immediateType != null) {
                 // if the token is an immediate, allocate a constant for it
                 return ParseImmediate();
             }
 
             ParseName(name);
-            def = LookupDef(name.getData(), basetype);
+            def = LookupDef(name.getData(), this.basetype);
             if (NOT(def)) {
-                if (basetype != null) {
-                    Error("%s is not a member of %s", name, basetype.TypeDef().Name());
+                if (this.basetype != null) {
+                    Error("%s is not a member of %s", name, this.basetype.TypeDef().Name());
                 } else {
                     Error("Unknown value \"%s\"", name);
                 }
@@ -1632,7 +1632,7 @@ public class Script_Compiler {
             idVarDef e;
             int op;
 
-            if (NOT(immediateType) && CheckToken("~")) {
+            if (NOT(this.immediateType) && CheckToken("~")) {
                 e = GetExpression(TILDE_PRIORITY);
                 switch (e.Type()) {
                     case ev_float:
@@ -1650,7 +1650,7 @@ public class Script_Compiler {
                 return EmitOpcode(op, e, null);
             }
 
-            if (NOT(immediateType) && CheckToken("!")) {
+            if (NOT(this.immediateType) && CheckToken("!")) {
                 e = GetExpression(NOT_PRIORITY);
                 switch (e.Type()) {
                     case ev_boolean:
@@ -1696,15 +1696,15 @@ public class Script_Compiler {
             }
 
             // check for negation operator
-            if (NOT(immediateType) && CheckToken("-")) {
+            if (NOT(this.immediateType) && CheckToken("-")) {
                 // constants are directly negated without an instruction
-                if (immediateType == type_float) {
-                    immediate = new eval_s(-immediate._float);
+                if (this.immediateType == type_float) {
+                    this.immediate = new eval_s(-this.immediate._float);
                     return ParseImmediate();
-                } else if (immediateType == type_vector) {
-                    immediate.vector[0] = -immediate.vector[0];
-                    immediate.vector[1] = -immediate.vector[1];
-                    immediate.vector[2] = -immediate.vector[2];
+                } else if (this.immediateType == type_vector) {
+                    this.immediate.vector[0] = -this.immediate.vector[0];
+                    this.immediate.vector[1] = -this.immediate.vector[1];
+                    this.immediate.vector[2] = -this.immediate.vector[2];
                     return ParseImmediate();
                 } else {
                     e = GetExpression(NOT_PRIORITY);
@@ -1741,10 +1741,10 @@ public class Script_Compiler {
             }
 
             if (CheckToken("thread")) {
-                callthread = true;
+                this.callthread = true;
                 e = GetExpression(FUNCTION_PRIORITY);
 
-                if (callthread) {
+                if (this.callthread) {
                     Error("Invalid thread call");
                 }
 
@@ -1753,7 +1753,7 @@ public class Script_Compiler {
                 return gameLocal.program.returnDef;
             }
 
-            if (NOT(immediateType) && CheckToken("(")) {
+            if (NOT(this.immediateType) && CheckToken("(")) {
                 e = GetExpression(TOP_PRIORITY);
                 ExpectToken(")");
 
@@ -1791,7 +1791,7 @@ public class Script_Compiler {
             }
 
             e = GetExpression(priority - 1);
-            if (token.equals(";")) {
+            if (this.token.equals(";")) {
                 // save us from searching through the opcodes unneccesarily
                 return e;
             }
@@ -1802,19 +1802,19 @@ public class Script_Compiler {
                 }
 
                 // has to be a punctuation
-                if (immediateType != null) {
+                if (this.immediateType != null) {
                     break;
                 }
 
                 for (op = opcodes[op_i = 0];
-                        op_i < opcodes.length && op != null && op.name != null;
+                        (op_i < opcodes.length) && (op != null) && (op.name != null);
                         op = opcodes[++op_i]) {
                     if ((op.priority == priority) && CheckToken(op.name)) {
                         break;
                     }
                 }
 
-                if (null == op || null == op.name) {
+                if ((null == op) || (null == op.name)) {
                     // next token isn't at this priority level
                     break;
                 }
@@ -1826,18 +1826,18 @@ public class Script_Compiler {
                 }
 
                 // preserve our base type
-                oldtype = basetype;
+                oldtype = this.basetype;
 
                 // field access needs scope from object
                 if ((op.name.charAt(0) == '.') && e.TypeDef().Inherits(type_object)) {
                     // save off what type this field is part of
-                    basetype = e.TypeDef().def;
+                    this.basetype = e.TypeDef().def;
                 }
 
                 if (op.rightAssociative) {
                     // if last statement is an indirect, change it to an address of
                     if (gameLocal.program.NumStatements() > 0) {
-                        statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
+                        final statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
                         if ((statement.op >= OP_INDIRECT_F) && (statement.op < OP_ADDRESS)) {
                             statement.op = OP_ADDRESS;
                             type_pointer.SetPointerType(e.TypeDef());
@@ -1851,7 +1851,7 @@ public class Script_Compiler {
                 }
 
                 // restore type
-                basetype = oldtype;
+                this.basetype = oldtype;
 
                 // type check
                 type_a = e.Type();
@@ -1859,7 +1859,7 @@ public class Script_Compiler {
 
                 // field access gets type from field
                 if (op.name.charAt(0) == '.') {
-                    if ((e2.Type() == ev_function) && e2.TypeDef().ReturnType() != null) {
+                    if ((e2.Type() == ev_function) && (e2.TypeDef().ReturnType() != null)) {
                         type_c = e2.TypeDef().ReturnType().Type();
                     } else if (e2.TypeDef().FieldType() != null) {
                         type_c = e2.TypeDef().FieldType().Type();
@@ -1879,7 +1879,7 @@ public class Script_Compiler {
                     }
 
                     op = opcodes[++op_i];
-                    if (null == op.name || !op.name.equals(oldop.name)) {
+                    if ((null == op.name) || !op.name.equals(oldop.name)) {
                         Error("type mismatch for '%s'", oldop.name);
                     }
                 }
@@ -1893,7 +1893,7 @@ public class Script_Compiler {
 
                     case OP_OBJECTCALL:
                         ExpectToken("(");
-                        if ((e2.initialized != uninitialized) && e2.value.functionPtr.eventdef != null) {
+                        if ((e2.initialized != uninitialized) && (e2.value.functionPtr.eventdef != null)) {
                             e = ParseEventCall(e, e2);
                         } else {
                             e = ParseObjectCall(e, e2);
@@ -1902,7 +1902,7 @@ public class Script_Compiler {
 
                     case OP_EVENTCALL:
                         ExpectToken("(");
-                        if ((e2.initialized != uninitialized) && e2.value.functionPtr.eventdef != null) {
+                        if ((e2.initialized != uninitialized) && (e2.value.functionPtr.eventdef != null)) {
                             e = ParseEventCall(e, e2);
                         } else {
                             e = ParseObjectCall(e, e2);
@@ -1910,7 +1910,7 @@ public class Script_Compiler {
                         break;
 
                     default:
-                        if (callthread) {
+                        if (this.callthread) {
                             Error("Expecting function call after 'thread'");
                         }
 
@@ -1950,7 +1950,7 @@ public class Script_Compiler {
                             // statement.b points to type_pointer, which is just a temporary that gets its type reassigned, so we store the real type in statement.c
                             // so that we can do a type check during run time since we don't know what type the script object is at compile time because it
                             // comes from an entity
-                            statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
+                            final statement_s statement = gameLocal.program.GetStatement(gameLocal.program.NumStatements() - 1);
                             statement.c = type_pointer.PointerType().def;
                         }
 
@@ -2033,7 +2033,7 @@ public class Script_Compiler {
             int op_i;
 
             if (CheckToken(";")) {
-                if (scope.TypeDef().ReturnType().Type() != ev_void) {
+                if (this.scope.TypeDef().ReturnType().Type() != ev_void) {
                     Error("expecting return value");
                 }
 
@@ -2045,7 +2045,7 @@ public class Script_Compiler {
             ExpectToken(";");
 
             type_a = e.Type();
-            type_b = scope.TypeDef().ReturnType().Type();
+            type_b = this.scope.TypeDef().ReturnType().Type();
 
             if (TypeMatches(type_a, type_b)) {
                 EmitOpcode(OP_RETURN, e, null);
@@ -2062,12 +2062,12 @@ public class Script_Compiler {
 
             while (!TypeMatches(type_a, op.type_a.Type()) || !TypeMatches(type_b, op.type_b.Type())) {
                 op = opcodes[++op_i];
-                if (null == op.name || !op.name.equals("=")) {
+                if ((null == op.name) || !op.name.equals("=")) {
                     Error("type mismatch for return value");
                 }
             }
 
-            idTypeDef returnType = scope.TypeDef().ReturnType();
+            final idTypeDef returnType = this.scope.TypeDef().ReturnType();
             if (returnType.Type() == ev_string) {
                 EmitOpcode(op, e, gameLocal.program.returnStringDef);
             } else {
@@ -2082,7 +2082,7 @@ public class Script_Compiler {
             int patch1;
             int patch2;
 
-            loopDepth++;
+            this.loopDepth++;
 
             ExpectToken("(");
 
@@ -2105,7 +2105,7 @@ public class Script_Compiler {
             // fixup breaks and continues
             PatchLoop(patch2, patch2);
 
-            loopDepth--;
+            this.loopDepth--;
         }
 
         /*
@@ -2155,7 +2155,7 @@ public class Script_Compiler {
             int patch3;
             int patch4;
 
-            loopDepth++;
+            this.loopDepth++;
 
             start = gameLocal.program.NumStatements();
 
@@ -2211,14 +2211,14 @@ public class Script_Compiler {
             // fixup breaks and continues
             PatchLoop(start, patch2);
 
-            loopDepth--;
+            this.loopDepth--;
         }
 
         private void ParseDoWhileStatement() {
             idVarDef e;
             int patch1;
 
-            loopDepth++;
+            this.loopDepth++;
 
             patch1 = gameLocal.program.NumStatements();
             ParseStatement();
@@ -2233,7 +2233,7 @@ public class Script_Compiler {
             // fixup breaks and continues
             PatchLoop(patch1, patch1);
 
-            loopDepth--;
+            this.loopDepth--;
         }
 
         private void ParseIfStatement() {
@@ -2298,7 +2298,7 @@ public class Script_Compiler {
 
             if (CheckToken("break")) {
                 ExpectToken(";");
-                if (0 == loopDepth) {
+                if (0 == this.loopDepth) {
                     Error("cannot break outside of a loop");
                 }
                 EmitOpcode(OP_BREAK, null, null);
@@ -2307,7 +2307,7 @@ public class Script_Compiler {
 
             if (CheckToken("continue")) {
                 ExpectToken(";");
-                if (0 == loopDepth) {
+                if (0 == this.loopDepth) {
                     Error("cannot contine outside of a loop");
                 }
                 EmitOpcode(OP_CONTINUE, null, null);
@@ -2333,15 +2333,15 @@ public class Script_Compiler {
             idTypeDef type;
             idTypeDef parentType;
             idTypeDef fieldtype;
-            idStr name = new idStr();
+            final idStr name = new idStr();
             String fieldname;
-            idTypeDef newtype = new idTypeDef(ev_field, null, "", 0, null);
+            final idTypeDef newtype = new idTypeDef(ev_field, null, "", 0, null);
             idVarDef oldscope;
             int num;
             int i;
 
-            oldscope = scope;
-            if (scope.Type() != ev_namespace) {
+            oldscope = this.scope;
+            if (this.scope.Type() != ev_namespace) {
                 Error("Objects cannot be defined within functions or other objects");
             }
 
@@ -2361,8 +2361,8 @@ public class Script_Compiler {
             }
 
             objtype = gameLocal.program.AllocType(ev_object, null, objname, parentType == type_object ? 0 : parentType.Size(), parentType);
-            objtype.def = gameLocal.program.AllocDef(objtype, objname, scope, true);
-            scope = objtype.def;
+            objtype.def = gameLocal.program.AllocDef(objtype, objname, this.scope, true);
+            this.scope = objtype.def;
 
             // inherit all the functions
             num = parentType.NumFunctions();
@@ -2393,13 +2393,13 @@ public class Script_Compiler {
                 } else {
                     type = gameLocal.program.GetType(newtype, true);
                     assert (NOT(type.def));
-                    gameLocal.program.AllocDef(type, name.getData(), scope, true);
+                    gameLocal.program.AllocDef(type, name.getData(), this.scope, true);
                     objtype.AddField(type, name.getData());
                     ExpectToken(";");
                 }
             } while (!CheckToken("}"));
 
-            scope = oldscope;
+            this.scope = oldscope;
 
             ExpectToken(";");
         }
@@ -2412,16 +2412,16 @@ public class Script_Compiler {
          ============
          */
         private idTypeDef ParseFunction(idTypeDef returnType, final String name) {
-            idTypeDef newtype = new idTypeDef(ev_function, null, name, type_function.Size(), returnType);
+            final idTypeDef newtype = new idTypeDef(ev_function, null, name, type_function.Size(), returnType);
             idTypeDef type;
 
-            if (scope.Type() != ev_namespace) {
+            if (this.scope.Type() != ev_namespace) {
                 // create self pointer
-                newtype.AddFunctionParm(scope.TypeDef(), "self");
+                newtype.AddFunctionParm(this.scope.TypeDef(), "self");
             }
 
             if (!CheckToken(")")) {
-                idStr parmName = new idStr();
+                final idStr parmName = new idStr();
                 do {
                     type = ParseType();
                     ParseName(parmName);
@@ -2445,19 +2445,19 @@ public class Script_Compiler {
             function_t func;
             statement_s pos;
 
-            if ((scope.Type() != ev_namespace) && !scope.TypeDef().Inherits(type_object)) {
+            if ((this.scope.Type() != ev_namespace) && !this.scope.TypeDef().Inherits(type_object)) {
                 Error("Functions may not be defined within other functions");
             }
 
             type = ParseFunction(returnType, name);
-            def = gameLocal.program.GetDef(type, name, scope);
+            def = gameLocal.program.GetDef(type, name, this.scope);
             if (NOT(def)) {
-                def = gameLocal.program.AllocDef(type, name, scope, true);
+                def = gameLocal.program.AllocDef(type, name, this.scope, true);
                 type.def = def;
 
                 func = gameLocal.program.AllocFunction(def);
-                if (scope.TypeDef().Inherits(type_object)) {
-                    scope.TypeDef().AddFunction(func);
+                if (this.scope.TypeDef().Inherits(type_object)) {
+                    this.scope.TypeDef().AddFunction(func);
                 }
             } else {
                 func = def.value.functionPtr;
@@ -2495,8 +2495,8 @@ public class Script_Compiler {
                 parm = gameLocal.program.AllocDef(type.GetParmType(i), type.GetParmName(i), def, false);
             }
 
-            oldscope = scope;
-            scope = def;
+            oldscope = this.scope;
+            this.scope = def;
 
             func.firstStatement = gameLocal.program.NumStatements();
 
@@ -2515,7 +2515,7 @@ public class Script_Compiler {
 
                 // emit the call to the constructor
                 if (constructorFunc != null) {
-                    idVarDef selfDef = gameLocal.program.GetDef(type.GetParmType(0), type.GetParmName(0), def);
+                    final idVarDef selfDef = gameLocal.program.GetDef(type.GetParmType(0), type.GetParmName(0), def);
                     assert (selfDef != null);
                     EmitPush(selfDef, selfDef.TypeDef());
                     EmitOpcode(opcodes[ OP_CALL], constructorFunc.def, null);
@@ -2553,7 +2553,7 @@ public class Script_Compiler {
                     }
 
                     // emit the call to the destructor
-                    idVarDef selfDef = gameLocal.program.GetDef(type.GetParmType(0), type.GetParmName(0), def);
+                    final idVarDef selfDef = gameLocal.program.GetDef(type.GetParmType(0), type.GetParmName(0), def);
                     assert (selfDef != null);
                     EmitPush(selfDef, selfDef.TypeDef());
                     EmitOpcode(opcodes[OP_CALL], destructorFunc.def, null);
@@ -2575,24 +2575,24 @@ public class Script_Compiler {
             // record the number of statements in the function
             func.numStatements = gameLocal.program.NumStatements() - func.firstStatement;
 
-            scope = oldscope;
+            this.scope = oldscope;
         }
 
         private void ParseVariableDef(idTypeDef type, final String name) {
             idVarDef def, def2;
             boolean negate;
 
-            def = gameLocal.program.GetDef(type, name, scope);
+            def = gameLocal.program.GetDef(type, name, this.scope);
             if (def != null) {
                 Error("%s redeclared", name);
             }
 
-            def = gameLocal.program.AllocDef(type, name, scope, false);
+            def = gameLocal.program.AllocDef(type, name, this.scope, false);
 
             // check for an initialization
             if (CheckToken("=")) {
                 // if a local variable in a function then write out interpreter code to initialize variable
-                if (scope.Type() == ev_function) {
+                if (this.scope.Type() == ev_function) {
                     def2 = GetExpression(TOP_PRIORITY);
                     if ((type == type_float) && (def2.TypeDef() == type_float)) {
                         EmitOpcode(OP_STORE_F, def2, def);
@@ -2624,36 +2624,36 @@ public class Script_Compiler {
                 } else {
                     // global variables can only be initialized with immediate values
                     negate = false;
-                    if (token.type == TT_PUNCTUATION && token.equals("-")) {
+                    if ((this.token.type == TT_PUNCTUATION) && this.token.equals("-")) {
                         negate = true;
                         NextToken();
-                        if (immediateType != type_float) {
+                        if (this.immediateType != type_float) {
                             Error("wrong immediate type for '-' on variable '%s'", name);
                         }
                     }
 
-                    if (immediateType != type) {
+                    if (this.immediateType != type) {
                         Error("wrong immediate type for '%s'", name);
                     }
 
                     // global variables are initialized at start up
                     if (type == type_string) {
-                        def.SetString(token.getData(), false);
+                        def.SetString(this.token.getData(), false);
                     } else {
                         if (negate) {
-                            immediate = new eval_s(-immediate._float);
+                            this.immediate = new eval_s(-this.immediate._float);
                         }
-                        def.SetValue(immediate, false);
+                        def.SetValue(this.immediate, false);
                     }
                     NextToken();
                 }
             } else if (type == type_string) {
                 // local strings on the stack are initialized in the interpreter
-                if (scope.Type() != ev_function) {
+                if (this.scope.Type() != ev_function) {
                     def.SetString("", false);
                 }
             } else if (type.Inherits(type_object)) {
-                if (scope.Type() != ev_function) {
+                if (this.scope.Type() != ev_function) {
                     def.SetObject(null);
                 }
             }
@@ -2667,7 +2667,7 @@ public class Script_Compiler {
             int num;
             String format;
             idEventDef ev;
-            idStr parmName = new idStr();
+            final idStr parmName = new idStr();
 
             ev = idEventDef.FindEvent(name);
             if (null == ev) {
@@ -2683,7 +2683,7 @@ public class Script_Compiler {
                 Error("Return type doesn't match internal return type '%s'", expectedType.Name());
             }
 
-            idTypeDef newtype = new idTypeDef(ev_function, null, name, type_function.Size(), returnType);
+            final idTypeDef newtype = new idTypeDef(ev_function, null, name, type_function.Size(), returnType);
 
             ExpectToken("(");
 
@@ -2691,7 +2691,7 @@ public class Script_Compiler {
             num = format.length();
             for (i = 0; i < num; i++) {
                 expectedType = GetTypeForEventArg(format.charAt(i));
-                if (null == expectedType || (expectedType == type_void)) {
+                if ((null == expectedType) || (expectedType == type_void)) {
                     Error("Invalid parameter '%c' in definition of '%s' event.", format.charAt(i), name);
                 }
 
@@ -2704,7 +2704,7 @@ public class Script_Compiler {
 
                 newtype.AddFunctionParm(argType, "");
 
-                if (i < num - 1) {
+                if (i < (num - 1)) {
                     if (CheckToken(")")) {
                         Error("Too few parameters for event definition.  Internal definition has %d parameters.", num);
                     }
@@ -2725,7 +2725,7 @@ public class Script_Compiler {
                 type = gameLocal.program.AllocType(newtype);
                 type.def = gameLocal.program.AllocDef(type, name, def_namespace, true);
 
-                function_t func = gameLocal.program.AllocFunction(type.def);
+                final function_t func = gameLocal.program.AllocFunction(type.def);
                 func.eventdef = ev;
                 func.parmSize.SetNum(num);
                 for (i = 0; i < num; i++) {
@@ -2747,7 +2747,7 @@ public class Script_Compiler {
          ================
          */
         private void ParseDefs() {
-            idStr name = new idStr();
+            final idStr name = new idStr();
             idTypeDef type;
             idVarDef def;
             idVarDef oldscope;
@@ -2768,23 +2768,23 @@ public class Script_Compiler {
             ParseName(name);
 
             if (type == type_namespace) {
-                def = gameLocal.program.GetDef(type, name.getData(), scope);
+                def = gameLocal.program.GetDef(type, name.getData(), this.scope);
                 if (NOT(def)) {
-                    def = gameLocal.program.AllocDef(type, name.getData(), scope, true);
+                    def = gameLocal.program.AllocDef(type, name.getData(), this.scope, true);
                 }
                 ParseNamespace(def);
             } else if (CheckToken("::")) {
-                def = gameLocal.program.GetDef(null, name.getData(), scope);
+                def = gameLocal.program.GetDef(null, name.getData(), this.scope);
                 if (NOT(def)) {
                     Error("Unknown object name '%s'", name);
                 }
                 ParseName(name);
-                oldscope = scope;
-                scope = def;
+                oldscope = this.scope;
+                this.scope = def;
 
                 ExpectToken("(");
                 ParseFunctionDef(type, name.getData());
-                scope = oldscope;
+                this.scope = oldscope;
             } else if (type == type_object) {
                 ParseObjectDef(name.getData());
             } else if (CheckToken("(")) {		// check for a function prototype or declaraction
@@ -2809,14 +2809,14 @@ public class Script_Compiler {
         private void ParseNamespace(idVarDef newScope) {
             idVarDef oldscope;
 
-            oldscope = scope;
+            oldscope = this.scope;
             if (newScope != def_namespace) {
                 ExpectToken("{");
             }
 
-            while (!eof) {
-                scope = newScope;
-                callthread = false;
+            while (!this.eof) {
+                this.scope = newScope;
+                this.callthread = false;
 
                 if ((newScope != def_namespace) && CheckToken("}")) {
                     break;
@@ -2825,7 +2825,7 @@ public class Script_Compiler {
                 ParseDefs();
             }
 
-            scope = oldscope;
+            this.scope = oldscope;
         }
 
         public idCompiler() {
@@ -2836,26 +2836,26 @@ public class Script_Compiler {
 //	assert( ( sizeof( opcodes ) / sizeof( opcodes[ 0 ] ) ) == ( NUM_OPCODES + 1 ) );
             assert (opcodes.length == (NUM_OPCODES + 1));
 
-            eof = true;
-            parserPtr = parser;
+            this.eof = true;
+            this.parserPtr = this.parser;
 
-            callthread = false;
-            loopDepth = 0;
-            eof = false;
-            braceDepth = 0;
-            immediateType = null;
-            basetype = null;
-            currentLineNumber = 0;
-            currentFileNumber = 0;
-            errorCount = 0;
-            console = false;
-            scope = def_namespace;
+            this.callthread = false;
+            this.loopDepth = 0;
+            this.eof = false;
+            this.braceDepth = 0;
+            this.immediateType = null;
+            this.basetype = null;
+            this.currentLineNumber = 0;
+            this.currentFileNumber = 0;
+            this.errorCount = 0;
+            this.console = false;
+            this.scope = def_namespace;
 
 //	memset( &immediate, 0, sizeof( immediate ) );
 //	memset( punctuationValid, 0, sizeof( punctuationValid ) );
             punctuationValid = new boolean[punctuationValid.length];
             for (ptr = 0; punctuation[ptr] != null; ptr++) {
-                id = parserPtr.GetPunctuationId(punctuation[ptr]);
+                id = this.parserPtr.GetPunctuationId(punctuation[ptr]);
                 if ((id >= 0) && (id < 256)) {
                     punctuationValid[ id] = true;
                 }
@@ -2870,78 +2870,78 @@ public class Script_Compiler {
          ============
          */
         public void CompileFile(final String text, final String filename, boolean toConsole) {
-            idTimer compile_time = new idTimer();
+            final idTimer compile_time = new idTimer();
             boolean error;
 
             compile_time.Start();
 
-            scope = def_namespace;
-            basetype = null;
-            callthread = false;
-            loopDepth = 0;
-            eof = false;
-            braceDepth = 0;
-            immediateType = null;
-            currentLineNumber = 0;
-            console = toConsole;
+            this.scope = def_namespace;
+            this.basetype = null;
+            this.callthread = false;
+            this.loopDepth = 0;
+            this.eof = false;
+            this.braceDepth = 0;
+            this.immediateType = null;
+            this.currentLineNumber = 0;
+            this.console = toConsole;
 
 //	memset( &immediate, 0, sizeof( immediate ) );
 
-            parser.SetFlags(LEXFL_ALLOWMULTICHARLITERALS);
-            parser.LoadMemory(text, text.length(), filename);
-            parserPtr = parser;
+            this.parser.SetFlags(LEXFL_ALLOWMULTICHARLITERALS);
+            this.parser.LoadMemory(text, text.length(), filename);
+            this.parserPtr = this.parser;
 
             // unread tokens to include script defines
-            token.oSet(SCRIPT_DEFAULTDEFS);
-            token.type = TT_STRING;
-            token.subtype = token.Length();
-            token.line = token.linesCrossed = 0;
-            parser.UnreadToken(token);
+            this.token.oSet(SCRIPT_DEFAULTDEFS);
+            this.token.type = TT_STRING;
+            this.token.subtype = this.token.Length();
+            this.token.line = this.token.linesCrossed = 0;
+            this.parser.UnreadToken(this.token);
 
-            token.oSet("include");
-            token.type = TT_NAME;
-            token.subtype = token.Length();
-            token.line = token.linesCrossed = 0;
-            parser.UnreadToken(token);
+            this.token.oSet("include");
+            this.token.type = TT_NAME;
+            this.token.subtype = this.token.Length();
+            this.token.line = this.token.linesCrossed = 0;
+            this.parser.UnreadToken(this.token);
 
-            token.oSet("#");
-            token.type = TT_PUNCTUATION;
-            token.subtype = P_PRECOMP;
-            token.line = token.linesCrossed = 0;
-            parser.UnreadToken(token);
+            this.token.oSet("#");
+            this.token.type = TT_PUNCTUATION;
+            this.token.subtype = P_PRECOMP;
+            this.token.line = this.token.linesCrossed = 0;
+            this.parser.UnreadToken(this.token);
 
             // init the current token line to be the first line so that currentLineNumber is set correctly in NextToken
-            token.line = 1;
+            this.token.line = 1;
 
             error = false;
             try {
                 // read first token
                 NextToken();
-                while (!eof && !error) {
+                while (!this.eof && !error) {
                     // parse from global namespace
                     ParseNamespace(def_namespace);
                 }
-            } catch (idCompileError err) {
+            } catch (final idCompileError err) {
                 String error2;
 
-                if (console) {
+                if (this.console) {
                     // don't print line number of an error if were calling script from the console using the "script" command
                     error2 = String.format("Error: %s\n", err.error);
                 } else {
-                    error2 = String.format("Error: file %s, line %d: %s\n", gameLocal.program.GetFilename(currentFileNumber), currentLineNumber, err.error);
+                    error2 = String.format("Error: file %s, line %d: %s\n", gameLocal.program.GetFilename(this.currentFileNumber), this.currentLineNumber, err.error);
                 }
 
-                parser.FreeSource();
+                this.parser.FreeSource();
 
                 throw new idCompileError(error2);
             }
 
-            parser.FreeSource();
+            this.parser.FreeSource();
 
             compile_time.Stop();
             if (!toConsole) {
                 gameLocal.Printf("Compiled '%s': %.1f ms\n", filename, compile_time.Milliseconds());
             }
         }
-    };
+    }
 }

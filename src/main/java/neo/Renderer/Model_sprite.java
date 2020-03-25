@@ -67,12 +67,12 @@ public class Model_sprite {
             srfTriangles_s tri;
             modelSurface_s surf = new modelSurface_s();
 
-            if (cachedModel != null && !RenderSystem_init.r_useCachedDynamicModels.GetBool()) {
+            if ((cachedModel != null) && !RenderSystem_init.r_useCachedDynamicModels.GetBool()) {
 //		delete cachedModel;
                 cachedModel = null;
             }
 
-            if (renderEntity == null || viewDef == null) {
+            if ((renderEntity == null) || (viewDef == null)) {
 //		delete cachedModel;
                 return null;
             }
@@ -143,8 +143,8 @@ public class Model_sprite {
             final byte blue = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_BLUE] * 255.0f);
             final byte alpha = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
 
-            idVec3 right = new idVec3(0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH] * 0.5f, 0.0f);
-            idVec3 up = new idVec3(0.0f, 0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT] * 0.5f);
+            final idVec3 right = new idVec3(0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH] * 0.5f, 0.0f);
+            final idVec3 up = new idVec3(0.0f, 0.0f, renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT] * 0.5f);
 
             tri.verts[ 0].xyz = up.oPlus(right);
             tri.verts[ 0].color[ 0] = red;
@@ -179,15 +179,15 @@ public class Model_sprite {
 
         @Override
         public idBounds Bounds(renderEntity_s renderEntity) {
-            idBounds b = new idBounds();
+            final idBounds b = new idBounds();
 
             b.Zero();
             if (renderEntity == null) {
                 b.ExpandSelf(8.0f);
             } else {
-                b.ExpandSelf((float) (Max(renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH], renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT]) * 0.5f));
+                b.ExpandSelf(Max(renderEntity.shaderParms[SHADERPARM_SPRITE_WIDTH], renderEntity.shaderParms[SHADERPARM_SPRITE_HEIGHT]) * 0.5f);
             }
             return b;
         }
-    };
+    }
 }

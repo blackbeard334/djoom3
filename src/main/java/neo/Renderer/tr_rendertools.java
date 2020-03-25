@@ -173,7 +173,7 @@ public class tr_rendertools {
         idVec3 end;
         boolean depthTest;
         int lifeTime;
-    };
+    }
 //
     static final debugLine_s[] rb_debugLines = new debugLine_s[MAX_DEBUG_LINES];
     static int rb_numDebugLines = 0;
@@ -194,14 +194,14 @@ public class tr_rendertools {
         boolean depthTest;
 
         public debugText_s() {
-            text = new idStr();
-            origin = new idVec3();
-            color = new idVec4();
-            viewAxis = new idMat3();
-            scale = align = lifeTime = 0;
-            depthTest = false;
+            this.text = new idStr();
+            this.origin = new idVec3();
+            this.color = new idVec4();
+            this.viewAxis = new idMat3();
+            this.scale = this.align = this.lifeTime = 0;
+            this.depthTest = false;
         }
-    };
+    }
 //
     static debugText_s[] rb_debugText = TempDump.allocArray(debugText_s.class, MAX_DEBUG_TEXT);
     static int rb_numDebugText = 0;
@@ -216,7 +216,7 @@ public class tr_rendertools {
         idWinding winding = new idWinding();
         boolean depthTest;
         int lifeTime;
-    };
+    }
 //
     static final debugPolygon_s[] rb_debugPolygons;
     static int rb_numDebugPolygons = 0;
@@ -288,8 +288,8 @@ public class tr_rendertools {
             backEnd.currentScissor = drawSurf.scissorRect;
             qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                     backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                    backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                    backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                    (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                    (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
         }
     }
 
@@ -305,8 +305,8 @@ public class tr_rendertools {
         backEnd.currentScissor = backEnd.viewDef.scissor;
         qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                 backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
     }
 
     /*
@@ -364,7 +364,7 @@ public class tr_rendertools {
         stencilReadback = ByteBuffer.allocate(glConfig.vidWidth * glConfig.vidHeight);// R_StaticAlloc(glConfig.vidWidth * glConfig.vidHeight);
         qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback);
 
-        for (i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++) {
+        for (i = 0; i < (glConfig.vidWidth * glConfig.vidHeight); i++) {
             counts[stencilReadback.get(i)]++;
         }
 
@@ -396,7 +396,7 @@ public class tr_rendertools {
         qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback);
 
         count = 0;
-        for (i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++) {
+        for (i = 0; i < (glConfig.vidWidth * glConfig.vidHeight); i++) {
             count += stencilReadback.get(i);
         }
 
@@ -482,7 +482,7 @@ public class tr_rendertools {
             }
         }
 
-        drawSurf_s[] newDrawSurfs = new drawSurf_s[numDrawSurfs + interactions];// R_FrameAlloc(numDrawSurfs + interactions);
+        final drawSurf_s[] newDrawSurfs = new drawSurf_s[numDrawSurfs + interactions];// R_FrameAlloc(numDrawSurfs + interactions);
 
         for (i = 0; i < numDrawSurfs; i++) {
             surf = drawSurfs[i];
@@ -736,21 +736,21 @@ public class tr_rendertools {
 
                     final srfTriangles_s tri = surf.geo;
 
-                    for (vertCache_s shadow : tri.shadowCache) {
+                    for (final vertCache_s shadow : tri.shadowCache) {
                         qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, vertexCache.Position(shadow).getInt());
                     }
                     qglBegin(GL_LINES);
 
                     for (int j = 0; j < tri.numIndexes; j += 3) {
-                        int i1 = tri.indexes[j + 0];
-                        int i2 = tri.indexes[j + 1];
-                        int i3 = tri.indexes[j + 2];
+                        final int i1 = tri.indexes[j + 0];
+                        final int i2 = tri.indexes[j + 1];
+                        final int i3 = tri.indexes[j + 2];
 
-                        if ((i1 & 1) + (i2 & 1) + (i3 & 1) == 1) {
-                            if ((i1 & 1) + (i2 & 1) == 0) {
+                        if (((i1 & 1) + (i2 & 1) + (i3 & 1)) == 1) {
+                            if (((i1 & 1) + (i2 & 1)) == 0) {
                                 qglArrayElement(i1);
                                 qglArrayElement(i2);
-                            } else if ((i1 & 1) + (i3 & 1) == 0) {
+                            } else if (((i1 & 1) + (i3 & 1)) == 0) {
                                 qglArrayElement(i1);
                                 qglArrayElement(i3);
                             }
@@ -824,7 +824,7 @@ public class tr_rendertools {
                         }
                     }
 
-                    ByteBuffer cache = vertexCache.Position(tri.shadowCache);//TODO:figure out how to work these damn casts.
+                    final ByteBuffer cache = vertexCache.Position(tri.shadowCache);//TODO:figure out how to work these damn casts.
                     qglVertexPointer(4, GL_FLOAT, shadowCache_s.BYTES/*sizeof(cache)*/, cache);
                     RB_DrawElementsWithCounters(tri);
                 }
@@ -866,7 +866,7 @@ public class tr_rendertools {
         qglBegin(GL_LINES);
         for (int i = 0; i < tri.numIndexes; i += 3) {
             for (int j = 0; j < 3; j++) {
-                int k = (j + 1) % 3;
+                final int k = (j + 1) % 3;
                 qglVertex3fv(tri.verts[ tri.silIndexes[i + j]].xyz.ToFloatPtr());
                 qglVertex3fv(tri.verts[ tri.silIndexes[i + k]].xyz.ToFloatPtr());
             }
@@ -934,7 +934,7 @@ public class tr_rendertools {
      =====================
      */
     public static void RB_ShowSurfaceInfo(drawSurf_s[] drawSurfs, int numDrawSurfs) {
-        modelTrace_s mt = new modelTrace_s();
+        final modelTrace_s mt = new modelTrace_s();
         idVec3 start, end;
 
         if (!r_showSurfaceInfo.GetBool()) {
@@ -961,8 +961,8 @@ public class tr_rendertools {
         qglPolygonOffset(-1, -2);
         qglEnable(GL_POLYGON_OFFSET_LINE);
 
-        idVec3[] trans = new idVec3[3];
-        float[] matrix = new float[16];
+        final idVec3[] trans = new idVec3[3];
+        final float[] matrix = new float[16];
 
         // transform the object verts into global space
         R_AxisToModelMatrix(mt.entity.axis, mt.entity.origin, matrix);
@@ -1031,7 +1031,7 @@ public class tr_rendertools {
             // draw the model bounds in white
             qglColor3f(1, 1, 1);
 
-            idRenderModel model = R_EntityDefDynamicModel(vModels.entityDef);
+            final idRenderModel model = R_EntityDefDynamicModel(vModels.entityDef);
             if (null == model) {
                 continue;	// particles won't instantiate without a current view
             }
@@ -1083,7 +1083,7 @@ public class tr_rendertools {
             qglBegin(GL_TRIANGLES);
             for (j = 0; j < tri.numIndexes; j += 3) {
                 idDrawVert a, b, c;
-                float[] d0 = new float[5], d1 = new float[5];
+                final float[] d0 = new float[5], d1 = new float[5];
                 float area;
 
                 a = tri.verts[tri.indexes[j]];
@@ -1097,7 +1097,7 @@ public class tr_rendertools {
                 d1[3] = c.st.oGet(0) - a.st.oGet(0);
                 d1[4] = c.st.oGet(1) - a.st.oGet(1);
 
-                area = d0[3] * d1[4] - d0[4] * d1[3];
+                area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
 
                 if (idMath.Fabs(area) < 0.0001) {
                     qglColor4f(0, 0, 1, 0.5f);
@@ -1209,19 +1209,19 @@ public class tr_rendertools {
                 v = tri.verts[tri.indexes[j]];
 
                 if (r_showTangentSpace.GetInteger() == 1) {
-                    qglColor4f(0.5f + 0.5f * v.tangents[0].oGet(0),
-                            0.5f + 0.5f * v.tangents[0].oGet(1),
-                            0.5f + 0.5f * v.tangents[0].oGet(2),
+                    qglColor4f(0.5f + (0.5f * v.tangents[0].oGet(0)),
+                            0.5f + (0.5f * v.tangents[0].oGet(1)),
+                            0.5f + (0.5f * v.tangents[0].oGet(2)),
                             0.5f);
                 } else if (r_showTangentSpace.GetInteger() == 2) {
-                    qglColor4f(0.5f + 0.5f * v.tangents[1].oGet(0),
-                            0.5f + 0.5f * v.tangents[1].oGet(1),
-                            0.5f + 0.5f * v.tangents[1].oGet(2),
+                    qglColor4f(0.5f + (0.5f * v.tangents[1].oGet(0)),
+                            0.5f + (0.5f * v.tangents[1].oGet(1)),
+                            0.5f + (0.5f * v.tangents[1].oGet(2)),
                             0.5f);
                 } else {
-                    qglColor4f(0.5f + 0.5f * v.normal.oGet(0),
-                            0.5f + 0.5f * v.normal.oGet(1),
-                            0.5f + 0.5f * v.normal.oGet(2),
+                    qglColor4f(0.5f + (0.5f * v.normal.oGet(0)),
+                            0.5f + (0.5f * v.normal.oGet(1)),
+                            0.5f + (0.5f * v.normal.oGet(2)),
                             0.5f);
                 }
                 qglVertex3fv(v.xyz.ToFloatPtr());
@@ -1287,7 +1287,7 @@ public class tr_rendertools {
     public static void RB_ShowNormals(drawSurf_s[] drawSurfs, int numDrawSurfs) {
         int i, j;
         drawSurf_s drawSurf;
-        idVec3 end = new idVec3();
+        final idVec3 end = new idVec3();
         srfTriangles_s tri;
         float size;
         boolean showNumbers;
@@ -1381,7 +1381,7 @@ public class tr_rendertools {
     public static void RB_AltShowNormals(drawSurf_s[] drawSurfs, int numDrawSurfs) {
         int i, j, k;
         drawSurf_s drawSurf;
-        idVec3 end = new idVec3();
+        final idVec3 end = new idVec3();
         srfTriangles_s tri;
 
         if (r_showNormals.GetFloat() == 0.0f) {
@@ -1488,10 +1488,10 @@ public class tr_rendertools {
             for (j = 0; j < tri.numIndexes; j += 3) {
                 final idDrawVert a, b, c;
                 float area, inva;
-                idVec3 temp = new idVec3();
-                float[] d0 = new float[5], d1 = new float[5];
+                final idVec3 temp = new idVec3();
+                final float[] d0 = new float[5], d1 = new float[5];
                 idVec3 mid;
-                idVec3[] tangents = {new idVec3(), new idVec3()};
+                final idVec3[] tangents = {new idVec3(), new idVec3()};
 
                 a = tri.verts[tri.indexes[j + 0]];
                 b = tri.verts[tri.indexes[j + 1]];
@@ -1509,21 +1509,21 @@ public class tr_rendertools {
                 d1[3] = c.st.oGet(0) - a.st.oGet(0);
                 d1[4] = c.st.oGet(1) - a.st.oGet(1);
 
-                area = d0[3] * d1[4] - d0[4] * d1[3];
+                area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
                 if (area == 0) {
                     continue;
                 }
                 inva = 1.0f / area;
 
-                temp.oSet(0, (d0[0] * d1[4] - d0[4] * d1[0]) * inva);
-                temp.oSet(1, (d0[1] * d1[4] - d0[4] * d1[1]) * inva);
-                temp.oSet(2, (d0[2] * d1[4] - d0[4] * d1[2]) * inva);
+                temp.oSet(0, ((d0[0] * d1[4]) - (d0[4] * d1[0])) * inva);
+                temp.oSet(1, ((d0[1] * d1[4]) - (d0[4] * d1[1])) * inva);
+                temp.oSet(2, ((d0[2] * d1[4]) - (d0[4] * d1[2])) * inva);
                 temp.Normalize();
                 tangents[0].oSet(temp);
 
-                temp.oSet(0, (d0[3] * d1[0] - d0[0] * d1[3]) * inva);
-                temp.oSet(1, (d0[3] * d1[1] - d0[1] * d1[3]) * inva);
-                temp.oSet(2, (d0[3] * d1[2] - d0[2] * d1[3]) * inva);
+                temp.oSet(0, ((d0[3] * d1[0]) - (d0[0] * d1[3])) * inva);
+                temp.oSet(1, ((d0[3] * d1[1]) - (d0[1] * d1[3])) * inva);
+                temp.oSet(2, ((d0[3] * d1[2]) - (d0[2] * d1[3])) * inva);
                 temp.Normalize();
                 tangents[1].oSet(temp);
 
@@ -1633,7 +1633,7 @@ public class tr_rendertools {
 
             tri = drawSurf.geo;
 
-            idDrawVert[] ac = tri.verts;//TODO:which element is the pointer pointing to?
+            final idDrawVert[] ac = tri.verts;//TODO:which element is the pointer pointing to?
             if (null == ac) {
                 continue;
             }
@@ -1655,7 +1655,7 @@ public class tr_rendertools {
                     for (m = 0; m < tri.numIndexes; m += 3) {
                         for (n = 0; n < 3; n++) {
                             o = (n == 2) ? 0 : n + 1;
-                            if (tri.indexes[m + n] == i2 && tri.indexes[m + o] == i1) {
+                            if ((tri.indexes[m + n] == i2) && (tri.indexes[m + o] == i1)) {
                                 break;
                             }
                         }
@@ -1690,7 +1690,7 @@ public class tr_rendertools {
             for (j = 0; j < tri.numSilEdges; j++) {
                 edge = tri.silEdges[j];
 
-                if (edge.p1 != danglePlane && edge.p2 != danglePlane) {
+                if ((edge.p1 != danglePlane) && (edge.p2 != danglePlane)) {
                     continue;
                 }
 
@@ -1868,20 +1868,20 @@ public class tr_rendertools {
         int i, num, index, charIndex;
         float spacing, textLen = 0.0f;
 
-        if (text != null && !text.isEmpty()) {
+        if ((text != null) && !text.isEmpty()) {
             if (0 == len) {
                 len = text.length();
             }
             for (i = 0; i < len; i++) {
                 charIndex = text.charAt(i) - 32;
-                if (charIndex < 0 || charIndex > NUM_SIMPLEX_CHARS) {
+                if ((charIndex < 0) || (charIndex > NUM_SIMPLEX_CHARS)) {
                     continue;
                 }
                 num = simplex[charIndex][0] * 2;
                 spacing = simplex[charIndex][1];
                 index = 2;
 
-                while (index - 2 < num) {
+                while ((index - 2) < num) {
                     if (simplex[charIndex][index] < 0) {
                         index++;
                         continue;
@@ -1911,7 +1911,7 @@ public class tr_rendertools {
         float textLen = 0, spacing;
         idVec3 org = new idVec3(), p1, p2;
 
-        if (text != null && !text.isEmpty()) {
+        if ((text != null) && !text.isEmpty()) {
             qglBegin(GL_LINES);
             qglColor3fv(color.ToFloatPtr());
 
@@ -1924,11 +1924,11 @@ public class tr_rendertools {
             len = text.length();
             for (i = 0; i < len; i++) {
 
-                if (i == 0 || text.charAt(i) == '\n') {
+                if ((i == 0) || (text.charAt(i) == '\n')) {
                     org = origin.oMinus(viewAxis.oGet(2)).oMultiply(line * 36.0f * scale);
                     if (align != 0) {
-                        for (j = 1; i + j <= len; j++) {
-                            if (i + j == len || text.charAt(i + j) == '\n') {
+                        for (j = 1; (i + j) <= len; j++) {
+                            if (((i + j) == len) || (text.charAt(i + j) == '\n')) {
                                 textLen = RB_DrawTextLength(text.substring(i), scale, j);
                                 break;
                             }
@@ -1945,14 +1945,14 @@ public class tr_rendertools {
                 }
 
                 charIndex = text.charAt(i) - 32;
-                if (charIndex < 0 || charIndex > NUM_SIMPLEX_CHARS) {
+                if ((charIndex < 0) || (charIndex > NUM_SIMPLEX_CHARS)) {
                     continue;
                 }
                 num = simplex[charIndex][0] * 2;
                 spacing = simplex[charIndex][1];
                 index = 2;
 
-                while (index - 2 < num) {
+                while ((index - 2) < num) {
                     if (simplex[charIndex][index] < 0) {
                         index++;
                         continue;
@@ -2284,7 +2284,7 @@ public class tr_rendertools {
         }
 
         v = r_testGamma.GetInteger();
-        if (v <= 1 || v >= 196) {
+        if ((v <= 1) || (v >= 196)) {
             v = 128;
         }
 
@@ -2292,26 +2292,26 @@ public class tr_rendertools {
         for (mask = 0; mask < 8; mask++) {
             y = mask * BAR_HEIGHT;
             for (c = 0; c < 4; c++) {
-                v = c * 64 + 32;
+                v = (c * 64) + 32;
                 // solid color
-                for (i = 0; i < BAR_HEIGHT / 2; i++) {
-                    for (j = 0; j < G_WIDTH / 4; j++) {
+                for (i = 0; i < (BAR_HEIGHT / 2); i++) {
+                    for (j = 0; j < (G_WIDTH / 4); j++) {
                         for (comp = 0; comp < 3; comp++) {
                             if ((mask & (1 << comp)) != 0) {
-                                image[y + i][c * G_WIDTH / 4 + j][comp] = (byte) v;
+                                image[y + i][((c * G_WIDTH) / 4) + j][comp] = (byte) v;
                             }
                         }
                     }
                     // dithered color
-                    for (j = 0; j < G_WIDTH / 4; j++) {
+                    for (j = 0; j < (G_WIDTH / 4); j++) {
                         if (((i ^ j) & 1) != 0) {
                             dither = c * 64;
                         } else {
-                            dither = c * 64 + 63;
+                            dither = (c * 64) + 63;
                         }
                         for (comp = 0; comp < 3; comp++) {
                             if ((mask & (1 << comp)) != 0) {
-                                image[y + BAR_HEIGHT / 2 + i][c * G_WIDTH / 4 + j][comp] = (byte) dither;
+                                image[y + (BAR_HEIGHT / 2) + i][((c * G_WIDTH) / 4) + j][comp] = (byte) dither;
                             }
                         }
                     }
@@ -2331,10 +2331,10 @@ public class tr_rendertools {
             }
             scale = scale * 1.5f;
             for (i = 0; i < BAR_HEIGHT; i++) {
-                for (j = 0; j < G_WIDTH / 4; j++) {
-                    image[y + i][c * G_WIDTH / 4 + j][0] = (byte) v;
-                    image[y + i][c * G_WIDTH / 4 + j][1] = (byte) v;
-                    image[y + i][c * G_WIDTH / 4 + j][2] = (byte) v;
+                for (j = 0; j < (G_WIDTH / 4); j++) {
+                    image[y + i][((c * G_WIDTH) / 4) + j][0] = (byte) v;
+                    image[y + i][((c * G_WIDTH) / 4) + j][1] = (byte) v;
+                    image[y + i][((c * G_WIDTH) / 4) + j][2] = (byte) v;
                 }
             }
         }
@@ -2362,7 +2362,7 @@ public class tr_rendertools {
      ==================
      */
     public static void RB_TestGammaBias() {
-        byte[][][] image = new byte[G_HEIGHT][G_WIDTH][4];
+        final byte[][][] image = new byte[G_HEIGHT][G_WIDTH][4];
 
         if (r_testGammaBias.GetInteger() <= 0) {
             return;
@@ -2372,7 +2372,7 @@ public class tr_rendertools {
         for (int bias = -40; bias < 40; bias += 10, y += BAR_HEIGHT) {
             float scale = 1;
             for (int c = 0; c < 4; c++) {
-                int v = (int) (64 * scale + bias);
+                int v = (int) ((64 * scale) + bias);
                 scale = scale * 1.5f;
                 if (v < 0) {
                     v = 0;
@@ -2380,10 +2380,10 @@ public class tr_rendertools {
                     v = 255;
                 }
                 for (int i = 0; i < BAR_HEIGHT; i++) {
-                    for (int j = 0; j < G_WIDTH / 4; j++) {
-                        image[y + i][c * G_WIDTH / 4 + j][0] = (byte) v;
-                        image[y + i][c * G_WIDTH / 4 + j][1] = (byte) v;
-                        image[y + i][c * G_WIDTH / 4 + j][2] = (byte) v;
+                    for (int j = 0; j < (G_WIDTH / 4); j++) {
+                        image[y + i][((c * G_WIDTH) / 4) + j][0] = (byte) v;
+                        image[y + i][((c * G_WIDTH) / 4) + j][1] = (byte) v;
+                        image[y + i][((c * G_WIDTH) / 4) + j][2] = (byte) v;
                     }
                 }
             }
@@ -2436,8 +2436,8 @@ public class tr_rendertools {
         } else {
             max = image.uploadWidth > image.uploadHeight ? image.uploadWidth : image.uploadHeight;
 
-            w = 0.25f * image.uploadWidth / max;
-            h = 0.25f * image.uploadHeight / max;
+            w = (0.25f * image.uploadWidth) / max;
+            h = (0.25f * image.uploadHeight) / max;
 
             w *= (float) glConfig.vidHeight / glConfig.vidWidth;
         }
@@ -2489,8 +2489,8 @@ public class tr_rendertools {
         backEnd.currentScissor = backEnd.viewDef.scissor;
         qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                 backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
 
         RB_ShowLightCount();
         RB_ShowShadowCount();

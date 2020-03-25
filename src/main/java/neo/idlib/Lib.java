@@ -111,7 +111,7 @@ public class Lib {
 
         public static void Warning(final String... fmt) {
         }
-    };
+    }
 //
 //
 //
@@ -279,7 +279,7 @@ public class Lib {
     }
 
     public static int LittleLong(byte[] b) {
-        int l = new BigInteger(b).intValue();
+        final int l = new BigInteger(b).intValue();
 
         return LittleLong(l);
     }
@@ -308,7 +308,7 @@ public class Lib {
 
     public static void LittleRevBytes(float[] bp, int elcount) {
         if (SWAP_TEST) {
-            int[] pb = new int[bp.length];
+            final int[] pb = new int[bp.length];
             for (int a = 0; a < bp.length; a++) {
                 pb[a] = Float.floatToIntBits(bp[a]);
             }
@@ -439,7 +439,7 @@ public class Lib {
         b3 = (byte) ((l >> 16) & 255);
         b4 = (byte) ((l >> 24) & 255);
 
-        return ((int) b1 << 24) + ((int) b2 << 16) + ((int) b3 << 8) + b4;
+        return (b1 << 24) + (b2 << 16) + (b3 << 8) + b4;
     }
 
     /*
@@ -517,7 +517,7 @@ public class Lib {
         }
 
         while (elcount-- != 0) {
-            q = p + elsize - 1;
+            q = (p + elsize) - 1;
             while (p < q) {
                 bp[p] ^= bp[q];
                 bp[q] ^= bp[p];
@@ -549,7 +549,7 @@ public class Lib {
         }
 
         while (elcount-- != 0) {
-            q = p + elsize - 1;
+            q = (p + elsize) - 1;
             while (p < q) {
                 bp[p] ^= bp[q];
                 bp[q] ^= bp[p];
@@ -617,7 +617,7 @@ public class Lib {
      ================
      */
     static void SixtetsForIntLittle(byte[] out, int src) {
-        int[] b = {
+        final int[] b = {
             (src >> 0) & 0xff,//TODO:check order
             (src >> 8) & 0xff,
             (src >> 16) & 0xff,
@@ -648,7 +648,7 @@ public class Lib {
      ================
      */
     static int IntForSixtetsLittle(byte[] in) {
-        int[] b = new int[4];
+        final int[] b = new int[4];
         b[0] |= in[0] << 2;
         b[0] |= (in[1] & 0x30) >> 4;
         b[1] |= (in[1] & 0xf) << 4;
@@ -671,8 +671,8 @@ public class Lib {
         int ret = 0;
         ret |= in[0];
         ret |= in[1] << 6;
-        ret |= in[2] << 2 * 6;
-        ret |= in[3] << 3 * 6;
+        ret |= in[2] << (2 * 6);
+        ret |= in[3] << (3 * 6);
         return ret;
     }
 
@@ -704,7 +704,7 @@ public class Lib {
             super(cause);
         }       
         
-    };
+    }
 
     // move from Math.h to keep gcc happy
     public static double Max(double x, double y) {

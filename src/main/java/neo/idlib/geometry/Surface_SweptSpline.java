@@ -24,8 +24,8 @@ public class Surface_SweptSpline {
     class idSurface_SweptSpline extends idSurface {
 
         public idSurface_SweptSpline() {
-            spline = null;
-            sweptSpline = null;
+            this.spline = null;
+            this.sweptSpline = null;
         }
 //	public						~idSurface_SweptSpline( void );
 //
@@ -54,7 +54,7 @@ public class Surface_SweptSpline {
          ====================
          */
         public void SetSweptCircle(final float radius) {
-            idCurve_NURBS<idVec4> nurbs = new idCurve_NURBS<>(idVec4.class);
+            final idCurve_NURBS<idVec4> nurbs = new idCurve_NURBS<>(idVec4.class);
             nurbs.Clear();
             nurbs.AddValue(0.0f, new idVec4(radius, radius, 0.0f, 0.00f));
             nurbs.AddValue(100.0f, new idVec4(-radius, radius, 0.0f, 0.25f));
@@ -66,7 +66,7 @@ public class Surface_SweptSpline {
 ////		delete sweptSpline;
 //                sweptSpline = null;
 //            }
-            sweptSpline = nurbs;
+            this.sweptSpline = nurbs;
         }
 //
 
@@ -82,47 +82,47 @@ public class Surface_SweptSpline {
             int i0, i1, j0, j1;
             float totalTime, t;
             idVec4 splinePos, splineD1;
-            idMat3 splineMat = new idMat3();
+            final idMat3 splineMat = new idMat3();
 
-            if (null == spline || null == sweptSpline) {
+            if ((null == this.spline) || (null == this.sweptSpline)) {
                 super.Clear();
                 return;
             }
 
-            verts.SetNum(splineSubdivisions * sweptSplineSubdivisions, false);
+            this.verts.SetNum(splineSubdivisions * sweptSplineSubdivisions, false);
 
             // calculate the points and first derivatives for the swept spline
-            totalTime = sweptSpline.GetTime(sweptSpline.GetNumValues() - 1) - sweptSpline.GetTime(0) + sweptSpline.GetCloseTime();
-            sweptSplineDiv = sweptSpline.GetBoundaryType() == idCurve_Spline.BT_CLOSED ? sweptSplineSubdivisions : sweptSplineSubdivisions - 1;
+            totalTime = (this.sweptSpline.GetTime(this.sweptSpline.GetNumValues() - 1) - this.sweptSpline.GetTime(0)) + this.sweptSpline.GetCloseTime();
+            sweptSplineDiv = this.sweptSpline.GetBoundaryType() == idCurve_Spline.BT_CLOSED ? sweptSplineSubdivisions : sweptSplineSubdivisions - 1;
             baseOffset = (splineSubdivisions - 1) * sweptSplineSubdivisions;
             for (i = 0; i < sweptSplineSubdivisions; i++) {
-                t = totalTime * i / sweptSplineDiv;
-                splinePos = sweptSpline.GetCurrentValue(t);
-                splineD1 = sweptSpline.GetCurrentFirstDerivative(t);
-                verts.oGet(baseOffset + i).xyz = splinePos.ToVec3();
-                verts.oGet(baseOffset + i).st.oSet(0, splinePos.w);
-                verts.oGet(baseOffset + i).tangents[0] = splineD1.ToVec3();
+                t = (totalTime * i) / sweptSplineDiv;
+                splinePos = this.sweptSpline.GetCurrentValue(t);
+                splineD1 = this.sweptSpline.GetCurrentFirstDerivative(t);
+                this.verts.oGet(baseOffset + i).xyz = splinePos.ToVec3();
+                this.verts.oGet(baseOffset + i).st.oSet(0, splinePos.w);
+                this.verts.oGet(baseOffset + i).tangents[0] = splineD1.ToVec3();
             }
 
             // sweep the spline
-            totalTime = spline.GetTime(spline.GetNumValues() - 1) - spline.GetTime(0) + spline.GetCloseTime();
-            splineDiv = spline.GetBoundaryType() == idCurve_Spline.BT_CLOSED ? splineSubdivisions : splineSubdivisions - 1;
+            totalTime = (this.spline.GetTime(this.spline.GetNumValues() - 1) - this.spline.GetTime(0)) + this.spline.GetCloseTime();
+            splineDiv = this.spline.GetBoundaryType() == idCurve_Spline.BT_CLOSED ? splineSubdivisions : splineSubdivisions - 1;
             splineMat.Identity();
             for (i = 0; i < splineSubdivisions; i++) {
-                t = totalTime * i / splineDiv;
+                t = (totalTime * i) / splineDiv;
 
-                splinePos = spline.GetCurrentValue(t);
-                splineD1 = spline.GetCurrentFirstDerivative(t);
+                splinePos = this.spline.GetCurrentValue(t);
+                splineD1 = this.spline.GetCurrentFirstDerivative(t);
 
                 GetFrame(splineMat, splineD1.ToVec3(), splineMat);
 
                 offset = i * sweptSplineSubdivisions;
                 for (j = 0; j < sweptSplineSubdivisions; j++) {
-                    idDrawVert v = verts.oGet(offset + j);
-                    v.xyz = splinePos.ToVec3().oPlus(verts.oGet(baseOffset + j).xyz.oMultiply(splineMat));
-                    v.st.oSet(0, verts.oGet(baseOffset + j).st.oGet(0));
+                    final idDrawVert v = this.verts.oGet(offset + j);
+                    v.xyz = splinePos.ToVec3().oPlus(this.verts.oGet(baseOffset + j).xyz.oMultiply(splineMat));
+                    v.st.oSet(0, this.verts.oGet(baseOffset + j).st.oGet(0));
                     v.st.oSet(1, splinePos.w);
-                    v.tangents[0] = verts.oGet(baseOffset + j).tangents[0].oMultiply(splineMat);
+                    v.tangents[0] = this.verts.oGet(baseOffset + j).tangents[0].oMultiply(splineMat);
                     v.tangents[1] = splineD1.ToVec3();
                     v.normal = v.tangents[1].Cross(v.tangents[0]);
                     v.normal.Normalize();
@@ -130,26 +130,26 @@ public class Surface_SweptSpline {
                 }
             }
 
-            indexes.SetNum(splineDiv * sweptSplineDiv * 2 * 3, false);
+            this.indexes.SetNum(splineDiv * sweptSplineDiv * 2 * 3, false);
 
             // create indexes for the triangles
             for (offset = i = 0; i < splineDiv; i++) {
 
                 i0 = (i + 0) * sweptSplineSubdivisions;
-                i1 = (i + 1) % splineSubdivisions * sweptSplineSubdivisions;
+                i1 = ((i + 1) % splineSubdivisions) * sweptSplineSubdivisions;
 
                 for (j = 0; j < sweptSplineDiv; j++) {
 
                     j0 = (j + 0);
                     j1 = (j + 1) % sweptSplineSubdivisions;
 
-                    indexes.oSet(offset++, i0 + j0);
-                    indexes.oSet(offset++, i0 + j1);
-                    indexes.oSet(offset++, i1 + j1);
+                    this.indexes.oSet(offset++, i0 + j0);
+                    this.indexes.oSet(offset++, i0 + j1);
+                    this.indexes.oSet(offset++, i1 + j1);
 
-                    indexes.oSet(offset++, i1 + j1);
-                    indexes.oSet(offset++, i1 + j0);
-                    indexes.oSet(offset++, i0 + j0);
+                    this.indexes.oSet(offset++, i1 + j1);
+                    this.indexes.oSet(offset++, i1 + j0);
+                    this.indexes.oSet(offset++, i0 + j0);
                 }
             }
 
@@ -161,11 +161,11 @@ public class Surface_SweptSpline {
         public void Clear() {
             super.Clear();
 //	delete spline;
-            spline = null;
-            spline = null;
+            this.spline = null;
+            this.spline = null;
 //	delete sweptSpline;
-            sweptSpline = null;
-            sweptSpline = null;
+            this.sweptSpline = null;
+            this.sweptSpline = null;
         }
 
         //
@@ -179,8 +179,9 @@ public class Surface_SweptSpline {
             float xy, xz, zz;
             float x2, y2, z2;
             float a, c, s, x, y, z;
-            idVec3 d, v = new idVec3();
-            idMat3 axis = new idMat3();
+            idVec3 d;
+			final idVec3 v = new idVec3();
+            final idMat3 axis = new idMat3();
 
             d = dir;
             d.Normalize();
@@ -189,7 +190,7 @@ public class Surface_SweptSpline {
 
             a = idMath.ACos(previousFrame.oGet(2).oMultiply(d)) * 0.5f;
             c = idMath.Cos(a);
-            s = idMath.Sqrt(1.0f - c * c);
+            s = idMath.Sqrt(1.0f - (c * c));
 
             x = v.oGet(0) * s;
             y = v.oGet(1) * s;
@@ -228,6 +229,4 @@ public class Surface_SweptSpline {
             newFrame.oGet(0).Normalize();
         }
     }
-
-    ;
 }

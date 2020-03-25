@@ -86,9 +86,9 @@ public class map {
      ===========
      */
     static int FindFloatPlane(final idPlane plane, boolean[] fixedDegeneracies) {
-        idPlane p = plane;
-        boolean fixed = p.FixDegeneracies(DIST_EPSILON);
-        if (fixed && fixedDegeneracies != null) {
+        final idPlane p = plane;
+        final boolean fixed = p.FixDegeneracies(DIST_EPSILON);
+        if (fixed && (fixedDegeneracies != null)) {
             fixedDegeneracies[0] = true;
         }
         return dmapGlobals.mapPlanes.FindPlane(p, NORMAL_EPSILON, DIST_EPSILON);
@@ -312,7 +312,7 @@ public class map {
         side_s s;
         idMapBrushSide ms;
         int i;
-        boolean[] fixedDegeneracies = {false};
+        final boolean[] fixedDegeneracies = {false};
 
         buildBrush.entitynum = dmapGlobals.num_entities - 1;
         buildBrush.brushnum = entityPrimitive;
@@ -399,7 +399,7 @@ public class map {
 
         mat = declManager.FindMaterial(patch.GetMaterial());
 
-        idSurface_Patch cp = new idSurface_Patch(patch);
+        final idSurface_Patch cp = new idSurface_Patch(patch);
 
         if (patch.GetExplicitlySubdivided()) {
             cp.SubdivideExplicit(patch.GetHorzSubdivisions(), patch.GetVertSubdivisions(), true);
@@ -453,7 +453,7 @@ public class map {
      */
     static void CreateMapLight(final idMapEntity mapEnt) {
         mapLight_t light;
-        boolean[] dynamic = {false};
+        final boolean[] dynamic = {false};
 
         // designers can add the "noPrelight" flag to signal that
         // the lights will move around, so we don't want
@@ -476,7 +476,7 @@ public class map {
         R_DeriveLightData(light.def);
 
         // get the name for naming the shadow surfaces
-        String[] name = {null};
+        final String[] name = {null};
 
         mapEnt.epairs.GetString("name", "", name);
 
@@ -505,7 +505,7 @@ public class map {
     static void CreateMapLights(final idMapFile dmapFile) {
         int i;
         idMapEntity mapEnt;
-        String[] value = {null};
+        final String[] value = {null};
 
         for (i = 0; i < dmapFile.GetNumEntities(); i++) {
             mapEnt = dmapFile.GetEntity(i);
@@ -525,7 +525,7 @@ public class map {
      */
     static boolean LoadDMapFile(final String filename) {
         primitive_s prim;
-        idBounds mapBounds = new idBounds();
+        final idBounds mapBounds = new idBounds();
         int brushes, triSurfs;
         int i;
         int size;

@@ -33,25 +33,25 @@ public class Complex {
         }
 
         public void Zero() {
-            r = i = 0.0f;
+            this.r = this.i = 0.0f;
         }
 
 //public	float				operator[]( int index ) final;
         public float oGet(int index) {
-            assert (index >= 0 && index < 2);
+            assert ((index >= 0) && (index < 2));
             if (0 == index) {
-                return r;
+                return this.r;
             } else {
-                return i;
+                return this.i;
             }
         }
 
         public void oSet(int index, float value) {
-            assert (index >= 0 && index < 2);
+            assert ((index >= 0) && (index < 2));
             if (0 == index) {
-                r = value;
+                this.r = value;
             } else {
-                i = value;
+                this.i = value;
             }
         }
 //public		float &				operator[]( int index );
@@ -59,20 +59,20 @@ public class Complex {
 //public		idComplex			operator-() final;
 
         public idComplex oNegative() {
-            return new idComplex(-r, -i);
+            return new idComplex(-this.r, -this.i);
         }
 //public		idComplex &			operator=( final idComplex &a );
 
         public idComplex oSet(final idComplex a) {
-            r = a.r;
-            i = a.i;
+            this.r = a.r;
+            this.i = a.i;
             return this;
         }
 //
 //public		idComplex			operator*( final idComplex &a ) final;
 
         public idComplex oMultiply(final idComplex a) {
-            return new idComplex(r * a.r - i * a.i, i * a.r + r * a.i);
+            return new idComplex((this.r * a.r) - (this.i * a.i), (this.i * a.r) + (this.r * a.i));
         }
 //public		idComplex			operator/( final idComplex &a ) final;
 
@@ -80,29 +80,29 @@ public class Complex {
             float s, t;
             if (idMath.Fabs(a.r) >= idMath.Fabs(a.i)) {
                 s = a.i / a.r;
-                t = 1.0f / (a.r + s * a.i);
-                return new idComplex((r + s * i) * t, (i - s * r) * t);
+                t = 1.0f / (a.r + (s * a.i));
+                return new idComplex((this.r + (s * this.i)) * t, (this.i - (s * this.r)) * t);
             } else {
                 s = a.r / a.i;
-                t = 1.0f / (s * a.r + a.i);
-                return new idComplex((r * s + i) * t, (i * s - r) * t);
+                t = 1.0f / ((s * a.r) + a.i);
+                return new idComplex(((this.r * s) + this.i) * t, ((this.i * s) - this.r) * t);
             }
         }
 //public		idComplex			operator+( final idComplex &a ) final;
 
         public idComplex oPlus(final idComplex a) {
-            return new idComplex(r + a.r, i + a.i);
+            return new idComplex(this.r + a.r, this.i + a.i);
         }
 //public		idComplex			operator-( final idComplex &a ) final;
 
         public idComplex oMinus(final idComplex a) {
-            return new idComplex(r - a.r, i - a.i);
+            return new idComplex(this.r - a.r, this.i - a.i);
         }
 //
 //public		idComplex &			operator*=( final idComplex &a );
 
         public idComplex oMulSet(final idComplex a) {
-            this.Set(r * a.r - i * a.i, i * a.r + r * a.i);
+            this.Set((this.r * a.r) - (this.i * a.i), (this.i * a.r) + (this.r * a.i));
             return this;
         }
 //public		idComplex &			operator/=( final idComplex &a );
@@ -111,77 +111,77 @@ public class Complex {
             float s, t;
             if (idMath.Fabs(a.r) >= idMath.Fabs(a.i)) {
                 s = a.i / a.r;
-                t = 1.0f / (a.r + s * a.i);
-                this.Set((r + s * i) * t, (i - s * r) * t);
+                t = 1.0f / (a.r + (s * a.i));
+                this.Set((this.r + (s * this.i)) * t, (this.i - (s * this.r)) * t);
             } else {
                 s = a.r / a.i;
-                t = 1.0f / (s * a.r + a.i);
-                this.Set((r * s + i) * t, (i * s - r) * t);
+                t = 1.0f / ((s * a.r) + a.i);
+                this.Set(((this.r * s) + this.i) * t, ((this.i * s) - this.r) * t);
             }
             return this;
         }
 //public		idComplex &			operator+=( final idComplex &a );
 
         public idComplex oPluSet(final idComplex a) {
-            r += a.r;
-            i += a.i;
+            this.r += a.r;
+            this.i += a.i;
             return this;
         }
 //public		idComplex &			operator-=( final idComplex &a );
 
         public idComplex oMinSet(final idComplex a) {
-            r -= a.r;
-            i -= a.i;
+            this.r -= a.r;
+            this.i -= a.i;
             return this;
         }
 //
 //public		idComplex			operator*( final float a ) final;
 
         public idComplex oMultiply(final float a) {
-            return new idComplex(r * a, i * a);
+            return new idComplex(this.r * a, this.i * a);
         }
 //public		idComplex			operator/( final float a ) final;
 
         public idComplex oDivide(final float a) {
-            float s = 1.0f / a;
-            return new idComplex(r * s, i * s);
+            final float s = 1.0f / a;
+            return new idComplex(this.r * s, this.i * s);
         }
 //public		idComplex			operator+( final float a ) final;
 
         public idComplex oPlus(final float a) {
-            return new idComplex(r + a, i);
+            return new idComplex(this.r + a, this.i);
         }
 //public		idComplex			operator-( final float a ) final;
 
         public idComplex oMinus(final float a) {
-            return new idComplex(r - a, i);
+            return new idComplex(this.r - a, this.i);
         }
 //
 //public		idComplex &			operator*=( final float a );
 
         public idComplex oMulSet(final float a) {
-            r *= a;
-            i *= a;
+            this.r *= a;
+            this.i *= a;
             return this;
         }
 //public		idComplex &			operator/=( final float a );
 
         public idComplex oDivSet(final float a) {
-            float s = 1.0f / a;
-            r *= s;
-            i *= s;
+            final float s = 1.0f / a;
+            this.r *= s;
+            this.i *= s;
             return this;
         }
 //public		idComplex &			operator+=( final float a );
 
         public idComplex oPluSet(final float a) {
-            r += a;
+            this.r += a;
             return this;
         }
 //public		idComplex &			operator-=( final float a );
 
         public idComplex oMinSet(final float a) {
-            r -= a;
+            this.r -= a;
             return this;
         }
 //
@@ -196,11 +196,11 @@ public class Complex {
             float s, t;
             if (idMath.Fabs(b.r) >= idMath.Fabs(b.i)) {
                 s = b.i / b.r;
-                t = a / (b.r + s * b.i);
+                t = a / (b.r + (s * b.i));
                 return new idComplex(t, -s * t);
             } else {
                 s = b.r / b.i;
-                t = a / (s * b.r + b.i);
+                t = a / ((s * b.r) + b.i);
                 return new idComplex(s * t, -t);
             }
         }
@@ -217,14 +217,14 @@ public class Complex {
 //
 
         public boolean Compare(final idComplex a) {// exact compare, no epsilon
-            return ((r == a.r) && (i == a.i));
+            return ((this.r == a.r) && (this.i == a.i));
         }
 
         public boolean Compare(final idComplex a, final float epsilon) {// compare with epsilon
-            if (idMath.Fabs(r - a.r) > epsilon) {
+            if (idMath.Fabs(this.r - a.r) > epsilon) {
                 return false;
             }
-            if (idMath.Fabs(i - a.i) > epsilon) {
+            if (idMath.Fabs(this.i - a.i) > epsilon) {
                 return false;
             }
             return true;
@@ -235,8 +235,8 @@ public class Complex {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 29 * hash + Float.floatToIntBits(this.r);
-            hash = 29 * hash + Float.floatToIntBits(this.i);
+            hash = (29 * hash) + Float.floatToIntBits(this.r);
+            hash = (29 * hash) + Float.floatToIntBits(this.i);
             return hash;
         }
 
@@ -260,13 +260,13 @@ public class Complex {
 
         public idComplex Reciprocal() {
             float s, t;
-            if (idMath.Fabs(r) >= idMath.Fabs(i)) {
-                s = i / r;
-                t = 1.0f / (r + s * i);
+            if (idMath.Fabs(this.r) >= idMath.Fabs(this.i)) {
+                s = this.i / this.r;
+                t = 1.0f / (this.r + (s * this.i));
                 return new idComplex(t, -s * t);
             } else {
-                s = r / i;
-                t = 1.0f / (s * r + i);
+                s = this.r / this.i;
+                t = 1.0f / ((s * this.r) + this.i);
                 return new idComplex(s * t, -t);
             }
         }
@@ -274,42 +274,42 @@ public class Complex {
         public idComplex Sqrt() {
             float x, y, w;
 
-            if (r == 0.0f && i == 0.0f) {
+            if ((this.r == 0.0f) && (this.i == 0.0f)) {
                 return new idComplex(0.0f, 0.0f);
             }
-            x = idMath.Fabs(r);
-            y = idMath.Fabs(i);
+            x = idMath.Fabs(this.r);
+            y = idMath.Fabs(this.i);
             if (x >= y) {
                 w = y / x;
-                w = idMath.Sqrt(x) * idMath.Sqrt(0.5f * (1.0f + idMath.Sqrt(1.0f + w * w)));
+                w = idMath.Sqrt(x) * idMath.Sqrt(0.5f * (1.0f + idMath.Sqrt(1.0f + (w * w))));
             } else {
                 w = x / y;
-                w = idMath.Sqrt(y) * idMath.Sqrt(0.5f * (w + idMath.Sqrt(1.0f + w * w)));
+                w = idMath.Sqrt(y) * idMath.Sqrt(0.5f * (w + idMath.Sqrt(1.0f + (w * w))));
             }
             if (w == 0.0f) {
                 return new idComplex(0.0f, 0.0f);
             }
-            if (r >= 0.0f) {
-                return new idComplex(w, 0.5f * i / w);
+            if (this.r >= 0.0f) {
+                return new idComplex(w, (0.5f * this.i) / w);
             } else {
-                return new idComplex(0.5f * y / w, (i >= 0.0f) ? w : -w);
+                return new idComplex((0.5f * y) / w, (this.i >= 0.0f) ? w : -w);
             }
         }
 
         public float Abs() {
             float x, y, t;
-            x = idMath.Fabs(r);
-            y = idMath.Fabs(i);
+            x = idMath.Fabs(this.r);
+            y = idMath.Fabs(this.i);
             if (x == 0.0f) {
                 return y;
             } else if (y == 0.0f) {
                 return x;
             } else if (x > y) {
                 t = y / x;
-                return x * idMath.Sqrt(1.0f + t * t);
+                return x * idMath.Sqrt(1.0f + (t * t));
             } else {
                 t = x / y;
-                return y * idMath.Sqrt(1.0f + t * t);
+                return y * idMath.Sqrt(1.0f + (t * t));
             }
         }
 
@@ -320,5 +320,5 @@ public class Complex {
 //public		final float *		ToFloatPtr( void ) final;
 //public		float *				ToFloatPtr( void );
 //public		final char *		ToString( int precision = 2 ) final;
-    };
+    }
 }

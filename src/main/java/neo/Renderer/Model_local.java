@@ -123,56 +123,56 @@ public class Model_local {
         // the inherited public interface
         public idRenderModelStatic() {
             this.surfaces = new idList<modelSurface_s>(modelSurface_s.class);
-            name = new idStr("<undefined>");
-            (bounds = new idBounds()).Clear();
-            lastModifiedFrame = 0;
-            lastArchivedFrame = 0;
-            overlaysAdded = 0;
-            shadowHull = null;
-            isStaticWorldModel = false;
-            defaulted = false;
-            purged = false;
-            fastLoad = false;
-            reloadable = true;
-            levelLoadReferenced = false;
-            timeStamp[0] = 0;
+            this.name = new idStr("<undefined>");
+            (this.bounds = new idBounds()).Clear();
+            this.lastModifiedFrame = 0;
+            this.lastArchivedFrame = 0;
+            this.overlaysAdded = 0;
+            this.shadowHull = null;
+            this.isStaticWorldModel = false;
+            this.defaulted = false;
+            this.purged = false;
+            this.fastLoad = false;
+            this.reloadable = true;
+            this.levelLoadReferenced = false;
+            this.timeStamp[0] = 0;
         }
 
         @Override
         public void InitFromFile(String fileName) throws idException {
             boolean loaded;
-            idStr extension = new idStr();
+            final idStr extension = new idStr();
 
             InitEmpty(fileName);
 
             // FIXME: load new .proc map format
-            name.ExtractFileExtension(extension);
+            this.name.ExtractFileExtension(extension);
 
             if (extension.Icmp("ase") == 0) {
-                loaded = LoadASE(name.getData());
-                reloadable = true;
+                loaded = LoadASE(this.name.getData());
+                this.reloadable = true;
             } else if (extension.Icmp("lwo") == 0) {
-                loaded = LoadLWO(name.getData());
-                reloadable = true;
+                loaded = LoadLWO(this.name.getData());
+                this.reloadable = true;
             } else if (extension.Icmp("flt") == 0) {
-                loaded = LoadFLT(name.getData());
-                reloadable = true;
+                loaded = LoadFLT(this.name.getData());
+                this.reloadable = true;
             } else if (extension.Icmp("ma") == 0) {
-                loaded = LoadMA(name.getData());
-                reloadable = true;
+                loaded = LoadMA(this.name.getData());
+                this.reloadable = true;
             } else {
-                common.Warning("idRenderModelStatic::InitFromFile: unknown type for model: \'%s\'", name);
+                common.Warning("idRenderModelStatic::InitFromFile: unknown type for model: \'%s\'", this.name);
                 loaded = false;
             }
 
             if (!loaded) {
-                common.Warning("Couldn't load model: '%s'", name);
+                common.Warning("Couldn't load model: '%s'", this.name);
                 MakeDefaultModel();
                 return;
             }
 
             // it is now available for use
-            purged = false;
+            this.purged = false;
 
             // create the bounds for culling and dynamic surface creation
             FinishSurfaces();
@@ -180,7 +180,7 @@ public class Model_local {
 
         @Override
         public void PartialInitFromFile(String fileName) {
-            fastLoad = true;
+            this.fastLoad = true;
             InitFromFile(fileName);
         }
 
@@ -189,16 +189,16 @@ public class Model_local {
             int i;
             modelSurface_s surf;
 
-            for (i = 0; i < surfaces.Num(); i++) {
-                surf = surfaces.oGet(i);
+            for (i = 0; i < this.surfaces.Num(); i++) {
+                surf = this.surfaces.oGet(i);
 
                 if (surf.geometry != null) {
                     R_FreeStaticTriSurf(surf.geometry);
                 }
             }
-            surfaces.Clear();
+            this.surfaces.Clear();
 
-            purged = true;
+            this.purged = true;
         }
 
         @Override
@@ -208,28 +208,28 @@ public class Model_local {
         @Override
         public void LoadModel() {
             PurgeModel();
-            InitFromFile(name.getData());
+            InitFromFile(this.name.getData());
         }
 
         @Override
         public boolean IsLoaded() {
-            return !purged;
+            return !this.purged;
         }
 
         @Override
         public void SetLevelLoadReferenced(boolean referenced) {
-            levelLoadReferenced = referenced;
+            this.levelLoadReferenced = referenced;
         }
 
         @Override
         public boolean IsLevelLoadReferenced() {
-            return levelLoadReferenced;
+            return this.levelLoadReferenced;
         }
 
         @Override
         public void TouchData() {
-            for (int i = 0; i < surfaces.Num(); i++) {
-                modelSurface_s surf = surfaces.oGet(i);
+            for (int i = 0; i < this.surfaces.Num(); i++) {
+                final modelSurface_s surf = this.surfaces.oGet(i);
 
                 // re-find the material to make sure it gets added to the
                 // level keep list
@@ -244,23 +244,23 @@ public class Model_local {
             // other model names are inline entity models, and need to be
             // shadowed normally
             if (0 == idStr.Cmpn(fileName, "_area", 5)) {
-                isStaticWorldModel = true;
+                this.isStaticWorldModel = true;
             } else {
-                isStaticWorldModel = false;
+                this.isStaticWorldModel = false;
             }
 
-            name = new idStr(fileName);
-            reloadable = false;	// if it didn't come from a file, we can't reload it
+            this.name = new idStr(fileName);
+            this.reloadable = false;	// if it didn't come from a file, we can't reload it
             PurgeModel();
-            purged = false;
-            bounds.Zero();
+            this.purged = false;
+            this.bounds.Zero();
         }
 
         @Override
         public void AddSurface(modelSurface_s surface) {
-            surfaces.AppendClone(surface);
+            this.surfaces.AppendClone(surface);
             if (surface.geometry != null) {
-                bounds.oPluSet(surface.geometry.bounds);
+                this.bounds.oPluSet(surface.geometry.bounds);
             }
         }
 
@@ -295,24 +295,24 @@ public class Model_local {
             int i;
             int totalVerts, totalIndexes;
 
-            purged = false;
+            this.purged = false;
 
             // make sure we don't have a huge bounds even if we don't finish everything
-            bounds.Zero();
+            this.bounds.Zero();
 
-            if (surfaces.Num() == 0) {
+            if (this.surfaces.Num() == 0) {
                 return;
             }
 
             // renderBump doesn't care about most of this
-            if (fastLoad) {
-                bounds.Zero();
-                for (i = 0; i < surfaces.Num(); i++) {
-                    modelSurface_s surf = surfaces.oGet(i);
+            if (this.fastLoad) {
+                this.bounds.Zero();
+                for (i = 0; i < this.surfaces.Num(); i++) {
+                    final modelSurface_s surf = this.surfaces.oGet(i);
 
                     R_BoundTriSurf(surf.geometry);
-                    bounds.AddBounds(surf.geometry.bounds);
-                    int a = 0;
+                    this.bounds.AddBounds(surf.geometry.bounds);
+                    final int a = 0;
                 }
 
                 return;
@@ -323,19 +323,19 @@ public class Model_local {
             totalIndexes = 0;
 
             // decide if we are going to merge all the surfaces into one shadower
-            int numOriginalSurfaces = surfaces.Num();
+            final int numOriginalSurfaces = this.surfaces.Num();
 
             // make sure there aren't any NULL shaders or geometry
             for (i = 0; i < numOriginalSurfaces; i++) {
-                modelSurface_s surf = surfaces.oGet(i);
+                final modelSurface_s surf = this.surfaces.oGet(i);
 
-                if (surf.geometry == null || surf.shader == null) {
+                if ((surf.geometry == null) || (surf.shader == null)) {
                     MakeDefaultModel();
-                    common.Error("Model %s, surface %d had NULL geometry", name, i);
+                    common.Error("Model %s, surface %d had NULL geometry", this.name, i);
                 }
                 if (surf.shader == null) {
                     MakeDefaultModel();
-                    common.Error("Model %s, surface %d had NULL shader", name, i);
+                    common.Error("Model %s, surface %d had NULL shader", this.name, i);
                 }
             }
 
@@ -346,7 +346,7 @@ public class Model_local {
             // add vertexes and indexes to the existing surface, because the
             // tangent generation wouldn't like the acute shared edges
             for (i = 0; i < numOriginalSurfaces; i++) {
-                modelSurface_s surf = surfaces.oGet(i);
+                final modelSurface_s surf = this.surfaces.oGet(i);
 
                 if (surf.shader.ShouldCreateBackSides()) {
                     srfTriangles_s newTri;
@@ -354,7 +354,7 @@ public class Model_local {
                     newTri = R_CopyStaticTriSurf(surf.geometry);
                     R_ReverseTriangles(newTri);
 
-                    modelSurface_s newSurf = new modelSurface_s();
+                    final modelSurface_s newSurf = new modelSurface_s();
 
                     newSurf.shader = surf.shader;
                     newSurf.geometry = newTri;
@@ -364,8 +364,8 @@ public class Model_local {
             }
 
             // clean the surfaces
-            for (i = 0; i < surfaces.Num(); i++) {
-                modelSurface_s surf = surfaces.oGet(i);
+            for (i = 0; i < this.surfaces.Num(); i++) {
+                final modelSurface_s surf = this.surfaces.oGet(i);
 
                 R_CleanupTriangles(surf.geometry, surf.geometry.generateNormals, true, surf.shader.UseUnsmoothedTangents());
                 if (surf.shader.SurfaceCastsShadow()) {
@@ -375,24 +375,24 @@ public class Model_local {
             }
 
             // add up the total surface area for development information
-            for (i = 0; i < surfaces.Num(); i++) {
-                modelSurface_s surf = surfaces.oGet(i);
-                srfTriangles_s tri = surf.geometry;
+            for (i = 0; i < this.surfaces.Num(); i++) {
+                final modelSurface_s surf = this.surfaces.oGet(i);
+                final srfTriangles_s tri = surf.geometry;
 
                 for (int j = 0; j < tri.numIndexes; j += 3) {
-                    float area = idWinding.TriangleArea(tri.verts[tri.indexes[j]].xyz,
+                    final float area = idWinding.TriangleArea(tri.verts[tri.indexes[j]].xyz,
                             tri.verts[tri.indexes[j + 1]].xyz, tri.verts[tri.indexes[j + 2]].xyz);
                     surf.shader.AddToSurfaceArea(area);
                 }
             }
 
             // calculate the bounds
-            if (surfaces.Num() == 0) {
-                bounds.Zero();
+            if (this.surfaces.Num() == 0) {
+                this.bounds.Zero();
             } else {
-                bounds.Clear();
-                for (i = 0; i < surfaces.Num(); i++) {
-                    modelSurface_s surf = surfaces.oGet(i);
+                this.bounds.Clear();
+                for (i = 0; i < this.surfaces.Num(); i++) {
+                    final modelSurface_s surf = this.surfaces.oGet(i);
 
                     // if the surface has a deformation, increase the bounds
                     // the amount here is somewhat arbitrary, designed to handle
@@ -401,8 +401,8 @@ public class Model_local {
                     // Note that this doesn't handle deformations that are skinned in
                     // at run time...
                     if (surf.shader.Deform() != DFRM_NONE) {
-                        srfTriangles_s tri = surf.geometry;
-                        idVec3 mid = (tri.bounds.oGet(1).oPlus(tri.bounds.oGet(0))).oMultiply(0.5f);
+                        final srfTriangles_s tri = surf.geometry;
+                        final idVec3 mid = (tri.bounds.oGet(1).oPlus(tri.bounds.oGet(0))).oMultiply(0.5f);
                         float radius = (tri.bounds.oGet(0).oMinus(mid)).Length();
                         radius += 20.0f;
 
@@ -416,8 +416,8 @@ public class Model_local {
                     }
 
                     // add to the model bounds
-                    bounds.AddBounds(surf.geometry.bounds);
-                    int a = 0;
+                    this.bounds.AddBounds(surf.geometry.bounds);
+                    final int a = 0;
                 }
             }
         }
@@ -431,8 +431,8 @@ public class Model_local {
          */
         @Override
         public void FreeVertexCache() {
-            for (int j = 0; j < surfaces.Num(); j++) {
-                srfTriangles_s tri = surfaces.oGet(j).geometry;
+            for (int j = 0; j < this.surfaces.Num(); j++) {
+                final srfTriangles_s tri = this.surfaces.oGet(j).geometry;
                 if (null == tri) {
                     continue;
                 }
@@ -450,7 +450,7 @@ public class Model_local {
 
         @Override
         public String Name() {
-            return name.getData();
+            return this.name.getData();
         }
 
         @Override
@@ -481,13 +481,13 @@ public class Model_local {
             if (IsDynamicModel() == DM_CONTINUOUS) {
                 common.Printf(" (DM_CONTINUOUS)");
             }
-            if (defaulted) {
+            if (this.defaulted) {
                 common.Printf(" (DEFAULTED)");
             }
-            if (bounds.oGet(0).oGet(0) >= bounds.oGet(1).oGet(0)) {
+            if (this.bounds.oGet(0).oGet(0) >= this.bounds.oGet(1).oGet(0)) {
                 common.Printf(" (EMPTY BOUNDS)");
             }
-            if (bounds.oGet(1).oGet(0) - bounds.oGet(0).oGet(0) > 100000) {
+            if ((this.bounds.oGet(1).oGet(0) - this.bounds.oGet(0).oGet(0)) > 100000) {
                 common.Printf(" (HUGE BOUNDS)");
             }
 
@@ -522,13 +522,13 @@ public class Model_local {
             if (IsDynamicModel() == DM_CONTINUOUS) {
                 common.Printf(" (DM_CONTINUOUS)");
             }
-            if (defaulted) {
+            if (this.defaulted) {
                 common.Printf(" (DEFAULTED)");
             }
-            if (bounds.oGet(0).oGet(0) >= bounds.oGet(1).oGet(0)) {
+            if (this.bounds.oGet(0).oGet(0) >= this.bounds.oGet(1).oGet(0)) {
                 common.Printf(" (EMPTY BOUNDS)");
             }
-            if (bounds.oGet(1).oGet(0) - bounds.oGet(0).oGet(0) > 100000) {
+            if ((this.bounds.oGet(1).oGet(0) - this.bounds.oGet(0).oGet(0)) > 100000) {
                 common.Printf(" (HUGE BOUNDS)");
             }
 
@@ -540,11 +540,11 @@ public class Model_local {
             int totalBytes = 0;
 
             totalBytes += sizeof(this);
-            totalBytes += name.DynamicMemoryUsed();
-            totalBytes += surfaces.MemoryUsed();
+            totalBytes += this.name.DynamicMemoryUsed();
+            totalBytes += this.surfaces.MemoryUsed();
 
-            if (shadowHull != null) {
-                totalBytes += R_TriSurfMemory(shadowHull);
+            if (this.shadowHull != null) {
+                totalBytes += R_TriSurfMemory(this.shadowHull);
             }
 
             for (int j = 0; j < NumSurfaces(); j++) {
@@ -560,27 +560,27 @@ public class Model_local {
 
         @Override
         public long[]/*ID_TIME_T*/ Timestamp() {
-            return timeStamp;
+            return this.timeStamp;
         }
 
         @Override
         public int NumSurfaces() {
-            return surfaces.Num();
+            return this.surfaces.Num();
         }
 
         @Override
         public int NumBaseSurfaces() {
-            return surfaces.Num() - overlaysAdded;
+            return this.surfaces.Num() - this.overlaysAdded;
         }
 
         @Override
         public modelSurface_s Surface(int surfaceNum) {
-            return surfaces.oGet(surfaceNum);
+            return this.surfaces.oGet(surfaceNum);
         }
 
         @Override
         public srfTriangles_s AllocSurfaceTriangles(int numVerts, int numIndexes) {
-            srfTriangles_s tri = R_AllocStaticTriSurf();
+            final srfTriangles_s tri = R_AllocStaticTriSurf();
             R_AllocStaticTriSurfVerts(tri, numVerts);
             R_AllocStaticTriSurfIndexes(tri, numIndexes);
             return tri;
@@ -593,17 +593,17 @@ public class Model_local {
 
         @Override
         public srfTriangles_s ShadowHull() {
-            return shadowHull;
+            return this.shadowHull;
         }
 
         @Override
         public boolean IsStaticWorldModel() {
-            return isStaticWorldModel;
+            return this.isStaticWorldModel;
         }
 
         @Override
         public boolean IsReloadable() {
-            return reloadable;
+            return this.reloadable;
         }
 
         @Override
@@ -614,7 +614,7 @@ public class Model_local {
 
         @Override
         public boolean IsDefaultModel() {
-            return defaulted;
+            return this.defaulted;
         }
 
         @Override
@@ -623,7 +623,7 @@ public class Model_local {
 //		delete cachedModel;
 //		cachedModel = NULL;
             }
-            common.Error("InstantiateDynamicModel called on static model '%s'", name.getData());
+            common.Error("InstantiateDynamicModel called on static model '%s'", this.name.getData());
             return null;
         }
 
@@ -659,7 +659,7 @@ public class Model_local {
 
         @Override
         public idBounds Bounds(renderEntity_s ent) {
-            return new idBounds(bounds.oGet(0), bounds.oGet(1));
+            return new idBounds(this.bounds.oGet(0), this.bounds.oGet(1));
         }
 
         @Override
@@ -674,17 +674,17 @@ public class Model_local {
             InitEmpty(f.ReadHashString());
 
             int i, j;
-            int[] numSurfaces = new int[1];
-            int[] index = new int[1];
-            int[] vert = new int[1];
+            final int[] numSurfaces = new int[1];
+            final int[] index = new int[1];
+            final int[] vert = new int[1];
             f.ReadInt(numSurfaces);
 
             for (i = 0; i < numSurfaces[0]; i++) {
-                modelSurface_s surf = new modelSurface_s();
+                final modelSurface_s surf = new modelSurface_s();
 
                 surf.shader = declManager.FindMaterial(f.ReadHashString());
 
-                srfTriangles_s tri = R_AllocStaticTriSurf();
+                final srfTriangles_s tri = R_AllocStaticTriSurf();
 
                 f.ReadInt(index);
                 tri.numIndexes = index[0];
@@ -698,7 +698,7 @@ public class Model_local {
                 tri.numVerts = vert[0];
                 R_AllocStaticTriSurfVerts(tri, tri.numVerts);
                 for (j = 0; j < tri.numVerts; ++j) {
-                    char[][] color = new char[4][1];
+                    final char[][] color = new char[4][1];
                     f.ReadVec3(tri.verts[j].xyz);
                     f.ReadVec2(tri.verts[j].st);
                     f.ReadVec3(tri.verts[j].normal);
@@ -726,21 +726,22 @@ public class Model_local {
 //            int[] data = new int[1];
 
             // note that it has been updated
-            lastArchivedFrame = tr.frameCount;
+            this.lastArchivedFrame = tr.frameCount;
 
 //            data = DC_DEFINE_MODEL.ordinal();//FIXME:WHY?
             f.WriteInt(DC_DEFINE_MODEL);
             f.WriteHashString(this.Name());
 
-            int i, j, iData = surfaces.Num();
+            int i, j;
+			final int iData = this.surfaces.Num();
             f.WriteInt(iData);
 
-            for (i = 0; i < surfaces.Num(); i++) {
-                final modelSurface_s surf = surfaces.oGet(i);
+            for (i = 0; i < this.surfaces.Num(); i++) {
+                final modelSurface_s surf = this.surfaces.oGet(i);
 
                 f.WriteHashString(surf.shader.GetName());
 
-                srfTriangles_s tri = surf.geometry;
+                final srfTriangles_s tri = surf.geometry;
                 f.WriteInt(tri.numIndexes);
                 for (j = 0; j < tri.numIndexes; ++j) {
                     f.WriteInt(tri.indexes[j]);
@@ -767,15 +768,15 @@ public class Model_local {
 
         public void MakeDefaultModel() {
 
-            defaulted = true;
+            this.defaulted = true;
 
             // throw out any surfaces we already have
             PurgeModel();
 
             // create one new surface
-            modelSurface_s surf = new modelSurface_s();
+            final modelSurface_s surf = new modelSurface_s();
 
-            srfTriangles_s tri = R_AllocStaticTriSurf();
+            final srfTriangles_s tri = R_AllocStaticTriSurf();
 
             surf.shader = tr.defaultMaterial;
             surf.geometry = tri;
@@ -814,8 +815,8 @@ public class Model_local {
         }
 
         public boolean LoadLWO(String fileName) {
-            int[] failID = {0};
-            int[] failPos = {0};
+            final int[] failID = {0};
+            final int[] failPos = {0};
             lwObject lwo;
 
             lwo = lwGetObject(fileName, failID, failPos);
@@ -838,7 +839,7 @@ public class Model_local {
          =================
          */
         public boolean LoadFLT(final String fileName) {
-            ByteBuffer[] buffer = {null};
+            final ByteBuffer[] buffer = {null};
             FloatBuffer data;
             int len;
 
@@ -846,13 +847,13 @@ public class Model_local {
             if (len <= 0) {
                 return false;
             }
-            int size = (int) Math.sqrt(len / 4.0f);
+            final int size = (int) Math.sqrt(len / 4.0f);
             data = buffer[0].asFloatBuffer();
 
             // bound the altitudes
             float min = 9999999;
             float max = -9999999;
-            for (int i = 0; i < len / 4; i++) {
+            for (int i = 0; i < (len / 4); i++) {
                 data.put(i, BigFloat(data.get(i)));
                 if (data.get(i) == -9999) {
                     data.put(i, 0);		// unscanned areas
@@ -867,15 +868,15 @@ public class Model_local {
             }
             if (true) {
                 // write out a gray scale height map
-                ByteBuffer image = ByteBuffer.allocate(len);// R_StaticAlloc(len);
+                final ByteBuffer image = ByteBuffer.allocate(len);// R_StaticAlloc(len);
                 int image_p = 0;
-                for (int i = 0; i < len / 4; i++) {
-                    float v = (data.get(i) - min) / (max - min);
+                for (int i = 0; i < (len / 4); i++) {
+                    final float v = (data.get(i) - min) / (max - min);
                     image.putFloat(image_p, v * 255);
                     image.put(image_p + 3, (byte) 255);
                     image_p += 4;
                 }
-                idStr tgaName = new idStr(fileName);
+                final idStr tgaName = new idStr(fileName);
                 tgaName.StripFileExtension();
                 tgaName.Append(".tga");
                 R_WriteTGA(tgaName.getData(), image, size, size, false);
@@ -889,7 +890,7 @@ public class Model_local {
                 int i;
                 for (minX = 0; minX < size; minX++) {
                     for (i = 0; i < size; i++) {
-                        if (data.get(i * size + minX) > 1.0) {
+                        if (data.get((i * size) + minX) > 1.0) {
                             break;
                         }
                     }
@@ -900,7 +901,7 @@ public class Model_local {
 
                 for (maxX = size - 1; maxX > 0; maxX--) {
                     for (i = 0; i < size; i++) {
-                        if (data.get(i * size + maxX) > 1.0) {
+                        if (data.get((i * size) + maxX) > 1.0) {
                             break;
                         }
                     }
@@ -911,7 +912,7 @@ public class Model_local {
 
                 for (minY = 0; minY < size; minY++) {
                     for (i = 0; i < size; i++) {
-                        if (data.get(minY * size + i) > 1.0) {
+                        if (data.get((minY * size) + i) > 1.0) {
                             break;
                         }
                     }
@@ -922,7 +923,7 @@ public class Model_local {
 
                 for (maxY = size - 1; maxY < size; maxY--) {
                     for (i = 0; i < size; i++) {
-                        if (data.get(maxY * size + i) > 1.0) {
+                        if (data.get((maxY * size) + i) > 1.0) {
                             break;
                         }
                     }
@@ -932,35 +933,35 @@ public class Model_local {
                 }
             }
 
-            int width = maxX - minX + 1;
-            int height = maxY - minY + 1;
+            final int width = (maxX - minX) + 1;
+            final int height = (maxY - minY) + 1;
 
 //width /= 2;
             // allocate triangle surface
-            srfTriangles_s tri = R_AllocStaticTriSurf();
+            final srfTriangles_s tri = R_AllocStaticTriSurf();
             tri.numVerts = width * height;
             tri.numIndexes = (width - 1) * (height - 1) * 6;
 
-            fastLoad = true;		// don't do all the sil processing
+            this.fastLoad = true;		// don't do all the sil processing
 
             R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
             R_AllocStaticTriSurfVerts(tri, tri.numVerts);
 
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-                    int v = i * width + j;
+                    final int v = (i * width) + j;
                     tri.verts[ v].Clear();
                     tri.verts[ v].xyz.oSet(0, j * 10);	// each sample is 10 meters
                     tri.verts[ v].xyz.oSet(1, -i * 10);
-                    tri.verts[ v].xyz.oSet(2, data.get((minY + i) * size + minX + j));	// height is in meters
+                    tri.verts[ v].xyz.oSet(2, data.get(((minY + i) * size) + minX + j));	// height is in meters
                     tri.verts[ v].st.oSet(0, (float) j / (width - 1));
                     tri.verts[ v].st.oSet(1, 1.0f - ((float) i / (height - 1)));
                 }
             }
 
-            for (int i = 0; i < height - 1; i++) {
-                for (int j = 0; j < width - 1; j++) {
-                    int v = (i * (width - 1) + j) * 6;
+            for (int i = 0; i < (height - 1); i++) {
+                for (int j = 0; j < (width - 1); j++) {
+                    final int v = ((i * (width - 1)) + j) * 6;
 //if (false){
 //			tri.indexes[ v + 0 ] = i * width + j;
 //			tri.indexes[ v + 1 ] = (i+1) * width + j;
@@ -970,12 +971,12 @@ public class Model_local {
 //			tri.indexes[ v + 5 ] = i * width + j + 1;
 //}else
                     {
-                        tri.indexes[ v + 0] = i * width + j;
-                        tri.indexes[ v + 1] = i * width + j + 1;
-                        tri.indexes[ v + 2] = (i + 1) * width + j + 1;
-                        tri.indexes[ v + 3] = i * width + j;
-                        tri.indexes[ v + 4] = (i + 1) * width + j + 1;
-                        tri.indexes[ v + 5] = (i + 1) * width + j;
+                        tri.indexes[ v + 0] = (i * width) + j;
+                        tri.indexes[ v + 1] = (i * width) + j + 1;
+                        tri.indexes[ v + 2] = ((i + 1) * width) + j + 1;
+                        tri.indexes[ v + 3] = (i * width) + j;
+                        tri.indexes[ v + 4] = ((i + 1) * width) + j + 1;
+                        tri.indexes[ v + 5] = ((i + 1) * width) + j;
                     }
                 }
             }
@@ -983,7 +984,7 @@ public class Model_local {
 //            fileSystem.FreeFile(data);
             data = null;
 
-            modelSurface_s surface = new modelSurface_s();
+            final modelSurface_s surface = new modelSurface_s();
 
             surface.geometry = tri;
             surface.id = 0;
@@ -1042,20 +1043,26 @@ public class Model_local {
 
             @Override
             public int hashCode() {
-                int result = v;
-                result = 31 * result + tv;
+                int result = this.v;
+                result = (31 * result) + this.tv;
                 return result;
             }
 
             @Override
             public boolean equals(final Object o) {
-                if (this == o) return true;
-                if (o == null || getClass() != o.getClass()) return false;
+                if (this == o) {
+					return true;
+				}
+                if ((o == null) || (getClass() != o.getClass())) {
+					return false;
+				}
 
                 final matchVert_s that = (matchVert_s) o;
 
-                if (v != that.v) return false;
-                return tv == that.tv;
+                if (this.v != that.v) {
+					return false;
+				}
+                return this.tv == that.tv;
 
             }
 
@@ -1065,7 +1072,7 @@ public class Model_local {
 //                        limit(length).
 //                        toArray(matchVert_s[]::new);
 //            }
-        };
+        }
         static final byte[] identityColor/*[4]*/ = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
                               private static int DBG_ConvertASEToModelSurfaces = 0;
         public boolean ConvertASEToModelSurfaces(final aseModel_s ase) {
@@ -1088,7 +1095,8 @@ public class Model_local {
             float uTiling, vTiling;
             int[] mergeTo;
             byte[] color;
-            modelSurface_s surf = new modelSurface_s(), modelSurf;
+            final modelSurface_s surf = new modelSurface_s();
+			modelSurface_s modelSurf;
 
             if (NOT(ase)) {
                 return false;
@@ -1097,7 +1105,7 @@ public class Model_local {
                 return false;
             }
 
-            timeStamp[0] = ase.timeStamp[0];
+            this.timeStamp[0] = ase.timeStamp[0];
 
             // the modeling programs can save out multiple surfaces with a common
             // material, but we would like to mege them together where possible
@@ -1152,8 +1160,8 @@ public class Model_local {
                 }
             }
 
-            idVectorSubset<idVec3> vertexSubset = new idVectorSubset<>(3);
-            idVectorSubset<idVec2> texCoordSubset = new idVectorSubset<>(2);
+            final idVectorSubset<idVec3> vertexSubset = new idVectorSubset<>(3);
+            final idVectorSubset<idVec2> texCoordSubset = new idVectorSubset<>(2);
 
             // build the surfaces
             for (objectNum = 0; objectNum < ase.objects.Num(); objectNum++) {
@@ -1167,7 +1175,7 @@ public class Model_local {
                 // completely ignore any explict normals on surfaces with a renderbump command
                 // which will guarantee the best contours and least vertexes.
                 final String rb = im1.GetRenderBump();
-                if (rb != null && !rb.isEmpty()) {
+                if ((rb != null) && !rb.isEmpty()) {
                     normalsParsed = false;
                 }
 
@@ -1178,15 +1186,15 @@ public class Model_local {
                 // if they are in different surfaces
                 vRemap = new int[mesh.numVertexes];// R_StaticAlloc(mesh.numVertexes /* sizeof( vRemap[0] ) */);
 
-                if (fastLoad) {
+                if (this.fastLoad) {
                     // renderbump doesn't care about vertex count
                     for (j = 0; j < mesh.numVertexes; j++) {
                         vRemap[j] = j;
                     }
                 } else {
-                    float vertexEpsilon = r_slopVertex.GetFloat();
-                    float expand = 2 * 32 * vertexEpsilon;
-                    idVec3 mins = new idVec3(), maxs = new idVec3();
+                    final float vertexEpsilon = r_slopVertex.GetFloat();
+                    final float expand = 2 * 32 * vertexEpsilon;
+                    final idVec3 mins = new idVec3(), maxs = new idVec3();
 
                     SIMDProcessor.MinMax(mins, maxs, mesh.vertexes, mesh.numVertexes);
                     mins.oMinSet(new idVec3(expand, expand, expand));
@@ -1199,15 +1207,15 @@ public class Model_local {
 
                 tvRemap = new int[mesh.numTVertexes];// R_StaticAlloc(mesh.numTVertexes /* sizeof( tvRemap[0] )*/);
 
-                if (fastLoad) {
+                if (this.fastLoad) {
                     // renderbump doesn't care about vertex count
                     for (j = 0; j < mesh.numTVertexes; j++) {
                         tvRemap[j] = j;
                     }
                 } else {
-                    float texCoordEpsilon = r_slopTexCoord.GetFloat();
-                    float expand = 2 * 32 * texCoordEpsilon;
-                    idVec2 mins = new idVec2(), maxs = new idVec2();
+                    final float texCoordEpsilon = r_slopTexCoord.GetFloat();
+                    final float expand = 2 * 32 * texCoordEpsilon;
+                    final idVec2 mins = new idVec2(), maxs = new idVec2();
 
                     SIMDProcessor.MinMax(mins, maxs, mesh.tvertexes, mesh.numTVertexes);
                     mins.oMinSet(new idVec2(expand, expand));
@@ -1239,23 +1247,23 @@ public class Model_local {
                 tv = 0;
 
                 // find all the unique combinations
-                float normalEpsilon = 1.0f - r_slopNormal.GetFloat();
+                final float normalEpsilon = 1.0f - r_slopNormal.GetFloat();
                 for (j = 0; j < mesh.numFaces; j++) {
                     for (k = 0; k < 3; k++) {
                         v = mesh.faces[j].vertexNum[k];
 
-                        if (v < 0 || v >= mesh.numVertexes) {
-                            common.Error("ConvertASEToModelSurfaces: bad vertex index in ASE file %s", name);
+                        if ((v < 0) || (v >= mesh.numVertexes)) {
+                            common.Error("ConvertASEToModelSurfaces: bad vertex index in ASE file %s", this.name);
                         }
 
                         // collapse the position if it was slightly offset 
                         v = vRemap[v];
 
                         // we may or may not have texcoords to compare
-                        if (mesh.numTVFaces == mesh.numFaces && mesh.numTVertexes != 0) {
+                        if ((mesh.numTVFaces == mesh.numFaces) && (mesh.numTVertexes != 0)) {
                             tv = mesh.faces[j].tVertexNum[k];
-                            if (tv < 0 || tv >= mesh.numTVertexes) {
-                                common.Error("ConvertASEToModelSurfaces: bad tex coord index in ASE file %s", name);
+                            if ((tv < 0) || (tv >= mesh.numTVertexes)) {
+                                common.Error("ConvertASEToModelSurfaces: bad tex coord index in ASE file %s", this.name);
                             }
                             // collapse the tex coord if it was slightly offset
                             tv = tvRemap[tv];
@@ -1313,11 +1321,11 @@ public class Model_local {
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > mesh.numFaces * 3) {
-                    common.FatalError("ConvertASEToModelSurfaces: index miscount in ASE file %s", name);
+                if (tri.numIndexes > (mesh.numFaces * 3)) {
+                    common.FatalError("ConvertASEToModelSurfaces: index miscount in ASE file %s", this.name);
                 }
-                if (tri.numVerts > mesh.numFaces * 3) {
-                    common.FatalError("ConvertASEToModelSurfaces: vertex miscount in ASE file %s", name);
+                if (tri.numVerts > (mesh.numFaces * 3)) {
+                    common.FatalError("ConvertASEToModelSurfaces: vertex miscount in ASE file %s", this.name);
                 }
 
                 // an ASE allows the texture coordinates to be scaled, translated, and rotated
@@ -1344,12 +1352,12 @@ public class Model_local {
                     tri.verts[ j].xyz.oSet(mesh.vertexes[ mv.v]);
                     tri.verts[ j].normal.oSet(mv.normal);
                     System.arraycopy(mv.color, 0, tri.verts[j].color = mv.color, 0, mv.color.length);
-                    if (mesh.numTVFaces == mesh.numFaces && mesh.numTVertexes != 0) {
+                    if ((mesh.numTVFaces == mesh.numFaces) && (mesh.numTVertexes != 0)) {
                         final idVec2 tv2 = mesh.tvertexes[ mv.tv];
-                        float u = tv2.x * uTiling + uOffset;
-                        float V = tv2.y * vTiling + vOffset;
-                        tri.verts[ j].st.oSet(0, u * textureCos + V * textureSin);
-                        tri.verts[ j].st.oSet(1, u * -textureSin + V * textureCos);
+                        final float u = (tv2.x * uTiling) + uOffset;
+                        final float V = (tv2.y * vTiling) + vOffset;
+                        tri.verts[ j].st.oSet(0, (u * textureCos) + (V * textureSin));
+                        tri.verts[ j].st.oSet(1, (u * -textureSin) + (V * textureCos));
                     }
                 }
 //
@@ -1360,7 +1368,7 @@ public class Model_local {
 
                 // see if we need to merge with a previous surface of the same material
                 modelSurf = this.surfaces.oGet(mergeTo[ objectNum]);
-                srfTriangles_s mergeTri = modelSurf.geometry;
+                final srfTriangles_s mergeTri = modelSurf.geometry;
                 if (null == mergeTri) {
                     modelSurf.geometry = tri;
                 } else {
@@ -1389,9 +1397,9 @@ public class Model_local {
             matchVert_s[] mvHash;		// points inside mvTable for each xyz index
             matchVert_s lastmv;
             matchVert_s mv;
-            idVec3 normal = new idVec3();
+            final idVec3 normal = new idVec3();
             int[] mergeTo;
-            byte[] color = new byte[4];
+            final byte[] color = new byte[4];
             modelSurface_s surf, modelSurf;
 
             if (NOT(lwo)) {
@@ -1401,7 +1409,7 @@ public class Model_local {
                 return false;
             }
 
-            timeStamp[0] = lwo.timeStamp[0];
+            this.timeStamp[0] = lwo.timeStamp[0];
 
             // count the number of surfaces
             i = 0;
@@ -1452,15 +1460,15 @@ public class Model_local {
                 }
             }
 
-            idVectorSubset<idVec3> vertexSubset = new idVectorSubset<>(3);
-            idVectorSubset<idVec2> texCoordSubset = new idVectorSubset<>(2);
+            final idVectorSubset<idVec3> vertexSubset = new idVectorSubset<>(3);
+            final idVectorSubset<idVec2> texCoordSubset = new idVectorSubset<>(2);
 
             // we only ever use the first layer
-            lwLayer layer = lwo.layer;
+            final lwLayer layer = lwo.layer;
 
             // vertex positions
             if (layer.point.count <= 0) {
-                common.Warning("ConvertLWOToModelSurfaces: model \'%s\' has bad or missing vertex data", name);
+                common.Warning("ConvertLWOToModelSurfaces: model \'%s\' has bad or missing vertex data", this.name);
                 return false;
             }
 
@@ -1497,7 +1505,7 @@ public class Model_local {
                     }
                 }
             } else {
-                common.Warning("ConvertLWOToModelSurfaces: model \'%s\' has bad or missing uv data", name);
+                common.Warning("ConvertLWOToModelSurfaces: model \'%s\' has bad or missing uv data", this.name);
                 numTVertexes = 1;
                 tvList = new idVec2[numTVertexes];// Mem_ClearedAlloc(numTVertexes /* sizeof( tvList[0] )*/);
                 tvList[0] = new idVec2();
@@ -1510,15 +1518,15 @@ public class Model_local {
             // if they are in different surfaces
             vRemap = new int[layer.point.count];// R_StaticAlloc(layer.point.count /* sizeof( vRemap[0] )*/);
 
-            if (fastLoad) {
+            if (this.fastLoad) {
                 // renderbump doesn't care about vertex count
                 for (j = 0; j < layer.point.count; j++) {
                     vRemap[j] = j;
                 }
             } else {
-                float vertexEpsilon = r_slopVertex.GetFloat();
-                float expand = 2 * 32 * vertexEpsilon;
-                idVec3 mins = new idVec3(), maxs = new idVec3();
+                final float vertexEpsilon = r_slopVertex.GetFloat();
+                final float expand = 2 * 32 * vertexEpsilon;
+                final idVec3 mins = new idVec3(), maxs = new idVec3();
 
                 SIMDProcessor.MinMax(mins, maxs, vList, layer.point.count);
                 mins.oMinSet(new idVec3(expand, expand, expand));
@@ -1531,15 +1539,15 @@ public class Model_local {
 
             tvRemap = new int[numTVertexes];// R_StaticAlloc(numTVertexes /* sizeof( tvRemap[0] )*/);
 
-            if (fastLoad) {
+            if (this.fastLoad) {
                 // renderbump doesn't care about vertex count
                 for (j = 0; j < numTVertexes; j++) {
                     tvRemap[j] = j;
                 }
             } else {
-                float texCoordEpsilon = r_slopTexCoord.GetFloat();
-                float expand = 2 * 32 * texCoordEpsilon;
-                idVec2 mins = new idVec2(), maxs = new idVec2();
+                final float texCoordEpsilon = r_slopTexCoord.GetFloat();
+                final float expand = 2 * 32 * texCoordEpsilon;
+                final idVec2 mins = new idVec2(), maxs = new idVec2();
 
                 SIMDProcessor.MinMax(mins, maxs, tvList, numTVertexes);
                 mins.oMinSet(new idVec2(expand, expand));
@@ -1559,7 +1567,7 @@ public class Model_local {
                 // completely ignore any explict normals on surfaces with a renderbump command
                 // which will guarantee the best contours and least vertexes.
                 final String rb = im1.GetRenderBump();
-                if (rb != null && !rb.isEmpty()) {
+                if ((rb != null) && !rb.isEmpty()) {
                     normalsParsed = false;
                 }
 
@@ -1579,20 +1587,20 @@ public class Model_local {
 
                 // find all the unique combinations
                 float normalEpsilon;
-                if (fastLoad) {
+                if (this.fastLoad) {
                     normalEpsilon = 1.0f;	// don't merge unless completely exact
                 } else {
                     normalEpsilon = 1.0f - r_slopNormal.GetFloat();
                 }
                 for (j = 0; j < layer.polygon.count; j++) {
-                    lwPolygon poly = layer.polygon.pol[j];
+                    final lwPolygon poly = layer.polygon.pol[j];
 
                     if (!poly.surf.equals(lwoSurf)) {
                         continue;
                     }
 
                     if (poly.nverts != 3) {
-                        common.Warning("ConvertLWOToModelSurfaces: model %s has too many verts for a poly! Make sure you triplet it down", name);
+                        common.Warning("ConvertLWOToModelSurfaces: model %s has too many verts for a poly! Make sure you triplet it down", this.name);
                         continue;
                     }
 
@@ -1615,10 +1623,10 @@ public class Model_local {
                         color[3] = (byte) 255;
 
                         // first set attributes from the vertex
-                        lwPoint pt = layer.point.pt[poly.getV(k).index];
+                        final lwPoint pt = layer.point.pt[poly.getV(k).index];
                         int nvm;
                         for (nvm = 0; nvm < pt.nvmaps; nvm++) {
-                            lwVMapPt vm = pt.vm[nvm];
+                            final lwVMapPt vm = pt.vm[nvm];
 
                             if (vm.vmap.type == LWID_('T', 'X', 'U', 'V')) {
                                 tv = tvRemap[vm.index + vm.vmap.offset];
@@ -1632,7 +1640,7 @@ public class Model_local {
 
                         // then override with polygon attributes
                         for (nvm = 0; nvm < poly.getV(k).nvmaps; nvm++) {
-                            lwVMapPt vm = poly.getV(k).vm[nvm];
+                            final lwVMapPt vm = poly.getV(k).vm[nvm];
 
                             if (vm.vmap.type == LWID_('T', 'X', 'U', 'V')) {
                                 tv = tvRemap[vm.index + vm.vmap.offset];
@@ -1683,11 +1691,11 @@ public class Model_local {
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > layer.polygon.count * 3) {
-                    common.FatalError("ConvertLWOToModelSurfaces: index miscount in LWO file %s", name);
+                if (tri.numIndexes > (layer.polygon.count * 3)) {
+                    common.FatalError("ConvertLWOToModelSurfaces: index miscount in LWO file %s", this.name);
                 }
-                if (tri.numVerts > layer.polygon.count * 3) {
-                    common.FatalError("ConvertLWOToModelSurfaces: vertex miscount in LWO file %s", name);
+                if (tri.numVerts > (layer.polygon.count * 3)) {
+                    common.FatalError("ConvertLWOToModelSurfaces: vertex miscount in LWO file %s", this.name);
                 }
 
                 // now allocate and generate the combined vertexes
@@ -1706,7 +1714,7 @@ public class Model_local {
 
                 // see if we need to merge with a previous surface of the same material
                 modelSurf = this.surfaces.oGet(mergeTo[ i]);
-                srfTriangles_s mergeTri = modelSurf.geometry;
+                final srfTriangles_s mergeTri = modelSurf.geometry;
                 if (null == mergeTri) {
                     modelSurf.geometry = tri;
                 } else {
@@ -1747,7 +1755,8 @@ public class Model_local {
             float uTiling, vTiling;
             int[] mergeTo;
             byte[] color;
-            modelSurface_s surf = new modelSurface_s(), modelSurf;
+            final modelSurface_s surf = new modelSurface_s();
+			modelSurface_s modelSurf;
 
             if (NOT(ma)) {
                 return false;
@@ -1756,7 +1765,7 @@ public class Model_local {
                 return false;
             }
 
-            timeStamp[0] = ma.timeStamp[0];
+            this.timeStamp[0] = ma.timeStamp[0];
 
             // the modeling programs can save out multiple surfaces with a common
             // material, but we would like to mege them together where possible
@@ -1820,8 +1829,8 @@ public class Model_local {
                 }
             }
 
-            idVectorSubset<idVec3> vertexSubset = new idVectorSubset<>(3);
-            idVectorSubset<idVec2> texCoordSubset = new idVectorSubset<>(3);
+            final idVectorSubset<idVec3> vertexSubset = new idVectorSubset<>(3);
+            final idVectorSubset<idVec2> texCoordSubset = new idVectorSubset<>(3);
 
             // build the surfaces
             for (objectNum = 0; objectNum < ma.objects.Num(); objectNum++) {
@@ -1839,7 +1848,7 @@ public class Model_local {
                 // completely ignore any explict normals on surfaces with a renderbump command
                 // which will guarantee the best contours and least vertexes.
                 final String rb = im1.GetRenderBump();
-                if (rb != null && !rb.isEmpty()) {
+                if ((rb != null) && !rb.isEmpty()) {
                     normalsParsed = false;
                 }
 
@@ -1850,15 +1859,15 @@ public class Model_local {
                 // if they are in different surfaces
                 vRemap = new int[mesh.numVertexes];// R_StaticAlloc(mesh.numVertexes /* sizeof( vRemap[0] )*/);
 
-                if (fastLoad) {
+                if (this.fastLoad) {
                     // renderbump doesn't care about vertex count
                     for (j = 0; j < mesh.numVertexes; j++) {
                         vRemap[j] = j;
                     }
                 } else {
-                    float vertexEpsilon = r_slopVertex.GetFloat();
-                    float expand = 2 * 32 * vertexEpsilon;
-                    idVec3 mins = new idVec3(), maxs = new idVec3();
+                    final float vertexEpsilon = r_slopVertex.GetFloat();
+                    final float expand = 2 * 32 * vertexEpsilon;
+                    final idVec3 mins = new idVec3(), maxs = new idVec3();
 
                     SIMDProcessor.MinMax(mins, maxs, mesh.vertexes, mesh.numVertexes);
                     mins.oMinSet(new idVec3(expand, expand, expand));
@@ -1871,15 +1880,15 @@ public class Model_local {
 
                 tvRemap = new int[mesh.numTVertexes];// R_StaticAlloc(mesh.numTVertexes /* sizeof( tvRemap[0] ) */);
 
-                if (fastLoad) {
+                if (this.fastLoad) {
                     // renderbump doesn't care about vertex count
                     for (j = 0; j < mesh.numTVertexes; j++) {
                         tvRemap[j] = j;
                     }
                 } else {
-                    float texCoordEpsilon = r_slopTexCoord.GetFloat();
-                    float expand = 2 * 32 * texCoordEpsilon;
-                    idVec2 mins = new idVec2(), maxs = new idVec2();
+                    final float texCoordEpsilon = r_slopTexCoord.GetFloat();
+                    final float expand = 2 * 32 * texCoordEpsilon;
+                    final idVec2 mins = new idVec2(), maxs = new idVec2();
 
                     SIMDProcessor.MinMax(mins, maxs, mesh.tvertexes, mesh.numTVertexes);
                     mins.oMinSet(new idVec2(expand, expand));
@@ -1911,13 +1920,13 @@ public class Model_local {
                 tv = 0;
 
                 // find all the unique combinations
-                float normalEpsilon = 1.0f - r_slopNormal.GetFloat();
+                final float normalEpsilon = 1.0f - r_slopNormal.GetFloat();
                 for (j = 0; j < mesh.numFaces; j++) {
                     for (k = 0; k < 3; k++) {
                         v = mesh.faces[j].vertexNum[k];
 
-                        if (v < 0 || v >= mesh.numVertexes) {
-                            common.Error("ConvertMAToModelSurfaces: bad vertex index in MA file %s", name);
+                        if ((v < 0) || (v >= mesh.numVertexes)) {
+                            common.Error("ConvertMAToModelSurfaces: bad vertex index in MA file %s", this.name);
                         }
 
                         // collapse the position if it was slightly offset 
@@ -1926,8 +1935,8 @@ public class Model_local {
                         // we may or may not have texcoords to compare
                         if (mesh.numTVertexes != 0) {
                             tv = mesh.faces[j].tVertexNum[k];
-                            if (tv < 0 || tv >= mesh.numTVertexes) {
-                                common.Error("ConvertMAToModelSurfaces: bad tex coord index in MA file %s", name);
+                            if ((tv < 0) || (tv >= mesh.numTVertexes)) {
+                                common.Error("ConvertMAToModelSurfaces: bad tex coord index in MA file %s", this.name);
                             }
                             // collapse the tex coord if it was slightly offset
                             tv = tvRemap[tv];
@@ -1940,7 +1949,7 @@ public class Model_local {
 
                         //BSM: Todo: Fix the vertex colors
                         // we may or may not have colors to compare
-                        if (mesh.faces[j].vertexColors[k] != -1 && mesh.faces[j].vertexColors[k] != -999) {
+                        if ((mesh.faces[j].vertexColors[k] != -1) && (mesh.faces[j].vertexColors[k] != -999)) {
                             final int offset = mesh.faces[j].vertexColors[k] * 4;
                             color = Arrays.copyOfRange(mesh.colors, offset, offset + 4);
                         }
@@ -1984,11 +1993,11 @@ public class Model_local {
                 }
 
                 // allocate space for the indexes and copy them
-                if (tri.numIndexes > mesh.numFaces * 3) {
-                    common.FatalError("ConvertMAToModelSurfaces: index miscount in MA file %s", name);
+                if (tri.numIndexes > (mesh.numFaces * 3)) {
+                    common.FatalError("ConvertMAToModelSurfaces: index miscount in MA file %s", this.name);
                 }
-                if (tri.numVerts > mesh.numFaces * 3) {
-                    common.FatalError("ConvertMAToModelSurfaces: vertex miscount in MA file %s", name);
+                if (tri.numVerts > (mesh.numFaces * 3)) {
+                    common.FatalError("ConvertMAToModelSurfaces: vertex miscount in MA file %s", this.name);
                 }
 
                 // an MA allows the texture coordinates to be scaled, translated, and rotated
@@ -2018,10 +2027,10 @@ public class Model_local {
                     tri.verts[j].color = mv.color;
                     if (mesh.numTVertexes != 0) {
                         final idVec2 tv2 = mesh.tvertexes[ mv.tv];
-                        float U = tv2.x * uTiling + uOffset;
-                        float V = tv2.y * vTiling + vOffset;
-                        tri.verts[ j].st.oSet(0, U * textureCos + V * textureSin);
-                        tri.verts[ j].st.oSet(1, U * -textureSin + V * textureCos);
+                        final float U = (tv2.x * uTiling) + uOffset;
+                        final float V = (tv2.y * vTiling) + vOffset;
+                        tri.verts[ j].st.oSet(0, (U * textureCos) + (V * textureSin));
+                        tri.verts[ j].st.oSet(1, (U * -textureSin) + (V * textureCos));
                     }
                 }
 //
@@ -2032,7 +2041,7 @@ public class Model_local {
 
                 // see if we need to merge with a previous surface of the same material
                 modelSurf = this.surfaces.oGet(mergeTo[ objectNum]);
-                srfTriangles_s mergeTri = modelSurf.geometry;
+                final srfTriangles_s mergeTri = modelSurf.geometry;
                 if (null == mergeTri) {
                     modelSurf.geometry = tri;
                 } else {
@@ -2062,18 +2071,18 @@ public class Model_local {
 
             for (lwSurface surf = obj.surf; surf != null; surf = surf.next) {
 
-                aseMaterial_t mat = new aseMaterial_t();// Mem_ClearedAlloc(sizeof( * mat));
+                final aseMaterial_t mat = new aseMaterial_t();// Mem_ClearedAlloc(sizeof( * mat));
                 System.arraycopy(surf.name.toCharArray(), 0, mat.name, 0, surf.name.length());
                 mat.uTiling = mat.vTiling = 1;
                 mat.angle = mat.uOffset = mat.vOffset = 0;
                 ase.materials.Append(mat);
 
-                lwLayer layer = obj.layer;
+                final lwLayer layer = obj.layer;
 
-                aseObject_t object = new aseObject_t();// Mem_ClearedAlloc(sizeof( * object));
+                final aseObject_t object = new aseObject_t();// Mem_ClearedAlloc(sizeof( * object));
                 object.materialRef = materialRef++;
 
-                aseMesh_t mesh = object.mesh;
+                final aseMesh_t mesh = object.mesh;
                 ase.objects.Append(object);
 
                 mesh.numFaces = layer.polygon.count;
@@ -2085,7 +2094,7 @@ public class Model_local {
 
                 // vertex positions
                 if (layer.point.count <= 0) {
-                    common.Warning("ConvertLWOToASE: model \'%s\' has bad or missing vertex data", name);
+                    common.Warning("ConvertLWOToASE: model \'%s\' has bad or missing vertex data", this.name);
                 }
 
                 for (j = 0; j < layer.point.count; j++) {
@@ -2130,7 +2139,7 @@ public class Model_local {
                 // triangles
                 int faceIndex = 0;
                 for (j = 0; j < layer.polygon.count; j++) {
-                    lwPolygon poly = layer.polygon.pol[j];
+                    final lwPolygon poly = layer.polygon.pol[j];
 
                     if (poly.surf != surf) {
                         continue;
@@ -2162,10 +2171,10 @@ public class Model_local {
                         mesh.faces[faceIndex].vertexColors[k][3] = (byte) 255;
 
                         // first set attributes from the vertex
-                        lwPoint pt = layer.point.pt[poly.getV(k).index];
+                        final lwPoint pt = layer.point.pt[poly.getV(k).index];
                         int nvm;
                         for (nvm = 0; nvm < pt.nvmaps; nvm++) {
-                            lwVMapPt vm = pt.vm[nvm];
+                            final lwVMapPt vm = pt.vm[nvm];
 
                             if (vm.vmap.type == LWID_('T', 'X', 'U', 'V')) {
                                 mesh.faces[faceIndex].tVertexNum[k] = vm.index + vm.vmap.offset;
@@ -2179,7 +2188,7 @@ public class Model_local {
 
                         // then override with polygon attributes
                         for (nvm = 0; nvm < poly.getV(k).nvmaps; nvm++) {
-                            lwVMapPt vm = poly.getV(k).vm[nvm];
+                            final lwVMapPt vm = poly.getV(k).vm[nvm];
 
                             if (vm.vmap.type == LWID_('T', 'X', 'U', 'V')) {
                                 mesh.faces[faceIndex].tVertexNum[k] = vm.index + vm.vmap.offset;
@@ -2198,7 +2207,7 @@ public class Model_local {
                 mesh.numFaces = faceIndex;
                 mesh.numTVFaces = faceIndex;
 
-                aseFace_t[] newFaces = new aseFace_t[mesh.numFaces];// Mem_Alloc(mesh.numFaces /* sizeof ( mesh.faces[0] ) */);
+                final aseFace_t[] newFaces = new aseFace_t[mesh.numFaces];// Mem_Alloc(mesh.numFaces /* sizeof ( mesh.faces[0] ) */);
 //		memcpy( newFaces, mesh.faces, sizeof( mesh.faces[0] ) * mesh.numFaces );
                 System.arraycopy(mesh.faces, 0, newFaces, 0, mesh.numFaces);
 //                Mem_Free(mesh.faces);
@@ -2211,10 +2220,10 @@ public class Model_local {
         public boolean DeleteSurfaceWithId(int id) {
             int i;
 
-            for (i = 0; i < surfaces.Num(); i++) {
-                if (surfaces.oGet(i).id == id) {
-                    R_FreeStaticTriSurf(surfaces.oGet(i).geometry);
-                    surfaces.RemoveIndex(i);
+            for (i = 0; i < this.surfaces.Num(); i++) {
+                if (this.surfaces.oGet(i).id == id) {
+                    R_FreeStaticTriSurf(this.surfaces.oGet(i).geometry);
+                    this.surfaces.RemoveIndex(i);
                     return true;
                 }
             }
@@ -2224,10 +2233,10 @@ public class Model_local {
         public void DeleteSurfacesWithNegativeId() {
             int i;
 
-            for (i = 0; i < surfaces.Num(); i++) {
-                if (surfaces.oGet(i).id < 0) {
-                    R_FreeStaticTriSurf(surfaces.oGet(i).geometry);
-                    surfaces.RemoveIndex(i);
+            for (i = 0; i < this.surfaces.Num(); i++) {
+                if (this.surfaces.oGet(i).id < 0) {
+                    R_FreeStaticTriSurf(this.surfaces.oGet(i).geometry);
+                    this.surfaces.RemoveIndex(i);
                     i--;
                 }
             }
@@ -2236,8 +2245,8 @@ public class Model_local {
         public boolean FindSurfaceWithId(int id, int[] surfaceNum) {
             int i;
 
-            for (i = 0; i < surfaces.Num(); i++) {
-                if (surfaces.oGet(i).id == id) {
+            for (i = 0; i < this.surfaces.Num(); i++) {
+                if (this.surfaces.oGet(i).id == id) {
                     surfaceNum[0] = i;
                     return true;
                 }
@@ -2259,7 +2268,7 @@ public class Model_local {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 
     /*
      ================

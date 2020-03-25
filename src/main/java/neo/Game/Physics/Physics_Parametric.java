@@ -59,7 +59,7 @@ public class Physics_Parametric {
         idCurve_Spline<idVec3>                  spline;               // spline based description of the position over time
         idInterpolateAccelDecelLinear<Float>    splineInterpolate;    // position along the spline over time
         boolean                                 useSplineAngles;      // set the orientation using the spline
-    };
+    }
 
     public static class idPhysics_Parametric extends idPhysics_Base {
         // CLASS_PROTOTYPE( idPhysics_Parametric );
@@ -85,48 +85,48 @@ public class Physics_Parametric {
 
         public idPhysics_Parametric() {
 
-            current = new parametricPState_s();
-            current.time = gameLocal.time;
-            current.atRest = -1;
-            current.useSplineAngles = false;
-            current.origin = new idVec3();
-            current.angles = new idAngles();
-            current.axis = idMat3.getMat3_identity();
-            current.localOrigin = new idVec3();
-            current.localAngles = new idAngles();
-            current.linearExtrapolation = new idExtrapolate<>();
-            current.linearExtrapolation.Init(0, 0, getVec3_zero(), getVec3_zero(), getVec3_zero(), EXTRAPOLATION_NONE);
-            current.angularExtrapolation = new idExtrapolate<>();
-            current.angularExtrapolation.Init(0, 0, getAng_zero(), getAng_zero(), getAng_zero(), EXTRAPOLATION_NONE);
-            current.linearInterpolation = new idInterpolateAccelDecelLinear<>();
-            current.linearInterpolation.Init(0, 0, 0, 0, getVec3_zero(), getVec3_zero());
-            current.angularInterpolation = new idInterpolateAccelDecelLinear<>();
-            current.angularInterpolation.Init(0, 0, 0, 0, getAng_zero(), getAng_zero());
-            current.spline = null;
-            current.splineInterpolate = new idInterpolateAccelDecelLinear<>();
-            current.splineInterpolate.Init(0, 1, 1, 2, 0f, 0f);
+            this.current = new parametricPState_s();
+            this.current.time = gameLocal.time;
+            this.current.atRest = -1;
+            this.current.useSplineAngles = false;
+            this.current.origin = new idVec3();
+            this.current.angles = new idAngles();
+            this.current.axis = idMat3.getMat3_identity();
+            this.current.localOrigin = new idVec3();
+            this.current.localAngles = new idAngles();
+            this.current.linearExtrapolation = new idExtrapolate<>();
+            this.current.linearExtrapolation.Init(0, 0, getVec3_zero(), getVec3_zero(), getVec3_zero(), EXTRAPOLATION_NONE);
+            this.current.angularExtrapolation = new idExtrapolate<>();
+            this.current.angularExtrapolation.Init(0, 0, getAng_zero(), getAng_zero(), getAng_zero(), EXTRAPOLATION_NONE);
+            this.current.linearInterpolation = new idInterpolateAccelDecelLinear<>();
+            this.current.linearInterpolation.Init(0, 0, 0, 0, getVec3_zero(), getVec3_zero());
+            this.current.angularInterpolation = new idInterpolateAccelDecelLinear<>();
+            this.current.angularInterpolation.Init(0, 0, 0, 0, getAng_zero(), getAng_zero());
+            this.current.spline = null;
+            this.current.splineInterpolate = new idInterpolateAccelDecelLinear<>();
+            this.current.splineInterpolate.Init(0, 1, 1, 2, 0f, 0f);
 
-            saved = current;
+            this.saved = this.current;
 
-            isPusher = false;
-            pushFlags = 0;
-            clipModel = null;
-            isBlocked = false;
-            pushResults = new trace_s();//memset( &pushResults, 0, sizeof(pushResults));
+            this.isPusher = false;
+            this.pushFlags = 0;
+            this.clipModel = null;
+            this.isBlocked = false;
+            this.pushResults = new trace_s();//memset( &pushResults, 0, sizeof(pushResults));
 
-            hasMaster = false;
-            isOrientated = false;
+            this.hasMaster = false;
+            this.isOrientated = false;
         }
 
         // ~idPhysics_Parametric();
         @Override
         protected void _deconstructor(){
-            if ( clipModel != null ) {
-            idClipModel.delete(clipModel);
+            if ( this.clipModel != null ) {
+            idClipModel.delete(this.clipModel);
             }
-            if ( current.spline != null ) {
+            if ( this.current.spline != null ) {
 //                delete current.spline;
-                current.spline = null;
+                this.current.spline = null;
             }
 
             super._deconstructor();
@@ -135,33 +135,33 @@ public class Physics_Parametric {
         @Override
         public void Save(idSaveGame savefile) {
 
-            idPhysics_Parametric_SavePState(savefile, current);
-            idPhysics_Parametric_SavePState(savefile, saved);
+            idPhysics_Parametric_SavePState(savefile, this.current);
+            idPhysics_Parametric_SavePState(savefile, this.saved);
 
-            savefile.WriteBool(isPusher);
-            savefile.WriteClipModel(clipModel);
-            savefile.WriteInt(pushFlags);
+            savefile.WriteBool(this.isPusher);
+            savefile.WriteClipModel(this.clipModel);
+            savefile.WriteInt(this.pushFlags);
 
-            savefile.WriteTrace(pushResults);
-            savefile.WriteBool(isBlocked);
+            savefile.WriteTrace(this.pushResults);
+            savefile.WriteBool(this.isBlocked);
 
-            savefile.WriteBool(hasMaster);
-            savefile.WriteBool(isOrientated);
+            savefile.WriteBool(this.hasMaster);
+            savefile.WriteBool(this.isOrientated);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            boolean[] isPusher = {false}, isBlocked = {false}, hasMaster = {false}, isOrientated = {false};
-            int[] pushFlags = {0};
+            final boolean[] isPusher = {false}, isBlocked = {false}, hasMaster = {false}, isOrientated = {false};
+            final int[] pushFlags = {0};
 
-            idPhysics_Parametric_RestorePState(savefile, current);
-            idPhysics_Parametric_RestorePState(savefile, saved);
+            idPhysics_Parametric_RestorePState(savefile, this.current);
+            idPhysics_Parametric_RestorePState(savefile, this.saved);
 
             savefile.ReadBool(isPusher);
-            savefile.ReadClipModel(clipModel);
+            savefile.ReadClipModel(this.clipModel);
             savefile.ReadInt(pushFlags);
 
-            savefile.ReadTrace(pushResults);
+            savefile.ReadTrace(this.pushResults);
             savefile.ReadBool(isBlocked);
 
             savefile.ReadBool(hasMaster);
@@ -175,117 +175,117 @@ public class Physics_Parametric {
         }
 
         public void SetPusher(int flags) {
-            assert (clipModel != null);
-            isPusher = true;
-            pushFlags = flags;
+            assert (this.clipModel != null);
+            this.isPusher = true;
+            this.pushFlags = flags;
         }
 
         public boolean IsPusher() {
-            return isPusher;
+            return this.isPusher;
         }
 
         public void SetLinearExtrapolation(int/*extrapolation_t*/ type, int time, int duration, final idVec3 base, final idVec3 speed, final idVec3 baseSpeed) {
-            current.time = gameLocal.time;
-            current.linearExtrapolation.Init(time, duration, base, baseSpeed, speed, type);
-            current.localOrigin.oSet(base);
+            this.current.time = gameLocal.time;
+            this.current.linearExtrapolation.Init(time, duration, base, baseSpeed, speed, type);
+            this.current.localOrigin.oSet(base);
             Activate();
         }
 
         public void SetAngularExtrapolation(int/*extrapolation_t*/ type, int time, int duration, final idAngles base, final idAngles speed, final idAngles baseSpeed) {
-            current.time = gameLocal.time;
-            current.angularExtrapolation.Init(time, duration, base, baseSpeed, speed, type);
-            current.localAngles.oSet(base);
+            this.current.time = gameLocal.time;
+            this.current.angularExtrapolation.Init(time, duration, base, baseSpeed, speed, type);
+            this.current.localAngles.oSet(base);
             Activate();
         }
 
         public int/*extrapolation_t*/ GetLinearExtrapolationType() {
-            return current.linearExtrapolation.GetExtrapolationType();
+            return this.current.linearExtrapolation.GetExtrapolationType();
         }
 
         public int/*extrapolation_t*/ GetAngularExtrapolationType() {
-            return current.angularExtrapolation.GetExtrapolationType();
+            return this.current.angularExtrapolation.GetExtrapolationType();
         }
 
         public void SetLinearInterpolation(int time, int accelTime, int decelTime, int duration, final idVec3 startPos, final idVec3 endPos) {
-            current.time = gameLocal.time;
-            current.linearInterpolation.Init(time, accelTime, decelTime, duration, startPos, endPos);
-            current.localOrigin.oSet(startPos);
+            this.current.time = gameLocal.time;
+            this.current.linearInterpolation.Init(time, accelTime, decelTime, duration, startPos, endPos);
+            this.current.localOrigin.oSet(startPos);
             Activate();
         }
 
         public void SetAngularInterpolation(int time, int accelTime, int decelTime, int duration, final idAngles startAng, final idAngles endAng) {
-            current.time = gameLocal.time;
-            current.angularInterpolation.Init(time, accelTime, decelTime, duration, startAng, endAng);
-            current.localAngles.oSet(startAng);
+            this.current.time = gameLocal.time;
+            this.current.angularInterpolation.Init(time, accelTime, decelTime, duration, startAng, endAng);
+            this.current.localAngles.oSet(startAng);
             Activate();
         }
 
         public void SetSpline(idCurve_Spline<idVec3> spline, int accelTime, int decelTime, boolean useSplineAngles) {
-            if (current.spline != null) {
+            if (this.current.spline != null) {
 //		delete current.spline;
-                current.spline = null;
+                this.current.spline = null;
             }
-            current.spline = spline;
-            if (current.spline != null) {
-                float startTime = current.spline.GetTime(0);
-                float endTime = current.spline.GetTime(current.spline.GetNumValues() - 1);
-                float length = current.spline.GetLengthForTime(endTime);
-                current.splineInterpolate.Init(startTime, accelTime, decelTime, endTime - startTime, 0.0f, length);
+            this.current.spline = spline;
+            if (this.current.spline != null) {
+                final float startTime = this.current.spline.GetTime(0);
+                final float endTime = this.current.spline.GetTime(this.current.spline.GetNumValues() - 1);
+                final float length = this.current.spline.GetLengthForTime(endTime);
+                this.current.splineInterpolate.Init(startTime, accelTime, decelTime, endTime - startTime, 0.0f, length);
             }
-            current.useSplineAngles = useSplineAngles;
+            this.current.useSplineAngles = useSplineAngles;
             Activate();
         }
 
         public idCurve_Spline<idVec3> GetSpline() {
-            return current.spline;
+            return this.current.spline;
         }
 
         public int GetSplineAcceleration() {
-            return (int) current.splineInterpolate.GetAcceleration();
+            return (int) this.current.splineInterpolate.GetAcceleration();
         }
 
         public int GetSplineDeceleration() {
-            return (int) current.splineInterpolate.GetDeceleration();
+            return (int) this.current.splineInterpolate.GetDeceleration();
         }
 
         public boolean UsingSplineAngles() {
-            return current.useSplineAngles;
+            return this.current.useSplineAngles;
         }
 
         public void GetLocalOrigin(idVec3 curOrigin) {
-            curOrigin.oSet(current.localOrigin);
+            curOrigin.oSet(this.current.localOrigin);
         }
 
         public void GetLocalAngles(idAngles curAngles) {
-            curAngles.oSet(current.localAngles);
+            curAngles.oSet(this.current.localAngles);
         }
 
         public void GetAngles(idAngles curAngles) {
-            curAngles.oSet(current.angles);
+            curAngles.oSet(this.current.angles);
         }
 
         // common physics interface
         @Override
         public void SetClipModel(idClipModel model, float density, int id /*= 0*/, boolean freeOld /*= true*/) {
 
-            assert (self != null);
+            assert (this.self != null);
             assert (model != null);
 
-            if (clipModel != null && clipModel != model && freeOld) {
-                idClipModel.delete(clipModel);
+            if ((this.clipModel != null) && (this.clipModel != model) && freeOld) {
+                idClipModel.delete(this.clipModel);
             }
-            clipModel = model;
-            clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            this.clipModel = model;
+            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
         }
 
         @Override
         public idClipModel GetClipModel(int id /*= 0*/) {
-            return clipModel;
+            return this.clipModel;
         }
 
         @Override
         public int GetNumClipModels() {
-            return (clipModel != null ? 1 : 0);
+            return (this.clipModel != null ? 1 : 0);
         }
 
         @Override
@@ -299,157 +299,159 @@ public class Physics_Parametric {
 
         @Override
         public void SetContents(int contents, int id /*= -1*/) {
-            if (clipModel != null) {
-                clipModel.SetContents(contents);
+            if (this.clipModel != null) {
+                this.clipModel.SetContents(contents);
             }
         }
 
         @Override
         public int GetContents(int id /*= -1*/) {
-            if (clipModel != null) {
-                return clipModel.GetContents();
+            if (this.clipModel != null) {
+                return this.clipModel.GetContents();
             }
             return 0;
         }
 
         @Override
         public idBounds GetBounds(int id /*= -1*/) {
-            if (clipModel != null) {
-                return clipModel.GetBounds();
+            if (this.clipModel != null) {
+                return this.clipModel.GetBounds();
             }
             return super.GetBounds();
         }
 
         @Override
         public idBounds GetAbsBounds(int id /*= -1*/) {
-            if (clipModel != null) {
-                return clipModel.GetAbsBounds();
+            if (this.clipModel != null) {
+                return this.clipModel.GetAbsBounds();
             }
             return super.GetAbsBounds();
         }
 
         @Override
         public boolean Evaluate(int timeStepMSec, int endTimeMSec) {
-            idVec3 oldLocalOrigin, oldOrigin, masterOrigin = new idVec3();
+            idVec3 oldLocalOrigin, oldOrigin;
+			final idVec3 masterOrigin = new idVec3();
             idAngles oldLocalAngles, oldAngles;
-            idMat3 oldAxis, masterAxis = new idMat3();
+            idMat3 oldAxis;
+			final idMat3 masterAxis = new idMat3();
 
-            isBlocked = false;
-            oldLocalOrigin = new idVec3(current.localOrigin);
-            oldOrigin = new idVec3(current.origin);
-            oldLocalAngles = new idAngles(current.localAngles);
-            oldAngles = new idAngles(current.angles);
-            oldAxis = new idMat3(current.axis);
+            this.isBlocked = false;
+            oldLocalOrigin = new idVec3(this.current.localOrigin);
+            oldOrigin = new idVec3(this.current.origin);
+            oldLocalAngles = new idAngles(this.current.localAngles);
+            oldAngles = new idAngles(this.current.angles);
+            oldAxis = new idMat3(this.current.axis);
 
-            current.localOrigin.Zero();
-            current.localAngles.Zero();
+            this.current.localOrigin.Zero();
+            this.current.localAngles.Zero();
 
-            if (current.spline != null) {
-                float length = current.splineInterpolate.GetCurrentValue(endTimeMSec);
-                float t = current.spline.GetTimeForLength(length, 0.01f);
-                current.localOrigin.oSet(current.spline.GetCurrentValue(t));
-                if (current.useSplineAngles) {
-                    current.localAngles = current.spline.GetCurrentFirstDerivative(t).ToAngles();
+            if (this.current.spline != null) {
+                final float length = this.current.splineInterpolate.GetCurrentValue(endTimeMSec);
+                final float t = this.current.spline.GetTimeForLength(length, 0.01f);
+                this.current.localOrigin.oSet(this.current.spline.GetCurrentValue(t));
+                if (this.current.useSplineAngles) {
+                    this.current.localAngles = this.current.spline.GetCurrentFirstDerivative(t).ToAngles();
                 }
-            } else if (current.linearInterpolation.GetDuration() != 0) {
-                current.localOrigin.oPluSet(current.linearInterpolation.GetCurrentValue(endTimeMSec));
+            } else if (this.current.linearInterpolation.GetDuration() != 0) {
+                this.current.localOrigin.oPluSet(this.current.linearInterpolation.GetCurrentValue(endTimeMSec));
             } else {
-                current.localOrigin.oPluSet(current.linearExtrapolation.GetCurrentValue(endTimeMSec));
+                this.current.localOrigin.oPluSet(this.current.linearExtrapolation.GetCurrentValue(endTimeMSec));
             }
 
-            if (current.angularInterpolation.GetDuration() != 0) {
-                current.localAngles.oPluSet(current.angularInterpolation.GetCurrentValue(endTimeMSec));
+            if (this.current.angularInterpolation.GetDuration() != 0) {
+                this.current.localAngles.oPluSet(this.current.angularInterpolation.GetCurrentValue(endTimeMSec));
             } else {
-                current.localAngles.oPluSet(current.angularExtrapolation.GetCurrentValue(endTimeMSec));
+                this.current.localAngles.oPluSet(this.current.angularExtrapolation.GetCurrentValue(endTimeMSec));
             }
 
-            current.localAngles.Normalize360();
-            current.origin.oSet(current.localOrigin);
-            current.angles.oSet(current.localAngles);
-            current.axis.oSet(current.localAngles.ToMat3());
+            this.current.localAngles.Normalize360();
+            this.current.origin.oSet(this.current.localOrigin);
+            this.current.angles.oSet(this.current.localAngles);
+            this.current.axis.oSet(this.current.localAngles.ToMat3());
 
-            if (hasMaster) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
+            if (this.hasMaster) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
                 if (masterAxis.IsRotated()) {
-                    current.origin = current.origin.oMultiply(masterAxis).oPlus(masterOrigin);
-                    if (isOrientated) {
-                        current.axis.oMulSet(masterAxis);
-                        current.angles = current.axis.ToAngles();
+                    this.current.origin = this.current.origin.oMultiply(masterAxis).oPlus(masterOrigin);
+                    if (this.isOrientated) {
+                        this.current.axis.oMulSet(masterAxis);
+                        this.current.angles = this.current.axis.ToAngles();
                     }
                 } else {
-                    current.origin.oPluSet(masterOrigin);
+                    this.current.origin.oPluSet(masterOrigin);
                 }
             }
 
-            if (isPusher) {
+            if (this.isPusher) {
 
                 {
-                    trace_s[] pushResults = {this.pushResults};
-                    gameLocal.push.ClipPush(pushResults, self, pushFlags, oldOrigin, oldAxis, current.origin, current.axis);
+                    final trace_s[] pushResults = {this.pushResults};
+                    gameLocal.push.ClipPush(pushResults, this.self, this.pushFlags, oldOrigin, oldAxis, this.current.origin, this.current.axis);
                     this.pushResults = pushResults[0];
                 }
-                if (pushResults.fraction < 1.0f) {
-                    clipModel.Link(gameLocal.clip, self, 0, oldOrigin, oldAxis);
-                    current.localOrigin = oldLocalOrigin;
-                    current.origin = oldOrigin;
-                    current.localAngles = oldLocalAngles;
-                    current.angles = oldAngles;
-                    current.axis = oldAxis;
-                    isBlocked = true;
+                if (this.pushResults.fraction < 1.0f) {
+                    this.clipModel.Link(gameLocal.clip, this.self, 0, oldOrigin, oldAxis);
+                    this.current.localOrigin = oldLocalOrigin;
+                    this.current.origin = oldOrigin;
+                    this.current.localAngles = oldLocalAngles;
+                    this.current.angles = oldAngles;
+                    this.current.axis = oldAxis;
+                    this.isBlocked = true;
                     return false;
                 }
 
-                current.angles = current.axis.ToAngles();
+                this.current.angles = this.current.axis.ToAngles();
             }
 
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
 
-            current.time = endTimeMSec;
+            this.current.time = endTimeMSec;
 
             if (TestIfAtRest()) {
                 Rest();
             }
 
-            return (!current.origin.equals(oldOrigin) || !current.axis.equals(oldAxis));
+            return (!this.current.origin.equals(oldOrigin) || !this.current.axis.equals(oldAxis));
         }
 
         @Override
         public void UpdateTime(int endTimeMSec) {
-            int timeLeap = endTimeMSec - current.time;
+            final int timeLeap = endTimeMSec - this.current.time;
 
-            current.time = endTimeMSec;
+            this.current.time = endTimeMSec;
             // move the trajectory start times to sync the trajectory with the current endTime
-            current.linearExtrapolation.SetStartTime(current.linearExtrapolation.GetStartTime() + timeLeap);
-            current.angularExtrapolation.SetStartTime(current.angularExtrapolation.GetStartTime() + timeLeap);
-            current.linearInterpolation.SetStartTime(current.linearInterpolation.GetStartTime() + timeLeap);
-            current.angularInterpolation.SetStartTime(current.angularInterpolation.GetStartTime() + timeLeap);
-            if (current.spline != null) {
-                current.spline.ShiftTime(timeLeap);
-                current.splineInterpolate.SetStartTime(current.splineInterpolate.GetStartTime() + timeLeap);
+            this.current.linearExtrapolation.SetStartTime(this.current.linearExtrapolation.GetStartTime() + timeLeap);
+            this.current.angularExtrapolation.SetStartTime(this.current.angularExtrapolation.GetStartTime() + timeLeap);
+            this.current.linearInterpolation.SetStartTime(this.current.linearInterpolation.GetStartTime() + timeLeap);
+            this.current.angularInterpolation.SetStartTime(this.current.angularInterpolation.GetStartTime() + timeLeap);
+            if (this.current.spline != null) {
+                this.current.spline.ShiftTime(timeLeap);
+                this.current.splineInterpolate.SetStartTime(this.current.splineInterpolate.GetStartTime() + timeLeap);
             }
         }
 
         @Override
         public int GetTime() {
-            return current.time;
+            return this.current.time;
         }
 
         @Override
         public void Activate() {
-            current.atRest = -1;
-            self.BecomeActive(TH_PHYSICS);
+            this.current.atRest = -1;
+            this.self.BecomeActive(TH_PHYSICS);
         }
 
         @Override
         public boolean IsAtRest() {
-            return current.atRest >= 0;
+            return this.current.atRest >= 0;
         }
 
         @Override
         public int GetRestStartTime() {
-            return current.atRest;
+            return this.current.atRest;
         }
 
         @Override
@@ -459,61 +461,61 @@ public class Physics_Parametric {
 
         @Override
         public void SaveState() {
-            saved = current;
+            this.saved = this.current;
         }
 
         @Override
         public void RestoreState() {
 
-            current = saved;
+            this.current = this.saved;
 
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
         @Override
         public void SetOrigin(final idVec3 newOrigin, int id /*= -1*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
-            current.linearExtrapolation.SetStartValue(newOrigin);
-            current.linearInterpolation.SetStartValue(newOrigin);
+            this.current.linearExtrapolation.SetStartValue(newOrigin);
+            this.current.linearInterpolation.SetStartValue(newOrigin);
 
-            current.localOrigin = current.linearExtrapolation.GetCurrentValue(current.time);
-            if (hasMaster) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin = masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis));
+            this.current.localOrigin = this.current.linearExtrapolation.GetCurrentValue(this.current.time);
+            if (this.hasMaster) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.origin = masterOrigin.oPlus(this.current.localOrigin.oMultiply(masterAxis));
             } else {
-                current.origin.oSet(current.localOrigin);
+                this.current.origin.oSet(this.current.localOrigin);
             }
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
             Activate();
         }
 
         @Override
         public void SetAxis(final idMat3 newAxis, int id /*= -1*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
-            current.localAngles = newAxis.ToAngles();
+            this.current.localAngles = newAxis.ToAngles();
 
-            current.angularExtrapolation.SetStartValue(current.localAngles);
-            current.angularInterpolation.SetStartValue(current.localAngles);
+            this.current.angularExtrapolation.SetStartValue(this.current.localAngles);
+            this.current.angularInterpolation.SetStartValue(this.current.localAngles);
 
-            current.localAngles = current.angularExtrapolation.GetCurrentValue(current.time);
-            if (hasMaster && isOrientated) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.axis = current.localAngles.ToMat3().oMultiply(masterAxis);
-                current.angles = current.axis.ToAngles();
+            this.current.localAngles = this.current.angularExtrapolation.GetCurrentValue(this.current.time);
+            if (this.hasMaster && this.isOrientated) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.axis = this.current.localAngles.ToMat3().oMultiply(masterAxis);
+                this.current.angles = this.current.axis.ToAngles();
             } else {
-                current.axis = current.localAngles.ToMat3();
-                current.angles.oSet(current.localAngles);
+                this.current.axis = this.current.localAngles.ToMat3();
+                this.current.angles.oSet(this.current.localAngles);
             }
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
             Activate();
         }
@@ -528,40 +530,40 @@ public class Physics_Parametric {
 
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
-            return new idVec3(current.origin);
+            return new idVec3(this.current.origin);
         }
 
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
-            return new idMat3(current.axis);
+            return new idMat3(this.current.axis);
         }
 
         @Override
         public void SetLinearVelocity(final idVec3 newLinearVelocity, int id /*= 0*/) {
-            SetLinearExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, current.origin, newLinearVelocity, getVec3_origin());
-            current.linearInterpolation.Init(0, 0, 0, 0, getVec3_zero(), getVec3_zero());
+            SetLinearExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, this.current.origin, newLinearVelocity, getVec3_origin());
+            this.current.linearInterpolation.Init(0, 0, 0, 0, getVec3_zero(), getVec3_zero());
             Activate();
         }
 
         @Override
         public void SetAngularVelocity(final idVec3 newAngularVelocity, int id /*= 0*/) {
-            idRotation rotation = new idRotation();
+            final idRotation rotation = new idRotation();
             idVec3 vec;
             float angle;
 
             vec = newAngularVelocity;
             angle = vec.Normalize();
-            rotation.Set(getVec3_origin(), vec, (float) RAD2DEG(angle));
+            rotation.Set(getVec3_origin(), vec, RAD2DEG(angle));
 
-            SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, current.angles, rotation.ToAngles(), getAng_zero());
-            current.angularInterpolation.Init(0, 0, 0, 0, getAng_zero(), getAng_zero());
+            SetAngularExtrapolation((EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP), gameLocal.time, 0, this.current.angles, rotation.ToAngles(), getAng_zero());
+            this.current.angularInterpolation.Init(0, 0, 0, 0, getAng_zero(), getAng_zero());
             Activate();
         }
         private static idVec3 curLinearVelocity;
 
         @Override
         public idVec3 GetLinearVelocity(int id /*= 0*/) {
-            curLinearVelocity = current.linearExtrapolation.GetCurrentSpeed(gameLocal.time);
+            curLinearVelocity = this.current.linearExtrapolation.GetCurrentSpeed(gameLocal.time);
             return curLinearVelocity;
         }
         private static idVec3 curAngularVelocity;
@@ -570,197 +572,197 @@ public class Physics_Parametric {
         public idVec3 GetAngularVelocity(int id /*= 0*/) {
             idAngles angles;
 
-            angles = current.angularExtrapolation.GetCurrentSpeed(gameLocal.time);
+            angles = this.current.angularExtrapolation.GetCurrentSpeed(gameLocal.time);
             curAngularVelocity = angles.ToAngularVelocity();
             return curAngularVelocity;
         }
 
         @Override
         public void DisableClip() {
-            if (clipModel != null) {
-                clipModel.Disable();
+            if (this.clipModel != null) {
+                this.clipModel.Disable();
             }
         }
 
         @Override
         public void EnableClip() {
-            if (clipModel != null) {
-                clipModel.Enable();
+            if (this.clipModel != null) {
+                this.clipModel.Enable();
             }
         }
 
         @Override
         public void UnlinkClip() {
-            if (clipModel != null) {
-                clipModel.Unlink();
+            if (this.clipModel != null) {
+                this.clipModel.Unlink();
             }
         }
 
         @Override
         public void LinkClip() {
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
         @Override
         public void SetMaster(idEntity master, final boolean orientated /*= true*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
             if (master != null) {
-                if (!hasMaster) {
+                if (!this.hasMaster) {
 
                     // transform from world space to master space
-                    self.GetMasterPosition(masterOrigin, masterAxis);
-                    current.localOrigin = (current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
+                    this.self.GetMasterPosition(masterOrigin, masterAxis);
+                    this.current.localOrigin = (this.current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose());
                     if (orientated) {
-                        current.localAngles = (current.axis.oMultiply(masterAxis.Transpose())).ToAngles();
+                        this.current.localAngles = (this.current.axis.oMultiply(masterAxis.Transpose())).ToAngles();
                     } else {
-                        current.localAngles = current.axis.ToAngles();
+                        this.current.localAngles = this.current.axis.ToAngles();
                     }
 
-                    current.linearExtrapolation.SetStartValue(current.localOrigin);
-                    current.angularExtrapolation.SetStartValue(current.localAngles);
-                    hasMaster = true;
-                    isOrientated = orientated;
+                    this.current.linearExtrapolation.SetStartValue(this.current.localOrigin);
+                    this.current.angularExtrapolation.SetStartValue(this.current.localAngles);
+                    this.hasMaster = true;
+                    this.isOrientated = orientated;
                 }
             } else {
-                if (hasMaster) {
+                if (this.hasMaster) {
                     // transform from master space to world space
-                    current.localOrigin.oSet(current.origin);
-                    current.localAngles.oSet(current.angles);
-                    SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, current.origin, getVec3_origin(), getVec3_origin());
-                    SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, current.angles, getAng_zero(), getAng_zero());
-                    hasMaster = false;
+                    this.current.localOrigin.oSet(this.current.origin);
+                    this.current.localAngles.oSet(this.current.angles);
+                    SetLinearExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.current.origin, getVec3_origin(), getVec3_origin());
+                    SetAngularExtrapolation(EXTRAPOLATION_NONE, 0, 0, this.current.angles, getAng_zero(), getAng_zero());
+                    this.hasMaster = false;
                 }
             }
         }
 
         @Override
         public trace_s GetBlockingInfo() {
-            return (isBlocked ? pushResults : null);
+            return (this.isBlocked ? this.pushResults : null);
         }
 
         @Override
         public idEntity GetBlockingEntity() {
-            if (isBlocked) {
-                return gameLocal.entities[ pushResults.c.entityNum];
+            if (this.isBlocked) {
+                return gameLocal.entities[ this.pushResults.c.entityNum];
             }
             return null;
         }
 
         @Override
         public int GetLinearEndTime() {
-            if (current.spline != null) {
-                if (current.spline.GetBoundaryType() != idCurve_Spline.BT_CLOSED) {
-                    return (int) current.spline.GetTime(current.spline.GetNumValues() - 1);
+            if (this.current.spline != null) {
+                if (this.current.spline.GetBoundaryType() != idCurve_Spline.BT_CLOSED) {
+                    return (int) this.current.spline.GetTime(this.current.spline.GetNumValues() - 1);
                 } else {
                     return 0;
                 }
-            } else if (current.linearInterpolation.GetDuration() != 0) {
-                return (int) current.linearInterpolation.GetEndTime();
+            } else if (this.current.linearInterpolation.GetDuration() != 0) {
+                return (int) this.current.linearInterpolation.GetEndTime();
             } else {
-                return (int) current.linearExtrapolation.GetEndTime();
+                return (int) this.current.linearExtrapolation.GetEndTime();
             }
         }
 
         @Override
         public int GetAngularEndTime() {
-            if (current.angularInterpolation.GetDuration() != 0) {
-                return (int) current.angularInterpolation.GetEndTime();
+            if (this.current.angularInterpolation.GetDuration() != 0) {
+                return (int) this.current.angularInterpolation.GetEndTime();
             } else {
-                return (int) current.angularExtrapolation.GetEndTime();
+                return (int) this.current.angularExtrapolation.GetEndTime();
             }
         }
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            msg.WriteLong(current.time);
-            msg.WriteLong(current.atRest);
-            msg.WriteFloat(current.origin.oGet(0));
-            msg.WriteFloat(current.origin.oGet(1));
-            msg.WriteFloat(current.origin.oGet(2));
-            msg.WriteFloat(current.angles.oGet(0));
-            msg.WriteFloat(current.angles.oGet(1));
-            msg.WriteFloat(current.angles.oGet(2));
-            msg.WriteDeltaFloat(current.origin.oGet(0), current.localOrigin.oGet(0));
-            msg.WriteDeltaFloat(current.origin.oGet(1), current.localOrigin.oGet(1));
-            msg.WriteDeltaFloat(current.origin.oGet(2), current.localOrigin.oGet(2));
-            msg.WriteDeltaFloat(current.angles.oGet(0), current.localAngles.oGet(0));
-            msg.WriteDeltaFloat(current.angles.oGet(1), current.localAngles.oGet(1));
-            msg.WriteDeltaFloat(current.angles.oGet(2), current.localAngles.oGet(2));
+            msg.WriteLong(this.current.time);
+            msg.WriteLong(this.current.atRest);
+            msg.WriteFloat(this.current.origin.oGet(0));
+            msg.WriteFloat(this.current.origin.oGet(1));
+            msg.WriteFloat(this.current.origin.oGet(2));
+            msg.WriteFloat(this.current.angles.oGet(0));
+            msg.WriteFloat(this.current.angles.oGet(1));
+            msg.WriteFloat(this.current.angles.oGet(2));
+            msg.WriteDeltaFloat(this.current.origin.oGet(0), this.current.localOrigin.oGet(0));
+            msg.WriteDeltaFloat(this.current.origin.oGet(1), this.current.localOrigin.oGet(1));
+            msg.WriteDeltaFloat(this.current.origin.oGet(2), this.current.localOrigin.oGet(2));
+            msg.WriteDeltaFloat(this.current.angles.oGet(0), this.current.localAngles.oGet(0));
+            msg.WriteDeltaFloat(this.current.angles.oGet(1), this.current.localAngles.oGet(1));
+            msg.WriteDeltaFloat(this.current.angles.oGet(2), this.current.localAngles.oGet(2));
 
-            msg.WriteBits(current.linearExtrapolation.GetExtrapolationType(), 8);
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetStartTime());
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetDuration());
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetStartValue().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetStartValue().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetStartValue().oGet(2));
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetSpeed().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetSpeed().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetSpeed().oGet(2));
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetBaseSpeed().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetBaseSpeed().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.linearExtrapolation.GetBaseSpeed().oGet(2));
+            msg.WriteBits(this.current.linearExtrapolation.GetExtrapolationType(), 8);
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetStartTime());
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetDuration());
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetStartValue().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetStartValue().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetStartValue().oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetSpeed().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetSpeed().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetSpeed().oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetBaseSpeed().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetBaseSpeed().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.linearExtrapolation.GetBaseSpeed().oGet(2));
 
-            msg.WriteBits(current.angularExtrapolation.GetExtrapolationType(), 8);
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetStartTime());
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetDuration());
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetStartValue().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetStartValue().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetStartValue().oGet(2));
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetSpeed().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetSpeed().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetSpeed().oGet(2));
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetBaseSpeed().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetBaseSpeed().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.angularExtrapolation.GetBaseSpeed().oGet(2));
+            msg.WriteBits(this.current.angularExtrapolation.GetExtrapolationType(), 8);
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetStartTime());
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetDuration());
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetStartValue().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetStartValue().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetStartValue().oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetSpeed().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetSpeed().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetSpeed().oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetBaseSpeed().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetBaseSpeed().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.angularExtrapolation.GetBaseSpeed().oGet(2));
 
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetStartTime());
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetAcceleration());
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetDeceleration());
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetDuration());
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetStartValue().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetStartValue().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetStartValue().oGet(2));
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetEndValue().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetEndValue().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.linearInterpolation.GetEndValue().oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetStartTime());
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetAcceleration());
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetDeceleration());
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetDuration());
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetStartValue().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetStartValue().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetStartValue().oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetEndValue().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetEndValue().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.linearInterpolation.GetEndValue().oGet(2));
 
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetStartTime());
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetAcceleration());
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetDeceleration());
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetDuration());
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetStartValue().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetStartValue().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetStartValue().oGet(2));
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetEndValue().oGet(0));
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetEndValue().oGet(1));
-            msg.WriteDeltaFloat(0.0f, current.angularInterpolation.GetEndValue().oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetStartTime());
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetAcceleration());
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetDeceleration());
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetDuration());
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetStartValue().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetStartValue().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetStartValue().oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetEndValue().oGet(0));
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetEndValue().oGet(1));
+            msg.WriteDeltaFloat(0.0f, this.current.angularInterpolation.GetEndValue().oGet(2));
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
             int/*extrapolation_t*/ linearType, angularType;
             float startTime, duration, accelTime, decelTime;
-            idVec3 linearStartValue = new idVec3(), linearSpeed = new idVec3(), linearBaseSpeed = new idVec3(), startPos = new idVec3(), endPos = new idVec3();
-            idAngles angularStartValue = new idAngles(), angularSpeed = new idAngles(), angularBaseSpeed = new idAngles(), startAng = new idAngles(), endAng = new idAngles();
+            final idVec3 linearStartValue = new idVec3(), linearSpeed = new idVec3(), linearBaseSpeed = new idVec3(), startPos = new idVec3(), endPos = new idVec3();
+            final idAngles angularStartValue = new idAngles(), angularSpeed = new idAngles(), angularBaseSpeed = new idAngles(), startAng = new idAngles(), endAng = new idAngles();
 
-            current.time = msg.ReadLong();
-            current.atRest = msg.ReadLong();
-            current.origin.oSet(0, msg.ReadFloat());
-            current.origin.oSet(1, msg.ReadFloat());
-            current.origin.oSet(2, msg.ReadFloat());
-            current.angles.oSet(0, msg.ReadFloat());
-            current.angles.oSet(1, msg.ReadFloat());
-            current.angles.oSet(2, msg.ReadFloat());
-            current.localOrigin.oSet(0, msg.ReadDeltaFloat(current.origin.oGet(0)));
-            current.localOrigin.oSet(1, msg.ReadDeltaFloat(current.origin.oGet(1)));
-            current.localOrigin.oSet(2, msg.ReadDeltaFloat(current.origin.oGet(2)));
-            current.localAngles.oSet(0, msg.ReadDeltaFloat(current.angles.oGet(0)));
-            current.localAngles.oSet(1, msg.ReadDeltaFloat(current.angles.oGet(1)));
-            current.localAngles.oSet(2, msg.ReadDeltaFloat(current.angles.oGet(2)));
+            this.current.time = msg.ReadLong();
+            this.current.atRest = msg.ReadLong();
+            this.current.origin.oSet(0, msg.ReadFloat());
+            this.current.origin.oSet(1, msg.ReadFloat());
+            this.current.origin.oSet(2, msg.ReadFloat());
+            this.current.angles.oSet(0, msg.ReadFloat());
+            this.current.angles.oSet(1, msg.ReadFloat());
+            this.current.angles.oSet(2, msg.ReadFloat());
+            this.current.localOrigin.oSet(0, msg.ReadDeltaFloat(this.current.origin.oGet(0)));
+            this.current.localOrigin.oSet(1, msg.ReadDeltaFloat(this.current.origin.oGet(1)));
+            this.current.localOrigin.oSet(2, msg.ReadDeltaFloat(this.current.origin.oGet(2)));
+            this.current.localAngles.oSet(0, msg.ReadDeltaFloat(this.current.angles.oGet(0)));
+            this.current.localAngles.oSet(1, msg.ReadDeltaFloat(this.current.angles.oGet(1)));
+            this.current.localAngles.oSet(2, msg.ReadDeltaFloat(this.current.angles.oGet(2)));
 
             linearType = /*(extrapolation_t)*/ msg.ReadBits(8);
             startTime = msg.ReadDeltaFloat(0.0f);
@@ -774,7 +776,7 @@ public class Physics_Parametric {
             linearBaseSpeed.oSet(0, msg.ReadDeltaFloat(0.0f));
             linearBaseSpeed.oSet(1, msg.ReadDeltaFloat(0.0f));
             linearBaseSpeed.oSet(2, msg.ReadDeltaFloat(0.0f));
-            current.linearExtrapolation.Init(startTime, duration, linearStartValue, linearBaseSpeed, linearSpeed, linearType);
+            this.current.linearExtrapolation.Init(startTime, duration, linearStartValue, linearBaseSpeed, linearSpeed, linearType);
 
             angularType = msg.ReadBits(8);
             startTime = msg.ReadDeltaFloat(0.0f);
@@ -788,7 +790,7 @@ public class Physics_Parametric {
             angularBaseSpeed.oSet(0, msg.ReadDeltaFloat(0.0f));
             angularBaseSpeed.oSet(1, msg.ReadDeltaFloat(0.0f));
             angularBaseSpeed.oSet(2, msg.ReadDeltaFloat(0.0f));
-            current.angularExtrapolation.Init(startTime, duration, angularStartValue, angularBaseSpeed, angularSpeed, angularType);
+            this.current.angularExtrapolation.Init(startTime, duration, angularStartValue, angularBaseSpeed, angularSpeed, angularType);
 
             startTime = msg.ReadDeltaFloat(0.0f);
             accelTime = msg.ReadDeltaFloat(0.0f);
@@ -800,7 +802,7 @@ public class Physics_Parametric {
             endPos.oSet(0, msg.ReadDeltaFloat(0.0f));
             endPos.oSet(1, msg.ReadDeltaFloat(0.0f));
             endPos.oSet(2, msg.ReadDeltaFloat(0.0f));
-            current.linearInterpolation.Init(startTime, accelTime, decelTime, duration, startPos, endPos);
+            this.current.linearInterpolation.Init(startTime, accelTime, decelTime, duration, startPos, endPos);
 
             startTime = msg.ReadDeltaFloat(0.0f);
             accelTime = msg.ReadDeltaFloat(0.0f);
@@ -812,42 +814,42 @@ public class Physics_Parametric {
             endAng.oSet(0, msg.ReadDeltaFloat(0.0f));
             endAng.oSet(1, msg.ReadDeltaFloat(0.0f));
             endAng.oSet(2, msg.ReadDeltaFloat(0.0f));
-            current.angularInterpolation.Init(startTime, accelTime, decelTime, duration, startAng, endAng);
+            this.current.angularInterpolation.Init(startTime, accelTime, decelTime, duration, startAng, endAng);
 
-            current.axis = current.angles.ToMat3();
+            this.current.axis = this.current.angles.ToMat3();
 
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
         private boolean TestIfAtRest() {
 
-            if ((current.linearExtrapolation.GetExtrapolationType() & ~EXTRAPOLATION_NOSTOP) == EXTRAPOLATION_NONE
-                    && (current.angularExtrapolation.GetExtrapolationType() & ~EXTRAPOLATION_NOSTOP) == EXTRAPOLATION_NONE
-                    && current.linearInterpolation.GetDuration() == 0
-                    && current.angularInterpolation.GetDuration() == 0
-                    && current.spline == null) {
+            if (((this.current.linearExtrapolation.GetExtrapolationType() & ~EXTRAPOLATION_NOSTOP) == EXTRAPOLATION_NONE)
+                    && ((this.current.angularExtrapolation.GetExtrapolationType() & ~EXTRAPOLATION_NOSTOP) == EXTRAPOLATION_NONE)
+                    && (this.current.linearInterpolation.GetDuration() == 0)
+                    && (this.current.angularInterpolation.GetDuration() == 0)
+                    && (this.current.spline == null)) {
                 return true;
             }
 
-            if (!current.linearExtrapolation.IsDone(current.time)) {
+            if (!this.current.linearExtrapolation.IsDone(this.current.time)) {
                 return false;
             }
 
-            if (!current.angularExtrapolation.IsDone(current.time)) {
+            if (!this.current.angularExtrapolation.IsDone(this.current.time)) {
                 return false;
             }
 
-            if (!current.linearInterpolation.IsDone(current.time)) {
+            if (!this.current.linearInterpolation.IsDone(this.current.time)) {
                 return false;
             }
 
-            if (!current.angularInterpolation.IsDone(current.time)) {
+            if (!this.current.angularInterpolation.IsDone(this.current.time)) {
                 return false;
             }
 
-            if (current.spline != null && !current.spline.IsDone(current.time)) {
+            if ((this.current.spline != null) && !this.current.spline.IsDone(this.current.time)) {
                 return false;
             }
 
@@ -855,10 +857,10 @@ public class Physics_Parametric {
         }
 
         private void Rest() {
-            current.atRest = gameLocal.time;
-            self.BecomeInactive(TH_PHYSICS);
+            this.current.atRest = gameLocal.time;
+            this.self.BecomeInactive(TH_PHYSICS);
         }
-    };
+    }
 
     /*
      ================
@@ -875,14 +877,14 @@ public class Physics_Parametric {
         savefile.WriteVec3(state.localOrigin);
         savefile.WriteAngles(state.localAngles);
 
-        savefile.WriteInt((int) state.linearExtrapolation.GetExtrapolationType());
+        savefile.WriteInt(state.linearExtrapolation.GetExtrapolationType());
         savefile.WriteFloat(state.linearExtrapolation.GetStartTime());
         savefile.WriteFloat(state.linearExtrapolation.GetDuration());
         savefile.WriteVec3(state.linearExtrapolation.GetStartValue());
         savefile.WriteVec3(state.linearExtrapolation.GetBaseSpeed());
         savefile.WriteVec3(state.linearExtrapolation.GetSpeed());
 
-        savefile.WriteInt((int) state.angularExtrapolation.GetExtrapolationType());
+        savefile.WriteInt(state.angularExtrapolation.GetExtrapolationType());
         savefile.WriteFloat(state.angularExtrapolation.GetStartTime());
         savefile.WriteFloat(state.angularExtrapolation.GetDuration());
         savefile.WriteAngles(state.angularExtrapolation.GetStartValue());
@@ -918,12 +920,12 @@ public class Physics_Parametric {
      ================
      */
     static void idPhysics_Parametric_RestorePState(idRestoreGame savefile, parametricPState_s state) {
-        int[]/*extrapolation_t*/ etype = {0};
-        float[] startTime = {0}, duration = {0}, accelTime = {0}, decelTime = {0}, startValue = {0}, endValue = {0};
-        idVec3 linearStartValue = new idVec3(), linearBaseSpeed = new idVec3(), linearSpeed = new idVec3(), startPos = new idVec3(), endPos = new idVec3();
-        idAngles angularStartValue = new idAngles(), angularBaseSpeed = new idAngles(), angularSpeed = new idAngles(), startAng = new idAngles(), endAng = new idAngles();
-        int[] time = {0}, atRest = {0};
-        boolean[] useSplineAngles = {false};
+        final int[]/*extrapolation_t*/ etype = {0};
+        final float[] startTime = {0}, duration = {0}, accelTime = {0}, decelTime = {0}, startValue = {0}, endValue = {0};
+        final idVec3 linearStartValue = new idVec3(), linearBaseSpeed = new idVec3(), linearSpeed = new idVec3(), startPos = new idVec3(), endPos = new idVec3();
+        final idAngles angularStartValue = new idAngles(), angularBaseSpeed = new idAngles(), angularSpeed = new idAngles(), startAng = new idAngles(), endAng = new idAngles();
+        final int[] time = {0}, atRest = {0};
+        final boolean[] useSplineAngles = {false};
 
         savefile.ReadInt(time);
         savefile.ReadInt(atRest);

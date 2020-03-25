@@ -185,11 +185,11 @@ public class RenderWorld_local {
         doublePortal_s doublePortal;
         
         public portal_s(){
-            intoArea = 0;
-            w = new idWinding();
-            plane = new idPlane();
+            this.intoArea = 0;
+            this.w = new idWinding();
+            this.plane = new idPlane();
         }
-    };
+    }
 
     public static class doublePortal_s {
 
@@ -201,7 +201,7 @@ public class RenderWorld_local {
         // fog volume over each portal.
         idRenderLightLocal fogLight;
         doublePortal_s nextFoggedPortal;
-    };
+    }
 
     public static class portalArea_s {
         int             areaNum;
@@ -224,7 +224,7 @@ public class RenderWorld_local {
                     limit(length).
                     toArray(portalArea_s[]::new);
         }
-    };
+    }
     static final int CHILDREN_HAVE_MULTIPLE_AREAS = -2;
     static final int AREANUM_SOLID                = -1;
 
@@ -234,7 +234,7 @@ public class RenderWorld_local {
         int[] children = new int[2];	// negative numbers are (-1 - areaNumber), 0 = solid
         int commonChildrenArea;         // if all children are either solid or a single area,
         //                              // this is the area number, else CHILDREN_HAVE_MULTIPLE_AREAS
-    };
+    }
 
     public static class idRenderWorldLocal extends idRenderWorld {
 
@@ -276,33 +276,33 @@ public class RenderWorld_local {
         //
 
         public idRenderWorldLocal() {
-            mapName = new idStr();//.Clear();
-            mapTimeStamp = new long[]{FILE_NOT_FOUND_TIMESTAMP};
+            this.mapName = new idStr();//.Clear();
+            this.mapTimeStamp = new long[]{FILE_NOT_FOUND_TIMESTAMP};
 
-            generateAllInteractionsCalled = false;
+            this.generateAllInteractionsCalled = false;
 
-            areaNodes = null;
-            numAreaNodes = 0;
+            this.areaNodes = null;
+            this.numAreaNodes = 0;
 
-            portalAreas = null;
-            numPortalAreas = 0;
+            this.portalAreas = null;
+            this.numPortalAreas = 0;
 
-            doublePortals = null;
-            numInterAreaPortals = 0;
+            this.doublePortals = null;
+            this.numInterAreaPortals = 0;
 
-            interactionTable = null;
-            interactionTableWidth = 0;
-            interactionTableHeight = 0;
+            this.interactionTable = null;
+            this.interactionTableWidth = 0;
+            this.interactionTableHeight = 0;
         }
         // virtual					~idRenderWorldLocal();
 
         @Override
         public int AddEntityDef(renderEntity_s re) {
             // try and reuse a free spot
-            int entityHandle = entityDefs.FindNull();
+            int entityHandle = this.entityDefs.FindNull();
             if (entityHandle == -1) {
-                entityHandle = entityDefs.Append((idRenderEntityLocal) null);
-                if (interactionTable != null && entityDefs.Num() > interactionTableWidth) {
+                entityHandle = this.entityDefs.Append((idRenderEntityLocal) null);
+                if ((this.interactionTable != null) && (this.entityDefs.Num() > this.interactionTableWidth)) {
                     ResizeInteractionTable();
                 }
             }
@@ -335,14 +335,14 @@ public class RenderWorld_local {
             }
 
             // create new slots if needed
-            if (entityHandle < 0 || entityHandle > LUDICROUS_INDEX) {
+            if ((entityHandle < 0) || (entityHandle > LUDICROUS_INDEX)) {
                 common.Error("idRenderWorld::UpdateEntityDef: index = %d", entityHandle);
             }
-            while (entityHandle >= entityDefs.Num()) {
-                entityDefs.Append((idRenderEntityLocal) null);
+            while (entityHandle >= this.entityDefs.Num()) {
+                this.entityDefs.Append((idRenderEntityLocal) null);
             }
 
-            idRenderEntityLocal def = entityDefs.oGet(entityHandle);
+            idRenderEntityLocal def = this.entityDefs.oGet(entityHandle);
             if (def != null) {
 
                 if (0 == re.forceUpdate) {
@@ -358,14 +358,14 @@ public class RenderWorld_local {
                     // then we can leave the references as they are
                     if (re.callback != null) {
 
-                        boolean axisMatch = re.axis.equals(def.parms.axis);
-                        boolean originMatch = re.origin.equals(def.parms.origin);
-                        boolean boundsMatch = re.bounds.equals(def.referenceBounds);
-                        boolean modelMatch = (re.hModel == def.parms.hModel);
+                        final boolean axisMatch = re.axis.equals(def.parms.axis);
+                        final boolean originMatch = re.origin.equals(def.parms.origin);
+                        final boolean boundsMatch = re.bounds.equals(def.referenceBounds);
+                        final boolean modelMatch = (re.hModel == def.parms.hModel);
 
                         if (boundsMatch && originMatch && axisMatch && modelMatch) {
                             // only clear the dynamic model and interaction surfaces if they exist
-                            c_callbackUpdate++;
+                            this.c_callbackUpdate++;
                             R_ClearEntityDefDynamicModel(def);
                             def.parms = new renderEntity_s(re);
                             return;
@@ -382,7 +382,7 @@ public class RenderWorld_local {
             } else {
                 // creating a new one
                 def = new idRenderEntityLocal();
-                entityDefs.oSet(entityHandle, def);
+                this.entityDefs.oSet(entityHandle, def);
 
                 def.world = this;
                 def.index = entityHandle;
@@ -393,13 +393,13 @@ public class RenderWorld_local {
             R_AxisToModelMatrix(def.parms.axis, def.parms.origin, def.modelMatrix);
 
             def.lastModifiedFrameNum = tr.frameCount;
-            if (session.writeDemo != null && def.archived) {
+            if ((session.writeDemo != null) && def.archived) {
                 WriteFreeEntity(entityHandle);
                 def.archived = false;
             }
 
             // optionally immediately issue any callbacks
-            if (!r_useEntityCallbacks.GetBool() && def.parms.callback != null) {
+            if (!r_useEntityCallbacks.GetBool() && (def.parms.callback != null)) {
                 R_IssueEntityDefCallback(def);
             }
 
@@ -420,12 +420,12 @@ public class RenderWorld_local {
         public void FreeEntityDef(int entityHandle) {
             idRenderEntityLocal def;
 
-            if (entityHandle < 0 || entityHandle >= entityDefs.Num()) {
-                common.Printf("idRenderWorld::FreeEntityDef: handle %d > %d\n", entityHandle, entityDefs.Num());
+            if ((entityHandle < 0) || (entityHandle >= this.entityDefs.Num())) {
+                common.Printf("idRenderWorld::FreeEntityDef: handle %d > %d\n", entityHandle, this.entityDefs.Num());
                 return;
             }
 
-            def = entityDefs.oGet(entityHandle);
+            def = this.entityDefs.oGet(entityHandle);
             if (NOT(def)) {
                 common.Printf("idRenderWorld::FreeEntityDef: handle %d is NULL\n", entityHandle);
                 return;
@@ -433,7 +433,7 @@ public class RenderWorld_local {
 
             R_FreeEntityDefDerivedData(def, false, false);
 
-            if (session.writeDemo != null && def.archived) {
+            if ((session.writeDemo != null) && def.archived) {
                 WriteFreeEntity(entityHandle);
             }
 
@@ -445,19 +445,19 @@ public class RenderWorld_local {
             def.parms.gui[2] = null;
 
 //	delete def;
-            entityDefs.oSet(entityHandle, null);
+            this.entityDefs.oSet(entityHandle, null);
         }
 
         @Override
         public renderEntity_s GetRenderEntity(int entityHandle) {
             idRenderEntityLocal def;
 
-            if (entityHandle < 0 || entityHandle >= entityDefs.Num()) {
-                common.Printf("idRenderWorld::GetRenderEntity: invalid handle %d [0, %d]\n", entityHandle, entityDefs.Num());
+            if ((entityHandle < 0) || (entityHandle >= this.entityDefs.Num())) {
+                common.Printf("idRenderWorld::GetRenderEntity: invalid handle %d [0, %d]\n", entityHandle, this.entityDefs.Num());
                 return null;
             }
 
-            def = entityDefs.oGet(entityHandle);
+            def = this.entityDefs.oGet(entityHandle);
             if (NOT(def)) {
                 common.Printf("idRenderWorld::GetRenderEntity: handle %d is NULL\n", entityHandle);
                 return null;
@@ -469,11 +469,11 @@ public class RenderWorld_local {
         @Override
         public int AddLightDef(renderLight_s rlight) {
             // try and reuse a free spot
-            int lightHandle = lightDefs.FindNull();
+            int lightHandle = this.lightDefs.FindNull();
 
             if (lightHandle == -1) {
-                lightHandle = lightDefs.Append((idRenderLightLocal) null);
-                if (interactionTable != null && lightDefs.Num() > interactionTableHeight) {
+                lightHandle = this.lightDefs.Append((idRenderLightLocal) null);
+                if ((this.interactionTable != null) && (this.lightDefs.Num() > this.interactionTableHeight)) {
                     ResizeInteractionTable();
                 }
             }
@@ -501,25 +501,25 @@ public class RenderWorld_local {
             tr.pc.c_lightUpdates++;
 
             // create new slots if needed
-            if (lightHandle < 0 || lightHandle > LUDICROUS_INDEX) {
+            if ((lightHandle < 0) || (lightHandle > LUDICROUS_INDEX)) {
                 common.Error("idRenderWorld::UpdateLightDef: index = %d", lightHandle);
             }
-            while (lightHandle >= lightDefs.Num()) {
-                lightDefs.Append((idRenderLightLocal) null);
+            while (lightHandle >= this.lightDefs.Num()) {
+                this.lightDefs.Append((idRenderLightLocal) null);
             }
 
             boolean justUpdate = false;
-            idRenderLightLocal light = lightDefs.oGet(lightHandle);
+            idRenderLightLocal light = this.lightDefs.oGet(lightHandle);
             if (light != null) {
                 // if the shape of the light stays the same, we don't need to dump
                 // any of our derived data, because shader parms are calculated every frame
                 if (rlight.axis.equals(light.parms.axis) && rlight.end.equals(light.parms.end)
                         && rlight.lightCenter.equals(light.parms.lightCenter) && rlight.lightRadius.equals(light.parms.lightRadius)
-                        && rlight.noShadows == light.parms.noShadows && rlight.origin.equals(light.parms.origin)
-                        && rlight.parallel == light.parms.parallel && rlight.pointLight == light.parms.pointLight
+                        && (rlight.noShadows == light.parms.noShadows) && rlight.origin.equals(light.parms.origin)
+                        && (rlight.parallel == light.parms.parallel) && (rlight.pointLight == light.parms.pointLight)
                         && rlight.right.equals(light.parms.right) && rlight.start.equals(light.parms.start)
                         && rlight.target.equals(light.parms.target) && rlight.up.equals(light.parms.up)
-                        && rlight.shader == light.lightShader && rlight.prelightModel == light.parms.prelightModel) {
+                        && (rlight.shader == light.lightShader) && (rlight.prelightModel == light.parms.prelightModel)) {
                     justUpdate = true;
                 } else {
                     // if we are updating shadows, the prelight model is no longer valid
@@ -529,7 +529,7 @@ public class RenderWorld_local {
             } else {
                 // create a new one
                 light = new idRenderLightLocal();
-                lightDefs.oSet(lightHandle, light);
+                this.lightDefs.oSet(lightHandle, light);
 
                 light.world = this;
                 light.index = lightHandle;
@@ -537,7 +537,7 @@ public class RenderWorld_local {
 
             light.parms = new renderLight_s(rlight);
             light.lastModifiedFrameNum = tr.frameCount;
-            if (session.writeDemo != null && light.archived) {
+            if ((session.writeDemo != null) && light.archived) {
                 WriteFreeLight(lightHandle);
                 light.archived = false;
             }
@@ -565,12 +565,12 @@ public class RenderWorld_local {
         public void FreeLightDef(int lightHandle) {
             idRenderLightLocal light;
 
-            if (lightHandle < 0 || lightHandle >= lightDefs.Num()) {
-                common.Printf("idRenderWorld::FreeLightDef: invalid handle %d [0, %d]\n", lightHandle, lightDefs.Num());
+            if ((lightHandle < 0) || (lightHandle >= this.lightDefs.Num())) {
+                common.Printf("idRenderWorld::FreeLightDef: invalid handle %d [0, %d]\n", lightHandle, this.lightDefs.Num());
                 return;
             }
 
-            light = lightDefs.oGet(lightHandle);
+            light = this.lightDefs.oGet(lightHandle);
             if (NOT(light)) {
                 common.Printf("idRenderWorld::FreeLightDef: handle %d is NULL\n", lightHandle);
                 return;
@@ -578,24 +578,24 @@ public class RenderWorld_local {
 
             R_FreeLightDefDerivedData(light);
 
-            if (session.writeDemo != null && light.archived) {
+            if ((session.writeDemo != null) && light.archived) {
                 WriteFreeLight(lightHandle);
             }
 
             //delete light;
-            lightDefs.oSet(lightHandle, null);
+            this.lightDefs.oSet(lightHandle, null);
         }
 
         @Override
         public renderLight_s GetRenderLight(int lightHandle) {
             idRenderLightLocal def;
 
-            if (lightHandle < 0 || lightHandle >= lightDefs.Num()) {
-                common.Printf("idRenderWorld::GetRenderLight: handle %d > %d\n", lightHandle, lightDefs.Num());
+            if ((lightHandle < 0) || (lightHandle >= this.lightDefs.Num())) {
+                common.Printf("idRenderWorld::GetRenderLight: handle %d > %d\n", lightHandle, this.lightDefs.Num());
                 return null;
             }
 
-            def = lightDefs.oGet(lightHandle);
+            def = this.lightDefs.oGet(lightHandle);
             if (null == def) {
                 common.Printf("idRenderWorld::GetRenderLight: handle %d is NULL\n", lightHandle);
                 return null;
@@ -608,12 +608,12 @@ public class RenderWorld_local {
         public boolean CheckAreaForPortalSky(int areaNum) {
             areaReference_s ref;
 
-            assert (areaNum >= 0 && areaNum < numPortalAreas);
+            assert ((areaNum >= 0) && (areaNum < this.numPortalAreas));
 
-            for (ref = portalAreas[areaNum].entityRefs.areaNext; ref.entity != null; ref = ref.areaNext) {
-                assert (ref.area == portalAreas[areaNum]);
+            for (ref = this.portalAreas[areaNum].entityRefs.areaNext; ref.entity != null; ref = ref.areaNext) {
+                assert (ref.area == this.portalAreas[areaNum]);
 
-                if (ref.entity != null && ref.entity.needsPortalSky) {
+                if ((ref.entity != null) && ref.entity.needsPortalSky) {
                     return true;
                 }
             }
@@ -639,9 +639,9 @@ public class RenderWorld_local {
                 return;
             }
 
-            int start = Sys_Milliseconds();
+            final int start = Sys_Milliseconds();
 
-            generateAllInteractionsCalled = false;
+            this.generateAllInteractionsCalled = false;
 
             // watch how much memory we allocate
             tr.staticAllocCount = 0;
@@ -651,37 +651,37 @@ public class RenderWorld_local {
             tr.viewDef = null;
 
             for (int i = 0; i < this.lightDefs.Num(); i++) {
-                idRenderLightLocal ldef = this.lightDefs.oGet(i);
+                final idRenderLightLocal ldef = this.lightDefs.oGet(i);
                 if (NOT(ldef)) {
                     continue;
                 }
                 this.CreateLightDefInteractions(ldef);
             }
 
-            int end = Sys_Milliseconds();
-            int msec = end - start;
+            final int end = Sys_Milliseconds();
+            final int msec = end - start;
 
             common.Printf("idRenderWorld::GenerateAllInteractions, msec = %d, staticAllocCount = %d.\n", msec, tr.staticAllocCount);
 
             // build the interaction table
             if (RenderSystem_init.r_useInteractionTable.GetBool()) {
-                interactionTableWidth = entityDefs.Num() + 100;
-                interactionTableHeight = lightDefs.Num() + 100;
-                int size = interactionTableWidth * interactionTableHeight;//* sizeof(interactionTable);
-                interactionTable = new idInteraction[size];// R_ClearedStaticAlloc(size);
+                this.interactionTableWidth = this.entityDefs.Num() + 100;
+                this.interactionTableHeight = this.lightDefs.Num() + 100;
+                final int size = this.interactionTableWidth * this.interactionTableHeight;//* sizeof(interactionTable);
+                this.interactionTable = new idInteraction[size];// R_ClearedStaticAlloc(size);
 
                 int count = 0;
                 for (int i = 0; i < this.lightDefs.Num(); i++) {
-                    idRenderLightLocal ldef = this.lightDefs.oGet(i);
+                    final idRenderLightLocal ldef = this.lightDefs.oGet(i);
                     if (NOT(ldef)) {
                         continue;
                     }
                     idInteraction inter;
                     for (inter = ldef.firstInteraction; inter != null; inter = inter.lightNext) {
-                        idRenderEntityLocal edef = inter.entityDef;
-                        int index = ldef.index * interactionTableWidth + edef.index;
+                        final idRenderEntityLocal edef = inter.entityDef;
+                        final int index = (ldef.index * this.interactionTableWidth) + edef.index;
 
-                        interactionTable[index] = inter;
+                        this.interactionTable[index] = inter;
                         count++;
                     }
                 }
@@ -691,7 +691,7 @@ public class RenderWorld_local {
             }
 
             // entities flagged as noDynamicInteractions will no longer make any
-            generateAllInteractionsCalled = true;
+            this.generateAllInteractionsCalled = true;
         }
 
         @Override
@@ -702,12 +702,12 @@ public class RenderWorld_local {
         @Override
         public void ProjectDecalOntoWorld(idFixedWinding winding, idVec3 projectionOrigin, boolean parallel, float fadeDepth, idMaterial material, int startTime) {
             int i, numAreas;
-            int[] areas = new int[10];
+            final int[] areas = new int[10];
             areaReference_s ref;
             portalArea_s area;
             idRenderModel model;
             idRenderEntityLocal def;
-            decalProjectionInfo_s info = new decalProjectionInfo_s(), localInfo = new decalProjectionInfo_s();
+            final decalProjectionInfo_s info = new decalProjectionInfo_s(), localInfo = new decalProjectionInfo_s();
 
             if (!idRenderModelDecal.CreateProjectionInfo(info, winding, projectionOrigin, parallel, fadeDepth, material, startTime)) {
                 return;
@@ -719,7 +719,7 @@ public class RenderWorld_local {
             // check all areas for models
             for (i = 0; i < numAreas; i++) {
 
-                area = portalAreas[areas[i]];
+                area = this.portalAreas[areas[i]];
 
                 // check all models in this area
                 for (ref = area.entityRefs.areaNext; ref != area.entityRefs; ref = ref.areaNext) {
@@ -727,15 +727,15 @@ public class RenderWorld_local {
 
                     // completely ignore any dynamic or callback models
                     model = def.parms.hModel;
-                    if (model == null || model.IsDynamicModel() != DM_STATIC || def.parms.callback != null) {
+                    if ((model == null) || (model.IsDynamicModel() != DM_STATIC) || (def.parms.callback != null)) {
                         continue;
                     }
 
-                    if (def.parms.customShader != null && !def.parms.customShader.AllowOverlays()) {
+                    if ((def.parms.customShader != null) && !def.parms.customShader.AllowOverlays()) {
                         continue;
                     }
 
-                    idBounds bounds = new idBounds();
+                    final idBounds bounds = new idBounds();
                     bounds.FromTransformedBounds(model.Bounds(def.parms), def.parms.origin, def.parms.axis);
 
                     // if the model bounds do not overlap with the projection bounds
@@ -757,21 +757,21 @@ public class RenderWorld_local {
 
         @Override
         public void ProjectDecal(int entityHandle, idFixedWinding winding, idVec3 projectionOrigin, boolean parallel, float fadeDepth, idMaterial material, int startTime) {
-            decalProjectionInfo_s info = new decalProjectionInfo_s(), localInfo = new decalProjectionInfo_s();
+            final decalProjectionInfo_s info = new decalProjectionInfo_s(), localInfo = new decalProjectionInfo_s();
 
-            if (entityHandle < 0 || entityHandle >= entityDefs.Num()) {
+            if ((entityHandle < 0) || (entityHandle >= this.entityDefs.Num())) {
                 common.Error("idRenderWorld::ProjectOverlay: index = %d", entityHandle);
                 return;
             }
 
-            idRenderEntityLocal def = entityDefs.oGet(entityHandle);
+            final idRenderEntityLocal def = this.entityDefs.oGet(entityHandle);
             if (NOT(def)) {
                 return;
             }
 
             final idRenderModel model = def.parms.hModel;
 
-            if (model == null || model.IsDynamicModel() != DM_STATIC || def.parms.callback != null) {
+            if ((model == null) || (model.IsDynamicModel() != DM_STATIC) || (def.parms.callback != null)) {
                 return;
             }
 
@@ -779,7 +779,7 @@ public class RenderWorld_local {
                 return;
             }
 
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
             bounds.FromTransformedBounds(model.Bounds(def.parms), def.parms.origin, def.parms.axis);
 
             // if the model bounds do not overlap with the projection bounds
@@ -800,12 +800,12 @@ public class RenderWorld_local {
         @Override
         public void ProjectOverlay(int entityHandle, idPlane[] localTextureAxis, idMaterial material) {
 
-            if (entityHandle < 0 || entityHandle >= entityDefs.Num()) {
+            if ((entityHandle < 0) || (entityHandle >= this.entityDefs.Num())) {
                 common.Error("idRenderWorld::ProjectOverlay: index = %d", entityHandle);
                 return;
             }
 
-            idRenderEntityLocal def = entityDefs.oGet(entityHandle);
+            final idRenderEntityLocal def = this.entityDefs.oGet(entityHandle);
             if (NOT(def)) {
                 return;
             }
@@ -826,12 +826,12 @@ public class RenderWorld_local {
 
         @Override
         public void RemoveDecals(int entityHandle) {
-            if (entityHandle < 0 || entityHandle >= entityDefs.Num()) {
+            if ((entityHandle < 0) || (entityHandle >= this.entityDefs.Num())) {
                 common.Error("idRenderWorld::ProjectOverlay: index = %d", entityHandle);
                 return;
             }
 
-            idRenderEntityLocal def = entityDefs.oGet(entityHandle);
+            final idRenderEntityLocal def = this.entityDefs.oGet(entityHandle);
             if (NOT(def)) {
                 return;
             }
@@ -880,7 +880,7 @@ public class RenderWorld_local {
                     return;
                 }
 
-                if (renderView.fov_x <= 0 || renderView.fov_y <= 0) {
+                if ((renderView.fov_x <= 0) || (renderView.fov_y <= 0)) {
                     common.Error("idRenderWorld::RenderScene: bad FOVs: %f, %f", renderView.fov_x, renderView.fov_y);
                 }
 
@@ -888,11 +888,11 @@ public class RenderWorld_local {
                 tr.guiModel.EmitFullScreen();
                 tr.guiModel.Clear();
 
-                int startTime = Sys_Milliseconds();
+                final int startTime = Sys_Milliseconds();
 
                 // setup view parms for the initial view
                 //
-                viewDef_s parms = new viewDef_s();// R_ClearedFrameAlloc(sizeof(parms));
+                final viewDef_s parms = new viewDef_s();// R_ClearedFrameAlloc(sizeof(parms));
                 parms.renderView = new renderView_s(renderView);
 
                 if (tr.takingScreenshot) {
@@ -964,7 +964,7 @@ public class RenderWorld_local {
 //                        }
 //                    }
 //                }
-                int endTime = Sys_Milliseconds();
+                final int endTime = Sys_Milliseconds();
 
                 tr.pc.frontEndMsec += endTime - startTime;
 
@@ -975,7 +975,7 @@ public class RenderWorld_local {
 
         @Override
         public int NumAreas() {
-            return numPortalAreas;
+            return this.numPortalAreas;
         }
 
         /*
@@ -992,10 +992,10 @@ public class RenderWorld_local {
             int nodeNum;
             float d;
 
-            if (null == areaNodes) {
+            if (null == this.areaNodes) {
                 return -1;
             }
-            node = areaNodes[0];
+            node = this.areaNodes[0];
             while (true) {
                 d = node.plane.Normal().oMultiply(point) + node.plane.oGet(3);
                 if (d > 0) {
@@ -1008,12 +1008,12 @@ public class RenderWorld_local {
                 }
                 if (nodeNum < 0) {
                     nodeNum = -1 - nodeNum;
-                    if (nodeNum >= numPortalAreas) {
+                    if (nodeNum >= this.numPortalAreas) {
                         common.Error("idRenderWorld::PointInArea: area out of range");
                     }
                     return nodeNum;
                 }
-                node = areaNodes[nodeNum];
+                node = this.areaNodes[nodeNum];
             }
 
 //            return -1;
@@ -1029,13 +1029,13 @@ public class RenderWorld_local {
          */
         @Override
         public int BoundsInAreas(idBounds bounds, int[] areas, int maxAreas) {
-            int[] numAreas = new int[1];
+            final int[] numAreas = new int[1];
 
             assert (areas != null);
-            assert (bounds.oGet(0).oGet(0) <= bounds.oGet(1).oGet(0) && bounds.oGet(0).oGet(1) <= bounds.oGet(1).oGet(1) && bounds.oGet(0).oGet(2) <= bounds.oGet(1).oGet(2));
-            assert (bounds.oGet(1).oGet(0) - bounds.oGet(0).oGet(0) < 1e4f && bounds.oGet(1).oGet(1) - bounds.oGet(0).oGet(1) < 1e4f && bounds.oGet(1).oGet(2) - bounds.oGet(0).oGet(2) < 1e4f);
+            assert ((bounds.oGet(0).oGet(0) <= bounds.oGet(1).oGet(0)) && (bounds.oGet(0).oGet(1) <= bounds.oGet(1).oGet(1)) && (bounds.oGet(0).oGet(2) <= bounds.oGet(1).oGet(2)));
+            assert (((bounds.oGet(1).oGet(0) - bounds.oGet(0).oGet(0)) < 1e4f) && ((bounds.oGet(1).oGet(1) - bounds.oGet(0).oGet(1)) < 1e4f) && ((bounds.oGet(1).oGet(2) - bounds.oGet(0).oGet(2)) < 1e4f));
 
-            if (null == areaNodes) {
+            if (null == this.areaNodes) {
                 return 0;
             }
             BoundsInAreas_r(0, bounds, areas, numAreas, maxAreas);
@@ -1048,10 +1048,10 @@ public class RenderWorld_local {
             int count;
             portal_s portal;
 
-            if (areaNum >= numPortalAreas || areaNum < 0) {
+            if ((areaNum >= this.numPortalAreas) || (areaNum < 0)) {
                 common.Error("idRenderWorld::NumPortalsInArea: bad areanum %d", areaNum);
             }
-            area = portalAreas[areaNum];
+            area = this.portalAreas[areaNum];
 
             count = 0;
             for (portal = area.portals; portal != null; portal = portal.next) {
@@ -1065,12 +1065,12 @@ public class RenderWorld_local {
             portalArea_s area;
             int count;
             portal_s portal;
-            exitPortal_t ret = new exitPortal_t();
+            final exitPortal_t ret = new exitPortal_t();
 
-            if (areaNum > numPortalAreas) {
+            if (areaNum > this.numPortalAreas) {
                 common.Error("idRenderWorld::GetPortal: areaNum > numAreas");
             }
-            area = portalAreas[areaNum];
+            area = this.portalAreas[areaNum];
 
             count = 0;
             for (portal = area.portals; portal != null; portal = portal.next) {
@@ -1079,7 +1079,7 @@ public class RenderWorld_local {
                     ret.areas[1] = portal.intoArea;
                     ret.w = portal.w;
                     ret.blockingBits = portal.doublePortal.blockingBits;
-                    ret.portalHandle = indexOf(portal.doublePortal, doublePortals) + 1;
+                    ret.portalHandle = indexOf(portal.doublePortal, this.doublePortals) + 1;
                     return ret;
                 }
                 count++;
@@ -1104,29 +1104,29 @@ public class RenderWorld_local {
         @Override
         public guiPoint_t GuiTrace(int entityHandle, idVec3 start, idVec3 end) {
             localTrace_t local;
-            idVec3 localStart = new idVec3(), localEnd = new idVec3(), bestPoint;
+            final idVec3 localStart = new idVec3(), localEnd = new idVec3(), bestPoint;
             int j;
             idRenderModel model;
             srfTriangles_s tri;
             idMaterial shader;
-            guiPoint_t pt = new guiPoint_t();
+            final guiPoint_t pt = new guiPoint_t();
 
             pt.x = pt.y = -1;
             pt.guiId = 0;
 
-            if ((entityHandle < 0) || (entityHandle >= entityDefs.Num())) {
+            if ((entityHandle < 0) || (entityHandle >= this.entityDefs.Num())) {
                 common.Printf("idRenderWorld::GuiTrace: invalid handle %d\n", entityHandle);
                 return pt;
             }
 
-            idRenderEntityLocal def = entityDefs.oGet(entityHandle);
+            final idRenderEntityLocal def = this.entityDefs.oGet(entityHandle);
             if (NOT(def)) {
                 common.Printf("idRenderWorld::GuiTrace: handle %d is NULL\n", entityHandle);
                 return pt;
             }
 
             model = def.parms.hModel;
-            if (def.parms.callback != null || NOT(def.parms.hModel) || def.parms.hModel.IsDynamicModel() != DM_STATIC) {
+            if ((def.parms.callback != null) || NOT(def.parms.hModel) || (def.parms.hModel.IsDynamicModel() != DM_STATIC)) {
                 return pt;
             }
 
@@ -1134,7 +1134,7 @@ public class RenderWorld_local {
             R_GlobalPointToLocal(def.modelMatrix, start, localStart);
             R_GlobalPointToLocal(def.modelMatrix, end, localEnd);
 
-            float best = 99999f;
+            final float best = 99999f;
             final modelSurface_s bestSurf = null;
 
             for (j = 0; j < model.NumSurfaces(); j++) {
@@ -1156,10 +1156,10 @@ public class RenderWorld_local {
 
                 local = R_LocalTrace(localStart, localEnd, 0.0f, tri);
                 if (local.fraction < 1.0) {
-                    idVec3 origin = new idVec3();
-                    idVec3[] axis = idVec3.generateArray(3);
+                    final idVec3 origin = new idVec3();
+                    final idVec3[] axis = idVec3.generateArray(3);
                     idVec3 cursor;
-                    float[] axisLen = new float[2];
+                    final float[] axisLen = new float[2];
 
                     R_SurfaceToTextureAxis(tri, origin, axis);
                     cursor = local.point.oMinus(origin);
@@ -1185,23 +1185,23 @@ public class RenderWorld_local {
             modelSurface_s surf;
             localTrace_t localTrace;
             idRenderModel model;
-            float[] modelMatrix = new float[16];
-            idVec3 localStart = new idVec3(), localEnd = new idVec3();
+            final float[] modelMatrix = new float[16];
+            final idVec3 localStart = new idVec3(), localEnd = new idVec3();
             idMaterial shader;
 
             trace.fraction = 1.0f;
 
-            if (entityHandle < 0 || entityHandle >= entityDefs.Num()) {
+            if ((entityHandle < 0) || (entityHandle >= this.entityDefs.Num())) {
 //		common.Error( "idRenderWorld::ModelTrace: index = %i", entityHandle );
                 return false;
             }
 
-            idRenderEntityLocal def = entityDefs.oGet(entityHandle);
+            final idRenderEntityLocal def = this.entityDefs.oGet(entityHandle);
             if (null == def) {
                 return false;
             }
 
-            renderEntity_s refEnt = def.parms;
+            final renderEntity_s refEnt = def.parms;
 
             model = R_EntityDefDynamicModel(def);
             if (null == model) {
@@ -1233,7 +1233,7 @@ public class RenderWorld_local {
 
                 shader = R_RemapShaderBySkin(surf.shader, def.parms.customSkin, def.parms.customShader);
 
-                if (null == surf.geometry || null == shader) {
+                if ((null == surf.geometry) || (null == shader)) {
                     continue;
                 }
 
@@ -1244,7 +1244,7 @@ public class RenderWorld_local {
                     }
                 } else {
                     // skip if not drawn or translucent
-                    if (!shader.IsDrawn() || (shader.Coverage() != MC_OPAQUE && shader.Coverage() != MC_PERFORATED)) {
+                    if (!shader.IsDrawn() || ((shader.Coverage() != MC_OPAQUE) && (shader.Coverage() != MC_PERFORATED))) {
                         continue;
                     }
                 }
@@ -1283,11 +1283,11 @@ public class RenderWorld_local {
             idRenderModel model;
             srfTriangles_s tri;
             localTrace_t localTrace;
-            int[] areas = new int[128];
+            final int[] areas = new int[128];
             int numAreas, i, j, numSurfaces;
-            idBounds traceBounds = new idBounds(), bounds = new idBounds();
-            float[] modelMatrix = new float[16];
-            idVec3 localStart = new idVec3(), localEnd = new idVec3();
+            final idBounds traceBounds = new idBounds(), bounds = new idBounds();
+            final float[] modelMatrix = new float[16];
+            final idVec3 localStart = new idVec3(), localEnd = new idVec3();
             idMaterial shader;
 
             trace.fraction = 1.0f;
@@ -1306,7 +1306,7 @@ public class RenderWorld_local {
             // check all areas for models
             for (i = 0; i < numAreas; i++) {
 
-                area = portalAreas[areas[i]];
+                area = this.portalAreas[areas[i]];
 
                 // check all models in this area
                 for (ref = area.entityRefs.areaNext; ref != area.entityRefs; ref = ref.areaNext) {
@@ -1357,12 +1357,12 @@ public class RenderWorld_local {
 
                     // check all model surfaces
                     for (j = 0; j < model.NumSurfaces(); j++) {
-                        modelSurface_s surf = model.Surface(j);
+                        final modelSurface_s surf = model.Surface(j);
 
                         shader = R_RemapShaderBySkin(surf.shader, def.parms.customSkin, def.parms.customShader);
 
                         // if no geometry or no shader
-                        if (null == surf.geometry || null == shader) {
+                        if ((null == surf.geometry) || (null == shader)) {
                             continue;
                         }
 
@@ -1427,7 +1427,7 @@ public class RenderWorld_local {
 //            memset(results, 0, sizeof(modelTrace_t));
             results.clear();
             results.fraction = 1.0f;
-            if (areaNodes != null) {
+            if (this.areaNodes != null) {
                 RecurseProcBSP_r(results, -1, 0, 0.0f, 1.0f, start, end);
                 return (results.fraction < 1.0f);
             }
@@ -1450,7 +1450,9 @@ public class RenderWorld_local {
 
         @Override
         public void DebugArrow(idVec4 color, idVec3 start, idVec3 end, int size, int lifetime) {
-            idVec3 forward, right = new idVec3(), up = new idVec3(), v1, v2;
+            idVec3 forward;
+			final idVec3 right = new idVec3(), up = new idVec3();
+			idVec3 v1, v2;
             float a, s;
             int i;
 
@@ -1463,8 +1465,8 @@ public class RenderWorld_local {
             if (arrowStep != RenderSystem_init.r_debugArrowStep.GetInteger()) {
                 arrowStep = RenderSystem_init.r_debugArrowStep.GetInteger();
                 for (i = 0, a = 0; a < 360.0f; a += arrowStep, i++) {
-                    arrowCos[i] = idMath.Cos16((float) DEG2RAD(a));
-                    arrowSin[i] = idMath.Sin16((float) DEG2RAD(a));
+                    arrowCos[i] = idMath.Cos16(DEG2RAD(a));
+                    arrowSin[i] = idMath.Sin16(DEG2RAD(a));
                 }
                 arrowCos[i] = arrowCos[0];
                 arrowSin[i] = arrowSin[0];
@@ -1512,14 +1514,15 @@ public class RenderWorld_local {
         public void DebugCircle(idVec4 color, idVec3 origin, idVec3 dir, float radius, int numSteps, int lifetime, boolean depthTest) {
             int i;
             float a;
-            idVec3 left = new idVec3(), up = new idVec3(), point, lastPoint;
+            final idVec3 left = new idVec3(), up = new idVec3();
+			idVec3 point, lastPoint;
 
             dir.OrthogonalBasis(left, up);
             left.oMulSet(radius);
             up.oMulSet(radius);
             lastPoint = origin.oPlus(up);
             for (i = 1; i <= numSteps; i++) {
-                a = idMath.TWO_PI * i / numSteps;
+                a = (idMath.TWO_PI * i) / numSteps;
                 point = origin.oPlus(left.oMultiply(idMath.Sin16(a)).oPlus(up.oMultiply(idMath.Cos16(a))));
                 DebugLine(color, lastPoint, point, lifetime, depthTest);
                 lastPoint = point;
@@ -1530,7 +1533,8 @@ public class RenderWorld_local {
         public void DebugSphere(idVec4 color, idSphere sphere, int lifetime, boolean depthTest) {
             int i, j, n, num;
             float s, c;
-            idVec3 p = new idVec3(), lastp = new idVec3();
+            final idVec3 p = new idVec3();
+			idVec3 lastp = new idVec3();
             idVec3[] lastArray;
 
             num = 360 / 15;
@@ -1544,11 +1548,11 @@ public class RenderWorld_local {
                 s = idMath.Sin16(DEG2RAD(i));
                 c = idMath.Cos16(DEG2RAD(i));
                 lastp.oSet(0, sphere.GetOrigin().oGet(0));
-                lastp.oSet(1, sphere.GetOrigin().oGet(1) + sphere.GetRadius() * s);
-                lastp.oSet(2, sphere.GetOrigin().oGet(2) + sphere.GetRadius() * c);
+                lastp.oSet(1, sphere.GetOrigin().oGet(1) + (sphere.GetRadius() * s));
+                lastp.oSet(2, sphere.GetOrigin().oGet(2) + (sphere.GetRadius() * c));
                 for (n = 0, j = 15; j <= 360; j += 15, n++) {
-                    p.oSet(0, sphere.GetOrigin().oGet(0) + idMath.Sin16(DEG2RAD(j)) * sphere.GetRadius() * s);
-                    p.oSet(1, sphere.GetOrigin().oGet(1) + idMath.Cos16(DEG2RAD(j)) * sphere.GetRadius() * s);
+                    p.oSet(0, sphere.GetOrigin().oGet(0) + (idMath.Sin16(DEG2RAD(j)) * sphere.GetRadius() * s));
+                    p.oSet(1, sphere.GetOrigin().oGet(1) + (idMath.Cos16(DEG2RAD(j)) * sphere.GetRadius() * s));
                     p.oSet(2, lastp.oGet(2));
 
                     DebugLine(color, lastp, p, lifetime, depthTest);
@@ -1563,7 +1567,7 @@ public class RenderWorld_local {
         @Override
         public void DebugBounds(idVec4 color, idBounds bounds, idVec3 org, int lifetime) {
             int i;
-            idVec3[] v = new idVec3[8];
+            final idVec3[] v = new idVec3[8];
 
             if (bounds.IsCleared()) {
                 return;
@@ -1584,7 +1588,7 @@ public class RenderWorld_local {
         @Override
         public void DebugBox(idVec4 color, idBox box, int lifetime) {
             int i;
-            idVec3[] v = new idVec3[8];
+            final idVec3[] v = new idVec3[8];
 
             box.ToPoints(v);
             for (i = 0; i < 4; i++) {
@@ -1597,7 +1601,7 @@ public class RenderWorld_local {
         @Override
         public void DebugFrustum(idVec4 color, idFrustum frustum, boolean showFromOrigin, int lifetime) {
             int i;
-            idVec3[] v = new idVec3[8];
+            final idVec3[] v = new idVec3[8];
 
             frustum.ToPoints(v);
 
@@ -1629,7 +1633,7 @@ public class RenderWorld_local {
         @Override
         public void DebugCone(idVec4 color, idVec3 apex, idVec3 dir, float radius1, float radius2, int lifetime) {
             int i;
-            idMat3 axis = new idMat3();
+            final idMat3 axis = new idMat3();
             idVec3 top, p1, p2, lastp1, lastp2, d;
 
             axis.oSet(2, dir);
@@ -1670,22 +1674,22 @@ public class RenderWorld_local {
         public void DebugScreenRect(final idVec4 color, final idScreenRect rect, final viewDef_s viewDef, final int lifetime) {
             int i;
             float centerx, centery, dScale, hScale, vScale;
-            idBounds bounds = new idBounds();
-            idVec3[] p = new idVec3[4];
+            final idBounds bounds = new idBounds();
+            final idVec3[] p = new idVec3[4];
 
             centerx = (viewDef.viewport.x2 - viewDef.viewport.x1) * 0.5f;
             centery = (viewDef.viewport.y2 - viewDef.viewport.y1) * 0.5f;
 
             dScale = RenderSystem_init.r_znear.GetFloat() + 1.0f;
-            hScale = dScale * idMath.Tan16((float) DEG2RAD(viewDef.renderView.fov_x * 0.5f));
-            vScale = dScale * idMath.Tan16((float) DEG2RAD(viewDef.renderView.fov_y * 0.5f));
+            hScale = dScale * idMath.Tan16(DEG2RAD(viewDef.renderView.fov_x * 0.5f));
+            vScale = dScale * idMath.Tan16(DEG2RAD(viewDef.renderView.fov_y * 0.5f));
 
             bounds.oSet(0, 0,
                     bounds.oSet(1, 0, dScale));
-            bounds.oSet(0, 1, -(rect.x1 - centerx) / centerx * hScale);
-            bounds.oSet(1, 1, -(rect.x2 - centerx) / centerx * hScale);
-            bounds.oSet(0, 2, (rect.y1 - centery) / centery * vScale);
-            bounds.oSet(1, 2, (rect.y2 - centery) / centery * vScale);
+            bounds.oSet(0, 1, (-(rect.x1 - centerx) / centerx) * hScale);
+            bounds.oSet(1, 1, (-(rect.x2 - centerx) / centerx) * hScale);
+            bounds.oSet(0, 2, ((rect.y1 - centery) / centery) * vScale);
+            bounds.oSet(1, 2, ((rect.y2 - centery) / centery) * vScale);
 
             for (i = 0; i < 4; i++) {
                 p[i] = new idVec3(bounds.oGet(0).oGet(0),
@@ -1700,7 +1704,7 @@ public class RenderWorld_local {
 
         @Override
         public void DebugAxis(idVec3 origin, idMat3 axis) {
-            idVec3 start = origin;
+            final idVec3 start = origin;
             idVec3 end = start.oPlus(axis.oGet(0).oMultiply(20.0f));
             DebugArrow(colorWhite, start, end, 2);
             end = start.oPlus(axis.oGet(0).oMultiply(-20.0f));
@@ -1734,10 +1738,10 @@ public class RenderWorld_local {
         // RenderWorld_load.cpp
         public idRenderModel ParseModel(idLexer src) throws idException {
             idRenderModel model;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             int i, j;
             srfTriangles_s tri;
-            modelSurface_s surf = new modelSurface_s();
+            final modelSurface_s surf = new modelSurface_s();
 
             src.ExpectTokenString("{");
 
@@ -1747,7 +1751,7 @@ public class RenderWorld_local {
             model = renderModelManager.AllocModel();
             model.InitEmpty(token.getData());
 
-            int numSurfaces = src.ParseInt();
+            final int numSurfaces = src.ParseInt();
             if (numSurfaces < 0) {
                 src.Error("R_ParseModel: bad numSurfaces");
             }
@@ -1759,7 +1763,7 @@ public class RenderWorld_local {
 
                 surf.shader = declManager.FindMaterial(token);
 
-                ((idMaterial) surf.shader).AddReference();
+                surf.shader.AddReference();
 
                 tri = R_AllocStaticTriSurf();
                 surf.geometry = tri;
@@ -1769,7 +1773,7 @@ public class RenderWorld_local {
 
                 R_AllocStaticTriSurfVerts(tri, tri.numVerts);
                 for (j = 0; j < tri.numVerts; j++) {
-                    float[] vec = new float[8];
+                    final float[] vec = new float[8];
 
                     src.Parse1DMatrix(8, vec);
 
@@ -1802,10 +1806,10 @@ public class RenderWorld_local {
 
         public idRenderModel ParseShadowModel(idLexer src) throws idException {
             idRenderModel model;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             int j;
             srfTriangles_s tri;
-            modelSurface_s surf = new modelSurface_s();
+            final modelSurface_s surf = new modelSurface_s();
 
             src.ExpectTokenString("{");
 
@@ -1830,7 +1834,7 @@ public class RenderWorld_local {
             tri.bounds.Clear();
             tri.shadowVertexes = new Model.shadowCache_s[tri.numVerts];
             for (j = 0; j < tri.numVerts; j++) {
-                float[] vec = new float[8];
+                final float[] vec = new float[8];
 
                 src.Parse1DMatrix(3, vec);
                 tri.shadowVertexes[j] = new shadowCache_s();
@@ -1840,7 +1844,7 @@ public class RenderWorld_local {
                 tri.shadowVertexes[j].xyz.oSet(3, 1);// no homogenous value
 
                 tri.bounds.AddPoint(tri.shadowVertexes[j].xyz.ToVec3());
-                int a = 0;
+                final int a = 0;
             }
 
             R_AllocStaticTriSurfIndexes(tri, tri.numIndexes);
@@ -1861,15 +1865,15 @@ public class RenderWorld_local {
         public void SetupAreaRefs() {
             int i;
 
-            connectedAreaNum = 0;
-            for (i = 0; i < numPortalAreas; i++) {
-                portalAreas[i].areaNum = i;
-                portalAreas[i].lightRefs.areaNext
-                        = portalAreas[i].lightRefs.areaPrev
-                        = portalAreas[i].lightRefs;
-                portalAreas[i].entityRefs.areaNext
-                        = portalAreas[i].entityRefs.areaPrev
-                        = portalAreas[i].entityRefs;
+            this.connectedAreaNum = 0;
+            for (i = 0; i < this.numPortalAreas; i++) {
+                this.portalAreas[i].areaNum = i;
+                this.portalAreas[i].lightRefs.areaNext
+                        = this.portalAreas[i].lightRefs.areaPrev
+                        = this.portalAreas[i].lightRefs;
+                this.portalAreas[i].entityRefs.areaNext
+                        = this.portalAreas[i].entityRefs.areaPrev
+                        = this.portalAreas[i].entityRefs;
             }
         }
 
@@ -1878,26 +1882,26 @@ public class RenderWorld_local {
 
             src.ExpectTokenString("{");
 
-            numPortalAreas = src.ParseInt();
-            if (numPortalAreas < 0) {
+            this.numPortalAreas = src.ParseInt();
+            if (this.numPortalAreas < 0) {
                 src.Error("R_ParseInterAreaPortals: bad numPortalAreas");
                 return;
             }
-            portalAreas = portalArea_s.generateArray(numPortalAreas);
-            areaScreenRect = idScreenRect.generateArray(numPortalAreas);
+            this.portalAreas = portalArea_s.generateArray(this.numPortalAreas);
+            this.areaScreenRect = idScreenRect.generateArray(this.numPortalAreas);
 
             // set the doubly linked lists
             SetupAreaRefs();
 
-            numInterAreaPortals = src.ParseInt();
-            if (numInterAreaPortals < 0) {
+            this.numInterAreaPortals = src.ParseInt();
+            if (this.numInterAreaPortals < 0) {
                 src.Error("R_ParseInterAreaPortals: bad numInterAreaPortals");
                 return;
             }
 
-            doublePortals = TempDump.allocArray(doublePortal_s.class, numInterAreaPortals);
+            this.doublePortals = TempDump.allocArray(doublePortal_s.class, this.numInterAreaPortals);
 
-            for (i = 0; i < numInterAreaPortals; i++) {
+            for (i = 0; i < this.numInterAreaPortals; i++) {
                 int numPoints, a1, a2;
                 idWinding w;
                 portal_s p;
@@ -1918,26 +1922,26 @@ public class RenderWorld_local {
                 // add the portal to a1
                 p = new portal_s();// R_ClearedStaticAlloc(sizeof(p));
                 p.intoArea = a2;
-                p.doublePortal = doublePortals[i];
+                p.doublePortal = this.doublePortals[i];
                 p.w = w;
                 p.w.GetPlane(p.plane);
 
-                p.next = portalAreas[a1].portals;
-                portalAreas[a1].portals = p;
+                p.next = this.portalAreas[a1].portals;
+                this.portalAreas[a1].portals = p;
 
-                doublePortals[i].portals[0] = p;
+                this.doublePortals[i].portals[0] = p;
 
                 // reverse it for a2
                 p = new portal_s();// R_ClearedStaticAlloc(sizeof(p));
                 p.intoArea = a1;
-                p.doublePortal = doublePortals[i];
+                p.doublePortal = this.doublePortals[i];
                 p.w = w.Reverse();
                 p.w.GetPlane(p.plane);
 
-                p.next = portalAreas[a2].portals;
-                portalAreas[a2].portals = p;
+                p.next = this.portalAreas[a2].portals;
+                this.portalAreas[a2].portals = p;
 
-                doublePortals[i].portals[1] = p;
+                this.doublePortals[i].portals[1] = p;
             }
 
             src.ExpectTokenString("}");
@@ -1947,13 +1951,13 @@ public class RenderWorld_local {
 
             src.ExpectTokenString("{");
 
-            numAreaNodes = src.ParseInt();
-            if (numAreaNodes < 0) {
+            this.numAreaNodes = src.ParseInt();
+            if (this.numAreaNodes < 0) {
                 src.Error("R_ParseNodes: bad numAreaNodes");
             }
-            areaNodes = TempDump.allocArray(areaNode_t.class, numAreaNodes);
+            this.areaNodes = TempDump.allocArray(areaNode_t.class, this.numAreaNodes);
 
-            for (areaNode_t node : areaNodes) {
+            for (final areaNode_t node : this.areaNodes) {
                 src.Parse1DMatrix(4, node.plane);
                 node.children[0] = src.ParseInt();
                 node.children[1] = src.ParseInt();
@@ -1969,7 +1973,7 @@ public class RenderWorld_local {
                 if (node.children[i] <= 0) {
                     nums[i] = -1 - node.children[i];
                 } else {
-                    nums[i] = CommonChildrenArea_r(areaNodes[node.children[i]]);
+                    nums[i] = CommonChildrenArea_r(this.areaNodes[node.children[i]]);
                 }
             }
 
@@ -2000,11 +2004,11 @@ public class RenderWorld_local {
             FreeDefs();
 
             // free all the portals and check light/model references
-            for (i = 0; i < numPortalAreas; i++) {
+            for (i = 0; i < this.numPortalAreas; i++) {
                 portalArea_s area;
                 portal_s portal, nextPortal;
 
-                area = portalAreas[i];
+                area = this.portalAreas[i];
                 for (portal = area.portals; portal != null; portal = nextPortal) {//TODO:linkage?
                     nextPortal = portal.next;
 //			delete portal.w;
@@ -2021,37 +2025,37 @@ public class RenderWorld_local {
                 }
             }
 
-            if (portalAreas != null) {
+            if (this.portalAreas != null) {
 //                R_StaticFree(portalAreas);
-                portalAreas = null;
-                numPortalAreas = 0;
+                this.portalAreas = null;
+                this.numPortalAreas = 0;
 //                R_StaticFree(areaScreenRect);
-                areaScreenRect = null;
+                this.areaScreenRect = null;
             }
 
-            if (doublePortals != null) {
+            if (this.doublePortals != null) {
 //                R_StaticFree(doublePortals);
-                doublePortals = null;
-                numInterAreaPortals = 0;
+                this.doublePortals = null;
+                this.numInterAreaPortals = 0;
             }
 
-            if (areaNodes != null) {
+            if (this.areaNodes != null) {
 //                R_StaticFree(areaNodes);
-                areaNodes = null;
+                this.areaNodes = null;
             }
 
             // free all the inline idRenderModels 
-            for (i = 0; i < localModels.Num(); i++) {
-                renderModelManager.RemoveModel(localModels.oGet(i));
-                localModels.RemoveIndex(i);
+            for (i = 0; i < this.localModels.Num(); i++) {
+                renderModelManager.RemoveModel(this.localModels.oGet(i));
+                this.localModels.RemoveIndex(i);
 //		delete localModels[i];
             }
-            localModels.Clear();
+            this.localModels.Clear();
 
 //            areaReferenceAllocator.Shutdown();
 //            interactionAllocator.Shutdown();
 //            areaNumRefAllocator.Shutdown();
-            mapName.oSet("<FREED>");
+            this.mapName.oSet("<FREED>");
         }
 
         /*
@@ -2062,19 +2066,19 @@ public class RenderWorld_local {
          =================
          */
         public void ClearWorld() {
-            numPortalAreas = 1;
-            portalAreas = portalArea_s.generateArray(1);
-            areaScreenRect = idScreenRect.generateArray(1);
+            this.numPortalAreas = 1;
+            this.portalAreas = portalArea_s.generateArray(1);
+            this.areaScreenRect = idScreenRect.generateArray(1);
 
             SetupAreaRefs();
 
             // even though we only have a single area, create a node
             // that has both children pointing at it so we don't need to
             //
-            areaNodes = new areaNode_t[]{new areaNode_t()};// R_ClearedStaticAlloc(sizeof(areaNodes[0]));
-            areaNodes[0].plane.oSet(3, 1);
-            areaNodes[0].children[0] = -1;
-            areaNodes[0].children[1] = -1;
+            this.areaNodes = new areaNode_t[]{new areaNode_t()};// R_ClearedStaticAlloc(sizeof(areaNodes[0]));
+            this.areaNodes[0].plane.oSet(3, 1);
+            this.areaNodes[0].children[0] = -1;
+            this.areaNodes[0].children[1] = -1;
         }
 
         /*
@@ -2087,32 +2091,32 @@ public class RenderWorld_local {
         public void FreeDefs() {
             int i;
 
-            generateAllInteractionsCalled = false;
+            this.generateAllInteractionsCalled = false;
 
-            if (interactionTable != null) {
+            if (this.interactionTable != null) {
 //                R_StaticFree(interactionTable);
-                interactionTable = null;
+                this.interactionTable = null;
             }
 
             // free all lightDefs
-            for (i = 0; i < lightDefs.Num(); i++) {
+            for (i = 0; i < this.lightDefs.Num(); i++) {
                 idRenderLightLocal light;
 
-                light = lightDefs.oGet(i);
-                if (light != null && light.world.equals(this)) {
+                light = this.lightDefs.oGet(i);
+                if ((light != null) && light.world.equals(this)) {
                     FreeLightDef(i);
-                    lightDefs.oSet(i, null);
+                    this.lightDefs.oSet(i, null);
                 }
             }
 
             // free all entityDefs
-            for (i = 0; i < entityDefs.Num(); i++) {
+            for (i = 0; i < this.entityDefs.Num(); i++) {
                 idRenderEntityLocal mod;
 
-                mod = entityDefs.oGet(i);
-                if (mod != null && mod.world.equals(this)) {
+                mod = this.entityDefs.oGet(i);
+                if ((mod != null) && mod.world.equals(this)) {
                     FreeEntityDef(i);
-                    entityDefs.oSet(i, null);
+                    this.entityDefs.oSet(i, null);
                 }
             }
         }
@@ -2120,8 +2124,8 @@ public class RenderWorld_local {
         public void TouchWorldModels() {
             int i;
 
-            for (i = 0; i < localModels.Num(); i++) {
-                renderModelManager.CheckModel(localModels.oGet(i).Name());
+            for (i = 0; i < this.localModels.Num(); i++) {
+                renderModelManager.CheckModel(this.localModels.oGet(i).Name());
             }
         }
 
@@ -2131,18 +2135,18 @@ public class RenderWorld_local {
             // add the world model for each portal area
             // we can't just call AddEntityDef, because that would place the references
             // based on the bounding box, rather than explicitly into the correct area
-            for (i = 0; i < numPortalAreas; i++) {
+            for (i = 0; i < this.numPortalAreas; i++) {
                 idRenderEntityLocal def;
                 int index;
 
                 def = new idRenderEntityLocal();
 
                 // try and reuse a free spot
-                index = entityDefs.FindNull();
+                index = this.entityDefs.FindNull();
                 if (index == -1) {
-                    index = entityDefs.Append(def);
+                    index = this.entityDefs.Append(def);
                 } else {
-                    entityDefs.oSet(index, def);
+                    this.entityDefs.oSet(index, def);
                 }
 
                 def.index = index;
@@ -2153,7 +2157,7 @@ public class RenderWorld_local {
                     common.Error("idRenderWorldLocal::InitFromMap: bad area model lookup");
                 }
 
-                idRenderModel hModel = def.parms.hModel;
+                final idRenderModel hModel = def.parms.hModel;
 
                 for (int j = 0; j < hModel.NumSurfaces(); j++) {
                     final modelSurface_s surf = hModel.Surface(j);
@@ -2178,7 +2182,7 @@ public class RenderWorld_local {
                         = def.parms.shaderParms[2]
                         = def.parms.shaderParms[3] = 1;
 
-                AddEntityRefToArea(def, portalAreas[i]);
+                AddEntityRefToArea(def, this.portalAreas[i]);
             }
         }
 
@@ -2186,15 +2190,15 @@ public class RenderWorld_local {
             int i, j;
 
             // all portals start off open
-            for (i = 0; i < numInterAreaPortals; i++) {
-                doublePortals[i].blockingBits = PS_BLOCK_NONE.ordinal();
+            for (i = 0; i < this.numInterAreaPortals; i++) {
+                this.doublePortals[i].blockingBits = PS_BLOCK_NONE.ordinal();
             }
 
             // flood fill all area connections
-            for (i = 0; i < numPortalAreas; i++) {
+            for (i = 0; i < this.numPortalAreas; i++) {
                 for (j = 0; j < NUM_PORTAL_ATTRIBUTES; j++) {
-                    connectedAreaNum++;
-                    FloodConnectedAreas(portalAreas[i], j);
+                    this.connectedAreaNum++;
+                    FloodConnectedAreas(this.portalAreas[i], j);
                 }
             }
         }
@@ -2210,14 +2214,14 @@ public class RenderWorld_local {
         @Override
         public boolean InitFromMap(final String name) throws idException {
             idLexer src;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idStr filename;
             idRenderModel lastModel;
 
             // if this is an empty world, initialize manually
-            if (null == name || name.isEmpty()) {
+            if ((null == name) || name.isEmpty()) {
                 FreeWorld();
-                mapName.Clear();
+                this.mapName.Clear();
                 ClearWorld();
                 return true;
             }
@@ -2231,8 +2235,8 @@ public class RenderWorld_local {
             final long[] currentTimeStamp = new long[1];
             fileSystem.ReadFile(filename.getData(), null, currentTimeStamp);
 
-            if (mapName.equals(name)) {
-                if (currentTimeStamp[0] != FILE_NOT_FOUND_TIMESTAMP && currentTimeStamp[0] == mapTimeStamp[0]) {
+            if (this.mapName.equals(name)) {
+                if ((currentTimeStamp[0] != FILE_NOT_FOUND_TIMESTAMP) && (currentTimeStamp[0] == this.mapTimeStamp[0])) {
                     common.Printf("idRenderWorldLocal::InitFromMap: retaining existing map\n");
                     FreeDefs();
                     TouchWorldModels();
@@ -2252,15 +2256,15 @@ public class RenderWorld_local {
                 return false;
             }
 
-            mapName = new idStr(name);
-            mapTimeStamp[0] = currentTimeStamp[0];
+            this.mapName = new idStr(name);
+            this.mapTimeStamp[0] = currentTimeStamp[0];
 
             // if we are writing a demo, archive the load command
             if (session.writeDemo != null) {
                 WriteLoadMap();
             }
 
-            if (!src.ReadToken(token) || token.Icmp(PROC_FILE_ID) != 0) {
+            if (!src.ReadToken(token) || (token.Icmp(PROC_FILE_ID) != 0)) {
                 common.Printf("idRenderWorldLocal::InitFromMap: bad id '%s' instead of '%s'\n", token, PROC_FILE_ID);
 //		delete src;
                 return false;
@@ -2279,7 +2283,7 @@ public class RenderWorld_local {
                     renderModelManager.AddModel(lastModel);
 
                     // save it in the list to free when clearing this map
-                    localModels.Append(lastModel);
+                    this.localModels.Append(lastModel);
                     continue;
                 }
 
@@ -2290,7 +2294,7 @@ public class RenderWorld_local {
                     renderModelManager.AddModel(lastModel);
 
                     // save it in the list to free when clearing this map
-                    localModels.Append(lastModel);
+                    this.localModels.Append(lastModel);
                     continue;
                 }
 
@@ -2309,12 +2313,12 @@ public class RenderWorld_local {
 
 //	delete src;
             // if it was a trivial map without any areas, create a single area
-            if (0 == numPortalAreas) {
+            if (0 == this.numPortalAreas) {
                 ClearWorld();
             }
 
             // find the points where we can early-our of reference pushing into the BSP tree
-            CommonChildrenArea_r(areaNodes[0]);
+            CommonChildrenArea_r(this.areaNodes[0]);
 
             AddWorldModelEntities();
             ClearPortalStates();
@@ -2326,10 +2330,10 @@ public class RenderWorld_local {
         // RenderWorld_portals.cpp
 
         public idScreenRect ScreenRectFromWinding(final idWinding w, viewEntity_s space) {
-            idScreenRect r = new idScreenRect();
+            final idScreenRect r = new idScreenRect();
             int i;
             idVec3 v;
-            idVec3 ndc = new idVec3();
+            final idVec3 ndc = new idVec3();
             float windowX, windowY;
 
             r.Clear();
@@ -2352,7 +2356,7 @@ public class RenderWorld_local {
             idRenderLightLocal ldef;
             final idWinding w;
             int i;
-            idPlane forward = new idPlane();
+            final idPlane forward = new idPlane();
 
             ldef = p.doublePortal.fogLight;
             if (NOT(ldef)) {
@@ -2361,14 +2365,14 @@ public class RenderWorld_local {
 
             // find the current density of the fog
             final idMaterial lightShader = ldef.lightShader;
-            int size = lightShader.GetNumRegisters();
-            float[] regs = new float[size];
+            final int size = lightShader.GetNumRegisters();
+            final float[] regs = new float[size];
 
             lightShader.EvaluateRegisters(regs, ldef.parms.shaderParms, tr.viewDef, ldef.parms.referenceSound);
 
             final shaderStage_t stage = lightShader.GetStage(0);
 
-            float alpha = regs[stage.color.registers[3]];
+            final float alpha = regs[stage.color.registers[3]];
 
             // if they left the default value on, set a fog distance of 500
             float a;
@@ -2409,15 +2413,15 @@ public class RenderWorld_local {
             int addPlanes;
             idFixedWinding w;		// we won't overflow because MAX_PORTAL_PLANES = 20
 
-            area = portalAreas[areaNum];
+            area = this.portalAreas[areaNum];
 
             // cull models and lights to the current collection of planes
             AddAreaRefs(areaNum, ps);
 
-            if (areaScreenRect[areaNum].IsEmpty()) {
-                areaScreenRect[areaNum] = new idScreenRect(ps.rect);
+            if (this.areaScreenRect[areaNum].IsEmpty()) {
+                this.areaScreenRect[areaNum] = new idScreenRect(ps.rect);
             } else {
-                areaScreenRect[areaNum].Union(ps.rect);
+                this.areaScreenRect[areaNum].Union(ps.rect);
             }
 
             // go through all the portals
@@ -2530,7 +2534,7 @@ public class RenderWorld_local {
          =======================
          */
         public void FlowViewThroughPortals(final idVec3 origin, int numPlanes, final idPlane[] planes) {
-            portalStack_s ps = new portalStack_s();
+            final portalStack_s ps = new portalStack_s();
             int i;
 
             ps.next = null;
@@ -2545,18 +2549,18 @@ public class RenderWorld_local {
 
             if (tr.viewDef.areaNum < 0) {
 
-                for (i = 0; i < numPortalAreas; i++) {
-                    areaScreenRect[i] = new idScreenRect(tr.viewDef.scissor);//TODO:copy constructor?
+                for (i = 0; i < this.numPortalAreas; i++) {
+                    this.areaScreenRect[i] = new idScreenRect(tr.viewDef.scissor);//TODO:copy constructor?
                 }
 
                 // if outside the world, mark everything
-                for (i = 0; i < numPortalAreas; i++) {
+                for (i = 0; i < this.numPortalAreas; i++) {
                     AddAreaRefs(i, ps);
                 }
             } else {
 
-                for (i = 0; i < numPortalAreas; i++) {
-                    areaScreenRect[i].Clear();
+                for (i = 0; i < this.numPortalAreas; i++) {
+                    this.areaScreenRect[i].Clear();
                 }
 
                 // flood out through portals, setting area viewCount
@@ -2575,7 +2579,7 @@ public class RenderWorld_local {
             int addPlanes;
             idFixedWinding w;		// we won't overflow because MAX_PORTAL_PLANES = 20
 
-            area = portalAreas[areaNum];
+            area = this.portalAreas[areaNum];
 
             // add an areaRef
             AddLightRefToArea(light, area);
@@ -2702,10 +2706,10 @@ public class RenderWorld_local {
         public areaNumRef_s FloodFrustumAreas_r(final idFrustum frustum, final int areaNum, final idBounds bounds, areaNumRef_s areas) {
             portal_s p;
             portalArea_s portalArea;
-            idBounds newBounds = new idBounds();
+            final idBounds newBounds = new idBounds();
             areaNumRef_s a;
 
-            portalArea = portalAreas[areaNum];
+            portalArea = this.portalAreas[areaNum];
 
             // go through all the portals
             for (p = portalArea.portals; p != null; p = p.next) {
@@ -2735,9 +2739,9 @@ public class RenderWorld_local {
 
                 newBounds.IntersectSelf(bounds);
 
-                if (newBounds.oGet(0).oGet(0) > newBounds.oGet(1).oGet(0)
-                        || newBounds.oGet(0).oGet(1) > newBounds.oGet(1).oGet(1)
-                        || newBounds.oGet(0).oGet(2) > newBounds.oGet(1).oGet(2)) {
+                if ((newBounds.oGet(0).oGet(0) > newBounds.oGet(1).oGet(0))
+                        || (newBounds.oGet(0).oGet(1) > newBounds.oGet(1).oGet(1))
+                        || (newBounds.oGet(0).oGet(2) > newBounds.oGet(1).oGet(2))) {
                     continue;
                 }
 
@@ -2763,7 +2767,7 @@ public class RenderWorld_local {
          ===================
          */
         public areaNumRef_s FloodFrustumAreas(final idFrustum frustum, areaNumRef_s areas) {
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
             areaNumRef_s a;
 
             // bounds that cover the whole frustum
@@ -2817,13 +2821,13 @@ public class RenderWorld_local {
             viewEntity_s vEnt;
 //            idBounds b;
 
-            area = portalAreas[areaNum];
+            area = this.portalAreas[areaNum];
 
             for (ref = area.entityRefs.areaNext; ref != area.entityRefs; ref = ref.areaNext) {
                 entity = ref.entity;
 
                 // debug tool to allow viewing of only one entity at a time
-                if (r_singleEntity.GetInteger() >= 0 && r_singleEntity.GetInteger() != entity.index) {
+                if ((r_singleEntity.GetInteger() >= 0) && (r_singleEntity.GetInteger() != entity.index)) {
                     continue;
                 }
 
@@ -2832,10 +2836,10 @@ public class RenderWorld_local {
 
                 // check for completely suppressing the model
                 if (!r_skipSuppress.GetBool()) {
-                    if (entity.parms.suppressSurfaceInViewID != 0 && entity.parms.suppressSurfaceInViewID == tr.viewDef.renderView.viewID) {
+                    if ((entity.parms.suppressSurfaceInViewID != 0) && (entity.parms.suppressSurfaceInViewID == tr.viewDef.renderView.viewID)) {
                         continue;
                     }
-                    if (entity.parms.allowSurfaceInViewID != 0 && entity.parms.allowSurfaceInViewID != tr.viewDef.renderView.viewID) {
+                    if ((entity.parms.allowSurfaceInViewID != 0) && (entity.parms.allowSurfaceInViewID != tr.viewDef.renderView.viewID)) {
                         continue;
                     }
                 }
@@ -2866,7 +2870,7 @@ public class RenderWorld_local {
             int i, j;
             srfTriangles_s tri;
             float d;
-            idFixedWinding w = new idFixedWinding();		// we won't overflow because MAX_PORTAL_PLANES = 20
+            final idFixedWinding w = new idFixedWinding();		// we won't overflow because MAX_PORTAL_PLANES = 20
 
             if (r_useLightCulling.GetInteger() == 0) {
                 return false;
@@ -2894,7 +2898,7 @@ public class RenderWorld_local {
                     w.oSet(ow);
 
                     // now check the winding against each of the portalStack planes
-                    for (j = 0; j < ps.numPortalPlanes - 1; j++) {
+                    for (j = 0; j < (ps.numPortalPlanes - 1); j++) {
                         if (!w.ClipInPlace(ps.portalPlanes[j].oNegative())) {
                             break;
                         }
@@ -2915,7 +2919,7 @@ public class RenderWorld_local {
                 tri = light.frustumTris;
 
                 // check against frustum planes
-                for (i = 0; i < ps.numPortalPlanes - 1; i++) {
+                for (i = 0; i < (ps.numPortalPlanes - 1); i++) {
                     for (j = 0; j < tri.numVerts; j++) {
                         d = ps.portalPlanes[i].Distance(tri.verts[j].xyz);
                         if (d < 0.0f) {
@@ -2948,21 +2952,21 @@ public class RenderWorld_local {
             viewLight_s vLight;
             DEBUG_AddAreaLightRefs++;
 
-            area = portalAreas[areaNum];
+            area = this.portalAreas[areaNum];
 
             for (lref = area.lightRefs.areaNext; lref != area.lightRefs; lref = lref.areaNext) {
                 light = lref.light;
 
                 // debug tool to allow viewing of only one light at a time
-                if (r_singleLight.GetInteger() >= 0 && r_singleLight.GetInteger() != light.index) {
+                if ((r_singleLight.GetInteger() >= 0) && (r_singleLight.GetInteger() != light.index)) {
                     continue;
                 }
 
                 // check for being closed off behind a door
                 // a light that doesn't cast shadows will still light even if it is behind a door
-                if (r_useLightCulling.GetInteger() >= 3
+                if ((r_useLightCulling.GetInteger() >= 3)
                         && !light.parms.noShadows && light.lightShader.LightCastsShadows()
-                        && light.areaNum != -1 && !tr.viewDef.connectedAreas[light.areaNum]) {
+                        && (light.areaNum != -1) && !tr.viewDef.connectedAreas[light.areaNum]) {
                     continue;
                 }
 
@@ -2991,7 +2995,7 @@ public class RenderWorld_local {
         public void AddAreaRefs(int areaNum, final portalStack_s ps) {
             // mark the viewCount, so r_showPortals can display the
             // considered portals
-            portalAreas[areaNum].viewCount = tr.viewCount;
+            this.portalAreas[areaNum].viewCount = tr.viewCount;
 
             // add the models and lights, using more precise culling to the planes
             AddAreaEntityRefs(areaNum, ps);
@@ -3009,7 +3013,7 @@ public class RenderWorld_local {
             tr.viewDef.connectedAreas[areaNum] = true;
 
             // flood through all non-blocked portals
-            area = portalAreas[areaNum];
+            area = this.portalAreas[areaNum];
             for (portal = area.portals; portal != null; portal = portal.next) {
                 if (0 == (portal.doublePortal.blockingBits & PS_BLOCK_VIEW.ordinal())) {
                     BuildConnectedAreas_r(portal.intoArea);
@@ -3025,9 +3029,9 @@ public class RenderWorld_local {
          ===================
          */
         public void BuildConnectedAreas() {
-            int i;
+            final int i;
 
-            tr.viewDef.connectedAreas = new boolean[numPortalAreas];
+            tr.viewDef.connectedAreas = new boolean[this.numPortalAreas];
 
             // if we are outside the world, we can see all areas
             if (tr.viewDef.areaNum == -1) {
@@ -3037,7 +3041,7 @@ public class RenderWorld_local {
 
             // start with none visible, and flood fill from the current area
 //            memset(tr.viewDef.connectedAreas, 0, numPortalAreas);
-            tr.viewDef.connectedAreas = new boolean[numPortalAreas];
+            tr.viewDef.connectedAreas = new boolean[this.numPortalAreas];
             BuildConnectedAreas_r(tr.viewDef.areaNum);
         }
 
@@ -3083,7 +3087,7 @@ public class RenderWorld_local {
                 // if debugging, only mark this area
                 // if we are outside the world, don't draw anything
                 if (tr.viewDef.areaNum >= 0) {
-                    portalStack_s ps = new portalStack_s();
+                    final portalStack_s ps = new portalStack_s();
                     int i;
 
                     if (tr.viewDef.areaNum != lastPrintedAreaNum) {
@@ -3109,7 +3113,7 @@ public class RenderWorld_local {
 
         @Override
         public int NumPortals() {
-            return numInterAreaPortals;
+            return this.numInterAreaPortals;
         }
 
         /*
@@ -3123,12 +3127,12 @@ public class RenderWorld_local {
         @Override
         public int/*qhandle_t*/ FindPortal(final idBounds b) {
             int i, j;
-            idBounds wb = new idBounds();
+            final idBounds wb = new idBounds();
             doublePortal_s portal;
             idWinding w;
 
-            for (i = 0; i < numInterAreaPortals; i++) {
-                portal = doublePortals[i];
+            for (i = 0; i < this.numInterAreaPortals; i++) {
+                portal = this.doublePortals[i];
                 w = portal.portals[0].w;
 
                 wb.Clear();
@@ -3156,21 +3160,21 @@ public class RenderWorld_local {
                 return;
             }
 
-            if (portal < 1 || portal > numInterAreaPortals) {
+            if ((portal < 1) || (portal > this.numInterAreaPortals)) {
                 common.Error("SetPortalState: bad portal number %d", portal);
             }
-            int old = doublePortals[portal - 1].blockingBits;
+            final int old = this.doublePortals[portal - 1].blockingBits;
             if (old == blockTypes) {
                 return;
             }
-            doublePortals[portal - 1].blockingBits = blockTypes;
+            this.doublePortals[portal - 1].blockingBits = blockTypes;
 
             // leave the connectedAreaGroup the same on one side,
             // then flood fill from the other side with a new number for each changed attribute
             for (int i = 0; i < NUM_PORTAL_ATTRIBUTES; i++) {
                 if (((old ^ blockTypes) & (1 << i)) != 0) {
-                    connectedAreaNum++;
-                    FloodConnectedAreas(portalAreas[doublePortals[portal - 1].portals[1].intoArea], i);
+                    this.connectedAreaNum++;
+                    FloodConnectedAreas(this.portalAreas[this.doublePortals[portal - 1].portals[1].intoArea], i);
                 }
             }
 
@@ -3188,19 +3192,19 @@ public class RenderWorld_local {
                 return 0;
             }
 
-            if (portal < 1 || portal > numInterAreaPortals) {
+            if ((portal < 1) || (portal > this.numInterAreaPortals)) {
                 common.Error("GetPortalState: bad portal number %d", portal);
             }
 
-            return doublePortals[portal - 1].blockingBits;
+            return this.doublePortals[portal - 1].blockingBits;
         }
 
         @Override
         public boolean AreasAreConnected(int areaNum1, int areaNum2, portalConnection_t connection) {
-            if (areaNum1 == -1 || areaNum2 == -1) {
+            if ((areaNum1 == -1) || (areaNum2 == -1)) {
                 return false;
             }
-            if (areaNum1 > numPortalAreas || areaNum2 > numPortalAreas || areaNum1 < 0 || areaNum2 < 0) {
+            if ((areaNum1 > this.numPortalAreas) || (areaNum2 > this.numPortalAreas) || (areaNum1 < 0) || (areaNum2 < 0)) {
                 common.Error("idRenderWorldLocal::AreAreasConnected: bad parms: %d, %d", areaNum1, areaNum2);
             }
 
@@ -3212,28 +3216,28 @@ public class RenderWorld_local {
                 attribute++;
                 intConnection >>= 1;
             }
-            if (attribute >= NUM_PORTAL_ATTRIBUTES || (1 << attribute) != connection.ordinal()) {
+            if ((attribute >= NUM_PORTAL_ATTRIBUTES) || ((1 << attribute) != connection.ordinal())) {
                 common.Error("idRenderWorldLocal::AreasAreConnected: bad connection number: %d\n", connection.ordinal());
             }
 
-            return portalAreas[areaNum1].connectedAreaNum[attribute] == portalAreas[areaNum2].connectedAreaNum[attribute];
+            return this.portalAreas[areaNum1].connectedAreaNum[attribute] == this.portalAreas[areaNum2].connectedAreaNum[attribute];
         }
 
         public void FloodConnectedAreas(portalArea_s area, int portalAttributeIndex) {
-            if (area.connectedAreaNum[portalAttributeIndex] == connectedAreaNum) {
+            if (area.connectedAreaNum[portalAttributeIndex] == this.connectedAreaNum) {
                 return;
             }
-            area.connectedAreaNum[portalAttributeIndex] = connectedAreaNum;
+            area.connectedAreaNum[portalAttributeIndex] = this.connectedAreaNum;
 
             for (portal_s p = area.portals; p != null; p = p.next) {
                 if (0 == (p.doublePortal.blockingBits & (1 << portalAttributeIndex))) {
-                    FloodConnectedAreas(portalAreas[p.intoArea], portalAttributeIndex);
+                    FloodConnectedAreas(this.portalAreas[p.intoArea], portalAttributeIndex);
                 }
             }
         }
 
         public idScreenRect GetAreaScreenRect(int areaNum) {
-            return areaScreenRect[areaNum];
+            return this.areaScreenRect[areaNum];
         }
 
         /*
@@ -3250,8 +3254,8 @@ public class RenderWorld_local {
             idWinding w;
 
             // flood out through portals, setting area viewCount
-            for (i = 0; i < numPortalAreas; i++) {
-                area = portalAreas[i];
+            for (i = 0; i < this.numPortalAreas; i++) {
+                area = this.portalAreas[i];
                 if (area.viewCount != tr.viewCount) {
                     continue;
                 }
@@ -3261,7 +3265,7 @@ public class RenderWorld_local {
                         continue;
                     }
 
-                    if (portalAreas[p.intoArea].viewCount != tr.viewCount) {
+                    if (this.portalAreas[p.intoArea].viewCount != tr.viewCount) {
                         // red = can't see
                         qglColor3f(1, 0, 0);
                     } else {
@@ -3288,21 +3292,21 @@ public class RenderWorld_local {
             WriteLoadMap();
 
             // write the door portal state
-            for (i = 0; i < numInterAreaPortals; i++) {
-                if (doublePortals[i].blockingBits != 0) {
-                    SetPortalState(i + 1, doublePortals[i].blockingBits);
+            for (i = 0; i < this.numInterAreaPortals; i++) {
+                if (this.doublePortals[i].blockingBits != 0) {
+                    SetPortalState(i + 1, this.doublePortals[i].blockingBits);
                 }
             }
 
             // clear the archive counter on all defs
-            for (i = 0; i < lightDefs.Num(); i++) {
-                if (lightDefs.oGet(i) != null) {
-                    lightDefs.oGet(i).archived = false;
+            for (i = 0; i < this.lightDefs.Num(); i++) {
+                if (this.lightDefs.oGet(i) != null) {
+                    this.lightDefs.oGet(i).archived = false;
                 }
             }
-            for (i = 0; i < entityDefs.Num(); i++) {
-                if (entityDefs.oGet(i) != null) {
-                    entityDefs.oGet(i).archived = false;
+            for (i = 0; i < this.entityDefs.Num(); i++) {
+                if (this.entityDefs.oGet(i) != null) {
+                    this.entityDefs.oGet(i).archived = false;
                 }
             }
         }
@@ -3315,15 +3319,15 @@ public class RenderWorld_local {
         @Override
         public boolean ProcessDemoCommand(idDemoFile readDemo, renderView_s renderView, int[] demoTimeOffset) {
             boolean newMap = false;
-            renderViewShadow viewShadow = new Atomics.renderViewShadow();
+            final renderViewShadow viewShadow = new Atomics.renderViewShadow();
 
             if (null == readDemo) {
                 return false;
             }
 
             demoCommand_t dc;
-            int[] d = {0};
-            int/*qhandle_t*/[] h = {0};
+            final int[] d = {0};
+            final int/*qhandle_t*/[] h = {0};
 
             if (NOT(readDemo.ReadInt(d))) {
                 // a demoShot may not have an endFrame, but it is still valid
@@ -3335,13 +3339,13 @@ public class RenderWorld_local {
             switch (dc) {
                 case DC_LOADMAP:
                     // read the initial data
-                    demoHeader_t header = new demoHeader_t();
+                    final demoHeader_t header = new demoHeader_t();
 
                     readDemo.ReadInt(header.version);
                     readDemo.ReadInt(header.sizeofRenderEntity);
                     readDemo.ReadInt(header.sizeofRenderLight);
                     for (int i = 0; i < 256; i++) {
-                        short[] c = {0};
+                        final short[] c = {0};
                         readDemo.ReadChar(c);
                         header.mapname[i] = (char) c[0];
                     }
@@ -3372,7 +3376,7 @@ public class RenderWorld_local {
                     readDemo.ReadBool(viewShadow.cramZNear);
                     readDemo.ReadBool(viewShadow.forceUpdate);
                     // binary compatibility with win32 padded structures
-                    short[] tmp = new short[1];
+                    final short[] tmp = new short[1];
                     readDemo.ReadChar(tmp);
                     readDemo.ReadChar(tmp);
                     readDemo.ReadInt(viewShadow.time);
@@ -3390,7 +3394,7 @@ public class RenderWorld_local {
                     }
 
                     // possibly change the time offset if this is from a new map
-                    if (newMap && demoTimeOffset[0] != 0) {
+                    if (newMap && (demoTimeOffset[0] != 0)) {
                         demoTimeOffset[0] = viewShadow.time[0] - eventLoop.Milliseconds();
                     }
 
@@ -3433,7 +3437,7 @@ public class RenderWorld_local {
                     if (r_showDemo.GetBool()) {
                         common.Printf("DC_CROP_RENDER\n");
                     }
-                    int[][] size = new int[3][1];
+                    final int[][] size = new int[3][1];
                     readDemo.ReadInt(size[0]);
                     readDemo.ReadInt(size[1]);
                     readDemo.ReadInt(size[2]);
@@ -3455,13 +3459,13 @@ public class RenderWorld_local {
                     break;
 
                 case DC_DEFINE_MODEL: {
-                    idRenderModel model = renderModelManager.AllocModel();
+                    final idRenderModel model = renderModelManager.AllocModel();
                     model.ReadFromDemoFile(session.readDemo);
                     // add to model manager, so we can find it
                     renderModelManager.AddModel(model);
 
                     // save it in the list to free when clearing this map
-                    localModels.Append(model);
+                    this.localModels.Append(model);
 
                     if (r_showDemo.GetBool()) {
                         common.Printf("DC_DEFINE_MODEL\n");
@@ -3469,7 +3473,7 @@ public class RenderWorld_local {
                     break;
                 }
                 case DC_SET_PORTAL_STATE: {
-                    int[][] data = new int[2][1];
+                    final int[][] data = new int[2][1];
                     readDemo.ReadInt(data[0]);
                     readDemo.ReadInt(data[1]);
                     SetPortalState(data[0][0], data[1][0]);
@@ -3500,9 +3504,9 @@ public class RenderWorld_local {
             session.writeDemo.WriteInt(DS_RENDER);
             session.writeDemo.WriteInt(DC_LOADMAP);
 
-            demoHeader_t header = new demoHeader_t();
+            final demoHeader_t header = new demoHeader_t();
 //            strncpy(header.mapname, mapName.c_str(), sizeof(header.mapname) - 1);
-            header.mapname = mapName.c_str();
+            header.mapname = this.mapName.c_str();
             header.version[0] = 4;
             header.sizeofRenderEntity[0] = sizeof(renderEntity_s.class);
             header.sizeofRenderLight[0] = sizeof(renderLight_s.class);
@@ -3514,7 +3518,7 @@ public class RenderWorld_local {
             }
 
             if (RenderSystem_init.r_showDemo.GetBool()) {
-                common.Printf("write DC_DELETE_LIGHTDEF: %s\n", mapName);
+                common.Printf("write DC_DELETE_LIGHTDEF: %s\n", this.mapName);
             }
         }
 
@@ -3565,7 +3569,7 @@ public class RenderWorld_local {
 
             // make sure all necessary entities and lights are updated
             for (viewEntity_s viewEnt = viewDef.viewEntitys; viewEnt != null; viewEnt = viewEnt.next) {
-                idRenderEntityLocal ent = viewEnt.entityDef;
+                final idRenderEntityLocal ent = viewEnt.entityDef;
 
                 if (ent.archived) {
                     // still up to date
@@ -3578,7 +3582,7 @@ public class RenderWorld_local {
             }
 
             for (viewLight_s viewLight = viewDef.viewLights; viewLight != null; viewLight = viewLight.next) {
-                idRenderLightLocal light = viewLight.lightDef;
+                final idRenderLightLocal light = viewLight.lightDef;
 
                 if (light.archived) {
                     // still up to date
@@ -3669,7 +3673,7 @@ public class RenderWorld_local {
                 session.writeDemo.WriteHashString(light.shader.GetName());
             }
             if (light.referenceSound != null) {
-                int index = light.referenceSound.Index();
+                final int index = light.referenceSound.Index();
                 session.writeDemo.WriteInt(index);
             }
 
@@ -3725,9 +3729,9 @@ public class RenderWorld_local {
             session.writeDemo.Write(ent.remoteRenderView);
             session.writeDemo.WriteInt(ent.numJoints);
 //            session.writeDemo.WriteInt((int) ent.joints);
-            for (idJointMat joint : ent.joints) {//TODO: double check if writing individual floats is equavalent to the int cast above.
-                float[] mat = joint.ToFloatPtr();
-                ByteBuffer buffer = ByteBuffer.allocate(mat.length * 4);
+            for (final idJointMat joint : ent.joints) {//TODO: double check if writing individual floats is equavalent to the int cast above.
+                final float[] mat = joint.ToFloatPtr();
+                final ByteBuffer buffer = ByteBuffer.allocate(mat.length * 4);
                 buffer.asFloatBuffer().put(mat);
                 session.readDemo.Write(buffer);
 //                for (int a = 0; a < mat.length; a++) {
@@ -3754,12 +3758,12 @@ public class RenderWorld_local {
                 session.writeDemo.WriteHashString(ent.referenceShader.GetName());
             }
             if (ent.referenceSound != null) {
-                int index = ent.referenceSound.Index();
+                final int index = ent.referenceSound.Index();
                 session.writeDemo.WriteInt(index);
             }
             if (ent.numJoints != 0) {
                 for (int i = 0; i < ent.numJoints; i++) {
-                    float[] data = ent.joints[i].ToFloatPtr();
+                    final float[] data = ent.joints[i].ToFloatPtr();
                     for (int j = 0; j < 12; ++j) {
                         session.writeDemo.WriteFloat(data[j]);
                     }
@@ -3796,9 +3800,9 @@ public class RenderWorld_local {
         }
 
         public void ReadRenderEntity() {
-            renderEntity_s ent = new renderEntity_s();
-            renderEntityShadow shadow = new Atomics.renderEntityShadow();
-            int[] index = new int[1];
+            final renderEntity_s ent = new renderEntity_s();
+            final renderEntityShadow shadow = new Atomics.renderEntityShadow();
+            final int[] index = new int[1];
             int i;
 
             session.readDemo.ReadInt(index);
@@ -3841,9 +3845,9 @@ public class RenderWorld_local {
             session.readDemo.Read(shadow.remoteRenderView);
             session.readDemo.ReadInt(shadow.numJoints);
 //            session.readDemo.ReadInt((int) shadow.joints);
-            for (idJointMat joint : shadow.joints) {//TODO: double check if writing individual floats is equavalent to the int cast above.
-                float[] mat = joint.ToFloatPtr();
-                ByteBuffer buffer = ByteBuffer.allocate(mat.length * 4);
+            for (final idJointMat joint : shadow.joints) {//TODO: double check if writing individual floats is equavalent to the int cast above.
+                final float[] mat = joint.ToFloatPtr();
+                final ByteBuffer buffer = ByteBuffer.allocate(mat.length * 4);
                 buffer.asFloatBuffer().put(mat);
                 session.readDemo.Read(buffer);
 //                for (int a = 0; a < mat.length; a++) {
@@ -3879,9 +3883,9 @@ public class RenderWorld_local {
             if (shadow.numJoints[0] != 0) {
                 shadow.joints = new idJointMat[shadow.numJoints[0]];//Mem_Alloc16(ent.numJoints);
                 for (i = 0; i < shadow.numJoints[0]; i++) {
-                    float[] data = shadow.joints[i].ToFloatPtr();
+                    final float[] data = shadow.joints[i].ToFloatPtr();
                     for (int j = 0; j < 12; ++j) {
-                        float[] d = {0};
+                        final float[] d = {0};
                         session.readDemo.ReadFloat(d);
                         data[j] = d[0];
                     }
@@ -3927,9 +3931,9 @@ public class RenderWorld_local {
         }
 
         public void ReadRenderLight() {
-            renderLightShadow shadow = new Atomics.renderLightShadow();
-            renderLight_s light = new renderLight_s();
-            int[] index = new int[1];
+            final renderLightShadow shadow = new Atomics.renderLightShadow();
+            final renderLight_s light = new renderLight_s();
+            final int[] index = new int[1];
 
             session.readDemo.ReadInt(index);
             if (index[0] < 0) {
@@ -3957,7 +3961,7 @@ public class RenderWorld_local {
 //            session.readDemo.ReadInt((int) shadow.shader);
             session.readDemo.Read(shadow.shader);
             for (int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++) {
-                float[] parm = {0};
+                final float[] parm = {0};
                 session.readDemo.ReadFloat(parm);
                 shadow.shaderParms[i] = parm[0];
             }
@@ -3990,7 +3994,7 @@ public class RenderWorld_local {
             // we may want to resize this in the future if it turns out to be common
             common.Printf("idRenderWorldLocal::ResizeInteractionTable: overflowed interactionTableWidth, dumping\n");
 //            R_StaticFree(interactionTable);
-            interactionTable = null;
+            this.interactionTable = null;
         }
 
         public void AddEntityRefToArea(idRenderEntityLocal def, portalArea_s area) {
@@ -4039,7 +4043,7 @@ public class RenderWorld_local {
         public void RecurseProcBSP_r(modelTrace_s results, int parentNodeNum, int nodeNum, float p1f, float p2f, final idVec3 p1, final idVec3 p2) {
             float t1, t2;
             float frac;
-            idVec3 mid = new idVec3();
+            final idVec3 mid = new idVec3();
             int side;
             float midf;
             areaNode_t node;
@@ -4057,31 +4061,31 @@ public class RenderWorld_local {
 
                     results.fraction = p1f;
                     results.point = p1;
-                    node = areaNodes[parentNodeNum];
+                    node = this.areaNodes[parentNodeNum];
                     results.normal = node.plane.Normal();//TODO:ref?
                     return;
                 }
             }
-            node = areaNodes[nodeNum];
+            node = this.areaNodes[nodeNum];
 
             // distance from plane for trace start and end
             t1 = node.plane.Normal().oMultiply(p1) + node.plane.oGet(3);
             t2 = node.plane.Normal().oMultiply(p2) + node.plane.oGet(3);
 
-            if (t1 >= 0.0f && t2 >= 0.0f) {
+            if ((t1 >= 0.0f) && (t2 >= 0.0f)) {
                 RecurseProcBSP_r(results, nodeNum, node.children[0], p1f, p2f, p1, p2);
                 return;
             }
-            if (t1 < 0.0f && t2 < 0.0f) {
+            if ((t1 < 0.0f) && (t2 < 0.0f)) {
                 RecurseProcBSP_r(results, nodeNum, node.children[1], p1f, p2f, p1, p2);
                 return;
             }
             side = t1 < t2 ? 1 : 0;
             frac = t1 / (t1 - t2);
-            midf = p1f + frac * (p2f - p1f);
-            mid.oSet(0, p1.oGet(0) + frac * (p2.oGet(0) - p1.oGet(0)));
-            mid.oSet(1, p1.oGet(1) + frac * (p2.oGet(1) - p1.oGet(1)));
-            mid.oSet(2, p1.oGet(2) + frac * (p2.oGet(2) - p1.oGet(2)));
+            midf = p1f + (frac * (p2f - p1f));
+            mid.oSet(0, p1.oGet(0) + (frac * (p2.oGet(0) - p1.oGet(0))));
+            mid.oSet(1, p1.oGet(1) + (frac * (p2.oGet(1) - p1.oGet(1))));
+            mid.oSet(2, p1.oGet(2) + (frac * (p2.oGet(2) - p1.oGet(2))));
             RecurseProcBSP_r(results, nodeNum, node.children[side], p1f, midf, p1, mid);
             RecurseProcBSP_r(results, nodeNum, node.children[side ^ 1], midf, p2f, mid, p2);
         }
@@ -4099,13 +4103,13 @@ public class RenderWorld_local {
                             break;
                         }
                     }
-                    if (i >= numAreas[0] && numAreas[0] < maxAreas) {
+                    if ((i >= numAreas[0]) && (numAreas[0] < maxAreas)) {
                         areas[numAreas[0]++] = nodeNum;
                     }
                     return;
                 }
 
-                node = areaNodes[nodeNum];
+                node = this.areaNodes[nodeNum];
 
                 side = bounds.PlaneSide(node.plane);
                 if (side == PLANESIDE_FRONT) {
@@ -4134,8 +4138,8 @@ public class RenderWorld_local {
             int i;
             idRenderEntityLocal def;
 
-            for (i = 0; i < entityDefs.Num(); i++) {
-                def = entityDefs.oGet(i);
+            for (i = 0; i < this.entityDefs.Num(); i++) {
+                def = this.entityDefs.oGet(i);
                 if (NOT(def)) {
                     continue;
                 }
@@ -4168,9 +4172,9 @@ public class RenderWorld_local {
 
             if (nodeNum < 0) {
                 portalArea_s area;
-                int areaNum = -1 - nodeNum;
+                final int areaNum = -1 - nodeNum;
 
-                area = portalAreas[areaNum];
+                area = this.portalAreas[areaNum];
                 if (area.viewCount == tr.viewCount) {
                     return;	// already added a reference here
                 }
@@ -4186,24 +4190,24 @@ public class RenderWorld_local {
                 return;
             }
 
-            node = areaNodes[nodeNum];
+            node = this.areaNodes[nodeNum];
 
             // if we know that all possible children nodes only touch an area
             // we have already marked, we can early out
             if (r_useNodeCommonChildren.GetBool()
-                    && node.commonChildrenArea != CHILDREN_HAVE_MULTIPLE_AREAS) {
+                    && (node.commonChildrenArea != CHILDREN_HAVE_MULTIPLE_AREAS)) {
                 // note that we do NOT try to set a reference in this area
                 // yet, because the test volume may yet wind up being in the
                 // solid part, which would cause bounds slightly poked into
                 // a wall to show up in the next room
-                if (portalAreas[node.commonChildrenArea].viewCount == tr.viewCount) {
+                if (this.portalAreas[node.commonChildrenArea].viewCount == tr.viewCount) {
                     return;
                 }
             }
 
             // if the bounding sphere is completely on one side, don't
             // bother checking the individual points
-            float sd = node.plane.Distance(sphere.GetOrigin());
+            final float sd = node.plane.Distance(sphere.GetOrigin());
             if (sd >= sphere.GetRadius()) {
                 nodeNum = node.children[0];
                 if (nodeNum != 0) {	// 0 = solid
@@ -4303,9 +4307,10 @@ public class RenderWorld_local {
         public void PushVolumeIntoTree(idRenderEntityLocal def, idRenderLightLocal light, int numPoints, final idVec3[] points) {
             int i;
             float radSquared, lr;
-            idVec3 mid = new idVec3(), dir;
+            final idVec3 mid = new idVec3();
+			idVec3 dir;
 
-            if (areaNodes == null) {
+            if (this.areaNodes == null) {
                 return;
             }
 
@@ -4326,7 +4331,7 @@ public class RenderWorld_local {
                 }
             }
 
-            idSphere sphere = new idSphere(mid, (float) Math.sqrt(radSquared));
+            final idSphere sphere = new idSphere(mid, (float) Math.sqrt(radSquared));
 
             PushVolumeIntoTree_r(def, light, sphere, numPoints, points, 0);
         }
@@ -4381,17 +4386,17 @@ public class RenderWorld_local {
                     // but we don't want to instantiate dynamic models yet, so we can't check that on
                     // most things
                     // if the entity isn't viewed
-                    if (tr.viewDef != null && eDef.viewCount != tr.viewCount) {
+                    if ((tr.viewDef != null) && (eDef.viewCount != tr.viewCount)) {
                         // if the light doesn't cast shadows, skip
                         if (!lDef.lightShader.LightCastsShadows()) {
                             continue;
                         }
                         // if we are suppressing its shadow in this view, skip
                         if (!RenderSystem_init.r_skipSuppress.GetBool()) {
-                            if (eDef.parms.suppressShadowInViewID != 0 && eDef.parms.suppressShadowInViewID == tr.viewDef.renderView.viewID) {
+                            if ((eDef.parms.suppressShadowInViewID != 0) && (eDef.parms.suppressShadowInViewID == tr.viewDef.renderView.viewID)) {
                                 continue;
                             }
-                            if (eDef.parms.suppressShadowInLightID != 0 && eDef.parms.suppressShadowInLightID == lDef.parms.lightId) {
+                            if ((eDef.parms.suppressShadowInLightID != 0) && (eDef.parms.suppressShadowInLightID == lDef.parms.lightId)) {
                                 continue;
                             }
                         }
@@ -4405,13 +4410,13 @@ public class RenderWorld_local {
 
                     // if any of the edef's interaction match this light, we don't
                     // need to consider it. 
-                    if (r_useInteractionTable.GetBool() && this.interactionTable != null) {
+                    if (r_useInteractionTable.GetBool() && (this.interactionTable != null)) {
                         // allocating these tables may take several megs on big maps, but it saves 3% to 5% of
                         // the CPU time.  The table is updated at interaction::AllocAndLink() and interaction::UnlinkAndFree()
-                        int index = lDef.index * this.interactionTableWidth + eDef.index;
+                        final int index = (lDef.index * this.interactionTableWidth) + eDef.index;
                         inter = this.interactionTable[index];
                         if (index == 441291) {
-                            int x = 0;
+                            final int x = 0;
                         }
                         if (inter != null) {
                             // if this entity wasn't in view already, the scissor rect will be empty,
@@ -4451,7 +4456,7 @@ public class RenderWorld_local {
 
                     // do a check of the entity reference bounds against the light frustum,
                     // trying to avoid creating a viewEntity if it hasn't been already
-                    float[] modelMatrix = new float[16];
+                    final float[] modelMatrix = new float[16];
                     float[] m;
 
                     if (eDef.viewCount == tr.viewCount) {
@@ -4473,5 +4478,5 @@ public class RenderWorld_local {
                 }
             }
         }
-    };
+    }
 }

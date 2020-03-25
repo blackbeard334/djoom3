@@ -36,30 +36,30 @@ public class Sphere {
         }
 
         public idSphere(final idVec3 point) {
-            origin = new idVec3(point);
-            radius = 0.0f;
+            this.origin = new idVec3(point);
+            this.radius = 0.0f;
         }
 
         public idSphere(final idVec3 point, final float r) {
-            origin = new idVec3(point);
-            radius = r;
+            this.origin = new idVec3(point);
+            this.radius = r;
         }
 //
 
         public float oGet(final int index) {
-            return origin.oGet(index);
+            return this.origin.oGet(index);
         }
 
         public float oSet(final int index, final float value) {
-            return origin.oSet(index, value);
+            return this.origin.oSet(index, value);
         }
 
         public idSphere oPlus(final idVec3 t) {                // returns tranlated sphere
-            return new idSphere(origin.oPlus(t), radius);
+            return new idSphere(this.origin.oPlus(t), this.radius);
         }
 
         public idSphere oPluSet(final idVec3 t) {					// translate the sphere
-            origin.oPluSet(t);
+            this.origin.oPluSet(t);
             return this;
         }
 //public	idSphere		operator+( final idSphere &s );
@@ -67,11 +67,11 @@ public class Sphere {
 //
 
         public boolean Compare(final idSphere a) {							// exact compare, no epsilon
-            return (origin.Compare(a.origin) && radius == a.radius);
+            return (this.origin.Compare(a.origin) && (this.radius == a.radius));
         }
 
         public boolean Compare(final idSphere a, final float epsilon) {	// compare with epsilon
-            return (origin.Compare(a.origin, epsilon) && idMath.Fabs(radius - a.radius) <= epsilon);
+            return (this.origin.Compare(a.origin, epsilon) && (idMath.Fabs(this.radius - a.radius) <= epsilon));
         }
 //public	boolean			operator==(	final idSphere &a );						// exact compare, no epsilon
 //public	boolean			operator!=(	final idSphere &a );						// exact compare, no epsilon
@@ -79,8 +79,8 @@ public class Sphere {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 97 * hash + Objects.hashCode(this.origin);
-            hash = 97 * hash + Float.floatToIntBits(this.radius);
+            hash = (97 * hash) + Objects.hashCode(this.origin);
+            hash = (97 * hash) + Float.floatToIntBits(this.radius);
             return hash;
         }
 
@@ -103,46 +103,46 @@ public class Sphere {
         }
 
         public void Clear() {									// inside out sphere
-            origin.Zero();
-            radius = -1.0f;
+            this.origin.Zero();
+            this.radius = -1.0f;
         }
 
         public void Zero() {									// single point at origin
-            origin.Zero();
-            radius = 0.0f;
+            this.origin.Zero();
+            this.radius = 0.0f;
         }
 
         public void SetOrigin(final idVec3 o) {					// set origin of sphere
-            origin = o;
+            this.origin = o;
         }
 
         public void SetRadius(final float r) {						// set square radius
-            radius = r;
+            this.radius = r;
         }
 
         public final idVec3 GetOrigin() {						// returns origin of sphere
-            return origin;
+            return this.origin;
         }
 
         public float GetRadius() {						// returns sphere radius
-            return radius;
+            return this.radius;
         }
 
         public boolean IsCleared() {					// returns true if sphere is inside out
-            return (radius < 0.0f);
+            return (this.radius < 0.0f);
         }
 
         public boolean AddPoint(final idVec3 p) {					// add the point, returns true if the sphere expanded 
-            if (radius < 0.0f) {
-                origin = p;
-                radius = 0.0f;
+            if (this.radius < 0.0f) {
+                this.origin = p;
+                this.radius = 0.0f;
                 return true;
             } else {
-                float r = (p.oMinus(origin)).LengthSqr();
-                if (r > radius * radius) {
+                float r = (p.oMinus(this.origin)).LengthSqr();
+                if (r > (this.radius * this.radius)) {
                     r = idMath.Sqrt(r);
-                    origin.oPluSet((p.oMinus(origin)).oMultiply(0.5f).oMultiply(1.0f - radius / r));
-                    radius += 0.5f * (r - radius);
+                    this.origin.oPluSet((p.oMinus(this.origin)).oMultiply(0.5f).oMultiply(1.0f - (this.radius / r)));
+                    this.radius += 0.5f * (r - this.radius);
                     return true;
                 }
                 return false;
@@ -150,16 +150,16 @@ public class Sphere {
         }
 
         public boolean AddSphere(final idSphere s) {					// add the sphere, returns true if the sphere expanded
-            if (radius < 0.0f) {
-                origin = s.origin;
-                radius = s.radius;
+            if (this.radius < 0.0f) {
+                this.origin = s.origin;
+                this.radius = s.radius;
                 return true;
             } else {
-                float r = (s.origin.oMinus(origin)).LengthSqr();
-                if (r > (radius + s.radius) * (radius + s.radius)) {
+                float r = (s.origin.oMinus(this.origin)).LengthSqr();
+                if (r > ((this.radius + s.radius) * (this.radius + s.radius))) {
                     r = idMath.Sqrt(r);
-                    origin.oPluSet((s.origin.oPlus(origin)).oMultiply(0.5f).oMultiply(1.0f - radius / (r + s.radius)));
-                    radius += 0.5f * ((r + s.radius) - radius);
+                    this.origin.oPluSet((s.origin.oPlus(this.origin)).oMultiply(0.5f).oMultiply(1.0f - (this.radius / (r + s.radius))));
+                    this.radius += 0.5f * ((r + s.radius) - this.radius);
                     return true;
                 }
                 return false;
@@ -167,32 +167,32 @@ public class Sphere {
         }
 
         public idSphere Expand(final float d) {					// return bounds expanded in all directions with the given value
-            return new idSphere(origin, radius + d);
+            return new idSphere(this.origin, this.radius + d);
         }
 
         public idSphere ExpandSelf(final float d) {					// expand bounds in all directions with the given value
-            radius += d;
+            this.radius += d;
             return this;
         }
 
         public idSphere Translate(final idVec3 translation) {
-            return new idSphere(origin.oPlus(translation), radius);
+            return new idSphere(this.origin.oPlus(translation), this.radius);
         }
 
         public idSphere TranslateSelf(final idVec3 translation) {
-            origin.oPluSet(translation);
+            this.origin.oPluSet(translation);
             return this;
         }
 
         public float PlaneDistance(final idPlane plane) {
             float d;
 
-            d = plane.Distance(origin);
-            if (d > radius) {
-                return d - radius;
+            d = plane.Distance(this.origin);
+            if (d > this.radius) {
+                return d - this.radius;
             }
-            if (d < -radius) {
-                return d + radius;
+            if (d < -this.radius) {
+                return d + this.radius;
             }
             return 0.0f;
         }
@@ -204,26 +204,26 @@ public class Sphere {
         public int PlaneSide(final idPlane plane, final float epsilon) {
             float d;
 
-            d = plane.Distance(origin);
-            if (d > radius + epsilon) {
+            d = plane.Distance(this.origin);
+            if (d > (this.radius + epsilon)) {
                 return PLANESIDE_FRONT;
             }
-            if (d < -radius - epsilon) {
+            if (d < (-this.radius - epsilon)) {
                 return PLANESIDE_BACK;
             }
             return PLANESIDE_CROSS;
         }
 
         public boolean ContainsPoint(final idVec3 p) {			// includes touching
-            if ((p.oMinus(origin)).LengthSqr() > radius * radius) {
+            if ((p.oMinus(this.origin)).LengthSqr() > (this.radius * this.radius)) {
                 return false;
             }
             return true;
         }
 
         public boolean IntersectsSphere(final idSphere s) {	// includes touching
-            float r = s.radius + radius;
-            if ((s.origin.oMinus(origin)).LengthSqr() > r * r) {
+            final float r = s.radius + this.radius;
+            if ((s.origin.oMinus(this.origin)).LengthSqr() > (r * r)) {
                 return false;
             }
             return true;
@@ -240,17 +240,17 @@ public class Sphere {
             idVec3 r, s, e;
             float a;
 
-            s = start.oMinus(origin);
-            e = end.oMinus(origin);
+            s = start.oMinus(this.origin);
+            e = end.oMinus(this.origin);
             r = e.oMinus(s);
             a = s.oNegative().oMultiply(r);
             if (a <= 0) {
-                return (s.oMultiply(s) < radius * radius);
+                return (s.oMultiply(s) < (this.radius * this.radius));
             } else if (a >= r.oMultiply(r)) {
-                return (e.oMultiply(e) < radius * radius);
+                return (e.oMultiply(e) < (this.radius * this.radius));
             } else {
                 r = s.oPlus(r.oMultiply(a / (r.oMultiply(r))));
-                return (r.oMultiply(r) < radius * radius);
+                return (r.oMultiply(r) < (this.radius * this.radius));
             }
         }
 
@@ -268,11 +268,11 @@ public class Sphere {
             float a, b, c, d, sqrtd;
             idVec3 p;
 
-            p = start.oMinus(origin);
+            p = start.oMinus(this.origin);
             a = dir.oMultiply(dir);
             b = dir.oMultiply(p);
-            c = p.oMultiply(p) - radius * radius;
-            d = b * b - c * a;
+            c = p.oMultiply(p) - (this.radius * this.radius);
+            d = (b * b) - (c * a);
 
             if (d < 0.0f) {
                 return false;
@@ -298,51 +298,51 @@ public class Sphere {
         public void FromPoints(final idVec3[] points, final int numPoints) {
             int i;
             float radiusSqr, dist;
-            idVec3 mins = new idVec3(), maxs = new idVec3();
+            final idVec3 mins = new idVec3(), maxs = new idVec3();
 
             SIMDProcessor.MinMax(mins, maxs, points, numPoints);
 
-            origin = (mins.oPlus(maxs)).oMultiply(0.5f);
+            this.origin = (mins.oPlus(maxs)).oMultiply(0.5f);
 
             radiusSqr = 0.0f;
             for (i = 0; i < numPoints; i++) {
-                dist = (points[i].oMinus(origin)).LengthSqr();
+                dist = (points[i].oMinus(this.origin)).LengthSqr();
                 if (dist > radiusSqr) {
                     radiusSqr = dist;
                 }
             }
-            radius = idMath.Sqrt(radiusSqr);
+            this.radius = idMath.Sqrt(radiusSqr);
         }
 
         // Most tight sphere for a translation.
         public void FromPointTranslation(final idVec3 point, final idVec3 translation) {
-            origin = point.oPlus(translation.oMultiply(0.5f));
-            radius = idMath.Sqrt(0.5f * translation.LengthSqr());
+            this.origin = point.oPlus(translation.oMultiply(0.5f));
+            this.radius = idMath.Sqrt(0.5f * translation.LengthSqr());
         }
 
         public void FromSphereTranslation(final idSphere sphere, final idVec3 start, final idVec3 translation) {
-            origin = start.oPlus(sphere.origin).oPlus(translation.oMultiply(0.5f));
-            radius = idMath.Sqrt(0.5f * translation.LengthSqr()) + sphere.radius;
+            this.origin = start.oPlus(sphere.origin).oPlus(translation.oMultiply(0.5f));
+            this.radius = idMath.Sqrt(0.5f * translation.LengthSqr()) + sphere.radius;
         }
 
         // Most tight sphere for a rotation.
         public void FromPointRotation(final idVec3 point, final idRotation rotation) {
-            idVec3 end = rotation.oMultiply(point);
-            origin = (point.oPlus(end)).oMultiply(0.5f);
-            radius = idMath.Sqrt(0.5f * (end.oMinus(point)).LengthSqr());
+            final idVec3 end = rotation.oMultiply(point);
+            this.origin = (point.oPlus(end)).oMultiply(0.5f);
+            this.radius = idMath.Sqrt(0.5f * (end.oMinus(point)).LengthSqr());
         }
 
         public void FromSphereRotation(final idSphere sphere, final idVec3 start, final idRotation rotation) {
-            idVec3 end = rotation.oMultiply(sphere.origin);
-            origin = start.oPlus(sphere.origin.oPlus(end)).oMultiply(0.5f);
-            radius = idMath.Sqrt(0.5f * (end.oMinus(sphere.origin)).LengthSqr()) + sphere.radius;
+            final idVec3 end = rotation.oMultiply(sphere.origin);
+            this.origin = start.oPlus(sphere.origin.oPlus(end)).oMultiply(0.5f);
+            this.radius = idMath.Sqrt(0.5f * (end.oMinus(sphere.origin)).LengthSqr()) + sphere.radius;
         }
 
         public void AxisProjection(final idVec3 dir, float[] min, float[] max) {
             float d;
-            d = dir.oMultiply(origin);
-            min[0] = d - radius;
-            max[0] = d + radius;
+            d = dir.oMultiply(this.origin);
+            min[0] = d - this.radius;
+            max[0] = d + this.radius;
         }
-    };
+    }
 }

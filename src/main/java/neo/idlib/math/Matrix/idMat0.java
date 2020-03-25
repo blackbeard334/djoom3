@@ -13,8 +13,8 @@ public class idMat0 {
     static final double MATRIX_EPSILON         = 1.0E-6;//TODO: re-type to float.
 
     static void matrixPrint(idMatX x, String label) {
-        int rows = x.GetNumRows();
-        int columns = x.GetNumColumns();
+        final int rows = x.GetNumRows();
+        final int columns = x.GetNumColumns();
         System.out.println("START " + label);
         for (int b = 0; b < rows; b++) {
             for (int a = 0; a < columns; a++) {

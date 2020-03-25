@@ -170,7 +170,7 @@ public class snd_decoder {
         private idSoundSample lastSample;         // last sample being decoded
         private int           lastSampleOffset;   // last offset into the decoded sample
         private int           lastDecodeTime;     // last time decoding sound
-        private idFile_Memory file;               // encoded file in memory
+        private final idFile_Memory file;               // encoded file in memory
         //
         private Long          ogg;                // OggVorbis file
         //
@@ -186,13 +186,13 @@ public class snd_decoder {
         public void Decode(idSoundSample sample, int sampleOffset44k, int sampleCount44k, FloatBuffer dest) {
             int readSamples44k;
 
-            if (sample.objectInfo.wFormatTag != lastFormat || sample != lastSample) {
+            if ((sample.objectInfo.wFormatTag != this.lastFormat) || (sample != this.lastSample)) {
                 ClearDecoder();
             }
 
-            lastDecodeTime = soundSystemLocal.CurrentSoundTime;
+            this.lastDecodeTime = soundSystemLocal.CurrentSoundTime;
 
-            if (failed) {
+            if (this.failed) {
 //                memset(dest, 0, sampleCount44k * sizeof(dest[0]));
                 dest.clear();
                 return;
@@ -232,14 +232,14 @@ public class snd_decoder {
             Sys_EnterCriticalSection(CRITICAL_SECTION_ONE);
 
             try {
-                switch (lastFormat) {
+                switch (this.lastFormat) {
                     case WAVE_FORMAT_TAG_PCM: {
                         break;
                     }
                     case WAVE_FORMAT_TAG_OGG: {
 //                    ov_clear(ogg);
 //                    memset(ogg, 0, sizeof(ogg));
-                        ogg = null;
+                        this.ogg = null;
                         break;
                     }
                 }
@@ -252,20 +252,20 @@ public class snd_decoder {
 
         @Override
         public idSoundSample GetSample() {
-            return lastSample;
+            return this.lastSample;
         }
 
         @Override
         public int GetLastDecodeTime() {
-            return lastDecodeTime;
+            return this.lastDecodeTime;
         }
 
         public void Clear() {
-            failed = false;
-            lastFormat = WAVE_FORMAT_TAG_PCM;
-            lastSample = null;
-            lastSampleOffset = 0;
-            lastDecodeTime = 0;
+            this.failed = false;
+            this.lastFormat = WAVE_FORMAT_TAG_PCM;
+            this.lastSample = null;
+            this.lastSampleOffset = 0;
+            this.lastDecodeTime = 0;
         }
 
         public int DecodePCM(idSoundSample sample, int sampleOffset44k, int sampleCount44k, float[] dest) {
@@ -308,65 +308,65 @@ public class snd_decoder {
         public int DecodeOGG(idSoundSample sample, int sampleOffset44k, int sampleCount44k, FloatBuffer dest) {
             int readSamples, totalSamples;
 
-            int shift = (int) (22050 / sample.objectInfo.nSamplesPerSec);
-            int sampleOffset = sampleOffset44k >> shift;
-            int sampleCount = sampleCount44k >> shift;
+            final int shift = 22050 / sample.objectInfo.nSamplesPerSec;
+            final int sampleOffset = sampleOffset44k >> shift;
+            final int sampleCount = sampleCount44k >> shift;
 
             // open OGG file if not yet opened
-            if (lastSample == null) {
+            if (this.lastSample == null) {
                 // make sure there is enough space for another decoder
 //                if (decoderMemoryAllocator.GetFreeBlockMemory() < MIN_OGGVORBIS_MEMORY) {
 //                    return 0;
 //                }
                 if (sample.nonCacheData == null) {
                     assert (false);    // this should never happen
-                    failed = true;
+                    this.failed = true;
                     return 0;
                 }
-                file.SetData(sample.nonCacheData, sample.objectMemSize);
-                int[] error = {0};
-                ogg = ov_openFile(file, error);
+                this.file.SetData(sample.nonCacheData, sample.objectMemSize);
+                final int[] error = {0};
+                this.ogg = ov_openFile(this.file, error);
                 if (error[0] != 0) {
                     Logger.getLogger(snd_decoder.class.getName()).log(Level.SEVERE, getErrorMessage(error[0]));
-                    failed = true;
+                    this.failed = true;
                     return 0;
                 }
-                lastFormat = WAVE_FORMAT_TAG_OGG;
-                lastSample = sample;
+                this.lastFormat = WAVE_FORMAT_TAG_OGG;
+                this.lastSample = sample;
             }
 
             // seek to the right offset if necessary
-            if (sampleOffset != lastSampleOffset) {
-                if (!STBVorbis.stb_vorbis_seek(ogg, (sampleOffset / sample.objectInfo.nChannels))) {
-                    failed = true;
+            if (sampleOffset != this.lastSampleOffset) {
+                if (!STBVorbis.stb_vorbis_seek(this.ogg, (sampleOffset / sample.objectInfo.nChannels))) {
+                    this.failed = true;
                     return 0;
                 }
             }
 
-            lastSampleOffset = sampleOffset;
+            this.lastSampleOffset = sampleOffset;
 
             // decode OGG samples
             totalSamples = sampleCount;
             readSamples = 0;
             do {
-                PointerBuffer samples = PointerBuffer.allocateDirect(sample.objectInfo.nChannels);
+                final PointerBuffer samples = PointerBuffer.allocateDirect(sample.objectInfo.nChannels);
                 final int num_samples = totalSamples / sample.objectInfo.nChannels;
                 for (int i = 0; i < sample.objectInfo.nChannels; i++) {
                     samples.put(i, BufferUtils.createFloatBuffer(num_samples));
                 }
-                int ret = STBVorbis.stb_vorbis_get_samples_float(ogg, samples, num_samples);
+                int ret = STBVorbis.stb_vorbis_get_samples_float(this.ogg, samples, num_samples);
                 if (ret == 0) {
-                    failed = true;
+                    this.failed = true;
                     break;
                 }
                 if (ret < 0) {
-                    failed = true;
+                    this.failed = true;
                     return 0;
                 }
 
                 ret *= sample.objectInfo.nChannels;
 
-                float[][] samplesArray = new float[sample.objectInfo.nChannels][num_samples];
+                final float[][] samplesArray = new float[sample.objectInfo.nChannels][num_samples];
                 for (int i = 0; i < sample.objectInfo.nChannels; i++) {
                     samples.getFloatBuffer(i, num_samples).get(samplesArray[i]);
                 }
@@ -375,7 +375,7 @@ public class snd_decoder {
                 totalSamples -= ret;
             } while (totalSamples > 0);
 
-            lastSampleOffset += readSamples;
+            this.lastSampleOffset += readSamples;
 
             return (readSamples << shift);
         }

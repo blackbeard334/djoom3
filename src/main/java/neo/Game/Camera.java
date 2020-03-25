@@ -68,14 +68,14 @@ public class Camera {
 
         @Override
         public renderView_s GetRenderView() {
-            renderView_s rv = super.GetRenderView();
+            final renderView_s rv = super.GetRenderView();
             GetViewParms(rv);
             return rv;
         }
 
         public void Stop() {
         }
-    };
+    }
 
     /*
      ===============================================================================
@@ -104,26 +104,26 @@ public class Camera {
         //
 
         public idCameraView() {
-            fov = 90.0f;
-            attachedTo = null;
-            attachedView = null;
+            this.fov = 90.0f;
+            this.attachedTo = null;
+            this.attachedView = null;
         }
 
         // save games
         @Override
         public void Save(idSaveGame savefile) {				// archives object for save game file
-            savefile.WriteFloat(fov);
-            savefile.WriteObject(attachedTo);
-            savefile.WriteObject(attachedView);
+            savefile.WriteFloat(this.fov);
+            savefile.WriteObject(this.attachedTo);
+            savefile.WriteObject(this.attachedView);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {				// unarchives object from save game file
-            float[] fov = {this.fov};
+            final float[] fov = {this.fov};
 
             savefile.ReadFloat(fov);
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>(*/attachedTo);
-            savefile.ReadObject( /*reinterpret_cast<idClass *&>(*/attachedView);
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>(*/attachedTo);
+            savefile.ReadObject( this./*reinterpret_cast<idClass *&>(*/attachedView);
 
             this.fov = fov[0];
         }
@@ -133,11 +133,11 @@ public class Camera {
             super.Spawn();
             
             // if no target specified use ourself
-            final String cam = spawnArgs.GetString("cameraTarget");
+            final String cam = this.spawnArgs.GetString("cameraTarget");
             if (cam.isEmpty()) {
-                spawnArgs.Set("cameraTarget", spawnArgs.GetString("name"));
+                this.spawnArgs.Set("cameraTarget", this.spawnArgs.GetString("name"));
             }
-            fov = spawnArgs.GetFloat("fov", "90");
+            this.fov = this.spawnArgs.GetFloat("fov", "90");
 
             PostEventMS(EV_Camera_SetAttachments, 0);
 
@@ -155,15 +155,15 @@ public class Camera {
             idVec3 dir;
             idEntity ent;
 
-            if (attachedTo != null) {
-                ent = attachedTo;
+            if (this.attachedTo != null) {
+                ent = this.attachedTo;
             } else {
                 ent = this;
             }
 
             view.vieworg = new idVec3(ent.GetPhysics().GetOrigin());
-            if (attachedView != null) {
-                dir = attachedView.GetPhysics().GetOrigin().oMinus(view.vieworg);
+            if (this.attachedView != null) {
+                dir = this.attachedView.GetPhysics().GetOrigin().oMinus(view.vieworg);
                 dir.Normalize();
                 view.viewaxis = dir.ToMat3();
             } else {
@@ -171,8 +171,8 @@ public class Camera {
             }
 
             {
-                float[] fov_x = {view.fov_x}, fov_y = {view.fov_y};
-                gameLocal.CalcFov(fov, fov_x, fov_y);
+                final float[] fov_x = {view.fov_x}, fov_y = {view.fov_y};
+                gameLocal.CalcFov(this.fov, fov_x, fov_y);
                 view.fov_x = fov_x[0];
                 view.fov_y = fov_y[0];
             }
@@ -188,7 +188,7 @@ public class Camera {
         }
 
         protected void Event_Activate(idEventArg<idEntity> activator) {
-            if (spawnArgs.GetBool("trigger")) {
+            if (this.spawnArgs.GetBool("trigger")) {
                 if (gameLocal.GetCamera() != this) {
                     if (g_debugCinematic.GetBool()) {
                         gameLocal.Printf("%d: '%s' start\n", gameLocal.framenum, GetName());
@@ -205,7 +205,7 @@ public class Camera {
         }
 
         protected void Event_SetAttachments() {
-            idEntity[] attachedTo = {this.attachedTo}, attachedView = {this.attachedView};
+            final idEntity[] attachedTo = {this.attachedTo}, attachedView = {this.attachedView};
             SetAttachment(attachedTo, "attachedTo");
             SetAttachment(attachedView, "attachedView");
             this.attachedTo = attachedTo[0];
@@ -213,7 +213,7 @@ public class Camera {
         }
 
         protected void SetAttachment(idEntity[] e, final String p) {
-            final String cam = spawnArgs.GetString(p);
+            final String cam = this.spawnArgs.GetString(p);
             if (!cam.isEmpty()) {
                 e[0] = gameLocal.FindEntity(cam);
             }
@@ -238,7 +238,7 @@ public class Camera {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -254,10 +254,10 @@ public class Camera {
         float fov;
 
         public cameraFrame_t() {
-            q = new idCQuat();
-            t = new idVec3();
+            this.q = new idCQuat();
+            this.t = new idVec3();
         }
-    };
+    }
 
     public static class idCameraAnim extends idCamera {
 /**
@@ -280,21 +280,21 @@ public class Camera {
         private int                   frameRate;
         private int                   starttime;
         private int                   cycle;
-        private idList<Integer>       cameraCuts;
-        private idList<cameraFrame_t> camera;
-        private idEntityPtr<idEntity> activator;
+        private final idList<Integer>       cameraCuts;
+        private final idList<cameraFrame_t> camera;
+        private final idEntityPtr<idEntity> activator;
         //
         //
 
         public idCameraAnim() {
-            threadNum = 0;
-            offset = new idVec3();
-            frameRate = 0;
-            starttime = 0;
-            cycle = 1;
-            cameraCuts = new idList<>();
-            camera = new idList<>();
-            activator = new idEntityPtr<>(null);
+            this.threadNum = 0;
+            this.offset = new idVec3();
+            this.frameRate = 0;
+            this.starttime = 0;
+            this.cycle = 1;
+            this.cameraCuts = new idList<>();
+            this.camera = new idList<>();
+            this.activator = new idEntityPtr<>(null);
 
         }
         //~idCameraAnim();
@@ -302,22 +302,22 @@ public class Camera {
         // save games
         @Override
         public void Save(idSaveGame savefile) {				// archives object for save game file
-            savefile.WriteInt(threadNum);
-            savefile.WriteVec3(offset);
-            savefile.WriteInt(frameRate);
-            savefile.WriteInt(starttime);
-            savefile.WriteInt(cycle);
-            activator.Save(savefile);
+            savefile.WriteInt(this.threadNum);
+            savefile.WriteVec3(this.offset);
+            savefile.WriteInt(this.frameRate);
+            savefile.WriteInt(this.starttime);
+            savefile.WriteInt(this.cycle);
+            this.activator.Save(savefile);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {				// unarchives object from save game file
-            threadNum = savefile.ReadInt();
-            savefile.ReadVec3(offset);
-            frameRate = savefile.ReadInt();
-            starttime = savefile.ReadInt();
-            cycle = savefile.ReadInt();
-            activator.Restore(savefile);
+            this.threadNum = savefile.ReadInt();
+            savefile.ReadVec3(this.offset);
+            this.frameRate = savefile.ReadInt();
+            this.starttime = savefile.ReadInt();
+            this.cycle = savefile.ReadInt();
+            this.activator.Restore(savefile);
 
             LoadAnim();
         }
@@ -326,14 +326,14 @@ public class Camera {
         public void Spawn() {
             super.Spawn();
             
-            if (spawnArgs.GetVector("old_origin", "0 0 0", offset)) {
-                offset = GetPhysics().GetOrigin().oMinus(offset);
+            if (this.spawnArgs.GetVector("old_origin", "0 0 0", this.offset)) {
+                this.offset = GetPhysics().GetOrigin().oMinus(this.offset);
             } else {
-                offset.Zero();
+                this.offset.Zero();
             }
 
             // always think during cinematics
-            cinematic = true;
+            this.cinematic = true;
 
             LoadAnim();
         }
@@ -348,25 +348,26 @@ public class Camera {
             cameraFrame_t camFrame;
             int i;
             int cut;
-            idQuat q1, q2, q3 = new idQuat();
+            idQuat q1, q2;
+			final idQuat q3 = new idQuat();
 
             assert (view != null);
             if (null == view) {
                 return;
             }
 
-            if (camera.Num() == 0) {
+            if (this.camera.Num() == 0) {
                 // we most likely are in the middle of a restore
                 // FIXME: it would be better to fix it so this doesn't get called during a restore
                 return;
             }
 
-            if (frameRate == USERCMD_HZ) {
-                frameTime = gameLocal.time - starttime;
+            if (this.frameRate == USERCMD_HZ) {
+                frameTime = gameLocal.time - this.starttime;
                 frame = frameTime / gameLocal.msec;
                 lerp = 0.0f;
             } else {
-                frameTime = (gameLocal.time - starttime) * frameRate;
+                frameTime = (gameLocal.time - this.starttime) * this.frameRate;
                 frame = frameTime / 1000;
                 lerp = (frameTime % 1000) * 0.001f;
             }
@@ -374,8 +375,8 @@ public class Camera {
             // skip any frames where camera cuts occur
             realFrame = frame;
             cut = 0;
-            for (i = 0; i < cameraCuts.Num(); i++) {
-                if (frame < cameraCuts.oGet(i)) {
+            for (i = 0; i < this.cameraCuts.Num(); i++) {
+                if (frame < this.cameraCuts.oGet(i)) {
                     break;
                 }
                 frame++;
@@ -383,13 +384,13 @@ public class Camera {
             }
 
             if (g_debugCinematic.GetBool()) {
-                int prevFrameTime = (gameLocal.time - starttime - gameLocal.msec) * frameRate;
+                final int prevFrameTime = (gameLocal.time - this.starttime - gameLocal.msec) * this.frameRate;
                 int prevFrame = prevFrameTime / 1000;
                 int prevCut;
 
                 prevCut = 0;
-                for (i = 0; i < cameraCuts.Num(); i++) {
-                    if (prevFrame < cameraCuts.oGet(i)) {
+                for (i = 0; i < this.cameraCuts.Num(); i++) {
+                    if (prevFrame < this.cameraCuts.oGet(i)) {
                         break;
                     }
                     prevFrame++;
@@ -403,18 +404,18 @@ public class Camera {
 
             // clamp to the first frame.  also check if this is a one frame anim.  one frame anims would end immediately,
             // but since they're mainly used for static cams anyway, just stay on it infinitely.
-            if ((frame < 0) || (camera.Num() < 2)) {
-                view.viewaxis = camera.oGet(0).q.ToQuat().ToMat3();
-                view.vieworg = camera.oGet(0).t.oPlus(offset);
-                view.fov_x = camera.oGet(0).fov;
-            } else if (frame > camera.Num() - 2) {
-                if (cycle > 0) {
-                    cycle--;
+            if ((frame < 0) || (this.camera.Num() < 2)) {
+                view.viewaxis = this.camera.oGet(0).q.ToQuat().ToMat3();
+                view.vieworg = this.camera.oGet(0).t.oPlus(this.offset);
+                view.fov_x = this.camera.oGet(0).fov;
+            } else if (frame > (this.camera.Num() - 2)) {
+                if (this.cycle > 0) {
+                    this.cycle--;
                 }
 
-                if (cycle != 0) {
+                if (this.cycle != 0) {
                     // advance start time so that we loop
-                    starttime += ((camera.Num() - cameraCuts.Num()) * 1000) / frameRate;
+                    this.starttime += ((this.camera.Num() - this.cameraCuts.Num()) * 1000) / this.frameRate;
                     GetViewParms(view);
                     return;
                 }
@@ -426,30 +427,30 @@ public class Camera {
                     return;
                 } else {
                     // just use our last frame
-                    camFrame = camera.oGet(camera.Num() - 1);
+                    camFrame = this.camera.oGet(this.camera.Num() - 1);
                     view.viewaxis = camFrame.q.ToQuat().ToMat3();
-                    view.vieworg = camFrame.t.oPlus(offset);
+                    view.vieworg = camFrame.t.oPlus(this.offset);
                     view.fov_x = camFrame.fov;
                 }
             } else if (lerp == 0.0f) {
-                camFrame = camera.oGet(frame);
+                camFrame = this.camera.oGet(frame);
                 view.viewaxis = camFrame/*[ 0 ]*/.q.ToMat3();
-                view.vieworg = camFrame/*[ 0 ]*/.t.oPlus(offset);
+                view.vieworg = camFrame/*[ 0 ]*/.t.oPlus(this.offset);
                 view.fov_x = camFrame/*[ 0 ]*/.fov;
             } else {
-                camFrame = camera.oGet(frame);
-                final cameraFrame_t nextFrame = camera.oGet(frame + 1);
+                camFrame = this.camera.oGet(frame);
+                final cameraFrame_t nextFrame = this.camera.oGet(frame + 1);
                 invlerp = 1.0f - lerp;
                 q1 = camFrame/*[ 0 ]*/.q.ToQuat();
                 q2 = nextFrame.q.ToQuat();
                 q3.Slerp(q1, q2, lerp);
                 view.viewaxis = q3.ToMat3();
-                view.vieworg = camFrame/*[ 0 ]*/.t.oMultiply(invlerp).oPlus(nextFrame.t.oMultiply(lerp).oPlus(offset));
-                view.fov_x = camFrame/*[ 0 ]*/.fov * invlerp + nextFrame.fov * lerp;
+                view.vieworg = camFrame/*[ 0 ]*/.t.oMultiply(invlerp).oPlus(nextFrame.t.oMultiply(lerp).oPlus(this.offset));
+                view.fov_x = (camFrame/*[ 0 ]*/.fov * invlerp) + (nextFrame.fov * lerp);
             }
 
             {
-                float[] fov_x = {view.fov_x}, fov_y = {view.fov_y};
+                final float[] fov_x = {view.fov_x}, fov_y = {view.fov_y};
                 gameLocal.CalcFov(view.fov_x, fov_x, fov_y);
                 view.fov_x = fov_x[0];
                 view.fov_y = fov_y[0];
@@ -472,21 +473,21 @@ public class Camera {
             // }
 // }
             if (g_showcamerainfo.GetBool()) {
-                gameLocal.Printf("^5Frame: ^7%d/%d\n\n\n", realFrame + 1, camera.Num() - cameraCuts.Num());
+                gameLocal.Printf("^5Frame: ^7%d/%d\n\n\n", realFrame + 1, this.camera.Num() - this.cameraCuts.Num());
             }
         }
 
         private void Start() {
-            cycle = spawnArgs.GetInt("cycle");
-            if (0 == cycle) {
-                cycle = 1;
+            this.cycle = this.spawnArgs.GetInt("cycle");
+            if (0 == this.cycle) {
+                this.cycle = 1;
             }
 
             if (g_debugCinematic.GetBool()) {
                 gameLocal.Printf("%d: '%s' start\n", gameLocal.framenum, GetName());
             }
 
-            starttime = gameLocal.time;
+            this.starttime = gameLocal.time;
             gameLocal.SetCamera(this);
             BecomeActive(TH_THINK);
 
@@ -505,11 +506,11 @@ public class Camera {
 
                 BecomeInactive(TH_THINK);
                 gameLocal.SetCamera(null);
-                if (threadNum != 0) {
-                    idThread.ObjectMoveDone(threadNum, this);
-                    threadNum = 0;
+                if (this.threadNum != 0) {
+                    idThread.ObjectMoveDone(this.threadNum, this);
+                    this.threadNum = 0;
                 }
-                ActivateTargets(activator.GetEntity());
+                ActivateTargets(this.activator.GetEntity());
             }
         }
 
@@ -518,33 +519,33 @@ public class Camera {
             int frame;
             int frameTime;
 
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 // check if we're done in the Think function when the cinematic is being skipped (idCameraAnim::GetViewParms isn't called when skipping cinematics).
                 if (!gameLocal.skipCinematic) {
                     return;
                 }
 
-                if (camera.Num() < 2) {
+                if (this.camera.Num() < 2) {
                     // 1 frame anims never end
                     return;
                 }
 
-                if (frameRate == USERCMD_HZ) {
-                    frameTime = gameLocal.time - starttime;
+                if (this.frameRate == USERCMD_HZ) {
+                    frameTime = gameLocal.time - this.starttime;
                     frame = frameTime / gameLocal.msec;
                 } else {
-                    frameTime = (gameLocal.time - starttime) * frameRate;
+                    frameTime = (gameLocal.time - this.starttime) * this.frameRate;
                     frame = frameTime / 1000;
                 }
 
-                if (frame > camera.Num() + cameraCuts.Num() - 2) {
-                    if (cycle > 0) {
-                        cycle--;
+                if (frame > ((this.camera.Num() + this.cameraCuts.Num()) - 2)) {
+                    if (this.cycle > 0) {
+                        this.cycle--;
                     }
 
-                    if (cycle != 0) {
+                    if (this.cycle != 0) {
                         // advance start time so that we loop
-                        starttime += ((camera.Num() - cameraCuts.Num()) * 1000) / frameRate;
+                        this.starttime += ((this.camera.Num() - this.cameraCuts.Num()) * 1000) / this.frameRate;
                     } else {
                         Stop();
                     }
@@ -554,33 +555,33 @@ public class Camera {
 
         private void LoadAnim() {
             int version;
-            idLexer parser = new idLexer(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT);
-            idToken token = new idToken();
+            final idLexer parser = new idLexer(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT);
+            final idToken token = new idToken();
             int numFrames;
             int numCuts;
             int i;
             idStr filename;
             final String key;
 
-            key = spawnArgs.GetString("anim");
+            key = this.spawnArgs.GetString("anim");
             if (null == key) {
-                gameLocal.Error("Missing 'anim' key on '%s'", name);
+                gameLocal.Error("Missing 'anim' key on '%s'", this.name);
             }
 
-            filename = new idStr(spawnArgs.GetString(va("anim %s", key)));
+            filename = new idStr(this.spawnArgs.GetString(va("anim %s", key)));
             if (0 == filename.Length()) {
-                gameLocal.Error("Missing 'anim %s' key on '%s'", key, name);
+                gameLocal.Error("Missing 'anim %s' key on '%s'", key, this.name);
             }
 
             filename.SetFileExtension(MD5_CAMERA_EXT);
             if (!parser.LoadFile(filename)) {
-                gameLocal.Error("Unable to load '%s' on '%s'", filename, name);
+                gameLocal.Error("Unable to load '%s' on '%s'", filename, this.name);
             }
 
-            cameraCuts.Clear();
-            cameraCuts.SetGranularity(1);
-            camera.Clear();
-            camera.SetGranularity(1);
+            this.cameraCuts.Clear();
+            this.cameraCuts.SetGranularity(1);
+            this.camera.Clear();
+            this.camera.SetGranularity(1);
 
             parser.ExpectTokenString(MD5_VERSION_STRING);
             version = parser.ParseInt();
@@ -601,9 +602,9 @@ public class Camera {
 
             // parse framerate
             parser.ExpectTokenString("frameRate");
-            frameRate = parser.ParseInt();
-            if (frameRate <= 0) {
-                parser.Error("Invalid framerate: %d", frameRate);
+            this.frameRate = parser.ParseInt();
+            if (this.frameRate <= 0) {
+                parser.Error("Invalid framerate: %d", this.frameRate);
             }
 
             // parse num cuts
@@ -616,10 +617,10 @@ public class Camera {
             // parse the camera cuts
             parser.ExpectTokenString("cuts");
             parser.ExpectTokenString("{");
-            cameraCuts.SetNum(numCuts);
+            this.cameraCuts.SetNum(numCuts);
             for (i = 0; i < numCuts; i++) {
-                cameraCuts.oSet(i, parser.ParseInt());
-                if ((cameraCuts.oGet(i) < 1) || (cameraCuts.oGet(i) >= numFrames)) {
+                this.cameraCuts.oSet(i, parser.ParseInt());
+                if ((this.cameraCuts.oGet(i) < 1) || (this.cameraCuts.oGet(i) >= numFrames)) {
                     parser.Error("Invalid camera cut");
                 }
             }
@@ -628,13 +629,13 @@ public class Camera {
             // parse the camera frames
             parser.ExpectTokenString("camera");
             parser.ExpectTokenString("{");
-            camera.SetNum(numFrames);
+            this.camera.SetNum(numFrames);
             for (i = 0; i < numFrames; i++) {
-                cameraFrame_t cam = new cameraFrame_t();
+                final cameraFrame_t cam = new cameraFrame_t();
                 parser.Parse1DMatrix(3, cam.t);
                 parser.Parse1DMatrix(3, cam.q);
                 cam.fov = parser.ParseFloat();
-                camera.oSet(i, cam);
+                this.camera.oSet(i, cam);
             }
             parser.ExpectTokenString("}");
 
@@ -692,8 +693,8 @@ public class Camera {
         }
 
         private void Event_SetCallback() {
-            if ((gameLocal.GetCamera() == this) && 0 == threadNum) {
-                threadNum = idThread.CurrentThreadNum();
+            if ((gameLocal.GetCamera() == this) && (0 == this.threadNum)) {
+                this.threadNum = idThread.CurrentThreadNum();
                 idThread.ReturnInt(true);
             } else {
                 idThread.ReturnInt(false);
@@ -701,8 +702,8 @@ public class Camera {
         }
 
         private void Event_Activate(idEventArg<idEntity> _activator) {
-            activator.oSet(_activator.value);
-            if ((thinkFlags & TH_THINK) != 0) {
+            this.activator.oSet(_activator.value);
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 Stop();
             } else {
                 Start();
@@ -728,5 +729,5 @@ public class Camera {
             return eventCallbacks;
         }
 
-    };
+    }
 }

@@ -39,25 +39,25 @@ public class AAS_routing {
         //
 
         public idRoutingCache(int size) {
-            areaNum = 0;
-            cluster = 0;
-            next = prev = null;
-            time_next = time_prev = null;
-            travelFlags = 0;
-            startTravelTime = 0;
-            type = 0;
+            this.areaNum = 0;
+            this.cluster = 0;
+            this.next = this.prev = null;
+            this.time_next = this.time_prev = null;
+            this.travelFlags = 0;
+            this.startTravelTime = 0;
+            this.type = 0;
             this.size = size;
-            reachabilities = new byte[size];
+            this.reachabilities = new byte[size];
 //	memset( reachabilities, 0, size * sizeof( reachabilities[0] ) );
-            travelTimes = new int[size];
+            this.travelTimes = new int[size];
 //	memset( travelTimes, 0, size * sizeof( travelTimes[0] ) );
         }
 
         // ~idRoutingCache( void );
         public int Size() {
-            return idRoutingCache.BYTES + size * Byte.BYTES + size * Short.BYTES;//TODO:we use integers for travelTimes, but are using shorts for the sake of consistency...
+            return idRoutingCache.BYTES + (this.size * Byte.BYTES) + (this.size * Short.BYTES);//TODO:we use integers for travelTimes, but are using shorts for the sake of consistency...
         }
-    };
+    }
 
     static class idRoutingUpdate {
         // friend class idAASLocal;
@@ -72,7 +72,7 @@ public class AAS_routing {
         boolean         isInList;        // true if the update is in the list
         //
         //
-    };
+    }
 
     static class idRoutingObstacle {
         // friend class idAASLocal;
@@ -84,5 +84,5 @@ public class AAS_routing {
 
         idRoutingObstacle() {
         }
-    };
+    }
 }

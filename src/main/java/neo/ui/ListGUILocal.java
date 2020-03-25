@@ -24,34 +24,34 @@ public class ListGUILocal {
     public static class idListGUILocal extends idListGUI {
 
         private idUserInterface m_pGUI;
-        private idStr m_name;
+        private final idStr m_name;
         private int m_water;
-        private idList<Integer> m_ids;
+        private final idList<Integer> m_ids;
         private boolean m_stateUpdates;
         //
         //
 
         public idListGUILocal() {
-            m_pGUI = null;
-            m_name = new idStr();
-            m_water = 0;
-            m_ids = new idList<>();
-            m_stateUpdates = true;
+            this.m_pGUI = null;
+            this.m_name = new idStr();
+            this.m_water = 0;
+            this.m_ids = new idList<>();
+            this.m_stateUpdates = true;
         }
         // idListGUI interface
 
         @Override
         public void Config(idUserInterface pGUI, final String name) {
-            m_pGUI = pGUI;
-            m_name.oSet("" + name);
+            this.m_pGUI = pGUI;
+            this.m_name.oSet("" + name);
         }
 
         @Override
         public void Add(int id, final idStr s) {
-            int i = m_ids.FindIndex(id);
+            final int i = this.m_ids.FindIndex(id);
             if (i == -1) {
                 Append(s);
-                m_ids.Append(id);
+                this.m_ids.Append(id);
             } else {
                 this.oSet(i, s);
             }
@@ -62,17 +62,17 @@ public class ListGUILocal {
         @Override
         public void Push(final idStr s) {
             Append(s);
-            m_ids.Append(m_ids.Num());
+            this.m_ids.Append(this.m_ids.Num());
             StateChanged();
         }
 
         @Override
         public boolean Del(int id) {
-            int i = m_ids.FindIndex(id);
+            final int i = this.m_ids.FindIndex(id);
             if (i == -1) {
                 return false;
             }
-            m_ids.RemoveIndex(i);
+            this.m_ids.RemoveIndex(i);
             this.RemoveIndex(i);
             StateChanged();
             return true;
@@ -80,9 +80,9 @@ public class ListGUILocal {
 
         @Override
         public void Clear() {
-            m_ids.Clear();
+            this.m_ids.Clear();
             super.Clear();
-            if (m_pGUI != null) {
+            if (this.m_pGUI != null) {
                 // will clear all the GUI variables and will set m_water back to 0
                 StateChanged();
             }
@@ -99,65 +99,65 @@ public class ListGUILocal {
 //                s[0] = '\0';
                 s[0] = "";
             }
-            int sel = m_pGUI.State().GetInt(va("%s_sel_%d", m_name, _sel), "-1");
-            if (sel == -1 || sel >= m_ids.Num()) {
+            int sel = this.m_pGUI.State().GetInt(va("%s_sel_%d", this.m_name, _sel), "-1");
+            if ((sel == -1) || (sel >= this.m_ids.Num())) {
                 return -1;
             }
             if (s != null) {
-                idStr.snPrintf(s, size, m_pGUI.State().GetString(va("%s_item_%d", m_name, sel), ""));
+                idStr.snPrintf(s, size, this.m_pGUI.State().GetString(va("%s_item_%d", this.m_name, sel), ""));
             }
             // don't let overflow
-            if (sel >= m_ids.Num()) {
+            if (sel >= this.m_ids.Num()) {
                 sel = 0;
             }
-            m_pGUI.SetStateInt(va("%s_selid_0", m_name), m_ids.oGet(sel));
-            return m_ids.oGet(sel);
+            this.m_pGUI.SetStateInt(va("%s_selid_0", this.m_name), this.m_ids.oGet(sel));
+            return this.m_ids.oGet(sel);
         }
 
         @Override
         public void SetSelection(int sel) {
-            m_pGUI.SetStateInt(va("%s_sel_0", m_name), sel);
+            this.m_pGUI.SetStateInt(va("%s_sel_0", this.m_name), sel);
             StateChanged();
         }
 
         @Override
         public int GetNumSelections() {
-            return m_pGUI.State().GetInt(va("%s_numsel", m_name));
+            return this.m_pGUI.State().GetInt(va("%s_numsel", this.m_name));
         }
 
         @Override
         public boolean IsConfigured() {
-            return m_pGUI != null;
+            return this.m_pGUI != null;
         }
 
         @Override
         public void SetStateChanges(boolean enable) {
-            m_stateUpdates = enable;
+            this.m_stateUpdates = enable;
             StateChanged();
         }
 
         @Override
         public void Shutdown() {
-            m_pGUI = null;
-            m_name.Clear();
+            this.m_pGUI = null;
+            this.m_name.Clear();
             Clear();
         }
 
         private void StateChanged() {
             int i;
 
-            if (!m_stateUpdates) {
+            if (!this.m_stateUpdates) {
                 return;
             }
 
             for (i = 0; i < Num(); i++) {
-                m_pGUI.SetStateString(va("%s_item_%d", m_name, i), this.oGet(i).getData());
+                this.m_pGUI.SetStateString(va("%s_item_%d", this.m_name, i), this.oGet(i).getData());
             }
-            for (i = Num(); i < m_water; i++) {
-                m_pGUI.SetStateString(va("%s_item_%d", m_name, i), "");
+            for (i = Num(); i < this.m_water; i++) {
+                this.m_pGUI.SetStateString(va("%s_item_%d", this.m_name, i), "");
             }
-            m_water = Num();
-            m_pGUI.StateChanged(com_frameTime);
+            this.m_water = Num();
+            this.m_pGUI.StateChanged(com_frameTime);
         }
-    };
+    }
 }

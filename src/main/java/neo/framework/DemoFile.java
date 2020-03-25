@@ -41,7 +41,7 @@ public class DemoFile {
         DS_RENDER,
         DS_SOUND,
         DS_VERSION
-    };
+    }
 
     public static class idDemoFile extends idFile {
 
@@ -64,79 +64,79 @@ public class DemoFile {
         //
 
         public idDemoFile() {
-            f = null;
-            fLog = null;
-            log = false;
-            fileImage = null;
-            compressor = null;
-            writing = false;
+            this.f = null;
+            this.fLog = null;
+            this.log = false;
+            this.fileImage = null;
+            this.compressor = null;
+            this.writing = false;
         }
 //					~idDemoFile();
 
         @Override
         public String GetName() {
-            return (f != null ? f.GetName() : "");
+            return (this.f != null ? this.f.GetName() : "");
         }
 
         @Override
         public String GetFullPath() {
-            return (f != null ? f.GetFullPath() : "");
+            return (this.f != null ? this.f.GetFullPath() : "");
         }
 
         public void SetLog(boolean b, final String p) {
-            log = b;
+            this.log = b;
             if (p != null) {
-                logStr = new idStr(p);
+                this.logStr = new idStr(p);
             }
         }
 
         public void Log(final String p) {
-            if (fLog != null && p != null && !p.isEmpty()) {
-                fLog.WriteString(p/*, strlen(p)*/);
+            if ((this.fLog != null) && (p != null) && !p.isEmpty()) {
+                this.fLog.WriteString(p/*, strlen(p)*/);
             }
         }
         static final int magicLen = DEMO_MAGIC.length();
 
         public boolean OpenForReading(final String fileName) {
-            ByteBuffer magicBuffer = ByteBuffer.allocate(magicLen);
-            int[] compression = new int[1];
+            final ByteBuffer magicBuffer = ByteBuffer.allocate(magicLen);
+            final int[] compression = new int[1];
             int fileLength;
 
             Close();
 
-            f = fileSystem.OpenFileRead(fileName);
-            if (null == f) {
+            this.f = fileSystem.OpenFileRead(fileName);
+            if (null == this.f) {
                 return false;
             }
 
-            fileLength = f.Length();
+            fileLength = this.f.Length();
 
             if (com_preloadDemos.GetBool()) {
-                fileImage = ByteBuffer.allocate(fileLength);// Mem_Alloc(fileLength);
-                f.Read(fileImage, fileLength);
-                fileSystem.CloseFile(f);
-                f = new idFile_Memory(va("preloaded(%s)", fileName), fileImage, fileLength);//TODO:should fileImage be a reference??
+                this.fileImage = ByteBuffer.allocate(fileLength);// Mem_Alloc(fileLength);
+                this.f.Read(this.fileImage, fileLength);
+                fileSystem.CloseFile(this.f);
+                this.f = new idFile_Memory(va("preloaded(%s)", fileName), this.fileImage, fileLength);//TODO:should fileImage be a reference??
             }
 
             if (com_logDemos.GetBool()) {
-                fLog = fileSystem.OpenFileWrite("demoread.log");
+                this.fLog = fileSystem.OpenFileWrite("demoread.log");
             }
 
-            writing = false;
+            this.writing = false;
 
-            f.Read(magicBuffer);//, magicLen);
+            this.f.Read(magicBuffer);//, magicLen);
             if (DEMO_MAGIC.equals(new String(magicBuffer.array()).substring(0, magicLen))) {
 //	if ( memcmp(magicBuffer, DEMO_MAGIC, magicLen) == 0 ) {
-                f.ReadInt(compression);
+                this.f.ReadInt(compression);
             } else {
                 // Ideally we would error out if the magic string isn't there,
                 // but for backwards compatibility we are going to assume it's just an uncompressed demo file
                 compression[0] = 0;
-                f.Rewind();
+                this.f.Rewind();
             }
 
-            compressor = AllocCompressor(compression[0]);
-            compressor.Init(f, false, 8);
+            this.compressor = AllocCompressor(compression[0]);
+            this.compressor.Init(this.f, false, 8);
 
             return true;
         }
@@ -144,58 +144,58 @@ public class DemoFile {
         public boolean OpenForWriting(final String fileName) {
             Close();
 
-            f = fileSystem.OpenFileWrite(fileName);
-            if (f == null) {
+            this.f = fileSystem.OpenFileWrite(fileName);
+            if (this.f == null) {
                 return false;
             }
 
             if (com_logDemos.GetBool()) {
-                fLog = fileSystem.OpenFileWrite("demowrite.log");
+                this.fLog = fileSystem.OpenFileWrite("demowrite.log");
             }
 
-            writing = true;
+            this.writing = true;
 
-            f.WriteString(DEMO_MAGIC/*, sizeof(DEMO_MAGIC)*/);
-            f.WriteInt(com_compressDemos.GetInteger());
-            f.Flush();
+            this.f.WriteString(DEMO_MAGIC/*, sizeof(DEMO_MAGIC)*/);
+            this.f.WriteInt(com_compressDemos.GetInteger());
+            this.f.Flush();
 
-            compressor = AllocCompressor(com_compressDemos.GetInteger());
-            compressor.Init(f, true, 8);
+            this.compressor = AllocCompressor(com_compressDemos.GetInteger());
+            this.compressor.Init(this.f, true, 8);
 
             return true;
         }
 
         public void Close() {
-            if (writing && compressor != null) {
-                compressor.FinishCompress();
+            if (this.writing && (this.compressor != null)) {
+                this.compressor.FinishCompress();
             }
 
-            if (f != null) {
-                fileSystem.CloseFile(f);
-                f = null;
+            if (this.f != null) {
+                fileSystem.CloseFile(this.f);
+                this.f = null;
             }
-            if (fLog != null) {
-                fileSystem.CloseFile(fLog);
-                fLog = null;
+            if (this.fLog != null) {
+                fileSystem.CloseFile(this.fLog);
+                this.fLog = null;
             }
-            if (fileImage != null) {
+            if (this.fileImage != null) {
 //                Mem_Free(fileImage);
-                fileImage = null;
+                this.fileImage = null;
             }
-            if (compressor != null) {
+            if (this.compressor != null) {
 //		delete compressor;
-                compressor = null;
+                this.compressor = null;
             }
 
-            demoStrings.DeleteContents(true);
+            this.demoStrings.DeleteContents(true);
         }
 
         public String ReadHashString() throws idException {
-            int[] index = new int[1];
+            final int[] index = new int[1];
 
-            if (log && fLog != null) {
-                final String text = va("%s > Reading hash string\n", logStr.getData());
-                fLog.WriteString(text);
+            if (this.log && (this.fLog != null)) {
+                final String text = va("%s > Reading hash string\n", this.logStr.getData());
+                this.fLog.WriteString(text);
             }
 
             ReadInt(index);
@@ -204,48 +204,48 @@ public class DemoFile {
                 // read a new string for the table
                 idStr str;
 
-                idStr data = new idStr();
+                final idStr data = new idStr();
                 ReadString(data);
                 str = data;
 
-                demoStrings.Append(str);
+                this.demoStrings.Append(str);
 
                 return str.getData();
             }
 
-            if (index[0] < -1 || index[0] >= demoStrings.Num()) {
+            if ((index[0] < -1) || (index[0] >= this.demoStrings.Num())) {
                 Close();
                 common.Error("demo hash index out of range");
             }
 
-            return demoStrings.oGet(index[0]).getData();//TODO:return c_str?
+            return this.demoStrings.oGet(index[0]).getData();//TODO:return c_str?
         }
 
         public void WriteHashString(final String str) {
-            if (log && fLog != null) {
-                final String text = va("%s > Writing hash string\n", logStr.getData());
-                fLog.WriteString(text);
+            if (this.log && (this.fLog != null)) {
+                final String text = va("%s > Writing hash string\n", this.logStr.getData());
+                this.fLog.WriteString(text);
             }
             // see if it is already in the has table
-            for (int i = 0; i < demoStrings.Num(); i++) {
-                if (demoStrings.oGet(i).getData().equals(str)) {
+            for (int i = 0; i < this.demoStrings.Num(); i++) {
+                if (this.demoStrings.oGet(i).getData().equals(str)) {
                     WriteInt(i);
                     return;
                 }
             }
 
             // add it to our table and the demo table
-            idStr copy = new idStr(str);
+            final idStr copy = new idStr(str);
 //common.Printf( "hash:%i = %s\n", demoStrings.Num(), str );
-            demoStrings.Append(copy);
-            int cmd = -1;
+            this.demoStrings.Append(copy);
+            final int cmd = -1;
             WriteInt(cmd);
             WriteString(str);
         }
 
         public void ReadDict(idDict dict) throws idException {
             int i;
-            int[] c = new int[1];
+            final int[] c = new int[1];
             String key, val;
 
             dict.Clear();
@@ -270,8 +270,8 @@ public class DemoFile {
 
         @Override
         public int Read(ByteBuffer buffer, int len) {
-            int read = compressor.Read(buffer, len);
-            if (read == 0 && len >= 4) {
+            final int read = this.compressor.Read(buffer, len);
+            if ((read == 0) && (len >= 4)) {
 //                *(demoSystem_t *)buffer = DS_FINISHED;
                 buffer.putInt(DS_FINISHED.ordinal());
             }
@@ -280,7 +280,7 @@ public class DemoFile {
 
         @Override
         public int Write(final ByteBuffer buffer, int len) {
-            return compressor.Write(buffer, len);
+            return this.compressor.Write(buffer, len);
         }
 
         private static idCompressor AllocCompressor(int type) {
@@ -297,5 +297,5 @@ public class DemoFile {
             }
         }
 
-    };
+    }
 }

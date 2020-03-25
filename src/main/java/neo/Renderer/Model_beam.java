@@ -75,7 +75,7 @@ public class Model_beam {
                 cachedModel = null;
             }
 
-            if (renderEntity == null || viewDef == null) {
+            if ((renderEntity == null) || (viewDef == null)) {
 //		delete cachedModel;
                 return null;
             }
@@ -129,31 +129,31 @@ public class Model_beam {
                 staticModel.AddSurface(surf);
             }
 
-            idVec3 target = /*reinterpret_cast<const idVec3 *>*/ new idVec3(renderEntity.shaderParms, SHADERPARM_BEAM_END_X);
+            final idVec3 target = /*reinterpret_cast<const idVec3 *>*/ new idVec3(renderEntity.shaderParms, SHADERPARM_BEAM_END_X);
 
             // we need the view direction to project the minor axis of the tube
             // as the view changes
-            idVec3 localView = new idVec3(), localTarget = new idVec3();
-            float[] modelMatrix = new float[16];
+            final idVec3 localView = new idVec3(), localTarget = new idVec3();
+            final float[] modelMatrix = new float[16];
             R_AxisToModelMatrix(renderEntity.axis, renderEntity.origin, modelMatrix);
             R_GlobalPointToLocal(modelMatrix, viewDef.renderView.vieworg, localView);
             R_GlobalPointToLocal(modelMatrix, target, localTarget);
 
-            idVec3 major = localTarget;
-            idVec3 minor = new idVec3();
+            final idVec3 major = localTarget;
+            final idVec3 minor = new idVec3();
 
-            idVec3 mid = localTarget.oMultiply(0.5f);
-            idVec3 dir = mid.oMinus(localView);
+            final idVec3 mid = localTarget.oMultiply(0.5f);
+            final idVec3 dir = mid.oMinus(localView);
             minor.Cross(major, dir);
             minor.Normalize();
             if (renderEntity.shaderParms[SHADERPARM_BEAM_WIDTH] != 0.0f) {
                 minor.oMulSet(renderEntity.shaderParms[SHADERPARM_BEAM_WIDTH] * 0.5f);
             }
 
-            byte red = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_RED] * 255.0f);
-            byte green = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_GREEN] * 255.0f);
-            byte blue = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_BLUE] * 255.0f);
-            byte alpha = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
+            final byte red = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_RED] * 255.0f);
+            final byte green = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_GREEN] * 255.0f);
+            final byte blue = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_BLUE] * 255.0f);
+            final byte alpha = (byte) idMath.FtoiFast(renderEntity.shaderParms[SHADERPARM_ALPHA] * 255.0f);
 
             tri.verts[0].xyz = minor;
             tri.verts[0].color[0] = red;
@@ -188,15 +188,15 @@ public class Model_beam {
 
         @Override
         public idBounds Bounds(renderEntity_s renderEntity) {
-            idBounds b = new idBounds();
+            final idBounds b = new idBounds();
 
             b.Zero();
             if (null == renderEntity) {
                 b.ExpandSelf(8.0f);
             } else {
-                idVec3 target = /* * reinterpret_cast<const idVec3 *>*/ new idVec3(renderEntity.shaderParms, SHADERPARM_BEAM_END_X);
-                idVec3 localTarget = new idVec3();
-                float[] modelMatrix = new float[16];
+                final idVec3 target = /* * reinterpret_cast<const idVec3 *>*/ new idVec3(renderEntity.shaderParms, SHADERPARM_BEAM_END_X);
+                final idVec3 localTarget = new idVec3();
+                final float[] modelMatrix = new float[16];
                 R_AxisToModelMatrix(renderEntity.axis, renderEntity.origin, modelMatrix);
                 R_GlobalPointToLocal(modelMatrix, target, localTarget);
 
@@ -207,5 +207,5 @@ public class Model_beam {
             }
             return b;
         }
-    };
+    }
 }

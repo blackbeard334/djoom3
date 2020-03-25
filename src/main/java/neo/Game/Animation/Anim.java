@@ -69,7 +69,7 @@ public class Anim {
         int   frame2;
         float frontlerp;
         float backlerp;
-    };
+    }
 
     public static final class jointAnimInfo_t {
 
@@ -77,14 +77,14 @@ public class Anim {
         int parentNum;
         int animBits;
         int firstComponent;
-    };
+    }
 
     public static final class jointInfo_t {
 
         int/*jointHandle_t*/ num;
         int/*jointHandle_t*/ parentNum;
         int channel;
-    };
+    }
 
     //
 // joint modifier modes.  make sure to change script/doom_defs.script if you add any, or change their order.
@@ -96,7 +96,7 @@ public class Anim {
         JOINTMOD_LOCAL_OVERRIDE, // sets the joint's position or orientation in joint local space
         JOINTMOD_WORLD, // modifies joint's position or orientation in model space
         JOINTMOD_WORLD_OVERRIDE        // sets the joint's position or orientation in model space
-    };
+    }
 
     public static final class jointMod_t {
 
@@ -110,7 +110,7 @@ public class Anim {
             this.mat = new idMat3();
             this.pos = new idVec3();
         }
-    };
+    }
     public static final int ANIM_TX = (1 << 0);// BIT(0);
     public static final int ANIM_TY = (1 << 1);// BIT(1);
     public static final int ANIM_TZ = (1 << 2);// BIT(2);
@@ -161,13 +161,13 @@ public class Anim {
         FC_DISABLE_LEG_IK,
         FC_RECORDDEMO,
         FC_AVIGAME
-    };
+    }
 
     public static final class frameLookup_t {
 
         int num;
         int firstCommand;
-    };
+    }
 
     public static final class frameCommand_t {
 
@@ -180,7 +180,7 @@ public class Anim {
         public idDeclSkin    skin;
         public int           index;
         // };
-    };
+    }
 
     public static final class animFlags_t {
 
@@ -188,7 +188,7 @@ public class Anim {
         public boolean random_cycle_start;//: 1;
         public boolean ai_no_turn;//: 1;
         public boolean anim_turn;//: 1;
-    };
+    }
 
     /*
      ==============================================================================================
@@ -204,56 +204,56 @@ public class Anim {
         private int                     animLength;
         private int                     numJoints;
         private int                     numAnimatedComponents;
-        private idList<idBounds>        bounds;
-        private idList<jointAnimInfo_t> jointInfo;
-        private idList<idJointQuat>     baseFrame;
-        private idList<Float>           componentFrames;
-        private idStr                   name;
-        private idVec3                  totaldelta;
+        private final idList<idBounds>        bounds;
+        private final idList<jointAnimInfo_t> jointInfo;
+        private final idList<idJointQuat>     baseFrame;
+        private final idList<Float>           componentFrames;
+        private final idStr                   name;
+        private final idVec3                  totaldelta;
         private int                     ref_count;
 //
 //
 
         public idMD5Anim() {
-            ref_count = 0;
-            numFrames = 0;
-            numJoints = 0;
-            frameRate = 24;
-            animLength = 0;
-            bounds = new idList<>();
-            jointInfo = new idList<>();
-            baseFrame = new idList<>();
-            componentFrames = new idList<>();
-            name = new idStr();
-            totaldelta = new idVec3();
+            this.ref_count = 0;
+            this.numFrames = 0;
+            this.numJoints = 0;
+            this.frameRate = 24;
+            this.animLength = 0;
+            this.bounds = new idList<>();
+            this.jointInfo = new idList<>();
+            this.baseFrame = new idList<>();
+            this.componentFrames = new idList<>();
+            this.name = new idStr();
+            this.totaldelta = new idVec3();
         }
         // ~idMD5Anim();
 
         public void Free() {
-            numFrames = 0;
-            numJoints = 0;
-            frameRate = 24;
-            animLength = 0;
-            name.oSet("");
+            this.numFrames = 0;
+            this.numJoints = 0;
+            this.frameRate = 24;
+            this.animLength = 0;
+            this.name.oSet("");
 
-            totaldelta.Zero();
+            this.totaldelta.Zero();
 
-            jointInfo.Clear();
-            bounds.Clear();
-            componentFrames.Clear();
+            this.jointInfo.Clear();
+            this.bounds.Clear();
+            this.componentFrames.Clear();
         }
 
         public boolean Reload() {
             String filename;
 
-            filename = name.getData();
+            filename = this.name.getData();
             Free();
 
             return LoadAnim(filename);
         }
 
         public int/*size_t*/ Allocated() {
-            int/*size_t*/ size = bounds.Allocated() + jointInfo.Allocated() + componentFrames.Allocated() + name.Allocated();
+            final int/*size_t*/ size = this.bounds.Allocated() + this.jointInfo.Allocated() + this.componentFrames.Allocated() + this.name.Allocated();
             return size;
         }
 
@@ -263,8 +263,8 @@ public class Anim {
 
         public boolean LoadAnim(final String filename) throws idException {
             int version;
-            idLexer parser = new idLexer(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT);
-            idToken token = new idToken();
+            final idLexer parser = new idLexer(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT);
+            final idToken token = new idToken();
             int i, j;
             int num;
 
@@ -274,7 +274,7 @@ public class Anim {
 
             Free();
 
-            name.oSet(filename);
+            this.name.oSet(filename);
 
             parser.ExpectTokenString(MD5_VERSION_STRING);
             version = parser.ParseInt();
@@ -288,40 +288,40 @@ public class Anim {
 
             // parse num frames
             parser.ExpectTokenString("numFrames");
-            numFrames = parser.ParseInt();
-            if (numFrames <= 0) {
-                parser.Error("Invalid number of frames: %d", numFrames);
+            this.numFrames = parser.ParseInt();
+            if (this.numFrames <= 0) {
+                parser.Error("Invalid number of frames: %d", this.numFrames);
             }
 
             // parse num joints
             parser.ExpectTokenString("numJoints");
-            numJoints = parser.ParseInt();
-            if (numJoints <= 0) {
-                parser.Error("Invalid number of joints: %d", numJoints);
+            this.numJoints = parser.ParseInt();
+            if (this.numJoints <= 0) {
+                parser.Error("Invalid number of joints: %d", this.numJoints);
             }
 
             // parse frame rate
             parser.ExpectTokenString("frameRate");
-            frameRate = parser.ParseInt();
-            if (frameRate < 0) {
-                parser.Error("Invalid frame rate: %d", frameRate);
+            this.frameRate = parser.ParseInt();
+            if (this.frameRate < 0) {
+                parser.Error("Invalid frame rate: %d", this.frameRate);
             }
 
             // parse number of animated components
             parser.ExpectTokenString("numAnimatedComponents");
-            numAnimatedComponents = parser.ParseInt();
-            if ((numAnimatedComponents < 0) || (numAnimatedComponents > numJoints * 6)) {
-                parser.Error("Invalid number of animated components: %d", numAnimatedComponents);
+            this.numAnimatedComponents = parser.ParseInt();
+            if ((this.numAnimatedComponents < 0) || (this.numAnimatedComponents > (this.numJoints * 6))) {
+                parser.Error("Invalid number of animated components: %d", this.numAnimatedComponents);
             }
 
             // parse the hierarchy
-            jointInfo.SetGranularity(1);
-            jointInfo.SetNum(numJoints);
+            this.jointInfo.SetGranularity(1);
+            this.jointInfo.SetNum(this.numJoints);
             parser.ExpectTokenString("hierarchy");
             parser.ExpectTokenString("{");
-            for (i = 0; i < numJoints; i++) {
+            for (i = 0; i < this.numJoints; i++) {
                 parser.ReadToken(token);
-                final jointAnimInfo_t joint = jointInfo.oSet(i, new jointAnimInfo_t());
+                final jointAnimInfo_t joint = this.jointInfo.oSet(i, new jointAnimInfo_t());
                 joint.nameIndex = animationLib.JointIndex(token.getData());
 
                 // parse parent num
@@ -342,7 +342,7 @@ public class Anim {
 
                 // parse first component
                 joint.firstComponent = parser.ParseInt();
-                if ((numAnimatedComponents > 0) && ((joint.firstComponent < 0) || (joint.firstComponent >= numAnimatedComponents))) {
+                if ((this.numAnimatedComponents > 0) && ((joint.firstComponent < 0) || (joint.firstComponent >= this.numAnimatedComponents))) {
                     parser.Error("Invalid first component: %d", joint.firstComponent);
                 }
             }
@@ -352,23 +352,23 @@ public class Anim {
             // parse bounds
             parser.ExpectTokenString("bounds");
             parser.ExpectTokenString("{");
-            bounds.SetGranularity(1);
-            bounds.SetNum(numFrames);
-            for (i = 0; i < numFrames; i++) {
-                final idBounds bound = bounds.oSet(i, new idBounds());
+            this.bounds.SetGranularity(1);
+            this.bounds.SetNum(this.numFrames);
+            for (i = 0; i < this.numFrames; i++) {
+                final idBounds bound = this.bounds.oSet(i, new idBounds());
                 parser.Parse1DMatrix(3, bound.oGet(0));
                 parser.Parse1DMatrix(3, bound.oGet(1));
             }
             parser.ExpectTokenString("}");
 
             // parse base frame
-            baseFrame.SetGranularity(1);
-            baseFrame.SetNum(numJoints);
+            this.baseFrame.SetGranularity(1);
+            this.baseFrame.SetNum(this.numJoints);
             parser.ExpectTokenString("baseframe");
             parser.ExpectTokenString("{");
-            for (i = 0; i < numJoints; i++) {
-                idCQuat q = new idCQuat();
-                final idJointQuat frame = baseFrame.oSet(i, new idJointQuat());
+            for (i = 0; i < this.numJoints; i++) {
+                final idCQuat q = new idCQuat();
+                final idJointQuat frame = this.baseFrame.oSet(i, new idJointQuat());
                 parser.Parse1DMatrix(3, frame.t);
                 parser.Parse1DMatrix(3, q);
                 frame.q.oSet(q.ToQuat());
@@ -376,11 +376,11 @@ public class Anim {
             parser.ExpectTokenString("}");
 
             // parse frames
-            componentFrames.SetGranularity(1);
-            componentFrames.SetNum(numAnimatedComponents * numFrames);
+            this.componentFrames.SetGranularity(1);
+            this.componentFrames.SetNum(this.numAnimatedComponents * this.numFrames);
 
             int c_ptr = 0;
-            for (i = 0; i < numFrames; i++) {
+            for (i = 0; i < this.numFrames; i++) {
                 parser.ExpectTokenString("frame");
                 num = parser.ParseInt();
                 if (num != i) {
@@ -388,8 +388,8 @@ public class Anim {
                 }
                 parser.ExpectTokenString("{");
 
-                for (j = 0; j < numAnimatedComponents; j++, c_ptr++) {
-                    componentFrames.oSet(c_ptr, parser.ParseFloat());
+                for (j = 0; j < this.numAnimatedComponents; j++, c_ptr++) {
+                    this.componentFrames.oSet(c_ptr, parser.ParseFloat());
                 }
 
                 parser.ExpectTokenString("}");
@@ -397,44 +397,44 @@ public class Anim {
             
 
             // get total move delta
-            if (0 == numAnimatedComponents) {
-                totaldelta.Zero();
+            if (0 == this.numAnimatedComponents) {
+                this.totaldelta.Zero();
             } else {
-                c_ptr = jointInfo.oGet(0).firstComponent;
-                if ((jointInfo.oGet(0).animBits & ANIM_TX) != 0) {
-                    for (i = 0; i < numFrames; i++) {
-                        final int index = c_ptr + numAnimatedComponents * i;
-                        componentFrames.oSet(index, componentFrames.oGet(index) - baseFrame.oGet(0).t.x);
+                c_ptr = this.jointInfo.oGet(0).firstComponent;
+                if ((this.jointInfo.oGet(0).animBits & ANIM_TX) != 0) {
+                    for (i = 0; i < this.numFrames; i++) {
+                        final int index = c_ptr + (this.numAnimatedComponents * i);
+                        this.componentFrames.oSet(index, this.componentFrames.oGet(index) - this.baseFrame.oGet(0).t.x);
                     }
-                    totaldelta.x = componentFrames.oGet(numAnimatedComponents * (numFrames - 1));
+                    this.totaldelta.x = this.componentFrames.oGet(this.numAnimatedComponents * (this.numFrames - 1));
                     c_ptr++;
                 } else {
-                    totaldelta.x = 0.0f;
+                    this.totaldelta.x = 0.0f;
                 }
-                if ((jointInfo.oGet(0).animBits & ANIM_TY) != 0) {
-                    for (i = 0; i < numFrames; i++) {
-                        final int index = c_ptr + numAnimatedComponents * i;
-                        componentFrames.oSet(index, componentFrames.oGet(index) - baseFrame.oGet(0).t.y);
+                if ((this.jointInfo.oGet(0).animBits & ANIM_TY) != 0) {
+                    for (i = 0; i < this.numFrames; i++) {
+                        final int index = c_ptr + (this.numAnimatedComponents * i);
+                        this.componentFrames.oSet(index, this.componentFrames.oGet(index) - this.baseFrame.oGet(0).t.y);
                     }
-                    totaldelta.y = componentFrames.oGet(c_ptr + numAnimatedComponents * (numFrames - 1));
+                    this.totaldelta.y = this.componentFrames.oGet(c_ptr + (this.numAnimatedComponents * (this.numFrames - 1)));
                     c_ptr++;
                 } else {
-                    totaldelta.y = 0.0f;
+                    this.totaldelta.y = 0.0f;
                 }
-                if ((jointInfo.oGet(0).animBits & ANIM_TZ) != 0) {
-                    for (i = 0; i < numFrames; i++) {
-                        final int index = c_ptr + numAnimatedComponents * i;
-                        componentFrames.oSet(index, componentFrames.oGet(index) - baseFrame.oGet(0).t.z);
+                if ((this.jointInfo.oGet(0).animBits & ANIM_TZ) != 0) {
+                    for (i = 0; i < this.numFrames; i++) {
+                        final int index = c_ptr + (this.numAnimatedComponents * i);
+                        this.componentFrames.oSet(index, this.componentFrames.oGet(index) - this.baseFrame.oGet(0).t.z);
                     }
-                    totaldelta.z = componentFrames.oGet(c_ptr + numAnimatedComponents * (numFrames - 1));
+                    this.totaldelta.z = this.componentFrames.oGet(c_ptr + (this.numAnimatedComponents * (this.numFrames - 1)));
                 } else {
-                    totaldelta.z = 0.0f;
+                    this.totaldelta.z = 0.0f;
                 }
             }
-            baseFrame.oGet(0).t.Zero();
+            this.baseFrame.oGet(0).t.Zero();
 
             // we don't count last frame because it would cause a 1 frame pause at the end
-            animLength = ((numFrames - 1) * 1000 + frameRate - 1) / frameRate;
+            this.animLength = ((((this.numFrames - 1) * 1000) + this.frameRate) - 1) / this.frameRate;
 
             // done
             return true;
@@ -445,15 +445,15 @@ public class Anim {
         }
 
         public void IncreaseRefs() {
-            ref_count++;
+            this.ref_count++;
         }
 
         public void DecreaseRefs() {
-            ref_count--;
+            this.ref_count--;
         }
 
         public int NumRefs() {
-            return ref_count;
+            return this.ref_count;
         }
 
         public void CheckModelHierarchy(final idRenderModel model) {
@@ -461,23 +461,23 @@ public class Anim {
             int jointNum;
             int parent;
 
-            if (jointInfo.Num() != model.NumJoints()) {
-                gameLocal.Error("Model '%s' has different # of joints than anim '%s'", model.Name(), name);
+            if (this.jointInfo.Num() != model.NumJoints()) {
+                gameLocal.Error("Model '%s' has different # of joints than anim '%s'", model.Name(), this.name);
             }
 
             final idMD5Joint[] modelJoints = model.GetJoints();
-            for (i = 0; i < jointInfo.Num(); i++) {
-                jointNum = jointInfo.oGet(i).nameIndex;
+            for (i = 0; i < this.jointInfo.Num(); i++) {
+                jointNum = this.jointInfo.oGet(i).nameIndex;
                 if (!modelJoints[ i].name.equals(animationLib.JointName(jointNum))) {
-                    gameLocal.Error("Model '%s''s joint names don't match anim '%s''s", model.Name(), name);
+                    gameLocal.Error("Model '%s''s joint names don't match anim '%s''s", model.Name(), this.name);
                 }
                 if (modelJoints[i].parent != null) {
                     parent = indexOf(modelJoints[i].parent, modelJoints);
                 } else {
                     parent = -1;
                 }
-                if (parent != jointInfo.oGet(i).parentNum) {
-                    gameLocal.Error("Model '%s' has deleteifferent joint hierarchy than anim '%s'", model.Name(), name);
+                if (parent != this.jointInfo.oGet(i).parentNum) {
+                    gameLocal.Error("Model '%s' has deleteifferent joint hierarchy than anim '%s'", model.Name(), this.name);
                 }
             }
         }
@@ -497,28 +497,28 @@ public class Anim {
             int[] lerpIndex;
 
             // copy the baseframe
-            SIMDProcessor.Memcpy(joints, baseFrame.Ptr(idJointQuat[].class), baseFrame.Num() /* sizeof( baseFrame[ 0 ] )*/);
+            SIMDProcessor.Memcpy(joints, this.baseFrame.Ptr(idJointQuat[].class), this.baseFrame.Num() /* sizeof( baseFrame[ 0 ] )*/);
 
-            if (0 == numAnimatedComponents) {
+            if (0 == this.numAnimatedComponents) {
                 // just use the base frame
                 return;
             }
 
-            blendJoints = new idJointQuat[baseFrame.Num()];
-            lerpIndex = new int[baseFrame.Num()];
+            blendJoints = new idJointQuat[this.baseFrame.Num()];
+            lerpIndex = new int[this.baseFrame.Num()];
             numLerpJoints = 0;
 
 //	frame1 = componentFrames.Ptr()   ;
 //	frame2 = componentFrames.Ptr();
-            f1_ptr = frame.frame1 * numAnimatedComponents;
-            f2_ptr = frame.frame2 * numAnimatedComponents;
-            jointframe1 = jointframe2 = componentFrames.Ptr(Float[].class);
+            f1_ptr = frame.frame1 * this.numAnimatedComponents;
+            f2_ptr = frame.frame2 * this.numAnimatedComponents;
+            jointframe1 = jointframe2 = this.componentFrames.Ptr(Float[].class);
 
             for (i = 0; i < numIndexes; i++) {
-                int j = index[i];
+                final int j = index[i];
                 jointPtr = joints[j];
                 blendPtr = blendJoints[j] = new idJointQuat();
-                infoPtr = jointInfo.oGet(j);
+                infoPtr = this.jointInfo.oGet(j);
 
                 animBits = infoPtr.animBits;
                 if (animBits != 0) {
@@ -668,7 +668,7 @@ public class Anim {
             SIMDProcessor.BlendJoints(joints, blendJoints, frame.backlerp, lerpIndex, numLerpJoints);
 
             if (frame.cycleCount != 0) {
-                joints[0].t.oPluSet(totaldelta.oMultiply(frame.cycleCount));
+                joints[0].t.oPluSet(this.totaldelta.oMultiply(frame.cycleCount));
             }
         }
 
@@ -683,25 +683,25 @@ public class Anim {
             jointAnimInfo_t infoPtr;
 
             // copy the baseframe
-            SIMDProcessor.Memcpy(joints, baseFrame.Ptr(idJointQuat[].class), baseFrame.Num() /* sizeof( baseFrame[ 0 ] )*/);
+            SIMDProcessor.Memcpy(joints, this.baseFrame.Ptr(idJointQuat[].class), this.baseFrame.Num() /* sizeof( baseFrame[ 0 ] )*/);
 
-            if ((framenum == 0) || 0 == numAnimatedComponents) {
+            if ((framenum == 0) || (0 == this.numAnimatedComponents)) {
                 // just use the base frame
                 return;
             }
 
 //	frame = &componentFrames[ framenum * numAnimatedComponents ];
-            f_ptr = framenum * numAnimatedComponents;
+            f_ptr = framenum * this.numAnimatedComponents;
 
             for (i = 0; i < numIndexes; i++) {
-                int j = index[i];
+                final int j = index[i];
                 jointPtr = joints[j];
-                infoPtr = jointInfo.oGet(j);
+                infoPtr = this.jointInfo.oGet(j);
 
                 animBits = infoPtr.animBits;
                 if (animBits != 0) {
 
-                    jointframe = componentFrames.Ptr();
+                    jointframe = this.componentFrames.Ptr();
                     jf_ptr = f_ptr + infoPtr.firstComponent;
 
                     if ((animBits & (ANIM_TX | ANIM_TY | ANIM_TZ)) != 0) {
@@ -740,23 +740,23 @@ public class Anim {
         }
 
         public int Length() {
-            return animLength;
+            return this.animLength;
         }
 
         public int NumFrames() {
-            return numFrames;
+            return this.numFrames;
         }
 
         public int NumJoints() {
-            return numJoints;
+            return this.numJoints;
         }
 
         public idVec3 TotalMovementDelta() {
-            return totaldelta;
+            return this.totaldelta;
         }
 
         public String Name() {
-            return name.getData();
+            return this.name.getData();
         }
 
         public void GetFrameBlend(int framenum, frameBlend_t frame) {	// frame 1 is first frame
@@ -768,8 +768,8 @@ public class Anim {
             framenum--;
             if (framenum < 0) {
                 framenum = 0;
-            } else if (framenum >= numFrames) {
-                framenum = numFrames - 1;
+            } else if (framenum >= this.numFrames) {
+                framenum = this.numFrames - 1;
             }
 
             frame.frame1 = framenum;
@@ -780,7 +780,7 @@ public class Anim {
             int frameTime;
             int frameNum;
 
-            if (numFrames <= 1) {
+            if (this.numFrames <= 1) {
                 frame.frame1 = 0;
                 frame.frame2 = 0;
                 frame.backlerp = 0.0f;
@@ -798,22 +798,22 @@ public class Anim {
                 return;
             }
 
-            frameTime = time * frameRate;
+            frameTime = time * this.frameRate;
             frameNum = frameTime / 1000;
-            frame.cycleCount = frameNum / (numFrames - 1);
+            frame.cycleCount = frameNum / (this.numFrames - 1);
 
             if ((cyclecount > 0) && (frame.cycleCount >= cyclecount)) {
                 frame.cycleCount = cyclecount - 1;
-                frame.frame1 = numFrames - 1;
+                frame.frame1 = this.numFrames - 1;
                 frame.frame2 = frame.frame1;
                 frame.backlerp = 0.0f;
                 frame.frontlerp = 1.0f;
                 return;
             }
 
-            frame.frame1 = frameNum % (numFrames - 1);
+            frame.frame1 = frameNum % (this.numFrames - 1);
             frame.frame2 = frame.frame1 + 1;
-            if (frame.frame2 >= numFrames) {
+            if (frame.frame2 >= this.numFrames) {
                 frame.frame2 = 0;
             }
 
@@ -822,61 +822,61 @@ public class Anim {
         }
 
         public void GetOrigin(idVec3 offset, int time, int cyclecount) {
-            frameBlend_t frame = new frameBlend_t();
+            final frameBlend_t frame = new frameBlend_t();
             int c1_ptr, c2_ptr;
 
-            offset.oSet(baseFrame.oGet(0).t);
-            if (0 == (jointInfo.oGet(0).animBits & (ANIM_TX | ANIM_TY | ANIM_TZ))) {
+            offset.oSet(this.baseFrame.oGet(0).t);
+            if (0 == (this.jointInfo.oGet(0).animBits & (ANIM_TX | ANIM_TY | ANIM_TZ))) {
                 // just use the baseframe		
                 return;
             }
 
             ConvertTimeToFrame(time, cyclecount, frame);
 
-            Float[] componentPtr1 = componentFrames.Ptr(Float[].class);
-            c1_ptr = numAnimatedComponents * frame.frame1 + jointInfo.oGet(0).firstComponent;
-            Float[] componentPtr2 = componentFrames.Ptr(Float[].class);
-            c2_ptr = numAnimatedComponents * frame.frame2 + jointInfo.oGet(0).firstComponent;
+            final Float[] componentPtr1 = this.componentFrames.Ptr(Float[].class);
+            c1_ptr = (this.numAnimatedComponents * frame.frame1) + this.jointInfo.oGet(0).firstComponent;
+            final Float[] componentPtr2 = this.componentFrames.Ptr(Float[].class);
+            c2_ptr = (this.numAnimatedComponents * frame.frame2) + this.jointInfo.oGet(0).firstComponent;
 
-            if ((jointInfo.oGet(0).animBits & ANIM_TX) != 0) {
-                offset.x = componentPtr1[c1_ptr] * frame.frontlerp + componentPtr2[c2_ptr] * frame.backlerp;
+            if ((this.jointInfo.oGet(0).animBits & ANIM_TX) != 0) {
+                offset.x = (componentPtr1[c1_ptr] * frame.frontlerp) + (componentPtr2[c2_ptr] * frame.backlerp);
                 c1_ptr++;
                 c2_ptr++;
             }
 
-            if ((jointInfo.oGet(0).animBits & ANIM_TY) != 0) {
-                offset.y = componentPtr1[c1_ptr] * frame.frontlerp + componentPtr2[c2_ptr] * frame.backlerp;
+            if ((this.jointInfo.oGet(0).animBits & ANIM_TY) != 0) {
+                offset.y = (componentPtr1[c1_ptr] * frame.frontlerp) + (componentPtr2[c2_ptr] * frame.backlerp);
                 c1_ptr++;
                 c2_ptr++;
             }
 
-            if ((jointInfo.oGet(0).animBits & ANIM_TZ) != 0) {
-                offset.z = componentPtr1[c1_ptr] * frame.frontlerp + componentPtr2[c2_ptr] * frame.backlerp;
+            if ((this.jointInfo.oGet(0).animBits & ANIM_TZ) != 0) {
+                offset.z = (componentPtr1[c1_ptr] * frame.frontlerp) + (componentPtr2[c2_ptr] * frame.backlerp);
             }
 
             if (frame.cycleCount != 0) {
-                offset.oPluSet(totaldelta.oMultiply(frame.cycleCount));
+                offset.oPluSet(this.totaldelta.oMultiply(frame.cycleCount));
             }
         }
 
         public void GetOriginRotation(idQuat rotation, int time, int cyclecount) {
-            frameBlend_t frame = new frameBlend_t();
+            final frameBlend_t frame = new frameBlend_t();
             int animBits;
             int j1_ptr, j2_ptr;
 
-            animBits = jointInfo.oGet(0).animBits;
+            animBits = this.jointInfo.oGet(0).animBits;
             if (NOT(animBits & (ANIM_QX | ANIM_QY | ANIM_QZ))) {
                 // just use the baseframe		
-                rotation.oSet(baseFrame.oGet(0).q);
+                rotation.oSet(this.baseFrame.oGet(0).q);
                 return;
             }
 
             ConvertTimeToFrame(time, cyclecount, frame);
 
-            Float[] jointframe1 = componentFrames.Ptr(Float[].class);
-            j1_ptr = numAnimatedComponents * frame.frame1 + jointInfo.oGet(0).firstComponent;
-            Float[] jointframe2 = componentFrames.Ptr(Float[].class);
-            j2_ptr = numAnimatedComponents * frame.frame2 + jointInfo.oGet(0).firstComponent;
+            final Float[] jointframe1 = this.componentFrames.Ptr(Float[].class);
+            j1_ptr = (this.numAnimatedComponents * frame.frame1) + this.jointInfo.oGet(0).firstComponent;
+            final Float[] jointframe2 = this.componentFrames.Ptr(Float[].class);
+            j2_ptr = (this.numAnimatedComponents * frame.frame2) + this.jointInfo.oGet(0).firstComponent;
 
             if ((animBits & ANIM_TX) != 0) {
                 j1_ptr++;
@@ -893,16 +893,16 @@ public class Anim {
                 j2_ptr++;
             }
 
-            idQuat q1 = new idQuat();
-            idQuat q2 = new idQuat();
+            final idQuat q1 = new idQuat();
+            final idQuat q2 = new idQuat();
 
             switch (animBits & (ANIM_QX | ANIM_QY | ANIM_QZ)) {
                 case ANIM_QX:
                     q1.x = jointframe1[j1_ptr + 0];
                     q2.x = jointframe2[j2_ptr + 0];
-                    q1.y = baseFrame.oGet(0).q.y;
+                    q1.y = this.baseFrame.oGet(0).q.y;
                     q2.y = q1.y;
-                    q1.z = baseFrame.oGet(0).q.z;
+                    q1.z = this.baseFrame.oGet(0).q.z;
                     q2.z = q1.z;
                     q1.w = q1.CalcW();
                     q2.w = q2.CalcW();
@@ -910,9 +910,9 @@ public class Anim {
                 case ANIM_QY:
                     q1.y = jointframe1[j1_ptr + 0];
                     q2.y = jointframe2[j2_ptr + 0];
-                    q1.x = baseFrame.oGet(0).q.x;
+                    q1.x = this.baseFrame.oGet(0).q.x;
                     q2.x = q1.x;
-                    q1.z = baseFrame.oGet(0).q.z;
+                    q1.z = this.baseFrame.oGet(0).q.z;
                     q2.z = q1.z;
                     q1.w = q1.CalcW();
                     q2.w = q2.CalcW();
@@ -920,9 +920,9 @@ public class Anim {
                 case ANIM_QZ:
                     q1.z = jointframe1[j1_ptr + 0];
                     q2.z = jointframe2[j2_ptr + 0];
-                    q1.x = baseFrame.oGet(0).q.x;
+                    q1.x = this.baseFrame.oGet(0).q.x;
                     q2.x = q1.x;
-                    q1.y = baseFrame.oGet(0).q.y;
+                    q1.y = this.baseFrame.oGet(0).q.y;
                     q2.y = q1.y;
                     q1.w = q1.CalcW();
                     q2.w = q2.CalcW();
@@ -932,7 +932,7 @@ public class Anim {
                     q1.y = jointframe1[j1_ptr + 1];
                     q2.x = jointframe2[j2_ptr + 0];
                     q2.y = jointframe2[j2_ptr + 1];
-                    q1.z = baseFrame.oGet(0).q.z;
+                    q1.z = this.baseFrame.oGet(0).q.z;
                     q2.z = q1.z;
                     q1.w = q1.CalcW();
                     q2.w = q2.CalcW();
@@ -942,7 +942,7 @@ public class Anim {
                     q1.z = jointframe1[j1_ptr + 1];
                     q2.x = jointframe2[j2_ptr + 0];
                     q2.z = jointframe2[j2_ptr + 1];
-                    q1.y = baseFrame.oGet(0).q.y;
+                    q1.y = this.baseFrame.oGet(0).q.y;
                     q2.y = q1.y;
                     q1.w = q1.CalcW();
                     q2.w = q2.CalcW();
@@ -952,7 +952,7 @@ public class Anim {
                     q1.z = jointframe1[j1_ptr + 1];
                     q2.y = jointframe2[j2_ptr + 0];
                     q2.z = jointframe2[j2_ptr + 1];
-                    q1.x = baseFrame.oGet(0).q.x;
+                    q1.x = this.baseFrame.oGet(0).q.x;
                     q2.x = q1.x;
                     q1.w = q1.CalcW();
                     q2.w = q2.CalcW();
@@ -973,43 +973,43 @@ public class Anim {
         }
 
         public void GetBounds(idBounds bnds, int time, int cyclecount) {
-            frameBlend_t frame = new frameBlend_t();
+            final frameBlend_t frame = new frameBlend_t();
             idVec3 offset;
             int c1_ptr, c2_ptr;
 
             ConvertTimeToFrame(time, cyclecount, frame);
 
-            bnds.oSet(bounds.oGet(frame.frame1));
-            bnds.AddBounds(bounds.oGet(frame.frame2));
+            bnds.oSet(this.bounds.oGet(frame.frame1));
+            bnds.AddBounds(this.bounds.oGet(frame.frame2));
 
             // origin position
-            offset = baseFrame.oGet(0).t;
-            if ((jointInfo.oGet(0).animBits & (ANIM_TX | ANIM_TY | ANIM_TZ)) != 0) {
-                Float[] componentPtr1 = componentFrames.Ptr(Float[].class);
-                c1_ptr = numAnimatedComponents * frame.frame1 + jointInfo.oGet(0).firstComponent;
-                Float[] componentPtr2 = componentFrames.Ptr(Float[].class);
-                c2_ptr = numAnimatedComponents * frame.frame2 + jointInfo.oGet(0).firstComponent;
+            offset = this.baseFrame.oGet(0).t;
+            if ((this.jointInfo.oGet(0).animBits & (ANIM_TX | ANIM_TY | ANIM_TZ)) != 0) {
+                final Float[] componentPtr1 = this.componentFrames.Ptr(Float[].class);
+                c1_ptr = (this.numAnimatedComponents * frame.frame1) + this.jointInfo.oGet(0).firstComponent;
+                final Float[] componentPtr2 = this.componentFrames.Ptr(Float[].class);
+                c2_ptr = (this.numAnimatedComponents * frame.frame2) + this.jointInfo.oGet(0).firstComponent;
 
-                if ((jointInfo.oGet(0).animBits & ANIM_TX) != 0) {
-                    offset.x = componentPtr1[c1_ptr] * frame.frontlerp + componentPtr2[c2_ptr] * frame.backlerp;
+                if ((this.jointInfo.oGet(0).animBits & ANIM_TX) != 0) {
+                    offset.x = (componentPtr1[c1_ptr] * frame.frontlerp) + (componentPtr2[c2_ptr] * frame.backlerp);
                     c1_ptr++;
                     c2_ptr++;
                 }
 
-                if ((jointInfo.oGet(0).animBits & ANIM_TY) != 0) {
-                    offset.y = componentPtr1[c1_ptr] * frame.frontlerp + componentPtr2[c2_ptr] * frame.backlerp;
+                if ((this.jointInfo.oGet(0).animBits & ANIM_TY) != 0) {
+                    offset.y = (componentPtr1[c1_ptr] * frame.frontlerp) + (componentPtr2[c2_ptr] * frame.backlerp);
                     c1_ptr++;
                     c2_ptr++;
                 }
 
-                if ((jointInfo.oGet(0).animBits & ANIM_TZ) != 0) {
-                    offset.z = componentPtr1[c1_ptr] * frame.frontlerp + componentPtr2[c2_ptr] * frame.backlerp;
+                if ((this.jointInfo.oGet(0).animBits & ANIM_TZ) != 0) {
+                    offset.z = (componentPtr1[c1_ptr] * frame.frontlerp) + (componentPtr2[c2_ptr] * frame.backlerp);
                 }
             }
 
             bnds.oMinSet(offset);
         }
-    };
+    }
 
     /*
      ==============================================================================================
@@ -1023,7 +1023,7 @@ public class Anim {
         AF_JOINTMOD_AXIS,
         AF_JOINTMOD_ORIGIN,
         AF_JOINTMOD_BOTH
-    };
+    }
 
     public static class idAFPoseJointMod {
         public AFJointModType_t mod;
@@ -1033,11 +1033,11 @@ public class Anim {
         //
 
         public idAFPoseJointMod() {
-            mod = AF_JOINTMOD_AXIS;
-            axis = getMat3_identity();
-            origin = new idVec3();
+            this.mod = AF_JOINTMOD_AXIS;
+            this.axis = getMat3_identity();
+            this.origin = new idVec3();
         }
-    };
+    }
 
     /*
      ==============================================================================================
@@ -1048,36 +1048,36 @@ public class Anim {
      */
     public static class idAnimManager {
 
-        private idHashTable<idMD5Anim> animations;
-        private idStrList jointnames;
-        private idHashIndex jointnamesHash;
+        private final idHashTable<idMD5Anim> animations;
+        private final idStrList jointnames;
+        private final idHashIndex jointnamesHash;
         //
         //
 
         public idAnimManager() {
-            animations = new idHashTable<>();
-            jointnames = new idStrList();
-            jointnamesHash = new idHashIndex();
+            this.animations = new idHashTable<>();
+            this.jointnames = new idStrList();
+            this.jointnamesHash = new idHashIndex();
         }
         // ~idAnimManager();
         public static boolean forceExport = false;
 
         public void Shutdown() {
-            animations.DeleteContents();
-            jointnames.Clear();
-            jointnamesHash.Free();
+            this.animations.DeleteContents();
+            this.jointnames.Clear();
+            this.jointnamesHash.Free();
         }
 
         public idMD5Anim GetAnim(final String name) {
-            idMD5Anim[] animPtr = {null};
+            final idMD5Anim[] animPtr = {null};
             idMD5Anim anim;
 
             // see if it has been asked for before
-            if (animations.Get(name, animPtr)) {
+            if (this.animations.Get(name, animPtr)) {
                 anim = animPtr[0];
             } else {
-                idStr extension = new idStr();
-                idStr filename = new idStr(name);
+                final idStr extension = new idStr();
+                final idStr filename = new idStr(name);
 
                 filename.ExtractFileExtension(extension);
                 if (!extension.equals(MD5_ANIM_EXT)) {
@@ -1090,7 +1090,7 @@ public class Anim {
 //                    delete anim;
                     anim = null;
                 }
-                animations.Set(filename.getData(), anim);
+                this.animations.Set(filename.getData(), anim);
             }
 
             return anim;
@@ -1100,8 +1100,8 @@ public class Anim {
             int i;
             idMD5Anim animptr;
 
-            for (i = 0; i < animations.Num(); i++) {
-                animptr = animations.GetIndex(i);
+            for (i = 0; i < this.animations.Num(); i++) {
+                animptr = this.animations.GetIndex(i);
                 if (animptr != null) {// && *animptr ) {
                     animptr.Reload();
                 }
@@ -1119,8 +1119,8 @@ public class Anim {
 
             num = 0;
             size = 0;
-            for (i = 0; i < animations.Num(); i++) {
-                animptr = animations.GetIndex(i);
+            for (i = 0; i < this.animations.Num(); i++) {
+                animptr = this.animations.GetIndex(i);
                 if (animptr != null) {// && *animptr ) {//TODO:check this locl shit
                     anim = animptr;
                     s = anim.Size();
@@ -1130,32 +1130,32 @@ public class Anim {
                 }
             }
 
-            namesize = jointnames.Size() + jointnamesHash.Size();
-            for (i = 0; i < jointnames.Num(); i++) {
-                namesize += jointnames.oGet(i).Size();
+            namesize = this.jointnames.Size() + this.jointnamesHash.Size();
+            for (i = 0; i < this.jointnames.Num(); i++) {
+                namesize += this.jointnames.oGet(i).Size();
             }
 
             gameLocal.Printf("\n%d memory used in %d anims\n", size, num);
-            gameLocal.Printf("%d memory used in %d joint names\n", namesize, jointnames.Num());
+            gameLocal.Printf("%d memory used in %d joint names\n", namesize, this.jointnames.Num());
         }
 
         public int JointIndex(final String name) {
             int i, hash;
 
-            hash = jointnamesHash.GenerateKey(name);
-            for (i = jointnamesHash.First(hash); i != -1; i = jointnamesHash.Next(i)) {
-                if (jointnames.oGet(i).Cmp(name) == 0) {
+            hash = this.jointnamesHash.GenerateKey(name);
+            for (i = this.jointnamesHash.First(hash); i != -1; i = this.jointnamesHash.Next(i)) {
+                if (this.jointnames.oGet(i).Cmp(name) == 0) {
                     return i;
                 }
             }
 
-            i = jointnames.Append(name);
-            jointnamesHash.Add(hash, i);
+            i = this.jointnames.Append(name);
+            this.jointnamesHash.Add(hash, i);
             return i;
         }
 
         public String JointName(int index) {
-            return jointnames.oGet(index).getData();
+            return this.jointnames.oGet(index).getData();
         }
 //
 //        public void ClearAnimsInUse();
@@ -1164,10 +1164,10 @@ public class Anim {
         public void FlushUnusedAnims() {
             int i;
             idMD5Anim animptr;
-            idList<idMD5Anim> removeAnims = new idList<>();
+            final idList<idMD5Anim> removeAnims = new idList<>();
 
-            for (i = 0; i < animations.Num(); i++) {
-                animptr = animations.GetIndex(i);
+            for (i = 0; i < this.animations.Num(); i++) {
+                animptr = this.animations.GetIndex(i);
                 if (animptr != null) {//&& *animptr ) {
                     if (animptr.NumRefs() <= 0) {
                         removeAnims.Append(animptr);
@@ -1176,9 +1176,9 @@ public class Anim {
             }
 
             for (i = 0; i < removeAnims.Num(); i++) {
-                animations.Remove(removeAnims.oGet(i).Name());
+                this.animations.Remove(removeAnims.oGet(i).Name());
 //		delete removeAnims[ i ];
             }
         }
-    };
+    }
 }

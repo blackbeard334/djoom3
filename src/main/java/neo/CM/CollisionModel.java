@@ -48,7 +48,7 @@ public class CollisionModel {
         CONTACT_EDGE, // trace model edge hits model edge
         CONTACT_MODELVERTEX, // model vertex hits trace model polygon
         CONTACT_TRMVERTEX	// trace model vertex hits model polygon
-    };
+    }
 
     // contact info
     public static class contactInfo_t {
@@ -68,8 +68,8 @@ public class CollisionModel {
         private final  int DBG_count   = DBG_counter++;
 
         public contactInfo_t() {
-            point = new idVec3();
-            normal = new idVec3();
+            this.point = new idVec3();
+            this.normal = new idVec3();
 //            TempDump.printCallStack("contactInfo_t:" + DBG_count);
         }
 
@@ -86,7 +86,7 @@ public class CollisionModel {
             this.entityNum = c.entityNum;
             this.id = c.id;
         }
-    };
+    }
 
     // trace result
     public static class trace_s implements SERiAL {
@@ -101,14 +101,14 @@ public class CollisionModel {
         public contactInfo_t c;            // contact information, only valid if fraction < 1.0
 
         public trace_s() {
-            endpos = new idVec3();
-            endAxis = new idMat3();
+            this.endpos = new idVec3();
+            this.endAxis = new idMat3();
             this.c = new contactInfo_t();
         }
 
         public trace_s(final trace_s bla) {
-            endpos = new idVec3(bla.endpos);
-            endAxis = new idMat3(bla.endAxis);
+            this.endpos = new idVec3(bla.endpos);
+            this.endAxis = new idMat3(bla.endAxis);
             this.c = new contactInfo_t(bla.c);
         }
 
@@ -133,7 +133,7 @@ public class CollisionModel {
             this.endAxis.oSet(s.endAxis);
             this.c = new contactInfo_t(s.c);
         }
-    };
+    }
 //
 //typedef int cmHandle_t;
     public static final float CM_CLIP_EPSILON   = 0.25f;        // always stay this distance away from any model
@@ -216,5 +216,5 @@ public class CollisionModel {
         public abstract boolean WriteCollisionModelForMapEntity(final idMapEntity mapEnt, final String filename, final boolean testTraceModel/* = true*/);
 
         public abstract boolean WriteCollisionModelForMapEntity(final idMapEntity mapEnt, final String filename);
-    };
+    }
 }

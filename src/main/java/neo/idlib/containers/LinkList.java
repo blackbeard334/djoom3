@@ -33,10 +33,10 @@ public class LinkList {
          ================
          */
         public idLinkList() {
-            owner = null;
-            head = this;
-            next = this;
-            prev = this;
+            this.owner = null;
+            this.head = this;
+            this.next = this;
+            this.prev = this;
         }
         
         public idLinkList(final type owner) {
@@ -54,7 +54,7 @@ public class LinkList {
          ================
          */
         public boolean IsListEmpty() {
-            return head.next == head;
+            return this.head.next == this.head;
         }
 
         /*
@@ -65,7 +65,7 @@ public class LinkList {
          ================
          */
         public boolean InList() {
-            return head != this;
+            return this.head != this;
         }
 
         /*
@@ -80,7 +80,7 @@ public class LinkList {
             int num;
 
             num = 0;
-            for (node = head.next; node != head; node = node.next) {
+            for (node = this.head.next; node != this.head; node = node.next) {
                 num++;
             }
 
@@ -95,9 +95,9 @@ public class LinkList {
          ================
          */
         public void Clear() {
-            if (head == this) {
-                while (next != this) {
-                    next.Remove();
+            if (this.head == this) {
+                while (this.next != this) {
+                    this.next.Remove();
                 }
             } else {
                 Remove();
@@ -115,11 +115,11 @@ public class LinkList {
         public void InsertBefore(idLinkList<type> node) {
             Remove();
 
-            next = node;
-            prev = node.prev;
+            this.next = node;
+            this.prev = node.prev;
             node.prev = this;
-            prev.next = this;
-            head = node.head;
+            this.prev.next = this;
+            this.head = node.head;
         }
 
         /*
@@ -133,11 +133,11 @@ public class LinkList {
         public void InsertAfter(idLinkList<type> node) {
             Remove();
 
-            prev = node;
-            next = node.next;
+            this.prev = node;
+            this.next = node.next;
             node.next = this;
-            next.prev = this;
-            head = node.head;
+            this.next.prev = this;
+            this.head = node.head;
         }
 
         /*
@@ -170,12 +170,12 @@ public class LinkList {
          ================
          */
         public void Remove() {
-            prev.next = next;
-            next.prev = prev;
+            this.prev.next = this.next;
+            this.next.prev = this.prev;
 
-            next = this;
-            prev = this;
-            head = this;
+            this.next = this;
+            this.prev = this;
+            this.head = this;
         }
 
         /*
@@ -186,15 +186,15 @@ public class LinkList {
          ================
          */
 		public type Next() {
-            if (null == next || (next == head)) {
+            if ((null == this.next) || (this.next == this.head)) {
                 return null;
             }
-            if (next.owner != null) {
-                type obj = (type) next.owner;
+            if (this.next.owner != null) {
+                final type obj = this.next.owner;
                 return obj;
             } else {
             	// Done ToDo: beware missing links in linked lists(a.next.next.next.NULL.next).
-                type obj = (type) next.Next();
+                final type obj = this.next.Next();
                 return obj;
             }
         }
@@ -207,15 +207,15 @@ public class LinkList {
          ================
          */
         public type Prev() {
-            if (null == prev || (prev == head)) {
+            if ((null == this.prev) || (this.prev == this.head)) {
                 return null;
             }
-            if (prev.owner != null) {
-                type obj = (type) prev.owner;
+            if (this.prev.owner != null) {
+                final type obj = this.prev.owner;
                 return obj;
             } else {
             	// Done ToDo: beware missing links in linked lists(a.next.next.next.NULL.next).
-            	type obj = (type) prev.Prev();
+            	final type obj = this.prev.Prev();
                 return obj;
             }
         }
@@ -229,7 +229,7 @@ public class LinkList {
          ================
          */
         public type Owner() {
-            return owner;
+            return this.owner;
         }
 
         /*
@@ -240,7 +240,7 @@ public class LinkList {
          ================
          */
         public void SetOwner(type object) {
-            owner = object;
+            this.owner = object;
         }
 //
 
@@ -253,7 +253,7 @@ public class LinkList {
          ================
          */
         public idLinkList<type> ListHead() {
-            return head;
+            return this.head;
         }
 
         /*
@@ -264,10 +264,10 @@ public class LinkList {
          ================
          */
         public idLinkList<type> NextNode() {
-            if (next == head) {
+            if (this.next == this.head) {
                 return null;
             }
-            return next;
+            return this.next;
         }
 
         /*
@@ -278,10 +278,10 @@ public class LinkList {
          ================
          */
         public idLinkList<type> PrevNode() {
-            if (prev == head) {
+            if (this.prev == this.head) {
                 return null;
             }
-            return prev;
+            return this.prev;
         }
-    };
+    }
 }

@@ -75,27 +75,27 @@ public class snd_emitter {
 //
 
         public void Clear() {
-            fadeStart44kHz = 0;
-            fadeEnd44kHz = 0;
-            fadeStartVolume = 0;
-            fadeEndVolume = 0;
+            this.fadeStart44kHz = 0;
+            this.fadeEnd44kHz = 0;
+            this.fadeStartVolume = 0;
+            this.fadeEndVolume = 0;
         }
 
         public float FadeDbAt44kHz(int current44kHz) {
             float fadeDb;
 
-            if (current44kHz >= fadeEnd44kHz) {
-                fadeDb = fadeEndVolume;
-            } else if (current44kHz > fadeStart44kHz) {
-                float fraction = (fadeEnd44kHz - fadeStart44kHz);
-                float over = (current44kHz - fadeStart44kHz);
-                fadeDb = fadeStartVolume + (fadeEndVolume - fadeStartVolume) * over / fraction;
+            if (current44kHz >= this.fadeEnd44kHz) {
+                fadeDb = this.fadeEndVolume;
+            } else if (current44kHz > this.fadeStart44kHz) {
+                final float fraction = (this.fadeEnd44kHz - this.fadeStart44kHz);
+                final float over = (current44kHz - this.fadeStart44kHz);
+                fadeDb = this.fadeStartVolume + (((this.fadeEndVolume - this.fadeStartVolume) * over) / fraction);
             } else {
-                fadeDb = fadeStartVolume;
+                fadeDb = this.fadeStartVolume;
             }
             return fadeDb;
         }
-    };
+    }
 
     static class SoundFX {
 
@@ -112,10 +112,10 @@ public class snd_emitter {
 //
 
         public SoundFX() {
-            channel = 0;
-            buffer = null;
-            initialized = false;
-            maxlen = 0;
+            this.channel = 0;
+            this.buffer = null;
+            this.initialized = false;
+            this.maxlen = 0;
 //            memset(continuitySamples, 0, sizeof(float) * 4);
         }
 
@@ -127,60 +127,60 @@ public class snd_emitter {
         }
 
         public void SetChannel(int chan) {
-            channel = chan;
+            this.channel = chan;
         }
 
         public int GetChannel() {
-            return channel;
+            return this.channel;
         }
 
         public void SetContinuitySamples(float in1, float in2, float out1, float out2) {
-            continuitySamples[0] = in1;
-            continuitySamples[1] = in2;
-            continuitySamples[2] = out1;
-            continuitySamples[3] = out2;
+            this.continuitySamples[0] = in1;
+            this.continuitySamples[1] = in2;
+            this.continuitySamples[2] = out1;
+            this.continuitySamples[3] = out2;
         }
 
         // FIXME?
         public void GetContinuitySamples(float[] in1, float[] in2, float[] out1, float[] out2) {
-            in1[0] = continuitySamples[0];
-            in2[0] = continuitySamples[1];
-            out1[0] = continuitySamples[2];
-            out2[0] = continuitySamples[3];
+            in1[0] = this.continuitySamples[0];
+            in2[0] = this.continuitySamples[1];
+            out1[0] = this.continuitySamples[2];
+            out2[0] = this.continuitySamples[3];
         }
 
         public void SetParameter(float val) {
-            param = val;
+            this.param = val;
         }
-    };
+    }
 
     static class SoundFX_Lowpass extends SoundFX {
 
         @Override
         public void ProcessSample(float[] in, int in_offset, float[] out, int out_offset) {
             float c, a1, a2, a3, b1, b2;
-            float resonance = idSoundSystemLocal.s_enviroSuitCutoffQ.GetFloat();
-            float cutoffFrequency = idSoundSystemLocal.s_enviroSuitCutoffFreq.GetFloat();
+            final float resonance = idSoundSystemLocal.s_enviroSuitCutoffQ.GetFloat();
+            final float cutoffFrequency = idSoundSystemLocal.s_enviroSuitCutoffFreq.GetFloat();
 
             Initialize();
 
-            c = 1.0f / idMath.Tan16(idMath.PI * cutoffFrequency / 44100);
+            c = 1.0f / idMath.Tan16((idMath.PI * cutoffFrequency) / 44100);
 
             // compute coefs
-            a1 = 1.0f / (1.0f + resonance * c + c * c);
+            a1 = 1.0f / (1.0f + (resonance * c) + (c * c));
             a2 = 2 * a1;
             a3 = a1;
-            b1 = 2.0f * (1.0f - c * c) * a1;
-            b2 = (1.0f - resonance * c + c * c) * a1;
+            b1 = 2.0f * (1.0f - (c * c)) * a1;
+            b2 = ((1.0f - (resonance * c)) + (c * c)) * a1;
 
             // compute output value
-            out[out_offset + 0] = a1 * in[in_offset + 0]
-                    + a2 * in[in_offset + -1]
-                    + a3 * in[in_offset + -2]
-                    - b1 * out[out_offset + -1]
-                    - b2 * out[out_offset + -2];
+            out[out_offset + 0] = ((a1 * in[in_offset + 0])
+                    + (a2 * in[in_offset + -1])
+                    + (a3 * in[in_offset + -2]))
+                    - (b1 * out[out_offset + -1])
+                    - (b2 * out[out_offset + -2]);
         }
-    };
+    }
 
     static class SoundFX_LowpassFast extends SoundFX {
 
@@ -194,30 +194,30 @@ public class snd_emitter {
         @Override
         public void ProcessSample(float[] in, final int inOffset, float[] out, final int outOffset) {
             // compute output value
-            out[outOffset + 0] = a1 * in[inOffset + 0]
-                    + a2 * in[inOffset - 1]
-                    + a3 * in[inOffset - 2]
-                    - b1 * out[outOffset - 1]
-                    - b2 * out[outOffset - 2];
+            out[outOffset + 0] = ((this.a1 * in[inOffset + 0])
+                    + (this.a2 * in[inOffset - 1])
+                    + (this.a3 * in[inOffset - 2]))
+                    - (this.b1 * out[outOffset - 1])
+                    - (this.b2 * out[outOffset - 2]);
         }
 
         public void SetParms(float p1 /*= 0*/, float p2 /*= 0*/, float p3 /*= 0*/) {
             float c;
 
             // set the vars
-            freq = p1;
-            res = p2;
+            this.freq = p1;
+            this.res = p2;
 
             // precompute the coefs
-            c = 1.0f / idMath.Tan(idMath.PI * freq / 44100);
+            c = 1.0f / idMath.Tan((idMath.PI * this.freq) / 44100);
 
             // compute coefs
-            a1 = 1.0f / (1.0f + res * c + c * c);
-            a2 = 2 * a1;
-            a3 = a1;
+            this.a1 = 1.0f / (1.0f + (this.res * c) + (c * c));
+            this.a2 = 2 * this.a1;
+            this.a3 = this.a1;
 
-            b1 = 2.0f * (1.0f - c * c) * a1;
-            b2 = (1.0f - res * c + c * c) * a1;
+            this.b1 = 2.0f * (1.0f - (c * c)) * this.a1;
+            this.b2 = ((1.0f - (this.res * c)) + (c * c)) * this.a1;
         }
 
         public void SetParms(float p1 /*= 0*/, float p2 /*= 0*/) {
@@ -231,7 +231,7 @@ public class snd_emitter {
         public void SetParms() {
             SetParms(0);
         }
-    };
+    }
 
     static class SoundFX_Comb extends SoundFX {
 
@@ -241,34 +241,34 @@ public class snd_emitter {
 
         @Override
         public void Initialize() {
-            if (initialized) {
+            if (this.initialized) {
                 return;
             }
 
-            initialized = true;
-            maxlen = 50000;
-            buffer = new float[maxlen];
-            currentTime = 0;
+            this.initialized = true;
+            this.maxlen = 50000;
+            this.buffer = new float[this.maxlen];
+            this.currentTime = 0;
         }
 
         @Override
         public void ProcessSample(float[] in, int in_offset, float[] out, int out_offset) {
-            float gain = idSoundSystemLocal.s_reverbFeedback.GetFloat();
-            int len = (int) (idSoundSystemLocal.s_reverbTime.GetFloat() + param);
+            final float gain = idSoundSystemLocal.s_reverbFeedback.GetFloat();
+            final int len = (int) (idSoundSystemLocal.s_reverbTime.GetFloat() + this.param);
 
             Initialize();
 
             // sum up and output
-            out[out_offset + 0] = buffer[currentTime];
-            buffer[currentTime] = buffer[currentTime] * gain + in[in_offset + 0];
+            out[out_offset + 0] = this.buffer[this.currentTime];
+            this.buffer[this.currentTime] = (this.buffer[this.currentTime] * gain) + in[in_offset + 0];
 
             // increment current time
-            currentTime++;
-            if (currentTime >= len) {
-                currentTime -= len;
+            this.currentTime++;
+            if (this.currentTime >= len) {
+                this.currentTime -= len;
             }
         }
-    };
+    }
 
     static class FracTime {
 
@@ -278,18 +278,18 @@ public class snd_emitter {
 //
 
         public void Set(int val) {
-            time = val;
-            frac = 0;
+            this.time = val;
+            this.frac = 0;
         }
 
         public void Increment(float val) {
-            frac += val;
-            while (frac >= 1.f) {
-                time++;
-                frac--;
+            this.frac += val;
+            while (this.frac >= 1.f) {
+                this.time++;
+                this.frac--;
             }
         }
-    };
+    }
     
     //enum {
     public static final int PLAYBACK_RESET     = 0;
@@ -316,9 +316,9 @@ public class snd_emitter {
 
         // functions
         void GenerateSlowChannel(FracTime playPos, int sampleCount44k, float[] finalBuffer) {
-            idSoundWorldLocal sw = (idSoundWorldLocal) soundSystemLocal.GetPlayingSoundWorld();
-            float[] in = new float[MIXBUFFER_SAMPLES + 3], out = new float[MIXBUFFER_SAMPLES + 3];
-            float[] src = new float[MIXBUFFER_SAMPLES + 3 - 2], spline = new float[MIXBUFFER_SAMPLES + 3 - 2];
+            final idSoundWorldLocal sw = (idSoundWorldLocal) soundSystemLocal.GetPlayingSoundWorld();
+            final float[] in = new float[MIXBUFFER_SAMPLES + 3], out = new float[MIXBUFFER_SAMPLES + 3];
+            final float[] src = new float[(MIXBUFFER_SAMPLES + 3) - 2], spline = new float[(MIXBUFFER_SAMPLES + 3) - 2];
 //            int src, spline;
             float slowmoSpeed;
             int i, neededSamples, orgTime, zeroedPos, count = 0;
@@ -331,12 +331,12 @@ public class snd_emitter {
                 slowmoSpeed = 1;
             }
 
-            neededSamples = (int) (sampleCount44k * slowmoSpeed + 4);
+            neededSamples = (int) ((sampleCount44k * slowmoSpeed) + 4);
             orgTime = playPos.time;
 
             // get the channel's samples
-            chan.GatherChannelSamples(playPos.time * 2, neededSamples, FloatBuffer.wrap(src));
-            for (i = 0; i < neededSamples >> 1; i++) {
+            this.chan.GatherChannelSamples(playPos.time * 2, neededSamples, FloatBuffer.wrap(src));
+            for (i = 0; i < (neededSamples >> 1); i++) {
                 spline[i] = src[i * 2];
             }
 
@@ -344,7 +344,7 @@ public class snd_emitter {
             zeroedPos = playPos.time;
             playPos.time = 0;
 
-            for (i = 0; i < sampleCount44k >> 1; i++, count += 2) {
+            for (i = 0; i < (sampleCount44k >> 1); i++, count += 2) {
                 float val;
                 val = spline[playPos.time];
                 src[i] = val;
@@ -353,31 +353,31 @@ public class snd_emitter {
 
             // lowpass filter
 //            float *in_p = in + 2, *out_p = out + 2;
-            float[] in_p1 = {0}, in_p2 = {0}, out_p1 = {0}, out_p2 = {0};
-            int numSamples = sampleCount44k >> 1;
+            final float[] in_p1 = {0}, in_p2 = {0}, out_p1 = {0}, out_p2 = {0};
+            final int numSamples = sampleCount44k >> 1;
 
-            lowpass.GetContinuitySamples(in_p1, in_p2, out_p1, out_p2);
-            lowpass.SetParms(slowmoSpeed * 15000, 1.2f, 9);
+            this.lowpass.GetContinuitySamples(in_p1, in_p2, out_p1, out_p2);
+            this.lowpass.SetParms(slowmoSpeed * 15000, 1.2f, 9);
 
-            System.arraycopy(src, 0, in, 2, MIXBUFFER_SAMPLES + 3 - 2);
-            System.arraycopy(spline, 0, out, 2, MIXBUFFER_SAMPLES + 3 - 2);
+            System.arraycopy(src, 0, in, 2, (MIXBUFFER_SAMPLES + 3) - 2);
+            System.arraycopy(spline, 0, out, 2, (MIXBUFFER_SAMPLES + 3) - 2);
             in[0] = in_p1[0];//FIXME:ugly block.
             in[1] = in_p2[0];
             out[0] = out_p1[0];
             out[1] = out_p2[0];
 
             for (i = 0, count = 0; i < numSamples; i++, count += 2) {
-                lowpass.ProcessSample(in, 2 + i, out, 2 + i);
+                this.lowpass.ProcessSample(in, 2 + i, out, 2 + i);
                 finalBuffer[count] = finalBuffer[count + 1] = out[i];
             }
 
-            lowpass.SetContinuitySamples(in[2 + numSamples - 2], in[2 + numSamples - 3], out[2 + numSamples - 2], out[2 + numSamples - 3]);//2 = pointer offset
+            this.lowpass.SetContinuitySamples(in[(2 + numSamples) - 2], in[(2 + numSamples) - 3], out[(2 + numSamples) - 2], out[(2 + numSamples) - 3]);//2 = pointer offset
 
             playPos.time += zeroedPos;
         }
 
         float GetSlowmoSpeed() {
-            idSoundWorldLocal sw = (idSoundWorldLocal) soundSystemLocal.GetPlayingSoundWorld();
+            final idSoundWorldLocal sw = (idSoundWorldLocal) soundSystemLocal.GetPlayingSoundWorld();
 
             if (sw != null) {
                 return sw.slowmoSpeed;
@@ -394,54 +394,54 @@ public class snd_emitter {
 //	memset( this, 0, sizeof( *this ) );//TODO:
 
 //	this.chan = chan;
-            curPosition.Set(0);
-            newPosition.Set(0);
+            this.curPosition.Set(0);
+            this.newPosition.Set(0);
 
-            curSampleOffset = -10000;
-            newSampleOffset = -10000;
+            this.curSampleOffset = -10000;
+            this.newSampleOffset = -10000;
 
-            triggerOffset = 0;
+            this.triggerOffset = 0;
         }
 
         public void GatherChannelSamples(int sampleOffset44k, int sampleCount44k, float[] dest) {
             int state = 0;
 
             // setup chan
-            active = true;
-            newSampleOffset = sampleOffset44k >> 1;
+            this.active = true;
+            this.newSampleOffset = sampleOffset44k >> 1;
 
             // set state
-            if (newSampleOffset < curSampleOffset) {
+            if (this.newSampleOffset < this.curSampleOffset) {
                 state = PLAYBACK_RESET;
-            } else if (newSampleOffset > curSampleOffset) {
+            } else if (this.newSampleOffset > this.curSampleOffset) {
                 state = PLAYBACK_ADVANCING;
             }
 
             if (state == PLAYBACK_RESET) {
-                curPosition.Set(newSampleOffset);
+                this.curPosition.Set(this.newSampleOffset);
             }
 
             // set current vars
-            curSampleOffset = newSampleOffset;
-            newPosition = curPosition;
+            this.curSampleOffset = this.newSampleOffset;
+            this.newPosition = this.curPosition;
 
             // do the slow processing
-            GenerateSlowChannel(newPosition, sampleCount44k, dest);
+            GenerateSlowChannel(this.newPosition, sampleCount44k, dest);
 
             // finish off
             if (state == PLAYBACK_ADVANCING) {
-                curPosition = newPosition;
+                this.curPosition = this.newPosition;
             }
         }
 
         public boolean IsActive() {
-            return active;
+            return this.active;
         }
 
         public FracTime GetCurrentPosition() {
-            return curPosition;
+            return this.curPosition;
         }
-    };
+    }
 
     static class idSoundChannel {
 
@@ -468,7 +468,7 @@ public class snd_emitter {
         //
 
         public idSoundChannel() {
-            decoder = null;
+            this.decoder = null;
             this.channelFade = new idSoundFade();
             this.openalStreamingBuffer = BufferUtils.createIntBuffer(3);
             this.lastopenalStreamingBuffer = BufferUtils.createIntBuffer(3);
@@ -480,40 +480,40 @@ public class snd_emitter {
             int j;
 
             Stop();
-            soundShader = null;
-            lastVolume = 0.0f;
-            triggerChannel = SCHANNEL_ANY;
-            channelFade.Clear();
-            diversity = 0.0f;
-            leadinSample = null;
-            trigger44kHzTime = 0;
+            this.soundShader = null;
+            this.lastVolume = 0.0f;
+            this.triggerChannel = SCHANNEL_ANY;
+            this.channelFade.Clear();
+            this.diversity = 0.0f;
+            this.leadinSample = null;
+            this.trigger44kHzTime = 0;
             for (j = 0; j < 6; j++) {
-                lastV[j] = 0.0f;
+                this.lastV[j] = 0.0f;
             }
 //	memset( &parms, 0, sizeof(parms) );
-            parms = new soundShaderParms_t();
+            this.parms = new soundShaderParms_t();
 
-            triggered = false;
-            openalSource = 0;//null;
-            openalStreamingOffset = 0;
+            this.triggered = false;
+            this.openalSource = 0;//null;
+            this.openalStreamingOffset = 0;
 //            openalStreamingBuffer[0] = openalStreamingBuffer[1] = openalStreamingBuffer[2] = 0;
 //            lastopenalStreamingBuffer[0] = lastopenalStreamingBuffer[1] = lastopenalStreamingBuffer[2] = 0;
-            openalStreamingBuffer.clear();
-            lastopenalStreamingBuffer.clear();
+            this.openalStreamingBuffer.clear();
+            this.lastopenalStreamingBuffer.clear();
         }
 
         public void Start() {
-            triggerState = true;
-            if (decoder == null) {
-                decoder = idSampleDecoder.Alloc();
+            this.triggerState = true;
+            if (this.decoder == null) {
+                this.decoder = idSampleDecoder.Alloc();
             }
         }
 
         public void Stop() {
-            triggerState = false;
-            if (decoder != null) {
-                idSampleDecoder.Free(decoder);
-                decoder = null;
+            this.triggerState = false;
+            if (this.decoder != null) {
+                idSampleDecoder.Free(this.decoder);
+                this.decoder = null;
             }
         }
 
@@ -545,8 +545,8 @@ public class snd_emitter {
             }
 
             // grab part of the leadin sample
-            idSoundSample leadin = leadinSample;
-            if (NOT(leadin) || sampleOffset44k < 0 || sampleCount44k <= 0) {
+            final idSoundSample leadin = this.leadinSample;
+            if (NOT(leadin) || (sampleOffset44k < 0) || (sampleCount44k <= 0)) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
 //                dest.clear();
                 return;
@@ -559,7 +559,7 @@ public class snd_emitter {
                 }
 
                 // decode the sample
-                decoder.Decode(leadin, sampleOffset44k, len, dest);
+                this.decoder.Decode(leadin, sampleOffset44k, len, dest);
 
                 dest.position(dest_p += len);
                 sampleCount44k -= len;
@@ -567,14 +567,14 @@ public class snd_emitter {
             }
 
             // if not looping, zero fill any remaining spots
-            if (null == soundShader || 0 == (parms.soundShaderFlags & SSF_LOOPING)) {
+            if ((null == this.soundShader) || (0 == (this.parms.soundShaderFlags & SSF_LOOPING))) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
 //                dest.clear();
                 return;
             }
 
             // fill the remainder with looped samples
-            idSoundSample loop = soundShader.entries[0];
+            final idSoundSample loop = this.soundShader.entries[0];
 
             if (null == loop) {
 //		memset( dest_p, 0, sampleCount44k * sizeof( dest_p[0] ) );
@@ -585,7 +585,7 @@ public class snd_emitter {
             sampleOffset44k -= leadin.LengthIn44kHzSamples();
 
             while (sampleCount44k > 0) {
-                int totalLen = loop.LengthIn44kHzSamples();
+                final int totalLen = loop.LengthIn44kHzSamples();
 
                 sampleOffset44k %= totalLen;
 
@@ -595,7 +595,7 @@ public class snd_emitter {
                 }
 
                 // decode the sample
-                decoder.Decode(loop, sampleOffset44k, len, dest);//TODO:
+                this.decoder.Decode(loop, sampleOffset44k, len, dest);//TODO:
 
                 dest.position(dest_p += len);
                 sampleCount44k -= len;
@@ -606,32 +606,32 @@ public class snd_emitter {
         public void ALStop() {			// free OpenAL resources if any
             if (idSoundSystemLocal.useOpenAL) {
 
-                if (alIsSource(openalSource)) {
-                    alSourceStop(openalSource);
-                    alSourcei(openalSource, AL_BUFFER, 0);
-                    soundSystemLocal.FreeOpenALSource(openalSource);
+                if (alIsSource(this.openalSource)) {
+                    alSourceStop(this.openalSource);
+                    alSourcei(this.openalSource, AL_BUFFER, 0);
+                    soundSystemLocal.FreeOpenALSource(this.openalSource);
                 }
 
-                if (openalStreamingBuffer.get(0) != 0 && openalStreamingBuffer.get(1) != 0 && openalStreamingBuffer.get(2) != 0) {
+                if ((this.openalStreamingBuffer.get(0) != 0) && (this.openalStreamingBuffer.get(1) != 0) && (this.openalStreamingBuffer.get(2) != 0)) {
                     alGetError();
 //                    alDeleteBuffers(3, openalStreamingBuffer[0]);
-                    AL10.alDeleteBuffers(openalStreamingBuffer);
+                    AL10.alDeleteBuffers(this.openalStreamingBuffer);
                     if (alGetError() == AL_NO_ERROR) {
-                        openalStreamingBuffer.clear();
+                        this.openalStreamingBuffer.clear();
                     }
                 }
 
-                if (lastopenalStreamingBuffer.get(0) != 0 && lastopenalStreamingBuffer.get(1) != 0 && lastopenalStreamingBuffer.get(2) != 0) {
+                if ((this.lastopenalStreamingBuffer.get(0) != 0) && (this.lastopenalStreamingBuffer.get(1) != 0) && (this.lastopenalStreamingBuffer.get(2) != 0)) {
                     alGetError();
 //                    alDeleteBuffers(3, lastopenalStreamingBuffer[0]);
-                    AL10.alDeleteBuffers(lastopenalStreamingBuffer);
+                    AL10.alDeleteBuffers(this.lastopenalStreamingBuffer);
                     if (alGetError() == AL_NO_ERROR) {
-                        lastopenalStreamingBuffer.clear();
+                        this.lastopenalStreamingBuffer.clear();
                     }
                 }
             }
         }
-    };
+    }
     
     /*
      ===============================================================================
@@ -684,18 +684,18 @@ public class snd_emitter {
         //
 
         public idSoundEmitterLocal() {
-            soundWorld = null;
+            this.soundWorld = null;
             this.origin = new idVec3();
             this.spatializedOrigin = new idVec3();
 
             this.channels = new idSoundChannel[SOUND_MAX_CHANNELS];
-            for (int c = 0; c < channels.length; c++) {
-                channels[c] = new idSoundChannel();
+            for (int c = 0; c < this.channels.length; c++) {
+                this.channels[c] = new idSoundChannel();
             }
 
             this.slowChannels = new idSlowChannel[SOUND_MAX_CHANNELS];
-            for (int s = 0; s < slowChannels.length; s++) {
-                slowChannels[s] = new idSlowChannel();
+            for (int s = 0; s < this.slowChannels.length; s++) {
+                this.slowChannels[s] = new idSlowChannel();
             }
             Clear();
         }
@@ -714,22 +714,22 @@ public class snd_emitter {
          */
         @Override
         public void Free(boolean immediate) {
-            if (removeStatus != REMOVE_STATUS_ALIVE) {
+            if (this.removeStatus != REMOVE_STATUS_ALIVE) {
                 return;
             }
 
             if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
-                common.Printf("FreeSound (%d,%d)\n", index, immediate);
+                common.Printf("FreeSound (%d,%d)\n", this.index, immediate);
             }
-            if (soundWorld != null && soundWorld.writeDemo != null) {
-                soundWorld.writeDemo.WriteInt(DS_SOUND);
-                soundWorld.writeDemo.WriteInt(SCMD_FREE);
-                soundWorld.writeDemo.WriteInt(index);
-                soundWorld.writeDemo.WriteInt(btoi(immediate));
+            if ((this.soundWorld != null) && (this.soundWorld.writeDemo != null)) {
+                this.soundWorld.writeDemo.WriteInt(DS_SOUND);
+                this.soundWorld.writeDemo.WriteInt(SCMD_FREE);
+                this.soundWorld.writeDemo.WriteInt(this.index);
+                this.soundWorld.writeDemo.WriteInt(btoi(immediate));
             }
 
             if (!immediate) {
-                removeStatus = REMOVE_STATUS_WAITSAMPLEFINISHED;
+                this.removeStatus = REMOVE_STATUS_WAITSAMPLEFINISHED;
             } else {
                 Clear();
             }
@@ -742,18 +742,18 @@ public class snd_emitter {
             if (null == parms) {
                 common.Error("idSoundEmitterLocal::UpdateEmitter: NULL parms");
             }
-            if (soundWorld != null && soundWorld.writeDemo != null) {
-                soundWorld.writeDemo.WriteInt(DS_SOUND);
-                soundWorld.writeDemo.WriteInt(SCMD_UPDATE);
-                soundWorld.writeDemo.WriteInt(index);
-                soundWorld.writeDemo.WriteVec3(origin);
-                soundWorld.writeDemo.WriteInt(listenerId);
-                soundWorld.writeDemo.WriteFloat(parms.minDistance);
-                soundWorld.writeDemo.WriteFloat(parms.maxDistance);
-                soundWorld.writeDemo.WriteFloat(parms.volume);
-                soundWorld.writeDemo.WriteFloat(parms.shakes);
-                soundWorld.writeDemo.WriteInt(parms.soundShaderFlags);
-                soundWorld.writeDemo.WriteInt(parms.soundClass);
+            if ((this.soundWorld != null) && (this.soundWorld.writeDemo != null)) {
+                this.soundWorld.writeDemo.WriteInt(DS_SOUND);
+                this.soundWorld.writeDemo.WriteInt(SCMD_UPDATE);
+                this.soundWorld.writeDemo.WriteInt(this.index);
+                this.soundWorld.writeDemo.WriteVec3(origin);
+                this.soundWorld.writeDemo.WriteInt(listenerId);
+                this.soundWorld.writeDemo.WriteFloat(parms.minDistance);
+                this.soundWorld.writeDemo.WriteFloat(parms.maxDistance);
+                this.soundWorld.writeDemo.WriteFloat(parms.volume);
+                this.soundWorld.writeDemo.WriteFloat(parms.shakes);
+                this.soundWorld.writeDemo.WriteInt(parms.soundShaderFlags);
+                this.soundWorld.writeDemo.WriteInt(parms.soundClass);
             }
 
             this.origin = origin;
@@ -779,23 +779,23 @@ public class snd_emitter {
             }
 
             if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
-                common.Printf("StartSound %dms (%d,%d,%s) = ", soundWorld.gameMsec, index, (int) channel, shader.GetName());
+                common.Printf("StartSound %dms (%d,%d,%s) = ", this.soundWorld.gameMsec, this.index, channel, shader.GetName());
             }
 
-            if (soundWorld != null && soundWorld.writeDemo != null) {
-                soundWorld.writeDemo.WriteInt(DS_SOUND);
-                soundWorld.writeDemo.WriteInt(SCMD_START);
-                soundWorld.writeDemo.WriteInt(index);
+            if ((this.soundWorld != null) && (this.soundWorld.writeDemo != null)) {
+                this.soundWorld.writeDemo.WriteInt(DS_SOUND);
+                this.soundWorld.writeDemo.WriteInt(SCMD_START);
+                this.soundWorld.writeDemo.WriteInt(this.index);
 
-                soundWorld.writeDemo.WriteHashString(shader.GetName());
+                this.soundWorld.writeDemo.WriteHashString(shader.GetName());
 
-                soundWorld.writeDemo.WriteInt(channel);
-                soundWorld.writeDemo.WriteFloat(diversity);
-                soundWorld.writeDemo.WriteInt(soundShaderFlags);
+                this.soundWorld.writeDemo.WriteInt(channel);
+                this.soundWorld.writeDemo.WriteFloat(diversity);
+                this.soundWorld.writeDemo.WriteInt(soundShaderFlags);
             }
 
             // build the channel parameters by taking the shader parms and optionally overriding
-            soundShaderParms_t[] chanParms = {null};
+            final soundShaderParms_t[] chanParms = {null};
 
             chanParms[0] = shader.parms;
             OverrideParms(chanParms[0], this.parms, chanParms);
@@ -808,9 +808,9 @@ public class snd_emitter {
             // this is the sample time it will be first mixed
             int start44kHz;
 
-            if (soundWorld.fpa[0] != null) {
+            if (this.soundWorld.fpa[0] != null) {
                 // if we are recording an AVI demo, don't use hardware time
-                start44kHz = soundWorld.lastAVI44kHz + MIXBUFFER_SAMPLES;
+                start44kHz = this.soundWorld.lastAVI44kHz + MIXBUFFER_SAMPLES;
             } else {
                 start44kHz = soundSystemLocal.GetCurrent44kHzTime() + MIXBUFFER_SAMPLES;
             }
@@ -828,7 +828,7 @@ public class snd_emitter {
 
             // pick a sound from the list based on the passed diversity
             choice = (int) (diversity * shader.numEntries);
-            if (choice < 0 || choice >= shader.numEntries) {
+            if ((choice < 0) || (choice >= shader.numEntries)) {
                 choice = 0;
             }
 
@@ -841,7 +841,7 @@ public class snd_emitter {
                     sample = shader.entries[choice];
                 }
                 for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                    idSoundChannel chan = channels[i];
+                    final idSoundChannel chan = this.channels[i];
                     if (chan.leadinSample == sample) {
                         choice = (choice + 1) % shader.numEntries;
                         break;
@@ -852,8 +852,8 @@ public class snd_emitter {
             // PLAY_ONCE sounds will never be restarted while they are running
             if ((chanParms[0].soundShaderFlags & SSF_PLAY_ONCE) != 0) {
                 for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                    idSoundChannel chan = channels[i];
-                    if (chan.triggerState && chan.soundShader == shader) {
+                    final idSoundChannel chan = this.channels[i];
+                    if (chan.triggerState && (chan.soundShader == shader)) {
                         if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
                             common.Printf("PLAY_ONCE not restarting\n");
                         }
@@ -865,8 +865,8 @@ public class snd_emitter {
             // never play the same sound twice with the same starting time, even
             // if they are on different channels
             for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                idSoundChannel chan = channels[i];
-                if (chan.triggerState && chan.soundShader == shader && chan.trigger44kHzTime == start44kHz) {
+                final idSoundChannel chan = this.channels[i];
+                if (chan.triggerState && (chan.soundShader == shader) && (chan.trigger44kHzTime == start44kHz)) {
                     if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
                         common.Printf("already started this frame\n");
                     }
@@ -879,8 +879,8 @@ public class snd_emitter {
             // kill any sound that is currently playing on this channel
             if (channel != SCHANNEL_ANY) {
                 for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                    idSoundChannel chan = channels[i];
-                    if (chan.triggerState && chan.soundShader != null && chan.triggerChannel == channel) {
+                    final idSoundChannel chan = this.channels[i];
+                    if (chan.triggerState && (chan.soundShader != null) && (chan.triggerChannel == channel)) {
                         if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
                             common.Printf("(override %s)", chan.soundShader.base.GetName());
                         }
@@ -900,7 +900,7 @@ public class snd_emitter {
             // find a free channel to play the sound on
             idSoundChannel chan;
             for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                chan = channels[i];
+                chan = this.channels[i];
                 if (!chan.triggerState) {
                     break;
                 }
@@ -915,7 +915,7 @@ public class snd_emitter {
                 return 0;
             }
 
-            chan = channels[i];
+            chan = this.channels[i];
 
             if (shader.leadins[choice] != null) {
                 chan.leadinSample = shader.leadins[choice];
@@ -925,12 +925,12 @@ public class snd_emitter {
 
             // if the sample is onDemand (voice mails, etc), load it now
             if (chan.leadinSample.purged) {
-                int start = Sys_Milliseconds();
+                final int start = Sys_Milliseconds();
                 chan.leadinSample.Load();
-                int end = Sys_Milliseconds();
+                final int end = Sys_Milliseconds();
                 session.TimeHitch(end - start);
                 // recalculate start44kHz, because loading may have taken a fair amount of time
-                if (NOT(soundWorld.fpa[0])) {
+                if (NOT(this.soundWorld.fpa[0])) {
                     start44kHz = soundSystemLocal.GetCurrent44kHzTime() + MIXBUFFER_SAMPLES;
                 }
             }
@@ -952,17 +952,17 @@ public class snd_emitter {
             chan.openalStreamingOffset = 0;
             chan.trigger44kHzTime = start44kHz;
             chan.parms = chanParms[0];
-            chan.triggerGame44kHzTime = soundWorld.game44kHz;
+            chan.triggerGame44kHzTime = this.soundWorld.game44kHz;
             chan.soundShader = shader;
             chan.triggerChannel = channel;
             chan.Start();
 
             // we need to start updating the def and mixing it in
-            playing = true;
+            this.playing = true;
 
             // spatialize it immediately, so it will start the next mix block
             // even if that happens before the next PlaceOrigin()
-            Spatialize(soundWorld.listenerPos, soundWorld.listenerArea, soundWorld.rw);
+            Spatialize(this.soundWorld.listenerPos, this.soundWorld.listenerArea, this.soundWorld.rw);
 
             // return length of sound in milliseconds
             int length = chan.leadinSample.LengthIn44kHzSamples();
@@ -973,7 +973,7 @@ public class snd_emitter {
 
             // adjust the start time based on diversity for looping sounds, so they don't all start
             // at the same point
-            if ((chan.parms.soundShaderFlags & SSF_LOOPING) != 0 && NOT(chan.leadinSample.LengthIn44kHzSamples())) {
+            if (((chan.parms.soundShaderFlags & SSF_LOOPING) != 0) && NOT(chan.leadinSample.LengthIn44kHzSamples())) {
                 chan.trigger44kHzTime -= diversity * length;
                 chan.trigger44kHzTime &= ~7;		// so we don't have to worry about the 22kHz and 11kHz expansions
                 // starting in fractional samples
@@ -995,36 +995,36 @@ public class snd_emitter {
                 common.Error("idSoundEmitterLocal::ModifySound: NULL parms");
             }
             if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
-                common.Printf("ModifySound(%d,%d)\n", index, channel);
+                common.Printf("ModifySound(%d,%d)\n", this.index, channel);
             }
-            if (soundWorld != null && soundWorld.writeDemo != null) {
-                soundWorld.writeDemo.WriteInt(DS_SOUND);
-                soundWorld.writeDemo.WriteInt(SCMD_MODIFY);
-                soundWorld.writeDemo.WriteInt(index);
-                soundWorld.writeDemo.WriteInt(channel);
-                soundWorld.writeDemo.WriteFloat(parms.minDistance);
-                soundWorld.writeDemo.WriteFloat(parms.maxDistance);
-                soundWorld.writeDemo.WriteFloat(parms.volume);
-                soundWorld.writeDemo.WriteFloat(parms.shakes);
-                soundWorld.writeDemo.WriteInt(parms.soundShaderFlags);
-                soundWorld.writeDemo.WriteInt(parms.soundClass);
+            if ((this.soundWorld != null) && (this.soundWorld.writeDemo != null)) {
+                this.soundWorld.writeDemo.WriteInt(DS_SOUND);
+                this.soundWorld.writeDemo.WriteInt(SCMD_MODIFY);
+                this.soundWorld.writeDemo.WriteInt(this.index);
+                this.soundWorld.writeDemo.WriteInt(channel);
+                this.soundWorld.writeDemo.WriteFloat(parms.minDistance);
+                this.soundWorld.writeDemo.WriteFloat(parms.maxDistance);
+                this.soundWorld.writeDemo.WriteFloat(parms.volume);
+                this.soundWorld.writeDemo.WriteFloat(parms.shakes);
+                this.soundWorld.writeDemo.WriteInt(parms.soundShaderFlags);
+                this.soundWorld.writeDemo.WriteInt(parms.soundClass);
             }
 
             for (int i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                idSoundChannel chan = channels[i];
+                final idSoundChannel chan = this.channels[i];
 
                 if (!chan.triggerState) {
                     continue;
                 }
-                if (channel != SCHANNEL_ANY && chan.triggerChannel != channel) {
+                if ((channel != SCHANNEL_ANY) && (chan.triggerChannel != channel)) {
                     continue;
                 }
 
-                soundShaderParms_t[] chanParms = {chan.parms};
+                final soundShaderParms_t[] chanParms = {chan.parms};
                 OverrideParms(chan.parms, parms, chanParms);
                 chan.parms = chanParms[0];
 
-                if (chan.parms.shakes > 0.0f && chan.soundShader != null) {
+                if ((chan.parms.shakes > 0.0f) && (chan.soundShader != null)) {
                     chan.soundShader.CheckShakesAndOgg();
                 }
             }
@@ -1042,25 +1042,25 @@ public class snd_emitter {
             int i;
 
             if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
-                common.Printf("StopSound(%d,%d)\n", index, channel);
+                common.Printf("StopSound(%d,%d)\n", this.index, channel);
             }
 
-            if (soundWorld != null && soundWorld.writeDemo != null) {
-                soundWorld.writeDemo.WriteInt(DS_SOUND);
-                soundWorld.writeDemo.WriteInt(SCMD_STOP);
-                soundWorld.writeDemo.WriteInt(index);
-                soundWorld.writeDemo.WriteInt(channel);
+            if ((this.soundWorld != null) && (this.soundWorld.writeDemo != null)) {
+                this.soundWorld.writeDemo.WriteInt(DS_SOUND);
+                this.soundWorld.writeDemo.WriteInt(SCMD_STOP);
+                this.soundWorld.writeDemo.WriteInt(this.index);
+                this.soundWorld.writeDemo.WriteInt(channel);
             }
 
             Sys_EnterCriticalSection();
 
             for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                idSoundChannel chan = channels[i];
+                final idSoundChannel chan = this.channels[i];
 
                 if (!chan.triggerState) {
                     continue;
                 }
-                if (channel != SCHANNEL_ANY && chan.triggerChannel != channel) {
+                if ((channel != SCHANNEL_ANY) && (chan.triggerChannel != channel)) {
                     continue;
                 }
 
@@ -1092,44 +1092,44 @@ public class snd_emitter {
         @Override
         public void FadeSound(final int channel, float to, float over) {
             if (idSoundSystemLocal.s_showStartSound.GetInteger() != 0) {
-                common.Printf("FadeSound(%d,%d,%f,%f )\n", index, channel, to, over);
+                common.Printf("FadeSound(%d,%d,%f,%f )\n", this.index, channel, to, over);
             }
-            if (NOT(soundWorld)) {
+            if (NOT(this.soundWorld)) {
                 return;
             }
-            if (soundWorld.writeDemo != null) {
-                soundWorld.writeDemo.WriteInt(DS_SOUND);
-                soundWorld.writeDemo.WriteInt(SCMD_FADE);
-                soundWorld.writeDemo.WriteInt(index);
-                soundWorld.writeDemo.WriteInt(channel);
-                soundWorld.writeDemo.WriteFloat(to);
-                soundWorld.writeDemo.WriteFloat(over);
+            if (this.soundWorld.writeDemo != null) {
+                this.soundWorld.writeDemo.WriteInt(DS_SOUND);
+                this.soundWorld.writeDemo.WriteInt(SCMD_FADE);
+                this.soundWorld.writeDemo.WriteInt(this.index);
+                this.soundWorld.writeDemo.WriteInt(channel);
+                this.soundWorld.writeDemo.WriteFloat(to);
+                this.soundWorld.writeDemo.WriteFloat(over);
             }
 
             int start44kHz;
 
-            if (soundWorld.fpa[0] != null) {
+            if (this.soundWorld.fpa[0] != null) {
                 // if we are recording an AVI demo, don't use hardware time
-                start44kHz = soundWorld.lastAVI44kHz + MIXBUFFER_SAMPLES;
+                start44kHz = this.soundWorld.lastAVI44kHz + MIXBUFFER_SAMPLES;
             } else {
                 start44kHz = soundSystemLocal.GetCurrent44kHzTime() + MIXBUFFER_SAMPLES;
             }
 
-            int length44kHz = soundSystemLocal.MillisecondsToSamples((int) (over * 1000));
+            final int length44kHz = soundSystemLocal.MillisecondsToSamples((int) (over * 1000));
 
             for (int i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                idSoundChannel chan = channels[i];
+                final idSoundChannel chan = this.channels[i];
 
                 if (!chan.triggerState) {
                     continue;
                 }
-                if (channel != SCHANNEL_ANY && chan.triggerChannel != channel) {
+                if ((channel != SCHANNEL_ANY) && (chan.triggerChannel != channel)) {
                     continue;
                 }
 
                 // if it is already fading to this volume at this rate, don't change it
-                if (chan.channelFade.fadeEndVolume == to
-                        && chan.channelFade.fadeEnd44kHz - chan.channelFade.fadeStart44kHz == length44kHz) {
+                if ((chan.channelFade.fadeEndVolume == to)
+                        && ((chan.channelFade.fadeEnd44kHz - chan.channelFade.fadeStart44kHz) == length44kHz)) {
                     continue;
                 }
 
@@ -1143,7 +1143,7 @@ public class snd_emitter {
 
         @Override
         public boolean CurrentlyPlaying() {
-            return playing;
+            return this.playing;
         }
 
         /*
@@ -1160,28 +1160,28 @@ public class snd_emitter {
                 return idSoundSystemLocal.s_constantAmplitude.GetFloat();
             }
 
-            if (removeStatus > REMOVE_STATUS_WAITSAMPLEFINISHED) {
+            if (this.removeStatus > REMOVE_STATUS_WAITSAMPLEFINISHED) {
                 return 0.0f;
             }
 
-            int localTime = soundSystemLocal.GetCurrent44kHzTime();
+            final int localTime = soundSystemLocal.GetCurrent44kHzTime();
 
             // see if we can use our cached value
-            if (ampTime == localTime) {
-                return amplitude;
+            if (this.ampTime == localTime) {
+                return this.amplitude;
             }
 
             // calculate a new value
-            ampTime = localTime;
-            amplitude = soundWorld.FindAmplitude(this, localTime, null, SCHANNEL_ANY, false);
+            this.ampTime = localTime;
+            this.amplitude = this.soundWorld.FindAmplitude(this, localTime, null, SCHANNEL_ANY, false);
 
-            return amplitude;
+            return this.amplitude;
         }
 
         // for save games.  Index will always be > 0
         @Override
         public int Index() {
-            return index;
+            return this.index;
         }
         //----------------------------------------------
 
@@ -1189,24 +1189,24 @@ public class snd_emitter {
             int i;
 
             for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                channels[i].ALStop();
-                channels[i].Clear();
+                this.channels[i].ALStop();
+                this.channels[i].Clear();
             }
 
-            removeStatus = REMOVE_STATUS_SAMPLEFINISHED;
-            distance = 0.0f;
+            this.removeStatus = REMOVE_STATUS_SAMPLEFINISHED;
+            this.distance = 0.0f;
 
-            lastValidPortalArea = -1;
+            this.lastValidPortalArea = -1;
 
-            playing = false;
-            hasShakes = false;
-            ampTime = 0;								// last time someone queried
-            amplitude = 0;
-            maxDistance = 10.0f;						// meters
-            spatializedOrigin.Zero();
+            this.playing = false;
+            this.hasShakes = false;
+            this.ampTime = 0;								// last time someone queried
+            this.amplitude = 0;
+            this.maxDistance = 10.0f;						// meters
+            this.spatializedOrigin.Zero();
 
 //	memset( &parms, 0, sizeof( parms ) );
-            parms = new soundShaderParms_t();
+            this.parms = new soundShaderParms_t();
         }
 
         public void OverrideParms(final soundShaderParms_t base, final soundShaderParms_t over, soundShaderParms_t[] out) {
@@ -1255,11 +1255,11 @@ public class snd_emitter {
             int i;
 
             hasActive = false;
-            hasShakes = false;
+            this.hasShakes = false;
 
-            if (playing) {
+            if (this.playing) {
                 for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                    idSoundChannel chan = channels[i];
+                    final idSoundChannel chan = this.channels[i];
 
                     if (!chan.triggerState) {
                         continue;
@@ -1277,10 +1277,10 @@ public class snd_emitter {
 //                            alGetSourcei(chan.openalSource, AL_SOURCE_STATE, state);
                             state = AL10.alGetSourcei(chan.openalSource, AL_SOURCE_STATE);
                         }
-                        idSlowChannel slow = GetSlowChannel(chan);
+                        final idSlowChannel slow = GetSlowChannel(chan);
 
-                        if (soundWorld.slowmoActive && slow.IsActive()) {
-                            if (slow.GetCurrentPosition().time >= chan.leadinSample.LengthIn44kHzSamples() / 2) {
+                        if (this.soundWorld.slowmoActive && slow.IsActive()) {
+                            if (slow.GetCurrentPosition().time >= (chan.leadinSample.LengthIn44kHzSamples() / 2)) {
                                 chan.Stop();
                                 // if this was an onDemand sound, purge the sample now
                                 if (chan.leadinSample.onDemand) {
@@ -1288,7 +1288,7 @@ public class snd_emitter {
                                 }
                                 continue;
                             }
-                        } else if ((chan.trigger44kHzTime + chan.leadinSample.LengthIn44kHzSamples() < current44kHzTime) || (state == AL_STOPPED)) {
+                        } else if (((chan.trigger44kHzTime + chan.leadinSample.LengthIn44kHzSamples()) < current44kHzTime) || (state == AL_STOPPED)) {
                             chan.Stop();
 
                             // free hardware resources
@@ -1303,24 +1303,24 @@ public class snd_emitter {
                     }
 
                     // free decoder memory if no sound was decoded for a while
-                    if (chan.decoder != null && chan.decoder.GetLastDecodeTime() < current44kHzTime - SOUND_DECODER_FREE_DELAY) {
+                    if ((chan.decoder != null) && (chan.decoder.GetLastDecodeTime() < (current44kHzTime - SOUND_DECODER_FREE_DELAY))) {
                         chan.decoder.ClearDecoder();
                     }
 
                     hasActive = true;
 
                     if (chan.parms.shakes > 0.0f) {
-                        hasShakes = true;
+                        this.hasShakes = true;
                     }
                 }
             }
 
             // mark the entire sound emitter as non-playing if there aren't any active channels
             if (!hasActive) {
-                playing = false;
-                if (removeStatus == REMOVE_STATUS_WAITSAMPLEFINISHED) {
+                this.playing = false;
+                if (this.removeStatus == REMOVE_STATUS_WAITSAMPLEFINISHED) {
                     // this can now be reused by the next request for a new soundEmitter
-                    removeStatus = REMOVE_STATUS_SAMPLEFINISHED;
+                    this.removeStatus = REMOVE_STATUS_SAMPLEFINISHED;
                 }
             }
         }
@@ -1334,82 +1334,82 @@ public class snd_emitter {
          */
         public void Spatialize(idVec3 listenerPos, int listenerArea, idRenderWorld rw) {
             int i;
-            boolean hasActive = false;
+            final boolean hasActive = false;
 
             //
             // work out the maximum distance of all the playing channels
             //
-            maxDistance = 0;
+            this.maxDistance = 0;
 
             for (i = 0; i < SOUND_MAX_CHANNELS; i++) {
-                idSoundChannel chan = channels[i];
+                final idSoundChannel chan = this.channels[i];
 
                 if (!chan.triggerState) {
                     continue;
                 }
-                if (chan.parms.maxDistance > maxDistance) {
-                    maxDistance = chan.parms.maxDistance;
+                if (chan.parms.maxDistance > this.maxDistance) {
+                    this.maxDistance = chan.parms.maxDistance;
                 }
             }
 
             //
             // work out where the sound comes from
             //
-            idVec3 realOrigin = origin.oMultiply(DOOM_TO_METERS);
-            idVec3 len = listenerPos.oMinus(realOrigin);
-            realDistance = len.LengthFast();
+            final idVec3 realOrigin = this.origin.oMultiply(DOOM_TO_METERS);
+            final idVec3 len = listenerPos.oMinus(realOrigin);
+            this.realDistance = len.LengthFast();
 
-            if (realDistance >= maxDistance) {
+            if (this.realDistance >= this.maxDistance) {
                 // no way to possibly hear it
-                distance = realDistance;
+                this.distance = this.realDistance;
                 return;
             }
 
             //
             // work out virtual origin and distance, which may be from a portal instead of the actual origin
             //
-            distance = maxDistance * METERS_TO_DOOM;
+            this.distance = this.maxDistance * METERS_TO_DOOM;
             if (listenerArea == -1) {		// listener is outside the world
                 return;
             }
             if (rw != null) {
                 // we have a valid renderWorld
-                int soundInArea = rw.PointInArea(origin);
+                int soundInArea = rw.PointInArea(this.origin);
                 if (soundInArea == -1) {
-                    if (lastValidPortalArea == -1) {		// sound is outside the world
-                        distance = realDistance;
-                        spatializedOrigin = origin;			// sound is in our area
+                    if (this.lastValidPortalArea == -1) {		// sound is outside the world
+                        this.distance = this.realDistance;
+                        this.spatializedOrigin = this.origin;			// sound is in our area
                         return;
                     }
-                    soundInArea = lastValidPortalArea;
+                    soundInArea = this.lastValidPortalArea;
                 }
-                lastValidPortalArea = soundInArea;
+                this.lastValidPortalArea = soundInArea;
                 if (soundInArea == listenerArea) {
-                    distance = realDistance;
-                    spatializedOrigin = origin;			// sound is in our area
+                    this.distance = this.realDistance;
+                    this.spatializedOrigin = this.origin;			// sound is in our area
                     return;
                 }
 
-                soundWorld.ResolveOrigin(0, null, soundInArea, 0.0f, origin, this);
-                distance /= METERS_TO_DOOM;
+                this.soundWorld.ResolveOrigin(0, null, soundInArea, 0.0f, this.origin, this);
+                this.distance /= METERS_TO_DOOM;
             } else {
                 // no portals available
-                distance = realDistance;
-                spatializedOrigin = origin;			// sound is in our area
+                this.distance = this.realDistance;
+                this.spatializedOrigin = this.origin;			// sound is in our area
             }
         }
 
         public idSlowChannel GetSlowChannel(final idSoundChannel chan) {
-            return slowChannels[indexOf(chan, channels)];//TODO: pointer subtraction
+            return this.slowChannels[indexOf(chan, this.channels)];//TODO: pointer subtraction
         }
 
         public void SetSlowChannel(final idSoundChannel chan, idSlowChannel slow) {
-            slowChannels[indexOf(chan, channels)] = slow;
+            this.slowChannels[indexOf(chan, this.channels)] = slow;
         }
 
         public void ResetSlowChannel(final idSoundChannel chan) {
-            int index = indexOf(chan, channels);
-            slowChannels[index].Reset();
+            final int index = indexOf(chan, this.channels);
+            this.slowChannels[index].Reset();
         }
 
         @Override
@@ -1426,5 +1426,5 @@ public class snd_emitter {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 }

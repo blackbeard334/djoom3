@@ -62,12 +62,12 @@ public class tr_turboshadow {
             R_CalcInteractionCullBits(ent, tri, light, cullInfo);
         }
 
-        int numFaces = tri.numIndexes / 3;
+        final int numFaces = tri.numIndexes / 3;
         int numShadowingFaces = 0;
         facing = cullInfo.facing;
 
         // if all the triangles are inside the light frustum
-        if (cullInfo.cullBits == LIGHT_CULL_ALL_FRONT || !RenderSystem_init.r_useShadowProjectedCull.GetBool()) {
+        if ((cullInfo.cullBits == LIGHT_CULL_ALL_FRONT) || !RenderSystem_init.r_useShadowProjectedCull.GetBool()) {
 
             // count the number of shadowing faces
             for (i = 0; i < numFaces; i++) {
@@ -79,13 +79,13 @@ public class tr_turboshadow {
 
             // make all triangles that are outside the light frustum "facing", so they won't cast shadows
             indexes = tri.indexes;
-            byte[] modifyFacing = cullInfo.facing;
+            final byte[] modifyFacing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
             for (j = i = 0; i < tri.numIndexes; i += 3, j++) {
                 if (0 == modifyFacing[j]) {
-                    int i1 = indexes[i + 0];
-                    int i2 = indexes[i + 1];
-                    int i3 = indexes[i + 2];
+                    final int i1 = indexes[i + 0];
+                    final int i2 = indexes[i + 1];
+                    final int i3 = indexes[i + 2];
                     if ((cullBits[i1] & cullBits[i2] & cullBits[i3]) != 0) {
                         modifyFacing[j] = 1;
                     } else {
@@ -121,15 +121,15 @@ public class tr_turboshadow {
         // create new triangles along sil planes
         for (sil = 0, i = tri.numSilEdges; i > 0; i--, sil++) {
 
-            int f1 = facing[tri.silEdges[sil].p1];
-            int f2 = facing[tri.silEdges[sil].p2];
+            final int f1 = facing[tri.silEdges[sil].p1];
+            final int f2 = facing[tri.silEdges[sil].p2];
 
             if (0 == (f1 ^ f2)) {
                 continue;
             }
 
-            int v1 = tri.silEdges[sil].v1 << 1;
-            int v2 = tri.silEdges[sil].v2 << 1;
+            final int v1 = tri.silEdges[sil].v1 << 1;
+            final int v2 = tri.silEdges[sil].v2 << 1;
 
             // set the two triangle winding orders based on facing
             // without using a poorly-predictable branch
@@ -143,10 +143,10 @@ public class tr_turboshadow {
             shadowIndex += 6;
         }
 
-        int numShadowIndexes = shadowIndex;//shadowIndexes - tempIndexes;
+        final int numShadowIndexes = shadowIndex;//shadowIndexes - tempIndexes;
 
         // we aren't bothering to separate front and back caps on these
-        newTri.numIndexes = newTri.numShadowIndexesNoFrontCaps = numShadowIndexes + numShadowingFaces * 6;
+        newTri.numIndexes = newTri.numShadowIndexesNoFrontCaps = numShadowIndexes + (numShadowingFaces * 6);
         newTri.numShadowIndexesNoCaps = numShadowIndexes;
         newTri.shadowCapPlaneBits = SHADOW_CAP_INFINITE;
 
@@ -172,13 +172,13 @@ public class tr_turboshadow {
                 continue;
             }
 
-            int i0 = indexes[i + 0] << 1;
+            final int i0 = indexes[i + 0] << 1;
             shadowIndexes[shadowIndex + 2] = i0;
             shadowIndexes[shadowIndex + 3] = i0 ^ 1;
-            int i1 = indexes[i + 1] << 1;
+            final int i1 = indexes[i + 1] << 1;
             shadowIndexes[shadowIndex + 1] = i1;
             shadowIndexes[shadowIndex + 4] = i1 ^ 1;
-            int i2 = indexes[i + 2] << 1;
+            final int i2 = indexes[i + 2] << 1;
             shadowIndexes[shadowIndex + 0] = i2;
             shadowIndexes[shadowIndex + 5] = i2 ^ 1;
 
@@ -195,7 +195,7 @@ public class tr_turboshadow {
      */
     public static srfTriangles_s R_CreateTurboShadowVolume(final idRenderEntityLocal ent, final srfTriangles_s tri, final idRenderLightLocal light, srfCullInfo_t cullInfo) {
         int i, j;
-        idVec3 localLightOrigin = new idVec3();
+        final idVec3 localLightOrigin = new idVec3();
         srfTriangles_s newTri;
         silEdge_t sil;
         int /*glIndex_t */[] indexes;
@@ -206,12 +206,12 @@ public class tr_turboshadow {
             R_CalcInteractionCullBits(ent, tri, light, cullInfo);
         }
 
-        int numFaces = tri.numIndexes / 3;
+        final int numFaces = tri.numIndexes / 3;
         int numShadowingFaces = 0;
         facing = cullInfo.facing;
 
         // if all the triangles are inside the light frustum
-        if (cullInfo.cullBits == LIGHT_CULL_ALL_FRONT || !RenderSystem_init.r_useShadowProjectedCull.GetBool()) {
+        if ((cullInfo.cullBits == LIGHT_CULL_ALL_FRONT) || !RenderSystem_init.r_useShadowProjectedCull.GetBool()) {
 
             // count the number of shadowing faces
             for (i = 0; i < numFaces; i++) {
@@ -223,13 +223,13 @@ public class tr_turboshadow {
 
             // make all triangles that are outside the light frustum "facing", so they won't cast shadows
             indexes = tri.indexes;
-            byte[] modifyFacing = cullInfo.facing;
+            final byte[] modifyFacing = cullInfo.facing;
             final byte[] cullBits = cullInfo.cullBits;
             for (j = i = 0; i < tri.numIndexes; i += 3, j++) {
                 if (0 == modifyFacing[j]) {
-                    int i1 = indexes[i + 0];
-                    int i2 = indexes[i + 1];
-                    int i3 = indexes[i + 2];
+                    final int i1 = indexes[i + 0];
+                    final int i2 = indexes[i + 1];
+                    final int i3 = indexes[i + 2];
                     if ((cullBits[i1] & cullBits[i2] & cullBits[i3]) != 0) {
                         modifyFacing[j] = 1;
                     } else {
@@ -256,7 +256,7 @@ public class tr_turboshadow {
 
         R_GlobalPointToLocal(ent.modelMatrix, light.globalLightOrigin, localLightOrigin);
 
-        int[] vertRemap = new int[tri.numVerts];
+        final int[] vertRemap = new int[tri.numVerts];
 
         SIMDProcessor.Memset(vertRemap, -1, tri.numVerts /* sizeof(vertRemap[0])*/);
 
@@ -272,7 +272,7 @@ public class tr_turboshadow {
         }
 
         {
-            idVec4[] shadows = new idVec4[shadowVerts.length];
+            final idVec4[] shadows = new idVec4[shadowVerts.length];
 
             for (int a = 0; a < shadows.length; a++) {
                 shadows[a] = shadowVerts[a].xyz;
@@ -281,7 +281,7 @@ public class tr_turboshadow {
         }
 
         c_turboUsedVerts += newTri.numVerts;
-        c_turboUnusedVerts += tri.numVerts * 2 - newTri.numVerts;
+        c_turboUnusedVerts += (tri.numVerts * 2) - newTri.numVerts;
 
         if (USE_TRI_DATA_ALLOCATOR) {
             R_ResizeStaticTriSurfShadowVerts(newTri, newTri.numVerts);
@@ -307,15 +307,15 @@ public class tr_turboshadow {
         // create new triangles along sil planes
         for (sil = tri.silEdges[sil_index], i = tri.numSilEdges; i > 0; i--, sil = tri.silEdges[++sil_index]) {
 
-            int f1 = facing[sil.p1];
-            int f2 = facing[sil.p2];
+            final int f1 = facing[sil.p1];
+            final int f2 = facing[sil.p2];
 
             if (0 == (f1 ^ f2)) {
                 continue;
             }
 
-            int v1 = vertRemap[sil.v1];
-            int v2 = vertRemap[sil.v2];
+            final int v1 = vertRemap[sil.v1];
+            final int v2 = vertRemap[sil.v2];
 
             // set the two triangle winding orders based on facing
             // without using a poorly-predictable branch
@@ -329,10 +329,10 @@ public class tr_turboshadow {
             shadowIndex += 6;
         }
 
-        int numShadowIndexes = shadowIndex;
+        final int numShadowIndexes = shadowIndex;
 
         // we aren't bothering to separate front and back caps on these
-        newTri.numIndexes = newTri.numShadowIndexesNoFrontCaps = numShadowIndexes + numShadowingFaces * 6;
+        newTri.numIndexes = newTri.numShadowIndexesNoFrontCaps = numShadowIndexes + (numShadowingFaces * 6);
         newTri.numShadowIndexesNoCaps = numShadowIndexes;
         newTri.shadowCapPlaneBits = SHADOW_CAP_INFINITE;
 
@@ -358,13 +358,13 @@ public class tr_turboshadow {
                 continue;
             }
 
-            int i0 = vertRemap[indexes[i + 0]];
+            final int i0 = vertRemap[indexes[i + 0]];
             shadowIndexes[shadowIndex + 2] = i0;
             shadowIndexes[shadowIndex + 3] = i0 ^ 1;
-            int i1 = vertRemap[indexes[i + 1]];
+            final int i1 = vertRemap[indexes[i + 1]];
             shadowIndexes[shadowIndex + 1] = i1;
             shadowIndexes[shadowIndex + 4] = i1 ^ 1;
-            int i2 = vertRemap[indexes[i + 2]];
+            final int i2 = vertRemap[indexes[i + 2]];
             shadowIndexes[shadowIndex + 0] = i2;
             shadowIndexes[shadowIndex + 5] = i2 ^ 1;
 

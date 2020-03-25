@@ -213,7 +213,7 @@ public class UsercmdGen {
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public static final transient int BYTES = Integer.BYTES * 4 + 6 + 5 * Short.BYTES;
+		public static final transient int BYTES = (Integer.BYTES * 4) + 6 + (5 * Short.BYTES);
 
         public int  gameFrame;              // frame number
         public int  gameTime;               // game time
@@ -230,24 +230,24 @@ public class UsercmdGen {
         public int   sequence;              // just for debugging
 
         public void ByteSwap() {            // on big endian systems, byte swap the shorts and ints
-            angles[0] = LittleShort(angles[0]);
-            angles[1] = LittleShort(angles[1]);
-            angles[2] = LittleShort(angles[2]);
-            sequence = LittleLong(sequence);
+            this.angles[0] = LittleShort(this.angles[0]);
+            this.angles[1] = LittleShort(this.angles[1]);
+            this.angles[2] = LittleShort(this.angles[2]);
+            this.sequence = LittleLong(this.sequence);
         }
 
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = 83 * hash + this.buttons;
-            hash = 83 * hash + this.forwardmove;
-            hash = 83 * hash + this.rightmove;
-            hash = 83 * hash + this.upmove;
-            hash = 83 * hash + Arrays.hashCode(this.angles);
-            hash = 83 * hash + this.mx;
-            hash = 83 * hash + this.my;
-            hash = 83 * hash + this.impulse;
-            hash = 83 * hash + this.flags;
+            hash = (83 * hash) + this.buttons;
+            hash = (83 * hash) + this.forwardmove;
+            hash = (83 * hash) + this.rightmove;
+            hash = (83 * hash) + this.upmove;
+            hash = (83 * hash) + Arrays.hashCode(this.angles);
+            hash = (83 * hash) + this.mx;
+            hash = (83 * hash) + this.my;
+            hash = (83 * hash) + this.impulse;
+            hash = (83 * hash) + this.flags;
             return hash;
         }
 
@@ -304,13 +304,13 @@ public class UsercmdGen {
         public ByteBuffer Write() {
             throw new TODO_Exception();
         }
-    };
+    }
 
     public enum inhibit_t {
 
         INHIBIT_SESSION,
         INHIBIT_ASYNC
-    };
+    }
     static final int MAX_BUFFERED_USERCMD = 64;
 
     public static abstract class idUsercmdGen {
@@ -366,7 +366,7 @@ public class UsercmdGen {
         public idUsercmdGenLocal.MouseCursorCallback mouseCursorCallback;
         public idUsercmdGenLocal.MouseScrollCallback mouseScrollCallback;
         public idUsercmdGenLocal.MouseButtonCallback mouseButtonCallback;
-    };
+    }
 //
     static final int KEY_MOVESPEED = 127;
 
@@ -467,7 +467,7 @@ public class UsercmdGen {
         UB_IMPULSE63,
         //
         UB_MAX_BUTTONS
-    };
+    }
 
     static class userCmdString_t {
 
@@ -478,7 +478,7 @@ public class UsercmdGen {
 
         String          string;
         usercmdButton_t button;
-    };
+    }
 //
     static final userCmdString_t[] userCmdStrings = {
         new userCmdString_t("_moveUp", UB_UP),
@@ -586,22 +586,22 @@ public class UsercmdGen {
         }
 
         public void Clear() {
-            held = false;
-            on = 0;
+            this.held = false;
+            this.on = 0;
         }
 
         public void SetKeyState(int keystate, boolean toggle) {
             if (!toggle) {
-                held = false;
-                on = keystate;
+                this.held = false;
+                this.on = keystate;
             } else if (0 == keystate) {
-                held = false;
-            } else if (!held) {
-                held = true;
-                on ^= 1;
+                this.held = false;
+            } else if (!this.held) {
+                this.held = true;
+                this.on ^= 1;
             }
         }
-    };
+    }
     //    
     //    
     static final int NUM_USER_COMMANDS = userCmdStrings.length;
@@ -612,30 +612,30 @@ public class UsercmdGen {
 
     static class idUsercmdGenLocal extends idUsercmdGen {
 
-        private idVec3        viewangles;
+        private final idVec3        viewangles;
         private int           flags;
         private int           impulse;
         //
-        private buttonState_t toggled_crouch;
-        private buttonState_t toggled_run;
-        private buttonState_t toggled_zoom;
-        private int[]     buttonState = new int[etoi(UB_MAX_BUTTONS)];
-        private boolean[] keyState    = new boolean[K_LAST_KEY];
+        private final buttonState_t toggled_crouch;
+        private final buttonState_t toggled_run;
+        private final buttonState_t toggled_zoom;
+        private final int[]     buttonState = new int[etoi(UB_MAX_BUTTONS)];
+        private final boolean[] keyState    = new boolean[K_LAST_KEY];
         //
         private int       inhibitCommands;                      // true when in console or menu locally
-        private int       lastCommandTime;
+        private final int       lastCommandTime;
         //
         private boolean   initialized;
         //
         private usercmd_t cmd;                                  // the current cmd being built
-        private usercmd_t[] buffered = new usercmd_t[MAX_BUFFERED_USERCMD];
+        private final usercmd_t[] buffered = new usercmd_t[MAX_BUFFERED_USERCMD];
         //
         private double continuousMouseX, continuousMouseY;      // for gui event generatioin, never zerod
         private int     mouseButton;                            // for gui event generatioin
         private boolean mouseDown;
         //
         private double  mouseDx, mouseDy;                       // added to by mouse events
-        private int[]   joystickAxis = new int[etoi(MAX_JOYSTICK_AXIS)];// set by joystick events
+        private final int[]   joystickAxis = new int[etoi(MAX_JOYSTICK_AXIS)];// set by joystick events
         //
         private static final idCVar in_yawSpeed      = new idCVar("in_yawspeed", "140", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_FLOAT, "yaw change speed when holding down _left or _right button");
         private static final idCVar in_pitchSpeed    = new idCVar("in_pitchspeed", "140", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_FLOAT, "pitch change speed when holding down look _lookUp or _lookDown button");
@@ -656,41 +656,41 @@ public class UsercmdGen {
         //
 
         public idUsercmdGenLocal() {
-            lastCommandTime = 0;
-            initialized = false;
+            this.lastCommandTime = 0;
+            this.initialized = false;
 
-            flags = 0;
-            impulse = 0;
+            this.flags = 0;
+            this.impulse = 0;
 
-            toggled_crouch = new buttonState_t();
-            toggled_run = new buttonState_t();
-            toggled_zoom = new buttonState_t();
-            toggled_run.on = btoi(in_alwaysRun.GetBool());
+            this.toggled_crouch = new buttonState_t();
+            this.toggled_run = new buttonState_t();
+            this.toggled_zoom = new buttonState_t();
+            this.toggled_run.on = btoi(in_alwaysRun.GetBool());
 
-            viewangles = new idVec3();//ClearAngles();
+            this.viewangles = new idVec3();//ClearAngles();
             this.cmd = new usercmd_t();
             Clear();
 
-            keyboardCallback = new KeyboardCallback();
-            mouseCursorCallback = new MouseCursorCallback();
-            mouseScrollCallback = new MouseScrollCallback();
-            mouseButtonCallback = new MouseButtonCallback();
+            this.keyboardCallback = new KeyboardCallback();
+            this.mouseCursorCallback = new MouseCursorCallback();
+            this.mouseScrollCallback = new MouseScrollCallback();
+            this.mouseButtonCallback = new MouseButtonCallback();
         }
 
         @Override
         public void Init() {
-            initialized = true;
+            this.initialized = true;
         }
 
         @Override
         public void InitForNewMap() {
-            flags = 0;
-            impulse = 0;
+            this.flags = 0;
+            this.impulse = 0;
 
-            toggled_crouch.Clear();
-            toggled_run.Clear();
-            toggled_zoom.Clear();
-            toggled_run.on = in_alwaysRun.GetBool() ? 1 : 0;
+            this.toggled_crouch.Clear();
+            this.toggled_run.Clear();
+            this.toggled_zoom.Clear();
+            this.toggled_run.on = in_alwaysRun.GetBool() ? 1 : 0;
 
             Clear();
             ClearAngles();
@@ -698,25 +698,25 @@ public class UsercmdGen {
 
         @Override
         public void Shutdown() {
-            initialized = false;
+            this.initialized = false;
         }
 
         @Override
         public void Clear() {
             // clears all key states 
-            Arrays.fill(buttonState, 0);//	memset( buttonState, 0, sizeof( buttonState ) );
-            Arrays.fill(keyState, false);//	memset( keyState, false, sizeof( keyState ) );
+            Arrays.fill(this.buttonState, 0);//	memset( buttonState, 0, sizeof( buttonState ) );
+            Arrays.fill(this.keyState, false);//	memset( keyState, false, sizeof( keyState ) );
 
-            inhibitCommands = 0;//false;
+            this.inhibitCommands = 0;//false;
 
-            mouseDx = mouseDy = 0;
-            mouseButton = 0;
-            mouseDown = false;
+            this.mouseDx = this.mouseDy = 0;
+            this.mouseButton = 0;
+            this.mouseDown = false;
         }
 
         @Override
         public void ClearAngles() {
-            viewangles.Zero();
+            this.viewangles.Zero();
         }
 
         /*
@@ -732,25 +732,25 @@ public class UsercmdGen {
             // the packetClient code can legally ask for com_ticNumber+1, because
             // it is in the async code and com_ticNumber hasn't been updated yet,
             // but all other code should never ask for anything > com_ticNumber
-            if (ticNumber > com_ticNumber + 1) {
+            if (ticNumber > (com_ticNumber + 1)) {
                 common.Error("idUsercmdGenLocal::TicCmd ticNumber > com_ticNumber");
             }
 
-            if (ticNumber <= com_ticNumber - MAX_BUFFERED_USERCMD) {
+            if (ticNumber <= (com_ticNumber - MAX_BUFFERED_USERCMD)) {
                 // this can happen when something in the game code hitches badly, allowing the
                 // async code to overflow the buffers
                 //common.Printf( "warning: idUsercmdGenLocal::TicCmd ticNumber <= com_ticNumber - MAX_BUFFERED_USERCMD\n" );
             }
 
-            return buffered[ticNumber & (MAX_BUFFERED_USERCMD - 1)];
+            return this.buffered[ticNumber & (MAX_BUFFERED_USERCMD - 1)];
         }
 
         @Override
         public void InhibitUsercmd(inhibit_t subsystem, boolean inhibit) {
             if (inhibit) {
-                inhibitCommands |= 1 << subsystem.ordinal();
+                this.inhibitCommands |= 1 << subsystem.ordinal();
             } else {
-                inhibitCommands &= (0xffffffff ^ (1 << subsystem.ordinal()));
+                this.inhibitCommands &= (0xffffffff ^ (1 << subsystem.ordinal()));
             }
         }
 
@@ -765,7 +765,7 @@ public class UsercmdGen {
         @Override
         public void UsercmdInterrupt() {
             // dedicated servers won't create usercmds
-            if (!initialized) {
+            if (!this.initialized) {
                 return;
             }
 
@@ -786,9 +786,9 @@ public class UsercmdGen {
             MakeCurrent();
 
             // save a number for debugging cmdDemos and networking
-            cmd.sequence = com_ticNumber + 1;
+            this.cmd.sequence = com_ticNumber + 1;
 
-            buffered[(com_ticNumber + 1) & (MAX_BUFFERED_USERCMD - 1)] = cmd;
+            this.buffered[(com_ticNumber + 1) & (MAX_BUFFERED_USERCMD - 1)] = this.cmd;
         }
 
         /*
@@ -800,7 +800,7 @@ public class UsercmdGen {
          */
         @Override
         public int CommandStringUsercmdData(final String cmdString) {
-            for (userCmdString_t ucs : userCmdStrings) {
+            for (final userCmdString_t ucs : userCmdStrings) {
                 if (idStr.Icmp(cmdString, ucs.string) == 0) {
                     return ucs.button.ordinal();
                 }
@@ -815,7 +815,7 @@ public class UsercmdGen {
 
         @Override
         public String GetUserCommandName(int index) {
-            if (index >= 0 && index < NUM_USER_COMMANDS) {
+            if ((index >= 0) && (index < NUM_USER_COMMANDS)) {
                 return userCmdStrings[index].string;
             }
             return "";
@@ -825,8 +825,8 @@ public class UsercmdGen {
         public void MouseState(int[] x, int[] y, int[] button, boolean[] down) {
 //            x[0] = continuousMouseX;
 //            y[0] = continuousMouseY;
-            button[0] = mouseButton;
-            down[0] = mouseDown;
+            button[0] = this.mouseButton;
+            down[0] = this.mouseDown;
         }
 
 
@@ -839,10 +839,10 @@ public class UsercmdGen {
          */
         @Override
         public int ButtonState(int key) {
-            if (key < 0 || key >= UB_MAX_BUTTONS.ordinal()) {
+            if ((key < 0) || (key >= UB_MAX_BUTTONS.ordinal())) {
                 return -1;
             }
-            return (buttonState[key] > 0) ? 1 : 0;
+            return (this.buttonState[key] > 0) ? 1 : 0;
         }
 
         public int ButtonState(usercmdButton_t key) {
@@ -860,10 +860,10 @@ public class UsercmdGen {
          */
         @Override
         public int KeyState(int key) {
-            if (key < 0 || key >= K_LAST_KEY) {
+            if ((key < 0) || (key >= K_LAST_KEY)) {
                 return -1;
             }
-            return (keyState[key]) ? 1 : 0;
+            return (this.keyState[key]) ? 1 : 0;
         }
 
         @Override
@@ -885,9 +885,9 @@ public class UsercmdGen {
             // create the usercmd
             MakeCurrent();
 
-            cmd.duplicateCount = 0;
+            this.cmd.duplicateCount = 0;
 
-            return cmd;
+            return this.cmd;
         }
 
         /*
@@ -901,13 +901,13 @@ public class UsercmdGen {
             idVec3 oldAngles;
             int i;
 
-            oldAngles = new idVec3(viewangles);
+            oldAngles = new idVec3(this.viewangles);
 
             if (!Inhibited()) {
                 // update toggled key states
-                toggled_crouch.SetKeyState(ButtonState(UB_DOWN), in_toggleCrouch.GetBool());
-                toggled_run.SetKeyState(ButtonState(UB_SPEED), in_toggleRun.GetBool() && idAsyncNetwork.IsActive());
-                toggled_zoom.SetKeyState(ButtonState(UB_ZOOM), in_toggleZoom.GetBool());
+                this.toggled_crouch.SetKeyState(ButtonState(UB_DOWN), in_toggleCrouch.GetBool());
+                this.toggled_run.SetKeyState(ButtonState(UB_SPEED), in_toggleRun.GetBool() && idAsyncNetwork.IsActive());
+                this.toggled_zoom.SetKeyState(ButtonState(UB_ZOOM), in_toggleZoom.GetBool());
 
                 // keyboard angle adjustment
                 AdjustAngles();
@@ -925,25 +925,25 @@ public class UsercmdGen {
                 JoystickMove();
 
                 // check to make sure the angles haven't wrapped
-                if (viewangles.oGet(PITCH) - oldAngles.oGet(PITCH) > 90) {
-                    viewangles.oSet(PITCH, oldAngles.oGet(PITCH) + 90);
-                } else if (oldAngles.oGet(PITCH) - viewangles.oGet(PITCH) > 90) {
-                    viewangles.oSet(PITCH, oldAngles.oGet(PITCH) - 90);
+                if ((this.viewangles.oGet(PITCH) - oldAngles.oGet(PITCH)) > 90) {
+                    this.viewangles.oSet(PITCH, oldAngles.oGet(PITCH) + 90);
+                } else if ((oldAngles.oGet(PITCH) - this.viewangles.oGet(PITCH)) > 90) {
+                    this.viewangles.oSet(PITCH, oldAngles.oGet(PITCH) - 90);
                 }
             } else {
-                mouseDx = 0;
-                mouseDy = 0;
+                this.mouseDx = 0;
+                this.mouseDy = 0;
             }
 
             for (i = 0; i < 3; i++) {
-                cmd.angles[i] = (short) ANGLE2SHORT(viewangles.oGet(i));
+                this.cmd.angles[i] = (short) ANGLE2SHORT(this.viewangles.oGet(i));
             }
 
-            cmd.mx = (short) continuousMouseX;
-            cmd.my = (short) continuousMouseY;
+            this.cmd.mx = (short) this.continuousMouseX;
+            this.cmd.my = (short) this.continuousMouseY;
 
-            flags = cmd.flags;
-            impulse = cmd.impulse;
+            this.flags = this.cmd.flags;
+            this.impulse = this.cmd.impulse;
         }
 
 
@@ -955,11 +955,11 @@ public class UsercmdGen {
          ================
          */
         private void InitCurrent() {
-            cmd = new usercmd_t();//memset( &cmd, 0, sizeof( cmd ) );
-            cmd.flags = (byte) flags;
-            cmd.impulse = (byte) impulse;
-            cmd.buttons |= (in_alwaysRun.GetBool() && idAsyncNetwork.IsActive()) ? BUTTON_RUN : 0;
-            cmd.buttons |= in_freeLook.GetBool() ? BUTTON_MLOOK : 0;
+            this.cmd = new usercmd_t();//memset( &cmd, 0, sizeof( cmd ) );
+            this.cmd.flags = (byte) this.flags;
+            this.cmd.impulse = (byte) this.impulse;
+            this.cmd.buttons |= (in_alwaysRun.GetBool() && idAsyncNetwork.IsActive()) ? BUTTON_RUN : 0;
+            this.cmd.buttons |= in_freeLook.GetBool() ? BUTTON_MLOOK : 0;
         }
 
 
@@ -971,7 +971,7 @@ public class UsercmdGen {
          ================
          */
         private boolean Inhibited() {
-            return (inhibitCommands != 0);
+            return (this.inhibitCommands != 0);
         }
 
 
@@ -985,19 +985,19 @@ public class UsercmdGen {
         private void AdjustAngles() {
             float speed;
 
-            if ((toggled_run.on != 0) ^ (in_alwaysRun.GetBool() && idAsyncNetwork.IsActive())) {
+            if ((this.toggled_run.on != 0) ^ (in_alwaysRun.GetBool() && idAsyncNetwork.IsActive())) {
                 speed = idMath.M_MS2SEC * USERCMD_MSEC * in_angleSpeedKey.GetFloat();
             } else {
                 speed = idMath.M_MS2SEC * USERCMD_MSEC;
             }
 
             if (0 == ButtonState(UB_STRAFE)) {
-                viewangles.oMinSet(YAW, speed * in_yawSpeed.GetFloat() * ButtonState(UB_RIGHT));
-                viewangles.oPluSet(YAW, speed * in_yawSpeed.GetFloat() * ButtonState(UB_LEFT));
+                this.viewangles.oMinSet(YAW, speed * in_yawSpeed.GetFloat() * ButtonState(UB_RIGHT));
+                this.viewangles.oPluSet(YAW, speed * in_yawSpeed.GetFloat() * ButtonState(UB_LEFT));
             }
 
-            viewangles.oMinSet(PITCH, speed * in_pitchSpeed.GetFloat() * ButtonState(UB_LOOKUP));
-            viewangles.oPluSet(PITCH, speed * in_pitchSpeed.GetFloat() * ButtonState(UB_LOOKDOWN));
+            this.viewangles.oMinSet(PITCH, speed * in_pitchSpeed.GetFloat() * ButtonState(UB_LOOKUP));
+            this.viewangles.oPluSet(PITCH, speed * in_pitchSpeed.GetFloat() * ButtonState(UB_LOOKDOWN));
         }
 
         /*
@@ -1021,35 +1021,35 @@ public class UsercmdGen {
             side += KEY_MOVESPEED * ButtonState(UB_MOVERIGHT);
             side -= KEY_MOVESPEED * ButtonState(UB_MOVELEFT);
 
-            up -= KEY_MOVESPEED * toggled_crouch.on;
+            up -= KEY_MOVESPEED * this.toggled_crouch.on;
             up += KEY_MOVESPEED * ButtonState(UB_UP);
 
             forward += KEY_MOVESPEED * ButtonState(UB_FORWARD);
             forward -= KEY_MOVESPEED * ButtonState(UB_BACK);
 
-            cmd.forwardmove = (byte) idMath.ClampChar(forward);
-            cmd.rightmove = (byte) idMath.ClampChar(side);
-            cmd.upmove = (byte) idMath.ClampChar(up);
+            this.cmd.forwardmove = (byte) idMath.ClampChar(forward);
+            this.cmd.rightmove = (byte) idMath.ClampChar(side);
+            this.cmd.upmove = (byte) idMath.ClampChar(up);
         }
 
         private void JoystickMove() {
             float anglespeed;
 
-            if ((toggled_run.on != 0) ^ (in_alwaysRun.GetBool() && idAsyncNetwork.IsActive())) {
+            if ((this.toggled_run.on != 0) ^ (in_alwaysRun.GetBool() && idAsyncNetwork.IsActive())) {
                 anglespeed = idMath.M_MS2SEC * USERCMD_MSEC * in_angleSpeedKey.GetFloat();
             } else {
                 anglespeed = idMath.M_MS2SEC * USERCMD_MSEC;
             }
 
             if (0 == ButtonState(UB_STRAFE)) {
-                viewangles.oPluSet(YAW, anglespeed * in_yawSpeed.GetFloat() * joystickAxis[AXIS_SIDE.ordinal()]);
-                viewangles.oPluSet(PITCH, anglespeed * in_pitchSpeed.GetFloat() * joystickAxis[AXIS_FORWARD.ordinal()]);
+                this.viewangles.oPluSet(YAW, anglespeed * in_yawSpeed.GetFloat() * this.joystickAxis[AXIS_SIDE.ordinal()]);
+                this.viewangles.oPluSet(PITCH, anglespeed * in_pitchSpeed.GetFloat() * this.joystickAxis[AXIS_FORWARD.ordinal()]);
             } else {
-                cmd.rightmove = (byte) idMath.ClampChar(cmd.rightmove + joystickAxis[AXIS_SIDE.ordinal()]);
-                cmd.forwardmove = (byte) idMath.ClampChar(cmd.forwardmove + joystickAxis[AXIS_FORWARD.ordinal()]);
+                this.cmd.rightmove = (byte) idMath.ClampChar(this.cmd.rightmove + this.joystickAxis[AXIS_SIDE.ordinal()]);
+                this.cmd.forwardmove = (byte) idMath.ClampChar(this.cmd.forwardmove + this.joystickAxis[AXIS_FORWARD.ordinal()]);
             }
 
-            cmd.upmove = (byte) idMath.ClampChar(cmd.upmove + joystickAxis[AXIS_UP.ordinal()]);
+            this.cmd.upmove = (byte) idMath.ClampChar(this.cmd.upmove + this.joystickAxis[AXIS_UP.ordinal()]);
         }
 
         static double[][] history = new double[8][2];
@@ -1059,8 +1059,8 @@ public class UsercmdGen {
             float mx, my, strafeMx, strafeMy;
             int i;
 
-            history[historyCounter & 7][0] = mouseDx;
-            history[historyCounter & 7][1] = mouseDy;
+            history[historyCounter & 7][0] = this.mouseDx;
+            history[historyCounter & 7][1] = this.mouseDy;
 
             // allow mouse movement to be smoothed together
             int smooth = m_smooth.GetInteger();
@@ -1073,8 +1073,8 @@ public class UsercmdGen {
             mx = 0;
             my = 0;
             for (i = 0; i < smooth; i++) {
-                mx += history[(historyCounter - i + 8) & 7][0];
-                my += history[(historyCounter - i + 8) & 7][1];
+                mx += history[((historyCounter - i) + 8) & 7][0];
+                my += history[((historyCounter - i) + 8) & 7][1];
             }
             mx /= smooth;
             my /= smooth;
@@ -1090,15 +1090,15 @@ public class UsercmdGen {
             strafeMx = 0;
             strafeMy = 0;
             for (i = 0; i < smooth; i++) {
-                strafeMx += history[(historyCounter - i + 8) & 7][0];
-                strafeMy += history[(historyCounter - i + 8) & 7][1];
+                strafeMx += history[((historyCounter - i) + 8) & 7][0];
+                strafeMy += history[((historyCounter - i) + 8) & 7][1];
             }
             strafeMx /= smooth;
             strafeMy /= smooth;
 
             historyCounter++;
 
-            if (idMath.Fabs(mx) > 1000 || idMath.Fabs(my) > 1000) {
+            if ((idMath.Fabs(mx) > 1000) || (idMath.Fabs(my) > 1000)) {
                 Sys_DebugPrintf("idUsercmdGenLocal.MouseMove: Ignoring ridiculous mouse delta.\n");
                 mx = my = 0;
             }
@@ -1107,77 +1107,77 @@ public class UsercmdGen {
             my *= sensitivity.GetFloat();
 
             if (m_showMouseRate.GetBool()) {
-                Sys_DebugPrintf("[%3d %3d  = %5.1f %5.1f = %5.1f %5.1f] ", mouseDx, mouseDy, mx, my, strafeMx, strafeMy);
+                Sys_DebugPrintf("[%3d %3d  = %5.1f %5.1f = %5.1f %5.1f] ", this.mouseDx, this.mouseDy, mx, my, strafeMx, strafeMy);
             }
 
-            mouseDx = 0;
-            mouseDy = 0;
+            this.mouseDx = 0;
+            this.mouseDy = 0;
 
-            if (0.0f == strafeMx && 0.0f == strafeMy) {
+            if ((0.0f == strafeMx) && (0.0f == strafeMy)) {
                 return;
             }
 
-            if (ButtonState(UB_STRAFE) != 0 || 0 == (cmd.buttons & BUTTON_MLOOK)) {
+            if ((ButtonState(UB_STRAFE) != 0) || (0 == (this.cmd.buttons & BUTTON_MLOOK))) {
                 // add mouse X/Y movement to cmd
                 strafeMx *= m_strafeScale.GetFloat();
                 strafeMy *= m_strafeScale.GetFloat();
                 // clamp as a vector, instead of separate floats
-                float len = (float) Math.sqrt(strafeMx * strafeMx + strafeMy * strafeMy);
+                final float len = (float) Math.sqrt((strafeMx * strafeMx) + (strafeMy * strafeMy));
                 if (len > 127) {
-                    strafeMx = strafeMx * 127 / len;
-                    strafeMy = strafeMy * 127 / len;
+                    strafeMx = (strafeMx * 127) / len;
+                    strafeMy = (strafeMy * 127) / len;
                 }
             }
 
             if (0 == ButtonState(UB_STRAFE)) {
-                viewangles.oMinSet(YAW, m_yaw.GetFloat() * mx);
+                this.viewangles.oMinSet(YAW, m_yaw.GetFloat() * mx);
             } else {
-                cmd.rightmove = (byte) idMath.ClampChar((int) (cmd.rightmove + strafeMx));
+                this.cmd.rightmove = (byte) idMath.ClampChar((int) (this.cmd.rightmove + strafeMx));
             }
 
-            if (0 == ButtonState(UB_STRAFE) && (cmd.buttons & BUTTON_MLOOK) != 0) {
-                viewangles.oPluSet(PITCH, m_pitch.GetFloat() * my);
+            if ((0 == ButtonState(UB_STRAFE)) && ((this.cmd.buttons & BUTTON_MLOOK) != 0)) {
+                this.viewangles.oPluSet(PITCH, m_pitch.GetFloat() * my);
             } else {
-                cmd.forwardmove = (byte) idMath.ClampChar((int) (cmd.forwardmove - strafeMy));
+                this.cmd.forwardmove = (byte) idMath.ClampChar((int) (this.cmd.forwardmove - strafeMy));
             }
         }
 
         private void CmdButtons() {
             int i;
 
-            cmd.buttons = 0;
+            this.cmd.buttons = 0;
 
             // figure button bits
             for (i = 0; i <= 7; i++) {
                 if (ButtonState( /*(usercmdButton_t)*/(UB_BUTTON0.ordinal() + i)) != 0) {
-                    cmd.buttons |= 1 << i;
+                    this.cmd.buttons |= 1 << i;
                 }
             }
 
             // check the attack button
             if (ButtonState(UB_ATTACK) != 0) {
-                cmd.buttons |= BUTTON_ATTACK;
+                this.cmd.buttons |= BUTTON_ATTACK;
             }
 
             // check the run button
-            if ((toggled_run.on != 0) ^ (in_alwaysRun.GetBool() && idAsyncNetwork.IsActive())) {
-                cmd.buttons |= BUTTON_RUN;
+            if ((this.toggled_run.on != 0) ^ (in_alwaysRun.GetBool() && idAsyncNetwork.IsActive())) {
+                this.cmd.buttons |= BUTTON_RUN;
             }
 
             // check the zoom button
-            if (toggled_zoom.on != 0) {
-                cmd.buttons |= BUTTON_ZOOM;
+            if (this.toggled_zoom.on != 0) {
+                this.cmd.buttons |= BUTTON_ZOOM;
             }
 
             // check the scoreboard button
-            if (ButtonState(UB_SHOWSCORES) != 0 || ButtonState(UB_IMPULSE19) != 0) {
+            if ((ButtonState(UB_SHOWSCORES) != 0) || (ButtonState(UB_IMPULSE19) != 0)) {
                 // the button is toggled in SP mode as well but without effect
-                cmd.buttons |= BUTTON_SCORES;
+                this.cmd.buttons |= BUTTON_SCORES;
             }
 
             // check the mouse look button
             if ((ButtonState(UB_MLOOK) ^ in_freeLook.GetInteger()) != 0) {
-                cmd.buttons |= BUTTON_MLOOK;
+                this.cmd.buttons |= BUTTON_MLOOK;
             }
         }
 
@@ -1187,17 +1187,17 @@ public class UsercmdGen {
             @Override
             public void invoke(long window, double xpos, double ypos) {
                 final long dwTimeStamp = System.nanoTime();
-                final double dx = xpos - prevX;
-                final double dy = ypos - prevY;
+                final double dx = xpos - this.prevX;
+                final double dy = ypos - this.prevY;
 
-                if (dx != 0 || dy != 0) {
-                    mouseDx += dx;
-                    continuousMouseX += dx;
-                    prevX = xpos;
+                if ((dx != 0) || (dy != 0)) {
+                    idUsercmdGenLocal.this.mouseDx += dx;
+                    idUsercmdGenLocal.this.continuousMouseX += dx;
+                    this.prevX = xpos;
 
-                    mouseDy += dy;
-                    continuousMouseY += dy;
-                    prevY = ypos;
+                    idUsercmdGenLocal.this.mouseDy += dy;
+                    idUsercmdGenLocal.this.continuousMouseY += dy;
+                    this.prevY = ypos;
                     Sys_QueEvent(dwTimeStamp, SE_MOUSE, (int) dx, (int) dy, 0, null);
                 }
 
@@ -1218,8 +1218,8 @@ public class UsercmdGen {
                 while (wheelValue-- > 0) {
                     Key(key, true);
                     Key(key, false);
-                    mouseButton = key;
-                    mouseDown = true;
+                    idUsercmdGenLocal.this.mouseButton = key;
+                    idUsercmdGenLocal.this.mouseDown = true;
                     Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(true), 0, null);
                     Sys_QueEvent(dwTimeStamp, SE_KEY, key, btoi(false), 0, null);
                 }
@@ -1237,10 +1237,10 @@ public class UsercmdGen {
                 final int diaction = button;
                 if (diaction != -1) {
                     final int buton = action != GLFW_RELEASE ? 0x80 : 0;// (polled_didod[n].dwData & 0x80) == 0x80;
-                    mouseButton = K_MOUSE1 + diaction;
-                    mouseDown = (buton != 0);
-                    Key(mouseButton, mouseDown);
-                    Sys_QueEvent(dwTimeStamp, SE_KEY, mouseButton, buton, 0, null);
+                    idUsercmdGenLocal.this.mouseButton = K_MOUSE1 + diaction;
+                    idUsercmdGenLocal.this.mouseDown = (buton != 0);
+                    Key(idUsercmdGenLocal.this.mouseButton, idUsercmdGenLocal.this.mouseDown);
+                    Sys_QueEvent(dwTimeStamp, SE_KEY, idUsercmdGenLocal.this.mouseButton, buton, 0, null);
                 }
 
                 Sys_EndMouseInputEvents();
@@ -1250,7 +1250,7 @@ public class UsercmdGen {
          private class KeyboardCallback extends GLFWKeyCallback {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
-                int[] ch = {0};
+                final int[] ch = {0};
                 //                        //-+
                 // Study each of the buffer elements and process them.
                 //
@@ -1263,7 +1263,7 @@ public class UsercmdGen {
         }
 
         private void Joystick() {
-            Arrays.fill(joystickAxis, 0);//	memset( joystickAxis, 0, sizeof( joystickAxis ) );
+            Arrays.fill(this.joystickAxis, 0);//	memset( joystickAxis, 0, sizeof( joystickAxis ) );
         }
 
         /*
@@ -1276,32 +1276,32 @@ public class UsercmdGen {
         private void Key(int keyNum, boolean down) {
 
             // Sanity check, sometimes we get double message :(
-            if (keyState[keyNum] == down) {
+            if (this.keyState[keyNum] == down) {
                 return;
             }
-            keyState[keyNum] = down;
+            this.keyState[keyNum] = down;
 
-            int action = idKeyInput.GetUsercmdAction(keyNum);
+            final int action = idKeyInput.GetUsercmdAction(keyNum);
 
             if (down) {
 
-                buttonState[action]++;
+                this.buttonState[action]++;
 
                 if (!Inhibited()) {
-                    if (action >= UB_IMPULSE0.ordinal() && action <= UB_IMPULSE61.ordinal()) {
-                        impulse = cmd.impulse = (byte) (action - UB_IMPULSE0.ordinal());
-                        flags = cmd.flags ^= UCF_IMPULSE_SEQUENCE;
+                    if ((action >= UB_IMPULSE0.ordinal()) && (action <= UB_IMPULSE61.ordinal())) {
+                        this.impulse = this.cmd.impulse = (byte) (action - UB_IMPULSE0.ordinal());
+                        this.flags = this.cmd.flags ^= UCF_IMPULSE_SEQUENCE;
                     }
                 }
             } else {
-                buttonState[action]--;
+                this.buttonState[action]--;
                 // we might have one held down across an app active transition
-                if (buttonState[action] < 0) {
-                    buttonState[action] = 0;
+                if (this.buttonState[action] < 0) {
+                    this.buttonState[action] = 0;
                 }
             }
         }
-    };
+    }
 
     public static void setUsercmdGen(idUsercmdGen usercmdGen) {
         UsercmdGen.usercmdGen = localUsercmdGen = (idUsercmdGenLocal) usercmdGen;

@@ -161,7 +161,7 @@ public class FileSystem_h {
         FS_READ,
         FS_WRITE,
         FS_APPEND
-    };
+    }
 
     public enum fsPureReply_t {
 
@@ -169,13 +169,13 @@ public class FileSystem_h {
         PURE_RESTART, // restart required
         PURE_MISSING, // pak files missing on the client
         PURE_NODLL	  // no DLL could be extracted
-    };
+    }
 
     public enum dlType_t {
 
         DLTYPE_URL,
         DLTYPE_FILE
-    };
+    }
 
     public enum dlStatus_t {
 
@@ -184,20 +184,20 @@ public class FileSystem_h {
         DL_DONE,        // download completed, success
         DL_ABORTING,    // this one can be set during a download, it will force the next progress callback to abort - then will go to DL_FAILED
         DL_FAILED
-    };
+    }
 
     public enum dlMime_t {
 
         FILE_EXEC,
         FILE_OPEN
-    };
+    }
 
     public enum findFile_t {
 
         FIND_NO,
         FIND_YES,
         FIND_ADDON
-    };
+    }
 
     public static class urlDownload_s {
 
@@ -231,7 +231,7 @@ public class FileSystem_h {
             this.dlstatus = url.dlstatus;
             this.status = url.status;
         }
-    };
+    }
 
     public static class fileDownload_s {
 
@@ -257,7 +257,7 @@ public class FileSystem_h {
             this.length = file.length;
             this.buffer = file.buffer.duplicate();
         }
-    };
+    }
 
     public static class backgroundDownload_s {
 
@@ -288,11 +288,11 @@ public class FileSystem_h {
             this.next = bgl.next;//pointer
             this.opcode = bgl.opcode;
             this.f = bgl.f;//pointer
-            file = new fileDownload_s(bgl.file);
-            url = new urlDownload_s(bgl.url);
+            this.file = new fileDownload_s(bgl.file);
+            this.url = new urlDownload_s(bgl.url);
             this.completed = bgl.completed;
         }
-    };
+    }
 
     // file list for directory listings
     public static class idFileList {
@@ -300,7 +300,7 @@ public class FileSystem_h {
 //
 
         private idStr     basePath;
-        private idStrList list;
+        private final idStrList list;
         //
         //
 
@@ -310,27 +310,27 @@ public class FileSystem_h {
         }
 
         public String GetBasePath() {
-            return basePath.getData();
+            return this.basePath.getData();
         }
 
         public int GetNumFiles() {
-            return list.Num();
+            return this.list.Num();
         }
 
         public String GetFile(int index) {
-            return list.oGet(index).getData();
+            return this.list.oGet(index).getData();
         }
 
         public idStrList GetList() {
-            return list;
+            return this.list;
         }
-    };
+    }
 
     // mod list
     static class idModList {
 
-        private idStrList mods;
-        private idStrList descriptions;
+        private final idStrList mods;
+        private final idStrList descriptions;
         //
         //
 
@@ -340,15 +340,15 @@ public class FileSystem_h {
         }
 
         public int GetNumMods() {
-            return mods.Num();
+            return this.mods.Num();
         }
 
         public String GetMod(int index) {
-            return mods.oGet(index).getData();
+            return this.mods.oGet(index).getData();
         }
 
         public String GetDescription(int index) {
-            return descriptions.oGet(index).getData();
+            return this.descriptions.oGet(index).getData();
         }
     }
 
@@ -582,7 +582,7 @@ public class FileSystem_h {
             return FilenameCompare(s1.getData(), s2.getData());
         }
 
-    };
+    }
     /*
      =============================================================================
 
@@ -725,7 +725,7 @@ public class FileSystem_h {
             this.ext = ext;
             this.func = func;
         }
-    };
+    }
 
     static class excludeExtension extends pureExclusionFunc_t {
 
@@ -737,7 +737,7 @@ public class FileSystem_h {
 
         @Override
         public boolean run(pureExclusion_s excl, int l, idStr name) {
-            if (l > excl.extLen && 0 == idStr.Icmp(name.getData().substring(l - excl.extLen), excl.ext)) {
+            if ((l > excl.extLen) && (0 == idStr.Icmp(name.getData().substring(l - excl.extLen), excl.ext))) {
                 return true;
             }
             return false;
@@ -754,7 +754,7 @@ public class FileSystem_h {
 
         @Override
         public boolean run(pureExclusion_s excl, int l, idStr name) {
-            if (l > excl.extLen && 0 == idStr.Icmp(name.getData().substring(l - excl.extLen), excl.ext) && 0 == name.IcmpPrefixPath(excl.name)) {
+            if ((l > excl.extLen) && (0 == idStr.Icmp(name.getData().substring(l - excl.extLen), excl.ext)) && (0 == name.IcmpPrefixPath(excl.name))) {
                 return true;
             }
             return false;
@@ -771,7 +771,7 @@ public class FileSystem_h {
 
         @Override
         public boolean run(pureExclusion_s excl, int l, idStr name) {
-            if (l == excl.nameLen && 0 == name.Icmp(excl.name)) {
+            if ((l == excl.nameLen) && (0 == name.Icmp(excl.name))) {
                 return true;
             }
             return false;
@@ -831,7 +831,7 @@ public class FileSystem_h {
                 }
             }
         }
-    };
+    }
     static idInitExclusions initExclusions;
 //    
     static final int MAX_ZIPPED_FILE_NAME = 2048;
@@ -843,14 +843,14 @@ public class FileSystem_h {
         int pos;					// file info position in zip
         fileInPack_s next;				// next file in the hash
         ZipEntry entry;                                 //
-    };
+    }
 
     enum binaryStatus_t {
 
         BINARY_UNKNOWN,
         BINARY_YES,
         BINARY_NO
-    };
+    }
 
     enum pureStatus_t {
 
@@ -858,13 +858,13 @@ public class FileSystem_h {
         PURE_NEUTRAL, // neutral regarding pureness. gets in the pure list if referenced
         PURE_ALWAYS, // always referenced - for pak* named files, unless NEVER
         PURE_NEVER		// VO paks. may be referenced, won't be in the pure lists
-    };
+    }
 
     static class addonInfo_t {
 
         idList<Integer> depends;
         idList<idDict> mapDecls;
-    };
+    }
 
     static class pack_t {
 
@@ -882,20 +882,20 @@ public class FileSystem_h {
         boolean isNew;					// for downloaded paks
         fileInPack_s[] hashTable = new fileInPack_s[FILE_HASH_SIZE];
         fileInPack_s[] buildBuffer;
-    };
+    }
 
     static class directory_t {
 
         idStr path;					// c:\doom
         idStr gamedir;					// base
-    };
+    }
 
     static class searchpath_s {
 
         pack_t pack;					// only one of pack / dir will be non NULL
         directory_t dir;
         searchpath_s next;
-    };
+    }
 
 //    
 // search flags when opening a file
@@ -929,8 +929,8 @@ public class FileSystem_h {
 //
 
         public boolean Matches(final String directory, final String extension) {
-            if (0 == this.directory.Icmp(directory)
-                    && 0 == this.extension.Icmp(extension)) {
+            if ((0 == this.directory.Icmp(directory))
+                    && (0 == this.extension.Icmp(extension))) {
                 return true;
             }
             return false;
@@ -944,11 +944,11 @@ public class FileSystem_h {
 
         @Override
         public void Clear() {
-            directory.Clear();
-            extension.Clear();
+            this.directory.Clear();
+            this.extension.Clear();
             super.Clear();
         }
-    };
+    }
 
     static class idFileSystemLocal extends idFileSystem {
 
@@ -975,12 +975,12 @@ public class FileSystem_h {
         //
         private backgroundDownload_s backgroundDownloads;
         private backgroundDownload_s defaultBackgroundDownload;
-        private xthreadInfo          backgroundThread;
+        private final xthreadInfo          backgroundThread;
         //
-        private idList<pack_t>       serverPaks;
+        private final idList<pack_t>       serverPaks;
         private boolean              loadedFileFromDir;     // set to true once a file was loaded from a directory - can't switch to pure anymore
-        private idList<Integer>      restartChecksums;      // used during a restart to set things in right order
-        private idList<Integer>      addonChecksums;        // list of checksums that should go to the search list directly ( for restarts )
+        private final idList<Integer>      restartChecksums;      // used during a restart to set things in right order
+        private final idList<Integer>      addonChecksums;        // list of checksums that should go to the search list directly ( for restarts )
         private int                  restartGamePakChecksum;
         private int                  gameDLLChecksum;       // the checksum of the last loaded game DLL
         private int                  gamePakChecksum;       // the checksum of the pak holding the loaded game DLL
@@ -996,27 +996,27 @@ public class FileSystem_h {
         //
 
         public idFileSystemLocal() {
-            searchPaths = null;
-            readCount = 0;
-            loadCount = 0;
-            loadStack = 0;
+            this.searchPaths = null;
+            this.readCount = 0;
+            this.loadCount = 0;
+            this.loadStack = 0;
             this.gameFolder = new idStr();
-            dir_cache_index = 0;
-            dir_cache_count = 0;
-            d3xp = 0;
-            loadedFileFromDir = false;
-            restartGamePakChecksum = 0;
-            backgroundThread = new xthreadInfo();//memset( &backgroundThread, 0, sizeof( backgroundThread ) );
+            this.dir_cache_index = 0;
+            this.dir_cache_count = 0;
+            this.d3xp = 0;
+            this.loadedFileFromDir = false;
+            this.restartGamePakChecksum = 0;
+            this.backgroundThread = new xthreadInfo();//memset( &backgroundThread, 0, sizeof( backgroundThread ) );
             this.serverPaks = new idList<pack_t>();
-            addonPaks = null;
+            this.addonPaks = null;
             this.mapDict = new idDict();
 
-            restartChecksums = new idList<Integer>();
-            addonChecksums = new idList<Integer>();
+            this.restartChecksums = new idList<Integer>();
+            this.addonChecksums = new idList<Integer>();
 
             this.dir_cache = new idDEntry[MAX_CACHED_DIRS];
             for (int s = 0; s < MAX_CACHED_DIRS; s++) {
-                dir_cache[s] = new idDEntry();
+                this.dir_cache[s] = new idDEntry();
             }
         }
 
@@ -1046,10 +1046,10 @@ public class FileSystem_h {
             common.StartupVariable("fs_searchAddons", false);
 
             if (!ID_ALLOW_D3XP) {
-                if (fs_game.GetString() != null && 0 == idStr.Icmp(fs_game.GetString(), "d3xp")) {
+                if ((fs_game.GetString() != null) && (0 == idStr.Icmp(fs_game.GetString(), "d3xp"))) {
                     fs_game.SetString(null);
                 }
-                if (fs_game_base.GetString() != null && 0 == idStr.Icmp(fs_game_base.GetString(), "d3xp")) {
+                if ((fs_game_base.GetString() != null) && (0 == idStr.Icmp(fs_game_base.GetString(), "d3xp"))) {
                     fs_game_base.SetString(null);
                 }
             }
@@ -1091,9 +1091,9 @@ public class FileSystem_h {
         }
 
         public void StartBackgroundDownloadThread() {
-            if (NOT(backgroundThread.threadHandle)) {//TODO:enable this.
+            if (NOT(this.backgroundThread.threadHandle)) {//TODO:enable this.
 //                Sys_CreateThread(BackgroundDownloadThread.INSTANCE, null, THREAD_NORMAL, backgroundThread, "backgroundDownload", g_threads, g_thread_count);
-                if (NOT(backgroundThread.threadHandle)) {
+                if (NOT(this.backgroundThread.threadHandle)) {
                     common.Warning("idFileSystemLocal::StartBackgroundDownloadThread: failed");
                 }
             } else {
@@ -1131,29 +1131,29 @@ public class FileSystem_h {
             searchpath_s sp;
             searchpath_s next, loop;
 
-            gameFolder.Clear();
+            this.gameFolder.Clear();
 
-            serverPaks.Clear();
+            this.serverPaks.Clear();
             if (!reloading) {
-                restartChecksums.Clear();
-                addonChecksums.Clear();
+                this.restartChecksums.Clear();
+                this.addonChecksums.Clear();
             }
-            loadedFileFromDir = false;
-            gameDLLChecksum = 0;
-            gamePakChecksum = 0;
+            this.loadedFileFromDir = false;
+            this.gameDLLChecksum = 0;
+            this.gamePakChecksum = 0;
 
             ClearDirCache();
 
             // free everything - loop through searchPaths and addonPaks
-            for (loop = searchPaths; loop != null; loop = (loop == searchPaths ? addonPaks : null)) {
+            for (loop = this.searchPaths; loop != null; loop = (loop == this.searchPaths ? this.addonPaks : null)) {
                 for (sp = loop; sp != null; sp = next) {
-                    next = (searchpath_s) sp.next;
+                    next = sp.next;
 
                     if (sp.pack != null) {
                         try {
                             //                        unzClose(sp.pack.handle);
                             sp.pack.handle.close();
-                        } catch (IOException ex) {
+                        } catch (final IOException ex) {
                             Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
                         }
 //				delete [] sp.pack.buildBuffer;
@@ -1174,20 +1174,20 @@ public class FileSystem_h {
             }
 
             // any FS_ calls will now be an error until reinitialized
-            searchPaths = null;
-            addonPaks = null;
+            this.searchPaths = null;
+            this.addonPaks = null;
 
             cmdSystem.RemoveCommand("path");
             cmdSystem.RemoveCommand("dir");
             cmdSystem.RemoveCommand("dirtree");
             cmdSystem.RemoveCommand("touchFile");
 
-            mapDict.Clear();
+            this.mapDict.Clear();
         }
 
         @Override
         public boolean IsInitialized() {
-            return (searchPaths != null);
+            return (this.searchPaths != null);
         }
 
         @Override
@@ -1200,12 +1200,12 @@ public class FileSystem_h {
         @Override
         public idModList ListMods() {
             int i;
-            ByteBuffer desc = ByteBuffer.allocate(MAX_DESCRIPTION);
+            final ByteBuffer desc = ByteBuffer.allocate(MAX_DESCRIPTION);
 
-            idStrList dirs = new idStrList();
-            idStrList pk4s = new idStrList();
+            final idStrList dirs = new idStrList();
+            final idStrList pk4s = new idStrList();
 
-            idModList list = new idModList();
+            final idModList list = new idModList();
 
             final String[] search = new String[4];
             int isearch;
@@ -1230,12 +1230,12 @@ public class FileSystem_h {
 
                 // see if there are any pk4 files in each directory
                 for (i = 0; i < dirs.Num(); i++) {
-                    idStr gamepath = new idStr(BuildOSPath(search[isearch], dirs.oGet(i).getData(), ""));
+                    final idStr gamepath = new idStr(BuildOSPath(search[isearch], dirs.oGet(i).getData(), ""));
                     ListOSFiles(gamepath.getData(), ".pk4", pk4s);
                     if (pk4s.Num() != 0) {
                         if (0 == list.mods.Find(dirs.oGet(i))) {
                             // D3 1.3 #31, only list d3xp if the pak is present
-                            if (dirs.oGet(i).Icmp("d3xp") != 0 || HasD3XP()) {
+                            if ((dirs.oGet(i).Icmp("d3xp") != 0) || HasD3XP()) {
                                 list.mods.Append(dirs.oGet(i));
                             }
                         }
@@ -1250,8 +1250,8 @@ public class FileSystem_h {
 
                 for (isearch = 0; isearch < 4; isearch++) {
 
-                    idStr descfile = new idStr(BuildOSPath(search[isearch], list.mods.oGet(i).getData(), "description.txt"));
-                    FileChannel f = OpenOSFile(descfile.getData(), "r");
+                    final idStr descfile = new idStr(BuildOSPath(search[isearch], list.mods.oGet(i).getData(), "description.txt"));
+                    final FileChannel f = OpenOSFile(descfile.getData(), "r");
                     if (f != null) {
                         try {
                             if (f.read(desc) > 0) {
@@ -1263,7 +1263,7 @@ public class FileSystem_h {
                                 f.close();
                                 continue;
                             }
-                        } catch (IOException ex) {
+                        } catch (final IOException ex) {
                             Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
@@ -1304,10 +1304,10 @@ public class FileSystem_h {
 
         @Override
         public idFileList ListFiles(String relativePath, String extension, boolean sort, boolean fullRelativePath, String gamedir) {
-            idHashIndex hashIndex = new HashIndex.idHashIndex(4096, 4096);
-            idStrList extensionList = new idStrList();
+            final idHashIndex hashIndex = new HashIndex.idHashIndex(4096, 4096);
+            final idStrList extensionList = new idStrList();
 
-            idFileList fileList = new idFileList();
+            final idFileList fileList = new idFileList();
             fileList.basePath = new idStr(relativePath);
 
             GetExtensionList(extension, extensionList);
@@ -1333,10 +1333,10 @@ public class FileSystem_h {
 
         @Override
         public idFileList ListFilesTree(String relativePath, String extension, boolean sort, String gamedir) {
-            idHashIndex hashIndex = new idHashIndex(4096, 4096);
-            idStrList extensionList = new idStrList();
+            final idHashIndex hashIndex = new idHashIndex(4096, 4096);
+            final idStrList extensionList = new idStrList();
 
-            idFileList fileList = new idFileList();
+            final idFileList fileList = new idFileList();
             fileList.basePath = new idStr(relativePath);
             fileList.list.SetGranularity(4096);
 
@@ -1399,7 +1399,7 @@ public class FileSystem_h {
                         c1 = OSPath.charAt(base - 1);
                     }
                     c2 = OSPath.charAt(base + BASE_GAMEDIR.length());
-                    if ((c1 == '/' || c1 == '\\') && (c2 == '/' || c2 == '\\')) {
+                    if (((c1 == '/') || (c1 == '\\')) && ((c2 == '/') || (c2 == '\\'))) {
                         break;
                     }
                     base = OSPath.indexOf(BASE_GAMEDIR, base + 1);
@@ -1415,7 +1415,7 @@ public class FileSystem_h {
                 } else if (iGame == 1) {
                     fsgame = fs_game_base.GetString();
                 }
-                if (-1 == base && isNotNullOrEmpty(fsgame)) {
+                if ((-1 == base) && isNotNullOrEmpty(fsgame)) {
                     base = OSPath.indexOf(fsgame);
                     while (base != -1) {
                         char c1 = '\0', c2;
@@ -1423,7 +1423,7 @@ public class FileSystem_h {
                             c1 = OSPath.charAt(base - 1);
                         }
                         c2 = OSPath.charAt(base + fsgame.length());
-                        if ((c1 == '/' || c1 == '\\') && (c2 == '/' || c2 == '\\')) {
+                        if (((c1 == '/') || (c1 == '\\')) && ((c2 == '/') || (c2 == '\\'))) {
                             break;
                         }
                         base = OSPath.indexOf(fsgame, base + 1);
@@ -1466,12 +1466,12 @@ public class FileSystem_h {
             if (path.isEmpty()) {
                 path = fs_savepath.GetString();
             }
-            return BuildOSPath(path, gameFolder.getData(), relativePath);
+            return BuildOSPath(path, this.gameFolder.getData(), relativePath);
         }
 
         @Override
         public String BuildOSPath(String base, String game, String relativePath) {
-            StringBuilder OSPath = new StringBuilder(MAX_STRING_CHARS);
+            final StringBuilder OSPath = new StringBuilder(MAX_STRING_CHARS);
             idStr newPath;
 
             if (fs_caseSensitiveOS.GetBool() || com_developer.GetBool()) {
@@ -1501,7 +1501,7 @@ public class FileSystem_h {
                 }
             }
 
-            idStr strBase = new idStr(base);
+            final idStr strBase = new idStr(base);
             strBase.StripTrailing('/');
             strBase.StripTrailing('\\');
 //	sprintf( newPath, "%s/%s/%s", strBase.c_str(), game, relativePath );
@@ -1531,7 +1531,7 @@ public class FileSystem_h {
                 return;
             }
 
-            idStr path = new idStr(OSPath);
+            final idStr path = new idStr(OSPath);
             for (ofs = 1; ofs < path.Length(); ofs++) {
                 if (path.oGet(ofs) == PATHSEPERATOR_CHAR) {
                     // create the directory
@@ -1549,7 +1549,7 @@ public class FileSystem_h {
             fileInPack_s pakFile;
             long hash;
 
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
@@ -1558,7 +1558,7 @@ public class FileSystem_h {
             }
 
             // qpaths are not supposed to have a leading slash
-            if (relativePath.charAt(0) == '/' || relativePath.charAt(0) == '\\') {
+            if ((relativePath.charAt(0) == '/') || (relativePath.charAt(0) == '\\')) {
 //		relativePath++;
                 relativePath = relativePath.substring(1);
             }
@@ -1575,14 +1575,14 @@ public class FileSystem_h {
             //
             hash = HashFileName(relativePath);
 
-            for (search = searchPaths; search != null; search = (searchpath_s) search.next) {
+            for (search = this.searchPaths; search != null; search = search.next) {
                 // is the element a pak file?
-                if (search.pack != null && search.pack.hashTable[(int) hash] != null) {
+                if ((search.pack != null) && (search.pack.hashTable[(int) hash] != null)) {
 
                     // disregard if it doesn't match one of the allowed pure pak files - or is a localization file
-                    if (serverPaks.Num() != 0) {
+                    if (this.serverPaks.Num() != 0) {
                         GetPackStatus(search.pack);
-                        if (search.pack.pureStatus != PURE_NEVER && null == serverPaks.Find(search.pack)) {
+                        if ((search.pack.pureStatus != PURE_NEVER) && (null == this.serverPaks.Find(search.pack))) {
                             continue; // not on the pure server pak list
                         }
                     }
@@ -1595,7 +1595,7 @@ public class FileSystem_h {
                         if (FilenameCompare(pakFile.name.getData(), relativePath)) {
                             return true;
                         }
-                        pakFile = (fileInPack_s) pakFile.next;
+                        pakFile = pakFile.next;
                     } while (pakFile != null);
                 }
             }
@@ -1608,8 +1608,8 @@ public class FileSystem_h {
             int i;
             pureStatus_t status;
 
-            serverPaks.Clear();
-            for (search = searchPaths; search != null; search = (searchpath_s) search.next) {
+            this.serverPaks.Clear();
+            for (search = this.searchPaths; search != null; search = search.next) {
                 // is the element a referenced pak file?
                 if (null == search.pack) {
                     continue;
@@ -1618,20 +1618,20 @@ public class FileSystem_h {
                 if (status == PURE_NEVER) {
                     continue;
                 }
-                if (status == PURE_NEUTRAL && !search.pack.referenced) {
+                if ((status == PURE_NEUTRAL) && !search.pack.referenced) {
                     continue;
                 }
-                serverPaks.Append(search.pack);
-                if (serverPaks.Num() >= MAX_PURE_PAKS) {
+                this.serverPaks.Append(search.pack);
+                if (this.serverPaks.Num() >= MAX_PURE_PAKS) {
                     common.FatalError("MAX_PURE_PAKS ( %d ) exceeded\n", MAX_PURE_PAKS);
                 }
             }
             if (fs_debug.GetBool()) {
                 String checks = "";
-                for (i = 0; i < serverPaks.Num(); i++) {
-                    checks += va("%x ", serverPaks.oGet(i).checksum);
+                for (i = 0; i < this.serverPaks.Num(); i++) {
+                    checks += va("%x ", this.serverPaks.oGet(i).checksum);
                 }
-                common.Printf("set pure list - %d paks ( %s)\n", serverPaks.Num(), checks);
+                common.Printf("set pure list - %d paks ( %s)\n", this.serverPaks.Num(), checks);
             }
         }
 
@@ -1643,18 +1643,18 @@ public class FileSystem_h {
             idFile confFile;
             ByteBuffer buf;
             idLexer lexConf;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             int id;
 
             confHash = (int) HashFileName(BINARY_CONFIG);
 
 //	memset( gamePakForOS, 0, sizeof( gamePakForOS ) );
-            for (search = searchPaths; search != null; search = (searchpath_s) search.next) {
+            for (search = this.searchPaths; search != null; search = search.next) {
                 if (null == search.pack) {
                     continue;
                 }
                 search.pack.binary = BINARY_NO;
-                for (pakFile = search.pack.hashTable[confHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
+                for (pakFile = search.pack.hashTable[confHash]; pakFile != null; pakFile = pakFile.next) {
                     if (FilenameCompare(pakFile.name.getData(), BINARY_CONFIG)) {
                         search.pack.binary = BINARY_YES;
                         confFile = ReadFileFromZip(search.pack, pakFile, BINARY_CONFIG);
@@ -1665,11 +1665,11 @@ public class FileSystem_h {
                         while (lexConf.ReadToken(token)) {
                             if (token.IsNumeric()) {
                                 id = Integer.parseInt(token.getData());
-                                if (id < MAX_GAME_OS && 0 == gamePakForOS[id]) {
+                                if ((id < MAX_GAME_OS) && (0 == this.gamePakForOS[id])) {
                                     if (fs_debug.GetBool()) {
                                         common.Printf("Adding game pak checksum for OS %d: %s 0x%x\n", id, confFile.GetFullPath(), search.pack.checksum);
                                     }
-                                    gamePakForOS[id] = search.pack.checksum;
+                                    this.gamePakForOS[id] = search.pack.checksum;
                                 }
                             }
                         }
@@ -1682,13 +1682,13 @@ public class FileSystem_h {
 
             // some sanity checks on the game code references
             // make sure that at least the local OS got a pure reference
-            if (0 == gamePakForOS[BUILD_OS_ID]) {
+            if (0 == this.gamePakForOS[BUILD_OS_ID]) {
                 common.Warning("No game code pak reference found for the local OS");
                 return false;
             }
 
             if (!cvarSystem.GetCVarBool("net_serverAllowServerMod")
-                    && gamePakChecksum != gamePakForOS[BUILD_OS_ID]) {
+                    && (this.gamePakChecksum != this.gamePakForOS[BUILD_OS_ID])) {
                 common.Warning("The current game code doesn't match pak files (net_serverAllowServerMod is off)");
                 return false;
             }
@@ -1717,7 +1717,7 @@ public class FileSystem_h {
             int i, j, imissing;
             boolean success = true;
             boolean canPrepend = true;
-            String[] dllName = {null};
+            final String[] dllName = {null};
             int dllHash;
             fileInPack_s pakFile;
 
@@ -1734,20 +1734,20 @@ public class FileSystem_h {
                 return PURE_OK;
             }
 
-            if (0 == serverPaks.Num()) {
+            if (0 == this.serverPaks.Num()) {
                 // there was no pure lockdown yet - lock to what we already have
                 UpdatePureServerChecksums();
             }
             i = 0;
             j = 0;
             while (pureChecksums[i] != 0) {
-                if (j < serverPaks.Num() && serverPaks.oGet(j).checksum == pureChecksums[i]) {
+                if ((j < this.serverPaks.Num()) && (this.serverPaks.oGet(j).checksum == pureChecksums[i])) {
                     canPrepend = false; // once you start matching into the list there is no prepending anymore
                     i++;
                     j++; // the pak is matched, is in the right order, continue..
                 } else {
                     pack = GetPackForChecksum(pureChecksums[i], true);
-                    if (pack != null && pack.addon && !pack.addon_search) {
+                    if ((pack != null) && pack.addon && !pack.addon_search) {
                         // this is an addon pack, and it's not on our current search list
                         // setting success to false meaning that a restart including this addon is required
                         if (fs_debug.GetBool()) {
@@ -1755,7 +1755,7 @@ public class FileSystem_h {
                         }
                         success = false;
                     }
-                    if (pack != null && pack.isNew) {
+                    if ((pack != null) && pack.isNew) {
                         // that's a downloaded pack, we will need to restart
                         if (fs_debug.GetBool()) {
                             common.Printf("pak %s checksumed 0x%x is a newly downloaded file. Restart required.\n", pack.pakFilename.getData(), pack.checksum);
@@ -1769,15 +1769,15 @@ public class FileSystem_h {
                                 common.Printf("prepend pak %s checksumed 0x%x at index %d\n", pack.pakFilename.getData(), pack.checksum, j);
                             }
                             // NOTE: there is a light possibility this adds at the end of the list if UpdatePureServerChecksums didn't set anything
-                            serverPaks.Insert(pack, j);
+                            this.serverPaks.Insert(pack, j);
                             i++;
                             j++; // continue..
                         } else {
                             success = false;
                             if (fs_debug.GetBool()) {
                                 // verbose the situation
-                                if (serverPaks.Find(pack) != null) {
-                                    common.Printf("pak %s checksumed 0x%x is in the pure list at wrong index. Current index is %d, found at %d\n", pack.pakFilename.getData(), pack.checksum, j, serverPaks.FindIndex(pack));
+                                if (this.serverPaks.Find(pack) != null) {
+                                    common.Printf("pak %s checksumed 0x%x is in the pure list at wrong index. Current index is %d, found at %d\n", pack.pakFilename.getData(), pack.checksum, j, this.serverPaks.FindIndex(pack));
                                 } else {
                                     common.Printf("pak %s checksumed 0x%x can't be added to pure list because of search order\n", pack.pakFilename.getData(), pack.checksum);
                                 }
@@ -1796,10 +1796,10 @@ public class FileSystem_h {
                     }
                 }
             }
-            while (j < serverPaks.Num()) {
+            while (j < this.serverPaks.Num()) {
                 success = false; // just in case some extra pak files are referenced at the end of our local list
                 if (fs_debug.GetBool()) {
-                    common.Printf("pak %s checksumed 0x%x is an extra reference at the end of local pure list\n", serverPaks.oGet(j).pakFilename.getData(), serverPaks.oGet(j).checksum);
+                    common.Printf("pak %s checksumed 0x%x is an extra reference at the end of local pure list\n", this.serverPaks.oGet(j).pakFilename.getData(), this.serverPaks.oGet(j).checksum);
                 }
                 j++;
             }
@@ -1809,11 +1809,11 @@ public class FileSystem_h {
                 // server doesn't have knowledge of code we can use ( OS issue )
                 return PURE_NODLL;
             }
-            assert (gameDLLChecksum != 0);
+            assert (this.gameDLLChecksum != 0);
             if (ID_FAKE_PURE) {
-                gamePakChecksum = _gamePakChecksum;
+                this.gamePakChecksum = _gamePakChecksum;
             }
-            if (_gamePakChecksum != gamePakChecksum) {
+            if (_gamePakChecksum != this.gamePakChecksum) {
                 // current DLL is wrong, search for a pak with the approriate checksum
                 // ( search all paks, the pure list is not relevant here )
                 pack = GetPackForChecksum(_gamePakChecksum);
@@ -1835,9 +1835,9 @@ public class FileSystem_h {
                 }
                 // make sure there is a valid DLL for us
                 if (pack.hashTable[dllHash] != null) {
-                    for (pakFile = pack.hashTable[dllHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
+                    for (pakFile = pack.hashTable[dllHash]; pakFile != null; pakFile = pakFile.next) {
                         if (FilenameCompare(pakFile.name.getData(), dllName[0])) {
-                            gamePakChecksum = _gamePakChecksum;        // this will be used to extract the DLL in pure mode FindDLL
+                            this.gamePakChecksum = _gamePakChecksum;        // this will be used to extract the DLL in pure mode FindDLL
                             return PURE_RESTART;
                         }
                     }
@@ -1852,7 +1852,7 @@ public class FileSystem_h {
             }
 
             // one last check
-            if (loadedFileFromDir) {
+            if (this.loadedFileFromDir) {
                 success = false;
                 if (fs_debug.GetBool()) {
                     common.Printf("SetPureServerChecksums: there are files loaded from dir\n");
@@ -1865,15 +1865,15 @@ public class FileSystem_h {
         public void GetPureServerChecksums(int[] checksums, int OS, int[] _gamePakChecksum) {
             int i;
 
-            for (i = 0; i < serverPaks.Num(); i++) {
-                checksums[i] = serverPaks.oGet(i).checksum;
+            for (i = 0; i < this.serverPaks.Num(); i++) {
+                checksums[i] = this.serverPaks.oGet(i).checksum;
             }
             checksums[i] = 0;
             if (_gamePakChecksum != null) {
                 if (OS >= 0) {
-                    _gamePakChecksum[0] = gamePakForOS[OS];
+                    _gamePakChecksum[0] = this.gamePakForOS[OS];
                 } else {
-                    _gamePakChecksum[0] = gamePakChecksum;
+                    _gamePakChecksum[0] = this.gamePakChecksum;
                 }
             }
         }
@@ -1883,27 +1883,27 @@ public class FileSystem_h {
             int i;
             pack_t pack;
 
-            restartChecksums.Clear();
+            this.restartChecksums.Clear();
             i = 0;
             while (i < pureChecksums.length) {
                 pack = GetPackForChecksum(pureChecksums[i], true);
                 if (null == pack) {
                     common.FatalError("SetRestartChecksums failed: no pak for checksum 0x%x\n", pureChecksums[i]);
                 }
-                if (pack.addon && addonChecksums.FindIndex(pack.checksum) < 0) {
+                if (pack.addon && (this.addonChecksums.FindIndex(pack.checksum) < 0)) {
                     // can't mark it pure if we're not even gonna search it :-)
-                    addonChecksums.Append(pack.checksum);
+                    this.addonChecksums.Append(pack.checksum);
                 }
-                restartChecksums.Append(pureChecksums[i]);
+                this.restartChecksums.Append(pureChecksums[i]);
                 i++;
             }
-            restartGamePakChecksum = gamePakChecksum;
+            this.restartGamePakChecksum = gamePakChecksum;
         }
 
         @Override
         public void ClearPureChecksums() {
             common.DPrintf("Cleared pure server lock\n");
-            serverPaks.Clear();
+            this.serverPaks.Clear();
         }
 
         @Override
@@ -1933,10 +1933,10 @@ public class FileSystem_h {
         public int ReadFile(String relativePath, ByteBuffer[] buffer, long[] timestamp) {
             idFile f;
             ByteBuffer buf;
-            int[] len = {0};
+            final int[] len = {0};
             boolean isConfig;
 
-            if (NOT(searchPaths)) {
+            if (NOT(this.searchPaths)) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
@@ -1958,11 +1958,11 @@ public class FileSystem_h {
             if (relativePath.endsWith(".cfg")) {
 //            if (relativePath.indexOf(".cfg") == relativePath.length() - 4) {
                 isConfig = true;
-                if (eventLoop != null && eventLoop.JournalLevel() == 2) {
+                if ((eventLoop != null) && (eventLoop.JournalLevel() == 2)) {
                     int r;
 
-                    loadCount++;
-                    loadStack++;
+                    this.loadCount++;
+                    this.loadStack++;
 
                     common.DPrintf("Loading %s from journal file.\n", relativePath);
                     len[0] = 0;
@@ -2007,8 +2007,8 @@ public class FileSystem_h {
                 return len[0];
             }
 
-            loadCount++;
-            loadStack++;
+            this.loadCount++;
+            this.loadStack++;
 
             buf = ByteBuffer.allocate(len[0] + 1);// Heap.Mem_ClearedAlloc(len + 1);
             buffer[0] = buf;
@@ -2020,7 +2020,7 @@ public class FileSystem_h {
             CloseFile(f);
 
             // if we are journalling and it is a config file, write it to the journal file
-            if (isConfig && eventLoop != null && eventLoop.JournalLevel() == 1) {
+            if (isConfig && (eventLoop != null) && (eventLoop.JournalLevel() == 1)) {
                 common.DPrintf("Writing %s to journal file.\n", relativePath);
                 eventLoop.com_journalDataFile.WriteInt(len[0]);
                 eventLoop.com_journalDataFile.Write(buf, len[0]);
@@ -2038,13 +2038,13 @@ public class FileSystem_h {
 
         @Override
         public void FreeFile(Object[] buffer) {
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
             if (null == buffer) {
                 common.FatalError("idFileSystemLocal::FreeFile( null )");
             }
-            loadStack--;
+            this.loadStack--;
 
 //            Heap.Mem_Free(buffer);
             buffer[0] = null;
@@ -2066,11 +2066,11 @@ public class FileSystem_h {
         public int WriteFile(String relativePath, ByteBuffer buffer, int size, String basePath /*"fs_savepath"*/) {
             idFile f;
 
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
-            if (null == relativePath || null == buffer) {
+            if ((null == relativePath) || (null == buffer)) {
                 common.FatalError("idFileSystemLocal::WriteFile: NULL parameter");
             }
 
@@ -2092,11 +2092,11 @@ public class FileSystem_h {
             idStr OSPath;
 
             if (!fs_devpath.GetString().isEmpty()) {
-                OSPath = new idStr(BuildOSPath(fs_devpath.GetString(), gameFolder.getData(), relativePath));
+                OSPath = new idStr(BuildOSPath(fs_devpath.GetString(), this.gameFolder.getData(), relativePath));
                 remove(OSPath);
             }
 
-            OSPath = new idStr(BuildOSPath(fs_savepath.GetString(), gameFolder.getData(), relativePath));
+            OSPath = new idStr(BuildOSPath(fs_savepath.GetString(), this.gameFolder.getData(), relativePath));
             remove(OSPath);
 
             ClearDirCache();
@@ -2133,7 +2133,7 @@ public class FileSystem_h {
             long hash;
             FileChannel fp;
 
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
@@ -2146,7 +2146,7 @@ public class FileSystem_h {
             }
 
             // qpaths are not supposed to have a leading slash
-            if (relativePath.charAt(0) == '/' || relativePath.charAt(0) == '\\') {//TODO: regex
+            if ((relativePath.charAt(0) == '/') || (relativePath.charAt(0) == '\\')) {//TODO: regex
                 relativePath = relativePath.substring(1);
             }
 
@@ -2164,7 +2164,7 @@ public class FileSystem_h {
 
             // make sure the doomkey file is only readable by game at initialization
             // any other time the key should only be accessed in memory using the provided functions
-            if (common.IsInitialized() && (idStr.Icmp(relativePath, CDKEY_FILE) == 0 || idStr.Icmp(relativePath, XPKEY_FILE) == 0)) {
+            if (common.IsInitialized() && ((idStr.Icmp(relativePath, CDKEY_FILE) == 0) || (idStr.Icmp(relativePath, XPKEY_FILE) == 0))) {
                 return null;
             }
 
@@ -2173,13 +2173,13 @@ public class FileSystem_h {
             //
             hash = HashFileName(relativePath);
 
-            for (search = searchPaths; search != null; search = search.next) {
-                if (search.dir != null && (searchFlags & FSFLAG_SEARCH_DIRS) != 0) {
+            for (search = this.searchPaths; search != null; search = search.next) {
+                if ((search.dir != null) && ((searchFlags & FSFLAG_SEARCH_DIRS) != 0)) {
                     // check a file in the directory tree
 
                     // if we are running restricted, the only files we
                     // will allow to come from the directory are .cfg files
-                    if (fs_restrict.GetBool() || serverPaks.Num() != 0) {
+                    if (fs_restrict.GetBool() || (this.serverPaks.Num() != 0)) {
                         if (!FileAllowedFromDir(relativePath)) {
                             continue;
                         }
@@ -2187,7 +2187,7 @@ public class FileSystem_h {
 
                     dir = search.dir;
 
-                    if (gamedir != null && !gamedir.isEmpty()) {
+                    if ((gamedir != null) && !gamedir.isEmpty()) {
                         if (!dir.gamedir.equals(gamedir)) {
                             continue;
                         }
@@ -2199,7 +2199,7 @@ public class FileSystem_h {
                         continue;
                     }
 
-                    idFile_Permanent file = new idFile_Permanent();
+                    final idFile_Permanent file = new idFile_Permanent();
                     file.o = fp;
                     file.name.oSet(relativePath);
                     file.fullPath = netpath;
@@ -2209,28 +2209,28 @@ public class FileSystem_h {
                         common.Printf("idFileSystem::OpenFileRead: %s (found in '%s/%s')\n", relativePath, dir.path.getData(), dir.gamedir.getData());
                     }
 
-                    if (!loadedFileFromDir && !FileAllowedFromDir(relativePath)) {
-                        if (restartChecksums.Num() != 0) {
+                    if (!this.loadedFileFromDir && !FileAllowedFromDir(relativePath)) {
+                        if (this.restartChecksums.Num() != 0) {
                             common.FatalError("'%s' loaded from directory: Failed to restart with pure mode restrictions for server connect", relativePath);
                         }
                         common.DPrintf("filesystem: switching to pure mode will require a restart. '%s' loaded from directory.\n", relativePath);
-                        loadedFileFromDir = true;
+                        this.loadedFileFromDir = true;
                     }
 
                     // if fs_copyfiles is set
-                    if (allowCopyFiles && fs_copyfiles.GetInteger() != 0) {
+                    if (allowCopyFiles && (fs_copyfiles.GetInteger() != 0)) {
 
                         idStr copypath;
-                        idStr name = new idStr();
+                        final idStr name = new idStr();
                         copypath = new idStr(BuildOSPath(fs_savepath.GetString(), dir.gamedir.getData(), relativePath));
                         netpath.ExtractFileName(name);
                         copypath.StripFilename();
                         copypath.Append(PATHSEPERATOR_STR);
                         copypath.Append(name);
 
-                        boolean isFromCDPath = (0 == dir.path.Cmp(fs_cdpath.GetString()));
-                        boolean isFromSavePath = (0 == dir.path.Cmp(fs_savepath.GetString()));
-                        boolean isFromBasePath = (0 == dir.path.Cmp(fs_basepath.GetString()));
+                        final boolean isFromCDPath = (0 == dir.path.Cmp(fs_cdpath.GetString()));
+                        final boolean isFromSavePath = (0 == dir.path.Cmp(fs_savepath.GetString()));
+                        final boolean isFromBasePath = (0 == dir.path.Cmp(fs_basepath.GetString()));
 
                         switch (fs_copyfiles.GetInteger()) {
                             case 1:
@@ -2246,8 +2246,8 @@ public class FileSystem_h {
                                 } else if (isFromSavePath || isFromBasePath) {
                                     idStr sourcepath;
                                     sourcepath = new idStr(BuildOSPath(fs_cdpath.GetString(), dir.gamedir.getData(), relativePath));
-                                    long t1 = Sys_FileTimeStamp(sourcepath.getData());
-                                    long t2 = Sys_FileTimeStamp(copypath.getData());
+                                    final long t1 = Sys_FileTimeStamp(sourcepath.getData());
+                                    final long t2 = Sys_FileTimeStamp(copypath.getData());
                                     if (t1 > t2) {
                                         CopyFile(sourcepath.getData(), copypath.getData());
                                     }
@@ -2267,16 +2267,16 @@ public class FileSystem_h {
                     }
 
                     return file;
-                } else if (search.pack != null && (searchFlags & FSFLAG_SEARCH_PAKS) != 0) {
+                } else if ((search.pack != null) && ((searchFlags & FSFLAG_SEARCH_PAKS) != 0)) {
 
                     if (null == search.pack.hashTable[(int) hash]) {
                         continue;
                     }
 
                     // disregard if it doesn't match one of the allowed pure pak files
-                    if (serverPaks.Num() != 0) {
+                    if (this.serverPaks.Num() != 0) {
                         GetPackStatus(search.pack);
-                        if (search.pack.pureStatus != PURE_NEVER && null == serverPaks.Find(search.pack)) {
+                        if ((search.pack.pureStatus != PURE_NEVER) && (null == this.serverPaks.Find(search.pack))) {
                             continue; // not on the pure server pak list
                         }
                     }
@@ -2306,13 +2306,13 @@ public class FileSystem_h {
                     for (pakFile = pak.hashTable[(int) hash]; pakFile != null; pakFile = pakFile.next) {
                         // case and separator insensitive comparisons
                         if (FilenameCompare(pakFile.name.getData(), relativePath)) {
-                            idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
+                            final idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
 
                             if (foundInPak != null) {
                                 foundInPak[0] = pak;
                             }
 
-                            if (!pak.referenced && 0 == (searchFlags & FSFLAG_PURE_NOREF)) {
+                            if (!pak.referenced && (0 == (searchFlags & FSFLAG_PURE_NOREF))) {
                                 // mark this pak referenced
                                 if (fs_debug.GetInteger() != 0) {
                                     common.Printf("idFileSystem::OpenFileRead: %s . adding %s to referenced paks\n", relativePath, pak.pakFilename.getData());
@@ -2330,13 +2330,13 @@ public class FileSystem_h {
             }
 
             if ((searchFlags & FSFLAG_SEARCH_ADDONS) != 0) {
-                for (search = addonPaks; search != null; search = search.next) {
+                for (search = this.addonPaks; search != null; search = search.next) {
                     assert (search.pack != null);
 //			fileInPack_s	pakFile;
                     pak = search.pack;
                     for (pakFile = pak.hashTable[(int) hash]; pakFile != null; pakFile = pakFile.next) {
                         if (FilenameCompare(pakFile.name.getData(), relativePath)) {
-                            idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
+                            final idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
                             if (foundInPak != null) {
                                 foundInPak[0] = pak;
                             }
@@ -2378,7 +2378,7 @@ public class FileSystem_h {
             String OSpath;
             idFile_Permanent f;
 
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
@@ -2387,7 +2387,7 @@ public class FileSystem_h {
                 path = fs_savepath.GetString();
             }
 
-            OSpath = BuildOSPath(path, gameFolder.getData(), relativePath);
+            OSpath = BuildOSPath(path, this.gameFolder.getData(), relativePath);
 
             if (fs_debug.GetInteger() != 0) {
                 common.Printf("idFileSystem::OpenFileWrite: %s\n", OSpath);
@@ -2433,7 +2433,7 @@ public class FileSystem_h {
             String OSpath;
             idFile_Permanent f;
 
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
@@ -2442,7 +2442,7 @@ public class FileSystem_h {
                 path = fs_savepath.GetString();
             }
 
-            OSpath = BuildOSPath(path, gameFolder.getData(), filename);
+            OSpath = BuildOSPath(path, this.gameFolder.getData(), filename);
             CreateOSPath(OSpath);
 
             if (fs_debug.GetInteger() != 0) {
@@ -2483,7 +2483,7 @@ public class FileSystem_h {
         public idFile OpenExplicitFileRead(String OSPath) {
             idFile_Permanent f;
 
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
@@ -2512,7 +2512,7 @@ public class FileSystem_h {
         public idFile OpenExplicitFileWrite(String OSPath) {
             idFile_Permanent f;
 
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
@@ -2540,7 +2540,7 @@ public class FileSystem_h {
 
         @Override
         public void CloseFile(idFile f) {
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 //	delete f;
@@ -2552,8 +2552,8 @@ public class FileSystem_h {
                 if ( /*dynamic_cast<idFile_Permanent *>*/(bgl.f) != null) {
                     // add the bgl to the background download list
                     Sys_EnterCriticalSection();
-                    bgl.next = backgroundDownloads;
-                    backgroundDownloads = bgl;
+                    bgl.next = this.backgroundDownloads;
+                    this.backgroundDownloads = bgl;
                     Sys_TriggerEvent();
                     Sys_LeaveCriticalSection();
                 } else {
@@ -2564,8 +2564,8 @@ public class FileSystem_h {
                 }
             } else {
                 Sys_EnterCriticalSection();
-                bgl.next = backgroundDownloads;
-                backgroundDownloads = bgl;
+                bgl.next = this.backgroundDownloads;
+                this.backgroundDownloads = bgl;
                 Sys_TriggerEvent();
                 Sys_LeaveCriticalSection();
             }
@@ -2573,27 +2573,27 @@ public class FileSystem_h {
 
         @Override
         public void ResetReadCount() {
-            readCount = 0;
+            this.readCount = 0;
         }
 
         @Override
         public int GetReadCount() {
-            return readCount;
+            return this.readCount;
         }
 
         @Override
         public void AddToReadCount(int c) {
-            readCount += c;
+            this.readCount += c;
         }
 
         @Override
         public void FindDLL(String basename, char[] _dllPath, boolean updateChecksum) {
             idFile dllFile = null;
 //            char[] __dllName = new char[MAX_OSPATH];
-            String[] __dllName = {null};
+            final String[] __dllName = {null};
             idStr dllPath = new idStr();
             long dllHash;
-            pack_t[] inPak = new pack_t[1];
+            final pack_t[] inPak = new pack_t[1];
             pack_t pak;
             fileInPack_s pakFile;
             String dllName = null;
@@ -2604,7 +2604,7 @@ public class FileSystem_h {
 // #if ID_FAKE_PURE
             // if ( 1 ) {
 // #else
-            if (0 == serverPaks.Num()) {
+            if (0 == this.serverPaks.Num()) {
 // #endif
                 // from executable directory first - this is handy for developement
                 dllName = __dllName[0];
@@ -2614,9 +2614,9 @@ public class FileSystem_h {
                 dllFile = OpenExplicitFileRead(dllPath.getData());
             }
             if (null == dllFile) {
-                if (0 == serverPaks.Num()) {
+                if (0 == this.serverPaks.Num()) {
                     // not running in pure mode, try to extract from a pak file first
-                    dllFile = OpenFileReadFlags(dllName, (int) (FSFLAG_SEARCH_PAKS | FSFLAG_PURE_NOREF | FSFLAG_BINARY_ONLY), inPak);
+                    dllFile = OpenFileReadFlags(dllName, FSFLAG_SEARCH_PAKS | FSFLAG_PURE_NOREF | FSFLAG_BINARY_ONLY, inPak);
                     if (dllFile != null) {
                         common.Printf("found DLL in pak file: %s\n", dllFile.GetFullPath());
                         dllPath = new idStr(RelativePathToOSPath(dllName, "fs_savepath"));
@@ -2626,8 +2626,8 @@ public class FileSystem_h {
                         if (null == dllFile) {
                             common.Error("DLL extraction to fs_savepath failed\n");
                         } else if (updateChecksum) {
-                            gameDLLChecksum = GetFileChecksum(dllFile);
-                            gamePakChecksum = inPak[0].checksum;
+                            this.gameDLLChecksum = GetFileChecksum(dllFile);
+                            this.gamePakChecksum = inPak[0].checksum;
                             updateChecksum = false;	// don't try again below
                         }
                     } else {
@@ -2635,11 +2635,11 @@ public class FileSystem_h {
                         dllFile = OpenFileReadFlags(dllName, FSFLAG_SEARCH_DIRS);
                         if (dllFile != null) {
                             if (updateChecksum) {
-                                int[] gameDLLChecksum = {this.gameDLLChecksum = GetFileChecksum(dllFile)};
+                                final int[] gameDLLChecksum = {this.gameDLLChecksum = GetFileChecksum(dllFile)};
                                 // see if we can mark a pak file
                                 pak = FindPakForFileChecksum(dllName, gameDLLChecksum, false);
                                 this.gameDLLChecksum = gameDLLChecksum[0];
-                                gamePakChecksum = pak != null ? pak.checksum : 0;
+                                this.gamePakChecksum = pak != null ? pak.checksum : 0;
                                 updateChecksum = false;
                             }
                         }
@@ -2647,12 +2647,12 @@ public class FileSystem_h {
                 } else {
                     // we are in pure mode. this path to be reached only for game DLL situations
                     // with a code pak checksum given by server
-                    assert (gamePakChecksum != 0);
+                    assert (this.gamePakChecksum != 0);
                     assert (updateChecksum);
-                    pak = GetPackForChecksum(gamePakChecksum);
+                    pak = GetPackForChecksum(this.gamePakChecksum);
                     if (null == pak) {
                         // not supposed to happen, bug in pure code?
-                        common.Warning("FindDLL in pure mode: game pak not found ( 0x%x )\n", gamePakChecksum);
+                        common.Warning("FindDLL in pure mode: game pak not found ( 0x%x )\n", this.gamePakChecksum);
                     } else {
                         // extract and copy
                         for (pakFile = pak.hashTable[(int) dllHash]; pakFile != null; pakFile = pakFile.next) {
@@ -2666,7 +2666,7 @@ public class FileSystem_h {
                                 if (null == dllFile) {
                                     common.Error("DLL extraction to fs_savepath failed\n");
                                 } else {
-                                    gameDLLChecksum = GetFileChecksum(dllFile);
+                                    this.gameDLLChecksum = GetFileChecksum(dllFile);
                                     updateChecksum = false;	// don't try again below
                                 }
                             }
@@ -2676,11 +2676,11 @@ public class FileSystem_h {
             }
             if (updateChecksum) {
                 if (dllFile != null) {
-                    gameDLLChecksum = GetFileChecksum(dllFile);
+                    this.gameDLLChecksum = GetFileChecksum(dllFile);
                 } else {
-                    gameDLLChecksum = 0;
+                    this.gameDLLChecksum = 0;
                 }
-                gamePakChecksum = 0;
+                this.gamePakChecksum = 0;
             }
             if (dllFile != null) {
                 dllPath = new idStr(dllFile.GetFullPath());
@@ -2696,22 +2696,22 @@ public class FileSystem_h {
         public void ClearDirCache() {
             int i;
 
-            dir_cache_index = 0;
-            dir_cache_count = 0;
+            this.dir_cache_index = 0;
+            this.dir_cache_count = 0;
             for (i = 0; i < MAX_CACHED_DIRS; i++) {
-                dir_cache[i].Clear();
+                this.dir_cache[i].Clear();
             }
         }
 
         @Override
         public boolean HasD3XP() {
             int i;
-            idStrList dirs = new idStrList()/*, pk4s*/;
+            final idStrList dirs = new idStrList()/*, pk4s*/;
             String gamepath;
 
-            if (d3xp == -1) {
+            if (this.d3xp == -1) {
                 return false;
-            } else if (d3xp == 1) {
+            } else if (this.d3xp == 1) {
                 return true;
             }
 //	
@@ -2743,7 +2743,7 @@ public class FileSystem_h {
                 pakfile = OpenExplicitFileRead(BuildOSPath(search[i], "d3xp", "pak000.pk4"));
                 if (pakfile != null) {
                     CloseFile(pakfile);
-                    d3xp = 1;
+                    this.d3xp = 1;
                     return true;
                 }
             }
@@ -2757,16 +2757,16 @@ public class FileSystem_h {
                 if (dirs.oGet(i).Icmp("d3xp") == 0) {
 
                     gamepath = BuildOSPath(fs_savepath.GetString(), dirs.oGet(i).getData(), "default.cfg");
-                    idFile cfg = OpenExplicitFileRead(gamepath);
+                    final idFile cfg = OpenExplicitFileRead(gamepath);
                     if (cfg != null) {
                         CloseFile(cfg);
-                        d3xp = 1;
+                        this.d3xp = 1;
                         return true;
                     }
                 }
             }
 //#endif
-            d3xp = -1;
+            this.d3xp = -1;
             return false;
         }
 
@@ -2774,8 +2774,8 @@ public class FileSystem_h {
         public boolean RunningD3XP() {
             // TODO: mark the checksum of the gold XP and check for it being referenced ( for double mod support )
             // a simple fs_game check should be enough for now..
-            if (0 == idStr.Icmp(fs_game.GetString(), "d3xp")
-                    || 0 == idStr.Icmp(fs_game_base.GetString(), "d3xp")) {
+            if ((0 == idStr.Icmp(fs_game.GetString(), "d3xp"))
+                    || (0 == idStr.Icmp(fs_game_base.GetString(), "d3xp"))) {
                 return true;
             }
             return false;
@@ -2825,7 +2825,7 @@ public class FileSystem_h {
                 }
                 f.close();
 //            Heap.Mem_Free(buf);
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -2833,11 +2833,11 @@ public class FileSystem_h {
         @Override
         public int ValidateDownloadPakForChecksum(int checksum, char[] path, boolean isBinary) {
             int i;
-            idStrList testList = new idStrList();
+            final idStrList testList = new idStrList();
             idStr name;
-            idStr relativePath = new idStr();
+            final idStr relativePath = new idStr();
             boolean pakBinary;
-            pack_t pak = GetPackForChecksum(checksum);
+            final pack_t pak = GetPackForChecksum(checksum);
 
             if (NOT(pak)) {
                 return 0;
@@ -2866,7 +2866,7 @@ public class FileSystem_h {
             testList.Append(fs_basepath.GetString());
             testList.Append(fs_cdpath.GetString());
             for (i = 0; i < testList.Num(); i++) {
-                if (testList.oGet(i).Length() != 0
+                if ((testList.oGet(i).Length() != 0)
                         && NOT(testList.oGet(i).Icmpn(pak.pakFilename.getData(), testList.oGet(i).Length()))) {
                     relativePath.oSet(pak.pakFilename.getData().substring(testList.oGet(i).Length() + 1));
                     break;
@@ -2887,11 +2887,11 @@ public class FileSystem_h {
             try {
                 f = tmpfile();
 //            if (NOT(f)) {
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 common.Warning("idFileSystem::MakeTemporaryFile failed: %s", e.getMessage());// strerror(System.err));
                 return null;
             }
-            idFile_Permanent file = new idFile_Permanent();
+            final idFile_Permanent file = new idFile_Permanent();
             file.o = f;
             file.name.oSet("<tempfile>");
             file.fullPath.oSet("<tempfile>");
@@ -2909,7 +2909,7 @@ public class FileSystem_h {
          */
         @Override
         public int AddZipFile(String path) {
-            idStr fullpath = new idStr(fs_savepath.GetString());
+            final idStr fullpath = new idStr(fs_savepath.GetString());
             pack_t pak;
             searchpath_s search, last;
 
@@ -2925,9 +2925,9 @@ public class FileSystem_h {
             search.dir = null;
             search.pack = pak;
             search.next = null;
-            last = searchPaths;
+            last = this.searchPaths;
             while (last.next != null) {
-                last = (searchpath_s) last.next;
+                last = last.next;
             }
             last.next = search;
             common.Printf("Appended pk4 %s with checksum 0x%x\n", pak.pakFilename.getData() + pak.checksum);
@@ -2936,8 +2936,8 @@ public class FileSystem_h {
 
         @Override
         public findFile_t FindFile(String path, boolean scheduleAddons) {
-            pack_t[] pak = new pack_t[1];
-            idFile f = OpenFileReadFlags(path, FSFLAG_SEARCH_DIRS | FSFLAG_SEARCH_PAKS | FSFLAG_SEARCH_ADDONS, pak);
+            final pack_t[] pak = new pack_t[1];
+            final idFile f = OpenFileReadFlags(path, FSFLAG_SEARCH_DIRS | FSFLAG_SEARCH_PAKS | FSFLAG_SEARCH_ADDONS, pak);
             if (null == f) {
                 return FIND_NO;
             }
@@ -2946,8 +2946,8 @@ public class FileSystem_h {
                 return FIND_YES;
             }
             // marking addons for inclusion on reload - may need to do that even when already in the search path
-            if (scheduleAddons && pak[0].addon && addonChecksums.FindIndex(pak[0].checksum) < 0) {
-                addonChecksums.Append(pak[0].checksum);
+            if (scheduleAddons && pak[0].addon && (this.addonChecksums.FindIndex(pak[0].checksum) < 0)) {
+                this.addonChecksums.Append(pak[0].checksum);
             }
             // an addon that's not on search list yet? that will require a restart
             if (pak[0].addon && !pak[0].addon_search) {
@@ -2973,12 +2973,12 @@ public class FileSystem_h {
             // add to this all addon decls - coming from all addon packs ( searched or not )
             for (i = 0; i < 2; i++) {
                 if (i == 0) {
-                    search = searchPaths;
+                    search = this.searchPaths;
                 } else if (i == 1) {
-                    search = addonPaks;
+                    search = this.addonPaks;
                 }
-                for (; search != null; search = (searchpath_s) search.next) {
-                    if (null == search.pack || !search.pack.addon || null == search.pack.addon_info) {
+                for (; search != null; search = search.next) {
+                    if ((null == search.pack) || !search.pack.addon || (null == search.pack.addon_info)) {
                         continue;
                     }
                     ret += search.pack.addon_info.mapDecls.Num();
@@ -2998,7 +2998,7 @@ public class FileSystem_h {
             int i;
             idDecl mapDecl;
             idDeclEntityDef mapDef;
-            int numdecls = declManager.GetNumDecls(DECL_MAPDEF);
+            final int numdecls = declManager.GetNumDecls(DECL_MAPDEF);
             searchpath_s search = null;
 
             if (idecl < numdecls) {
@@ -3007,25 +3007,25 @@ public class FileSystem_h {
                 if (NOT(mapDef)) {
                     common.Error("idFileSystemLocal::GetMapDecl %d: not found\n", idecl);
                 }
-                mapDict = mapDef.dict;
-                mapDict.Set("path", mapDef.GetName());
-                return mapDict;
+                this.mapDict = mapDef.dict;
+                this.mapDict.Set("path", mapDef.GetName());
+                return this.mapDict;
             }
             idecl -= numdecls;
             for (i = 0; i < 2; i++) {
                 if (i == 0) {
-                    search = searchPaths;
+                    search = this.searchPaths;
                 } else if (i == 1) {
-                    search = addonPaks;
+                    search = this.addonPaks;
                 }
-                for (; search != null; search = (searchpath_s) search.next) {
-                    if (null == search.pack || !search.pack.addon || null == search.pack.addon_info) {
+                for (; search != null; search = search.next) {
+                    if ((null == search.pack) || !search.pack.addon || (null == search.pack.addon_info)) {
                         continue;
                     }
                     // each addon may have a bunch of map decls
                     if (idecl < search.pack.addon_info.mapDecls.Num()) {
-                        mapDict = search.pack.addon_info.mapDecls.oGet(idecl);
-                        return mapDict;
+                        this.mapDict = search.pack.addon_info.mapDecls.oGet(idecl);
+                        return this.mapDict;
                     }
                     idecl -= search.pack.addon_info.mapDecls.Num();
                     assert (idecl >= 0);
@@ -3037,7 +3037,7 @@ public class FileSystem_h {
         @Override
         public void FindMapScreenshot(String path, String[] buf, int len) {
             idFile file;
-            idStr mapname = new idStr(path);
+            final idStr mapname = new idStr(path);
 
             mapname.StripPath();
             mapname.StripFileExtension();
@@ -3048,8 +3048,8 @@ public class FileSystem_h {
                 file = OpenFileReadFlags(buf[0], FSFLAG_SEARCH_ADDONS);
                 if (file != null) {
                     // save it out to an addon splash directory
-                    int dlen = file.Length();
-                    ByteBuffer data = ByteBuffer.allocate(dlen);
+                    final int dlen = file.Length();
+                    final ByteBuffer data = ByteBuffer.allocate(dlen);
                     file.Read(data, dlen);
                     CloseFile(file);
                     idStr.snPrintf(buf, len, "guis/assets/splash/addon/%s.tga", mapname.getData());
@@ -3091,7 +3091,7 @@ public class FileSystem_h {
                 idFileList fileList;
                 int i;
 
-                if (args.Argc() < 2 || args.Argc() > 3) {
+                if ((args.Argc() < 2) || (args.Argc() > 3)) {
                     common.Printf("usage: dir <directory> [extension]\n");
                     return;
                 }
@@ -3141,7 +3141,7 @@ public class FileSystem_h {
                 idFileList fileList;
                 int i;
 
-                if (args.Argc() < 2 || args.Argc() > 3) {
+                if ((args.Argc() < 2) || (args.Argc() > 3)) {
                     common.Printf("usage: dirtree <directory> [extension]\n");
                     return;
                 }
@@ -3191,7 +3191,7 @@ public class FileSystem_h {
                 String status;// = "";
 
                 common.Printf("Current search path:\n");
-                for (sp = fileSystemLocal.searchPaths; sp != null; sp = (searchpath_s) sp.next) {
+                for (sp = fileSystemLocal.searchPaths; sp != null; sp = sp.next) {
                     if (sp.pack != null) {
                         if (com_developer.GetBool()) {
                             status = String.format("%s (%d files - 0x%x %s", sp.pack.pakFilename, sp.pack.numfiles, sp.pack.checksum, sp.pack.referenced ? "referenced" : "not referenced");
@@ -3226,7 +3226,7 @@ public class FileSystem_h {
                 }
                 // show addon packs that are *not* in the search lists
                 common.Printf("Addon pk4s:\n");
-                for (sp = fileSystemLocal.addonPaks; sp != null; sp = (searchpath_s) sp.next) {
+                for (sp = fileSystemLocal.addonPaks; sp != null; sp = sp.next) {
                     if (com_developer.GetBool()) {
                         common.Printf("%s (%d files - 0x%x)\n", sp.pack.pakFilename, sp.pack.numfiles, sp.pack.checksum);
                     } else {
@@ -3298,15 +3298,15 @@ public class FileSystem_h {
                 }
 
                 final ByteBuffer[] buffer = {null};
-                idParser src = new idParser((int) (LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT));
-                if (fileSystem.ReadFile(args.Argv(1), buffer, null) != 0 && buffer[0] != null) {
+                final idParser src = new idParser(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
+                if ((fileSystem.ReadFile(args.Argv(1), buffer, null) != 0) && (buffer[0] != null)) {
                     src.LoadMemory(new String(buffer[0].array()), buffer[0].capacity(), args.Argv(1));
                     if (src.IsLoaded()) {
-                        idToken token = new idToken();
+                        final idToken token = new idToken();
                         while (src.ReadToken(token)) {
                             common.Printf("%s\n", token.getData());
                             session.UpdateScreen();
-                            idFile f = fileSystemLocal.OpenFileRead(token.getData());
+                            final idFile f = fileSystemLocal.OpenFileRead(token.getData());
                             if (f != null) {
                                 fileSystemLocal.CloseFile(f);
                             }
@@ -3452,7 +3452,7 @@ public class FileSystem_h {
 //                }
 //                return 0;
             }
-        };
+        }
 
         private void ReplaceSeparators(idStr path) {
             ReplaceSeparators(path, PATHSEPERATOR_CHAR);
@@ -3472,7 +3472,7 @@ public class FileSystem_h {
             s = path.c_str();
 
             for (i = 0; i < s.length; i++) {
-                if (s[i] == '/' || s[i] == '\\') {
+                if ((s[i] == '/') || (s[i] == '\\')) {
                     s[i] = sep;
                 }
             }
@@ -3527,14 +3527,14 @@ public class FileSystem_h {
             }
 
             // try in cache
-            i = dir_cache_index - 1;
-            while (i >= dir_cache_index - dir_cache_count) {
+            i = this.dir_cache_index - 1;
+            while (i >= (this.dir_cache_index - this.dir_cache_count)) {
                 j = (i + MAX_CACHED_DIRS) % MAX_CACHED_DIRS;
-                if (dir_cache[j].Matches(directory, extension)) {
+                if (this.dir_cache[j].Matches(directory, extension)) {
                     if (fs_debug.GetInteger() != 0) {
                         //common.Printf( "idFileSystemLocal::ListOSFiles: cache hit: %s\n", directory );
                     }
-                    list = dir_cache[j];
+                    list = this.dir_cache[j];
                     return list.Num();
                 }
                 i--;
@@ -3551,10 +3551,10 @@ public class FileSystem_h {
             }
 
             // push a new entry
-            dir_cache[dir_cache_index].Init(directory, extension, list);
-            dir_cache_index = (++dir_cache_index) % MAX_CACHED_DIRS;
-            if (dir_cache_count < MAX_CACHED_DIRS) {
-                dir_cache_count++;
+            this.dir_cache[this.dir_cache_index].Init(directory, extension, list);
+            this.dir_cache_index = (++this.dir_cache_index) % MAX_CACHED_DIRS;
+            if (this.dir_cache_count < MAX_CACHED_DIRS) {
+                this.dir_cache_count++;
             }
 
             return ret;
@@ -3575,7 +3575,7 @@ public class FileSystem_h {
             int i;
             Path fp;
             idStr fpath, entry;
-            idStrList list = new idStrList();
+            final idStrList list = new idStrList();
 
 //if( __MWERKS__&&
 // WIN32 ){
@@ -3587,7 +3587,7 @@ public class FileSystem_h {
 //}
             try {
                 fp = Paths.get(fileName);//fp = fopen(fileName, mode);
-            } catch (InvalidPathException e) {
+            } catch (final InvalidPathException e) {
                 //log something.
                 fp = Paths.get("/" + UUID.randomUUID());
             }
@@ -3627,9 +3627,9 @@ public class FileSystem_h {
             try {
                 //                return new FileInputStream(fp.toFile()).getChannel();
                 return FileChannel.open(fp, fopenOptions(mode));
-            } catch (NoSuchFileException ex) {//TODO:turn exceptions back on.
+            } catch (final NoSuchFileException ex) {//TODO:turn exceptions back on.
 //                Logger.getLogger(FileSystem_h.class.getName()).log(Level.WARNING, null, ex);
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -3637,8 +3637,8 @@ public class FileSystem_h {
         }
 
         private FileChannel OpenOSFileCorrectName(idStr path, final String mode) {
-            idStr caseName = new idStr();
-            FileChannel f = OpenOSFile(path.getData(), mode, caseName);
+            final idStr caseName = new idStr();
+            final FileChannel f = OpenOSFile(path.getData(), mode, caseName);
             if (f != null) {
                 path.StripFilename();
                 path.Append(PATHSEPERATOR_STR);
@@ -3657,7 +3657,7 @@ public class FileSystem_h {
 //            end = ftell(o);
 //            fseek(o, pos, SEEK_SET);
                 return o.size();
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -3694,7 +3694,7 @@ public class FileSystem_h {
                 }
                 f.close();
 //            Heap.Mem_Free(buf);
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -3748,7 +3748,7 @@ public class FileSystem_h {
             pack_t pak;
             idStr work;
 
-            if (null == searchPaths) {
+            if (null == this.searchPaths) {
                 common.FatalError("Filesystem call made without initialization\n");
             }
 
@@ -3765,15 +3765,15 @@ public class FileSystem_h {
             }
 
             // search through the path, one element at a time, adding to list
-            for (search = searchPaths; search != null; search = search.next) {
+            for (search = this.searchPaths; search != null; search = search.next) {
                 if (search.dir != null) {
-                    if (gamedir != null && !gamedir.isEmpty()) {
+                    if ((gamedir != null) && !gamedir.isEmpty()) {
                         if (!search.dir.gamedir.getData().equals(gamedir)) {
                             continue;
                         }
                     }
 
-                    idStrList sysFiles = new idStrList();
+                    final idStrList sysFiles = new idStrList();
                     idStr netpath;
 
                     netpath = new idStr(BuildOSPath(search.dir.path.getData(), search.dir.gamedir.getData(), relativePath));
@@ -3805,9 +3805,9 @@ public class FileSystem_h {
                     // look through all the pak file elements
 
                     // exclude any extra packs if we have server paks to search
-                    if (serverPaks.Num() != 0) {
+                    if (this.serverPaks.Num() != 0) {
                         GetPackStatus(search.pack);
-                        if (search.pack.pureStatus != PURE_NEVER && 0 == serverPaks.Find(search.pack)) {
+                        if ((search.pack.pureStatus != PURE_NEVER) && (0 == this.serverPaks.Find(search.pack))) {
                             continue; // not on the pure server pak list
                         }
                     }
@@ -3826,12 +3826,12 @@ public class FileSystem_h {
                         name = buildBuffer[i].name.getData();
 
                         // check for a path match without the trailing '/'
-                        if (pathLength > 0 && idStr.Icmpn(name, relativePath, pathLength - 1) != 0) {
+                        if ((pathLength > 0) && (idStr.Icmpn(name, relativePath, pathLength - 1) != 0)) {
                             continue;
                         }
 
                         // ensure we have a path, and not just a filename containing the path
-                        if (name.length() == pathLength || name.charAt(pathLength - 1) != '/') {
+                        if ((name.length() == pathLength) || (name.charAt(pathLength - 1) != '/')) {
                             continue;
                         }
 
@@ -3841,13 +3841,13 @@ public class FileSystem_h {
                                 break;
                             }
                         }
-                        if (j + 1 < name.length()) {
+                        if ((j + 1) < name.length()) {
                             continue;
                         }
 
                         // check for extension match
                         for (j = 0; j < extensions.Num(); j++) {
-                            if (length >= extensions.oGet(j).Length() && extensions.oGet(j).Icmp(name.substring(length - extensions.oGet(j).Length())) == 0) {
+                            if ((length >= extensions.oGet(j).Length()) && (extensions.oGet(j).Icmp(name.substring(length - extensions.oGet(j).Length())) == 0)) {
                                 break;
                             }
                         }
@@ -3876,8 +3876,8 @@ public class FileSystem_h {
 
         private int GetFileListTree(final String relativePath, final idStrList extensions, idStrList list, idHashIndex hashIndex, final String gamedir /*= NULL*/) {
             int i;
-            idStrList slash = new idStrList(), folders = new idStrList(128);
-            idHashIndex folderHashIndex = new idHashIndex(1024, 128);
+            final idStrList slash = new idStrList(), folders = new idStrList(128);
+            final idHashIndex folderHashIndex = new idHashIndex(1024, 128);
 
             // recurse through the subdirectories
             slash.Append(new idStr("/"));
@@ -3910,20 +3910,20 @@ public class FileSystem_h {
             searchpath_s search;
             pack_t pak;
             idStr pakfile;
-            idStrList pakfiles = new idStrList();
+            final idStrList pakfiles = new idStrList();
 
             // check if the search path already exists
-            for (search = searchPaths; search != null; search = search.next) {
+            for (search = this.searchPaths; search != null; search = search.next) {
                 // if this element is a pak file
                 if (null == search.dir) {
                     continue;
                 }
-                if (search.dir.path.Cmp(path) == 0 && search.dir.gamedir.Cmp(dir) == 0) {
+                if ((search.dir.path.Cmp(path) == 0) && (search.dir.gamedir.Cmp(dir) == 0)) {
                     return;
                 }
             }
 
-            gameFolder = new idStr(dir);
+            this.gameFolder = new idStr(dir);
 
             //
             // add the directory to the search path
@@ -3934,8 +3934,8 @@ public class FileSystem_h {
 
             search.dir.path = new idStr(path);
             search.dir.gamedir = new idStr(dir);
-            search.next = searchPaths;
-            searchPaths = search;
+            search.next = this.searchPaths;
+            this.searchPaths = search;
 
             // find all pak files in this directory
             pakfile = new idStr(BuildOSPath(path, dir, ""));
@@ -3957,8 +3957,8 @@ public class FileSystem_h {
                 search = new searchpath_s();
                 search.dir = null;
                 search.pack = pak;
-                search.next = searchPaths.next;
-                searchPaths.next = search;
+                search.next = this.searchPaths.next;
+                this.searchPaths.next = search;
                 common.Printf("Loaded pk4 %s with checksum 0x%x\n", pakfile.getData(), pak.checksum);
             }
         }
@@ -4000,151 +4000,151 @@ public class FileSystem_h {
 
             common.Printf("------ Initializing File System ------\n");
 
-            if (restartChecksums.Num() != 0) {
-                common.Printf("restarting in pure mode with %d pak files\n", restartChecksums.Num());
+            if (this.restartChecksums.Num() != 0) {
+                common.Printf("restarting in pure mode with %d pak files\n", this.restartChecksums.Num());
             }
-            if (addonChecksums.Num() != 0) {
-                common.Printf("restarting filesystem with %d addon pak file(s) to include\n", addonChecksums.Num());
+            if (this.addonChecksums.Num() != 0) {
+                common.Printf("restarting filesystem with %d addon pak file(s) to include\n", this.addonChecksums.Num());
             }
 
             SetupGameDirectories(BASE_GAMEDIR);
 
             // fs_game_base override
-            if (!fs_game_base.GetString().isEmpty() && idStr.Icmp(fs_game_base.GetString(), BASE_GAMEDIR) != 0) {
+            if (!fs_game_base.GetString().isEmpty() && (idStr.Icmp(fs_game_base.GetString(), BASE_GAMEDIR) != 0)) {
                 SetupGameDirectories(fs_game_base.GetString());
             }
 
             // fs_game override
-            if (!fs_game.GetString().isEmpty() && idStr.Icmp(fs_game.GetString(), BASE_GAMEDIR) != 0 && idStr.Icmp(fs_game.GetString(), fs_game_base.GetString()) != 0) {
+            if (!fs_game.GetString().isEmpty() && (idStr.Icmp(fs_game.GetString(), BASE_GAMEDIR) != 0) && (idStr.Icmp(fs_game.GetString(), fs_game_base.GetString()) != 0)) {
                 SetupGameDirectories(fs_game.GetString());
             }
 
             // currently all addons are in the search list - deal with filtering out and dependencies now
             // scan through and deal with dependencies
-            search = searchPaths;
+            search = this.searchPaths;
             while (search != null) {
-                if (null == search.pack || !search.pack.addon) {
+                if ((null == search.pack) || !search.pack.addon) {
                     search = search.next;
                     continue;
                 }
                 pak = search.pack;
                 if (fs_searchAddons.GetBool()) {
                     // when we have fs_searchAddons on we should never have addonChecksums
-                    assert (0 == addonChecksums.Num());
+                    assert (0 == this.addonChecksums.Num());
                     pak.addon_search = true;
-                    search = (searchpath_s) search.next;
+                    search = search.next;
                     continue;
                 }
-                addon_index = addonChecksums.FindIndex(pak.checksum);
+                addon_index = this.addonChecksums.FindIndex(pak.checksum);
                 if (addon_index >= 0) {
                     assert (!pak.addon_search);	// any pak getting flagged as addon_search should also have been removed from addonChecksums already
                     pak.addon_search = true;
-                    addonChecksums.RemoveIndex(addon_index);
+                    this.addonChecksums.RemoveIndex(addon_index);
                     FollowAddonDependencies(pak);
                 }
-                search = (searchpath_s) search.next;
+                search = search.next;
             }
 
             // now scan to filter out addons not marked addon_search
-            search = searchPaths;
+            search = this.searchPaths;
             while (search != null) {
-                if (null == search.pack || !search.pack.addon) {
-                    search = (searchpath_s) search.next;
+                if ((null == search.pack) || !search.pack.addon) {
+                    search = search.next;
                     continue;
                 }
                 assert (null == search.dir);
                 pak = search.pack;
                 if (pak.addon_search) {
                     common.Printf("Addon pk4 %s with checksum 0x%x is on the search list\n", pak.pakFilename.getData(), pak.checksum);
-                    search = (searchpath_s) search.next;
+                    search = search.next;
                 } else {
                     // remove from search list, put in addons list
-                    searchpath_s paksearch = search;
-                    search = (searchpath_s) search.next;
-                    paksearch.next = addonPaks;
-                    addonPaks = paksearch;
+                    final searchpath_s paksearch = search;
+                    search = search.next;
+                    paksearch.next = this.addonPaks;
+                    this.addonPaks = paksearch;
                     common.Printf("Addon pk4 %s with checksum 0x%x is on addon list\n", pak.pakFilename.getData(), pak.checksum);
                 }
             }
 
             // all addon paks found and accounted for
-            assert (0 == addonChecksums.Num());
-            addonChecksums.Clear();	// just in case
+            assert (0 == this.addonChecksums.Num());
+            this.addonChecksums.Clear();	// just in case
 
-            if (restartChecksums.Num() != 0) {
-                search = searchPaths;
+            if (this.restartChecksums.Num() != 0) {
+                search = this.searchPaths;
                 while (search != null) {
                     if (null == search.pack) {
-                        search = (searchpath_s) search.next;
+                        search = search.next;
                         continue;
                     }
-                    if ((i = restartChecksums.FindIndex(search.pack.checksum)) != -1) {
+                    if ((i = this.restartChecksums.FindIndex(search.pack.checksum)) != -1) {
                         if (i == 0) {
                             // this pak is the next one in the pure search order
-                            serverPaks.Append(search.pack);
-                            restartChecksums.RemoveIndex(0);
-                            if (0 == restartChecksums.Num()) {
+                            this.serverPaks.Append(search.pack);
+                            this.restartChecksums.RemoveIndex(0);
+                            if (0 == this.restartChecksums.Num()) {
                                 break; // early out, we're done
                             }
-                            search = (searchpath_s) search.next;
+                            search = search.next;
                             continue;
                         } else {
                             // this pak will be on the pure list, but order is not right yet
                             searchpath_s aux;
-                            aux = (searchpath_s) search.next;
+                            aux = search.next;
                             if (null == aux) {
                                 // last of the list can't be swapped back
                                 if (fs_debug.GetBool()) {
                                     common.Printf("found pure checksum %x at index %d, but the end of search path is reached\n", search.pack.checksum, i);
-                                    idStr checks = new idStr();
+                                    final idStr checks = new idStr();
                                     checks.Clear();
-                                    for (i = 0; i < serverPaks.Num(); i++) {
-                                        checks.Append(va("%p ", serverPaks.oGet(i)));
+                                    for (i = 0; i < this.serverPaks.Num(); i++) {
+                                        checks.Append(va("%p ", this.serverPaks.oGet(i)));
                                     }
-                                    common.Printf("%d pure paks - %s \n", serverPaks.Num(), checks.getData());
+                                    common.Printf("%d pure paks - %s \n", this.serverPaks.Num(), checks.getData());
                                     checks.Clear();
-                                    for (i = 0; i < restartChecksums.Num(); i++) {
-                                        checks.Append(va("%x ", restartChecksums.oGet(i)));
+                                    for (i = 0; i < this.restartChecksums.Num(); i++) {
+                                        checks.Append(va("%x ", this.restartChecksums.oGet(i)));
                                     }
-                                    common.Printf("%d paks left - %s\n", restartChecksums.Num(), checks.getData());
+                                    common.Printf("%d paks left - %s\n", this.restartChecksums.Num(), checks.getData());
                                 }
                                 common.FatalError("Failed to restart with pure mode restrictions for server connect");
                             }
                             // put this search path at the end of the list
                             searchpath_s search_end;
-                            search_end = (searchpath_s) search.next;
+                            search_end = search.next;
                             while (search_end.next != null) {
-                                search_end = (searchpath_s) search_end.next;
+                                search_end = search_end.next;
                             }
                             search_end.next = search;
-                            search = (searchpath_s) search.next;
+                            search = search.next;
                             search_end.next.next = null;
                             continue;
                         }
                     }
                     // this pak is not on the pure list
-                    search = (searchpath_s) search.next;
+                    search = search.next;
                 }
                 // the list must be empty
-                if (restartChecksums.Num() != 0) {
+                if (this.restartChecksums.Num() != 0) {
                     if (fs_debug.GetBool()) {
-                        idStr checks = new idStr();
+                        final idStr checks = new idStr();
                         checks.Clear();
-                        for (i = 0; i < serverPaks.Num(); i++) {
-                            checks.Append(va("%p ", serverPaks.oGet(i)));
+                        for (i = 0; i < this.serverPaks.Num(); i++) {
+                            checks.Append(va("%p ", this.serverPaks.oGet(i)));
                         }
-                        common.Printf("%d pure paks - %s \n", serverPaks.Num(), checks);
+                        common.Printf("%d pure paks - %s \n", this.serverPaks.Num(), checks);
                         checks.Clear();
-                        for (i = 0; i < restartChecksums.Num(); i++) {
-                            checks.Append(va("%x ", restartChecksums.oGet(i)));
+                        for (i = 0; i < this.restartChecksums.Num(); i++) {
+                            checks.Append(va("%x ", this.restartChecksums.oGet(i)));
                         }
-                        common.Printf("%d paks left - %s\n", restartChecksums.Num(), checks);
+                        common.Printf("%d paks left - %s\n", this.restartChecksums.Num(), checks);
                     }
                     common.FatalError("Failed to restart with pure mode restrictions for server connect");
                 }
                 // also the game pak checksum
                 // we could check if the game pak is actually present, but we would not be restarting if there wasn't one @ first pure check
-                gamePakChecksum = restartGamePakChecksum;
+                this.gamePakChecksum = this.restartGamePakChecksum;
             }
 
             // add our commands
@@ -4174,7 +4174,7 @@ public class FileSystem_h {
                 common.Printf("\nRunning in restricted demo mode.\n\n");
                 // make sure that the pak file has the header checksum we expect
                 searchpath_s search;
-                for (search = searchPaths; search != null; search = (searchpath_s) search.next) {
+                for (search = this.searchPaths; search != null; search = search.next) {
                     if (search.pack != null) {
                         // a tiny attempt to keep the checksum from being scannable from the exe
                         if ((search.pack.checksum ^ 0x84268436) != (DEMO_PAK_CHECKSUM ^ 0x84268436)) {
@@ -4196,8 +4196,8 @@ public class FileSystem_h {
                     || ".dat".equals(path.substring(l - 4)) // for journal files
                     || "dll".equals(path.substring(l - 4)) // dynamic modules are handled a different way for pure
                     || ".so".equals(path.substring(l - 3))
-                    || (l > 6 && ".dylib".equals(path.substring(l - 6)))
-                    || (l > 10 && ".scriptcfg".equals(path.substring(l - 10))))// configuration script, such as map cycle
+                    || ((l > 6) && ".dylib".equals(path.substring(l - 6)))
+                    || ((l > 10) && ".scriptcfg".equals(path.substring(l - 10))))// configuration script, such as map cycle
                     || (ID_PURE_ALLOWDDS && "dds".equals(path.substring(l - 4)))) {
                 // note: cd and xp keys, as well as config.spec are opened through an explicit OS path and don't hit this
                 return true;
@@ -4232,7 +4232,7 @@ public class FileSystem_h {
 
         private pack_t GetPackForChecksum(int checksum, boolean searchAddons /*= false*/) {
             searchpath_s search;
-            for (search = searchPaths; search != null; search = (searchpath_s) search.next) {
+            for (search = this.searchPaths; search != null; search = search.next) {
                 if (null == search.pack) {
                     continue;
                 }
@@ -4241,8 +4241,8 @@ public class FileSystem_h {
                 }
             }
             if (searchAddons) {
-                for (search = addonPaks; search != null; search = (searchpath_s) search.next) {
-                    assert (search.pack != null && search.pack.addon);
+                for (search = this.addonPaks; search != null; search = search.next) {
+                    assert ((search.pack != null) && search.pack.addon);
                     if (search.pack.checksum == checksum) {
                         return search.pack;
                     }
@@ -4257,14 +4257,14 @@ public class FileSystem_h {
             pack_t pak;
             fileInPack_s pakFile;
             int hash;
-            assert (0 == serverPaks.Num());
+            assert (0 == this.serverPaks.Num());
             hash = (int) HashFileName(relativePath);
-            for (search = searchPaths; search != null; search = (searchpath_s) search.next) {
-                if (search.pack != null && search.pack.hashTable[hash] != null) {
+            for (search = this.searchPaths; search != null; search = search.next) {
+                if ((search.pack != null) && (search.pack.hashTable[hash] != null)) {
                     pak = search.pack;
-                    for (pakFile = pak.hashTable[hash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
+                    for (pakFile = pak.hashTable[hash]; pakFile != null; pakFile = pakFile.next) {
                         if (FilenameCompare(pakFile.name.getData(), relativePath)) {
-                            idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
+                            final idFile_InZip file = ReadFileFromZip(pak, pakFile, relativePath);
                             if (findChecksum[0] == GetFileChecksum(file)) {
                                 if (fs_debug.GetBool()) {
                                     common.Printf("found '%s' with checksum 0x%x in pak '%s'\n", relativePath, findChecksum[0], pak.pakFilename.getData());
@@ -4351,7 +4351,7 @@ public class FileSystem_h {
                 final Enumeration<? extends ZipEntry> entries = uf.entries();
                 for (i = 0; i < uf.size() /*gi.number_entry*/; i++) {
                     // go to the next file in the zip
-                    ZipEntry entry = entries.nextElement();
+                    final ZipEntry entry = entries.nextElement();
 //                err = unzGetCurrentFileInfo(uf, file_info, filename_inzip, sizeof(filename_inzip), null, 0, null, 0);
 //                if (err != UNZ_OK) {
 //                    break;
@@ -4383,12 +4383,12 @@ public class FileSystem_h {
                 // check if this is an addon pak
                 pack.addon = false;
                 confHash = (int) HashFileName(ADDON_CONFIG);
-                for (pakFile = pack.hashTable[confHash]; pakFile != null; pakFile = (fileInPack_s) pakFile.next) {
+                for (pakFile = pack.hashTable[confHash]; pakFile != null; pakFile = pakFile.next) {
                     if (FilenameCompare(pakFile.name.getData(), ADDON_CONFIG)) {
                         pack.addon = true;
-                        idFile_InZip file = ReadFileFromZip(pack, pakFile, ADDON_CONFIG);
+                        final idFile_InZip file = ReadFileFromZip(pack, pakFile, ADDON_CONFIG);
                         // may be just an empty file if you don't bother about the mapDef
-                        if (file != null && file.Length() != 0) {
+                        if ((file != null) && (file.Length() != 0)) {
                             ByteBuffer buf;
                             buf = ByteBuffer.allocate(file.Length() + 1);
                             file.Read( /*(void *)*/buf, file.Length());
@@ -4409,7 +4409,7 @@ public class FileSystem_h {
 //            Mem_Free(fs_headerLongs);
                 return pack;
 
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.getLogger(FileSystem_h.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -4418,7 +4418,7 @@ public class FileSystem_h {
 
         private idFile_InZip ReadFileFromZip(pack_t pak, fileInPack_s pakFile, final String relativePath) {
             File fp;
-            idFile_InZip file = new idFile_InZip();
+            final idFile_InZip file = new idFile_InZip();
 
             // open a new file on the pakfile
             fp = new File(pak.pakFilename.getData());//TODO: check this shit
@@ -4453,7 +4453,7 @@ public class FileSystem_h {
             int i, l, hashindex;
             fileInPack_s file;
             boolean abrt;
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             if (pak.pureStatus != PURE_UNKNOWN) {
                 return pak.pureStatus;
@@ -4477,7 +4477,7 @@ public class FileSystem_h {
                         common.DPrintf("pak '%s' candidate for pure: '%s'\n", pak.pakFilename.getData(), file.name.getData());
                         break;
                     }
-                    file = /*pak.buildBuffer =*/ (fileInPack_s) file.next;//TODO:check this assignment.
+                    file = file.next;//TODO:check this assignment.
                     i++;
                 }
                 if (abrt) {
@@ -4501,8 +4501,8 @@ public class FileSystem_h {
         }
 
         private addonInfo_t ParseAddonDef(final String buf, final int len) {
-            idLexer src = new idLexer();
-            idToken token = new idToken(), token2 = new idToken();
+            final idLexer src = new idLexer();
+            final idToken token = new idToken(), token2 = new idToken();
             addonInfo_t info;
 
             src.LoadMemory(buf, len, "<addon.conf>");
@@ -4551,7 +4551,7 @@ public class FileSystem_h {
 //			delete info;
                     return null;
                 }
-                idDict dict = new idDict();
+                final idDict dict = new idDict();
                 dict.Set("path", token.getData());
                 if (!src.ReadToken(token)) {
                     src.Warning("Expected {");
@@ -4596,19 +4596,20 @@ public class FileSystem_h {
 
         private void FollowAddonDependencies(pack_t pak) {
             assert (pak != null);
-            if (null == pak.addon_info || 0 == pak.addon_info.depends.Num()) {
+            if ((null == pak.addon_info) || (0 == pak.addon_info.depends.Num())) {
                 return;
             }
-            int i, num = pak.addon_info.depends.Num();
+            int i;
+			final int num = pak.addon_info.depends.Num();
             for (i = 0; i < num; i++) {
-                pack_t deppak = GetPackForChecksum(pak.addon_info.depends.oGet(i), true);
+                final pack_t deppak = GetPackForChecksum(pak.addon_info.depends.oGet(i), true);
                 if (deppak != null) {
                     // make sure it hasn't been marked for search already
                     if (!deppak.addon_search) {
                         // must clean addonChecksums as we go
-                        int addon_index = addonChecksums.FindIndex(deppak.checksum);
+                        final int addon_index = this.addonChecksums.FindIndex(deppak.checksum);
                         if (addon_index >= 0) {
-                            addonChecksums.RemoveIndex(addon_index);
+                            this.addonChecksums.RemoveIndex(addon_index);
                         }
                         deppak.addon_search = true;
                         common.Printf("Addon pk4 %s 0x%x depends on pak %s 0x%x, will be searched\n", pak.pakFilename.getData(), pak.checksum, deppak.pakFilename.getData(), deppak.checksum);
@@ -4637,7 +4638,7 @@ public class FileSystem_h {
 //							// curl_progress_callback in curl.h
 
         private static int CurlProgressFunction(Object[] clientp, double dltotal, double dlnow, double ultotal, double ulnow) {
-            backgroundDownload_s bgl = (backgroundDownload_s) clientp[0];
+            final backgroundDownload_s bgl = (backgroundDownload_s) clientp[0];
             if (bgl.url.status == DL_ABORTING) {
                 return 1;
             }
@@ -4645,7 +4646,7 @@ public class FileSystem_h {
             bgl.url.dlnow = (int) dlnow;
             return 0;
         }
-    };
+    }
 
     public static void setFileSystem(idFileSystem fileSystem) {
         FileSystem_h.fileSystem = FileSystem_h.fileSystemLocal = (idFileSystemLocal) fileSystem;

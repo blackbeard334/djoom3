@@ -181,9 +181,9 @@ public class sys_local {
 
         @Override
         public sysEvent_s GenerateMouseButtonEvent(int button, boolean down) {
-            sysEvent_s ev = new sysEvent_s();
+            final sysEvent_s ev = new sysEvent_s();
             ev.evType = SE_KEY;
-            ev.evValue = K_MOUSE1 + button - 1;
+            ev.evValue = (K_MOUSE1 + button) - 1;
             ev.evValue2 = btoi(down);
             ev.evPtrLength = 0;
             ev.evPtr = null;
@@ -192,7 +192,7 @@ public class sys_local {
 
         @Override
         public sysEvent_s GenerateMouseMoveEvent(int deltax, int deltay) {
-            sysEvent_s ev = new sysEvent_s();
+            final sysEvent_s ev = new sysEvent_s();
             ev.evType = SE_MOUSE;
             ev.evValue = deltax;
             ev.evValue2 = deltay;
@@ -251,7 +251,7 @@ public class sys_local {
 //                cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "quit\n");
 //            }
         }
-    };
+    }
     /*
      =================
      Sys_TimeStampToStr
@@ -266,7 +266,7 @@ public class sys_local {
         final Date time = new Date();
         String out;
 
-        idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
+        final idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
         if (lang.Icmp("english") == 0) {
             // english gets "month/day/year  hour:min" + "am" or "pm"
             out = new SimpleDateFormat("MM/dd/yyyy\thh:mmaa").format(time).toLowerCase();

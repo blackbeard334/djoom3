@@ -20,38 +20,38 @@ public class HashTable {
 
     public static class idHashTable<Type> {
 
-        private hashnode_s[] heads;
+        private final hashnode_s[] heads;
         //
-        private int          tablesize;
+        private final int          tablesize;
         private int          numentries;
-        private int          tablesizemask;
+        private final int          tablesizemask;
         //
         //
 
         public idHashTable() {
-            int newtablesize = 256;
+            final int newtablesize = 256;
 
-            tablesize = newtablesize;
-            assert (tablesize > 0);
+            this.tablesize = newtablesize;
+            assert (this.tablesize > 0);
 
-            heads = Stream.generate(hashnode_s::new).limit(tablesize).toArray(hashnode_s[]::new);//	memset( heads, 0, sizeof( *heads ) * tablesize );
-            numentries = 0;
+            this.heads = Stream.generate(hashnode_s::new).limit(this.tablesize).toArray(hashnode_s[]::new);//	memset( heads, 0, sizeof( *heads ) * tablesize );
+            this.numentries = 0;
 
-            tablesizemask = tablesize - 1;
+            this.tablesizemask = this.tablesize - 1;
         }
 
         public idHashTable(int newtablesize) {
 
             assert (idMath.IsPowerOfTwo(newtablesize));
 
-            tablesize = newtablesize;
-            assert (tablesize > 0);
+            this.tablesize = newtablesize;
+            assert (this.tablesize > 0);
 
-            heads = Stream.generate(hashnode_s::new).limit(tablesize).toArray(hashnode_s[]::new);//	memset( heads, 0, sizeof( *heads ) * tablesize );
+            this.heads = Stream.generate(hashnode_s::new).limit(this.tablesize).toArray(hashnode_s[]::new);//	memset( heads, 0, sizeof( *heads ) * tablesize );
 
-            numentries = 0;
+            this.numentries = 0;
 
-            tablesizemask = tablesize - 1;
+            this.tablesizemask = this.tablesize - 1;
         }
 
         public idHashTable(final idHashTable<Type> map) {
@@ -61,14 +61,14 @@ public class HashTable {
 
             assert (map.tablesize > 0);
 
-            tablesize = map.tablesize;
-            heads = new hashnode_s[tablesize];
-            numentries = map.numentries;
-            tablesizemask = map.tablesizemask;
+            this.tablesize = map.tablesize;
+            this.heads = new hashnode_s[this.tablesize];
+            this.numentries = map.numentries;
+            this.tablesizemask = map.tablesizemask;
 
-            for (i = 0; i < tablesize; i++) {
+            for (i = 0; i < this.tablesize; i++) {
                 if (null == map.heads[i]) {
-                    heads[i] = null;
+                    this.heads[i] = null;
                     continue;
                 }
 
@@ -95,7 +95,7 @@ public class HashTable {
             int hash, s;
 
             hash = GetHash(key);
-            for (nextPtr = heads[hash], node = nextPtr; node != null; nextPtr = node.next, node = nextPtr) {//TODO:what moves us?
+            for (nextPtr = this.heads[hash], node = nextPtr; node != null; nextPtr = node.next, node = nextPtr) {//TODO:what moves us?
                 s = node.key.Cmp(key);
                 if (s == 0) {
                     node.value = value;
@@ -106,9 +106,9 @@ public class HashTable {
                 }
             }
 
-            numentries++;
+            this.numentries++;
 
-            nextPtr = new hashnode_s(key, value, heads[hash]);
+            nextPtr = new hashnode_s(key, value, this.heads[hash]);
             nextPtr.next = node;
         }
 
@@ -121,7 +121,7 @@ public class HashTable {
             int hash, s;
 
             hash = GetHash(key);
-            for (node = heads[hash]; node != null; node = node.next) {
+            for (node = this.heads[hash]; node != null; node = node.next) {
                 s = node.key.Cmp(key);
                 if (s == 0) {
                     if (value != null) {
@@ -148,18 +148,18 @@ public class HashTable {
             int hash;
 
             hash = GetHash(key);
-            head = heads[hash];
+            head = this.heads[hash];
             if (head != null) {
                 for (prev = null, node = head; node != null; prev = node, node = node.next) {//TODO:fuck me if any of this shit works.
                     if (node.key.Cmp(key) != 0) {
                         if (prev != null) {
                             prev.next = node.next;
                         } else {
-                            heads[hash] = node.next;//TODO:double check these pointers.
+                            this.heads[hash] = node.next;//TODO:double check these pointers.
                         }
 
 //				delete node;
-                        numentries--;
+                        this.numentries--;
                         return true;
                     }
                 }
@@ -173,18 +173,18 @@ public class HashTable {
             hashnode_s node;
             hashnode_s next;
 
-            for (i = 0; i < tablesize; i++) {
-                next = heads[i];
+            for (i = 0; i < this.tablesize; i++) {
+                next = this.heads[i];
                 while (next != null) {
                     node = next;
                     next = next.next;
 //			delete node;
                 }
 
-                heads[i] = null;
+                this.heads[i] = null;
             }
 
-            numentries = 0;
+            this.numentries = 0;
         }
 
         public void DeleteContents() {
@@ -192,8 +192,8 @@ public class HashTable {
             hashnode_s node;
             hashnode_s next;
 
-            for (i = 0; i < tablesize; i++) {
-                next = heads[i];
+            for (i = 0; i < this.tablesize; i++) {
+                next = this.heads[i];
                 while (next != null) {
                     node = next;
                     next = next.next;
@@ -201,16 +201,16 @@ public class HashTable {
 //			delete node;
                 }
 
-                heads[i] = null;
+                this.heads[i] = null;
             }
 
-            numentries = 0;
+            this.numentries = 0;
         }
 
         // the entire contents can be itterated over, but note that the
         // exact index for a given element may change when new elements are added
         public int Num() {
-            return numentries;
+            return this.numentries;
         }
 
         /*
@@ -226,14 +226,14 @@ public class HashTable {
             int count;
             int i;
 
-            if ((index < 0) || (index > numentries)) {
+            if ((index < 0) || (index > this.numentries)) {
                 assert (false);
                 return null;
             }
 
             count = 0;
-            for (i = 0; i < tablesize; i++) {
-                for (node = heads[i]; node != null; node = node.next) {
+            for (i = 0; i < this.tablesize; i++) {
+                for (node = this.heads[i]; node != null; node = node.next) {
                     if (count == index) {
                         return (Type) node.value;
                     }
@@ -249,14 +249,14 @@ public class HashTable {
             hashnode_s node;
 
             // if no items in hash
-            if (0 == numentries) {
+            if (0 == this.numentries) {
                 return 100;
             }
-            average = numentries / tablesize;
+            average = this.numentries / this.tablesize;
             error = 0;
-            for (i = 0; i < tablesize; i++) {
+            for (i = 0; i < this.tablesize; i++) {
                 int numItems = 0;
-                for (node = heads[i]; node != null; node = node.next) {
+                for (node = this.heads[i]; node != null; node = node.next) {
                     numItems++;
                 }
                 e = Math.abs(numItems - average);
@@ -264,7 +264,7 @@ public class HashTable {
                     error += e - 1;
                 }
             }
-            return 100 - (error * 100 / numentries);
+            return 100 - ((error * 100) / this.numentries);
         }
 
         private class hashnode_s<Type> {
@@ -276,22 +276,22 @@ public class HashTable {
             //
 
             public hashnode_s() {
-                key = new idStr();
+                this.key = new idStr();
             }
 
             hashnode_s(final idStr k, Type v, hashnode_s n) {
-                key = new idStr(k);
-                value = v;
-                next = n;
+                this.key = new idStr(k);
+                this.value = v;
+                this.next = n;
             }
 
             hashnode_s(final String k, Type v, hashnode_s n) {
                 this(new idStr(k), v, n);
             }
-        };
+        }
 
         int GetHash(final String key) {
-            return (idStr.Hash(key) & tablesizemask);
+            return (idStr.Hash(key) & this.tablesizemask);
         }
-    };
+    }
 }

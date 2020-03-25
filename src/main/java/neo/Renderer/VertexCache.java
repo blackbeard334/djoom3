@@ -57,12 +57,12 @@ public class VertexCache {
         TAG_USED,
         TAG_FIXED, // for the temp buffers
         TAG_TEMP   // in frame temp area, not static area
-    };
+    }
 
     static class vertCache_s implements Iterable<vertCache_s> {//TODO:use iterators for all our makeshift linked lists.
 
         private int /*GLuint*/ vbo = 0;
-        private int /*GLuint*/ vao = 0;
+        private final int /*GLuint*/ vao = 0;
         private ByteBuffer     virtMem;    // only one of vbo / virtMem will be set
         private boolean        indexBuffer;// holds indexes instead of vertexes
         private int            offset;
@@ -75,16 +75,16 @@ public class VertexCache {
 
         @Override
         public Iterator<vertCache_s> iterator() {
-            Iterator i = new Iterator() {
+            final Iterator i = new Iterator() {
 
                 @Override
                 public boolean hasNext() {
-                    return next != null;
+                    return vertCache_s.this.next != null;
                 }
 
                 @Override
                 public Object next() {
-                    return next;
+                    return vertCache_s.this.next;
                 }
 
                 @Override
@@ -101,7 +101,7 @@ public class VertexCache {
          * NULL.
          */
         public static vertCache_s[] toArray(vertCache_s cache_s) {
-            List<vertCache_s> array = new ArrayList<>(10);
+            final List<vertCache_s> array = new ArrayList<>(10);
             Iterator<vertCache_s> iterator;
 
             if (cache_s != null) {
@@ -115,8 +115,6 @@ public class VertexCache {
             return (vertCache_s[]) array.toArray();
         }
     }
-
-    ;
     //
     static final int FRAME_MEMORY_BYTES = 0x200000;
     static final int EXPAND_HEADERS     = 1024;
@@ -144,8 +142,6 @@ public class VertexCache {
         }
     }
 
-    ;
-
     //================================================================================
     public static class idVertexCache {
 
@@ -172,11 +168,11 @@ public class VertexCache {
         //
 //        private final idBlockAlloc<vertCache_s> headerAllocator = new idBlockAlloc<>(1024);
         //
-        private       vertCache_s   freeStaticHeaders;      // head of doubly linked list
-        private       vertCache_s   freeDynamicHeaders;     // head of doubly linked list
-        private       vertCache_s   dynamicHeaders;         // head of doubly linked list
-        private       vertCache_s   deferredFreeList;       // head of doubly linked list
-        private       vertCache_s   staticHeaders;          // head of doubly linked list in MRU order,
+        private final       vertCache_s   freeStaticHeaders;      // head of doubly linked list
+        private final       vertCache_s   freeDynamicHeaders;     // head of doubly linked list
+        private final       vertCache_s   dynamicHeaders;         // head of doubly linked list
+        private final       vertCache_s   deferredFreeList;       // head of doubly linked list
+        private final       vertCache_s   staticHeaders;          // head of doubly linked list in MRU order,
         // staticHeaders.next is most recently used
         //
         private       int           frameBytes;             // for each of NUM_VERTEX_FRAMES frames
@@ -199,37 +195,37 @@ public class VertexCache {
                 r_vertexBufferMegs.SetInteger(8);
             }
 
-            virtualMemory = false;
+            this.virtualMemory = false;
 
             // use ARB_vertex_buffer_object unless explicitly disabled
-            if (r_useVertexBuffers.GetInteger() != 0 && glConfig.ARBVertexBufferObjectAvailable) {
+            if ((r_useVertexBuffers.GetInteger() != 0) && glConfig.ARBVertexBufferObjectAvailable) {
                 common.Printf("using ARB_vertex_buffer_object memory\n");
             } else {
-                virtualMemory = true;
+                this.virtualMemory = true;
                 r_useIndexBuffers.SetBool(false);
                 common.Printf("WARNING: vertex array range in virtual memory (SLOW)\n");
             }
 
             // initialize the cache memory blocks
-            freeStaticHeaders.next = freeStaticHeaders.prev = freeStaticHeaders;
-            staticHeaders.next = staticHeaders.prev = staticHeaders;
-            freeDynamicHeaders.next = freeDynamicHeaders.prev = freeDynamicHeaders;
-            dynamicHeaders.next = dynamicHeaders.prev = dynamicHeaders;
-            deferredFreeList.next = deferredFreeList.prev = deferredFreeList;
+            this.freeStaticHeaders.next = this.freeStaticHeaders.prev = this.freeStaticHeaders;
+            this.staticHeaders.next = this.staticHeaders.prev = this.staticHeaders;
+            this.freeDynamicHeaders.next = this.freeDynamicHeaders.prev = this.freeDynamicHeaders;
+            this.dynamicHeaders.next = this.dynamicHeaders.prev = this.dynamicHeaders;
+            this.deferredFreeList.next = this.deferredFreeList.prev = this.deferredFreeList;
 
             // set up the dynamic frame memory
-            frameBytes = FRAME_MEMORY_BYTES;
-            staticAllocTotal = 0;
+            this.frameBytes = FRAME_MEMORY_BYTES;
+            this.staticAllocTotal = 0;
 
-            ByteBuffer junk = BufferUtils.createByteBuffer(frameBytes);// Mem_Alloc(frameBytes);
+            ByteBuffer junk = BufferUtils.createByteBuffer(this.frameBytes);// Mem_Alloc(frameBytes);
             for (int i = 0; i < NUM_VERTEX_FRAMES; i++) {
-                allocatingTempBuffer = true;    // force the alloc to use GL_STREAM_DRAW_ARB
-                tempBuffers[i] = Alloc(junk, frameBytes);
-                allocatingTempBuffer = false;
-                tempBuffers[i].tag = TAG_FIXED;
+                this.allocatingTempBuffer = true;    // force the alloc to use GL_STREAM_DRAW_ARB
+                this.tempBuffers[i] = Alloc(junk, this.frameBytes);
+                this.allocatingTempBuffer = false;
+                this.tempBuffers[i].tag = TAG_FIXED;
                 // unlink these from the static list, so they won't ever get purged
-                tempBuffers[i].next.prev = tempBuffers[i].prev;
-                tempBuffers[i].prev.next = tempBuffers[i].next;
+                this.tempBuffers[i].next.prev = this.tempBuffers[i].prev;
+                this.tempBuffers[i].prev.next = this.tempBuffers[i].next;
             }
 //            Mem_Free(junk);
             junk = null;
@@ -251,7 +247,7 @@ public class VertexCache {
          =============
          */
         public boolean IsFast() {
-            if (virtualMemory) {
+            if (this.virtualMemory) {
                 return false;
             }
             return true;
@@ -268,8 +264,8 @@ public class VertexCache {
         // called when vertex programs are enabled or disabled, because
         // the cached data is no longer valid
         public void PurgeAll() {
-            while (staticHeaders.next != staticHeaders) {
-                ActuallyFree(staticHeaders.next);
+            while (this.staticHeaders.next != this.staticHeaders) {
+                ActuallyFree(this.staticHeaders.next);
             }
         }
 
@@ -289,16 +285,16 @@ public class VertexCache {
             buffer = null;
 
             // if we don't have any remaining unused headers, allocate some more
-            if (freeStaticHeaders.next == freeStaticHeaders) {
+            if (this.freeStaticHeaders.next == this.freeStaticHeaders) {
 
                 for (int i = 0; i < EXPAND_HEADERS; i++) {
                     block = new vertCache_s();//headerAllocator.Alloc();
-                    block.next = freeStaticHeaders.next;
-                    block.prev = freeStaticHeaders;
+                    block.next = this.freeStaticHeaders.next;
+                    block.prev = this.freeStaticHeaders;
                     block.next.prev = block;
                     block.prev.next = block;
 
-                    if (!virtualMemory) {
+                    if (!this.virtualMemory) {
                         block.vbo = qglGenBuffersARB();
 //                        block.vao = GL30.glGenVertexArrays();
                     }
@@ -306,11 +302,11 @@ public class VertexCache {
             }
 
             // move it from the freeStaticHeaders list to the staticHeaders list
-            block = freeStaticHeaders.next;
+            block = this.freeStaticHeaders.next;
             block.next.prev = block.prev;
             block.prev.next = block.next;
-            block.next = staticHeaders.next;
-            block.prev = staticHeaders;
+            block.next = this.staticHeaders.next;
+            block.prev = this.staticHeaders;
             block.next.prev = block;
             block.prev.next = block;
 
@@ -319,10 +315,10 @@ public class VertexCache {
             block.tag = TAG_USED;
 
             // save data for debugging
-            staticAllocThisFrame += block.size;
-            staticCountThisFrame++;
-            staticCountTotal++;
-            staticAllocTotal += block.size;
+            this.staticAllocThisFrame += block.size;
+            this.staticCountThisFrame++;
+            this.staticCountTotal++;
+            this.staticAllocTotal += block.size;
 
             // this will be set to zero when it is purged
             block.user = buffer;//TODO:wtf?
@@ -331,7 +327,7 @@ public class VertexCache {
             // allocation doesn't imply used-for-drawing, because at level
             // load time lots of things may be created, but they aren't
             // referenced by the GPU yet, and can be purged if needed.
-            block.frameUsed = currentFrame - NUM_VERTEX_FRAMES;
+            block.frameUsed = this.currentFrame - NUM_VERTEX_FRAMES;
 
             block.indexBuffer = indexBuffer;
 
@@ -342,7 +338,7 @@ public class VertexCache {
                     qglBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, /*(GLsizeiptrARB)*/ size, data, GL_STATIC_DRAW_ARB);
                 } else {
                     qglBindBufferARB(GL_ARRAY_BUFFER_ARB, block.vbo);//TODO:get?
-                    if (allocatingTempBuffer) {
+                    if (this.allocatingTempBuffer) {
                         qglBufferDataARB(GL_ARRAY_BUFFER_ARB, /*(GLsizeiptrARB)*/ size, data, GL_STREAM_DRAW_ARB);
                     } else {
                         qglBufferDataARB(GL_ARRAY_BUFFER_ARB, /*(GLsizeiptrARB)*/ size, data, GL_STATIC_DRAW_ARB);
@@ -359,7 +355,7 @@ public class VertexCache {
 
         @Deprecated
         public void Alloc(int[] data, int size, vertCache_s buffer, boolean indexBuffer /*= false*/) {
-            ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
+            final ByteBuffer byteData = ByteBuffer.allocate(data.length * 4);
             byteData.asIntBuffer().put(data);
 
 //            Alloc(byteData, size, buffer, indexBuffer);
@@ -367,7 +363,7 @@ public class VertexCache {
         }
 
         public vertCache_s Alloc(int[] data, int size, boolean indexBuffer) {
-            ByteBuffer byteData = BufferUtils.createByteBuffer(size);
+            final ByteBuffer byteData = BufferUtils.createByteBuffer(size);
             byteData.asIntBuffer().put(data);
 
             return Alloc(byteData, size, indexBuffer);
@@ -415,7 +411,7 @@ public class VertexCache {
         // This will be a real pointer with virtual memory,
         // but it will be an int offset cast to a pointer of ARB_vertex_buffer_object
         public ByteBuffer Position(vertCache_s buffer) {
-            if (null == buffer || buffer.tag == TAG_FREE) {
+            if ((null == buffer) || (buffer.tag == TAG_FREE)) {
                 common.FatalError("idVertexCache::Position: bad vertCache_t");
             }
 
@@ -467,10 +463,10 @@ public class VertexCache {
                 common.Error("idVertexCache::AllocFrameTemp: size = %d\n", size);
             }
 
-            if (dynamicAllocThisFrame + size > frameBytes) {
+            if ((this.dynamicAllocThisFrame + size) > this.frameBytes) {
                 // if we don't have enough room in the temp block, allocate a static block,
                 // but immediately free it so it will get freed at the next frame
-                tempOverflow = true;
+                this.tempOverflow = true;
                 block = Alloc(data, size);
                 Free(block);
                 return block;
@@ -478,38 +474,38 @@ public class VertexCache {
 
             // this data is just going on the shared dynamic list
             // if we don't have any remaining unused headers, allocate some more
-            if (freeDynamicHeaders.next == freeDynamicHeaders) {
+            if (this.freeDynamicHeaders.next == this.freeDynamicHeaders) {
 
                 for (int i = 0; i < EXPAND_HEADERS; i++) {
                     block = new vertCache_s();// headerAllocator.Alloc();
-                    block.next = freeDynamicHeaders.next;
-                    block.prev = freeDynamicHeaders;
+                    block.next = this.freeDynamicHeaders.next;
+                    block.prev = this.freeDynamicHeaders;
                     block.next.prev = block;
                     block.prev.next = block;
                 }
             }
 
             // move it from the freeDynamicHeaders list to the dynamicHeaders list
-            block = freeDynamicHeaders.next;
+            block = this.freeDynamicHeaders.next;
             block.next.prev = block.prev;
             block.prev.next = block.next;
-            block.next = dynamicHeaders.next;
-            block.prev = dynamicHeaders;
+            block.next = this.dynamicHeaders.next;
+            block.prev = this.dynamicHeaders;
             block.next.prev = block;
             block.prev.next = block;
 
             block.size = size;
             block.tag = TAG_TEMP;
             block.indexBuffer = false;
-            block.offset = dynamicAllocThisFrame;
-            dynamicAllocThisFrame += block.size;
-            dynamicCountThisFrame++;
+            block.offset = this.dynamicAllocThisFrame;
+            this.dynamicAllocThisFrame += block.size;
+            this.dynamicCountThisFrame++;
             block.user = null;
             block.frameUsed = 0;
 
             // copy the data
-            block.virtMem = tempBuffers[listNum].virtMem;
-            block.vbo = tempBuffers[listNum].vbo;
+            block.virtMem = this.tempBuffers[this.listNum].virtMem;
+            block.vbo = this.tempBuffers[this.listNum].vbo;
 
             if (block.vbo != 0) {
 //                GL30.glBindVertexArray(block.vao);
@@ -550,16 +546,16 @@ public class VertexCache {
                 common.FatalError("idVertexCache Touch: temporary pointer");
             }
 
-            block.frameUsed = currentFrame;
+            block.frameUsed = this.currentFrame;
 
             // move to the head of the LRU list
             block.next.prev = block.prev;
             block.prev.next = block.next;
 
-            block.next = staticHeaders.next;
-            block.prev = staticHeaders;
-            staticHeaders.next.prev = block;
-            staticHeaders.next = block;
+            block.next = this.staticHeaders.next;
+            block.prev = this.staticHeaders;
+            this.staticHeaders.next.prev = block;
+            this.staticHeaders.next = block;
         }
 
         // this block won't have to zero a buffer pointer when it is purged,
@@ -584,10 +580,10 @@ public class VertexCache {
             block.next.prev = block.prev;
             block.prev.next = block.next;
 
-            block.next = deferredFreeList.next;
-            block.prev = deferredFreeList;
-            deferredFreeList.next.prev = block;
-            deferredFreeList.next = block;
+            block.next = this.deferredFreeList.next;
+            block.prev = this.deferredFreeList;
+            this.deferredFreeList.next.prev = block;
+            this.deferredFreeList.next = block;
         }
 
         // updates the counter for determining which temp space to use
@@ -599,20 +595,20 @@ public class VertexCache {
                 int staticUseCount = 0;
                 int staticUseSize = 0;
 
-                for (vertCache_s block = staticHeaders.next; block != staticHeaders; block = block.next) {
-                    if (block.frameUsed == currentFrame) {
+                for (vertCache_s block = this.staticHeaders.next; block != this.staticHeaders; block = block.next) {
+                    if (block.frameUsed == this.currentFrame) {
                         staticUseCount++;
                         staticUseSize += block.size;
                     }
                 }
 
-                final String frameOverflow = tempOverflow ? "(OVERFLOW)" : "";
+                final String frameOverflow = this.tempOverflow ? "(OVERFLOW)" : "";
 
                 common.Printf("vertex dynamic:%d=%dk%s, static alloc:%d=%dk used:%d=%dk total:%d=%dk\n",
-                        dynamicCountThisFrame, dynamicAllocThisFrame / 1024, frameOverflow,
-                        staticCountThisFrame, staticAllocThisFrame / 1024,
+                        this.dynamicCountThisFrame, this.dynamicAllocThisFrame / 1024, frameOverflow,
+                        this.staticCountThisFrame, this.staticAllocThisFrame / 1024,
                         staticUseCount, staticUseSize / 1024,
-                        staticCountTotal, staticAllocTotal / 1024);
+                        this.staticCountTotal, this.staticAllocTotal / 1024);
             }
 
 //if (false){
@@ -622,35 +618,35 @@ public class VertexCache {
 //
 //	}
 //}
-            if (!virtualMemory) {
+            if (!this.virtualMemory) {
                 // unbind vertex buffers so normal virtual memory will be used in case
                 // r_useVertexBuffers / r_useIndexBuffers
                 qglBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
                 qglBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
             }
 
-            currentFrame = tr.frameCount;
-            listNum = currentFrame % NUM_VERTEX_FRAMES;
-            staticAllocThisFrame = 0;
-            staticCountThisFrame = 0;
-            dynamicAllocThisFrame = 0;
-            dynamicCountThisFrame = 0;
-            tempOverflow = false;
+            this.currentFrame = tr.frameCount;
+            this.listNum = this.currentFrame % NUM_VERTEX_FRAMES;
+            this.staticAllocThisFrame = 0;
+            this.staticCountThisFrame = 0;
+            this.dynamicAllocThisFrame = 0;
+            this.dynamicCountThisFrame = 0;
+            this.tempOverflow = false;
 
             // free all the deferred free headers
-            while (deferredFreeList.next != deferredFreeList) {
-                ActuallyFree(deferredFreeList.next);
+            while (this.deferredFreeList.next != this.deferredFreeList) {
+                ActuallyFree(this.deferredFreeList.next);
             }
 
             // free all the frame temp headers
-            vertCache_s block = dynamicHeaders.next;
-            if (block != dynamicHeaders) {
-                block.prev = freeDynamicHeaders;
-                dynamicHeaders.prev.next = freeDynamicHeaders.next;
-                freeDynamicHeaders.next.prev = dynamicHeaders.prev;
-                freeDynamicHeaders.next = block;
+            final vertCache_s block = this.dynamicHeaders.next;
+            if (block != this.dynamicHeaders) {
+                block.prev = this.freeDynamicHeaders;
+                this.dynamicHeaders.prev.next = this.freeDynamicHeaders.next;
+                this.freeDynamicHeaders.next.prev = this.dynamicHeaders.prev;
+                this.freeDynamicHeaders.next = block;
 
-                dynamicHeaders.next = dynamicHeaders.prev = dynamicHeaders;
+                this.dynamicHeaders.next = this.dynamicHeaders.prev = this.dynamicHeaders;
             }
         }
 
@@ -663,32 +659,32 @@ public class VertexCache {
 //            int deferredSpace = 0;
 
             vertCache_s block;
-            for (block = staticHeaders.next; block != staticHeaders; block = block.next) {
+            for (block = this.staticHeaders.next; block != this.staticHeaders; block = block.next) {
                 numActive++;
 
                 totalStatic += block.size;
-                if (block.frameUsed == currentFrame) {
+                if (block.frameUsed == this.currentFrame) {
                     frameStatic += block.size;
                 }
             }
 
             int numFreeStaticHeaders = 0;
-            for (block = freeStaticHeaders.next; block != freeStaticHeaders; block = block.next) {
+            for (block = this.freeStaticHeaders.next; block != this.freeStaticHeaders; block = block.next) {
                 numFreeStaticHeaders++;
             }
 
             int numFreeDynamicHeaders = 0;
-            for (block = freeDynamicHeaders.next; block != freeDynamicHeaders; block = block.next) {
+            for (block = this.freeDynamicHeaders.next; block != this.freeDynamicHeaders; block = block.next) {
                 numFreeDynamicHeaders++;
             }
 
             common.Printf("%d megs working set\n", r_vertexBufferMegs.GetInteger());
-            common.Printf("%d dynamic temp buffers of %dk\n", NUM_VERTEX_FRAMES, frameBytes / 1024);
+            common.Printf("%d dynamic temp buffers of %dk\n", NUM_VERTEX_FRAMES, this.frameBytes / 1024);
             common.Printf("%5d active static headers\n", numActive);
             common.Printf("%5d free static headers\n", numFreeStaticHeaders);
             common.Printf("%5d free dynamic headers\n", numFreeDynamicHeaders);
 
-            if (!virtualMemory) {
+            if (!this.virtualMemory) {
                 common.Printf("Vertex cache is in ARB_vertex_buffer_object memory (FAST).\n");
             } else {
                 common.Printf("Vertex cache is in virtual memory (SLOW)\n");
@@ -714,8 +710,8 @@ public class VertexCache {
 
             // temp blocks are in a shared space that won't be freed
             if (block.tag != TAG_TEMP) {
-                staticAllocTotal -= block.size;
-                staticCountTotal--;
+                this.staticAllocTotal -= block.size;
+                this.staticCountTotal--;
 
                 if (block.vbo != 0) {
 //                    if (false) {// this isn't really necessary, it will be reused soon enough
@@ -736,8 +732,8 @@ public class VertexCache {
 
             if (true) {
                 // stick it on the front of the free list so it will be reused immediately
-                block.next = freeStaticHeaders.next;
-                block.prev = freeStaticHeaders;
+                block.next = this.freeStaticHeaders.next;
+                block.prev = this.freeStaticHeaders;
 //            } else {
 //                // stick it on the back of the free list so it won't be reused soon (just for debugging)
 //                block.next = freeStaticHeaders;
@@ -747,6 +743,6 @@ public class VertexCache {
             block.next.prev = block;
             block.prev.next = block;
         }
-    };
+    }
 
 }

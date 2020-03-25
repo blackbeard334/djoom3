@@ -206,8 +206,8 @@ public class UserInterface {
 
             // De-allocates a list gui
             public abstract void FreeListGUI(idListGUI listgui);
-        };
-    };
+        }
+    }
 
     public static void setUiManager(idUserInterfaceManager uiManager) {
         UserInterface.uiManager = UserInterface.uiManagerLocal = (idUserInterfaceManagerLocal) uiManager;

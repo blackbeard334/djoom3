@@ -57,7 +57,7 @@ public class Str {
 
         MEASURE_SIZE,
         MEASURE_BANDWIDTH
-    };
+    }
 //
 //    static idDynamicBlockAlloc<Character> stringDataAllocator = new idDynamicBlockAlloc<>(1 << 18, 128);
 //    
@@ -123,7 +123,7 @@ public class Str {
         }
 
         public idStr(final idStr text, int start, int end) {
-            int i;
+            final int i;
             int l;
 
             Init();
@@ -181,7 +181,7 @@ public class Str {
         }
 
         public idStr(final String text, int start, int end) {
-            int i;
+            final int i;
 //	int l = strlen( text );
             int l = text.length();
 
@@ -226,8 +226,8 @@ public class Str {
 
         public idStr(final int i) {
 //	char []text=new char[ 64 ];
-            String text = Integer.toString(i);
-            int l = text.length();
+            final String text = Integer.toString(i);
+            final int l = text.length();
 
             Init();
 //	l = sprintf( text, "%d", i );
@@ -240,8 +240,8 @@ public class Str {
         }
 
         public idStr(final long u) {
-            String text = Long.toString(u);
-            int l = text.length();
+            final String text = Long.toString(u);
+            final int l = text.length();
 
             Init();
 //	l = sprintf( text, "%u", u );
@@ -252,8 +252,8 @@ public class Str {
         }
 
         public idStr(final float f) {
-            String text = Float.toString(f);
-            int l = text.length();
+            final String text = Float.toString(f);
+            final int l = text.length();
 
             Init();
 //	l = idStr.snPrintf( text, sizeof( text ), "%f", f );
@@ -289,8 +289,8 @@ public class Str {
 
         public char oSet(int index, final char value) {
             assert ((index >= 0) && (index <= Length()));
-            if (index == Length()
-                    || 0 == Length()) {//just append if length == 0;
+            if ((index == Length())
+                    || (0 == Length())) {//just append if length == 0;
                 setData(getData() + value);
             } else {
                 setData(getData().substring(0, index) + value + getData().substring(index + 1));
@@ -336,21 +336,21 @@ public class Str {
 
 //public	friend idStr		operator+( const idStr &a, const idStr &b );
         public idStr oPlus(final idStr b) {
-            idStr result = new idStr(this.getData());
+            final idStr result = new idStr(this.getData());
             result.Append(b.getData());
             return result;
         }
 
 //public	friend idStr		operator+( const idStr &a, const char *b );
         public idStr oPlus(final String b) {
-            idStr result = new idStr(this.getData());
+            final idStr result = new idStr(this.getData());
             result.Append(b);
             return result;
         }
 
 //public	friend idStr		operator+( const char *a, const idStr &b );
         public static idStr oPlus(final String a, final idStr b) {
-            idStr result = new idStr(a);
+            final idStr result = new idStr(a);
             result.Append(b.getData());
             return result;
         }
@@ -358,7 +358,7 @@ public class Str {
 //public	friend idStr		operator+( const idStr &a, const float b );
         public idStr oPlus(final float b) {
             String text;
-            idStr result = new idStr(this.getData());
+            final idStr result = new idStr(this.getData());
 
             text = String.format("%f", b);
             result.Append(text);
@@ -370,7 +370,7 @@ public class Str {
 //public	friend idStr		operator+( const idStr &a, const unsigned b );
         public idStr oPlus(final long b) {
             String text;
-            idStr result = new idStr(this.getData());
+            final idStr result = new idStr(this.getData());
 
             text = String.format("%d", b);
             result.Append(text);
@@ -380,14 +380,14 @@ public class Str {
 //public	friend idStr		operator+( const idStr &a, const bool b );
 
         public idStr oPlus(final boolean b) {
-            idStr result = new idStr(this.getData());
+            final idStr result = new idStr(this.getData());
             result.Append(b ? "true" : "false");
             return result;
         }
 
 //public	friend idStr		operator+( const idStr &a, const char b );
         public idStr oPlus(final char b) {
-            idStr result = new idStr(this.getData());
+            final idStr result = new idStr(this.getData());
             result.Append(b);
             return result;
         }
@@ -442,7 +442,7 @@ public class Str {
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = 59 * hash + Objects.hashCode(this.getData());
+            hash = (59 * hash) + Objects.hashCode(this.getData());
             return hash;
         }
 
@@ -589,7 +589,7 @@ public class Str {
 
         public void Append(final String text) {
             int newLen;
-            int i;
+            final int i;
 
             newLen = Length() + text.length();
             EnsureAlloced(newLen + 1);
@@ -608,9 +608,9 @@ public class Str {
 
         public void Append(final String text, int l) {
             int newLen;
-            int i;
+            final int i;
 
-            if (text != null && l > 0) {
+            if ((text != null) && (l > 0)) {
                 newLen = Length() + l;
                 EnsureAlloced(newLen + 1);
 //		for ( i = 0; text[ i ] && i < l; i++ ) {
@@ -623,7 +623,8 @@ public class Str {
         }
 
         public void Insert(final char a, int index) {
-            int i, l;
+            final int i;
+			int l;
 
             if (index < 0) {
                 index = 0;
@@ -642,7 +643,8 @@ public class Str {
         }
 
         public void Insert(final String text, int index) {
-            int i, l;
+            final int i;
+			int l;
 
             if (index < 0) {
                 index = 0;
@@ -806,11 +808,11 @@ public class Str {
             result.Empty();
 
             i = Length();
-            if (i == 0 || len <= 0 || start >= i) {
+            if ((i == 0) || (len <= 0) || (start >= i)) {
                 return null;
             }
 
-            if (start + len >= i) {
+            if ((start + len) >= i) {
                 len = i - start;
             }
 
@@ -831,14 +833,14 @@ public class Str {
 
         public idStr Mid(int start, int len) {// return 'len' characters starting at 'start'
             int i;
-            idStr result = new idStr();
+            final idStr result = new idStr();
 
             i = Length();
-            if (i == 0 || len <= 0 || start >= i) {
+            if ((i == 0) || (len <= 0) || (start >= i)) {
                 return result;
             }
 
-            if (start + len >= i) {
+            if ((start + len) >= i) {
                 len = i - start;
             }
 
@@ -897,7 +899,7 @@ public class Str {
 
         public void StripTrailing(final char c) {// strip char from end as many times as the char occurs
 
-            for (int i = Length(); i > 0 && getData().charAt(i - 1) == c; i--) {
+            for (int i = Length(); (i > 0) && (getData().charAt(i - 1) == c); i--) {
                 // setLen(getLen() - 1);
                 setData(getData().substring(0, Length() - 1));
             }
@@ -1113,7 +1115,7 @@ public class Str {
         }
 
         public idStr DefaultFileExtension(final String extension) {// if there's no file extension use the default
-            int i;
+            final int i;
 
             // do nothing if the string already has an extension
 //            for (i = len - 1; i >= 0; i--) {
@@ -1143,9 +1145,9 @@ public class Str {
         public void AppendPath(final String text) {// append a partial path
             int pos;
             int i = 0;
-            char[] dataArray = getData().toCharArray();
+            final char[] dataArray = getData().toCharArray();
 
-            if (text != null && text.length() > 0) {
+            if ((text != null) && (text.length() > 0)) {
                 pos = Length();
                 EnsureAlloced(Length() + text.length() + 2);
 
@@ -1200,7 +1202,7 @@ public class Str {
                 pos--;
             }
 
-            idStr temp = Right(Length() - pos);
+            final idStr temp = Right(Length() - pos);
             setData(temp.getData());
             // setLen(getData().length());
             return this;
@@ -1281,13 +1283,15 @@ public class Str {
         // char * methods to replace library functions
         public static int Length(final char[] s) {
             int i;
-            for (i = 0; i < s.length && s[i] != 0; i++) ;
+            for (i = 0; (i < s.length) && (s[i] != 0); i++) {
+				;
+			}
 
             return i;
         }
 
         public static char[] ToLower(char[] s) {
-            for (int i = 0; i < s.length && s[i] != 0; i++) {
+            for (int i = 0; (i < s.length) && (s[i] != 0); i++) {
                 if (CharIsUpper(s[i])) {
                     s[i] += ('a' - 'A');
                 }
@@ -1296,7 +1300,7 @@ public class Str {
         }
 
         public static char[] ToUpper(char[] s) {
-            for (int i = 0; i < s.length && s[i] != 0; i++) {
+            for (int i = 0; (i < s.length) && (s[i] != 0); i++) {
                 if (CharIsLower(s[i])) {
                     s[i] -= ('a' - 'A');
                 }
@@ -1308,21 +1312,21 @@ public class Str {
             try {
                 Double.parseDouble(s);
                 return true;
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 return false;
             }
         }
 
         static boolean isdigit(char c) {
-            if ('0' >= c && c <= '9') {
+            if (('0' >= c) && (c <= '9')) {
                 return true;
             }
             return false;
         }
 
         public static boolean IsColor(final String s) {
-            char[] sArray = s.toCharArray();
-            return (sArray[0] == C_COLOR_ESCAPE && sArray.length > 1 && sArray[1] != ' ');
+            final char[] sArray = s.toCharArray();
+            return ((sArray[0] == C_COLOR_ESCAPE) && (sArray.length > 1) && (sArray[1] != ' '));
         }
 
         public static boolean HasLower(final String s) {
@@ -1413,7 +1417,7 @@ public class Str {
 
         public static int Cmpn(final String s1, final String s2, int n) {//TODO:see if we can return booleans
             if (isNotNullOrEmpty(s1) && isNotNullOrEmpty(s2)) {
-                if (s1.length() >= n && s2.length() >= n) {
+                if ((s1.length() >= n) && (s2.length() >= n)) {
                     return Cmp(s1.substring(0, n), s2.substring(0, n));
                 }
             }
@@ -1442,7 +1446,7 @@ public class Str {
 
         public static int Icmpn(final String s1, final String s2, int n) {
             if (isNotNullOrEmpty(s1) && isNotNullOrEmpty(s2)) {
-                if (s1.length() >= n && s2.length() >= n) {
+                if ((s1.length() >= n) && (s2.length() >= n)) {
                     return Icmp(s1.substring(0, n), s2.substring(0, n));
                 }
             }
@@ -1458,8 +1462,8 @@ public class Str {
         }
 
         public static int IcmpNoColor(final String s1, final String s2) {
-            char[] s1Array = s1.toCharArray();
-            char[] s2Array = s2.toCharArray();
+            final char[] s1Array = s1.toCharArray();
+            final char[] s2Array = s2.toCharArray();
             int c1 = 0, c2 = 0, d;
 
             do {
@@ -1474,13 +1478,13 @@ public class Str {
 
                 d = s1Array[c1] - s2Array[c2];
                 while (d != 0) {
-                    if (c1 <= 'Z' && c1 >= 'A') {
+                    if ((c1 <= 'Z') && (c1 >= 'A')) {
                         d += ('a' - 'A');
                         if (0 == d) {
                             break;
                         }
                     }
-                    if (c2 <= 'Z' && c2 >= 'A') {
+                    if ((c2 <= 'Z') && (c2 >= 'A')) {
                         d -= ('a' - 'A');
                         if (0 == d) {
                             break;
@@ -1563,8 +1567,8 @@ public class Str {
         }
 
         public static int IcmpnPath(final String s1, final String s2, int n) {// compares paths and makes sure folders come first
-            char[] s1Array = s1.toCharArray();
-            char[] s2Array = s2.toCharArray();
+            final char[] s1Array = s1.toCharArray();
+            final char[] s2Array = s2.toCharArray();
             int c1 = 0, c2 = 0, d;
 
 //#if 0
@@ -1583,7 +1587,7 @@ public class Str {
 
                 d = s1Array[c1] - s2Array[c2];
                 while (d != 0) {
-                    if (c1 <= 'Z' && c1 >= 'A') {
+                    if ((c1 <= 'Z') && (c1 >= 'A')) {
                         d += ('a' - 'A');
                         if (0 == d) {
                             break;
@@ -1595,7 +1599,7 @@ public class Str {
                             break;
                         }
                     }
-                    if (c2 <= 'Z' && c2 >= 'A') {
+                    if ((c2 <= 'Z') && (c2 >= 'A')) {
                         d -= ('a' - 'A');
                         if (0 == d) {
                             break;
@@ -1609,20 +1613,20 @@ public class Str {
                     }
                     // make sure folders come first
                     while (c1 != 0) {
-                        if (c1 == '/' || c1 == '\\') {
+                        if ((c1 == '/') || (c1 == '\\')) {
                             break;
                         }
                         c1++;
                     }
                     while (c2 != 0) {
-                        if (c2 == '/' || c2 == '\\') {
+                        if ((c2 == '/') || (c2 == '\\')) {
                             break;
                         }
                         c2++;
                     }
-                    if (c1 != 0 && c2 == 0) {
+                    if ((c1 != 0) && (c2 == 0)) {
                         return -1;
-                    } else if (c1 == 0 && c2 != 0) {
+                    } else if ((c1 == 0) && (c2 != 0)) {
                         return 1;
                     }
                     // same folder depth so use the regular compare
@@ -1736,7 +1740,7 @@ public class Str {
                 return;
             }
 
-            for (String s : src) {
+            for (final String s : src) {
                 dest.append(s);
             }
         }
@@ -1745,7 +1749,7 @@ public class Str {
         public static int snPrintf(StringBuilder dest, int size, final String fmt, Object... args) {
             int len;
             final int bufferSize = 32000;
-            StringBuilder buffer = new StringBuilder(bufferSize);
+            final StringBuilder buffer = new StringBuilder(bufferSize);
 //
 //	va_start( argptr, fmt );
 //	len = vsprintf( buffer, fmt, argptr );
@@ -1791,7 +1795,7 @@ public class Str {
         public static int snPrintf(int offset, char[] dest, int size, final String fmt, Object... args) {
             int length;
 //            char[] argptr;
-            StringBuilder buffer = new StringBuilder(32000);	// big, but small enough to fit in PPC stack
+            final StringBuilder buffer = new StringBuilder(32000);	// big, but small enough to fit in PPC stack
 
 //	va_start( argptr, fmt );
 //	len = vsprintf( buffer, fmt, argptr );
@@ -1840,7 +1844,7 @@ public class Str {
 //#endif
 //            dest[size - 1] = '\0';
             ret = (dest[0] = String.format(fmt, args)).length();
-            if (ret < 0 || ret >= size) {
+            if ((ret < 0) || (ret >= size)) {
                 dest[0] = null;
                 return -1;
             }
@@ -1864,7 +1868,7 @@ public class Str {
         }
 
         public static int FindChar(final String str, final char c, int start, int end) {
-            char[] strArray = str.toCharArray();
+            final char[] strArray = str.toCharArray();
             int i;
 
             if (end == -1) {
@@ -1925,7 +1929,7 @@ public class Str {
          ============
          */
         public /*static*/ boolean Filter(final String filter, String name, boolean casesensitive) {
-            idStr buf = new idStr();
+            final idStr buf = new idStr();
             int i, index;
             boolean found;
             int filterIndex = 0;
@@ -1936,7 +1940,7 @@ public class Str {
                     filterIndex++;
                     buf.Empty();
                     for (i = 0; filterIndex < filter.length(); i++, filterChar = filter.charAt(filterIndex)) {
-                        if (filterChar == '*' || filterChar == '?' || (filterChar == '[' && filter.charAt(filterIndex + 1) != '[')) {
+                        if ((filterChar == '*') || (filterChar == '?') || ((filterChar == '[') && (filter.charAt(filterIndex + 1) != '['))) {
                             break;
                         }
                         buf.oPluSet(filterChar);
@@ -1967,20 +1971,20 @@ public class Str {
                     } else {
                         filterIndex++;
                         found = false;
-                        while (filterIndex < filter.length() && !found) {
-                            if (filterChar == ']' && filter.charAt(filterIndex + 1) != ']') {
+                        while ((filterIndex < filter.length()) && !found) {
+                            if ((filterChar == ']') && (filter.charAt(filterIndex + 1) != ']')) {
                                 break;
                             }
-                            if (filter.charAt(filterIndex + 1) == '-' && filter.length() > filterIndex + 2
-                                    && (filter.charAt(filterIndex + 2) != ']' || filter.charAt(filterIndex + 3) == ']')) {
+                            if ((filter.charAt(filterIndex + 1) == '-') && (filter.length() > (filterIndex + 2))
+                                    && ((filter.charAt(filterIndex + 2) != ']') || (filter.charAt(filterIndex + 3) == ']'))) {
                                 if (casesensitive) {
-                                    if (name.charAt(0) >= filterChar
-                                            && name.charAt(0) <= filter.charAt(filterIndex + 2)) {
+                                    if ((name.charAt(0) >= filterChar)
+                                            && (name.charAt(0) <= filter.charAt(filterIndex + 2))) {
                                         found = true;
                                     }
                                 } else {
 //							if ( ::toupper(*name) >= ::toupper(*filterIndex) && ::toupper(*name) <= ::toupper(*(filterIndex+2)) ) {
-                                    if (name.charAt(0) >= filterChar && name.charAt(0) <= filter.charAt(filterIndex + 2)) {
+                                    if ((name.charAt(0) >= filterChar) && (name.charAt(0) <= filter.charAt(filterIndex + 2))) {
                                         found = true;
                                     }
                                 }
@@ -2003,7 +2007,7 @@ public class Str {
                             return false;
                         }
                         while (filterIndex < filter.length()) {
-                            if (filterChar == ']' && filter.charAt(filterIndex + 1) != ']') {
+                            if ((filterChar == ']') && (filter.charAt(filterIndex + 1) != ']')) {
                                 break;
                             }
                             filterIndex++;
@@ -2042,7 +2046,7 @@ public class Str {
 
             mediaName.Empty();
 
-            for (char c : name.toCharArray()) {
+            for (final char c : name.toCharArray()) {
                 // truncate at an extension
                 if (c == '.') {
                     break;
@@ -2062,13 +2066,13 @@ public class Str {
             do {
                 d = name.charAt(c1) - ext.charAt(c2);
                 while (d != 0) {
-                    if (c1 <= 'Z' && c1 >= 'A') {
+                    if ((c1 <= 'Z') && (c1 >= 'A')) {
                         d += ('a' - 'A');
                         if (0 == d) {
                             break;
                         }
                     }
-                    if (c2 <= 'Z' && c2 >= 'A') {
+                    if ((c2 <= 'Z') && (c2 >= 'A')) {
                         d -= ('a' - 'A');
                         if (0 == d) {
                             break;
@@ -2078,7 +2082,7 @@ public class Str {
                 }
                 c1--;
                 c2--;
-            } while (c1 > 0 && c2 > 0);
+            } while ((c1 > 0) && (c2 > 0));
 
             return (c1 >= 0);
         }
@@ -2117,7 +2121,7 @@ public class Str {
         // hash keys
         public static int Hash(final char[] string) {
             int i, hash = 0;
-            for (i = 0; i < string.length && string[i] != '\0'; i++) {
+            for (i = 0; (i < string.length) && (string[i] != '\0'); i++) {
                 hash += (string[i]) * (i + 119);
             }
             return hash;
@@ -2138,7 +2142,7 @@ public class Str {
         // case insensitive
         public static int IHash(final char[] string) {
             int i, hash = 0;
-            for (i = 0; i < string.length && string[i] != '\0'; i++) {//TODO:eliminate '\0' from char strings.
+            for (i = 0; (i < string.length) && (string[i] != '\0'); i++) {//TODO:eliminate '\0' from char strings.
                 hash += ToLower(string[i]) * (i + 119);
             }
             return hash;
@@ -2155,14 +2159,14 @@ public class Str {
 
         // character methods
         public static char ToLower(char c) {
-            if (c <= 'Z' && c >= 'A') {
+            if ((c <= 'Z') && (c >= 'A')) {
                 return (char) (c + ('a' - 'A'));
             }
             return c;
         }
 
         public static char ToUpper(char c) {
-            if (c >= 'a' && c <= 'z') {
+            if ((c >= 'a') && (c <= 'z')) {
                 return (char) (c - ('a' - 'A'));
             }
             return c;
@@ -2170,31 +2174,31 @@ public class Str {
 
         public static boolean CharIsPrintable(int c) {
             // test for regular ascii and western European high-ascii chars
-            return (c >= 0x20 && c <= 0x7E) || (c >= 0xA1 && c <= 0xFF);
+            return ((c >= 0x20) && (c <= 0x7E)) || ((c >= 0xA1) && (c <= 0xFF));
         }
 
         public static boolean CharIsLower(int c) {
             // test for regular ascii and western European high-ascii chars
-            return (c >= 'a' && c <= 'z') || (c >= 0xE0 && c <= 0xFF);
+            return ((c >= 'a') && (c <= 'z')) || ((c >= 0xE0) && (c <= 0xFF));
         }
 
         public static boolean CharIsUpper(int c) {
             // test for regular ascii and western European high-ascii chars
-            return (c <= 'Z' && c >= 'A') || (c >= 0xC0 && c <= 0xDF);
+            return ((c <= 'Z') && (c >= 'A')) || ((c >= 0xC0) && (c <= 0xDF));
         }
 
         public static boolean CharIsAlpha(int c) {
             // test for regular ascii and western European high-ascii chars
-            return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-                    || (c >= 0xC0 && c <= 0xFF));
+            return (((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z'))
+                    || ((c >= 0xC0) && (c <= 0xFF)));
         }
 
         public static boolean CharIsNumeric(int c) {
-            return (c <= '9' && c >= '0');
+            return ((c <= '9') && (c >= '0'));
         }
 
         public static boolean CharIsNewLine(char c) {
-            return (c == '\n' || c == '\r' /*|| c == '\v'*/);
+            return ((c == '\n') || (c == '\r' /*|| c == '\v'*/));
         }
 
         public static boolean CharIsTab(char c) {
@@ -2244,7 +2248,7 @@ public class Str {
 //public	friend int			vsprintf( idStr &dest, const char *fmt, va_list ap );
         public int vsprintf(idStr string, final String fmt, Object... args) {//char[] argptr) {
             int l;
-            String[] buffer = {null};//new char[32000];
+            final String[] buffer = {null};//new char[32000];
 
             l = this.vsnPrintf(buffer, 32000, fmt, args);
 //	buffer[buffer.length-1] = '\0';
@@ -2305,7 +2309,7 @@ public class Str {
         // format value in the given measurement with the best unit, returns the best unit
         public int BestUnit(final String format, float value, Measure_t measure) {
             int unit = 1;
-            while (unit <= 3 && (1 << (unit * 10) < value)) {
+            while ((unit <= 3) && ((1 << (unit * 10)) < value)) {
                 unit++;
             }
             unit--;
@@ -2351,7 +2355,7 @@ public class Str {
 
         @Override
         public void Read(ByteBuffer buffer) {
-            int len = buffer.getInt();
+            final int len = buffer.getInt();
             buffer.getInt();//skip
 //            this.alloced = buffer.getInt();
             final char baseBuffer[] = new char[STR_ALLOC_BASE];
@@ -2382,7 +2386,7 @@ public class Str {
 //                        stringDataAllocator.GetNumEmptyBaseBlocks());
 //#endif
             }
-        };
+        }
 
         public int DynamicMemoryUsed() {
 //	return ( data == baseBuffer ) ? 0 : alloced;
@@ -2408,12 +2412,12 @@ public class Str {
         static int numFormatList = formatList.length;
 
         public static idStr FormatNumber(int number) {
-            idStr string = new idStr();
+            final idStr string = new idStr();
             boolean hit;
 
             // reset
             for (int i = 0; i < numFormatList; i++) {
-                formatList_t li = formatList[i];
+                final formatList_t li = formatList[i];
                 li.count = 0;
             }
 
@@ -2422,7 +2426,7 @@ public class Str {
                 hit = false;
 
                 for (int i = 0; i < numFormatList; i++) {
-                    formatList_t li = formatList[i];
+                    final formatList_t li = formatList[i];
 
                     if (number >= li.gran) {
                         li.count++;
@@ -2437,7 +2441,7 @@ public class Str {
             boolean found = false;
 
             for (int i = 0; i < numFormatList; i++) {
-                formatList_t li = formatList[i];
+                final formatList_t li = formatList[i];
 
                 if (li.count != 0) {
                     if (!found) {
@@ -2462,7 +2466,7 @@ public class Str {
             }
 
             // pad to proper size
-            int count = 11 - string.Length();
+            final int count = 11 - string.Length();
 
             for (int i = 0; i < count; i++) {
                 string.Insert(" ", 0);
@@ -2505,7 +2509,7 @@ public class Str {
         }
 
         public String getData() {
-			return data;
+			return this.data;
 		}
 
 		protected void setData(String data) {

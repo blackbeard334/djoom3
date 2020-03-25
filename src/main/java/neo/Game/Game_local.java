@@ -461,7 +461,7 @@ public class Game_local {
         idBitMsg state;
         ByteBuffer stateBuf = ByteBuffer.allocate(MAX_ENTITY_STATE_SIZE);
         entityState_s next;
-    };
+    }
 
     public static class snapshot_s {
 
@@ -469,7 +469,7 @@ public class Game_local {
         entityState_s firstEntityState;
         int[] pvs = new int[ENTITY_PVS_SIZE];
         snapshot_s next;
-    };
+    }
     public static final int MAX_EVENT_PARAM_SIZE = 128;
 
     public static class entityNetEvent_s {
@@ -481,7 +481,7 @@ public class Game_local {
         ByteBuffer paramsBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
         entityNetEvent_s next;
         entityNetEvent_s prev;
-    };
+    }
 // enum {
     public static final int GAME_RELIABLE_MESSAGE_INIT_DECL_REMAP = 0;
     public static final int GAME_RELIABLE_MESSAGE_REMAP_DECL      = 1;
@@ -517,13 +517,13 @@ public class Game_local {
         GAMESTATE_STARTUP, // inside InitFromNewMap().  spawning map entities.
         GAMESTATE_ACTIVE, // normal gameplay
         GAMESTATE_SHUTDOWN				// inside MapShutdown().  clearing memory.
-    };
+    }
 
     public static class spawnSpot_t {
 
         idEntity ent;
         int dist;
-    };
+    }
 //============================================================================
 
     public static class idEntityPtr<type extends idEntity> {
@@ -533,7 +533,7 @@ public class Game_local {
         //
 
         public idEntityPtr() {
-            spawnId = 0;
+            this.spawnId = 0;
         }
         
         public idEntityPtr(type ent) {
@@ -542,38 +542,38 @@ public class Game_local {
         // save games
 
         public void Save(idSaveGame savefile) {					// archives object for save game file
-            savefile.WriteInt(spawnId);
+            savefile.WriteInt(this.spawnId);
         }
 
         public void Restore(idRestoreGame savefile) {					// unarchives object from save game file
-            int[] spawnId = {0};
+            final int[] spawnId = {0};
             savefile.ReadInt(spawnId);
             this.spawnId = spawnId[0];
         }
 
         public idEntityPtr<type> oSet(type ent) {
             if (ent == null) {
-                spawnId = 0;
+                this.spawnId = 0;
             } else {
                 final int entityNumber = ent.entityNumber;
-                spawnId = (gameLocal.spawnIds[entityNumber] << GENTITYNUM_BITS) | entityNumber;
+                this.spawnId = (gameLocal.spawnIds[entityNumber] << GENTITYNUM_BITS) | entityNumber;
             }
             return this;
         }
 
         // synchronize entity pointers over the network
         public int GetSpawnId() {
-            return spawnId;
+            return this.spawnId;
         }
 
         public boolean SetSpawnId(int id) {
             // the reason for this first check is unclear:
             // the function returning false may mean the spawnId is already set right, or the entity is missing
-            if (id == spawnId) {
+            if (id == this.spawnId) {
                 return false;
             }
             if ((id >> GENTITYNUM_BITS) == gameLocal.spawnIds[id & ((1 << GENTITYNUM_BITS) - 1)]) {
-                spawnId = id;
+                this.spawnId = id;
                 return true;
             }
             return false;
@@ -581,21 +581,21 @@ public class Game_local {
 
 //        public boolean UpdateSpawnId();
         public boolean IsValid() {
-            return (gameLocal.spawnIds[spawnId & ((1 << GENTITYNUM_BITS) - 1)] == (spawnId >> GENTITYNUM_BITS));
+            return (gameLocal.spawnIds[this.spawnId & ((1 << GENTITYNUM_BITS) - 1)] == (this.spawnId >> GENTITYNUM_BITS));
         }
 
         public type GetEntity() {
-            int entityNum = spawnId & ((1 << GENTITYNUM_BITS) - 1);
-            if ((gameLocal.spawnIds[entityNum] == (spawnId >> GENTITYNUM_BITS))) {
+            final int entityNum = this.spawnId & ((1 << GENTITYNUM_BITS) - 1);
+            if ((gameLocal.spawnIds[entityNum] == (this.spawnId >> GENTITYNUM_BITS))) {
                 return (type) gameLocal.entities[entityNum];
             }
             return null;
         }
 
         public int GetEntityNum() {
-            return (spawnId & ((1 << GENTITYNUM_BITS) - 1));
+            return (this.spawnId & ((1 << GENTITYNUM_BITS) - 1));
         }
-    };
+    }
 
     //============================================================================
     public static class idGameLocal extends neo.Game.Game.idGame {
@@ -674,7 +674,7 @@ public class Game_local {
 //
         private static final int   INITIAL_SPAWN_COUNT = 1;
         //
-        private              idStr mapFileName         = new idStr();    // name of the map, empty string if no map loaded
+        private final              idStr mapFileName         = new idStr();    // name of the map, empty string if no map loaded
         private idMapFile          mapFile;            // will be NULL during the game unless in-game editing is used
         private boolean            mapCycleLoaded;
         //
@@ -686,18 +686,18 @@ public class Game_local {
         private idCamera           camera;
         private idMaterial         globalMaterial;     // for overriding everything
         //
-        private idList<idAAS> aasList  = new idList<>(); // area system
-        private idStrList     aasNames = new idStrList();
+        private final idList<idAAS> aasList  = new idList<>(); // area system
+        private final idStrList     aasNames = new idStrList();
         //
         private idEntityPtr<idActor> lastAIAlertEntity;
         private int                  lastAIAlertTime;
         //
-        private idDict      spawnArgs            = new idDict();        // spawn args used during entity spawning  FIXME: shouldn't be necessary anymore
+        private final idDict      spawnArgs            = new idDict();        // spawn args used during entity spawning  FIXME: shouldn't be necessary anymore
         //
         private pvsHandle_t playerPVS            = new pvsHandle_t();// merged pvs of all players
         private pvsHandle_t playerConnectedAreas = new pvsHandle_t();// all areas connected to any player area
         //
-        private idVec3      gravity              = new idVec3();          // global gravity vector
+        private final idVec3      gravity              = new idVec3();          // global gravity vector
         private gameState_t gamestate;            // keeps track of whether we're spawning, shutting down, or normal gameplay
         private boolean     influenceActive;        // true when a phantasm is happening
         private int         nextGibTime;
@@ -710,8 +710,8 @@ public class Game_local {
         //        private final idBlockAlloc<entityState_s> entityStateAllocator = new idBlockAlloc<>(256);
 //        private final idBlockAlloc<snapshot_s> snapshotAllocator = new idBlockAlloc<>(64);
 //
-        private       idEventQueue              eventQueue         = new idEventQueue();
-        private       idEventQueue              savedEventQueue    = new idEventQueue();
+        private final       idEventQueue              eventQueue         = new idEventQueue();
+        private final       idEventQueue              savedEventQueue    = new idEventQueue();
         //
         private final idStaticList<spawnSpot_t> spawnSpots         = new idStaticList<>(MAX_GENTITIES);
         private final idStaticList<idEntity>    initialSpots       = new idStaticList<>(MAX_GENTITIES);
@@ -729,8 +729,8 @@ public class Game_local {
 
         public idGameLocal() {
             for (int u = 0; u < MAX_CLIENTS; u++) {
-                userInfo[u] = new idDict();
-                persistentPlayerInfo[u] = new idDict();
+                this.userInfo[u] = new idDict();
+                this.persistentPlayerInfo[u] = new idDict();
             }
 
             Clear();
@@ -791,9 +791,9 @@ public class Game_local {
             InitConsoleCommands();
 
             // load default scripts
-            program.Startup(SCRIPT_DEFAULT);
+            this.program.Startup(SCRIPT_DEFAULT);
 
-            smokeParticles = new idSmokeParticles();
+            this.smokeParticles = new idSmokeParticles();
 
             // set up the aas
             dict = FindEntityDefDict("aas_types");
@@ -805,14 +805,14 @@ public class Game_local {
             idKeyValue kv = dict.MatchPrefix("type");
             while (kv != null) {
                 aas = idAAS.Alloc();
-                aasList.Append(aas);
-                aasNames.Append(kv.GetValue());
+                this.aasList.Append(aas);
+                this.aasNames.Append(kv.GetValue());
                 kv = dict.MatchPrefix("type", kv);
             }
 
-            gamestate = GAMESTATE_NOMAP;
+            this.gamestate = GAMESTATE_NOMAP;
 
-            Printf("...%d aas types\n", aasList.Num());
+            Printf("...%d aas types\n", this.aasList.Num());
             Printf("game initialized.\n");
             Printf("--------------------------------------\n");
         }
@@ -833,12 +833,12 @@ public class Game_local {
 
             Printf("------------ Game Shutdown -----------\n");
 
-            mpGame.Shutdown();
+            this.mpGame.Shutdown();
 
             MapShutdown();
 
-            aasList.DeleteContents(true);
-            aasNames.Clear();
+            this.aasList.DeleteContents(true);
+            this.aasNames.Clear();
 
             idAI.FreeObstacleAvoidanceNodes();
 
@@ -848,10 +848,10 @@ public class Game_local {
             idEvent.Shutdown();
 
 //	delete[] locationEntities;
-            locationEntities = null;
+            this.locationEntities = null;
 
 //	delete smokeParticles;
-            smokeParticles = null;
+            this.smokeParticles = null;
 
             idClass.Shutdown();
 
@@ -859,11 +859,11 @@ public class Game_local {
             idForce.ClearForceList();
 
             // free the program data
-            program.FreeData();
+            this.program.FreeData();
 
             // delete the .map file
 //	delete mapFile;
-            mapFile = null;
+            this.mapFile = null;
 
             // free the collision map
             CollisionModel_local.collisionModelManager.FreeMap();
@@ -894,12 +894,12 @@ public class Game_local {
 
         @Override
         public void SetLocalClient(int clientNum) {
-            localClientNum = clientNum;
+            this.localClientNum = clientNum;
         }
 
         @Override
         public void ThrottleUserInfo() {
-            mpGame.ThrottleUserInfo();
+            this.mpGame.ThrottleUserInfo();
         }
 
         @Override
@@ -909,7 +909,7 @@ public class Game_local {
 
             this.isClient = isClient;
 
-            if (clientNum >= 0 && clientNum < MAX_CLIENTS) {
+            if ((clientNum >= 0) && (clientNum < MAX_CLIENTS)) {
                 this.userInfo[clientNum] = userInfo;
 
                 // server sanity
@@ -922,11 +922,11 @@ public class Game_local {
                     }
 
                     // don't allow dupe nicknames
-                    for (i = 0; i < numClients; i++) {
+                    for (i = 0; i < this.numClients; i++) {
                         if (i == clientNum) {
                             continue;
                         }
-                        if (entities[i] != null && entities[i].IsType(idPlayer.class)) {
+                        if ((this.entities[i] != null) && this.entities[i].IsType(idPlayer.class)) {
                             if (0 == idStr.Icmp(this.userInfo[clientNum].GetString("ui_name"), this.userInfo[i].GetString("ui_name"))) {
                                 this.userInfo[clientNum].Set("ui_name", va("%s_", this.userInfo[clientNum].GetString("ui_name")));
                                 modifiedInfo = true;
@@ -937,41 +937,41 @@ public class Game_local {
                     }
                 }
 
-                if (entities[clientNum] != null && entities[clientNum].IsType(idPlayer.class)) {
-                    modifiedInfo |= ((idPlayer) entities[clientNum]).UserInfoChanged(canModify);
+                if ((this.entities[clientNum] != null) && this.entities[clientNum].IsType(idPlayer.class)) {
+                    modifiedInfo |= ((idPlayer) this.entities[clientNum]).UserInfoChanged(canModify);
                 }
 
                 if (!isClient) {
                     // now mark this client in game
-                    mpGame.EnterGame(clientNum);
+                    this.mpGame.EnterGame(clientNum);
                 }
             }
 
             if (modifiedInfo) {
                 assert (canModify);
-                newInfo = this.userInfo[clientNum];
-                return newInfo;
+                this.newInfo = this.userInfo[clientNum];
+                return this.newInfo;
             }
             return null;
         }
 
         @Override
         public idDict GetUserInfo(int clientNum) {
-            if (entities[ clientNum] != null && entities[ clientNum].IsType(idPlayer.class)) {
-                return userInfo[ clientNum];
+            if ((this.entities[ clientNum] != null) && this.entities[ clientNum].IsType(idPlayer.class)) {
+                return this.userInfo[ clientNum];
             }
             return null;
         }
 
         @Override
         public void SetServerInfo(final idDict _serverInfo) {
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
 
-            serverInfo = _serverInfo;
+            this.serverInfo = _serverInfo;
             UpdateServerInfoFlags();
 
-            if (!isClient) {
+            if (!this.isClient) {
                 // Let our clients know the server info changed
                 outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
                 outMsg.WriteByte(GAME_RELIABLE_MESSAGE_SERVERINFO);
@@ -984,18 +984,18 @@ public class Game_local {
         public idDict GetPersistentPlayerInfo(int clientNum) {
             idEntity ent;
 
-            persistentPlayerInfo[ clientNum].Clear();
-            ent = entities[ clientNum];
-            if (ent != null && ent.IsType(idPlayer.class)) {
+            this.persistentPlayerInfo[ clientNum].Clear();
+            ent = this.entities[ clientNum];
+            if ((ent != null) && ent.IsType(idPlayer.class)) {
                 ((idPlayer) ent).SavePersistantInfo();
             }
 
-            return persistentPlayerInfo[ clientNum];
+            return this.persistentPlayerInfo[ clientNum];
         }
 
         @Override
         public void SetPersistentPlayerInfo(int clientNum, final idDict playerInfo) {
-            persistentPlayerInfo[ clientNum] = playerInfo;
+            this.persistentPlayerInfo[ clientNum] = playerInfo;
         }
 
         @Override
@@ -1005,13 +1005,13 @@ public class Game_local {
             this.isClient = isClient;
             this.isMultiplayer = isServer || isClient;
 
-            if (mapFileName.Length() != 0) {
+            if (this.mapFileName.Length() != 0) {
                 MapShutdown();
             }
 
             Printf("----------- Game Map Init ------------\n");
 
-            gamestate = GAMESTATE_STARTUP;
+            this.gamestate = GAMESTATE_STARTUP;
 
             gameRenderWorld = renderWorld;
             gameSoundWorld = soundWorld;
@@ -1022,14 +1022,14 @@ public class Game_local {
 
             MapPopulate();
 
-            mpGame.Reset();
+            this.mpGame.Reset();
 
-            mpGame.Precache();
+            this.mpGame.Precache();
 
             // free up any unused animations
             animationLib.FlushUnusedAnims();
 
-            gamestate = GAMESTATE_ACTIVE;
+            this.gamestate = GAMESTATE_ACTIVE;
 
             Printf("--------------------------------------\n");
         }
@@ -1038,21 +1038,21 @@ public class Game_local {
         public boolean InitFromSaveGame(final String mapName, idRenderWorld renderWorld, idSoundWorld soundWorld, idFile saveGameFile) {
             int i;
             int num;
-            idEntity ent = new idEntity();
-            idDict si = new idDict();
+            final idEntity ent = new idEntity();
+            final idDict si = new idDict();
 
-            if (mapFileName.Length() != 0) {
+            if (this.mapFileName.Length() != 0) {
                 MapShutdown();
             }
 
             Printf("------- Game Map Init SaveGame -------\n");
 
-            gamestate = GAMESTATE_STARTUP;
+            this.gamestate = GAMESTATE_STARTUP;
 
             gameRenderWorld = renderWorld;
             gameSoundWorld = soundWorld;
 
-            idRestoreGame savegame = new idRestoreGame(saveGameFile);
+            final idRestoreGame savegame = new idRestoreGame(saveGameFile);
 
             savegame.ReadBuildNumber();
 
@@ -1060,12 +1060,12 @@ public class Game_local {
             savegame.CreateObjects();
 
             // Load the idProgram, also checking to make sure scripting hasn't changed since the savegame
-            if (program.Restore(savegame) == false) {
+            if (this.program.Restore(savegame) == false) {
 
                 // Abort the load process, and let the session know so that it can restart the level
                 // with the player persistent data.
                 savegame.DeleteObjects();
-                program.Restart();
+                this.program.Restart();
 
                 return false;
             }
@@ -1080,8 +1080,8 @@ public class Game_local {
             FindEntityDef("player_doommarine", false);
 
             // precache any media specified in the map
-            for (i = 0; i < mapFile.GetNumEntities(); i++) {
-                idMapEntity mapEnt = mapFile.GetEntity(i);
+            for (i = 0; i < this.mapFile.GetNumEntities(); i++) {
+                final idMapEntity mapEnt = this.mapFile.GetEntity(i);
 
                 if (!InhibitEntitySpawn(mapEnt.epairs)) {
                     CacheDictionaryMedia(mapEnt.epairs);
@@ -1096,35 +1096,35 @@ public class Game_local {
             savegame.ReadDict(si);
             SetServerInfo(si);
 
-            numClients = savegame.ReadInt();
-            for (i = 0; i < numClients; i++) {
-                savegame.ReadDict(userInfo[ i]);
-                savegame.ReadUsercmd(usercmds[ i]);
-                savegame.ReadDict(persistentPlayerInfo[ i]);
+            this.numClients = savegame.ReadInt();
+            for (i = 0; i < this.numClients; i++) {
+                savegame.ReadDict(this.userInfo[ i]);
+                savegame.ReadUsercmd(this.usercmds[ i]);
+                savegame.ReadDict(this.persistentPlayerInfo[ i]);
             }
 
             for (i = 0; i < MAX_GENTITIES; i++) {
-                savegame.ReadObject(/*reinterpret_cast<idClass *&>*/entities[i]);
-                spawnIds[i] = savegame.ReadInt();
+                savegame.ReadObject(/*reinterpret_cast<idClass *&>*/this.entities[i]);
+                this.spawnIds[i] = savegame.ReadInt();
 
                 // restore the entityNumber
-                if (entities[ i] != null) {
-                    entities[ i].entityNumber = i;
+                if (this.entities[ i] != null) {
+                    this.entities[ i].entityNumber = i;
                 }
             }
 
-            firstFreeIndex = savegame.ReadInt();
-            num_entities = savegame.ReadInt();
+            this.firstFreeIndex = savegame.ReadInt();
+            this.num_entities = savegame.ReadInt();
 
             // enityHash is restored by idEntity.Restore setting the entity name.
-            savegame.ReadObject(/*reinterpret_cast<idClass *&>*/world);
+            savegame.ReadObject(this./*reinterpret_cast<idClass *&>*/world);
 
             num = savegame.ReadInt();
             for (i = 0; i < num; i++) {
                 savegame.ReadObject(/*reinterpret_cast<idClass *&>*/ent);
                 assert (!ent.isNULL());
                 if (!ent.isNULL()) {
-                    ent.spawnNode.AddToEnd(spawnedEntities);
+                    ent.spawnNode.AddToEnd(this.spawnedEntities);
                 }
             }
 
@@ -1133,60 +1133,60 @@ public class Game_local {
                 savegame.ReadObject(/*reinterpret_cast<idClass *&>*/ent);
                 assert (!ent.isNULL());
                 if (!ent.isNULL()) {
-                    ent.activeNode.AddToEnd(activeEntities);
+                    ent.activeNode.AddToEnd(this.activeEntities);
                 }
             }
 
-            numEntitiesToDeactivate = savegame.ReadInt();
-            sortPushers = savegame.ReadBool();
-            sortTeamMasters = savegame.ReadBool();
-            savegame.ReadDict(persistentLevelInfo);
+            this.numEntitiesToDeactivate = savegame.ReadInt();
+            this.sortPushers = savegame.ReadBool();
+            this.sortTeamMasters = savegame.ReadBool();
+            savegame.ReadDict(this.persistentLevelInfo);
 
             for (i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++) {
-                globalShaderParms[i] = savegame.ReadFloat();
+                this.globalShaderParms[i] = savegame.ReadFloat();
             }
 
             i = savegame.ReadInt();
-            random.SetSeed(i);
+            this.random.SetSeed(i);
 
-            savegame.ReadObject(/*reinterpret_cast<idClass *&>*/frameCommandThread);
+            savegame.ReadObject(this./*reinterpret_cast<idClass *&>*/frameCommandThread);
 
             // clip
             // push
             // pvs
             // testmodel = "<NULL>"
             // testFx = "<NULL>"
-            savegame.ReadString(sessionCommand);
+            savegame.ReadString(this.sessionCommand);
 
             // FIXME: save smoke particles
-            cinematicSkipTime = savegame.ReadInt();
-            cinematicStopTime = savegame.ReadInt();
-            cinematicMaxSkipTime = savegame.ReadInt();
-            inCinematic = savegame.ReadBool();
-            skipCinematic = savegame.ReadBool();
+            this.cinematicSkipTime = savegame.ReadInt();
+            this.cinematicStopTime = savegame.ReadInt();
+            this.cinematicMaxSkipTime = savegame.ReadInt();
+            this.inCinematic = savegame.ReadBool();
+            this.skipCinematic = savegame.ReadBool();
 
-            isMultiplayer = savegame.ReadBool();
-            gameType = gameType_t.values()[savegame.ReadInt()];
+            this.isMultiplayer = savegame.ReadBool();
+            this.gameType = gameType_t.values()[savegame.ReadInt()];
 
-            framenum = savegame.ReadInt();
-            previousTime = savegame.ReadInt();
-            time = savegame.ReadInt();
+            this.framenum = savegame.ReadInt();
+            this.previousTime = savegame.ReadInt();
+            this.time = savegame.ReadInt();
 
-            vacuumAreaNum = savegame.ReadInt();
+            this.vacuumAreaNum = savegame.ReadInt();
 
-            entityDefBits = savegame.ReadInt();
-            isServer = savegame.ReadBool();
-            isClient = savegame.ReadBool();
+            this.entityDefBits = savegame.ReadInt();
+            this.isServer = savegame.ReadBool();
+            this.isClient = savegame.ReadBool();
 
-            localClientNum = savegame.ReadInt();
+            this.localClientNum = savegame.ReadInt();
 
             // snapshotEntities is used for multiplayer only
-            realClientTime = savegame.ReadInt();
-            isNewFrame = savegame.ReadBool();
-            clientSmoothing = savegame.ReadFloat();
+            this.realClientTime = savegame.ReadInt();
+            this.isNewFrame = savegame.ReadBool();
+            this.clientSmoothing = savegame.ReadFloat();
 
-            mapCycleLoaded = savegame.ReadBool();
-            spawnCount = savegame.ReadInt();
+            this.mapCycleLoaded = savegame.ReadBool();
+            this.spawnCount = savegame.ReadInt();
 
             num = savegame.ReadInt();
             if (num != 0) {
@@ -1194,31 +1194,31 @@ public class Game_local {
                     savegame.Error("idGameLocal.InitFromSaveGame: number of areas in map differs from save game.");
                 }
 
-                locationEntities = new idLocationEntity[num];
+                this.locationEntities = new idLocationEntity[num];
                 for (i = 0; i < num; i++) {
-                    savegame.ReadObject(/*reinterpret_cast<idClass *&>*/locationEntities[i]);
+                    savegame.ReadObject(/*reinterpret_cast<idClass *&>*/this.locationEntities[i]);
                 }
             }
 
-            savegame.ReadObject(/*reinterpret_cast<idClass *&>*/camera);
+            savegame.ReadObject(this./*reinterpret_cast<idClass *&>*/camera);
 
-            savegame.ReadMaterial(globalMaterial);
+            savegame.ReadMaterial(this.globalMaterial);
 
-            lastAIAlertEntity.Restore(savegame);
-            lastAIAlertTime = savegame.ReadInt();
+            this.lastAIAlertEntity.Restore(savegame);
+            this.lastAIAlertTime = savegame.ReadInt();
 
-            savegame.ReadDict(spawnArgs);
+            savegame.ReadDict(this.spawnArgs);
 
-            playerPVS.i = savegame.ReadInt();
-            playerPVS.h = savegame.ReadInt(/*(int &)*/);
-            playerConnectedAreas.i = savegame.ReadInt();
-            playerConnectedAreas.h = savegame.ReadInt( /*(int &)*/);
+            this.playerPVS.i = savegame.ReadInt();
+            this.playerPVS.h = savegame.ReadInt(/*(int &)*/);
+            this.playerConnectedAreas.i = savegame.ReadInt();
+            this.playerConnectedAreas.h = savegame.ReadInt( /*(int &)*/);
 
-            savegame.ReadVec3(gravity);
+            savegame.ReadVec3(this.gravity);
 
             // gamestate is restored after restoring everything else
-            influenceActive = savegame.ReadBool();
-            nextGibTime = savegame.ReadInt();
+            this.influenceActive = savegame.ReadBool();
+            this.nextGibTime = savegame.ReadInt();
 
             // spawnSpots
             // initialSpots
@@ -1231,14 +1231,14 @@ public class Game_local {
 
             savegame.RestoreObjects();
 
-            mpGame.Reset();
+            this.mpGame.Reset();
 
-            mpGame.Precache();
+            this.mpGame.Precache();
 
             // free up any unused animations
             animationLib.FlushUnusedAnims();
 
-            gamestate = GAMESTATE_ACTIVE;
+            this.gamestate = GAMESTATE_ACTIVE;
 
             Printf("--------------------------------------\n");
 
@@ -1259,7 +1259,7 @@ public class Game_local {
             idEntity ent;
             idEntity link;
 
-            idSaveGame savegame = new idSaveGame(saveGameFile);
+            final idSaveGame savegame = new idSaveGame(saveGameFile);
 
             if (g_flushSave.GetBool() == true) {
                 // force flushing with each write... for tracking down
@@ -1271,10 +1271,10 @@ public class Game_local {
 
             // go through all entities and threads and add them to the object list
             for (i = 0; i < MAX_GENTITIES; i++) {
-                ent = entities[i];
+                ent = this.entities[i];
 
                 if (ent != null) {
-                    if (ent.GetTeamMaster() != null && !ent.GetTeamMaster().equals(ent)) {
+                    if ((ent.GetTeamMaster() != null) && !ent.GetTeamMaster().equals(ent)) {
                         continue;
                     }
                     for (link = ent; link != null; link = link.GetNextTeamEntity()) {
@@ -1293,118 +1293,118 @@ public class Game_local {
             // write out complete object list
             savegame.WriteObjectList();
 
-            program.Save(savegame);
+            this.program.Save(savegame);
 
             savegame.WriteInt(g_skill.GetInteger());
 
-            savegame.WriteDict(serverInfo);
+            savegame.WriteDict(this.serverInfo);
 
-            savegame.WriteInt(numClients);
-            for (i = 0; i < numClients; i++) {
-                savegame.WriteDict(userInfo[ i]);
-                savegame.WriteUsercmd(usercmds[ i]);
-                savegame.WriteDict(persistentPlayerInfo[ i]);
+            savegame.WriteInt(this.numClients);
+            for (i = 0; i < this.numClients; i++) {
+                savegame.WriteDict(this.userInfo[ i]);
+                savegame.WriteUsercmd(this.usercmds[ i]);
+                savegame.WriteDict(this.persistentPlayerInfo[ i]);
             }
 
             for (i = 0; i < MAX_GENTITIES; i++) {
-                savegame.WriteObject(entities[i]);
-                savegame.WriteInt(spawnIds[ i]);
+                savegame.WriteObject(this.entities[i]);
+                savegame.WriteInt(this.spawnIds[ i]);
             }
 
-            savegame.WriteInt(firstFreeIndex);
-            savegame.WriteInt(num_entities);
+            savegame.WriteInt(this.firstFreeIndex);
+            savegame.WriteInt(this.num_entities);
 
             // enityHash is restored by idEntity::Restore setting the entity name.
-            savegame.WriteObject(world);
+            savegame.WriteObject(this.world);
 
-            savegame.WriteInt(spawnedEntities.Num());
-            for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+            savegame.WriteInt(this.spawnedEntities.Num());
+            for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                 savegame.WriteObject(ent);
             }
 
-            savegame.WriteInt(activeEntities.Num());
-            for (ent = activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
+            savegame.WriteInt(this.activeEntities.Num());
+            for (ent = this.activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
                 savegame.WriteObject(ent);
             }
 
-            savegame.WriteInt(numEntitiesToDeactivate);
-            savegame.WriteBool(sortPushers);
-            savegame.WriteBool(sortTeamMasters);
-            savegame.WriteDict(persistentLevelInfo);
+            savegame.WriteInt(this.numEntitiesToDeactivate);
+            savegame.WriteBool(this.sortPushers);
+            savegame.WriteBool(this.sortTeamMasters);
+            savegame.WriteDict(this.persistentLevelInfo);
 
             for (i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++) {
-                savegame.WriteFloat(globalShaderParms[ i]);
+                savegame.WriteFloat(this.globalShaderParms[ i]);
             }
 
-            savegame.WriteInt(random.GetSeed());
-            savegame.WriteObject(frameCommandThread);
+            savegame.WriteInt(this.random.GetSeed());
+            savegame.WriteObject(this.frameCommandThread);
 
             // clip
             // push
             // pvs
-            testmodel = null;
-            testFx = null;
+            this.testmodel = null;
+            this.testFx = null;
 
-            savegame.WriteString(sessionCommand);
+            savegame.WriteString(this.sessionCommand);
 
             // FIXME: save smoke particles
-            savegame.WriteInt(cinematicSkipTime);
-            savegame.WriteInt(cinematicStopTime);
-            savegame.WriteInt(cinematicMaxSkipTime);
-            savegame.WriteBool(inCinematic);
-            savegame.WriteBool(skipCinematic);
+            savegame.WriteInt(this.cinematicSkipTime);
+            savegame.WriteInt(this.cinematicStopTime);
+            savegame.WriteInt(this.cinematicMaxSkipTime);
+            savegame.WriteBool(this.inCinematic);
+            savegame.WriteBool(this.skipCinematic);
 
-            savegame.WriteBool(isMultiplayer);
-            savegame.WriteInt(etoi(gameType));
+            savegame.WriteBool(this.isMultiplayer);
+            savegame.WriteInt(etoi(this.gameType));
 
-            savegame.WriteInt(framenum);
-            savegame.WriteInt(previousTime);
-            savegame.WriteInt(time);
+            savegame.WriteInt(this.framenum);
+            savegame.WriteInt(this.previousTime);
+            savegame.WriteInt(this.time);
 
-            savegame.WriteInt(vacuumAreaNum);
+            savegame.WriteInt(this.vacuumAreaNum);
 
-            savegame.WriteInt(entityDefBits);
-            savegame.WriteBool(isServer);
-            savegame.WriteBool(isClient);
+            savegame.WriteInt(this.entityDefBits);
+            savegame.WriteBool(this.isServer);
+            savegame.WriteBool(this.isClient);
 
-            savegame.WriteInt(localClientNum);
+            savegame.WriteInt(this.localClientNum);
 
             // snapshotEntities is used for multiplayer only
-            savegame.WriteInt(realClientTime);
-            savegame.WriteBool(isNewFrame);
-            savegame.WriteFloat(clientSmoothing);
+            savegame.WriteInt(this.realClientTime);
+            savegame.WriteBool(this.isNewFrame);
+            savegame.WriteFloat(this.clientSmoothing);
 
-            savegame.WriteBool(mapCycleLoaded);
-            savegame.WriteInt(spawnCount);
+            savegame.WriteBool(this.mapCycleLoaded);
+            savegame.WriteInt(this.spawnCount);
 
-            if (NOT(locationEntities)) {
+            if (NOT(this.locationEntities)) {
                 savegame.WriteInt(0);
             } else {
                 savegame.WriteInt(gameRenderWorld.NumAreas());
                 for (i = 0; i < gameRenderWorld.NumAreas(); i++) {
-                    savegame.WriteObject(locationEntities[ i]);
+                    savegame.WriteObject(this.locationEntities[ i]);
                 }
             }
 
-            savegame.WriteObject(camera);
+            savegame.WriteObject(this.camera);
 
-            savegame.WriteMaterial(globalMaterial);
+            savegame.WriteMaterial(this.globalMaterial);
 
-            lastAIAlertEntity.Save(savegame);
-            savegame.WriteInt(lastAIAlertTime);
+            this.lastAIAlertEntity.Save(savegame);
+            savegame.WriteInt(this.lastAIAlertTime);
 
-            savegame.WriteDict(spawnArgs);
+            savegame.WriteDict(this.spawnArgs);
 
-            savegame.WriteInt(playerPVS.i);
-            savegame.WriteInt(playerPVS.h);
-            savegame.WriteInt(playerConnectedAreas.i);
-            savegame.WriteInt(playerConnectedAreas.h);
+            savegame.WriteInt(this.playerPVS.i);
+            savegame.WriteInt(this.playerPVS.h);
+            savegame.WriteInt(this.playerConnectedAreas.i);
+            savegame.WriteInt(this.playerConnectedAreas.h);
 
-            savegame.WriteVec3(gravity);
+            savegame.WriteVec3(this.gravity);
 
             // gamestate
-            savegame.WriteBool(influenceActive);
-            savegame.WriteInt(nextGibTime);
+            savegame.WriteBool(this.influenceActive);
+            savegame.WriteInt(this.nextGibTime);
 
             // spawnSpots
             // initialSpots
@@ -1422,7 +1422,7 @@ public class Game_local {
         public void MapShutdown() {
             Printf("--------- Game Map Shutdown ----------\n");
 
-            gamestate = GAMESTATE_SHUTDOWN;
+            this.gamestate = GAMESTATE_SHUTDOWN;
 
             if (gameRenderWorld != null) {
                 // clear any debug lines, text, and polygons
@@ -1431,33 +1431,33 @@ public class Game_local {
             }
 
             // clear out camera if we're in a cinematic
-            if (inCinematic) {
-                camera = null;
-                inCinematic = false;
+            if (this.inCinematic) {
+                this.camera = null;
+                this.inCinematic = false;
             }
 
             MapClear(true);
 
             // reset the script to the state it was before the map was started
-            program.Restart();
+            this.program.Restart();
 
-            if (smokeParticles != null) {
-                smokeParticles.Shutdown();
+            if (this.smokeParticles != null) {
+                this.smokeParticles.Shutdown();
             }
 
-            pvs.Shutdown();
+            this.pvs.Shutdown();
 
-            clip.Shutdown();
+            this.clip.Shutdown();
             idClipModel.ClearTraceModelCache();
 
             ShutdownAsyncNetwork();
 
-            mapFileName.Clear();
+            this.mapFileName.Clear();
 
             gameRenderWorld = null;
             gameSoundWorld = null;
 
-            gamestate = GAMESTATE_NOMAP;
+            this.gamestate = GAMESTATE_NOMAP;
 
             Printf("--------------------------------------\n");
         }
@@ -1502,7 +1502,7 @@ public class Game_local {
             }
 
             kv = dict.FindKey("s_shader");
-            if (kv != null && kv.GetValue().Length() != 0) {
+            if ((kv != null) && (kv.GetValue().Length() != 0)) {
                 declManager.FindType(DECL_SOUND, kv.GetValue());
             }
 
@@ -1517,13 +1517,13 @@ public class Game_local {
             kv = dict.MatchPrefix("gui", null);
             while (kv != null) {
                 if (kv.GetValue().Length() != 0) {
-                    if (0 == idStr.Icmp(kv.GetKey(), "gui_noninteractive")
-                            || 0 == idStr.Icmpn(kv.GetKey(), "gui_parm", 8)
-                            || 0 == idStr.Icmp(kv.GetKey(), "gui_inventory")) {
+                    if ((0 == idStr.Icmp(kv.GetKey(), "gui_noninteractive"))
+                            || (0 == idStr.Icmpn(kv.GetKey(), "gui_parm", 8))
+                            || (0 == idStr.Icmp(kv.GetKey(), "gui_inventory"))) {
                         // unfortunate flag names, they aren't actually a gui
                     } else {
                         declManager.MediaPrint("Precaching gui %s\n", kv.GetValue());
-                        idUserInterface gui = uiManager.Alloc();
+                        final idUserInterface gui = uiManager.Alloc();
                         if (gui != null) {
                             gui.InitFromFile(kv.GetValue().getData());
                             uiManager.DeAlloc(gui);
@@ -1534,7 +1534,7 @@ public class Game_local {
             }
 
             kv = dict.FindKey("texture");
-            if (kv != null && kv.GetValue().Length() != 0) {
+            if ((kv != null) && (kv.GetValue().Length() != 0)) {
                 declManager.FindType(DECL_MATERIAL, kv.GetValue());
             }
 
@@ -1558,8 +1558,8 @@ public class Game_local {
             // handles teleport fx.. this is not ideal but the actual decision on which fx to use
             // is handled by script code based on the teleport number
             kv = dict.MatchPrefix("teleport", null);
-            if (kv != null && kv.GetValue().Length() != 0) {
-                int teleportType = atoi(kv.GetValue());
+            if ((kv != null) && (kv.GetValue().Length() != 0)) {
+                final int teleportType = atoi(kv.GetValue());
                 final String p = (teleportType != 0) ? va("fx/teleporter%d.fx", teleportType) : "fx/teleporter.fx";
                 declManager.FindType(DECL_FX, p);
             }
@@ -1577,7 +1577,7 @@ public class Game_local {
             while (kv != null) {
                 if (kv.GetValue().Length() != 0) {
                     idStr prtName = kv.GetValue();
-                    int dash = prtName.Find('-');
+                    final int dash = prtName.Find('-');
                     if (dash > 0) {
                         prtName = prtName.Left(dash);
                     }
@@ -1630,16 +1630,16 @@ public class Game_local {
 
         @Override
         public void SpawnPlayer(int clientNum) {
-            idEntity[] ent = {null};
-            idDict args = new idDict();
+            final idEntity[] ent = {null};
+            final idDict args = new idDict();
 
             // they can connect
             Printf("SpawnPlayer: %d\n", clientNum);
 
             args.SetInt("spawn_entnum", clientNum);
             args.Set("name", va("player%d", clientNum + 1));
-            args.Set("classname", isMultiplayer ? "player_doommarine_mp" : "player_doommarine");
-            if (!SpawnEntityDef(args, ent) || null == entities[ clientNum]) {
+            args.Set("classname", this.isMultiplayer ? "player_doommarine_mp" : "player_doommarine");
+            if (!SpawnEntityDef(args, ent) || (null == this.entities[ clientNum])) {
                 Error("Failed to spawn player as '%s'", args.GetString("classname"));
             }
 
@@ -1648,11 +1648,11 @@ public class Game_local {
                 Error("'%s' spawned the player as a '%s'.  Player spawnclass must be a subclass of idPlayer.", args.GetString("classname"), ent[0].GetClassname());
             }
 
-            if (clientNum >= numClients) {
-                numClients = clientNum + 1;
+            if (clientNum >= this.numClients) {
+                this.numClients = clientNum + 1;
             }
 
-            mpGame.SpawnPlayer(clientNum);
+            this.mpGame.SpawnPlayer(clientNum);
         }
 
         @Override
@@ -1660,26 +1660,26 @@ public class Game_local {
             idEntity ent;
             int num;
             float ms;
-            idTimer timer_think = new idTimer(), timer_events = new idTimer(), timer_singlethink = new idTimer();
-            gameReturn_t ret = new gameReturn_t();
+            final idTimer timer_think = new idTimer(), timer_events = new idTimer(), timer_singlethink = new idTimer();
+            final gameReturn_t ret = new gameReturn_t();
             idPlayer player;
             renderView_s view;
 
             if (_DEBUG) {
-                if (isMultiplayer) {
-                    assert (!isClient);
+                if (this.isMultiplayer) {
+                    assert (!this.isClient);
                 }
             }
 
             player = GetLocalPlayer();
 
-            if (!isMultiplayer && g_stopTime.GetBool()) {
+            if (!this.isMultiplayer && g_stopTime.GetBool()) {
                 // clear any debug lines from a previous frame
-                gameRenderWorld.DebugClearLines(time + 1);
+                gameRenderWorld.DebugClearLines(this.time + 1);
 
                 // set the user commands for this frame
 //                memcpy(usercmds, clientCmds, numClients * sizeof(usercmds[ 0]));
-                System.arraycopy(clientCmds, 0, usercmds, 0, numClients);
+                System.arraycopy(clientCmds, 0, this.usercmds, 0, this.numClients);
 
                 if (player != null) {
                     player.Think();
@@ -1687,10 +1687,10 @@ public class Game_local {
             } else {
                 do {
                     // update the game time
-                    framenum++;
-                    previousTime = time;
-                    time += msec;
-                    realClientTime = time;
+                    this.framenum++;
+                    this.previousTime = this.time;
+                    this.time += msec;
+                    this.realClientTime = this.time;
 
                     if (GAME_DLL) {
                         // allow changing SIMD usage on the fly
@@ -1701,7 +1701,7 @@ public class Game_local {
 
                     // make sure the random number counter is used each frame so random events
                     // are influenced by the player's actions
-                    random.RandomInt();
+                    this.random.RandomInt();
 
                     if (player != null) {
                         // update the renderview so that any gui videos play from the right frame
@@ -1712,17 +1712,17 @@ public class Game_local {
                     }
 
                     // clear any debug lines from a previous frame
-                    gameRenderWorld.DebugClearLines(time);
+                    gameRenderWorld.DebugClearLines(this.time);
 
                     // clear any debug polygons from a previous frame
-                    gameRenderWorld.DebugClearPolygons(time);
+                    gameRenderWorld.DebugClearPolygons(this.time);
 
                     // set the user commands for this frame
 //                    memcpy(usercmds, clientCmds, numClients * sizeof(usercmds[ 0]));
-                    System.arraycopy(clientCmds, 0, usercmds, 0, numClients);
+                    System.arraycopy(clientCmds, 0, this.usercmds, 0, this.numClients);
 
                     // free old smoke particles
-                    smokeParticles.FreeSmokes();
+                    this.smokeParticles.FreeSmokes();
 
                     // process events on the server
                     ServerProcessEntityNetworkEventQueue();
@@ -1742,9 +1742,9 @@ public class Game_local {
                     // let entities think
                     if (g_timeentities.GetFloat() != 0) {
                         num = 0;
-                        for (ent = activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
-                            if (g_cinematic.GetBool() && inCinematic && !ent.cinematic) {
-                                ent.GetPhysics().UpdateTime(time);
+                        for (ent = this.activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
+                            if (g_cinematic.GetBool() && this.inCinematic && !ent.cinematic) {
+                                ent.GetPhysics().UpdateTime(this.time);
                                 continue;
                             }
                             timer_singlethink.Clear();
@@ -1753,16 +1753,16 @@ public class Game_local {
                             timer_singlethink.Stop();
                             ms = (float) timer_singlethink.Milliseconds();
                             if (ms >= g_timeentities.GetFloat()) {
-                                Printf("%d: entity '%s': %.1f ms\n", time, ent.name, ms);
+                                Printf("%d: entity '%s': %.1f ms\n", this.time, ent.name, ms);
                             }
                             num++;
                         }
                     } else {
-                        if (inCinematic) {
+                        if (this.inCinematic) {
                             num = 0;
-                            for (ent = activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
+                            for (ent = this.activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
                                 if (g_cinematic.GetBool() && !ent.cinematic) {
-                                    ent.GetPhysics().UpdateTime(time);
+                                    ent.GetPhysics().UpdateTime(this.time);
                                     continue;
                                 }
                                 ent.Think();
@@ -1770,7 +1770,7 @@ public class Game_local {
                             }
                         } else {
                             num = 0;
-                            for (ent = activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
+                            for (ent = this.activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
                                 ent.Think();
                                 if(num==117){
                                     DBG_RunFrame++;
@@ -1782,10 +1782,10 @@ public class Game_local {
                     }
 
                     // remove any entities that have stopped thinking
-                    if (numEntitiesToDeactivate != 0) {
+                    if (this.numEntitiesToDeactivate != 0) {
                         idEntity next_ent;
                         int c = 0;
-                        for (ent = activeEntities.Next(); ent != null; ent = next_ent) {
+                        for (ent = this.activeEntities.Next(); ent != null; ent = next_ent) {
                             next_ent = ent.activeNode.Next();
                             if (0 == ent.thinkFlags) {
                                 ent.activeNode.Remove();
@@ -1793,7 +1793,7 @@ public class Game_local {
                             }
                         }
                         //assert( numEntitiesToDeactivate == c );
-                        numEntitiesToDeactivate = 0;
+                        this.numEntitiesToDeactivate = 0;
                     }
 
                     timer_think.Stop();
@@ -1809,14 +1809,14 @@ public class Game_local {
                     FreePlayerPVS();
 
                     // do multiplayer related stuff
-                    if (isMultiplayer) {
-                        mpGame.Run();
+                    if (this.isMultiplayer) {
+                        this.mpGame.Run();
                     }
 
                     // display how long it took to calculate the current game frame
                     if (g_frametime.GetBool()) {
                         Printf("game %d: all:%.1f th:%.1f ev:%.1f %d ents \n",
-                                time, timer_think.Milliseconds() + timer_events.Milliseconds(),
+                                this.time, timer_think.Milliseconds() + timer_events.Milliseconds(),
                                 timer_think.Milliseconds(), timer_events.Milliseconds(), num);
                     }
 
@@ -1824,41 +1824,41 @@ public class Game_local {
                     ret.consistencyHash = 0;
                     ret.sessionCommand[0] = 0;
 
-                    if (!isMultiplayer && player != null) {
+                    if (!this.isMultiplayer && (player != null)) {
                         ret.health = player.health;
                         ret.heartRate = player.heartRate;
                         ret.stamina = idMath.FtoiFast(player.stamina);
                         // combat is a 0-100 value based on lastHitTime and lastDmgTime
                         // each make up 50% of the time spread over 10 seconds
                         ret.combat = 0;
-                        if (player.lastDmgTime > 0 && time < player.lastDmgTime + 10000) {
-                            ret.combat += 50.0f * (float) (time - player.lastDmgTime) / 10000;
+                        if ((player.lastDmgTime > 0) && (this.time < (player.lastDmgTime + 10000))) {
+                            ret.combat += (50.0f * (this.time - player.lastDmgTime)) / 10000;
                         }
-                        if (player.lastHitTime > 0 && time < player.lastHitTime + 10000) {
-                            ret.combat += 50.0f * (float) (time - player.lastHitTime) / 10000;
+                        if ((player.lastHitTime > 0) && (this.time < (player.lastHitTime + 10000))) {
+                            ret.combat += (50.0f * (this.time - player.lastHitTime)) / 10000;
                         }
                     }
 
                     // see if a target_sessionCommand has forced a changelevel
-                    if (sessionCommand.Length() != 0) {
+                    if (this.sessionCommand.Length() != 0) {
 //                        strncpy(ret.sessionCommand, sessionCommand, sizeof(ret.sessionCommand));
-                        ret.sessionCommand = sessionCommand.c_str();
+                        ret.sessionCommand = this.sessionCommand.c_str();
                         break;
                     }
 
                     // make sure we don't loop forever when skipping a cinematic
-                    if (skipCinematic && (time > cinematicMaxSkipTime)) {
+                    if (this.skipCinematic && (this.time > this.cinematicMaxSkipTime)) {
                         Warning("Exceeded maximum cinematic skip length.  Cinematic may be looping infinitely.");
-                        skipCinematic = false;
+                        this.skipCinematic = false;
                         break;
                     }
-                } while ((inCinematic || (time < cinematicStopTime)) && skipCinematic);
+                } while ((this.inCinematic || (this.time < this.cinematicStopTime)) && this.skipCinematic);
             }
 
-            ret.syncNextGameFrame = skipCinematic;
-            if (skipCinematic) {
+            ret.syncNextGameFrame = this.skipCinematic;
+            if (this.skipCinematic) {
                 snd_system.soundSystem.SetMute(false);
-                skipCinematic = false;
+                this.skipCinematic = false;
             }
 
             // show any debug info for this frame
@@ -1878,11 +1878,11 @@ public class Game_local {
          */
         @Override
         public boolean Draw(int clientNum) {
-            if (isMultiplayer) {
-                return mpGame.Draw(clientNum);
+            if (this.isMultiplayer) {
+                return this.mpGame.Draw(clientNum);
             }
 
-            idPlayer player = (idPlayer) entities[ clientNum];
+            final idPlayer player = (idPlayer) this.entities[ clientNum];
 
             if (null == player) {
                 return false;
@@ -1896,12 +1896,12 @@ public class Game_local {
 
         @Override
         public escReply_t HandleESC(idUserInterface[] gui) {
-            if (isMultiplayer) {
+            if (this.isMultiplayer) {
                 gui[0] = StartMenu();
                 // we may set the gui back to NULL to hide it
                 return ESC_GUI;
             }
-            idPlayer player = GetLocalPlayer();
+            final idPlayer player = GetLocalPlayer();
             if (player != null) {
                 if (player.HandleESC()) {
                     return ESC_IGNORE;
@@ -1914,18 +1914,18 @@ public class Game_local {
 
         @Override
         public idUserInterface StartMenu() {
-            if (!isMultiplayer) {
+            if (!this.isMultiplayer) {
                 return null;
             }
-            return mpGame.StartMenu();
+            return this.mpGame.StartMenu();
         }
 
         @Override
         public String HandleGuiCommands(final String menuCommand) {
-            if (!isMultiplayer) {
+            if (!this.isMultiplayer) {
                 return null;
             }
-            return mpGame.HandleGuiCommands(menuCommand);
+            return this.mpGame.HandleGuiCommands(menuCommand);
         }
 
         @Override
@@ -1936,17 +1936,17 @@ public class Game_local {
         public allowReply_t ServerAllowClient(int numClients, final String IP, final String guid, final String password, char[] reason/*[MAX_STRING_CHARS]*/) {
             reason[0] = '\0';
 
-            if (serverInfo.GetInt("si_pure") != 0 && !mpGame.IsPureReady()) {
+            if ((this.serverInfo.GetInt("si_pure") != 0) && !this.mpGame.IsPureReady()) {
                 idStr.snPrintf(reason, MAX_STRING_CHARS, "#str_07139");
                 return ALLOW_NOTYET;
             }
 
-            if (0 == serverInfo.GetInt("si_maxPlayers")) {
+            if (0 == this.serverInfo.GetInt("si_maxPlayers")) {
                 idStr.snPrintf(reason, MAX_STRING_CHARS, "#str_07140");
                 return ALLOW_NOTYET;
             }
 
-            if (numClients >= serverInfo.GetInt("si_maxPlayers")) {
+            if (numClients >= this.serverInfo.GetInt("si_maxPlayers")) {
                 idStr.snPrintf(reason, MAX_STRING_CHARS, "#str_07141");
                 return ALLOW_NOTYET;
             }
@@ -1977,20 +1977,20 @@ public class Game_local {
         @Override
         public void ServerClientConnect(int clientNum, final String guid) {
             // make sure no parasite entity is left
-            if (entities[ clientNum] != null) {
+            if (this.entities[ clientNum] != null) {
                 common.DPrintf("ServerClientConnect: remove old player entity\n");
 //		delete entities[ clientNum ];
-                entities[clientNum] = null;
+                this.entities[clientNum] = null;
             }
-            userInfo[clientNum].Clear();
-            mpGame.ServerClientConnect(clientNum);
+            this.userInfo[clientNum].Clear();
+            this.mpGame.ServerClientConnect(clientNum);
             Printf("client %d connected.\n", clientNum);
         }
 
         @Override
         public void ServerClientBegin(int clientNum) {
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
 
             // initialize the decl remap
             InitClientDeclRemap(clientNum);
@@ -2003,8 +2003,8 @@ public class Game_local {
 
             // spawn the player
             SpawnPlayer(clientNum);
-            if (clientNum == localClientNum) {
-                mpGame.EnterGame(clientNum);
+            if (clientNum == this.localClientNum) {
+                this.mpGame.EnterGame(clientNum);
             }
 
             // send message to spawn the player at the clients
@@ -2012,20 +2012,20 @@ public class Game_local {
             outMsg.BeginWriting();
             outMsg.WriteByte(GAME_RELIABLE_MESSAGE_SPAWN_PLAYER);
             outMsg.WriteByte(clientNum);
-            outMsg.WriteLong(spawnIds[ clientNum]);
+            outMsg.WriteLong(this.spawnIds[ clientNum]);
             networkSystem.ServerSendReliableMessage(-1, outMsg);
         }
 
         @Override
         public void ServerClientDisconnect(int clientNum) {
             int i;
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
 
             outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
             outMsg.BeginWriting();
             outMsg.WriteByte(GAME_RELIABLE_MESSAGE_DELETE_ENT);
-            outMsg.WriteBits((spawnIds[ clientNum] << GENTITYNUM_BITS) | clientNum, 32); // see GetSpawnId
+            outMsg.WriteBits((this.spawnIds[ clientNum] << GENTITYNUM_BITS) | clientNum, 32); // see GetSpawnId
             networkSystem.ServerSendReliableMessage(-1, outMsg);
 
             // free snapshots stored for this client
@@ -2033,21 +2033,21 @@ public class Game_local {
 
             // free entity states stored for this client
             for (i = 0; i < MAX_GENTITIES; i++) {
-                if (clientEntityStates[ clientNum][ i] != null) {
+                if (this.clientEntityStates[ clientNum][ i] != null) {
 //                    entityStateAllocator.Free(clientEntityStates[ clientNum][ i]);
-                    clientEntityStates[ clientNum][ i] = null;
+                    this.clientEntityStates[ clientNum][ i] = null;
                 }
             }
 
             // clear the client PVS
 //	memset( clientPVS[ clientNum ], 0, sizeof( clientPVS[ clientNum ] ) );
-            Arrays.fill(clientPVS[ clientNum], 0);
+            Arrays.fill(this.clientPVS[ clientNum], 0);
 
             // delete the player entity
 //	delete entities[ clientNum ];
-            entities[ clientNum] = null;
+            this.entities[ clientNum] = null;
 
-            mpGame.DisconnectClient(clientNum);
+            this.mpGame.DisconnectClient(clientNum);
 
         }
 
@@ -2061,25 +2061,25 @@ public class Game_local {
         @Override
         public void ServerWriteInitialReliableMessages(int clientNum) {
             int i;
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
             entityNetEvent_s event;
 
             // spawn players
             for (i = 0; i < MAX_CLIENTS; i++) {
-                if (entities[i] == null || i == clientNum) {
+                if ((this.entities[i] == null) || (i == clientNum)) {
                     continue;
                 }
                 outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
                 outMsg.BeginWriting();
                 outMsg.WriteByte(GAME_RELIABLE_MESSAGE_SPAWN_PLAYER);
                 outMsg.WriteByte(i);
-                outMsg.WriteLong(spawnIds[ i]);
+                outMsg.WriteLong(this.spawnIds[ i]);
                 networkSystem.ServerSendReliableMessage(clientNum, outMsg);
             }
 
             // send all saved events
-            for (event = savedEventQueue.Start(); event != null; event = event.next) {
+            for (event = this.savedEventQueue.Start(); event != null; event = event.next) {
                 outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
                 outMsg.BeginWriting();
                 outMsg.WriteByte(GAME_RELIABLE_MESSAGE_EVENT);
@@ -2095,7 +2095,7 @@ public class Game_local {
             }
 
             // update portals for opened doors
-            int numPortals = gameRenderWorld.NumPortals();
+            final int numPortals = gameRenderWorld.NumPortals();
             outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
             outMsg.BeginWriting();
             outMsg.WriteByte(GAME_RELIABLE_MESSAGE_PORTALSTATES);
@@ -2105,7 +2105,7 @@ public class Game_local {
             }
             networkSystem.ServerSendReliableMessage(clientNum, outMsg);
 
-            mpGame.ServerWriteInitialReliableMessages(clientNum);
+            this.mpGame.ServerWriteInitialReliableMessages(clientNum);
         }
 
         /*
@@ -2118,23 +2118,23 @@ public class Game_local {
         @Override
         public void ServerWriteSnapshot(int clientNum, int sequence, idBitMsg msg, byte[] clientInPVS, int numPVSClients) {
             int i;
-            int[] msgSize = {0}, msgWriteBit = {0};
+            final int[] msgSize = {0}, msgWriteBit = {0};
             idPlayer player, spectated;
             idEntity ent;
             pvsHandle_t pvsHandle;
-            idBitMsgDelta deltaMsg = new idBitMsgDelta();
+            final idBitMsgDelta deltaMsg = new idBitMsgDelta();
             snapshot_s snapshot;
             entityState_s base, newBase;
             int numSourceAreas;
-            int[] sourceAreas = new int[idEntity.MAX_PVS_AREAS];
+            final int[] sourceAreas = new int[idEntity.MAX_PVS_AREAS];
             idRandom tagRandom;
 
-            player = (idPlayer) entities[ clientNum];
+            player = (idPlayer) this.entities[ clientNum];
             if (null == player) {
                 return;
             }
-            if (player.spectating && player.spectator != clientNum && entities[ player.spectator] != null) {
-                spectated = (idPlayer) entities[ player.spectator];
+            if (player.spectating && (player.spectator != clientNum) && (this.entities[ player.spectator] != null)) {
+                spectated = (idPlayer) this.entities[ player.spectator];
             } else {
                 spectated = player;
             }
@@ -2146,8 +2146,8 @@ public class Game_local {
             snapshot = new snapshot_s();//snapshotAllocator.Alloc();
             snapshot.sequence = sequence;
             snapshot.firstEntityState = null;
-            snapshot.next = clientSnapshots[clientNum];
-            clientSnapshots[clientNum] = snapshot;
+            snapshot.next = this.clientSnapshots[clientNum];
+            this.clientSnapshots[clientNum] = snapshot;
 //            memset(snapshot.pvs, 0, sizeof(snapshot.pvs));
             Arrays.fill(snapshot.pvs, 0);
 
@@ -2158,15 +2158,15 @@ public class Game_local {
 
             if (ASYNC_WRITE_TAGS) {
                 tagRandom = new idRandom();
-                tagRandom.SetSeed(random.RandomInt());
+                tagRandom.SetSeed(this.random.RandomInt());
                 msg.WriteLong(tagRandom.GetSeed());
             }
 
             // create the snapshot
-            for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+            for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
 
                 // if the entity is not in the player PVS
-                if (!ent.PhysicsTeamInPVS(pvsHandle) && ent.entityNumber != clientNum) {
+                if (!ent.PhysicsTeamInPVS(pvsHandle) && (ent.entityNumber != clientNum)) {
                     continue;
                 }
 
@@ -2184,7 +2184,7 @@ public class Game_local {
                 // write the entity to the snapshot
                 msg.WriteBits(ent.entityNumber, GENTITYNUM_BITS);
 
-                base = clientEntityStates[clientNum][ent.entityNumber];
+                base = this.clientEntityStates[clientNum][ent.entityNumber];
                 if (base != null) {
                     base.state.BeginReading();
                 }
@@ -2195,9 +2195,9 @@ public class Game_local {
 
                 deltaMsg.Init(base != null ? base.state : null, newBase.state, msg);
 
-                deltaMsg.WriteBits(spawnIds[ ent.entityNumber], 32 - GENTITYNUM_BITS);
+                deltaMsg.WriteBits(this.spawnIds[ ent.entityNumber], 32 - GENTITYNUM_BITS);
 //                deltaMsg.WriteBits(ent.GetType().typeNum, idClass.GetTypeNumBits());//TODO:fix this.
-                deltaMsg.WriteBits(ServerRemapDecl(-1, DECL_ENTITYDEF, ent.entityDefNumber), entityDefBits);
+                deltaMsg.WriteBits(ServerRemapDecl(-1, DECL_ENTITYDEF, ent.entityDefNumber), this.entityDefBits);
 
                 // write the class specific data to the snapshot
                 ent.WriteToSnapshot(deltaMsg);
@@ -2229,14 +2229,14 @@ public class Game_local {
                 gameLocal.pvs.WritePVS(pvsHandle, msg);
             }
             for (i = 0; i < ENTITY_PVS_SIZE; i++) {
-                msg.WriteDeltaLong(clientPVS[clientNum][i], snapshot.pvs[i]);
+                msg.WriteDeltaLong(this.clientPVS[clientNum][i], snapshot.pvs[i]);
             }
 
             // free the PVS
-            pvs.FreeCurrentPVS(pvsHandle);
+            this.pvs.FreeCurrentPVS(pvsHandle);
 
             // write the game and player state to the snapshot
-            base = clientEntityStates[clientNum][ENTITYNUM_NONE];	// ENTITYNUM_NONE is used for the game and player state
+            base = this.clientEntityStates[clientNum][ENTITYNUM_NONE];	// ENTITYNUM_NONE is used for the game and player state
             if (base != null) {
                 base.state.BeginReading();
             }
@@ -2247,7 +2247,7 @@ public class Game_local {
             newBase.state.Init(newBase.stateBuf);
             newBase.state.BeginWriting();
             deltaMsg.Init(base != null ? base.state : null, newBase.state, msg);
-            if (player.spectating && player.spectator != player.entityNumber && gameLocal.entities[ player.spectator] != null && gameLocal.entities[ player.spectator].IsType(idPlayer.class)) {
+            if (player.spectating && (player.spectator != player.entityNumber) && (gameLocal.entities[ player.spectator] != null) && gameLocal.entities[ player.spectator].IsType(idPlayer.class)) {
                 ((idPlayer) gameLocal.entities[ player.spectator]).WritePlayerStateToSnapshot(deltaMsg);
             } else {
                 player.WritePlayerStateToSnapshot(deltaMsg);
@@ -2273,37 +2273,37 @@ public class Game_local {
             switch (id) {
                 case GAME_RELIABLE_MESSAGE_CHAT:
                 case GAME_RELIABLE_MESSAGE_TCHAT: {
-                    char[] name = new char[128];
-                    char[] text = new char[128];
+                    final char[] name = new char[128];
+                    final char[] text = new char[128];
 
                     msg.ReadString(name, 128);
                     msg.ReadString(text, 128);
 
-                    mpGame.ProcessChatMessage(clientNum, id == GAME_RELIABLE_MESSAGE_TCHAT, ctos(name), ctos(text), null);
+                    this.mpGame.ProcessChatMessage(clientNum, id == GAME_RELIABLE_MESSAGE_TCHAT, ctos(name), ctos(text), null);
 
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_VCHAT: {
-                    int index = msg.ReadLong();
-                    boolean team = msg.ReadBits(1) != 0;
-                    mpGame.ProcessVoiceChat(clientNum, team, index);
+                    final int index = msg.ReadLong();
+                    final boolean team = msg.ReadBits(1) != 0;
+                    this.mpGame.ProcessVoiceChat(clientNum, team, index);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_KILL: {
-                    mpGame.WantKilled(clientNum);
+                    this.mpGame.WantKilled(clientNum);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_DROPWEAPON: {
-                    mpGame.DropWeapon(clientNum);
+                    this.mpGame.DropWeapon(clientNum);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_CALLVOTE: {
-                    mpGame.ServerCallVote(clientNum, msg);
+                    this.mpGame.ServerCallVote(clientNum, msg);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_CASTVOTE: {
-                    boolean vote = (msg.ReadByte() != 0);
-                    mpGame.CastVote(clientNum, vote);
+                    final boolean vote = (msg.ReadByte() != 0);
+                    this.mpGame.CastVote(clientNum, vote);
                     break;
                 }
 //if (false){
@@ -2317,8 +2317,8 @@ public class Game_local {
                     entityNetEvent_s event;
 
                     // allocate new event
-                    event = eventQueue.Alloc();
-                    eventQueue.Enqueue(event, OUTOFORDER_DROP);
+                    event = this.eventQueue.Alloc();
+                    this.eventQueue.Enqueue(event, OUTOFORDER_DROP);
 
                     event.spawnId = msg.ReadBits(32);
                     event.event = msg.ReadByte();
@@ -2355,7 +2355,7 @@ public class Game_local {
                 return;
             }
 
-            player = (idPlayer) entities[clientNum];
+            player = (idPlayer) this.entities[clientNum];
             if (null == player) {
                 return;
             }
@@ -2363,9 +2363,9 @@ public class Game_local {
             viewAxis = player.viewAngles.ToMat3();
             viewBounds = player.GetPhysics().GetAbsBounds().Expand(net_clientShowSnapshotRadius.GetFloat());
 
-            for (ent = snapshotEntities.Next(); ent != null; ent = ent.snapshotNode.Next()) {
+            for (ent = this.snapshotEntities.Next(); ent != null; ent = ent.snapshotNode.Next()) {
 
-                if (net_clientShowSnapshot.GetInteger() == 1 && ent.snapshotBits == 0) {
+                if ((net_clientShowSnapshot.GetInteger() == 1) && (ent.snapshotBits == 0)) {
                     continue;
                 }
 
@@ -2375,14 +2375,14 @@ public class Game_local {
                     continue;
                 }
 
-                base = clientEntityStates[clientNum][ent.entityNumber];
+                base = this.clientEntityStates[clientNum][ent.entityNumber];
                 if (base != null) {
                     baseBits = base.state.GetNumBitsWritten();
                 } else {
                     baseBits = 0;
                 }
 
-                if (net_clientShowSnapshot.GetInteger() == 2 && baseBits == 0) {
+                if ((net_clientShowSnapshot.GetInteger() == 2) && (baseBits == 0)) {
                     continue;
                 }
 
@@ -2402,7 +2402,7 @@ public class Game_local {
         public void ClientProcessReliableMessage(int clientNum, final idBitMsg msg) {
             int id, line;
             idPlayer p;
-            idDict backupSI;
+            final idDict backupSI;
 
             InitLocalClient(clientNum);
 
@@ -2414,7 +2414,7 @@ public class Game_local {
                 }
                 case GAME_RELIABLE_MESSAGE_REMAP_DECL: {
                     int type, index;
-                    char[] name = new char[MAX_STRING_CHARS];
+                    final char[] name = new char[MAX_STRING_CHARS];
 
                     type = msg.ReadByte();
                     index = msg.ReadLong();
@@ -2422,28 +2422,28 @@ public class Game_local {
 
                     final idDecl decl = declManager.FindType(declType_t.values()[type], ctos(name), false);
                     if (decl != null) {
-                        if (index >= clientDeclRemap[clientNum][type].Num()) {
-                            clientDeclRemap[clientNum][type].AssureSize(index + 1, -1);
+                        if (index >= this.clientDeclRemap[clientNum][type].Num()) {
+                            this.clientDeclRemap[clientNum][type].AssureSize(index + 1, -1);
                         }
-                        clientDeclRemap[clientNum][type].oSet(index, decl.Index());
+                        this.clientDeclRemap[clientNum][type].oSet(index, decl.Index());
                     }
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_SPAWN_PLAYER: {
-                    int client = msg.ReadByte();
-                    int spawnId = msg.ReadLong();
-                    if (null == entities[ client]) {
+                    final int client = msg.ReadByte();
+                    final int spawnId = msg.ReadLong();
+                    if (null == this.entities[ client]) {
                         SpawnPlayer(client);
-                        entities[ client].FreeModelDef();
+                        this.entities[ client].FreeModelDef();
                     }
                     // fix up the spawnId to match what the server says
                     // otherwise there is going to be a bogus delete/new of the client entity in the first ClientReadFromSnapshot
-                    spawnIds[ client] = spawnId;
+                    this.spawnIds[ client] = spawnId;
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_DELETE_ENT: {
-                    int spawnId = msg.ReadBits(32);
-                    idEntityPtr<idEntity> entPtr = new idEntityPtr<>();
+                    final int spawnId = msg.ReadBits(32);
+                    final idEntityPtr<idEntity> entPtr = new idEntityPtr<>();
                     if (!entPtr.SetSpawnId(spawnId)) {
                         break;
                     }
@@ -2452,40 +2452,40 @@ public class Game_local {
                 }
                 case GAME_RELIABLE_MESSAGE_CHAT:
                 case GAME_RELIABLE_MESSAGE_TCHAT: { // (client should never get a TCHAT though)
-                    char[] name = new char[128];
-                    char[] text = new char[128];
+                    final char[] name = new char[128];
+                    final char[] text = new char[128];
                     msg.ReadString(name, 128);
                     msg.ReadString(text, 128);
-                    mpGame.AddChatLine("%s^0: %s\n", ctos(name), ctos(text));
+                    this.mpGame.AddChatLine("%s^0: %s\n", ctos(name), ctos(text));
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_SOUND_EVENT: {
-                    snd_evt_t snd_evt = snd_evt_t.values()[msg.ReadByte()];
-                    mpGame.PlayGlobalSound(-1, snd_evt);
+                    final snd_evt_t snd_evt = snd_evt_t.values()[msg.ReadByte()];
+                    this.mpGame.PlayGlobalSound(-1, snd_evt);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_SOUND_INDEX: {
-                    int index = gameLocal.ClientRemapDecl(DECL_SOUND, msg.ReadLong());
-                    if (index >= 0 && index < declManager.GetNumDecls(DECL_SOUND)) {
+                    final int index = gameLocal.ClientRemapDecl(DECL_SOUND, msg.ReadLong());
+                    if ((index >= 0) && (index < declManager.GetNumDecls(DECL_SOUND))) {
                         final idSoundShader shader = declManager.SoundByIndex(index);
-                        mpGame.PlayGlobalSound(-1, SND_COUNT, shader.GetName());
+                        this.mpGame.PlayGlobalSound(-1, SND_COUNT, shader.GetName());
                     }
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_DB: {
-                    idMultiplayerGame.msg_evt_t msg_evt = idMultiplayerGame.msg_evt_t.values()[msg.ReadByte()];
+                    final idMultiplayerGame.msg_evt_t msg_evt = idMultiplayerGame.msg_evt_t.values()[msg.ReadByte()];
                     int parm1, parm2;
                     parm1 = msg.ReadByte();
                     parm2 = msg.ReadByte();
-                    mpGame.PrintMessageEvent(-1, msg_evt, parm1, parm2);
+                    this.mpGame.PrintMessageEvent(-1, msg_evt, parm1, parm2);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_EVENT: {
                     entityNetEvent_s event;
 
                     // allocate new event
-                    event = eventQueue.Alloc();
-                    eventQueue.Enqueue(event, OUTOFORDER_IGNORE);
+                    event = this.eventQueue.Alloc();
+                    this.eventQueue.Enqueue(event, OUTOFORDER_IGNORE);
 
                     event.spawnId = msg.ReadBits(32);
                     event.event = msg.ReadByte();
@@ -2503,7 +2503,7 @@ public class Game_local {
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_SERVERINFO: {
-                    idDict info = new idDict();
+                    final idDict info = new idDict();
                     msg.ReadDeltaDict(info, null);
                     gameLocal.SetServerInfo(info);
                     break;
@@ -2514,7 +2514,7 @@ public class Game_local {
                 }
                 case GAME_RELIABLE_MESSAGE_TOURNEYLINE: {
                     line = msg.ReadByte();
-                    p = (idPlayer) entities[ clientNum];
+                    p = (idPlayer) this.entities[ clientNum];
                     if (null == p) {
                         break;
                     }
@@ -2522,21 +2522,21 @@ public class Game_local {
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_STARTVOTE: {
-                    char[] voteString = new char[MAX_STRING_CHARS];
-                    int clientNum2 = msg.ReadByte();
+                    final char[] voteString = new char[MAX_STRING_CHARS];
+                    final int clientNum2 = msg.ReadByte();
                     msg.ReadString(voteString, MAX_STRING_CHARS);
-                    mpGame.ClientStartVote(clientNum2, ctos(voteString));
+                    this.mpGame.ClientStartVote(clientNum2, ctos(voteString));
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_UPDATEVOTE: {
-                    int result = msg.ReadByte();
-                    int yesCount = msg.ReadByte();
-                    int noCount = msg.ReadByte();
-                    mpGame.ClientUpdateVote(idMultiplayerGame.vote_result_t.values()[result], yesCount, noCount);
+                    final int result = msg.ReadByte();
+                    final int yesCount = msg.ReadByte();
+                    final int noCount = msg.ReadByte();
+                    this.mpGame.ClientUpdateVote(idMultiplayerGame.vote_result_t.values()[result], yesCount, noCount);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_PORTALSTATES: {
-                    int numPortals = msg.ReadLong();
+                    final int numPortals = msg.ReadLong();
                     assert (numPortals == gameRenderWorld.NumPortals());
                     for (int i = 0; i < numPortals; i++) {
                         gameRenderWorld.SetPortalState( /*(qhandle_t)*/(i + 1), msg.ReadBits(NUM_RENDER_PORTAL_BITS));
@@ -2544,18 +2544,18 @@ public class Game_local {
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_PORTAL: {
-                    int /*qhandle_t*/ portal = msg.ReadLong();
-                    int blockingBits = msg.ReadBits(NUM_RENDER_PORTAL_BITS);
-                    assert (portal > 0 && portal <= gameRenderWorld.NumPortals());
+                    final int /*qhandle_t*/ portal = msg.ReadLong();
+                    final int blockingBits = msg.ReadBits(NUM_RENDER_PORTAL_BITS);
+                    assert ((portal > 0) && (portal <= gameRenderWorld.NumPortals()));
                     gameRenderWorld.SetPortalState(portal, blockingBits);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_STARTSTATE: {
-                    mpGame.ClientReadStartState(msg);
+                    this.mpGame.ClientReadStartState(msg);
                     break;
                 }
                 case GAME_RELIABLE_MESSAGE_WARMUPTIME: {
-                    mpGame.ClientReadWarmupTime(msg);
+                    this.mpGame.ClientReadWarmupTime(msg);
                     break;
                 }
                 default: {
@@ -2569,11 +2569,11 @@ public class Game_local {
         public gameReturn_t ClientPrediction(int clientNum, final usercmd_t[] clientCmds, boolean lastPredictFrame) {
             idEntity ent;
             idPlayer player;
-            gameReturn_t ret = new gameReturn_t();
+            final gameReturn_t ret = new gameReturn_t();
 
             ret.sessionCommand[ 0] = '\0';
 
-            player = (idPlayer) entities[clientNum];
+            player = (idPlayer) this.entities[clientNum];
             if (null == player) {
                 return ret;
             }
@@ -2588,24 +2588,24 @@ public class Game_local {
             InitLocalClient(clientNum);
 
             // update the game time
-            framenum++;
-            previousTime = time;
-            time += msec;
+            this.framenum++;
+            this.previousTime = this.time;
+            this.time += msec;
 
             // update the real client time and the new frame flag
-            if (time > realClientTime) {
-                realClientTime = time;
-                isNewFrame = true;
+            if (this.time > this.realClientTime) {
+                this.realClientTime = this.time;
+                this.isNewFrame = true;
             } else {
-                isNewFrame = false;
+                this.isNewFrame = false;
             }
 
             // set the user commands for this frame
 //            memcpy(usercmds, clientCmds, numClients * sizeof(usercmds[ 0]));
-            System.arraycopy(clientCmds, 0, usercmds, 0, numClients);
+            System.arraycopy(clientCmds, 0, this.usercmds, 0, this.numClients);
 
             // run prediction on all entities from the last snapshot
-            for (ent = snapshotEntities.Next(); ent != null; ent = ent.snapshotNode.Next()) {
+            for (ent = this.snapshotEntities.Next(); ent != null; ent = ent.snapshotNode.Next()) {
                 ent.thinkFlags |= TH_PHYSICS;
                 ent.ClientPredictionThink();
             }
@@ -2614,21 +2614,21 @@ public class Game_local {
             idEvent.ServiceEvents();
 
             // show any debug info for this frame
-            if (isNewFrame) {
+            if (this.isNewFrame) {
                 RunDebugInfo();
                 D_DrawDebugLines();
             }
 
-            if (sessionCommand.Length() != 0) {
+            if (this.sessionCommand.Length() != 0) {
 //                strncpy(ret.sessionCommand, sessionCommand, sizeof(ret.sessionCommand));
-                ret.sessionCommand = sessionCommand.c_str();
+                ret.sessionCommand = this.sessionCommand.c_str();
             }
             return ret;
         }
 
         @Override
         public void GetClientStats(int clientNum, String[] data, final int len) {
-            mpGame.PlayerStats(clientNum, data, len);
+            this.mpGame.PlayerStats(clientNum, data, len);
         }
 
         @Override
@@ -2641,14 +2641,14 @@ public class Game_local {
                 return;
             }
 
-            int oldTeam = player.team;
+            final int oldTeam = player.team;
 
             // Put in spectator mode
             if (team == -1) {
-                ((idPlayer) entities[ clientNum]).Spectate(true);
+                ((idPlayer) this.entities[ clientNum]).Spectate(true);
             } // Switch to a team
             else {
-                mpGame.SwitchToTeam(clientNum, oldTeam, team);
+                this.mpGame.SwitchToTeam(clientNum, oldTeam, team);
             }
         }
 
@@ -2670,7 +2670,7 @@ public class Game_local {
                 // first token is the game pak if request, empty if not requested by the client
                 // there may be empty tokens for paks the server couldn't pinpoint - the order matters
                 String reply = "2;";
-                idStrList dlTable = new idStrList(), pakList = new idStrList();
+                final idStrList dlTable = new idStrList(), pakList = new idStrList();
                 int i, j;
 
                 Tokenize(dlTable, cvarSystem.GetCVarString("net_serverDlTable"));
@@ -2697,7 +2697,7 @@ public class Game_local {
                     if (j == dlTable.Num()) {
                         common.Printf("download for %s: pak not matched: %s\n", IP, pakList.oGet(i));
                     } else {
-                        idStr url = new idStr(cvarSystem.GetCVarString("net_serverDlBaseURL"));
+                        final idStr url = new idStr(cvarSystem.GetCVarString("net_serverDlBaseURL"));
                         url.AppendPath(dlTable.oGet(j));
                         reply += url;
                         common.DPrintf("download for %s: %s\n", IP, url);
@@ -2726,108 +2726,108 @@ public class Game_local {
          */
         public void LoadMap(final String mapName, int randseed) {
             int i;
-            boolean sameMap = (mapFile != null && idStr.Icmp(mapFileName, mapName) == 0);
+            final boolean sameMap = ((this.mapFile != null) && (idStr.Icmp(this.mapFileName, mapName) == 0));
 
             // clear the sound system
             gameSoundWorld.ClearAllSoundEmitters();
 
             InitAsyncNetwork();
 
-            if (!sameMap || (mapFile != null && mapFile.NeedsReload())) {
+            if (!sameMap || ((this.mapFile != null) && this.mapFile.NeedsReload())) {
                 // load the .map file
 //		if ( mapFile) {
 //			delete mapFile;
 //		}
-                mapFile = new idMapFile();
-                if (!mapFile.Parse(mapName + ".map")) {
+                this.mapFile = new idMapFile();
+                if (!this.mapFile.Parse(mapName + ".map")) {
 //			delete mapFile;
-                    mapFile = null;
+                    this.mapFile = null;
                     Error("Couldn't load %s", mapName);
                 }
             }
-            mapFileName.oSet(mapFile.GetName());
+            this.mapFileName.oSet(this.mapFile.GetName());
 
             // load the collision map
-            CollisionModel_local.collisionModelManager.LoadMap(mapFile);
+            CollisionModel_local.collisionModelManager.LoadMap(this.mapFile);
 
-            numClients = 0;
+            this.numClients = 0;
 
             // initialize all entities for this game
-            entities = new idEntity[entities.length];//	memset( entities, 0, sizeof( entities ) );
-            usercmds = Stream.generate(usercmd_t::new).limit(usercmds.length).toArray(usercmd_t[]::new);//memset( usercmds, 0, sizeof( usercmds ) );
-            spawnIds = new int[spawnIds.length];//memset( spawnIds, -1, sizeof( spawnIds ) );
-            spawnCount = INITIAL_SPAWN_COUNT;
+            this.entities = new idEntity[this.entities.length];//	memset( entities, 0, sizeof( entities ) );
+            this.usercmds = Stream.generate(usercmd_t::new).limit(this.usercmds.length).toArray(usercmd_t[]::new);//memset( usercmds, 0, sizeof( usercmds ) );
+            this.spawnIds = new int[this.spawnIds.length];//memset( spawnIds, -1, sizeof( spawnIds ) );
+            this.spawnCount = INITIAL_SPAWN_COUNT;
 
-            spawnedEntities.Clear();
-            activeEntities.Clear();
-            numEntitiesToDeactivate = 0;
-            sortTeamMasters = false;
-            sortPushers = false;
-            lastGUIEnt.oSet(null);
-            lastGUI = 0;
+            this.spawnedEntities.Clear();
+            this.activeEntities.Clear();
+            this.numEntitiesToDeactivate = 0;
+            this.sortTeamMasters = false;
+            this.sortPushers = false;
+            this.lastGUIEnt.oSet(null);
+            this.lastGUI = 0;
 
-            globalMaterial = null;
+            this.globalMaterial = null;
 
 //	memset( globalShaderParms, 0, sizeof( globalShaderParms ) );
-            globalShaderParms = new float[globalShaderParms.length];
+            this.globalShaderParms = new float[this.globalShaderParms.length];
 
             // always leave room for the max number of clients,
             // even if they aren't all used, so numbers inside that
             // range are NEVER anything but clients
-            num_entities = MAX_CLIENTS;
-            firstFreeIndex = MAX_CLIENTS;
+            this.num_entities = MAX_CLIENTS;
+            this.firstFreeIndex = MAX_CLIENTS;
 
             // reset the random number generator.
-            random.SetSeed(isMultiplayer ? randseed : 0);
+            this.random.SetSeed(this.isMultiplayer ? randseed : 0);
 
-            camera = null;
-            world = null;
-            testmodel = null;
-            testFx = null;
+            this.camera = null;
+            this.world = null;
+            this.testmodel = null;
+            this.testFx = null;
 
-            lastAIAlertEntity.oSet(null);
-            lastAIAlertTime = 0;
+            this.lastAIAlertEntity.oSet(null);
+            this.lastAIAlertTime = 0;
 
-            previousTime = 0;
-            time = 0;
-            framenum = 0;
-            sessionCommand.oSet("");
-            nextGibTime = 0;
+            this.previousTime = 0;
+            this.time = 0;
+            this.framenum = 0;
+            this.sessionCommand.oSet("");
+            this.nextGibTime = 0;
 
-            vacuumAreaNum = -1;		// if an info_vacuum is spawned, it will set this
+            this.vacuumAreaNum = -1;		// if an info_vacuum is spawned, it will set this
 
-            if (null == editEntities) {
-                editEntities = new idEditEntities();
+            if (null == this.editEntities) {
+                this.editEntities = new idEditEntities();
             }
 
-            gravity.Set(0, 0, -g_gravity.GetFloat());
+            this.gravity.Set(0, 0, -g_gravity.GetFloat());
 
-            spawnArgs.Clear();
+            this.spawnArgs.Clear();
 
-            skipCinematic = false;
-            inCinematic = false;
-            cinematicSkipTime = 0;
-            cinematicStopTime = 0;
-            cinematicMaxSkipTime = 0;
+            this.skipCinematic = false;
+            this.inCinematic = false;
+            this.cinematicSkipTime = 0;
+            this.cinematicStopTime = 0;
+            this.cinematicMaxSkipTime = 0;
 
-            clip.Init();
-            pvs.Init();
-            playerPVS.i = -1;
-            playerConnectedAreas.i = -1;
+            this.clip.Init();
+            this.pvs.Init();
+            this.playerPVS.i = -1;
+            this.playerConnectedAreas.i = -1;
 
             // load navigation system for all the different monster sizes
-            for (i = 0; i < aasNames.Num(); i++) {
-                aasList.oGet(i).Init(new idStr(mapFileName).SetFileExtension(aasNames.oGet(i)), mapFile.GetGeometryCRC());
+            for (i = 0; i < this.aasNames.Num(); i++) {
+                this.aasList.oGet(i).Init(new idStr(this.mapFileName).SetFileExtension(this.aasNames.oGet(i)), this.mapFile.GetGeometryCRC());
             }
 
             // clear the smoke particle free list
-            smokeParticles.Init();
+            this.smokeParticles.Init();
 
             // cache miscellanious media references
             FindEntityDef("preCacheExtras", false);
 
             if (!sameMap) {
-                mapFile.RemovePrimitiveData();
+                this.mapFile.RemovePrimitiveData();
             }
         }
 
@@ -2836,21 +2836,21 @@ public class Game_local {
 
             Printf("----------- Game Map Restart ------------\n");
 
-            gamestate = GAMESTATE_SHUTDOWN;
+            this.gamestate = GAMESTATE_SHUTDOWN;
 
             for (i = 0; i < MAX_CLIENTS; i++) {
-                if (entities[ i] != null && entities[ i].IsType(idPlayer.class)) {
-                    ((idPlayer) entities[ i]).PrepareForRestart();
+                if ((this.entities[ i] != null) && this.entities[ i].IsType(idPlayer.class)) {
+                    ((idPlayer) this.entities[ i]).PrepareForRestart();
                 }
             }
 
-            eventQueue.Shutdown();
-            savedEventQueue.Shutdown();
+            this.eventQueue.Shutdown();
+            this.savedEventQueue.Shutdown();
 
             MapClear(false);
 
             // clear the smoke particle free list
-            smokeParticles.Init();
+            this.smokeParticles.Init();
 
             // clear the sound system
             if (gameSoundWorld != null) {
@@ -2859,12 +2859,12 @@ public class Game_local {
 
             // the spawnCount is reset to zero temporarily to spawn the map entities with the same spawnId
             // if we don't do that, network clients are confused and don't show any map entities
-            latchSpawnCount = spawnCount;
-            spawnCount = INITIAL_SPAWN_COUNT;
+            latchSpawnCount = this.spawnCount;
+            this.spawnCount = INITIAL_SPAWN_COUNT;
 
-            gamestate = GAMESTATE_STARTUP;
+            this.gamestate = GAMESTATE_STARTUP;
 
-            program.Restart();
+            this.program.Restart();
 
             InitScriptForMap();
 
@@ -2872,39 +2872,39 @@ public class Game_local {
 
             // once the map is populated, set the spawnCount back to where it was so we don't risk any collision
             // (note that if there are no players in the game, we could just leave it at it's current value)
-            spawnCount = latchSpawnCount;
+            this.spawnCount = latchSpawnCount;
 
             // setup the client entities again
             for (i = 0; i < MAX_CLIENTS; i++) {
-                if (entities[ i] != null && entities[ i].IsType(idPlayer.class)) {
-                    ((idPlayer) entities[ i]).Restart();
+                if ((this.entities[ i] != null) && this.entities[ i].IsType(idPlayer.class)) {
+                    ((idPlayer) this.entities[ i]).Restart();
                 }
             }
 
-            gamestate = GAMESTATE_ACTIVE;
+            this.gamestate = GAMESTATE_ACTIVE;
 
             Printf("--------------------------------------\n");
         }
 
         public void MapRestart() {
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
             idDict newInfo;
             int i;
             idKeyValue keyval, keyval2;
 
-            if (isClient) {
+            if (this.isClient) {
                 LocalMapRestart();
             } else {
                 newInfo = cvarSystem.MoveCVarsToDict(CVAR_SERVERINFO);
                 for (i = 0; i < newInfo.GetNumKeyVals(); i++) {
                     keyval = newInfo.GetKeyVal(i);
-                    keyval2 = serverInfo.FindKey(keyval.GetKey());
+                    keyval2 = this.serverInfo.FindKey(keyval.GetKey());
                     if (null == keyval2) {
                         break;
                     }
                     // a select set of si_ changes will cause a full restart of the server
-                    if (keyval.GetValue().Cmp(keyval2.GetValue()) != 0
+                    if ((keyval.GetValue().Cmp(keyval2.GetValue()) != 0)
                             && (NOT(keyval.GetKey().Cmp("si_pure")) || NOT(keyval.GetKey().Cmp("si_map")))) {
                         break;
                     }
@@ -2916,11 +2916,11 @@ public class Game_local {
                     outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
                     outMsg.WriteByte(GAME_RELIABLE_MESSAGE_RESTART);
                     outMsg.WriteBits(1, 1);
-                    outMsg.WriteDeltaDict(serverInfo, null);
+                    outMsg.WriteDeltaDict(this.serverInfo, null);
                     networkSystem.ServerSendReliableMessage(-1, outMsg);
 
                     LocalMapRestart();
-                    mpGame.MapRestart();
+                    this.mpGame.MapRestart();
                 }
             }
         }
@@ -2938,7 +2938,7 @@ public class Game_local {
 
         public void Warning(final String fmt, final Object... args) {
 //	va_list		argptr;
-            StringBuilder text = new StringBuilder(MAX_STRING_CHARS);
+            final StringBuilder text = new StringBuilder(MAX_STRING_CHARS);
             idThread thread;
 //
 //	va_start( argptr, fmt );
@@ -2956,7 +2956,7 @@ public class Game_local {
 
         public static void Error(final String fmt, final Object... args) {
 //	va_list		argptr;
-            StringBuilder text = new StringBuilder(MAX_STRING_CHARS);
+            final StringBuilder text = new StringBuilder(MAX_STRING_CHARS);
             idThread thread;
 //
 //	va_start( argptr, fmt );
@@ -2990,7 +2990,7 @@ public class Game_local {
 
         public void DWarning(final String fmt, final Object... args) {
 //	va_list		argptr;
-            StringBuilder text = new StringBuilder(MAX_STRING_CHARS);
+            final StringBuilder text = new StringBuilder(MAX_STRING_CHARS);
             idThread thread;
 
             if (!developer.GetBool()) {
@@ -3069,10 +3069,10 @@ public class Game_local {
             }
 
             Printf("map cycle script: '%s'\n", g_mapCycle.GetString());
-            func = program.FindFunction("mapcycle::cycle");
+            func = this.program.FindFunction("mapcycle::cycle");
             if (NOT(func)) {
-                program.CompileFile(g_mapCycle.GetString());
-                func = program.FindFunction("mapcycle::cycle");
+                this.program.CompileFile(g_mapCycle.GetString());
+                func = this.program.FindFunction("mapcycle::cycle");
             }
             if (NOT(func)) {
                 Printf("Couldn't find mapcycle::cycle\n");
@@ -3085,8 +3085,8 @@ public class Game_local {
             newInfo = cvarSystem.MoveCVarsToDict(CVAR_SERVERINFO);
             for (i = 0; i < newInfo.GetNumKeyVals(); i++) {
                 keyval = newInfo.GetKeyVal(i);
-                keyval2 = serverInfo.FindKey(keyval.GetKey());
-                if (null == keyval2 || keyval.GetValue().Cmp(keyval2.GetValue()) != 0) {
+                keyval2 = this.serverInfo.FindKey(keyval.GetKey());
+                if ((null == keyval2) || (keyval.GetValue().Cmp(keyval2.GetValue()) != 0)) {
                     break;
                 }
             }
@@ -3125,37 +3125,37 @@ public class Game_local {
          ================
          */
         public idMapFile GetLevelMap() {
-            if (mapFile != null && mapFile.HasPrimitiveData()) {
-                return mapFile;
+            if ((this.mapFile != null) && this.mapFile.HasPrimitiveData()) {
+                return this.mapFile;
             }
-            if (0 == mapFileName.Length()) {
+            if (0 == this.mapFileName.Length()) {
                 return null;
             }
 
 //	if ( mapFile ) {
 //		delete mapFile;
 //	}
-            mapFile = new idMapFile();
-            if (!mapFile.Parse(mapFileName)) {
+            this.mapFile = new idMapFile();
+            if (!this.mapFile.Parse(this.mapFileName)) {
 //		delete mapFile;
-                mapFile = null;
+                this.mapFile = null;
             }
 
-            return mapFile;
+            return this.mapFile;
         }
 
         public String GetMapName() {
-            return mapFileName.getData();
+            return this.mapFileName.getData();
         }
 
         public int NumAAS() {
-            return aasList.Num();
+            return this.aasList.Num();
         }
 
         public idAAS GetAAS(int num) {
-            if ((num >= 0) && (num < aasList.Num())) {
-                if (aasList.oGet(num) != null && aasList.oGet(num).GetSettings() != null) {
-                    return aasList.oGet(num);
+            if ((num >= 0) && (num < this.aasList.Num())) {
+                if ((this.aasList.oGet(num) != null) && (this.aasList.oGet(num).GetSettings() != null)) {
+                    return this.aasList.oGet(num);
                 }
             }
             return null;
@@ -3164,12 +3164,12 @@ public class Game_local {
         public idAAS GetAAS(final String name) {
             int i;
 
-            for (i = 0; i < aasNames.Num(); i++) {
-                if (aasNames.oGet(i).equals(name)) {
-                    if (NOT(aasList.oGet(i).GetSettings())) {
+            for (i = 0; i < this.aasNames.Num(); i++) {
+                if (this.aasNames.oGet(i).equals(name)) {
+                    if (NOT(this.aasList.oGet(i).GetSettings())) {
                         return null;
                     } else {
-                        return aasList.oGet(i);
+                        return this.aasList.oGet(i);
                     }
                 }
             }
@@ -3179,8 +3179,8 @@ public class Game_local {
         public void SetAASAreaState(final idBounds bounds, final int areaContents, boolean closed) {
             int i;
 
-            for (i = 0; i < aasList.Num(); i++) {
-                aasList.oGet(i).SetAreaState(bounds, areaContents, closed);
+            for (i = 0; i < this.aasList.Num(); i++) {
+                this.aasList.oGet(i).SetAreaState(bounds, areaContents, closed);
             }
         }
 
@@ -3189,13 +3189,13 @@ public class Game_local {
             int obstacle;
             int check;
 
-            if (0 == aasList.Num()) {
+            if (0 == this.aasList.Num()) {
                 return -1;
             }
 
-            obstacle = aasList.oGet(0).AddObstacle(bounds);
-            for (i = 1; i < aasList.Num(); i++) {
-                check = aasList.oGet(i).AddObstacle(bounds);
+            obstacle = this.aasList.oGet(0).AddObstacle(bounds);
+            for (i = 1; i < this.aasList.Num(); i++) {
+                check = this.aasList.oGet(i).AddObstacle(bounds);
                 assert (check == obstacle);
             }
 
@@ -3205,23 +3205,23 @@ public class Game_local {
         public void RemoveAASObstacle(final int/*aasHandle_t*/ handle) {
             int i;
 
-            for (i = 0; i < aasList.Num(); i++) {
-                aasList.oGet(i).RemoveObstacle(handle);
+            for (i = 0; i < this.aasList.Num(); i++) {
+                this.aasList.oGet(i).RemoveObstacle(handle);
             }
         }
 
         public void RemoveAllAASObstacles() {
             int i;
 
-            for (i = 0; i < aasList.Num(); i++) {
-                aasList.oGet(i).RemoveAllObstacles();
+            for (i = 0; i < this.aasList.Num(); i++) {
+                this.aasList.oGet(i).RemoveAllObstacles();
             }
         }
 
         public boolean CheatsOk(boolean requirePlayer /*= true*/) {
             idPlayer player;
 
-            if (isMultiplayer && !cvarSystem.GetCVarBool("net_allowCheats")) {
+            if (this.isMultiplayer && !cvarSystem.GetCVarBool("net_allowCheats")) {
                 Printf("Not allowed in multiplayer.\n");
                 return false;
             }
@@ -3231,7 +3231,7 @@ public class Game_local {
             }
 
             player = GetLocalPlayer();
-            if (!requirePlayer || (player != null && (player.health > 0))) {
+            if (!requirePlayer || ((player != null) && (player.health > 0))) {
                 return true;
             }
 
@@ -3266,14 +3266,14 @@ public class Game_local {
          ==============
          */
         public gameState_t GameState() {
-            return gamestate;
+            return this.gamestate;
         }
 
         public idEntity SpawnEntityType(final idTypeInfo classdef, final idDict args /*= NULL*/, boolean bIsClientReadSnapshot /*= false*/) {
             idClass obj;
 
             if (_DEBUG) {
-                if (isClient) {
+                if (this.isClient) {
                     assert (bIsClientReadSnapshot);
                 }
             }
@@ -3284,16 +3284,16 @@ public class Game_local {
 
             try {
                 if (args != null) {
-                    spawnArgs.oSet(args);
+                    this.spawnArgs.oSet(args);
                 } else {
-                    spawnArgs.Clear();
+                    this.spawnArgs.Clear();
                 }
                 obj = (idClass) classdef.CreateInstance.run();
                 obj.CallSpawn();
-            } catch (idAllocError ex) {
+            } catch (final idAllocError ex) {
                 obj = null;
             }
-            spawnArgs.Clear();
+            this.spawnArgs.Clear();
 
             return (idEntity) obj;
         }
@@ -3311,9 +3311,9 @@ public class Game_local {
             }
 
             if (args != null) {
-                spawnArgs.oSet(args);
+                this.spawnArgs.oSet(args);
             } else {
-                spawnArgs.Clear();
+                this.spawnArgs.Clear();
             }
 
             try {
@@ -3343,24 +3343,24 @@ public class Game_local {
          ===================
          */private static int DBG_SpawnEntityDef = 0;
         public boolean SpawnEntityDef(final idDict args, idEntity[] ent /*= NULL*/, boolean setDefaults /*= true*/) {
-            String[] classname = {null};DBG_SpawnEntityDef++;
-            String[] spawn = {null};
-            idTypeInfo cls;
+            final String[] classname = {null};DBG_SpawnEntityDef++;
+            final String[] spawn = {null};
+            final idTypeInfo cls;
 //            idClass obj;
             String error = "";
-            String[] name = new String[1];
+            final String[] name = new String[1];
 
             if (ent != null) {
                 ent[0] = null;
             }
 
-            spawnArgs.oSet(args);
+            this.spawnArgs.oSet(args);
 
-            if (spawnArgs.GetString("name", "", name)) {
+            if (this.spawnArgs.GetString("name", "", name)) {
                 error = String.format(" on '%s'", name[0]);
             }
 
-            spawnArgs.GetString("classname", null, classname);
+            this.spawnArgs.GetString("classname", null, classname);
 
             final idDeclEntityDef def = FindEntityDef(classname[0], false);
 
@@ -3369,10 +3369,10 @@ public class Game_local {
                 return false;
             }
 
-            spawnArgs.SetDefaults(def.dict);
+            this.spawnArgs.SetDefaults(def.dict);
 
             // check if we should spawn a class object
-            spawnArgs.GetString("spawnclass", null, spawn);
+            this.spawnArgs.GetString("spawnclass", null, spawn);
             if (spawn[0] != null) {
                 final idEntity obj;
                 switch (spawn[0]) {//TODO:mayhaps implement some other cases
@@ -3617,14 +3617,14 @@ public class Game_local {
             }
 
             // check if we should call a script function to spawn
-            spawnArgs.GetString("spawnfunc", null, spawn);
+            this.spawnArgs.GetString("spawnfunc", null, spawn);
             if (spawn[0] != null) {
-                final function_t func = program.FindFunction(spawn[0]);
+                final function_t func = this.program.FindFunction(spawn[0]);
                 if (null == func) {
                     Warning("Could not spawn '%s'.  Script function '%s' not found%s.", classname[0], spawn[0], error);
                     return false;
                 }
-                idThread thread = new idThread(func);
+                final idThread thread = new idThread(func);
                 thread.DelayedStart(0);
                 return true;
             }
@@ -3647,7 +3647,7 @@ public class Game_local {
 
         public idDeclEntityDef FindEntityDef(final String name, boolean makeDefault /*= true*/) {
             idDecl decl = null;
-            if (isMultiplayer) {
+            if (this.isMultiplayer) {
                 decl = declManager.FindType(DECL_ENTITYDEF, va("%s_mp", name), false);
             }
             if (null == decl) {
@@ -3674,46 +3674,46 @@ public class Game_local {
         }
 
         public void RegisterEntity(idEntity ent) {
-            int[] spawn_entnum = {0};
+            final int[] spawn_entnum = {0};
 
-            if (spawnCount >= (1 << (32 - GENTITYNUM_BITS))) {
+            if (this.spawnCount >= (1 << (32 - GENTITYNUM_BITS))) {
                 Error("idGameLocal::RegisterEntity: spawn count overflow");
             }
 
-            if (!spawnArgs.GetInt("spawn_entnum", "0", spawn_entnum)) {
-                while (entities[firstFreeIndex] != null && firstFreeIndex < ENTITYNUM_MAX_NORMAL) {
-                    firstFreeIndex++;
+            if (!this.spawnArgs.GetInt("spawn_entnum", "0", spawn_entnum)) {
+                while ((this.entities[this.firstFreeIndex] != null) && (this.firstFreeIndex < ENTITYNUM_MAX_NORMAL)) {
+                    this.firstFreeIndex++;
                 }
-                if (firstFreeIndex >= ENTITYNUM_MAX_NORMAL) {
+                if (this.firstFreeIndex >= ENTITYNUM_MAX_NORMAL) {
                     Error("no free entities");
                 }
-                spawn_entnum[0] = firstFreeIndex++;
+                spawn_entnum[0] = this.firstFreeIndex++;
             }
 
-            entities[ spawn_entnum[0]] = ent;
-            spawnIds[ spawn_entnum[0]] = spawnCount++;
+            this.entities[ spawn_entnum[0]] = ent;
+            this.spawnIds[ spawn_entnum[0]] = this.spawnCount++;
             ent.entityNumber = spawn_entnum[0];
-            ent.spawnNode.AddToEnd(spawnedEntities);
-            ent.spawnArgs.TransferKeyValues(spawnArgs);
+            ent.spawnNode.AddToEnd(this.spawnedEntities);
+            ent.spawnArgs.TransferKeyValues(this.spawnArgs);
 
-            if (spawn_entnum[0] >= num_entities) {
-                num_entities++;
+            if (spawn_entnum[0] >= this.num_entities) {
+                this.num_entities++;
             }
         }
 
         public void UnregisterEntity(idEntity ent) {
             assert (ent != null);
 
-            if (editEntities != null) {
-                editEntities.RemoveSelectedEntity(ent);
+            if (this.editEntities != null) {
+                this.editEntities.RemoveSelectedEntity(ent);
             }
 
-            if ((ent.entityNumber != ENTITYNUM_NONE) && (entities[ ent.entityNumber] == ent)) {
+            if ((ent.entityNumber != ENTITYNUM_NONE) && (this.entities[ ent.entityNumber] == ent)) {
                 ent.spawnNode.Remove();
-                entities[ ent.entityNumber] = null;
-                spawnIds[ ent.entityNumber] = -1;
-                if (ent.entityNumber >= MAX_CLIENTS && ent.entityNumber < firstFreeIndex) {
-                    firstFreeIndex = ent.entityNumber;
+                this.entities[ ent.entityNumber] = null;
+                this.spawnIds[ ent.entityNumber] = -1;
+                if ((ent.entityNumber >= MAX_CLIENTS) && (ent.entityNumber < this.firstFreeIndex)) {
+                    this.firstFreeIndex = ent.entityNumber;
                 }
                 ent.entityNumber = ENTITYNUM_NONE;
             }
@@ -3722,8 +3722,8 @@ public class Game_local {
         public boolean RequirementMet(idEntity activator, final idStr requires, int removeItem) {
             if (requires.Length() != 0) {
                 if (activator.IsType(idPlayer.class)) {
-                    idPlayer player = (idPlayer) activator;
-                    idDict item = player.FindInventoryItem(requires);
+                    final idPlayer player = (idPlayer) activator;
+                    final idDict item = player.FindInventoryItem(requires);
                     if (item != null) {
                         if (removeItem != 0) {
                             player.RemoveInventoryItem(item);
@@ -3739,16 +3739,16 @@ public class Game_local {
         }
 
         public void AlertAI(idEntity ent) {
-            if (ent != null && ent.IsType(idActor.class)) {
+            if ((ent != null) && ent.IsType(idActor.class)) {
                 // alert them for the next frame
-                lastAIAlertTime = time + msec;
-                lastAIAlertEntity.oSet((idActor) ent);
+                this.lastAIAlertTime = this.time + msec;
+                this.lastAIAlertEntity.oSet((idActor) ent);
             }
         }
 
         public idActor GetAlertEntity() {
-            if (lastAIAlertTime >= time) {
-                return lastAIAlertEntity.GetEntity();
+            if (this.lastAIAlertTime >= this.time) {
+                return this.lastAIAlertEntity.GetEntity();
             }
 
             return null;
@@ -3762,10 +3762,10 @@ public class Game_local {
          ================
          */
         public boolean InPlayerPVS(idEntity ent) {
-            if (playerPVS.i == -1) {
+            if (this.playerPVS.i == -1) {
                 return false;
             }
-            return pvs.InCurrentPVS(playerPVS, ent.GetPVSAreas(), ent.GetNumPVSAreas());
+            return this.pvs.InCurrentPVS(this.playerPVS, ent.GetPVSAreas(), ent.GetNumPVSAreas());
         }
 
         /*
@@ -3776,10 +3776,10 @@ public class Game_local {
          ================
          */
         public boolean InPlayerConnectedArea(idEntity ent) {
-            if (playerConnectedAreas.i == -1) {
+            if (this.playerConnectedAreas.i == -1) {
                 return false;
             }
-            return pvs.InCurrentPVS(playerConnectedAreas, ent.GetPVSAreas(), ent.GetNumPVSAreas());
+            return this.pvs.InCurrentPVS(this.playerConnectedAreas, ent.GetPVSAreas(), ent.GetNumPVSAreas());
         }
 
         public void SetCamera(idCamera cam) {
@@ -3789,40 +3789,40 @@ public class Game_local {
 
             // this should fix going into a cinematic when dead.. rare but happens
             idPlayer client = GetLocalPlayer();
-            if (client.health <= 0 || client.AI_DEAD.operator()) {
+            if ((client.health <= 0) || client.AI_DEAD.operator()) {
                 return;
             }
 
-            camera = cam;
-            if (camera != null) {
-                inCinematic = true;
+            this.camera = cam;
+            if (this.camera != null) {
+                this.inCinematic = true;
 
-                if (skipCinematic && camera.spawnArgs.GetBool("disconnect")) {
-                    camera.spawnArgs.SetBool("disconnect", false);
+                if (this.skipCinematic && this.camera.spawnArgs.GetBool("disconnect")) {
+                    this.camera.spawnArgs.SetBool("disconnect", false);
                     cvarSystem.SetCVarFloat("r_znear", 3.0f);
                     cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "disconnect\n");
-                    skipCinematic = false;
+                    this.skipCinematic = false;
                     return;
                 }
 
-                if (time > cinematicStopTime) {
-                    cinematicSkipTime = (int) (time + CINEMATIC_SKIP_DELAY);
+                if (this.time > this.cinematicStopTime) {
+                    this.cinematicSkipTime = (int) (this.time + CINEMATIC_SKIP_DELAY);
                 }
 
                 // set r_znear so that transitioning into/out of the player's head doesn't clip through the view
                 cvarSystem.SetCVarFloat("r_znear", 1.0f);
 
                 // hide all the player models
-                for (i = 0; i < numClients; i++) {
-                    if (entities[ i] != null) {
-                        client = (idPlayer) entities[ i];
+                for (i = 0; i < this.numClients; i++) {
+                    if (this.entities[ i] != null) {
+                        client = (idPlayer) this.entities[ i];
                         client.EnterCinematic();
                     }
                 }
 
                 if (!cam.spawnArgs.GetBool("ignore_enemies")) {
                     // kill any active monsters that are enemies of the player
-                    for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+                    for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                         if (ent.cinematic || ent.fl.isDormant) {
                             // only kill entities that aren't needed for cinematics and aren't dormant
                             continue;
@@ -3850,16 +3850,16 @@ public class Game_local {
                 }
 
             } else {
-                inCinematic = false;
-                cinematicStopTime = time + msec;
+                this.inCinematic = false;
+                this.cinematicStopTime = this.time + msec;
 
                 // restore r_znear
                 cvarSystem.SetCVarFloat("r_znear", 3.0f);
 
                 // show all the player models
-                for (i = 0; i < numClients; i++) {
-                    if (entities[ i] != null) {
-                        idPlayer client2 = (idPlayer) entities[i];
+                for (i = 0; i < this.numClients; i++) {
+                    if (this.entities[ i] != null) {
+                        final idPlayer client2 = (idPlayer) this.entities[i];
                         client2.ExitCinematic();
                     }
                 }
@@ -3867,29 +3867,29 @@ public class Game_local {
         }
 
         public idCamera GetCamera() {
-            return camera;
+            return this.camera;
         }
 
         public boolean SkipCinematic() {
-            if (camera != null) {
-                if (camera.spawnArgs.GetBool("disconnect")) {
-                    camera.spawnArgs.SetBool("disconnect", false);
+            if (this.camera != null) {
+                if (this.camera.spawnArgs.GetBool("disconnect")) {
+                    this.camera.spawnArgs.SetBool("disconnect", false);
                     cvarSystem.SetCVarFloat("r_znear", 3.0f);
                     cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "disconnect\n");
-                    skipCinematic = false;
+                    this.skipCinematic = false;
                     return false;
                 }
 
-                if (camera.spawnArgs.GetBool("instantSkip")) {
-                    camera.Stop();
+                if (this.camera.spawnArgs.GetBool("instantSkip")) {
+                    this.camera.Stop();
                     return false;
                 }
             }
 
             snd_system.soundSystem.SetMute(true);
-            if (!skipCinematic) {
-                skipCinematic = true;
-                cinematicMaxSkipTime = (int) (gameLocal.time + SEC2MS(g_cinematicMaxSkipTime.GetFloat()));
+            if (!this.skipCinematic) {
+                this.skipCinematic = true;
+                this.cinematicMaxSkipTime = (int) (gameLocal.time + SEC2MS(g_cinematicMaxSkipTime.GetFloat()));
             }
 
             return true;
@@ -3914,9 +3914,9 @@ public class Game_local {
 //            }
 
             // first, calculate the vertical fov based on a 640x480 view
-            x = (float) (640.0f / tan(base_fov / 360.0f * idMath.PI));
+            x = (float) (640.0f / tan((base_fov / 360.0f) * idMath.PI));
             y = (float) atan2(480.0f, x);
-            fov_y[0] = y * 360.0f / idMath.PI;
+            fov_y[0] = (y * 360.0f) / idMath.PI;
 
             // FIXME: somehow, this is happening occasionally
             assert (fov_y[0] > 0);
@@ -3946,13 +3946,13 @@ public class Game_local {
                     break;
             }
 
-            y = (float) (ratio_y / tan(fov_y[0] / 360.0f * idMath.PI));
-            fov_x[0] = (float) (atan2(ratio_x, y) * 360.0f / idMath.PI);
+            y = (float) (ratio_y / tan((fov_y[0] / 360.0f) * idMath.PI));
+            fov_x[0] = (float) ((atan2(ratio_x, y) * 360.0f) / idMath.PI);
 
             if (fov_x[0] < base_fov) {
                 fov_x[0] = base_fov;
-                x = (float) (ratio_x / tan(fov_x[0] / 360.0f * idMath.PI));
-                fov_y[0] = (float) (atan2(ratio_y, x) * 360.0f / idMath.PI);
+                x = (float) (ratio_x / tan((fov_x[0] / 360.0f) * idMath.PI));
+                fov_y[0] = (float) ((atan2(ratio_y, x) * 360.0f) / idMath.PI);
             }
 
             // FIXME: somehow, this is happening occasionally
@@ -3967,16 +3967,16 @@ public class Game_local {
             if (FindEntity(name) != null) {
                 Error("Multiple entities named '%s'", name);
             }
-            entityHash.Add(entityHash.GenerateKey(name, true), ent.entityNumber);
+            this.entityHash.Add(this.entityHash.GenerateKey(name, true), ent.entityNumber);
         }
 
         public boolean RemoveEntityFromHash(final String name, idEntity ent) {
             int hash, i;
 
-            hash = entityHash.GenerateKey(name, true);
-            for (i = entityHash.First(hash); i != -1; i = entityHash.Next(i)) {
-                if (entities[i] != null && entities[i].equals(ent) && entities[i].name.Icmp(name) == 0) {
-                    entityHash.Remove(hash, i);
+            hash = this.entityHash.GenerateKey(name, true);
+            for (i = this.entityHash.First(hash); i != -1; i = this.entityHash.Next(i)) {
+                if ((this.entities[i] != null) && this.entities[i].equals(ent) && (this.entities[i].name.Icmp(name) == 0)) {
+                    this.entityHash.Remove(hash, i);
                     return true;
                 }
             }
@@ -3999,7 +3999,7 @@ public class Game_local {
 
                     ent = FindEntity(arg.GetValue());
                     if (ent != null) {
-                        idEntityPtr<idEntity> entityPtr = list.Alloc();
+                        final idEntityPtr<idEntity> entityPtr = list.Alloc();
                         entityPtr.oSet(ent);
                     }
                 }
@@ -4018,14 +4018,14 @@ public class Game_local {
         public idEntity GetTraceEntity(final trace_s trace) {
             idEntity master;
 
-            if (null == entities[ trace.c.entityNum]) {
+            if (null == this.entities[ trace.c.entityNum]) {
                 return null;
             }
-            master = entities[ trace.c.entityNum].GetBindMaster();
+            master = this.entities[ trace.c.entityNum].GetBindMaster();
             if (master != null) {
                 return master;
             }
-            return entities[ trace.c.entityNum];
+            return this.entities[ trace.c.entityNum];
         }
 
         /*
@@ -4056,7 +4056,7 @@ public class Game_local {
                     }
                 }
             }
-        };
+        }
 
         /*
          =============
@@ -4069,17 +4069,17 @@ public class Game_local {
         public idEntity FindTraceEntity(idVec3 start, idVec3 end, final Class/*idTypeInfo*/ c, final idEntity skip) {
             idEntity ent;
             idEntity bestEnt;
-            float[] scale = {0};
+            final float[] scale = {0};
             float bestScale;
             idBounds b;
 
             bestEnt = null;
             bestScale = 1.0f;
-            for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
-                if (ent.IsType(c) && ent != skip) {
+            for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+                if (ent.IsType(c) && (ent != skip)) {
                     b = ent.GetPhysics().GetAbsBounds().Expand(16);
                     if (b.RayIntersection(start, end.oMinus(start), scale)) {
-                        if (scale[0] >= 0.0f && scale[0] < bestScale) {
+                        if ((scale[0] >= 0.0f) && (scale[0] < bestScale)) {
                             bestEnt = ent;
                             bestScale = scale[0];
                         }
@@ -4100,10 +4100,10 @@ public class Game_local {
         public idEntity FindEntity(final String name) {
             int hash, i;
 
-            hash = entityHash.GenerateKey(name, true);
-            for (i = entityHash.First(hash); i != -1; i = entityHash.Next(i)) {
-                if (entities[i] != null && entities[i].name.Icmp(name) == 0) {
-                    return entities[i];
+            hash = this.entityHash.GenerateKey(name, true);
+            for (i = this.entityHash.First(hash); i != -1; i = this.entityHash.Next(i)) {
+                if ((this.entities[i] != null) && (this.entities[i].name.Icmp(name) == 0)) {
+                    return this.entities[i];
                 }
             }
 
@@ -4128,7 +4128,7 @@ public class Game_local {
             idEntity ent;
 
             if (null == from) {
-                ent = spawnedEntities.Next();
+                ent = this.spawnedEntities.Next();
             } else {
                 ent = from.spawnNode.Next();
             }
@@ -4145,11 +4145,11 @@ public class Game_local {
 
         public int EntitiesWithinRadius(final idVec3 org, float radius, idEntity[] entityList, int maxCount) {
             idEntity ent;
-            idBounds bo = new idBounds(org);
+            final idBounds bo = new idBounds(org);
             int entCount = 0;
 
             bo.ExpandSelf(radius);
-            for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+            for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                 if (ent.GetPhysics().GetAbsBounds().IntersectsBounds(bo)) {
                     entityList[entCount++] = ent;
                 }
@@ -4172,7 +4172,7 @@ public class Game_local {
             int num;
             idEntity hit;
             idClipModel cm;
-            idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
+            final idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
             idPhysics phys;
 
             phys = ent.GetPhysics();
@@ -4180,7 +4180,7 @@ public class Game_local {
                 return;
             }
 
-            num = clip.ClipModelsTouchingBounds(phys.GetAbsBounds(), phys.GetClipMask(), clipModels, MAX_GENTITIES);
+            num = this.clip.ClipModelsTouchingBounds(phys.GetAbsBounds(), phys.GetClipMask(), clipModels, MAX_GENTITIES);
             for (i = 0; i < num; i++) {
                 cm = clipModels[ i];
 
@@ -4218,14 +4218,15 @@ public class Game_local {
 
         public void RadiusDamage(final idVec3 origin, idEntity inflictor, idEntity attacker, idEntity ignoreDamage, idEntity ignorePush, final String damageDefName, float dmgPower /*= 1.0f*/) {
             float dist, damageScale;
-            float[] attackerDamageScale = {0}, attackerPushScale = {0};
+            final float[] attackerDamageScale = {0}, attackerPushScale = {0};
             idEntity ent;
-            idEntity[] entityList = new idEntity[MAX_GENTITIES];
+            final idEntity[] entityList = new idEntity[MAX_GENTITIES];
             int numListedEntities;
             idBounds bounds;
-            idVec3 v = new idVec3(), damagePoint = new idVec3(), dir;
+            final idVec3 v = new idVec3(), damagePoint = new idVec3();
+			idVec3 dir;
             int i, e;
-            int[] damage = {0}, radius = {0}, push = {0};
+            final int[] damage = {0}, radius = {0}, push = {0};
 
             final idDict damageDef = FindEntityDefDict(damageDefName, false);
             if (null == damageDef) {
@@ -4246,15 +4247,15 @@ public class Game_local {
             bounds = new idBounds(origin).Expand(radius[0]);
 
             // get all entities touching the bounds
-            numListedEntities = clip.EntitiesTouchingBounds(bounds, -1, entityList, MAX_GENTITIES);
+            numListedEntities = this.clip.EntitiesTouchingBounds(bounds, -1, entityList, MAX_GENTITIES);
 
-            if (inflictor != null && inflictor.IsType(idAFAttachment.class)) {
+            if ((inflictor != null) && inflictor.IsType(idAFAttachment.class)) {
                 inflictor = ((idAFAttachment) inflictor).GetBody();
             }
-            if (attacker != null && attacker.IsType(idAFAttachment.class)) {
+            if ((attacker != null) && attacker.IsType(idAFAttachment.class)) {
                 attacker = ((idAFAttachment) attacker).GetBody();
             }
-            if (ignoreDamage != null && ignoreDamage.IsType(idAFAttachment.class)) {
+            if ((ignoreDamage != null) && ignoreDamage.IsType(idAFAttachment.class)) {
                 ignoreDamage = ((idAFAttachment) ignoreDamage).GetBody();
             }
 
@@ -4267,16 +4268,16 @@ public class Game_local {
                     continue;
                 }
 
-                if (ent == inflictor || (ent.IsType(idAFAttachment.class) && ((idAFAttachment) ent).GetBody() == inflictor)) {
+                if ((ent == inflictor) || (ent.IsType(idAFAttachment.class) && (((idAFAttachment) ent).GetBody() == inflictor))) {
                     continue;
                 }
 
-                if (ent == ignoreDamage || (ent.IsType(idAFAttachment.class) && ((idAFAttachment) ent).GetBody() == ignoreDamage)) {
+                if ((ent == ignoreDamage) || (ent.IsType(idAFAttachment.class) && (((idAFAttachment) ent).GetBody() == ignoreDamage))) {
                     continue;
                 }
 
                 // don't damage a dead player
-                if (isMultiplayer && ent.entityNumber < MAX_CLIENTS && ent.IsType(idPlayer.class) && ((idPlayer) ent).health < 0) {
+                if (this.isMultiplayer && (ent.entityNumber < MAX_CLIENTS) && ent.IsType(idPlayer.class) && (((idPlayer) ent).health < 0)) {
                     continue;
                 }
 
@@ -4303,8 +4304,8 @@ public class Game_local {
                     dir.oPluSet(2, 24);
 
                     // get the damage scale
-                    damageScale = dmgPower * (1.0f - dist / radius[0]);
-                    if (ent == attacker || (ent.IsType(idAFAttachment.class) && ((idAFAttachment) ent).GetBody() == attacker)) {
+                    damageScale = dmgPower * (1.0f - (dist / radius[0]));
+                    if ((ent == attacker) || (ent.IsType(idAFAttachment.class) && (((idAFAttachment) ent).GetBody() == attacker))) {
                         damageScale *= attackerDamageScale[0];
                     }
 
@@ -4325,10 +4326,10 @@ public class Game_local {
         public void RadiusPush(final idVec3 origin, final float radius, final float push, final idEntity inflictor, final idEntity ignore, float inflictorScale, final boolean quake) {
             int i, numListedClipModels;
             idClipModel clipModel;
-            idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
-            idVec3 dir = new idVec3();
+            final idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
+            final idVec3 dir = new idVec3();
             idBounds bounds;
-            modelTrace_s result = new modelTrace_s();
+            final modelTrace_s result = new modelTrace_s();
             idEntity ent;
             float scale;
 
@@ -4337,12 +4338,12 @@ public class Game_local {
             bounds = new idBounds(origin).Expand(radius);
 
             // get all clip models touching the bounds
-            numListedClipModels = clip.ClipModelsTouchingBounds(bounds, -1, clipModelList, MAX_GENTITIES);
+            numListedClipModels = this.clip.ClipModelsTouchingBounds(bounds, -1, clipModelList, MAX_GENTITIES);
 
-            if (inflictor != null && inflictor.IsType(idAFAttachment.class)) {
+            if ((inflictor != null) && inflictor.IsType(idAFAttachment.class)) {
                 inflictor.oSet(((idAFAttachment) inflictor).GetBody());
             }
-            if (ignore != null && ignore.IsType(idAFAttachment.class)) {
+            if ((ignore != null) && ignore.IsType(idAFAttachment.class)) {
                 ignore.oSet(((idAFAttachment) ignore).GetBody());
             }
 
@@ -4369,7 +4370,7 @@ public class Game_local {
                 }
 
                 // don't push the ignore entity
-                if (ent == ignore || (ent.IsType(idAFAttachment.class) && ((idAFAttachment) ent).GetBody() == ignore)) {
+                if ((ent == ignore) || (ent.IsType(idAFAttachment.class) && (((idAFAttachment) ent).GetBody() == ignore))) {
                     continue;
                 }
 
@@ -4378,14 +4379,14 @@ public class Game_local {
                 }
 
                 // scale the push for the inflictor
-                if (ent == inflictor || (ent.IsType(idAFAttachment.class) && ((idAFAttachment) ent).GetBody() == inflictor)) {
+                if ((ent == inflictor) || (ent.IsType(idAFAttachment.class) && (((idAFAttachment) ent).GetBody() == inflictor))) {
                     scale = inflictorScale;
                 } else {
                     scale = 1.0f;
                 }
 
                 if (quake) {
-                    clipModel.GetEntity().ApplyImpulse(world, clipModel.GetId(), clipModel.GetOrigin(), dir.oMultiply(scale * push));
+                    clipModel.GetEntity().ApplyImpulse(this.world, clipModel.GetId(), clipModel.GetOrigin(), dir.oMultiply(scale * push));
                 } else {
                     RadiusPushClipModel(origin, scale * push, clipModel);
                 }
@@ -4397,7 +4398,7 @@ public class Game_local {
             float dot, dist, area;
             idTraceModel trm;
             traceModelPoly_t poly;
-            idFixedWinding w = new idFixedWinding();
+            final idFixedWinding w = new idFixedWinding();
             idVec3 v, localOrigin, center = new idVec3(), impulse;
 
             trm = clipModel.GetTraceModel();
@@ -4405,7 +4406,7 @@ public class Game_local {
                 impulse = clipModel.GetAbsBounds().GetCenter().oMinus(origin);
                 impulse.Normalize();
                 impulse.z += 1.0f;
-                clipModel.GetEntity().ApplyImpulse(world, clipModel.GetId(), clipModel.GetOrigin(), impulse.oMultiply(push));
+                clipModel.GetEntity().ApplyImpulse(this.world, clipModel.GetId(), clipModel.GetOrigin(), impulse.oMultiply(push));
                 return;
             }
 
@@ -4440,7 +4441,7 @@ public class Game_local {
                 // impulse is applied to the center of the polygon
                 center = clipModel.GetOrigin().oPlus(center.oMultiply(clipModel.GetAxis()));
 
-                clipModel.GetEntity().ApplyImpulse(world, clipModel.GetId(), center, impulse);
+                clipModel.GetEntity().ApplyImpulse(this.world, clipModel.GetId(), center, impulse);
             }
         }
         private static final idVec3[] decalWinding = {
@@ -4451,9 +4452,9 @@ public class Game_local {
         };
 
         public void ProjectDecal(final idVec3 origin, final idVec3 dir, float depth, boolean parallel, float size, final String material, float angle /*= 0*/) {
-            float[] s = {0}, c = {0};
-            idMat3 axis = new idMat3(), axistemp = new idMat3();
-            idFixedWinding winding = new idFixedWinding();
+            final float[] s = {0}, c = {0};
+            final idMat3 axis = new idMat3(), axistemp = new idMat3();
+            final idFixedWinding winding = new idFixedWinding();
             idVec3 windingOrigin, projectionOrigin;
 
             if (!g_decals.GetBool()) {
@@ -4461,7 +4462,7 @@ public class Game_local {
             }
 
             // randomly rotate the decal winding
-            idMath.SinCos16((angle != 0) ? angle : random.RandomFloat() * idMath.TWO_PI, s, c);
+            idMath.SinCos16((angle != 0) ? angle : this.random.RandomFloat() * idMath.TWO_PI, s, c);
 
             // winding orientation
             axis.oSet(2, dir);
@@ -4484,7 +4485,7 @@ public class Game_local {
             winding.oPluSet(new idVec5(windingOrigin.oPlus((axis.oMultiply(decalWinding[1])).oMultiply(size)), new idVec2(0, 1)));
             winding.oPluSet(new idVec5(windingOrigin.oPlus((axis.oMultiply(decalWinding[2])).oMultiply(size)), new idVec2(0, 0)));
             winding.oPluSet(new idVec5(windingOrigin.oPlus((axis.oMultiply(decalWinding[3])).oMultiply(size)), new idVec2(1, 0)));
-            gameRenderWorld.ProjectDecalOntoWorld(winding, projectionOrigin, parallel, depth * 0.5f, declManager.FindMaterial(material), time);
+            gameRenderWorld.ProjectDecalOntoWorld(winding, projectionOrigin, parallel, depth * 0.5f, declManager.FindMaterial(material), this.time);
         }
 
         public void ProjectDecal(final idVec3 origin, final idVec3 dir, float depth, boolean parallel, float size, final String material) {
@@ -4492,30 +4493,30 @@ public class Game_local {
         }
 
         public void BloodSplat(final idVec3 origin, final idVec3 dir, float size, final String material) {
-            float halfSize = size * 0.5f;
-            idVec3[] verts = {new idVec3(0.0f, +halfSize, +halfSize),
+            final float halfSize = size * 0.5f;
+            final idVec3[] verts = {new idVec3(0.0f, +halfSize, +halfSize),
                 new idVec3(0.0f, +halfSize, -halfSize),
                 new idVec3(0.0f, -halfSize, -halfSize),
                 new idVec3(0.0f, -halfSize, +halfSize)};
-            idTraceModel trm = new idTraceModel();
-            idClipModel mdl = new idClipModel();
-            trace_s[] results = {null};
+            final idTraceModel trm = new idTraceModel();
+            final idClipModel mdl = new idClipModel();
+            final trace_s[] results = {null};
 
             // FIXME: get from damage def
             if (!g_bloodEffects.GetBool()) {
                 return;
             }
 
-            size = halfSize + random.RandomFloat() * halfSize;
+            size = halfSize + (this.random.RandomFloat() * halfSize);
             trm.SetupPolygon(verts, 4);
             mdl.LoadModel(trm);
-            clip.Translation(results, origin, origin.oPlus(dir.oMultiply(64.0f)), mdl, getMat3_identity(), CONTENTS_SOLID, null);
+            this.clip.Translation(results, origin, origin.oPlus(dir.oMultiply(64.0f)), mdl, getMat3_identity(), CONTENTS_SOLID, null);
             ProjectDecal(results[0].endpos, dir, 2.0f * size, true, size, material);
         }
 
         public void CallFrameCommand(idEntity ent, final function_t frameCommand) {
-            frameCommandThread.CallFunction(ent, frameCommand, true);
-            frameCommandThread.Execute();
+            this.frameCommandThread.CallFunction(ent, frameCommand, true);
+            this.frameCommandThread.Execute();
         }
 
         public void CallObjectFrameCommand(idEntity ent, final String frameCommand) {
@@ -4527,22 +4528,22 @@ public class Game_local {
                     Error("Unknown function '%s' called for frame command on entity '%s'", frameCommand, ent.name);
                 }
             } else {
-                frameCommandThread.CallFunction(ent, func, true);
-                frameCommandThread.Execute();
+                this.frameCommandThread.CallFunction(ent, func, true);
+                this.frameCommandThread.Execute();
             }
         }
 
         public idVec3 GetGravity() {
-            return gravity;
+            return this.gravity;
         }
 
         // added the following to assist licensees with merge issues
         public int GetFrameNum() {
-            return framenum;
+            return this.framenum;
         }
 
         public int GetTime() {
-            return time;
+            return this.time;
         }
 
         public int GetMSec() {
@@ -4553,9 +4554,9 @@ public class Game_local {
             int i, current;
 
             current = 0;
-            for (i = 0; i < numClients; i++) {
-                current = (_current + i + 1) % numClients;
-                if (entities[ current] != null && entities[ current].IsType(idPlayer.class)) {
+            for (i = 0; i < this.numClients; i++) {
+                current = (_current + i + 1) % this.numClients;
+                if ((this.entities[ current] != null) && this.entities[ current].IsType(idPlayer.class)) {
                     return current;
                 }
             }
@@ -4564,11 +4565,11 @@ public class Game_local {
         }
 
         public idPlayer GetClientByNum(int current) {
-            if (current < 0 || current >= numClients) {
+            if ((current < 0) || (current >= this.numClients)) {
                 current = 0;
             }
-            if (entities[current] != null) {
-                return ((idPlayer) entities[current]);
+            if (this.entities[current] != null) {
+                return ((idPlayer) this.entities[current]);
             }
             return null;
         }
@@ -4576,10 +4577,10 @@ public class Game_local {
         public idPlayer GetClientByName(final String name) {
             int i;
             idEntity ent;
-            for (i = 0; i < numClients; i++) {
-                ent = entities[ i];
-                if (ent != null && ent.IsType(idPlayer.class)) {
-                    if (idStr.IcmpNoColor(name, userInfo[ i].GetString("ui_name")) == 0) {
+            for (i = 0; i < this.numClients; i++) {
+                ent = this.entities[ i];
+                if ((ent != null) && ent.IsType(idPlayer.class)) {
+                    if (idStr.IcmpNoColor(name, this.userInfo[ i].GetString("ui_name")) == 0) {
                         return (idPlayer) ent;
                     }
                 }
@@ -4589,7 +4590,7 @@ public class Game_local {
 
         public idPlayer GetClientByCmdArgs(final idCmdArgs args) {
             idPlayer player;
-            idStr client = new idStr(args.Argv(1));
+            final idStr client = new idStr(args.Argv(1));
             if (0 == client.Length()) {
                 return null;
             }
@@ -4616,15 +4617,15 @@ public class Game_local {
          ================
          */
         public idPlayer GetLocalPlayer() {
-            if (localClientNum < 0) {
+            if (this.localClientNum < 0) {
                 return null;
             }
 
-            if (null == entities[ localClientNum] || !entities[ localClientNum].IsType(idPlayer.class)) {
+            if ((null == this.entities[ this.localClientNum]) || !this.entities[ this.localClientNum].IsType(idPlayer.class)) {
                 // not fully in game yet
                 return null;
             }
-            return (idPlayer) entities[localClientNum];
+            return (idPlayer) this.entities[this.localClientNum];
         }
 
         /*
@@ -4638,17 +4639,17 @@ public class Game_local {
             idEntity ent;
 
             // allocate the area table
-            int numAreas = gameRenderWorld.NumAreas();
-            locationEntities = new idLocationEntity[numAreas];
+            final int numAreas = gameRenderWorld.NumAreas();
+            this.locationEntities = new idLocationEntity[numAreas];
 //	memset( locationEntities, 0, numAreas * sizeof( *locationEntities ) );
 
             // for each location entity, make pointers from every area it touches
-            for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+            for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                 if (!ent.IsType(idLocationEntity.class)) {
                     continue;
                 }
-                idVec3 point = ent.spawnArgs.GetVector("origin");
-                int areaNum = gameRenderWorld.PointInArea(point);
+                final idVec3 point = ent.spawnArgs.GetVector("origin");
+                final int areaNum = gameRenderWorld.PointInArea(point);
                 if (areaNum < 0) {
                     Printf("SpreadLocations: location '%s' is not in a valid area\n", ent.spawnArgs.GetString("name"));
                     continue;
@@ -4656,12 +4657,12 @@ public class Game_local {
                 if (areaNum >= numAreas) {
                     Error("idGameLocal::SpreadLocations: areaNum >= gameRenderWorld.NumAreas()");
                 }
-                if (locationEntities[areaNum] != null) {
+                if (this.locationEntities[areaNum] != null) {
                     Warning("location entity '%s' overlaps '%s'", ent.spawnArgs.GetString("name"),
-                            locationEntities[areaNum].spawnArgs.GetString("name"));
+                            this.locationEntities[areaNum].spawnArgs.GetString("name"));
                     continue;
                 }
-                locationEntities[areaNum] = (idLocationEntity) ent;
+                this.locationEntities[areaNum] = (idLocationEntity) ent;
 
                 // spread to all other connected areas
                 for (int i = 0; i < numAreas; i++) {
@@ -4669,7 +4670,7 @@ public class Game_local {
                         continue;
                     }
                     if (gameRenderWorld.AreasAreConnected(areaNum, i, PS_BLOCK_LOCATION)) {
-                        locationEntities[i] = (idLocationEntity) ent;
+                        this.locationEntities[i] = (idLocationEntity) ent;
                     }
                 }
             }
@@ -4684,12 +4685,12 @@ public class Game_local {
          ===================
          */
         public idLocationEntity LocationForPoint(final idVec3 point) {
-            if (null == locationEntities) {
+            if (null == this.locationEntities) {
                 // before SpreadLocations() has been called
                 return null;
             }
 
-            int areaNum = gameRenderWorld.PointInArea(point);
+            final int areaNum = gameRenderWorld.PointInArea(point);
             if (areaNum < 0) {
                 return null;
             }
@@ -4697,7 +4698,7 @@ public class Game_local {
                 Error("idGameLocal::LocationForPoint: areaNum >= gameRenderWorld.NumAreas()");
             }
 
-            return locationEntities[ areaNum];
+            return this.locationEntities[ areaNum];
         }
 
         /*
@@ -4716,7 +4717,7 @@ public class Game_local {
             float dist;
             boolean alone;
 
-            if (!isMultiplayer || NOT(spawnSpots.Num())) {
+            if (!this.isMultiplayer || NOT(this.spawnSpots.Num())) {
                 spot.ent = FindEntityUsingDef(null, "info_player_start");
                 if (null == spot.ent) {
                     Error("No info_player_start on map.\n");
@@ -4725,55 +4726,55 @@ public class Game_local {
             }
             if (player.spectating) {
                 // plain random spot, don't bother
-                return spawnSpots.oGet(random.RandomInt(spawnSpots.Num())).ent;
-            } else if (player.useInitialSpawns && currentInitialSpot < initialSpots.Num()) {
-                return initialSpots.oGet(currentInitialSpot++);
+                return this.spawnSpots.oGet(this.random.RandomInt(this.spawnSpots.Num())).ent;
+            } else if (player.useInitialSpawns && (this.currentInitialSpot < this.initialSpots.Num())) {
+                return this.initialSpots.oGet(this.currentInitialSpot++);
             } else {
                 // check if we are alone in map
                 alone = true;
                 for (j = 0; j < MAX_CLIENTS; j++) {
-                    if (entities[j] != null && !entities[ j].equals(player)) {
+                    if ((this.entities[j] != null) && !this.entities[ j].equals(player)) {
                         alone = false;
                         break;
                     }
                 }
                 if (alone) {
                     // don't do distance-based
-                    return spawnSpots.oGet(random.RandomInt(spawnSpots.Num())).ent;
+                    return this.spawnSpots.oGet(this.random.RandomInt(this.spawnSpots.Num())).ent;
                 }
 
                 // find the distance to the closest active player for each spawn spot
-                for (i = 0; i < spawnSpots.Num(); i++) {
-                    pos = spawnSpots.oGet(i).ent.GetPhysics().GetOrigin();
-                    spawnSpots.oGet(i).dist = 0x7fffffff;
+                for (i = 0; i < this.spawnSpots.Num(); i++) {
+                    pos = this.spawnSpots.oGet(i).ent.GetPhysics().GetOrigin();
+                    this.spawnSpots.oGet(i).dist = 0x7fffffff;
                     for (j = 0; j < MAX_CLIENTS; j++) {
-                        if (null == entities[ j] || !entities[ j].IsType(idPlayer.class)
-                                || entities[ j].equals(player)
-                                || ((idPlayer) entities[ j]).spectating) {
+                        if ((null == this.entities[ j]) || !this.entities[ j].IsType(idPlayer.class)
+                                || this.entities[ j].equals(player)
+                                || ((idPlayer) this.entities[ j]).spectating) {
                             continue;
                         }
 
-                        dist = (pos.oMinus(entities[ j].GetPhysics().GetOrigin())).LengthSqr();
-                        if (dist < spawnSpots.oGet(i).dist) {
-                            spawnSpots.oGet(i).dist = (int) dist;
+                        dist = (pos.oMinus(this.entities[ j].GetPhysics().GetOrigin())).LengthSqr();
+                        if (dist < this.spawnSpots.oGet(i).dist) {
+                            this.spawnSpots.oGet(i).dist = (int) dist;
                         }
                     }
                 }
 
                 // sort the list
 //                qsort( /*( void * )*/spawnSpots.Ptr(), spawnSpots.Num(), sizeof(spawnSpot_t), /*( int (*)(const void *, const void *) )*/ sortSpawnPoints);
-                Arrays.sort(spawnSpots.Ptr(), 0, spawnSpots.Num(), new sortSpawnPoints());
+                Arrays.sort(this.spawnSpots.Ptr(), 0, this.spawnSpots.Num(), new sortSpawnPoints());
 
                 // choose a random one in the top half
-                which = random.RandomInt(spawnSpots.Num() / 2);
-                spot = spawnSpots.oGet(which);
+                which = this.random.RandomInt(this.spawnSpots.Num() / 2);
+                spot = this.spawnSpots.oGet(which);
             }
             return spot.ent;
         }
 
         public void SetPortalState(int/*qhandle_t*/ portal, int blockingBits) {
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
 
             if (!gameLocal.isClient) {
                 outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
@@ -4788,10 +4789,10 @@ public class Game_local {
         public void SaveEntityNetworkEvent(final idEntity ent, int eventId, final idBitMsg msg) {
             entityNetEvent_s event;
 
-            event = savedEventQueue.Alloc();
+            event = this.savedEventQueue.Alloc();
             event.spawnId = GetSpawnId(ent);
             event.event = eventId;
-            event.time = time;
+            event.time = this.time;
             if (msg != null) {
                 event.paramsSize = msg.GetSize();
 //		memcpy( event.paramsBuf, msg.GetData(), msg.GetSize() );
@@ -4800,12 +4801,12 @@ public class Game_local {
                 event.paramsSize = 0;
             }
 
-            savedEventQueue.Enqueue(event, OUTOFORDER_IGNORE);
+            this.savedEventQueue.Enqueue(event, OUTOFORDER_IGNORE);
         }
 
         public void ServerSendChatMessage(int to, final String name, final String text) {
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
 
             outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
             outMsg.BeginWriting();
@@ -4814,15 +4815,15 @@ public class Game_local {
             outMsg.WriteString(text, -1, false);
             networkSystem.ServerSendReliableMessage(to, outMsg);
 
-            if (to == -1 || to == localClientNum) {
-                mpGame.AddChatLine("%s^0: %s\n", name, text);
+            if ((to == -1) || (to == this.localClientNum)) {
+                this.mpGame.AddChatLine("%s^0: %s\n", name, text);
             }
         }
 
         public int ServerRemapDecl(int clientNum, declType_t type, int index) {
 
             // only implicit materials and sound shaders decls are used
-            if (type != DECL_MATERIAL && type != DECL_SOUND) {
+            if ((type != DECL_MATERIAL) && (type != DECL_SOUND)) {
                 return index;
             }
 
@@ -4839,7 +4840,7 @@ public class Game_local {
         public int ClientRemapDecl(declType_t type, int index) {
 
             // only implicit materials and sound shaders decls are used
-            if (type != DECL_MATERIAL && type != DECL_SOUND) {
+            if ((type != DECL_MATERIAL) && (type != DECL_SOUND)) {
                 return index;
             }
 
@@ -4849,35 +4850,35 @@ public class Game_local {
             }
 
             // make sure the index is valid
-            if (clientDeclRemap[localClientNum][ type.ordinal()].Num() == 0) {
+            if (this.clientDeclRemap[this.localClientNum][ type.ordinal()].Num() == 0) {
                 gameLocal.Error("client received decl index %d before %s decl remap was initialized", index, declManager.GetDeclNameFromType(type));
                 return -1;
             }
-            if (index >= clientDeclRemap[localClientNum][ type.ordinal()].Num()) {
+            if (index >= this.clientDeclRemap[this.localClientNum][ type.ordinal()].Num()) {
                 gameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
                 return -1;
             }
-            if (clientDeclRemap[localClientNum][ type.ordinal()].oGet(index) == -1) {
+            if (this.clientDeclRemap[this.localClientNum][ type.ordinal()].oGet(index) == -1) {
                 gameLocal.Error("client received unmapped %s decl index %d from server", declManager.GetDeclNameFromType(type), index);
                 return -1;
             }
-            return clientDeclRemap[localClientNum][type.ordinal()].oGet(index);
+            return this.clientDeclRemap[this.localClientNum][type.ordinal()].oGet(index);
         }
 
         public void SetGlobalMaterial(final idMaterial mat) {
-            globalMaterial = mat;
+            this.globalMaterial = mat;
         }
 
         public idMaterial GetGlobalMaterial() {
-            return globalMaterial;
+            return this.globalMaterial;
         }
 
         public void SetGibTime(int _time) {
-            nextGibTime = _time;
+            this.nextGibTime = _time;
         }
 
         public int GetGibTime() {
-            return nextGibTime;
+            return this.nextGibTime;
         }
 
         public boolean NeedRestart() {
@@ -4889,12 +4890,12 @@ public class Game_local {
 
             for (int i = 0; i < newInfo.GetNumKeyVals(); i++) {
                 keyval = newInfo.GetKeyVal(i);
-                keyval2 = serverInfo.FindKey(keyval.GetKey());
+                keyval2 = this.serverInfo.FindKey(keyval.GetKey());
                 if (null == keyval2) {
                     return true;
                 }
                 // a select set of si_ changes will cause a full restart of the server
-                if (keyval.GetValue().Cmp(keyval2.GetValue().getData()) != 0 && (0 == keyval.GetKey().Cmp("si_pure") || 0 == keyval.GetKey().Cmp("si_map"))) {
+                if ((keyval.GetValue().Cmp(keyval2.GetValue().getData()) != 0) && ((0 == keyval.GetKey().Cmp("si_pure")) || (0 == keyval.GetKey().Cmp("si_map")))) {
                     return true;
                 }
             }
@@ -4904,107 +4905,107 @@ public class Game_local {
         private void Clear() {
             int i;
 
-            serverInfo.Clear();
-            numClients = 0;
+            this.serverInfo.Clear();
+            this.numClients = 0;
             for (i = 0; i < MAX_CLIENTS; i++) {
-                userInfo[i].Clear();
-                persistentPlayerInfo[i].Clear();
+                this.userInfo[i].Clear();
+                this.persistentPlayerInfo[i].Clear();
             }
 //	memset( usercmds, 0, sizeof( usercmds ) );
-            for (int u = 0; u < usercmds.length; u++) {
-                usercmds[u] = new usercmd_t();
+            for (int u = 0; u < this.usercmds.length; u++) {
+                this.usercmds[u] = new usercmd_t();
             }
 //	memset( entities, 0, sizeof( entities ) );
-            for (int e = 0; e < entities.length; e++) {
-                entities[e] = new idEntity();
+            for (int e = 0; e < this.entities.length; e++) {
+                this.entities[e] = new idEntity();
             }
-            spawnIds = new int[spawnIds.length];
-            Arrays.fill(spawnIds, -1);//	memset( spawnIds, -1, sizeof( spawnIds ) );
-            firstFreeIndex = 0;
-            num_entities = 0;
-            spawnedEntities.Clear();
-            activeEntities.Clear();
-            numEntitiesToDeactivate = 0;
-            sortPushers = false;
-            sortTeamMasters = false;
-            persistentLevelInfo.Clear();
-            globalShaderParms = new float[globalShaderParms.length];//memset( globalShaderParms, 0, sizeof( globalShaderParms ) );
-            random.SetSeed(0);
-            world = null;
-            frameCommandThread = null;
-            testmodel = null;
-            testFx = null;
-            clip.Shutdown();
-            pvs.Shutdown();
-            sessionCommand.Clear();
-            locationEntities = null;
-            smokeParticles = null;
-            editEntities = null;
-            entityHash.Clear(1024, MAX_GENTITIES);
-            inCinematic = false;
-            cinematicSkipTime = 0;
-            cinematicStopTime = 0;
-            cinematicMaxSkipTime = 0;
-            framenum = 0;
-            previousTime = 0;
-            time = 0;
-            vacuumAreaNum = 0;
-            mapFileName.Clear();
-            mapFile = null;
-            spawnCount = INITIAL_SPAWN_COUNT;
-            mapSpawnCount = 0;
-            camera = null;
-            aasList.Clear();
-            aasNames.Clear();
-            lastAIAlertEntity = new idEntityPtr<>(null);
-            lastAIAlertTime = 0;
-            spawnArgs.Clear();
-            gravity.Set(0, 0, -1);
-            playerPVS.h = /*(unsigned int)*/ -1;
-            playerConnectedAreas.h = /*(unsigned int)*/ -1;
-            gamestate = GAMESTATE_UNINITIALIZED;
-            skipCinematic = false;
-            influenceActive = false;
+            this.spawnIds = new int[this.spawnIds.length];
+            Arrays.fill(this.spawnIds, -1);//	memset( spawnIds, -1, sizeof( spawnIds ) );
+            this.firstFreeIndex = 0;
+            this.num_entities = 0;
+            this.spawnedEntities.Clear();
+            this.activeEntities.Clear();
+            this.numEntitiesToDeactivate = 0;
+            this.sortPushers = false;
+            this.sortTeamMasters = false;
+            this.persistentLevelInfo.Clear();
+            this.globalShaderParms = new float[this.globalShaderParms.length];//memset( globalShaderParms, 0, sizeof( globalShaderParms ) );
+            this.random.SetSeed(0);
+            this.world = null;
+            this.frameCommandThread = null;
+            this.testmodel = null;
+            this.testFx = null;
+            this.clip.Shutdown();
+            this.pvs.Shutdown();
+            this.sessionCommand.Clear();
+            this.locationEntities = null;
+            this.smokeParticles = null;
+            this.editEntities = null;
+            this.entityHash.Clear(1024, MAX_GENTITIES);
+            this.inCinematic = false;
+            this.cinematicSkipTime = 0;
+            this.cinematicStopTime = 0;
+            this.cinematicMaxSkipTime = 0;
+            this.framenum = 0;
+            this.previousTime = 0;
+            this.time = 0;
+            this.vacuumAreaNum = 0;
+            this.mapFileName.Clear();
+            this.mapFile = null;
+            this.spawnCount = INITIAL_SPAWN_COUNT;
+            this.mapSpawnCount = 0;
+            this.camera = null;
+            this.aasList.Clear();
+            this.aasNames.Clear();
+            this.lastAIAlertEntity = new idEntityPtr<>(null);
+            this.lastAIAlertTime = 0;
+            this.spawnArgs.Clear();
+            this.gravity.Set(0, 0, -1);
+            this.playerPVS.h = /*(unsigned int)*/ -1;
+            this.playerConnectedAreas.h = /*(unsigned int)*/ -1;
+            this.gamestate = GAMESTATE_UNINITIALIZED;
+            this.skipCinematic = false;
+            this.influenceActive = false;
 
-            localClientNum = 0;
-            isMultiplayer = false;
-            isServer = false;
-            isClient = false;
-            realClientTime = 0;
-            isNewFrame = true;
-            clientSmoothing = 0.1f;
-            entityDefBits = 0;
+            this.localClientNum = 0;
+            this.isMultiplayer = false;
+            this.isServer = false;
+            this.isClient = false;
+            this.realClientTime = 0;
+            this.isNewFrame = true;
+            this.clientSmoothing = 0.1f;
+            this.entityDefBits = 0;
 
-            nextGibTime = 0;
-            globalMaterial = null;
-            newInfo.Clear();
-            lastGUIEnt = new idEntityPtr<>(null);
-            lastGUI = 0;
+            this.nextGibTime = 0;
+            this.globalMaterial = null;
+            this.newInfo.Clear();
+            this.lastGUIEnt = new idEntityPtr<>(null);
+            this.lastGUI = 0;
 
 //	memset( clientEntityStates, 0, sizeof( clientEntityStates ) );
-            for (int a = 0; a < clientEntityStates.length; a++) {
-                for (int b = 0; b < clientEntityStates[0].length; b++) {
-                    clientEntityStates[a][b] = new entityState_s();
+            for (int a = 0; a < this.clientEntityStates.length; a++) {
+                for (int b = 0; b < this.clientEntityStates[0].length; b++) {
+                    this.clientEntityStates[a][b] = new entityState_s();
                 }
             }
-            clientPVS = new int[clientPVS.length][clientPVS[0].length];//memset( clientPVS, 0, sizeof( clientPVS ) );
+            this.clientPVS = new int[this.clientPVS.length][this.clientPVS[0].length];//memset( clientPVS, 0, sizeof( clientPVS ) );
 //	memset( clientSnapshots, 0, sizeof( clientSnapshots ) );
-            for (int c = 0; c < clientSnapshots.length; c++) {
-                clientSnapshots[c] = new snapshot_s();
+            for (int c = 0; c < this.clientSnapshots.length; c++) {
+                this.clientSnapshots[c] = new snapshot_s();
             }
 
-            eventQueue.Init();
-            savedEventQueue.Init();
+            this.eventQueue.Init();
+            this.savedEventQueue.Init();
 
-            lagometer = new byte[lagometer.length][lagometer[0].length][lagometer[0][0].length];//memset(lagometer, 0, sizeof(lagometer));
+            this.lagometer = new byte[this.lagometer.length][this.lagometer[0].length][this.lagometer[0][0].length];//memset(lagometer, 0, sizeof(lagometer));
         }
 
         // returns true if the entity shouldn't be spawned at all in this game type or difficulty level
         private boolean InhibitEntitySpawn(idDict spawnArgs) {
 
-            boolean[] result = {false};
+            final boolean[] result = {false};
 
-            if (isMultiplayer) {
+            if (this.isMultiplayer) {
                 spawnArgs.GetBool("not_multiplayer", "0", result);
             } else if (g_skill.GetInteger() == 0) {
                 spawnArgs.GetBool("not_easy", "0", result);
@@ -5018,7 +5019,7 @@ public class Game_local {
             if (!ID_DEMO_BUILD) {//#ifndef
                 if (g_skill.GetInteger() == 3) {
                     name = spawnArgs.GetString("classname");
-                    if (idStr.Icmp(name, "item_medkit") == 0 || idStr.Icmp(name, "item_medkit_small") == 0) {
+                    if ((idStr.Icmp(name, "item_medkit") == 0) || (idStr.Icmp(name, "item_medkit_small") == 0)) {
                         result[0] = true;
                     }
                 }
@@ -5026,7 +5027,7 @@ public class Game_local {
 
             if (gameLocal.isMultiplayer) {
                 name = spawnArgs.GetString("classname");
-                if (idStr.Icmp(name, "weapon_bfg") == 0 || idStr.Icmp(name, "weapon_soulcube") == 0) {
+                if ((idStr.Icmp(name, "weapon_bfg") == 0) || (idStr.Icmp(name, "weapon_soulcube") == 0)) {
                     result[0] = true;
                 }
             }
@@ -5052,24 +5053,24 @@ public class Game_local {
 
             Printf("Spawning entities\n");
 
-            if (mapFile == null) {
+            if (this.mapFile == null) {
                 Printf("No mapfile present\n");
                 return;
             }
 
             SetSkill(g_skill.GetInteger());
 
-            numEntities = mapFile.GetNumEntities();
+            numEntities = this.mapFile.GetNumEntities();
             if (numEntities == 0) {
                 Error("...no entities");
             }
 
             // the worldspawn is a special that performs any global setup
             // needed by a level
-            mapEnt = mapFile.GetEntity(0);
+            mapEnt = this.mapFile.GetEntity(0);
             args = mapEnt.epairs;
             args.SetInt("spawn_entnum", ENTITYNUM_WORLD);
-            if (!SpawnEntityDef(args) || null == entities[ ENTITYNUM_WORLD] || !entities[ ENTITYNUM_WORLD].IsType(idWorldspawn.class)) {
+            if (!SpawnEntityDef(args) || (null == this.entities[ ENTITYNUM_WORLD]) || !this.entities[ ENTITYNUM_WORLD].IsType(idWorldspawn.class)) {
                 Error("Problem spawning world entity");
             }
 
@@ -5077,7 +5078,7 @@ public class Game_local {
             inhibit = 0;
 
             for (i = 1; i < numEntities; i++) {
-                mapEnt = mapFile.GetEntity(i);
+                mapEnt = this.mapFile.GetEntity(i);
                 args = mapEnt.epairs;
 
                 if (!InhibitEntitySpawn(args)) {
@@ -5097,7 +5098,7 @@ public class Game_local {
         // commons used by init, shutdown, and restart
         private void MapPopulate() {
 
-            if (isMultiplayer) {
+            if (this.isMultiplayer) {
                 cvarSystem.SetCVarBool("r_skipSpecular", false);
             }
             // parse the key/value pairs and spawn entities
@@ -5111,7 +5112,7 @@ public class Game_local {
 
             // spawnCount - 1 is the number of entities spawned into the map, their indexes started at MAX_CLIENTS (included)
             // mapSpawnCount is used as the max index of map entities, it's the first index of non-map entities
-            mapSpawnCount = MAX_CLIENTS + spawnCount - 1;
+            this.mapSpawnCount = (MAX_CLIENTS + this.spawnCount) - 1;
 
             // execute pending events before the very first game frame
             // this makes sure the map script main() function is called
@@ -5127,41 +5128,41 @@ public class Game_local {
 //		delete entities[ i ];
                 // ~idEntity is in charge of setting the pointer to NULL
                 // it will also clear pending events for this entity
-                assert (null == entities[ i]);
-                spawnIds[ i] = -1;
+                assert (null == this.entities[ i]);
+                this.spawnIds[ i] = -1;
             }
 
-            entityHash.Clear(1024, MAX_GENTITIES);
+            this.entityHash.Clear(1024, MAX_GENTITIES);
 
             if (!clearClients) {
                 // add back the hashes of the clients
                 for (i = 0; i < MAX_CLIENTS; i++) {
-                    if (null == entities[ i]) {
+                    if (null == this.entities[ i]) {
                         continue;
                     }
-                    entityHash.Add(entityHash.GenerateKey(entities[ i].name.c_str(), true), i);
+                    this.entityHash.Add(this.entityHash.GenerateKey(this.entities[ i].name.c_str(), true), i);
                 }
             }
 
 //	delete frameCommandThread;
-            frameCommandThread = null;
+            this.frameCommandThread = null;
 
-            if (editEntities != null) {
+            if (this.editEntities != null) {
 //		delete editEntities;
-                editEntities = null;
+                this.editEntities = null;
             }
 
 //	delete[] locationEntities;
-            locationEntities = null;
+            this.locationEntities = null;
         }
 
         private pvsHandle_t GetClientPVS(idPlayer player, pvsType_t type) {
             if (player.GetPrivateCameraView() != null) {
-                return pvs.SetupCurrentPVS(player.GetPrivateCameraView().GetPVSAreas(), player.GetPrivateCameraView().GetNumPVSAreas());
-            } else if (camera != null) {
-                return pvs.SetupCurrentPVS(camera.GetPVSAreas(), camera.GetNumPVSAreas());
+                return this.pvs.SetupCurrentPVS(player.GetPrivateCameraView().GetPVSAreas(), player.GetPrivateCameraView().GetNumPVSAreas());
+            } else if (this.camera != null) {
+                return this.pvs.SetupCurrentPVS(this.camera.GetPVSAreas(), this.camera.GetNumPVSAreas());
             } else {
-                return pvs.SetupCurrentPVS(player.GetPVSAreas(), player.GetNumPVSAreas());
+                return this.pvs.SetupCurrentPVS(player.GetPVSAreas(), player.GetNumPVSAreas());
             }
         }
 
@@ -5171,45 +5172,45 @@ public class Game_local {
             idPlayer player;
             pvsHandle_t otherPVS, newPVS;
 
-            playerPVS.i = -1;
-            for (i = 0; i < numClients; i++) {
-                ent = entities[i];
-                if (null == ent || !ent.IsType(idPlayer.class)) {
+            this.playerPVS.i = -1;
+            for (i = 0; i < this.numClients; i++) {
+                ent = this.entities[i];
+                if ((null == ent) || !ent.IsType(idPlayer.class)) {
                     continue;
                 }
 
                 player = (idPlayer) ent;
 
-                if (playerPVS.i == -1) {
-                    playerPVS = GetClientPVS(player, PVS_NORMAL);
+                if (this.playerPVS.i == -1) {
+                    this.playerPVS = GetClientPVS(player, PVS_NORMAL);
                 } else {
                     otherPVS = GetClientPVS(player, PVS_NORMAL);
-                    newPVS = pvs.MergeCurrentPVS(playerPVS, otherPVS);
-                    pvs.FreeCurrentPVS(playerPVS);
-                    pvs.FreeCurrentPVS(otherPVS);
-                    playerPVS = newPVS;
+                    newPVS = this.pvs.MergeCurrentPVS(this.playerPVS, otherPVS);
+                    this.pvs.FreeCurrentPVS(this.playerPVS);
+                    this.pvs.FreeCurrentPVS(otherPVS);
+                    this.playerPVS = newPVS;
                 }
 
-                if (playerConnectedAreas.i == -1) {
-                    playerConnectedAreas = GetClientPVS(player, PVS_CONNECTED_AREAS);
+                if (this.playerConnectedAreas.i == -1) {
+                    this.playerConnectedAreas = GetClientPVS(player, PVS_CONNECTED_AREAS);
                 } else {
                     otherPVS = GetClientPVS(player, PVS_CONNECTED_AREAS);
-                    newPVS = pvs.MergeCurrentPVS(playerConnectedAreas, otherPVS);
-                    pvs.FreeCurrentPVS(playerConnectedAreas);
-                    pvs.FreeCurrentPVS(otherPVS);
-                    playerConnectedAreas = newPVS;
+                    newPVS = this.pvs.MergeCurrentPVS(this.playerConnectedAreas, otherPVS);
+                    this.pvs.FreeCurrentPVS(this.playerConnectedAreas);
+                    this.pvs.FreeCurrentPVS(otherPVS);
+                    this.playerConnectedAreas = newPVS;
                 }
             }
         }
 
         private void FreePlayerPVS() {
-            if (playerPVS.i != -1) {
-                pvs.FreeCurrentPVS(playerPVS);
-                playerPVS.i = -1;
+            if (this.playerPVS.i != -1) {
+                this.pvs.FreeCurrentPVS(this.playerPVS);
+                this.playerPVS.i = -1;
             }
-            if (playerConnectedAreas.i != -1) {
-                pvs.FreeCurrentPVS(playerConnectedAreas);
-                playerConnectedAreas.i = -1;
+            if (this.playerConnectedAreas.i != -1) {
+                this.pvs.FreeCurrentPVS(this.playerConnectedAreas);
+                this.playerConnectedAreas.i = -1;
             }
         }
 
@@ -5220,14 +5221,14 @@ public class Game_local {
                 if (g_gravity.GetFloat() == 0.0f) {
                     g_gravity.SetFloat(1.0f);
                 }
-                gravity.Set(0, 0, -g_gravity.GetFloat());
+                this.gravity.Set(0, 0, -g_gravity.GetFloat());
 
                 // update all physics objects
-                for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+                for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                     if (ent.IsType(idAFEntity_Generic.class)) {
-                        idPhysics phys = ent.GetPhysics();
+                        final idPhysics phys = ent.GetPhysics();
                         if (phys != null) {
-                            phys.SetGravity(gravity);
+                            phys.SetGravity(this.gravity);
                         }
                     }
                 }
@@ -5247,24 +5248,24 @@ public class Game_local {
             idEntity ent, next_ent, master, part;
 
             // if the active entity list needs to be reordered to place physics team masters at the front
-            if (sortTeamMasters) {
-                for (ent = activeEntities.Next(); ent != null; ent = next_ent) {
+            if (this.sortTeamMasters) {
+                for (ent = this.activeEntities.Next(); ent != null; ent = next_ent) {
                     next_ent = ent.activeNode.Next();
                     master = ent.GetTeamMaster();
-                    if (master != null && master == ent) {
+                    if ((master != null) && (master == ent)) {
                         ent.activeNode.Remove();
-                        ent.activeNode.AddToFront(activeEntities);
+                        ent.activeNode.AddToFront(this.activeEntities);
                     }
                 }
             }
 
             // if the active entity list needs to be reordered to place pushers at the front
-            if (sortPushers) {
+            if (this.sortPushers) {
 
-                for (ent = activeEntities.Next(); ent != null; ent = next_ent) {
+                for (ent = this.activeEntities.Next(); ent != null; ent = next_ent) {
                     next_ent = ent.activeNode.Next();
                     master = ent.GetTeamMaster();
-                    if (null == master || master == ent) {
+                    if ((null == master) || (master == ent)) {
                         // check if there is an actor on the team
                         for (part = ent; part != null; part = part.GetNextTeamEntity()) {
                             if (part.GetPhysics().IsType(idPhysics_Actor.class)) {
@@ -5274,15 +5275,15 @@ public class Game_local {
                         // if there is an actor on the team
                         if (part != null) {
                             ent.activeNode.Remove();
-                            ent.activeNode.AddToFront(activeEntities);
+                            ent.activeNode.AddToFront(this.activeEntities);
                         }
                     }
                 }
 
-                for (ent = activeEntities.Next(); ent != null; ent = next_ent) {
+                for (ent = this.activeEntities.Next(); ent != null; ent = next_ent) {
                     next_ent = ent.activeNode.Next();
                     master = ent.GetTeamMaster();
-                    if (null == master || master == ent) {
+                    if ((null == master) || (master == ent)) {
                         // check if there is an entity on the team using parametric physics
                         for (part = ent; part != null; part = part.GetNextTeamEntity()) {
                             if (part.GetPhysics().IsType(idPhysics_Parametric.class)) {
@@ -5292,23 +5293,23 @@ public class Game_local {
                         // if there is an entity on the team using parametric physics
                         if (part != null) {
                             ent.activeNode.Remove();
-                            ent.activeNode.AddToFront(activeEntities);
+                            ent.activeNode.AddToFront(this.activeEntities);
                         }
                     }
                 }
             }
 
-            sortTeamMasters = false;
-            sortPushers = false;
+            this.sortTeamMasters = false;
+            this.sortPushers = false;
         }
 
         private void ShowTargets() {
-            idMat3 axis = GetLocalPlayer().viewAngles.ToMat3();
-            idVec3 up = axis.oGet(2).oMultiply(5.0f);
+            final idMat3 axis = GetLocalPlayer().viewAngles.ToMat3();
+            final idVec3 up = axis.oGet(2).oMultiply(5.0f);
             final idVec3 viewPos = GetLocalPlayer().GetPhysics().GetOrigin();
-            idBounds viewTextBounds = new idBounds(viewPos);
-            idBounds viewBounds = new idBounds(viewPos);
-            idBounds box = new idBounds(new idVec3(-4.0f, -4.0f, -4.0f), new idVec3(4.0f, 4.0f, 4.0f));
+            final idBounds viewTextBounds = new idBounds(viewPos);
+            final idBounds viewBounds = new idBounds(viewPos);
+            final idBounds box = new idBounds(new idVec3(-4.0f, -4.0f, -4.0f), new idVec3(4.0f, 4.0f, 4.0f));
             idEntity ent;
             idEntity target;
             int i;
@@ -5316,7 +5317,7 @@ public class Game_local {
 
             viewTextBounds.ExpandSelf(128.0f);
             viewBounds.ExpandSelf(512.0f);
-            for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+            for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                 totalBounds = ent.GetPhysics().GetAbsBounds();
                 for (i = 0; i < ent.targets.Num(); i++) {
                     target = ent.targets.oGet(i).GetEntity();
@@ -5329,18 +5330,18 @@ public class Game_local {
                     continue;
                 }
 
-                float[] dist = {0};
-                idVec3 dir = totalBounds.GetCenter().oMinus(viewPos);
+                final float[] dist = {0};
+                final idVec3 dir = totalBounds.GetCenter().oMinus(viewPos);
                 dir.NormalizeFast();
                 totalBounds.RayIntersection(viewPos, dir, dist);
-                float frac = (512.0f - dist[0]) / 512.0f;
+                final float frac = (512.0f - dist[0]) / 512.0f;
                 if (frac < 0.0f) {
                     continue;
                 }
 
                 gameRenderWorld.DebugBounds((ent.IsHidden() ? colorLtGrey : colorOrange).oMultiply(frac), ent.GetPhysics().GetAbsBounds());
                 if (viewTextBounds.IntersectsBounds(ent.GetPhysics().GetAbsBounds())) {
-                    idVec3 center = ent.GetPhysics().GetAbsBounds().GetCenter();
+                    final idVec3 center = ent.GetPhysics().GetAbsBounds().GetCenter();
                     gameRenderWorld.DrawText(ent.name.getData(), center.oMinus(up), 0.1f, (colorWhite).oMultiply(frac), axis, 1);
                     gameRenderWorld.DrawText(ent.GetEntityDefName(), center, 0.1f, (colorWhite).oMultiply(frac), axis, 1);
                     gameRenderWorld.DrawText(va("#%d", ent.entityNumber), center.oPlus(up), 0.1f, (colorWhite).oMultiply(frac), axis, 1);
@@ -5368,16 +5369,16 @@ public class Game_local {
             final idVec3 origin = player.GetPhysics().GetOrigin();
 
             if (g_showEntityInfo.GetBool()) {
-                idMat3 axis = player.viewAngles.ToMat3();
-                idVec3 up = axis.oGet(2).oMultiply(5.0f);
-                idBounds viewTextBounds = new idBounds(origin);
-                idBounds viewBounds = new idBounds(origin);
+                final idMat3 axis = player.viewAngles.ToMat3();
+                final idVec3 up = axis.oGet(2).oMultiply(5.0f);
+                final idBounds viewTextBounds = new idBounds(origin);
+                final idBounds viewBounds = new idBounds(origin);
 
                 viewTextBounds.ExpandSelf(128.0f);
                 viewBounds.ExpandSelf(512.0f);
-                for (ent = spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
+                for (ent = this.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                     // don't draw the worldspawn
-                    if (ent == world) {
+                    if (ent == this.world) {
                         continue;
                     }
 
@@ -5387,7 +5388,7 @@ public class Game_local {
                     }
 
                     final idBounds entBounds = ent.GetPhysics().GetAbsBounds();
-                    int contents = ent.GetPhysics().GetContents();
+                    final int contents = ent.GetPhysics().GetContents();
                     if ((contents & CONTENTS_BODY) != 0) {
                         gameRenderWorld.DebugBounds(colorCyan, entBounds);
                     } else if ((contents & CONTENTS_TRIGGER) != 0) {
@@ -5410,8 +5411,8 @@ public class Game_local {
 
             // debug tool to draw bounding boxes around active entities
             if (g_showActiveEntities.GetBool()) {
-                for (ent = activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
-                    idBounds b = ent.GetPhysics().GetBounds();
+                for (ent = this.activeEntities.Next(); ent != null; ent = ent.activeNode.Next()) {
+                    final idBounds b = ent.GetPhysics().GetBounds();
                     if (b.GetVolume() <= 0) {
                         b.oSet(0, 0, b.oSet(0, 1, b.oSet(0, 2, -8)));
                         b.oSet(1, 0, b.oSet(1, 1, b.oSet(1, 2, 8)));
@@ -5441,7 +5442,7 @@ public class Game_local {
             }
 
             if (g_editEntityMode.GetBool()) {
-                editEntities.DisplayEntities();
+                this.editEntities.DisplayEntities();
             }
 
             if (g_showCollisionWorld.GetBool()) {
@@ -5449,24 +5450,24 @@ public class Game_local {
             }
 
             if (g_showCollisionModels.GetBool()) {
-                clip.DrawClipModels(player.GetEyePosition(), g_maxShowDistance.GetFloat(), pm_thirdPerson.GetBool() ? null : player);
+                this.clip.DrawClipModels(player.GetEyePosition(), g_maxShowDistance.GetFloat(), pm_thirdPerson.GetBool() ? null : player);
             }
 
             if (g_showCollisionTraces.GetBool()) {
-                clip.PrintStatistics();
+                this.clip.PrintStatistics();
             }
 
             if (g_showPVS.GetInteger() != 0) {
-                pvs.DrawPVS(origin, (g_showPVS.GetInteger() == 2) ? PVS_ALL_PORTALS_OPEN : PVS_NORMAL);
+                this.pvs.DrawPVS(origin, (g_showPVS.GetInteger() == 2) ? PVS_ALL_PORTALS_OPEN : PVS_NORMAL);
             }
 
             if (aas_test.GetInteger() >= 0) {
-                idAAS aas = GetAAS(aas_test.GetInteger());
+                final idAAS aas = GetAAS(aas_test.GetInteger());
                 if (aas != null) {
                     aas.Test(origin);
                     if (ai_testPredictPath.GetBool()) {
-                        idVec3 velocity = new idVec3();
-                        predictedPath_s path = new predictedPath_s();
+                        final idVec3 velocity = new idVec3();
+                        final predictedPath_s path = new predictedPath_s();
 
                         velocity.x = (float) (cos(DEG2RAD(player.viewAngles.yaw)) * 100.0f);
                         velocity.y = (float) (sin(DEG2RAD(player.viewAngles.yaw)) * 100.0f);
@@ -5477,10 +5478,10 @@ public class Game_local {
             }
 
             if (ai_showObstacleAvoidance.GetInteger() == 2) {
-                idAAS aas = GetAAS(0);
+                final idAAS aas = GetAAS(0);
                 if (aas != null) {
                     idVec3 seekPos;
-                    obstaclePath_s path = new obstaclePath_s();
+                    final obstaclePath_s path = new obstaclePath_s();
 
                     seekPos = player.GetPhysics().GetOrigin().oPlus(player.viewAxis.oGet(0).oMultiply(200.0f));
                     idAI.FindPathAroundObstacles(player.GetPhysics(), aas, null, player.GetPhysics().GetOrigin(), seekPos, path);
@@ -5493,14 +5494,14 @@ public class Game_local {
 
         private void InitScriptForMap() {
             // create a thread to run frame commands on
-            frameCommandThread = new idThread();
-            frameCommandThread.ManualDelete();
-            frameCommandThread.SetThreadName("frameCommands");
+            this.frameCommandThread = new idThread();
+            this.frameCommandThread.ManualDelete();
+            this.frameCommandThread.SetThreadName("frameCommands");
 
             // run the main game script function (not the level specific main)
-            final function_t func = program.FindFunction(SCRIPT_DEFAULTFUNC);
+            final function_t func = this.program.FindFunction(SCRIPT_DEFAULTFUNC);
             if (func != null) {
-                idThread thread = new idThread(func);
+                final idThread thread = new idThread(func);
                 if (thread.Start()) {
                     // thread has finished executing, so delete it
 //			delete thread;
@@ -5630,45 +5631,45 @@ public class Game_local {
 
             for (i = 0; i < MAX_CLIENTS; i++) {
                 for (type = 0; type < declManager.GetNumDeclTypes(); type++) {
-                    clientDeclRemap[i][type] = new idList<>();
+                    this.clientDeclRemap[i][type] = new idList<>();
                 }
             }
 
 //	memset( clientEntityStates, 0, sizeof( clientEntityStates ) );
-            clientEntityStates = new entityState_s[clientEntityStates.length][clientEntityStates[0].length];
+            this.clientEntityStates = new entityState_s[this.clientEntityStates.length][this.clientEntityStates[0].length];
 //	memset( clientPVS, 0, sizeof( clientPVS ) );
-            clientPVS = new int[clientPVS.length][clientPVS[0].length];
+            this.clientPVS = new int[this.clientPVS.length][this.clientPVS[0].length];
 //	memset( clientSnapshots, 0, sizeof( clientSnapshots ) );
-            clientSnapshots = new snapshot_s[clientSnapshots.length];
+            this.clientSnapshots = new snapshot_s[this.clientSnapshots.length];
 
-            eventQueue.Init();
-            savedEventQueue.Init();
+            this.eventQueue.Init();
+            this.savedEventQueue.Init();
 
-            entityDefBits = -(idMath.BitsForInteger(declManager.GetNumDecls(DECL_ENTITYDEF)) + 1);
-            localClientNum = 0; // on a listen server SetLocalUser will set this right
-            realClientTime = 0;
-            isNewFrame = true;
-            clientSmoothing = net_clientSmoothing.GetFloat();
+            this.entityDefBits = -(idMath.BitsForInteger(declManager.GetNumDecls(DECL_ENTITYDEF)) + 1);
+            this.localClientNum = 0; // on a listen server SetLocalUser will set this right
+            this.realClientTime = 0;
+            this.isNewFrame = true;
+            this.clientSmoothing = net_clientSmoothing.GetFloat();
         }
 
         private void ShutdownAsyncNetwork() {
 //            entityStateAllocator.Shutdown();
 //            snapshotAllocator.Shutdown();
-            eventQueue.Shutdown();
-            savedEventQueue.Shutdown();
+            this.eventQueue.Shutdown();
+            this.savedEventQueue.Shutdown();
             //	memset( clientEntityStates, 0, sizeof( clientEntityStates ) );
-            clientEntityStates = new entityState_s[clientEntityStates.length][clientEntityStates[0].length];
+            this.clientEntityStates = new entityState_s[this.clientEntityStates.length][this.clientEntityStates[0].length];
 //	memset( clientPVS, 0, sizeof( clientPVS ) );
-            clientPVS = new int[clientPVS.length][clientPVS[0].length];
+            this.clientPVS = new int[this.clientPVS.length][this.clientPVS[0].length];
 //	memset( clientSnapshots, 0, sizeof( clientSnapshots ) );
-            clientSnapshots = new snapshot_s[clientSnapshots.length];
+            this.clientSnapshots = new snapshot_s[this.clientSnapshots.length];
         }
 
         private void InitLocalClient(int clientNum) {
-            isServer = false;
-            isClient = true;
-            localClientNum = clientNum;
-            clientSmoothing = net_clientSmoothing.GetFloat();
+            this.isServer = false;
+            this.isClient = true;
+            this.localClientNum = clientNum;
+            this.clientSmoothing = net_clientSmoothing.GetFloat();
         }
 
         private void InitClientDeclRemap(int clientNum) {
@@ -5677,13 +5678,13 @@ public class Game_local {
             for (type = 0; type < declManager.GetNumDeclTypes(); type++) {
 
                 // only implicit materials and sound shaders decls are used
-                if (type != etoi(DECL_MATERIAL) && type != etoi(DECL_SOUND)) {
+                if ((type != etoi(DECL_MATERIAL)) && (type != etoi(DECL_SOUND))) {
                     continue;
                 }
 
                 num = declManager.GetNumDecls(type);
-                clientDeclRemap[clientNum][type].Clear();
-                clientDeclRemap[clientNum][type].AssureSize(num, -1);
+                this.clientDeclRemap[clientNum][type].Clear();
+                this.clientDeclRemap[clientNum][type].AssureSize(num, -1);
 
                 // pre-initialize the remap with non-implicit decls, all non-implicit decls are always going
                 // to be in order and in sync between server and client because of the decl manager checksum
@@ -5693,25 +5694,25 @@ public class Game_local {
                         // once the first implicit decl is found all remaining decls are considered implicit as well
                         break;
                     }
-                    clientDeclRemap[clientNum][type].oSet(i, i);
+                    this.clientDeclRemap[clientNum][type].oSet(i, i);
                 }
             }
         }
 
         private void ServerSendDeclRemapToClient(int clientNum, declType_t type, int index) {
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
 
             // if no client connected for this spot
-            if (entities[clientNum] == null) {
+            if (this.entities[clientNum] == null) {
                 return;
             }
             // increase size of list if required
-            if (index >= clientDeclRemap[clientNum][type.ordinal()].Num()) {
-                clientDeclRemap[clientNum][type.ordinal()].AssureSize(index + 1, -1);
+            if (index >= this.clientDeclRemap[clientNum][type.ordinal()].Num()) {
+                this.clientDeclRemap[clientNum][type.ordinal()].AssureSize(index + 1, -1);
             }
             // if already remapped
-            if (clientDeclRemap[clientNum][type.ordinal()].oGet(index) != -1) {
+            if (this.clientDeclRemap[clientNum][type.ordinal()].oGet(index) != -1) {
                 return;
             }
 
@@ -5722,7 +5723,7 @@ public class Game_local {
             }
 
             // set the index at the server
-            clientDeclRemap[clientNum][type.ordinal()].oSet(index, index);
+            this.clientDeclRemap[clientNum][type.ordinal()].oSet(index, index);
 
             // write update to client
             outMsg.Init(msgBuf, MAX_GAME_MESSAGE_SIZE);
@@ -5738,7 +5739,7 @@ public class Game_local {
             snapshot_s snapshot, lastSnapshot, nextSnapshot;
             entityState_s state;
 
-            for (lastSnapshot = null, snapshot = clientSnapshots[clientNum]; snapshot != null; snapshot = nextSnapshot) {
+            for (lastSnapshot = null, snapshot = this.clientSnapshots[clientNum]; snapshot != null; snapshot = nextSnapshot) {
                 nextSnapshot = snapshot.next;
                 if (snapshot.sequence < sequence) {
                     for (state = snapshot.firstEntityState; state != null; state = snapshot.firstEntityState) {
@@ -5748,7 +5749,7 @@ public class Game_local {
                     if (lastSnapshot != null) {
                         lastSnapshot.next = snapshot.next;
                     } else {
-                        clientSnapshots[clientNum] = snapshot.next;
+                        this.clientSnapshots[clientNum] = snapshot.next;
                     }
 //                    snapshotAllocator.Free(snapshot);
                 } else {
@@ -5763,21 +5764,21 @@ public class Game_local {
 
             FreeSnapshotsOlderThanSequence(clientNum, sequence);
 
-            for (lastSnapshot = null, snapshot = clientSnapshots[clientNum]; snapshot != null; snapshot = nextSnapshot) {
+            for (lastSnapshot = null, snapshot = this.clientSnapshots[clientNum]; snapshot != null; snapshot = nextSnapshot) {
                 nextSnapshot = snapshot.next;
                 if (snapshot.sequence == sequence) {
                     for (state = snapshot.firstEntityState; state != null; state = state.next) {
-                        if (clientEntityStates[clientNum][state.entityNumber] != null) {
+                        if (this.clientEntityStates[clientNum][state.entityNumber] != null) {
 //                            entityStateAllocator.Free(clientEntityStates[clientNum][state.entityNumber]);
                         }
-                        clientEntityStates[clientNum][state.entityNumber] = state;
+                        this.clientEntityStates[clientNum][state.entityNumber] = state;
                     }
 //			memcpy( clientPVS[clientNum], snapshot.pvs, sizeof( snapshot.pvs ) );
-                    System.arraycopy(snapshot.pvs, 0, clientPVS[clientNum], 0, snapshot.pvs.length);
+                    System.arraycopy(snapshot.pvs, 0, this.clientPVS[clientNum], 0, snapshot.pvs.length);
                     if (lastSnapshot != null) {
                         lastSnapshot.next = nextSnapshot;
                     } else {
-                        clientSnapshots[clientNum] = nextSnapshot;
+                        this.clientSnapshots[clientNum] = nextSnapshot;
                     }
 //                    snapshotAllocator.Free(snapshot);
                     return true;
@@ -5793,20 +5794,20 @@ public class Game_local {
             int i;
 
             for (i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++) {
-                msg.WriteFloat(globalShaderParms[i]);
+                msg.WriteFloat(this.globalShaderParms[i]);
             }
 
-            mpGame.WriteToSnapshot(msg);
+            this.mpGame.WriteToSnapshot(msg);
         }
 
         private void ReadGameStateFromSnapshot(final idBitMsgDelta msg) {
             int i;
 
             for (i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++) {
-                globalShaderParms[i] = msg.ReadFloat();
+                this.globalShaderParms[i] = msg.ReadFloat();
             }
 
-            mpGame.ReadFromSnapshot(msg);
+            this.mpGame.ReadFromSnapshot(msg);
         }
 
         private void NetworkEventWarning(final entityNetEvent_s event, final String... fmt) {//id_attribute((format(printf,3,4)));
@@ -5829,16 +5830,16 @@ public class Game_local {
         private void ServerProcessEntityNetworkEventQueue() {
             idEntity ent;
             entityNetEvent_s event;
-            idBitMsg eventMsg = new idBitMsg();
+            final idBitMsg eventMsg = new idBitMsg();
 
-            while (eventQueue.Start() != null) {
-                event = eventQueue.Start();
+            while (this.eventQueue.Start() != null) {
+                event = this.eventQueue.Start();
 
-                if (event.time > time) {
+                if (event.time > this.time) {
                     break;
                 }
 
-                idEntityPtr< idEntity> entPtr = new idEntityPtr<>();
+                final idEntityPtr< idEntity> entPtr = new idEntityPtr<>();
 
                 if (!entPtr.SetSpawnId(event.spawnId)) {
                     NetworkEventWarning(event, "Entity does not exist any longer, or has not been spawned yet.");
@@ -5854,26 +5855,26 @@ public class Game_local {
                     }
                 }
 
-                entityNetEvent_s freedEvent = eventQueue.Dequeue();
+                final entityNetEvent_s freedEvent = this.eventQueue.Dequeue();
                 assert (freedEvent == event);
-                eventQueue.Free(event);
+                this.eventQueue.Free(event);
             }
         }
 
         private void ClientProcessEntityNetworkEventQueue() {
             idEntity ent;
             entityNetEvent_s event;
-            idBitMsg eventMsg = new idBitMsg();
+            final idBitMsg eventMsg = new idBitMsg();
 
-            while (eventQueue.Start() != null) {
-                event = eventQueue.Start();
+            while (this.eventQueue.Start() != null) {
+                event = this.eventQueue.Start();
 
                 // only process forward, in order
-                if (event.time > time) {
+                if (event.time > this.time) {
                     break;
                 }
 
-                idEntityPtr< idEntity> entPtr = new idEntityPtr<>();
+                final idEntityPtr< idEntity> entPtr = new idEntityPtr<>();
 
                 if (!entPtr.SetSpawnId(event.spawnId)) {
                     if (null == gameLocal.entities[ event.spawnId & ((1 << GENTITYNUM_BITS) - 1)]) {
@@ -5892,9 +5893,9 @@ public class Game_local {
                     }
                 }
 
-                entityNetEvent_s freedEvent = eventQueue.Dequeue();
+                final entityNetEvent_s freedEvent = this.eventQueue.Dequeue();
                 assert (freedEvent.equals(event));
-                eventQueue.Free(event);
+                this.eventQueue.Free(event);
             }
         }
 
@@ -5910,7 +5911,7 @@ public class Game_local {
                 return;
             }
 
-            player = (idPlayer) entities[clientNum];
+            player = (idPlayer) this.entities[clientNum];
             if (null == player) {
                 return;
             }
@@ -5918,9 +5919,9 @@ public class Game_local {
             viewAxis = player.viewAngles.ToMat3();
             viewBounds = player.GetPhysics().GetAbsBounds().Expand(net_clientShowSnapshotRadius.GetFloat());
 
-            for (ent = snapshotEntities.Next(); ent != null; ent = ent.snapshotNode.Next()) {
+            for (ent = this.snapshotEntities.Next(); ent != null; ent = ent.snapshotNode.Next()) {
 
-                if (net_clientShowSnapshot.GetInteger() == 1 && ent.snapshotBits == 0) {
+                if ((net_clientShowSnapshot.GetInteger() == 1) && (ent.snapshotBits == 0)) {
                     continue;
                 }
 
@@ -5930,14 +5931,14 @@ public class Game_local {
                     continue;
                 }
 
-                base = clientEntityStates[clientNum][ent.entityNumber];
+                base = this.clientEntityStates[clientNum][ent.entityNumber];
                 if (base != null) {
                     baseBits = base.state.GetNumBitsWritten();
                 } else {
                     baseBits = 0;
                 }
 
-                if (net_clientShowSnapshot.GetInteger() == 2 && baseBits == 0) {
+                if ((net_clientShowSnapshot.GetInteger() == 2) && (baseBits == 0)) {
                     continue;
                 }
 
@@ -5950,24 +5951,24 @@ public class Game_local {
 
         // call after any change to serverInfo. Will update various quick-access flags
         private void UpdateServerInfoFlags() {
-            gameType = GAME_SP;
-            if ((idStr.Icmp(serverInfo.GetString("si_gameType"), "deathmatch") == 0)) {
-                gameType = GAME_DM;
-            } else if ((idStr.Icmp(serverInfo.GetString("si_gameType"), "Tourney") == 0)) {
-                gameType = GAME_TOURNEY;
-            } else if ((idStr.Icmp(serverInfo.GetString("si_gameType"), "Team DM") == 0)) {
-                gameType = GAME_TDM;
-            } else if ((idStr.Icmp(serverInfo.GetString("si_gameType"), "Last Man") == 0)) {
-                gameType = GAME_LASTMAN;
+            this.gameType = GAME_SP;
+            if ((idStr.Icmp(this.serverInfo.GetString("si_gameType"), "deathmatch") == 0)) {
+                this.gameType = GAME_DM;
+            } else if ((idStr.Icmp(this.serverInfo.GetString("si_gameType"), "Tourney") == 0)) {
+                this.gameType = GAME_TOURNEY;
+            } else if ((idStr.Icmp(this.serverInfo.GetString("si_gameType"), "Team DM") == 0)) {
+                this.gameType = GAME_TDM;
+            } else if ((idStr.Icmp(this.serverInfo.GetString("si_gameType"), "Last Man") == 0)) {
+                this.gameType = GAME_LASTMAN;
             }
-            if (gameType == GAME_LASTMAN) {
-                if (0 == serverInfo.GetInt("si_warmup")) {
+            if (this.gameType == GAME_LASTMAN) {
+                if (0 == this.serverInfo.GetInt("si_warmup")) {
                     common.Warning("Last Man Standing - forcing warmup on");
-                    serverInfo.SetInt("si_warmup", 1);
+                    this.serverInfo.SetInt("si_warmup", 1);
                 }
-                if (serverInfo.GetInt("si_fraglimit") <= 0) {
+                if (this.serverInfo.GetInt("si_fraglimit") <= 0) {
                     common.Warning("Last Man Standing - setting fraglimit 1");
-                    serverInfo.SetInt("si_fraglimit", 1);
+                    this.serverInfo.SetInt("si_fraglimit", 1);
                 }
             }
         }
@@ -5980,44 +5981,44 @@ public class Game_local {
          ============
          */
         private void RandomizeInitialSpawns() {
-            spawnSpot_t spot = new spawnSpot_t();
+            final spawnSpot_t spot = new spawnSpot_t();
             int i, j;
             idEntity ent;
 
-            if (!isMultiplayer || isClient) {
+            if (!this.isMultiplayer || this.isClient) {
                 return;
             }
-            spawnSpots.Clear();
-            initialSpots.Clear();
+            this.spawnSpots.Clear();
+            this.initialSpots.Clear();
             spot.dist = 0;
             spot.ent = FindEntityUsingDef(null, "info_player_deathmatch");
             while (spot.ent != null) {
-                spawnSpots.Append(spot);
+                this.spawnSpots.Append(spot);
                 if (spot.ent.spawnArgs.GetBool("initial")) {
-                    initialSpots.Append(spot.ent);
+                    this.initialSpots.Append(spot.ent);
                 }
                 spot.ent = FindEntityUsingDef(spot.ent, "info_player_deathmatch");
             }
-            if (0 == spawnSpots.Num()) {
+            if (0 == this.spawnSpots.Num()) {
                 common.Warning("no info_player_deathmatch in map");
                 return;
             }
-            common.Printf("%d spawns (%d initials)\n", spawnSpots.Num(), initialSpots.Num());
+            common.Printf("%d spawns (%d initials)\n", this.spawnSpots.Num(), this.initialSpots.Num());
             // if there are no initial spots in the map, consider they can all be used as initial
-            if (0 == initialSpots.Num()) {
+            if (0 == this.initialSpots.Num()) {
                 common.Warning("no info_player_deathmatch entities marked initial in map");
-                for (i = 0; i < spawnSpots.Num(); i++) {
-                    initialSpots.Append(spawnSpots.oGet(i).ent);
+                for (i = 0; i < this.spawnSpots.Num(); i++) {
+                    this.initialSpots.Append(this.spawnSpots.oGet(i).ent);
                 }
             }
-            for (i = 0; i < initialSpots.Num(); i++) {
-                j = random.RandomInt(initialSpots.Num());
-                ent = initialSpots.oGet(i);
-                initialSpots.oSet(i, initialSpots.oGet(j));
-                initialSpots.oSet(j, ent);
+            for (i = 0; i < this.initialSpots.Num(); i++) {
+                j = this.random.RandomInt(this.initialSpots.Num());
+                ent = this.initialSpots.oGet(i);
+                this.initialSpots.oSet(i, this.initialSpots.oGet(j));
+                this.initialSpots.oSet(j, ent);
             }
             // reset the counter
-            currentInitialSpot = 0;
+            this.currentInitialSpot = 0;
         }
 
         private static class sortSpawnPoints implements cmp_t<spawnSpot_t> {
@@ -6035,12 +6036,12 @@ public class Game_local {
                     return 0;
                 }
             }
-        };
+        }
 
         private void DumpOggSounds() {
             int i, j, k, size, totalSize;
             idFile file;
-            idStrList oggSounds = new idStrList(), weaponSounds = new idStrList();
+            final idStrList oggSounds = new idStrList(), weaponSounds = new idStrList();
             idSoundShader soundShader;
             soundShaderParms_t parms;
             idStr soundName;
@@ -6049,9 +6050,9 @@ public class Game_local {
                 soundShader = (idSoundShader) declManager.DeclByIndex(DECL_SOUND, i, false);
                 parms = soundShader.GetParms();
 
-                if (soundShader.EverReferenced() && soundShader.GetState() != DS_DEFAULTED) {
+                if (soundShader.EverReferenced() && (soundShader.GetState() != DS_DEFAULTED)) {
 
-                    ((idSoundShader) soundShader).EnsureNotPurged();
+                    soundShader.EnsureNotPurged();
 
                     for (j = 0; j < soundShader.GetNumSounds(); j++) {
                         soundName = new idStr(soundShader.GetSound(j));
@@ -6060,33 +6061,33 @@ public class Game_local {
                         // don't OGG sounds that cause a shake because that would
                         // cause continuous seeking on the OGG file which is expensive
                         if (parms.shakes != 0.0f) {
-                            shakeSounds.AddUnique(soundName);
+                            this.shakeSounds.AddUnique(soundName);
                             continue;
                         }
 
                         // if not voice over or combat chatter
-                        if (soundName.Find("/vo/", false) == -1
-                                && soundName.Find("/combat_chatter/", false) == -1
-                                && soundName.Find("/bfgcarnage/", false) == -1
-                                && soundName.Find("/enpro/", false) == - 1
-                                && soundName.Find("/soulcube/energize_01.wav", false) == -1) {
+                        if ((soundName.Find("/vo/", false) == -1)
+                                && (soundName.Find("/combat_chatter/", false) == -1)
+                                && (soundName.Find("/bfgcarnage/", false) == -1)
+                                && (soundName.Find("/enpro/", false) == - 1)
+                                && (soundName.Find("/soulcube/energize_01.wav", false) == -1)) {
                             // don't OGG weapon sounds
-                            if (soundName.Find("weapon", false) != -1
-                                    || soundName.Find("gun", false) != -1
-                                    || soundName.Find("bullet", false) != -1
-                                    || soundName.Find("bfg", false) != -1
-                                    || soundName.Find("plasma", false) != -1) {
+                            if ((soundName.Find("weapon", false) != -1)
+                                    || (soundName.Find("gun", false) != -1)
+                                    || (soundName.Find("bullet", false) != -1)
+                                    || (soundName.Find("bfg", false) != -1)
+                                    || (soundName.Find("plasma", false) != -1)) {
                                 weaponSounds.AddUnique(soundName);
                                 continue;
                             }
                         }
 
-                        for (k = 0; k < shakeSounds.Num(); k++) {
-                            if (shakeSounds.oGet(k).IcmpPath(soundName.getData()) == 0) {
+                        for (k = 0; k < this.shakeSounds.Num(); k++) {
+                            if (this.shakeSounds.oGet(k).IcmpPath(soundName.getData()) == 0) {
                                 break;
                             }
                         }
-                        if (k < shakeSounds.Num()) {
+                        if (k < this.shakeSounds.Num()) {
                             continue;
                         }
 
@@ -6103,11 +6104,11 @@ public class Game_local {
 
             // list all the shake sounds
             totalSize = 0;
-            for (i = 0; i < shakeSounds.Num(); i++) {
-                size = fileSystem.ReadFile(shakeSounds.oGet(i), null, null);
+            for (i = 0; i < this.shakeSounds.Num(); i++) {
+                size = fileSystem.ReadFile(this.shakeSounds.oGet(i), null, null);
                 totalSize += size;
-                shakeSounds.oGet(i).Replace("/", "\\");
-                file.Printf("echo \"%s\" (%d kB)\n", shakeSounds.oGet(i), size >> 10);
+                this.shakeSounds.oGet(i).Replace("/", "\\");
+                file.Printf("echo \"%s\" (%d kB)\n", this.shakeSounds.oGet(i), size >> 10);
             }
             file.Printf("echo %d kB in shake sounds\n\n\n", totalSize >> 10);
 
@@ -6134,23 +6135,23 @@ public class Game_local {
 
             fileSystem.CloseFile(file);
 
-            shakeSounds.Clear();
+            this.shakeSounds.Clear();
         }
 
         private void GetShakeSounds(final idDict dict) {
             idSoundShader soundShader;
             final String soundShaderName;
-            idStr soundName = new idStr();
+            final idStr soundName = new idStr();
 
             soundShaderName = dict.GetString("s_shader");
-            if (!soundShaderName.isEmpty() && dict.GetFloat("s_shakes") != 0.0f) {
+            if (!soundShaderName.isEmpty() && (dict.GetFloat("s_shakes") != 0.0f)) {
                 soundShader = declManager.FindSound(soundShaderName);
 
                 for (int i = 0; i < soundShader.GetNumSounds(); i++) {
                     soundName.oSet(soundShader.GetSound(i));
                     soundName.BackSlashesToSlashes();
 
-                    shakeSounds.AddUnique(soundName);
+                    this.shakeSounds.AddUnique(soundName);
                 }
             }
         }
@@ -6191,8 +6192,8 @@ public class Game_local {
 //			token = NULL;
 //		}		
 //	}
-            String[] tokens = in.split(";");
-            for (String token : tokens) {
+            final String[] tokens = in.split(";");
+            for (final String token : tokens) {
                 out.Append(token);
             }
         }
@@ -6203,38 +6204,38 @@ public class Game_local {
 
             for (i = 0; i < LAGO_HEIGHT; i++) {
 //                memmove( (byte *)lagometer + LAGO_WIDTH * 4 * i, (byte *)lagometer + LAGO_WIDTH * 4 * i + 4, ( LAGO_WIDTH - 1 ) * 4 );
-                memmove(lagometer, LAGO_WIDTH * 4 * i, lagometer, LAGO_WIDTH * 4 * i + 4, (LAGO_WIDTH - 1) * 4);//TODO:flatten 3d array and copy
+                memmove(this.lagometer, LAGO_WIDTH * 4 * i, this.lagometer, (LAGO_WIDTH * 4 * i) + 4, (LAGO_WIDTH - 1) * 4);//TODO:flatten 3d array and copy
             }
             j = LAGO_WIDTH - 1;
             for (i = 0; i < LAGO_HEIGHT; i++) {
-                lagometer[i][j][0] = lagometer[i][j][1] = lagometer[i][j][2] = lagometer[i][j][3] = 0;
+                this.lagometer[i][j][0] = this.lagometer[i][j][1] = this.lagometer[i][j][2] = this.lagometer[i][j][3] = 0;
             }
-            ahead = (int) idMath.Rint((float) aheadOfServer / 16.0f);
+            ahead = (int) idMath.Rint(aheadOfServer / 16.0f);
             if (ahead >= 0) {
-                for (i = 2 * Max(0, 5 - ahead); i < 2 * 5; i++) {
-                    lagometer[i][j][1] = CCLV;
-                    lagometer[i][j][3] = CCLV;
+                for (i = 2 * Max(0, 5 - ahead); i < (2 * 5); i++) {
+                    this.lagometer[i][j][1] = CCLV;
+                    this.lagometer[i][j][3] = CCLV;
                 }
             } else {
-                for (i = 2 * 5; i < 2 * (5 + Min(10, -ahead)); i++) {
-                    lagometer[i][j][0] = CCLV;
-                    lagometer[i][j][1] = CCLV;
-                    lagometer[i][j][3] = CCLV;
+                for (i = 2 * 5; i < (2 * (5 + Min(10, -ahead))); i++) {
+                    this.lagometer[i][j][0] = CCLV;
+                    this.lagometer[i][j][1] = CCLV;
+                    this.lagometer[i][j][3] = CCLV;
                 }
             }
-            for (i = LAGO_HEIGHT - 2 * Min(6, dupeUsercmds); i < LAGO_HEIGHT; i++) {
-                lagometer[i][j][0] = CCLV;
+            for (i = LAGO_HEIGHT - (2 * Min(6, dupeUsercmds)); i < LAGO_HEIGHT; i++) {
+                this.lagometer[i][j][0] = CCLV;
                 if (dupeUsercmds <= 2) {
-                    lagometer[i][j][1] = CCLV;
+                    this.lagometer[i][j][1] = CCLV;
                 }
-                lagometer[i][j][3] = CCLV;
+                this.lagometer[i][j][3] = CCLV;
             }
         }
 
         @Override
         public void GetMapLoadingGUI(char[] gui/*[MAX_STRING_CHARS ]*/) {
         }
-    };
+    }
     //============================================================================
 
     public static final idAnimManager animationLib = new idAnimManager();
@@ -6250,7 +6251,7 @@ public class Game_local {
 		public idGameError(final String text) {
             super(text);
         }
-    };
+    }
     //============================================================================
 
 //
@@ -6274,7 +6275,7 @@ public class Game_local {
         // internal use only.  not exposed to script or framecommands.
         SND_CHANNEL_AMBIENT,
         SND_CHANNEL_DAMAGE
-    };
+    }
 //    
 // content masks
     public static final int MASK_ALL = (-1);
@@ -6339,7 +6340,7 @@ public class Game_local {
      ============
      */
     static void TestGameAPI() {
-        gameImport_t testImport = new gameImport_t();
+        final gameImport_t testImport = new gameImport_t();
         gameExport_t testExport = new gameExport_t();
 
         testImport.sys = sys;
@@ -6365,15 +6366,15 @@ public class Game_local {
 
         sc = srcOffset % src.length;
         sb = (srcOffset - sc) / src.length;
-        sa = (srcOffset - sc - sb * src.length) / src[0].length;
+        sa = (srcOffset - sc - (sb * src.length)) / src[0].length;
 
         dc = dstOffset % dst.length;
         db = (dstOffset - dc) / dst.length;
-        da = (dstOffset - dc - db * dst.length) / dst[0].length;
+        da = (dstOffset - dc - (db * dst.length)) / dst[0].length;
 
         for (int count = 0; sa < src.length; sa++) {
             for (sb = 0; sb < src[0].length; sb++) {
-                for (; sc < src[0][0].length && count < length; sc++, count++) {
+                for (; (sc < src[0][0].length) && (count < length); sc++, count++) {
                     dst[da][db][dc++] = src[sa][sb][sc];
 
                     if (dc == dst[0][0].length) {

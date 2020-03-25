@@ -106,7 +106,7 @@ public class tritjunction {
                 }
             }
         }
-    };
+    }
     static idBounds hashBounds;
     static idVec3   hashScale;
     static final hashVert_s[][][] hashVerts = new hashVert_s[HASH_BINS][HASH_BINS][HASH_BINS];
@@ -121,8 +121,8 @@ public class tritjunction {
      ===============
      */
     static hashVert_s GetHashVert(idVec3 v) {
-        int[] iv = new int[3];
-        int[] block = new int[3];
+        final int[] iv = new int[3];
+        final int[] block = new int[3];
         int i;
         hashVert_s hv;
 
@@ -130,7 +130,7 @@ public class tritjunction {
 
         // snap the vert to integral values
         for (i = 0; i < 3; i++) {
-            iv[i] = (int) floor((v.oGet(i) + 0.5 / SNAP_FRACTIONS) * SNAP_FRACTIONS);
+            iv[i] = (int) floor((v.oGet(i) + (0.5 / SNAP_FRACTIONS)) * SNAP_FRACTIONS);
             block[i] = (iv[i] - hashIntMins[i]) / hashIntScale[i];
             if (block[i] < 0) {
                 block[i] = 0;
@@ -151,7 +151,7 @@ public class tritjunction {
             for (i = 0; i < 3; i++) {
                 int d;
                 d = hv.iv[i] - iv[i];
-                if (d < -1 || d > 1) {
+                if ((d < -1) || (d > 1)) {
                     break;
                 }
             }
@@ -193,7 +193,7 @@ public class tritjunction {
      ==================
      */
     static void HashBlocksForTri(final mapTri_s tri, int[][] blocks/*[2][3]*/) {
-        idBounds bounds = new idBounds();
+        final idBounds bounds = new idBounds();
         int i;
 
         bounds.Clear();
@@ -210,7 +210,7 @@ public class tritjunction {
                 blocks[0][i] = HASH_BINS - 1;
             }
 
-            blocks[1][i] = (int) ((bounds.oGet(1, i) + 1.0 - hashBounds.oGet(0, i)) / hashScale.oGet(i));
+            blocks[1][i] = (int) (((bounds.oGet(1, i) + 1.0) - hashBounds.oGet(0, i)) / hashScale.oGet(i));
             if (blocks[1][i] < 0) {
                 blocks[1][i] = 0;
             } else if (blocks[1][i] >= HASH_BINS) {
@@ -266,7 +266,7 @@ public class tritjunction {
         // add all the points to the hash buckets
         for (group = groupList; group != null; group = group.nextGroup) {
             // don't create tjunctions against discrete surfaces (blood decals, etc)
-            if (group.material != null && group.material.IsDiscrete()) {
+            if ((group.material != null) && group.material.IsDiscrete()) {
                 continue;
             }
             for (a = group.triList; a != null; a = a.next) {
@@ -315,15 +315,15 @@ public class tritjunction {
     static mapTri_s FixTriangleAgainstHashVert(final mapTri_s a, final hashVert_s hv) {
         int i;
         idDrawVert v1, v2, v3;
-        idDrawVert split = new idDrawVert();
-        idVec3 dir = new idVec3();
+        final idDrawVert split = new idDrawVert();
+        final idVec3 dir = new idVec3();
         float len;
         float frac;
         mapTri_s new1, new2;
-        idVec3 temp = new idVec3();
+        final idVec3 temp = new idVec3();
         float d, off;
         idVec3 v;
-        idPlane plane1 = new idPlane(), plane2 = new idPlane();
+        final idPlane plane1 = new idPlane(), plane2 = new idPlane();
 
         v = hv.v;
 
@@ -346,7 +346,7 @@ public class tritjunction {
             // if it is close to one of the edge vertexes, skip it
             VectorSubtract(v, v1.xyz, temp);
             d = DotProduct(temp, dir);
-            if (d <= 0 || d >= len) {
+            if ((d <= 0) || (d >= len)) {
                 continue;
             }
 
@@ -354,7 +354,7 @@ public class tritjunction {
             VectorMA(v1.xyz, d, dir, temp);
             VectorSubtract(temp, v, temp);
             off = temp.Length();
-            if (off <= -COLINEAR_EPSILON || off >= COLINEAR_EPSILON) {
+            if ((off <= -COLINEAR_EPSILON) || (off >= COLINEAR_EPSILON)) {
                 continue;
             }
 
@@ -362,11 +362,11 @@ public class tritjunction {
             // but interpolate everything else from the original tri
             VectorCopy(v, split.xyz);
             frac = d / len;
-            split.st.oSet(0, v1.st.oGet(0) + frac * (v2.st.oGet(0) - v1.st.oGet(0)));
-            split.st.oSet(1, v1.st.oGet(1) + frac * (v2.st.oGet(1) - v1.st.oGet(1)));
-            split.normal.oSet(0, v1.normal.oGet(0) + frac * (v2.normal.oGet(0) - v1.normal.oGet(0)));
-            split.normal.oSet(1, v1.normal.oGet(1) + frac * (v2.normal.oGet(1) - v1.normal.oGet(1)));
-            split.normal.oSet(2, v1.normal.oGet(2) + frac * (v2.normal.oGet(2) - v1.normal.oGet(2)));
+            split.st.oSet(0, v1.st.oGet(0) + (frac * (v2.st.oGet(0) - v1.st.oGet(0))));
+            split.st.oSet(1, v1.st.oGet(1) + (frac * (v2.st.oGet(1) - v1.st.oGet(1))));
+            split.normal.oSet(0, v1.normal.oGet(0) + (frac * (v2.normal.oGet(0) - v1.normal.oGet(0))));
+            split.normal.oSet(1, v1.normal.oGet(1) + (frac * (v2.normal.oGet(1) - v1.normal.oGet(1))));
+            split.normal.oSet(2, v1.normal.oGet(2) + (frac * (v2.normal.oGet(2) - v1.normal.oGet(2))));
             split.normal.Normalize();
 
             // split the tri
@@ -409,16 +409,16 @@ public class tritjunction {
         mapTri_s fixed;
         mapTri_s a;
         mapTri_s test, next;
-        int[][] blocks = new int[2][3];
+        final int[][] blocks = new int[2][3];
         int i, j, k;
         hashVert_s hv;
 
         // if this triangle is degenerate after point snapping,
         // do nothing (this shouldn't happen, because they should
         // be removed as they are hashed)
-        if (tri.hashVert[0] == tri.hashVert[1]
-                || tri.hashVert[0] == tri.hashVert[2]
-                || tri.hashVert[1] == tri.hashVert[2]) {
+        if ((tri.hashVert[0] == tri.hashVert[1])
+                || (tri.hashVert[0] == tri.hashVert[2])
+                || (tri.hashVert[1] == tri.hashVert[2])) {
             return null;
         }
 
@@ -502,7 +502,7 @@ public class tritjunction {
 
         for (group = groupList; group != null; group = group.nextGroup) {
             // don't touch discrete surfaces
-            if (group.material != null && group.material.IsDiscrete()) {
+            if ((group.material != null) && group.material.IsDiscrete()) {
                 continue;
             }
 
@@ -586,7 +586,7 @@ public class tritjunction {
         for (areaNum = 0; areaNum < e.numAreas; areaNum++) {
             for (group = e.areas[areaNum].groups; group != null; group = group.nextGroup) {
                 // don't touch discrete surfaces
-                if (group.material != null && group.material.IsDiscrete()) {
+                if ((group.material != null) && group.material.IsDiscrete()) {
                     continue;
                 }
 
@@ -602,7 +602,7 @@ public class tritjunction {
         // optionally inline some of the func_static models
         if (dmapGlobals.entityNum == 0) {
             for (int eNum = 1; eNum < dmapGlobals.num_entities; eNum++) {
-                uEntity_t entity = dmapGlobals.uEntities[eNum];
+                final uEntity_t entity = dmapGlobals.uEntities[eNum];
                 final String className = entity.mapEntity.epairs.GetString("classname");
                 if (idStr.Icmp(className, "func_static") != 0) {
                     continue;
@@ -615,13 +615,13 @@ public class tritjunction {
                     continue;
                 }
 
-                idRenderModel model = renderModelManager.FindModel(modelName);
+                final idRenderModel model = renderModelManager.FindModel(modelName);
 
 //			common.Printf( "adding T junction verts for %s.\n", entity.mapEntity.epairs.GetString( "name" ) );
                 idMat3 axis = new idMat3();
                 // get the rotation matrix in either full form, or single angle form
                 if (!entity.mapEntity.epairs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
-                    float angle = entity.mapEntity.epairs.GetFloat("angle");
+                    final float angle = entity.mapEntity.epairs.GetFloat("angle");
                     if (angle != 0.0f) {
                         axis = new idAngles(0.0f, angle, 0.0f).ToMat3();
                     } else {
@@ -629,13 +629,13 @@ public class tritjunction {
                     }
                 }
 
-                idVec3 origin = entity.mapEntity.epairs.GetVector("origin");
+                final idVec3 origin = entity.mapEntity.epairs.GetVector("origin");
 
                 for (i = 0; i < model.NumSurfaces(); i++) {
                     final modelSurface_s surface = model.Surface(i);
                     final srfTriangles_s tri = surface.geometry;
 
-                    mapTri_s mapTri = new mapTri_s();
+                    final mapTri_s mapTri = new mapTri_s();
 //				memset( &mapTri, 0, sizeof( mapTri ) );
                     mapTri.material = surface.shader;
                     // don't let discretes (autosprites, etc) merge together
@@ -643,7 +643,7 @@ public class tritjunction {
                         mapTri.mergeGroup = surface;
                     }
                     for (int j = 0; j < tri.numVerts; j += 3) {
-                        idVec3 v = tri.verts[j].xyz.oMultiply(axis).oPlus(origin);
+                        final idVec3 v = tri.verts[j].xyz.oMultiply(axis).oPlus(origin);
                         GetHashVert(v);
                     }
                 }
@@ -654,13 +654,13 @@ public class tritjunction {
         for (areaNum = 0; areaNum < e.numAreas; areaNum++) {
             for (group = e.areas[areaNum].groups; group != null; group = group.nextGroup) {
                 // don't touch discrete surfaces
-                if (group.material != null && group.material.IsDiscrete()) {
+                if ((group.material != null) && group.material.IsDiscrete()) {
                     continue;
                 }
 
                 mapTri_s newList = null;
                 for (mapTri_s tri = group.triList; tri != null; tri = tri.next) {
-                    mapTri_s fixed = FixTriangleAgainstHash(tri);
+                    final mapTri_s fixed = FixTriangleAgainstHash(tri);
                     newList = MergeTriLists(newList, fixed);
                 }
                 FreeTriList(group.triList);

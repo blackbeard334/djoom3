@@ -123,7 +123,7 @@ public class Compressor {
         public boolean Seek(long offset, fsOrigin_t origin) throws idException {
             return super.Seek(offset, origin);
         }
-    };
+    }
 
     /*
      =================================================================================
@@ -135,8 +135,8 @@ public class Compressor {
     static class idCompressor_None extends idCompressor {
 
         public idCompressor_None() {
-            file = null;
-            compress = true;
+            this.file = null;
+            this.compress = true;
         }
 
         @Override
@@ -156,8 +156,8 @@ public class Compressor {
 
         @Override
         public String GetName() {
-            if (file != null) {
-                return file.GetName();
+            if (this.file != null) {
+                return this.file.GetName();
             } else {
                 return "";
             }
@@ -165,8 +165,8 @@ public class Compressor {
 
         @Override
         public String GetFullPath() {
-            if (file != null) {
-                return file.GetFullPath();
+            if (this.file != null) {
+                return this.file.GetFullPath();
             } else {
                 return "";
             }
@@ -174,24 +174,24 @@ public class Compressor {
 
         @Override
         public int Read(ByteBuffer outData) {
-            if (compress == true /*|| outLength <= 0*/) {
+            if (this.compress == true /*|| outLength <= 0*/) {
                 return 0;
             }
-            return file.Read(outData);
+            return this.file.Read(outData);
         }
 
         @Override
         public int Write(ByteBuffer inData) {
-            if (compress == false) {
+            if (this.compress == false) {
                 return 0;
             }
-            return file.Write(inData);
+            return this.file.Write(inData);
         }
 
         @Override
         public int Length() {
-            if (file != null) {
-                return file.Length();
+            if (this.file != null) {
+                return this.file.Length();
             } else {
                 return 0;
             }
@@ -199,8 +199,8 @@ public class Compressor {
 
         @Override
         public long Timestamp() {
-            if (file != null) {
-                return file.Timestamp();
+            if (this.file != null) {
+                return this.file.Timestamp();
             } else {
                 return 0;
             }
@@ -208,8 +208,8 @@ public class Compressor {
 
         @Override
         public int Tell() {
-            if (file != null) {
-                return file.Tell();
+            if (this.file != null) {
+                return this.file.Tell();
             } else {
                 return 0;
             }
@@ -217,15 +217,15 @@ public class Compressor {
 
         @Override
         public void ForceFlush() {
-            if (file != null) {
-                file.ForceFlush();
+            if (this.file != null) {
+                this.file.ForceFlush();
             }
         }
 
         @Override
         public void Flush() {
-            if (file != null) {
-                file.ForceFlush();
+            if (this.file != null) {
+                this.file.ForceFlush();
             }
         }
 
@@ -238,7 +238,7 @@ public class Compressor {
 //
         protected idFile file;
         protected boolean compress;
-    };
+    }
 
     /*
      =================================================================================
@@ -274,45 +274,45 @@ public class Compressor {
         @Override
         public void Init(idFile f, boolean compress, int wordLength) {
 
-            assert (wordLength >= 1 && wordLength <= 32);
+            assert ((wordLength >= 1) && (wordLength <= 32));
 
             this.file = f;
             this.compress = compress;
             this.wordLength = wordLength;
 
-            readTotalBytes = 0;
-            readLength = 0;
-            readByte = 0;
-            readBit = 0;
-            readData = null;
+            this.readTotalBytes = 0;
+            this.readLength = 0;
+            this.readByte = 0;
+            this.readBit = 0;
+            this.readData = null;
 
-            writeTotalBytes = 0;
-            writeLength = 0;
-            writeByte = 0;
-            writeBit = 0;
-            writeData = null;
+            this.writeTotalBytes = 0;
+            this.writeLength = 0;
+            this.writeByte = 0;
+            this.writeBit = 0;
+            this.writeData = null;
         }
 
         @Override
         public void FinishCompress() {
-            if (compress == false) {
+            if (this.compress == false) {
                 return;
             }
 
-            if (writeByte != 0) {//TODO:wtf?
-                file.Write(buffer, writeByte);
+            if (this.writeByte != 0) {//TODO:wtf?
+                this.file.Write(this.buffer, this.writeByte);
             }
-            writeLength = 0;
-            writeByte = 0;
-            writeBit = 0;
+            this.writeLength = 0;
+            this.writeByte = 0;
+            this.writeBit = 0;
         }
 
         @Override
         public float GetCompressionRatio() {
-            if (compress) {
-                return (readTotalBytes - writeTotalBytes) * 100.0f / readTotalBytes;
+            if (this.compress) {
+                return ((this.readTotalBytes - this.writeTotalBytes) * 100.0f) / this.readTotalBytes;
             } else {
-                return (writeTotalBytes - readTotalBytes) * 100.0f / writeTotalBytes;
+                return ((this.writeTotalBytes - this.readTotalBytes) * 100.0f) / this.writeTotalBytes;
             }
         }
 
@@ -320,7 +320,7 @@ public class Compressor {
         public int Write(final ByteBuffer inData, int inLength) {
             int i;
 
-            if (compress == false || inLength <= 0) {
+            if ((this.compress == false) || (inLength <= 0)) {
                 return 0;
             }
 
@@ -336,13 +336,13 @@ public class Compressor {
         public int Read(ByteBuffer outData, int outLength) {
             int i;
 
-            if (compress == true || outLength <= 0) {
+            if ((this.compress == true) || (outLength <= 0)) {
                 return 0;
             }
 
             InitDecompress(outData, outLength);
 
-            for (i = 0; i < outLength && readLength >= 0; i++) {
+            for (i = 0; (i < outLength) && (this.readLength >= 0); i++) {
                 WriteBits(ReadBits(8), 8);
             }
             return i;
@@ -350,16 +350,16 @@ public class Compressor {
 
         protected void InitCompress(final ByteBuffer inData, final int inLength) {
 
-            readLength = inLength;
-            readByte = 0;
-            readBit = 0;
-            readData = inData;
+            this.readLength = inLength;
+            this.readByte = 0;
+            this.readBit = 0;
+            this.readData = inData;
 
-            if (0 == writeLength) {
-                writeLength = buffer.capacity();
-                writeByte = 0;
-                writeBit = 0;
-                writeData = buffer;
+            if (0 == this.writeLength) {
+                this.writeLength = this.buffer.capacity();
+                this.writeByte = 0;
+                this.writeBit = 0;
+                this.writeData = this.buffer;
             }
         }
 
@@ -369,17 +369,17 @@ public class Compressor {
 
         protected void InitDecompress(ByteBuffer outData, int outLength) {
 
-            if (0 == readLength) {
-                readLength = file.Read(buffer);
-                readByte = 0;
-                readBit = 0;
-                readData = buffer;
+            if (0 == this.readLength) {
+                this.readLength = this.file.Read(this.buffer);
+                this.readByte = 0;
+                this.readBit = 0;
+                this.readData = this.buffer;
             }
 
-            writeLength = outLength;
-            writeByte = 0;
-            writeBit = 0;
-            writeData = outData;
+            this.writeLength = outLength;
+            this.writeByte = 0;
+            this.writeBit = 0;
+            this.writeData = outData;
         }
 
         protected void InitDecompress(byte[] outData, int outLength) {
@@ -390,44 +390,44 @@ public class Compressor {
             int put, fraction;
 
             // Short circuit for writing single bytes at a time
-            if (writeBit == 0 && numBits == 8 && writeByte < writeLength) {
-                writeByte++;
-                writeTotalBytes++;
-                writeData.putInt(writeByte - 1, value);//TODO:check if inputs should be cast to bytes or stores as INT in this case (4 bytes)
+            if ((this.writeBit == 0) && (numBits == 8) && (this.writeByte < this.writeLength)) {
+                this.writeByte++;
+                this.writeTotalBytes++;
+                this.writeData.putInt(this.writeByte - 1, value);//TODO:check if inputs should be cast to bytes or stores as INT in this case (4 bytes)
                 return;
             }
 
             while (numBits != 0) {
-                if (writeBit == 0) {
-                    if (writeByte >= writeLength) {
-                        if (writeData == buffer) {
-                            file.Write(buffer, writeByte);
-                            writeByte = 0;
+                if (this.writeBit == 0) {
+                    if (this.writeByte >= this.writeLength) {
+                        if (this.writeData == this.buffer) {
+                            this.file.Write(this.buffer, this.writeByte);
+                            this.writeByte = 0;
                         } else {
                             put = numBits;
-                            writeBit = put & 7;
-                            writeByte += (put >> 3) + (writeBit != 0 ? 1 : 0);
-                            writeTotalBytes += (put >> 3) + (writeBit != 0 ? 1 : 0);
+                            this.writeBit = put & 7;
+                            this.writeByte += (put >> 3) + (this.writeBit != 0 ? 1 : 0);
+                            this.writeTotalBytes += (put >> 3) + (this.writeBit != 0 ? 1 : 0);
                             return;
                         }
                     }
-                    writeData.putInt(writeByte, 0);
-                    writeByte++;
-                    writeTotalBytes++;
+                    this.writeData.putInt(this.writeByte, 0);
+                    this.writeByte++;
+                    this.writeTotalBytes++;
                 }
-                put = 8 - writeBit;
+                put = 8 - this.writeBit;
                 if (put > numBits) {
                     put = numBits;
                 }
                 fraction = value & ((1 << put) - 1);
                 {
-                    final int pos = writeByte - 1;
-                    final int val = writeData.getInt(pos) | fraction << writeBit;
-                    writeData.putInt(pos, val);
+                    final int pos = this.writeByte - 1;
+                    final int val = this.writeData.getInt(pos) | (fraction << this.writeBit);
+                    this.writeData.putInt(pos, val);
                 }
                 numBits -= put;
                 value >>= put;
-                writeBit = (writeBit + put) & 7;
+                this.writeBit = (this.writeBit + put) & 7;
             }
         }
 
@@ -438,60 +438,60 @@ public class Compressor {
             valueBits = 0;
 
             // Short circuit for reading single bytes at a time
-            if (readBit == 0 && numBits == 8 && readByte < readLength) {
-                readByte++;
-                readTotalBytes++;
-                return readData.getInt(readByte - 1);
+            if ((this.readBit == 0) && (numBits == 8) && (this.readByte < this.readLength)) {
+                this.readByte++;
+                this.readTotalBytes++;
+                return this.readData.getInt(this.readByte - 1);
             }
 
             while (valueBits < numBits) {
-                if (readBit == 0) {
-                    if (readByte >= readLength) {
-                        if (readData == buffer) {
-                            readLength = file.Read(buffer);
-                            readByte = 0;
+                if (this.readBit == 0) {
+                    if (this.readByte >= this.readLength) {
+                        if (this.readData == this.buffer) {
+                            this.readLength = this.file.Read(this.buffer);
+                            this.readByte = 0;
                         } else {
                             get = numBits - valueBits;
-                            readBit = get & 7;
-                            readByte += (get >> 3) + (readBit != 0 ? 1 : 0);
-                            readTotalBytes += (get >> 3) + (readBit != 0 ? 1 : 0);
+                            this.readBit = get & 7;
+                            this.readByte += (get >> 3) + (this.readBit != 0 ? 1 : 0);
+                            this.readTotalBytes += (get >> 3) + (this.readBit != 0 ? 1 : 0);
                             return value;
                         }
                     }
-                    readByte++;
-                    readTotalBytes++;
+                    this.readByte++;
+                    this.readTotalBytes++;
                 }
-                get = 8 - readBit;
+                get = 8 - this.readBit;
                 if (get > (numBits - valueBits)) {
                     get = (numBits - valueBits);
                 }
-                fraction = readData.get(readByte - 1);
-                fraction >>= readBit;
+                fraction = this.readData.get(this.readByte - 1);
+                fraction >>= this.readBit;
                 fraction &= (1 << get) - 1;
                 value |= fraction << valueBits;
                 valueBits += get;
-                readBit = (readBit + get) & 7;
+                this.readBit = (this.readBit + get) & 7;
             }
 
             return value;
         }
 
         protected void UnreadBits(int numBits) {
-            readByte -= (numBits >> 3);
-            readTotalBytes -= (numBits >> 3);
-            if (readBit == 0) {
-                readBit = 8 - (numBits & 7);
+            this.readByte -= (numBits >> 3);
+            this.readTotalBytes -= (numBits >> 3);
+            if (this.readBit == 0) {
+                this.readBit = 8 - (numBits & 7);
             } else {
-                readBit -= numBits & 7;
-                if (readBit <= 0) {
-                    readByte--;
-                    readTotalBytes--;
-                    readBit = (readBit + 8) & 7;
+                this.readBit -= numBits & 7;
+                if (this.readBit <= 0) {
+                    this.readByte--;
+                    this.readTotalBytes--;
+                    this.readBit = (this.readBit + 8) & 7;
                 }
             }
-            if (readByte < 0) {
-                readByte = 0;
-                readBit = 0;
+            if (this.readByte < 0) {
+                this.readByte = 0;
+                this.readBit = 0;
             }
         }
 
@@ -499,7 +499,7 @@ public class Compressor {
             int i;
 
             // If the two bit pointers are aligned then we can use a faster comparison
-            if ((bitPtr1 & 7) == (bitPtr2 & 7) && maxBits > 16) {
+            if (((bitPtr1 & 7) == (bitPtr2 & 7)) && (maxBits > 16)) {
                 int p1 = bitPtr1 >> 3;
                 int p2 = bitPtr2 >> 3;
 
@@ -522,7 +522,7 @@ public class Compressor {
                 int remain = bitsRemain >> 3;
 
                 // Compare the middle bytes as ints
-                while (remain >= 4 && ((int) src1[p1] == (int) src2[p2])) {
+                while ((remain >= 4) && (src1[p1] == src2[p2])) {
                     p1 += 4;
                     p2 += 4;
                     remain -= 4;
@@ -530,7 +530,7 @@ public class Compressor {
                 }
 
                 // Compare the remaining bytes
-                while (remain > 0 && (src1[p1] == src2[p2])) {
+                while ((remain > 0) && (src1[p1] == src2[p2])) {
                     p1++;
                     p2++;
                     remain--;
@@ -561,7 +561,7 @@ public class Compressor {
                 return i;
             }
         }
-    };
+    }
 
     /*
      =================================================================================
@@ -581,43 +581,43 @@ public class Compressor {
         @Override
         public void Init(idFile f, boolean compress, int wordLength) {
             super.Init(f, compress, wordLength);
-            runLengthCode = (1 << wordLength) - 1;
+            this.runLengthCode = (1 << wordLength) - 1;
         }
 
         @Override
         public int Write(final ByteBuffer inData, int inLength) {
             int bits, nextBits, count;
 
-            if (compress == false || inLength <= 0) {
+            if ((this.compress == false) || (inLength <= 0)) {
                 return 0;
             }
 
             InitCompress(inData, inLength);
 
-            while (readByte <= readLength) {
+            while (this.readByte <= this.readLength) {
                 count = 1;
-                bits = ReadBits(wordLength);
-                for (nextBits = ReadBits(wordLength); nextBits == bits; nextBits = ReadBits(wordLength)) {
+                bits = ReadBits(this.wordLength);
+                for (nextBits = ReadBits(this.wordLength); nextBits == bits; nextBits = ReadBits(this.wordLength)) {
                     count++;
-                    if (count >= (1 << wordLength)) {
-                        if (count >= (1 << wordLength) + 3 || bits == runLengthCode) {
+                    if (count >= (1 << this.wordLength)) {
+                        if ((count >= ((1 << this.wordLength) + 3)) || (bits == this.runLengthCode)) {
                             break;
                         }
                     }
                 }
                 if (nextBits != bits) {
-                    UnreadBits(wordLength);
+                    UnreadBits(this.wordLength);
                 }
-                if (count > 3 || bits == runLengthCode) {
-                    WriteBits(runLengthCode, wordLength);
-                    WriteBits(bits, wordLength);
-                    if (bits != runLengthCode) {
+                if ((count > 3) || (bits == this.runLengthCode)) {
+                    WriteBits(this.runLengthCode, this.wordLength);
+                    WriteBits(bits, this.wordLength);
+                    if (bits != this.runLengthCode) {
                         count -= 3;
                     }
-                    WriteBits(count - 1, wordLength);
+                    WriteBits(count - 1, this.wordLength);
                 } else {
                     while (count-- != 0) {
-                        WriteBits(bits, wordLength);
+                        WriteBits(bits, this.wordLength);
                     }
                 }
             }
@@ -629,34 +629,34 @@ public class Compressor {
         public int Read(ByteBuffer outData, int outLength) {
             int bits, count;
 
-            if (compress == true || outLength <= 0) {
+            if ((this.compress == true) || (outLength <= 0)) {
                 return 0;
             }
 
             InitDecompress(outData, outLength);
 
-            while (writeByte <= writeLength && readLength >= 0) {
-                bits = ReadBits(wordLength);
-                if (bits == runLengthCode) {
-                    bits = ReadBits(wordLength);
-                    count = ReadBits(wordLength) + 1;
-                    if (bits != runLengthCode) {
+            while ((this.writeByte <= this.writeLength) && (this.readLength >= 0)) {
+                bits = ReadBits(this.wordLength);
+                if (bits == this.runLengthCode) {
+                    bits = ReadBits(this.wordLength);
+                    count = ReadBits(this.wordLength) + 1;
+                    if (bits != this.runLengthCode) {
                         count += 3;
                     }
                     while (count-- != 0) {
-                        WriteBits(bits, wordLength);
+                        WriteBits(bits, this.wordLength);
                     }
                 } else {
-                    WriteBits(bits, wordLength);
+                    WriteBits(bits, this.wordLength);
                 }
             }
 
-            return writeByte;
+            return this.writeByte;
         }
 //
 //
         private int runLengthCode;
-    };
+    }
 
     /*
      =================================================================================
@@ -677,23 +677,23 @@ public class Compressor {
         public int Write(final ByteBuffer inData, int inLength) {
             int bits, count;
 
-            if (compress == false || inLength <= 0) {
+            if ((this.compress == false) || (inLength <= 0)) {
                 return 0;
             }
 
             InitCompress(inData, inLength);
 
-            while (readByte <= readLength) {
+            while (this.readByte <= this.readLength) {
                 count = 0;
-                for (bits = ReadBits(wordLength); bits == 0 && count < (1 << wordLength); bits = ReadBits(wordLength)) {
+                for (bits = ReadBits(this.wordLength); (bits == 0) && (count < (1 << this.wordLength)); bits = ReadBits(this.wordLength)) {
                     count++;
                 }
                 if (count != 0) {
-                    WriteBits(0, wordLength);
-                    WriteBits(count - 1, wordLength);
-                    UnreadBits(wordLength);
+                    WriteBits(0, this.wordLength);
+                    WriteBits(count - 1, this.wordLength);
+                    UnreadBits(this.wordLength);
                 } else {
-                    WriteBits(bits, wordLength);
+                    WriteBits(bits, this.wordLength);
                 }
             }
 
@@ -704,27 +704,27 @@ public class Compressor {
         public int Read(ByteBuffer outData, int outLength) {
             int bits, count;
 
-            if (compress == true || outLength <= 0) {
+            if ((this.compress == true) || (outLength <= 0)) {
                 return 0;
             }
 
             InitDecompress(outData, outLength);
 
-            while (writeByte <= writeLength && readLength >= 0) {
-                bits = ReadBits(wordLength);
+            while ((this.writeByte <= this.writeLength) && (this.readLength >= 0)) {
+                bits = ReadBits(this.wordLength);
                 if (bits == 0) {
-                    count = ReadBits(wordLength) + 1;
+                    count = ReadBits(this.wordLength) + 1;
                     while (count-- > 0) {
-                        WriteBits(0, wordLength);
+                        WriteBits(0, this.wordLength);
                     }
                 } else {
-                    WriteBits(bits, wordLength);
+                    WriteBits(bits, this.wordLength);
                 }
             }
 
-            return writeByte;
+            return this.writeByte;
         }
-    };
+    }
     static final int HMAX = 256;				// Maximum symbol
     static final int NYT = HMAX;				// NYT = Not Yet Transmitted
     static final int INTERNAL_NODE = HMAX + 1;			// internal node
@@ -736,10 +736,10 @@ public class Compressor {
         nodetype head;					// highest ranked node in block
         int weight;
         int symbol;
-    };
+    }
 
     class huffmanNode_t extends nodetype {
-    };
+    }
 
     /*
      =================================================================================
@@ -754,7 +754,7 @@ public class Compressor {
      */
     static class idCompressor_Huffman extends idCompressor_None {
 
-        private ByteBuffer seq = ByteBuffer.allocate(65536);//TODO:allocateDirect?
+        private final ByteBuffer seq = ByteBuffer.allocate(65536);//TODO:allocateDirect?
         private int bloc;
         private int blocMax;
         private int blocIn;
@@ -767,11 +767,11 @@ public class Compressor {
         private huffmanNode_t tree;
         private huffmanNode_t lhead;
         private huffmanNode_t ltail;
-        private huffmanNode_t[] loc = new huffmanNode_t[HMAX + 1];
+        private final huffmanNode_t[] loc = new huffmanNode_t[HMAX + 1];
         private huffmanNode_t[] freelist;
         //
-        private huffmanNode_t[] nodeList = new huffmanNode_t[768];
-        private huffmanNode_t[] nodePtrs = new huffmanNode_t[768];
+        private final huffmanNode_t[] nodeList = new huffmanNode_t[768];
+        private final huffmanNode_t[] nodePtrs = new huffmanNode_t[768];
         //
         //
 
@@ -784,63 +784,63 @@ public class Compressor {
 
             this.file = f;
             this.compress = compress;
-            bloc = 0;
-            blocMax = 0;
-            blocIn = 0;
-            blocNode = 0;
-            blocPtrs = 0;
-            compressedSize = 0;
-            unCompressedSize = 0;
+            this.bloc = 0;
+            this.blocMax = 0;
+            this.blocIn = 0;
+            this.blocNode = 0;
+            this.blocPtrs = 0;
+            this.compressedSize = 0;
+            this.unCompressedSize = 0;
 
-            tree = null;
-            lhead = null;
-            ltail = null;
+            this.tree = null;
+            this.lhead = null;
+            this.ltail = null;
             for (i = 0; i < (HMAX + 1); i++) {
-                loc[i] = null;
+                this.loc[i] = null;
             }
-            freelist = null;
+            this.freelist = null;
 
             for (i = 0; i < 768; i++) {
 //		memset( &nodeList[i], 0, sizeof(huffmanNode_t) );
-                nodePtrs[i] = null;
+                this.nodePtrs[i] = null;
             }
 
             if (compress) {
                 // Add the NYT (not yet transmitted) node into the tree/list
-                tree = lhead = loc[NYT] = nodeList[blocNode++];
-                tree.symbol = NYT;
-                tree.weight = 0;
-                lhead.next = lhead.prev = null;
-                tree.parent = tree.left = tree.right = null;
-                loc[NYT] = tree;
+                this.tree = this.lhead = this.loc[NYT] = this.nodeList[this.blocNode++];
+                this.tree.symbol = NYT;
+                this.tree.weight = 0;
+                this.lhead.next = this.lhead.prev = null;
+                this.tree.parent = this.tree.left = this.tree.right = null;
+                this.loc[NYT] = this.tree;
             } else {
                 // Initialize the tree & list with the NYT node 
-                tree = lhead = ltail = loc[NYT] = nodeList[blocNode++];
-                tree.symbol = NYT;
-                tree.weight = 0;
-                lhead.next = lhead.prev = null;
-                tree.parent = tree.left = tree.right = null;
+                this.tree = this.lhead = this.ltail = this.loc[NYT] = this.nodeList[this.blocNode++];
+                this.tree.symbol = NYT;
+                this.tree.weight = 0;
+                this.lhead.next = this.lhead.prev = null;
+                this.tree.parent = this.tree.left = this.tree.right = null;
             }
         }
 
         @Override
         public void FinishCompress() {
 
-            if (compress == false) {
+            if (this.compress == false) {
                 return;
             }
 
-            bloc += 7;
-            int str = (bloc >> 3);
+            this.bloc += 7;
+            final int str = (this.bloc >> 3);
             if (str != 0) {
-                file.Write(seq, str);
-                compressedSize += str;
+                this.file.Write(this.seq, str);
+                this.compressedSize += str;
             }
         }
 
         @Override
         public float GetCompressionRatio() {
-            return (unCompressedSize - compressedSize) * 100.0f / unCompressedSize;
+            return ((this.unCompressedSize - this.compressedSize) * 100.0f) / this.unCompressedSize;
         }
 //
 
@@ -849,49 +849,49 @@ public class Compressor {
             int i;
             int ch;
 
-            if (compress == false || inLength <= 0) {
+            if ((this.compress == false) || (inLength <= 0)) {
                 return 0;
             }
 
             for (i = 0; i < inLength; i++) {
                 ch = inData.getInt(i);
-                Transmit(ch, seq);  // Transmit symbol 
+                Transmit(ch, this.seq);  // Transmit symbol 
                 AddRef((byte) ch);         // Do update 
 
-                int b = (bloc >> 3);
+                final int b = (this.bloc >> 3);
                 if (b > 32768) {
-                    file.Write(seq, b);
-                    seq.put(0, seq.get(b));
-                    bloc &= 7;
-                    compressedSize += b;
+                    this.file.Write(this.seq, b);
+                    this.seq.put(0, this.seq.get(b));
+                    this.bloc &= 7;
+                    this.compressedSize += b;
                 }
             }
 
-            unCompressedSize += i;
+            this.unCompressedSize += i;
             return i;
         }
 
         @Override
         public int Read(ByteBuffer outData, int outLength) {
             int i, j;
-            int[] ch = new int[1];
+            final int[] ch = new int[1];
 
-            if (compress == true || outLength <= 0) {
+            if ((this.compress == true) || (outLength <= 0)) {
                 return 0;
             }
 
-            if (bloc == 0) {
-                blocMax = file.Read(seq);
-                blocIn = 0;
+            if (this.bloc == 0) {
+                this.blocMax = this.file.Read(this.seq);
+                this.blocIn = 0;
             }
 
             for (i = 0; i < outLength; i++) {
                 ch[0] = 0;
                 // don't overflow reading from the file
-                if ((bloc >> 3) > blocMax) {
+                if ((this.bloc >> 3) > this.blocMax) {
                     break;
                 }
-                Receive(tree, ch);		// Get a character 
+                Receive(this.tree, ch);		// Get a character 
                 if (ch[0] == NYT) {		// We got a NYT, get the symbol associated with it
 
                     ch[0] = 0;
@@ -904,25 +904,25 @@ public class Compressor {
                 AddRef((byte) ch[0]);				// Increment node 
             }
 
-            compressedSize = bloc >> 3;
-            unCompressedSize += i;
+            this.compressedSize = this.bloc >> 3;
+            this.unCompressedSize += i;
             return i;
         }
 
         private void AddRef(byte ch) {
             huffmanNode_t tnode, tnode2;
-            if (loc[ch] == null) { /* if this is the first transmission of this node */
+            if (this.loc[ch] == null) { /* if this is the first transmission of this node */
 
-                tnode = nodeList[blocNode++];
-                tnode2 = nodeList[blocNode++];
+                tnode = this.nodeList[this.blocNode++];
+                tnode2 = this.nodeList[this.blocNode++];
 
                 tnode2.symbol = INTERNAL_NODE;
                 tnode2.weight = 1;
-                tnode2.next = lhead.next;
-                if (lhead.next != null) {
-                    lhead.next.prev = tnode2;
-                    if (lhead.next.weight == 1) {
-                        tnode2.head = lhead.next.head;
+                tnode2.next = this.lhead.next;
+                if (this.lhead.next != null) {
+                    this.lhead.next.prev = tnode2;
+                    if (this.lhead.next.weight == 1) {
+                        tnode2.head = this.lhead.next.head;
                     } else {
                         tnode2.head = Get_ppnode();
                         tnode2.head = tnode2;
@@ -931,16 +931,16 @@ public class Compressor {
                     tnode2.head = Get_ppnode();
                     tnode2.head = tnode2;
                 }
-                lhead.next = tnode2;
-                tnode2.prev = lhead;
+                this.lhead.next = tnode2;
+                tnode2.prev = this.lhead;
 
                 tnode.symbol = ch;
                 tnode.weight = 1;
-                tnode.next = lhead.next;
-                if (lhead.next != null) {
-                    lhead.next.prev = tnode;
-                    if (lhead.next.weight == 1) {
-                        tnode.head = lhead.next.head;
+                tnode.next = this.lhead.next;
+                if (this.lhead.next != null) {
+                    this.lhead.next.prev = tnode;
+                    if (this.lhead.next.weight == 1) {
+                        tnode.head = this.lhead.next.head;
                     } else {
                         /* this should never happen */
                         tnode.head = Get_ppnode();
@@ -951,32 +951,32 @@ public class Compressor {
                     tnode.head = Get_ppnode();
                     tnode.head = tnode;
                 }
-                lhead.next = tnode;
-                tnode.prev = lhead;
+                this.lhead.next = tnode;
+                tnode.prev = this.lhead;
                 tnode.left = tnode.right = null;
 
-                if (lhead.parent != null) {
-                    if (lhead.parent.left == lhead) { /* lhead is guaranteed to by the NYT */
+                if (this.lhead.parent != null) {
+                    if (this.lhead.parent.left == this.lhead) { /* lhead is guaranteed to by the NYT */
 
-                        lhead.parent.left = tnode2;
+                        this.lhead.parent.left = tnode2;
                     } else {
-                        lhead.parent.right = tnode2;
+                        this.lhead.parent.right = tnode2;
                     }
                 } else {
-                    tree = tnode2;
+                    this.tree = tnode2;
                 }
 
                 tnode2.right = tnode;
-                tnode2.left = lhead;
+                tnode2.left = this.lhead;
 
-                tnode2.parent = lhead.parent;
-                lhead.parent = tnode.parent = tnode2;
+                tnode2.parent = this.lhead.parent;
+                this.lhead.parent = tnode.parent = tnode2;
 
-                loc[ch] = tnode;
+                this.loc[ch] = tnode;
 
                 Increment((huffmanNode_t) tnode2.parent);
             } else {
-                Increment(loc[ch]);
+                Increment(this.loc[ch]);
             }
         }
 
@@ -988,7 +988,7 @@ public class Compressor {
          ================
          */
         private int Receive(huffmanNode_t node, int[] ch) {
-            while (node != null && node.symbol == INTERNAL_NODE) {
+            while ((node != null) && (node.symbol == INTERNAL_NODE)) {
                 if (Get_bit() != 0) {
                     node = (huffmanNode_t) node.right;
                 } else {
@@ -1010,33 +1010,33 @@ public class Compressor {
          */
         private void Transmit(int ch, ByteBuffer fout) {
             int i;
-            if (loc[ch] == null) {
+            if (this.loc[ch] == null) {
                 /* huffmanNode_t hasn't been transmitted, send a NYT, then the symbol */
                 Transmit(NYT, fout);
                 for (i = 7; i >= 0; i--) {
                     Add_bit((char) ((ch >> i) & 0x1), fout);
                 }
             } else {
-                Send(loc[ch], null, fout);
+                Send(this.loc[ch], null, fout);
             }
         }
 
         private void PutBit(int bit, byte[] fout, int[] offset) {
-            bloc = offset[0];
-            if ((bloc & 7) == 0) {
-                fout[(bloc >> 3)] = 0;
+            this.bloc = offset[0];
+            if ((this.bloc & 7) == 0) {
+                fout[(this.bloc >> 3)] = 0;
             }
-            fout[(bloc >> 3)] |= bit << (bloc & 7);
-            bloc++;
-            offset[0] = bloc;
+            fout[(this.bloc >> 3)] |= bit << (this.bloc & 7);
+            this.bloc++;
+            offset[0] = this.bloc;
         }
 
         private int GetBit(byte[] fin, int[] offset) {
             int t;
-            bloc = offset[0];
-            t = (fin[(bloc >> 3)] >> (bloc & 7)) & 0x1;
-            bloc++;
-            offset[0] = bloc;
+            this.bloc = offset[0];
+            t = (fin[(this.bloc >> 3)] >> (this.bloc & 7)) & 0x1;
+            this.bloc++;
+            offset[0] = this.bloc;
             return t;
         }
 //
@@ -1050,14 +1050,14 @@ public class Compressor {
          ================
          */
         private void Add_bit(int bit, ByteBuffer fout) {
-            final int pos = bloc >> 3;
-            final int val = bit << (bloc & 7);
+            final int pos = this.bloc >> 3;
+            final int val = bit << (this.bloc & 7);
 
-            if ((bloc & 7) == 0) {
+            if ((this.bloc & 7) == 0) {
                 fout.putInt(pos, 0);
             }
             fout.putInt(pos, val);
-            bloc++;
+            this.bloc++;
         }
 
         /*
@@ -1069,32 +1069,32 @@ public class Compressor {
          */
         private int Get_bit() {
             int t;
-            int wh = bloc >> 3;
-            int whb = wh >> 16;
-            if (whb != blocIn) {
-                blocMax += file.Read(seq/*, sizeof( seq )*/);
-                blocIn++;
+            int wh = this.bloc >> 3;
+            final int whb = wh >> 16;
+            if (whb != this.blocIn) {
+                this.blocMax += this.file.Read(this.seq/*, sizeof( seq )*/);
+                this.blocIn++;
             }
             wh &= 0xffff;
-            t = (seq.get(wh) >> (bloc & 7)) & 0x1;
-            bloc++;
+            t = (this.seq.get(wh) >> (this.bloc & 7)) & 0x1;
+            this.bloc++;
             return t;
         }
 
         private huffmanNode_t Get_ppnode() {
             final huffmanNode_t tppnode;
-            if (null == freelist) {
-                return nodePtrs[blocPtrs++];
+            if (null == this.freelist) {
+                return this.nodePtrs[this.blocPtrs++];
             } else {
-                tppnode = freelist[0];
+                tppnode = this.freelist[0];
 //                freelist = /*(huffmanNode_t **)**/tppnode;
                 return tppnode;
             }
         }
 
         private void Free_ppnode(huffmanNode_t[] ppnode) {
-            ppnode[0] = /*(huffmanNode_t *)*/ freelist[0];//TODO:fix
-            freelist = ppnode;
+            ppnode[0] = /*(huffmanNode_t *)*/ this.freelist[0];//TODO:fix
+            this.freelist = ppnode;
         }
 
         /*
@@ -1117,7 +1117,7 @@ public class Compressor {
                     par1.right = node2;
                 }
             } else {
-                tree = node2;
+                this.tree = node2;
             }
 
             if (par2 != null) {
@@ -1127,7 +1127,7 @@ public class Compressor {
                     par2.right = node1;
                 }
             } else {
-                tree = node1;
+                this.tree = node1;
             }
 
             node1.parent = par2;
@@ -1179,22 +1179,22 @@ public class Compressor {
                 return;
             }
 
-            if (node.next != null && node.next.weight == node.weight) {
+            if ((node.next != null) && (node.next.weight == node.weight)) {
                 lnode = (huffmanNode_t) node.head;
                 if (lnode != node.parent) {
                     Swap(lnode, node);
                 }
                 Swaplist(lnode, node);
             }
-            if (node.prev != null && node.prev.weight == node.weight) {
+            if ((node.prev != null) && (node.prev.weight == node.weight)) {
                 node.head = node.prev;
             } else {
-                huffmanNode_t[] temp = new huffmanNode_t[1];
+                final huffmanNode_t[] temp = new huffmanNode_t[1];
                 Free_ppnode(temp);
                 node.head = temp[0];
             }
             node.weight++;
-            if (node.next != null && node.next.weight == node.weight) {
+            if ((node.next != null) && (node.next.weight == node.weight)) {
                 node.head = node.next.head;
             } else {
                 node.head = Get_ppnode();
@@ -1230,7 +1230,7 @@ public class Compressor {
                 }
             }
         }
-    };
+    }
     static final int AC_WORD_LENGTH = 8;
     static final int AC_NUM_BITS = 16;
     static final int AC_MSB_SHIFT = 15;
@@ -1256,22 +1256,22 @@ public class Compressor {
 
             long low;
             long high;
-        };
+        }
 
         private class acProbs_t extends acProbs_s {
-        };
+        }
 
         private class acSymbol_s {
 
             long low;
             long high;
             int position;
-        };
+        }
 
         private class acSymbol_t extends acSymbol_s {
-        };
+        }
 
-        private acProbs_t[] probabilities = new acProbs_t[1 << AC_WORD_LENGTH];
+        private final acProbs_t[] probabilities = new acProbs_t[1 << AC_WORD_LENGTH];
         //
         private int symbolBuffer;
         private int symbolBit;
@@ -1291,13 +1291,13 @@ public class Compressor {
         public void Init(idFile f, boolean compress, int wordLength) {
             super.Init(f, compress, wordLength);
 
-            symbolBuffer = 0;
-            symbolBit = 0;
+            this.symbolBuffer = 0;
+            this.symbolBit = 0;
         }
 
         @Override
         public void FinishCompress() {
-            if (compress == false) {
+            if (this.compress == false) {
                 return;
             }
 
@@ -1310,18 +1310,18 @@ public class Compressor {
         public int Write(ByteBuffer inData, int inLength) {
             int i, j;
 
-            if (compress == false || inLength <= 0) {
+            if ((this.compress == false) || (inLength <= 0)) {
                 return 0;
             }
 
             InitCompress(inData, inLength);
 
             for (i = 0; i < inLength; i++) {
-                if ((readTotalBytes & ((1 << 14) - 1)) == 0) {
-                    if (readTotalBytes != 0) {
+                if ((this.readTotalBytes & ((1 << 14) - 1)) == 0) {
+                    if (this.readTotalBytes != 0) {
                         WriteOverflowBits();
                         WriteBits(0, 15);
-                        while (writeBit != 0) {
+                        while (this.writeBit != 0) {
                             WriteBits(0, 1);
                         }
                         WriteBits(255, 8);
@@ -1340,25 +1340,25 @@ public class Compressor {
         public int Read(ByteBuffer outData, int outLength) {
             int i, j;
 
-            if (compress == true || outLength <= 0) {
+            if ((this.compress == true) || (outLength <= 0)) {
                 return 0;
             }
 
             InitDecompress(outData, outLength);
 
-            for (i = 0; i < outLength && readLength >= 0; i++) {
-                if ((writeTotalBytes & ((1 << 14) - 1)) == 0) {
-                    if (writeTotalBytes != 0) {
-                        while (readBit != 0) {
+            for (i = 0; (i < outLength) && (this.readLength >= 0); i++) {
+                if ((this.writeTotalBytes & ((1 << 14) - 1)) == 0) {
+                    if (this.writeTotalBytes != 0) {
+                        while (this.readBit != 0) {
                             ReadBits(1);
                         }
-                        while (ReadBits(8) == 0 && readLength > 0) {
+                        while ((ReadBits(8) == 0) && (this.readLength > 0)) {
                         }
                     }
                     InitProbabilities();
                     for (j = 0; j < AC_NUM_BITS; j++) {
-                        code <<= 1;
-                        code |= ReadBits(1);
+                        this.code <<= 1;
+                        this.code |= ReadBits(1);
                     }
                 }
                 for (j = 0; j < 8; j++) {
@@ -1370,17 +1370,17 @@ public class Compressor {
         }
 
         private void InitProbabilities() {
-            high = AC_HIGH_INIT;
-            low = AC_LOW_INIT;
-            underflowBits = 0;
-            code = 0;
+            this.high = AC_HIGH_INIT;
+            this.low = AC_LOW_INIT;
+            this.underflowBits = 0;
+            this.code = 0;
 
             for (int i = 0; i < (1 << AC_WORD_LENGTH); i++) {
-                probabilities[i].low = i;
-                probabilities[i].high = i + 1;
+                this.probabilities[i].low = i;
+                this.probabilities[i].high = i + 1;
             }
 
-            scale = (1 << AC_WORD_LENGTH);
+            this.scale = (1 << AC_WORD_LENGTH);
         }
 
         private void UpdateProbabilities(acSymbol_t symbol) {
@@ -1388,14 +1388,14 @@ public class Compressor {
 
             x = symbol.position;
 
-            probabilities[x].high++;
+            this.probabilities[x].high++;
 
             for (i = x + 1; i < (1 << AC_WORD_LENGTH); i++) {
-                probabilities[i].low++;
-                probabilities[i].high++;
+                this.probabilities[i].low++;
+                this.probabilities[i].high++;
             }
 
-            scale++;
+            this.scale++;
         }
 
         private int ProbabilityForCount(long count) {
@@ -1409,11 +1409,11 @@ public class Compressor {
                 res = 0;
                 while (mid > 0) {
                     mid = len >> 1;
-                    if (count >= probabilities[offset + mid].high) {
+                    if (count >= this.probabilities[offset + mid].high) {
                         offset += mid;
                         len -= mid;
                         res = 1;
-                    } else if (count < probabilities[offset + mid].low) {
+                    } else if (count < this.probabilities[offset + mid].low) {
                         len -= mid;
                         res = 0;
                     } else {
@@ -1427,7 +1427,7 @@ public class Compressor {
                 int j;
 
                 for (j = 0; j < (1 << AC_WORD_LENGTH); j++) {
-                    if (count >= probabilities[j].low && count < probabilities[j].high) {
+                    if ((count >= this.probabilities[j].low) && (count < this.probabilities[j].high)) {
                         return j;
                     }
                 }
@@ -1441,8 +1441,8 @@ public class Compressor {
 //
 
         private void CharToSymbol(int c, acSymbol_t symbol) {
-            symbol.low = probabilities[c].low;
-            symbol.high = probabilities[c].high;
+            symbol.low = this.probabilities[c].low;
+            symbol.high = this.probabilities[c].high;
             symbol.position = c;
         }
 
@@ -1450,106 +1450,106 @@ public class Compressor {
             int range;
 
             // rescale high and low for the new symbol.
-            range = (high - low) + 1;
-            high = (int) (low + (range * symbol.high) / scale - 1);
-            low = (int) (low + (range * symbol.low) / scale);
+            range = (this.high - this.low) + 1;
+            this.high = (int) ((this.low + ((range * symbol.high) / this.scale)) - 1);
+            this.low = (int) (this.low + ((range * symbol.low) / this.scale));
 
             while (true) {
-                if ((high & AC_MSB_MASK) == (low & AC_MSB_MASK)) {
+                if ((this.high & AC_MSB_MASK) == (this.low & AC_MSB_MASK)) {
                     // the high digits of low and high have converged, and can be written to the stream
-                    WriteBits(high >> AC_MSB_SHIFT, 1);
+                    WriteBits(this.high >> AC_MSB_SHIFT, 1);
 
-                    while (underflowBits > 0) {
+                    while (this.underflowBits > 0) {
 
-                        WriteBits(~high >> AC_MSB_SHIFT, 1);
+                        WriteBits(~this.high >> AC_MSB_SHIFT, 1);
 
-                        underflowBits--;
+                        this.underflowBits--;
                     }
-                } else if ((low & AC_MSB2_MASK) != 0 && 0 == (high & AC_MSB2_MASK)) {
+                } else if (((this.low & AC_MSB2_MASK) != 0) && (0 == (this.high & AC_MSB2_MASK))) {
                     // underflow is in danger of happening, 2nd digits are converging but 1st digits don't match
-                    underflowBits += 1;
-                    low &= AC_MSB2_MASK - 1;
-                    high |= AC_MSB2_MASK;
+                    this.underflowBits += 1;
+                    this.low &= AC_MSB2_MASK - 1;
+                    this.high |= AC_MSB2_MASK;
                 } else {
                     UpdateProbabilities(symbol);
                     return;
                 }
 
-                low <<= 1;
-                high <<= 1;
-                high |= 1;
+                this.low <<= 1;
+                this.high <<= 1;
+                this.high |= 1;
             }
         }
 //
 
         private int SymbolFromCount(long count, acSymbol_t symbol) {
-            int p = ProbabilityForCount(count);
-            symbol.low = probabilities[p].low;
-            symbol.high = probabilities[p].high;
+            final int p = ProbabilityForCount(count);
+            symbol.low = this.probabilities[p].low;
+            symbol.high = this.probabilities[p].high;
             symbol.position = p;
             return p;
         }
 
         private int GetCurrentCount() {
-            return (int) (((code - low + 1) * scale - 1) / (high - low + 1));
+            return (int) (((((this.code - this.low) + 1) * this.scale) - 1) / ((this.high - this.low) + 1));
         }
 
         private void RemoveSymbolFromStream(acSymbol_t symbol) {
             long range;
 
-            range = (long) (high - low) + 1;
-            high = low + (int) ((range * symbol.high) / scale - 1);
-            low = low + (int) ((range * symbol.low) / scale);
+            range = (long) (this.high - this.low) + 1;
+            this.high = this.low + (int) (((range * symbol.high) / this.scale) - 1);
+            this.low = this.low + (int) ((range * symbol.low) / this.scale);
 
             while (true) {
 
-                if ((high & AC_MSB_MASK) == (low & AC_MSB_MASK)) {
-                } else if ((low & AC_MSB2_MASK) == AC_MSB2_MASK && (high & AC_MSB2_MASK) == 0) {
-                    code ^= AC_MSB2_MASK;
-                    low &= AC_MSB2_MASK - 1;
-                    high |= AC_MSB2_MASK;
+                if ((this.high & AC_MSB_MASK) == (this.low & AC_MSB_MASK)) {
+                } else if (((this.low & AC_MSB2_MASK) == AC_MSB2_MASK) && ((this.high & AC_MSB2_MASK) == 0)) {
+                    this.code ^= AC_MSB2_MASK;
+                    this.low &= AC_MSB2_MASK - 1;
+                    this.high |= AC_MSB2_MASK;
                 } else {
                     UpdateProbabilities(symbol);
                     return;
                 }
 
-                low <<= 1;
-                high <<= 1;
-                high |= 1;
-                code <<= 1;
-                code |= ReadBits(1);
+                this.low <<= 1;
+                this.high <<= 1;
+                this.high |= 1;
+                this.code <<= 1;
+                this.code |= ReadBits(1);
             }
         }
 //
 
         private void PutBit(int putbit) {
-            symbolBuffer |= (putbit & 1) << symbolBit;
-            symbolBit++;
+            this.symbolBuffer |= (putbit & 1) << this.symbolBit;
+            this.symbolBit++;
 
-            if (symbolBit >= AC_WORD_LENGTH) {
-                acSymbol_t symbol = new acSymbol_t();
+            if (this.symbolBit >= AC_WORD_LENGTH) {
+                final acSymbol_t symbol = new acSymbol_t();
 
-                CharToSymbol(symbolBuffer, symbol);
+                CharToSymbol(this.symbolBuffer, symbol);
                 EncodeSymbol(symbol);
 
-                symbolBit = 0;
-                symbolBuffer = 0;
+                this.symbolBit = 0;
+                this.symbolBuffer = 0;
             }
         }
 
         private int GetBit() {
             int getbit;
 
-            if (symbolBit <= 0) {
+            if (this.symbolBit <= 0) {
                 // read a new symbol out
-                acSymbol_t symbol = new acSymbol_t();
-                symbolBuffer = SymbolFromCount(GetCurrentCount(), symbol);
+                final acSymbol_t symbol = new acSymbol_t();
+                this.symbolBuffer = SymbolFromCount(GetCurrentCount(), symbol);
                 RemoveSymbolFromStream(symbol);
-                symbolBit = AC_WORD_LENGTH;
+                this.symbolBit = AC_WORD_LENGTH;
             }
 
-            getbit = (symbolBuffer >> (AC_WORD_LENGTH - symbolBit)) & 1;
-            symbolBit--;
+            getbit = (this.symbolBuffer >> (AC_WORD_LENGTH - this.symbolBit)) & 1;
+            this.symbolBit--;
 
             return getbit;
         }
@@ -1557,14 +1557,14 @@ public class Compressor {
 
         private void WriteOverflowBits() {
 
-            WriteBits(low >> AC_MSB2_SHIFT, 1);
+            WriteBits(this.low >> AC_MSB2_SHIFT, 1);
 
-            underflowBits++;
-            while (underflowBits-- > 0) {
-                WriteBits(~low >> AC_MSB2_SHIFT, 1);
+            this.underflowBits++;
+            while (this.underflowBits-- > 0) {
+                WriteBits(~this.low >> AC_MSB2_SHIFT, 1);
             }
         }
-    };
+    }
     static final int LZSS_BLOCK_SIZE = 65535;
     static final int LZSS_HASH_BITS = 10;
     static final int LZSS_HASH_SIZE = (1 << LZSS_HASH_BITS);
@@ -1615,20 +1615,20 @@ public class Compressor {
         public void Init(idFile f, boolean compress, int wordLength) {
             super.Init(f, compress, wordLength);
 
-            offsetBits = LZSS_OFFSET_BITS;
-            lengthBits = LZSS_LENGTH_BITS;
+            this.offsetBits = LZSS_OFFSET_BITS;
+            this.lengthBits = LZSS_LENGTH_BITS;
 
-            minMatchWords = (offsetBits + lengthBits + wordLength) / wordLength;
-            blockSize = 0;
-            blockIndex = 0;
+            this.minMatchWords = (this.offsetBits + this.lengthBits + wordLength) / wordLength;
+            this.blockSize = 0;
+            this.blockIndex = 0;
         }
 
         @Override
         public void FinishCompress() {
-            if (compress == false) {
+            if (this.compress == false) {
                 return;
             }
-            if (blockSize != 0) {
+            if (this.blockSize != 0) {
                 CompressBlock();
             }
             super.FinishCompress();
@@ -1639,23 +1639,23 @@ public class Compressor {
         public int Write(final ByteBuffer inData, int inLength) {
             int i, n;
 
-            if (compress == false || inLength <= 0) {
+            if ((this.compress == false) || (inLength <= 0)) {
                 return 0;
             }
 
             for (n = i = 0; i < inLength; i += n) {
-                n = LZSS_BLOCK_SIZE - blockSize;
-                if (inLength - i >= n) {
+                n = LZSS_BLOCK_SIZE - this.blockSize;
+                if ((inLength - i) >= n) {
 //			memcpy( block + blockSize, ((const byte *)inData) + i, n );
-                    inData.get(block, i, n);
-                    blockSize = LZSS_BLOCK_SIZE;
+                    inData.get(this.block, i, n);
+                    this.blockSize = LZSS_BLOCK_SIZE;
                     CompressBlock();
-                    blockSize = 0;
+                    this.blockSize = 0;
                 } else {
 //			memcpy( block + blockSize, ((const byte *)inData) + i, inLength - i );
-                    System.arraycopy(inData.array(), i, block, blockSize, inLength - i);
+                    System.arraycopy(inData.array(), i, this.block, this.blockSize, inLength - i);
                     n = inLength - i;
-                    blockSize += n;
+                    this.blockSize += n;
                 }
             }
 
@@ -1666,29 +1666,29 @@ public class Compressor {
         public int Read(ByteBuffer outData, int outLength) {
             int i, n;
 
-            if (compress == true || outLength <= 0) {
+            if ((this.compress == true) || (outLength <= 0)) {
                 return 0;
             }
 
-            if (0 == blockSize) {
+            if (0 == this.blockSize) {
                 DecompressBlock();
             }
 
             for (n = i = 0; i < outLength; i += n) {
-                if (0 == blockSize) {
+                if (0 == this.blockSize) {
                     return i;
                 }
-                n = blockSize - blockIndex;
-                if (outLength - i >= n) {
+                n = this.blockSize - this.blockIndex;
+                if ((outLength - i) >= n) {
 //			memcpy( ((byte *)outData) + i, block + blockIndex, n );
-                    System.arraycopy(block, blockIndex, outData.array(), i, n);
+                    System.arraycopy(this.block, this.blockIndex, outData.array(), i, n);
                     DecompressBlock();
-                    blockIndex = 0;
+                    this.blockIndex = 0;
                 } else {
 //			memcpy( ((byte *)outData) + i, block + blockIndex, outLength - i );
-                    System.arraycopy(block, blockIndex, outData.array(), i, outLength - i);
+                    System.arraycopy(this.block, this.blockIndex, outData.array(), i, outLength - i);
                     n = outLength - i;
-                    blockIndex += n;
+                    this.blockIndex += n;
                 }
             }
 
@@ -1699,37 +1699,37 @@ public class Compressor {
             int i, n, hash, bottom, maxBits;
 
             wordOffset[0] = startWord;
-            numWords[0] = minMatchWords - 1;
+            numWords[0] = this.minMatchWords - 1;
 
-            bottom = Lib.Max(0, startWord - ((1 << offsetBits) - 1));
-            maxBits = (blockSize << 3) - startWord * wordLength;
+            bottom = Lib.Max(0, startWord - ((1 << this.offsetBits) - 1));
+            maxBits = (this.blockSize << 3) - (startWord * this.wordLength);
 
             hash = startValue & LZSS_HASH_MASK;
-            for (i = hashTable[hash]; i >= bottom; i = hashNext[i]) {
-                n = Compare(block, i * wordLength, block, startWord * wordLength, Lib.Min(maxBits, (startWord - i) * wordLength));
-                if (n > numWords[0] * wordLength) {
-                    numWords[0] = n / wordLength;
+            for (i = this.hashTable[hash]; i >= bottom; i = this.hashNext[i]) {
+                n = Compare(this.block, i * this.wordLength, this.block, startWord * this.wordLength, Lib.Min(maxBits, (startWord - i) * this.wordLength));
+                if (n > (numWords[0] * this.wordLength)) {
+                    numWords[0] = n / this.wordLength;
                     wordOffset[0] = i;
-                    if (numWords[0] > ((1 << lengthBits) - 1 + minMatchWords) - 1) {
-                        numWords[0] = ((1 << lengthBits) - 1 + minMatchWords) - 1;
+                    if (numWords[0] > ((((1 << this.lengthBits) - 1) + this.minMatchWords) - 1)) {
+                        numWords[0] = (((1 << this.lengthBits) - 1) + this.minMatchWords) - 1;
                         break;
                     }
                 }
             }
 
-            return (numWords[0] >= minMatchWords);
+            return (numWords[0] >= this.minMatchWords);
         }
 
         protected void AddToHash(int index, int hash) {
-            hashNext[index] = hashTable[hash];
-            hashTable[hash] = index;
+            this.hashNext[index] = this.hashTable[hash];
+            this.hashTable[hash] = index;
         }
 
         protected int GetWordFromBlock(int wordOffset) {
             int blockBit, blockByte, value, valueBits, get, fraction;
 
-            blockBit = (wordOffset * wordLength) & 7;
-            blockByte = (wordOffset * wordLength) >> 3;
+            blockBit = (wordOffset * this.wordLength) & 7;
+            blockByte = (wordOffset * this.wordLength) >> 3;
             if (blockBit != 0) {
                 blockByte++;
             }
@@ -1737,7 +1737,7 @@ public class Compressor {
             value = 0;
             valueBits = 0;
 
-            while (valueBits < wordLength) {
+            while (valueBits < this.wordLength) {
                 if (blockBit == 0) {
                     if (blockByte >= LZSS_BLOCK_SIZE) {
                         return value;
@@ -1745,10 +1745,10 @@ public class Compressor {
                     blockByte++;
                 }
                 get = 8 - blockBit;
-                if (get > (wordLength - valueBits)) {
-                    get = (wordLength - valueBits);
+                if (get > (this.wordLength - valueBits)) {
+                    get = (this.wordLength - valueBits);
                 }
-                fraction = block[blockByte - 1];
+                fraction = this.block[blockByte - 1];
                 fraction >>= blockBit;
                 fraction &= (1 << get) - 1;
                 value |= fraction << valueBits;
@@ -1761,62 +1761,62 @@ public class Compressor {
 
         protected void CompressBlock() {
             int i, startWord, startValue;
-            int[] wordOffset = new int[1], numWords = new int[1];
+            final int[] wordOffset = new int[1], numWords = new int[1];
 
-            InitCompress(block, blockSize);
+            InitCompress(this.block, this.blockSize);
 
 //	memset( hashTable, -1, sizeof( hashTable ) );
 //	memset( hashNext, -1, sizeof( hashNext ) );
-            Arrays.fill(hashTable, -1);
-            Arrays.fill(hashNext, -1);
+            Arrays.fill(this.hashTable, -1);
+            Arrays.fill(this.hashNext, -1);
 
             startWord = 0;
-            while (readByte < readLength) {
-                startValue = ReadBits(wordLength);
+            while (this.readByte < this.readLength) {
+                startValue = ReadBits(this.wordLength);
                 if (FindMatch(startWord, startValue, wordOffset, numWords)) {
                     WriteBits(1, 1);
-                    WriteBits(startWord - wordOffset[0], offsetBits);
-                    WriteBits(numWords[0] - minMatchWords, lengthBits);
-                    UnreadBits(wordLength);
+                    WriteBits(startWord - wordOffset[0], this.offsetBits);
+                    WriteBits(numWords[0] - this.minMatchWords, this.lengthBits);
+                    UnreadBits(this.wordLength);
                     for (i = 0; i < numWords[0]; i++) {
-                        startValue = ReadBits(wordLength);
+                        startValue = ReadBits(this.wordLength);
                         AddToHash(startWord, startValue & LZSS_HASH_MASK);
                         startWord++;
                     }
                 } else {
                     WriteBits(0, 1);
-                    WriteBits(startValue, wordLength);
+                    WriteBits(startValue, this.wordLength);
                     AddToHash(startWord, startValue & LZSS_HASH_MASK);
                     startWord++;
                 }
             }
 
-            blockSize = 0;
+            this.blockSize = 0;
         }
 
         protected void DecompressBlock() {
             int i, offset, startWord, numWords;
 
-            InitDecompress(block, LZSS_BLOCK_SIZE);
+            InitDecompress(this.block, LZSS_BLOCK_SIZE);
 
             startWord = 0;
-            while (writeByte < writeLength && readLength >= 0) {
+            while ((this.writeByte < this.writeLength) && (this.readLength >= 0)) {
                 if (ReadBits(1) != 0) {
-                    offset = startWord - ReadBits(offsetBits);
-                    numWords = ReadBits(lengthBits) + minMatchWords;
+                    offset = startWord - ReadBits(this.offsetBits);
+                    numWords = ReadBits(this.lengthBits) + this.minMatchWords;
                     for (i = 0; i < numWords; i++) {
-                        WriteBits(GetWordFromBlock(offset + i), wordLength);
+                        WriteBits(GetWordFromBlock(offset + i), this.wordLength);
                         startWord++;
                     }
                 } else {
-                    WriteBits(ReadBits(wordLength), wordLength);
+                    WriteBits(ReadBits(this.wordLength), this.wordLength);
                     startWord++;
                 }
             }
 
-            blockSize = Lib.Min(writeByte, LZSS_BLOCK_SIZE);
+            this.blockSize = Lib.Min(this.writeByte, LZSS_BLOCK_SIZE);
         }
-    };
+    }
 
     /*
      =================================================================================
@@ -1836,12 +1836,12 @@ public class Compressor {
         public void Init(idFile f, boolean compress, int wordLength) {
             super.Init(f, compress, wordLength);
 
-            offsetBits = 2 * wordLength;
-            lengthBits = wordLength;
+            this.offsetBits = 2 * wordLength;
+            this.lengthBits = wordLength;
 
-            minMatchWords = (offsetBits + lengthBits + wordLength) / wordLength;
-            blockSize = 0;
-            blockIndex = 0;
+            this.minMatchWords = (this.offsetBits + this.lengthBits + wordLength) / wordLength;
+            this.blockSize = 0;
+            this.blockIndex = 0;
         }
 
         @Override
@@ -1849,61 +1849,61 @@ public class Compressor {
             int i, startWord, startValue;
             final int[] wordOffset = new int[1], numWords = new int[1];
 
-            InitCompress(block, blockSize);
+            InitCompress(this.block, this.blockSize);
 
 //	memset( hashTable, -1, sizeof( hashTable ) );
 //	memset( hashNext, -1, sizeof( hashNext ) );
-            Arrays.fill(hashTable, -1);
-            Arrays.fill(hashNext, -1);
+            Arrays.fill(this.hashTable, -1);
+            Arrays.fill(this.hashNext, -1);
 
             startWord = 0;
-            while (readByte < readLength) {
-                startValue = ReadBits(wordLength);
+            while (this.readByte < this.readLength) {
+                startValue = ReadBits(this.wordLength);
                 if (FindMatch(startWord, startValue, wordOffset, numWords)) {
-                    WriteBits(numWords[0] - (minMatchWords - 1), lengthBits);
-                    WriteBits(startWord - wordOffset[0], offsetBits);
-                    UnreadBits(wordLength);
+                    WriteBits(numWords[0] - (this.minMatchWords - 1), this.lengthBits);
+                    WriteBits(startWord - wordOffset[0], this.offsetBits);
+                    UnreadBits(this.wordLength);
                     for (i = 0; i < numWords[0]; i++) {
-                        startValue = ReadBits(wordLength);
+                        startValue = ReadBits(this.wordLength);
                         AddToHash(startWord, startValue & LZSS_HASH_MASK);
                         startWord++;
                     }
                 } else {
-                    WriteBits(0, lengthBits);
-                    WriteBits(startValue, wordLength);
+                    WriteBits(0, this.lengthBits);
+                    WriteBits(startValue, this.wordLength);
                     AddToHash(startWord, startValue & LZSS_HASH_MASK);
                     startWord++;
                 }
             }
 
-            blockSize = 0;
+            this.blockSize = 0;
         }
 
         @Override
         protected void DecompressBlock() {
             int i, offset, startWord, numWords;
 
-            InitDecompress(block, LZSS_BLOCK_SIZE);
+            InitDecompress(this.block, LZSS_BLOCK_SIZE);
 
             startWord = 0;
-            while (writeByte < writeLength && readLength >= 0) {
-                numWords = ReadBits(lengthBits);
+            while ((this.writeByte < this.writeLength) && (this.readLength >= 0)) {
+                numWords = ReadBits(this.lengthBits);
                 if (numWords != 0) {
-                    numWords += (minMatchWords - 1);
-                    offset = startWord - ReadBits(offsetBits);
+                    numWords += (this.minMatchWords - 1);
+                    offset = startWord - ReadBits(this.offsetBits);
                     for (i = 0; i < numWords; i++) {
-                        WriteBits(GetWordFromBlock(offset + i), wordLength);
+                        WriteBits(GetWordFromBlock(offset + i), this.wordLength);
                         startWord++;
                     }
                 } else {
-                    WriteBits(ReadBits(wordLength), wordLength);
+                    WriteBits(ReadBits(this.wordLength), this.wordLength);
                     startWord++;
                 }
             }
 
-            blockSize = Lib.Min(writeByte, LZSS_BLOCK_SIZE);
+            this.blockSize = Lib.Min(this.writeByte, LZSS_BLOCK_SIZE);
         }
-    };
+    }
 
     /*
      =================================================================================
@@ -1967,7 +1967,7 @@ public class Compressor {
 
             int k;
             int w;
-        };
+        }
         protected dictionary[] dictionary = new dictionary[LZW_DICT_SIZE];
         protected idHashIndex index;
         //
@@ -1995,24 +1995,24 @@ public class Compressor {
             super.Init(f, compress, wordLength);
 
             for (int i = 0; i < LZW_FIRST_CODE; i++) {
-                dictionary[i].k = i;
-                dictionary[i].w = -1;
+                this.dictionary[i].k = i;
+                this.dictionary[i].w = -1;
             }
-            index.Clear();
+            this.index.Clear();
 
-            nextCode = LZW_FIRST_CODE;
-            codeBits = LZW_START_BITS;
+            this.nextCode = LZW_FIRST_CODE;
+            this.codeBits = LZW_START_BITS;
 
-            blockSize = 0;
-            blockIndex = 0;
+            this.blockSize = 0;
+            this.blockIndex = 0;
 
-            w = -1;
-            oldCode = -1;
+            this.w = -1;
+            this.oldCode = -1;
         }
 
         @Override
         public void FinishCompress() {
-            WriteBits(w, codeBits);
+            WriteBits(this.w, this.codeBits);
             super.FinishCompress();
         }
 
@@ -2023,17 +2023,17 @@ public class Compressor {
             InitCompress(inData, inLength);
 
             for (i = 0; i < inLength; i++) {
-                int k = ReadBits(8);
+                final int k = ReadBits(8);
 
-                int code = Lookup(w, k);
+                final int code = Lookup(this.w, k);
                 if (code >= 0) {
-                    w = code;
+                    this.w = code;
                 } else {
-                    WriteBits(w, codeBits);
+                    WriteBits(this.w, this.codeBits);
                     if (!BumpBits()) {
-                        AddToDict(w, k);
+                        AddToDict(this.w, k);
                     }
-                    w = k;
+                    this.w = k;
                 }
             }
 
@@ -2044,29 +2044,29 @@ public class Compressor {
         public int Read(ByteBuffer outData, int outLength) {
             int i, n;
 
-            if (compress == true || outLength <= 0) {
+            if ((this.compress == true) || (outLength <= 0)) {
                 return 0;
             }
 
-            if (0 == blockSize) {
+            if (0 == this.blockSize) {
                 DecompressBlock();
             }
 
             for (n = i = 0; i < outLength; i += n) {
-                if (0 == blockSize) {
+                if (0 == this.blockSize) {
                     return i;
                 }
-                n = blockSize - blockIndex;
-                if (outLength - i >= n) {
+                n = this.blockSize - this.blockIndex;
+                if ((outLength - i) >= n) {
 //			memcpy( ((byte *)outData) + i, block + blockIndex, n );
-                    System.arraycopy(block, blockIndex, outData.array(), i, n);
+                    System.arraycopy(this.block, this.blockIndex, outData.array(), i, n);
                     DecompressBlock();
-                    blockIndex = 0;
+                    this.blockIndex = 0;
                 } else {
 //			memcpy( ((byte *)outData) + i, block + blockIndex, outLength - i );
-                    System.arraycopy(block, blockIndex, outData.array(), i, outLength - i);
+                    System.arraycopy(this.block, this.blockIndex, outData.array(), i, outLength - i);
                     n = outLength - i;
-                    blockIndex += n;
+                    this.blockIndex += n;
                 }
             }
 
@@ -2074,10 +2074,10 @@ public class Compressor {
         }
 
         protected int AddToDict(int w, int k) {
-            dictionary[nextCode].k = k;
-            dictionary[nextCode].w = w;
-            index.Add(w ^ k, nextCode);
-            return nextCode++;
+            this.dictionary[this.nextCode].k = k;
+            this.dictionary[this.nextCode].w = w;
+            this.index.Add(w ^ k, this.nextCode);
+            return this.nextCode++;
         }
 
         protected int Lookup(int w, int k) {
@@ -2086,8 +2086,8 @@ public class Compressor {
             if (w == -1) {
                 return k;
             } else {
-                for (j = index.First(w ^ k); j >= 0; j = index.Next(j)) {
-                    if (dictionary[j].k == k && dictionary[j].w == w) {
+                for (j = this.index.First(w ^ k); j >= 0; j = this.index.Next(j)) {
+                    if ((this.dictionary[j].k == k) && (this.dictionary[j].w == w)) {
                         return j;
                     }
                 }
@@ -2106,12 +2106,12 @@ public class Compressor {
          ================
          */
         protected boolean BumpBits() {
-            if (nextCode == (1 << codeBits)) {
-                codeBits++;
-                if (codeBits > LZW_DICT_BITS) {
-                    nextCode = LZW_FIRST_CODE;
-                    codeBits = LZW_START_BITS;
-                    index.Clear();
+            if (this.nextCode == (1 << this.codeBits)) {
+                this.codeBits++;
+                if (this.codeBits > LZW_DICT_BITS) {
+                    this.nextCode = LZW_FIRST_CODE;
+                    this.codeBits = LZW_START_BITS;
+                    this.index.Clear();
                     return true;
                 }
             }
@@ -2126,13 +2126,13 @@ public class Compressor {
          ================
          */
         protected int WriteChain(int code) {
-            byte[] chain = new byte[LZW_DICT_SIZE];
+            final byte[] chain = new byte[LZW_DICT_SIZE];
             int firstChar = 0;
             int i = 0;
             do {
-                assert (i < LZW_DICT_SIZE - 1 && code >= 0);
-                chain[i++] = (byte) dictionary[code].k;
-                code = dictionary[code].w;
+                assert ((i < (LZW_DICT_SIZE - 1)) && (code >= 0));
+                chain[i++] = (byte) this.dictionary[code].k;
+                code = this.dictionary[code].w;
             } while (code >= 0);
             firstChar = chain[--i];
             for (; i >= 0; i--) {
@@ -2144,40 +2144,40 @@ public class Compressor {
         protected void DecompressBlock() {
             int code, firstChar;
 
-            InitDecompress(block, LZW_BLOCK_SIZE);
+            InitDecompress(this.block, LZW_BLOCK_SIZE);
 
-            while (writeByte < writeLength - LZW_DICT_SIZE && readLength > 0) {
-                assert (codeBits <= LZW_DICT_BITS);
+            while ((this.writeByte < (this.writeLength - LZW_DICT_SIZE)) && (this.readLength > 0)) {
+                assert (this.codeBits <= LZW_DICT_BITS);
 
-                code = ReadBits(codeBits);
-                if (readLength == 0) {
+                code = ReadBits(this.codeBits);
+                if (this.readLength == 0) {
                     break;
                 }
 
-                if (oldCode == -1) {
+                if (this.oldCode == -1) {
                     assert (code < 256);
                     WriteBits(code, 8);
-                    oldCode = code;
+                    this.oldCode = code;
                     firstChar = code;
                     continue;
                 }
 
-                if (code >= nextCode) {
-                    assert (code == nextCode);
-                    firstChar = WriteChain(oldCode);
+                if (code >= this.nextCode) {
+                    assert (code == this.nextCode);
+                    firstChar = WriteChain(this.oldCode);
                     WriteBits(firstChar, 8);
                 } else {
                     firstChar = WriteChain(code);
                 }
-                AddToDict(oldCode, firstChar);
+                AddToDict(this.oldCode, firstChar);
                 if (BumpBits()) {
-                    oldCode = -1;
+                    this.oldCode = -1;
                 } else {
-                    oldCode = code;
+                    this.oldCode = code;
                 }
             }
 
-            blockSize = Lib.Min(writeByte, LZW_BLOCK_SIZE);
+            this.blockSize = Lib.Min(this.writeByte, LZW_BLOCK_SIZE);
         }
-    };
+    }
 }

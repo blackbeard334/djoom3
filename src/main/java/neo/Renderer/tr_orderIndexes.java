@@ -18,7 +18,7 @@ public class tr_orderIndexes {
     static final int STALL_SIZE = 8;
 
     public static int R_MeshCost(int numIndexes, int/*glIndex_t */[] indexes) {
-        int[] inCache = new int[CACHE_SIZE];
+        final int[] inCache = new int[CACHE_SIZE];
         int i, j, v;
         int c_stalls;
         int c_loads;
@@ -55,7 +55,7 @@ public class tr_orderIndexes {
 
         vertRef_s next;
         int tri;
-    };
+    }
 
     /*
      ====================
@@ -157,9 +157,9 @@ public class tr_orderIndexes {
                         }
 
                         // if this triangle also uses v2, grab it
-                        if (oldIndexes[tri * 3 + 0] == v2
-                                || oldIndexes[tri * 3 + 1] == v2
-                                || oldIndexes[tri * 3 + 2] == v2) {
+                        if ((oldIndexes[(tri * 3) + 0] == v2)
+                                || (oldIndexes[(tri * 3) + 1] == v2)
+                                || (oldIndexes[(tri * 3) + 2] == v2)) {
                             break;
                         }
                     }

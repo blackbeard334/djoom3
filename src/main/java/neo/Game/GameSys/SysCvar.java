@@ -63,11 +63,9 @@ public class SysCvar {
 
         //    static final String __TIME__;
         gameVersion_s() {
-            string = String.format("%s.%d%s %s %s", ENGINE_VERSION, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__/*, __TIME__*/);
+            this.string = String.format("%s.%d%s %s %s", ENGINE_VERSION, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__/*, __TIME__*/);
         }
     }
-
-    ;
     static final        gameVersion_s gameVersion                  = new gameVersion_s();//TODO:static final?
     //
     public static final idCVar        g_version                    = new idCVar("g_version", gameVersion.string, CVAR_GAME | CVAR_ROM, "game version");

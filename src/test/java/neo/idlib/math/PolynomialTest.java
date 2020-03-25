@@ -23,78 +23,78 @@ public class PolynomialTest {
     public void setUp() throws Exception {
         idMath.Init();
 
-        roots = new float[4];
-        complexRoots = Stream.generate(idComplex::new).limit(4).toArray(idComplex[]::new);
+        this.roots = new float[4];
+        this.complexRoots = Stream.generate(idComplex::new).limit(4).toArray(idComplex[]::new);
     }
 
     @Test
     public void Test1() {
 
-        p = new idPolynomial(-5.0f, 4.0f);
-        num = p.GetRoots(roots);
-        for (i = 0; i < num; i++) {
-            value = p.GetValue(roots[i]);
-            Assert.assertTrue(idMath.Fabs(value) < 1e-4f);
+        this.p = new idPolynomial(-5.0f, 4.0f);
+        this.num = this.p.GetRoots(this.roots);
+        for (this.i = 0; this.i < this.num; this.i++) {
+            this.value = this.p.GetValue(this.roots[this.i]);
+            Assert.assertTrue(idMath.Fabs(this.value) < 1e-4f);
         }
     }
 
     @Test
     public void Test2() {
-        p = new idPolynomial(-5.0f, 4.0f, 3.0f);
-        num = p.GetRoots(roots);
-        for (i = 0; i < num; i++) {
-            value = p.GetValue(roots[i]);
-            Assert.assertTrue(idMath.Fabs(value) < 1e-4f);
+        this.p = new idPolynomial(-5.0f, 4.0f, 3.0f);
+        this.num = this.p.GetRoots(this.roots);
+        for (this.i = 0; this.i < this.num; this.i++) {
+            this.value = this.p.GetValue(this.roots[this.i]);
+            Assert.assertTrue(idMath.Fabs(this.value) < 1e-4f);
         }
     }
 
     @Test
     public void Test3() {
-        p = new idPolynomial(1.0f, 4.0f, 3.0f, -2.0f);
-        num = p.GetRoots(roots);
-        for (i = 0; i < num; i++) {
-            value = p.GetValue(roots[i]);
-            Assert.assertTrue(idMath.Fabs(value) < 1e-4f);
+        this.p = new idPolynomial(1.0f, 4.0f, 3.0f, -2.0f);
+        this.num = this.p.GetRoots(this.roots);
+        for (this.i = 0; this.i < this.num; this.i++) {
+            this.value = this.p.GetValue(this.roots[this.i]);
+            Assert.assertTrue(idMath.Fabs(this.value) < 1e-4f);
         }
     }
 
     @Test
     public void Test4() {
-        p = new idPolynomial(5.0f, 4.0f, 3.0f, -2.0f);
-        num = p.GetRoots(roots);
-        for (i = 0; i < num; i++) {
-            value = p.GetValue(roots[i]);
-            Assert.assertTrue(idMath.Fabs(value) < 1e-4f);
+        this.p = new idPolynomial(5.0f, 4.0f, 3.0f, -2.0f);
+        this.num = this.p.GetRoots(this.roots);
+        for (this.i = 0; this.i < this.num; this.i++) {
+            this.value = this.p.GetValue(this.roots[this.i]);
+            Assert.assertTrue(idMath.Fabs(this.value) < 1e-4f);
         }
     }
 
     @Test
     public void Test5() {
-        p = new idPolynomial(-5.0f, 4.0f, 3.0f, 2.0f, 1.0f);
-        num = p.GetRoots(roots);
-        for (i = 0; i < num; i++) {
-            value = p.GetValue(roots[i]);
-            Assert.assertTrue(idMath.Fabs(value) < 1e-4f);
+        this.p = new idPolynomial(-5.0f, 4.0f, 3.0f, 2.0f, 1.0f);
+        this.num = this.p.GetRoots(this.roots);
+        for (this.i = 0; this.i < this.num; this.i++) {
+            this.value = this.p.GetValue(this.roots[this.i]);
+            Assert.assertTrue(idMath.Fabs(this.value) < 1e-4f);
         }
     }
 
     @Test
     public void Test6() {
-        p = new idPolynomial(1.0f, 4.0f, 3.0f, -2.0f);
-        num = p.GetRoots(complexRoots);
-        for (i = 0; i < num; i++) {
-            complexValue = p.GetValue(complexRoots[i]);
-            Assert.assertTrue(idMath.Fabs(complexValue.r) < 1e-4f && idMath.Fabs(complexValue.i) < 1e-4f);
+        this.p = new idPolynomial(1.0f, 4.0f, 3.0f, -2.0f);
+        this.num = this.p.GetRoots(this.complexRoots);
+        for (this.i = 0; this.i < this.num; this.i++) {
+            this.complexValue = this.p.GetValue(this.complexRoots[this.i]);
+            Assert.assertTrue((idMath.Fabs(this.complexValue.r) < 1e-4f) && (idMath.Fabs(this.complexValue.i) < 1e-4f));
         }
     }
 
     @Test
     public void Test7() {
-        p = new idPolynomial(5.0f, 4.0f, 3.0f, -2.0f);
-        num = p.GetRoots(complexRoots);
-        for (i = 0; i < num; i++) {
-            complexValue = p.GetValue(complexRoots[i]);
-            Assert.assertTrue(idMath.Fabs(complexValue.r) < 1e-4f && idMath.Fabs(complexValue.i) < 1e-4f);
+        this.p = new idPolynomial(5.0f, 4.0f, 3.0f, -2.0f);
+        this.num = this.p.GetRoots(this.complexRoots);
+        for (this.i = 0; this.i < this.num; this.i++) {
+            this.complexValue = this.p.GetValue(this.complexRoots[this.i]);
+            Assert.assertTrue((idMath.Fabs(this.complexValue.r) < 1e-4f) && (idMath.Fabs(this.complexValue.i) < 1e-4f));
         }
     }
 }

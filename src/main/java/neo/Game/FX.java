@@ -75,7 +75,7 @@ public class FX {
         boolean        shakeStarted;
         boolean        decalDropped;
         boolean        launched;
-    };
+    }
     /*
      ===============================================================================
 
@@ -110,12 +110,12 @@ public class FX {
 
 //        public 	CLASS_PROTOTYPE( idEntityFx );
         public idEntityFx() {
-            fxEffect = null;
-            started = -1;
-            nextTriggerTime = -1;
-            fl.networkSync = true;
-            actions = new idList<>();
-            systemName = new idStr();
+            this.fxEffect = null;
+            this.started = -1;
+            this.nextTriggerTime = -1;
+            this.fl.networkSync = true;
+            this.actions = new idList<>();
+            this.systemName = new idStr();
         }
 //	virtual					~idEntityFx();
 
@@ -127,15 +127,15 @@ public class FX {
                 return;
             }
 
-            String[] fx = new String[1];
-            nextTriggerTime = 0;
-            fxEffect = null;
-            if (spawnArgs.GetString("fx", "", fx)) {
-                systemName.oSet(fx[0]);
+            final String[] fx = new String[1];
+            this.nextTriggerTime = 0;
+            this.fxEffect = null;
+            if (this.spawnArgs.GetString("fx", "", fx)) {
+                this.systemName.oSet(fx[0]);
             }
-            if (!spawnArgs.GetBool("triggered")) {
+            if (!this.spawnArgs.GetBool("triggered")) {
                 Setup(fx[0]);
-                if (spawnArgs.GetBool("test") || spawnArgs.GetBool("start") || spawnArgs.GetFloat("restart") != 0) {
+                if (this.spawnArgs.GetBool("test") || this.spawnArgs.GetBool("start") || (this.spawnArgs.GetFloat("restart") != 0)) {
                     PostEventMS(EV_Activate, 0, this);
                 }
             }
@@ -145,84 +145,84 @@ public class FX {
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteInt(started);
-            savefile.WriteInt(nextTriggerTime);
-            savefile.WriteFX(fxEffect);
-            savefile.WriteString(systemName);
+            savefile.WriteInt(this.started);
+            savefile.WriteInt(this.nextTriggerTime);
+            savefile.WriteFX(this.fxEffect);
+            savefile.WriteString(this.systemName);
 
-            savefile.WriteInt(actions.Num());
+            savefile.WriteInt(this.actions.Num());
 
-            for (i = 0; i < actions.Num(); i++) {
+            for (i = 0; i < this.actions.Num(); i++) {
 
-                if (actions.oGet(i).lightDefHandle >= 0) {
+                if (this.actions.oGet(i).lightDefHandle >= 0) {
                     savefile.WriteBool(true);
-                    savefile.WriteRenderLight(actions.oGet(i).renderLight);
+                    savefile.WriteRenderLight(this.actions.oGet(i).renderLight);
                 } else {
                     savefile.WriteBool(false);
                 }
 
-                if (actions.oGet(i).modelDefHandle >= 0) {
+                if (this.actions.oGet(i).modelDefHandle >= 0) {
                     savefile.WriteBool(true);
-                    savefile.WriteRenderEntity(actions.oGet(i).renderEntity);
+                    savefile.WriteRenderEntity(this.actions.oGet(i).renderEntity);
                 } else {
                     savefile.WriteBool(false);
                 }
 
-                savefile.WriteFloat(actions.oGet(i).delay);
-                savefile.WriteInt(actions.oGet(i).start);
-                savefile.WriteBool(actions.oGet(i).soundStarted);
-                savefile.WriteBool(actions.oGet(i).shakeStarted);
-                savefile.WriteBool(actions.oGet(i).decalDropped);
-                savefile.WriteBool(actions.oGet(i).launched);
+                savefile.WriteFloat(this.actions.oGet(i).delay);
+                savefile.WriteInt(this.actions.oGet(i).start);
+                savefile.WriteBool(this.actions.oGet(i).soundStarted);
+                savefile.WriteBool(this.actions.oGet(i).shakeStarted);
+                savefile.WriteBool(this.actions.oGet(i).decalDropped);
+                savefile.WriteBool(this.actions.oGet(i).launched);
             }
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
             int i;
-            int[] num = {0};
-            boolean[] hasObject = {false};
+            final int[] num = {0};
+            final boolean[] hasObject = {false};
 
-            started = savefile.ReadInt();
-            nextTriggerTime = savefile.ReadInt();
-            savefile.ReadFX(fxEffect);
-            savefile.ReadString(systemName);
+            this.started = savefile.ReadInt();
+            this.nextTriggerTime = savefile.ReadInt();
+            savefile.ReadFX(this.fxEffect);
+            savefile.ReadString(this.systemName);
 
             savefile.ReadInt(num);
 
-            actions.SetNum(num[0]);
+            this.actions.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
 
                 savefile.ReadBool(hasObject);
                 if (hasObject[0]) {
-                    savefile.ReadRenderLight(actions.oGet(i).renderLight);
-                    actions.oGet(i).lightDefHandle = gameRenderWorld.AddLightDef(actions.oGet(i).renderLight);
+                    savefile.ReadRenderLight(this.actions.oGet(i).renderLight);
+                    this.actions.oGet(i).lightDefHandle = gameRenderWorld.AddLightDef(this.actions.oGet(i).renderLight);
                 } else {
 //			memset( actions.oGet(i).renderLight, 0, sizeof( renderLight_t ) );
-                    actions.oGet(i).renderLight = new renderLight_s();
-                    actions.oGet(i).lightDefHandle = -1;
+                    this.actions.oGet(i).renderLight = new renderLight_s();
+                    this.actions.oGet(i).lightDefHandle = -1;
                 }
 
                 savefile.ReadBool(hasObject);
                 if (hasObject[0]) {
-                    savefile.ReadRenderEntity(actions.oGet(i).renderEntity);
-                    actions.oGet(i).modelDefHandle = gameRenderWorld.AddEntityDef(actions.oGet(i).renderEntity);
+                    savefile.ReadRenderEntity(this.actions.oGet(i).renderEntity);
+                    this.actions.oGet(i).modelDefHandle = gameRenderWorld.AddEntityDef(this.actions.oGet(i).renderEntity);
                 } else {
 //			memset( &actions[i].renderEntity, 0, sizeof( renderEntity_t ) );
-                    actions.oGet(i).renderEntity = new renderEntity_s();
-                    actions.oGet(i).modelDefHandle = -1;
+                    this.actions.oGet(i).renderEntity = new renderEntity_s();
+                    this.actions.oGet(i).modelDefHandle = -1;
                 }
 
-                actions.oGet(i).delay = savefile.ReadFloat();
+                this.actions.oGet(i).delay = savefile.ReadFloat();
 
                 // let the FX regenerate the particleSystem
-                actions.oGet(i).particleSystem = -1;
+                this.actions.oGet(i).particleSystem = -1;
 
-                actions.oGet(i).start = savefile.ReadInt();
-                actions.oGet(i).soundStarted = savefile.ReadBool();
-                actions.oGet(i).shakeStarted = savefile.ReadBool();
-                actions.oGet(i).decalDropped = savefile.ReadBool();
-                actions.oGet(i).launched = savefile.ReadBool();
+                this.actions.oGet(i).start = savefile.ReadInt();
+                this.actions.oGet(i).soundStarted = savefile.ReadBool();
+                this.actions.oGet(i).shakeStarted = savefile.ReadBool();
+                this.actions.oGet(i).decalDropped = savefile.ReadBool();
+                this.actions.oGet(i).launched = savefile.ReadBool();
             }
         }
 
@@ -239,7 +239,7 @@ public class FX {
                 return;
             }
 
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 Run(gameLocal.time);
             }
 
@@ -249,32 +249,32 @@ public class FX {
 
         public void Setup(final String fx) {
 
-            if (started >= 0) {
+            if (this.started >= 0) {
                 return;					// already started
             }
 
             // early during MP Spawn() with no information. wait till we ReadFromSnapshot for more
-            if (gameLocal.isClient && (null == fx || !fx.isEmpty())) {//[0] == '\0' ) ) {
+            if (gameLocal.isClient && ((null == fx) || !fx.isEmpty())) {//[0] == '\0' ) ) {
                 return;
             }
 
-            systemName.oSet(fx);
-            started = 0;
+            this.systemName.oSet(fx);
+            this.started = 0;
 
-            fxEffect = (idDeclFX) declManager.FindType(DECL_FX, systemName);
+            this.fxEffect = (idDeclFX) declManager.FindType(DECL_FX, this.systemName);
 
-            if (fxEffect != null) {
-                idFXLocalAction localAction = new idFXLocalAction();
+            if (this.fxEffect != null) {
+                final idFXLocalAction localAction = new idFXLocalAction();
 
 //		memset( &localAction, 0, sizeof( idFXLocalAction ) );
-                actions.AssureSize(fxEffect.events.Num(), localAction);
+                this.actions.AssureSize(this.fxEffect.events.Num(), localAction);
 
-                for (int i = 0; i < fxEffect.events.Num(); i++) {
-                    final idFXSingleAction fxaction = fxEffect.events.oGet(i);
+                for (int i = 0; i < this.fxEffect.events.Num(); i++) {
+                    final idFXSingleAction fxaction = this.fxEffect.events.oGet(i);
 
-                    idFXLocalAction laction = actions.oGet(i);
-                    if (fxaction.random1 != 0 || fxaction.random2 != 0) {
-                        laction.delay = fxaction.random1 + gameLocal.random.RandomFloat() * (fxaction.random2 - fxaction.random1);
+                    final idFXLocalAction laction = this.actions.oGet(i);
+                    if ((fxaction.random1 != 0) || (fxaction.random2 != 0)) {
+                        laction.delay = fxaction.random1 + (gameLocal.random.RandomFloat() * (fxaction.random2 - fxaction.random1));
                     } else {
                         laction.delay = fxaction.delay;
                     }
@@ -291,17 +291,17 @@ public class FX {
 
         public void Run(int time) {
             int ieff, j;
-            idEntity[] ent = {null};
+            final idEntity[] ent = {null};
             idDict projectileDef;
             idProjectile projectile;
 
-            if (NOT(fxEffect)) {
+            if (NOT(this.fxEffect)) {
                 return;
             }
 
-            for (ieff = 0; ieff < fxEffect.events.Num(); ieff++) {
-                final idFXSingleAction fxaction = fxEffect.events.oGet(ieff);
-                idFXLocalAction laction = actions.oGet(ieff);
+            for (ieff = 0; ieff < this.fxEffect.events.Num(); ieff++) {
+                final idFXSingleAction fxaction = this.fxEffect.events.oGet(ieff);
+                final idFXLocalAction laction = this.actions.oGet(ieff);
 
                 //
                 // if we're currently done with this one
@@ -314,7 +314,7 @@ public class FX {
                 // see if it's delayed
                 //
                 if (laction.delay != 0) {
-                    if (laction.start + (time - laction.start) < laction.start + (laction.delay * 1000)) {
+                    if ((laction.start + (time - laction.start)) < (laction.start + (laction.delay * 1000))) {
                         continue;
                     }
                 }
@@ -322,14 +322,14 @@ public class FX {
                 //
                 // each event can have it's own delay and restart
                 //
-                int actualStart = laction.delay != 0 ? laction.start + (int) (laction.delay * 1000) : laction.start;
-                float pct = (float) (time - actualStart) / (1000 * fxaction.duration);
+                final int actualStart = laction.delay != 0 ? laction.start + (int) (laction.delay * 1000) : laction.start;
+                final float pct = (time - actualStart) / (1000 * fxaction.duration);
                 if (pct >= 1.0f) {
                     laction.start = -1;
                     float totalDelay;
                     if (fxaction.restart != 0) {
-                        if (fxaction.random1 != 0 || fxaction.random2 != 0) {
-                            totalDelay = fxaction.random1 + gameLocal.random.RandomFloat() * (fxaction.random2 - fxaction.random1);
+                        if ((fxaction.random1 != 0) || (fxaction.random2 != 0)) {
+                            totalDelay = fxaction.random1 + (gameLocal.random.RandomFloat() * (fxaction.random2 - fxaction.random1));
                         } else {
                             totalDelay = fxaction.delay;
                         }
@@ -340,9 +340,9 @@ public class FX {
                 }
 
                 if (fxaction.fire.Length() != 0) {
-                    for (j = 0; j < fxEffect.events.Num(); j++) {
-                        if (fxEffect.events.oGet(j).name.Icmp(fxaction.fire) == 0) {
-                            actions.oGet(j).delay = 0;
+                    for (j = 0; j < this.fxEffect.events.Num(); j++) {
+                        if (this.fxEffect.events.oGet(j).name.Icmp(fxaction.fire) == 0) {
+                            this.actions.oGet(j).delay = 0;
                         }
                     }
                 }
@@ -351,7 +351,7 @@ public class FX {
                 if (fxaction.sibling == -1) {
                     useAction = laction;
                 } else {
-                    useAction = actions.oGet(fxaction.sibling);
+                    useAction = this.actions.oGet(fxaction.sibling);
                 }
                 assert (useAction != null);
 
@@ -372,7 +372,7 @@ public class FX {
                                 useAction.renderLight.shaderParms[SHADERPARM_BLUE] = fxaction.lightColor.z;
                                 useAction.renderLight.shaderParms[SHADERPARM_TIMESCALE] = 1.0f;
                                 useAction.renderLight.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(time);
-                                useAction.renderLight.referenceSound = refSound.referenceSound;
+                                useAction.renderLight.referenceSound = this.refSound.referenceSound;
                                 useAction.renderLight.pointLight = true;
                                 if (fxaction.noshadows) {
                                     useAction.renderLight.noShadows = true;
@@ -380,8 +380,8 @@ public class FX {
                                 useAction.lightDefHandle = gameRenderWorld.AddLightDef(useAction.renderLight);
                             }
                             if (fxaction.noshadows) {
-                                for (j = 0; j < fxEffect.events.Num(); j++) {
-                                    idFXLocalAction laction2 = actions.oGet(j);
+                                for (j = 0; j < this.fxEffect.events.Num(); j++) {
+                                    final idFXLocalAction laction2 = this.actions.oGet(j);
                                     if (laction2.modelDefHandle != -1) {
                                         laction2.renderEntity.noShadow = true;
                                     }
@@ -396,10 +396,10 @@ public class FX {
                             useAction.soundStarted = true;
                             final idSoundShader shader = declManager.FindSound(fxaction.data);
                             StartSoundShader(shader, SND_CHANNEL_ANY, 0, false, null);
-                            for (j = 0; j < fxEffect.events.Num(); j++) {
-                                idFXLocalAction laction2 = actions.oGet(j);
+                            for (j = 0; j < this.fxEffect.events.Num(); j++) {
+                                final idFXLocalAction laction2 = this.actions.oGet(j);
                                 if (laction2.lightDefHandle != -1) {
-                                    laction2.renderLight.referenceSound = refSound.referenceSound;
+                                    laction2.renderLight.referenceSound = this.refSound.referenceSound;
                                     gameRenderWorld.UpdateLightDef(laction2.lightDefHandle, laction2.renderLight);
                                 }
                             }
@@ -415,19 +415,19 @@ public class FX {
                     }
                     case FX_SHAKE: {
                         if (!useAction.shakeStarted) {
-                            idDict args = new idDict();
+                            final idDict args = new idDict();
                             args.Clear();
                             args.SetFloat("kick_time", fxaction.shakeTime);
                             args.SetFloat("kick_amplitude", fxaction.shakeAmplitude);
                             for (j = 0; j < gameLocal.numClients; j++) {
-                                idPlayer player = gameLocal.GetClientByNum(j);
-                                if (player != null && (player.GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin())).LengthSqr() < Square(fxaction.shakeDistance)) {
-                                    if (!gameLocal.isMultiplayer || !fxaction.shakeIgnoreMaster || GetBindMaster() != player) {
+                                final idPlayer player = gameLocal.GetClientByNum(j);
+                                if ((player != null) && ((player.GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin())).LengthSqr() < Square(fxaction.shakeDistance))) {
+                                    if (!gameLocal.isMultiplayer || !fxaction.shakeIgnoreMaster || (GetBindMaster() != player)) {
                                         player.playerView.DamageImpulse(fxaction.offset, args);
                                     }
                                 }
                             }
-                            if (fxaction.shakeImpulse != 0.0f && fxaction.shakeDistance != 0.0f) {
+                            if ((fxaction.shakeImpulse != 0.0f) && (fxaction.shakeDistance != 0.0f)) {
                                 idEntity ignore_ent = null;
                                 if (gameLocal.isMultiplayer) {
                                     ignore_ent = this;
@@ -483,7 +483,7 @@ public class FX {
                                 gameLocal.Warning("projectile \'%s\' not found", fxaction.data);
                             } else {
                                 gameLocal.SpawnEntityDef(projectileDef, ent, false);
-                                if (ent[0] != null && ent[0].IsType(idProjectile.class)) {
+                                if ((ent[0] != null) && ent[0].IsType(idProjectile.class)) {
                                     projectile = (idProjectile) ent[0];
                                     projectile.Create(this, GetPhysics().GetOrigin(), GetPhysics().GetAxis().oGet(0));
                                     projectile.Launch(GetPhysics().GetOrigin(), GetPhysics().GetAxis().oGet(0), getVec3_origin());
@@ -500,12 +500,12 @@ public class FX {
         }
 
         public void Start(int time) {
-            if (NOT(fxEffect)) {
+            if (NOT(this.fxEffect)) {
                 return;
             }
-            started = time;
-            for (int i = 0; i < fxEffect.events.Num(); i++) {
-                idFXLocalAction laction = actions.oGet(i);
+            this.started = time;
+            for (int i = 0; i < this.fxEffect.events.Num(); i++) {
+                final idFXLocalAction laction = this.actions.oGet(i);
                 laction.start = time;
                 laction.soundStarted = false;
                 laction.shakeStarted = false;
@@ -517,18 +517,18 @@ public class FX {
 
         public void Stop() {
             CleanUp();
-            started = -1;
+            this.started = -1;
         }
 
         public int Duration() {
             int max = 0;
 
-            if (NOT(fxEffect)) {
+            if (NOT(this.fxEffect)) {
                 return max;
             }
-            for (int i = 0; i < fxEffect.events.Num(); i++) {
-                final idFXSingleAction fxaction = fxEffect.events.oGet(i);
-                int d = (int) ((fxaction.delay + fxaction.duration) * 1000.0f);
+            for (int i = 0; i < this.fxEffect.events.Num(); i++) {
+                final idFXSingleAction fxaction = this.fxEffect.events.oGet(i);
+                final int d = (int) ((fxaction.delay + fxaction.duration) * 1000.0f);
                 if (d > max) {
                     max = d;
                 }
@@ -538,15 +538,15 @@ public class FX {
         }
 
         public String EffectName() {
-            return (fxEffect != null ? fxEffect.GetName() : null);
+            return (this.fxEffect != null ? this.fxEffect.GetName() : null);
         }
 
         public String Joint() {
-            return (fxEffect != null ? fxEffect.joint.getData() : null);
+            return (this.fxEffect != null ? this.fxEffect.joint.getData() : null);
         }
 
         public boolean Done() {
-            if (started > 0 && gameLocal.time > started + Duration()) {
+            if ((this.started > 0) && (gameLocal.time > (this.started + Duration()))) {
                 return true;
             }
             return false;
@@ -556,32 +556,32 @@ public class FX {
         public void WriteToSnapshot(idBitMsgDelta msg) {
             GetPhysics().WriteToSnapshot(msg);
             WriteBindToSnapshot(msg);
-            msg.WriteLong((fxEffect != null) ? gameLocal.ServerRemapDecl(-1, DECL_FX, fxEffect.Index()) : -1);
-            msg.WriteLong(started);
+            msg.WriteLong((this.fxEffect != null) ? gameLocal.ServerRemapDecl(-1, DECL_FX, this.fxEffect.Index()) : -1);
+            msg.WriteLong(this.started);
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
             int fx_index, start_time;
-            int[] max_lapse = new int[1];
+            final int[] max_lapse = new int[1];
 
             GetPhysics().ReadFromSnapshot(msg);
             ReadBindFromSnapshot(msg);
             fx_index = gameLocal.ClientRemapDecl(DECL_FX, msg.ReadLong());
             start_time = msg.ReadLong();
 
-            if (fx_index != -1 && start_time > 0 && NOT(fxEffect) && started < 0) {
-                spawnArgs.GetInt("effect_lapse", "1000", max_lapse);
-                if (gameLocal.time - start_time > max_lapse[0]) {
+            if ((fx_index != -1) && (start_time > 0) && NOT(this.fxEffect) && (this.started < 0)) {
+                this.spawnArgs.GetInt("effect_lapse", "1000", max_lapse);
+                if ((gameLocal.time - start_time) > max_lapse[0]) {
                     // too late, skip the effect completely
-                    started = 0;
+                    this.started = 0;
                     return;
                 }
                 final idDeclFX fx = (idDeclFX) declManager.DeclByIndex(DECL_FX, fx_index);
                 if (null == fx) {
                     gameLocal.Error("FX at index %d not found", fx_index);
                 }
-                fxEffect = fx;
+                this.fxEffect = fx;
                 Setup(fx.GetName());
                 Start(start_time);
             }
@@ -598,15 +598,15 @@ public class FX {
 
         public static idEntityFx StartFx(final String fx, final idVec3 useOrigin, final idMat3 useAxis, idEntity ent, boolean bind) {
 
-            if (g_skipFX.GetBool() || null == fx || fx.isEmpty()) {
+            if (g_skipFX.GetBool() || (null == fx) || fx.isEmpty()) {
                 return null;
             }
 
-            idDict args = new idDict();
+            final idDict args = new idDict();
             args.SetBool("start", true);
             args.Set("fx", fx);
-            idEntityFx nfx = (idEntityFx) gameLocal.SpawnEntityType(idEntityFx.class, args);
-            if (nfx.Joint() != null && !nfx.Joint().isEmpty()) {
+            final idEntityFx nfx = (idEntityFx) gameLocal.SpawnEntityType(idEntityFx.class, args);
+            if ((nfx.Joint() != null) && !nfx.Joint().isEmpty()) {
                 nfx.BindToJoint(ent, nfx.Joint(), true);
                 nfx.SetOrigin(getVec3_origin());
             } else {
@@ -635,25 +635,25 @@ public class FX {
             }
 
             float fxActionDelay;
-            String[] fx = new String[1];
+            final String[] fx = new String[1];
 
-            if (gameLocal.time < nextTriggerTime) {
+            if (gameLocal.time < this.nextTriggerTime) {
                 return;
             }
 
-            if (spawnArgs.GetString("fx", "", fx)) {
+            if (this.spawnArgs.GetString("fx", "", fx)) {
                 Setup(fx[0]);
                 Start(gameLocal.time);
                 PostEventMS(EV_Fx_KillFx, Duration());
                 BecomeActive(TH_THINK);
             }
 
-            fxActionDelay = spawnArgs.GetFloat("fxActionDelay");
+            fxActionDelay = this.spawnArgs.GetFloat("fxActionDelay");
             if (fxActionDelay != 0.0f) {
-                nextTriggerTime = (int) (gameLocal.time + SEC2MS(fxActionDelay));
+                this.nextTriggerTime = (int) (gameLocal.time + SEC2MS(fxActionDelay));
             } else {
                 // prevent multiple triggers on same frame
-                nextTriggerTime = gameLocal.time + 1;
+                this.nextTriggerTime = gameLocal.time + 1;
             }
             PostEventSec(EV_Fx_Action, fxActionDelay, activator.value);
         }
@@ -675,11 +675,11 @@ public class FX {
             CleanUp();
             BecomeInactive(TH_THINK);
 
-            if (spawnArgs.GetBool("test")) {
+            if (this.spawnArgs.GetBool("test")) {
                 PostEventMS(EV_Activate, 0, this);
             } else {
-                if (spawnArgs.GetFloat("restart") != 0 || !spawnArgs.GetBool("triggered")) {
-                    float rest = spawnArgs.GetFloat("restart", "0");
+                if ((this.spawnArgs.GetFloat("restart") != 0) || !this.spawnArgs.GetBool("triggered")) {
+                    float rest = this.spawnArgs.GetFloat("restart", "0");
                     if (rest == 0.0f) {
                         PostEventSec(EV_Remove, 0.1f);
                     } else {
@@ -691,22 +691,22 @@ public class FX {
         }
 
         protected void CleanUp() {
-            if (NOT(fxEffect)) {
+            if (NOT(this.fxEffect)) {
                 return;
             }
-            for (int i = 0; i < fxEffect.events.Num(); i++) {
-                final idFXSingleAction fxaction = fxEffect.events.oGet(i);
-                idFXLocalAction laction = actions.oGet(i);
+            for (int i = 0; i < this.fxEffect.events.Num(); i++) {
+                final idFXSingleAction fxaction = this.fxEffect.events.oGet(i);
+                final idFXLocalAction laction = this.actions.oGet(i);
                 CleanUpSingleAction(fxaction, laction);
             }
         }
 
         protected void CleanUpSingleAction(final idFXSingleAction fxaction, idFXLocalAction laction) {
-            if (laction.lightDefHandle != -1 && fxaction.sibling == -1 && fxaction.type != FX_ATTACHLIGHT) {
+            if ((laction.lightDefHandle != -1) && (fxaction.sibling == -1) && (fxaction.type != FX_ATTACHLIGHT)) {
                 gameRenderWorld.FreeLightDef(laction.lightDefHandle);
                 laction.lightDefHandle = -1;
             }
-            if (laction.modelDefHandle != -1 && fxaction.sibling == -1 && fxaction.type != FX_ATTACHENTITY) {
+            if ((laction.modelDefHandle != -1) && (fxaction.sibling == -1) && (fxaction.type != FX_ATTACHENTITY)) {
                 gameRenderWorld.FreeEntityDef(laction.modelDefHandle);
                 laction.modelDefHandle = -1;
             }
@@ -714,8 +714,8 @@ public class FX {
         }
 
         protected void ApplyFade(final idFXSingleAction fxaction, idFXLocalAction laction, final int time, final int actualStart) {
-            if (fxaction.fadeInTime != 0 || fxaction.fadeOutTime != 0) {
-                float fadePct = (float) (time - actualStart) / (1000.0f * ((fxaction.fadeInTime != 0) ? fxaction.fadeInTime : fxaction.fadeOutTime));
+            if ((fxaction.fadeInTime != 0) || (fxaction.fadeOutTime != 0)) {
+                float fadePct = (time - actualStart) / (1000.0f * ((fxaction.fadeInTime != 0) ? fxaction.fadeInTime : fxaction.fadeOutTime));
                 if (fadePct > 1.0) {
                     fadePct = 1.0f;
                 }
@@ -745,7 +745,7 @@ public class FX {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -771,8 +771,8 @@ public class FX {
         private void Event_DoAction(idEventArg<idEntity> activator) {
             float angle;
 
-            angle = spawnArgs.GetFloat("angle");
-            idAngles a = new idAngles(0, spawnArgs.GetFloat("angle"), 0);
+            angle = this.spawnArgs.GetFloat("angle");
+            final idAngles a = new idAngles(0, this.spawnArgs.GetFloat("angle"), 0);
             activator.value.Teleport(GetPhysics().GetOrigin(), a, null);
         }
 
@@ -785,5 +785,5 @@ public class FX {
             return eventCallbacks;
         }
 
-    };
+    }
 }

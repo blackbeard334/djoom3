@@ -42,16 +42,16 @@ public class Force_Spring {
         //
 
         public idForce_Spring() {
-            Kstretch = 100.0f;
-            Kcompress = 100.0f;
-            damping = 0.0f;
-            restLength = 0.0f;
-            physics1 = null;
-            id1 = 0;
-            p1 = getVec3_zero();
-            physics2 = null;
-            id2 = 0;
-            p2 = getVec3_zero();
+            this.Kstretch = 100.0f;
+            this.Kcompress = 100.0f;
+            this.damping = 0.0f;
+            this.restLength = 0.0f;
+            this.physics1 = null;
+            this.id1 = 0;
+            this.p1 = getVec3_zero();
+            this.physics2 = null;
+            this.id2 = 0;
+            this.p2 = getVec3_zero();
         }
 //	virtual				~idForce_Spring( void );
 
@@ -81,53 +81,53 @@ public class Force_Spring {
             idVec3 pos1, pos2, velocity1, velocity2, force, dampingForce;
             impactInfo_s info = new impactInfo_s();
 
-            pos1 = p1;
-            pos2 = p2;
+            pos1 = this.p1;
+            pos2 = this.p2;
             velocity1 = velocity2 = getVec3_origin();
 
-            if (physics1 != null) {
-                axis = physics1.GetAxis(id1);
-                pos1 = physics1.GetOrigin(id1);
-                pos1.oPluSet(p1.oMultiply(axis));
-                if (damping > 0.0f) {
-                    info = physics1.GetImpactInfo(id1, pos1);
+            if (this.physics1 != null) {
+                axis = this.physics1.GetAxis(this.id1);
+                pos1 = this.physics1.GetOrigin(this.id1);
+                pos1.oPluSet(this.p1.oMultiply(axis));
+                if (this.damping > 0.0f) {
+                    info = this.physics1.GetImpactInfo(this.id1, pos1);
                     velocity1 = info.velocity;
                 }
             }
 
-            if (physics2 != null) {
-                axis = physics2.GetAxis(id2);
-                pos2 = physics2.GetOrigin(id2);
-                pos2.oPluSet(p2.oMultiply(axis));
-                if (damping > 0.0f) {
-                    info = physics2.GetImpactInfo(id2, pos2);
+            if (this.physics2 != null) {
+                axis = this.physics2.GetAxis(this.id2);
+                pos2 = this.physics2.GetOrigin(this.id2);
+                pos2.oPluSet(this.p2.oMultiply(axis));
+                if (this.damping > 0.0f) {
+                    info = this.physics2.GetImpactInfo(this.id2, pos2);
                     velocity2 = info.velocity;
                 }
             }
 
             force = pos2.oMinus(pos1);
-            dampingForce = force.oMultiply(damping * (((velocity2.oMinus(velocity1)).oMultiply(force)) / (force.oMultiply(force))));
+            dampingForce = force.oMultiply(this.damping * (((velocity2.oMinus(velocity1)).oMultiply(force)) / (force.oMultiply(force))));
             length = force.Normalize();
 
             // if the spring is stretched
-            if (length > restLength) {
-                if (Kstretch > 0.0f) {
-                    force = force.oMultiply((float) (Square(length - restLength) * Kstretch)).oMinus(dampingForce);
-                    if (physics1 != null) {
-                        physics1.AddForce(id1, pos1, force);
+            if (length > this.restLength) {
+                if (this.Kstretch > 0.0f) {
+                    force = force.oMultiply(Square(length - this.restLength) * this.Kstretch).oMinus(dampingForce);
+                    if (this.physics1 != null) {
+                        this.physics1.AddForce(this.id1, pos1, force);
                     }
-                    if (physics2 != null) {
-                        physics2.AddForce(id2, pos2, force.oNegative());
+                    if (this.physics2 != null) {
+                        this.physics2.AddForce(this.id2, pos2, force.oNegative());
                     }
                 }
             } else {
-                if (Kcompress > 0.0f) {
-                    force = force.oMultiply((float) (Square(length - restLength) * Kcompress)).oMinSet(dampingForce);
-                    if (physics1 != null) {
-                        physics1.AddForce(id1, pos1, force.oNegative());
+                if (this.Kcompress > 0.0f) {
+                    force = force.oMultiply(Square(length - this.restLength) * this.Kcompress).oMinSet(dampingForce);
+                    if (this.physics1 != null) {
+                        this.physics1.AddForce(this.id1, pos1, force.oNegative());
                     }
-                    if (physics2 != null) {
-                        physics2.AddForce(id2, pos2, force);
+                    if (this.physics2 != null) {
+                        this.physics2.AddForce(this.id2, pos2, force);
                     }
                 }
             }
@@ -135,12 +135,12 @@ public class Force_Spring {
 
         @Override
         public void RemovePhysics(final idPhysics phys) {
-            if (physics1.equals(phys)) {
-                physics1 = null;
+            if (this.physics1.equals(phys)) {
+                this.physics1 = null;
             }
-            if (physics2.equals(phys)) {
-                physics2 = null;
+            if (this.physics2.equals(phys)) {
+                this.physics2 = null;
             }
         }
-    };
+    }
 }

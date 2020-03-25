@@ -140,8 +140,8 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static boolean memcmp(byte[] a, byte[] b, int length) {
-        if (null == a || null == b
-                || a.length < length || b.length < length) {
+        if ((null == a) || (null == b)
+                || (a.length < length) || (b.length < length)) {
             return false;
         }
 
@@ -194,9 +194,9 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static byte[] flatten(byte[][] input) {
         final int height = input.length;
         final int width = input[0].length;
-        byte[] output = new byte[height * width];
+        final byte[] output = new byte[height * width];
 
-        for (byte[] anInput : input) {
+        for (final byte[] anInput : input) {
             System.arraycopy(anInput, 0, output, width, width);
         }
 
@@ -207,7 +207,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
         final int height = input.length;
         final int width = input[0].length;
         final int length = input[0][0].length;
-        byte[] output = new byte[height * width * length];
+        final byte[] output = new byte[height * width * length];
 
         for (int a = 0; a < height; a++) {
             final int x = a * width * length;
@@ -233,11 +233,11 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static boolean isNotNullOrEmpty(final String stringy) {
-        return stringy != null && !stringy.isEmpty() && !stringy.startsWith("\0");
+        return (stringy != null) && !stringy.isEmpty() && !stringy.startsWith("\0");
     }
 
     public static boolean isNotNullOrEmpty(final idStr stringy) {
-        return stringy != null && !stringy.IsEmpty() && '\0' != stringy.oGet(0);
+        return (stringy != null) && !stringy.IsEmpty() && ('\0' != stringy.oGet(0));
     }
 
     /**
@@ -246,7 +246,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static int indexOf(Object v1, Object[] vList) {
         int i;
 
-        if (v1 != null && vList != null) {
+        if ((v1 != null) && (vList != null)) {
             for (i = 0; i < vList.length; i++) {
                 if (vList[i].equals(v1)) {
                     return i;
@@ -266,9 +266,11 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      */
     public static boolean NOT(final Object... objects) {
         //TODO: make sure incoming object isn't Integer or Float...etc.
-        if (objects == null) return true;
+        if (objects == null) {
+			return true;
+		}
 
-        for (Object o : objects) {
+        for (final Object o : objects) {
             if (o != null) {
                 return false;
             }
@@ -336,7 +338,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
     /** FloatBuffer to Float Array */
     public static float[] fbtofa(final FloatBuffer fb){
-        float[] fa = new float[fb.capacity()];
+        final float[] fa = new float[fb.capacity()];
         fb.duplicate().get(fa);
 
         return fa;
@@ -345,7 +347,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static int atoi(String ascii) {
         try {
             return Integer.parseInt(ascii.trim());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return 0;
         }
     }
@@ -365,7 +367,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static float atof(String ascii) {
         try {
             return Float.parseFloat(ascii.trim());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return 0;
         }
     }
@@ -485,10 +487,11 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
      * Integer array TO Int array
      */
     public static int[] itoi(Integer[] integerArray) {
-        if (integerArray == null)
-            return null;
+        if (integerArray == null) {
+			return null;
+		}
 
-        int[] intArray = new int[integerArray.length];
+        final int[] intArray = new int[integerArray.length];
         for (int a = 0; a < intArray.length; a++) {
             intArray[a] = integerArray[a];
         }
@@ -497,14 +500,14 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static byte[] itob(int[] intArray) {
-        ByteBuffer buffer = ByteBuffer.allocate(intArray.length * 4);
+        final ByteBuffer buffer = ByteBuffer.allocate(intArray.length * 4);
         buffer.asIntBuffer().put(intArray);
 
         return buffer.array();
     }
 
     public static int[] btoia(ByteBuffer buffer) {
-        int[] intArray = new int[buffer.capacity() / 4];
+        final int[] intArray = new int[buffer.capacity() / 4];
 
         for (int i = 0; i < intArray.length; i++) {
             intArray[i] = buffer.getInt(4 * i);
@@ -514,7 +517,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static long ntohl(byte[] ip) {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
+        final ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.put(ip);
         buffer.flip();
         buffer.limit(8);
@@ -523,7 +526,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     }
 
     public static Set<StandardOpenOption> fopenOptions(String mode) {
-        Set<StandardOpenOption> temp = new HashSet<>();
+        final Set<StandardOpenOption> temp = new HashSet<>();
 
         if (null == mode) {
             return null;
@@ -565,7 +568,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     public static long[] reinterpret_cast_long_array(final byte[] array) {
         final int len = array.length / Long.BYTES;
         final LongBuffer buffer = ByteBuffer.wrap(array).asLongBuffer();
-        long[] temp = new long[len];
+        final long[] temp = new long[len];
 
         for (int l = 0; l < len; l++) {
             temp[l] = buffer.get(l);
@@ -608,7 +611,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             final String key = String.format("%s.%s->%d\n", elements[e].getClassName(), elements[e].getMethodName(), elements[e].getLineNumber());
 
             if (CALL_STACK_MAP.containsKey(key)) {
-                int value = CALL_STACK_MAP.get(key);
+                final int value = CALL_STACK_MAP.get(key);
                 CALL_STACK_MAP.put(key, value + 1);//increment
             } else {
                 CALL_STACK_MAP.put(key, 1);
@@ -646,11 +649,11 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
     @Deprecated
     public static <T> T[] allocArray(Class<T> clazz, int length) {
 
-        T[] array = (T[]) Array.newInstance(clazz, length);
+        final T[] array = (T[]) Array.newInstance(clazz, length);
 
         for (int a = 0; a < length; a++) {
             try {
-                array[a] = (T) clazz.getConstructor().newInstance();
+                array[a] = clazz.getConstructor().newInstance();
             } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 throw new TODO_Exception();//missing default constructor
             }
@@ -709,7 +712,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
          * @return
          */
         public ByteBuffer Write();
-    };
+    }
 
     /**
      *
@@ -739,7 +742,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
 
         public boolean isNULL();
 
-    };
+    }
 
     /**
      *
@@ -802,7 +805,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             int returnValue = 0;
 
             try {
-                Method getDimension = clazz.getDeclaredMethod(GET_DIMENSION);
+                final Method getDimension = clazz.getDeclaredMethod(GET_DIMENSION);
                 returnValue = (int) getDimension.invoke(object);
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(Curve.class.getName()).log(Level.SEVERE, null, ex);
@@ -856,10 +859,10 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
                 try {
                     oMultiply = returnObject.getClass().getDeclaredMethod(O_MULTIPLY);
                     returnValue = (float) oMultiply.invoke(returnObject, value);//object becomes float when multiplied(idMat)
-                } catch (NoSuchMethodException ex) {
+                } catch (final NoSuchMethodException ex) {
                     returnValue = ((float) returnObject) * value;//object that has float(idVec)
                 }
-            } catch (NoSuchMethodException ex) {
+            } catch (final NoSuchMethodException ex) {
                 returnValue = ((float) object) * value;//float
             } catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(Curve.class.getName()).log(Level.SEVERE, null, ex);
@@ -936,11 +939,11 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             try {
                 method1 = class1.getDeclaredMethod(O_METHOD, class2);
                 returnObject = method1.invoke(object1, object2);
-            } catch (NoSuchMethodException nox) {
+            } catch (final NoSuchMethodException nox) {
                 try {//try teh other way around.
                     method2 = class2.getDeclaredMethod(O_METHOD, class1);
                     returnObject = method2.invoke(object2, object1);
-                } catch (Exception ex) {
+                } catch (final Exception ex) {
                     //we should only get here if both our objects are primitives.
                     switch (O_METHOD) {
                         case O_PLUS:
@@ -981,7 +984,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             public int[] time = {0};
             public float[][] shaderParms = new float[MAX_GLOBAL_SHADER_PARMS][];
             public idMaterial globalMaterial = new idMaterial();
-        };
+        }
 
         public static class renderEntityShadow {
 
@@ -1030,7 +1033,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             public int[] forceUpdate = {0};
             public int[] timeGroup = {0};
             public int[] xrayIndex = {0};
-        };
+        }
 
         public static class renderLightShadow {
 
@@ -1063,7 +1066,7 @@ public class TempDump {//TODO:rename/refactor to ToolBox or something
             public idMaterial shader;
             public float[] shaderParms = new float[MAX_ENTITY_SHADER_PARMS];
             public idSoundEmitter referenceSound;
-        };
+        }
     }
 
     /**

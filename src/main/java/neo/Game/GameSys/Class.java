@@ -149,7 +149,7 @@ public class Class {
 
         idEventDef      event;
         eventCallback_t function;
-    };
+    }
 
     public static class idEventArg<T> {
 
@@ -159,24 +159,32 @@ public class Class {
 //
 
         private idEventArg(T data) {
-            if(data instanceof Integer)         type = D_EVENT_INTEGER;
-            else if(data instanceof Enum)       type = D_EVENT_INTEGER;
-            else if(data instanceof Float)      type = D_EVENT_FLOAT;
-            else if(data instanceof idVec3)     type = D_EVENT_VECTOR;
-            else if(data instanceof idStr)      type = D_EVENT_STRING;
-            else if(data instanceof String)     type = D_EVENT_STRING;
-            else if(data instanceof idEntity)   type = D_EVENT_ENTITY;
-            else if(data instanceof trace_s)    type = D_EVENT_TRACE;
-            else {
+            if(data instanceof Integer) {
+				this.type = D_EVENT_INTEGER;
+			} else if(data instanceof Enum) {
+				this.type = D_EVENT_INTEGER;
+			} else if(data instanceof Float) {
+				this.type = D_EVENT_FLOAT;
+			} else if(data instanceof idVec3) {
+				this.type = D_EVENT_VECTOR;
+			} else if(data instanceof idStr) {
+				this.type = D_EVENT_STRING;
+			} else if(data instanceof String) {
+				this.type = D_EVENT_STRING;
+			} else if(data instanceof idEntity) {
+				this.type = D_EVENT_ENTITY;
+			} else if(data instanceof trace_s) {
+				this.type = D_EVENT_TRACE;
+			} else {
 //                type = D_EVENT_VOID;
                 throw new TempDump.TypeErasure_Expection();
             }
-            value = data;
+            this.value = data;
         }
 
         private idEventArg(int type, T data) {
             this.type = type;
-            value = data;
+            this.value = data;
         }
 
         static <T> idEventArg<T> toArg(T data) {
@@ -210,7 +218,7 @@ public class Class {
         public static idEventArg<trace_s> toArg(trace_s data) {
             return new idEventArg(D_EVENT_TRACE, data);
         }
-    };
+    }
 
     public static class idAllocError extends neo.idlib.Lib.idException {
 
@@ -222,7 +230,7 @@ public class Class {
 		public idAllocError(final String text /*= ""*/) {
             super(text);
         }
-    };
+    }
 //    /*
 //================
 //ABSTRACT_PROTOTYPE
@@ -522,10 +530,11 @@ public class Class {
 
             if (g_debugTriggers.GetBool() && (ev == EV_Activate) && IsType(idEntity.class)) {
                 final String name;
-                if (data[0] != null && ((idClass) data[0].value).IsType(idEntity.class))
-                    name = ((idEntity) data[0].value).GetName();
-                else
-                    name = "NULL";
+                if ((data[0] != null) && ((idClass) data[0].value).IsType(idEntity.class)) {
+					name = ((idEntity) data[0].value).GetName();
+				} else {
+					name = "NULL";
+				}
                 gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, ((idEntity) this).GetName(), name);
             }
 
@@ -624,14 +633,23 @@ public class Class {
 
         public void Event_Remove() {
             //	delete this;//if only
-            if (this instanceof idBFGProjectile) idBFGProjectile.delete((idBFGProjectile) this);
-            else if (this instanceof idProjectile) idProjectile.delete((idProjectile) this);
-            else if (this instanceof idTrigger_Multi) idTrigger_Multi.delete((idTrigger_Multi) this);
-            else if (this instanceof idTarget_Remove) idTarget_Remove.delete((idTarget_Remove) this);
-            else if (this instanceof idAI) idAI.delete((idAI) this);
-            else if (this instanceof idEntity) idEntity.delete((idEntity) this);
-            else if (this instanceof idThread) idThread.delete((idThread) this);
-            else throw new TODO_Exception();
+            if (this instanceof idBFGProjectile) {
+				idBFGProjectile.delete(this);
+			} else if (this instanceof idProjectile) {
+				idProjectile.delete(this);
+			} else if (this instanceof idTrigger_Multi) {
+				idTrigger_Multi.delete(this);
+			} else if (this instanceof idTarget_Remove) {
+				idTarget_Remove.delete(this);
+			} else if (this instanceof idAI) {
+				idAI.delete(this);
+			} else if (this instanceof idEntity) {
+				idEntity.delete(this);
+			} else if (this instanceof idThread) {
+				idThread.delete((idThread) this);
+			} else {
+				throw new TODO_Exception();
+			}
         }
 
         // Static functions
@@ -774,7 +792,7 @@ public class Class {
             public void run(idCmdArgs args) {
                 gameLocal.Printf("Class memory status: %d bytes allocated in %d objects\n", memused, numobjects);
             }
-        };
+        }
 
         /*
          ================
@@ -807,7 +825,7 @@ public class Class {
 
                 gameLocal.Printf("...%d classes", types.Num());
             }
-        };
+        }
 
         public static idClass CreateInstance(final String name) {
 //            idTypeInfo type;
@@ -902,9 +920,9 @@ public class Class {
         }
 
         private boolean ProcessEventArgs(final idEventDef ev, int numargs, idEventArg... args) {
-            idTypeInfo c;
-            int num;
-            idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
+            final idTypeInfo c;
+            final int num;
+            final idEventArg[] data = new idEventArg[D_EVENT_MAXARGS];
 //            va_list args;
 
             assert (ev != null);
@@ -933,9 +951,11 @@ public class Class {
         }
 
         public static void delete(final idClass clazz){
-            if (clazz != null) clazz._deconstructor();
+            if (clazz != null) {
+				clazz._deconstructor();
+			}
         }
-    };
+    }
 
     /**
      * *********************************************************************
@@ -985,13 +1005,13 @@ public class Class {
             this.CreateInstance = CreateInstance;
             this.zuper = idClass.GetClass(superclass);
             this.freeEventMap = false;
-            typeNum = 0;
-            lastChild = 0;
+            this.typeNum = 0;
+            this.lastChild = 0;
 
             // Check if any subclasses were initialized before their superclass
             for (type = typelist; type != null; type = type.next) {
                 if ((type.zuper == null) && NOT(idStr.Cmp(type.superclass, this.classname))
-                        && idStr.Cmp(type.classname, "idClass") != 0) {
+                        && (idStr.Cmp(type.classname, "idClass") != 0)) {
                     type.zuper = this;
                 }
             }
@@ -1000,14 +1020,14 @@ public class Class {
             for (insert = typelist; insert != null; insert = insert.next) {
                 assert (idStr.Cmp(classname, insert.classname) != 0);
                 if (idStr.Cmp(classname, insert.classname) < 0) {
-                    next = insert;
+                    this.next = insert;
                     insert = this;
                     break;
                 }
             }
             if (null == insert) {
                 insert = this;
-                next = null;
+                this.next = null;
             }
         }
         // ~idTypeInfo();
@@ -1028,43 +1048,43 @@ public class Class {
             boolean[] set;
             int num;
 
-            if (eventMap != null) {
+            if (this.eventMap != null) {
                 // we've already been initialized by a subclass
                 return;
             }
 
             // make sure our superclass is initialized first
-            if (zuper != null && null == zuper.eventMap) {
-                zuper.Init();
+            if ((this.zuper != null) && (null == this.zuper.eventMap)) {
+                this.zuper.Init();
             }
 
             // add to our node hierarchy
-            if (zuper != null) {
-                node.ParentTo(zuper.node);
+            if (this.zuper != null) {
+                this.node.ParentTo(this.zuper.node);
             } else {
-                node.ParentTo(classHierarchy);
+                this.node.ParentTo(classHierarchy);
             }
-            node.SetOwner(this);
+            this.node.SetOwner(this);
 
             // keep track of the number of children below each class
-            for (c = zuper; c != null; c = c.zuper) {
+            for (c = this.zuper; c != null; c = c.zuper) {
                 c.lastChild++;
             }
 
             // if we're not adding any new event callbacks, we can just use our superclass's table
-            if ((null == eventCallbacks || NOT(eventCallbacks[0].event)) && zuper != null) {
-                eventMap = zuper.eventMap;
+            if (((null == this.eventCallbacks) || NOT(this.eventCallbacks[0].event)) && (this.zuper != null)) {
+                this.eventMap = this.zuper.eventMap;
                 return;
             }
 
             // set a flag so we know to delete the eventMap table
-            freeEventMap = true;
+            this.freeEventMap = true;
 
             // Allocate our new table.  It has to have as many entries as there
             // are events.  NOTE: could save some space by keeping track of the maximum
             // event that the class responds to and doing range checking.
             num = idEventDef.NumEventCommands();
-            eventMap = new eventCallback_t[num];
+            this.eventMap = new eventCallback_t[num];
 //	memset( eventMap, 0, sizeof( eventCallback_t ) * num );
             eventCallbackMemory += sizeof(eventCallback_t.class) * num;
 
@@ -1090,7 +1110,7 @@ public class Class {
                         continue;
                     }
                     set[ ev] = true;
-                    eventMap[ ev] = def[ i].function;
+                    this.eventMap[ ev] = def[ i].function;
                 }
             }
 
@@ -1108,14 +1128,14 @@ public class Class {
          */
         public void Shutdown() {
             // free up the memory used for event lookups
-            if (eventMap != null) {
+            if (this.eventMap != null) {
 //		if ( freeEventMap ) {
 //			delete[] eventMap;
 //		}
-                eventMap = null;
+                this.eventMap = null;
             }
-            typeNum = 0;
-            lastChild = 0;
+            this.typeNum = 0;
+            this.lastChild = 0;
         }
 
         /*
@@ -1127,7 +1147,7 @@ public class Class {
          ================
          */
         public boolean IsType(final idTypeInfo type) {
-            return ((typeNum >= type.typeNum) && (typeNum <= type.lastChild));
+            return ((this.typeNum >= type.typeNum) && (this.typeNum <= type.lastChild));
         }
 
         public boolean IsType(final java.lang.Class type) {
@@ -1136,12 +1156,12 @@ public class Class {
 
         public boolean RespondsTo(final idEventDef ev) {
             assert (idEvent.initialized);
-            if (null == eventMap[ ev.GetEventNum()]) {
+            if (null == this.eventMap[ ev.GetEventNum()]) {
                 // we don't respond to this event
                 return false;
             }
 
             return true;
         }
-    };
+    }
 }

@@ -145,7 +145,7 @@ public class Weapon {
         WP_HOLSTERED,
         WP_RISING,
         WP_LOWERING
-    };
+    }
     //    
     public static final int        AMMO_NUMTYPES               = 16;
     //
@@ -237,17 +237,17 @@ public class Weapon {
 
 
         // script control
-        private idScriptBool WEAPON_ATTACK       = new idScriptBool();
-        private idScriptBool WEAPON_RELOAD       = new idScriptBool();
-        private idScriptBool WEAPON_NETRELOAD    = new idScriptBool();
-        private idScriptBool WEAPON_NETENDRELOAD = new idScriptBool();
-        private idScriptBool WEAPON_NETFIRING    = new idScriptBool();
-        private idScriptBool WEAPON_RAISEWEAPON  = new idScriptBool();
-        private idScriptBool WEAPON_LOWERWEAPON  = new idScriptBool();
+        private final idScriptBool WEAPON_ATTACK       = new idScriptBool();
+        private final idScriptBool WEAPON_RELOAD       = new idScriptBool();
+        private final idScriptBool WEAPON_NETRELOAD    = new idScriptBool();
+        private final idScriptBool WEAPON_NETENDRELOAD = new idScriptBool();
+        private final idScriptBool WEAPON_NETFIRING    = new idScriptBool();
+        private final idScriptBool WEAPON_RAISEWEAPON  = new idScriptBool();
+        private final idScriptBool WEAPON_LOWERWEAPON  = new idScriptBool();
         private weaponStatus_t                status;
         private idThread                      thread;
-        private idStr                         state;
-        private idStr                         idealState;
+        private final idStr                         state;
+        private final idStr                         idealState;
         private int                           animBlendFrames;
         private int                           animDoneTime;
         private boolean                       isLinked;
@@ -256,7 +256,7 @@ public class Weapon {
         private idEntity                      projectileEnt;
         //
         private idPlayer                      owner;
-        private idEntityPtr<idAnimatedEntity> worldModel;
+        private final idEntityPtr<idAnimatedEntity> worldModel;
         //
         // hiding (for GUIs and NPCs)
         private int                           hideTime;
@@ -272,30 +272,30 @@ public class Weapon {
         private int                           berserk;
         //
         // these are the player render view parms, which include bobbing
-        private idVec3                        playerViewOrigin;
-        private idMat3                        playerViewAxis;
+        private final idVec3                        playerViewOrigin;
+        private final idMat3                        playerViewAxis;
         //
         // the view weapon render entity parms
-        private idVec3                        viewWeaponOrigin;
-        private idMat3                        viewWeaponAxis;
+        private final idVec3                        viewWeaponOrigin;
+        private final idMat3                        viewWeaponAxis;
         //
         // the muzzle bone's position, used for launching projectiles and trailing smoke
-        private idVec3                        muzzleOrigin;
-        private idMat3                        muzzleAxis;
+        private final idVec3                        muzzleOrigin;
+        private final idMat3                        muzzleAxis;
         //
-        private idVec3                        pushVelocity;
+        private final idVec3                        pushVelocity;
         //
         // weapon definition
         // we maintain local copies of the projectile and brass dictionaries so they
         // do not have to be copied across the DLL boundary when entities are spawned
         private idDeclEntityDef               weaponDef;
         private idDeclEntityDef               meleeDef;
-        private idDict                        projectileDict;
+        private final idDict                        projectileDict;
         private float                         meleeDistance;
-        private idStr                         meleeDefName;
-        private idDict                        brassDict;
+        private final idStr                         meleeDefName;
+        private final idDict                        brassDict;
         private int                           brassDelay;
-        private idStr                         icon;
+        private final idStr                         icon;
         //
         // view weapon gui light
         private renderLight_s                 guiLight;
@@ -308,7 +308,7 @@ public class Weapon {
         private renderLight_s                 worldMuzzleFlash;     // positioned on world weapon bone
         private int                           worldMuzzleFlashHandle;
         //
-        private idVec3                        flashColor;
+        private final idVec3                        flashColor;
         private int                           muzzleFlashEnd;
         private int                           flashTime;
         private boolean                       lightOn;
@@ -322,8 +322,8 @@ public class Weapon {
         private int                           kick_endtime;
         private int                           muzzle_kick_time;
         private int                           muzzle_kick_maxtime;
-        private idAngles                      muzzle_kick_angles;
-        private idVec3                        muzzle_kick_offset;
+        private final idAngles                      muzzle_kick_angles;
+        private final idVec3                        muzzle_kick_offset;
         //
         // ammo management
         private int /*ammo_t*/                ammoType;
@@ -359,7 +359,7 @@ public class Weapon {
         private boolean                       continuousSmoke;      // if smoke is continuous ( chainsaw )
         private idDeclParticle                strikeSmoke;          // striking something in melee
         private int                           strikeSmokeStartTime; // timing
-        private idVec3                        strikePos;            // position of last melee strike
+        private final idVec3                        strikePos;            // position of last melee strike
         private idMat3                        strikeAxis;           // axis of last melee strike
         private int                           nextStrikeFx;         // used for sound and decal ( may use for strike smoke too )
         //
@@ -371,7 +371,7 @@ public class Weapon {
         private renderLight_s                 nozzleGlow;           // nozzle light
         private int                           nozzleGlowHandle;     // handle for nozzle light
         //
-        private idVec3                        nozzleGlowColor;      // color of the nozzle glow
+        private final idVec3                        nozzleGlowColor;      // color of the nozzle glow
         private idMaterial                    nozzleGlowShader;     // shader for glow light
         private float                         nozzleGlowRadius;     // radius of glow light
         //
@@ -390,50 +390,50 @@ public class Weapon {
 
          ***********************************************************************/
         public idWeapon() {
-            owner = null;
-            worldModel = new idEntityPtr<>(null);
-            weaponDef = null;
-            thread = null;
+            this.owner = null;
+            this.worldModel = new idEntityPtr<>(null);
+            this.weaponDef = null;
+            this.thread = null;
 
-            guiLight = new renderLight_s();//memset( &guiLight, 0, sizeof( guiLight ) );
-            muzzleFlash = new renderLight_s();//memset( &muzzleFlash, 0, sizeof( muzzleFlash ) );
-            worldMuzzleFlash = new renderLight_s();//memset( &worldMuzzleFlash, 0, sizeof( worldMuzzleFlash ) );
-            nozzleGlow = new renderLight_s();//memset( &nozzleGlow, 0, sizeof( nozzleGlow ) );
+            this.guiLight = new renderLight_s();//memset( &guiLight, 0, sizeof( guiLight ) );
+            this.muzzleFlash = new renderLight_s();//memset( &muzzleFlash, 0, sizeof( muzzleFlash ) );
+            this.worldMuzzleFlash = new renderLight_s();//memset( &worldMuzzleFlash, 0, sizeof( worldMuzzleFlash ) );
+            this.nozzleGlow = new renderLight_s();//memset( &nozzleGlow, 0, sizeof( nozzleGlow ) );
 
-            muzzleFlashEnd = 0;
-            flashColor = getVec3_origin();
-            muzzleFlashHandle = -1;
-            worldMuzzleFlashHandle = -1;
-            guiLightHandle = -1;
-            nozzleGlowHandle = -1;
-            modelDefHandle = -1;
+            this.muzzleFlashEnd = 0;
+            this.flashColor = getVec3_origin();
+            this.muzzleFlashHandle = -1;
+            this.worldMuzzleFlashHandle = -1;
+            this.guiLightHandle = -1;
+            this.nozzleGlowHandle = -1;
+            this.modelDefHandle = -1;
 
-            berserk = 2;
-            brassDelay = 0;
+            this.berserk = 2;
+            this.brassDelay = 0;
 
-            allowDrop = true;
+            this.allowDrop = true;
 
-            state = new idStr();
-            idealState = new idStr();
-            playerViewOrigin = new idVec3();
-            playerViewAxis = new idMat3();
-            viewWeaponOrigin = new idVec3();
-            viewWeaponAxis = new idMat3();
-            muzzleOrigin = new idVec3();
-            muzzleAxis = new idMat3();
-            pushVelocity = new idVec3();
-            projectileDict = new idDict();
-            meleeDefName = new idStr();
-            brassDict = new idDict();
-            icon = new idStr();
-            muzzle_kick_angles = new idAngles();
-            muzzle_kick_offset = new idVec3();
-            strikePos = new idVec3();
-            nozzleGlowColor = new idVec3();
+            this.state = new idStr();
+            this.idealState = new idStr();
+            this.playerViewOrigin = new idVec3();
+            this.playerViewAxis = new idMat3();
+            this.viewWeaponOrigin = new idVec3();
+            this.viewWeaponAxis = new idMat3();
+            this.muzzleOrigin = new idVec3();
+            this.muzzleAxis = new idMat3();
+            this.pushVelocity = new idVec3();
+            this.projectileDict = new idDict();
+            this.meleeDefName = new idStr();
+            this.brassDict = new idDict();
+            this.icon = new idStr();
+            this.muzzle_kick_angles = new idAngles();
+            this.muzzle_kick_offset = new idVec3();
+            this.strikePos = new idVec3();
+            this.nozzleGlowColor = new idVec3();
 
             Clear();
 
-            fl.networkSync = true;
+            this.fl.networkSync = true;
         }
         // virtual					~idWeapon();
 
@@ -444,13 +444,13 @@ public class Weapon {
 
             if (!gameLocal.isClient) {
                 // setup the world model
-                worldModel.oSet((idAnimatedEntity) gameLocal.SpawnEntityType(idAnimatedEntity.class, null));
-                worldModel.GetEntity().fl.networkSync = true;
+                this.worldModel.oSet((idAnimatedEntity) gameLocal.SpawnEntityType(idAnimatedEntity.class, null));
+                this.worldModel.GetEntity().fl.networkSync = true;
             }
 
-            thread = new idThread();
-            thread.ManualDelete();
-            thread.ManualControl();
+            this.thread = new idThread();
+            this.thread.ManualDelete();
+            this.thread.ManualControl();
         }
 
         /*
@@ -461,17 +461,17 @@ public class Weapon {
          ================
          */
         public void SetOwner(idPlayer _owner) {
-            assert (null == owner);
-            owner = _owner;
-            SetName(va("%s_weapon", owner.name));
+            assert (null == this.owner);
+            this.owner = _owner;
+            SetName(va("%s_weapon", this.owner.name));
 
-            if (worldModel.GetEntity() != null) {
-                worldModel.GetEntity().SetName(va("%s_weapon_worldmodel", owner.name));
+            if (this.worldModel.GetEntity() != null) {
+                this.worldModel.GetEntity().SetName(va("%s_weapon_worldmodel", this.owner.name));
             }
         }
 
         public idPlayer GetOwner() {
-            return owner;
+            return this.owner;
         }
 
 
@@ -490,8 +490,8 @@ public class Weapon {
         public static void CacheWeapon(final String weaponName) {
             idDeclEntityDef weaponDef;
             String brassDefName;
-            idStr clipModelName = new idStr();
-            idTraceModel trm = new idTraceModel();
+            final idStr clipModelName = new idStr();
+            final idTraceModel trm = new idTraceModel();
             String guiName;
 
             weaponDef = gameLocal.FindEntityDef(weaponName, false);
@@ -523,272 +523,272 @@ public class Weapon {
         @Override
         public void Save(idSaveGame savefile) {					// archives object for save game file
 
-            savefile.WriteInt(etoi(status));
-            savefile.WriteObject(thread);
-            savefile.WriteString(state);
-            savefile.WriteString(idealState);
-            savefile.WriteInt(animBlendFrames);
-            savefile.WriteInt(animDoneTime);
-            savefile.WriteBool(isLinked);
+            savefile.WriteInt(etoi(this.status));
+            savefile.WriteObject(this.thread);
+            savefile.WriteString(this.state);
+            savefile.WriteString(this.idealState);
+            savefile.WriteInt(this.animBlendFrames);
+            savefile.WriteInt(this.animDoneTime);
+            savefile.WriteBool(this.isLinked);
 
-            savefile.WriteObject(owner);
-            worldModel.Save(savefile);
+            savefile.WriteObject(this.owner);
+            this.worldModel.Save(savefile);
 
-            savefile.WriteInt(hideTime);
-            savefile.WriteFloat(hideDistance);
-            savefile.WriteInt(hideStartTime);
-            savefile.WriteFloat(hideStart);
-            savefile.WriteFloat(hideEnd);
-            savefile.WriteFloat(hideOffset);
-            savefile.WriteBool(hide);
-            savefile.WriteBool(disabled);
+            savefile.WriteInt(this.hideTime);
+            savefile.WriteFloat(this.hideDistance);
+            savefile.WriteInt(this.hideStartTime);
+            savefile.WriteFloat(this.hideStart);
+            savefile.WriteFloat(this.hideEnd);
+            savefile.WriteFloat(this.hideOffset);
+            savefile.WriteBool(this.hide);
+            savefile.WriteBool(this.disabled);
 
-            savefile.WriteInt(berserk);
+            savefile.WriteInt(this.berserk);
 
-            savefile.WriteVec3(playerViewOrigin);
-            savefile.WriteMat3(playerViewAxis);
+            savefile.WriteVec3(this.playerViewOrigin);
+            savefile.WriteMat3(this.playerViewAxis);
 
-            savefile.WriteVec3(viewWeaponOrigin);
-            savefile.WriteMat3(viewWeaponAxis);
+            savefile.WriteVec3(this.viewWeaponOrigin);
+            savefile.WriteMat3(this.viewWeaponAxis);
 
-            savefile.WriteVec3(muzzleOrigin);
-            savefile.WriteMat3(muzzleAxis);
+            savefile.WriteVec3(this.muzzleOrigin);
+            savefile.WriteMat3(this.muzzleAxis);
 
-            savefile.WriteVec3(pushVelocity);
+            savefile.WriteVec3(this.pushVelocity);
 
-            savefile.WriteString(weaponDef.GetName());
-            savefile.WriteFloat(meleeDistance);
-            savefile.WriteString(meleeDefName);
-            savefile.WriteInt(brassDelay);
-            savefile.WriteString(icon);
+            savefile.WriteString(this.weaponDef.GetName());
+            savefile.WriteFloat(this.meleeDistance);
+            savefile.WriteString(this.meleeDefName);
+            savefile.WriteInt(this.brassDelay);
+            savefile.WriteString(this.icon);
 
-            savefile.WriteInt(guiLightHandle);
-            savefile.WriteRenderLight(guiLight);
+            savefile.WriteInt(this.guiLightHandle);
+            savefile.WriteRenderLight(this.guiLight);
 
-            savefile.WriteInt(muzzleFlashHandle);
-            savefile.WriteRenderLight(muzzleFlash);
+            savefile.WriteInt(this.muzzleFlashHandle);
+            savefile.WriteRenderLight(this.muzzleFlash);
 
-            savefile.WriteInt(worldMuzzleFlashHandle);
-            savefile.WriteRenderLight(worldMuzzleFlash);
+            savefile.WriteInt(this.worldMuzzleFlashHandle);
+            savefile.WriteRenderLight(this.worldMuzzleFlash);
 
-            savefile.WriteVec3(flashColor);
-            savefile.WriteInt(muzzleFlashEnd);
-            savefile.WriteInt(flashTime);
+            savefile.WriteVec3(this.flashColor);
+            savefile.WriteInt(this.muzzleFlashEnd);
+            savefile.WriteInt(this.flashTime);
 
-            savefile.WriteBool(lightOn);
-            savefile.WriteBool(silent_fire);
+            savefile.WriteBool(this.lightOn);
+            savefile.WriteBool(this.silent_fire);
 
-            savefile.WriteInt(kick_endtime);
-            savefile.WriteInt(muzzle_kick_time);
-            savefile.WriteInt(muzzle_kick_maxtime);
-            savefile.WriteAngles(muzzle_kick_angles);
-            savefile.WriteVec3(muzzle_kick_offset);
+            savefile.WriteInt(this.kick_endtime);
+            savefile.WriteInt(this.muzzle_kick_time);
+            savefile.WriteInt(this.muzzle_kick_maxtime);
+            savefile.WriteAngles(this.muzzle_kick_angles);
+            savefile.WriteVec3(this.muzzle_kick_offset);
 
-            savefile.WriteInt(ammoType);
-            savefile.WriteInt(ammoRequired);
-            savefile.WriteInt(clipSize);
-            savefile.WriteInt(ammoClip);
-            savefile.WriteInt(lowAmmo);
-            savefile.WriteBool(powerAmmo);
+            savefile.WriteInt(this.ammoType);
+            savefile.WriteInt(this.ammoRequired);
+            savefile.WriteInt(this.clipSize);
+            savefile.WriteInt(this.ammoClip);
+            savefile.WriteInt(this.lowAmmo);
+            savefile.WriteBool(this.powerAmmo);
 
             // savegames <= 17
             savefile.WriteInt(0);
 
-            savefile.WriteInt(zoomFov);
+            savefile.WriteInt(this.zoomFov);
 
-            savefile.WriteJoint(barrelJointView);
-            savefile.WriteJoint(flashJointView);
-            savefile.WriteJoint(ejectJointView);
-            savefile.WriteJoint(guiLightJointView);
-            savefile.WriteJoint(ventLightJointView);
+            savefile.WriteJoint(this.barrelJointView);
+            savefile.WriteJoint(this.flashJointView);
+            savefile.WriteJoint(this.ejectJointView);
+            savefile.WriteJoint(this.guiLightJointView);
+            savefile.WriteJoint(this.ventLightJointView);
 
-            savefile.WriteJoint(flashJointWorld);
-            savefile.WriteJoint(barrelJointWorld);
-            savefile.WriteJoint(ejectJointWorld);
+            savefile.WriteJoint(this.flashJointWorld);
+            savefile.WriteJoint(this.barrelJointWorld);
+            savefile.WriteJoint(this.ejectJointWorld);
 
-            savefile.WriteBool(hasBloodSplat);
+            savefile.WriteBool(this.hasBloodSplat);
 
-            savefile.WriteSoundShader(sndHum);
+            savefile.WriteSoundShader(this.sndHum);
 
-            savefile.WriteParticle(weaponSmoke);
-            savefile.WriteInt(weaponSmokeStartTime);
-            savefile.WriteBool(continuousSmoke);
-            savefile.WriteParticle(strikeSmoke);
-            savefile.WriteInt(strikeSmokeStartTime);
-            savefile.WriteVec3(strikePos);
-            savefile.WriteMat3(strikeAxis);
-            savefile.WriteInt(nextStrikeFx);
+            savefile.WriteParticle(this.weaponSmoke);
+            savefile.WriteInt(this.weaponSmokeStartTime);
+            savefile.WriteBool(this.continuousSmoke);
+            savefile.WriteParticle(this.strikeSmoke);
+            savefile.WriteInt(this.strikeSmokeStartTime);
+            savefile.WriteVec3(this.strikePos);
+            savefile.WriteMat3(this.strikeAxis);
+            savefile.WriteInt(this.nextStrikeFx);
 
-            savefile.WriteBool(nozzleFx);
-            savefile.WriteInt(nozzleFxFade);
+            savefile.WriteBool(this.nozzleFx);
+            savefile.WriteInt(this.nozzleFxFade);
 
-            savefile.WriteInt(lastAttack);
+            savefile.WriteInt(this.lastAttack);
 
-            savefile.WriteInt(nozzleGlowHandle);
-            savefile.WriteRenderLight(nozzleGlow);
+            savefile.WriteInt(this.nozzleGlowHandle);
+            savefile.WriteRenderLight(this.nozzleGlow);
 
-            savefile.WriteVec3(nozzleGlowColor);
-            savefile.WriteMaterial(nozzleGlowShader);
-            savefile.WriteFloat(nozzleGlowRadius);
+            savefile.WriteVec3(this.nozzleGlowColor);
+            savefile.WriteMaterial(this.nozzleGlowShader);
+            savefile.WriteFloat(this.nozzleGlowRadius);
 
-            savefile.WriteInt(weaponAngleOffsetAverages);
-            savefile.WriteFloat(weaponAngleOffsetScale);
-            savefile.WriteFloat(weaponAngleOffsetMax);
-            savefile.WriteFloat(weaponOffsetTime);
-            savefile.WriteFloat(weaponOffsetScale);
+            savefile.WriteInt(this.weaponAngleOffsetAverages);
+            savefile.WriteFloat(this.weaponAngleOffsetScale);
+            savefile.WriteFloat(this.weaponAngleOffsetMax);
+            savefile.WriteFloat(this.weaponOffsetTime);
+            savefile.WriteFloat(this.weaponOffsetScale);
 
-            savefile.WriteBool(allowDrop);
-            savefile.WriteObject(projectileEnt);
+            savefile.WriteBool(this.allowDrop);
+            savefile.WriteObject(this.projectileEnt);
 
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {					// unarchives object from save game file
 
-            status = weaponStatus_t.values()[savefile.ReadInt()];
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/thread);
-            savefile.ReadString(state);
-            savefile.ReadString(idealState);
-            animBlendFrames = savefile.ReadInt();
-            animDoneTime = savefile.ReadInt();
-            isLinked = savefile.ReadBool();
+            this.status = weaponStatus_t.values()[savefile.ReadInt()];
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/thread);
+            savefile.ReadString(this.state);
+            savefile.ReadString(this.idealState);
+            this.animBlendFrames = savefile.ReadInt();
+            this.animDoneTime = savefile.ReadInt();
+            this.isLinked = savefile.ReadBool();
 
             // Re-link script fields
-            WEAPON_ATTACK.LinkTo(scriptObject, "WEAPON_ATTACK");
-            WEAPON_RELOAD.LinkTo(scriptObject, "WEAPON_RELOAD");
-            WEAPON_NETRELOAD.LinkTo(scriptObject, "WEAPON_NETRELOAD");
-            WEAPON_NETENDRELOAD.LinkTo(scriptObject, "WEAPON_NETENDRELOAD");
-            WEAPON_NETFIRING.LinkTo(scriptObject, "WEAPON_NETFIRING");
-            WEAPON_RAISEWEAPON.LinkTo(scriptObject, "WEAPON_RAISEWEAPON");
-            WEAPON_LOWERWEAPON.LinkTo(scriptObject, "WEAPON_LOWERWEAPON");
+            this.WEAPON_ATTACK.LinkTo(this.scriptObject, "WEAPON_ATTACK");
+            this.WEAPON_RELOAD.LinkTo(this.scriptObject, "WEAPON_RELOAD");
+            this.WEAPON_NETRELOAD.LinkTo(this.scriptObject, "WEAPON_NETRELOAD");
+            this.WEAPON_NETENDRELOAD.LinkTo(this.scriptObject, "WEAPON_NETENDRELOAD");
+            this.WEAPON_NETFIRING.LinkTo(this.scriptObject, "WEAPON_NETFIRING");
+            this.WEAPON_RAISEWEAPON.LinkTo(this.scriptObject, "WEAPON_RAISEWEAPON");
+            this.WEAPON_LOWERWEAPON.LinkTo(this.scriptObject, "WEAPON_LOWERWEAPON");
 
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/owner);
-            worldModel.Restore(savefile);
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/owner);
+            this.worldModel.Restore(savefile);
 
-            hideTime = savefile.ReadInt();
-            hideDistance = savefile.ReadFloat();
-            hideStartTime = savefile.ReadInt();
-            hideStart = savefile.ReadFloat();
-            hideEnd = savefile.ReadFloat();
-            hideOffset = savefile.ReadFloat();
-            hide = savefile.ReadBool();
-            disabled = savefile.ReadBool();
+            this.hideTime = savefile.ReadInt();
+            this.hideDistance = savefile.ReadFloat();
+            this.hideStartTime = savefile.ReadInt();
+            this.hideStart = savefile.ReadFloat();
+            this.hideEnd = savefile.ReadFloat();
+            this.hideOffset = savefile.ReadFloat();
+            this.hide = savefile.ReadBool();
+            this.disabled = savefile.ReadBool();
 
-            berserk = savefile.ReadInt();
+            this.berserk = savefile.ReadInt();
 
-            savefile.ReadVec3(playerViewOrigin);
-            savefile.ReadMat3(playerViewAxis);
+            savefile.ReadVec3(this.playerViewOrigin);
+            savefile.ReadMat3(this.playerViewAxis);
 
-            savefile.ReadVec3(viewWeaponOrigin);
-            savefile.ReadMat3(viewWeaponAxis);
+            savefile.ReadVec3(this.viewWeaponOrigin);
+            savefile.ReadMat3(this.viewWeaponAxis);
 
-            savefile.ReadVec3(muzzleOrigin);
-            savefile.ReadMat3(muzzleAxis);
+            savefile.ReadVec3(this.muzzleOrigin);
+            savefile.ReadMat3(this.muzzleAxis);
 
-            savefile.ReadVec3(pushVelocity);
+            savefile.ReadVec3(this.pushVelocity);
 
-            idStr objectname = new idStr();
+            final idStr objectname = new idStr();
             savefile.ReadString(objectname);
-            weaponDef = gameLocal.FindEntityDef(objectname.getData());
-            meleeDef = gameLocal.FindEntityDef(weaponDef.dict.GetString("def_melee"), false);
+            this.weaponDef = gameLocal.FindEntityDef(objectname.getData());
+            this.meleeDef = gameLocal.FindEntityDef(this.weaponDef.dict.GetString("def_melee"), false);
 
-            final idDeclEntityDef projectileDef = gameLocal.FindEntityDef(weaponDef.dict.GetString("def_projectile"), false);
+            final idDeclEntityDef projectileDef = gameLocal.FindEntityDef(this.weaponDef.dict.GetString("def_projectile"), false);
             if (projectileDef != null) {
-                projectileDict.oSet(projectileDef.dict);
+                this.projectileDict.oSet(projectileDef.dict);
             } else {
-                projectileDict.Clear();
+                this.projectileDict.Clear();
             }
 
-            final idDeclEntityDef brassDef = gameLocal.FindEntityDef(weaponDef.dict.GetString("def_ejectBrass"), false);
+            final idDeclEntityDef brassDef = gameLocal.FindEntityDef(this.weaponDef.dict.GetString("def_ejectBrass"), false);
             if (brassDef != null) {
-                brassDict.oSet(brassDef.dict);
+                this.brassDict.oSet(brassDef.dict);
             } else {
-                brassDict.Clear();
+                this.brassDict.Clear();
             }
 
-            meleeDistance = savefile.ReadFloat();
-            savefile.ReadString(meleeDefName);
-            brassDelay = savefile.ReadInt();
-            savefile.ReadString(icon);
+            this.meleeDistance = savefile.ReadFloat();
+            savefile.ReadString(this.meleeDefName);
+            this.brassDelay = savefile.ReadInt();
+            savefile.ReadString(this.icon);
 
-            guiLightHandle = savefile.ReadInt();
-            savefile.ReadRenderLight(guiLight);
+            this.guiLightHandle = savefile.ReadInt();
+            savefile.ReadRenderLight(this.guiLight);
 
-            muzzleFlashHandle = savefile.ReadInt();
-            savefile.ReadRenderLight(muzzleFlash);
+            this.muzzleFlashHandle = savefile.ReadInt();
+            savefile.ReadRenderLight(this.muzzleFlash);
 
-            worldMuzzleFlashHandle = savefile.ReadInt();
-            savefile.ReadRenderLight(worldMuzzleFlash);
+            this.worldMuzzleFlashHandle = savefile.ReadInt();
+            savefile.ReadRenderLight(this.worldMuzzleFlash);
 
-            savefile.ReadVec3(flashColor);
-            muzzleFlashEnd = savefile.ReadInt();
-            flashTime = savefile.ReadInt();
+            savefile.ReadVec3(this.flashColor);
+            this.muzzleFlashEnd = savefile.ReadInt();
+            this.flashTime = savefile.ReadInt();
 
-            lightOn = savefile.ReadBool();
-            silent_fire = savefile.ReadBool();
+            this.lightOn = savefile.ReadBool();
+            this.silent_fire = savefile.ReadBool();
 
-            kick_endtime = savefile.ReadInt();
-            muzzle_kick_time = savefile.ReadInt();
-            muzzle_kick_maxtime = savefile.ReadInt();
-            savefile.ReadAngles(muzzle_kick_angles);
-            savefile.ReadVec3(muzzle_kick_offset);
+            this.kick_endtime = savefile.ReadInt();
+            this.muzzle_kick_time = savefile.ReadInt();
+            this.muzzle_kick_maxtime = savefile.ReadInt();
+            savefile.ReadAngles(this.muzzle_kick_angles);
+            savefile.ReadVec3(this.muzzle_kick_offset);
 
-            ammoType = savefile.ReadInt();
-            ammoRequired = savefile.ReadInt();
-            clipSize = savefile.ReadInt();
-            ammoClip = savefile.ReadInt();
-            lowAmmo = savefile.ReadInt();
-            powerAmmo = savefile.ReadBool();
+            this.ammoType = savefile.ReadInt();
+            this.ammoRequired = savefile.ReadInt();
+            this.clipSize = savefile.ReadInt();
+            this.ammoClip = savefile.ReadInt();
+            this.lowAmmo = savefile.ReadInt();
+            this.powerAmmo = savefile.ReadBool();
 
             // savegame versions <= 17
             int foo;
             foo = savefile.ReadInt();
 
-            zoomFov = savefile.ReadInt();
+            this.zoomFov = savefile.ReadInt();
 
-            barrelJointView = savefile.ReadJoint();
-            flashJointView = savefile.ReadJoint();
-            ejectJointView = savefile.ReadJoint();
-            guiLightJointView = savefile.ReadJoint();
-            ventLightJointView = savefile.ReadJoint();
+            this.barrelJointView = savefile.ReadJoint();
+            this.flashJointView = savefile.ReadJoint();
+            this.ejectJointView = savefile.ReadJoint();
+            this.guiLightJointView = savefile.ReadJoint();
+            this.ventLightJointView = savefile.ReadJoint();
 
-            flashJointWorld = savefile.ReadJoint();
-            barrelJointWorld = savefile.ReadJoint();
-            ejectJointWorld = savefile.ReadJoint();
+            this.flashJointWorld = savefile.ReadJoint();
+            this.barrelJointWorld = savefile.ReadJoint();
+            this.ejectJointWorld = savefile.ReadJoint();
 
-            hasBloodSplat = savefile.ReadBool();
+            this.hasBloodSplat = savefile.ReadBool();
 
-            savefile.ReadSoundShader(sndHum);
+            savefile.ReadSoundShader(this.sndHum);
 
-            savefile.ReadParticle(weaponSmoke);
-            weaponSmokeStartTime = savefile.ReadInt();
-            continuousSmoke = savefile.ReadBool();
-            savefile.ReadParticle(strikeSmoke);
-            strikeSmokeStartTime = savefile.ReadInt();
-            savefile.ReadVec3(strikePos);
-            savefile.ReadMat3(strikeAxis);
-            nextStrikeFx = savefile.ReadInt();
+            savefile.ReadParticle(this.weaponSmoke);
+            this.weaponSmokeStartTime = savefile.ReadInt();
+            this.continuousSmoke = savefile.ReadBool();
+            savefile.ReadParticle(this.strikeSmoke);
+            this.strikeSmokeStartTime = savefile.ReadInt();
+            savefile.ReadVec3(this.strikePos);
+            savefile.ReadMat3(this.strikeAxis);
+            this.nextStrikeFx = savefile.ReadInt();
 
-            nozzleFx = savefile.ReadBool();
-            nozzleFxFade = savefile.ReadInt();
+            this.nozzleFx = savefile.ReadBool();
+            this.nozzleFxFade = savefile.ReadInt();
 
-            lastAttack = savefile.ReadInt();
+            this.lastAttack = savefile.ReadInt();
 
-            nozzleGlowHandle = savefile.ReadInt();
-            savefile.ReadRenderLight(nozzleGlow);
+            this.nozzleGlowHandle = savefile.ReadInt();
+            savefile.ReadRenderLight(this.nozzleGlow);
 
-            savefile.ReadVec3(nozzleGlowColor);
-            savefile.ReadMaterial(nozzleGlowShader);
-            nozzleGlowRadius = savefile.ReadFloat();
+            savefile.ReadVec3(this.nozzleGlowColor);
+            savefile.ReadMaterial(this.nozzleGlowShader);
+            this.nozzleGlowRadius = savefile.ReadFloat();
 
-            weaponAngleOffsetAverages = savefile.ReadInt();
-            weaponAngleOffsetScale = savefile.ReadFloat();
-            weaponAngleOffsetMax = savefile.ReadFloat();
-            weaponOffsetTime = savefile.ReadFloat();
-            weaponOffsetScale = savefile.ReadFloat();
+            this.weaponAngleOffsetAverages = savefile.ReadInt();
+            this.weaponAngleOffsetScale = savefile.ReadFloat();
+            this.weaponAngleOffsetMax = savefile.ReadFloat();
+            this.weaponOffsetTime = savefile.ReadFloat();
+            this.weaponOffsetScale = savefile.ReadFloat();
 
-            allowDrop = savefile.ReadBool();
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/projectileEnt);
+            this.allowDrop = savefile.ReadBool();
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/projectileEnt);
         }
 
         /* **********************************************************************
@@ -800,176 +800,176 @@ public class Weapon {
             CancelEvents(EV_Weapon_Clear);
 
             DeconstructScriptObject();
-            scriptObject.Free();
+            this.scriptObject.Free();
 
-            WEAPON_ATTACK.Unlink();
-            WEAPON_RELOAD.Unlink();
-            WEAPON_NETRELOAD.Unlink();
-            WEAPON_NETENDRELOAD.Unlink();
-            WEAPON_NETFIRING.Unlink();
-            WEAPON_RAISEWEAPON.Unlink();
-            WEAPON_LOWERWEAPON.Unlink();
+            this.WEAPON_ATTACK.Unlink();
+            this.WEAPON_RELOAD.Unlink();
+            this.WEAPON_NETRELOAD.Unlink();
+            this.WEAPON_NETENDRELOAD.Unlink();
+            this.WEAPON_NETFIRING.Unlink();
+            this.WEAPON_RAISEWEAPON.Unlink();
+            this.WEAPON_LOWERWEAPON.Unlink();
 
-            if (muzzleFlashHandle != -1) {
-                gameRenderWorld.FreeLightDef(muzzleFlashHandle);
-                muzzleFlashHandle = -1;
+            if (this.muzzleFlashHandle != -1) {
+                gameRenderWorld.FreeLightDef(this.muzzleFlashHandle);
+                this.muzzleFlashHandle = -1;
             }
-            if (muzzleFlashHandle != -1) {
-                gameRenderWorld.FreeLightDef(muzzleFlashHandle);
-                muzzleFlashHandle = -1;
+            if (this.muzzleFlashHandle != -1) {
+                gameRenderWorld.FreeLightDef(this.muzzleFlashHandle);
+                this.muzzleFlashHandle = -1;
             }
-            if (worldMuzzleFlashHandle != -1) {
-                gameRenderWorld.FreeLightDef(worldMuzzleFlashHandle);
-                worldMuzzleFlashHandle = -1;
+            if (this.worldMuzzleFlashHandle != -1) {
+                gameRenderWorld.FreeLightDef(this.worldMuzzleFlashHandle);
+                this.worldMuzzleFlashHandle = -1;
             }
-            if (guiLightHandle != -1) {
-                gameRenderWorld.FreeLightDef(guiLightHandle);
-                guiLightHandle = -1;
+            if (this.guiLightHandle != -1) {
+                gameRenderWorld.FreeLightDef(this.guiLightHandle);
+                this.guiLightHandle = -1;
             }
-            if (nozzleGlowHandle != -1) {
-                gameRenderWorld.FreeLightDef(nozzleGlowHandle);
-                nozzleGlowHandle = -1;
+            if (this.nozzleGlowHandle != -1) {
+                gameRenderWorld.FreeLightDef(this.nozzleGlowHandle);
+                this.nozzleGlowHandle = -1;
             }
 
 //	memset( &renderEntity, 0, sizeof( renderEntity ) );
-            renderEntity = new renderEntity_s();
-            renderEntity.entityNum = entityNumber;
+            this.renderEntity = new renderEntity_s();
+            this.renderEntity.entityNum = this.entityNumber;
 
-            renderEntity.noShadow = true;
-            renderEntity.noSelfShadow = true;
-            renderEntity.customSkin = null;
+            this.renderEntity.noShadow = true;
+            this.renderEntity.noSelfShadow = true;
+            this.renderEntity.customSkin = null;
 
             // set default shader parms
-            renderEntity.shaderParms[ SHADERPARM_RED] = 1.0f;
-            renderEntity.shaderParms[ SHADERPARM_GREEN] = 1.0f;
-            renderEntity.shaderParms[ SHADERPARM_BLUE] = 1.0f;
-            renderEntity.shaderParms[3] = 1.0f;
-            renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = 0.0f;
-            renderEntity.shaderParms[5] = 0.0f;
-            renderEntity.shaderParms[6] = 0.0f;
-            renderEntity.shaderParms[7] = 0.0f;
+            this.renderEntity.shaderParms[ SHADERPARM_RED] = 1.0f;
+            this.renderEntity.shaderParms[ SHADERPARM_GREEN] = 1.0f;
+            this.renderEntity.shaderParms[ SHADERPARM_BLUE] = 1.0f;
+            this.renderEntity.shaderParms[3] = 1.0f;
+            this.renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = 0.0f;
+            this.renderEntity.shaderParms[5] = 0.0f;
+            this.renderEntity.shaderParms[6] = 0.0f;
+            this.renderEntity.shaderParms[7] = 0.0f;
 
-            if (refSound.referenceSound != null) {
-                refSound.referenceSound.Free(true);
+            if (this.refSound.referenceSound != null) {
+                this.refSound.referenceSound.Free(true);
             }
 //	memset( &refSound, 0, sizeof( refSound_t ) );
-            refSound = new refSound_t();
+            this.refSound = new refSound_t();
 
             // setting diversity to 0 results in no random sound.  -1 indicates random.
-            refSound.diversity = -1.0f;
+            this.refSound.diversity = -1.0f;
 
-            if (owner != null) {
+            if (this.owner != null) {
                 // don't spatialize the weapon sounds
-                refSound.listenerId = owner.GetListenerId();
+                this.refSound.listenerId = this.owner.GetListenerId();
             }
 
             // clear out the sounds from our spawnargs since we'll copy them from the weapon def
-            idKeyValue kv = spawnArgs.MatchPrefix("snd_");
+            idKeyValue kv = this.spawnArgs.MatchPrefix("snd_");
             while (kv != null) {
-                spawnArgs.Delete(kv.GetKey());
-                kv = spawnArgs.MatchPrefix("snd_");
+                this.spawnArgs.Delete(kv.GetKey());
+                kv = this.spawnArgs.MatchPrefix("snd_");
             }
 
-            hideTime = 300;
-            hideDistance = -15.0f;
-            hideStartTime = gameLocal.time - hideTime;
-            hideStart = 0.0f;
-            hideEnd = 0.0f;
-            hideOffset = 0.0f;
-            hide = false;
-            disabled = false;
+            this.hideTime = 300;
+            this.hideDistance = -15.0f;
+            this.hideStartTime = gameLocal.time - this.hideTime;
+            this.hideStart = 0.0f;
+            this.hideEnd = 0.0f;
+            this.hideOffset = 0.0f;
+            this.hide = false;
+            this.disabled = false;
 
-            weaponSmoke = null;
-            weaponSmokeStartTime = 0;
-            continuousSmoke = false;
-            strikeSmoke = null;
-            strikeSmokeStartTime = 0;
-            strikePos.Zero();
-            strikeAxis = getMat3_identity();
-            nextStrikeFx = 0;
+            this.weaponSmoke = null;
+            this.weaponSmokeStartTime = 0;
+            this.continuousSmoke = false;
+            this.strikeSmoke = null;
+            this.strikeSmokeStartTime = 0;
+            this.strikePos.Zero();
+            this.strikeAxis = getMat3_identity();
+            this.nextStrikeFx = 0;
 
-            icon.oSet("");
+            this.icon.oSet("");
 
-            playerViewAxis.Identity();
-            playerViewOrigin.Zero();
-            viewWeaponAxis.Identity();
-            viewWeaponOrigin.Zero();
-            muzzleAxis.Identity();
-            muzzleOrigin.Zero();
-            pushVelocity.Zero();
+            this.playerViewAxis.Identity();
+            this.playerViewOrigin.Zero();
+            this.viewWeaponAxis.Identity();
+            this.viewWeaponOrigin.Zero();
+            this.muzzleAxis.Identity();
+            this.muzzleOrigin.Zero();
+            this.pushVelocity.Zero();
 
-            status = WP_HOLSTERED;
-            state.oSet("");
-            idealState.oSet("");
-            animBlendFrames = 0;
-            animDoneTime = 0;
+            this.status = WP_HOLSTERED;
+            this.state.oSet("");
+            this.idealState.oSet("");
+            this.animBlendFrames = 0;
+            this.animDoneTime = 0;
 
-            projectileDict.Clear();
-            meleeDef = null;
-            meleeDefName.oSet("");
-            meleeDistance = 0.0f;
-            brassDict.Clear();
+            this.projectileDict.Clear();
+            this.meleeDef = null;
+            this.meleeDefName.oSet("");
+            this.meleeDistance = 0.0f;
+            this.brassDict.Clear();
 
-            flashTime = 250;
-            lightOn = false;
-            silent_fire = false;
+            this.flashTime = 250;
+            this.lightOn = false;
+            this.silent_fire = false;
 
-            ammoType = 0;
-            ammoRequired = 0;
-            ammoClip = 0;
-            clipSize = 0;
-            lowAmmo = 0;
-            powerAmmo = false;
+            this.ammoType = 0;
+            this.ammoRequired = 0;
+            this.ammoClip = 0;
+            this.clipSize = 0;
+            this.lowAmmo = 0;
+            this.powerAmmo = false;
 
-            kick_endtime = 0;
-            muzzle_kick_time = 0;
-            muzzle_kick_maxtime = 0;
-            muzzle_kick_angles.Zero();
-            muzzle_kick_offset.Zero();
+            this.kick_endtime = 0;
+            this.muzzle_kick_time = 0;
+            this.muzzle_kick_maxtime = 0;
+            this.muzzle_kick_angles.Zero();
+            this.muzzle_kick_offset.Zero();
 
-            zoomFov = 90;
+            this.zoomFov = 90;
 
-            barrelJointView = INVALID_JOINT;
-            flashJointView = INVALID_JOINT;
-            ejectJointView = INVALID_JOINT;
-            guiLightJointView = INVALID_JOINT;
-            ventLightJointView = INVALID_JOINT;
+            this.barrelJointView = INVALID_JOINT;
+            this.flashJointView = INVALID_JOINT;
+            this.ejectJointView = INVALID_JOINT;
+            this.guiLightJointView = INVALID_JOINT;
+            this.ventLightJointView = INVALID_JOINT;
 
-            barrelJointWorld = INVALID_JOINT;
-            flashJointWorld = INVALID_JOINT;
-            ejectJointWorld = INVALID_JOINT;
+            this.barrelJointWorld = INVALID_JOINT;
+            this.flashJointWorld = INVALID_JOINT;
+            this.ejectJointWorld = INVALID_JOINT;
 
-            hasBloodSplat = false;
-            nozzleFx = false;
-            nozzleFxFade = 1500;
-            lastAttack = 0;
-            nozzleGlowHandle = -1;
-            nozzleGlowShader = null;
-            nozzleGlowRadius = 10;
-            nozzleGlowColor.Zero();
+            this.hasBloodSplat = false;
+            this.nozzleFx = false;
+            this.nozzleFxFade = 1500;
+            this.lastAttack = 0;
+            this.nozzleGlowHandle = -1;
+            this.nozzleGlowShader = null;
+            this.nozzleGlowRadius = 10;
+            this.nozzleGlowColor.Zero();
 
-            weaponAngleOffsetAverages = 0;
-            weaponAngleOffsetScale = 0.0f;
-            weaponAngleOffsetMax = 0.0f;
-            weaponOffsetTime = 0.0f;
-            weaponOffsetScale = 0.0f;
+            this.weaponAngleOffsetAverages = 0;
+            this.weaponAngleOffsetScale = 0.0f;
+            this.weaponAngleOffsetMax = 0.0f;
+            this.weaponOffsetTime = 0.0f;
+            this.weaponOffsetScale = 0.0f;
 
-            allowDrop = true;
+            this.allowDrop = true;
 
-            animator.ClearAllAnims(gameLocal.time, 0);
+            this.animator.ClearAllAnims(gameLocal.time, 0);
             FreeModelDef();
 
-            sndHum = null;
+            this.sndHum = null;
 
-            isLinked = false;
-            projectileEnt = null;
+            this.isLinked = false;
+            this.projectileEnt = null;
 
-            isFiring = false;
+            this.isFiring = false;
         }
 
         public void GetWeaponDef(final String objectName, int ammoinclip) {
-            String[] shader = {null};
-            String[] objectType = {null};
+            final String[] shader = {null};
+            final String[] objectType = {null};
             String vmodel;
             String guiName;
             String projectileName;
@@ -983,82 +983,82 @@ public class Weapon {
                 return;
             }
 
-            assert (owner != null);
+            assert (this.owner != null);
 
-            weaponDef = gameLocal.FindEntityDef(objectName);
+            this.weaponDef = gameLocal.FindEntityDef(objectName);
 
-            ammoType = GetAmmoNumForName(weaponDef.dict.GetString("ammoType"));
-            ammoRequired = weaponDef.dict.GetInt("ammoRequired");
-            clipSize = weaponDef.dict.GetInt("clipSize");
-            lowAmmo = weaponDef.dict.GetInt("lowAmmo");
+            this.ammoType = GetAmmoNumForName(this.weaponDef.dict.GetString("ammoType"));
+            this.ammoRequired = this.weaponDef.dict.GetInt("ammoRequired");
+            this.clipSize = this.weaponDef.dict.GetInt("clipSize");
+            this.lowAmmo = this.weaponDef.dict.GetInt("lowAmmo");
 
-            icon.oSet(weaponDef.dict.GetString("icon"));
-            silent_fire = weaponDef.dict.GetBool("silent_fire");
-            powerAmmo = weaponDef.dict.GetBool("powerAmmo");
+            this.icon.oSet(this.weaponDef.dict.GetString("icon"));
+            this.silent_fire = this.weaponDef.dict.GetBool("silent_fire");
+            this.powerAmmo = this.weaponDef.dict.GetBool("powerAmmo");
 
-            muzzle_kick_time = (int) SEC2MS(weaponDef.dict.GetFloat("muzzle_kick_time"));
-            muzzle_kick_maxtime = (int) SEC2MS(weaponDef.dict.GetFloat("muzzle_kick_maxtime"));
-            muzzle_kick_angles.oSet(weaponDef.dict.GetAngles("muzzle_kick_angles"));
-            muzzle_kick_offset.oSet(weaponDef.dict.GetVector("muzzle_kick_offset"));
+            this.muzzle_kick_time = (int) SEC2MS(this.weaponDef.dict.GetFloat("muzzle_kick_time"));
+            this.muzzle_kick_maxtime = (int) SEC2MS(this.weaponDef.dict.GetFloat("muzzle_kick_maxtime"));
+            this.muzzle_kick_angles.oSet(this.weaponDef.dict.GetAngles("muzzle_kick_angles"));
+            this.muzzle_kick_offset.oSet(this.weaponDef.dict.GetVector("muzzle_kick_offset"));
 
-            hideTime = (int) SEC2MS(weaponDef.dict.GetFloat("hide_time", "0.3"));
-            hideDistance = weaponDef.dict.GetFloat("hide_distance", "-15");
+            this.hideTime = (int) SEC2MS(this.weaponDef.dict.GetFloat("hide_time", "0.3"));
+            this.hideDistance = this.weaponDef.dict.GetFloat("hide_distance", "-15");
 
             // muzzle smoke
-            smokeName = weaponDef.dict.GetString("smoke_muzzle");
+            smokeName = this.weaponDef.dict.GetString("smoke_muzzle");
             if (isNotNullOrEmpty(smokeName)) {
-                weaponSmoke = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
+                this.weaponSmoke = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
             } else {
-                weaponSmoke = null;
+                this.weaponSmoke = null;
             }
-            continuousSmoke = weaponDef.dict.GetBool("continuousSmoke");
-            weaponSmokeStartTime = (continuousSmoke) ? gameLocal.time : 0;
+            this.continuousSmoke = this.weaponDef.dict.GetBool("continuousSmoke");
+            this.weaponSmokeStartTime = (this.continuousSmoke) ? gameLocal.time : 0;
 
-            smokeName = weaponDef.dict.GetString("smoke_strike");
+            smokeName = this.weaponDef.dict.GetString("smoke_strike");
             if (isNotNullOrEmpty(smokeName)) {
-                strikeSmoke = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
+                this.strikeSmoke = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
             } else {
-                strikeSmoke = null;
+                this.strikeSmoke = null;
             }
-            strikeSmokeStartTime = 0;
-            strikePos.Zero();
-            strikeAxis = getMat3_identity();
-            nextStrikeFx = 0;
+            this.strikeSmokeStartTime = 0;
+            this.strikePos.Zero();
+            this.strikeAxis = getMat3_identity();
+            this.nextStrikeFx = 0;
 
             // setup gui light
-            guiLight = new renderLight_s();//	memset( &guiLight, 0, sizeof( guiLight ) );
-            final String guiLightShader = weaponDef.dict.GetString("mtr_guiLightShader");
+            this.guiLight = new renderLight_s();//	memset( &guiLight, 0, sizeof( guiLight ) );
+            final String guiLightShader = this.weaponDef.dict.GetString("mtr_guiLightShader");
             if (isNotNullOrEmpty(guiLightShader)) {
-                guiLight.shader = declManager.FindMaterial(guiLightShader, false);
-                guiLight.lightRadius.oSet(0, guiLight.lightRadius.oSet(1, guiLight.lightRadius.oSet(2, 3)));
-                guiLight.pointLight = true;
+                this.guiLight.shader = declManager.FindMaterial(guiLightShader, false);
+                this.guiLight.lightRadius.oSet(0, this.guiLight.lightRadius.oSet(1, this.guiLight.lightRadius.oSet(2, 3)));
+                this.guiLight.pointLight = true;
             }
 
             // setup the view model
-            vmodel = weaponDef.dict.GetString("model_view");
+            vmodel = this.weaponDef.dict.GetString("model_view");
             SetModel(vmodel);
 
             // setup the world model
-            InitWorldModel(weaponDef);
+            InitWorldModel(this.weaponDef);
 
             // copy the sounds from the weapon view model def into out spawnargs
-            idKeyValue kv = weaponDef.dict.MatchPrefix("snd_");
+            idKeyValue kv = this.weaponDef.dict.MatchPrefix("snd_");
             while (kv != null) {
-                spawnArgs.Set(kv.GetKey(), kv.GetValue());
-                kv = weaponDef.dict.MatchPrefix("snd_", kv);
+                this.spawnArgs.Set(kv.GetKey(), kv.GetValue());
+                kv = this.weaponDef.dict.MatchPrefix("snd_", kv);
             }
 
             // find some joints in the model for locating effects
-            barrelJointView = animator.GetJointHandle("barrel");
-            flashJointView = animator.GetJointHandle("flash");
-            ejectJointView = animator.GetJointHandle("eject");
-            guiLightJointView = animator.GetJointHandle("guiLight");
-            ventLightJointView = animator.GetJointHandle("ventLight");
+            this.barrelJointView = this.animator.GetJointHandle("barrel");
+            this.flashJointView = this.animator.GetJointHandle("flash");
+            this.ejectJointView = this.animator.GetJointHandle("eject");
+            this.guiLightJointView = this.animator.GetJointHandle("guiLight");
+            this.ventLightJointView = this.animator.GetJointHandle("ventLight");
 
             // get the projectile
-            projectileDict.Clear();
+            this.projectileDict.Clear();
 
-            projectileName = weaponDef.dict.GetString("def_projectile");
+            projectileName = this.weaponDef.dict.GetString("def_projectile");
             if (isNotNullOrEmpty(projectileName)) {
                 final idDeclEntityDef projectileDef = gameLocal.FindEntityDef(projectileName, false);
                 if (null == projectileDef) {
@@ -1068,7 +1068,7 @@ public class Weapon {
                     if (!idProjectile.class.getSimpleName().equals(spawnclass)) {
                         gameLocal.Warning("Invalid spawnclass '%s' on projectile '%s' (used by weapon '%s')", spawnclass, projectileName, objectName);
                     } else {
-                        projectileDict.oSet(projectileDef.dict);
+                        this.projectileDict.oSet(projectileDef.dict);
                     }
                 }
             }
@@ -1081,137 +1081,138 @@ public class Weapon {
             float flashRadius;
             boolean flashPointLight;
 
-            weaponDef.dict.GetString("mtr_flashShader", "", shader);
+            this.weaponDef.dict.GetString("mtr_flashShader", "", shader);
             flashShader = declManager.FindMaterial(shader[0], false);
-            flashPointLight = weaponDef.dict.GetBool("flashPointLight", "1");
-            weaponDef.dict.GetVector("flashColor", "0 0 0", flashColor);
-            flashRadius = (float) weaponDef.dict.GetInt("flashRadius");	// if 0, no light will spawn
-            flashTime = (int) SEC2MS(weaponDef.dict.GetFloat("flashTime", "0.25"));
-            flashTarget = weaponDef.dict.GetVector("flashTarget");
-            flashUp = weaponDef.dict.GetVector("flashUp");
-            flashRight = weaponDef.dict.GetVector("flashRight");
+            flashPointLight = this.weaponDef.dict.GetBool("flashPointLight", "1");
+            this.weaponDef.dict.GetVector("flashColor", "0 0 0", this.flashColor);
+            flashRadius = this.weaponDef.dict.GetInt("flashRadius");	// if 0, no light will spawn
+            this.flashTime = (int) SEC2MS(this.weaponDef.dict.GetFloat("flashTime", "0.25"));
+            flashTarget = this.weaponDef.dict.GetVector("flashTarget");
+            flashUp = this.weaponDef.dict.GetVector("flashUp");
+            flashRight = this.weaponDef.dict.GetVector("flashRight");
 
-            muzzleFlash = new renderLight_s();//memset( & muzzleFlash, 0, sizeof(muzzleFlash));
-            muzzleFlash.lightId = LIGHTID_VIEW_MUZZLE_FLASH + owner.entityNumber;
-            muzzleFlash.allowLightInViewID = owner.entityNumber + 1;
+            this.muzzleFlash = new renderLight_s();//memset( & muzzleFlash, 0, sizeof(muzzleFlash));
+            this.muzzleFlash.lightId = LIGHTID_VIEW_MUZZLE_FLASH + this.owner.entityNumber;
+            this.muzzleFlash.allowLightInViewID = this.owner.entityNumber + 1;
 
             // the weapon lights will only be in first person
-            guiLight.allowLightInViewID = owner.entityNumber + 1;
-            nozzleGlow.allowLightInViewID = owner.entityNumber + 1;
+            this.guiLight.allowLightInViewID = this.owner.entityNumber + 1;
+            this.nozzleGlow.allowLightInViewID = this.owner.entityNumber + 1;
 
-            muzzleFlash.pointLight = flashPointLight;
-            muzzleFlash.shader = flashShader;
-            muzzleFlash.shaderParms[ SHADERPARM_RED] = flashColor.oGet(0);
-            muzzleFlash.shaderParms[ SHADERPARM_GREEN] = flashColor.oGet(1);
-            muzzleFlash.shaderParms[ SHADERPARM_BLUE] = flashColor.oGet(2);
-            muzzleFlash.shaderParms[ SHADERPARM_TIMESCALE] = 1.0f;
+            this.muzzleFlash.pointLight = flashPointLight;
+            this.muzzleFlash.shader = flashShader;
+            this.muzzleFlash.shaderParms[ SHADERPARM_RED] = this.flashColor.oGet(0);
+            this.muzzleFlash.shaderParms[ SHADERPARM_GREEN] = this.flashColor.oGet(1);
+            this.muzzleFlash.shaderParms[ SHADERPARM_BLUE] = this.flashColor.oGet(2);
+            this.muzzleFlash.shaderParms[ SHADERPARM_TIMESCALE] = 1.0f;
 
-            muzzleFlash.lightRadius.oSet(0, flashRadius);
-            muzzleFlash.lightRadius.oSet(1, flashRadius);
-            muzzleFlash.lightRadius.oSet(2, flashRadius);
+            this.muzzleFlash.lightRadius.oSet(0, flashRadius);
+            this.muzzleFlash.lightRadius.oSet(1, flashRadius);
+            this.muzzleFlash.lightRadius.oSet(2, flashRadius);
 
             if (!flashPointLight) {
-                muzzleFlash.target.oSet(flashTarget);
-                muzzleFlash.up.oSet(flashUp);
-                muzzleFlash.right.oSet(flashRight);
-                muzzleFlash.end.oSet(flashTarget);
+                this.muzzleFlash.target.oSet(flashTarget);
+                this.muzzleFlash.up.oSet(flashUp);
+                this.muzzleFlash.right.oSet(flashRight);
+                this.muzzleFlash.end.oSet(flashTarget);
             }
 
             // the world muzzle flash is the same, just positioned differently
-            worldMuzzleFlash = new renderLight_s(muzzleFlash);
-            worldMuzzleFlash.suppressLightInViewID = owner.entityNumber + 1;
-            worldMuzzleFlash.allowLightInViewID = 0;
-            worldMuzzleFlash.lightId = LIGHTID_WORLD_MUZZLE_FLASH + owner.entityNumber;
+            this.worldMuzzleFlash = new renderLight_s(this.muzzleFlash);
+            this.worldMuzzleFlash.suppressLightInViewID = this.owner.entityNumber + 1;
+            this.worldMuzzleFlash.allowLightInViewID = 0;
+            this.worldMuzzleFlash.lightId = LIGHTID_WORLD_MUZZLE_FLASH + this.owner.entityNumber;
 
             //-----------------------------------
-            nozzleFx = weaponDef.dict.GetBool("nozzleFx");
-            nozzleFxFade = weaponDef.dict.GetInt("nozzleFxFade", "1500");
-            nozzleGlowColor.oSet(weaponDef.dict.GetVector("nozzleGlowColor", "1 1 1"));
-            nozzleGlowRadius = weaponDef.dict.GetFloat("nozzleGlowRadius", "10");
-            weaponDef.dict.GetString("mtr_nozzleGlowShader", "", shader);
-            nozzleGlowShader = declManager.FindMaterial(shader[0], false);
+            this.nozzleFx = this.weaponDef.dict.GetBool("nozzleFx");
+            this.nozzleFxFade = this.weaponDef.dict.GetInt("nozzleFxFade", "1500");
+            this.nozzleGlowColor.oSet(this.weaponDef.dict.GetVector("nozzleGlowColor", "1 1 1"));
+            this.nozzleGlowRadius = this.weaponDef.dict.GetFloat("nozzleGlowRadius", "10");
+            this.weaponDef.dict.GetString("mtr_nozzleGlowShader", "", shader);
+            this.nozzleGlowShader = declManager.FindMaterial(shader[0], false);
 
             // get the melee damage def
-            meleeDistance = weaponDef.dict.GetFloat("melee_distance");
-            meleeDefName.oSet(weaponDef.dict.GetString("def_melee"));
-            if (meleeDefName.Length() != 0) {
-                meleeDef = gameLocal.FindEntityDef(meleeDefName.getData(), false);
-                if (null == meleeDef) {
-                    gameLocal.Error("Unknown melee '%s'", meleeDefName);
+            this.meleeDistance = this.weaponDef.dict.GetFloat("melee_distance");
+            this.meleeDefName.oSet(this.weaponDef.dict.GetString("def_melee"));
+            if (this.meleeDefName.Length() != 0) {
+                this.meleeDef = gameLocal.FindEntityDef(this.meleeDefName.getData(), false);
+                if (null == this.meleeDef) {
+                    gameLocal.Error("Unknown melee '%s'", this.meleeDefName);
                 }
             }
 
             // get the brass def
-            brassDict.Clear();
-            brassDelay = weaponDef.dict.GetInt("ejectBrassDelay", "0");
-            brassDefName = weaponDef.dict.GetString("def_ejectBrass");
+            this.brassDict.Clear();
+            this.brassDelay = this.weaponDef.dict.GetInt("ejectBrassDelay", "0");
+            brassDefName = this.weaponDef.dict.GetString("def_ejectBrass");
 
             if (isNotNullOrEmpty(brassDefName)) {
                 final idDeclEntityDef brassDef = gameLocal.FindEntityDef(brassDefName, false);
                 if (null == brassDef) {
                     gameLocal.Warning("Unknown brass '%s'", brassDefName);
                 } else {
-                    brassDict.oSet(brassDef.dict);
+                    this.brassDict.oSet(brassDef.dict);
                 }
             }
 
-            if ((ammoType < 0) || (ammoType >= AMMO_NUMTYPES)) {
+            if ((this.ammoType < 0) || (this.ammoType >= AMMO_NUMTYPES)) {
                 gameLocal.Warning("Unknown ammotype in object '%s'", objectName);
             }
 
-            ammoClip = ammoinclip;
-            if ((ammoClip < 0) || (ammoClip > clipSize)) {
+            this.ammoClip = ammoinclip;
+            if ((this.ammoClip < 0) || (this.ammoClip > this.clipSize)) {
                 // first time using this weapon so have it fully loaded to start
-                ammoClip = clipSize;
-                ammoAvail = owner.inventory.HasAmmo(ammoType, ammoRequired);
-                if (ammoClip > ammoAvail) {
-                    ammoClip = ammoAvail;
+                this.ammoClip = this.clipSize;
+                ammoAvail = this.owner.inventory.HasAmmo(this.ammoType, this.ammoRequired);
+                if (this.ammoClip > ammoAvail) {
+                    this.ammoClip = ammoAvail;
                 }
             }
 
-            renderEntity.gui[ 0] = null;
-            guiName = weaponDef.dict.GetString("gui");
+            this.renderEntity.gui[ 0] = null;
+            guiName = this.weaponDef.dict.GetString("gui");
             if (isNotNullOrEmpty(guiName)) {
-                renderEntity.gui[ 0] = uiManager.FindGui(guiName, true, false, true);
+                this.renderEntity.gui[ 0] = uiManager.FindGui(guiName, true, false, true);
             }
 
-            zoomFov = weaponDef.dict.GetInt("zoomFov", "70");
-            berserk = weaponDef.dict.GetInt("berserk", "2");
+            this.zoomFov = this.weaponDef.dict.GetInt("zoomFov", "70");
+            this.berserk = this.weaponDef.dict.GetInt("berserk", "2");
 
-            weaponAngleOffsetAverages = weaponDef.dict.GetInt("weaponAngleOffsetAverages", "10");
-            weaponAngleOffsetScale = weaponDef.dict.GetFloat("weaponAngleOffsetScale", "0.25");
-            weaponAngleOffsetMax = weaponDef.dict.GetFloat("weaponAngleOffsetMax", "10");
+            this.weaponAngleOffsetAverages = this.weaponDef.dict.GetInt("weaponAngleOffsetAverages", "10");
+            this.weaponAngleOffsetScale = this.weaponDef.dict.GetFloat("weaponAngleOffsetScale", "0.25");
+            this.weaponAngleOffsetMax = this.weaponDef.dict.GetFloat("weaponAngleOffsetMax", "10");
 
-            weaponOffsetTime = weaponDef.dict.GetFloat("weaponOffsetTime", "400");
-            weaponOffsetScale = weaponDef.dict.GetFloat("weaponOffsetScale", "0.005");
+            this.weaponOffsetTime = this.weaponDef.dict.GetFloat("weaponOffsetTime", "400");
+            this.weaponOffsetScale = this.weaponDef.dict.GetFloat("weaponOffsetScale", "0.005");
 
-            if (!weaponDef.dict.GetString("weapon_scriptobject", null, objectType)) {
+            if (!this.weaponDef.dict.GetString("weapon_scriptobject", null, objectType)) {
                 gameLocal.Error("No 'weapon_scriptobject' set on '%s'.", objectName);
             }
 
             // setup script object
-            if (!scriptObject.SetType(objectType[0])) {
+            if (!this.scriptObject.SetType(objectType[0])) {
                 gameLocal.Error("Script object '%s' not found on weapon '%s'.", objectType[0], objectName);
             }
 
-            WEAPON_ATTACK.LinkTo(scriptObject, "WEAPON_ATTACK");
-            WEAPON_RELOAD.LinkTo(scriptObject, "WEAPON_RELOAD");
-            WEAPON_NETRELOAD.LinkTo(scriptObject, "WEAPON_NETRELOAD");
-            WEAPON_NETENDRELOAD.LinkTo(scriptObject, "WEAPON_NETENDRELOAD");
-            if (!ID_DEMO_BUILD)
-                WEAPON_NETFIRING.LinkTo(scriptObject, "WEAPON_NETFIRING");
-            WEAPON_RAISEWEAPON.LinkTo(scriptObject, "WEAPON_RAISEWEAPON");
-            WEAPON_LOWERWEAPON.LinkTo(scriptObject, "WEAPON_LOWERWEAPON");
+            this.WEAPON_ATTACK.LinkTo(this.scriptObject, "WEAPON_ATTACK");
+            this.WEAPON_RELOAD.LinkTo(this.scriptObject, "WEAPON_RELOAD");
+            this.WEAPON_NETRELOAD.LinkTo(this.scriptObject, "WEAPON_NETRELOAD");
+            this.WEAPON_NETENDRELOAD.LinkTo(this.scriptObject, "WEAPON_NETENDRELOAD");
+            if (!ID_DEMO_BUILD) {
+				this.WEAPON_NETFIRING.LinkTo(this.scriptObject, "WEAPON_NETFIRING");
+			}
+            this.WEAPON_RAISEWEAPON.LinkTo(this.scriptObject, "WEAPON_RAISEWEAPON");
+            this.WEAPON_LOWERWEAPON.LinkTo(this.scriptObject, "WEAPON_LOWERWEAPON");
 
-            spawnArgs.oSet(weaponDef.dict);
+            this.spawnArgs.oSet(this.weaponDef.dict);
 
-            shader[0] = spawnArgs.GetString("snd_hum");
+            shader[0] = this.spawnArgs.GetString("snd_hum");
             if (isNotNullOrEmpty(shader[0])) {
-                sndHum = declManager.FindSound(shader[0]);
-                StartSoundShader(sndHum, SND_CHANNEL_BODY, 0, false, null);
+                this.sndHum = declManager.FindSound(shader[0]);
+                StartSoundShader(this.sndHum, SND_CHANNEL_BODY, 0, false, null);
             }
 
-            isLinked = true;
+            this.isLinked = true;
 
             // call script object's constructor
             ConstructScriptObject();
@@ -1221,11 +1222,11 @@ public class Weapon {
         }
 
         public boolean IsLinked() {
-            return isLinked;
+            return this.isLinked;
         }
 
         public boolean IsWorldModelReady() {
-            return (worldModel.GetEntity() != null);
+            return (this.worldModel.GetEntity() != null);
         }
 
         /* **********************************************************************
@@ -1234,28 +1235,28 @@ public class Weapon {
 
          ***********************************************************************/
         public String Icon() {
-            return icon.getData();
+            return this.icon.getData();
         }
 
         public void UpdateGUI() {
-            if (null == renderEntity.gui[ 0]) {
+            if (null == this.renderEntity.gui[ 0]) {
                 return;
             }
 
-            if (status == WP_HOLSTERED) {
+            if (this.status == WP_HOLSTERED) {
                 return;
             }
 
-            if (owner.weaponGone) {
+            if (this.owner.weaponGone) {
                 // dropping weapons was implemented wierd, so we have to not update the gui when it happens or we'll get a negative ammo count
                 return;
             }
 
-            if (gameLocal.localClientNum != owner.entityNumber) {
+            if (gameLocal.localClientNum != this.owner.entityNumber) {
                 // if updating the hud for a followed client
-                if (gameLocal.localClientNum >= 0 && gameLocal.entities[ gameLocal.localClientNum] != null && gameLocal.entities[ gameLocal.localClientNum].IsType(idPlayer.class)) {
-                    idPlayer p = (idPlayer) gameLocal.entities[ gameLocal.localClientNum];
-                    if (!p.spectating || p.spectator != owner.entityNumber) {
+                if ((gameLocal.localClientNum >= 0) && (gameLocal.entities[ gameLocal.localClientNum] != null) && gameLocal.entities[ gameLocal.localClientNum].IsType(idPlayer.class)) {
+                    final idPlayer p = (idPlayer) gameLocal.entities[ gameLocal.localClientNum];
+                    if (!p.spectating || (p.spectator != this.owner.entityNumber)) {
                         return;
                     }
                 } else {
@@ -1263,45 +1264,45 @@ public class Weapon {
                 }
             }
 
-            int inclip = AmmoInClip();
-            int ammoamount = AmmoAvailable();
+            final int inclip = AmmoInClip();
+            final int ammoamount = AmmoAvailable();
 
             if (ammoamount < 0) {
                 // show infinite ammo
-                renderEntity.gui[ 0].SetStateString("player_ammo", "");
+                this.renderEntity.gui[ 0].SetStateString("player_ammo", "");
             } else {
                 // show remaining ammo
-                renderEntity.gui[0].SetStateString("player_totalammo", va("%d", ammoamount - inclip));
-                renderEntity.gui[0].SetStateString("player_ammo", ClipSize() != 0 ? va("%d", inclip) : "--");
-                renderEntity.gui[0].SetStateString("player_clips", ClipSize() != 0 ? va("%d", ammoamount / ClipSize()) : "--");
-                renderEntity.gui[0].SetStateString("player_allammo", va("%d/%d", inclip, ammoamount - inclip));
+                this.renderEntity.gui[0].SetStateString("player_totalammo", va("%d", ammoamount - inclip));
+                this.renderEntity.gui[0].SetStateString("player_ammo", ClipSize() != 0 ? va("%d", inclip) : "--");
+                this.renderEntity.gui[0].SetStateString("player_clips", ClipSize() != 0 ? va("%d", ammoamount / ClipSize()) : "--");
+                this.renderEntity.gui[0].SetStateString("player_allammo", va("%d/%d", inclip, ammoamount - inclip));
             }
-            renderEntity.gui[0].SetStateBool("player_ammo_empty", (ammoamount == 0));
-            renderEntity.gui[0].SetStateBool("player_clip_empty", (inclip == 0));
-            renderEntity.gui[0].SetStateBool("player_clip_low", (inclip <= lowAmmo));
+            this.renderEntity.gui[0].SetStateBool("player_ammo_empty", (ammoamount == 0));
+            this.renderEntity.gui[0].SetStateBool("player_clip_empty", (inclip == 0));
+            this.renderEntity.gui[0].SetStateBool("player_clip_low", (inclip <= this.lowAmmo));
         }
 
         @Override
         public void SetModel(final String modelname) {
             assert (modelname != null);
 
-            if (modelDefHandle >= 0) {
-                gameRenderWorld.RemoveDecals(modelDefHandle);
+            if (this.modelDefHandle >= 0) {
+                gameRenderWorld.RemoveDecals(this.modelDefHandle);
             }
 
-            renderEntity.hModel = animator.SetModel(modelname);
-            if (renderEntity.hModel != null) {
-                renderEntity.customSkin = animator.ModelDef().GetDefaultSkin();
+            this.renderEntity.hModel = this.animator.SetModel(modelname);
+            if (this.renderEntity.hModel != null) {
+                this.renderEntity.customSkin = this.animator.ModelDef().GetDefaultSkin();
                 {
-                    idJointMat[][] joints = {null};
-                    renderEntity.numJoints = animator.GetJoints(joints);
-                    renderEntity.joints = joints[0];
+                    final idJointMat[][] joints = {null};
+                    this.renderEntity.numJoints = this.animator.GetJoints(joints);
+                    this.renderEntity.joints = joints[0];
                 }
             } else {
-                renderEntity.customSkin = null;
-                renderEntity.callback = null;
-                renderEntity.numJoints = 0;
-                renderEntity.joints = null;
+                this.renderEntity.customSkin = null;
+                this.renderEntity.callback = null;
+                this.renderEntity.numJoints = 0;
+                this.renderEntity.joints = null;
             }
 
             // hide the model until an animation is played
@@ -1318,21 +1319,21 @@ public class Weapon {
         public boolean GetGlobalJointTransform(boolean viewModel, final int /*jointHandle_t*/ jointHandle, idVec3 offset, idMat3 axis) {
             if (viewModel) {
                 // view model
-                if (animator.GetJointTransform(jointHandle, gameLocal.time, offset, axis)) {
-                    offset.oSet(offset.oMultiply(viewWeaponAxis).oPlus(viewWeaponOrigin));
-                    axis.oSet(axis.oMultiply(viewWeaponAxis));
+                if (this.animator.GetJointTransform(jointHandle, gameLocal.time, offset, axis)) {
+                    offset.oSet(offset.oMultiply(this.viewWeaponAxis).oPlus(this.viewWeaponOrigin));
+                    axis.oSet(axis.oMultiply(this.viewWeaponAxis));
                     return true;
                 }
             } else {
                 // world model
-                if (worldModel.GetEntity() != null && worldModel.GetEntity().GetAnimator().GetJointTransform(jointHandle, gameLocal.time, offset, axis)) {
-                    offset.oSet(worldModel.GetEntity().GetPhysics().GetOrigin().oPlus(offset.oMultiply(worldModel.GetEntity().GetPhysics().GetAxis())));
-                    axis.oSet(axis.oMultiply(worldModel.GetEntity().GetPhysics().GetAxis()));
+                if ((this.worldModel.GetEntity() != null) && this.worldModel.GetEntity().GetAnimator().GetJointTransform(jointHandle, gameLocal.time, offset, axis)) {
+                    offset.oSet(this.worldModel.GetEntity().GetPhysics().GetOrigin().oPlus(offset.oMultiply(this.worldModel.GetEntity().GetPhysics().GetAxis())));
+                    axis.oSet(axis.oMultiply(this.worldModel.GetEntity().GetPhysics().GetAxis()));
                     return true;
                 }
             }
-            offset.oSet(viewWeaponOrigin);
-            axis.oSet(viewWeaponAxis);
+            offset.oSet(this.viewWeaponOrigin);
+            axis.oSet(this.viewWeaponAxis);
             return false;
         }
 
@@ -1343,13 +1344,13 @@ public class Weapon {
         public boolean UpdateSkin() {
             function_t func;
 
-            if (!isLinked) {
+            if (!this.isLinked) {
                 return false;
             }
 
-            func = scriptObject.GetFunction("UpdateSkin");
+            func = this.scriptObject.GetFunction("UpdateSkin");
             if (null == func) {
-                common.Warning("Can't find function 'UpdateSkin' in object '%s'", scriptObject.GetTypeName());
+                common.Warning("Can't find function 'UpdateSkin' in object '%s'", this.scriptObject.GetTypeName());
                 return false;
             }
 
@@ -1371,15 +1372,15 @@ public class Weapon {
         }
 
         public void Raise() {
-            if (isLinked) {
-                WEAPON_RAISEWEAPON.operator(true);
+            if (this.isLinked) {
+                this.WEAPON_RAISEWEAPON.operator(true);
             }
         }
 
         public void PutAway() {
-            hasBloodSplat = false;
-            if (isLinked) {
-                WEAPON_LOWERWEAPON.operator(true);
+            this.hasBloodSplat = false;
+            if (this.isLinked) {
+                this.WEAPON_LOWERWEAPON.operator(true);
             }
         }
 
@@ -1390,78 +1391,78 @@ public class Weapon {
          ================
          */
         public void Reload() {
-            if (isLinked) {
-                WEAPON_RELOAD.operator(true);
+            if (this.isLinked) {
+                this.WEAPON_RELOAD.operator(true);
             }
         }
 
         public void LowerWeapon() {
-            if (!hide) {
-                hideStart = 0.0f;
-                hideEnd = hideDistance;
-                if (gameLocal.time - hideStartTime < hideTime) {
-                    hideStartTime = gameLocal.time - (hideTime - (gameLocal.time - hideStartTime));
+            if (!this.hide) {
+                this.hideStart = 0.0f;
+                this.hideEnd = this.hideDistance;
+                if ((gameLocal.time - this.hideStartTime) < this.hideTime) {
+                    this.hideStartTime = gameLocal.time - (this.hideTime - (gameLocal.time - this.hideStartTime));
                 } else {
-                    hideStartTime = gameLocal.time;
+                    this.hideStartTime = gameLocal.time;
                 }
-                hide = true;
+                this.hide = true;
             }
         }
 
         public void RaiseWeapon() {
             Show();
 
-            if (hide) {
-                hideStart = hideDistance;
-                hideEnd = 0.0f;
-                if (gameLocal.time - hideStartTime < hideTime) {
-                    hideStartTime = gameLocal.time - (hideTime - (gameLocal.time - hideStartTime));
+            if (this.hide) {
+                this.hideStart = this.hideDistance;
+                this.hideEnd = 0.0f;
+                if ((gameLocal.time - this.hideStartTime) < this.hideTime) {
+                    this.hideStartTime = gameLocal.time - (this.hideTime - (gameLocal.time - this.hideStartTime));
                 } else {
-                    hideStartTime = gameLocal.time;
+                    this.hideStartTime = gameLocal.time;
                 }
-                hide = false;
+                this.hide = false;
             }
         }
 
         public void HideWeapon() {
             Hide();
-            if (worldModel.GetEntity() != null) {
-                worldModel.GetEntity().Hide();
+            if (this.worldModel.GetEntity() != null) {
+                this.worldModel.GetEntity().Hide();
             }
-            muzzleFlashEnd = 0;
+            this.muzzleFlashEnd = 0;
         }
 
         public void ShowWeapon() {
             Show();
-            if (worldModel.GetEntity() != null) {
-                worldModel.GetEntity().Show();
+            if (this.worldModel.GetEntity() != null) {
+                this.worldModel.GetEntity().Show();
             }
-            if (lightOn) {
+            if (this.lightOn) {
                 MuzzleFlashLight();
             }
         }
 
         public void HideWorldModel() {
-            if (worldModel.GetEntity() != null) {
-                worldModel.GetEntity().Hide();
+            if (this.worldModel.GetEntity() != null) {
+                this.worldModel.GetEntity().Hide();
             }
         }
 
         public void ShowWorldModel() {
-            if (worldModel.GetEntity() != null) {
-                worldModel.GetEntity().Show();
+            if (this.worldModel.GetEntity() != null) {
+                this.worldModel.GetEntity().Show();
             }
         }
 
         public void OwnerDied() {
-            if (isLinked) {
+            if (this.isLinked) {
                 SetState("OwnerDied", 0);
-                thread.Execute();
+                this.thread.Execute();
             }
 
             Hide();
-            if (worldModel.GetEntity() != null) {
-                worldModel.GetEntity().Hide();
+            if (this.worldModel.GetEntity() != null) {
+                this.worldModel.GetEntity().Hide();
             }
 
             // don't clear the weapon immediately since the owner might have killed himself by firing the weapon
@@ -1470,72 +1471,72 @@ public class Weapon {
         }
 
         public void BeginAttack() {
-            if (status != WP_OUTOFAMMO) {
-                lastAttack = gameLocal.time;
+            if (this.status != WP_OUTOFAMMO) {
+                this.lastAttack = gameLocal.time;
             }
 
-            if (!isLinked) {
+            if (!this.isLinked) {
                 return;
             }
 
-            if (!WEAPON_ATTACK.operator()) {
-                if (sndHum != null) {
+            if (!this.WEAPON_ATTACK.operator()) {
+                if (this.sndHum != null) {
                     StopSound(etoi(SND_CHANNEL_BODY), false);
                 }
             }
-            WEAPON_ATTACK.operator(true);
+            this.WEAPON_ATTACK.operator(true);
         }
 
         public void EndAttack() {
-            if (!WEAPON_ATTACK.IsLinked()) {
+            if (!this.WEAPON_ATTACK.IsLinked()) {
                 return;
             }
-            if (WEAPON_ATTACK.operator()) {
-                WEAPON_ATTACK.operator(false);
-                if (sndHum != null) {
-                    StartSoundShader(sndHum, SND_CHANNEL_BODY, 0, false, null);
+            if (this.WEAPON_ATTACK.operator()) {
+                this.WEAPON_ATTACK.operator(false);
+                if (this.sndHum != null) {
+                    StartSoundShader(this.sndHum, SND_CHANNEL_BODY, 0, false, null);
                 }
             }
         }
 
         public boolean IsReady() {
-            return !hide && !IsHidden() && ((status == WP_RELOAD) || (status == WP_READY) || (status == WP_OUTOFAMMO));
+            return !this.hide && !IsHidden() && ((this.status == WP_RELOAD) || (this.status == WP_READY) || (this.status == WP_OUTOFAMMO));
         }
 
         public boolean IsReloading() {
-            return (status == WP_RELOAD);
+            return (this.status == WP_RELOAD);
         }
 
         public boolean IsHolstered() {
-            return (status == WP_HOLSTERED);
+            return (this.status == WP_HOLSTERED);
         }
 
         public boolean ShowCrosshair() {
-            return !(state.equals(WP_RISING) || state.equals(WP_LOWERING) || state.equals(WP_HOLSTERED));
+            return !(this.state.equals(WP_RISING) || this.state.equals(WP_LOWERING) || this.state.equals(WP_HOLSTERED));
         }
 
         public idEntity DropItem(final idVec3 velocity, int activateDelay, int removeDelay, boolean died) {
-            if (null == weaponDef || null == worldModel.GetEntity()) {
+            if ((null == this.weaponDef) || (null == this.worldModel.GetEntity())) {
                 return null;
             }
-            if (!allowDrop) {
+            if (!this.allowDrop) {
                 return null;
             }
-            final String classname = weaponDef.dict.GetString("def_dropItem");
+            final String classname = this.weaponDef.dict.GetString("def_dropItem");
             if (!isNotNullOrEmpty(classname)) {
                 return null;
             }
             StopSound(etoi(SND_CHANNEL_BODY), true);
             StopSound(etoi(SND_CHANNEL_BODY3), true);
 
-            return idMoveableItem.DropItem(classname, worldModel.GetEntity().GetPhysics().GetOrigin(), worldModel.GetEntity().GetPhysics().GetAxis(), velocity, activateDelay, removeDelay);
+            return idMoveableItem.DropItem(classname, this.worldModel.GetEntity().GetPhysics().GetOrigin(), this.worldModel.GetEntity().GetPhysics().GetAxis(), velocity, activateDelay, removeDelay);
         }
 
         public boolean CanDrop() {
-            if (null == weaponDef || null == worldModel.GetEntity()) {
+            if ((null == this.weaponDef) || (null == this.worldModel.GetEntity())) {
                 return false;
             }
-            final String classname = weaponDef.dict.GetString("def_dropItem");
+            final String classname = this.weaponDef.dict.GetString("def_dropItem");
             if (!isNotNullOrEmpty(classname)) {
                 return false;
             }
@@ -1544,16 +1545,16 @@ public class Weapon {
 
         public void WeaponStolen() {
             assert (!gameLocal.isClient);
-            if (projectileEnt != null) {
-                if (isLinked) {
+            if (this.projectileEnt != null) {
+                if (this.isLinked) {
                     SetState("WeaponStolen", 0);
-                    thread.Execute();
+                    this.thread.Execute();
                 }
-                projectileEnt = null;
+                this.projectileEnt = null;
             }
 
             // set to holstered so we can switch weapons right away
-            status = WP_HOLSTERED;
+            this.status = WP_HOLSTERED;
 
             HideWeapon();
         }
@@ -1575,20 +1576,20 @@ public class Weapon {
         public idThread ConstructScriptObject() {
             function_t constructor;
 
-            thread.EndThread();
+            this.thread.EndThread();
 
             // call script object's constructor
-            constructor = scriptObject.GetConstructor();
+            constructor = this.scriptObject.GetConstructor();
             if (null == constructor) {
-                gameLocal.Error("Missing constructor on '%s' for weapon", scriptObject.GetTypeName());
+                gameLocal.Error("Missing constructor on '%s' for weapon", this.scriptObject.GetTypeName());
             }
 
             // init the script object's data
-            scriptObject.ClearObject();
-            thread.CallFunction(this, constructor, true);
-            thread.Execute();
+            this.scriptObject.ClearObject();
+            this.thread.CallFunction(this, constructor, true);
+            this.thread.Execute();
 
-            return thread;
+            return this.thread;
         }
 
         /*
@@ -1603,7 +1604,7 @@ public class Weapon {
         public void DefinalructScriptObject() {
             function_t destructor;
 
-            if (NOT(thread)) {
+            if (NOT(this.thread)) {
                 return;
             }
 
@@ -1612,49 +1613,49 @@ public class Weapon {
                 return;
             }
 
-            thread.EndThread();
+            this.thread.EndThread();
 
             // call script object's destructor
-            destructor = scriptObject.GetDestructor();
+            destructor = this.scriptObject.GetDestructor();
             if (destructor != null) {
                 // start a thread that will run immediately and end
-                thread.CallFunction(this, destructor, true);
-                thread.Execute();
-                thread.EndThread();
+                this.thread.CallFunction(this, destructor, true);
+                this.thread.Execute();
+                this.thread.EndThread();
             }
 
             // clear out the object's memory
-            scriptObject.ClearObject();
+            this.scriptObject.ClearObject();
         }
 
         public void SetState(final String statename, int blendFrames) {
             function_t func;
 
-            if (!isLinked) {
+            if (!this.isLinked) {
                 return;
             }
 
-            func = scriptObject.GetFunction(statename);
+            func = this.scriptObject.GetFunction(statename);
             if (null == func) {
                 assert (false);
-                gameLocal.Error("Can't find function '%s' in object '%s'", statename, scriptObject.GetTypeName());
+                gameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
             }
 
-            thread.CallFunction(this, func, true);
-            state.oSet(statename);
+            this.thread.CallFunction(this, func, true);
+            this.state.oSet(statename);
 
-            animBlendFrames = blendFrames;
+            this.animBlendFrames = blendFrames;
             if (g_debugWeapon.GetBool()) {
                 gameLocal.Printf("%d: weapon state : %s\n", gameLocal.time, statename);
             }
 
-            idealState.oSet("");
+            this.idealState.oSet("");
         }
 
         public void UpdateScript() {
             int count;
 
-            if (!isLinked) {
+            if (!this.isLinked) {
                 return;
             }
 
@@ -1663,58 +1664,58 @@ public class Weapon {
                 return;
             }
 
-            if (idealState.Length() != 0) {
-                SetState(idealState.getData(), animBlendFrames);
+            if (this.idealState.Length() != 0) {
+                SetState(this.idealState.getData(), this.animBlendFrames);
             }
 
             // update script state, which may call Event_LaunchProjectiles, among other things
             count = 10;
-            while ((thread.Execute() || idealState.Length() != 0) && count-- != 0) {
+            while ((this.thread.Execute() || (this.idealState.Length() != 0)) && (count-- != 0)) {
                 // happens for weapons with no clip (like grenades)
-                if (idealState.Length() != 0) {
-                    SetState(idealState.getData(), animBlendFrames);
+                if (this.idealState.Length() != 0) {
+                    SetState(this.idealState.getData(), this.animBlendFrames);
                 }
             }
 
-            WEAPON_RELOAD.operator(false);
+            this.WEAPON_RELOAD.operator(false);
         }
 
         public void EnterCinematic() {
             StopSound(etoi(SND_CHANNEL_ANY), false);
 
-            if (isLinked) {
+            if (this.isLinked) {
                 SetState("EnterCinematic", 0);
-                thread.Execute();
+                this.thread.Execute();
 
-                WEAPON_ATTACK.operator(false);
-                WEAPON_RELOAD.operator(false);
-                WEAPON_NETRELOAD.operator(false);
-                WEAPON_NETENDRELOAD.operator(false);
-                WEAPON_NETFIRING.operator(false);
-                WEAPON_RAISEWEAPON.operator(false);
-                WEAPON_LOWERWEAPON.operator(false);
+                this.WEAPON_ATTACK.operator(false);
+                this.WEAPON_RELOAD.operator(false);
+                this.WEAPON_NETRELOAD.operator(false);
+                this.WEAPON_NETENDRELOAD.operator(false);
+                this.WEAPON_NETFIRING.operator(false);
+                this.WEAPON_RAISEWEAPON.operator(false);
+                this.WEAPON_LOWERWEAPON.operator(false);
             }
 
-            disabled = true;
+            this.disabled = true;
 
             LowerWeapon();
         }
 
         public void ExitCinematic() {
-            disabled = false;
+            this.disabled = false;
 
-            if (isLinked) {
+            if (this.isLinked) {
                 SetState("ExitCinematic", 0);
-                thread.Execute();
+                this.thread.Execute();
             }
 
             RaiseWeapon();
         }
 
         public void NetCatchup() {
-            if (isLinked) {
+            if (this.isLinked) {
                 SetState("NetCatchup", 0);
-                thread.Execute();
+                this.thread.Execute();
             }
         }
 
@@ -1724,37 +1725,37 @@ public class Weapon {
 
          ***********************************************************************/
         public void PresentWeapon(boolean showViewModel) {
-            playerViewOrigin.oSet(owner.firstPersonViewOrigin);
-            playerViewAxis.oSet(owner.firstPersonViewAxis);
+            this.playerViewOrigin.oSet(this.owner.firstPersonViewOrigin);
+            this.playerViewAxis.oSet(this.owner.firstPersonViewAxis);
 
             // calculate weapon position based on player movement bobbing
-            owner.CalculateViewWeaponPos(viewWeaponOrigin, viewWeaponAxis);
+            this.owner.CalculateViewWeaponPos(this.viewWeaponOrigin, this.viewWeaponAxis);
 
             // hide offset is for dropping the gun when approaching a GUI or NPC
             // This is simpler to manage than doing the weapon put-away animation
-            if (gameLocal.time - hideStartTime < hideTime) {
-                float frac = (float) (gameLocal.time - hideStartTime) / (float) hideTime;
-                if (hideStart < hideEnd) {
+            if ((gameLocal.time - this.hideStartTime) < this.hideTime) {
+                float frac = (float) (gameLocal.time - this.hideStartTime) / (float) this.hideTime;
+                if (this.hideStart < this.hideEnd) {
                     frac = 1.0f - frac;
-                    frac = 1.0f - frac * frac;
+                    frac = 1.0f - (frac * frac);
                 } else {
                     frac = frac * frac;
                 }
-                hideOffset = hideStart + (hideEnd - hideStart) * frac;
+                this.hideOffset = this.hideStart + ((this.hideEnd - this.hideStart) * frac);
             } else {
-                hideOffset = hideEnd;
-                if (hide && disabled) {
+                this.hideOffset = this.hideEnd;
+                if (this.hide && this.disabled) {
                     Hide();
                 }
             }
-            viewWeaponOrigin.oPluSet(viewWeaponAxis.oGet(2).oMultiply(hideOffset));
+            this.viewWeaponOrigin.oPluSet(this.viewWeaponAxis.oGet(2).oMultiply(this.hideOffset));
 
             // kick up based on repeat firing
-            MuzzleRise(viewWeaponOrigin, viewWeaponAxis);
+            MuzzleRise(this.viewWeaponOrigin, this.viewWeaponAxis);
 
             // set the physics position and orientation
-            GetPhysics().SetOrigin(viewWeaponOrigin);
-            GetPhysics().SetAxis(viewWeaponAxis);
+            GetPhysics().SetOrigin(this.viewWeaponOrigin);
+            GetPhysics().SetAxis(this.viewWeaponAxis);
             UpdateVisuals();
 
             // update the weapon script
@@ -1766,10 +1767,10 @@ public class Weapon {
             UpdateAnimation();
 
             // only show the surface in player view
-            renderEntity.allowSurfaceInViewID = owner.entityNumber + 1;
+            this.renderEntity.allowSurfaceInViewID = this.owner.entityNumber + 1;
 
             // crunch the depth range so it never pokes into walls this breaks the machine gun gui
-            renderEntity.weaponDepthHack = true;
+            this.renderEntity.weaponDepthHack = true;
 
             // present the model
             if (showViewModel) {
@@ -1778,80 +1779,80 @@ public class Weapon {
                 FreeModelDef();
             }
 
-            if (worldModel.GetEntity() != null && worldModel.GetEntity().GetRenderEntity() != null) {
+            if ((this.worldModel.GetEntity() != null) && (this.worldModel.GetEntity().GetRenderEntity() != null)) {
                 // deal with the third-person visible world model
                 // don't show shadows of the world model in first person
                 if (gameLocal.isMultiplayer || g_showPlayerShadow.GetBool() || pm_thirdPerson.GetBool()) {
-                    worldModel.GetEntity().GetRenderEntity().suppressShadowInViewID = 0;
+                    this.worldModel.GetEntity().GetRenderEntity().suppressShadowInViewID = 0;
                 } else {
-                    worldModel.GetEntity().GetRenderEntity().suppressShadowInViewID = owner.entityNumber + 1;
-                    worldModel.GetEntity().GetRenderEntity().suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + owner.entityNumber;
+                    this.worldModel.GetEntity().GetRenderEntity().suppressShadowInViewID = this.owner.entityNumber + 1;
+                    this.worldModel.GetEntity().GetRenderEntity().suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + this.owner.entityNumber;
                 }
             }
 
-            if (nozzleFx) {
+            if (this.nozzleFx) {
                 UpdateNozzleFx();
             }
 
             // muzzle smoke
-            if (showViewModel && !disabled && weaponSmoke != null && (weaponSmokeStartTime != 0)) {
+            if (showViewModel && !this.disabled && (this.weaponSmoke != null) && (this.weaponSmokeStartTime != 0)) {
                 // use the barrel joint if available
-                if (barrelJointView != 0) {
-                    GetGlobalJointTransform(true, barrelJointView, muzzleOrigin, muzzleAxis);
+                if (this.barrelJointView != 0) {
+                    GetGlobalJointTransform(true, this.barrelJointView, this.muzzleOrigin, this.muzzleAxis);
                 } else {
                     // default to going straight out the view
-                    muzzleOrigin.oSet(playerViewOrigin);
-                    muzzleAxis.oSet(playerViewAxis);
+                    this.muzzleOrigin.oSet(this.playerViewOrigin);
+                    this.muzzleAxis.oSet(this.playerViewAxis);
                 }
                 // spit out a particle
-                if (!gameLocal.smokeParticles.EmitSmoke(weaponSmoke, weaponSmokeStartTime, gameLocal.random.RandomFloat(), muzzleOrigin, muzzleAxis)) {
-                    weaponSmokeStartTime = (continuousSmoke) ? gameLocal.time : 0;
+                if (!gameLocal.smokeParticles.EmitSmoke(this.weaponSmoke, this.weaponSmokeStartTime, gameLocal.random.RandomFloat(), this.muzzleOrigin, this.muzzleAxis)) {
+                    this.weaponSmokeStartTime = (this.continuousSmoke) ? gameLocal.time : 0;
                 }
             }
 
-            if (showViewModel && strikeSmoke != null && strikeSmokeStartTime != 0) {
+            if (showViewModel && (this.strikeSmoke != null) && (this.strikeSmokeStartTime != 0)) {
                 // spit out a particle
-                if (!gameLocal.smokeParticles.EmitSmoke(strikeSmoke, strikeSmokeStartTime, gameLocal.random.RandomFloat(), strikePos, strikeAxis)) {
-                    strikeSmokeStartTime = 0;
+                if (!gameLocal.smokeParticles.EmitSmoke(this.strikeSmoke, this.strikeSmokeStartTime, gameLocal.random.RandomFloat(), this.strikePos, this.strikeAxis)) {
+                    this.strikeSmokeStartTime = 0;
                 }
             }
 
             // remove the muzzle flash light when it's done
-            if ((!lightOn && (gameLocal.time >= muzzleFlashEnd)) || IsHidden()) {
-                if (muzzleFlashHandle != -1) {
-                    gameRenderWorld.FreeLightDef(muzzleFlashHandle);
-                    muzzleFlashHandle = -1;
+            if ((!this.lightOn && (gameLocal.time >= this.muzzleFlashEnd)) || IsHidden()) {
+                if (this.muzzleFlashHandle != -1) {
+                    gameRenderWorld.FreeLightDef(this.muzzleFlashHandle);
+                    this.muzzleFlashHandle = -1;
                 }
-                if (worldMuzzleFlashHandle != -1) {
-                    gameRenderWorld.FreeLightDef(worldMuzzleFlashHandle);
-                    worldMuzzleFlashHandle = -1;
+                if (this.worldMuzzleFlashHandle != -1) {
+                    gameRenderWorld.FreeLightDef(this.worldMuzzleFlashHandle);
+                    this.worldMuzzleFlashHandle = -1;
                 }
             }
 
             // update the muzzle flash light, so it moves with the gun
-            if (muzzleFlashHandle != -1) {
+            if (this.muzzleFlashHandle != -1) {
                 UpdateFlashPosition();
-                gameRenderWorld.UpdateLightDef(muzzleFlashHandle, muzzleFlash);
-                gameRenderWorld.UpdateLightDef(worldMuzzleFlashHandle, worldMuzzleFlash);
+                gameRenderWorld.UpdateLightDef(this.muzzleFlashHandle, this.muzzleFlash);
+                gameRenderWorld.UpdateLightDef(this.worldMuzzleFlashHandle, this.worldMuzzleFlash);
 
                 // wake up monsters with the flashlight
-                if (!gameLocal.isMultiplayer && lightOn && !owner.fl.notarget) {
+                if (!gameLocal.isMultiplayer && this.lightOn && !this.owner.fl.notarget) {
                     AlertMonsters();
                 }
             }
 
             // update the gui light
-            if (guiLight.lightRadius.oGet(0) != 0 && guiLightJointView != INVALID_JOINT) {
-                GetGlobalJointTransform(true, guiLightJointView, guiLight.origin, guiLight.axis);
+            if ((this.guiLight.lightRadius.oGet(0) != 0) && (this.guiLightJointView != INVALID_JOINT)) {
+                GetGlobalJointTransform(true, this.guiLightJointView, this.guiLight.origin, this.guiLight.axis);
 
-                if ((guiLightHandle != -1)) {
-                    gameRenderWorld.UpdateLightDef(guiLightHandle, guiLight);
+                if ((this.guiLightHandle != -1)) {
+                    gameRenderWorld.UpdateLightDef(this.guiLightHandle, this.guiLight);
                 } else {
-                    guiLightHandle = gameRenderWorld.AddLightDef(guiLight);
+                    this.guiLightHandle = gameRenderWorld.AddLightDef(this.guiLight);
                 }
             }
 
-            if (status != WP_READY && sndHum != null) {
+            if ((this.status != WP_READY) && (this.sndHum != null)) {
                 StopSound(etoi(SND_CHANNEL_BODY), false);
             }
 
@@ -1859,36 +1860,37 @@ public class Weapon {
         }
 
         public int GetZoomFov() {
-            return zoomFov;
+            return this.zoomFov;
         }
 
         public void GetWeaponAngleOffsets(int[] average, float[] scale, float[] max) {
-            average[0] = weaponAngleOffsetAverages;
-            scale[0] = weaponAngleOffsetScale;
-            max[0] = weaponAngleOffsetMax;
+            average[0] = this.weaponAngleOffsetAverages;
+            scale[0] = this.weaponAngleOffsetScale;
+            max[0] = this.weaponAngleOffsetMax;
         }
 
         public void GetWeaponTimeOffsets(float[] time, float[] scale) {
-            time[0] = weaponOffsetTime;
-            scale[0] = weaponOffsetScale;
+            time[0] = this.weaponOffsetTime;
+            scale[0] = this.weaponOffsetScale;
         }
 
         public boolean BloodSplat(float size) {
-            float[] s = new float[1], c = new float[1];
-            idMat3 localAxis = new idMat3(), axistemp = new idMat3();
-            idVec3 localOrigin = new idVec3(), normal;
+            final float[] s = new float[1], c = new float[1];
+            final idMat3 localAxis = new idMat3(), axistemp = new idMat3();
+            final idVec3 localOrigin = new idVec3();
+			idVec3 normal;
 
-            if (hasBloodSplat) {
+            if (this.hasBloodSplat) {
                 return true;
             }
 
-            hasBloodSplat = true;
+            this.hasBloodSplat = true;
 
-            if (modelDefHandle < 0) {
+            if (this.modelDefHandle < 0) {
                 return false;
             }
 
-            if (!GetGlobalJointTransform(true, ejectJointView, localOrigin, localAxis)) {
+            if (!GetGlobalJointTransform(true, this.ejectJointView, localOrigin, localAxis)) {
                 return false;
             }
 
@@ -1909,7 +1911,7 @@ public class Weapon {
             localAxis.oGet(0).oMulSet(1.0f / size);
             localAxis.oGet(1).oMulSet(1.0f / size);
 
-            idPlane[] localPlane = new idPlane[2];
+            final idPlane[] localPlane = new idPlane[2];
 
             localPlane[0].oSet(localAxis.oGet(0));//TODO:check what init value is you lazy arse.
             localPlane[0].oSet(3, -(localOrigin.oMultiply(localAxis.oGet(0))) + 0.5f);
@@ -1919,7 +1921,7 @@ public class Weapon {
 
             final idMaterial mtr = declManager.FindMaterial("textures/decals/duffysplatgun");
 
-            gameRenderWorld.ProjectOverlay(modelDefHandle, localPlane, mtr);
+            gameRenderWorld.ProjectOverlay(this.modelDefHandle, localPlane, mtr);
 
             return true;
         }
@@ -1930,7 +1932,7 @@ public class Weapon {
 
          ***********************************************************************/
         public static int /*ammo_t*/ GetAmmoNumForName(final String ammoname) {
-            int[] num = new int[1];
+            final int[] num = new int[1];
             idDict ammoDict;
 
             assert (ammoname != null);
@@ -2008,69 +2010,69 @@ public class Weapon {
         }
 
         public int /*ammo_t*/ GetAmmoType() {
-            return ammoType;
+            return this.ammoType;
         }
 
         public int AmmoAvailable() {
-            if (owner != null) {
-                return owner.inventory.HasAmmo(ammoType, ammoRequired);
+            if (this.owner != null) {
+                return this.owner.inventory.HasAmmo(this.ammoType, this.ammoRequired);
             } else {
                 return 0;
             }
         }
 
         public int AmmoInClip() {
-            return ammoClip;
+            return this.ammoClip;
         }
 
         public void ResetAmmoClip() {
-            ammoClip = -1;
+            this.ammoClip = -1;
         }
 
         public int ClipSize() {
-            return clipSize;
+            return this.clipSize;
         }
 
         public int LowAmmo() {
-            return lowAmmo;
+            return this.lowAmmo;
         }
 
         public int AmmoRequired() {
-            return ammoRequired;
+            return this.ammoRequired;
         }
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            msg.WriteBits(ammoClip, ASYNC_PLAYER_INV_CLIP_BITS);
-            msg.WriteBits(worldModel.GetSpawnId(), 32);
-            msg.WriteBits(btoi(lightOn), 1);
-            msg.WriteBits(isFiring ? 1 : 0, 1);
+            msg.WriteBits(this.ammoClip, ASYNC_PLAYER_INV_CLIP_BITS);
+            msg.WriteBits(this.worldModel.GetSpawnId(), 32);
+            msg.WriteBits(btoi(this.lightOn), 1);
+            msg.WriteBits(this.isFiring ? 1 : 0, 1);
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
-            ammoClip = msg.ReadBits(ASYNC_PLAYER_INV_CLIP_BITS);
-            worldModel.SetSpawnId(msg.ReadBits(32));
-            boolean snapLight = msg.ReadBits(1) != 0;
-            isFiring = msg.ReadBits(1) != 0;
+            this.ammoClip = msg.ReadBits(ASYNC_PLAYER_INV_CLIP_BITS);
+            this.worldModel.SetSpawnId(msg.ReadBits(32));
+            final boolean snapLight = msg.ReadBits(1) != 0;
+            this.isFiring = msg.ReadBits(1) != 0;
 
             // WEAPON_NETFIRING is only turned on for other clients we're predicting. not for local client
-            if (owner != null && gameLocal.localClientNum != owner.entityNumber && WEAPON_NETFIRING.IsLinked()) {
+            if ((this.owner != null) && (gameLocal.localClientNum != this.owner.entityNumber) && this.WEAPON_NETFIRING.IsLinked()) {
 
                 // immediately go to the firing state so we don't skip fire animations
-                if (!WEAPON_NETFIRING.operator() && isFiring) {
-                    idealState.oSet("Fire");
+                if (!this.WEAPON_NETFIRING.operator() && this.isFiring) {
+                    this.idealState.oSet("Fire");
                 }
 
                 // immediately switch back to idle
-                if (WEAPON_NETFIRING.operator() && !isFiring) {
-                    idealState.oSet("Idle");
+                if (this.WEAPON_NETFIRING.operator() && !this.isFiring) {
+                    this.idealState.oSet("Idle");
                 }
 
-                WEAPON_NETFIRING.operator(isFiring);
+                this.WEAPON_NETFIRING.operator(this.isFiring);
             }
 
-            if (snapLight != lightOn) {
+            if (snapLight != this.lightOn) {
                 Reload();
             }
         }
@@ -2086,26 +2088,26 @@ public class Weapon {
 
             switch (event) {
                 case EVENT_RELOAD: {
-                    if (gameLocal.time - time < 1000) {
-                        if (WEAPON_NETRELOAD.IsLinked()) {
-                            WEAPON_NETRELOAD.operator(true);
-                            WEAPON_NETENDRELOAD.operator(false);
+                    if ((gameLocal.time - time) < 1000) {
+                        if (this.WEAPON_NETRELOAD.IsLinked()) {
+                            this.WEAPON_NETRELOAD.operator(true);
+                            this.WEAPON_NETENDRELOAD.operator(false);
                         }
                     }
                     return true;
                 }
                 case EVENT_ENDRELOAD: {
-                    if (WEAPON_NETENDRELOAD.IsLinked()) {
-                        WEAPON_NETENDRELOAD.operator(true);
+                    if (this.WEAPON_NETENDRELOAD.IsLinked()) {
+                        this.WEAPON_NETENDRELOAD.operator(true);
                     }
                     return true;
                 }
                 case EVENT_CHANGESKIN: {
-                    int index = gameLocal.ClientRemapDecl(DECL_SKIN, msg.ReadLong());
-                    renderEntity.customSkin = (index != -1) ? (idDeclSkin) declManager.DeclByIndex(DECL_SKIN, index) : null;
+                    final int index = gameLocal.ClientRemapDecl(DECL_SKIN, msg.ReadLong());
+                    this.renderEntity.customSkin = (index != -1) ? (idDeclSkin) declManager.DeclByIndex(DECL_SKIN, index) : null;
                     UpdateVisuals();
-                    if (worldModel.GetEntity() != null) {
-                        worldModel.GetEntity().SetSkin(renderEntity.customSkin);
+                    if (this.worldModel.GetEntity() != null) {
+                        this.worldModel.GetEntity().SetSkin(this.renderEntity.customSkin);
                     }
                     return true;
                 }
@@ -2123,42 +2125,42 @@ public class Weapon {
 
         // flashlight
         private void AlertMonsters() {
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
             idEntity ent;
-            idVec3 end = muzzleFlash.origin.oPlus(muzzleFlash.axis.oMultiply(muzzleFlash.target));
+            final idVec3 end = this.muzzleFlash.origin.oPlus(this.muzzleFlash.axis.oMultiply(this.muzzleFlash.target));
 
-            gameLocal.clip.TracePoint(tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner);
+            gameLocal.clip.TracePoint(tr, this.muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, this.owner);
             if (g_debugWeapon.GetBool()) {
-                gameRenderWorld.DebugLine(colorYellow, muzzleFlash.origin, end, 0);
-                gameRenderWorld.DebugArrow(colorGreen, muzzleFlash.origin, tr[0].endpos, 2, 0);
+                gameRenderWorld.DebugLine(colorYellow, this.muzzleFlash.origin, end, 0);
+                gameRenderWorld.DebugArrow(colorGreen, this.muzzleFlash.origin, tr[0].endpos, 2, 0);
             }
 
             if (tr[0].fraction < 1.0f) {
                 ent = gameLocal.GetTraceEntity(tr[0]);
                 if (ent.IsType(idAI.class)) {
-                    ((idAI) ent).TouchedByFlashlight(owner);
+                    ((idAI) ent).TouchedByFlashlight(this.owner);
                 } else if (ent.IsType(idTrigger.class)) {
                     ent.Signal(SIG_TOUCH);
-                    ent.ProcessEvent(EV_Touch, owner, tr[0]);
+                    ent.ProcessEvent(EV_Touch, this.owner, tr[0]);
                 }
             }
 
             // jitter the trace to try to catch cases where a trace down the center doesn't hit the monster
-            end.oPluSet(muzzleFlash.axis.oMultiply(muzzleFlash.right.oMultiply(idMath.Sin16(MS2SEC(gameLocal.time) * 31.34f))));
-            end.oPluSet(muzzleFlash.axis.oMultiply(muzzleFlash.up.oMultiply(idMath.Sin16(MS2SEC(gameLocal.time) * 12.17f))));
-            gameLocal.clip.TracePoint(tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner);
+            end.oPluSet(this.muzzleFlash.axis.oMultiply(this.muzzleFlash.right.oMultiply(idMath.Sin16(MS2SEC(gameLocal.time) * 31.34f))));
+            end.oPluSet(this.muzzleFlash.axis.oMultiply(this.muzzleFlash.up.oMultiply(idMath.Sin16(MS2SEC(gameLocal.time) * 12.17f))));
+            gameLocal.clip.TracePoint(tr, this.muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, this.owner);
             if (g_debugWeapon.GetBool()) {
-                gameRenderWorld.DebugLine(colorYellow, muzzleFlash.origin, end, 0);
-                gameRenderWorld.DebugArrow(colorGreen, muzzleFlash.origin, tr[0].endpos, 2, 0);
+                gameRenderWorld.DebugLine(colorYellow, this.muzzleFlash.origin, end, 0);
+                gameRenderWorld.DebugArrow(colorGreen, this.muzzleFlash.origin, tr[0].endpos, 2, 0);
             }
 
             if (tr[0].fraction < 1.0f) {
                 ent = gameLocal.GetTraceEntity(tr[0]);
                 if (ent.IsType(idAI.class)) {
-                    ((idAI) ent).TouchedByFlashlight(owner);
+                    ((idAI) ent).TouchedByFlashlight(this.owner);
                 } else if (ent.IsType(idTrigger.class)) {
                     ent.Signal(SIG_TOUCH);
-                    ent.ProcessEvent(EV_Touch, owner, tr[0]);
+                    ent.ProcessEvent(EV_Touch, this.owner, tr[0]);
                 }
             }
         }
@@ -2167,7 +2169,7 @@ public class Weapon {
         private void InitWorldModel(final idDeclEntityDef def) {
             idEntity ent;
 
-            ent = worldModel.GetEntity();
+            ent = this.worldModel.GetEntity();
 
             assert (ent != null);
             assert (def != null);
@@ -2184,55 +2186,55 @@ public class Weapon {
                 }
                 ent.GetPhysics().SetContents(0);
                 ent.GetPhysics().SetClipModel(null, 1.0f);
-                ent.BindToJoint(owner, attach, true);
+                ent.BindToJoint(this.owner, attach, true);
                 ent.GetPhysics().SetOrigin(getVec3_origin());
                 ent.GetPhysics().SetAxis(getMat3_identity());
 
                 // supress model in player views, but allow it in mirrors and remote views
-                renderEntity_s worldModelRenderEntity = ent.GetRenderEntity();
+                final renderEntity_s worldModelRenderEntity = ent.GetRenderEntity();
                 if (worldModelRenderEntity != null) {
-                    worldModelRenderEntity.suppressSurfaceInViewID = owner.entityNumber + 1;
-                    worldModelRenderEntity.suppressShadowInViewID = owner.entityNumber + 1;
-                    worldModelRenderEntity.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + owner.entityNumber;
+                    worldModelRenderEntity.suppressSurfaceInViewID = this.owner.entityNumber + 1;
+                    worldModelRenderEntity.suppressShadowInViewID = this.owner.entityNumber + 1;
+                    worldModelRenderEntity.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + this.owner.entityNumber;
                 }
             } else {
                 ent.SetModel("");
                 ent.Hide();
             }
 
-            flashJointWorld = ent.GetAnimator().GetJointHandle("flash");
-            barrelJointWorld = ent.GetAnimator().GetJointHandle("muzzle");
-            ejectJointWorld = ent.GetAnimator().GetJointHandle("eject");
+            this.flashJointWorld = ent.GetAnimator().GetJointHandle("flash");
+            this.barrelJointWorld = ent.GetAnimator().GetJointHandle("muzzle");
+            this.ejectJointWorld = ent.GetAnimator().GetJointHandle("eject");
         }
 
         private void MuzzleFlashLight() {
 
-            if (!lightOn && (!g_muzzleFlash.GetBool() || 0 == muzzleFlash.lightRadius.oGet(0))) {
+            if (!this.lightOn && (!g_muzzleFlash.GetBool() || (0 == this.muzzleFlash.lightRadius.oGet(0)))) {
                 return;
             }
 
-            if (flashJointView == INVALID_JOINT) {
+            if (this.flashJointView == INVALID_JOINT) {
                 return;
             }
 
             UpdateFlashPosition();
 
             // these will be different each fire
-            muzzleFlash.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
-            muzzleFlash.shaderParms[ SHADERPARM_DIVERSITY] = renderEntity.shaderParms[SHADERPARM_DIVERSITY];
+            this.muzzleFlash.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+            this.muzzleFlash.shaderParms[ SHADERPARM_DIVERSITY] = this.renderEntity.shaderParms[SHADERPARM_DIVERSITY];
 
-            worldMuzzleFlash.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
-            worldMuzzleFlash.shaderParms[ SHADERPARM_DIVERSITY] = renderEntity.shaderParms[SHADERPARM_DIVERSITY];
+            this.worldMuzzleFlash.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+            this.worldMuzzleFlash.shaderParms[ SHADERPARM_DIVERSITY] = this.renderEntity.shaderParms[SHADERPARM_DIVERSITY];
 
             // the light will be removed at this time
-            muzzleFlashEnd = gameLocal.time + flashTime;
+            this.muzzleFlashEnd = gameLocal.time + this.flashTime;
 
-            if (muzzleFlashHandle != -1) {
-                gameRenderWorld.UpdateLightDef(muzzleFlashHandle, muzzleFlash);
-                gameRenderWorld.UpdateLightDef(worldMuzzleFlashHandle, worldMuzzleFlash);
+            if (this.muzzleFlashHandle != -1) {
+                gameRenderWorld.UpdateLightDef(this.muzzleFlashHandle, this.muzzleFlash);
+                gameRenderWorld.UpdateLightDef(this.worldMuzzleFlashHandle, this.worldMuzzleFlash);
             } else {
-                muzzleFlashHandle = gameRenderWorld.AddLightDef(muzzleFlash);
-                worldMuzzleFlashHandle = gameRenderWorld.AddLightDef(worldMuzzleFlash);
+                this.muzzleFlashHandle = gameRenderWorld.AddLightDef(this.muzzleFlash);
+                this.worldMuzzleFlashHandle = gameRenderWorld.AddLightDef(this.worldMuzzleFlash);
             }
         }
 
@@ -2249,92 +2251,92 @@ public class Weapon {
             idAngles ang;
             idVec3 offset;
 
-            time = kick_endtime - gameLocal.time;
+            time = this.kick_endtime - gameLocal.time;
             if (time <= 0) {
                 return;
             }
 
-            if (muzzle_kick_maxtime <= 0) {
+            if (this.muzzle_kick_maxtime <= 0) {
                 return;
             }
 
-            if (time > muzzle_kick_maxtime) {
-                time = muzzle_kick_maxtime;
+            if (time > this.muzzle_kick_maxtime) {
+                time = this.muzzle_kick_maxtime;
             }
 
-            amount = (float) time / (float) muzzle_kick_maxtime;
-            ang = muzzle_kick_angles.oMultiply(amount);
-            offset = muzzle_kick_offset.oMultiply(amount);
+            amount = (float) time / (float) this.muzzle_kick_maxtime;
+            ang = this.muzzle_kick_angles.oMultiply(amount);
+            offset = this.muzzle_kick_offset.oMultiply(amount);
 
             origin.oSet(origin.oMinus(axis.oMultiply(offset)));
             axis.oSet(ang.ToMat3().oMultiply(axis));
         }
 
         private void UpdateNozzleFx() {
-            if (!nozzleFx) {
+            if (!this.nozzleFx) {
                 return;
             }
 
             //
             // shader parms
             //
-            int la = gameLocal.time - lastAttack + 1;
+            final int la = (gameLocal.time - this.lastAttack) + 1;
             float s = 1.0f;
             float l = 0.0f;
-            if (la < nozzleFxFade) {
-                s = ((float) la / nozzleFxFade);
+            if (la < this.nozzleFxFade) {
+                s = ((float) la / this.nozzleFxFade);
                 l = 1.0f - s;
             }
-            renderEntity.shaderParms[5] = s;
-            renderEntity.shaderParms[6] = l;
+            this.renderEntity.shaderParms[5] = s;
+            this.renderEntity.shaderParms[6] = l;
 
-            if (ventLightJointView == INVALID_JOINT) {
+            if (this.ventLightJointView == INVALID_JOINT) {
                 return;
             }
 
             //
             // vent light
             //
-            if (nozzleGlowHandle == -1) {
+            if (this.nozzleGlowHandle == -1) {
 //		memset(&nozzleGlow, 0, sizeof(nozzleGlow));
-                nozzleGlow = new renderLight_s();
-                if (owner != null) {
-                    nozzleGlow.allowLightInViewID = owner.entityNumber + 1;
+                this.nozzleGlow = new renderLight_s();
+                if (this.owner != null) {
+                    this.nozzleGlow.allowLightInViewID = this.owner.entityNumber + 1;
                 }
-                nozzleGlow.pointLight = true;
-                nozzleGlow.noShadows = true;
-                nozzleGlow.lightRadius.x = nozzleGlowRadius;
-                nozzleGlow.lightRadius.y = nozzleGlowRadius;
-                nozzleGlow.lightRadius.z = nozzleGlowRadius;
-                nozzleGlow.shader = nozzleGlowShader;
-                nozzleGlow.shaderParms[ SHADERPARM_TIMESCALE] = 1.0f;
-                nozzleGlow.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
-                GetGlobalJointTransform(true, ventLightJointView, nozzleGlow.origin, nozzleGlow.axis);
-                nozzleGlowHandle = gameRenderWorld.AddLightDef(nozzleGlow);
+                this.nozzleGlow.pointLight = true;
+                this.nozzleGlow.noShadows = true;
+                this.nozzleGlow.lightRadius.x = this.nozzleGlowRadius;
+                this.nozzleGlow.lightRadius.y = this.nozzleGlowRadius;
+                this.nozzleGlow.lightRadius.z = this.nozzleGlowRadius;
+                this.nozzleGlow.shader = this.nozzleGlowShader;
+                this.nozzleGlow.shaderParms[ SHADERPARM_TIMESCALE] = 1.0f;
+                this.nozzleGlow.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+                GetGlobalJointTransform(true, this.ventLightJointView, this.nozzleGlow.origin, this.nozzleGlow.axis);
+                this.nozzleGlowHandle = gameRenderWorld.AddLightDef(this.nozzleGlow);
             }
 
-            GetGlobalJointTransform(true, ventLightJointView, nozzleGlow.origin, nozzleGlow.axis);
+            GetGlobalJointTransform(true, this.ventLightJointView, this.nozzleGlow.origin, this.nozzleGlow.axis);
 
-            nozzleGlow.shaderParms[ SHADERPARM_RED] = nozzleGlowColor.x * s;
-            nozzleGlow.shaderParms[ SHADERPARM_GREEN] = nozzleGlowColor.y * s;
-            nozzleGlow.shaderParms[ SHADERPARM_BLUE] = nozzleGlowColor.z * s;
-            gameRenderWorld.UpdateLightDef(nozzleGlowHandle, nozzleGlow);
+            this.nozzleGlow.shaderParms[ SHADERPARM_RED] = this.nozzleGlowColor.x * s;
+            this.nozzleGlow.shaderParms[ SHADERPARM_GREEN] = this.nozzleGlowColor.y * s;
+            this.nozzleGlow.shaderParms[ SHADERPARM_BLUE] = this.nozzleGlowColor.z * s;
+            gameRenderWorld.UpdateLightDef(this.nozzleGlowHandle, this.nozzleGlow);
         }
 
         private void UpdateFlashPosition() {
             // the flash has an explicit joint for locating it
-            GetGlobalJointTransform(true, flashJointView, muzzleFlash.origin, muzzleFlash.axis);
+            GetGlobalJointTransform(true, this.flashJointView, this.muzzleFlash.origin, this.muzzleFlash.axis);
 
             // if the desired point is inside or very close to a wall, back it up until it is clear
-            idVec3 start = muzzleFlash.origin.oMinus(playerViewAxis.oGet(0).oMultiply(16));
-            idVec3 end = muzzleFlash.origin.oPlus(playerViewAxis.oGet(0).oMultiply(8));
-            trace_s[] tr = {null};
-            gameLocal.clip.TracePoint(tr, start, end, MASK_SHOT_RENDERMODEL, owner);
+            final idVec3 start = this.muzzleFlash.origin.oMinus(this.playerViewAxis.oGet(0).oMultiply(16));
+            final idVec3 end = this.muzzleFlash.origin.oPlus(this.playerViewAxis.oGet(0).oMultiply(8));
+            final trace_s[] tr = {null};
+            gameLocal.clip.TracePoint(tr, start, end, MASK_SHOT_RENDERMODEL, this.owner);
             // be at least 8 units away from a solid
-            muzzleFlash.origin = tr[0].endpos.oMinus(playerViewAxis.oGet(0).oMultiply(8));
+            this.muzzleFlash.origin = tr[0].endpos.oMinus(this.playerViewAxis.oGet(0).oMultiply(8));
 
             // put the world muzzle flash on the end of the joint, no matter what
-            GetGlobalJointTransform(false, flashJointWorld, worldMuzzleFlash.origin, worldMuzzleFlash.axis);
+            GetGlobalJointTransform(false, this.flashJointWorld, this.worldMuzzleFlash.origin, this.worldMuzzleFlash.axis);
         }
 
         /* **********************************************************************
@@ -2347,90 +2349,90 @@ public class Weapon {
         }
 
         private void Event_GetOwner() {
-            idThread.ReturnEntity(owner);
+            idThread.ReturnEntity(this.owner);
         }
 
         private void Event_WeaponState(final idEventArg<String> _statename, idEventArg<Integer> blendFrames) {
-            String statename = _statename.value;
+            final String statename = _statename.value;
             function_t func;
 
-            func = scriptObject.GetFunction(statename);
+            func = this.scriptObject.GetFunction(statename);
             if (null == func) {
                 assert (false);
-                gameLocal.Error("Can't find function '%s' in object '%s'", statename, scriptObject.GetTypeName());
+                gameLocal.Error("Can't find function '%s' in object '%s'", statename, this.scriptObject.GetTypeName());
             }
 
-            idealState.oSet(statename);
+            this.idealState.oSet(statename);
 
-            if (0 == idealState.Icmp("Fire")) {
-                isFiring = true;
+            if (0 == this.idealState.Icmp("Fire")) {
+                this.isFiring = true;
             } else {
-                isFiring = false;
+                this.isFiring = false;
             }
 
-            animBlendFrames = blendFrames.value;
-            thread.DoneProcessing();
+            this.animBlendFrames = blendFrames.value;
+            this.thread.DoneProcessing();
         }
 //
 //        private void Event_SetWeaponStatus(float newStatus);
 //
 
         private void Event_WeaponReady() {
-            status = WP_READY;
-            if (isLinked) {
-                WEAPON_RAISEWEAPON.operator(false);
+            this.status = WP_READY;
+            if (this.isLinked) {
+                this.WEAPON_RAISEWEAPON.operator(false);
             }
-            if (sndHum != null) {
-                StartSoundShader(sndHum, SND_CHANNEL_BODY, 0, false, null);
+            if (this.sndHum != null) {
+                StartSoundShader(this.sndHum, SND_CHANNEL_BODY, 0, false, null);
             }
 
         }
 
         private void Event_WeaponOutOfAmmo() {
-            status = WP_OUTOFAMMO;
-            if (isLinked) {
-                WEAPON_RAISEWEAPON.operator(false);
+            this.status = WP_OUTOFAMMO;
+            if (this.isLinked) {
+                this.WEAPON_RAISEWEAPON.operator(false);
             }
         }
 
         private void Event_WeaponReloading() {
-            status = WP_RELOAD;
+            this.status = WP_RELOAD;
         }
 
         private void Event_WeaponHolstered() {
-            status = WP_HOLSTERED;
-            if (isLinked) {
-                WEAPON_LOWERWEAPON.operator(false);
+            this.status = WP_HOLSTERED;
+            if (this.isLinked) {
+                this.WEAPON_LOWERWEAPON.operator(false);
             }
         }
 
         private void Event_WeaponRising() {
-            status = WP_RISING;
-            if (isLinked) {
-                WEAPON_LOWERWEAPON.operator(false);
+            this.status = WP_RISING;
+            if (this.isLinked) {
+                this.WEAPON_LOWERWEAPON.operator(false);
             }
-            owner.WeaponRisingCallback();
+            this.owner.WeaponRisingCallback();
         }
 
         private void Event_WeaponLowering() {
-            status = WP_LOWERING;
-            if (isLinked) {
-                WEAPON_RAISEWEAPON.operator(false);
+            this.status = WP_LOWERING;
+            if (this.isLinked) {
+                this.WEAPON_RAISEWEAPON.operator(false);
             }
-            owner.WeaponLoweringCallback();
+            this.owner.WeaponLoweringCallback();
         }
 
         private void Event_UseAmmo(idEventArg<Integer> _amount) {
-            int amount = _amount.value;
+            final int amount = _amount.value;
             if (gameLocal.isClient) {
                 return;
             }
 
-            owner.inventory.UseAmmo(ammoType, (powerAmmo) ? amount : (amount * ammoRequired));
-            if (clipSize != 0 && ammoRequired != 0) {
-                ammoClip -= powerAmmo ? amount : (amount * ammoRequired);
-                if (ammoClip < 0) {
-                    ammoClip = 0;
+            this.owner.inventory.UseAmmo(this.ammoType, (this.powerAmmo) ? amount : (amount * this.ammoRequired));
+            if ((this.clipSize != 0) && (this.ammoRequired != 0)) {
+                this.ammoClip -= this.powerAmmo ? amount : (amount * this.ammoRequired);
+                if (this.ammoClip < 0) {
+                    this.ammoClip = 0;
                 }
             }
         }
@@ -2442,90 +2444,90 @@ public class Weapon {
                 return;
             }
 
-            ammoClip += amount.value;
-            if (ammoClip > clipSize) {
-                ammoClip = clipSize;
+            this.ammoClip += amount.value;
+            if (this.ammoClip > this.clipSize) {
+                this.ammoClip = this.clipSize;
             }
 
-            ammoAvail = owner.inventory.HasAmmo(ammoType, ammoRequired);
-            if (ammoClip > ammoAvail) {
-                ammoClip = ammoAvail;
+            ammoAvail = this.owner.inventory.HasAmmo(this.ammoType, this.ammoRequired);
+            if (this.ammoClip > ammoAvail) {
+                this.ammoClip = ammoAvail;
             }
         }
 
         private void Event_AmmoInClip() {
-            int ammo = AmmoInClip();
+            final int ammo = AmmoInClip();
             idThread.ReturnFloat(ammo);
         }
 
         private void Event_AmmoAvailable() {
-            int ammoAvail = owner.inventory.HasAmmo(ammoType, ammoRequired);
+            final int ammoAvail = this.owner.inventory.HasAmmo(this.ammoType, this.ammoRequired);
             idThread.ReturnFloat(ammoAvail);
         }
 
         private void Event_TotalAmmoCount() {
-            int ammoAvail = owner.inventory.HasAmmo(ammoType, 1);
+            final int ammoAvail = this.owner.inventory.HasAmmo(this.ammoType, 1);
             idThread.ReturnFloat(ammoAvail);
         }
 
         private void Event_ClipSize() {
-            idThread.ReturnFloat(clipSize);
+            idThread.ReturnFloat(this.clipSize);
         }
 
         private void Event_PlayAnim(idEventArg<Integer> _channel, final idEventArg<String> _animname) {
-            int channel = _channel.value;
-            String animname = _animname.value;
+            final int channel = _channel.value;
+            final String animname = _animname.value;
             int anim;
 
-            anim = animator.GetAnim(animname);
+            anim = this.animator.GetAnim(animname);
             if (0 == anim) {
-                gameLocal.Warning("missing '%s' animation on '%s' (%s)", animname, name, GetEntityDefName());
-                animator.Clear(channel, gameLocal.time, FRAME2MS(animBlendFrames));
-                animDoneTime = 0;
+                gameLocal.Warning("missing '%s' animation on '%s' (%s)", animname, this.name, GetEntityDefName());
+                this.animator.Clear(channel, gameLocal.time, FRAME2MS(this.animBlendFrames));
+                this.animDoneTime = 0;
             } else {
-                if (!(owner != null && owner.GetInfluenceLevel() != 0)) {
+                if (!((this.owner != null) && (this.owner.GetInfluenceLevel() != 0))) {
                     Show();
                 }
-                animator.PlayAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
-                animDoneTime = animator.CurrentAnim(channel).GetEndTime();
-                if (worldModel.GetEntity() != null) {
-                    anim = worldModel.GetEntity().GetAnimator().GetAnim(animname);
+                this.animator.PlayAnim(channel, anim, gameLocal.time, FRAME2MS(this.animBlendFrames));
+                this.animDoneTime = this.animator.CurrentAnim(channel).GetEndTime();
+                if (this.worldModel.GetEntity() != null) {
+                    anim = this.worldModel.GetEntity().GetAnimator().GetAnim(animname);
                     if (anim != 0) {
-                        worldModel.GetEntity().GetAnimator().PlayAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
+                        this.worldModel.GetEntity().GetAnimator().PlayAnim(channel, anim, gameLocal.time, FRAME2MS(this.animBlendFrames));
                     }
                 }
             }
-            animBlendFrames = 0;
+            this.animBlendFrames = 0;
             idThread.ReturnInt(0);
         }
 
         private void Event_PlayCycle(idEventArg<Integer> _channel, final idEventArg<String> _animname) {
-            int channel = _channel.value;
-            String animname = _animname.value;
+            final int channel = _channel.value;
+            final String animname = _animname.value;
             int anim;
 
-            anim = animator.GetAnim(animname);
+            anim = this.animator.GetAnim(animname);
             if (0 == anim) {
-                gameLocal.Warning("missing '%s' animation on '%s' (%s)", animname, name, GetEntityDefName());
-                animator.Clear(channel, gameLocal.time, FRAME2MS(animBlendFrames));
-                animDoneTime = 0;
+                gameLocal.Warning("missing '%s' animation on '%s' (%s)", animname, this.name, GetEntityDefName());
+                this.animator.Clear(channel, gameLocal.time, FRAME2MS(this.animBlendFrames));
+                this.animDoneTime = 0;
             } else {
-                if (!(owner != null && owner.GetInfluenceLevel() != 0)) {
+                if (!((this.owner != null) && (this.owner.GetInfluenceLevel() != 0))) {
                     Show();
                 }
-                animator.CycleAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
-                animDoneTime = animator.CurrentAnim(channel).GetEndTime();
-                if (worldModel.GetEntity() != null) {
-                    anim = worldModel.GetEntity().GetAnimator().GetAnim(animname);
-                    worldModel.GetEntity().GetAnimator().CycleAnim(channel, anim, gameLocal.time, FRAME2MS(animBlendFrames));
+                this.animator.CycleAnim(channel, anim, gameLocal.time, FRAME2MS(this.animBlendFrames));
+                this.animDoneTime = this.animator.CurrentAnim(channel).GetEndTime();
+                if (this.worldModel.GetEntity() != null) {
+                    anim = this.worldModel.GetEntity().GetAnimator().GetAnim(animname);
+                    this.worldModel.GetEntity().GetAnimator().CycleAnim(channel, anim, gameLocal.time, FRAME2MS(this.animBlendFrames));
                 }
             }
-            animBlendFrames = 0;
+            this.animBlendFrames = 0;
             idThread.ReturnInt(0);
         }
 
         private void Event_AnimDone(idEventArg<Integer> channel, idEventArg<Integer> blendFrames) {
-            if (animDoneTime - FRAME2MS(blendFrames.value) <= gameLocal.time) {
+            if ((this.animDoneTime - FRAME2MS(blendFrames.value)) <= gameLocal.time) {
                 idThread.ReturnInt(true);
             } else {
                 idThread.ReturnInt(false);
@@ -2533,20 +2535,20 @@ public class Weapon {
         }
 
         private void Event_SetBlendFrames(idEventArg<Integer> channel, idEventArg<Integer> blendFrames) {
-            animBlendFrames = blendFrames.value;
+            this.animBlendFrames = blendFrames.value;
         }
 
         private void Event_GetBlendFrames(idEventArg<Integer> channel) {
-            idThread.ReturnInt(animBlendFrames);
+            idThread.ReturnInt(this.animBlendFrames);
         }
 
         private void Event_Next() {
             // change to another weapon if possible
-            owner.NextBestWeapon();
+            this.owner.NextBestWeapon();
         }
 
         private void Event_SetSkin(final idEventArg<String> _skinname) {
-            String skinname = _skinname.value;
+            final String skinname = _skinname.value;
             idDeclSkin skinDecl;
 
             if (!isNotNullOrEmpty(skinname)) {
@@ -2555,16 +2557,16 @@ public class Weapon {
                 skinDecl = declManager.FindSkin(skinname);
             }
 
-            renderEntity.customSkin = skinDecl;
+            this.renderEntity.customSkin = skinDecl;
             UpdateVisuals();
 
-            if (worldModel.GetEntity() != null) {
-                worldModel.GetEntity().SetSkin(skinDecl);
+            if (this.worldModel.GetEntity() != null) {
+                this.worldModel.GetEntity().SetSkin(skinDecl);
             }
 
             if (gameLocal.isServer) {
-                idBitMsg msg = new idBitMsg();
-                ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+                final idBitMsg msg = new idBitMsg();
+                final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                 msg.WriteLong((skinDecl != null) ? gameLocal.ServerRemapDecl(-1, DECL_SKIN, skinDecl.Index()) : -1);
@@ -2574,61 +2576,61 @@ public class Weapon {
 
         private void Event_Flashlight(idEventArg<Integer> enable) {
             if (enable.value != 0) {
-                lightOn = true;
+                this.lightOn = true;
                 MuzzleFlashLight();
             } else {
-                lightOn = false;
-                muzzleFlashEnd = 0;
+                this.lightOn = false;
+                this.muzzleFlashEnd = 0;
             }
         }
 
         private void Event_GetLightParm(idEventArg<Integer> _parmnum) {
-            int parmnum = _parmnum.value;
+            final int parmnum = _parmnum.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
                 gameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
-            idThread.ReturnFloat(muzzleFlash.shaderParms[ parmnum]);
+            idThread.ReturnFloat(this.muzzleFlash.shaderParms[ parmnum]);
         }
 
         private void Event_SetLightParm(idEventArg<Integer> _parmnum, idEventArg<Float> _value) {
-            int parmnum = _parmnum.value;
-            float value = _value.value;
+            final int parmnum = _parmnum.value;
+            final float value = _value.value;
             if ((parmnum < 0) || (parmnum >= MAX_ENTITY_SHADER_PARMS)) {
                 gameLocal.Error("shader parm index (%d) out of range", parmnum);
             }
 
-            muzzleFlash.shaderParms[ parmnum] = value;
-            worldMuzzleFlash.shaderParms[ parmnum] = value;
+            this.muzzleFlash.shaderParms[ parmnum] = value;
+            this.worldMuzzleFlash.shaderParms[ parmnum] = value;
             UpdateVisuals();
         }
 
         private void Event_SetLightParms(idEventArg<Float> parm0, idEventArg<Float> parm1, idEventArg<Float> parm2, idEventArg<Float> parm3) {
-            muzzleFlash.shaderParms[SHADERPARM_RED] = parm0.value;
-            muzzleFlash.shaderParms[SHADERPARM_GREEN] = parm1.value;
-            muzzleFlash.shaderParms[SHADERPARM_BLUE] = parm2.value;
-            muzzleFlash.shaderParms[SHADERPARM_ALPHA] = parm3.value;
+            this.muzzleFlash.shaderParms[SHADERPARM_RED] = parm0.value;
+            this.muzzleFlash.shaderParms[SHADERPARM_GREEN] = parm1.value;
+            this.muzzleFlash.shaderParms[SHADERPARM_BLUE] = parm2.value;
+            this.muzzleFlash.shaderParms[SHADERPARM_ALPHA] = parm3.value;
 
-            worldMuzzleFlash.shaderParms[SHADERPARM_RED] = parm0.value;
-            worldMuzzleFlash.shaderParms[SHADERPARM_GREEN] = parm1.value;
-            worldMuzzleFlash.shaderParms[SHADERPARM_BLUE] = parm2.value;
-            worldMuzzleFlash.shaderParms[SHADERPARM_ALPHA] = parm3.value;
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_RED] = parm0.value;
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_GREEN] = parm1.value;
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_BLUE] = parm2.value;
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_ALPHA] = parm3.value;
 
             UpdateVisuals();
         }
 
         private void Event_LaunchProjectiles(idEventArg<Integer> _num_projectiles, idEventArg<Float> _spread, idEventArg<Float> fuseOffset, idEventArg<Float> launchPower, idEventArg<Float> _dmgPower) {
-            int num_projectiles = _num_projectiles.value;
-            float spread = _spread.value;
+            final int num_projectiles = _num_projectiles.value;
+            final float spread = _spread.value;
             float dmgPower = _dmgPower.value;
             idProjectile proj;
-            idEntity[] ent = {null};
+            final idEntity[] ent = {null};
             int i;
             idVec3 dir;
             float ang;
             float spin;
-            float[] distance = {0};
-            trace_s[] tr = {null};
+            final float[] distance = {0};
+            final trace_s[] tr = {null};
             idVec3 start;
             idVec3 muzzle_pos = new idVec3();
             idBounds ownerBounds, projBounds;
@@ -2637,8 +2639,8 @@ public class Weapon {
                 return;
             }
 
-            if (0 == projectileDict.GetNumKeyVals()) {
-                final String classname = weaponDef.dict.GetString("classname");
+            if (0 == this.projectileDict.GetNumKeyVals()) {
+                final String classname = this.weaponDef.dict.GetString("classname");
                 gameLocal.Warning("No projectile defined on '%s'", classname);
                 return;
             }
@@ -2647,162 +2649,162 @@ public class Weapon {
             if (!gameLocal.isClient) {
 
                 // check if we're out of ammo or the clip is empty
-                int ammoAvail = owner.inventory.HasAmmo(ammoType, ammoRequired);
-                if (0 == ammoAvail || ((clipSize != 0) && (ammoClip <= 0))) {
+                final int ammoAvail = this.owner.inventory.HasAmmo(this.ammoType, this.ammoRequired);
+                if ((0 == ammoAvail) || ((this.clipSize != 0) && (this.ammoClip <= 0))) {
                     return;
                 }
 
                 // if this is a power ammo weapon ( currently only the bfg ) then make sure 
                 // we only fire as much power as available in each clip
-                if (powerAmmo) {
+                if (this.powerAmmo) {
                     // power comes in as a float from zero to max
                     // if we use this on more than the bfg will need to define the max
                     // in the .def as opposed to just in the script so proper calcs
                     // can be done here. 
                     dmgPower = (int) dmgPower + 1;
-                    if (dmgPower > ammoClip) {
-                        dmgPower = ammoClip;
+                    if (dmgPower > this.ammoClip) {
+                        dmgPower = this.ammoClip;
                     }
                 }
 
-                owner.inventory.UseAmmo(ammoType, (int) ((powerAmmo) ? dmgPower : ammoRequired));
-                if (clipSize != 0 && ammoRequired != 0) {
-                    ammoClip -= powerAmmo ? dmgPower : 1;
+                this.owner.inventory.UseAmmo(this.ammoType, (int) ((this.powerAmmo) ? dmgPower : this.ammoRequired));
+                if ((this.clipSize != 0) && (this.ammoRequired != 0)) {
+                    this.ammoClip -= this.powerAmmo ? dmgPower : 1;
                 }
 
             }
 
-            if (!silent_fire) {
+            if (!this.silent_fire) {
                 // wake up nearby monsters
-                gameLocal.AlertAI(owner);
+                gameLocal.AlertAI(this.owner);
             }
 
             // set the shader parm to the time of last projectile firing,
             // which the gun material shaders can reference for single shot barrel glows, etc
-            renderEntity.shaderParms[ SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat();
-            renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.realClientTime);
+            this.renderEntity.shaderParms[ SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat();
+            this.renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.realClientTime);
 
-            if (worldModel.GetEntity() != null) {
-                worldModel.GetEntity().SetShaderParm(SHADERPARM_DIVERSITY, renderEntity.shaderParms[ SHADERPARM_DIVERSITY]);
-                worldModel.GetEntity().SetShaderParm(SHADERPARM_TIMEOFFSET, renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET]);
+            if (this.worldModel.GetEntity() != null) {
+                this.worldModel.GetEntity().SetShaderParm(SHADERPARM_DIVERSITY, this.renderEntity.shaderParms[ SHADERPARM_DIVERSITY]);
+                this.worldModel.GetEntity().SetShaderParm(SHADERPARM_TIMEOFFSET, this.renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET]);
             }
 
             // calculate the muzzle position
-            if (barrelJointView != INVALID_JOINT && projectileDict.GetBool("launchFromBarrel")) {
+            if ((this.barrelJointView != INVALID_JOINT) && this.projectileDict.GetBool("launchFromBarrel")) {
                 // there is an explicit joint for the muzzle
-                GetGlobalJointTransform(true, barrelJointView, muzzleOrigin, muzzleAxis);
+                GetGlobalJointTransform(true, this.barrelJointView, this.muzzleOrigin, this.muzzleAxis);
             } else {
                 // go straight out of the view
-                muzzleOrigin.oSet(playerViewOrigin);
-                muzzleAxis.oSet(playerViewAxis);
+                this.muzzleOrigin.oSet(this.playerViewOrigin);
+                this.muzzleAxis.oSet(this.playerViewAxis);
             }
 
             // add some to the kick time, incrementally moving repeat firing weapons back
-            if (kick_endtime < gameLocal.realClientTime) {
-                kick_endtime = gameLocal.realClientTime;
+            if (this.kick_endtime < gameLocal.realClientTime) {
+                this.kick_endtime = gameLocal.realClientTime;
             }
-            kick_endtime += muzzle_kick_time;
-            if (kick_endtime > gameLocal.realClientTime + muzzle_kick_maxtime) {
-                kick_endtime = gameLocal.realClientTime + muzzle_kick_maxtime;
+            this.kick_endtime += this.muzzle_kick_time;
+            if (this.kick_endtime > (gameLocal.realClientTime + this.muzzle_kick_maxtime)) {
+                this.kick_endtime = gameLocal.realClientTime + this.muzzle_kick_maxtime;
             }
 
             if (gameLocal.isClient) {
 
                 // predict instant hit projectiles
-                if (projectileDict.GetBool("net_instanthit")) {
-                    float spreadRad = DEG2RAD(spread);
-                    muzzle_pos = muzzleOrigin.oPlus(playerViewAxis.oGet(0).oMultiply(2.0f));
+                if (this.projectileDict.GetBool("net_instanthit")) {
+                    final float spreadRad = DEG2RAD(spread);
+                    muzzle_pos = this.muzzleOrigin.oPlus(this.playerViewAxis.oGet(0).oMultiply(2.0f));
                     for (i = 0; i < num_projectiles; i++) {
                         ang = idMath.Sin(spreadRad * gameLocal.random.RandomFloat());
-                        spin = (float) DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
-                        dir = playerViewAxis.oGet(0).oPlus(playerViewAxis.oGet(2).oMultiply(ang * idMath.Sin(spin)).oMinus(playerViewAxis.oGet(1).oMultiply(ang * idMath.Cos(spin))));
+                        spin = DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
+                        dir = this.playerViewAxis.oGet(0).oPlus(this.playerViewAxis.oGet(2).oMultiply(ang * idMath.Sin(spin)).oMinus(this.playerViewAxis.oGet(1).oMultiply(ang * idMath.Cos(spin))));
                         dir.Normalize();
-                        gameLocal.clip.Translation(tr, muzzle_pos, muzzle_pos.oPlus(dir.oMultiply(4096.0f)), null, getMat3_identity(), MASK_SHOT_RENDERMODEL, owner);
+                        gameLocal.clip.Translation(tr, muzzle_pos, muzzle_pos.oPlus(dir.oMultiply(4096.0f)), null, getMat3_identity(), MASK_SHOT_RENDERMODEL, this.owner);
                         if (tr[0].fraction < 1.0f) {
-                            idProjectile.ClientPredictionCollide(this, projectileDict, tr[0], getVec3_origin(), true);
+                            idProjectile.ClientPredictionCollide(this, this.projectileDict, tr[0], getVec3_origin(), true);
                         }
                     }
                 }
 
             } else {
 
-                ownerBounds = owner.GetPhysics().GetAbsBounds();
+                ownerBounds = this.owner.GetPhysics().GetAbsBounds();
 
-                owner.AddProjectilesFired(num_projectiles);
+                this.owner.AddProjectilesFired(num_projectiles);
 
-                float spreadRad = (float) DEG2RAD(spread);
+                final float spreadRad = DEG2RAD(spread);
                 for (i = 0; i < num_projectiles; i++) {
                     ang = idMath.Sin(spreadRad * gameLocal.random.RandomFloat());
-                    spin = (float) DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
-                    dir = playerViewAxis.oGet(0).oPlus(playerViewAxis.oGet(2).oMultiply(ang * idMath.Sin(spin)).oMinus(playerViewAxis.oGet(1).oMultiply(ang * idMath.Cos(spin))));
+                    spin = DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
+                    dir = this.playerViewAxis.oGet(0).oPlus(this.playerViewAxis.oGet(2).oMultiply(ang * idMath.Sin(spin)).oMinus(this.playerViewAxis.oGet(1).oMultiply(ang * idMath.Cos(spin))));
                     dir.Normalize();
 
-                    if (projectileEnt != null) {
-                        ent[0] = projectileEnt;
+                    if (this.projectileEnt != null) {
+                        ent[0] = this.projectileEnt;
                         ent[0].Show();
                         ent[0].Unbind();
-                        projectileEnt = null;
+                        this.projectileEnt = null;
                     } else {
-                        gameLocal.SpawnEntityDef(projectileDict, ent, false);
+                        gameLocal.SpawnEntityDef(this.projectileDict, ent, false);
                     }
 
-                    if (null == ent[0] || !ent[0].IsType(idProjectile.class)) {
-                        final String projectileName = weaponDef.dict.GetString("def_projectile");
+                    if ((null == ent[0]) || !ent[0].IsType(idProjectile.class)) {
+                        final String projectileName = this.weaponDef.dict.GetString("def_projectile");
                         gameLocal.Error("'%s' is not an idProjectile", projectileName);
                     }
 
-                    if (projectileDict.GetBool("net_instanthit")) {
+                    if (this.projectileDict.GetBool("net_instanthit")) {
                         // don't synchronize this on top of the already predicted effect
                         ent[0].fl.networkSync = false;
                     }
 
                     proj = (idProjectile) ent[0];
-                    proj.Create(owner, muzzleOrigin, dir);
+                    proj.Create(this.owner, this.muzzleOrigin, dir);
 
                     projBounds = proj.GetPhysics().GetBounds().Rotate(proj.GetPhysics().GetAxis());
 
                     // make sure the projectile starts inside the bounding box of the owner
                     if (i == 0) {
-                        muzzle_pos = muzzleOrigin.oPlus(playerViewAxis.oGet(0).oMultiply(2.0f));
-                        if ((ownerBounds.oMinus(projBounds)).RayIntersection(muzzle_pos, playerViewAxis.oGet(0), distance)) {
-                            start = muzzle_pos.oPlus(playerViewAxis.oGet(0).oMultiply(distance[0]));
+                        muzzle_pos = this.muzzleOrigin.oPlus(this.playerViewAxis.oGet(0).oMultiply(2.0f));
+                        if ((ownerBounds.oMinus(projBounds)).RayIntersection(muzzle_pos, this.playerViewAxis.oGet(0), distance)) {
+                            start = muzzle_pos.oPlus(this.playerViewAxis.oGet(0).oMultiply(distance[0]));
                         } else {
                             start = ownerBounds.GetCenter();
                         }
-                        gameLocal.clip.Translation(tr, start, muzzle_pos, proj.GetPhysics().GetClipModel(), proj.GetPhysics().GetClipModel().GetAxis(), MASK_SHOT_RENDERMODEL, owner
+                        gameLocal.clip.Translation(tr, start, muzzle_pos, proj.GetPhysics().GetClipModel(), proj.GetPhysics().GetClipModel().GetAxis(), MASK_SHOT_RENDERMODEL, this.owner
                         );
                         muzzle_pos = tr[0].endpos;
                     }
 
-                    proj.Launch(muzzle_pos, dir, pushVelocity, fuseOffset.value, launchPower.value, dmgPower);
+                    proj.Launch(muzzle_pos, dir, this.pushVelocity, fuseOffset.value, launchPower.value, dmgPower);
                 }
 
                 // toss the brass
-                PostEventMS(EV_Weapon_EjectBrass, brassDelay);
+                PostEventMS(EV_Weapon_EjectBrass, this.brassDelay);
             }
 
             // add the light for the muzzleflash
-            if (!lightOn) {
+            if (!this.lightOn) {
                 MuzzleFlashLight();
             }
 
-            owner.WeaponFireFeedback(weaponDef.dict);
+            this.owner.WeaponFireFeedback(this.weaponDef.dict);
 
             // reset muzzle smoke
-            weaponSmokeStartTime = gameLocal.realClientTime;
+            this.weaponSmokeStartTime = gameLocal.realClientTime;
         }
 
         private void Event_CreateProjectile() {
             if (!gameLocal.isClient) {
-                idEntity[] projectileEnt2 = {null};
-                gameLocal.SpawnEntityDef(projectileDict, projectileEnt2, false);
-                projectileEnt = projectileEnt2[0];
-                if (projectileEnt != null) {
-                    projectileEnt.SetOrigin(GetPhysics().GetOrigin());
-                    projectileEnt.Bind(owner, false);
-                    projectileEnt.Hide();
+                final idEntity[] projectileEnt2 = {null};
+                gameLocal.SpawnEntityDef(this.projectileDict, projectileEnt2, false);
+                this.projectileEnt = projectileEnt2[0];
+                if (this.projectileEnt != null) {
+                    this.projectileEnt.SetOrigin(GetPhysics().GetOrigin());
+                    this.projectileEnt.Bind(this.owner, false);
+                    this.projectileEnt.Hide();
                 }
-                idThread.ReturnEntity(projectileEnt);
+                idThread.ReturnEntity(this.projectileEnt);
             } else {
                 idThread.ReturnEntity(null);
             }
@@ -2816,11 +2818,11 @@ public class Weapon {
          ================
          */
         private void Event_EjectBrass() {
-            if (!g_showBrass.GetBool() || !owner.CanShowWeaponViewmodel()) {
+            if (!g_showBrass.GetBool() || !this.owner.CanShowWeaponViewmodel()) {
                 return;
             }
 
-            if (ejectJointView == INVALID_JOINT || 0 == brassDict.GetNumKeyVals()) {
+            if ((this.ejectJointView == INVALID_JOINT) || (0 == this.brassDict.GetNumKeyVals())) {
                 return;
             }
 
@@ -2828,23 +2830,25 @@ public class Weapon {
                 return;
             }
 
-            idMat3 axis = new idMat3();
-            idVec3 origin = new idVec3(), linear_velocity, angular_velocity = new idVec3();
-            idEntity[] ent = {null};
+            final idMat3 axis = new idMat3();
+            final idVec3 origin = new idVec3();
+			idVec3 linear_velocity;
+			final idVec3 angular_velocity = new idVec3();
+            final idEntity[] ent = {null};
 
-            if (!GetGlobalJointTransform(true, ejectJointView, origin, axis)) {
+            if (!GetGlobalJointTransform(true, this.ejectJointView, origin, axis)) {
                 return;
             }
 
-            gameLocal.SpawnEntityDef(brassDict, ent, false);
+            gameLocal.SpawnEntityDef(this.brassDict, ent, false);
             if (NOT(ent[0]) || !ent[0].IsType(idDebris.class)) {
-                gameLocal.Error("'%s' is not an idDebris", weaponDef != null ? weaponDef.dict.GetString("def_ejectBrass") : "def_ejectBrass");
+                gameLocal.Error("'%s' is not an idDebris", this.weaponDef != null ? this.weaponDef.dict.GetString("def_ejectBrass") : "def_ejectBrass");
             }
-            idDebris debris = (idDebris) ent[0];
-            debris.Create(owner, origin, axis);
+            final idDebris debris = (idDebris) ent[0];
+            debris.Create(this.owner, origin, axis);
             debris.Launch();
 
-            linear_velocity = playerViewAxis.oGet(0).oPlus(playerViewAxis.oGet(1).oPlus(playerViewAxis.oGet(2))).oMultiply(40);
+            linear_velocity = this.playerViewAxis.oGet(0).oPlus(this.playerViewAxis.oGet(1).oPlus(this.playerViewAxis.oGet(2))).oMultiply(40);
             angular_velocity.Set(10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat(), 10 * gameLocal.random.CRandomFloat());
 
             debris.GetPhysics().SetLinearVelocity(linear_velocity);
@@ -2853,16 +2857,16 @@ public class Weapon {
 
         private void Event_Melee() {
             idEntity ent;
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
 
-            if (null == meleeDef) {
-                gameLocal.Error("No meleeDef on '%s'", weaponDef.dict.GetString("classname"));
+            if (null == this.meleeDef) {
+                gameLocal.Error("No meleeDef on '%s'", this.weaponDef.dict.GetString("classname"));
             }
 
             if (!gameLocal.isClient) {
-                idVec3 start = playerViewOrigin;
-                idVec3 end = start.oPlus(playerViewAxis.oGet(0).oMultiply(meleeDistance * owner.PowerUpModifier(MELEE_DISTANCE)));
-                gameLocal.clip.TracePoint(tr, start, end, MASK_SHOT_RENDERMODEL, owner);
+                final idVec3 start = this.playerViewOrigin;
+                final idVec3 end = start.oPlus(this.playerViewAxis.oGet(0).oMultiply(this.meleeDistance * this.owner.PowerUpModifier(MELEE_DISTANCE)));
+                gameLocal.clip.TracePoint(tr, start, end, MASK_SHOT_RENDERMODEL, this.owner);
                 if (tr[0].fraction < 1.0f) {
                     ent = gameLocal.GetTraceEntity(tr[0]);
                 } else {
@@ -2877,12 +2881,12 @@ public class Weapon {
                 }
 
                 boolean hit = false;
-                String hitSound = meleeDef.dict.GetString("snd_miss");
+                String hitSound = this.meleeDef.dict.GetString("snd_miss");
 
                 if (ent != null) {
 
-                    float push = meleeDef.dict.GetFloat("push");
-                    idVec3 impulse = tr[0].c.normal.oMultiply(-push * owner.PowerUpModifier(SPEED));
+                    final float push = this.meleeDef.dict.GetFloat("push");
+                    final idVec3 impulse = tr[0].c.normal.oMultiply(-push * this.owner.PowerUpModifier(SPEED));
 
                     if (gameLocal.world.spawnArgs.GetBool("no_Weapons") && (ent.IsType(idActor.class) || ent.IsType(idAFAttachment.class))) {
                         idThread.ReturnInt(0);
@@ -2893,28 +2897,29 @@ public class Weapon {
 
                     // weapon stealing - do this before damaging so weapons are not dropped twice
                     if (gameLocal.isMultiplayer
-                            && weaponDef != null && weaponDef.dict.GetBool("stealing")
+                            && (this.weaponDef != null) && this.weaponDef.dict.GetBool("stealing")
                             && ent.IsType(idPlayer.class)
-                            && !owner.PowerUpActive(BERSERK)
-                            && (gameLocal.gameType != GAME_TDM || gameLocal.serverInfo.GetBool("si_teamDamage") || (owner.team != ((idPlayer) ent).team))) {
-                        owner.StealWeapon((idPlayer) ent);
+                            && !this.owner.PowerUpActive(BERSERK)
+                            && ((gameLocal.gameType != GAME_TDM) || gameLocal.serverInfo.GetBool("si_teamDamage") || (this.owner.team != ((idPlayer) ent).team))) {
+                        this.owner.StealWeapon((idPlayer) ent);
                     }
 
                     if (ent.fl.takedamage) {
-                        idVec3 kickDir = new idVec3(), globalKickDir;
-                        meleeDef.dict.GetVector("kickDir", "0 0 0", kickDir);
-                        globalKickDir = muzzleAxis.oMultiply(kickDir);
-                        ent.Damage(owner, owner, globalKickDir, meleeDefName.getData(), owner.PowerUpModifier(MELEE_DAMAGE), tr[0].c.id);
+                        final idVec3 kickDir = new idVec3();
+						idVec3 globalKickDir;
+                        this.meleeDef.dict.GetVector("kickDir", "0 0 0", kickDir);
+                        globalKickDir = this.muzzleAxis.oMultiply(kickDir);
+                        ent.Damage(this.owner, this.owner, globalKickDir, this.meleeDefName.getData(), this.owner.PowerUpModifier(MELEE_DAMAGE), tr[0].c.id);
                         hit = true;
                     }
 
-                    if (weaponDef.dict.GetBool("impact_damage_effect")) {
+                    if (this.weaponDef.dict.GetBool("impact_damage_effect")) {
 
                         if (ent.spawnArgs.GetBool("bleed")) {
 
-                            hitSound = meleeDef.dict.GetString(owner.PowerUpActive(BERSERK) ? "snd_hit_berserk" : "snd_hit");
+                            hitSound = this.meleeDef.dict.GetString(this.owner.PowerUpActive(BERSERK) ? "snd_hit_berserk" : "snd_hit");
 
-                            ent.AddDamageEffect(tr[0], impulse, meleeDef.dict.GetString("classname"));
+                            ent.AddDamageEffect(tr[0], impulse, this.meleeDef.dict.GetString("classname"));
 
                         } else {
 
@@ -2926,26 +2931,26 @@ public class Weapon {
                             final String materialType = gameLocal.sufaceTypeNames[ type.ordinal()];
 
                             // start impact sound based on material type
-                            hitSound = meleeDef.dict.GetString(va("snd_%s", materialType));
+                            hitSound = this.meleeDef.dict.GetString(va("snd_%s", materialType));
                             if (isNotNullOrEmpty(hitSound)) {
-                                hitSound = meleeDef.dict.GetString("snd_metal");
+                                hitSound = this.meleeDef.dict.GetString("snd_metal");
                             }
 
-                            if (gameLocal.time > nextStrikeFx) {
+                            if (gameLocal.time > this.nextStrikeFx) {
                                 final String decal;
                                 // project decal
-                                decal = weaponDef.dict.GetString("mtr_strike");
+                                decal = this.weaponDef.dict.GetString("mtr_strike");
                                 if (isNotNullOrEmpty(decal)) {
                                     gameLocal.ProjectDecal(tr[0].c.point, tr[0].c.normal.oNegative(), 8.0f, true, 6.0f, decal);
                                 }
-                                nextStrikeFx = gameLocal.time + 200;
+                                this.nextStrikeFx = gameLocal.time + 200;
                             } else {
                                 hitSound = "";
                             }
 
-                            strikeSmokeStartTime = gameLocal.time;
-                            strikePos.oSet(tr[0].c.point);
-                            strikeAxis.oSet(tr[0].endAxis.oNegative());
+                            this.strikeSmokeStartTime = gameLocal.time;
+                            this.strikePos.oSet(tr[0].c.point);
+                            this.strikeAxis.oSet(tr[0].endAxis.oNegative());
                         }
                     }
                 }
@@ -2956,48 +2961,48 @@ public class Weapon {
                 }
 
                 idThread.ReturnInt(hit);
-                owner.WeaponFireFeedback(weaponDef.dict);
+                this.owner.WeaponFireFeedback(this.weaponDef.dict);
                 return;
             }
 
             idThread.ReturnInt(0);
-            owner.WeaponFireFeedback(weaponDef.dict);
+            this.owner.WeaponFireFeedback(this.weaponDef.dict);
         }
 
         private void Event_GetWorldModel() {
-            idThread.ReturnEntity(worldModel.GetEntity());
+            idThread.ReturnEntity(this.worldModel.GetEntity());
         }
 
         private void Event_AllowDrop(idEventArg<Integer> allow) {
-            allowDrop = (allow.value != 0);
+            this.allowDrop = (allow.value != 0);
         }
 
         private void Event_AutoReload() {
-            assert (owner != null);
+            assert (this.owner != null);
             if (gameLocal.isClient) {
                 idThread.ReturnFloat(0.0f);
                 return;
             }
-            idThread.ReturnFloat(btoi(gameLocal.userInfo[owner.entityNumber].GetBool("ui_autoReload")));
+            idThread.ReturnFloat(btoi(gameLocal.userInfo[this.owner.entityNumber].GetBool("ui_autoReload")));
         }
 
         private void Event_NetReload() {
-            assert (owner != null);
+            assert (this.owner != null);
             if (gameLocal.isServer) {
                 ServerSendEvent(EVENT_RELOAD, null, false, -1);
             }
         }
 
         private void Event_IsInvisible() {
-            if (null == owner) {
+            if (null == this.owner) {
                 idThread.ReturnFloat(0);
                 return;
             }
-            idThread.ReturnFloat(owner.PowerUpActive(INVISIBILITY) ? 1 : 0);
+            idThread.ReturnFloat(this.owner.PowerUpActive(INVISIBILITY) ? 1 : 0);
         }
 
         private void Event_NetEndReload() {
-            assert (owner != null);
+            assert (this.owner != null);
             if (gameLocal.isServer) {
                 ServerSendEvent(EVENT_ENDRELOAD, null, false, -1);
             }
@@ -3017,5 +3022,5 @@ public class Weapon {
             return eventCallbacks;
         }
 
-    };
+    }
 }

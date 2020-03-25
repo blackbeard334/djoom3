@@ -54,8 +54,8 @@ public class snd_wavefile {
         public  waveformatextensible_s mpwfx;       // Pointer to waveformatex structure
         //
         private idFile                 mhmmio;      // I/O handle for the WAVE
-        private mminfo_s               mck;         // Multimedia RIFF chunk
-        private mminfo_s               mckRiff;     // used when opening a WAVE file
+        private final mminfo_s               mck;         // Multimedia RIFF chunk
+        private final mminfo_s               mckRiff;     // used when opening a WAVE file
         private long/*dword*/          mdwSize;     // size in samples
         private long/*dword*/          mMemSize;    // size of the wave data in memory
         private long/*dword*/          mseekBase;
@@ -79,16 +79,16 @@ public class snd_wavefile {
         //-----------------------------------------------------------------------------
         public idWaveFile() {
 //	memset( &mpwfx, 0, sizeof( waveformatextensible_t ) );
-            mpwfx = new waveformatextensible_s();
-            mhmmio = null;
-            mck = new mminfo_s();
-            mckRiff = new mminfo_s();
-            mdwSize = 0;
-            mseekBase = 0;
-            mbIsReadingFromMemory = false;
-            mpbData = null;
-            ogg = null;
-            isOgg = false;
+            this.mpwfx = new waveformatextensible_s();
+            this.mhmmio = null;
+            this.mck = new mminfo_s();
+            this.mckRiff = new mminfo_s();
+            this.mdwSize = 0;
+            this.mseekBase = 0;
+            this.mbIsReadingFromMemory = false;
+            this.mpbData = null;
+            this.ogg = null;
+            this.isOgg = false;
         }
         // ~idWaveFile();
 
@@ -98,16 +98,16 @@ public class snd_wavefile {
         //-----------------------------------------------------------------------------
         public int Open(final String strFileName, waveformatex_s[] pwfx /*= NULL*/) {
 
-            mbIsReadingFromMemory = false;
+            this.mbIsReadingFromMemory = false;
 
-            mpbData = null;
-            mpbDataCur = mpbData;
+            this.mpbData = null;
+            this.mpbDataCur = this.mpbData;
 
             if (strFileName == null) {
                 return -1;
             }
 
-            idStr name = new idStr(strFileName);
+            final idStr name = new idStr(strFileName);
 
             // note: used to only check for .wav when making a build
             name.SetFileExtension(".ogg");
@@ -116,15 +116,15 @@ public class snd_wavefile {
             }
 
 //	memset( &mpwfx, 0, sizeof( waveformatextensible_t ) );
-            mpwfx = new waveformatextensible_s();
+            this.mpwfx = new waveformatextensible_s();
 
-            mhmmio = fileSystem.OpenFileRead(strFileName);
-            if (null == mhmmio) {
-                mdwSize = 0;
+            this.mhmmio = fileSystem.OpenFileRead(strFileName);
+            if (null == this.mhmmio) {
+                this.mdwSize = 0;
                 return -1;
             }
-            if (mhmmio.Length() <= 0) {
-                mhmmio = null;
+            if (this.mhmmio.Length() <= 0) {
+                this.mhmmio = null;
                 return -1;
             }
             if (ReadMMIO() != 0) {
@@ -133,7 +133,7 @@ public class snd_wavefile {
                 return -1;
             }
 
-            mfileTime = mhmmio.Timestamp();
+            this.mfileTime = this.mhmmio.Timestamp();
 
             if (ResetFile() != 0) {
                 Close();
@@ -141,12 +141,12 @@ public class snd_wavefile {
             }
 
             // After the reset, the size of the wav file is mck.cksize so store it now
-            mdwSize = mck.cksize / Short.BYTES;
-            mMemSize = mck.cksize;
+            this.mdwSize = this.mck.cksize / Short.BYTES;
+            this.mMemSize = this.mck.cksize;
 
-            if (mck.cksize != 0xffffffff) {
+            if (this.mck.cksize != 0xffffffff) {
                 if (pwfx != null) {
-                    pwfx[0] = new waveformatex_s(mpwfx.Format);//memcpy(pwfx, (waveformatex_t *) & mpwfx, sizeof(waveformatex_t));
+                    pwfx[0] = new waveformatex_s(this.mpwfx.Format);//memcpy(pwfx, (waveformatex_t *) & mpwfx, sizeof(waveformatex_t));
                 }
                 return 0;
             }
@@ -158,13 +158,13 @@ public class snd_wavefile {
         // Desc: copy data to idWaveFile member variable from memory
         //-----------------------------------------------------------------------------
         public int OpenFromMemory(short[] pbData, int ulDataSize, waveformatextensible_s pwfx) {
-            mpwfx = pwfx;
-            mulDataSize = ulDataSize;
-            mpbData = stobb(pbData);
-            mpbDataCur = mpbData.duplicate();
-            mdwSize = ulDataSize / 2;//sizeof(short);
-            mMemSize = ulDataSize;
-            mbIsReadingFromMemory = true;
+            this.mpwfx = pwfx;
+            this.mulDataSize = ulDataSize;
+            this.mpbData = stobb(pbData);
+            this.mpbDataCur = this.mpbData.duplicate();
+            this.mdwSize = ulDataSize / 2;//sizeof(short);
+            this.mMemSize = ulDataSize;
+            this.mbIsReadingFromMemory = true;
 
             return 0;
         }
@@ -179,21 +179,21 @@ public class snd_wavefile {
         //-----------------------------------------------------------------------------
         public int Read(ByteBuffer pBuffer, int dwSizeToRead, int[] pdwSizeRead) {
 
-            if (ogg != null) {
+            if (this.ogg != null) {
 
                 return ReadOGG(pBuffer.array(), dwSizeToRead, pdwSizeRead);
 
-            } else if (mbIsReadingFromMemory) {
+            } else if (this.mbIsReadingFromMemory) {
 
-                if (mpbDataCur == null) {
+                if (this.mpbDataCur == null) {
                     return -1;
                 }
-                final int pos = dwSizeToRead + mpbDataCur.position();//add current offset
-                if (mpbDataCur.get(dwSizeToRead) > mpbData.get((int) mulDataSize)) {
-                    dwSizeToRead = (int) (mulDataSize - mpbDataCur.position());
+                final int pos = dwSizeToRead + this.mpbDataCur.position();//add current offset
+                if (this.mpbDataCur.get(dwSizeToRead) > this.mpbData.get((int) this.mulDataSize)) {
+                    dwSizeToRead = (int) (this.mulDataSize - this.mpbDataCur.position());
                 }
-                SIMDProcessor.Memcpy(pBuffer, mpbDataCur, dwSizeToRead);
-                mpbDataCur.position(pos);
+                SIMDProcessor.Memcpy(pBuffer, this.mpbDataCur, dwSizeToRead);
+                this.mpbDataCur.position(pos);
 
                 if (pdwSizeRead != null) {
                     pdwSizeRead[0] = dwSizeToRead;
@@ -203,16 +203,16 @@ public class snd_wavefile {
 
             } else {
 
-                if (mhmmio == null) {
+                if (this.mhmmio == null) {
                     return -1;
                 }
                 if (pBuffer == null) {
                     return -1;
                 }
 
-                dwSizeToRead = mhmmio.Read(pBuffer, dwSizeToRead);
+                dwSizeToRead = this.mhmmio.Read(pBuffer, dwSizeToRead);
                 // this is hit by ogg code, which does it's own byte swapping internally
-                if (!isOgg) {
+                if (!this.isOgg) {
                     LittleRevBytes(pBuffer.array(), 2, dwSizeToRead / 2);
                 }
 
@@ -254,12 +254,12 @@ public class snd_wavefile {
         // Desc: Closes the wave file 
         //-----------------------------------------------------------------------------
         public int Close() {
-            if (ogg != null) {
+            if (this.ogg != null) {
                 return CloseOGG();
             }
-            if (mhmmio != null) {
-                fileSystem.CloseFile(mhmmio);
-                mhmmio = null;
+            if (this.mhmmio != null) {
+                fileSystem.CloseFile(this.mhmmio);
+                this.mhmmio = null;
             }
             return 0;
         }
@@ -270,43 +270,43 @@ public class snd_wavefile {
         //       beginning of the file again 
         //-----------------------------------------------------------------------------
         public int ResetFile() {
-            if (mbIsReadingFromMemory) {
-                mpbDataCur = mpbData;
+            if (this.mbIsReadingFromMemory) {
+                this.mpbDataCur = this.mpbData;
             } else {
-                if (mhmmio == null) {
+                if (this.mhmmio == null) {
                     return -1;
                 }
 
                 // Seek to the data
-                if (!mhmmio.Seek(mckRiff.dwDataOffset + Integer.BYTES, FS_SEEK_SET)) {
+                if (!this.mhmmio.Seek(this.mckRiff.dwDataOffset + Integer.BYTES, FS_SEEK_SET)) {
                     return -1;
                 }
 
                 // Search the input file for for the 'fmt ' chunk.
-                mck.ckid = 0;
+                this.mck.ckid = 0;
                 do {
-                    ByteBuffer ioin = ByteBuffer.allocate(1);
-                    if (0 == mhmmio.Read(ioin, 1)) {
+                    final ByteBuffer ioin = ByteBuffer.allocate(1);
+                    if (0 == this.mhmmio.Read(ioin, 1)) {
                         return -1;
                     }
-                    mck.ckid = Integer.toUnsignedLong((int) (mck.ckid >>> 8) | (ioin.get() << 24));
-                } while (mck.ckid != mmioFOURCC('d', 'a', 't', 'a'));
+                    this.mck.ckid = Integer.toUnsignedLong((int) (this.mck.ckid >>> 8) | (ioin.get() << 24));
+                } while (this.mck.ckid != mmioFOURCC('d', 'a', 't', 'a'));
 
-                mck.cksize = mhmmio.ReadInt();
-                assert (!isOgg);
-                mck.cksize = LittleLong(mck.cksize);
-                mseekBase = mhmmio.Tell();
+                this.mck.cksize = this.mhmmio.ReadInt();
+                assert (!this.isOgg);
+                this.mck.cksize = LittleLong(this.mck.cksize);
+                this.mseekBase = this.mhmmio.Tell();
             }
 
             return 0;
         }
 
         public int GetOutputSize() {
-            return (int) mdwSize;
+            return (int) this.mdwSize;
         }
 
         public int GetMemorySize() {
-            return (int) mMemSize;
+            return (int) this.mMemSize;
         }
 
         //-----------------------------------------------------------------------------
@@ -316,30 +316,30 @@ public class snd_wavefile {
         //       update mckRiff, and mpwfx. 
         //-----------------------------------------------------------------------------
         private int ReadMMIO() {
-            mminfo_s ckIn = new mminfo_s(); // chunk info. for general use.
-            pcmwaveformat_s pcmWaveFormat = new pcmwaveformat_s();  // Temp PCM structure to load in.       
+            final mminfo_s ckIn = new mminfo_s(); // chunk info. for general use.
+            final pcmwaveformat_s pcmWaveFormat = new pcmwaveformat_s();  // Temp PCM structure to load in.       
 
-            mpwfx = new waveformatextensible_s();//memset( &mpwfx, 0, sizeof( waveformatextensible_t ) );
+            this.mpwfx = new waveformatextensible_s();//memset( &mpwfx, 0, sizeof( waveformatextensible_t ) );
 
-            mhmmio.Read(mckRiff, 12);
-            assert (!isOgg);
-            mckRiff.ckid = LittleLong(mckRiff.ckid);
-            mckRiff.cksize = LittleLong(mckRiff.cksize);
-            mckRiff.fccType = LittleLong(mckRiff.fccType);
-            mckRiff.dwDataOffset = 12;
+            this.mhmmio.Read(this.mckRiff, 12);
+            assert (!this.isOgg);
+            this.mckRiff.ckid = LittleLong(this.mckRiff.ckid);
+            this.mckRiff.cksize = LittleLong(this.mckRiff.cksize);
+            this.mckRiff.fccType = LittleLong(this.mckRiff.fccType);
+            this.mckRiff.dwDataOffset = 12;
 
             // Check to make sure this is a valid wave file
-            if ((mckRiff.ckid != fourcc_riff) || (mckRiff.fccType != mmioFOURCC('W', 'A', 'V', 'E'))) {
+            if ((this.mckRiff.ckid != fourcc_riff) || (this.mckRiff.fccType != mmioFOURCC('W', 'A', 'V', 'E'))) {
                 return -1;
             }
 
             // Search the input file for for the 'fmt ' chunk.
             ckIn.dwDataOffset = 12;
             do {
-                if (8 != mhmmio.Read(ckIn, 8)) {
+                if (8 != this.mhmmio.Read(ckIn, 8)) {
                     return -1;
                 }
-                assert (!isOgg);
+                assert (!this.isOgg);
                 ckIn.ckid = LittleLong(ckIn.ckid);
                 ckIn.cksize = LittleLong(ckIn.cksize);
                 ckIn.dwDataOffset += ckIn.cksize - 8;
@@ -352,10 +352,10 @@ public class snd_wavefile {
             }
 
             // Read the 'fmt ' chunk into <pcmWaveFormat>.
-            if (mhmmio.Read(pcmWaveFormat) != pcmwaveformat_s.BYTES) {
+            if (this.mhmmio.Read(pcmWaveFormat) != pcmwaveformat_s.BYTES) {
                 return -1;
             }
-            assert (!isOgg);
+            assert (!this.isOgg);
             pcmWaveFormat.wf.wFormatTag = LittleShort((short) pcmWaveFormat.wf.wFormatTag);
             pcmWaveFormat.wf.nChannels = LittleShort((short) pcmWaveFormat.wf.nChannels);
             pcmWaveFormat.wf.nSamplesPerSec = LittleLong(pcmWaveFormat.wf.nSamplesPerSec);
@@ -364,12 +364,12 @@ public class snd_wavefile {
             pcmWaveFormat.wBitsPerSample = LittleShort((short) pcmWaveFormat.wBitsPerSample);
 
             // Copy the bytes from the pcm structure to the waveformatex_t structure
-            mpwfx = new waveformatextensible_s(pcmWaveFormat);
+            this.mpwfx = new waveformatextensible_s(pcmWaveFormat);
 
             // Allocate the waveformatex_t, but if its not pcm format, read the next
             // word, and thats how many extra bytes to allocate.
             if (pcmWaveFormat.wf.wFormatTag == WAVE_FORMAT_TAG_PCM) {
-                mpwfx.Format.cbSize = 0;
+                this.mpwfx.Format.cbSize = 0;
             } else {
                 return -1;    // we don't handle these (32 bit wavefiles, etc)
 // #if 0
@@ -392,57 +392,57 @@ public class snd_wavefile {
 
         private int OpenOGG(final String strFileName, waveformatex_s[] pwfx /*= NULL*/) {
 //            memset(pwfx, 0, sizeof(waveformatex_t));
-            int error[] = {0};
+            final int error[] = {0};
             STBVorbisInfo vi = null;
-            mhmmio = fileSystem.OpenFileRead(strFileName);
-            if (null == mhmmio) {
+            this.mhmmio = fileSystem.OpenFileRead(strFileName);
+            if (null == this.mhmmio) {
                 return -1;
             }
 
             Sys_EnterCriticalSection(CRITICAL_SECTION_ONE);
 
-            ByteBuffer buffer = ByteBuffer.allocate(mhmmio.Length());
-            mhmmio.Read(buffer);
+            final ByteBuffer buffer = ByteBuffer.allocate(this.mhmmio.Length());
+            this.mhmmio.Read(buffer);
             try {
-                ByteBuffer d_buffer = (ByteBuffer) BufferUtils.createByteBuffer(buffer.capacity()).put(buffer).rewind();
+                final ByteBuffer d_buffer = (ByteBuffer) BufferUtils.createByteBuffer(buffer.capacity()).put(buffer).rewind();
                 final long ov = STBVorbis.stb_vorbis_open_memory(d_buffer, error, null);
                 if (error[0] != 0) {
-                    fileSystem.CloseFile(mhmmio);
-                    mhmmio = null;
+                    fileSystem.CloseFile(this.mhmmio);
+                    this.mhmmio = null;
                     return -1;
                 }
                 vi = STBVorbis.stb_vorbis_get_info(ov, STBVorbisInfo.create());
-                mfileTime = mhmmio.Timestamp();
+                this.mfileTime = this.mhmmio.Timestamp();
 
-                mpwfx.Format.nSamplesPerSec = vi.sample_rate();
-                mpwfx.Format.nChannels = vi.channels();
-                mpwfx.Format.wBitsPerSample = Short.SIZE;
-                mdwSize = STBVorbis.stb_vorbis_stream_length_in_samples(ov) * vi.channels();    // pcm samples * num channels
-                mbIsReadingFromMemory = false;
+                this.mpwfx.Format.nSamplesPerSec = vi.sample_rate();
+                this.mpwfx.Format.nChannels = vi.channels();
+                this.mpwfx.Format.wBitsPerSample = Short.SIZE;
+                this.mdwSize = STBVorbis.stb_vorbis_stream_length_in_samples(ov) * vi.channels();    // pcm samples * num channels
+                this.mbIsReadingFromMemory = false;
 
                 if (s_realTimeDecoding.GetBool()) {
-                    fileSystem.CloseFile(mhmmio);
-                    mhmmio = null;
+                    fileSystem.CloseFile(this.mhmmio);
+                    this.mhmmio = null;
 
-                    mpwfx.Format.wFormatTag = WAVE_FORMAT_TAG_OGG;
-                    mhmmio = fileSystem.OpenFileRead(strFileName);
-                    mMemSize = mhmmio.Length();
+                    this.mpwfx.Format.wFormatTag = WAVE_FORMAT_TAG_OGG;
+                    this.mhmmio = fileSystem.OpenFileRead(strFileName);
+                    this.mMemSize = this.mhmmio.Length();
 
                 } else {
-                    ogg = "we only check if this is not null";
+                    this.ogg = "we only check if this is not null";
 
-                    mpwfx.Format.wFormatTag = WAVE_FORMAT_TAG_PCM;
-                    mMemSize = mdwSize * Short.SIZE / Byte.SIZE;
+                    this.mpwfx.Format.wFormatTag = WAVE_FORMAT_TAG_PCM;
+                    this.mMemSize = (this.mdwSize * Short.SIZE) / Byte.SIZE;
                 }
 
                 if (pwfx != null) {
-                    pwfx[0] = new waveformatex_s(mpwfx.Format);
+                    pwfx[0] = new waveformatex_s(this.mpwfx.Format);
                 }
             } finally {
                 Sys_LeaveCriticalSection(CRITICAL_SECTION_ONE);
             }
 
-            isOgg = true;
+            this.isOgg = true;
 
             return 0;
         }

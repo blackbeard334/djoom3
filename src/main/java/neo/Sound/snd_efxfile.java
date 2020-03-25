@@ -28,23 +28,23 @@ public class snd_efxfile {
 //			data = NULL;
 //		}
 //	}
-    };
+    }
 
     static class idEFXFile {
 
         public idList<idSoundEffect> effects;
 
         public idEFXFile() {
-            effects = new idList<>();
+            this.effects = new idList<>();
         }
 //	~idEFXFile();
 
         public boolean FindEffect(idStr name, idSoundEffect[] effect, int[] index) {
             int i;
 
-            for (i = 0; i < effects.Num(); i++) {
-                if (effects.oGet(i) != null && (effects.oGet(i).name.equals(name))) {
-                    effect[0] = effects.oGet(i);
+            for (i = 0; i < this.effects.Num(); i++) {
+                if ((this.effects.oGet(i) != null) && (this.effects.oGet(i).name.equals(name))) {
+                    effect[0] = this.effects.oGet(i);
                     index[0] = i;
                     return true;
                 }
@@ -188,8 +188,8 @@ public class snd_efxfile {
         }
 
         public boolean LoadFile(final String filename, boolean OSPath /*= false*/) {
-            idLexer src = new idLexer(LEXFL_NOSTRINGCONCAT);
-            idToken token;
+            final idLexer src = new idLexer(LEXFL_NOSTRINGCONCAT);
+            final idToken token;
 
             src.LoadFile(filename, OSPath);
             if (!src.IsLoaded()) {
@@ -224,8 +224,8 @@ public class snd_efxfile {
         }
 
         public void Clear() {
-            effects.DeleteContents(true);
+            this.effects.DeleteContents(true);
         }
 
-    };
+    }
 }

@@ -22,18 +22,18 @@ public class PlaneSet {
      */
     public static class idPlaneSet extends idList<idPlane> {
 
-        private idHashIndex hash;
+        private final idHashIndex hash;
         //
         //
 
         public idPlaneSet() {
-            hash = new idHashIndex();
+            this.hash = new idHashIndex();
         }
 
         @Override
         public void Clear() {
             super.Clear();
-            hash.Free();
+            this.hash.Free();
         }
 
 //
@@ -44,26 +44,26 @@ public class PlaneSet {
 
             hashKey = (int) (idMath.Fabs(plane.Dist()) * 0.125f);
             for (border = -1; border <= 1; border++) {
-                for (i = hash.First(hashKey + border); i >= 0; i = hash.Next(i)) {
+                for (i = this.hash.First(hashKey + border); i >= 0; i = this.hash.Next(i)) {
                     if (this.oGet(i).Compare(plane, normalEps, distEps)) {
                         return i;
                     }
                 }
             }
 
-            if (plane.Type() >= PLANETYPE_NEGX && plane.Type() < PLANETYPE_TRUEAXIAL) {
+            if ((plane.Type() >= PLANETYPE_NEGX) && (plane.Type() < PLANETYPE_TRUEAXIAL)) {
                 Append(plane.oNegative());
-                hash.Add(hashKey, Num() - 1);
+                this.hash.Add(hashKey, Num() - 1);
                 Append(plane);
-                hash.Add(hashKey, Num() - 1);
+                this.hash.Add(hashKey, Num() - 1);
                 return (Num() - 1);
             } else {
                 Append(plane);
-                hash.Add(hashKey, Num() - 1);
+                this.hash.Add(hashKey, Num() - 1);
                 Append(plane.oNegative());
-                hash.Add(hashKey, Num() - 1);
+                this.hash.Add(hashKey, Num() - 1);
                 return (Num() - 2);
             }
         }
-    };
+    }
 }

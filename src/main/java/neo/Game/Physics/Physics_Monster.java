@@ -52,7 +52,7 @@ public class Physics_Monster {
         MM_BLOCKED,
         MM_STEPPED,
         MM_FALLING
-    };
+    }
 
     private static class monsterPState_s {
 
@@ -69,7 +69,7 @@ public class Physics_Monster {
             this.localOrigin = new idVec3();
             this.pushVelocity = new idVec3();
         }
-    };
+    }
     static final float OVERCLIP                       = 1.001f;
     //
     static final float MONSTER_VELOCITY_MAX           = 4000;
@@ -88,7 +88,7 @@ public class Physics_Monster {
         // properties
         private float               maxStepHeight;    // maximum step height
         private float               minFloorCosine;   // minimum cosine of floor angle
-        private idVec3              delta;            // delta for next move
+        private final idVec3              delta;            // delta for next move
         //
         private boolean             forceDeltaMove;
         private boolean             fly;
@@ -104,66 +104,66 @@ public class Physics_Monster {
         public idPhysics_Monster() {
 
 //	memset( &current, 0, sizeof( current ) );
-            current = new monsterPState_s();
-            current.atRest = -1;
-            saved = current;
+            this.current = new monsterPState_s();
+            this.current.atRest = -1;
+            this.saved = this.current;
 
-            delta = new idVec3();
-            maxStepHeight = 18.0f;
-            minFloorCosine = 0.7f;
-            moveResult = MM_OK;
-            forceDeltaMove = false;
-            fly = false;
-            useVelocityMove = false;
-            noImpact = false;
-            blockingEntity = null;
+            this.delta = new idVec3();
+            this.maxStepHeight = 18.0f;
+            this.minFloorCosine = 0.7f;
+            this.moveResult = MM_OK;
+            this.forceDeltaMove = false;
+            this.fly = false;
+            this.useVelocityMove = false;
+            this.noImpact = false;
+            this.blockingEntity = null;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
 
-            idPhysics_Monster_SavePState(savefile, current);
-            idPhysics_Monster_SavePState(savefile, saved);
+            idPhysics_Monster_SavePState(savefile, this.current);
+            idPhysics_Monster_SavePState(savefile, this.saved);
 
-            savefile.WriteFloat(maxStepHeight);
-            savefile.WriteFloat(minFloorCosine);
-            savefile.WriteVec3(delta);
+            savefile.WriteFloat(this.maxStepHeight);
+            savefile.WriteFloat(this.minFloorCosine);
+            savefile.WriteVec3(this.delta);
 
-            savefile.WriteBool(forceDeltaMove);
-            savefile.WriteBool(fly);
-            savefile.WriteBool(useVelocityMove);
-            savefile.WriteBool(noImpact);
+            savefile.WriteBool(this.forceDeltaMove);
+            savefile.WriteBool(this.fly);
+            savefile.WriteBool(this.useVelocityMove);
+            savefile.WriteBool(this.noImpact);
 
-            savefile.WriteInt(etoi(moveResult));
-            savefile.WriteObject(blockingEntity);
+            savefile.WriteInt(etoi(this.moveResult));
+            savefile.WriteObject(this.blockingEntity);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
 
-            idPhysics_Monster_RestorePState(savefile, current);
-            idPhysics_Monster_RestorePState(savefile, saved);
+            idPhysics_Monster_RestorePState(savefile, this.current);
+            idPhysics_Monster_RestorePState(savefile, this.saved);
 
-            maxStepHeight = savefile.ReadFloat();
-            minFloorCosine = savefile.ReadFloat();
-            savefile.ReadVec3(delta);
+            this.maxStepHeight = savefile.ReadFloat();
+            this.minFloorCosine = savefile.ReadFloat();
+            savefile.ReadVec3(this.delta);
 
-            forceDeltaMove = savefile.ReadBool();
-            fly = savefile.ReadBool();
-            useVelocityMove = savefile.ReadBool();
-            noImpact = savefile.ReadBool();
+            this.forceDeltaMove = savefile.ReadBool();
+            this.fly = savefile.ReadBool();
+            this.useVelocityMove = savefile.ReadBool();
+            this.noImpact = savefile.ReadBool();
 
-            moveResult = monsterMoveResult_t.values()[savefile.ReadInt()];
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/blockingEntity);
+            this.moveResult = monsterMoveResult_t.values()[savefile.ReadInt()];
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/blockingEntity);
         }
 
         // maximum step up the monster can take, default 18 units
         public void SetMaxStepHeight(final float newMaxStepHeight) {
-            maxStepHeight = newMaxStepHeight;
+            this.maxStepHeight = newMaxStepHeight;
         }
 
         public float GetMaxStepHeight() {
-            return maxStepHeight;
+            return this.maxStepHeight;
         }
 //
 //        // minimum cosine of floor angle to be able to stand on the floor
@@ -172,148 +172,149 @@ public class Physics_Monster {
 
         // set delta for next move
         public void SetDelta(final idVec3 d) {
-            delta.oSet(d);
-            if (!delta.equals(getVec3_origin())) {
+            this.delta.oSet(d);
+            if (!this.delta.equals(getVec3_origin())) {
                 Activate();
             }
         }
 
         // returns true if monster is standing on the ground
         public boolean OnGround() {
-            return current.onGround;
+            return this.current.onGround;
         }
 
         // returns the movement result
         public monsterMoveResult_t GetMoveResult() {
-            return moveResult;
+            return this.moveResult;
         }
 
         // overrides any velocity for pure delta movement
         public void ForceDeltaMove(boolean force) {
-            forceDeltaMove = force;
+            this.forceDeltaMove = force;
         }
 
         // whether velocity should be affected by gravity
         public void UseFlyMove(boolean force) {
-            fly = force;
+            this.fly = force;
         }
 
         // don't use delta movement
         public void UseVelocityMove(boolean force) {
-            useVelocityMove = force;
+            this.useVelocityMove = force;
         }
 
         // get entity blocking the move
         public idEntity GetSlideMoveEntity() {
-            return blockingEntity;
+            return this.blockingEntity;
         }
 
         // enable/disable activation by impact
         public void EnableImpact() {
-            noImpact = false;
+            this.noImpact = false;
         }
 
         public void DisableImpact() {
-            noImpact = true;
+            this.noImpact = true;
         }
 
         private static int DBG_Evaluate = 0;
         // common physics interface
         @Override
         public boolean Evaluate(int timeStepMSec, int endTimeMSec) {   DBG_Evaluate++;
-            idVec3 masterOrigin = new idVec3(), oldOrigin;
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+			idVec3 oldOrigin;
+            final idMat3 masterAxis = new idMat3();
             float timeStep;
 
             timeStep = MS2SEC(timeStepMSec);
 
-            moveResult = MM_OK;
-            blockingEntity = null;
-            oldOrigin = current.origin;
+            this.moveResult = MM_OK;
+            this.blockingEntity = null;
+            oldOrigin = this.current.origin;
 
             // if bound to a master
-            if (masterEntity != null) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin.oSet(masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis)));
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
-                current.velocity.oSet((current.origin.oMinus(oldOrigin)).oDivide(timeStep));
-                masterDeltaYaw = masterYaw;
-                masterYaw = masterAxis.oGet(0).ToYaw();
-                masterDeltaYaw = masterYaw - masterDeltaYaw;
+            if (this.masterEntity != null) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.origin.oSet(masterOrigin.oPlus(this.current.localOrigin.oMultiply(masterAxis)));
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
+                this.current.velocity.oSet((this.current.origin.oMinus(oldOrigin)).oDivide(timeStep));
+                this.masterDeltaYaw = this.masterYaw;
+                this.masterYaw = masterAxis.oGet(0).ToYaw();
+                this.masterDeltaYaw = this.masterYaw - this.masterDeltaYaw;
                 return true;
             }
 
             // if the monster is at rest
-            if (current.atRest >= 0) {
+            if (this.current.atRest >= 0) {
                 return false;
             }
 
             ActivateContactEntities();
 
             // move the monster velocity into the frame of a pusher
-            current.velocity.oMinSet(current.pushVelocity);
+            this.current.velocity.oMinSet(this.current.pushVelocity);
 
-            clipModel.Unlink();
+            this.clipModel.Unlink();
 
             // check if on the ground
-            this.CheckGround(current);
+            this.CheckGround(this.current);
 
             // if not on the ground or moving upwards
             float upspeed;
-            if (!gravityNormal.equals(getVec3_zero())) {
-                upspeed = -(current.velocity.oMultiply(gravityNormal));
+            if (!this.gravityNormal.equals(getVec3_zero())) {
+                upspeed = -(this.current.velocity.oMultiply(this.gravityNormal));
             } else {
-                upspeed = current.velocity.z;
+                upspeed = this.current.velocity.z;
             }
-            if (fly || (!forceDeltaMove && (!current.onGround || upspeed > 1.0f))) {
+            if (this.fly || (!this.forceDeltaMove && (!this.current.onGround || (upspeed > 1.0f)))) {
                 if (upspeed < 0.0f) {
-                    moveResult = MM_FALLING;
+                    this.moveResult = MM_FALLING;
                 } else {
-                    current.onGround = false;
-                    moveResult = MM_OK;
+                    this.current.onGround = false;
+                    this.moveResult = MM_OK;
                 }
-                delta.oSet(current.velocity.oMultiply(timeStep));
-                if (!delta.equals(getVec3_origin())) {
-                    moveResult = this.SlideMove(current.origin, current.velocity, delta);
-                    delta.Zero();
+                this.delta.oSet(this.current.velocity.oMultiply(timeStep));
+                if (!this.delta.equals(getVec3_origin())) {
+                    this.moveResult = this.SlideMove(this.current.origin, this.current.velocity, this.delta);
+                    this.delta.Zero();
                 }
 
-                if (!fly) {
-                    current.velocity.oPluSet(gravityVector.oMultiply(timeStep));
+                if (!this.fly) {
+                    this.current.velocity.oPluSet(this.gravityVector.oMultiply(timeStep));
                 }
             } else {
-                if (useVelocityMove) {
-                    delta.oSet(current.velocity.oMultiply(timeStep));
+                if (this.useVelocityMove) {
+                    this.delta.oSet(this.current.velocity.oMultiply(timeStep));
                 } else {
-                    current.velocity.oSet(delta.oDivide(timeStep));
+                    this.current.velocity.oSet(this.delta.oDivide(timeStep));
                 }
 
-                current.velocity.oMinSet(gravityNormal.oMultiply(current.velocity.oMultiply(gravityNormal)));
+                this.current.velocity.oMinSet(this.gravityNormal.oMultiply(this.current.velocity.oMultiply(this.gravityNormal)));
 
-                if (delta.equals(getVec3_origin())) {
+                if (this.delta.equals(getVec3_origin())) {
                     Rest();
                 } else {
                     // try moving into the desired direction
-                    moveResult = this.StepMove(current.origin, current.velocity, delta);
-                    delta.Zero();
+                    this.moveResult = this.StepMove(this.current.origin, this.current.velocity, this.delta);
+                    this.delta.Zero();
                 }
             }
 
-            clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
+            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
 
             // get all the ground contacts
             EvaluateContacts();
 
             // move the monster velocity back into the world frame
-            current.velocity.oPluSet(current.pushVelocity);
-            current.pushVelocity.Zero();
+            this.current.velocity.oPluSet(this.current.pushVelocity);
+            this.current.pushVelocity.Zero();
 
             if (IsOutsideWorld()) {
-                gameLocal.Warning("clip model outside world bounds for entity '%s' at (%s)", self.name, current.origin.ToString(0));
+                gameLocal.Warning("clip model outside world bounds for entity '%s' at (%s)", this.self.name, this.current.origin.ToString(0));
                 Rest();
             }
 
-            return (!current.origin.equals(oldOrigin));
+            return (!this.current.origin.equals(oldOrigin));
         }
 
         @Override
@@ -327,127 +328,127 @@ public class Physics_Monster {
 
         @Override
         public impactInfo_s GetImpactInfo(final int id, final idVec3 point) {
-            impactInfo_s info = new impactInfo_s();
-            info.invMass = invMass;
+            final impactInfo_s info = new impactInfo_s();
+            info.invMass = this.invMass;
             info.invInertiaTensor.Zero();
             info.position.Zero();
-            info.velocity.oSet(current.velocity);
+            info.velocity.oSet(this.current.velocity);
             return info;
         }
 
         @Override
         public void ApplyImpulse(final int id, final idVec3 point, final idVec3 impulse) {
-            if (noImpact) {
+            if (this.noImpact) {
                 return;
             }
-            current.velocity.oPluSet(impulse.oMultiply(invMass));
+            this.current.velocity.oPluSet(impulse.oMultiply(this.invMass));
             Activate();
         }
 
         @Override
         public void Activate() {
-            current.atRest = -1;
-            self.BecomeActive(TH_PHYSICS);
+            this.current.atRest = -1;
+            this.self.BecomeActive(TH_PHYSICS);
         }
 
         @Override
         public void PutToRest() {
-            current.atRest = gameLocal.time;
-            current.velocity.Zero();
-            self.BecomeInactive(TH_PHYSICS);
+            this.current.atRest = gameLocal.time;
+            this.current.velocity.Zero();
+            this.self.BecomeInactive(TH_PHYSICS);
         }
 
         @Override
         public boolean IsAtRest() {
-            return current.atRest >= 0;
+            return this.current.atRest >= 0;
         }
 
         @Override
         public int GetRestStartTime() {
-            return current.atRest;
+            return this.current.atRest;
         }
 
         @Override
         public void SaveState() {
-            saved = current;
+            this.saved = this.current;
         }
 
         @Override
         public void RestoreState() {
-            current = saved;
+            this.current = this.saved;
 
-            clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
+            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
 
             EvaluateContacts();
         }
 
         @Override
         public void SetOrigin(final idVec3 newOrigin, int id /*= -1*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
-            current.localOrigin.oSet(newOrigin);
-            if (masterEntity != null) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
+            this.current.localOrigin.oSet(newOrigin);
+            if (this.masterEntity != null) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
             } else {
-                current.origin.oSet(newOrigin);
+                this.current.origin.oSet(newOrigin);
             }
-            clipModel.Link(gameLocal.clip, self, 0, newOrigin, clipModel.GetAxis());
+            this.clipModel.Link(gameLocal.clip, this.self, 0, newOrigin, this.clipModel.GetAxis());
             Activate();
         }
 
         @Override
         public void SetAxis(final idMat3 newAxis, int id /*= -1*/) {
-            clipModel.Link(gameLocal.clip, self, 0, clipModel.GetOrigin(), newAxis);
+            this.clipModel.Link(gameLocal.clip, this.self, 0, this.clipModel.GetOrigin(), newAxis);
             Activate();
         }
 
         @Override
         public void Translate(final idVec3 translation, int id /*= -1*/) {
 
-            current.localOrigin.oPluSet(translation);
-            current.origin.oPluSet(translation);
-            clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis());
+            this.current.localOrigin.oPluSet(translation);
+            this.current.origin.oPluSet(translation);
+            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis());
             Activate();
         }
 
         @Override
         public void Rotate(final idRotation rotation, int id /*= -1*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
-            current.origin.oMulSet(rotation);
-            if (masterEntity != null) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
+            this.current.origin.oMulSet(rotation);
+            if (this.masterEntity != null) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.localOrigin.oSet((this.current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
             } else {
-                current.localOrigin.oSet(current.origin);
+                this.current.localOrigin.oSet(this.current.origin);
             }
-            clipModel.Link(gameLocal.clip, self, 0, current.origin, clipModel.GetAxis().oMultiply(rotation.ToMat3()));
+            this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.clipModel.GetAxis().oMultiply(rotation.ToMat3()));
             Activate();
         }
 
         @Override
         public void SetLinearVelocity(final idVec3 newLinearVelocity, int id /*= 0*/) {
-            current.velocity.oSet(newLinearVelocity);
+            this.current.velocity.oSet(newLinearVelocity);
             Activate();
         }
 
         @Override
         public idVec3 GetLinearVelocity(int id /*= 0*/) {
-            return new idVec3(current.velocity);
+            return new idVec3(this.current.velocity);
         }
 
         @Override
         public void SetPushed(int deltaTime) {
             // velocity with which the monster is pushed
-            current.pushVelocity.oPluSet((current.origin.oMinus(saved.origin)).oDivide(deltaTime * idMath.M_MS2SEC));
+            this.current.pushVelocity.oPluSet((this.current.origin.oMinus(this.saved.origin)).oDivide(deltaTime * idMath.M_MS2SEC));
         }
 
         @Override
         public idVec3 GetPushedLinearVelocity(final int id /*= 0*/) {
-            return current.pushVelocity;
+            return this.current.pushVelocity;
         }
 
         /*
@@ -459,21 +460,21 @@ public class Physics_Monster {
          */
         @Override
         public void SetMaster(idEntity master, final boolean orientated /*= true*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
             if (master != null) {
-                if (null == masterEntity) {
+                if (null == this.masterEntity) {
                     // transform from world space to master space
-                    self.GetMasterPosition(masterOrigin, masterAxis);
-                    current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
-                    masterEntity = master;
-                    masterYaw = masterAxis.oGet(0).ToYaw();
+                    this.self.GetMasterPosition(masterOrigin, masterAxis);
+                    this.current.localOrigin.oSet((this.current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
+                    this.masterEntity = master;
+                    this.masterYaw = masterAxis.oGet(0).ToYaw();
                 }
                 ClearContacts();
             } else {
-                if (masterEntity != null) {
-                    masterEntity = null;
+                if (this.masterEntity != null) {
+                    this.masterEntity = null;
                     Activate();
                 }
             }
@@ -481,62 +482,62 @@ public class Physics_Monster {
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            msg.WriteFloat(current.origin.oGet(0));
-            msg.WriteFloat(current.origin.oGet(1));
-            msg.WriteFloat(current.origin.oGet(2));
-            msg.WriteFloat(current.velocity.oGet(0), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
-            msg.WriteFloat(current.velocity.oGet(1), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
-            msg.WriteFloat(current.velocity.oGet(2), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
-            msg.WriteDeltaFloat(current.origin.oGet(0), current.localOrigin.oGet(0));
-            msg.WriteDeltaFloat(current.origin.oGet(1), current.localOrigin.oGet(1));
-            msg.WriteDeltaFloat(current.origin.oGet(2), current.localOrigin.oGet(2));
-            msg.WriteDeltaFloat(0.0f, current.pushVelocity.oGet(0), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
-            msg.WriteDeltaFloat(0.0f, current.pushVelocity.oGet(1), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
-            msg.WriteDeltaFloat(0.0f, current.pushVelocity.oGet(2), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
-            msg.WriteLong(current.atRest);
-            msg.WriteBits(btoi(current.onGround), 1);
+            msg.WriteFloat(this.current.origin.oGet(0));
+            msg.WriteFloat(this.current.origin.oGet(1));
+            msg.WriteFloat(this.current.origin.oGet(2));
+            msg.WriteFloat(this.current.velocity.oGet(0), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
+            msg.WriteFloat(this.current.velocity.oGet(1), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
+            msg.WriteFloat(this.current.velocity.oGet(2), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
+            msg.WriteDeltaFloat(this.current.origin.oGet(0), this.current.localOrigin.oGet(0));
+            msg.WriteDeltaFloat(this.current.origin.oGet(1), this.current.localOrigin.oGet(1));
+            msg.WriteDeltaFloat(this.current.origin.oGet(2), this.current.localOrigin.oGet(2));
+            msg.WriteDeltaFloat(0.0f, this.current.pushVelocity.oGet(0), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
+            msg.WriteDeltaFloat(0.0f, this.current.pushVelocity.oGet(1), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
+            msg.WriteDeltaFloat(0.0f, this.current.pushVelocity.oGet(2), MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS);
+            msg.WriteLong(this.current.atRest);
+            msg.WriteBits(btoi(this.current.onGround), 1);
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
-            current.origin.oSet(0, msg.ReadFloat());
-            current.origin.oSet(1, msg.ReadFloat());
-            current.origin.oSet(2, msg.ReadFloat());
-            current.velocity.oSet(0, msg.ReadFloat(MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
-            current.velocity.oSet(1, msg.ReadFloat(MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
-            current.velocity.oSet(2, msg.ReadFloat(MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
-            current.localOrigin.oSet(0, msg.ReadDeltaFloat(current.origin.oGet(0)));
-            current.localOrigin.oSet(1, msg.ReadDeltaFloat(current.origin.oGet(1)));
-            current.localOrigin.oSet(2, msg.ReadDeltaFloat(current.origin.oGet(2)));
-            current.pushVelocity.oSet(0, msg.ReadDeltaFloat(0.0f, MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
-            current.pushVelocity.oSet(1, msg.ReadDeltaFloat(0.0f, MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
-            current.pushVelocity.oSet(2, msg.ReadDeltaFloat(0.0f, MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
-            current.atRest = msg.ReadLong();
-            current.onGround = msg.ReadBits(1) != 0;
+            this.current.origin.oSet(0, msg.ReadFloat());
+            this.current.origin.oSet(1, msg.ReadFloat());
+            this.current.origin.oSet(2, msg.ReadFloat());
+            this.current.velocity.oSet(0, msg.ReadFloat(MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
+            this.current.velocity.oSet(1, msg.ReadFloat(MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
+            this.current.velocity.oSet(2, msg.ReadFloat(MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
+            this.current.localOrigin.oSet(0, msg.ReadDeltaFloat(this.current.origin.oGet(0)));
+            this.current.localOrigin.oSet(1, msg.ReadDeltaFloat(this.current.origin.oGet(1)));
+            this.current.localOrigin.oSet(2, msg.ReadDeltaFloat(this.current.origin.oGet(2)));
+            this.current.pushVelocity.oSet(0, msg.ReadDeltaFloat(0.0f, MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
+            this.current.pushVelocity.oSet(1, msg.ReadDeltaFloat(0.0f, MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
+            this.current.pushVelocity.oSet(2, msg.ReadDeltaFloat(0.0f, MONSTER_VELOCITY_EXPONENT_BITS, MONSTER_VELOCITY_MANTISSA_BITS));
+            this.current.atRest = msg.ReadLong();
+            this.current.onGround = msg.ReadBits(1) != 0;
         }
 
         private void CheckGround(monsterPState_s state) {
-            trace_s[] groundTrace = {null};
+            final trace_s[] groundTrace = {null};
             idVec3 down;
 
-            if (gravityNormal.equals(getVec3_zero())) {
+            if (this.gravityNormal.equals(getVec3_zero())) {
                 state.onGround = false;
-                groundEntityPtr = new idEntityPtr<>(null);
+                this.groundEntityPtr = new idEntityPtr<>(null);
                 return;
             }
 
-            down = state.origin.oPlus(gravityNormal.oMultiply(CONTACT_EPSILON));
-            gameLocal.clip.Translation(groundTrace, state.origin, down, clipModel, clipModel.GetAxis(), clipMask, self);
+            down = state.origin.oPlus(this.gravityNormal.oMultiply(CONTACT_EPSILON));
+            gameLocal.clip.Translation(groundTrace, state.origin, down, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
 
             if (groundTrace[0].fraction == 1.0f) {
                 state.onGround = false;
-                groundEntityPtr = new idEntityPtr<>(null);
+                this.groundEntityPtr = new idEntityPtr<>(null);
                 return;
             }
 
-            groundEntityPtr.oSet(gameLocal.entities[groundTrace[0].c.entityNum]);
+            this.groundEntityPtr.oSet(gameLocal.entities[groundTrace[0].c.entityNum]);
 
-            if ((groundTrace[0].c.normal.oMultiply(gravityNormal.oNegative())) < minFloorCosine) {
+            if ((groundTrace[0].c.normal.oMultiply(this.gravityNormal.oNegative())) < this.minFloorCosine) {
                 state.onGround = false;
                 return;
             }
@@ -544,26 +545,26 @@ public class Physics_Monster {
             state.onGround = true;
 
             // let the entity know about the collision
-            self.Collide(groundTrace[0], state.velocity);
+            this.self.Collide(groundTrace[0], state.velocity);
 
             // apply impact to a non world floor entity
-            if (groundTrace[0].c.entityNum != ENTITYNUM_WORLD && groundEntityPtr.GetEntity() != null) {
-                impactInfo_s info = groundEntityPtr.GetEntity().GetImpactInfo(self, groundTrace[0].c.id, groundTrace[0].c.point);
+            if ((groundTrace[0].c.entityNum != ENTITYNUM_WORLD) && (this.groundEntityPtr.GetEntity() != null)) {
+                final impactInfo_s info = this.groundEntityPtr.GetEntity().GetImpactInfo(this.self, groundTrace[0].c.id, groundTrace[0].c.point);
                 if (info.invMass != 0.0f) {
-                    groundEntityPtr.GetEntity().ApplyImpulse(self, 0, groundTrace[0].c.point, state.velocity.oDivide(info.invMass * 10.0f));
+                    this.groundEntityPtr.GetEntity().ApplyImpulse(this.self, 0, groundTrace[0].c.point, state.velocity.oDivide(info.invMass * 10.0f));
                 }
             }
         }
 
         private monsterMoveResult_t SlideMove(idVec3 start, idVec3 velocity, final idVec3 delta) {
             int i;
-            trace_s[] tr = {null};
-            idVec3 move = new idVec3();
+            final trace_s[] tr = {null};
+            final idVec3 move = new idVec3();
 
-            blockingEntity = null;
+            this.blockingEntity = null;
             move.oSet(delta);
             for (i = 0; i < 3; i++) {
-                gameLocal.clip.Translation(tr, start, start.oPlus(move), clipModel, clipModel.GetAxis(), clipMask, self);
+                gameLocal.clip.Translation(tr, start, start.oPlus(move), this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
 
                 start.oSet(tr[0].endpos);
 
@@ -575,7 +576,7 @@ public class Physics_Monster {
                 }
 
                 if (tr[0].c.entityNum != ENTITYNUM_NONE) {
-                    blockingEntity = gameLocal.entities[ tr[0].c.entityNum];
+                    this.blockingEntity = gameLocal.entities[ tr[0].c.entityNum];
                 }
 
                 // clip the movement delta and velocity
@@ -595,7 +596,7 @@ public class Physics_Monster {
          =====================
          */
         private monsterMoveResult_t StepMove(idVec3 start, idVec3 velocity, final idVec3 delta) {
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
             idVec3 up, down, noStepPos, noStepVel, stepPos, stepVel;
             monsterMoveResult_t result1, result2;
             float stepdist;
@@ -611,14 +612,14 @@ public class Physics_Monster {
             result1 = SlideMove(noStepPos, noStepVel, delta);
             if (result1 == MM_OK) {
                 velocity.oSet(noStepVel);
-                if (gravityNormal.equals(getVec3_zero())) {
+                if (this.gravityNormal.equals(getVec3_zero())) {
                     start.oSet(noStepPos);
                     return MM_OK;
                 }
 
                 // try to step down so that we walk down slopes and stairs at a normal rate
-                down = noStepPos.oPlus(gravityNormal.oMultiply(maxStepHeight));
-                gameLocal.clip.Translation(tr, noStepPos, down, clipModel, clipModel.GetAxis(), clipMask, self);
+                down = noStepPos.oPlus(this.gravityNormal.oMultiply(this.maxStepHeight));
+                gameLocal.clip.Translation(tr, noStepPos, down, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
                 if (tr[0].fraction < 1.0f) {
                     start.oSet(tr[0].endpos);
                     return MM_STEPPED;
@@ -628,22 +629,22 @@ public class Physics_Monster {
                 }
             }
 
-            if (blockingEntity != null && blockingEntity.IsType(idActor.class)) {
+            if ((this.blockingEntity != null) && this.blockingEntity.IsType(idActor.class)) {
                 // try to step down in case walking into an actor while going down steps
-                down = noStepPos.oPlus(gravityNormal.oMultiply(maxStepHeight));
-                gameLocal.clip.Translation(tr, noStepPos, down, clipModel, clipModel.GetAxis(), clipMask, self);
+                down = noStepPos.oPlus(this.gravityNormal.oMultiply(this.maxStepHeight));
+                gameLocal.clip.Translation(tr, noStepPos, down, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
                 start.oSet(tr[0].endpos);
                 velocity.oSet(noStepVel);
                 return MM_BLOCKED;
             }
 
-            if (gravityNormal.equals(getVec3_zero())) {
+            if (this.gravityNormal.equals(getVec3_zero())) {
                 return result1;
             }
 
             // try to step up
-            up = start.oMinus(gravityNormal.oMultiply(maxStepHeight));
-            gameLocal.clip.Translation(tr, start, up, clipModel, clipModel.GetAxis(), clipMask, self);
+            up = start.oMinus(this.gravityNormal.oMultiply(this.maxStepHeight));
+            gameLocal.clip.Translation(tr, start, up, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
             if (tr[0].fraction == 0.0f) {
                 start.oSet(noStepPos);
                 velocity.oSet(noStepVel);
@@ -661,14 +662,14 @@ public class Physics_Monster {
             }
 
             // step down again
-            down = stepPos.oPlus(gravityNormal.oMultiply(maxStepHeight));
-            gameLocal.clip.Translation(tr, stepPos, down, clipModel, clipModel.GetAxis(), clipMask, self);
+            down = stepPos.oPlus(this.gravityNormal.oMultiply(this.maxStepHeight));
+            gameLocal.clip.Translation(tr, stepPos, down, this.clipModel, this.clipModel.GetAxis(), this.clipMask, this.self);
             stepPos = tr[0].endpos;
 
             // if the move is further without stepping up, or the slope is too steap, don't step up
             nostepdist = (noStepPos.oMinus(start)).LengthSqr();
             stepdist = (stepPos.oMinus(start)).LengthSqr();
-            if ((nostepdist >= stepdist) || ((tr[0].c.normal.oMultiply(gravityNormal.oNegative())) < minFloorCosine)) {
+            if ((nostepdist >= stepdist) || ((tr[0].c.normal.oMultiply(this.gravityNormal.oNegative())) < this.minFloorCosine)) {
                 start.oSet(noStepPos);
                 velocity.oSet(noStepVel);
                 return MM_SLIDING;
@@ -681,11 +682,11 @@ public class Physics_Monster {
         }
 
         private void Rest() {
-            current.atRest = gameLocal.time;
-            current.velocity.Zero();
-            self.BecomeInactive(TH_PHYSICS);
+            this.current.atRest = gameLocal.time;
+            this.current.velocity.Zero();
+            this.self.BecomeInactive(TH_PHYSICS);
         }
-    };
+    }
 
     /*
      ================
@@ -707,8 +708,8 @@ public class Physics_Monster {
      ================
      */
     static void idPhysics_Monster_RestorePState(idRestoreGame savefile, monsterPState_s state) {
-        boolean[] onGround = {false};
-        int[] atRest = {0};
+        final boolean[] onGround = {false};
+        final int[] atRest = {0};
 
         savefile.ReadVec3(state.origin);
         savefile.ReadVec3(state.velocity);

@@ -178,7 +178,7 @@ public class Projectile {
             public ByteBuffer Write() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-        };
+        }
         //
         protected projectileFlags_s   projectileFlags;
         //
@@ -208,7 +208,7 @@ public class Projectile {
             LAUNCHED,//= 2,
             FIZZLED,//= 3,
             EXPLODED,//= 4
-        };
+        }
         //
         protected projectileState_t state;
         //
@@ -219,29 +219,29 @@ public class Projectile {
         // public :
         // CLASS_PROTOTYPE( idProjectile );
         public idProjectile() {
-            owner = new idEntityPtr<>();
-            lightDefHandle = -1;
-            thrust = 0.0f;
-            thrust_end = 0;
-            smokeFly = null;
-            smokeFlyTime = 0;
-            state = SPAWNED;
-            lightOffset = getVec3_zero();
-            lightStartTime = 0;
-            lightEndTime = 0;
-            lightColor = getVec3_zero();
-            state = SPAWNED;
-            damagePower = 1.0f;
-            projectileFlags = new projectileFlags_s();//memset( &projectileFlags, 0, sizeof( projectileFlags ) );
-            renderLight = new renderLight_s();//memset( &renderLight, 0, sizeof( renderLight ) );
+            this.owner = new idEntityPtr<>();
+            this.lightDefHandle = -1;
+            this.thrust = 0.0f;
+            this.thrust_end = 0;
+            this.smokeFly = null;
+            this.smokeFlyTime = 0;
+            this.state = SPAWNED;
+            this.lightOffset = getVec3_zero();
+            this.lightStartTime = 0;
+            this.lightEndTime = 0;
+            this.lightColor = getVec3_zero();
+            this.state = SPAWNED;
+            this.damagePower = 1.0f;
+            this.projectileFlags = new projectileFlags_s();//memset( &projectileFlags, 0, sizeof( projectileFlags ) );
+            this.renderLight = new renderLight_s();//memset( &renderLight, 0, sizeof( renderLight ) );
             
             // note: for net_instanthit projectiles, we will force this back to false at spawn time
-            fl.networkSync = true;
+            this.fl.networkSync = true;
 
-            netSyncPhysics = false;
+            this.netSyncPhysics = false;
             
-            physicsObj = new idPhysics_RigidBody();
-            thruster = new idForce_Constant();
+            this.physicsObj = new idPhysics_RigidBody();
+            this.thruster = new idForce_Constant();
         }
 
         @Override
@@ -256,87 +256,87 @@ public class Projectile {
         public void Spawn() {
             super.Spawn();
             
-            physicsObj.SetSelf(this);
-            physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
-            physicsObj.SetContents(0);
-            physicsObj.SetClipMask(0);
-            physicsObj.PutToRest();
-            SetPhysics(physicsObj);
+            this.physicsObj.SetSelf(this);
+            this.physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
+            this.physicsObj.SetContents(0);
+            this.physicsObj.SetClipMask(0);
+            this.physicsObj.PutToRest();
+            SetPhysics(this.physicsObj);
         }
 
         @Override
         public void Save(idSaveGame savefile) {
 
-            owner.Save(savefile);
+            this.owner.Save(savefile);
 
-            projectileFlags_s flags = projectileFlags;
+            final projectileFlags_s flags = this.projectileFlags;
             LittleBitField(flags);
             savefile.Write(flags);
 
-            savefile.WriteFloat(thrust);
-            savefile.WriteInt(thrust_end);
+            savefile.WriteFloat(this.thrust);
+            savefile.WriteInt(this.thrust_end);
 
-            savefile.WriteRenderLight(renderLight);
-            savefile.WriteInt(lightDefHandle);
-            savefile.WriteVec3(lightOffset);
-            savefile.WriteInt(lightStartTime);
-            savefile.WriteInt(lightEndTime);
-            savefile.WriteVec3(lightColor);
+            savefile.WriteRenderLight(this.renderLight);
+            savefile.WriteInt(this.lightDefHandle);
+            savefile.WriteVec3(this.lightOffset);
+            savefile.WriteInt(this.lightStartTime);
+            savefile.WriteInt(this.lightEndTime);
+            savefile.WriteVec3(this.lightColor);
 
-            savefile.WriteParticle(smokeFly);
-            savefile.WriteInt(smokeFlyTime);
+            savefile.WriteParticle(this.smokeFly);
+            savefile.WriteInt(this.smokeFlyTime);
 
-            savefile.WriteInt(etoi(state));
+            savefile.WriteInt(etoi(this.state));
 
-            savefile.WriteFloat(damagePower);
+            savefile.WriteFloat(this.damagePower);
 
-            savefile.WriteStaticObject(physicsObj);
-            savefile.WriteStaticObject(thruster);
+            savefile.WriteStaticObject(this.physicsObj);
+            savefile.WriteStaticObject(this.thruster);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
 
-            owner.Restore(savefile);
+            this.owner.Restore(savefile);
 
-            savefile.Read(projectileFlags);
-            LittleBitField(projectileFlags);
+            savefile.Read(this.projectileFlags);
+            LittleBitField(this.projectileFlags);
 
-            thrust = savefile.ReadFloat();
-            thrust_end = savefile.ReadInt();
+            this.thrust = savefile.ReadFloat();
+            this.thrust_end = savefile.ReadInt();
 
-            savefile.ReadRenderLight(renderLight);
-            lightDefHandle = savefile.ReadInt();
-            savefile.ReadVec3(lightOffset);
-            lightStartTime = savefile.ReadInt();
-            lightEndTime = savefile.ReadInt();
-            savefile.ReadVec3(lightColor);
+            savefile.ReadRenderLight(this.renderLight);
+            this.lightDefHandle = savefile.ReadInt();
+            savefile.ReadVec3(this.lightOffset);
+            this.lightStartTime = savefile.ReadInt();
+            this.lightEndTime = savefile.ReadInt();
+            savefile.ReadVec3(this.lightColor);
 
-            savefile.ReadParticle(smokeFly);
-            smokeFlyTime = savefile.ReadInt();
+            savefile.ReadParticle(this.smokeFly);
+            this.smokeFlyTime = savefile.ReadInt();
 
-            state = projectileState_t.values()[savefile.ReadInt()];
+            this.state = projectileState_t.values()[savefile.ReadInt()];
 
-            damagePower = savefile.ReadFloat();
+            this.damagePower = savefile.ReadFloat();
 
-            savefile.ReadStaticObject(physicsObj);
-            RestorePhysics(physicsObj);
+            savefile.ReadStaticObject(this.physicsObj);
+            RestorePhysics(this.physicsObj);
 
-            savefile.ReadStaticObject(thruster);
-            thruster.SetPhysics(physicsObj);
+            savefile.ReadStaticObject(this.thruster);
+            this.thruster.SetPhysics(this.physicsObj);
 
-            if (smokeFly != null) {
+            if (this.smokeFly != null) {
                 idVec3 dir;
-                dir = physicsObj.GetLinearVelocity();
+                dir = this.physicsObj.GetLinearVelocity();
                 dir.NormalizeFast();
-                gameLocal.smokeParticles.EmitSmoke(smokeFly, gameLocal.time, gameLocal.random.RandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis());
+                gameLocal.smokeParticles.EmitSmoke(this.smokeFly, gameLocal.time, gameLocal.random.RandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis());
             }
         }
 
         public void Create(idEntity owner, final idVec3 start, final idVec3 dir) {
 //            idDict args;
             String shaderName;
-            idVec3 light_color = new idVec3();
+            final idVec3 light_color = new idVec3();
 //            idVec3 light_offset;
             idVec3 tmp;
             idMat3 axis;
@@ -349,43 +349,43 @@ public class Projectile {
             axis.oSet(2, axis.oGet(0));
             axis.oSet(0, tmp.oNegative());
 
-            physicsObj.SetOrigin(start);
-            physicsObj.SetAxis(axis);
+            this.physicsObj.SetOrigin(start);
+            this.physicsObj.SetAxis(axis);
 
-            physicsObj.GetClipModel().SetOwner(owner);
+            this.physicsObj.GetClipModel().SetOwner(owner);
 
             this.owner.oSet(owner);
 
 //	memset( &renderLight, 0, sizeof( renderLight ) );
-            renderLight = new renderLight_s();
-            shaderName = spawnArgs.GetString("mtr_light_shader");
+            this.renderLight = new renderLight_s();
+            shaderName = this.spawnArgs.GetString("mtr_light_shader");
             if (!shaderName.isEmpty()) {
-                renderLight.shader = declManager.FindMaterial(shaderName, false);
-                renderLight.pointLight = true;
-                renderLight.lightRadius.oSet(0,
-                        renderLight.lightRadius.oSet(1,
-                                renderLight.lightRadius.oSet(2, spawnArgs.GetFloat("light_radius"))));
-                spawnArgs.GetVector("light_color", "1 1 1", light_color);
-                renderLight.shaderParms[0] = light_color.oGet(0);
-                renderLight.shaderParms[1] = light_color.oGet(1);
-                renderLight.shaderParms[2] = light_color.oGet(2);
-                renderLight.shaderParms[3] = 1.0f;
+                this.renderLight.shader = declManager.FindMaterial(shaderName, false);
+                this.renderLight.pointLight = true;
+                this.renderLight.lightRadius.oSet(0,
+                        this.renderLight.lightRadius.oSet(1,
+                                this.renderLight.lightRadius.oSet(2, this.spawnArgs.GetFloat("light_radius"))));
+                this.spawnArgs.GetVector("light_color", "1 1 1", light_color);
+                this.renderLight.shaderParms[0] = light_color.oGet(0);
+                this.renderLight.shaderParms[1] = light_color.oGet(1);
+                this.renderLight.shaderParms[2] = light_color.oGet(2);
+                this.renderLight.shaderParms[3] = 1.0f;
             }
 
-            spawnArgs.GetVector("light_offset", "0 0 0", lightOffset);
+            this.spawnArgs.GetVector("light_offset", "0 0 0", this.lightOffset);
 
-            lightStartTime = 0;
-            lightEndTime = 0;
-            smokeFlyTime = 0;
+            this.lightStartTime = 0;
+            this.lightEndTime = 0;
+            this.smokeFlyTime = 0;
 
-            damagePower = 1.0f;
+            this.damagePower = 1.0f;
 
             UpdateVisuals();
 
-            state = CREATED;
+            this.state = CREATED;
 
-            if (spawnArgs.GetBool("net_fullphysics")) {
-                netSyncPhysics = true;
+            if (this.spawnArgs.GetBool("net_fullphysics")) {
+                this.netSyncPhysics = true;
             }
         }
 
@@ -393,8 +393,8 @@ public class Projectile {
             float fuse;
             float startthrust;
             float endthrust;
-            idVec3 velocity = new idVec3();
-            idAngles angular_velocity = new idAngles();
+            final idVec3 velocity = new idVec3();
+            final idAngles angular_velocity = new idAngles();
             float linear_friction;
             float angular_friction;
             float contact_friction;
@@ -410,49 +410,49 @@ public class Projectile {
             int clipMask;
 
             // allow characters to throw projectiles during cinematics, but not the player
-            if (owner.GetEntity() != null && !owner.GetEntity().IsType(idPlayer.class)) {
-                cinematic = owner.GetEntity().cinematic;
+            if ((this.owner.GetEntity() != null) && !this.owner.GetEntity().IsType(idPlayer.class)) {
+                this.cinematic = this.owner.GetEntity().cinematic;
             } else {
-                cinematic = false;
+                this.cinematic = false;
             }
 
-            thrust = spawnArgs.GetFloat("thrust");
-            startthrust = spawnArgs.GetFloat("thrust_start");
-            endthrust = spawnArgs.GetFloat("thrust_end");
+            this.thrust = this.spawnArgs.GetFloat("thrust");
+            startthrust = this.spawnArgs.GetFloat("thrust_start");
+            endthrust = this.spawnArgs.GetFloat("thrust_end");
 
-            spawnArgs.GetVector("velocity", "0 0 0", velocity);
+            this.spawnArgs.GetVector("velocity", "0 0 0", velocity);
 
             speed = velocity.Length() * launchPower;
 
-            damagePower = dmgPower;
+            this.damagePower = dmgPower;
 
-            spawnArgs.GetAngles("angular_velocity", "0 0 0", angular_velocity);
+            this.spawnArgs.GetAngles("angular_velocity", "0 0 0", angular_velocity);
 
-            linear_friction = spawnArgs.GetFloat("linear_friction");
-            angular_friction = spawnArgs.GetFloat("angular_friction");
-            contact_friction = spawnArgs.GetFloat("contact_friction");
-            bounce = spawnArgs.GetFloat("bounce");
-            mass = spawnArgs.GetFloat("mass");
-            gravity = spawnArgs.GetFloat("gravity");
-            fuse = spawnArgs.GetFloat("fuse");
+            linear_friction = this.spawnArgs.GetFloat("linear_friction");
+            angular_friction = this.spawnArgs.GetFloat("angular_friction");
+            contact_friction = this.spawnArgs.GetFloat("contact_friction");
+            bounce = this.spawnArgs.GetFloat("bounce");
+            mass = this.spawnArgs.GetFloat("mass");
+            gravity = this.spawnArgs.GetFloat("gravity");
+            fuse = this.spawnArgs.GetFloat("fuse");
 
-            projectileFlags.detonate_on_world = spawnArgs.GetBool("detonate_on_world");
-            projectileFlags.detonate_on_actor = spawnArgs.GetBool("detonate_on_actor");
-            projectileFlags.randomShaderSpin = spawnArgs.GetBool("random_shader_spin");
+            this.projectileFlags.detonate_on_world = this.spawnArgs.GetBool("detonate_on_world");
+            this.projectileFlags.detonate_on_actor = this.spawnArgs.GetBool("detonate_on_actor");
+            this.projectileFlags.randomShaderSpin = this.spawnArgs.GetBool("random_shader_spin");
 
             if (mass <= 0) {
                 gameLocal.Error("Invalid mass on '%s'\n", GetEntityDefName());
             }
 
-            thrust *= mass;
+            this.thrust *= mass;
             thrust_start = (int) (SEC2MS(startthrust) + gameLocal.time);
-            thrust_end = (int) (SEC2MS(endthrust) + gameLocal.time);
+            this.thrust_end = (int) (SEC2MS(endthrust) + gameLocal.time);
 
-            lightStartTime = 0;
-            lightEndTime = 0;
+            this.lightStartTime = 0;
+            this.lightEndTime = 0;
 
-            if (health != 0) {
-                fl.takedamage = true;
+            if (this.health != 0) {
+                this.fl.takedamage = true;
             }
 
             gravVec = gameLocal.GetGravity();
@@ -468,42 +468,42 @@ public class Projectile {
 
             contents = 0;
             clipMask = MASK_SHOT_RENDERMODEL;
-            if (spawnArgs.GetBool("detonate_on_trigger")) {
+            if (this.spawnArgs.GetBool("detonate_on_trigger")) {
                 contents |= CONTENTS_TRIGGER;
             }
-            if (!spawnArgs.GetBool("no_contents")) {
+            if (!this.spawnArgs.GetBool("no_contents")) {
                 contents |= CONTENTS_PROJECTILE;
                 clipMask |= CONTENTS_PROJECTILE;
             }
 
             // don't do tracers on client, we don't know origin and direction
-            if (spawnArgs.GetBool("tracers") && gameLocal.random.RandomFloat() > 0.5f) {
-                SetModel(spawnArgs.GetString("model_tracer"));
-                projectileFlags.isTracer = true;
+            if (this.spawnArgs.GetBool("tracers") && (gameLocal.random.RandomFloat() > 0.5f)) {
+                SetModel(this.spawnArgs.GetString("model_tracer"));
+                this.projectileFlags.isTracer = true;
             }
 
-            physicsObj.SetMass(mass);
-            physicsObj.SetFriction(linear_friction, angular_friction, contact_friction);
+            this.physicsObj.SetMass(mass);
+            this.physicsObj.SetFriction(linear_friction, angular_friction, contact_friction);
             if (contact_friction == 0.0f) {
-                physicsObj.NoContact();
+                this.physicsObj.NoContact();
             }
-            physicsObj.SetBouncyness(bounce);
-            physicsObj.SetGravity(gravVec.oMultiply(gravity));
-            physicsObj.SetContents(contents);
-            physicsObj.SetClipMask(clipMask);
-            physicsObj.SetLinearVelocity(pushVelocity.oPlus(axis.oGet(2).oMultiply(speed)));
-            physicsObj.SetAngularVelocity(angular_velocity.ToAngularVelocity().oMultiply(axis));
-            physicsObj.SetOrigin(start);
-            physicsObj.SetAxis(axis);
+            this.physicsObj.SetBouncyness(bounce);
+            this.physicsObj.SetGravity(gravVec.oMultiply(gravity));
+            this.physicsObj.SetContents(contents);
+            this.physicsObj.SetClipMask(clipMask);
+            this.physicsObj.SetLinearVelocity(pushVelocity.oPlus(axis.oGet(2).oMultiply(speed)));
+            this.physicsObj.SetAngularVelocity(angular_velocity.ToAngularVelocity().oMultiply(axis));
+            this.physicsObj.SetOrigin(start);
+            this.physicsObj.SetAxis(axis);
 
-            thruster.SetPosition(physicsObj, 0, new idVec3(GetPhysics().GetBounds().oGet(0).x, 0, 0));
+            this.thruster.SetPosition(this.physicsObj, 0, new idVec3(GetPhysics().GetBounds().oGet(0).x, 0, 0));
 
             if (!gameLocal.isClient) {
                 if (fuse <= 0) {
                     // run physics for 1 second
                     RunPhysics();
-                    PostEventMS(EV_Remove, spawnArgs.GetInt("remove_time", "1500"));
-                } else if (spawnArgs.GetBool("detonate_on_fuse")) {
+                    PostEventMS(EV_Remove, this.spawnArgs.GetInt("remove_time", "1500"));
+                } else if (this.spawnArgs.GetBool("detonate_on_fuse")) {
                     fuse -= timeSinceFire;
                     if (fuse < 0.0f) {
                         fuse = 0.0f;
@@ -518,29 +518,29 @@ public class Projectile {
                 }
             }
 
-            if (projectileFlags.isTracer) {
+            if (this.projectileFlags.isTracer) {
                 StartSound("snd_tracer", SND_CHANNEL_BODY, 0, false, null);
             } else {
                 StartSound("snd_fly", SND_CHANNEL_BODY, 0, false, null);
             }
 
-            smokeFlyTime = 0;
-            final String smokeName = spawnArgs.GetString("smoke_fly");
+            this.smokeFlyTime = 0;
+            final String smokeName = this.spawnArgs.GetString("smoke_fly");
             if (!smokeName.isEmpty()) {// != '\0' ) {
-                smokeFly = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
-                smokeFlyTime = gameLocal.time;
+                this.smokeFly = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
+                this.smokeFlyTime = gameLocal.time;
             }
 
             // used for the plasma bolts but may have other uses as well
-            if (projectileFlags.randomShaderSpin) {
+            if (this.projectileFlags.randomShaderSpin) {
                 float f = gameLocal.random.RandomFloat();
                 f *= 0.5f;
-                renderEntity.shaderParms[SHADERPARM_DIVERSITY] = f;
+                this.renderEntity.shaderParms[SHADERPARM_DIVERSITY] = f;
             }
 
             UpdateVisuals();
 
-            state = LAUNCHED;
+            this.state = LAUNCHED;
         }
 
         public void Launch(final idVec3 start, final idVec3 dir, final idVec3 pushVelocity, final float timeSinceFire /*= 0.0f*/, final float launchPower /*= 1.0f*/) {
@@ -557,24 +557,24 @@ public class Projectile {
 
         @Override
         public void FreeLightDef() {
-            if (lightDefHandle != -1) {
-                gameRenderWorld.FreeLightDef(lightDefHandle);
-                lightDefHandle = -1;
+            if (this.lightDefHandle != -1) {
+                gameRenderWorld.FreeLightDef(this.lightDefHandle);
+                this.lightDefHandle = -1;
             }
         }
 
         public idEntity GetOwner() {
-            return owner.GetEntity();
+            return this.owner.GetEntity();
         }
 
         @Override
         public void Think() {
 
-            if ((thinkFlags & TH_THINK) != 0) {
-                if (thrust != 0 && (gameLocal.time < thrust_end)) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
+                if ((this.thrust != 0) && (gameLocal.time < this.thrust_end)) {
                     // evaluate force
-                    thruster.SetForce(GetPhysics().GetAxis().oGet(0).oMultiply(thrust));
-                    thruster.Evaluate(gameLocal.time);
+                    this.thruster.SetForce(GetPhysics().GetAxis().oGet(0).oMultiply(this.thrust));
+                    this.thruster.Evaluate(gameLocal.time);
                 }
             }
 
@@ -584,39 +584,39 @@ public class Projectile {
             Present();
 
             // add the particles
-            if (smokeFly != null && smokeFlyTime != 0 && !IsHidden()) {
-                idVec3 dir = GetPhysics().GetLinearVelocity().oNegative();
+            if ((this.smokeFly != null) && (this.smokeFlyTime != 0) && !IsHidden()) {
+                final idVec3 dir = GetPhysics().GetLinearVelocity().oNegative();
                 dir.Normalize();
-                if (!gameLocal.smokeParticles.EmitSmoke(smokeFly, smokeFlyTime, gameLocal.random.RandomFloat(), GetPhysics().GetOrigin(), dir.ToMat3())) {
-                    smokeFlyTime = gameLocal.time;
+                if (!gameLocal.smokeParticles.EmitSmoke(this.smokeFly, this.smokeFlyTime, gameLocal.random.RandomFloat(), GetPhysics().GetOrigin(), dir.ToMat3())) {
+                    this.smokeFlyTime = gameLocal.time;
                 }
             }
 
             // add the light
-            if (renderLight.lightRadius.x > 0.0f && g_projectileLights.GetBool()) {
-                renderLight.origin.oSet(GetPhysics().GetOrigin().oPlus(GetPhysics().GetAxis().oMultiply(lightOffset)));
-                renderLight.axis.oSet(GetPhysics().GetAxis());
-                if ((lightDefHandle != -1)) {
-                    if (lightEndTime > 0 && gameLocal.time <= lightEndTime + gameLocal.GetMSec()) {
-                        idVec3 color = new idVec3(0, 0, 0);//TODO:superfluous
-                        if (gameLocal.time < lightEndTime) {
-                            float frac = (float) (gameLocal.time - lightStartTime) / (float) (lightEndTime - lightStartTime);
-                            color.Lerp(lightColor, color, frac);
+            if ((this.renderLight.lightRadius.x > 0.0f) && g_projectileLights.GetBool()) {
+                this.renderLight.origin.oSet(GetPhysics().GetOrigin().oPlus(GetPhysics().GetAxis().oMultiply(this.lightOffset)));
+                this.renderLight.axis.oSet(GetPhysics().GetAxis());
+                if ((this.lightDefHandle != -1)) {
+                    if ((this.lightEndTime > 0) && (gameLocal.time <= (this.lightEndTime + gameLocal.GetMSec()))) {
+                        final idVec3 color = new idVec3(0, 0, 0);//TODO:superfluous
+                        if (gameLocal.time < this.lightEndTime) {
+                            final float frac = (float) (gameLocal.time - this.lightStartTime) / (float) (this.lightEndTime - this.lightStartTime);
+                            color.Lerp(this.lightColor, color, frac);
                         }
-                        renderLight.shaderParms[SHADERPARM_RED] = color.x;
-                        renderLight.shaderParms[SHADERPARM_GREEN] = color.y;
-                        renderLight.shaderParms[SHADERPARM_BLUE] = color.z;
+                        this.renderLight.shaderParms[SHADERPARM_RED] = color.x;
+                        this.renderLight.shaderParms[SHADERPARM_GREEN] = color.y;
+                        this.renderLight.shaderParms[SHADERPARM_BLUE] = color.z;
                     }
-                    gameRenderWorld.UpdateLightDef(lightDefHandle, renderLight);
+                    gameRenderWorld.UpdateLightDef(this.lightDefHandle, this.renderLight);
                 } else {
-                    lightDefHandle = gameRenderWorld.AddLightDef(renderLight);
+                    this.lightDefHandle = gameRenderWorld.AddLightDef(this.renderLight);
                 }
             }
         }
 
         @Override
         public void Killed(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            if (spawnArgs.GetBool("detonate_on_death")) {
+            if (this.spawnArgs.GetBool("detonate_on_death")) {
                 trace_s collision;
 
 //		memset( &collision, 0, sizeof( collision ) );
@@ -626,8 +626,8 @@ public class Projectile {
                 collision.c.point.oSet(GetPhysics().GetOrigin());
                 collision.c.normal.Set(0, 0, 1);
                 Explode(collision, null);
-                physicsObj.ClearContacts();
-                physicsObj.PutToRest();
+                this.physicsObj.ClearContacts();
+                this.physicsObj.PutToRest();
             } else {
                 Fizzle();
             }
@@ -639,16 +639,16 @@ public class Projectile {
             idEntity ignore;
             String damageDefName;
             idVec3 dir;
-            float[] push = {0};
+            final float[] push = {0};
             float damageScale;
 
-            if (state == EXPLODED || state == FIZZLED) {
+            if ((this.state == EXPLODED) || (this.state == FIZZLED)) {
                 return true;
             }
 
             // predict the explosion
             if (gameLocal.isClient) {
-                if (ClientPredictionCollide(this, spawnArgs, collision, velocity, !spawnArgs.GetBool("net_instanthit"))) {
+                if (ClientPredictionCollide(this, this.spawnArgs, collision, velocity, !this.spawnArgs.GetBool("net_instanthit"))) {
                     Explode(collision, null);
                     return true;
                 }
@@ -664,7 +664,7 @@ public class Projectile {
 
             // get the entity the projectile collided with
             ent = gameLocal.entities[ collision.c.entityNum];
-            if (ent.equals(owner.GetEntity())) {
+            if (ent.equals(this.owner.GetEntity())) {
                 assert (false);
                 return true;
             }
@@ -680,7 +680,7 @@ public class Projectile {
             dir.Normalize();
 
             // projectiles can apply an additional impulse next to the rigid body physics impulse
-            if (spawnArgs.GetFloat("push", "0", push) && push[0] > 0) {
+            if (this.spawnArgs.GetFloat("push", "0", push) && (push[0] > 0)) {
                 ent.ApplyImpulse(this, collision.c.id, collision.c.point, dir.oMultiply(push[0]));
             }
 
@@ -690,13 +690,13 @@ public class Projectile {
             }
 
             if (ent.IsType(idActor.class) || (ent.IsType(idAFAttachment.class) && ((idAFAttachment) ent).GetBody().IsType(idActor.class))) {
-                if (!projectileFlags.detonate_on_actor) {
+                if (!this.projectileFlags.detonate_on_actor) {
                     return false;
                 }
             } else {
-                if (!projectileFlags.detonate_on_world) {
+                if (!this.projectileFlags.detonate_on_world) {
                     if (!StartSound("snd_ricochet", SND_CHANNEL_ITEM, 0, true, null)) {
-                        float len = velocity.Length();
+                        final float len = velocity.Length();
                         if (len > BOUNCE_SOUND_MIN_VELOCITY) {
                             SetSoundVolume(len > BOUNCE_SOUND_MAX_VELOCITY ? 1.0f : idMath.Sqrt(len - BOUNCE_SOUND_MIN_VELOCITY) * (1.0f / idMath.Sqrt(BOUNCE_SOUND_MAX_VELOCITY - BOUNCE_SOUND_MIN_VELOCITY)));
                             StartSound("snd_bounce", SND_CHANNEL_ANY, 0, true, null);
@@ -712,36 +712,36 @@ public class Projectile {
             // unlink the clip model because we no longer need it
             GetPhysics().UnlinkClip();
 
-            damageDefName = spawnArgs.GetString("def_damage");
+            damageDefName = this.spawnArgs.GetString("def_damage");
 
             ignore = null;
 
             // if the hit entity takes damage
             if (ent.fl.takedamage) {
-                if (damagePower != 0) {
-                    damageScale = damagePower;
+                if (this.damagePower != 0) {
+                    damageScale = this.damagePower;
                 } else {
                     damageScale = 1.0f;
                 }
 
                 // if the projectile owner is a player
-                if (owner.GetEntity() != null && owner.GetEntity().IsType(idPlayer.class)) {
+                if ((this.owner.GetEntity() != null) && this.owner.GetEntity().IsType(idPlayer.class)) {
                     // if the projectile hit an actor
                     if (ent.IsType(idActor.class)) {
-                        idPlayer player = (idPlayer) owner.GetEntity();
+                        final idPlayer player = (idPlayer) this.owner.GetEntity();
                         player.AddProjectileHits(1);
                         damageScale *= player.PowerUpModifier(PROJECTILE_DAMAGE);
                     }
                 }
 
                 if (!damageDefName.isEmpty()) {//[0] != '\0') {
-                    ent.Damage(this, owner.GetEntity(), dir, damageDefName, damageScale, CLIPMODEL_ID_TO_JOINT_HANDLE(collision.c.id));
+                    ent.Damage(this, this.owner.GetEntity(), dir, damageDefName, damageScale, CLIPMODEL_ID_TO_JOINT_HANDLE(collision.c.id));
                     ignore = ent;
                 }
             }
 
             // if the projectile causes a damage effect
-            if (spawnArgs.GetBool("impact_damage_effect")) {
+            if (this.spawnArgs.GetBool("impact_damage_effect")) {
                 // if the hit entity has a special damage effect
                 if (ent.spawnArgs.GetBool("bleed")) {
                     ent.AddDamageEffect(collision, velocity, damageDefName);
@@ -758,10 +758,10 @@ public class Projectile {
         public void Explode(final trace_s collision, idEntity ignore) {
             String fxname, light_shader, sndExplode;
             float light_fadetime;
-            idVec3 normal = new idVec3();
+            final idVec3 normal = new idVec3();
             int removeTime;
 
-            if (state == EXPLODED || state == FIZZLED) {
+            if ((this.state == EXPLODED) || (this.state == FIZZLED)) {
                 return;
             }
 
@@ -769,7 +769,7 @@ public class Projectile {
             StopSound(etoi(SND_CHANNEL_BODY2), false);
 
             // play explode sound
-            switch ((int) damagePower) {
+            switch ((int) this.damagePower) {
                 case 2:
                     sndExplode = "snd_explode2";
                     break;
@@ -787,96 +787,96 @@ public class Projectile {
 
             // we need to work out how long the effects last and then remove them at that time
             // for example, bullets have no real effects
-            if (smokeFly != null && smokeFlyTime != 0) {
-                smokeFlyTime = 0;
+            if ((this.smokeFly != null) && (this.smokeFlyTime != 0)) {
+                this.smokeFlyTime = 0;
             }
 
             Hide();
             FreeLightDef();
 
-            if (spawnArgs.GetVector("detonation_axis", "", normal)) {
+            if (this.spawnArgs.GetVector("detonation_axis", "", normal)) {
                 GetPhysics().SetAxis(normal.ToMat3());
             }
             GetPhysics().SetOrigin(collision.endpos.oPlus(collision.c.normal.oMultiply(2.0f)));
 
             // default remove time
-            removeTime = spawnArgs.GetInt("remove_time", "1500");
+            removeTime = this.spawnArgs.GetInt("remove_time", "1500");
 
             // change the model, usually to a PRT
             if (g_testParticle.GetInteger() == TEST_PARTICLE_IMPACT) {
                 fxname = g_testParticleName.GetString();
             } else {
-                fxname = spawnArgs.GetString("model_detonate");
+                fxname = this.spawnArgs.GetString("model_detonate");
             }
 
-            int surfaceType = (collision.c.material != null ? collision.c.material.GetSurfaceType() : SURFTYPE_METAL).ordinal();
-            if (!(fxname != null && !fxname.isEmpty())) {
+            final int surfaceType = (collision.c.material != null ? collision.c.material.GetSurfaceType() : SURFTYPE_METAL).ordinal();
+            if (!((fxname != null) && !fxname.isEmpty())) {
                 if ((surfaceType == etoi(SURFTYPE_NONE))
                         || (surfaceType == etoi(SURFTYPE_METAL))
                         || (surfaceType == etoi(SURFTYPE_STONE))) {
-                    fxname = spawnArgs.GetString("model_smokespark");
+                    fxname = this.spawnArgs.GetString("model_smokespark");
                 } else if (surfaceType == etoi(SURFTYPE_RICOCHET)) {
-                    fxname = spawnArgs.GetString("model_ricochet");
+                    fxname = this.spawnArgs.GetString("model_ricochet");
                 } else {
-                    fxname = spawnArgs.GetString("model_smoke");
+                    fxname = this.spawnArgs.GetString("model_smoke");
                 }
             }
 
-            if (fxname != null && !fxname.isEmpty()) {
+            if ((fxname != null) && !fxname.isEmpty()) {
                 SetModel(fxname);
-                renderEntity.shaderParms[SHADERPARM_RED]
-                        = renderEntity.shaderParms[SHADERPARM_GREEN]
-                        = renderEntity.shaderParms[SHADERPARM_BLUE]
-                        = renderEntity.shaderParms[SHADERPARM_ALPHA] = 1.0f;
-                renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
-                renderEntity.shaderParms[SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat();
+                this.renderEntity.shaderParms[SHADERPARM_RED]
+                        = this.renderEntity.shaderParms[SHADERPARM_GREEN]
+                        = this.renderEntity.shaderParms[SHADERPARM_BLUE]
+                        = this.renderEntity.shaderParms[SHADERPARM_ALPHA] = 1.0f;
+                this.renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+                this.renderEntity.shaderParms[SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat();
                 Show();
                 removeTime = (removeTime > 3000) ? removeTime : 3000;
             }
 
             // explosion light
-            light_shader = spawnArgs.GetString("mtr_explode_light_shader");
+            light_shader = this.spawnArgs.GetString("mtr_explode_light_shader");
             if (light_shader != null) {
-                renderLight.shader = declManager.FindMaterial(light_shader, false);
-                renderLight.pointLight = true;
-                renderLight.lightRadius.oSet(1,
-                        renderLight.lightRadius.oSet(2,
-                                renderLight.lightRadius.oSet(2, spawnArgs.GetFloat("explode_light_radius"))));
-                spawnArgs.GetVector("explode_light_color", "1 1 1", lightColor);
-                renderLight.shaderParms[SHADERPARM_RED] = lightColor.x;
-                renderLight.shaderParms[SHADERPARM_GREEN] = lightColor.y;
-                renderLight.shaderParms[SHADERPARM_BLUE] = lightColor.z;
-                renderLight.shaderParms[SHADERPARM_ALPHA] = 1.0f;
-                renderLight.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
-                light_fadetime = spawnArgs.GetFloat("explode_light_fadetime", "0.5");
-                lightStartTime = gameLocal.time;
-                lightEndTime = (int) (gameLocal.time + SEC2MS(light_fadetime));
+                this.renderLight.shader = declManager.FindMaterial(light_shader, false);
+                this.renderLight.pointLight = true;
+                this.renderLight.lightRadius.oSet(1,
+                        this.renderLight.lightRadius.oSet(2,
+                                this.renderLight.lightRadius.oSet(2, this.spawnArgs.GetFloat("explode_light_radius"))));
+                this.spawnArgs.GetVector("explode_light_color", "1 1 1", this.lightColor);
+                this.renderLight.shaderParms[SHADERPARM_RED] = this.lightColor.x;
+                this.renderLight.shaderParms[SHADERPARM_GREEN] = this.lightColor.y;
+                this.renderLight.shaderParms[SHADERPARM_BLUE] = this.lightColor.z;
+                this.renderLight.shaderParms[SHADERPARM_ALPHA] = 1.0f;
+                this.renderLight.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+                light_fadetime = this.spawnArgs.GetFloat("explode_light_fadetime", "0.5");
+                this.lightStartTime = gameLocal.time;
+                this.lightEndTime = (int) (gameLocal.time + SEC2MS(light_fadetime));
                 BecomeActive(TH_THINK);
             }
 
-            fl.takedamage = false;
-            physicsObj.SetContents(0);
-            physicsObj.PutToRest();
+            this.fl.takedamage = false;
+            this.physicsObj.SetContents(0);
+            this.physicsObj.PutToRest();
 
-            state = EXPLODED;
+            this.state = EXPLODED;
 
             if (gameLocal.isClient) {
                 return;
             }
 
             // alert the ai
-            gameLocal.AlertAI(owner.GetEntity());
+            gameLocal.AlertAI(this.owner.GetEntity());
 
             // bind the projectile to the impact entity if necesary
-            if (gameLocal.entities[collision.c.entityNum] != null && spawnArgs.GetBool("bindOnImpact")) {
+            if ((gameLocal.entities[collision.c.entityNum] != null) && this.spawnArgs.GetBool("bindOnImpact")) {
                 Bind(gameLocal.entities[collision.c.entityNum], true);
             }
 
             // splash damage
-            if (!projectileFlags.noSplashDamage) {
-                float delay = spawnArgs.GetFloat("delay_splash");
+            if (!this.projectileFlags.noSplashDamage) {
+                final float delay = this.spawnArgs.GetFloat("delay_splash");
                 if (delay != 0) {
-                    if (removeTime < delay * 1000) {
+                    if (removeTime < (delay * 1000)) {
                         removeTime = (int) ((delay + 0.10f) * 1000);
                     }
                     PostEventSec(EV_RadiusDamage, delay, ignore);
@@ -886,48 +886,48 @@ public class Projectile {
             }
 
             // spawn debris entities
-            int fxdebris = spawnArgs.GetInt("debris_count");
+            final int fxdebris = this.spawnArgs.GetInt("debris_count");
             if (fxdebris != 0) {
                 idDict debris = gameLocal.FindEntityDefDict("projectile_debris", false);
                 if (debris != null) {
-                    int amount = gameLocal.random.RandomInt(fxdebris);
+                    final int amount = gameLocal.random.RandomInt(fxdebris);
                     for (int i = 0; i < amount; i++) {
-                        idEntity[] ent = {null};
-                        idVec3 dir = new idVec3();
+                        final idEntity[] ent = {null};
+                        final idVec3 dir = new idVec3();
                         dir.x = gameLocal.random.CRandomFloat() * 4.0f;
                         dir.y = gameLocal.random.CRandomFloat() * 4.0f;
                         dir.z = gameLocal.random.RandomFloat() * 8.0f;
                         dir.Normalize();
 
                         gameLocal.SpawnEntityDef(debris, ent, false);
-                        if (null == ent[0] || !ent[0].IsType(idDebris.class)) {
+                        if ((null == ent[0]) || !ent[0].IsType(idDebris.class)) {
                             gameLocal.Error("'projectile_debris' is not an idDebris");
                         }
 
-                        idDebris debris2 = (idDebris) ent[0];
-                        debris2.Create(owner.GetEntity(), physicsObj.GetOrigin(), dir.ToMat3());
+                        final idDebris debris2 = (idDebris) ent[0];
+                        debris2.Create(this.owner.GetEntity(), this.physicsObj.GetOrigin(), dir.ToMat3());
                         debris2.Launch();
                     }
                 }
 
                 debris = gameLocal.FindEntityDefDict("projectile_shrapnel", false);
                 if (debris != null) {
-                    int amount = gameLocal.random.RandomInt(fxdebris);
+                    final int amount = gameLocal.random.RandomInt(fxdebris);
                     for (int i = 0; i < amount; i++) {
-                        idEntity[] ent = {null};
-                        idVec3 dir = new idVec3();
+                        final idEntity[] ent = {null};
+                        final idVec3 dir = new idVec3();
                         dir.x = gameLocal.random.CRandomFloat() * 8.0f;
                         dir.y = gameLocal.random.CRandomFloat() * 8.0f;
-                        dir.z = gameLocal.random.RandomFloat() * 8.0f + 8.0f;
+                        dir.z = (gameLocal.random.RandomFloat() * 8.0f) + 8.0f;
                         dir.Normalize();
 
                         gameLocal.SpawnEntityDef(debris, ent, false);
-                        if (null == ent[0] || !ent[0].IsType(idDebris.class)) {
+                        if ((null == ent[0]) || !ent[0].IsType(idDebris.class)) {
                             gameLocal.Error("'projectile_shrapnel' is not an idDebris");
                         }
 
-                        idDebris debris2 = (idDebris) ent[0];
-                        debris2.Create(owner.GetEntity(), physicsObj.GetOrigin(), dir.ToMat3());
+                        final idDebris debris2 = (idDebris) ent[0];
+                        debris2.Create(this.owner.GetEntity(), this.physicsObj.GetOrigin(), dir.ToMat3());
                         debris2.Launch();
                     }
                 }
@@ -939,7 +939,7 @@ public class Projectile {
 
         public void Fizzle() {
 
-            if (state == EXPLODED || state == FIZZLED) {
+            if ((this.state == EXPLODED) || (this.state == FIZZLED)) {
                 return;
             }
 
@@ -947,37 +947,37 @@ public class Projectile {
             StartSound("snd_fizzle", SND_CHANNEL_BODY, 0, false, null);
 
             // fizzle FX
-            final String psystem = spawnArgs.GetString("smoke_fuse");
-            if (psystem != null && !psystem.isEmpty()) {
+            final String psystem = this.spawnArgs.GetString("smoke_fuse");
+            if ((psystem != null) && !psystem.isEmpty()) {
 //FIXME:SMOKE		gameLocal.particles.SpawnParticles( GetPhysics().GetOrigin(), vec3_origin, psystem );
             }
 
             // we need to work out how long the effects last and then remove them at that time
             // for example, bullets have no real effects
-            if (smokeFly != null && smokeFlyTime != 0) {
-                smokeFlyTime = 0;
+            if ((this.smokeFly != null) && (this.smokeFlyTime != 0)) {
+                this.smokeFlyTime = 0;
             }
 
-            fl.takedamage = false;
-            physicsObj.SetContents(0);
-            physicsObj.GetClipModel().Unlink();
-            physicsObj.PutToRest();
+            this.fl.takedamage = false;
+            this.physicsObj.SetContents(0);
+            this.physicsObj.GetClipModel().Unlink();
+            this.physicsObj.PutToRest();
 
             Hide();
             FreeLightDef();
 
-            state = FIZZLED;
+            this.state = FIZZLED;
 
             if (gameLocal.isClient) {
                 return;
             }
 
             CancelEvents(EV_Fizzle);
-            PostEventMS(EV_Remove, spawnArgs.GetInt("remove_time", "1500"));
+            PostEventMS(EV_Remove, this.spawnArgs.GetInt("remove_time", "1500"));
         }
 
         public static idVec3 GetVelocity(final idDict projectile) {
-            idVec3 velocity = new idVec3();
+            final idVec3 velocity = new idVec3();
 
             projectile.GetVector("velocity", "0 0 0", velocity);
             return velocity;
@@ -1033,7 +1033,7 @@ public class Projectile {
             idEntity ent;
 
             // remove projectile when a 'noimpact' surface is hit
-            if (collision.c.material != null && (collision.c.material.GetSurfaceFlags() & SURF_NOIMPACT) != 0) {
+            if ((collision.c.material != null) && ((collision.c.material.GetSurfaceFlags() & SURF_NOIMPACT) != 0)) {
                 return false;
             }
 
@@ -1071,7 +1071,7 @@ public class Projectile {
 
         @Override
         public void ClientPredictionThink() {
-            if (null == renderEntity.hModel) {
+            if (null == this.renderEntity.hModel) {
                 return;
             }
             Think();
@@ -1079,16 +1079,16 @@ public class Projectile {
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            msg.WriteBits(owner.GetSpawnId(), 32);
-            msg.WriteBits(etoi(state), 3);
-            msg.WriteBits(btoi(fl.hidden), 1);
-            if (netSyncPhysics) {
+            msg.WriteBits(this.owner.GetSpawnId(), 32);
+            msg.WriteBits(etoi(this.state), 3);
+            msg.WriteBits(btoi(this.fl.hidden), 1);
+            if (this.netSyncPhysics) {
                 msg.WriteBits(1, 1);
-                physicsObj.WriteToSnapshot(msg);
+                this.physicsObj.WriteToSnapshot(msg);
             } else {
                 msg.WriteBits(0, 1);
-                final idVec3 origin = physicsObj.GetOrigin();
-                final idVec3 velocity = physicsObj.GetLinearVelocity();
+                final idVec3 origin = this.physicsObj.GetOrigin();
+                final idVec3 velocity = this.physicsObj.GetLinearVelocity();
 
                 msg.WriteFloat(origin.x);
                 msg.WriteFloat(origin.y);
@@ -1104,7 +1104,7 @@ public class Projectile {
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
             projectileState_t newState;
 
-            owner.SetSpawnId(msg.ReadBits(32));
+            this.owner.SetSpawnId(msg.ReadBits(32));
             newState = projectileState_t.values()[msg.ReadBits(3)];
             if (msg.ReadBits(1) != 0) {
                 Hide();
@@ -1112,10 +1112,10 @@ public class Projectile {
                 Show();
             }
 
-            while (state != newState) {
-                switch (state) {
+            while (this.state != newState) {
+                switch (this.state) {
                     case SPAWNED: {
-                        Create(owner.GetEntity(), getVec3_origin(), new idVec3(1, 0, 0));
+                        Create(this.owner.GetEntity(), getVec3_origin(), new idVec3(1, 0, 0));
                         break;
                     }
                     case CREATED: {
@@ -1141,18 +1141,18 @@ public class Projectile {
                     case FIZZLED:
                     case EXPLODED: {
                         StopSound(etoi(SND_CHANNEL_BODY2), false);
-                        GameEdit.gameEdit.ParseSpawnArgsToRenderEntity(spawnArgs, renderEntity);
-                        state = SPAWNED;
+                        GameEdit.gameEdit.ParseSpawnArgsToRenderEntity(this.spawnArgs, this.renderEntity);
+                        this.state = SPAWNED;
                         break;
                     }
                 }
             }
 
             if (msg.ReadBits(1) != 0) {
-                physicsObj.ReadFromSnapshot(msg);
+                this.physicsObj.ReadFromSnapshot(msg);
             } else {
-                idVec3 origin = new idVec3();
-                idVec3 velocity = new idVec3();
+                final idVec3 origin = new idVec3();
+                final idVec3 velocity = new idVec3();
                 idVec3 tmp;
                 idMat3 axis;
 
@@ -1164,8 +1164,8 @@ public class Projectile {
                 velocity.y = msg.ReadDeltaFloat(0.0f, RB_VELOCITY_EXPONENT_BITS, RB_VELOCITY_MANTISSA_BITS);
                 velocity.z = msg.ReadDeltaFloat(0.0f, RB_VELOCITY_EXPONENT_BITS, RB_VELOCITY_MANTISSA_BITS);
 
-                physicsObj.SetOrigin(origin);
-                physicsObj.SetLinearVelocity(velocity);
+                this.physicsObj.SetOrigin(origin);
+                this.physicsObj.SetLinearVelocity(velocity);
 
                 // align z-axis of model with the direction
                 velocity.NormalizeFast();
@@ -1173,7 +1173,7 @@ public class Projectile {
                 tmp = axis.oGet(2);
                 axis.oSet(2, axis.oGet(0));
                 axis.oSet(0, tmp.oNegative());
-                physicsObj.SetAxis(axis);
+                this.physicsObj.SetAxis(axis);
             }
 
             if (msg.HasChanged()) {
@@ -1184,7 +1184,7 @@ public class Projectile {
         @Override
         public boolean ClientReceiveEvent(int event, int time, final idBitMsg msg) {
             trace_s collision;
-            idVec3 velocity = new idVec3();
+            final idVec3 velocity = new idVec3();
 
             switch (event) {
                 case EVENT_DAMAGE_EFFECT: {
@@ -1194,12 +1194,12 @@ public class Projectile {
                     collision.c.point.oSet(1, msg.ReadFloat());
                     collision.c.point.oSet(2, msg.ReadFloat());
                     collision.c.normal.oSet(msg.ReadDir(24));
-                    int index = gameLocal.ClientRemapDecl(DECL_MATERIAL, msg.ReadLong());
+                    final int index = gameLocal.ClientRemapDecl(DECL_MATERIAL, msg.ReadLong());
                     collision.c.material = (index != -1) ? (idMaterial) (declManager.DeclByIndex(DECL_MATERIAL, index)) : null;
                     velocity.oSet(0, msg.ReadFloat(5, 10));
                     velocity.oSet(1, msg.ReadFloat(5, 10));
                     velocity.oSet(2, msg.ReadFloat(5, 10));
-                    DefaultDamageEffect(this, spawnArgs, collision, velocity);
+                    DefaultDamageEffect(this, this.spawnArgs, collision, velocity);
                     return true;
                 }
                 default: {
@@ -1211,15 +1211,15 @@ public class Projectile {
 
         private void AddDefaultDamageEffect(final trace_s collision, final idVec3 velocity) {
 
-            DefaultDamageEffect(this, spawnArgs, collision, velocity);
+            DefaultDamageEffect(this, this.spawnArgs, collision, velocity);
 
-            if (gameLocal.isServer && fl.networkSync) {
-                idBitMsg msg = new idBitMsg();
-                ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+            if (gameLocal.isServer && this.fl.networkSync) {
+                final idBitMsg msg = new idBitMsg();
+                final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
                 int excludeClient;
 
-                if (spawnArgs.GetBool("net_instanthit")) {
-                    excludeClient = owner.GetEntityNum();
+                if (this.spawnArgs.GetBool("net_instanthit")) {
+                    excludeClient = this.owner.GetEntityNum();
                 } else {
                     excludeClient = -1;
                 }
@@ -1256,9 +1256,9 @@ public class Projectile {
         }
 
         private void Event_RadiusDamage(idEventArg<idEntity> ignore) {
-            final String splash_damage = spawnArgs.GetString("def_splash_damage");
+            final String splash_damage = this.spawnArgs.GetString("def_splash_damage");
             if (!splash_damage.isEmpty()) {//[0] != '\0' ) {
-                gameLocal.RadiusDamage(physicsObj.GetOrigin(), this, owner.GetEntity(), ignore.value, this, splash_damage, damagePower);
+                gameLocal.RadiusDamage(this.physicsObj.GetOrigin(), this, this.owner.GetEntity(), ignore.value, this, splash_damage, this.damagePower);
             }
         }
 
@@ -1268,7 +1268,7 @@ public class Projectile {
                 return;
             }
 
-            if (!other.value.equals(owner.GetEntity())) {
+            if (!other.value.equals(this.owner.GetEntity())) {
                 trace_s collision;
 
                 collision = new trace_s();//memset( &collision, 0, sizeof( collision ) );
@@ -1282,7 +1282,7 @@ public class Projectile {
         }
 
         private void Event_GetProjectileState() {
-            idThread.ReturnInt(etoi(state));
+            idThread.ReturnInt(etoi(this.state));
         }
 
         @Override
@@ -1294,7 +1294,7 @@ public class Projectile {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -1311,7 +1311,7 @@ public class Projectile {
 		 */
 		private static final long serialVersionUID = 1L;
 		private   idAngles              rndScale;
-        private   idAngles              rndAng;
+        private final   idAngles              rndAng;
         private   idAngles              angles;
         private   int                   rndUpdateTime;
         private   float                 turn_max;
@@ -1327,51 +1327,51 @@ public class Projectile {
         //
 
         public idGuidedProjectile() {
-            enemy = new idEntityPtr<>();
-            speed = 0.0f;
-            turn_max = 0.0f;
-            clamp_dist = 0.0f;
-            rndScale = getAng_zero();
-            rndAng = getAng_zero();
-            rndUpdateTime = 0;
-            angles = getAng_zero();
-            burstMode = false;
-            burstDist = 0;
-            burstVelocity = 0.0f;
-            unGuided = false;
+            this.enemy = new idEntityPtr<>();
+            this.speed = 0.0f;
+            this.turn_max = 0.0f;
+            this.clamp_dist = 0.0f;
+            this.rndScale = getAng_zero();
+            this.rndAng = getAng_zero();
+            this.rndUpdateTime = 0;
+            this.angles = getAng_zero();
+            this.burstMode = false;
+            this.burstDist = 0;
+            this.burstVelocity = 0.0f;
+            this.unGuided = false;
         }
         // ~idGuidedProjectile( void );
 
         @Override
         public void Save(idSaveGame savefile) {
-            enemy.Save(savefile);
-            savefile.WriteFloat(speed);
-            savefile.WriteAngles(rndScale);
-            savefile.WriteAngles(rndAng);
-            savefile.WriteInt(rndUpdateTime);
-            savefile.WriteFloat(turn_max);
-            savefile.WriteFloat(clamp_dist);
-            savefile.WriteAngles(angles);
-            savefile.WriteBool(burstMode);
-            savefile.WriteBool(unGuided);
-            savefile.WriteFloat(burstDist);
-            savefile.WriteFloat(burstVelocity);
+            this.enemy.Save(savefile);
+            savefile.WriteFloat(this.speed);
+            savefile.WriteAngles(this.rndScale);
+            savefile.WriteAngles(this.rndAng);
+            savefile.WriteInt(this.rndUpdateTime);
+            savefile.WriteFloat(this.turn_max);
+            savefile.WriteFloat(this.clamp_dist);
+            savefile.WriteAngles(this.angles);
+            savefile.WriteBool(this.burstMode);
+            savefile.WriteBool(this.unGuided);
+            savefile.WriteFloat(this.burstDist);
+            savefile.WriteFloat(this.burstVelocity);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            enemy.Restore(savefile);
-            speed = savefile.ReadFloat();
-            savefile.ReadAngles(rndScale);
-            savefile.ReadAngles(rndAng);
-            rndUpdateTime = savefile.ReadInt();
-            turn_max = savefile.ReadFloat();
-            clamp_dist = savefile.ReadFloat();
-            savefile.ReadAngles(angles);
-            burstMode = savefile.ReadBool();
-            unGuided = savefile.ReadBool();
-            burstDist = savefile.ReadFloat();
-            burstVelocity = savefile.ReadFloat();
+            this.enemy.Restore(savefile);
+            this.speed = savefile.ReadFloat();
+            savefile.ReadAngles(this.rndScale);
+            savefile.ReadAngles(this.rndAng);
+            this.rndUpdateTime = savefile.ReadInt();
+            this.turn_max = savefile.ReadFloat();
+            this.clamp_dist = savefile.ReadFloat();
+            savefile.ReadAngles(this.angles);
+            this.burstMode = savefile.ReadBool();
+            this.unGuided = savefile.ReadBool();
+            this.burstDist = savefile.ReadFloat();
+            this.burstVelocity = savefile.ReadFloat();
         }
 
         @Override
@@ -1382,7 +1382,7 @@ public class Projectile {
         @Override
         public void Think() {
             idVec3 dir;
-            idVec3 seekPos = new idVec3();
+            final idVec3 seekPos = new idVec3();
             idVec3 velocity;
             idVec3 nose;
             idVec3 tmp;
@@ -1393,52 +1393,52 @@ public class Projectile {
             float frac;
             int i;
 
-            if (state == LAUNCHED && !unGuided) {
+            if ((this.state == LAUNCHED) && !this.unGuided) {
 
                 GetSeekPos(seekPos);
 
-                if (rndUpdateTime < gameLocal.time) {
-                    rndAng.oSet(0, rndScale.oGet(0) * gameLocal.random.CRandomFloat());
-                    rndAng.oSet(1, rndScale.oGet(1) * gameLocal.random.CRandomFloat());
-                    rndAng.oSet(2, rndScale.oGet(2) * gameLocal.random.CRandomFloat());
-                    rndUpdateTime = gameLocal.time + 200;
+                if (this.rndUpdateTime < gameLocal.time) {
+                    this.rndAng.oSet(0, this.rndScale.oGet(0) * gameLocal.random.CRandomFloat());
+                    this.rndAng.oSet(1, this.rndScale.oGet(1) * gameLocal.random.CRandomFloat());
+                    this.rndAng.oSet(2, this.rndScale.oGet(2) * gameLocal.random.CRandomFloat());
+                    this.rndUpdateTime = gameLocal.time + 200;
                 }
 
-                nose = physicsObj.GetOrigin().oPlus(physicsObj.GetAxis().oGet(0).oMultiply(10.0f));
+                nose = this.physicsObj.GetOrigin().oPlus(this.physicsObj.GetAxis().oGet(0).oMultiply(10.0f));
 
                 dir = seekPos.oMinus(nose);
                 dist = dir.Normalize();
                 dirAng = dir.ToAngles();
 
                 // make it more accurate as it gets closer
-                frac = dist / clamp_dist;
+                frac = dist / this.clamp_dist;
                 if (frac > 1.0f) {
                     frac = 1.0f;
                 }
 
-                diff = dirAng.oMinus(angles).oPlus(rndAng.oMultiply(frac));
+                diff = dirAng.oMinus(this.angles).oPlus(this.rndAng.oMultiply(frac));
 
                 // clamp the to the max turn rate
                 diff.Normalize180();
                 for (i = 0; i < 3; i++) {
-                    if (diff.oGet(i) > turn_max) {
-                        diff.oSet(i, turn_max);
-                    } else if (diff.oGet(i) < -turn_max) {
-                        diff.oSet(i, -turn_max);
+                    if (diff.oGet(i) > this.turn_max) {
+                        diff.oSet(i, this.turn_max);
+                    } else if (diff.oGet(i) < -this.turn_max) {
+                        diff.oSet(i, -this.turn_max);
                     }
                 }
-                angles.oPluSet(diff);
+                this.angles.oPluSet(diff);
 
                 // make the visual model always points the dir we're traveling
-                dir = angles.ToForward();
-                velocity = dir.oMultiply(speed);
+                dir = this.angles.ToForward();
+                velocity = dir.oMultiply(this.speed);
 
-                if (burstMode && dist < burstDist) {
-                    unGuided = true;
-                    velocity.oMulSet(burstVelocity);
+                if (this.burstMode && (dist < this.burstDist)) {
+                    this.unGuided = true;
+                    velocity.oMulSet(this.burstVelocity);
                 }
 
-                physicsObj.SetLinearVelocity(velocity);
+                this.physicsObj.SetLinearVelocity(velocity);
 
                 // align z-axis of model with the direction
                 axis = dir.ToMat3();
@@ -1455,39 +1455,39 @@ public class Projectile {
         @Override
         public void Launch(final idVec3 start, final idVec3 dir, final idVec3 pushVelocity, final float timeSinceFire /*= 0.0f*/, final float launchPower /*= 1.0f*/, final float dmgPower /*= 1.0f*/) {
             super.Launch(start, dir, pushVelocity, timeSinceFire, launchPower, dmgPower);
-            if (owner.GetEntity() != null) {
-                if (owner.GetEntity().IsType(idAI.class)) {
-                    enemy.oSet(((idAI) owner.GetEntity()).GetEnemy());
-                } else if (owner.GetEntity().IsType(idPlayer.class)) {
-                    trace_s[] tr = {null};
-                    idPlayer player = (idPlayer) owner.GetEntity();
-                    idVec3 start2 = player.GetEyePosition();
-                    idVec3 end2 = start2.oPlus(player.viewAxis.oGet(0).oMultiply(1000.0f));
-                    gameLocal.clip.TracePoint(tr, start2, end2, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity());
+            if (this.owner.GetEntity() != null) {
+                if (this.owner.GetEntity().IsType(idAI.class)) {
+                    this.enemy.oSet(((idAI) this.owner.GetEntity()).GetEnemy());
+                } else if (this.owner.GetEntity().IsType(idPlayer.class)) {
+                    final trace_s[] tr = {null};
+                    final idPlayer player = (idPlayer) this.owner.GetEntity();
+                    final idVec3 start2 = player.GetEyePosition();
+                    final idVec3 end2 = start2.oPlus(player.viewAxis.oGet(0).oMultiply(1000.0f));
+                    gameLocal.clip.TracePoint(tr, start2, end2, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, this.owner.GetEntity());
                     if (tr[0].fraction < 1.0f) {
-                        enemy.oSet(gameLocal.GetTraceEntity(tr[0]));
+                        this.enemy.oSet(gameLocal.GetTraceEntity(tr[0]));
                     }
                     // ignore actors on the player's team
-                    if (enemy.GetEntity() == null || !enemy.GetEntity().IsType(idActor.class) || (((idActor) enemy.GetEntity()).team == player.team)) {
-                        enemy.oSet(player.EnemyWithMostHealth());
+                    if ((this.enemy.GetEntity() == null) || !this.enemy.GetEntity().IsType(idActor.class) || (((idActor) this.enemy.GetEntity()).team == player.team)) {
+                        this.enemy.oSet(player.EnemyWithMostHealth());
                     }
                 }
             }
-            final idVec3 vel = physicsObj.GetLinearVelocity();
-            angles = vel.ToAngles();
-            speed = vel.Length();
-            rndScale = spawnArgs.GetAngles("random", "15 15 0");
-            turn_max = spawnArgs.GetFloat("turn_max", "180") / (float) USERCMD_HZ;
-            clamp_dist = spawnArgs.GetFloat("clamp_dist", "256");
-            burstMode = spawnArgs.GetBool("burstMode");
-            unGuided = false;
-            burstDist = spawnArgs.GetFloat("burstDist", "64");
-            burstVelocity = spawnArgs.GetFloat("burstVelocity", "1.25");
+            final idVec3 vel = this.physicsObj.GetLinearVelocity();
+            this.angles = vel.ToAngles();
+            this.speed = vel.Length();
+            this.rndScale = this.spawnArgs.GetAngles("random", "15 15 0");
+            this.turn_max = this.spawnArgs.GetFloat("turn_max", "180") / USERCMD_HZ;
+            this.clamp_dist = this.spawnArgs.GetFloat("clamp_dist", "256");
+            this.burstMode = this.spawnArgs.GetBool("burstMode");
+            this.unGuided = false;
+            this.burstDist = this.spawnArgs.GetFloat("burstDist", "64");
+            this.burstVelocity = this.spawnArgs.GetFloat("burstVelocity", "1.25");
             UpdateVisuals();
         }
 
         protected void GetSeekPos(idVec3 out) {
-            idEntity enemyEnt = enemy.GetEntity();
+            final idEntity enemyEnt = this.enemy.GetEntity();
             if (enemyEnt != null) {
                 if (enemyEnt.IsType(idActor.class)) {
                     out.oSet(((idActor) enemyEnt).GetEyePosition());
@@ -1496,10 +1496,10 @@ public class Projectile {
                     out.oSet(enemyEnt.GetPhysics().GetOrigin());
                 }
             } else {
-                out.oSet(GetPhysics().GetOrigin().oPlus(physicsObj.GetLinearVelocity().oMultiply(2.0f)));
+                out.oSet(GetPhysics().GetOrigin().oPlus(this.physicsObj.GetLinearVelocity().oMultiply(2.0f)));
             }
         }
-    };
+    }
 
     /*
      ===============================================================================
@@ -1532,83 +1532,83 @@ public class Projectile {
         // ~idSoulCubeMissile();
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteVec3(startingVelocity);
-            savefile.WriteVec3(endingVelocity);
-            savefile.WriteFloat(accelTime);
-            savefile.WriteInt(launchTime);
-            savefile.WriteBool(killPhase);
-            savefile.WriteBool(returnPhase);
-            savefile.WriteVec3(destOrg);
-            savefile.WriteInt(orbitTime);
-            savefile.WriteVec3(orbitOrg);
-            savefile.WriteInt(smokeKillTime);
-            savefile.WriteParticle(smokeKill);
+            savefile.WriteVec3(this.startingVelocity);
+            savefile.WriteVec3(this.endingVelocity);
+            savefile.WriteFloat(this.accelTime);
+            savefile.WriteInt(this.launchTime);
+            savefile.WriteBool(this.killPhase);
+            savefile.WriteBool(this.returnPhase);
+            savefile.WriteVec3(this.destOrg);
+            savefile.WriteInt(this.orbitTime);
+            savefile.WriteVec3(this.orbitOrg);
+            savefile.WriteInt(this.smokeKillTime);
+            savefile.WriteParticle(this.smokeKill);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadVec3(startingVelocity);
-            savefile.ReadVec3(endingVelocity);
-            accelTime = savefile.ReadFloat();
-            launchTime = savefile.ReadInt();
-            killPhase = savefile.ReadBool();
-            returnPhase = savefile.ReadBool();
-            savefile.ReadVec3(destOrg);
-            orbitTime = savefile.ReadInt();
-            savefile.ReadVec3(orbitOrg);
-            smokeKillTime = savefile.ReadInt();
-            savefile.ReadParticle(smokeKill);
+            savefile.ReadVec3(this.startingVelocity);
+            savefile.ReadVec3(this.endingVelocity);
+            this.accelTime = savefile.ReadFloat();
+            this.launchTime = savefile.ReadInt();
+            this.killPhase = savefile.ReadBool();
+            this.returnPhase = savefile.ReadBool();
+            savefile.ReadVec3(this.destOrg);
+            this.orbitTime = savefile.ReadInt();
+            savefile.ReadVec3(this.orbitOrg);
+            this.smokeKillTime = savefile.ReadInt();
+            savefile.ReadParticle(this.smokeKill);
         }
 
         @Override
         public void Spawn() {
-            startingVelocity.Zero();
-            endingVelocity.Zero();
-            accelTime = 0.0f;
-            launchTime = 0;
-            killPhase = false;
-            returnPhase = false;
-            smokeKillTime = 0;
-            smokeKill = null;
+            this.startingVelocity.Zero();
+            this.endingVelocity.Zero();
+            this.accelTime = 0.0f;
+            this.launchTime = 0;
+            this.killPhase = false;
+            this.returnPhase = false;
+            this.smokeKillTime = 0;
+            this.smokeKill = null;
         }
 
         @Override
         public void Think() {
             float pct;
-            idVec3 seekPos = new idVec3();
+            final idVec3 seekPos = new idVec3();
             idEntity ownerEnt;
 
-            if (state == LAUNCHED) {
-                if (killPhase) {
+            if (this.state == LAUNCHED) {
+                if (this.killPhase) {
                     // orbit the mob, cascading down
-                    if (gameLocal.time < orbitTime + 1500) {
-                        if (!gameLocal.smokeParticles.EmitSmoke(smokeKill, smokeKillTime, gameLocal.random.CRandomFloat(), orbitOrg, getMat3_identity())) {
-                            smokeKillTime = gameLocal.time;
+                    if (gameLocal.time < (this.orbitTime + 1500)) {
+                        if (!gameLocal.smokeParticles.EmitSmoke(this.smokeKill, this.smokeKillTime, gameLocal.random.CRandomFloat(), this.orbitOrg, getMat3_identity())) {
+                            this.smokeKillTime = gameLocal.time;
                         }
                     }
                 } else {
-                    if (accelTime != 0 && gameLocal.time < launchTime + accelTime * 1000) {
-                        pct = (gameLocal.time - launchTime) / (accelTime * 1000);
-                        speed = (startingVelocity.oPlus((startingVelocity.oPlus(endingVelocity)).oMultiply(pct))).Length();
+                    if ((this.accelTime != 0) && (gameLocal.time < (this.launchTime + (this.accelTime * 1000)))) {
+                        pct = (gameLocal.time - this.launchTime) / (this.accelTime * 1000);
+                        this.speed = (this.startingVelocity.oPlus((this.startingVelocity.oPlus(this.endingVelocity)).oMultiply(pct))).Length();
                     }
                 }
                 super.Think();
                 GetSeekPos(seekPos);
-                if ((seekPos.oMinus(physicsObj.GetOrigin())).Length() < 32.0f) {
-                    if (returnPhase) {
+                if ((seekPos.oMinus(this.physicsObj.GetOrigin())).Length() < 32.0f) {
+                    if (this.returnPhase) {
                         StopSound(etoi(SND_CHANNEL_ANY), false);
                         StartSound("snd_return", SND_CHANNEL_BODY2, 0, false, null);
                         Hide();
                         PostEventSec(EV_Remove, 2.0f);
 
-                        ownerEnt = owner.GetEntity();
-                        if (ownerEnt != null && ownerEnt.IsType(idPlayer.class)) {
+                        ownerEnt = this.owner.GetEntity();
+                        if ((ownerEnt != null) && ownerEnt.IsType(idPlayer.class)) {
                             ((idPlayer) ownerEnt).SetSoulCubeProjectile(null);
                         }
 
-                        state = FIZZLED;
-                    } else if (!killPhase) {
-                        KillTarget(physicsObj.GetAxis().oGet(0));
+                        this.state = FIZZLED;
+                    } else if (!this.killPhase) {
+                        KillTarget(this.physicsObj.GetAxis().oGet(0));
                     }
                 }
             }
@@ -1621,26 +1621,26 @@ public class Projectile {
             idEntity ownerEnt;
 
             // push it out a little
-            newStart = start.oPlus(dir.oMultiply(spawnArgs.GetFloat("launchDist")));
-            offs = spawnArgs.GetVector("launchOffset", "0 0 -4");
+            newStart = start.oPlus(dir.oMultiply(this.spawnArgs.GetFloat("launchDist")));
+            offs = this.spawnArgs.GetVector("launchOffset", "0 0 -4");
             newStart.oPluSet(offs);
             super.Launch(newStart, dir, pushVelocity, timeSinceFire, launchPower, dmgPower);
-            if (enemy.GetEntity() == null || !enemy.GetEntity().IsType(idActor.class)) {
-                destOrg = start.oPlus(dir.oMultiply(256.0f));
+            if ((this.enemy.GetEntity() == null) || !this.enemy.GetEntity().IsType(idActor.class)) {
+                this.destOrg = start.oPlus(dir.oMultiply(256.0f));
             } else {
-                destOrg.Zero();
+                this.destOrg.Zero();
             }
-            physicsObj.SetClipMask(0); // never collide.. think routine will decide when to detonate
-            startingVelocity = spawnArgs.GetVector("startingVelocity", "15 0 0");
-            endingVelocity = spawnArgs.GetVector("endingVelocity", "1500 0 0");
-            accelTime = spawnArgs.GetFloat("accelTime", "5");
-            physicsObj.SetLinearVelocity(physicsObj.GetAxis().oGet(2).oMultiply(startingVelocity.Length()));
-            launchTime = gameLocal.time;
-            killPhase = false;
+            this.physicsObj.SetClipMask(0); // never collide.. think routine will decide when to detonate
+            this.startingVelocity = this.spawnArgs.GetVector("startingVelocity", "15 0 0");
+            this.endingVelocity = this.spawnArgs.GetVector("endingVelocity", "1500 0 0");
+            this.accelTime = this.spawnArgs.GetFloat("accelTime", "5");
+            this.physicsObj.SetLinearVelocity(this.physicsObj.GetAxis().oGet(2).oMultiply(this.startingVelocity.Length()));
+            this.launchTime = gameLocal.time;
+            this.killPhase = false;
             UpdateVisuals();
 
-            ownerEnt = owner.GetEntity();
-            if (ownerEnt != null && ownerEnt.IsType(idPlayer.class)) {
+            ownerEnt = this.owner.GetEntity();
+            if ((ownerEnt != null) && ownerEnt.IsType(idPlayer.class)) {
                 ((idPlayer) ownerEnt).SetSoulCubeProjectile(this);
             }
 
@@ -1648,23 +1648,23 @@ public class Projectile {
 
         @Override
         protected void GetSeekPos(idVec3 out) {
-            if (returnPhase && owner.GetEntity() != null && owner.GetEntity().IsType(idActor.class)) {
-                idActor act = (idActor) owner.GetEntity();
+            if (this.returnPhase && (this.owner.GetEntity() != null) && this.owner.GetEntity().IsType(idActor.class)) {
+                final idActor act = (idActor) this.owner.GetEntity();
                 out.oSet(act.GetEyePosition());
                 return;
             }
-            if (!destOrg.equals(getVec3_zero())) {
-                out.oSet(destOrg);
+            if (!this.destOrg.equals(getVec3_zero())) {
+                out.oSet(this.destOrg);
                 return;
             }
             super.GetSeekPos(out);
         }
 
         protected void ReturnToOwner() {
-            speed *= 0.65f;
-            killPhase = false;
-            returnPhase = true;
-            smokeFlyTime = 0;
+            this.speed *= 0.65f;
+            this.killPhase = false;
+            this.returnPhase = true;
+            this.smokeFlyTime = 0;
         }
 
         protected void KillTarget(final idVec3 dir) {
@@ -1673,34 +1673,34 @@ public class Projectile {
             idActor act;
 
             ReturnToOwner();
-            if (enemy.GetEntity() != null && enemy.GetEntity().IsType(idActor.class)) {
-                act = (idActor) enemy.GetEntity();
-                killPhase = true;
-                orbitOrg = act.GetPhysics().GetAbsBounds().GetCenter();
-                orbitTime = gameLocal.time;
-                smokeKillTime = 0;
-                smokeName = spawnArgs.GetString("smoke_kill");
+            if ((this.enemy.GetEntity() != null) && this.enemy.GetEntity().IsType(idActor.class)) {
+                act = (idActor) this.enemy.GetEntity();
+                this.killPhase = true;
+                this.orbitOrg = act.GetPhysics().GetAbsBounds().GetCenter();
+                this.orbitTime = gameLocal.time;
+                this.smokeKillTime = 0;
+                smokeName = this.spawnArgs.GetString("smoke_kill");
                 if (!smokeName.isEmpty()) {// != '\0' ) {
-                    smokeKill = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
-                    smokeKillTime = gameLocal.time;
+                    this.smokeKill = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
+                    this.smokeKillTime = gameLocal.time;
                 }
-                ownerEnt = owner.GetEntity();
-                if ((act.health > 0) && ownerEnt != null && ownerEnt.IsType(idPlayer.class) && (ownerEnt.health > 0) && !act.spawnArgs.GetBool("boss")) {
+                ownerEnt = this.owner.GetEntity();
+                if ((act.health > 0) && (ownerEnt != null) && ownerEnt.IsType(idPlayer.class) && (ownerEnt.health > 0) && !act.spawnArgs.GetBool("boss")) {
                     ((idPlayer) ownerEnt).GiveHealthPool(act.health);
                 }
-                act.Damage(this, owner.GetEntity(), dir, spawnArgs.GetString("def_damage"), 1.0f, INVALID_JOINT);
+                act.Damage(this, this.owner.GetEntity(), dir, this.spawnArgs.GetString("def_damage"), 1.0f, INVALID_JOINT);
                 act.GetAFPhysics().SetTimeScale(0.25f);
                 StartSound("snd_explode", SND_CHANNEL_BODY, 0, false, null);
             }
         }
-    };
+    }
 
     public static class beamTarget_t {
 
         idEntityPtr<idEntity> target;
         renderEntity_s renderEntity;
         int/*qhandle_t*/ modelDefHandle;
-    };
+    }
 
     /*
      ===============================================================================
@@ -1721,7 +1721,7 @@ public class Projectile {
             eventCallbacks.put(EV_RemoveBeams, (eventCallback_t0<idBFGProjectile>) idBFGProjectile::Event_RemoveBeams);
         }
 
-        private idList<beamTarget_t> beamTargets;
+        private final idList<beamTarget_t> beamTargets;
         private renderEntity_s       secondModel;
         private int/*qhandle_t*/     secondModelDefHandle;
         private int                  nextDamageTime;
@@ -1730,20 +1730,20 @@ public class Projectile {
         //
 
         public idBFGProjectile() {
-            beamTargets = new idList<>();
-            secondModel = new renderEntity_s();
-            secondModelDefHandle = -1;
-            nextDamageTime = 0;
-            damageFreq = new idStr();
+            this.beamTargets = new idList<>();
+            this.secondModel = new renderEntity_s();
+            this.secondModelDefHandle = -1;
+            this.nextDamageTime = 0;
+            this.damageFreq = new idStr();
         }
 
         @Override
         protected void _deconstructor() {
             FreeBeams();
 
-            if (secondModelDefHandle >= 0) {
-                gameRenderWorld.FreeEntityDef(secondModelDefHandle);
-                secondModelDefHandle = -1;
+            if (this.secondModelDefHandle >= 0) {
+                gameRenderWorld.FreeEntityDef(this.secondModelDefHandle);
+                this.secondModelDefHandle = -1;
             }
 
             super._deconstructor();
@@ -1753,43 +1753,43 @@ public class Projectile {
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteInt(beamTargets.Num());
-            for (i = 0; i < beamTargets.Num(); i++) {
-                beamTargets.oGet(i).target.Save(savefile);
-                savefile.WriteRenderEntity(beamTargets.oGet(i).renderEntity);
-                savefile.WriteInt(beamTargets.oGet(i).modelDefHandle);
+            savefile.WriteInt(this.beamTargets.Num());
+            for (i = 0; i < this.beamTargets.Num(); i++) {
+                this.beamTargets.oGet(i).target.Save(savefile);
+                savefile.WriteRenderEntity(this.beamTargets.oGet(i).renderEntity);
+                savefile.WriteInt(this.beamTargets.oGet(i).modelDefHandle);
             }
 
-            savefile.WriteRenderEntity(secondModel);
-            savefile.WriteInt(secondModelDefHandle);
-            savefile.WriteInt(nextDamageTime);
-            savefile.WriteString(damageFreq);
+            savefile.WriteRenderEntity(this.secondModel);
+            savefile.WriteInt(this.secondModelDefHandle);
+            savefile.WriteInt(this.nextDamageTime);
+            savefile.WriteString(this.damageFreq);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
             int i;
-            int[] num = new int[1];
+            final int[] num = new int[1];
 
             savefile.ReadInt(num);
-            beamTargets.SetNum(num[0]);
+            this.beamTargets.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
-                beamTargets.oGet(i).target.Restore(savefile);
-                savefile.ReadRenderEntity(beamTargets.oGet(i).renderEntity);
-                beamTargets.oGet(i).modelDefHandle = savefile.ReadInt();
+                this.beamTargets.oGet(i).target.Restore(savefile);
+                savefile.ReadRenderEntity(this.beamTargets.oGet(i).renderEntity);
+                this.beamTargets.oGet(i).modelDefHandle = savefile.ReadInt();
 
-                if (beamTargets.oGet(i).modelDefHandle >= 0) {
-                    beamTargets.oGet(i).modelDefHandle = gameRenderWorld.AddEntityDef(beamTargets.oGet(i).renderEntity);
+                if (this.beamTargets.oGet(i).modelDefHandle >= 0) {
+                    this.beamTargets.oGet(i).modelDefHandle = gameRenderWorld.AddEntityDef(this.beamTargets.oGet(i).renderEntity);
                 }
             }
 
-            savefile.ReadRenderEntity(secondModel);
-            secondModelDefHandle = savefile.ReadInt();
-            nextDamageTime = savefile.ReadInt();
-            savefile.ReadString(damageFreq);
+            savefile.ReadRenderEntity(this.secondModel);
+            this.secondModelDefHandle = savefile.ReadInt();
+            this.nextDamageTime = savefile.ReadInt();
+            savefile.ReadString(this.damageFreq);
 
-            if (secondModelDefHandle >= 0) {
-                secondModelDefHandle = gameRenderWorld.AddEntityDef(secondModel);
+            if (this.secondModelDefHandle >= 0) {
+                this.secondModelDefHandle = gameRenderWorld.AddEntityDef(this.secondModel);
             }
         }
 
@@ -1797,80 +1797,80 @@ public class Projectile {
         public void Spawn() {
             super.Spawn();
             
-            beamTargets.Clear();
-            secondModel = new renderEntity_s();//memset( &secondModel, 0, sizeof( secondModel ) );
-            secondModelDefHandle = -1;
-            final String temp = spawnArgs.GetString("model_two");
-            if (temp != null && !temp.isEmpty()) {
-                secondModel.hModel = renderModelManager.FindModel(temp);
-                secondModel.bounds.oSet(secondModel.hModel.Bounds(secondModel));
-                secondModel.shaderParms[ SHADERPARM_RED]
-                        = secondModel.shaderParms[ SHADERPARM_GREEN]
-                        = secondModel.shaderParms[ SHADERPARM_BLUE]
-                        = secondModel.shaderParms[ SHADERPARM_ALPHA] = 1.0f;
-                secondModel.noSelfShadow = true;
-                secondModel.noShadow = true;
+            this.beamTargets.Clear();
+            this.secondModel = new renderEntity_s();//memset( &secondModel, 0, sizeof( secondModel ) );
+            this.secondModelDefHandle = -1;
+            final String temp = this.spawnArgs.GetString("model_two");
+            if ((temp != null) && !temp.isEmpty()) {
+                this.secondModel.hModel = renderModelManager.FindModel(temp);
+                this.secondModel.bounds.oSet(this.secondModel.hModel.Bounds(this.secondModel));
+                this.secondModel.shaderParms[ SHADERPARM_RED]
+                        = this.secondModel.shaderParms[ SHADERPARM_GREEN]
+                        = this.secondModel.shaderParms[ SHADERPARM_BLUE]
+                        = this.secondModel.shaderParms[ SHADERPARM_ALPHA] = 1.0f;
+                this.secondModel.noSelfShadow = true;
+                this.secondModel.noShadow = true;
             }
-            nextDamageTime = 0;
-            damageFreq = null;
+            this.nextDamageTime = 0;
+            this.damageFreq = null;
         }
 
         @Override
         public void Think() {
-            if (state == LAUNCHED) {
+            if (this.state == LAUNCHED) {
 
                 // update beam targets
-                for (int i = 0; i < beamTargets.Num(); i++) {
-                    if (beamTargets.oGet(i).target.GetEntity() == null) {
+                for (int i = 0; i < this.beamTargets.Num(); i++) {
+                    if (this.beamTargets.oGet(i).target.GetEntity() == null) {
                         continue;
                     }
-                    idPlayer player = (beamTargets.oGet(i).target.GetEntity().IsType(idPlayer.class)) ? (idPlayer) beamTargets.oGet(i).target.GetEntity() : null;
-                    idVec3 org = beamTargets.oGet(i).target.GetEntity().GetPhysics().GetAbsBounds().GetCenter();
-                    beamTargets.oGet(i).renderEntity.origin.oSet(GetPhysics().GetOrigin());
-                    beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_X] = org.x;
-                    beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_Y] = org.y;
-                    beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_Z] = org.z;
-                    beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_RED]
-                            = beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_GREEN]
-                            = beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BLUE]
-                            = beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_ALPHA] = 1.0f;
-                    if (gameLocal.time > nextDamageTime) {
+                    final idPlayer player = (this.beamTargets.oGet(i).target.GetEntity().IsType(idPlayer.class)) ? (idPlayer) this.beamTargets.oGet(i).target.GetEntity() : null;
+                    idVec3 org = this.beamTargets.oGet(i).target.GetEntity().GetPhysics().GetAbsBounds().GetCenter();
+                    this.beamTargets.oGet(i).renderEntity.origin.oSet(GetPhysics().GetOrigin());
+                    this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_X] = org.x;
+                    this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_Y] = org.y;
+                    this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BEAM_END_Z] = org.z;
+                    this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_RED]
+                            = this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_GREEN]
+                            = this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BLUE]
+                            = this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_ALPHA] = 1.0f;
+                    if (gameLocal.time > this.nextDamageTime) {
                         boolean bfgVision = true;
-                        if (damageFreq != null && /*(const char *)*/ !damageFreq.IsEmpty() && beamTargets.oGet(i).target.GetEntity() != null && beamTargets.oGet(i).target.GetEntity().CanDamage(GetPhysics().GetOrigin(), org)) {
-                            org = beamTargets.oGet(i).target.GetEntity().GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
+                        if ((this.damageFreq != null) && /*(const char *)*/ !this.damageFreq.IsEmpty() && (this.beamTargets.oGet(i).target.GetEntity() != null) && this.beamTargets.oGet(i).target.GetEntity().CanDamage(GetPhysics().GetOrigin(), org)) {
+                            org = this.beamTargets.oGet(i).target.GetEntity().GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
                             org.Normalize();
-                            beamTargets.oGet(i).target.GetEntity().Damage(this, owner.GetEntity(), org, damageFreq.getData(), (damagePower != 0) ? damagePower : 1.0f, INVALID_JOINT);
+                            this.beamTargets.oGet(i).target.GetEntity().Damage(this, this.owner.GetEntity(), org, this.damageFreq.getData(), (this.damagePower != 0) ? this.damagePower : 1.0f, INVALID_JOINT);
                         } else {
-                            beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_RED]
-                                    = beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_GREEN]
-                                    = beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BLUE]
-                                    = beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_ALPHA] = 0.0f;
+                            this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_RED]
+                                    = this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_GREEN]
+                                    = this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_BLUE]
+                                    = this.beamTargets.oGet(i).renderEntity.shaderParms[ SHADERPARM_ALPHA] = 0.0f;
                             bfgVision = false;
                         }
                         if (player != null) {
                             player.playerView.EnableBFGVision(bfgVision);
                         }
-                        nextDamageTime = gameLocal.time + BFG_DAMAGE_FREQUENCY;
+                        this.nextDamageTime = gameLocal.time + BFG_DAMAGE_FREQUENCY;
                     }
-                    gameRenderWorld.UpdateEntityDef(beamTargets.oGet(i).modelDefHandle, beamTargets.oGet(i).renderEntity);
+                    gameRenderWorld.UpdateEntityDef(this.beamTargets.oGet(i).modelDefHandle, this.beamTargets.oGet(i).renderEntity);
                 }
 
-                if (secondModelDefHandle >= 0) {
-                    secondModel.origin.oSet(GetPhysics().GetOrigin());
-                    gameRenderWorld.UpdateEntityDef(secondModelDefHandle, secondModel);
+                if (this.secondModelDefHandle >= 0) {
+                    this.secondModel.origin.oSet(GetPhysics().GetOrigin());
+                    gameRenderWorld.UpdateEntityDef(this.secondModelDefHandle, this.secondModel);
                 }
 
-                idAngles ang = new idAngles();
+                final idAngles ang = new idAngles();
 
-                ang.pitch = (gameLocal.time & 4095) * 360.0f / -4096.0f;
+                ang.pitch = ((gameLocal.time & 4095) * 360.0f) / -4096.0f;
                 ang.yaw = ang.pitch;
                 ang.roll = 0.0f;
                 SetAngles(ang);
 
-                ang.pitch = (gameLocal.time & 2047) * 360.0f / -2048.0f;
+                ang.pitch = ((gameLocal.time & 2047) * 360.0f) / -2048.0f;
                 ang.yaw = ang.pitch;
                 ang.roll = 0.0f;
-                secondModel.axis.oSet(ang.ToMat3());
+                this.secondModel.axis.oSet(ang.ToMat3());
 
                 UpdateVisuals();
             }
@@ -1888,37 +1888,37 @@ public class Projectile {
             // but saves on the traces making sure they are visible
             // damage is not applied until the projectile explodes
             idEntity ent;
-            idEntity[] entityList = new idEntity[MAX_GENTITIES];
+            final idEntity[] entityList = new idEntity[MAX_GENTITIES];
             int numListedEntities;
             idBounds bounds;
-            idVec3 damagePoint = new idVec3();
+            final idVec3 damagePoint = new idVec3();
 
-            float[] radius = {0};
-            spawnArgs.GetFloat("damageRadius", "512", radius);
+            final float[] radius = {0};
+            this.spawnArgs.GetFloat("damageRadius", "512", radius);
             bounds = new idBounds(GetPhysics().GetOrigin()).Expand(radius[0]);
 
-            float beamWidth = spawnArgs.GetFloat("beam_WidthFly");
-            final String skin = spawnArgs.GetString("skin_beam");
+            final float beamWidth = this.spawnArgs.GetFloat("beam_WidthFly");
+            final String skin = this.spawnArgs.GetString("skin_beam");
 
 //	memset( &secondModel, 0, sizeof( secondModel ) );
-            secondModel = new renderEntity_s();
-            secondModelDefHandle = -1;
-            final String temp = spawnArgs.GetString("model_two");
-            if (temp != null && !temp.isEmpty()) {
-                secondModel.hModel = renderModelManager.FindModel(temp);
-                secondModel.bounds.oSet(secondModel.hModel.Bounds(secondModel));
-                secondModel.shaderParms[ SHADERPARM_RED]
-                        = secondModel.shaderParms[ SHADERPARM_GREEN]
-                        = secondModel.shaderParms[ SHADERPARM_BLUE]
-                        = secondModel.shaderParms[ SHADERPARM_ALPHA] = 1.0f;
-                secondModel.noSelfShadow = true;
-                secondModel.noShadow = true;
-                secondModel.origin.oSet(GetPhysics().GetOrigin());
-                secondModel.axis.oSet(GetPhysics().GetAxis());
-                secondModelDefHandle = gameRenderWorld.AddEntityDef(secondModel);
+            this.secondModel = new renderEntity_s();
+            this.secondModelDefHandle = -1;
+            final String temp = this.spawnArgs.GetString("model_two");
+            if ((temp != null) && !temp.isEmpty()) {
+                this.secondModel.hModel = renderModelManager.FindModel(temp);
+                this.secondModel.bounds.oSet(this.secondModel.hModel.Bounds(this.secondModel));
+                this.secondModel.shaderParms[ SHADERPARM_RED]
+                        = this.secondModel.shaderParms[ SHADERPARM_GREEN]
+                        = this.secondModel.shaderParms[ SHADERPARM_BLUE]
+                        = this.secondModel.shaderParms[ SHADERPARM_ALPHA] = 1.0f;
+                this.secondModel.noSelfShadow = true;
+                this.secondModel.noShadow = true;
+                this.secondModel.origin.oSet(GetPhysics().GetOrigin());
+                this.secondModel.axis.oSet(GetPhysics().GetAxis());
+                this.secondModelDefHandle = gameRenderWorld.AddEntityDef(this.secondModel);
             }
 
-            idVec3 delta = new idVec3(15.0f, 15.0f, 15.0f);
+            final idVec3 delta = new idVec3(15.0f, 15.0f, 15.0f);
             //physicsObj.SetAngularExtrapolation( extrapolation_t(EXTRAPOLATION_LINEAR|EXTRAPOLATION_NOSTOP), gameLocal.time, 0, physicsObj.GetAxis().ToAngles(), delta, ang_zero );
 
             // get all entities touching the bounds
@@ -1927,7 +1927,7 @@ public class Projectile {
                 ent = entityList[ e];
                 assert (ent != null);
 
-                if (ent == this || ent == owner.GetEntity() || ent.IsHidden() || !ent.IsActive() || !ent.fl.takedamage || ent.health <= 0 || !ent.IsType(idActor.class)) {
+                if ((ent == this) || (ent == this.owner.GetEntity()) || ent.IsHidden() || !ent.IsActive() || !ent.fl.takedamage || (ent.health <= 0) || !ent.IsType(idActor.class)) {
                     continue;
                 }
 
@@ -1936,12 +1936,12 @@ public class Projectile {
                 }
 
                 if (ent.IsType(idPlayer.class)) {
-                    idPlayer player = (idPlayer) ent;
+                    final idPlayer player = (idPlayer) ent;
                     player.playerView.EnableBFGVision(true);
                 }
 
-                beamTarget_t bt = new beamTarget_t();//memset( &bt.renderEntity, 0, sizeof( renderEntity_t ) );
-                renderEntity = new renderEntity_s();
+                final beamTarget_t bt = new beamTarget_t();//memset( &bt.renderEntity, 0, sizeof( renderEntity_t ) );
+                this.renderEntity = new renderEntity_s();
                 bt.renderEntity.origin.oSet(GetPhysics().GetOrigin());
                 bt.renderEntity.axis.oSet(GetPhysics().GetAxis());
                 bt.renderEntity.shaderParms[ SHADERPARM_BEAM_WIDTH] = beamWidth;
@@ -1958,20 +1958,20 @@ public class Projectile {
                 bt.renderEntity.customSkin = declManager.FindSkin(skin);
                 bt.target.oSet(ent);
                 bt.modelDefHandle = gameRenderWorld.AddEntityDef(bt.renderEntity);
-                beamTargets.Append(bt);
+                this.beamTargets.Append(bt);
             }
             if (numListedEntities != 0) {
                 StartSound("snd_beam", SND_CHANNEL_BODY2, 0, false, null);
             }
-            damageFreq.oSet(spawnArgs.GetString("def_damageFreq"));
-            nextDamageTime = gameLocal.time + BFG_DAMAGE_FREQUENCY;
+            this.damageFreq.oSet(this.spawnArgs.GetString("def_damageFreq"));
+            this.nextDamageTime = gameLocal.time + BFG_DAMAGE_FREQUENCY;
             UpdateVisuals();
         }
 
         @Override
         public void Explode(final trace_s collision, idEntity ignore) {
             int i;
-            idVec3 dmgPoint = new idVec3();
+            final idVec3 dmgPoint = new idVec3();
             idVec3 dir;
             float beamWidth;
             float damageScale;
@@ -1979,30 +1979,30 @@ public class Projectile {
             idPlayer player;
             idEntity ownerEnt;
 
-            ownerEnt = owner.GetEntity();
-            if (ownerEnt != null && ownerEnt.IsType(idPlayer.class)) {
+            ownerEnt = this.owner.GetEntity();
+            if ((ownerEnt != null) && ownerEnt.IsType(idPlayer.class)) {
                 player = (idPlayer) ownerEnt;
             } else {
                 player = null;
             }
 
-            beamWidth = spawnArgs.GetFloat("beam_WidthExplode");
-            damage = spawnArgs.GetString("def_damage");
+            beamWidth = this.spawnArgs.GetFloat("beam_WidthExplode");
+            damage = this.spawnArgs.GetString("def_damage");
 
-            for (i = 0; i < beamTargets.Num(); i++) {
-                if ((beamTargets.oGet(i).target.GetEntity() == null) || (ownerEnt == null)) {
+            for (i = 0; i < this.beamTargets.Num(); i++) {
+                if ((this.beamTargets.oGet(i).target.GetEntity() == null) || (ownerEnt == null)) {
                     continue;
                 }
 
-                if (!beamTargets.oGet(i).target.GetEntity().CanDamage(GetPhysics().GetOrigin(), dmgPoint)) {
+                if (!this.beamTargets.oGet(i).target.GetEntity().CanDamage(GetPhysics().GetOrigin(), dmgPoint)) {
                     continue;
                 }
 
-                beamTargets.oGet(i).renderEntity.shaderParms[SHADERPARM_BEAM_WIDTH] = beamWidth;
+                this.beamTargets.oGet(i).renderEntity.shaderParms[SHADERPARM_BEAM_WIDTH] = beamWidth;
 
                 // if the hit entity takes damage
-                if (damagePower != 0) {
-                    damageScale = damagePower;
+                if (this.damagePower != 0) {
+                    damageScale = this.damagePower;
                 } else {
                     damageScale = 1.0f;
                 }
@@ -2010,27 +2010,27 @@ public class Projectile {
                 // if the projectile owner is a player
                 if (player != null) {
                     // if the projectile hit an actor
-                    if (beamTargets.oGet(i).target.GetEntity().IsType(idActor.class)) {
+                    if (this.beamTargets.oGet(i).target.GetEntity().IsType(idActor.class)) {
                         player.SetLastHitTime(gameLocal.time);
                         player.AddProjectileHits(1);
                         damageScale *= player.PowerUpModifier(PROJECTILE_DAMAGE);
                     }
                 }
 
-                if (!damage.isEmpty() && (beamTargets.oGet(i).target.GetEntity().entityNumber > gameLocal.numClients - 1)) {
-                    dir = beamTargets.oGet(i).target.GetEntity().GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
+                if (!damage.isEmpty() && (this.beamTargets.oGet(i).target.GetEntity().entityNumber > (gameLocal.numClients - 1))) {
+                    dir = this.beamTargets.oGet(i).target.GetEntity().GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
                     dir.Normalize();
-                    beamTargets.oGet(i).target.GetEntity().Damage(this, ownerEnt, dir, damage, damageScale, (collision.c.id < 0) ? CLIPMODEL_ID_TO_JOINT_HANDLE(collision.c.id) : INVALID_JOINT);
+                    this.beamTargets.oGet(i).target.GetEntity().Damage(this, ownerEnt, dir, damage, damageScale, (collision.c.id < 0) ? CLIPMODEL_ID_TO_JOINT_HANDLE(collision.c.id) : INVALID_JOINT);
                 }
             }
 
-            if (secondModelDefHandle >= 0) {
-                gameRenderWorld.FreeEntityDef(secondModelDefHandle);
-                secondModelDefHandle = -1;
+            if (this.secondModelDefHandle >= 0) {
+                gameRenderWorld.FreeEntityDef(this.secondModelDefHandle);
+                this.secondModelDefHandle = -1;
             }
 
             if (ignore == null) {
-                projectileFlags.noSplashDamage = true;
+                this.projectileFlags.noSplashDamage = true;
             }
 
             if (!gameLocal.isClient) {
@@ -2045,14 +2045,14 @@ public class Projectile {
         }
 
         private void FreeBeams() {
-            for (int i = 0; i < beamTargets.Num(); i++) {
-                if (beamTargets.oGet(i).modelDefHandle >= 0) {
-                    gameRenderWorld.FreeEntityDef(beamTargets.oGet(i).modelDefHandle);
-                    beamTargets.oGet(i).modelDefHandle = -1;
+            for (int i = 0; i < this.beamTargets.Num(); i++) {
+                if (this.beamTargets.oGet(i).modelDefHandle >= 0) {
+                    gameRenderWorld.FreeEntityDef(this.beamTargets.oGet(i).modelDefHandle);
+                    this.beamTargets.oGet(i).modelDefHandle = -1;
                 }
             }
 
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             if (player != null) {
                 player.playerView.EnableBFGVision(false);
             }
@@ -2074,7 +2074,7 @@ public class Projectile {
 
 
 //        private void ApplyDamage();
-    };
+    }
 
     /*
      ===============================================================================
@@ -2098,7 +2098,7 @@ public class Projectile {
 
 
         private idEntityPtr<idEntity> owner;
-        private idPhysics_RigidBody   physicsObj;
+        private final idPhysics_RigidBody   physicsObj;
         private idDeclParticle        smokeFly;
         private int                   smokeFlyTime;
         private idSoundShader         sndBounce;
@@ -2106,45 +2106,45 @@ public class Projectile {
         //
 
         public idDebris() {
-            owner = null;
-            physicsObj = new idPhysics_RigidBody();
-            smokeFly = null;
-            smokeFlyTime = 0;
-            sndBounce = null;
+            this.owner = null;
+            this.physicsObj = new idPhysics_RigidBody();
+            this.smokeFly = null;
+            this.smokeFlyTime = 0;
+            this.sndBounce = null;
         }
 
         // ~idDebris();
         // save games
         @Override
         public void Save(idSaveGame savefile) {					// archives object for save game file 
-            owner.Save(savefile);
+            this.owner.Save(savefile);
 
-            savefile.WriteStaticObject(physicsObj);
+            savefile.WriteStaticObject(this.physicsObj);
 
-            savefile.WriteParticle(smokeFly);
-            savefile.WriteInt(smokeFlyTime);
-            savefile.WriteSoundShader(sndBounce);
+            savefile.WriteParticle(this.smokeFly);
+            savefile.WriteInt(this.smokeFlyTime);
+            savefile.WriteSoundShader(this.sndBounce);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {					// unarchives object from save game file
-            owner.Restore(savefile);
+            this.owner.Restore(savefile);
 
-            savefile.ReadStaticObject(physicsObj);
-            RestorePhysics(physicsObj);
+            savefile.ReadStaticObject(this.physicsObj);
+            RestorePhysics(this.physicsObj);
 
-            savefile.ReadParticle(smokeFly);
-            smokeFlyTime = savefile.ReadInt();
-            savefile.ReadSoundShader(sndBounce);
+            savefile.ReadParticle(this.smokeFly);
+            this.smokeFlyTime = savefile.ReadInt();
+            savefile.ReadSoundShader(this.sndBounce);
         }
 
         @Override
         public void Spawn() {
             super.Spawn();
 
-            owner = null;
-            smokeFly = null;
-            smokeFlyTime = 0;
+            this.owner = null;
+            this.smokeFly = null;
+            this.smokeFlyTime = 0;
         }
 
         public void Create(idEntity owner, final idVec3 start, final idMat3 axis) {
@@ -2153,16 +2153,16 @@ public class Projectile {
             GetPhysics().SetAxis(axis);
             GetPhysics().SetContents(0);
             this.owner = new idEntityPtr<>(owner);
-            smokeFly = null;
-            smokeFlyTime = 0;
-            sndBounce = null;
+            this.smokeFly = null;
+            this.smokeFlyTime = 0;
+            this.sndBounce = null;
             UpdateVisuals();
         }
 
         public void Launch() {
             float fuse;
-            idVec3 velocity = new idVec3();
-            idAngles angular_velocity = new idAngles();
+            final idVec3 velocity = new idVec3();
+            final idAngles angular_velocity = new idAngles();
             float linear_friction;
             float angular_friction;
             float contact_friction;
@@ -2173,19 +2173,19 @@ public class Projectile {
             boolean randomVelocity;
             idMat3 axis;
 
-            renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+            this.renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
 
-            spawnArgs.GetVector("velocity", "0 0 0", velocity);
-            spawnArgs.GetAngles("angular_velocity", "0 0 0", angular_velocity);
+            this.spawnArgs.GetVector("velocity", "0 0 0", velocity);
+            this.spawnArgs.GetAngles("angular_velocity", "0 0 0", angular_velocity);
 
-            linear_friction = spawnArgs.GetFloat("linear_friction");
-            angular_friction = spawnArgs.GetFloat("angular_friction");
-            contact_friction = spawnArgs.GetFloat("contact_friction");
-            bounce = spawnArgs.GetFloat("bounce");
-            mass = spawnArgs.GetFloat("mass");
-            gravity = spawnArgs.GetFloat("gravity");
-            fuse = spawnArgs.GetFloat("fuse");
-            randomVelocity = spawnArgs.GetBool("random_velocity");
+            linear_friction = this.spawnArgs.GetFloat("linear_friction");
+            angular_friction = this.spawnArgs.GetFloat("angular_friction");
+            contact_friction = this.spawnArgs.GetFloat("contact_friction");
+            bounce = this.spawnArgs.GetFloat("bounce");
+            mass = this.spawnArgs.GetFloat("mass");
+            gravity = this.spawnArgs.GetFloat("gravity");
+            fuse = this.spawnArgs.GetFloat("fuse");
+            randomVelocity = this.spawnArgs.GetBool("random_velocity");
 
             if (mass <= 0) {
                 gameLocal.Error("Invalid mass on '%s'\n", GetEntityDefName());
@@ -2197,8 +2197,8 @@ public class Projectile {
                 velocity.z *= gameLocal.random.RandomFloat() + 0.5f;
             }
 
-            if (health != 0) {
-                fl.takedamage = true;
+            if (this.health != 0) {
+                this.fl.takedamage = true;
             }
 
             gravVec = gameLocal.GetGravity();
@@ -2207,46 +2207,46 @@ public class Projectile {
 
             Unbind();
 
-            physicsObj.SetSelf(this);
+            this.physicsObj.SetSelf(this);
 
             // check if a clip model is set
-            idStr clipModelName = new idStr();
-            idTraceModel trm = new idTraceModel();
-            spawnArgs.GetString("clipmodel", "", clipModelName);
+            final idStr clipModelName = new idStr();
+            final idTraceModel trm = new idTraceModel();
+            this.spawnArgs.GetString("clipmodel", "", clipModelName);
             if (clipModelName.IsEmpty()) {
-                clipModelName.oSet(spawnArgs.GetString("model"));		// use the visual model
+                clipModelName.oSet(this.spawnArgs.GetString("model"));		// use the visual model
             }
 
             // load the trace model
             if (!CollisionModel_local.collisionModelManager.TrmFromModel(clipModelName, trm)) {
                 // default to a box
-                physicsObj.SetClipBox(renderEntity.bounds, 1.0f);
+                this.physicsObj.SetClipBox(this.renderEntity.bounds, 1.0f);
             } else {
-                physicsObj.SetClipModel(new idClipModel(trm), 1.0f);
+                this.physicsObj.SetClipModel(new idClipModel(trm), 1.0f);
             }
 
-            physicsObj.GetClipModel().SetOwner(owner.GetEntity());
-            physicsObj.SetMass(mass);
-            physicsObj.SetFriction(linear_friction, angular_friction, contact_friction);
+            this.physicsObj.GetClipModel().SetOwner(this.owner.GetEntity());
+            this.physicsObj.SetMass(mass);
+            this.physicsObj.SetFriction(linear_friction, angular_friction, contact_friction);
             if (contact_friction == 0.0f) {
-                physicsObj.NoContact();
+                this.physicsObj.NoContact();
             }
-            physicsObj.SetBouncyness(bounce);
-            physicsObj.SetGravity(gravVec.oMultiply(gravity));
-            physicsObj.SetContents(0);
-            physicsObj.SetClipMask(MASK_SOLID | CONTENTS_MOVEABLECLIP);
-            physicsObj.SetLinearVelocity(axis.oGet(0).oMultiply(velocity.oGet(0)).oPlus(axis.oGet(1).oMultiply(velocity.oGet(1)).oPlus(axis.oGet(2).oMultiply(velocity.oGet(2)))));
-            physicsObj.SetAngularVelocity(angular_velocity.ToAngularVelocity().oMultiply(axis));
-            physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            physicsObj.SetAxis(axis);
-            SetPhysics(physicsObj);
+            this.physicsObj.SetBouncyness(bounce);
+            this.physicsObj.SetGravity(gravVec.oMultiply(gravity));
+            this.physicsObj.SetContents(0);
+            this.physicsObj.SetClipMask(MASK_SOLID | CONTENTS_MOVEABLECLIP);
+            this.physicsObj.SetLinearVelocity(axis.oGet(0).oMultiply(velocity.oGet(0)).oPlus(axis.oGet(1).oMultiply(velocity.oGet(1)).oPlus(axis.oGet(2).oMultiply(velocity.oGet(2)))));
+            this.physicsObj.SetAngularVelocity(angular_velocity.ToAngularVelocity().oMultiply(axis));
+            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            this.physicsObj.SetAxis(axis);
+            SetPhysics(this.physicsObj);
 
             if (!gameLocal.isClient) {
                 if (fuse <= 0) {
                     // run physics for 1 second
                     RunPhysics();
                     PostEventMS(EV_Remove, 0);
-                } else if (spawnArgs.GetBool("detonate_on_fuse")) {
+                } else if (this.spawnArgs.GetBool("detonate_on_fuse")) {
                     if (fuse < 0.0f) {
                         fuse = 0.0f;
                     }
@@ -2262,18 +2262,18 @@ public class Projectile {
 
             StartSound("snd_fly", SND_CHANNEL_BODY, 0, false, null);
 
-            smokeFly = null;
-            smokeFlyTime = 0;
-            final String smokeName = spawnArgs.GetString("smoke_fly");
+            this.smokeFly = null;
+            this.smokeFlyTime = 0;
+            final String smokeName = this.spawnArgs.GetString("smoke_fly");
             if (isNotNullOrEmpty(smokeName)) {//smokeName != '\0' ) {
-                smokeFly = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
-                smokeFlyTime = gameLocal.time;
-                gameLocal.smokeParticles.EmitSmoke(smokeFly, smokeFlyTime, gameLocal.random.CRandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis());
+                this.smokeFly = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
+                this.smokeFlyTime = gameLocal.time;
+                gameLocal.smokeParticles.EmitSmoke(this.smokeFly, this.smokeFlyTime, gameLocal.random.CRandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis());
             }
 
-            final String sndName = spawnArgs.GetString("snd_bounce");
+            final String sndName = this.spawnArgs.GetString("snd_bounce");
             if (isNotNullOrEmpty(sndName)) {//sndName != '\0' ) {
-                sndBounce = declManager.FindSound(sndName);
+                this.sndBounce = declManager.FindSound(sndName);
             }
 
             UpdateVisuals();
@@ -2286,16 +2286,16 @@ public class Projectile {
             RunPhysics();
             Present();
 
-            if (smokeFly != null && smokeFlyTime != 0) {
-                if (!gameLocal.smokeParticles.EmitSmoke(smokeFly, smokeFlyTime, gameLocal.random.CRandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis())) {
-                    smokeFlyTime = 0;
+            if ((this.smokeFly != null) && (this.smokeFlyTime != 0)) {
+                if (!gameLocal.smokeParticles.EmitSmoke(this.smokeFly, this.smokeFlyTime, gameLocal.random.CRandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis())) {
+                    this.smokeFlyTime = 0;
                 }
             }
         }
 
         @Override
         public void Killed(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            if (spawnArgs.GetBool("detonate_on_death")) {
+            if (this.spawnArgs.GetBool("detonate_on_death")) {
                 Explode();
             } else {
                 Fizzle();
@@ -2314,18 +2314,18 @@ public class Projectile {
             Hide();
 
             // these must not be "live forever" particle systems
-            smokeFly = null;
-            smokeFlyTime = 0;
-            final String smokeName = spawnArgs.GetString("smoke_detonate");
+            this.smokeFly = null;
+            this.smokeFlyTime = 0;
+            final String smokeName = this.spawnArgs.GetString("smoke_detonate");
             if (isNotNullOrEmpty(smokeName)) {//smokeName != '\0' ) {
-                smokeFly = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
-                smokeFlyTime = gameLocal.time;
-                gameLocal.smokeParticles.EmitSmoke(smokeFly, smokeFlyTime, gameLocal.random.CRandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis());
+                this.smokeFly = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
+                this.smokeFlyTime = gameLocal.time;
+                gameLocal.smokeParticles.EmitSmoke(this.smokeFly, this.smokeFlyTime, gameLocal.random.CRandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis());
             }
 
-            fl.takedamage = false;
-            physicsObj.SetContents(0);
-            physicsObj.PutToRest();
+            this.fl.takedamage = false;
+            this.physicsObj.SetContents(0);
+            this.physicsObj.PutToRest();
 
             CancelEvents(EV_Explode);
             PostEventMS(EV_Remove, 0);
@@ -2341,16 +2341,16 @@ public class Projectile {
             StartSound("snd_fizzle", SND_CHANNEL_BODY, 0, false, null);
 
             // fizzle FX
-            final String smokeName = spawnArgs.GetString("smoke_fuse");
+            final String smokeName = this.spawnArgs.GetString("smoke_fuse");
             if (isNotNullOrEmpty(smokeName)) {//smokeName != '\0' ) {
-                smokeFly = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
-                smokeFlyTime = gameLocal.time;
-                gameLocal.smokeParticles.EmitSmoke(smokeFly, smokeFlyTime, gameLocal.random.CRandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis());
+                this.smokeFly = (idDeclParticle) declManager.FindType(DECL_PARTICLE, smokeName);
+                this.smokeFlyTime = gameLocal.time;
+                gameLocal.smokeParticles.EmitSmoke(this.smokeFly, this.smokeFlyTime, gameLocal.random.CRandomFloat(), GetPhysics().GetOrigin(), GetPhysics().GetAxis());
             }
 
-            fl.takedamage = false;
-            physicsObj.SetContents(0);
-            physicsObj.PutToRest();
+            this.fl.takedamage = false;
+            this.physicsObj.SetContents(0);
+            this.physicsObj.PutToRest();
 
             Hide();
 
@@ -2364,10 +2364,10 @@ public class Projectile {
 
         @Override
         public boolean Collide(final trace_s collision, final idVec3 velocity) {
-            if (sndBounce != null) {
-                StartSoundShader(sndBounce, SND_CHANNEL_BODY, 0, false, null);
+            if (this.sndBounce != null) {
+                StartSoundShader(this.sndBounce, SND_CHANNEL_BODY, 0, false, null);
             }
-            sndBounce = null;
+            this.sndBounce = null;
             return false;
         }
 
@@ -2398,5 +2398,5 @@ public class Projectile {
             return eventCallbacks;
         }
 
-    };
+    }
 }

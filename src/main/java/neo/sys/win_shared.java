@@ -51,7 +51,7 @@ public class win_shared {
 //        }
 //        return -1;
         final long ram = ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getTotalPhysicalMemorySize();
-        int megaRam = (int) (ram / 1000000);
+        final int megaRam = (int) (ram / 1000000);
 
         return megaRam;
     }

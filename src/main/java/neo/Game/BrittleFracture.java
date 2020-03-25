@@ -98,7 +98,7 @@ public class BrittleFracture {
         int                    droppedTime;
         boolean                atEdge;
         int                    islandNum;
-    };
+    }
 //
     public static final int SHARD_ALIVE_TIME = 5000;
     public static final int SHARD_FADE_START = 2000;
@@ -142,12 +142,12 @@ public class BrittleFracture {
         private float                 density;
         private float                 friction;
         private float                 bouncyness;
-        private idStr                 fxFracture;
+        private final idStr                 fxFracture;
         //
         // state
         private idPhysics_StaticMulti physicsObj;
-        private idList<shard_s>       shards;
-        private idBounds              bounds;
+        private final idList<shard_s>       shards;
+        private final idBounds              bounds;
         private boolean               disableFracture;
         //
         // for rendering
@@ -157,243 +157,243 @@ public class BrittleFracture {
         //
 
         public idBrittleFracture() {
-            material = null;
-            decalMaterial = null;
-            decalSize = 0;
-            maxShardArea = 0;
-            maxShatterRadius = 0;
-            minShatterRadius = 0;
-            linearVelocityScale = 0;
-            angularVelocityScale = 0;
-            shardMass = 0;
-            density = 0;
-            friction = 0;
-            bouncyness = 0;
-            fxFracture = new idStr();
+            this.material = null;
+            this.decalMaterial = null;
+            this.decalSize = 0;
+            this.maxShardArea = 0;
+            this.maxShatterRadius = 0;
+            this.minShatterRadius = 0;
+            this.linearVelocityScale = 0;
+            this.angularVelocityScale = 0;
+            this.shardMass = 0;
+            this.density = 0;
+            this.friction = 0;
+            this.bouncyness = 0;
+            this.fxFracture = new idStr();
 
-            shards = new idList<>();
-            bounds = idBounds.ClearBounds();
-            disableFracture = false;
+            this.shards = new idList<>();
+            this.bounds = idBounds.ClearBounds();
+            this.disableFracture = false;
 
-            lastRenderEntityUpdate = -1;
-            changed = false;
+            this.lastRenderEntityUpdate = -1;
+            this.changed = false;
 
-            fl.networkSync = true;
+            this.fl.networkSync = true;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
             int i, j;
 
-            savefile.WriteInt(health);
-            entityFlags_s flags = fl;
+            savefile.WriteInt(this.health);
+            final entityFlags_s flags = this.fl;
             LittleBitField(flags);
             savefile.Write(flags);
 
             // setttings
-            savefile.WriteMaterial(material);
-            savefile.WriteMaterial(decalMaterial);
-            savefile.WriteFloat(decalSize);
-            savefile.WriteFloat(maxShardArea);
-            savefile.WriteFloat(maxShatterRadius);
-            savefile.WriteFloat(minShatterRadius);
-            savefile.WriteFloat(linearVelocityScale);
-            savefile.WriteFloat(angularVelocityScale);
-            savefile.WriteFloat(shardMass);
-            savefile.WriteFloat(density);
-            savefile.WriteFloat(friction);
-            savefile.WriteFloat(bouncyness);
-            savefile.WriteString(fxFracture);
+            savefile.WriteMaterial(this.material);
+            savefile.WriteMaterial(this.decalMaterial);
+            savefile.WriteFloat(this.decalSize);
+            savefile.WriteFloat(this.maxShardArea);
+            savefile.WriteFloat(this.maxShatterRadius);
+            savefile.WriteFloat(this.minShatterRadius);
+            savefile.WriteFloat(this.linearVelocityScale);
+            savefile.WriteFloat(this.angularVelocityScale);
+            savefile.WriteFloat(this.shardMass);
+            savefile.WriteFloat(this.density);
+            savefile.WriteFloat(this.friction);
+            savefile.WriteFloat(this.bouncyness);
+            savefile.WriteString(this.fxFracture);
 
             // state
-            savefile.WriteBounds(bounds);
-            savefile.WriteBool(disableFracture);
+            savefile.WriteBounds(this.bounds);
+            savefile.WriteBool(this.disableFracture);
 
-            savefile.WriteInt(lastRenderEntityUpdate);
-            savefile.WriteBool(changed);
+            savefile.WriteInt(this.lastRenderEntityUpdate);
+            savefile.WriteBool(this.changed);
 
-            savefile.WriteStaticObject(physicsObj);
+            savefile.WriteStaticObject(this.physicsObj);
 
-            savefile.WriteInt(shards.Num());
-            for (i = 0; i < shards.Num(); i++) {
-                savefile.WriteWinding(shards.oGet(i).winding);
+            savefile.WriteInt(this.shards.Num());
+            for (i = 0; i < this.shards.Num(); i++) {
+                savefile.WriteWinding(this.shards.oGet(i).winding);
 
-                savefile.WriteInt(shards.oGet(i).decals.Num());
-                for (j = 0; j < shards.oGet(i).decals.Num(); j++) {
-                    savefile.WriteWinding(shards.oGet(i).decals.oGet(j));
+                savefile.WriteInt(this.shards.oGet(i).decals.Num());
+                for (j = 0; j < this.shards.oGet(i).decals.Num(); j++) {
+                    savefile.WriteWinding(this.shards.oGet(i).decals.oGet(j));
                 }
 
-                savefile.WriteInt(shards.oGet(i).neighbours.Num());
-                for (j = 0; j < shards.oGet(i).neighbours.Num(); j++) {
-                    int index = shards.FindIndex(shards.oGet(i).neighbours.oGet(j));
+                savefile.WriteInt(this.shards.oGet(i).neighbours.Num());
+                for (j = 0; j < this.shards.oGet(i).neighbours.Num(); j++) {
+                    final int index = this.shards.FindIndex(this.shards.oGet(i).neighbours.oGet(j));
                     assert (index != -1);
                     savefile.WriteInt(index);
                 }
 
-                savefile.WriteInt(shards.oGet(i).edgeHasNeighbour.Num());
-                for (j = 0; j < shards.oGet(i).edgeHasNeighbour.Num(); j++) {
-                    savefile.WriteBool(shards.oGet(i).edgeHasNeighbour.oGet(j));
+                savefile.WriteInt(this.shards.oGet(i).edgeHasNeighbour.Num());
+                for (j = 0; j < this.shards.oGet(i).edgeHasNeighbour.Num(); j++) {
+                    savefile.WriteBool(this.shards.oGet(i).edgeHasNeighbour.oGet(j));
                 }
 
-                savefile.WriteInt(shards.oGet(i).droppedTime);
-                savefile.WriteInt(shards.oGet(i).islandNum);
-                savefile.WriteBool(shards.oGet(i).atEdge);
-                savefile.WriteStaticObject(shards.oGet(i).physicsObj);
+                savefile.WriteInt(this.shards.oGet(i).droppedTime);
+                savefile.WriteInt(this.shards.oGet(i).islandNum);
+                savefile.WriteBool(this.shards.oGet(i).atEdge);
+                savefile.WriteStaticObject(this.shards.oGet(i).physicsObj);
             }
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
             int i, j;
-            int[] num = new int[1];
+            final int[] num = new int[1];
 
-            renderEntity.hModel = renderModelManager.AllocModel();
-            renderEntity.hModel.InitEmpty(brittleFracture_SnapshotName);
-            renderEntity.callback = idBrittleFracture.ModelCallback.getInstance();
-            renderEntity.noShadow = true;
-            renderEntity.noSelfShadow = true;
-            renderEntity.noDynamicInteractions = false;
+            this.renderEntity.hModel = renderModelManager.AllocModel();
+            this.renderEntity.hModel.InitEmpty(brittleFracture_SnapshotName);
+            this.renderEntity.callback = idBrittleFracture.ModelCallback.getInstance();
+            this.renderEntity.noShadow = true;
+            this.renderEntity.noSelfShadow = true;
+            this.renderEntity.noDynamicInteractions = false;
 
-            health = savefile.ReadInt();
-            savefile.Read(fl);
-            LittleBitField(fl);
+            this.health = savefile.ReadInt();
+            savefile.Read(this.fl);
+            LittleBitField(this.fl);
 
             // setttings
-            savefile.ReadMaterial(material);
-            savefile.ReadMaterial(decalMaterial);
-            decalSize = savefile.ReadFloat();
-            maxShardArea = savefile.ReadFloat();
-            maxShatterRadius = savefile.ReadFloat();
-            minShatterRadius = savefile.ReadFloat();
-            linearVelocityScale = savefile.ReadFloat();
-            angularVelocityScale = savefile.ReadFloat();
-            shardMass = savefile.ReadFloat();
-            density = savefile.ReadFloat();
-            friction = savefile.ReadFloat();
-            bouncyness = savefile.ReadFloat();
-            savefile.ReadString(fxFracture);
+            savefile.ReadMaterial(this.material);
+            savefile.ReadMaterial(this.decalMaterial);
+            this.decalSize = savefile.ReadFloat();
+            this.maxShardArea = savefile.ReadFloat();
+            this.maxShatterRadius = savefile.ReadFloat();
+            this.minShatterRadius = savefile.ReadFloat();
+            this.linearVelocityScale = savefile.ReadFloat();
+            this.angularVelocityScale = savefile.ReadFloat();
+            this.shardMass = savefile.ReadFloat();
+            this.density = savefile.ReadFloat();
+            this.friction = savefile.ReadFloat();
+            this.bouncyness = savefile.ReadFloat();
+            savefile.ReadString(this.fxFracture);
 
             // state
-            savefile.ReadBounds(bounds);
-            disableFracture = savefile.ReadBool();
+            savefile.ReadBounds(this.bounds);
+            this.disableFracture = savefile.ReadBool();
 
-            lastRenderEntityUpdate = savefile.ReadInt();
-            changed = savefile.ReadBool();
+            this.lastRenderEntityUpdate = savefile.ReadInt();
+            this.changed = savefile.ReadBool();
 
-            savefile.ReadStaticObject(physicsObj);
-            RestorePhysics(physicsObj);
+            savefile.ReadStaticObject(this.physicsObj);
+            RestorePhysics(this.physicsObj);
 
             savefile.ReadInt(num);
-            shards.SetNum(num[0]);
+            this.shards.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
-                shards.oSet(i, new shard_s());
+                this.shards.oSet(i, new shard_s());
             }
 
             for (i = 0; i < num[0]; i++) {
-                savefile.ReadWinding(shards.oGet(i).winding);
+                savefile.ReadWinding(this.shards.oGet(i).winding);
 
                 j = savefile.ReadInt();
-                shards.oGet(i).decals.SetNum(j);
-                for (j = 0; j < shards.oGet(i).decals.Num(); j++) {
-                    shards.oGet(i).decals.oSet(j, new idFixedWinding());
-                    savefile.ReadWinding(shards.oGet(i).decals.oGet(j));//TODO:pointer of begin range?
+                this.shards.oGet(i).decals.SetNum(j);
+                for (j = 0; j < this.shards.oGet(i).decals.Num(); j++) {
+                    this.shards.oGet(i).decals.oSet(j, new idFixedWinding());
+                    savefile.ReadWinding(this.shards.oGet(i).decals.oGet(j));//TODO:pointer of begin range?
                 }
 
                 j = savefile.ReadInt();
-                shards.oGet(i).neighbours.SetNum(j);
-                for (j = 0; j < shards.oGet(i).neighbours.Num(); j++) {
-                    int[] index = new int[1];
+                this.shards.oGet(i).neighbours.SetNum(j);
+                for (j = 0; j < this.shards.oGet(i).neighbours.Num(); j++) {
+                    final int[] index = new int[1];
                     savefile.ReadInt(index);
                     assert (index[0] != -1);
-                    shards.oGet(i).neighbours.oSet(j, shards.oGet(index[0]));
+                    this.shards.oGet(i).neighbours.oSet(j, this.shards.oGet(index[0]));
                 }
 
                 j = savefile.ReadInt();
-                shards.oGet(i).edgeHasNeighbour.SetNum(j);
-                for (j = 0; j < shards.oGet(i).edgeHasNeighbour.Num(); j++) {
-                    shards.oGet(i).edgeHasNeighbour.oSet(j, savefile.ReadBool());
+                this.shards.oGet(i).edgeHasNeighbour.SetNum(j);
+                for (j = 0; j < this.shards.oGet(i).edgeHasNeighbour.Num(); j++) {
+                    this.shards.oGet(i).edgeHasNeighbour.oSet(j, savefile.ReadBool());
                 }
 
-                shards.oGet(i).droppedTime = savefile.ReadInt();
-                shards.oGet(i).islandNum = savefile.ReadInt();
-                shards.oGet(i).atEdge = savefile.ReadBool();
-                savefile.ReadStaticObject(shards.oGet(i).physicsObj);
-                if (shards.oGet(i).droppedTime < 0) {
-                    shards.oGet(i).clipModel = physicsObj.GetClipModel(i);
+                this.shards.oGet(i).droppedTime = savefile.ReadInt();
+                this.shards.oGet(i).islandNum = savefile.ReadInt();
+                this.shards.oGet(i).atEdge = savefile.ReadBool();
+                savefile.ReadStaticObject(this.shards.oGet(i).physicsObj);
+                if (this.shards.oGet(i).droppedTime < 0) {
+                    this.shards.oGet(i).clipModel = this.physicsObj.GetClipModel(i);
                 } else {
-                    shards.oGet(i).clipModel = shards.oGet(i).physicsObj.GetClipModel();
+                    this.shards.oGet(i).clipModel = this.shards.oGet(i).physicsObj.GetClipModel();
                 }
             }
         }
 
         @Override
         public void Spawn() {
-            float[] d = {0}, f = {0}, b = {0};
+            final float[] d = {0}, f = {0}, b = {0};
 
             // get shard properties
-            decalMaterial = declManager.FindMaterial(spawnArgs.GetString("mtr_decal"));
-            decalSize = spawnArgs.GetFloat("decalSize", "40");
-            maxShardArea = spawnArgs.GetFloat("maxShardArea", "200");
-            maxShardArea = idMath.ClampFloat(100, 10000, maxShardArea);
-            maxShatterRadius = spawnArgs.GetFloat("maxShatterRadius", "40");
-            minShatterRadius = spawnArgs.GetFloat("minShatterRadius", "10");
-            linearVelocityScale = spawnArgs.GetFloat("linearVelocityScale", "0.1");
-            angularVelocityScale = spawnArgs.GetFloat("angularVelocityScale", "40");
-            fxFracture.oSet(spawnArgs.GetString("fx"));
+            this.decalMaterial = declManager.FindMaterial(this.spawnArgs.GetString("mtr_decal"));
+            this.decalSize = this.spawnArgs.GetFloat("decalSize", "40");
+            this.maxShardArea = this.spawnArgs.GetFloat("maxShardArea", "200");
+            this.maxShardArea = idMath.ClampFloat(100, 10000, this.maxShardArea);
+            this.maxShatterRadius = this.spawnArgs.GetFloat("maxShatterRadius", "40");
+            this.minShatterRadius = this.spawnArgs.GetFloat("minShatterRadius", "10");
+            this.linearVelocityScale = this.spawnArgs.GetFloat("linearVelocityScale", "0.1");
+            this.angularVelocityScale = this.spawnArgs.GetFloat("angularVelocityScale", "40");
+            this.fxFracture.oSet(this.spawnArgs.GetString("fx"));
 
             // get rigid body properties
-            shardMass = spawnArgs.GetFloat("shardMass", "20");
-            shardMass = idMath.ClampFloat(0.001f, 1000.0f, shardMass);
-            spawnArgs.GetFloat("density", "0.1", d);
-            density = idMath.ClampFloat(0.001f, 1000.0f, d[0]);
-            spawnArgs.GetFloat("friction", "0.4", f);
-            friction = idMath.ClampFloat(0.0f, 1.0f, f[0]);
-            spawnArgs.GetFloat("bouncyness", "0.01", b);
-            bouncyness = idMath.ClampFloat(0.0f, 1.0f, b[0]);
+            this.shardMass = this.spawnArgs.GetFloat("shardMass", "20");
+            this.shardMass = idMath.ClampFloat(0.001f, 1000.0f, this.shardMass);
+            this.spawnArgs.GetFloat("density", "0.1", d);
+            this.density = idMath.ClampFloat(0.001f, 1000.0f, d[0]);
+            this.spawnArgs.GetFloat("friction", "0.4", f);
+            this.friction = idMath.ClampFloat(0.0f, 1.0f, f[0]);
+            this.spawnArgs.GetFloat("bouncyness", "0.01", b);
+            this.bouncyness = idMath.ClampFloat(0.0f, 1.0f, b[0]);
 
-            disableFracture = spawnArgs.GetBool("disableFracture", "0");
-            health = spawnArgs.GetInt("health", "40");
-            fl.takedamage = true;
+            this.disableFracture = this.spawnArgs.GetBool("disableFracture", "0");
+            this.health = this.spawnArgs.GetInt("health", "40");
+            this.fl.takedamage = true;
 
             // FIXME: set "bleed" so idProjectile calls AddDamageEffect
-            spawnArgs.SetBool("bleed", true);
+            this.spawnArgs.SetBool("bleed", true);
 
-            CreateFractures(renderEntity.hModel);
+            CreateFractures(this.renderEntity.hModel);
 
             FindNeighbours();
 
-            renderEntity.hModel = renderModelManager.AllocModel();
-            renderEntity.hModel.InitEmpty(brittleFracture_SnapshotName);
-            renderEntity.callback = idBrittleFracture.ModelCallback.getInstance();
-            renderEntity.noShadow = true;
-            renderEntity.noSelfShadow = true;
-            renderEntity.noDynamicInteractions = false;
+            this.renderEntity.hModel = renderModelManager.AllocModel();
+            this.renderEntity.hModel.InitEmpty(brittleFracture_SnapshotName);
+            this.renderEntity.callback = idBrittleFracture.ModelCallback.getInstance();
+            this.renderEntity.noShadow = true;
+            this.renderEntity.noSelfShadow = true;
+            this.renderEntity.noDynamicInteractions = false;
         }
 
         @Override
         public void Present() {
 
             // don't present to the renderer if the entity hasn't changed
-            if (0 == (thinkFlags & TH_UPDATEVISUALS)) {
+            if (0 == (this.thinkFlags & TH_UPDATEVISUALS)) {
                 return;
             }
             BecomeInactive(TH_UPDATEVISUALS);
 
-            renderEntity.bounds.oSet(bounds);
-            renderEntity.origin.Zero();
-            renderEntity.axis.Identity();
+            this.renderEntity.bounds.oSet(this.bounds);
+            this.renderEntity.origin.Zero();
+            this.renderEntity.axis.Identity();
 
             // force an update because the bounds/origin/axis may stay the same while the model changes
-            renderEntity.forceUpdate = 1;//true;
+            this.renderEntity.forceUpdate = 1;//true;
 
             // add to refresh list
-            if (modelDefHandle == -1) {
-                modelDefHandle = gameRenderWorld.AddEntityDef(renderEntity);
+            if (this.modelDefHandle == -1) {
+                this.modelDefHandle = gameRenderWorld.AddEntityDef(this.renderEntity);
             } else {
-                gameRenderWorld.UpdateEntityDef(modelDefHandle, renderEntity);
+                gameRenderWorld.UpdateEntityDef(this.modelDefHandle, this.renderEntity);
             }
 
-            changed = true;
+            this.changed = true;
         }
 
         @Override
@@ -403,10 +403,10 @@ public class BrittleFracture {
             boolean atRest = true, fading = false;
 
             // remove overdue shards
-            for (i = 0; i < shards.Num(); i++) {
-                droppedTime = shards.oGet(i).droppedTime;
+            for (i = 0; i < this.shards.Num(); i++) {
+                droppedTime = this.shards.oGet(i).droppedTime;
                 if (droppedTime != -1) {
-                    if (gameLocal.time - droppedTime > SHARD_ALIVE_TIME) {
+                    if ((gameLocal.time - droppedTime) > SHARD_ALIVE_TIME) {
                         RemoveShard(i);
                         i--;
                     }
@@ -415,19 +415,19 @@ public class BrittleFracture {
             }
 
             // remove the entity when nothing is visible
-            if (0 == shards.Num()) {
+            if (0 == this.shards.Num()) {
                 PostEventMS(EV_Remove, 0);
                 return;
             }
 
-            if ((thinkFlags & TH_PHYSICS) != 0) {
+            if ((this.thinkFlags & TH_PHYSICS) != 0) {
 
                 startTime = gameLocal.previousTime;
                 endTime = gameLocal.time;
 
                 // run physics on shards
-                for (i = 0; i < shards.Num(); i++) {
-                    shard = shards.oGet(i);
+                for (i = 0; i < this.shards.Num(); i++) {
+                    shard = this.shards.oGet(i);
 
                     if (shard.droppedTime == -1) {
                         continue;
@@ -447,10 +447,10 @@ public class BrittleFracture {
                 }
             }
 
-            if (!atRest || bounds.IsCleared()) {
-                bounds.Clear();
-                for (i = 0; i < shards.Num(); i++) {
-                    bounds.AddBounds(shards.oGet(i).clipModel.GetAbsBounds());
+            if (!atRest || this.bounds.IsCleared()) {
+                this.bounds.Clear();
+                for (i = 0; i < this.shards.Num(); i++) {
+                    this.bounds.AddBounds(this.shards.oGet(i).clipModel.GetAbsBounds());
                 }
             }
 
@@ -467,13 +467,13 @@ public class BrittleFracture {
         @Override
         public void ApplyImpulse(idEntity ent, int id, final idVec3 point, final idVec3 impulse) {
 
-            if (id < 0 || id >= shards.Num()) {
+            if ((id < 0) || (id >= this.shards.Num())) {
                 return;
             }
 
-            if (shards.oGet(id).droppedTime != -1) {
-                shards.oGet(id).physicsObj.ApplyImpulse(0, point, impulse);
-            } else if (health <= 0 && !disableFracture) {
+            if (this.shards.oGet(id).droppedTime != -1) {
+                this.shards.oGet(id).physicsObj.ApplyImpulse(0, point, impulse);
+            } else if ((this.health <= 0) && !this.disableFracture) {
                 Shatter(point, impulse, gameLocal.time);
             }
         }
@@ -481,27 +481,27 @@ public class BrittleFracture {
         @Override
         public void AddForce(idEntity ent, int id, final idVec3 point, final idVec3 force) {
 
-            if (id < 0 || id >= shards.Num()) {
+            if ((id < 0) || (id >= this.shards.Num())) {
                 return;
             }
 
-            if (shards.oGet(id).droppedTime != -1) {
-                shards.oGet(id).physicsObj.AddForce(0, point, force);
-            } else if (health <= 0 && !disableFracture) {
+            if (this.shards.oGet(id).droppedTime != -1) {
+                this.shards.oGet(id).physicsObj.AddForce(0, point, force);
+            } else if ((this.health <= 0) && !this.disableFracture) {
                 Shatter(point, force, gameLocal.time);
             }
         }
 
         @Override
         public void AddDamageEffect(final trace_s collision, final idVec3 velocity, final String damageDefName) {
-            if (!disableFracture) {
+            if (!this.disableFracture) {
                 ProjectDecal(collision.c.point, collision.c.normal, gameLocal.time, damageDefName);
             }
         }
 
         @Override
         public void Killed(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            if (!disableFracture) {
+            if (!this.disableFracture) {
                 ActivateTargets(this);
                 Break();
             }
@@ -510,14 +510,15 @@ public class BrittleFracture {
         public void ProjectDecal(final idVec3 point, final idVec3 dir, final int time, final String damageDefName) {
             int i, j, bits, clipBits;
             float a, c, s;
-            idVec2[] st = new idVec2[MAX_POINTS_ON_WINDING];
+            final idVec2[] st = new idVec2[MAX_POINTS_ON_WINDING];
             idVec3 origin;
-            idMat3 axis = new idMat3(), axisTemp = new idMat3();
-            idPlane[] textureAxis = new idPlane[2];
+            idMat3 axis = new idMat3();
+			final idMat3 axisTemp = new idMat3();
+            final idPlane[] textureAxis = new idPlane[2];
 
             if (gameLocal.isServer) {
-                idBitMsg msg = new idBitMsg();
-                ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+                final idBitMsg msg = new idBitMsg();
+                final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                 msg.BeginWriting();
@@ -558,21 +559,21 @@ public class BrittleFracture {
             axis.oSet(0, axisTemp.oGet(0).oMultiply(c).oPlus(axisTemp.oGet(1).oMultiply(s)));
             axis.oSet(1, axisTemp.oGet(0).oMultiply(s).oPlus(axisTemp.oGet(1).oMultiply(-c)));
 
-            textureAxis[0].oSet(axis.oGet(0).oMultiply(1.0f / decalSize));
+            textureAxis[0].oSet(axis.oGet(0).oMultiply(1.0f / this.decalSize));
             textureAxis[0].oSet(3, -(point.oMultiply(textureAxis[0].Normal())) + 0.5f);
 
-            textureAxis[1].oSet(axis.oGet(1).oMultiply(1.0f / decalSize));
+            textureAxis[1].oSet(axis.oGet(1).oMultiply(1.0f / this.decalSize));
             textureAxis[1].oSet(3, -(point.oMultiply(textureAxis[1].Normal())) + 0.5f);
 
-            for (i = 0; i < shards.Num(); i++) {
-                idFixedWinding winding = shards.oGet(i).winding;
-                origin = shards.oGet(i).clipModel.GetOrigin();
-                axis = shards.oGet(i).clipModel.GetAxis();
+            for (i = 0; i < this.shards.Num(); i++) {
+                final idFixedWinding winding = this.shards.oGet(i).winding;
+                origin = this.shards.oGet(i).clipModel.GetOrigin();
+                axis = this.shards.oGet(i).clipModel.GetAxis();
                 float d0, d1;
 
                 clipBits = -1;
                 for (j = 0; j < winding.GetNumPoints(); j++) {
-                    idVec3 p = origin.oPlus(winding.oGet(j).ToVec3().oMultiply(axis));
+                    final idVec3 p = origin.oPlus(winding.oGet(j).ToVec3().oMultiply(axis));
 
                     st[j].x = d0 = textureAxis[0].Distance(p);
                     st[j].y = d1 = textureAxis[1].Distance(p);
@@ -591,8 +592,8 @@ public class BrittleFracture {
                     continue;
                 }
 
-                idFixedWinding decal = new idFixedWinding();
-                shards.oGet(i).decals.Append(decal);
+                final idFixedWinding decal = new idFixedWinding();
+                this.shards.oGet(i).decals.Append(decal);
 
                 decal.SetNumPoints(winding.GetNumPoints());
                 for (j = 0; j < winding.GetNumPoints(); j++) {
@@ -606,7 +607,7 @@ public class BrittleFracture {
         }
 
         public boolean IsBroken() {
-            return (fl.takedamage == false);
+            return (this.fl.takedamage == false);
         }
 
         @Override
@@ -621,7 +622,7 @@ public class BrittleFracture {
 
         @Override
         public boolean ClientReceiveEvent(int event, int time, final idBitMsg msg) {
-            idVec3 point = new idVec3(), dir = new idVec3();
+            final idVec3 point = new idVec3(), dir = new idVec3();
 
             switch (event) {
                 case EVENT_PROJECT_DECAL: {
@@ -659,7 +660,7 @@ public class BrittleFracture {
             srfTriangles_s tris, decalTris;
             modelSurface_s surface;
             idDrawVert v;
-            idPlane plane = new idPlane();
+            final idPlane plane = new idPlane();
             idMat3 tangents;
 
             // this may be triggered by a model trace or other non-view related source,
@@ -669,22 +670,22 @@ public class BrittleFracture {
             }
 
             // don't regenerate it if it is current
-            if (lastRenderEntityUpdate == gameLocal.time || !changed) {
+            if ((this.lastRenderEntityUpdate == gameLocal.time) || !this.changed) {
                 return false;
             }
 
-            lastRenderEntityUpdate = gameLocal.time;
-            changed = false;
+            this.lastRenderEntityUpdate = gameLocal.time;
+            this.changed = false;
 
             numTris = 0;
             numDecalTris = 0;
-            for (i = 0; i < shards.Num(); i++) {
-                n = shards.oGet(i).winding.GetNumPoints();
+            for (i = 0; i < this.shards.Num(); i++) {
+                n = this.shards.oGet(i).winding.GetNumPoints();
                 if (n > 2) {
                     numTris += n - 2;
                 }
-                for (k = 0; k < shards.oGet(i).decals.Num(); k++) {
-                    n = shards.oGet(i).decals.oGet(k).GetNumPoints();
+                for (k = 0; k < this.shards.oGet(i).decals.Num(); k++) {
+                    n = this.shards.oGet(i).decals.oGet(k).GetNumPoints();
                     if (n > 2) {
                         numDecalTris += n - 2;
                     }
@@ -695,18 +696,18 @@ public class BrittleFracture {
             renderEntity.hModel.InitEmpty(brittleFracture_SnapshotName);
 
             // allocate triangle surfaces for the fractures and decals
-            tris = renderEntity.hModel.AllocSurfaceTriangles(numTris * 3, material.ShouldCreateBackSides() ? numTris * 6 : numTris * 3);
-            decalTris = renderEntity.hModel.AllocSurfaceTriangles(numDecalTris * 3, decalMaterial.ShouldCreateBackSides() ? numDecalTris * 6 : numDecalTris * 3);
+            tris = renderEntity.hModel.AllocSurfaceTriangles(numTris * 3, this.material.ShouldCreateBackSides() ? numTris * 6 : numTris * 3);
+            decalTris = renderEntity.hModel.AllocSurfaceTriangles(numDecalTris * 3, this.decalMaterial.ShouldCreateBackSides() ? numDecalTris * 6 : numDecalTris * 3);
 
-            for (i = 0; i < shards.Num(); i++) {
-                final idVec3 origin = shards.oGet(i).clipModel.GetOrigin();
-                final idMat3 axis = shards.oGet(i).clipModel.GetAxis();
+            for (i = 0; i < this.shards.Num(); i++) {
+                final idVec3 origin = this.shards.oGet(i).clipModel.GetOrigin();
+                final idMat3 axis = this.shards.oGet(i).clipModel.GetAxis();
 
                 fade = 1.0f;
-                if (shards.oGet(i).droppedTime >= 0) {
-                    msec = gameLocal.time - shards.oGet(i).droppedTime - SHARD_FADE_START;
+                if (this.shards.oGet(i).droppedTime >= 0) {
+                    msec = gameLocal.time - this.shards.oGet(i).droppedTime - SHARD_FADE_START;
                     if (msec > 0) {
-                        fade = 1.0f - (float) msec / (SHARD_ALIVE_TIME - SHARD_FADE_START);
+                        fade = 1.0f - ((float) msec / (SHARD_ALIVE_TIME - SHARD_FADE_START));
                     }
                 }
                 packedColor = (int) PackColor(new idVec4(renderEntity.shaderParms[SHADERPARM_RED] * fade,
@@ -714,7 +715,7 @@ public class BrittleFracture {
                         renderEntity.shaderParms[ SHADERPARM_BLUE] * fade,
                         fade));
 
-                final idWinding winding = shards.oGet(i).winding;
+                final idWinding winding = this.shards.oGet(i).winding;
 
                 winding.GetPlane(plane);
                 tangents = (plane.Normal().oMultiply(axis)).ToMat3();
@@ -755,7 +756,7 @@ public class BrittleFracture {
                     tris.indexes[tris.numIndexes++] = tris.numVerts - 2;
                     tris.indexes[tris.numIndexes++] = tris.numVerts - 1;
 
-                    if (material.ShouldCreateBackSides()) {
+                    if (this.material.ShouldCreateBackSides()) {
 
                         tris.indexes[tris.numIndexes++] = tris.numVerts - 2;
                         tris.indexes[tris.numIndexes++] = tris.numVerts - 3;
@@ -763,8 +764,8 @@ public class BrittleFracture {
                     }
                 }
 
-                for (k = 0; k < shards.oGet(i).decals.Num(); k++) {
-                    final idWinding decalWinding = shards.oGet(i).decals.oGet(k);
+                for (k = 0; k < this.shards.oGet(i).decals.Num(); k++) {
+                    final idWinding decalWinding = this.shards.oGet(i).decals.oGet(k);
 
                     for (j = 2; j < decalWinding.GetNumPoints(); j++) {
 
@@ -802,7 +803,7 @@ public class BrittleFracture {
                         decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 2;
                         decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 1;
 
-                        if (decalMaterial.ShouldCreateBackSides()) {
+                        if (this.decalMaterial.ShouldCreateBackSides()) {
 
                             decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 2;
                             decalTris.indexes[decalTris.numIndexes++] = decalTris.numVerts - 3;
@@ -820,14 +821,14 @@ public class BrittleFracture {
 
 //	memset( &surface, 0, sizeof( surface ) );
             surface = new modelSurface_s();
-            surface.shader = material;
+            surface.shader = this.material;
             surface.id = 0;
             surface.geometry = tris;
             renderEntity.hModel.AddSurface(surface);
 
 //	memset( &surface, 0, sizeof( surface ) );
             surface = new modelSurface_s();
-            surface.shader = decalMaterial;
+            surface.shader = this.decalMaterial;
             surface.id = 1;
             surface.geometry = decalTris;
             renderEntity.hModel.AddSurface(surface);
@@ -876,10 +877,10 @@ public class BrittleFracture {
             public ByteBuffer Write() {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-        };
+        }
 
         private void AddShard(idClipModel clipModel, idFixedWinding w) {
-            shard_s shard = new shard_s();
+            final shard_s shard = new shard_s();
             shard.clipModel = clipModel;
             shard.droppedTime = -1;
             shard.winding = w;
@@ -887,19 +888,19 @@ public class BrittleFracture {
             shard.edgeHasNeighbour.AssureSize(w.GetNumPoints(), false);
             shard.neighbours.Clear();
             shard.atEdge = false;
-            shards.Append(shard);
+            this.shards.Append(shard);
         }
 
         private void RemoveShard(int index) {
             int i;
 
 //	delete shards[index];
-            shards.oSet(index, null);
-            shards.RemoveIndex(index);
-            physicsObj.RemoveIndex(index);
+            this.shards.oSet(index, null);
+            this.shards.RemoveIndex(index);
+            this.physicsObj.RemoveIndex(index);
 
-            for (i = index; i < shards.Num(); i++) {
-                shards.oGet(i).clipModel.SetId(i);
+            for (i = index; i < this.shards.Num(); i++) {
+                this.shards.oGet(i).clipModel.SetId(i);
             }
         }
 
@@ -929,7 +930,7 @@ public class BrittleFracture {
 
             // remove the clip model from the static physics object
             clipModelId = shard.clipModel.GetId();
-            physicsObj.SetClipModel(null, 1.0f, clipModelId, false);
+            this.physicsObj.SetClipModel(null, 1.0f, clipModelId, false);
 
             origin = shard.clipModel.GetOrigin();
             axis = shard.clipModel.GetAxis();
@@ -939,21 +940,21 @@ public class BrittleFracture {
 
             dir2 = origin.oMinus(point);
             dist = dir2.Normalize();
-            f = dist > maxShatterRadius ? 1.0f : idMath.Sqrt(dist - minShatterRadius) * (1.0f / idMath.Sqrt(maxShatterRadius - minShatterRadius));
+            f = dist > this.maxShatterRadius ? 1.0f : idMath.Sqrt(dist - this.minShatterRadius) * (1.0f / idMath.Sqrt(this.maxShatterRadius - this.minShatterRadius));
 
             // setup the physics
             shard.physicsObj.SetSelf(this);
-            shard.physicsObj.SetClipModel(shard.clipModel, density);
-            shard.physicsObj.SetMass(shardMass);
+            shard.physicsObj.SetClipModel(shard.clipModel, this.density);
+            shard.physicsObj.SetMass(this.shardMass);
             shard.physicsObj.SetOrigin(origin);
             shard.physicsObj.SetAxis(axis);
-            shard.physicsObj.SetBouncyness(bouncyness);
-            shard.physicsObj.SetFriction(0.6f, 0.6f, friction);
+            shard.physicsObj.SetBouncyness(this.bouncyness);
+            shard.physicsObj.SetFriction(0.6f, 0.6f, this.friction);
             shard.physicsObj.SetGravity(gameLocal.GetGravity());
             shard.physicsObj.SetContents(CONTENTS_RENDERMODEL);
             shard.physicsObj.SetClipMask(MASK_SOLID | CONTENTS_MOVEABLECLIP);
-            shard.physicsObj.ApplyImpulse(0, origin, dir.oMultiply(impulse * linearVelocityScale));
-            shard.physicsObj.SetAngularVelocity(dir.Cross(dir2).oMultiply(f * angularVelocityScale));
+            shard.physicsObj.ApplyImpulse(0, origin, dir.oMultiply(impulse * this.linearVelocityScale));
+            shard.physicsObj.SetAngularVelocity(dir.Cross(dir2).oMultiply(f * this.angularVelocityScale));
 
             shard.clipModel.SetId(clipModelId);
 
@@ -967,8 +968,8 @@ public class BrittleFracture {
             float m;
 
             if (gameLocal.isServer) {
-                idBitMsg msg = new idBitMsg();
-                ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+                final idBitMsg msg = new idBitMsg();
+                final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                 msg.BeginWriting();
@@ -989,21 +990,21 @@ public class BrittleFracture {
                 Break();
             }
 
-            if (fxFracture.Length() != 0) {
-                idEntityFx.StartFx(fxFracture, point, GetPhysics().GetAxis(), this, true);
+            if (this.fxFracture.Length() != 0) {
+                idEntityFx.StartFx(this.fxFracture, point, GetPhysics().GetAxis(), this, true);
             }
 
             dir = impulse;
             m = dir.Normalize();
 
-            for (i = 0; i < shards.Num(); i++) {
-                shard = shards.oGet(i);
+            for (i = 0; i < this.shards.Num(); i++) {
+                shard = this.shards.oGet(i);
 
                 if (shard.droppedTime != -1) {
                     continue;
                 }
 
-                if ((shard.clipModel.GetOrigin().oMinus(point)).LengthSqr() > Square(maxShatterRadius)) {
+                if ((shard.clipModel.GetOrigin().oMinus(point)).LengthSqr() > Square(this.maxShatterRadius)) {
                     continue;
                 }
 
@@ -1025,28 +1026,28 @@ public class BrittleFracture {
             dir.Normalize();
 
             numIslands = 0;
-            queue = new shard_s[shards.Num()];
-            for (i = 0; i < shards.Num(); i++) {
-                shards.oGet(i).islandNum = 0;
+            queue = new shard_s[this.shards.Num()];
+            for (i = 0; i < this.shards.Num(); i++) {
+                this.shards.oGet(i).islandNum = 0;
             }
 
-            for (i = 0; i < shards.Num(); i++) {
+            for (i = 0; i < this.shards.Num(); i++) {
 
-                if (shards.oGet(i).droppedTime != -1) {
+                if (this.shards.oGet(i).droppedTime != -1) {
                     continue;
                 }
 
-                if (shards.oGet(i).islandNum != 0) {
+                if (this.shards.oGet(i).islandNum != 0) {
                     continue;
                 }
 
                 queueStart = 0;
                 queueEnd = 1;
-                queue[0] = shards.oGet(i);
-                shards.oGet(i).islandNum = numIslands + 1;
+                queue[0] = this.shards.oGet(i);
+                this.shards.oGet(i).islandNum = numIslands + 1;
                 touchesEdge = false;
 
-                if (shards.oGet(i).atEdge) {
+                if (this.shards.oGet(i).atEdge) {
                     touchesEdge = true;
                 }
 
@@ -1084,26 +1085,26 @@ public class BrittleFracture {
         }
 
         private void Break() {
-            fl.takedamage = false;
-            physicsObj.SetContents(CONTENTS_RENDERMODEL | CONTENTS_TRIGGER);
+            this.fl.takedamage = false;
+            this.physicsObj.SetContents(CONTENTS_RENDERMODEL | CONTENTS_TRIGGER);
         }
 
         private void Fracture_r(idFixedWinding w) {
             int i, j, bestPlane;
             float a, c, s, dist, bestDist;
             idVec3 origin;
-            idPlane windingPlane = new idPlane();
-            idPlane[] splitPlanes = new idPlane[2];
-            idMat3 axis = new idMat3(), axistemp = new idMat3();
-            idFixedWinding back = new idFixedWinding();
-            idTraceModel trm = new idTraceModel();
+            final idPlane windingPlane = new idPlane();
+            final idPlane[] splitPlanes = new idPlane[2];
+            final idMat3 axis = new idMat3(), axistemp = new idMat3();
+            final idFixedWinding back = new idFixedWinding();
+            final idTraceModel trm = new idTraceModel();
             idClipModel clipModel;
 
             while (true) {
                 origin = w.GetCenter();
                 w.GetPlane(windingPlane);
 
-                if (w.GetArea() < maxShardArea) {
+                if (w.GetArea() < this.maxShardArea) {
                     break;
                 }
 
@@ -1151,9 +1152,9 @@ public class BrittleFracture {
             trm.Shrink(CM_CLIP_EPSILON);
             clipModel = new idClipModel(trm);
 
-            physicsObj.SetClipModel(clipModel, 1.0f, shards.Num());
-            physicsObj.SetOrigin(GetPhysics().GetOrigin().oPlus(origin), shards.Num());
-            physicsObj.SetAxis(GetPhysics().GetAxis(), shards.Num());
+            this.physicsObj.SetClipModel(clipModel, 1.0f, this.shards.Num());
+            this.physicsObj.SetOrigin(GetPhysics().GetOrigin().oPlus(origin), this.shards.Num());
+            this.physicsObj.SetAxis(GetPhysics().GetAxis(), this.shards.Num());
 
             AddShard(clipModel, w);
         }
@@ -1162,24 +1163,24 @@ public class BrittleFracture {
             int i, j, k;
             modelSurface_s surf;
             idDrawVert v;
-            idFixedWinding w = new idFixedWinding();
+            final idFixedWinding w = new idFixedWinding();
 
             if (NOT(renderModel)) {
                 return;
             }
 
-            physicsObj.SetSelf(this);
-            physicsObj.SetOrigin(GetPhysics().GetOrigin(), 0);
-            physicsObj.SetAxis(GetPhysics().GetAxis(), 0);
+            this.physicsObj.SetSelf(this);
+            this.physicsObj.SetOrigin(GetPhysics().GetOrigin(), 0);
+            this.physicsObj.SetAxis(GetPhysics().GetAxis(), 0);
 
             for (i = 0; i < 1 /*renderModel.NumSurfaces()*/; i++) {
                 surf = renderModel.Surface(i);
-                material = surf.shader;
+                this.material = surf.shader;
 
                 for (j = 0; j < surf.geometry.numIndexes; j += 3) {
                     w.Clear();
                     for (k = 0; k < 3; k++) {
-                        v = surf.geometry.verts[ surf.geometry.indexes[ j + 2 - k]];
+                        v = surf.geometry.verts[ surf.geometry.indexes[ (j + 2) - k]];
                         w.AddPoint(v.xyz);
                         w.oGet(k).s = v.st.oGet(0);
                         w.oGet(k).t = v.st.oGet(1);
@@ -1188,19 +1189,19 @@ public class BrittleFracture {
                 }
             }
 
-            physicsObj.SetContents(material.GetContentFlags());
-            SetPhysics(physicsObj);
+            this.physicsObj.SetContents(this.material.GetContentFlags());
+            SetPhysics(this.physicsObj);
         }
 
         private void FindNeighbours() {
             int i, j, k, l;
             idVec3 p1, p2, dir;
             idMat3 axis;
-            idPlane[] plane = new idPlane[4];
+            final idPlane[] plane = new idPlane[4];
 
-            for (i = 0; i < shards.Num(); i++) {
+            for (i = 0; i < this.shards.Num(); i++) {
 
-                shard_s shard1 = shards.oGet(i);
+                final shard_s shard1 = this.shards.oGet(i);
                 final idWinding w1 = shard1.winding;
                 final idVec3 origin1 = shard1.clipModel.GetOrigin();
                 final idMat3 axis1 = shard1.clipModel.GetAxis();
@@ -1222,13 +1223,13 @@ public class BrittleFracture {
                     plane[3].SetNormal(axis.oGet(2));
                     plane[3].FitThroughPoint(p1);
 
-                    for (j = 0; j < shards.Num(); j++) {
+                    for (j = 0; j < this.shards.Num(); j++) {
 
                         if (i == j) {
                             continue;
                         }
 
-                        shard_s shard2 = shards.oGet(j);
+                        final shard_s shard2 = this.shards.oGet(j);
 
                         for (l = 0; l < shard1.neighbours.Num(); l++) {
                             if (shard1.neighbours.oGet(l).equals(shard2)) {
@@ -1246,13 +1247,13 @@ public class BrittleFracture {
                         for (l = w2.GetNumPoints() - 1; l >= 0; l--) {
                             p1 = origin1.oPlus(w2.oGet(l).ToVec3().oMultiply(axis2));
                             p2 = origin1.oPlus(w2.oGet((l - 1) % w2.GetNumPoints()).ToVec3().oMultiply(axis2));
-                            if (plane[0].Side(p2, 0.1f) == SIDE_FRONT && plane[1].Side(p1, 0.1f) == SIDE_FRONT) {
-                                if (plane[2].Side(p1, 0.1f) == SIDE_ON && plane[3].Side(p1, 0.1f) == SIDE_ON) {
-                                    if (plane[2].Side(p2, 0.1f) == SIDE_ON && plane[3].Side(p2, 0.1f) == SIDE_ON) {
+                            if ((plane[0].Side(p2, 0.1f) == SIDE_FRONT) && (plane[1].Side(p1, 0.1f) == SIDE_FRONT)) {
+                                if ((plane[2].Side(p1, 0.1f) == SIDE_ON) && (plane[3].Side(p1, 0.1f) == SIDE_ON)) {
+                                    if ((plane[2].Side(p2, 0.1f) == SIDE_ON) && (plane[3].Side(p2, 0.1f) == SIDE_ON)) {
                                         shard1.neighbours.Append(shard2);
                                         shard1.edgeHasNeighbour.oSet(k, true);
                                         shard2.neighbours.Append(shard1);
-                                        shard2.edgeHasNeighbour.oSet((l - 1 + w2.GetNumPoints()) % w2.GetNumPoints(), true);
+                                        shard2.edgeHasNeighbour.oSet(((l - 1) + w2.GetNumPoints()) % w2.GetNumPoints(), true);
                                         break;
                                     }
                                 }
@@ -1275,26 +1276,26 @@ public class BrittleFracture {
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            disableFracture = false;
-            if (health <= 0) {
+            this.disableFracture = false;
+            if (this.health <= 0) {
                 Break();
             }
         }
 
         private void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> _trace) {
-            idEntity other = _other.value;
-            trace_s trace = _trace.value;
+            final idEntity other = _other.value;
+            final trace_s trace = _trace.value;
             idVec3 point, impulse;
 
             if (!IsBroken()) {
                 return;
             }
 
-            if (trace.c.id < 0 || trace.c.id >= shards.Num()) {
+            if ((trace.c.id < 0) || (trace.c.id >= this.shards.Num())) {
                 return;
             }
 
-            point = shards.oGet(trace.c.id).clipModel.GetOrigin();
+            point = this.shards.oGet(trace.c.id).clipModel.GetOrigin();
             impulse = other.GetPhysics().GetLinearVelocity().oMultiply(other.GetPhysics().GetMass());
 
             Shatter(point, impulse, gameLocal.time);
@@ -1314,16 +1315,16 @@ public class BrittleFracture {
         protected void _deconstructor() {
             int i;
 
-            for (i = 0; i < shards.Num(); i++) {
-                shards.oGet(i).decals.DeleteContents(true);
+            for (i = 0; i < this.shards.Num(); i++) {
+                this.shards.oGet(i).decals.DeleteContents(true);
 //                delete shards[i];
             }
 
             // make sure the render entity is freed before the model is freed
             FreeModelDef();
-            renderModelManager.FreeModel(renderEntity.hModel);
+            renderModelManager.FreeModel(this.renderEntity.hModel);
 
             super._deconstructor();
         }
-    };
+    }
 }
