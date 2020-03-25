@@ -42,8 +42,8 @@ public class StrList {
                 return;
             }
 
-            idList<idStr> other = new idList<>();
-            idList<idStr> pointerList = new idList<>();
+            final idList<idStr> other = new idList<>();
+            final idList<idStr> pointerList = new idList<>();
 
             pointerList.SetNum(Num());
             for (i = 0; i < Num(); i++) {
@@ -130,8 +130,8 @@ public class StrList {
                 return;
             }
 
-            idList<idStr> other = new idList<>();
-            idList<idStr> pointerList = new idList<>();
+            final idList<idStr> other = new idList<>();
+            final idList<idStr> pointerList = new idList<>();
 
             pointerList.SetNum(list.Num());
             for (i = 0; i < list.Num(); i++) {
@@ -157,7 +157,7 @@ public class StrList {
             return super.Append(new idStr(obj));
         }
 
-    };
+    }
 
 //    class idStrPtrList extends idList<idStr> {
 //    }

@@ -26,13 +26,13 @@ public class DeclTable {
 
         private boolean clamp;
         private boolean snap;
-        private idList<Float> values = new idList<>();
+        private final idList<Float> values = new idList<>();
         //
         //
 
         @Override
         public long Size() {
-            return /*sizeof(idDeclTable) +*/ values.Allocated();
+            return /*sizeof(idDeclTable) +*/ this.values.Allocated();
         }
 
         @Override
@@ -42,17 +42,17 @@ public class DeclTable {
 
         @Override
         public boolean Parse(String text, int textLength) throws Lib.idException {
-            idLexer src = new idLexer();
-            idToken token = new idToken();
+            final idLexer src = new idLexer();
+            final idToken token = new idToken();
             float v;
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
             src.SkipUntilString("{");
 
-            snap = false;
-            clamp = false;
-            values.Clear();
+            this.snap = false;
+            this.clamp = false;
+            this.values.Clear();
 
             while (true) {
                 if (!src.ReadToken(token)) {
@@ -64,13 +64,13 @@ public class DeclTable {
                 }
 
                 if (token.Icmp("snap") == 0) {
-                    snap = true;
+                    this.snap = true;
                 } else if (token.Icmp("clamp") == 0) {
-                    clamp = true;
+                    this.clamp = true;
                 } else if (token.Icmp("{") == 0) {
 
                     while (true) {
-                        boolean[] errorFlag = new boolean[1];
+                        final boolean[] errorFlag = new boolean[1];
 
                         v = src.ParseFloat(errorFlag);
                         if (errorFlag[0]) {
@@ -79,7 +79,7 @@ public class DeclTable {
                             return false;
                         }
 
-                        values.Append(v);
+                        this.values.Append(v);
 
                         src.ReadToken(token);
                         if (token.equals("}")) {
@@ -102,35 +102,35 @@ public class DeclTable {
 
             // copy the 0 element to the end, so lerping doesn't
             // need to worry about the wrap case
-            float val = values.oGet(0);		// template bug requires this to not be in the Append()?
-            values.Append(val);
+            final float val = this.values.oGet(0);		// template bug requires this to not be in the Append()?
+            this.values.Append(val);
 
             return true;
         }
 
         @Override
         public void FreeData() {
-            snap = false;
-            clamp = false;
-            values.Clear();
+            this.snap = false;
+            this.clamp = false;
+            this.values.Clear();
         }
 
         public float TableLookup(float index) {
             int iIndex;
             float iFrac;
 
-            int domain = values.Num() - 1;
+            final int domain = this.values.Num() - 1;
 
             if (domain <= 1) {
                 return 1.0f;
             }
 
-            if (clamp) {
+            if (this.clamp) {
                 index *= (domain - 1);
-                if (index >= domain - 1) {
-                    return values.oGet(domain - 1);
+                if (index >= (domain - 1)) {
+                    return this.values.oGet(domain - 1);
                 } else if (index <= 0) {
-                    return values.oGet(0);
+                    return this.values.oGet(0);
                 }
                 iIndex = idMath.Ftoi(index);
                 iFrac = index - iIndex;
@@ -146,14 +146,14 @@ public class DeclTable {
                 iIndex = iIndex % domain;
             }
 
-            if (!snap) {
+            if (!this.snap) {
                 // we duplicated the 0 index at the end at creation time, so we
                 // don't need to worry about wrapping the filter
-                return values.oGet(iIndex) * (1.0f - iFrac) + values.oGet(iIndex + 1) * iFrac;
+                return (this.values.oGet(iIndex) * (1.0f - iFrac)) + (this.values.oGet(iIndex + 1) * iFrac);
             }
 
-            return values.oGet(iIndex);
+            return this.values.oGet(iIndex);
         }
 
-    };
+    }
 }

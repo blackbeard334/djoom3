@@ -470,7 +470,7 @@ public class Entity {
         protected int                  modelDefHandle;                  // handle to static renderer model
         protected refSound_t           refSound;                        // used to present sound to the audio engine
         //
-        private   idPhysics_Static     defaultPhysicsObj;               // default physics object
+        private final   idPhysics_Static     defaultPhysicsObj;               // default physics object
         private   idPhysics            physics;                         // physics used for this entity
         private   idEntity             bindMaster;                      // entity bound to if unequal NULL
         private   int/*jointHandle_t*/ bindJoint;                       // joint bound to if unequal INVALID_JOINT
@@ -499,60 +499,60 @@ public class Entity {
 //        public static idEventFunc<idEntity>[] eventCallbacks;
 //
         public idEntity() {
-            targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<>().getClass());
+            this.targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<>().getClass());
 
-            entityNumber = ENTITYNUM_NONE;
-            entityDefNumber = -1;
+            this.entityNumber = ENTITYNUM_NONE;
+            this.entityDefNumber = -1;
 
-            spawnNode = new idLinkList<>();
-            spawnNode.SetOwner(this);
-            activeNode = new idLinkList<>();
-            activeNode.SetOwner(this);
+            this.spawnNode = new idLinkList<>();
+            this.spawnNode.SetOwner(this);
+            this.activeNode = new idLinkList<>();
+            this.activeNode.SetOwner(this);
 
-            snapshotNode = new idLinkList<>();
-            snapshotNode.SetOwner(this);
-            snapshotSequence = -1;
-            snapshotBits = 0;
+            this.snapshotNode = new idLinkList<>();
+            this.snapshotNode.SetOwner(this);
+            this.snapshotSequence = -1;
+            this.snapshotBits = 0;
 
-            name = new idStr();
-            spawnArgs = new idDict();
-            scriptObject = new idScriptObject();
+            this.name = new idStr();
+            this.spawnArgs = new idDict();
+            this.scriptObject = new idScriptObject();
 
-            thinkFlags = 0;
-            dormantStart = 0;
-            cinematic = false;
-            renderView = null;
-            cameraTarget = null;
-            health = 0;
+            this.thinkFlags = 0;
+            this.dormantStart = 0;
+            this.cinematic = false;
+            this.renderView = null;
+            this.cameraTarget = null;
+            this.health = 0;
 
-            physics = null;
-            bindMaster = null;
-            bindJoint = INVALID_JOINT;
-            bindBody = -1;
-            teamMaster = null;
-            teamChain = null;
-            signals = null;
+            this.physics = null;
+            this.bindMaster = null;
+            this.bindJoint = INVALID_JOINT;
+            this.bindBody = -1;
+            this.teamMaster = null;
+            this.teamChain = null;
+            this.signals = null;
 
 //            memset(PVSAreas, 0, sizeof(PVSAreas));
-            numPVSAreas = -1;
+            this.numPVSAreas = -1;
 
-            fl = new entityFlags_s();//	memset( &fl, 0, sizeof( fl ) );
-            fl.neverDormant = true;// most entities never go dormant
+            this.fl = new entityFlags_s();//	memset( &fl, 0, sizeof( fl ) );
+            this.fl.neverDormant = true;// most entities never go dormant
 
-            renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
-            modelDefHandle = -1;
-            refSound = new refSound_t();//memset( &refSound, 0, sizeof( refSound ) );
-            defaultPhysicsObj = new idPhysics_Static();
+            this.renderEntity = new renderEntity_s();//memset( &renderEntity, 0, sizeof( renderEntity ) );
+            this.modelDefHandle = -1;
+            this.refSound = new refSound_t();//memset( &refSound, 0, sizeof( refSound ) );
+            this.defaultPhysicsObj = new idPhysics_Static();
 
-            mpGUIState = -1;
+            this.mpGUIState = -1;
 
         }
 
         @Override
         protected void _deconstructor() {
-            if (gameLocal.GameState() != GAMESTATE_SHUTDOWN && !gameLocal.isClient && fl.networkSync && entityNumber >= MAX_CLIENTS) {
-                idBitMsg msg = new idBitMsg();
-                byte[] msgBuf = new byte[MAX_GAME_MESSAGE_SIZE];
+            if ((gameLocal.GameState() != GAMESTATE_SHUTDOWN) && !gameLocal.isClient && this.fl.networkSync && (this.entityNumber >= MAX_CLIENTS)) {
+                final idBitMsg msg = new idBitMsg();
+                final byte[] msgBuf = new byte[MAX_GAME_MESSAGE_SIZE];
 
                 msg.Init(msgBuf);
                 msg.WriteByte(GAME_RELIABLE_MESSAGE_DELETE_ENT);
@@ -561,12 +561,12 @@ public class Entity {
             }
 
             DeconstructScriptObject();
-            scriptObject.Free();
+            this.scriptObject.Free();
 
-            if (thinkFlags != 0) {
-                BecomeInactive(thinkFlags);
+            if (this.thinkFlags != 0) {
+                BecomeInactive(this.thinkFlags);
             }
-            activeNode.Remove();
+            this.activeNode.Remove();
 
             Signal(SIG_REMOVED);
 
@@ -581,106 +581,108 @@ public class Entity {
             Unbind();
             QuitTeam();
 
-            gameLocal.RemoveEntityFromHash(name.toString(), this);
+            gameLocal.RemoveEntityFromHash(this.name.toString(), this);
 
 //            delete renderView;
-            renderView = null;
+            this.renderView = null;
 
 //            delete signals;
-            signals = null;
+            this.signals = null;
 
             FreeModelDef();
             FreeSoundEmitter(false);
 
             gameLocal.UnregisterEntity(this);
 
-            delete(teamChain);
-            delete(teamMaster);
-            delete(bindMaster);
-            delete(physics);
-            if (physics != defaultPhysicsObj) delete(defaultPhysicsObj);
-            delete(cameraTarget);
+            delete(this.teamChain);
+            delete(this.teamMaster);
+            delete(this.bindMaster);
+            delete(this.physics);
+            if (this.physics != this.defaultPhysicsObj) {
+				delete(this.defaultPhysicsObj);
+			}
+            delete(this.cameraTarget);
             super._deconstructor();
         }
 
         @Override
         public void Spawn() {
             int i;
-            String[] temp = {null};
+            final String[] temp = {null};
             idVec3 origin;
             idMat3 axis;
             idKeyValue networkSync;
-            String[] classname = {null};
-            String[] scriptObjectName = {null};
+            final String[] classname = {null};
+            final String[] scriptObjectName = {null};
 
             gameLocal.RegisterEntity(this);
 
-            spawnArgs.GetString("classname", null, classname);
+            this.spawnArgs.GetString("classname", null, classname);
             final idDeclEntityDef def = gameLocal.FindEntityDef(classname[0], false);
             if (def != null) {
-                entityDefNumber = def.Index();
+                this.entityDefNumber = def.Index();
             }
 
             FixupLocalizedStrings();
 
             // parse static models the same way the editor display does
-            GameEdit.gameEdit.ParseSpawnArgsToRenderEntity(spawnArgs, renderEntity);
+            GameEdit.gameEdit.ParseSpawnArgsToRenderEntity(this.spawnArgs, this.renderEntity);
 
-            renderEntity.entityNum = entityNumber;
+            this.renderEntity.entityNum = this.entityNumber;
 
             // go dormant within 5 frames so that when the map starts most monsters are dormant
-            dormantStart = gameLocal.time - DELAY_DORMANT_TIME + gameLocal.msec * 5;
+            this.dormantStart = (gameLocal.time - DELAY_DORMANT_TIME) + (gameLocal.msec * 5);
 
-            origin = new idVec3(renderEntity.origin);
-            axis = new idMat3(renderEntity.axis);
+            origin = new idVec3(this.renderEntity.origin);
+            axis = new idMat3(this.renderEntity.axis);
 
             // do the audio parsing the same way dmap and the editor do
-            GameEdit.gameEdit.ParseSpawnArgsToRefSound(spawnArgs, refSound);
+            GameEdit.gameEdit.ParseSpawnArgsToRefSound(this.spawnArgs, this.refSound);
 
             // only play SCHANNEL_PRIVATE when sndworld.PlaceListener() is called with this listenerId
             // don't spatialize sounds from the same entity
-            refSound.listenerId = entityNumber + 1;
+            this.refSound.listenerId = this.entityNumber + 1;
 
-            cameraTarget = null;
-            temp[0] = spawnArgs.GetString("cameraTarget");
-            if (temp[0] != null && !temp[0].isEmpty()) {
+            this.cameraTarget = null;
+            temp[0] = this.spawnArgs.GetString("cameraTarget");
+            if ((temp[0] != null) && !temp[0].isEmpty()) {
                 // update the camera taget
                 PostEventMS(EV_UpdateCameraTarget, 0);
             }
 
             for (i = 0; i < MAX_RENDERENTITY_GUI; i++) {
-                UpdateGuiParms(renderEntity.gui[i], spawnArgs);
+                UpdateGuiParms(this.renderEntity.gui[i], this.spawnArgs);
             }
 
-            fl.solidForTeam = spawnArgs.GetBool("solidForTeam", "0");
-            fl.neverDormant = spawnArgs.GetBool("neverDormant", "0");
-            fl.hidden = spawnArgs.GetBool("hide", "0");
-            if (fl.hidden) {
+            this.fl.solidForTeam = this.spawnArgs.GetBool("solidForTeam", "0");
+            this.fl.neverDormant = this.spawnArgs.GetBool("neverDormant", "0");
+            this.fl.hidden = this.spawnArgs.GetBool("hide", "0");
+            if (this.fl.hidden) {
                 // make sure we're hidden, since a spawn function might not set it up right
                 PostEventMS(EV_Hide, 0);
             }
-            cinematic = spawnArgs.GetBool("cinematic", "0");
+            this.cinematic = this.spawnArgs.GetBool("cinematic", "0");
 
-            networkSync = spawnArgs.FindKey("networkSync");
+            networkSync = this.spawnArgs.FindKey("networkSync");
             if (networkSync != null) {
-                fl.networkSync = (atoi(networkSync.GetValue()) != 0);
+                this.fl.networkSync = (atoi(networkSync.GetValue()) != 0);
             }
 
             if (false) {
                 if (!gameLocal.isClient) {
                     // common.DPrintf( "NET: DBG %s - %s is synced: %s\n", spawnArgs.GetString( "classname", "" ), GetType().classname, fl.networkSync ? "true" : "false" );
-                    if (spawnArgs.GetString("classname", "").charAt(0) == '\0' && !fl.networkSync) {
+                    if ((this.spawnArgs.GetString("classname", "").charAt(0) == '\0') && !this.fl.networkSync) {
                         common.DPrintf("NET: WRN %s entity, no classname, and no networkSync?\n", GetType().getName());
                     }
                 }
             }
 
             // every object will have a unique name
-            temp[0] = spawnArgs.GetString("name", va("%s_%s_%d", GetClassname(), spawnArgs.GetString("classname"), entityNumber));
+            temp[0] = this.spawnArgs.GetString("name", va("%s_%s_%d", GetClassname(), this.spawnArgs.GetString("classname"), this.entityNumber));
             SetName(temp[0]);
 
             // if we have targets, wait until all entities are spawned to get them
-            if (spawnArgs.MatchPrefix("target") != null || spawnArgs.MatchPrefix("guiTarget") != null) {
+            if ((this.spawnArgs.MatchPrefix("target") != null) || (this.spawnArgs.MatchPrefix("guiTarget") != null)) {
                 if (gameLocal.GameState() == GAMESTATE_STARTUP) {
                     PostEventMS(EV_FindTargets, 0);
                 } else {
@@ -689,31 +691,31 @@ public class Entity {
                 }
             }
 
-            health = spawnArgs.GetInt("health");
+            this.health = this.spawnArgs.GetInt("health");
 
             InitDefaultPhysics(origin, axis);
 
             SetOrigin(origin);
             SetAxis(axis);
 
-            temp[0] = spawnArgs.GetString("model");
-            if (temp[0] != null && !temp[0].isEmpty()) {
+            temp[0] = this.spawnArgs.GetString("model");
+            if ((temp[0] != null) && !temp[0].isEmpty()) {
                 SetModel(temp[0]);
             }
 
-            if (spawnArgs.GetString("bind", "", temp)) {
+            if (this.spawnArgs.GetString("bind", "", temp)) {
                 PostEventMS(EV_SpawnBind, 0);
             }
 
             // auto-start a sound on the entity
-            if (refSound.shader != null && !refSound.waitfortrigger) {
-                StartSoundShader(refSound.shader, SND_CHANNEL_ANY, 0, false, null);
+            if ((this.refSound.shader != null) && !this.refSound.waitfortrigger) {
+                StartSoundShader(this.refSound.shader, SND_CHANNEL_ANY, 0, false, null);
             }
 
             // setup script object
-            if (ShouldConstructScriptObjectAtSpawn() && spawnArgs.GetString("scriptobject", null, scriptObjectName)) {
-                if (!scriptObject.SetType(scriptObjectName[0])) {
-                    gameLocal.Error("Script object '%s' not found on entity '%s'.", scriptObjectName[0], name);
+            if (ShouldConstructScriptObjectAtSpawn() && this.spawnArgs.GetString("scriptobject", null, scriptObjectName)) {
+                if (!this.scriptObject.SetType(scriptObjectName[0])) {
+                    gameLocal.Error("Script object '%s' not found on entity '%s'.", scriptObjectName[0], this.name);
                 }
 
                 ConstructScriptObject();
@@ -724,169 +726,169 @@ public class Entity {
         public void Save(idSaveGame savefile) {
             int i, j;
 
-            savefile.WriteInt(entityNumber);
-            savefile.WriteInt(entityDefNumber);
+            savefile.WriteInt(this.entityNumber);
+            savefile.WriteInt(this.entityDefNumber);
 
             // spawnNode and activeNode are restored by gameLocal
-            savefile.WriteInt(snapshotSequence);
-            savefile.WriteInt(snapshotBits);
+            savefile.WriteInt(this.snapshotSequence);
+            savefile.WriteInt(this.snapshotBits);
 
-            savefile.WriteDict(spawnArgs);
-            savefile.WriteString(name);
-            scriptObject.Save(savefile);
+            savefile.WriteDict(this.spawnArgs);
+            savefile.WriteString(this.name);
+            this.scriptObject.Save(savefile);
 
-            savefile.WriteInt(thinkFlags);
-            savefile.WriteInt(dormantStart);
-            savefile.WriteBool(cinematic);
+            savefile.WriteInt(this.thinkFlags);
+            savefile.WriteInt(this.dormantStart);
+            savefile.WriteBool(this.cinematic);
 
-            savefile.WriteObject(cameraTarget);
+            savefile.WriteObject(this.cameraTarget);
 
-            savefile.WriteInt(health);
+            savefile.WriteInt(this.health);
 
-            savefile.WriteInt(targets.Num());
-            for (i = 0; i < targets.Num(); i++) {
-                targets.oGet(i).Save(savefile);
+            savefile.WriteInt(this.targets.Num());
+            for (i = 0; i < this.targets.Num(); i++) {
+                this.targets.oGet(i).Save(savefile);
             }
 
-            entityFlags_s flags = fl;
+            final entityFlags_s flags = this.fl;
             LittleBitField(flags/*, sizeof(flags)*/);
             savefile.Write(flags/*, sizeof(flags)*/);
 
-            savefile.WriteRenderEntity(renderEntity);
-            savefile.WriteInt(modelDefHandle);
-            savefile.WriteRefSound(refSound);
+            savefile.WriteRenderEntity(this.renderEntity);
+            savefile.WriteInt(this.modelDefHandle);
+            savefile.WriteRefSound(this.refSound);
 
-            savefile.WriteObject(bindMaster);
-            savefile.WriteJoint(bindJoint);
-            savefile.WriteInt(bindBody);
-            savefile.WriteObject(teamMaster);
-            savefile.WriteObject(teamChain);
+            savefile.WriteObject(this.bindMaster);
+            savefile.WriteJoint(this.bindJoint);
+            savefile.WriteInt(this.bindBody);
+            savefile.WriteObject(this.teamMaster);
+            savefile.WriteObject(this.teamChain);
 
-            savefile.WriteStaticObject(defaultPhysicsObj);
+            savefile.WriteStaticObject(this.defaultPhysicsObj);
 
-            savefile.WriteInt(numPVSAreas);
+            savefile.WriteInt(this.numPVSAreas);
             for (i = 0; i < MAX_PVS_AREAS; i++) {
-                savefile.WriteInt(PVSAreas[i]);
+                savefile.WriteInt(this.PVSAreas[i]);
             }
 
-            if (null == signals) {
+            if (null == this.signals) {
                 savefile.WriteBool(false);
             } else {
                 savefile.WriteBool(true);
                 for (i = 0; i < NUM_SIGNALS.ordinal(); i++) {
-                    savefile.WriteInt(signals.signal[i].Num());
-                    for (j = 0; j < signals.signal[i].Num(); j++) {
-                        savefile.WriteInt(signals.signal[i].oGet(j).threadnum);
-                        savefile.WriteString(signals.signal[i].oGet(j).function.Name());
+                    savefile.WriteInt(this.signals.signal[i].Num());
+                    for (j = 0; j < this.signals.signal[i].Num(); j++) {
+                        savefile.WriteInt(this.signals.signal[i].oGet(j).threadnum);
+                        savefile.WriteString(this.signals.signal[i].oGet(j).function.Name());
                     }
                 }
             }
 
-            savefile.WriteInt(mpGUIState);
+            savefile.WriteInt(this.mpGUIState);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
             int i, j;
-            int[] num = {0};
-            idStr funcname = new idStr();
+            final int[] num = {0};
+            final idStr funcname = new idStr();
 
-            entityNumber = savefile.ReadInt();
-            entityDefNumber = savefile.ReadInt();
+            this.entityNumber = savefile.ReadInt();
+            this.entityDefNumber = savefile.ReadInt();
 
             // spawnNode and activeNode are restored by gameLocal
-            snapshotSequence = savefile.ReadInt();
-            snapshotBits = savefile.ReadInt();
+            this.snapshotSequence = savefile.ReadInt();
+            this.snapshotBits = savefile.ReadInt();
 
-            savefile.ReadDict(spawnArgs);
-            savefile.ReadString(name);
-            SetName(name);
+            savefile.ReadDict(this.spawnArgs);
+            savefile.ReadString(this.name);
+            SetName(this.name);
 
-            scriptObject.Restore(savefile);
+            this.scriptObject.Restore(savefile);
 
-            thinkFlags = savefile.ReadInt();
-            dormantStart = savefile.ReadInt();
-            cinematic = savefile.ReadBool();
+            this.thinkFlags = savefile.ReadInt();
+            this.dormantStart = savefile.ReadInt();
+            this.cinematic = savefile.ReadBool();
 
-            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/(cameraTarget));
+            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/(this.cameraTarget));
 
-            health = savefile.ReadInt();
+            this.health = savefile.ReadInt();
 
-            targets.Clear();
+            this.targets.Clear();
             savefile.ReadInt(num);
-            targets.SetNum(num[0]);
+            this.targets.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
-                targets.oGet(i).Restore(savefile);
+                this.targets.oGet(i).Restore(savefile);
             }
 
-            savefile.Read(fl);
-            LittleBitField(fl);
+            savefile.Read(this.fl);
+            LittleBitField(this.fl);
 
-            savefile.ReadRenderEntity(renderEntity);
-            modelDefHandle = savefile.ReadInt();
-            savefile.ReadRefSound(refSound);
+            savefile.ReadRenderEntity(this.renderEntity);
+            this.modelDefHandle = savefile.ReadInt();
+            savefile.ReadRefSound(this.refSound);
 
-            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/(bindMaster));
-            bindJoint = savefile.ReadJoint();
-            bindBody = savefile.ReadInt();
-            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/(teamMaster));
-            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/(teamChain));
+            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/(this.bindMaster));
+            this.bindJoint = savefile.ReadJoint();
+            this.bindBody = savefile.ReadInt();
+            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/(this.teamMaster));
+            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/(this.teamChain));
 
-            savefile.ReadStaticObject(defaultPhysicsObj);
-            RestorePhysics(defaultPhysicsObj);
+            savefile.ReadStaticObject(this.defaultPhysicsObj);
+            RestorePhysics(this.defaultPhysicsObj);
 
-            numPVSAreas = savefile.ReadInt();
+            this.numPVSAreas = savefile.ReadInt();
             for (i = 0; i < MAX_PVS_AREAS; i++) {
-                PVSAreas[i] = savefile.ReadInt();
+                this.PVSAreas[i] = savefile.ReadInt();
             }
 
-            boolean[] readsignals = new boolean[1];
+            final boolean[] readsignals = new boolean[1];
             savefile.ReadBool(readsignals);
             if (readsignals[0]) {
-                signals = new signalList_t();
+                this.signals = new signalList_t();
                 for (i = 0; i < NUM_SIGNALS.ordinal(); i++) {
                     savefile.ReadInt(num);
-                    signals.signal[i].SetNum(num[0]);
+                    this.signals.signal[i].SetNum(num[0]);
                     for (j = 0; j < num[0]; j++) {
-                        signals.signal[i].oGet(j).threadnum = savefile.ReadInt();
+                        this.signals.signal[i].oGet(j).threadnum = savefile.ReadInt();
                         savefile.ReadString(funcname);
-                        signals.signal[i].oGet(j).function = gameLocal.program.FindFunction(funcname);
-                        if (null == signals.signal[i].oGet(j).function) {
+                        this.signals.signal[i].oGet(j).function = gameLocal.program.FindFunction(funcname);
+                        if (null == this.signals.signal[i].oGet(j).function) {
                             savefile.Error("Function '%s' not found", funcname.toString());
                         }
                     }
                 }
             }
 
-            mpGUIState = savefile.ReadInt();
+            this.mpGUIState = savefile.ReadInt();
 
             // restore must retrieve modelDefHandle from the renderer
-            if (modelDefHandle != -1) {
-                modelDefHandle = gameRenderWorld.AddEntityDef(renderEntity);
+            if (this.modelDefHandle != -1) {
+                this.modelDefHandle = gameRenderWorld.AddEntityDef(this.renderEntity);
             }
         }
 
         public String GetEntityDefName() {
-            if (entityDefNumber < 0) {
+            if (this.entityDefNumber < 0) {
                 return "*unknown*";
             }
-            return declManager.DeclByIndex(DECL_ENTITYDEF, entityDefNumber, false).GetName();
+            return declManager.DeclByIndex(DECL_ENTITYDEF, this.entityDefNumber, false).GetName();
         }
 
         public void SetName(final String newname) {
-            if (name.Length() != 0) {
-                gameLocal.RemoveEntityFromHash(name.toString(), this);
-                gameLocal.program.SetEntity(name.toString(), null);
+            if (this.name.Length() != 0) {
+                gameLocal.RemoveEntityFromHash(this.name.toString(), this);
+                gameLocal.program.SetEntity(this.name.toString(), null);
             }
 
-            name.oSet(newname);
-            if (name.Length() != 0) {
+            this.name.oSet(newname);
+            if (this.name.Length() != 0) {
 //            if ( ( name == "NULL" ) || ( name == "null_entity" ) ) {
                 if (("NULL".equals(newname)) || ("null_entity".equals(newname))) {
-                    gameLocal.Error("Cannot name entity '%s'.  '%s' is reserved for script.", name, name);
+                    gameLocal.Error("Cannot name entity '%s'.  '%s' is reserved for script.", this.name, this.name);
                 }
-                gameLocal.AddEntityToHash(name.toString(), this);
-                gameLocal.program.SetEntity(name.toString(), this);
+                gameLocal.AddEntityToHash(this.name.toString(), this);
+                gameLocal.program.SetEntity(this.name.toString(), this);
             }
         }
 
@@ -895,7 +897,7 @@ public class Entity {
         }
 
         public String GetName() {
-            return name.toString();
+            return this.name.toString();
         }
 
         /*
@@ -913,17 +915,17 @@ public class Entity {
             String target;
 
             if (null == source) {//TODO:null check
-                source = spawnArgs;
+                source = this.spawnArgs;
             }
-            cameraTarget = null;
+            this.cameraTarget = null;
             target = source.GetString("cameraTarget");
-            if (target != null && !target.isEmpty()) {
+            if ((target != null) && !target.isEmpty()) {
                 // update the camera taget
                 PostEventMS(EV_UpdateCameraTarget, 0);
             }
 
             for (i = 0; i < MAX_RENDERENTITY_GUI; i++) {
-                UpdateGuiParms(renderEntity.gui[i], source);
+                UpdateGuiParms(this.renderEntity.gui[i], source);
             }
         }
 
@@ -937,24 +939,24 @@ public class Entity {
         // clients generate views based on all the player specific options,
         // cameras have custom code, and everything else just uses the axis orientation
         public renderView_s GetRenderView() {
-            if (null == renderView) {
-                renderView = new renderView_s();
+            if (null == this.renderView) {
+                this.renderView = new renderView_s();
             }
             //	memset( renderView, 0, sizeof( *renderView ) );
 
-            renderView.vieworg = new idVec3(GetPhysics().GetOrigin());
-            renderView.fov_x = 120;
-            renderView.fov_y = 120;
-            renderView.viewaxis = new idMat3(GetPhysics().GetAxis());
+            this.renderView.vieworg = new idVec3(GetPhysics().GetOrigin());
+            this.renderView.fov_x = 120;
+            this.renderView.fov_y = 120;
+            this.renderView.viewaxis = new idMat3(GetPhysics().GetAxis());
 
             // copy global shader parms
-            System.arraycopy(gameLocal.globalShaderParms, 0, renderView.shaderParms, 0, MAX_GLOBAL_SHADER_PARMS);
+            System.arraycopy(gameLocal.globalShaderParms, 0, this.renderView.shaderParms, 0, MAX_GLOBAL_SHADER_PARMS);
 
-            renderView.globalMaterial = gameLocal.GetGlobalMaterial();
+            this.renderView.globalMaterial = gameLocal.GetGlobalMaterial();
 
-            renderView.time = gameLocal.time;
+            this.renderView.time = gameLocal.time;
 
-            return renderView;
+            return this.renderView;
         }
 
         /* **********************************************************************
@@ -980,11 +982,11 @@ public class Entity {
             boolean dormant;
 
             dormant = DoDormantTests();
-            if (dormant && !fl.isDormant) {
-                fl.isDormant = true;
+            if (dormant && !this.fl.isDormant) {
+                this.fl.isDormant = true;
                 DormantBegin();
-            } else if (!dormant && fl.isDormant) {
-                fl.isDormant = false;
+            } else if (!dormant && this.fl.isDormant) {
+                this.fl.isDormant = false;
                 DormantEnd();
             }
 
@@ -1012,27 +1014,27 @@ public class Entity {
         }
 
         public boolean IsActive() {
-            return activeNode.InList();
+            return this.activeNode.InList();
         }
 
         public void BecomeActive(int flags) {
             if ((flags & TH_PHYSICS) != 0) {
                 // enable the team master if this entity is part of a physics team
-                if (teamMaster != null && teamMaster != this) {
-                    teamMaster.BecomeActive(TH_PHYSICS);
-                } else if (0 == (thinkFlags & TH_PHYSICS)) {
+                if ((this.teamMaster != null) && (this.teamMaster != this)) {
+                    this.teamMaster.BecomeActive(TH_PHYSICS);
+                } else if (0 == (this.thinkFlags & TH_PHYSICS)) {
                     // if this is a pusher
-                    if (physics.IsType(idPhysics_Parametric.class) || physics.IsType(idPhysics_Actor.class)) {
+                    if (this.physics.IsType(idPhysics_Parametric.class) || this.physics.IsType(idPhysics_Actor.class)) {
                         gameLocal.sortPushers = true;
                     }
                 }
             }
 
-            final int oldFlags = thinkFlags;
-            thinkFlags |= flags;
-            if (thinkFlags != 0) {
+            final int oldFlags = this.thinkFlags;
+            this.thinkFlags |= flags;
+            if (this.thinkFlags != 0) {
                 if (!IsActive()) {
-                    activeNode.AddToEnd(gameLocal.activeEntities);
+                    this.activeNode.AddToEnd(gameLocal.activeEntities);
                 } else if (0 == oldFlags) {
                     // we became inactive this frame, so we have to decrease the count of entities to deactivate
                     gameLocal.numEntitiesToDeactivate--;
@@ -1043,9 +1045,9 @@ public class Entity {
         public void BecomeInactive(int flags) {
             if ((flags & TH_PHYSICS) != 0) {
                 // may only disable physics on a team master if no team members are running physics or bound to a joints
-                if (teamMaster == this) {
-                    for (idEntity ent = teamMaster.teamChain; ent != null; ent = ent.teamChain) {
-                        if ((ent.thinkFlags & TH_PHYSICS) != 0 || ((ent.bindMaster == this) && (ent.bindJoint != INVALID_JOINT))) {
+                if (this.teamMaster == this) {
+                    for (idEntity ent = this.teamMaster.teamChain; ent != null; ent = ent.teamChain) {
+                        if (((ent.thinkFlags & TH_PHYSICS) != 0) || ((ent.bindMaster == this) && (ent.bindJoint != INVALID_JOINT))) {
                             flags &= ~TH_PHYSICS;
                             break;
                         }
@@ -1053,19 +1055,19 @@ public class Entity {
                 }
             }
 
-            if (thinkFlags != 0) {
-                thinkFlags &= ~flags;
-                if (0 == thinkFlags && IsActive()) {
+            if (this.thinkFlags != 0) {
+                this.thinkFlags &= ~flags;
+                if ((0 == this.thinkFlags) && IsActive()) {
                     gameLocal.numEntitiesToDeactivate++;
                 }
             }
 
             if ((flags & TH_PHYSICS) != 0) {
                 // if this entity has a team master
-                if (teamMaster != null && !teamMaster.equals(this)) {
+                if ((this.teamMaster != null) && !this.teamMaster.equals(this)) {
                     // if the team master is at rest
-                    if (teamMaster.IsAtRest()) {
-                        teamMaster.BecomeInactive(TH_PHYSICS);
+                    if (this.teamMaster.IsAtRest()) {
+                        this.teamMaster.BecomeInactive(TH_PHYSICS);
                     }
                 }
             }
@@ -1074,10 +1076,10 @@ public class Entity {
         public void UpdatePVSAreas(final idVec3 pos) {
             int i;
 
-            numPVSAreas = gameLocal.pvs.GetPVSAreas(new idBounds(pos), PVSAreas, MAX_PVS_AREAS);
-            i = numPVSAreas;
+            this.numPVSAreas = gameLocal.pvs.GetPVSAreas(new idBounds(pos), this.PVSAreas, MAX_PVS_AREAS);
+            i = this.numPVSAreas;
             while (i < MAX_PVS_AREAS) {
-                PVSAreas[i++] = 0;
+                this.PVSAreas[i++] = 0;
             }
         }
 
@@ -1101,36 +1103,36 @@ public class Entity {
             }
 
             // don't present to the renderer if the entity hasn't changed
-            if (0 == (thinkFlags & TH_UPDATEVISUALS)) {
+            if (0 == (this.thinkFlags & TH_UPDATEVISUALS)) {
                 return;
             }
             BecomeInactive(TH_UPDATEVISUALS);
 
             // camera target for remote render views
-            if (cameraTarget != null && gameLocal.InPlayerPVS(this)) {
-                renderEntity.remoteRenderView = cameraTarget.GetRenderView();
+            if ((this.cameraTarget != null) && gameLocal.InPlayerPVS(this)) {
+                this.renderEntity.remoteRenderView = this.cameraTarget.GetRenderView();
             }
 
             // if set to invisible, skip
-            if (null == renderEntity.hModel || IsHidden()) {
+            if ((null == this.renderEntity.hModel) || IsHidden()) {
                 return;
             }
 
             // add to refresh list
-            if (modelDefHandle == -1) {
-                modelDefHandle = gameRenderWorld.AddEntityDef(renderEntity);
-                int a = 0;
+            if (this.modelDefHandle == -1) {
+                this.modelDefHandle = gameRenderWorld.AddEntityDef(this.renderEntity);
+                final int a = 0;
             } else {
-                gameRenderWorld.UpdateEntityDef(modelDefHandle, renderEntity);
+                gameRenderWorld.UpdateEntityDef(this.modelDefHandle, this.renderEntity);
             }
         }
 
         public renderEntity_s GetRenderEntity() {
-            return renderEntity;
+            return this.renderEntity;
         }
 
         public int GetModelDefHandle() {
-            return modelDefHandle;
+            return this.modelDefHandle;
         }
 
         public void SetModel(final String modelname) {
@@ -1138,31 +1140,31 @@ public class Entity {
 
             FreeModelDef();
 
-            renderEntity.hModel = renderModelManager.FindModel(modelname);
+            this.renderEntity.hModel = renderModelManager.FindModel(modelname);
 
-            if (renderEntity.hModel != null) {
-                renderEntity.hModel.Reset();
+            if (this.renderEntity.hModel != null) {
+                this.renderEntity.hModel.Reset();
             }
 
-            renderEntity.callback = null;
-            renderEntity.numJoints = 0;
-            renderEntity.joints = null;
-            if (renderEntity.hModel != null) {
-                renderEntity.bounds.oSet(renderEntity.hModel.Bounds(renderEntity));
+            this.renderEntity.callback = null;
+            this.renderEntity.numJoints = 0;
+            this.renderEntity.joints = null;
+            if (this.renderEntity.hModel != null) {
+                this.renderEntity.bounds.oSet(this.renderEntity.hModel.Bounds(this.renderEntity));
             } else {
-                renderEntity.bounds.Zero();
+                this.renderEntity.bounds.Zero();
             }
 
             UpdateVisuals();
         }
 
         public void SetSkin(final idDeclSkin skin) {
-            renderEntity.customSkin = skin;
+            this.renderEntity.customSkin = skin;
             UpdateVisuals();
         }
 
         public idDeclSkin GetSkin() {
-            return renderEntity.customSkin;
+            return this.renderEntity.customSkin;
         }
 
         public void SetShaderParm(int parmnum, float value) {
@@ -1171,14 +1173,14 @@ public class Entity {
                 return;
             }
 
-            renderEntity.shaderParms[parmnum] = value;
+            this.renderEntity.shaderParms[parmnum] = value;
             UpdateVisuals();
         }
 
         public void SetColor(float red, float green, float blue) {
-            renderEntity.shaderParms[SHADERPARM_RED] = red;
-            renderEntity.shaderParms[SHADERPARM_GREEN] = green;
-            renderEntity.shaderParms[SHADERPARM_BLUE] = blue;
+            this.renderEntity.shaderParms[SHADERPARM_RED] = red;
+            this.renderEntity.shaderParms[SHADERPARM_GREEN] = green;
+            this.renderEntity.shaderParms[SHADERPARM_BLUE] = blue;
             UpdateVisuals();
         }
 
@@ -1188,30 +1190,30 @@ public class Entity {
         }
 
         public void GetColor(idVec3 out) {
-            out.oSet(0, renderEntity.shaderParms[SHADERPARM_RED]);
-            out.oSet(1, renderEntity.shaderParms[SHADERPARM_GREEN]);
-            out.oSet(2, renderEntity.shaderParms[SHADERPARM_BLUE]);
+            out.oSet(0, this.renderEntity.shaderParms[SHADERPARM_RED]);
+            out.oSet(1, this.renderEntity.shaderParms[SHADERPARM_GREEN]);
+            out.oSet(2, this.renderEntity.shaderParms[SHADERPARM_BLUE]);
         }
 
         public void SetColor(final idVec4 color) {
-            renderEntity.shaderParms[SHADERPARM_RED] = color.oGet(0);
-            renderEntity.shaderParms[SHADERPARM_GREEN] = color.oGet(1);
-            renderEntity.shaderParms[SHADERPARM_BLUE] = color.oGet(2);
-            renderEntity.shaderParms[SHADERPARM_ALPHA] = color.oGet(3);
+            this.renderEntity.shaderParms[SHADERPARM_RED] = color.oGet(0);
+            this.renderEntity.shaderParms[SHADERPARM_GREEN] = color.oGet(1);
+            this.renderEntity.shaderParms[SHADERPARM_BLUE] = color.oGet(2);
+            this.renderEntity.shaderParms[SHADERPARM_ALPHA] = color.oGet(3);
             UpdateVisuals();
         }
 
         public void GetColor(idVec4 out) {
-            out.oSet(0, renderEntity.shaderParms[SHADERPARM_RED]);
-            out.oSet(1, renderEntity.shaderParms[SHADERPARM_GREEN]);
-            out.oSet(2, renderEntity.shaderParms[SHADERPARM_BLUE]);
-            out.oSet(3, renderEntity.shaderParms[SHADERPARM_ALPHA]);
+            out.oSet(0, this.renderEntity.shaderParms[SHADERPARM_RED]);
+            out.oSet(1, this.renderEntity.shaderParms[SHADERPARM_GREEN]);
+            out.oSet(2, this.renderEntity.shaderParms[SHADERPARM_BLUE]);
+            out.oSet(3, this.renderEntity.shaderParms[SHADERPARM_ALPHA]);
         }
 
         public void FreeModelDef() {
-            if (modelDefHandle != -1) {
-                gameRenderWorld.FreeEntityDef(modelDefHandle);
-                modelDefHandle = -1;
+            if (this.modelDefHandle != -1) {
+                gameRenderWorld.FreeEntityDef(this.modelDefHandle);
+                this.modelDefHandle = -1;
             }
         }
 
@@ -1220,7 +1222,7 @@ public class Entity {
 
         public void Hide() {
             if (!IsHidden()) {
-                fl.hidden = true;
+                this.fl.hidden = true;
                 FreeModelDef();
                 UpdateVisuals();
             }
@@ -1228,13 +1230,13 @@ public class Entity {
 
         public void Show() {
             if (IsHidden()) {
-                fl.hidden = false;
+                this.fl.hidden = false;
                 UpdateVisuals();
             }
         }
 
         public boolean IsHidden() {
-            return fl.hidden;
+            return this.fl.hidden;
         }
 
         public void UpdateVisuals() {
@@ -1246,10 +1248,10 @@ public class Entity {
             UpdateModelTransform();
 
             // check if the entity has an MD5 model
-            idAnimator animator = GetAnimator();
-            if (animator != null && animator.ModelHandle() != null) {
+            final idAnimator animator = GetAnimator();
+            if ((animator != null) && (animator.ModelHandle() != null)) {
                 // set the callback to update the joints
-                renderEntity.callback = idEntity.ModelCallback.getInstance();
+                this.renderEntity.callback = idEntity.ModelCallback.getInstance();
             }
 
             // set to invalid number to force an update the next time the PVS areas are retrieved
@@ -1260,32 +1262,32 @@ public class Entity {
         }
 
         public void UpdateModelTransform() {
-            idVec3 origin = new idVec3();
-            idMat3 axis = new idMat3();
+            final idVec3 origin = new idVec3();
+            final idMat3 axis = new idMat3();
 
             if (GetPhysicsToVisualTransform(origin, axis)) {
-                renderEntity.axis.oSet(axis.oMultiply(GetPhysics().GetAxis()));
-                renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(origin.oMultiply(renderEntity.axis)));
+                this.renderEntity.axis.oSet(axis.oMultiply(GetPhysics().GetAxis()));
+                this.renderEntity.origin.oSet(GetPhysics().GetOrigin().oPlus(origin.oMultiply(this.renderEntity.axis)));
             } else {
-                renderEntity.axis.oSet(GetPhysics().GetAxis());
-                renderEntity.origin.oSet(GetPhysics().GetOrigin());
+                this.renderEntity.axis.oSet(GetPhysics().GetAxis());
+                this.renderEntity.origin.oSet(GetPhysics().GetOrigin());
             }
         }
 
         public void ProjectOverlay(final idVec3 origin, final idVec3 dir, float size, final String material) {
-            float[] s = new float[1], c = new float[1];
-            idMat3 axis = new idMat3(), axistemp = new idMat3();
-            idVec3 localOrigin = new idVec3();
-            idVec3[] localAxis = new idVec3[2];
-            idPlane[] localPlane = new idPlane[2];
+            final float[] s = new float[1], c = new float[1];
+            final idMat3 axis = new idMat3(), axistemp = new idMat3();
+            final idVec3 localOrigin = new idVec3();
+            final idVec3[] localAxis = new idVec3[2];
+            final idPlane[] localPlane = new idPlane[2];
 
             // make sure the entity has a valid model handle
-            if (modelDefHandle < 0) {
+            if (this.modelDefHandle < 0) {
                 return;
             }
 
             // only do this on dynamic md5 models
-            if (renderEntity.hModel.IsDynamicModel() != DM_CACHED) {
+            if (this.renderEntity.hModel.IsDynamicModel() != DM_CACHED) {
                 return;
             }
 
@@ -1296,9 +1298,9 @@ public class Entity {
             axis.oSet(0, axistemp.oGet(0).oMultiply(c[0]).oPlus(axistemp.oGet(1).oMultiply(-s[0])));
             axis.oSet(1, axistemp.oGet(0).oMultiply(-s[0]).oPlus(axistemp.oGet(1).oMultiply(-c[0])));
 
-            renderEntity.axis.ProjectVector(origin.oMinus(renderEntity.origin), localOrigin);
-            renderEntity.axis.ProjectVector(axis.oGet(0), localAxis[0]);
-            renderEntity.axis.ProjectVector(axis.oGet(1), localAxis[1]);
+            this.renderEntity.axis.ProjectVector(origin.oMinus(this.renderEntity.origin), localOrigin);
+            this.renderEntity.axis.ProjectVector(axis.oGet(0), localAxis[0]);
+            this.renderEntity.axis.ProjectVector(axis.oGet(1), localAxis[1]);
 
             size = 1.0f / size;
             localAxis[0].oMulSet(size);
@@ -1313,28 +1315,28 @@ public class Entity {
             final idMaterial mtr = declManager.FindMaterial(material);
 
             // project an overlay onto the model
-            gameRenderWorld.ProjectOverlay(modelDefHandle, localPlane, mtr);
+            gameRenderWorld.ProjectOverlay(this.modelDefHandle, localPlane, mtr);
 
             // make sure non-animating models update their overlay
             UpdateVisuals();
         }
 
         public int GetNumPVSAreas() {
-            if (numPVSAreas < 0) {
+            if (this.numPVSAreas < 0) {
                 UpdatePVSAreas();
             }
-            return numPVSAreas;
+            return this.numPVSAreas;
         }
 
         public int[] GetPVSAreas() {
-            if (numPVSAreas < 0) {
+            if (this.numPVSAreas < 0) {
                 UpdatePVSAreas();
             }
-            return PVSAreas;
+            return this.PVSAreas;
         }
 
         public void ClearPVSAreas() {
-            numPVSAreas = -1;
+            this.numPVSAreas = -1;
         }
 
         /*
@@ -1347,8 +1349,8 @@ public class Entity {
         public boolean PhysicsTeamInPVS(pvsHandle_t pvsHandle) {
             idEntity part;
 
-            if (teamMaster != null) {
-                for (part = teamMaster; part != null; part = part.teamChain) {
+            if (this.teamMaster != null) {
+                for (part = this.teamMaster; part != null; part = part.teamChain) {
                     if (gameLocal.pvs.InCurrentPVS(pvsHandle, part.GetPVSAreas(), part.GetNumPVSAreas())) {
                         return true;
                     }
@@ -1370,7 +1372,7 @@ public class Entity {
                 return false;
             }
 
-            idAnimator animator = GetAnimator();
+            final idAnimator animator = GetAnimator();
             if (animator != null) {
                 return animator.CreateFrame(gameLocal.time, false);
             }
@@ -1458,7 +1460,7 @@ public class Entity {
 
         public boolean StartSound(final String soundName, final int/*s_channelType*/ channel, int soundShaderFlags, boolean broadcast, int[] length) {
             idSoundShader shader;
-            idStr sound = new idStr();
+            final idStr sound = new idStr();
 
             if (length != null) {
                 length[0] = 0;
@@ -1468,7 +1470,7 @@ public class Entity {
             // hardcoded sounds MUST be avoided at all times because they won't get precached.
             assert (idStr.Icmpn(soundName, "snd_", 4) == 0);
 
-            if (!spawnArgs.GetString(soundName, "", sound)) {
+            if (!this.spawnArgs.GetString(soundName, "", sound)) {
                 return false;
             }
 
@@ -1507,8 +1509,8 @@ public class Entity {
             }
 
             if (gameLocal.isServer && broadcast) {
-                idBitMsg msg = new idBitMsg();
-                ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+                final idBitMsg msg = new idBitMsg();
+                final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                 msg.BeginWriting();
@@ -1518,26 +1520,26 @@ public class Entity {
             }
 
             // set a random value for diversity unless one was parsed from the entity
-            if (refSound.diversity < 0.0f) {
+            if (this.refSound.diversity < 0.0f) {
                 diversity = gameLocal.random.RandomFloat();
             } else {
-                diversity = refSound.diversity;
+                diversity = this.refSound.diversity;
             }
 
             // if we don't have a soundEmitter allocated yet, get one now
-            if (NOT(refSound.referenceSound)) {
-                refSound.referenceSound = gameSoundWorld.AllocSoundEmitter();
+            if (NOT(this.refSound.referenceSound)) {
+                this.refSound.referenceSound = gameSoundWorld.AllocSoundEmitter();
             }
 
             UpdateSound();
 
-            len = refSound.referenceSound.StartSound(shader, channel, diversity, soundShaderFlags);
+            len = this.refSound.referenceSound.StartSound(shader, channel, diversity, soundShaderFlags);
             if (length != null) {
                 length[0] = len;
             }
 
             // set reference to the sound for shader synced effects
-            renderEntity.referenceSound = refSound.referenceSound;
+            this.renderEntity.referenceSound = this.refSound.referenceSound;
 
             return true;
         }
@@ -1552,8 +1554,8 @@ public class Entity {
             }
 
             if (gameLocal.isServer && broadcast) {
-                idBitMsg msg = new idBitMsg();
-                ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+                final idBitMsg msg = new idBitMsg();
+                final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                 msg.BeginWriting();
@@ -1561,8 +1563,8 @@ public class Entity {
                 ServerSendEvent(EVENT_STOPSOUNDSHADER, msg, false, -1);
             }
 
-            if (refSound.referenceSound != null) {
-                refSound.referenceSound.StopSound(channel);
+            if (this.refSound.referenceSound != null) {
+                this.refSound.referenceSound.StopSound(channel);
             }
         }
 
@@ -1574,36 +1576,36 @@ public class Entity {
          ================
          */
         public void SetSoundVolume(float volume) {
-            refSound.parms.volume = volume;
+            this.refSound.parms.volume = volume;
         }
 
         public void UpdateSound() {
-            if (refSound.referenceSound != null) {
-                idVec3 origin = new idVec3();
-                idMat3 axis = new idMat3();
+            if (this.refSound.referenceSound != null) {
+                final idVec3 origin = new idVec3();
+                final idMat3 axis = new idMat3();
 
                 if (GetPhysicsToSoundTransform(origin, axis)) {
-                    refSound.origin = GetPhysics().GetOrigin().oPlus(origin.oMultiply(axis));
+                    this.refSound.origin = GetPhysics().GetOrigin().oPlus(origin.oMultiply(axis));
                 } else {
-                    refSound.origin = GetPhysics().GetOrigin();
+                    this.refSound.origin = GetPhysics().GetOrigin();
                 }
 
-                refSound.referenceSound.UpdateEmitter(refSound.origin, refSound.listenerId, refSound.parms);
+                this.refSound.referenceSound.UpdateEmitter(this.refSound.origin, this.refSound.listenerId, this.refSound.parms);
             }
         }
 
         public int GetListenerId() {
-            return refSound.listenerId;
+            return this.refSound.listenerId;
         }
 
         public idSoundEmitter GetSoundEmitter() {
-            return refSound.referenceSound;
+            return this.refSound.referenceSound;
         }
 
         public void FreeSoundEmitter(boolean immediate) {
-            if (refSound.referenceSound != null) {
-                refSound.referenceSound.Free(immediate);
-                refSound.referenceSound = null;
+            if (this.refSound.referenceSound != null) {
+                this.refSound.referenceSound.Free(immediate);
+                this.refSound.referenceSound = null;
             }
         }
 
@@ -1632,14 +1634,14 @@ public class Entity {
             idEntity next;
 
             // if we're already on a team, quit it so we can join this one
-            if (teamMaster != null && (teamMaster != this)) {
+            if ((this.teamMaster != null) && (this.teamMaster != this)) {
                 QuitTeam();
             }
 
             assert (teammember != null);
 
             if (teammember == this) {
-                teamMaster = this;
+                this.teamMaster = this;
                 return;
             }
 
@@ -1652,17 +1654,17 @@ public class Entity {
                 teammember.teamChain = this;
 
                 // make anyone who's bound to me part of the new team
-                for (ent = teamChain; ent != null; ent = ent.teamChain) {
+                for (ent = this.teamChain; ent != null; ent = ent.teamChain) {
                     ent.teamMaster = master;
                 }
             } else {
                 // skip past the chain members bound to the entity we're teaming up with
                 prev = teammember;
                 next = teammember.teamChain;
-                if (bindMaster != null) {
+                if (this.bindMaster != null) {
                     // if we have a bindMaster, join after any entities bound to the entity
                     // we're joining
-                    while (next != null && next.IsBoundTo(teammember)) {
+                    while ((next != null) && next.IsBoundTo(teammember)) {
                         prev = next;
                         next = next.teamChain;
                     }
@@ -1684,7 +1686,7 @@ public class Entity {
                 ent.teamChain = next;
             }
 
-            teamMaster = master;
+            this.teamMaster = master;
 
             // reorder the active entity list
             gameLocal.sortTeamMasters = true;
@@ -1705,10 +1707,10 @@ public class Entity {
 
             PreBind();
 
-            bindJoint = INVALID_JOINT;
-            bindBody = -1;
-            bindMaster = master;
-            fl.bindOrientated = orientated;
+            this.bindJoint = INVALID_JOINT;
+            this.bindBody = -1;
+            this.bindMaster = master;
+            this.fl.bindOrientated = orientated;
 
             FinishBind();
 
@@ -1744,10 +1746,10 @@ public class Entity {
 
             PreBind();
 
-            bindJoint = jointnum;
-            bindBody = -1;
-            bindMaster = master;
-            fl.bindOrientated = orientated;
+            this.bindJoint = jointnum;
+            this.bindBody = -1;
+            this.bindMaster = master;
+            this.fl.bindOrientated = orientated;
 
             FinishBind();
 
@@ -1769,10 +1771,10 @@ public class Entity {
 
             PreBind();
 
-            bindJoint = jointnum;
-            bindBody = -1;
-            bindMaster = master;
-            fl.bindOrientated = orientated;
+            this.bindJoint = jointnum;
+            this.bindBody = -1;
+            this.bindMaster = master;
+            this.fl.bindOrientated = orientated;
 
             FinishBind();
 
@@ -1798,10 +1800,10 @@ public class Entity {
 
             PreBind();
 
-            bindJoint = INVALID_JOINT;
-            bindBody = bodyId;
-            bindMaster = master;
-            fl.bindOrientated = orientated;
+            this.bindJoint = INVALID_JOINT;
+            this.bindBody = bodyId;
+            this.bindMaster = master;
+            this.fl.bindOrientated = orientated;
 
             FinishBind();
 
@@ -1819,27 +1821,27 @@ public class Entity {
                 ((idAFEntity_Base) this).RemoveBindConstraints();
             }
 
-            if (null == bindMaster) {
+            if (null == this.bindMaster) {
                 return;
             }
 
-            if (null == teamMaster) {
+            if (null == this.teamMaster) {
                 // Teammaster already has been freed
-                bindMaster = null;
+                this.bindMaster = null;
                 return;
             }
 
             PreUnbind();
 
-            if (physics != null) {
-                physics.SetMaster(null, fl.bindOrientated);
+            if (this.physics != null) {
+                this.physics.SetMaster(null, this.fl.bindOrientated);
             }
 
             // We're still part of a team, so that means I have to extricate myself
             // and any entities that are bound to me from the old team.
             // Find the node previous to me in the team
-            prev = teamMaster;
-            for (ent = teamMaster.teamChain; ent != null && (ent != this); ent = ent.teamChain) {
+            prev = this.teamMaster;
+            for (ent = this.teamMaster.teamChain; (ent != null) && (ent != this); ent = ent.teamChain) {
                 prev = ent;
             }
 
@@ -1848,7 +1850,7 @@ public class Entity {
             // Find the last node in my team that is bound to me.
             // Also find the first node not bound to me, if one exists.
             last = this;
-            for (next = teamChain; next != null; next = next.teamChain) {
+            for (next = this.teamChain; next != null; next = next.teamChain) {
                 if (!next.IsBoundTo(this)) {
                     break;
                 }
@@ -1863,9 +1865,9 @@ public class Entity {
 
             // connect up the previous member of the old team to the node that
             // follow the last node bound to me (if one exists).
-            if (teamMaster != this) {
+            if (this.teamMaster != this) {
                 prev.teamChain = next;
-                if (null == next && (teamMaster == prev)) {
+                if ((null == next) && (this.teamMaster == prev)) {
                     prev.teamMaster = null;
                 }
             } else if (next != null) {
@@ -1878,23 +1880,23 @@ public class Entity {
             }
 
             // If we don't have anyone on our team, then clear the team variables.
-            if (teamChain != null) {
+            if (this.teamChain != null) {
                 // make myself my own team
-                teamMaster = this;
+                this.teamMaster = this;
             } else {
                 // no longer a team
-                teamMaster = null;
+                this.teamMaster = null;
             }
 
-            bindJoint = INVALID_JOINT;
-            bindBody = -1;
-            bindMaster = null;
+            this.bindJoint = INVALID_JOINT;
+            this.bindBody = -1;
+            this.bindMaster = null;
 
             PostUnbind();
         }
 
         public boolean IsBound() {
-            if (bindMaster != null) {
+            if (this.bindMaster != null) {
                 return true;
             }
             return false;
@@ -1903,11 +1905,11 @@ public class Entity {
         public boolean IsBoundTo(idEntity master) {
             idEntity ent;
 
-            if (null == bindMaster) {
+            if (null == this.bindMaster) {
                 return false;
             }
 
-            for (ent = bindMaster; ent != null; ent = ent.bindMaster) {
+            for (ent = this.bindMaster; ent != null; ent = ent.bindMaster) {
                 if (ent == master) {
                     return true;
                 }
@@ -1917,30 +1919,30 @@ public class Entity {
         }
 
         public idEntity GetBindMaster() {
-            return bindMaster;
+            return this.bindMaster;
         }
 
         public int/*jointHandle_t*/ GetBindJoint() {
-            return bindJoint;
+            return this.bindJoint;
         }
 
         public int GetBindBody() {
-            return bindBody;
+            return this.bindBody;
         }
 
         public idEntity GetTeamMaster() {
-            return teamMaster;
+            return this.teamMaster;
         }
 
         public idEntity GetNextTeamEntity() {
-            return teamChain;
+            return this.teamChain;
         }
 
         public void ConvertLocalToWorldTransform(idVec3 offset, idMat3 axis) {
             UpdateModelTransform();
 
-            offset.oSet(renderEntity.origin.oPlus(offset.oMultiply(renderEntity.axis)));
-            axis.oMulSet(renderEntity.axis);
+            offset.oSet(this.renderEntity.origin.oPlus(offset.oMultiply(this.renderEntity.axis)));
+            axis.oMulSet(this.renderEntity.axis);
         }
 
         /*
@@ -1955,14 +1957,14 @@ public class Entity {
          ================
          */
         public idVec3 GetLocalVector(final idVec3 vec) {
-            idVec3 pos = new idVec3();
+            final idVec3 pos = new idVec3();
 
-            if (null == bindMaster) {
+            if (null == this.bindMaster) {
                 return vec;
             }
 
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
             GetMasterPosition(masterOrigin, masterAxis);
             masterAxis.ProjectVector(vec, pos);
@@ -1979,14 +1981,14 @@ public class Entity {
          ================
          */
         public idVec3 GetLocalCoordinates(final idVec3 vec) {
-            idVec3 pos = new idVec3();
+            final idVec3 pos = new idVec3();
 
-            if (null == bindMaster) {
+            if (null == this.bindMaster) {
                 return vec;
             }
 
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
             GetMasterPosition(masterOrigin, masterAxis);
             masterAxis.ProjectVector(vec.oMinus(masterOrigin), pos);
@@ -2006,14 +2008,14 @@ public class Entity {
          ================
          */
         public idVec3 GetWorldVector(final idVec3 vec) {
-            idVec3 pos = new idVec3();
+            final idVec3 pos = new idVec3();
 
-            if (null == bindMaster) {
+            if (null == this.bindMaster) {
                 return vec;
             }
 
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
             GetMasterPosition(masterOrigin, masterAxis);
             masterAxis.UnprojectVector(vec, pos);
@@ -2031,14 +2033,14 @@ public class Entity {
          ================
          */
         public idVec3 GetWorldCoordinates(final idVec3 vec) {
-            idVec3 pos = new idVec3();
+            final idVec3 pos = new idVec3();
 
-            if (null == bindMaster) {
+            if (null == this.bindMaster) {
                 return vec;
             }
 
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
             GetMasterPosition(masterOrigin, masterAxis);
             masterAxis.UnprojectVector(vec, pos);
@@ -2048,29 +2050,29 @@ public class Entity {
         }
 
         public boolean GetMasterPosition(idVec3 masterOrigin, idMat3 masterAxis) {
-            idVec3 localOrigin = new idVec3();
-            idMat3 localAxis = new idMat3();
+            final idVec3 localOrigin = new idVec3();
+            final idMat3 localAxis = new idMat3();
             idAnimator masterAnimator;
 
-            if (bindMaster != null) {
+            if (this.bindMaster != null) {
                 // if bound to a joint of an animated model
-                if (bindJoint != INVALID_JOINT) {
-                    masterAnimator = bindMaster.GetAnimator();
+                if (this.bindJoint != INVALID_JOINT) {
+                    masterAnimator = this.bindMaster.GetAnimator();
                     if (null == masterAnimator) {
                         masterOrigin.oSet(getVec3_origin());
                         masterAxis.oSet(getMat3_identity());
                         return false;
                     } else {
-                        masterAnimator.GetJointTransform(bindJoint, gameLocal.time, masterOrigin, masterAxis);
-                        masterAxis.oMulSet(bindMaster.renderEntity.axis);
-                        masterOrigin.oSet(bindMaster.renderEntity.origin.oPlus(masterOrigin.oMultiply(bindMaster.renderEntity.axis)));
+                        masterAnimator.GetJointTransform(this.bindJoint, gameLocal.time, masterOrigin, masterAxis);
+                        masterAxis.oMulSet(this.bindMaster.renderEntity.axis);
+                        masterOrigin.oSet(this.bindMaster.renderEntity.origin.oPlus(masterOrigin.oMultiply(this.bindMaster.renderEntity.axis)));
                     }
-                } else if (bindBody >= 0 && bindMaster.GetPhysics() != null) {
-                    masterOrigin.oSet(bindMaster.GetPhysics().GetOrigin(bindBody));
-                    masterAxis.oSet(bindMaster.GetPhysics().GetAxis(bindBody));
+                } else if ((this.bindBody >= 0) && (this.bindMaster.GetPhysics() != null)) {
+                    masterOrigin.oSet(this.bindMaster.GetPhysics().GetOrigin(this.bindBody));
+                    masterAxis.oSet(this.bindMaster.GetPhysics().GetAxis(this.bindBody));
                 } else {
-                    masterOrigin.oSet(bindMaster.renderEntity.origin);
-                    masterAxis.oSet(bindMaster.renderEntity.axis);
+                    masterOrigin.oSet(this.bindMaster.renderEntity.origin);
+                    masterAxis.oSet(this.bindMaster.renderEntity.axis);
                 }
                 return true;
             } else {
@@ -2082,18 +2084,18 @@ public class Entity {
 
         public void GetWorldVelocities(idVec3 linearVelocity, idVec3 angularVelocity) {
 
-            linearVelocity.oSet(physics.GetLinearVelocity());
-            angularVelocity.oSet(physics.GetAngularVelocity());
+            linearVelocity.oSet(this.physics.GetLinearVelocity());
+            angularVelocity.oSet(this.physics.GetAngularVelocity());
 
-            if (bindMaster != null) {
-                idVec3 masterOrigin = new idVec3(), masterLinearVelocity = new idVec3(), masterAngularVelocity = new idVec3();
-                idMat3 masterAxis = new idMat3();
+            if (this.bindMaster != null) {
+                final idVec3 masterOrigin = new idVec3(), masterLinearVelocity = new idVec3(), masterAngularVelocity = new idVec3();
+                final idMat3 masterAxis = new idMat3();
 
                 // get position of master
                 GetMasterPosition(masterOrigin, masterAxis);
 
                 // get master velocities
-                bindMaster.GetWorldVelocities(masterLinearVelocity, masterAngularVelocity);
+                this.bindMaster.GetWorldVelocities(masterLinearVelocity, masterAngularVelocity);
 
                 // linear velocity relative to master plus master linear and angular velocity
                 linearVelocity.oSet(linearVelocity.oMultiply(masterAxis).oPlus(masterLinearVelocity.oPlus(masterAngularVelocity.Cross(GetPhysics().GetOrigin().oMinus(masterOrigin)))));
@@ -2109,31 +2111,31 @@ public class Entity {
         // set a new physics object to be used by this entity
         public void SetPhysics(idPhysics phys) {
             // clear any contacts the current physics object has
-            if (physics != null) {
-                physics.ClearContacts();
+            if (this.physics != null) {
+                this.physics.ClearContacts();
             }
             // set new physics object or set the default physics if NULL
             if (phys != null) {
-                defaultPhysicsObj.SetClipModel(null, 1.0f);
-                physics = phys;
-                physics.Activate();
+                this.defaultPhysicsObj.SetClipModel(null, 1.0f);
+                this.physics = phys;
+                this.physics.Activate();
             } else {
-                physics = defaultPhysicsObj;
+                this.physics = this.defaultPhysicsObj;
             }
-            physics.UpdateTime(gameLocal.time);
-            physics.SetMaster(bindMaster, fl.bindOrientated);
+            this.physics.UpdateTime(gameLocal.time);
+            this.physics.SetMaster(this.bindMaster, this.fl.bindOrientated);
         }
 
         // get the physics object used by this entity
         public idPhysics GetPhysics() {
-            return physics;
+            return this.physics;
         }
 
         // restore physics pointer for save games
         public void RestorePhysics(idPhysics phys) {
             assert (phys != null);
             // restore physics pointer
-            physics = phys;
+            this.physics = phys;
         }
 
         private static int DBG_RunPhysics = 0;
@@ -2141,11 +2143,11 @@ public class Entity {
         public boolean RunPhysics() {
             int i, reachedTime, startTime, endTime;
             idEntity part, blockedPart, blockingEntity = new idEntity();
-            trace_s results;
+            final trace_s results;
             boolean moved;
 
             // don't run physics if not enabled
-            if (0 == (thinkFlags & TH_PHYSICS)) {
+            if (0 == (this.thinkFlags & TH_PHYSICS)) {
                 // however do update any animation controllers
                 if (UpdateAnimationControllers()) {
                     BecomeActive(TH_ANIMATE);
@@ -2154,7 +2156,7 @@ public class Entity {
             }
 
             // if this entity is a team slave don't do anything because the team master will handle everything
-            if (teamMaster != null && teamMaster != this) {
+            if ((this.teamMaster != null) && (this.teamMaster != this)) {
                 return false;
             }
 
@@ -2173,12 +2175,14 @@ public class Entity {
                     part.physics.SaveState();
                 }
             }
-                                                      DBG_name = name.toString();
+                                                      DBG_name = this.name.toString();
             // move the whole team
             for (part = this; part != null; part = part.teamChain) {
 
                 if (part.physics != null) {
-                                             if(name.equals("marscity_civilian1_1_head")) DBG_RunPhysics++;
+                                             if(this.name.equals("marscity_civilian1_1_head")) {
+												DBG_RunPhysics++;
+											}
                     // run physics
                     moved = part.physics.Evaluate(endTime - startTime, endTime);
 
@@ -2249,7 +2253,7 @@ public class Entity {
 
             // set pushed
             for (i = 0; i < gameLocal.push.GetNumPushedEntities(); i++) {
-                idEntity ent = gameLocal.push.GetPushedEntity(i);
+                final idEntity ent = gameLocal.push.GetPushedEntity(i);
                 ent.physics.SetPushed(endTime - startTime);
             }
 
@@ -2263,11 +2267,11 @@ public class Entity {
                 if (part.physics != null) {
 
                     reachedTime = part.physics.GetLinearEndTime();
-                    if (startTime < reachedTime && endTime >= reachedTime) {
+                    if ((startTime < reachedTime) && (endTime >= reachedTime)) {
                         part.ProcessEvent(EV_ReachedPos);
                     }
                     reachedTime = part.physics.GetAngularEndTime();
-                    if (startTime < reachedTime && endTime >= reachedTime) {
+                    if ((startTime < reachedTime) && (endTime >= reachedTime)) {
                         part.ProcessEvent(EV_ReachedAng);
                     }
                 }
@@ -2304,7 +2308,7 @@ public class Entity {
 
         // get the floor position underneath the physics object
         public boolean GetFloorPos(float max_dist, idVec3 floorpos) {
-            trace_s[] result = {new trace_s()};
+            final trace_s[] result = {new trace_s()};
 
             if (!GetPhysics().HasGroundContacts()) {
                 GetPhysics().ClipTranslation(result, GetPhysics().GetGravityNormal().oMultiply(max_dist), null);
@@ -2400,7 +2404,7 @@ public class Entity {
         // returns true if this entity can be damaged from the given origin
         public boolean CanDamage(final idVec3 origin, idVec3 damagePoint) {
             idVec3 dest;
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
             idVec3 midpoint;
 
             // use the midpoint of the bounds instead of the origin, because
@@ -2409,7 +2413,7 @@ public class Entity {
 
             dest = midpoint;
             gameLocal.clip.TracePoint(tr, origin, dest, MASK_SOLID, null);
-            if (tr[0].fraction == 1.0 || (gameLocal.GetTraceEntity(tr[0]) == this)) {
+            if ((tr[0].fraction == 1.0) || (gameLocal.GetTraceEntity(tr[0]) == this)) {
                 damagePoint.oSet(tr[0].endpos);
                 return true;
             }
@@ -2419,7 +2423,7 @@ public class Entity {
             dest.oPluSet(0, 15.0f);
             dest.oPluSet(1, 15.0f);
             gameLocal.clip.TracePoint(tr, origin, dest, MASK_SOLID, null);
-            if (tr[0].fraction == 1.0 || (gameLocal.GetTraceEntity(tr[0]) == this)) {
+            if ((tr[0].fraction == 1.0) || (gameLocal.GetTraceEntity(tr[0]) == this)) {
                 damagePoint.oSet(tr[0].endpos);
                 return true;
             }
@@ -2428,7 +2432,7 @@ public class Entity {
             dest.oPluSet(0, 15.0f);
             dest.oMinSet(1, 15.0f);
             gameLocal.clip.TracePoint(tr, origin, dest, MASK_SOLID, null);
-            if (tr[0].fraction == 1.0 || (gameLocal.GetTraceEntity(tr[0]) == this)) {
+            if ((tr[0].fraction == 1.0) || (gameLocal.GetTraceEntity(tr[0]) == this)) {
                 damagePoint.oSet(tr[0].endpos);
                 return true;
             }
@@ -2437,7 +2441,7 @@ public class Entity {
             dest.oMinSet(0, 15.0f);
             dest.oPluSet(1, 15.0f);
             gameLocal.clip.TracePoint(tr, origin, dest, MASK_SOLID, null);
-            if (tr[0].fraction == 1.0 || (gameLocal.GetTraceEntity(tr[0]) == this)) {
+            if ((tr[0].fraction == 1.0) || (gameLocal.GetTraceEntity(tr[0]) == this)) {
                 damagePoint.oSet(tr[0].endpos);
                 return true;
             }
@@ -2446,7 +2450,7 @@ public class Entity {
             dest.oMinSet(0, 15.0f);
             dest.oMinSet(1, 15.0f);
             gameLocal.clip.TracePoint(tr, origin, dest, MASK_SOLID, null);
-            if (tr[0].fraction == 1.0 || (gameLocal.GetTraceEntity(tr[0]) == this)) {
+            if ((tr[0].fraction == 1.0) || (gameLocal.GetTraceEntity(tr[0]) == this)) {
                 damagePoint.oSet(tr[0].endpos);
                 return true;
             }
@@ -2454,7 +2458,7 @@ public class Entity {
             dest = midpoint;
             dest.oPluSet(2, 15.0f);
             gameLocal.clip.TracePoint(tr, origin, dest, MASK_SOLID, null);
-            if (tr[0].fraction == 1.0 || (gameLocal.GetTraceEntity(tr[0]) == this)) {
+            if ((tr[0].fraction == 1.0) || (gameLocal.GetTraceEntity(tr[0]) == this)) {
                 damagePoint.oSet(tr[0].endpos);
                 return true;
             }
@@ -2462,7 +2466,7 @@ public class Entity {
             dest = midpoint;
             dest.oMinSet(2, 15.0f);
             gameLocal.clip.TracePoint(tr, origin, dest, MASK_SOLID, null);
-            if (tr[0].fraction == 1.0 || (gameLocal.GetTraceEntity(tr[0]) == this)) {
+            if ((tr[0].fraction == 1.0) || (gameLocal.GetTraceEntity(tr[0]) == this)) {
                 damagePoint.oSet(tr[0].endpos);
                 return true;
             }
@@ -2489,7 +2493,7 @@ public class Entity {
          */
         // applies damage to this entity
         public void Damage(idEntity inflictor, idEntity attacker, final idVec3 dir, final String damageDefName, final float damageScale, final int location) {
-            if (!fl.takedamage) {
+            if (!this.fl.takedamage) {
                 return;
             }
 
@@ -2506,16 +2510,16 @@ public class Entity {
                 gameLocal.Error("Unknown damageDef '%s'\n", damageDefName);
             }
 
-            int[] damage = {damageDef.GetInt("damage")};
+            final int[] damage = {damageDef.GetInt("damage")};
 
             // inform the attacker that they hit someone
             attacker.DamageFeedback(this, inflictor, damage);
             if (0 == damage[0]) {
                 // do the damage
-                health -= damage[0];
-                if (health <= 0) {
-                    if (health < -999) {
-                        health = -999;
+                this.health -= damage[0];
+                if (this.health <= 0) {
+                    if (this.health < -999) {
+                        this.health = -999;
                     }
 
                     Killed(inflictor, attacker, damage[0], dir, location);
@@ -2538,7 +2542,7 @@ public class Entity {
 
             // start impact sound based on material type
             key = va("snd_%s", materialType);
-            sound = spawnArgs.GetString(key);
+            sound = this.spawnArgs.GetString(key);
             if (sound.isEmpty()) {// == '\0' ) {
                 sound = def.dict.GetString(key);
             }
@@ -2549,12 +2553,12 @@ public class Entity {
             if (g_decals.GetBool()) {
                 // place a wound overlay on the model
                 key = va("mtr_wound_%s", materialType);
-                decal = spawnArgs.RandomPrefix(key, gameLocal.random);
+                decal = this.spawnArgs.RandomPrefix(key, gameLocal.random);
                 if (decal.isEmpty()) {// == '\0' ) {
                     decal = def.dict.RandomPrefix(key, gameLocal.random);
                 }
                 if (!decal.isEmpty()) {// != '\0' ) {
-                    idVec3 dir = velocity;
+                    final idVec3 dir = velocity;
                     dir.Normalize();
                     ProjectOverlay(collision.c.point, dir, 20.0f, decal);
                 }
@@ -2629,14 +2633,14 @@ public class Entity {
             function_t constructor;
 
             // init the script object's data
-            scriptObject.ClearObject();
+            this.scriptObject.ClearObject();
 
             // call script object's constructor
-            constructor = scriptObject.GetConstructor();
+            constructor = this.scriptObject.GetConstructor();
             if (constructor != null) {
                 // start a thread that will initialize after Spawn is done being called
                 thread = new idThread();
-                thread.SetThreadName(name.toString());
+                thread.SetThreadName(this.name.toString());
                 thread.CallFunction(this, constructor, true);
                 thread.DelayedStart(0);
             } else {
@@ -2644,7 +2648,7 @@ public class Entity {
             }
 
             // clear out the object's memory
-            scriptObject.ClearObject();
+            this.scriptObject.ClearObject();
 
             return thread;
         }
@@ -2668,11 +2672,11 @@ public class Entity {
             }
 
             // call script object's destructor
-            destructor = scriptObject.GetDestructor();
+            destructor = this.scriptObject.GetDestructor();
             if (destructor != null) {
                 // start a thread that will run immediately and be destroyed
                 thread = new idThread();
-                thread.SetThreadName(name.toString());
+                thread.SetThreadName(this.name.toString());
                 thread.CallFunction(this, destructor, true);
                 thread.Execute();
 //		delete thread;
@@ -2686,23 +2690,23 @@ public class Entity {
         public void SetSignal(int _signalnum, idThread thread, final function_t function) {
             int i;
             int num;
-            signal_t sig = new signal_t();
+            final signal_t sig = new signal_t();
             int threadnum;
             final int signalnum = _signalnum;
 
             assert ((signalnum >= 0) && (signalnum < NUM_SIGNALS.ordinal()));
 
-            if (null == signals) {
-                signals = new signalList_t();
+            if (null == this.signals) {
+                this.signals = new signalList_t();
             }
 
             assert (thread != null);
             threadnum = thread.GetThreadNum();
 
-            num = signals.signal[signalnum].Num();
+            num = this.signals.signal[signalnum].Num();
             for (i = 0; i < num; i++) {
-                if (signals.signal[signalnum].oGet(i).threadnum == threadnum) {
-                    signals.signal[signalnum].oGet(i).function = function;
+                if (this.signals.signal[signalnum].oGet(i).threadnum == threadnum) {
+                    this.signals.signal[signalnum].oGet(i).function = function;
                     return;
                 }
             }
@@ -2713,7 +2717,7 @@ public class Entity {
 
             sig.threadnum = threadnum;
             sig.function = function;
-            signals.signal[signalnum].Append(sig);
+            this.signals.signal[signalnum].Append(sig);
         }
 
         public void ClearSignal(idThread thread, signalNum_t _signalnum) {
@@ -2723,11 +2727,11 @@ public class Entity {
                 gameLocal.Error("Signal out of range");
             }
 
-            if (null == signals) {
+            if (null == this.signals) {
                 return;
             }
 
-            signals.signal[signalnum].Clear();
+            this.signals.signal[signalnum].Clear();
         }
 
         public void ClearSignalThread(signalNum_t _signalnum, idThread thread) {
@@ -2746,16 +2750,16 @@ public class Entity {
                 gameLocal.Error("Signal out of range");
             }
 
-            if (null == signals) {
+            if (null == this.signals) {
                 return;
             }
 
             threadnum = thread.GetThreadNum();
 
-            num = signals.signal[signalnum].Num();
+            num = this.signals.signal[signalnum].Num();
             for (i = 0; i < num; i++) {
-                if (signals.signal[signalnum].oGet(i).threadnum == threadnum) {
-                    signals.signal[signalnum].RemoveIndex(i);
+                if (this.signals.signal[signalnum].oGet(i).threadnum == threadnum) {
+                    this.signals.signal[signalnum].RemoveIndex(i);
                     return;
                 }
             }
@@ -2763,23 +2767,23 @@ public class Entity {
 
         public boolean HasSignal(signalNum_t _signalnum) {
             final int signalnum = _signalnum.ordinal();
-            if (null == signals) {
+            if (null == this.signals) {
                 return false;
             }
             assert ((signalnum >= 0) && (signalnum < NUM_SIGNALS.ordinal()));
-            return (signals.signal[signalnum].Num() > 0);
+            return (this.signals.signal[signalnum].Num() > 0);
         }
 
         public void Signal(signalNum_t _signalnum) {
             int i;
             int num;
-            signal_t[] sigs = new signal_t[MAX_SIGNAL_THREADS];
+            final signal_t[] sigs = new signal_t[MAX_SIGNAL_THREADS];
             idThread thread;
             final int signalnum = _signalnum.ordinal();
 
             assert ((signalnum >= 0) && (signalnum < NUM_SIGNALS.ordinal()));
 
-            if (null == signals) {
+            if (null == this.signals) {
                 return;
             }
 
@@ -2787,13 +2791,13 @@ public class Entity {
             // to end any of the threads in the list.  By copying the list
             // we don't have to worry about the list changing as we're
             // processing it.
-            num = signals.signal[signalnum].Num();
+            num = this.signals.signal[signalnum].Num();
             for (i = 0; i < num; i++) {
-                sigs[i] = signals.signal[signalnum].oGet(i);
+                sigs[i] = this.signals.signal[signalnum].oGet(i);
             }
 
             // clear out the signal list so that we don't get into an infinite loop
-            signals.signal[signalnum].Clear();
+            this.signals.signal[signalnum].Clear();
 
             for (i = 0; i < num; i++) {
                 thread = idThread.GetThread(sigs[i].threadnum);
@@ -2810,7 +2814,7 @@ public class Entity {
                 gameLocal.Error("Signal out of range");
             }
 
-            if (null == signals) {
+            if (null == this.signals) {
                 return;
             }
 
@@ -2826,8 +2830,8 @@ public class Entity {
         public void TriggerGuis() {
             int i;
             for (i = 0; i < MAX_RENDERENTITY_GUI; i++) {
-                if (renderEntity.gui[i] != null) {
-                    renderEntity.gui[i].Trigger(gameLocal.time);
+                if (this.renderEntity.gui[i] != null) {
+                    this.renderEntity.gui[i].Trigger(gameLocal.time);
                 }
             }
         }
@@ -2835,9 +2839,11 @@ public class Entity {
         public boolean HandleGuiCommands(idEntity entityGui, final String cmds) {
             idEntity targetEnt;
             boolean ret = false;
-            if (entityGui != null && cmds != null && !cmds.isEmpty()) {
-                idLexer src = new idLexer();
-                idToken token = new idToken(), token2 = new idToken(), token3 = new idToken(), token4 = new idToken();
+            if ((entityGui != null) && (cmds != null) && !cmds.isEmpty()) {
+                final idLexer src = new idLexer();
+                final idToken token = new idToken(), token2 = new idToken();
+				idToken token3 = new idToken();
+				final idToken token4 = new idToken();
                 src.LoadMemory(cmds, cmds.length(), "guiCommands");
                 while (true) {
 
@@ -2862,7 +2868,7 @@ public class Entity {
                         if (targets) {
                             entityGui.ActivateTargets(this);
                         } else {
-                            idEntity ent = gameLocal.FindEntity(token2);
+                            final idEntity ent = gameLocal.FindEntity(token2);
                             if (ent != null) {
                                 ent.Signal(SIG_TRIGGER);
                                 ent.PostEventMS(EV_Activate, 0, this);
@@ -2887,7 +2893,7 @@ public class Entity {
                             if (null == func) {
                                 gameLocal.Error("Can't find function '%s' for gui in entity '%s'", token2, entityGui.name);
                             } else {
-                                idThread thread = new idThread(func);
+                                final idThread thread = new idThread(func);
                                 thread.DelayedStart(0);
                             }
                         }
@@ -2904,7 +2910,7 @@ public class Entity {
 
                     if (token.Icmp("setkeyval") == 0) {
                         if (src.ReadToken(token2) && src.ReadToken(token3) && src.ReadToken(token4)) {
-                            idEntity ent = gameLocal.FindEntity(token2);
+                            final idEntity ent = gameLocal.FindEntity(token2);
                             if (ent != null) {
                                 ent.spawnArgs.Set(token3, token4);
                                 ent.UpdateChangeableSpawnArgs(null);
@@ -2928,11 +2934,11 @@ public class Entity {
                     }
 
                     if (0 == token.Icmp("turkeyscore")) {
-                        if (src.ReadToken(token2) && entityGui.renderEntity.gui[0] != null) {
+                        if (src.ReadToken(token2) && (entityGui.renderEntity.gui[0] != null)) {
                             int score = entityGui.renderEntity.gui[0].State().GetInt("score");
                             score += Integer.parseInt(token2.toString());
                             entityGui.renderEntity.gui[0].SetStateInt("score", score);
-                            if (gameLocal.GetLocalPlayer() != null && score >= 25000 && !gameLocal.GetLocalPlayer().inventory.turkeyScore) {
+                            if ((gameLocal.GetLocalPlayer() != null) && (score >= 25000) && !gameLocal.GetLocalPlayer().inventory.turkeyScore) {
                                 gameLocal.GetLocalPlayer().GiveEmail("highScore");
                                 gameLocal.GetLocalPlayer().inventory.turkeyScore = true;
                             }
@@ -2950,7 +2956,7 @@ public class Entity {
                             }
                             msg += token2.toString();
                         }
-                        common.Printf("ent gui 0x%x '%s': %s\n", entityNumber, name, msg);
+                        common.Printf("ent gui 0x%x '%s': %s\n", this.entityNumber, this.name, msg);
                         continue;
                     }
 
@@ -2963,11 +2969,11 @@ public class Entity {
                             continue;
                         }
 
-                        int c = entityGui.targets.Num();
+                        final int c = entityGui.targets.Num();
                         int i;
                         for (i = 0; i < c; i++) {
                             targetEnt = entityGui.targets.oGet(i).GetEntity();
-                            if (targetEnt != null && targetEnt.HandleSingleGuiCommand(entityGui, src)) {
+                            if ((targetEnt != null) && targetEnt.HandleSingleGuiCommand(entityGui, src)) {
                                 break;
                             }
                         }
@@ -3007,12 +3013,12 @@ public class Entity {
             int i;
 
             // targets can be a list of multiple names
-            gameLocal.GetTargets(spawnArgs, targets, "target");
+            gameLocal.GetTargets(this.spawnArgs, this.targets, "target");
 
             // ensure that we don't target ourselves since that could cause an infinite loop when activating entities
-            for (i = 0; i < targets.Num(); i++) {
-                if (targets.oGet(i).GetEntity() == this) {
-                    gameLocal.Error("Entity '%s' is targeting itself", name);
+            for (i = 0; i < this.targets.Num(); i++) {
+                if (this.targets.oGet(i).GetEntity() == this) {
+                    gameLocal.Error("Entity '%s' is targeting itself", this.name);
                 }
             }
         }
@@ -3020,9 +3026,9 @@ public class Entity {
         public void RemoveNullTargets() {
             int i;
 
-            for (i = targets.Num() - 1; i >= 0; i--) {
-                if (NOT(targets.oGet(i).GetEntity())) {
-                    targets.RemoveIndex(i);
+            for (i = this.targets.Num() - 1; i >= 0; i--) {
+                if (NOT(this.targets.oGet(i).GetEntity())) {
+                    this.targets.RemoveIndex(i);
                 }
             }
         }
@@ -3038,8 +3044,8 @@ public class Entity {
             idEntity ent;
             int i, j;
 
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
                 if (null == ent) {
                     continue;
                 }
@@ -3078,9 +3084,9 @@ public class Entity {
         public boolean TouchTriggers() {
             int i, numClipModels, numEntities;
             idClipModel cm;
-            idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
+            final idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
             idEntity ent;
-            trace_s trace = new trace_s();//memset( &trace, 0, sizeof( trace ) );
+            final trace_s trace = new trace_s();//memset( &trace, 0, sizeof( trace ) );
 
             trace.endpos.oSet(GetPhysics().GetOrigin());
             trace.endAxis.oSet(GetPhysics().GetAxis());
@@ -3115,7 +3121,7 @@ public class Entity {
                 ent.Signal(SIG_TOUCH);
                 ent.ProcessEvent(EV_Touch, this, trace);
 
-                if (NOT(gameLocal.entities[entityNumber])) {
+                if (NOT(gameLocal.entities[this.entityNumber])) {
                     gameLocal.Printf("entity was removed while touching triggers\n");
                     return true;
                 }
@@ -3127,17 +3133,17 @@ public class Entity {
         public idCurve_Spline<idVec3> GetSpline() {
             int i, numPoints, t;
             idKeyValue kv;
-            idLexer lex = new idLexer();
-            idVec3 v = new idVec3();
+            final idLexer lex = new idLexer();
+            final idVec3 v = new idVec3();
             idCurve_Spline<idVec3> spline;
             final String curveTag = "curve_";
 
-            kv = spawnArgs.MatchPrefix(curveTag);
+            kv = this.spawnArgs.MatchPrefix(curveTag);
             if (null == kv) {
                 return null;
             }
 
-            idStr str = kv.GetKey().Right(kv.GetKey().Length() - curveTag.length());
+            final idStr str = kv.GetKey().Right(kv.GetKey().Length() - curveTag.length());
             if (str.Icmp("CatmullRomSpline") == 0) {
                 spline = new idCurve_CatmullRomSpline<>(idVec3.class);
             } else if (str.Icmp("nubs") == 0) {
@@ -3208,13 +3214,13 @@ public class Entity {
                 case EVENT_STARTSOUNDSHADER: {
                     // the sound stuff would early out
                     assert (gameLocal.isNewFrame);
-                    if (time < gameLocal.realClientTime - 1000) {
+                    if (time < (gameLocal.realClientTime - 1000)) {
                         // too old, skip it ( reliable messages don't need to be parsed in full )
-                        common.DPrintf("ent 0x%x: start sound shader too old (%d ms)\n", entityNumber, gameLocal.realClientTime - time);
+                        common.DPrintf("ent 0x%x: start sound shader too old (%d ms)\n", this.entityNumber, gameLocal.realClientTime - time);
                         return true;
                     }
                     index = gameLocal.ClientRemapDecl(DECL_SOUND, msg.ReadLong());
-                    if (index >= 0 && index < declManager.GetNumDecls(DECL_SOUND)) {
+                    if ((index >= 0) && (index < declManager.GetNumDecls(DECL_SOUND))) {
                         shader = declManager.SoundByIndex(index, false);
                         channel = /*(s_channelType)*/ msg.ReadByte();
                         StartSoundShader(shader, channel, 0, false, null);
@@ -3238,15 +3244,15 @@ public class Entity {
         public void WriteBindToSnapshot(idBitMsgDelta msg) {
             int bindInfo;
 
-            if (bindMaster != null) {
-                bindInfo = bindMaster.entityNumber;
-                bindInfo |= (fl.bindOrientated ? 1 : 0) << GENTITYNUM_BITS;
-                if (bindJoint != INVALID_JOINT) {
+            if (this.bindMaster != null) {
+                bindInfo = this.bindMaster.entityNumber;
+                bindInfo |= (this.fl.bindOrientated ? 1 : 0) << GENTITYNUM_BITS;
+                if (this.bindJoint != INVALID_JOINT) {
                     bindInfo |= 1 << (GENTITYNUM_BITS + 1);
-                    bindInfo |= bindJoint << (3 + GENTITYNUM_BITS);
-                } else if (bindBody != -1) {
+                    bindInfo |= this.bindJoint << (3 + GENTITYNUM_BITS);
+                } else if (this.bindBody != -1) {
                     bindInfo |= 2 << (GENTITYNUM_BITS + 1);
-                    bindInfo |= bindBody << (3 + GENTITYNUM_BITS);
+                    bindInfo |= this.bindBody << (3 + GENTITYNUM_BITS);
                 }
             } else {
                 bindInfo = ENTITYNUM_NONE;
@@ -3281,34 +3287,34 @@ public class Entity {
                         break;
                     }
                 }
-            } else if (bindMaster != null) {
+            } else if (this.bindMaster != null) {
                 Unbind();
             }
         }
 
         public void WriteColorToSnapshot(idBitMsgDelta msg) {
-            idVec4 color = new idVec4(
-                    renderEntity.shaderParms[SHADERPARM_RED],
-                    renderEntity.shaderParms[SHADERPARM_GREEN],
-                    renderEntity.shaderParms[SHADERPARM_BLUE],
-                    renderEntity.shaderParms[SHADERPARM_ALPHA]);
+            final idVec4 color = new idVec4(
+                    this.renderEntity.shaderParms[SHADERPARM_RED],
+                    this.renderEntity.shaderParms[SHADERPARM_GREEN],
+                    this.renderEntity.shaderParms[SHADERPARM_BLUE],
+                    this.renderEntity.shaderParms[SHADERPARM_ALPHA]);
             msg.WriteLong((int) PackColor(color));
         }
 
         public void ReadColorFromSnapshot(final idBitMsgDelta msg) {
-            idVec4 color = new idVec4();
+            final idVec4 color = new idVec4();
 
             UnpackColor(msg.ReadLong(), color);
-            renderEntity.shaderParms[SHADERPARM_RED] = color.oGet(0);
-            renderEntity.shaderParms[SHADERPARM_GREEN] = color.oGet(1);
-            renderEntity.shaderParms[SHADERPARM_BLUE] = color.oGet(2);
-            renderEntity.shaderParms[SHADERPARM_ALPHA] = color.oGet(3);
+            this.renderEntity.shaderParms[SHADERPARM_RED] = color.oGet(0);
+            this.renderEntity.shaderParms[SHADERPARM_GREEN] = color.oGet(1);
+            this.renderEntity.shaderParms[SHADERPARM_BLUE] = color.oGet(2);
+            this.renderEntity.shaderParms[SHADERPARM_ALPHA] = color.oGet(3);
         }
 
         public void WriteGUIToSnapshot(idBitMsgDelta msg) {
             // no need to loop over MAX_RENDERENTITY_GUI at this time
-            if (renderEntity.gui[0] != null) {
-                msg.WriteByte(renderEntity.gui[0].State().GetInt("networkState"));
+            if (this.renderEntity.gui[0] != null) {
+                msg.WriteByte(this.renderEntity.gui[0].State().GetInt("networkState"));
             } else {
                 msg.WriteByte(0);
             }
@@ -3318,9 +3324,9 @@ public class Entity {
             int state;
             idUserInterface gui;
             state = msg.ReadByte();
-            gui = renderEntity.gui[0];
-            if (gui != null && state != mpGUIState) {
-                mpGUIState = state;
+            gui = this.renderEntity.gui[0];
+            if ((gui != null) && (state != this.mpGUIState)) {
+                this.mpGUIState = state;
                 gui.SetStateInt("networkState", state);
                 gui.HandleNamedEvent("networkState");
             }
@@ -3335,8 +3341,8 @@ public class Entity {
          ================
          */
         public void ServerSendEvent(int eventId, final idBitMsg msg, boolean saveEvent, int excludeClient) {
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
 
             if (!gameLocal.isServer) {
                 return;
@@ -3372,8 +3378,8 @@ public class Entity {
         }
 
         public void ClientSendEvent(int eventId, final idBitMsg msg) {
-            idBitMsg outMsg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
+            final idBitMsg outMsg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_GAME_MESSAGE_SIZE);
 
             if (!gameLocal.isClient) {
                 return;
@@ -3401,10 +3407,10 @@ public class Entity {
         }
 
         private void FixupLocalizedStrings() {
-            for (int i = 0; i < spawnArgs.GetNumKeyVals(); i++) {
-                final idKeyValue kv = spawnArgs.GetKeyVal(i);
+            for (int i = 0; i < this.spawnArgs.GetNumKeyVals(); i++) {
+                final idKeyValue kv = this.spawnArgs.GetKeyVal(i);
                 if (idStr.Cmpn(kv.GetValue().toString(), STRTABLE_ID, STRTABLE_ID_LENGTH) == 0) {
-                    spawnArgs.Set(kv.GetKey(), common.GetLanguageDict().GetString(kv.GetValue()));
+                    this.spawnArgs.Set(kv.GetKey(), common.GetLanguageDict().GetString(kv.GetValue()));
                 }
             }
         }
@@ -3419,16 +3425,16 @@ public class Entity {
          */
         private boolean DoDormantTests() {                // dormant == on the active list, but out of PVS
 
-            if (fl.neverDormant) {
+            if (this.fl.neverDormant) {
                 return false;
             }
 
             // if the monster area is not topologically connected to a player
             if (!gameLocal.InPlayerConnectedArea(this)) {
-                if (dormantStart == 0) {
-                    dormantStart = gameLocal.time;
+                if (this.dormantStart == 0) {
+                    this.dormantStart = gameLocal.time;
                 }
-                if (gameLocal.time - dormantStart < DELAY_DORMANT_TIME) {
+                if ((gameLocal.time - this.dormantStart) < DELAY_DORMANT_TIME) {
                     // just got closed off, don't go dormant yet
                     return false;
                 }
@@ -3436,15 +3442,15 @@ public class Entity {
             } else {
                 // the monster area is topologically connected to a player, but if
                 // the monster hasn't been woken up before, do the more precise PVS check
-                if (!fl.hasAwakened) {
+                if (!this.fl.hasAwakened) {
                     if (!gameLocal.InPlayerPVS(this)) {
                         return true;        // stay dormant
                     }
                 }
 
                 // wake up
-                dormantStart = 0;
-                fl.hasAwakened = true;        // only go dormant when area closed off now, not just out of PVS
+                this.dormantStart = 0;
+                this.fl.hasAwakened = true;        // only go dormant when area closed off now, not just out of PVS
                 return false;
             }
 
@@ -3461,33 +3467,33 @@ public class Entity {
         // initialize the default physics
         private static int DBG_InitDefaultPhysics = 0;
         private void InitDefaultPhysics(final idVec3 origin, final idMat3 axis) {
-            String[] temp = new String[1];
+            final String[] temp = new String[1];
             idClipModel clipModel = null;DBG_InitDefaultPhysics++;
 
             // check if a clipmodel key/value pair is set
-            if (spawnArgs.GetString("clipmodel", "", temp)) {
+            if (this.spawnArgs.GetString("clipmodel", "", temp)) {
                 if (idClipModel.CheckModel(temp[0]) != 0) {
                     clipModel = new idClipModel(temp[0]);
                 }
             }
 
-            if (!spawnArgs.GetBool("noclipmodel", "0")) {
+            if (!this.spawnArgs.GetBool("noclipmodel", "0")) {
 
                 // check if mins/maxs or size key/value pairs are set
                 if (NOT(clipModel)) {
-                    idVec3 size = new idVec3();
-                    idBounds bounds = new idBounds();
+                    final idVec3 size = new idVec3();
+                    final idBounds bounds = new idBounds();
                     boolean setClipModel = false;
 
-                    if (spawnArgs.GetVector("mins", null, bounds.oGet(0))
-                            && spawnArgs.GetVector("maxs", null, bounds.oGet(1))) {
+                    if (this.spawnArgs.GetVector("mins", null, bounds.oGet(0))
+                            && this.spawnArgs.GetVector("maxs", null, bounds.oGet(1))) {
                         setClipModel = true;
-                        if (bounds.oGet(0).oGet(0) > bounds.oGet(1).oGet(0) || bounds.oGet(0).oGet(1) > bounds.oGet(1).oGet(1) || bounds.oGet(0).oGet(2) > bounds.oGet(1).oGet(2)) {
-                            gameLocal.Error("Invalid bounds '%s'-'%s' on entity '%s'", bounds.oGet(0).ToString(), bounds.oGet(1).ToString(), name);
+                        if ((bounds.oGet(0).oGet(0) > bounds.oGet(1).oGet(0)) || (bounds.oGet(0).oGet(1) > bounds.oGet(1).oGet(1)) || (bounds.oGet(0).oGet(2) > bounds.oGet(1).oGet(2))) {
+                            gameLocal.Error("Invalid bounds '%s'-'%s' on entity '%s'", bounds.oGet(0).ToString(), bounds.oGet(1).ToString(), this.name);
                         }
-                    } else if (spawnArgs.GetVector("size", null, size)) {
+                    } else if (this.spawnArgs.GetVector("size", null, size)) {
                         if ((size.x < 0.0f) || (size.y < 0.0f) || (size.z < 0.0f)) {
-                            gameLocal.Error("Invalid size '%s' on entity '%s'", size.ToString(), name);
+                            gameLocal.Error("Invalid size '%s' on entity '%s'", size.ToString(), this.name);
                         }
                         bounds.oGet(0).Set(size.x * -0.5f, size.y * -0.5f, 0.0f);
                         bounds.oGet(1).Set(size.x * 0.5f, size.y * 0.5f, size.z);
@@ -3495,12 +3501,12 @@ public class Entity {
                     }
 
                     if (setClipModel) {
-                        int[] numSides = {0};
-                        idTraceModel trm = new idTraceModel();
+                        final int[] numSides = {0};
+                        final idTraceModel trm = new idTraceModel();
 
-                        if (spawnArgs.GetInt("cylinder", "0", numSides) && numSides[0] > 0) {
+                        if (this.spawnArgs.GetInt("cylinder", "0", numSides) && (numSides[0] > 0)) {
                             trm.SetupCylinder(bounds, Math.max(numSides[0], 3));
-                        } else if (spawnArgs.GetInt("cone", "0", numSides) && numSides[0] > 0) {
+                        } else if (this.spawnArgs.GetInt("cone", "0", numSides) && (numSides[0] > 0)) {
                             trm.SetupCone(bounds, Math.max(numSides[0], 3));
                         } else {
                             trm.SetupBox(bounds);
@@ -3511,7 +3517,7 @@ public class Entity {
 
                 // check if the visual model can be used as collision model
                 if (NOT(clipModel)) {
-                    temp[0] = spawnArgs.GetString("model");
+                    temp[0] = this.spawnArgs.GetString("model");
                     if ((temp[0] != null) && (!temp[0].isEmpty())) {
                         if (idClipModel.CheckModel(temp[0]) != 0) {
                             clipModel = new idClipModel(temp[0]);
@@ -3520,27 +3526,27 @@ public class Entity {
                 }
             }
 
-            defaultPhysicsObj.SetSelf(this);
-            defaultPhysicsObj.SetClipModel(clipModel, 1.0f);
-            defaultPhysicsObj.SetOrigin(origin);
-            defaultPhysicsObj.SetAxis(axis);
+            this.defaultPhysicsObj.SetSelf(this);
+            this.defaultPhysicsObj.SetClipModel(clipModel, 1.0f);
+            this.defaultPhysicsObj.SetOrigin(origin);
+            this.defaultPhysicsObj.SetAxis(axis);
 
-            physics = defaultPhysicsObj;
+            this.physics = this.defaultPhysicsObj;
         }
 
         // update visual position from the physics
         private void UpdateFromPhysics(boolean moveBack) {
 
             if (IsType(idActor.class)) {
-                idActor actor = (idActor) this;
+                final idActor actor = (idActor) this;
 
                 // set master delta angles for actors
                 if (GetBindMaster() != null) {
-                    idAngles delta = actor.GetDeltaViewAngles();
+                    final idAngles delta = actor.GetDeltaViewAngles();
                     if (moveBack) {
-                        delta.yaw -= ((idPhysics_Actor) physics).GetMasterDeltaYaw();
+                        delta.yaw -= ((idPhysics_Actor) this.physics).GetMasterDeltaYaw();
                     } else {
-                        delta.yaw += ((idPhysics_Actor) physics).GetMasterDeltaYaw();
+                        delta.yaw += ((idPhysics_Actor) this.physics).GetMasterDeltaYaw();
                     }
                     actor.SetDeltaViewAngles(delta);
                 }
@@ -3552,7 +3558,7 @@ public class Entity {
         // entity binding
         private boolean InitBind(idEntity master) {        // initialize an entity binding
 
-            if (null == master || master.equals(gameLocal.world)) {
+            if ((null == master) || master.equals(gameLocal.world)) {
                 // this can happen in scripts, so safely exit out.
                 return false;
             }
@@ -3571,7 +3577,7 @@ public class Entity {
             Unbind();
 
             // add any bind constraints to an articulated figure
-            if (master != null && IsType(idAFEntity_Base.class)) {
+            if ((master != null) && IsType(idAFEntity_Base.class)) {
                 ((idAFEntity_Base) this).AddBindConstraints();
             }
 
@@ -3581,32 +3587,32 @@ public class Entity {
         private void FinishBind() {                // finish an entity binding
 
             // set the master on the physics object
-            physics.SetMaster(bindMaster, fl.bindOrientated);
+            this.physics.SetMaster(this.bindMaster, this.fl.bindOrientated);
 
             // We are now separated from our previous team and are either
             // an individual, or have a team of our own.  Now we can join
             // the new bindMaster's team.  Bindmaster must be set before
             // joining the team, or we will be placed in the wrong position
             // on the team.
-            JoinTeam(bindMaster);
+            JoinTeam(this.bindMaster);
 
             // if our bindMaster is enabled during a cinematic, we must be, too
-            cinematic = bindMaster.cinematic;
+            this.cinematic = this.bindMaster.cinematic;
 
             // make sure the team master is active so that physics get run
-            teamMaster.BecomeActive(TH_PHYSICS);
+            this.teamMaster.BecomeActive(TH_PHYSICS);
         }
 
         private void RemoveBinds() {                // deletes any entities bound to this object
             idEntity ent;
             idEntity next;
 
-            for (ent = teamChain; ent != null; ent = next) {
+            for (ent = this.teamChain; ent != null; ent = next) {
                 next = ent.teamChain;
                 if (ent.bindMaster == this) {
                     ent.Unbind();
                     ent.PostEventMS(EV_Remove, 0);
-                    next = teamChain;
+                    next = this.teamChain;
                 }
             }
         }
@@ -3614,53 +3620,53 @@ public class Entity {
         private void QuitTeam() {                    // leave the current team
             idEntity ent;
 
-            if (null == teamMaster) {
+            if (null == this.teamMaster) {
                 return;
             }
 
             // check if I'm the teamMaster
-            if (teamMaster == this) {
+            if (this.teamMaster == this) {
                 // do we have more than one teammate?
-                if (null == teamChain.teamChain) {
+                if (null == this.teamChain.teamChain) {
                     // no, break up the team
-                    teamChain.teamMaster = null;
+                    this.teamChain.teamMaster = null;
                 } else {
                     // yes, so make the first teammate the teamMaster
-                    for (ent = teamChain; ent != null; ent = ent.teamChain) {
-                        ent.teamMaster = teamChain;
+                    for (ent = this.teamChain; ent != null; ent = ent.teamChain) {
+                        ent.teamMaster = this.teamChain;
                     }
                 }
             } else {
-                assert (teamMaster != null);
-                assert (teamMaster.teamChain != null);
+                assert (this.teamMaster != null);
+                assert (this.teamMaster.teamChain != null);
 
                 // find the previous member of the teamChain
-                ent = teamMaster;
+                ent = this.teamMaster;
                 while (ent.teamChain != this) {
                     assert (ent.teamChain != null); // this should never happen
                     ent = ent.teamChain;
                 }
 
                 // remove this from the teamChain
-                ent.teamChain = teamChain;
+                ent.teamChain = this.teamChain;
 
                 // if no one is left on the team, break it up
-                if (null == teamMaster.teamChain) {
-                    teamMaster.teamMaster = null;
+                if (null == this.teamMaster.teamChain) {
+                    this.teamMaster.teamMaster = null;
                 }
             }
 
-            teamMaster = null;
-            teamChain = null;
+            this.teamMaster = null;
+            this.teamChain = null;
         }
 
         private void UpdatePVSAreas() {
             int localNumPVSAreas;
-            int[] localPVSAreas = new int[32];
-            idBounds modelAbsBounds = new idBounds();
+            final int[] localPVSAreas = new int[32];
+            final idBounds modelAbsBounds = new idBounds();
             int i;
 
-            modelAbsBounds.FromTransformedBounds(renderEntity.bounds, renderEntity.origin, renderEntity.axis);
+            modelAbsBounds.FromTransformedBounds(this.renderEntity.bounds, this.renderEntity.origin, this.renderEntity.axis);
             localNumPVSAreas = gameLocal.pvs.GetPVSAreas(modelAbsBounds, localPVSAreas, localPVSAreas.length);
 
             // FIXME: some particle systems may have huge bounds and end up in many PVS areas
@@ -3669,12 +3675,12 @@ public class Entity {
                 localNumPVSAreas = gameLocal.pvs.GetPVSAreas(new idBounds(modelAbsBounds.GetCenter()).Expand(64.0f), localPVSAreas, localPVSAreas.length);
             }
 
-            for (numPVSAreas = 0; numPVSAreas < MAX_PVS_AREAS && numPVSAreas < localNumPVSAreas; numPVSAreas++) {
-                PVSAreas[numPVSAreas] = localPVSAreas[numPVSAreas];
+            for (this.numPVSAreas = 0; (this.numPVSAreas < MAX_PVS_AREAS) && (this.numPVSAreas < localNumPVSAreas); this.numPVSAreas++) {
+                this.PVSAreas[this.numPVSAreas] = localPVSAreas[this.numPVSAreas];
             }
 
-            for (i = numPVSAreas; i < MAX_PVS_AREAS; i++) {
-                PVSAreas[i] = 0;
+            for (i = this.numPVSAreas; i < MAX_PVS_AREAS; i++) {
+                this.PVSAreas[i] = 0;
             }
         }
 
@@ -3685,7 +3691,7 @@ public class Entity {
          ***********************************************************************/
         // events
         private void Event_GetName() {
-            idThread.ReturnString(name.toString());
+            idThread.ReturnString(this.name.toString());
         }
 
         private static void Event_SetName(idEntity e, final idEventArg<String> newName) {
@@ -3709,14 +3715,14 @@ public class Entity {
         }
 
         private void Event_NumTargets() {
-            idThread.ReturnFloat(targets.Num());
+            idThread.ReturnFloat(this.targets.Num());
         }
 
         private static void Event_GetTarget(idEntity e, idEventArg<Float> index) {
             int i;
 
             i = index.value.intValue();
-            if ((i < 0) || i >= e.targets.Num()) {
+            if ((i < 0) || (i >= e.targets.Num())) {
                 idThread.ReturnEntity(null);
             } else {
                 idThread.ReturnEntity(e.targets.oGet(i).GetEntity());
@@ -3737,10 +3743,10 @@ public class Entity {
             }
 
             ignoreNum = -1;
-            if (ignore != null && (!ignore.isEmpty()) && (e.targets.Num() > 1)) {
+            if ((ignore != null) && (!ignore.isEmpty()) && (e.targets.Num() > 1)) {
                 for (i = 0; i < e.targets.Num(); i++) {
                     ent = e.targets.oGet(i).GetEntity();
-                    if (ent != null && (ent.name.equals(ignore))) {
+                    if ((ent != null) && (ent.name.equals(ignore))) {
                         ignoreNum = i;
                         break;
                     }
@@ -3782,43 +3788,43 @@ public class Entity {
 
         private void Event_SpawnBind() {
             idEntity parent;
-            String[] bind = new String[1], joint = new String[1], bindanim = new String[1];
+            final String[] bind = new String[1], joint = new String[1], bindanim = new String[1];
             int/*jointHandle_t*/ bindJoint;
             boolean bindOrientated;
-            int[] id = new int[1];
+            final int[] id = new int[1];
             idAnim anim;
             int animNum;
             idAnimator parentAnimator;
 
-            if (spawnArgs.GetString("bind", "", bind)) {
+            if (this.spawnArgs.GetString("bind", "", bind)) {
                 if (idStr.Icmp(bind[0], "worldspawn") == 0) {
                     //FIXME: Completely unneccessary since the worldspawn is called "world"
                     parent = gameLocal.world;
                 } else {
                     parent = gameLocal.FindEntity(bind[0]);
                 }
-                bindOrientated = spawnArgs.GetBool("bindOrientated", "1");
+                bindOrientated = this.spawnArgs.GetBool("bindOrientated", "1");
                 if (parent != null) {
                     // bind to a joint of the skeletal model of the parent
-                    if (spawnArgs.GetString("bindToJoint", "", joint) && joint[0] != null) {//TODO:check if java actually compiles them in the right order.
+                    if (this.spawnArgs.GetString("bindToJoint", "", joint) && (joint[0] != null)) {//TODO:check if java actually compiles them in the right order.
                         parentAnimator = parent.GetAnimator();
                         if (NOT(parentAnimator)) {
-                            gameLocal.Error("Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint[0], name);
+                            gameLocal.Error("Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint[0], this.name);
                         }
                         bindJoint = parentAnimator.GetJointHandle(joint[0]);
                         if (bindJoint == INVALID_JOINT) {
-                            gameLocal.Error("Joint '%s' not found for bind on '%s'", joint[0], name);
+                            gameLocal.Error("Joint '%s' not found for bind on '%s'", joint[0], this.name);
                         }
 
                         // bind it relative to a specific anim
-                        if ((parent.spawnArgs.GetString("bindanim", "", bindanim) || parent.spawnArgs.GetString("anim", "", bindanim)) && bindanim[0] != null) {
+                        if ((parent.spawnArgs.GetString("bindanim", "", bindanim) || parent.spawnArgs.GetString("anim", "", bindanim)) && (bindanim[0] != null)) {
                             animNum = parentAnimator.GetAnim(bindanim[0]);
                             if (0 == animNum) {
-                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], name);
+                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], this.name);
                             }
                             anim = parentAnimator.GetAnim(animNum);
                             if (NOT(anim)) {
-                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], name);
+                                gameLocal.Error("Anim '%s' not found for bind on '%s'", bindanim[0], this.name);
                             }
 
                             // make sure parent's render origin has been set
@@ -3826,7 +3832,7 @@ public class Entity {
 
                             //FIXME: need a BindToJoint that accepts a joint position
                             parentAnimator.CreateFrame(gameLocal.time, true);
-                            idJointMat[] frame = parent.renderEntity.joints;
+                            final idJointMat[] frame = parent.renderEntity.joints;
                             GameEdit.gameEdit.ANIM_CreateAnimFrame(parentAnimator.ModelHandle(), anim.MD5Anim(0), parent.renderEntity.numJoints, frame, 0, parentAnimator.ModelDef().GetVisualOffset(), parentAnimator.RemoveOrigin());
                             BindToJoint(parent, joint[0], bindOrientated);
                             parentAnimator.ForceUpdate();
@@ -3834,7 +3840,7 @@ public class Entity {
                             BindToJoint(parent, joint[0], bindOrientated);
                         }
                     } // bind to a body of the physics object of the parent
-                    else if (spawnArgs.GetInt("bindToBody", "0", id)) {
+                    else if (this.spawnArgs.GetInt("bindToBody", "0", id)) {
                         BindToBody(parent, id[0], bindOrientated);
                     } // bind to the parent
                     else {
@@ -3887,14 +3893,14 @@ public class Entity {
         }
 
         private void Event_GetColor() {
-            idVec3 out = new idVec3();
+            final idVec3 out = new idVec3();
 
             GetColor(out);
             idThread.ReturnVector(out);
         }
 
         private void Event_IsHidden() {
-            idThread.ReturnInt(fl.hidden);
+            idThread.ReturnInt(this.fl.hidden);
         }
 
         private void Event_Hide() {
@@ -3910,7 +3916,7 @@ public class Entity {
         }
 
         private static void Event_StartSoundShader(idEntity e, final idEventArg<String> soundName, idEventArg<Integer> channel) {
-            int[] length = new int[1];
+            final int[] length = new int[1];
 
             e.StartSoundShader(declManager.FindSound(soundName.value), /*(s_channelType)*/ channel.value, 0, false, length);
             idThread.ReturnFloat(MS2SEC(length[0]));
@@ -3921,7 +3927,7 @@ public class Entity {
         }
 
         private static void Event_StartSound(idEntity e, final idEventArg<String> soundName, idEventArg<Integer> channel, idEventArg<Integer> netSync) {
-            int[] time = new int[1];
+            final int[] time = new int[1];
 
             e.StartSound(soundName.value, /*(s_channelType)*/ channel.value, 0, (netSync.value != 0), time);
             idThread.ReturnFloat(MS2SEC(time[0]));
@@ -3938,7 +3944,7 @@ public class Entity {
         }
 
         private static void Event_SetWorldOrigin(idEntity e, final idEventArg<idVec3> org) {
-            idVec3 neworg = e.GetLocalCoordinates(org.value);
+            final idVec3 neworg = e.GetLocalCoordinates(org.value);
             e.SetOrigin(neworg);
         }
 
@@ -3951,7 +3957,7 @@ public class Entity {
         }
 
         private void Event_GetAngles() {
-            idAngles ang = GetPhysics().GetAxis().ToAngles();
+            final idAngles ang = GetPhysics().GetAxis().ToAngles();
             idThread.ReturnVector(new idVec3(ang.oGet(0), ang.oGet(1), ang.oGet(2)));
         }
 
@@ -4052,14 +4058,14 @@ public class Entity {
         }
 
         private static void Event_GetKey(idEntity e, final idEventArg<String> key) {
-            String[] value = new String[1];
+            final String[] value = new String[1];
 
             e.spawnArgs.GetString(key.value, "", value);
             idThread.ReturnString(value[0]);
         }
 
         private static void Event_GetIntKey(idEntity e, final idEventArg<String> key) {
-            int[] value = new int[1];
+            final int[] value = new int[1];
 
             e.spawnArgs.GetInt(key.value, "0", value);
 
@@ -4068,14 +4074,14 @@ public class Entity {
         }
 
         private static void Event_GetFloatKey(idEntity e, final idEventArg<String> key) {
-            float[] value = new float[1];
+            final float[] value = new float[1];
 
             e.spawnArgs.GetFloat(key.value, "0", value);
             idThread.ReturnFloat(value[0]);
         }
 
         private static void Event_GetVectorKey(idEntity e, final idEventArg<String> key) {
-            idVec3 value = new idVec3();
+            final idVec3 value = new idVec3();
 
             e.spawnArgs.GetVector(key.value, "0 0 0", value);
             idThread.ReturnVector(value);
@@ -4083,7 +4089,7 @@ public class Entity {
 
         private static void Event_GetEntityKey(idEntity e, final idEventArg<String> key) {
             idEntity ent;
-            String[] entName = new String[1];
+            final String[] entName = new String[1];
 
             if (!e.spawnArgs.GetString(key.value, null, entName)) {
                 idThread.ReturnEntity(null);
@@ -4099,25 +4105,25 @@ public class Entity {
         }
 
         private void Event_RestorePosition() {
-            idVec3 org = new idVec3();
+            final idVec3 org = new idVec3();
             idAngles angles = new idAngles();
-            idMat3 axis = new idMat3();
+            final idMat3 axis = new idMat3();
             idEntity part;
 
-            spawnArgs.GetVector("origin", "0 0 0", org);
+            this.spawnArgs.GetVector("origin", "0 0 0", org);
 
             // get the rotation matrix in either full form, or single angle form
-            if (spawnArgs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
+            if (this.spawnArgs.GetMatrix("rotation", "1 0 0 0 1 0 0 0 1", axis)) {
                 angles = axis.ToAngles();
             } else {
                 angles.oSet(0, 0);
-                angles.oSet(1, spawnArgs.GetFloat("angle"));
+                angles.oSet(1, this.spawnArgs.GetFloat("angle"));
                 angles.oSet(2, 0);
             }
 
             Teleport(org, angles, null);
 
-            for (part = teamChain; part != null; part = part.teamChain) {
+            for (part = this.teamChain; part != null; part = part.teamChain) {
                 if (part.bindMaster != this) {
                     continue;
                 }
@@ -4136,22 +4142,22 @@ public class Entity {
             idKeyValue kv;
             idVec3 dir;
 
-            target = spawnArgs.GetString("cameraTarget");
+            target = this.spawnArgs.GetString("cameraTarget");
 
-            cameraTarget = gameLocal.FindEntity(target);
+            this.cameraTarget = gameLocal.FindEntity(target);
 
-            if (cameraTarget != null) {
-                kv = cameraTarget.spawnArgs.MatchPrefix("target", null);
+            if (this.cameraTarget != null) {
+                kv = this.cameraTarget.spawnArgs.MatchPrefix("target", null);
                 while (kv != null) {
-                    idEntity ent = gameLocal.FindEntity(kv.GetValue());
-                    if (ent != null && idStr.Icmp(ent.GetEntityDefName(), "target_null") == 0) {
-                        dir = ent.GetPhysics().GetOrigin().oMinus(cameraTarget.GetPhysics().GetOrigin());
+                    final idEntity ent = gameLocal.FindEntity(kv.GetValue());
+                    if ((ent != null) && (idStr.Icmp(ent.GetEntityDefName(), "target_null") == 0)) {
+                        dir = ent.GetPhysics().GetOrigin().oMinus(this.cameraTarget.GetPhysics().GetOrigin());
                         dir.Normalize();
-                        cameraTarget.SetAxis(dir.ToMat3());
+                        this.cameraTarget.SetAxis(dir.ToMat3());
                         SetAxis(dir.ToMat3());
                         break;
                     }
-                    kv = cameraTarget.spawnArgs.MatchPrefix("target", kv);
+                    kv = this.cameraTarget.spawnArgs.MatchPrefix("target", kv);
                 }
             }
             UpdateVisuals();
@@ -4162,13 +4168,13 @@ public class Entity {
                 // just say it's really far away
                 idThread.ReturnFloat(MAX_WORLD_SIZE);
             } else {
-                float dist = e.GetPhysics().GetOrigin().oMinus(ent.value.GetPhysics().GetOrigin()).LengthFast();
+                final float dist = e.GetPhysics().GetOrigin().oMinus(ent.value.GetPhysics().GetOrigin()).LengthFast();
                 idThread.ReturnFloat(dist);
             }
         }
 
         private static void Event_DistanceToPoint(idEntity e, final idEventArg<idVec3> point) {
-            float dist = e.GetPhysics().GetOrigin().oMinus(point.value).LengthFast();
+            final float dist = e.GetPhysics().GetOrigin().oMinus(point.value).LengthFast();
             idThread.ReturnFloat(dist);
         }
 
@@ -4186,7 +4192,7 @@ public class Entity {
         }
 
         private void Event_Wait(idEventArg<Float> time) {
-            idThread thread = idThread.CurrentThread();
+            final idThread thread = idThread.CurrentThread();
 
             if (null == thread) {
                 gameLocal.Error("Event 'wait' called from outside thread");
@@ -4198,7 +4204,7 @@ public class Entity {
         private void Event_HasFunction(final idEventArg<String> name) {
             function_t func;
 
-            func = scriptObject.GetFunction(name.value);
+            func = this.scriptObject.GetFunction(name.value);
             if (func != null) {
                 idThread.ReturnInt(true);
             } else {
@@ -4216,15 +4222,15 @@ public class Entity {
                 gameLocal.Error("Event 'callFunction' called from outside thread");
             }
 
-            func = scriptObject.GetFunction(funcName);
+            func = this.scriptObject.GetFunction(funcName);
             if (NOT(func)) {
-                gameLocal.Error("Unknown function '%s' in '%s'", funcName, scriptObject.GetTypeName());
+                gameLocal.Error("Unknown function '%s' in '%s'", funcName, this.scriptObject.GetTypeName());
             }
 
             if (func.type.NumParameters() != 1) {
                 gameLocal.Error("Function '%s' has the wrong number of parameters for 'callFunction'", funcName);
             }
-            if (!scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
+            if (!this.scriptObject.GetTypeDef().Inherits(func.type.GetParmType(0))) {
                 gameLocal.Error("Function '%s' is the wrong type for 'callFunction'", funcName);
             }
 
@@ -4233,8 +4239,8 @@ public class Entity {
         }
 
         private void Event_SetNeverDormant(idEventArg<Integer> enable) {
-            fl.neverDormant = (enable.value != 0);
-            dormantStart = 0;
+            this.fl.neverDormant = (enable.value != 0);
+            this.dormantStart = 0;
         }
     }
 
@@ -4297,9 +4303,9 @@ public class Entity {
 //        public static idEventFunc<idAnimatedEntity>[] eventCallbacks;
 //
         public idAnimatedEntity() {
-            animator = new idAnimator();
-            animator.SetEntity(this);
-            damageEffects = null;
+            this.animator = new idAnimator();
+            this.animator.SetEntity(this);
+            this.damageEffects = null;
         }
 
 //							// ~idAnimatedEntity();
@@ -4313,7 +4319,7 @@ public class Entity {
          */
         @Override
         public void Save(idSaveGame savefile) {
-            animator.Save(savefile);
+            this.animator.Save(savefile);
 
             // Wounds are very temporary, ignored at this time
             //damageEffect_s			*damageEffects;
@@ -4328,20 +4334,20 @@ public class Entity {
          */
         @Override
         public void Restore(idRestoreGame savefile) {
-            animator.Restore(savefile);
+            this.animator.Restore(savefile);
 
             // check if the entity has an MD5 model
-            if (animator.ModelHandle() != null) {
+            if (this.animator.ModelHandle() != null) {
                 // set the callback to update the joints
-                renderEntity.callback = idEntity.ModelCallback.getInstance();
+                this.renderEntity.callback = idEntity.ModelCallback.getInstance();
                 {
-                    idJointMat[][] joints = {null};
-                    renderEntity.numJoints = animator.GetJoints(joints);
-                    renderEntity.joints = joints[0];
+                    final idJointMat[][] joints = {null};
+                    this.renderEntity.numJoints = this.animator.GetJoints(joints);
+                    this.renderEntity.joints = joints[0];
                 }
-                animator.GetBounds(gameLocal.time, renderEntity.bounds);
-                if (modelDefHandle != -1) {
-                    gameRenderWorld.UpdateEntityDef(modelDefHandle, renderEntity);
+                this.animator.GetBounds(gameLocal.time, this.renderEntity.bounds);
+                if (this.modelDefHandle != -1) {
+                    gameRenderWorld.UpdateEntityDef(this.modelDefHandle, this.renderEntity);
                 }
             }
         }
@@ -4363,30 +4369,30 @@ public class Entity {
 
         public void UpdateAnimation() {
             // don't do animations if they're not enabled
-            if (0 == (thinkFlags & TH_ANIMATE)) {
+            if (0 == (this.thinkFlags & TH_ANIMATE)) {
                 return;
             }
 
             // is the model an MD5?
-            if (NOT(animator.ModelHandle())) {
+            if (NOT(this.animator.ModelHandle())) {
                 // no, so nothing to do
                 return;
             }
 
             // call any frame commands that have happened in the past frame
-            if (!fl.hidden) {
-                animator.ServiceAnims(gameLocal.previousTime, gameLocal.time);
+            if (!this.fl.hidden) {
+                this.animator.ServiceAnims(gameLocal.previousTime, gameLocal.time);
             }
 
             // if the model is animating then we have to update it
-            if (!animator.FrameHasChanged(gameLocal.time)) {
+            if (!this.animator.FrameHasChanged(gameLocal.time)) {
                 // still fine the way it was
                 return;
             }
 
             // get the latest frame bounds
-            animator.GetBounds(gameLocal.time, renderEntity.bounds);
-            if (renderEntity.bounds.IsCleared() && !fl.hidden) {
+            this.animator.GetBounds(gameLocal.time, this.renderEntity.bounds);
+            if (this.renderEntity.bounds.IsCleared() && !this.fl.hidden) {
                 gameLocal.DPrintf("%d: inside out bounds\n", gameLocal.time);
             }
 
@@ -4394,42 +4400,42 @@ public class Entity {
             UpdateVisuals();
 
             // the animation is updated
-            animator.ClearForceUpdate();
+            this.animator.ClearForceUpdate();
         }
 
         @Override
         public idAnimator GetAnimator() {
-            return animator;
+            return this.animator;
         }
 
         @Override
         public void SetModel(final String modelname) {
             FreeModelDef();
 
-            renderEntity.hModel = animator.SetModel(modelname);
-            if (NOT(renderEntity.hModel)) {
+            this.renderEntity.hModel = this.animator.SetModel(modelname);
+            if (NOT(this.renderEntity.hModel)) {
                 super.SetModel(modelname);
                 return;
             }
 
-            if (null == renderEntity.customSkin) {
-                renderEntity.customSkin = animator.ModelDef().GetDefaultSkin();
+            if (null == this.renderEntity.customSkin) {
+                this.renderEntity.customSkin = this.animator.ModelDef().GetDefaultSkin();
             }
 
             // set the callback to update the joints
-            renderEntity.callback = idEntity.ModelCallback.getInstance();
+            this.renderEntity.callback = idEntity.ModelCallback.getInstance();
             {
-                idJointMat[][] joints = {null};
-                renderEntity.numJoints = animator.GetJoints(joints);
-                renderEntity.joints = joints[0];
+                final idJointMat[][] joints = {null};
+                this.renderEntity.numJoints = this.animator.GetJoints(joints);
+                this.renderEntity.joints = joints[0];
             }
-            animator.GetBounds(gameLocal.time, renderEntity.bounds);
+            this.animator.GetBounds(gameLocal.time, this.renderEntity.bounds);
 
             UpdateVisuals();
         }
 
         public boolean GetJointWorldTransform(int/*jointHandle_t*/ jointHandle, int currentTime, idVec3 offset, idMat3 axis) {
-            if (!animator.GetJointTransform(jointHandle, currentTime, offset, axis)) {
+            if (!this.animator.GetJointTransform(jointHandle, currentTime, offset, axis)) {
                 return false;
             }
 
@@ -4442,20 +4448,20 @@ public class Entity {
             int numJoints;
             idJointMat[] frame;
 
-            anim = animator.GetAnim(animNum);
+            anim = this.animator.GetAnim(animNum);
             if (null == anim) {
                 assert (false);
                 return false;
             }
 
-            numJoints = animator.NumJoints();
+            numJoints = this.animator.NumJoints();
             if ((jointHandle < 0) || (jointHandle >= numJoints)) {
                 assert (false);
                 return false;
             }
 
             frame = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
-            GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), anim.MD5Anim(0), renderEntity.numJoints, frame, frameTime, animator.ModelDef().GetVisualOffset(), animator.RemoveOrigin());
+            GameEdit.gameEdit.ANIM_CreateAnimFrame(this.animator.ModelHandle(), anim.MD5Anim(0), this.renderEntity.numJoints, frame, frameTime, this.animator.ModelDef().GetVisualOffset(), this.animator.RemoveOrigin());
 
             offset.oSet(frame[jointHandle].ToVec3());
             axis.oSet(frame[jointHandle].ToMat3());
@@ -4480,23 +4486,23 @@ public class Entity {
 
             // start impact sound based on material type
             key = va("snd_%s", materialType);
-            sound = spawnArgs.GetString(key);
-            if (sound == null || sound.isEmpty()) {// == '\0' ) {
+            sound = this.spawnArgs.GetString(key);
+            if ((sound == null) || sound.isEmpty()) {// == '\0' ) {
                 sound = def.dict.GetString(key);
             }
-            if (sound != null && !sound.isEmpty()) {// != '\0' ) {
+            if ((sound != null) && !sound.isEmpty()) {// != '\0' ) {
                 StartSoundShader(declManager.FindSound(sound), SND_CHANNEL_BODY, 0, false, null);
             }
 
             if (g_decals.GetBool()) {
                 // place a wound overlay on the model
                 key = va("mtr_wound_%s", materialType);
-                decal = spawnArgs.RandomPrefix(key, gameLocal.random);
-                if (decal == null || decal.isEmpty()) {// == '\0' ) {
+                decal = this.spawnArgs.RandomPrefix(key, gameLocal.random);
+                if ((decal == null) || decal.isEmpty()) {// == '\0' ) {
                     decal = def.dict.RandomPrefix(key, gameLocal.random);
                 }
-                if (decal != null && !decal.isEmpty()) {// != '\0' ) {
-                    idVec3 dir = new idVec3(velocity);
+                if ((decal != null) && !decal.isEmpty()) {// != '\0' ) {
+                    final idVec3 dir = new idVec3(velocity);
                     dir.Normalize();
                     ProjectOverlay(collision.c.point, dir, 20.0f, decal);
                 }
@@ -4509,8 +4515,8 @@ public class Entity {
             idVec3 origin, dir;
             idMat3 axis;
 
-            axis = renderEntity.joints[jointNum].ToMat3().oMultiply(renderEntity.axis);
-            origin = renderEntity.origin.oPlus(renderEntity.joints[jointNum].ToVec3().oMultiply(renderEntity.axis));
+            axis = this.renderEntity.joints[jointNum].ToMat3().oMultiply(this.renderEntity.axis);
+            origin = this.renderEntity.origin.oPlus(this.renderEntity.joints[jointNum].ToVec3().oMultiply(this.renderEntity.axis));
 
             origin = origin.oPlus(localOrigin.oMultiply(axis));
             dir = localDir.oMultiply(axis);
@@ -4524,21 +4530,21 @@ public class Entity {
 
             // start impact sound based on material type
             key = va("snd_%s", materialType);
-            sound = spawnArgs.GetString(key);
-            if (sound == null || sound.isEmpty()) {// == '\0' ) {
+            sound = this.spawnArgs.GetString(key);
+            if ((sound == null) || sound.isEmpty()) {// == '\0' ) {
                 sound = def.dict.GetString(key);
             }
-            if (sound != null && !sound.isEmpty()) {// != '\0' ) {
+            if ((sound != null) && !sound.isEmpty()) {// != '\0' ) {
                 StartSoundShader(declManager.FindSound(sound), SND_CHANNEL_BODY, 0, false, null);
             }
 
             // blood splats are thrown onto nearby surfaces
             key = va("mtr_splat_%s", materialType);
-            splat = spawnArgs.RandomPrefix(key, gameLocal.random);
-            if (splat == null || splat.isEmpty()) {// == '\0' ) {
+            splat = this.spawnArgs.RandomPrefix(key, gameLocal.random);
+            if ((splat == null) || splat.isEmpty()) {// == '\0' ) {
                 splat = def.dict.RandomPrefix(key, gameLocal.random);
             }
-            if (splat != null && !splat.isEmpty()) {// 1= '\0' ) {
+            if ((splat != null) && !splat.isEmpty()) {// 1= '\0' ) {
                 gameLocal.BloodSplat(origin, dir, 64.0f, splat);
             }
 
@@ -4546,22 +4552,22 @@ public class Entity {
             if (!(IsType(idPlayer.class) && !gameLocal.isMultiplayer)) {
                 // place a wound overlay on the model
                 key = va("mtr_wound_%s", materialType);
-                decal = spawnArgs.RandomPrefix(key, gameLocal.random);
-                if (decal == null || decal.isEmpty()) {// == '\0' ) {
+                decal = this.spawnArgs.RandomPrefix(key, gameLocal.random);
+                if ((decal == null) || decal.isEmpty()) {// == '\0' ) {
                     decal = def.dict.RandomPrefix(key, gameLocal.random);
                 }
-                if (decal != null && !decal.isEmpty()) {// == '\0' ) {
+                if ((decal != null) && !decal.isEmpty()) {// == '\0' ) {
                     ProjectOverlay(origin, dir, 20.0f, decal);
                 }
             }
 
             // a blood spurting wound is added
             key = va("smoke_wound_%s", materialType);
-            bleed = spawnArgs.GetString(key);
-            if (bleed == null || bleed.isEmpty()) {// == '\0' ) {
+            bleed = this.spawnArgs.GetString(key);
+            if ((bleed == null) || bleed.isEmpty()) {// == '\0' ) {
                 bleed = def.dict.GetString(key);
             }
-            if (bleed != null && !bleed.isEmpty()) {// == '\0' ) {
+            if ((bleed != null) && !bleed.isEmpty()) {// == '\0' ) {
                 de = new damageEffect_s();
                 de.next = this.damageEffects;
                 this.damageEffects = de;
@@ -4598,11 +4604,11 @@ public class Entity {
             // emit a particle for each bleeding wound
             for (de = this.damageEffects; de != null; de = de.next) {
                 idVec3 origin = new idVec3(), start;
-                idMat3 axis = new idMat3();
+                final idMat3 axis = new idMat3();
 
-                animator.GetJointTransform(de.jointNum, gameLocal.time, origin, axis);
-                axis.oMulSet(renderEntity.axis);
-                origin = renderEntity.origin.oPlus(origin.oMultiply(renderEntity.axis));
+                this.animator.GetJointTransform(de.jointNum, gameLocal.time, origin, axis);
+                axis.oMulSet(this.renderEntity.axis);
+                origin = this.renderEntity.origin.oPlus(origin.oMultiply(this.renderEntity.axis));
                 start = origin.oPlus(de.localOrigin.oMultiply(axis));
                 if (!gameLocal.smokeParticles.EmitSmoke(de.type, de.time, gameLocal.random.CRandomFloat(), start, axis)) {
                     de.time = 0;
@@ -4615,7 +4621,8 @@ public class Entity {
             int damageDefIndex;
             int materialIndex;
             int/*jointHandle_s*/ jointNum;
-            idVec3 localOrigin = new idVec3(), localNormal, localDir;
+            final idVec3 localOrigin = new idVec3();
+			idVec3 localNormal, localDir;
 
             switch (event) {
                 case EVENT_ADD_DAMAGE_EFFECT: {
@@ -4663,7 +4670,7 @@ public class Entity {
          ================
          */
         private void Event_ClearAllJoints() {
-            animator.ClearAllJoints();
+            this.animator.ClearAllJoints();
         }
 
         /*
@@ -4710,8 +4717,8 @@ public class Entity {
          ================
          */
         private static void Event_GetJointPos(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
-            idVec3 offset = new idVec3();
-            idMat3 axis = new idMat3();
+            final idVec3 offset = new idVec3();
+            final idMat3 axis = new idMat3();
 
             if (!e.GetJointWorldTransform(jointnum.value, gameLocal.time, offset, axis)) {
                 gameLocal.Warning("Joint # %d out of range on entity '%s'", jointnum, e.name);
@@ -4729,15 +4736,15 @@ public class Entity {
          ================
          */
         private static void Event_GetJointAngle(idAnimatedEntity e, idEventArg<Integer>/*jointHandle_t*/ jointnum) {
-            idVec3 offset = new idVec3();
-            idMat3 axis = new idMat3();
+            final idVec3 offset = new idVec3();
+            final idMat3 axis = new idMat3();
 
             if (!e.GetJointWorldTransform(jointnum.value, gameLocal.time, offset, axis)) {
                 gameLocal.Warning("Joint # %d out of range on entity '%s'", jointnum, e.name);
             }
 
-            idAngles ang = axis.ToAngles();
-            idVec3 vec = new idVec3(ang.oGet(0), ang.oGet(1), ang.oGet(2));
+            final idAngles ang = axis.ToAngles();
+            final idVec3 vec = new idVec3(ang.oGet(0), ang.oGet(1), ang.oGet(2));
             idThread.ReturnVector(vec);
         }
 
@@ -4801,7 +4808,7 @@ public class Entity {
      ================
      */
     static void UpdateGuiParms(idUserInterface gui, final idDict args) {
-        if (gui == null || args == null) {
+        if ((gui == null) || (args == null)) {
             return;
         }
         idKeyValue kv = args.MatchPrefix("gui_parm", null);

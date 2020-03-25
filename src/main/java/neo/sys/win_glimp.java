@@ -77,8 +77,6 @@ public class win_glimp {
         public int     multiSamples;
     }
 
-    ;
-
     /*
      ===================
      GLW_SetFullScreen
@@ -163,8 +161,8 @@ public class win_glimp {
 //        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 //        window = GLFW.glfwCreateWindow(parms.width, parms.height, NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH, glfwGetPrimaryMonitor(), 0);//HACKME::0 change this back to setDisplayModeAndFullscreen.
         window = GLFW.glfwCreateWindow(parms.width, parms.height, NeoFixStrings.BLAAAAAAAAAAAAAAAAAARRRGGGGHH, 0, 0);
-        GLFWVidMode currentMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-        glfwSetWindowPos(window, currentMode.width() / 2 - parms.width / 2, currentMode.height() / 2 - parms.height / 2);
+        final GLFWVidMode currentMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        glfwSetWindowPos(window, (currentMode.width() / 2) - (parms.width / 2), (currentMode.height() / 2) - (parms.height / 2));
         if (window != 0) {
             glfwMakeContextCurrent(window);
             GL.createCapabilities();
@@ -564,7 +562,7 @@ public class win_glimp {
                     tr.logFile.write(atobb(String.format("// %s\n\n", cvarSystem.GetCVarString("si_version"))));
                 }
             }
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             Logger.getLogger(win_glimp.class.getName()).log(Level.SEVERE, null, ex);
             common.Warning("---GLimp_EnableLogging---\n%s\n---", ex.getMessage());
         }

@@ -242,7 +242,7 @@ public class AI {
         MOVETYPE_FLY,
         MOVETYPE_STATIC,
         NUM_MOVETYPES
-    };
+    }
 
     public enum moveCommand_t {
 
@@ -264,7 +264,7 @@ public class AI {
         MOVE_SLIDE_TO_POSITION,
         MOVE_WANDER,
         NUM_MOVE_COMMANDS
-    };
+    }
 
     public enum talkState_t {
 
@@ -273,7 +273,7 @@ public class AI {
         TALK_OK,
         TALK_BUSY,
         NUM_TALK_STATES
-    };
+    }
 
     //
     // status results from move commands
@@ -290,7 +290,7 @@ public class AI {
         MOVE_STATUS_BLOCKED_BY_OBJECT,
         MOVE_STATUS_BLOCKED_BY_ENEMY,
         MOVE_STATUS_BLOCKED_BY_MONSTER
-    };
+    }
 
     static final int DI_NODIR = -1;
 
@@ -305,11 +305,11 @@ public class AI {
         idEntity seekPosObstacle;           // if != NULL the obstacle containing the seek position
 
         public obstaclePath_s() {
-            seekPos = new idVec3();
-            startPosOutsideObstacles = new idVec3();
-            seekPosOutsideObstacles = new idVec3();
+            this.seekPos = new idVec3();
+            this.startPosOutsideObstacles = new idVec3();
+            this.seekPosOutsideObstacles = new idVec3();
         }
-    };
+    }
 
     // path prediction
 // typedef enum {
@@ -328,21 +328,21 @@ public class AI {
         int      endTime;                     // time predicted
         int      endEvent;                    // event that stopped the prediction
         idEntity blockingEntity;              // entity that blocks the movement
-    };
+    }
 
 
     static class particleEmitter_s {
 
         particleEmitter_s() {
-            particle = null;
-            time = 0;
-            joint = INVALID_JOINT;
+            this.particle = null;
+            this.time = 0;
+            this.joint = INVALID_JOINT;
         }
 
         idDeclParticle particle;
         int            time;
         int/*jointHandle_t*/ joint;
-    };
+    }
 
     static final String[] moveCommandString/*[ NUM_MOVE_COMMANDS ]*/ = {
             "MOVE_NONE",
@@ -385,86 +385,86 @@ public class AI {
         //
 
         public idMoveState() {
-            moveType = MOVETYPE_ANIM;
-            moveCommand = MOVE_NONE;
-            moveStatus = MOVE_STATUS_DONE;
-            moveDest = new idVec3();
-            moveDir = new idVec3(1.0f, 0.0f, 0.0f);
-            goalEntity = new idEntityPtr<>(null);
-            goalEntityOrigin = new idVec3();
-            toAreaNum = 0;
-            startTime = 0;
-            duration = 0;
-            speed = 0.0f;
-            range = 0.0f;
-            wanderYaw = 0;
-            nextWanderTime = 0;
-            blockTime = 0;
-            obstacle = new idEntityPtr<>(null);
-            lastMoveOrigin = getVec3_origin();
-            lastMoveTime = 0;
-            anim = 0;
+            this.moveType = MOVETYPE_ANIM;
+            this.moveCommand = MOVE_NONE;
+            this.moveStatus = MOVE_STATUS_DONE;
+            this.moveDest = new idVec3();
+            this.moveDir = new idVec3(1.0f, 0.0f, 0.0f);
+            this.goalEntity = new idEntityPtr<>(null);
+            this.goalEntityOrigin = new idVec3();
+            this.toAreaNum = 0;
+            this.startTime = 0;
+            this.duration = 0;
+            this.speed = 0.0f;
+            this.range = 0.0f;
+            this.wanderYaw = 0;
+            this.nextWanderTime = 0;
+            this.blockTime = 0;
+            this.obstacle = new idEntityPtr<>(null);
+            this.lastMoveOrigin = getVec3_origin();
+            this.lastMoveTime = 0;
+            this.anim = 0;
         }
 
         public void Save(idSaveGame savefile) {
-            savefile.WriteInt(moveType.ordinal());
-            savefile.WriteInt(moveCommand.ordinal());
-            savefile.WriteInt(moveStatus.ordinal());
-            savefile.WriteVec3(moveDest);
-            savefile.WriteVec3(moveDir);
-            goalEntity.Save(savefile);
-            savefile.WriteVec3(goalEntityOrigin);
-            savefile.WriteInt(toAreaNum);
-            savefile.WriteInt(startTime);
-            savefile.WriteInt(duration);
-            savefile.WriteFloat(speed);
-            savefile.WriteFloat(range);
-            savefile.WriteFloat(wanderYaw);
-            savefile.WriteInt(nextWanderTime);
-            savefile.WriteInt(blockTime);
-            obstacle.Save(savefile);
-            savefile.WriteVec3(lastMoveOrigin);
-            savefile.WriteInt(lastMoveTime);
-            savefile.WriteInt(anim);
+            savefile.WriteInt(this.moveType.ordinal());
+            savefile.WriteInt(this.moveCommand.ordinal());
+            savefile.WriteInt(this.moveStatus.ordinal());
+            savefile.WriteVec3(this.moveDest);
+            savefile.WriteVec3(this.moveDir);
+            this.goalEntity.Save(savefile);
+            savefile.WriteVec3(this.goalEntityOrigin);
+            savefile.WriteInt(this.toAreaNum);
+            savefile.WriteInt(this.startTime);
+            savefile.WriteInt(this.duration);
+            savefile.WriteFloat(this.speed);
+            savefile.WriteFloat(this.range);
+            savefile.WriteFloat(this.wanderYaw);
+            savefile.WriteInt(this.nextWanderTime);
+            savefile.WriteInt(this.blockTime);
+            this.obstacle.Save(savefile);
+            savefile.WriteVec3(this.lastMoveOrigin);
+            savefile.WriteInt(this.lastMoveTime);
+            savefile.WriteInt(this.anim);
         }
 
         public void Restore(idRestoreGame savefile) {
-            moveType = moveType_t.values()[savefile.ReadInt()];
-            moveCommand = moveCommand_t.values()[savefile.ReadInt()];
-            moveStatus = moveStatus_t.values()[savefile.ReadInt()];
-            savefile.ReadVec3(moveDest);
-            savefile.ReadVec3(moveDir);
-            goalEntity.Restore(savefile);
-            savefile.ReadVec3(goalEntityOrigin);
-            toAreaNum = savefile.ReadInt();
-            startTime = savefile.ReadInt();
-            duration = savefile.ReadInt();
-            speed = savefile.ReadFloat();
-            range = savefile.ReadFloat();
-            wanderYaw = savefile.ReadFloat();
-            nextWanderTime = savefile.ReadInt();
-            blockTime = savefile.ReadInt();
-            obstacle.Restore(savefile);
-            savefile.ReadVec3(lastMoveOrigin);
-            lastMoveTime = savefile.ReadInt();
-            anim = savefile.ReadInt();
+            this.moveType = moveType_t.values()[savefile.ReadInt()];
+            this.moveCommand = moveCommand_t.values()[savefile.ReadInt()];
+            this.moveStatus = moveStatus_t.values()[savefile.ReadInt()];
+            savefile.ReadVec3(this.moveDest);
+            savefile.ReadVec3(this.moveDir);
+            this.goalEntity.Restore(savefile);
+            savefile.ReadVec3(this.goalEntityOrigin);
+            this.toAreaNum = savefile.ReadInt();
+            this.startTime = savefile.ReadInt();
+            this.duration = savefile.ReadInt();
+            this.speed = savefile.ReadFloat();
+            this.range = savefile.ReadFloat();
+            this.wanderYaw = savefile.ReadFloat();
+            this.nextWanderTime = savefile.ReadInt();
+            this.blockTime = savefile.ReadInt();
+            this.obstacle.Restore(savefile);
+            savefile.ReadVec3(this.lastMoveOrigin);
+            this.lastMoveTime = savefile.ReadInt();
+            this.anim = savefile.ReadInt();
         }
-    };
+    }
 
     public static class idAASFindCover extends idAASCallback {
 
-        private pvsHandle_t hidePVS;
-        private int[] PVSAreas = new int[idEntity.MAX_PVS_AREAS];
+        private final pvsHandle_t hidePVS;
+        private final int[] PVSAreas = new int[idEntity.MAX_PVS_AREAS];
         //
         //
 
         public idAASFindCover(final idVec3 hideFromPos) {
             int numPVSAreas;
-            idBounds bounds = new idBounds(hideFromPos.oMinus(new idVec3(16, 16, 0)), hideFromPos.oPlus(new idVec3(16, 16, 64)));
+            final idBounds bounds = new idBounds(hideFromPos.oMinus(new idVec3(16, 16, 0)), hideFromPos.oPlus(new idVec3(16, 16, 64)));
 
             // setup PVS
-            numPVSAreas = gameLocal.pvs.GetPVSAreas(bounds, PVSAreas, idEntity.MAX_PVS_AREAS);
-            hidePVS = gameLocal.pvs.SetupCurrentPVS(PVSAreas, numPVSAreas);
+            numPVSAreas = gameLocal.pvs.GetPVSAreas(bounds, this.PVSAreas, idEntity.MAX_PVS_AREAS);
+            this.hidePVS = gameLocal.pvs.SetupCurrentPVS(this.PVSAreas, numPVSAreas);
         }
 
         // ~idAASFindCover();
@@ -472,24 +472,24 @@ public class AI {
         public boolean TestArea(final idAAS aas, int areaNum) {
             idVec3 areaCenter;
             int numPVSAreas;
-            int[] PVSAreas = new int[idEntity.MAX_PVS_AREAS];
+            final int[] PVSAreas = new int[idEntity.MAX_PVS_AREAS];
 
             areaCenter = aas.AreaCenter(areaNum);
             areaCenter.oPluSet(2, 1.0f);
 
             numPVSAreas = gameLocal.pvs.GetPVSAreas(new idBounds(areaCenter).Expand(16.0f), PVSAreas, idEntity.MAX_PVS_AREAS);
-            if (!gameLocal.pvs.InCurrentPVS(hidePVS, PVSAreas, numPVSAreas)) {
+            if (!gameLocal.pvs.InCurrentPVS(this.hidePVS, PVSAreas, numPVSAreas)) {
                 return true;
             }
 
             return false;
         }
-    };
+    }
 
     public static class idAASFindAreaOutOfRange extends idAASCallback {
 
-        private idVec3 targetPos;
-        private float  maxDistSqr;
+        private final idVec3 targetPos;
+        private final float  maxDistSqr;
         //
         //
 
@@ -501,34 +501,34 @@ public class AI {
         @Override
         public boolean TestArea(final idAAS aas, int areaNum) {
             final idVec3 areaCenter = aas.AreaCenter(areaNum);
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
             float dist;
 
-            dist = (targetPos.ToVec2().oMinus(areaCenter.ToVec2())).LengthSqr();
+            dist = (this.targetPos.ToVec2().oMinus(areaCenter.ToVec2())).LengthSqr();
 
-            if ((maxDistSqr > 0.0f) && (dist < maxDistSqr)) {
+            if ((this.maxDistSqr > 0.0f) && (dist < this.maxDistSqr)) {
                 return false;
             }
 
-            gameLocal.clip.TracePoint(trace, targetPos, areaCenter.oPlus(new idVec3(0.0f, 0.0f, 1.0f)), MASK_OPAQUE, null);
+            gameLocal.clip.TracePoint(trace, this.targetPos, areaCenter.oPlus(new idVec3(0.0f, 0.0f, 1.0f)), MASK_OPAQUE, null);
             if (trace[0].fraction < 1.0f) {
                 return false;
             }
 
             return true;
         }
-    };
+    }
 
     public static class idAASFindAttackPosition extends idAASCallback {
 
-        private idAI        self;
-        private idEntity    target;
-        private idBounds    excludeBounds;
-        private idVec3      targetPos;
-        private idVec3      fireOffset;
-        private idMat3      gravityAxis;
-        private pvsHandle_t targetPVS;
-        private int[] PVSAreas = new int[idEntity.MAX_PVS_AREAS];
+        private final idAI        self;
+        private final idEntity    target;
+        private final idBounds    excludeBounds;
+        private final idVec3      targetPos;
+        private final idVec3      fireOffset;
+        private final idMat3      gravityAxis;
+        private final pvsHandle_t targetPVS;
+        private final int[] PVSAreas = new int[idEntity.MAX_PVS_AREAS];
         //
         //
 
@@ -541,50 +541,50 @@ public class AI {
             this.self = self;
             this.gravityAxis = gravityAxis;
 
-            excludeBounds = new idBounds(new idVec3(-64.0f, -64.0f, -8.0f), new idVec3(64.0f, 64.0f, 64.0f));
-            excludeBounds.TranslateSelf(self.GetPhysics().GetOrigin());
+            this.excludeBounds = new idBounds(new idVec3(-64.0f, -64.0f, -8.0f), new idVec3(64.0f, 64.0f, 64.0f));
+            this.excludeBounds.TranslateSelf(self.GetPhysics().GetOrigin());
 
             // setup PVS
-            idBounds bounds = new idBounds(targetPos.oMinus(new idVec3(16, 16, 0)), targetPos.oPlus(new idVec3(16, 16, 64)));
-            numPVSAreas = gameLocal.pvs.GetPVSAreas(bounds, PVSAreas, idEntity.MAX_PVS_AREAS);
-            targetPVS = gameLocal.pvs.SetupCurrentPVS(PVSAreas, numPVSAreas);
+            final idBounds bounds = new idBounds(targetPos.oMinus(new idVec3(16, 16, 0)), targetPos.oPlus(new idVec3(16, 16, 64)));
+            numPVSAreas = gameLocal.pvs.GetPVSAreas(bounds, this.PVSAreas, idEntity.MAX_PVS_AREAS);
+            this.targetPVS = gameLocal.pvs.SetupCurrentPVS(this.PVSAreas, numPVSAreas);
         }
         // ~idAASFindAttackPosition();
 
         @Override
         public boolean TestArea(final idAAS aas, int areaNum) {
             idVec3 dir;
-            idVec3 local_dir = new idVec3();
+            final idVec3 local_dir = new idVec3();
             idVec3 fromPos;
             idMat3 axis;
             idVec3 areaCenter;
             int numPVSAreas;
-            int[] PVSAreas = new int[idEntity.MAX_PVS_AREAS];
+            final int[] PVSAreas = new int[idEntity.MAX_PVS_AREAS];
 
             areaCenter = aas.AreaCenter(areaNum);
             areaCenter.oPluSet(2, 1.0f);
 
-            if (excludeBounds.ContainsPoint(areaCenter)) {
+            if (this.excludeBounds.ContainsPoint(areaCenter)) {
                 // too close to where we already are
                 return false;
             }
 
             numPVSAreas = gameLocal.pvs.GetPVSAreas(new idBounds(areaCenter).Expand(16.0f), PVSAreas, idEntity.MAX_PVS_AREAS);
-            if (!gameLocal.pvs.InCurrentPVS(targetPVS, PVSAreas, numPVSAreas)) {
+            if (!gameLocal.pvs.InCurrentPVS(this.targetPVS, PVSAreas, numPVSAreas)) {
                 return false;
             }
 
             // calculate the world transform of the launch position
-            dir = targetPos.oMinus(areaCenter);
-            gravityAxis.ProjectVector(dir, local_dir);
+            dir = this.targetPos.oMinus(areaCenter);
+            this.gravityAxis.ProjectVector(dir, local_dir);
             local_dir.z = 0.0f;
             local_dir.ToVec2_Normalize();
             axis = local_dir.ToMat3();
-            fromPos = areaCenter.oPlus(fireOffset.oMultiply(axis));
+            fromPos = areaCenter.oPlus(this.fireOffset.oMultiply(axis));
 
-            return self.GetAimDir(fromPos, target, self, dir);
+            return this.self.GetAimDir(fromPos, this.target, this.self, dir);
         }
-    };
+    }
 
     public static class idAI extends idActor {
         /**
@@ -870,130 +870,130 @@ public class AI {
         //
 
         public idAI() {
-            aas = null;
-            travelFlags = TFL_WALK | TFL_AIR;
-            move = new idMoveState();
-            kickForce = 2048.0f;
-            ignore_obstacles = false;
-            blockedRadius = 0.0f;
-            blockedMoveTime = 750;
-            blockedAttackTime = 750;
-            turnRate = 360.0f;
-            turnVel = 0.0f;
-            anim_turn_yaw = 0.0f;
-            anim_turn_amount = 0.0f;
-            anim_turn_angles = 0.0f;
-            physicsObj = new idPhysics_Monster();
-            fly_offset = 0;
-            fly_seek_scale = 1.0f;
-            fly_roll_scale = 0.0f;
-            fly_roll_max = 0.0f;
-            fly_roll = 0.0f;
-            fly_pitch_scale = 0.0f;
-            fly_pitch_max = 0.0f;
-            fly_pitch = 0.0f;
-            allowMove = false;
-            allowHiddenMovement = false;
-            fly_speed = 0.0f;
-            fly_bob_strength = 0.0f;
-            fly_bob_vert = 0.0f;
-            fly_bob_horz = 0.0f;
-            lastHitCheckResult = false;
-            lastHitCheckTime = 0;
-            lastAttackTime = 0;
-            melee_range = 0.0f;
-            projectile_height_to_distance_ratio = 1.0f;
-            missileLaunchOffset = new idList<>();
-            projectileDef = null;
-            projectile = new idEntityPtr<>(null);
-            attack = new idStr();
-            projectileClipModel = null;
-            projectileRadius = 0.0f;
-            projectileVelocity = getVec3_origin();
-            projectileGravity = getVec3_origin();
-            projectileSpeed = 0.0f;
-            chat_snd = null;
-            chat_min = 0;
-            chat_max = 0;
-            chat_time = 0;
-            talk_state = TALK_NEVER;
-            talkTarget = new idEntityPtr<>(null);
+            this.aas = null;
+            this.travelFlags = TFL_WALK | TFL_AIR;
+            this.move = new idMoveState();
+            this.kickForce = 2048.0f;
+            this.ignore_obstacles = false;
+            this.blockedRadius = 0.0f;
+            this.blockedMoveTime = 750;
+            this.blockedAttackTime = 750;
+            this.turnRate = 360.0f;
+            this.turnVel = 0.0f;
+            this.anim_turn_yaw = 0.0f;
+            this.anim_turn_amount = 0.0f;
+            this.anim_turn_angles = 0.0f;
+            this.physicsObj = new idPhysics_Monster();
+            this.fly_offset = 0;
+            this.fly_seek_scale = 1.0f;
+            this.fly_roll_scale = 0.0f;
+            this.fly_roll_max = 0.0f;
+            this.fly_roll = 0.0f;
+            this.fly_pitch_scale = 0.0f;
+            this.fly_pitch_max = 0.0f;
+            this.fly_pitch = 0.0f;
+            this.allowMove = false;
+            this.allowHiddenMovement = false;
+            this.fly_speed = 0.0f;
+            this.fly_bob_strength = 0.0f;
+            this.fly_bob_vert = 0.0f;
+            this.fly_bob_horz = 0.0f;
+            this.lastHitCheckResult = false;
+            this.lastHitCheckTime = 0;
+            this.lastAttackTime = 0;
+            this.melee_range = 0.0f;
+            this.projectile_height_to_distance_ratio = 1.0f;
+            this.missileLaunchOffset = new idList<>();
+            this.projectileDef = null;
+            this.projectile = new idEntityPtr<>(null);
+            this.attack = new idStr();
+            this.projectileClipModel = null;
+            this.projectileRadius = 0.0f;
+            this.projectileVelocity = getVec3_origin();
+            this.projectileGravity = getVec3_origin();
+            this.projectileSpeed = 0.0f;
+            this.chat_snd = null;
+            this.chat_min = 0;
+            this.chat_max = 0;
+            this.chat_time = 0;
+            this.talk_state = TALK_NEVER;
+            this.talkTarget = new idEntityPtr<>(null);
 
-            particles = new idList<>();
-            restartParticles = true;
-            useBoneAxis = false;
+            this.particles = new idList<>();
+            this.restartParticles = true;
+            this.useBoneAxis = false;
 
-            wakeOnFlashlight = false;
-            worldMuzzleFlash = new renderLight_s();//memset( &worldMuzzleFlash, 0, sizeof ( worldMuzzleFlash ) );
-            worldMuzzleFlashHandle = -1;
+            this.wakeOnFlashlight = false;
+            this.worldMuzzleFlash = new renderLight_s();//memset( &worldMuzzleFlash, 0, sizeof ( worldMuzzleFlash ) );
+            this.worldMuzzleFlashHandle = -1;
 
-            enemy = new idEntityPtr<>(null);
-            lastVisibleEnemyPos = new idVec3();
-            lastVisibleEnemyEyeOffset = new idVec3();
-            lastVisibleReachableEnemyPos = new idVec3();
-            lastReachableEnemyPos = new idVec3();
-            shrivel_rate = 0.0f;
-            shrivel_start = 0;
-            fl.neverDormant = false;        // AI's can go dormant
-            current_yaw = 0.0f;
-            ideal_yaw = 0.0f;
+            this.enemy = new idEntityPtr<>(null);
+            this.lastVisibleEnemyPos = new idVec3();
+            this.lastVisibleEnemyEyeOffset = new idVec3();
+            this.lastVisibleReachableEnemyPos = new idVec3();
+            this.lastReachableEnemyPos = new idVec3();
+            this.shrivel_rate = 0.0f;
+            this.shrivel_start = 0;
+            this.fl.neverDormant = false;        // AI's can go dormant
+            this.current_yaw = 0.0f;
+            this.ideal_yaw = 0.0f;
 
-            num_cinematics = 0;
-            current_cinematic = 0;
+            this.num_cinematics = 0;
+            this.current_cinematic = 0;
 
-            allowEyeFocus = true;
-            allowPain = true;
-            allowJointMod = true;
-            focusEntity = new idEntityPtr<>(null);
-            focusTime = 0;
-            alignHeadTime = 0;
-            forceAlignHeadTime = 0;
+            this.allowEyeFocus = true;
+            this.allowPain = true;
+            this.allowJointMod = true;
+            this.focusEntity = new idEntityPtr<>(null);
+            this.focusTime = 0;
+            this.alignHeadTime = 0;
+            this.forceAlignHeadTime = 0;
 
-            currentFocusPos = new idVec3();
-            eyeAng = new idAngles();
-            lookAng = new idAngles();
-            destLookAng = new idAngles();
-            lookMin = new idAngles();
-            lookMax = new idAngles();
+            this.currentFocusPos = new idVec3();
+            this.eyeAng = new idAngles();
+            this.lookAng = new idAngles();
+            this.destLookAng = new idAngles();
+            this.lookMin = new idAngles();
+            this.lookMax = new idAngles();
             
-            lookJoints = new idList<>();
-            lookJointAngles = new idList<>();
+            this.lookJoints = new idList<>();
+            this.lookJointAngles = new idList<>();
 
-            eyeMin = new idAngles();
-            eyeMax = new idAngles();
-            muzzleFlashEnd = 0;
-            flashTime = 0;
-            flashJointWorld = INVALID_JOINT;
+            this.eyeMin = new idAngles();
+            this.eyeMax = new idAngles();
+            this.muzzleFlashEnd = 0;
+            this.flashTime = 0;
+            this.flashJointWorld = INVALID_JOINT;
 
-            focusJoint = INVALID_JOINT;
-            orientationJoint = INVALID_JOINT;
-            flyTiltJoint = INVALID_JOINT;
+            this.focusJoint = INVALID_JOINT;
+            this.orientationJoint = INVALID_JOINT;
+            this.flyTiltJoint = INVALID_JOINT;
 
-            eyeVerticalOffset = 0.0f;
-            eyeHorizontalOffset = 0.0f;
-            eyeFocusRate = 0.0f;
-            headFocusRate = 0.0f;
-            focusAlignTime = 0;
+            this.eyeVerticalOffset = 0.0f;
+            this.eyeHorizontalOffset = 0.0f;
+            this.eyeFocusRate = 0.0f;
+            this.headFocusRate = 0.0f;
+            this.focusAlignTime = 0;
 
-            AI_TALK = new idScriptBool();
-            AI_DAMAGE = new idScriptBool();
-            AI_PAIN = new idScriptBool();
-            AI_SPECIAL_DAMAGE = new idScriptFloat();
-            AI_DEAD = new idScriptBool();
-            AI_ENEMY_VISIBLE = new idScriptBool();
-            AI_ENEMY_IN_FOV = new idScriptBool();
-            AI_ENEMY_DEAD = new idScriptBool();
-            AI_MOVE_DONE = new idScriptBool();
-            AI_ONGROUND = new idScriptBool();
-            AI_ACTIVATED = new idScriptBool();
-            AI_FORWARD = new idScriptBool();
-            AI_JUMP = new idScriptBool();
-            AI_ENEMY_REACHABLE = new idScriptBool();
-            AI_BLOCKED = new idScriptBool();
-            AI_OBSTACLE_IN_PATH = new idScriptBool();
-            AI_DEST_UNREACHABLE = new idScriptBool();
-            AI_HIT_ENEMY = new idScriptBool();
-            AI_PUSHED = new idScriptBool();
+            this.AI_TALK = new idScriptBool();
+            this.AI_DAMAGE = new idScriptBool();
+            this.AI_PAIN = new idScriptBool();
+            this.AI_SPECIAL_DAMAGE = new idScriptFloat();
+            this.AI_DEAD = new idScriptBool();
+            this.AI_ENEMY_VISIBLE = new idScriptBool();
+            this.AI_ENEMY_IN_FOV = new idScriptBool();
+            this.AI_ENEMY_DEAD = new idScriptBool();
+            this.AI_MOVE_DONE = new idScriptBool();
+            this.AI_ONGROUND = new idScriptBool();
+            this.AI_ACTIVATED = new idScriptBool();
+            this.AI_FORWARD = new idScriptBool();
+            this.AI_JUMP = new idScriptBool();
+            this.AI_ENEMY_REACHABLE = new idScriptBool();
+            this.AI_BLOCKED = new idScriptBool();
+            this.AI_OBSTACLE_IN_PATH = new idScriptBool();
+            this.AI_DEST_UNREACHABLE = new idScriptBool();
+            this.AI_HIT_ENEMY = new idScriptBool();
+            this.AI_PUSHED = new idScriptBool();
         }
         // ~idAI();
 
@@ -1001,275 +1001,275 @@ public class AI {
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteInt(travelFlags);
-            move.Save(savefile);
-            savedMove.Save(savefile);
-            savefile.WriteFloat(kickForce);
-            savefile.WriteBool(ignore_obstacles);
-            savefile.WriteFloat(blockedRadius);
-            savefile.WriteInt(blockedMoveTime);
-            savefile.WriteInt(blockedAttackTime);
+            savefile.WriteInt(this.travelFlags);
+            this.move.Save(savefile);
+            this.savedMove.Save(savefile);
+            savefile.WriteFloat(this.kickForce);
+            savefile.WriteBool(this.ignore_obstacles);
+            savefile.WriteFloat(this.blockedRadius);
+            savefile.WriteInt(this.blockedMoveTime);
+            savefile.WriteInt(this.blockedAttackTime);
 
-            savefile.WriteFloat(ideal_yaw);
-            savefile.WriteFloat(current_yaw);
-            savefile.WriteFloat(turnRate);
-            savefile.WriteFloat(turnVel);
-            savefile.WriteFloat(anim_turn_yaw);
-            savefile.WriteFloat(anim_turn_amount);
-            savefile.WriteFloat(anim_turn_angles);
+            savefile.WriteFloat(this.ideal_yaw);
+            savefile.WriteFloat(this.current_yaw);
+            savefile.WriteFloat(this.turnRate);
+            savefile.WriteFloat(this.turnVel);
+            savefile.WriteFloat(this.anim_turn_yaw);
+            savefile.WriteFloat(this.anim_turn_amount);
+            savefile.WriteFloat(this.anim_turn_angles);
 
-            savefile.WriteStaticObject(physicsObj);
+            savefile.WriteStaticObject(this.physicsObj);
 
-            savefile.WriteFloat(fly_speed);
-            savefile.WriteFloat(fly_bob_strength);
-            savefile.WriteFloat(fly_bob_vert);
-            savefile.WriteFloat(fly_bob_horz);
-            savefile.WriteInt(fly_offset);
-            savefile.WriteFloat(fly_seek_scale);
-            savefile.WriteFloat(fly_roll_scale);
-            savefile.WriteFloat(fly_roll_max);
-            savefile.WriteFloat(fly_roll);
-            savefile.WriteFloat(fly_pitch_scale);
-            savefile.WriteFloat(fly_pitch_max);
-            savefile.WriteFloat(fly_pitch);
+            savefile.WriteFloat(this.fly_speed);
+            savefile.WriteFloat(this.fly_bob_strength);
+            savefile.WriteFloat(this.fly_bob_vert);
+            savefile.WriteFloat(this.fly_bob_horz);
+            savefile.WriteInt(this.fly_offset);
+            savefile.WriteFloat(this.fly_seek_scale);
+            savefile.WriteFloat(this.fly_roll_scale);
+            savefile.WriteFloat(this.fly_roll_max);
+            savefile.WriteFloat(this.fly_roll);
+            savefile.WriteFloat(this.fly_pitch_scale);
+            savefile.WriteFloat(this.fly_pitch_max);
+            savefile.WriteFloat(this.fly_pitch);
 
-            savefile.WriteBool(allowMove);
-            savefile.WriteBool(allowHiddenMovement);
-            savefile.WriteBool(disableGravity);
-            savefile.WriteBool(af_push_moveables);
+            savefile.WriteBool(this.allowMove);
+            savefile.WriteBool(this.allowHiddenMovement);
+            savefile.WriteBool(this.disableGravity);
+            savefile.WriteBool(this.af_push_moveables);
 
-            savefile.WriteBool(lastHitCheckResult);
-            savefile.WriteInt(lastHitCheckTime);
-            savefile.WriteInt(lastAttackTime);
-            savefile.WriteFloat(melee_range);
-            savefile.WriteFloat(projectile_height_to_distance_ratio);
+            savefile.WriteBool(this.lastHitCheckResult);
+            savefile.WriteInt(this.lastHitCheckTime);
+            savefile.WriteInt(this.lastAttackTime);
+            savefile.WriteFloat(this.melee_range);
+            savefile.WriteFloat(this.projectile_height_to_distance_ratio);
 
-            savefile.WriteInt(missileLaunchOffset.Num());
-            for (i = 0; i < missileLaunchOffset.Num(); i++) {
-                savefile.WriteVec3(missileLaunchOffset.oGet(i));
+            savefile.WriteInt(this.missileLaunchOffset.Num());
+            for (i = 0; i < this.missileLaunchOffset.Num(); i++) {
+                savefile.WriteVec3(this.missileLaunchOffset.oGet(i));
             }
 
-            idStr projectileName = new idStr();
-            spawnArgs.GetString("def_projectile", "", projectileName);
+            final idStr projectileName = new idStr();
+            this.spawnArgs.GetString("def_projectile", "", projectileName);
             savefile.WriteString(projectileName);
-            savefile.WriteFloat(projectileRadius);
-            savefile.WriteFloat(projectileSpeed);
-            savefile.WriteVec3(projectileVelocity);
-            savefile.WriteVec3(projectileGravity);
-            projectile.Save(savefile);
-            savefile.WriteString(attack);
+            savefile.WriteFloat(this.projectileRadius);
+            savefile.WriteFloat(this.projectileSpeed);
+            savefile.WriteVec3(this.projectileVelocity);
+            savefile.WriteVec3(this.projectileGravity);
+            this.projectile.Save(savefile);
+            savefile.WriteString(this.attack);
 
-            savefile.WriteSoundShader(chat_snd);
-            savefile.WriteInt(chat_min);
-            savefile.WriteInt(chat_max);
-            savefile.WriteInt(chat_time);
-            savefile.WriteInt(etoi(talk_state));
-            talkTarget.Save(savefile);
+            savefile.WriteSoundShader(this.chat_snd);
+            savefile.WriteInt(this.chat_min);
+            savefile.WriteInt(this.chat_max);
+            savefile.WriteInt(this.chat_time);
+            savefile.WriteInt(etoi(this.talk_state));
+            this.talkTarget.Save(savefile);
 
-            savefile.WriteInt(num_cinematics);
-            savefile.WriteInt(current_cinematic);
+            savefile.WriteInt(this.num_cinematics);
+            savefile.WriteInt(this.current_cinematic);
 
-            savefile.WriteBool(allowJointMod);
-            focusEntity.Save(savefile);
-            savefile.WriteVec3(currentFocusPos);
-            savefile.WriteInt(focusTime);
-            savefile.WriteInt(alignHeadTime);
-            savefile.WriteInt(forceAlignHeadTime);
-            savefile.WriteAngles(eyeAng);
-            savefile.WriteAngles(lookAng);
-            savefile.WriteAngles(destLookAng);
-            savefile.WriteAngles(lookMin);
-            savefile.WriteAngles(lookMax);
+            savefile.WriteBool(this.allowJointMod);
+            this.focusEntity.Save(savefile);
+            savefile.WriteVec3(this.currentFocusPos);
+            savefile.WriteInt(this.focusTime);
+            savefile.WriteInt(this.alignHeadTime);
+            savefile.WriteInt(this.forceAlignHeadTime);
+            savefile.WriteAngles(this.eyeAng);
+            savefile.WriteAngles(this.lookAng);
+            savefile.WriteAngles(this.destLookAng);
+            savefile.WriteAngles(this.lookMin);
+            savefile.WriteAngles(this.lookMax);
 
-            savefile.WriteInt(lookJoints.Num());
-            for (i = 0; i < lookJoints.Num(); i++) {
-                savefile.WriteJoint(lookJoints.oGet(i));
-                savefile.WriteAngles(lookJointAngles.oGet(i));
+            savefile.WriteInt(this.lookJoints.Num());
+            for (i = 0; i < this.lookJoints.Num(); i++) {
+                savefile.WriteJoint(this.lookJoints.oGet(i));
+                savefile.WriteAngles(this.lookJointAngles.oGet(i));
             }
 
-            savefile.WriteFloat(shrivel_rate);
-            savefile.WriteInt(shrivel_start);
+            savefile.WriteFloat(this.shrivel_rate);
+            savefile.WriteInt(this.shrivel_start);
 
-            savefile.WriteInt(particles.Num());
-            for (i = 0; i < particles.Num(); i++) {
-                savefile.WriteParticle(particles.oGet(i).particle);
-                savefile.WriteInt(particles.oGet(i).time);
-                savefile.WriteJoint(particles.oGet(i).joint);
+            savefile.WriteInt(this.particles.Num());
+            for (i = 0; i < this.particles.Num(); i++) {
+                savefile.WriteParticle(this.particles.oGet(i).particle);
+                savefile.WriteInt(this.particles.oGet(i).time);
+                savefile.WriteJoint(this.particles.oGet(i).joint);
             }
-            savefile.WriteBool(restartParticles);
-            savefile.WriteBool(useBoneAxis);
+            savefile.WriteBool(this.restartParticles);
+            savefile.WriteBool(this.useBoneAxis);
 
-            enemy.Save(savefile);
-            savefile.WriteVec3(lastVisibleEnemyPos);
-            savefile.WriteVec3(lastVisibleEnemyEyeOffset);
-            savefile.WriteVec3(lastVisibleReachableEnemyPos);
-            savefile.WriteVec3(lastReachableEnemyPos);
-            savefile.WriteBool(wakeOnFlashlight);
+            this.enemy.Save(savefile);
+            savefile.WriteVec3(this.lastVisibleEnemyPos);
+            savefile.WriteVec3(this.lastVisibleEnemyEyeOffset);
+            savefile.WriteVec3(this.lastVisibleReachableEnemyPos);
+            savefile.WriteVec3(this.lastReachableEnemyPos);
+            savefile.WriteBool(this.wakeOnFlashlight);
 
-            savefile.WriteAngles(eyeMin);
-            savefile.WriteAngles(eyeMax);
+            savefile.WriteAngles(this.eyeMin);
+            savefile.WriteAngles(this.eyeMax);
 
-            savefile.WriteFloat(eyeVerticalOffset);
-            savefile.WriteFloat(eyeHorizontalOffset);
-            savefile.WriteFloat(eyeFocusRate);
-            savefile.WriteFloat(headFocusRate);
-            savefile.WriteInt(focusAlignTime);
+            savefile.WriteFloat(this.eyeVerticalOffset);
+            savefile.WriteFloat(this.eyeHorizontalOffset);
+            savefile.WriteFloat(this.eyeFocusRate);
+            savefile.WriteFloat(this.headFocusRate);
+            savefile.WriteInt(this.focusAlignTime);
 
-            savefile.WriteJoint(flashJointWorld);
-            savefile.WriteInt(muzzleFlashEnd);
+            savefile.WriteJoint(this.flashJointWorld);
+            savefile.WriteInt(this.muzzleFlashEnd);
 
-            savefile.WriteJoint(focusJoint);
-            savefile.WriteJoint(orientationJoint);
-            savefile.WriteJoint(flyTiltJoint);
+            savefile.WriteJoint(this.focusJoint);
+            savefile.WriteJoint(this.orientationJoint);
+            savefile.WriteJoint(this.flyTiltJoint);
 
-            savefile.WriteBool(GetPhysics().equals(physicsObj));
+            savefile.WriteBool(GetPhysics().equals(this.physicsObj));
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            boolean[] restorePhysics = {false};
+            final boolean[] restorePhysics = {false};
             int i;
             int num;
-            idBounds bounds;
+            final idBounds bounds;
 
-            travelFlags = savefile.ReadInt();
-            move.Restore(savefile);
-            savedMove.Restore(savefile);
-            kickForce = savefile.ReadFloat();
-            ignore_obstacles = savefile.ReadBool();
-            blockedRadius = savefile.ReadFloat();
-            blockedMoveTime = savefile.ReadInt();
-            blockedAttackTime = savefile.ReadInt();
+            this.travelFlags = savefile.ReadInt();
+            this.move.Restore(savefile);
+            this.savedMove.Restore(savefile);
+            this.kickForce = savefile.ReadFloat();
+            this.ignore_obstacles = savefile.ReadBool();
+            this.blockedRadius = savefile.ReadFloat();
+            this.blockedMoveTime = savefile.ReadInt();
+            this.blockedAttackTime = savefile.ReadInt();
 
-            ideal_yaw = savefile.ReadFloat();
-            current_yaw = savefile.ReadFloat();
-            turnRate = savefile.ReadFloat();
-            turnVel = savefile.ReadFloat();
-            anim_turn_yaw = savefile.ReadFloat();
-            anim_turn_amount = savefile.ReadFloat();
-            anim_turn_angles = savefile.ReadFloat();
+            this.ideal_yaw = savefile.ReadFloat();
+            this.current_yaw = savefile.ReadFloat();
+            this.turnRate = savefile.ReadFloat();
+            this.turnVel = savefile.ReadFloat();
+            this.anim_turn_yaw = savefile.ReadFloat();
+            this.anim_turn_amount = savefile.ReadFloat();
+            this.anim_turn_angles = savefile.ReadFloat();
 
-            savefile.ReadStaticObject(physicsObj);
+            savefile.ReadStaticObject(this.physicsObj);
 
-            fly_speed = savefile.ReadFloat();
-            fly_bob_strength = savefile.ReadFloat();
-            fly_bob_vert = savefile.ReadFloat();
-            fly_bob_horz = savefile.ReadFloat();
-            fly_offset = savefile.ReadInt();
-            fly_seek_scale = savefile.ReadFloat();
-            fly_roll_scale = savefile.ReadFloat();
-            fly_roll_max = savefile.ReadFloat();
-            fly_roll = savefile.ReadFloat();
-            fly_pitch_scale = savefile.ReadFloat();
-            fly_pitch_max = savefile.ReadFloat();
-            fly_pitch = savefile.ReadFloat();
+            this.fly_speed = savefile.ReadFloat();
+            this.fly_bob_strength = savefile.ReadFloat();
+            this.fly_bob_vert = savefile.ReadFloat();
+            this.fly_bob_horz = savefile.ReadFloat();
+            this.fly_offset = savefile.ReadInt();
+            this.fly_seek_scale = savefile.ReadFloat();
+            this.fly_roll_scale = savefile.ReadFloat();
+            this.fly_roll_max = savefile.ReadFloat();
+            this.fly_roll = savefile.ReadFloat();
+            this.fly_pitch_scale = savefile.ReadFloat();
+            this.fly_pitch_max = savefile.ReadFloat();
+            this.fly_pitch = savefile.ReadFloat();
 
-            allowMove = savefile.ReadBool();
-            allowHiddenMovement = savefile.ReadBool();
-            disableGravity = savefile.ReadBool();
-            af_push_moveables = savefile.ReadBool();
+            this.allowMove = savefile.ReadBool();
+            this.allowHiddenMovement = savefile.ReadBool();
+            this.disableGravity = savefile.ReadBool();
+            this.af_push_moveables = savefile.ReadBool();
 
-            lastHitCheckResult = savefile.ReadBool();
-            lastHitCheckTime = savefile.ReadInt();
-            lastAttackTime = savefile.ReadInt();
-            melee_range = savefile.ReadFloat();
-            projectile_height_to_distance_ratio = savefile.ReadFloat();
+            this.lastHitCheckResult = savefile.ReadBool();
+            this.lastHitCheckTime = savefile.ReadInt();
+            this.lastAttackTime = savefile.ReadInt();
+            this.melee_range = savefile.ReadFloat();
+            this.projectile_height_to_distance_ratio = savefile.ReadFloat();
 
             num = savefile.ReadInt();
-            missileLaunchOffset.SetGranularity(1);
-            missileLaunchOffset.SetNum(num);
+            this.missileLaunchOffset.SetGranularity(1);
+            this.missileLaunchOffset.SetNum(num);
             for (i = 0; i < num; i++) {
-                savefile.ReadVec3(missileLaunchOffset.oGet(i));
+                savefile.ReadVec3(this.missileLaunchOffset.oGet(i));
             }
 
-            idStr projectileName = new idStr();
+            final idStr projectileName = new idStr();
             savefile.ReadString(projectileName);
             if (projectileName.Length() != 0) {
-                projectileDef = gameLocal.FindEntityDefDict(projectileName.toString());
+                this.projectileDef = gameLocal.FindEntityDefDict(projectileName.toString());
             } else {
-                projectileDef = null;
+                this.projectileDef = null;
             }
-            projectileRadius = savefile.ReadFloat();
-            projectileSpeed = savefile.ReadFloat();
-            savefile.ReadVec3(projectileVelocity);
-            savefile.ReadVec3(projectileGravity);
-            projectile.Restore(savefile);
-            savefile.ReadString(attack);
+            this.projectileRadius = savefile.ReadFloat();
+            this.projectileSpeed = savefile.ReadFloat();
+            savefile.ReadVec3(this.projectileVelocity);
+            savefile.ReadVec3(this.projectileGravity);
+            this.projectile.Restore(savefile);
+            savefile.ReadString(this.attack);
 
-            savefile.ReadSoundShader(chat_snd);
-            chat_min = savefile.ReadInt();
-            chat_max = savefile.ReadInt();
-            chat_time = savefile.ReadInt();
+            savefile.ReadSoundShader(this.chat_snd);
+            this.chat_min = savefile.ReadInt();
+            this.chat_max = savefile.ReadInt();
+            this.chat_time = savefile.ReadInt();
             i = savefile.ReadInt();
-            talk_state = talkState_t.values()[i];
-            talkTarget.Restore(savefile);
+            this.talk_state = talkState_t.values()[i];
+            this.talkTarget.Restore(savefile);
 
-            num_cinematics = savefile.ReadInt();
-            current_cinematic = savefile.ReadInt();
+            this.num_cinematics = savefile.ReadInt();
+            this.current_cinematic = savefile.ReadInt();
 
-            allowJointMod = savefile.ReadBool();
-            focusEntity.Restore(savefile);
-            savefile.ReadVec3(currentFocusPos);
-            focusTime = savefile.ReadInt();
-            alignHeadTime = savefile.ReadInt();
-            forceAlignHeadTime = savefile.ReadInt();
-            savefile.ReadAngles(eyeAng);
-            savefile.ReadAngles(lookAng);
-            savefile.ReadAngles(destLookAng);
-            savefile.ReadAngles(lookMin);
-            savefile.ReadAngles(lookMax);
+            this.allowJointMod = savefile.ReadBool();
+            this.focusEntity.Restore(savefile);
+            savefile.ReadVec3(this.currentFocusPos);
+            this.focusTime = savefile.ReadInt();
+            this.alignHeadTime = savefile.ReadInt();
+            this.forceAlignHeadTime = savefile.ReadInt();
+            savefile.ReadAngles(this.eyeAng);
+            savefile.ReadAngles(this.lookAng);
+            savefile.ReadAngles(this.destLookAng);
+            savefile.ReadAngles(this.lookMin);
+            savefile.ReadAngles(this.lookMax);
 
             num = savefile.ReadInt();
-            lookJoints.SetGranularity(1);
-            lookJoints.SetNum(num);
-            lookJointAngles.SetGranularity(1);
-            lookJointAngles.SetNum(num);
+            this.lookJoints.SetGranularity(1);
+            this.lookJoints.SetNum(num);
+            this.lookJointAngles.SetGranularity(1);
+            this.lookJointAngles.SetNum(num);
             for (i = 0; i < num; i++) {
-                lookJoints.oSet(i, savefile.ReadJoint());
-                savefile.ReadAngles(lookJointAngles.oGet(i));
+                this.lookJoints.oSet(i, savefile.ReadJoint());
+                savefile.ReadAngles(this.lookJointAngles.oGet(i));
             }
 
-            shrivel_rate = savefile.ReadFloat();
-            shrivel_start = savefile.ReadInt();
+            this.shrivel_rate = savefile.ReadFloat();
+            this.shrivel_start = savefile.ReadInt();
 
             num = savefile.ReadInt();
-            particles.SetNum(num);
-            for (i = 0; i < particles.Num(); i++) {
-                savefile.ReadParticle(particles.oGet(i).particle);
-                particles.oGet(i).time = savefile.ReadInt();
-                particles.oGet(i).joint = savefile.ReadJoint();
+            this.particles.SetNum(num);
+            for (i = 0; i < this.particles.Num(); i++) {
+                savefile.ReadParticle(this.particles.oGet(i).particle);
+                this.particles.oGet(i).time = savefile.ReadInt();
+                this.particles.oGet(i).joint = savefile.ReadJoint();
             }
-            restartParticles = savefile.ReadBool();
-            useBoneAxis = savefile.ReadBool();
+            this.restartParticles = savefile.ReadBool();
+            this.useBoneAxis = savefile.ReadBool();
 
-            enemy.Restore(savefile);
-            savefile.ReadVec3(lastVisibleEnemyPos);
-            savefile.ReadVec3(lastVisibleEnemyEyeOffset);
-            savefile.ReadVec3(lastVisibleReachableEnemyPos);
-            savefile.ReadVec3(lastReachableEnemyPos);
+            this.enemy.Restore(savefile);
+            savefile.ReadVec3(this.lastVisibleEnemyPos);
+            savefile.ReadVec3(this.lastVisibleEnemyEyeOffset);
+            savefile.ReadVec3(this.lastVisibleReachableEnemyPos);
+            savefile.ReadVec3(this.lastReachableEnemyPos);
 
-            wakeOnFlashlight = savefile.ReadBool();
+            this.wakeOnFlashlight = savefile.ReadBool();
 
-            savefile.ReadAngles(eyeMin);
-            savefile.ReadAngles(eyeMax);
+            savefile.ReadAngles(this.eyeMin);
+            savefile.ReadAngles(this.eyeMax);
 
-            eyeVerticalOffset = savefile.ReadFloat();
-            eyeHorizontalOffset = savefile.ReadFloat();
-            eyeFocusRate = savefile.ReadFloat();
-            headFocusRate = savefile.ReadFloat();
-            focusAlignTime = savefile.ReadInt();
+            this.eyeVerticalOffset = savefile.ReadFloat();
+            this.eyeHorizontalOffset = savefile.ReadFloat();
+            this.eyeFocusRate = savefile.ReadFloat();
+            this.headFocusRate = savefile.ReadFloat();
+            this.focusAlignTime = savefile.ReadInt();
 
-            flashJointWorld = savefile.ReadJoint();
-            muzzleFlashEnd = savefile.ReadInt();
+            this.flashJointWorld = savefile.ReadJoint();
+            this.muzzleFlashEnd = savefile.ReadInt();
 
-            focusJoint = savefile.ReadJoint();
-            orientationJoint = savefile.ReadJoint();
-            flyTiltJoint = savefile.ReadJoint();
+            this.focusJoint = savefile.ReadJoint();
+            this.orientationJoint = savefile.ReadJoint();
+            this.flyTiltJoint = savefile.ReadJoint();
 
             savefile.ReadBool(restorePhysics);
 
             // Set the AAS if the character has the correct gravity vector
-            idVec3 gravity = spawnArgs.GetVector("gravityDir", "0 0 -1");
+            final idVec3 gravity = this.spawnArgs.GetVector("gravityDir", "0 0 -1");
             gravity.oMulSet(g_gravity.GetFloat());
             if (gravity == gameLocal.GetGravity()) {
                 SetAAS();
@@ -1284,7 +1284,7 @@ public class AI {
             LinkScriptVariables();
 
             if (restorePhysics[0]) {
-                RestorePhysics(physicsObj);
+                RestorePhysics(this.physicsObj);
             }
         }
 
@@ -1293,216 +1293,216 @@ public class AI {
             super.Spawn();
             
             idKeyValue kv;
-            idStr jointName = new idStr();
+            final idStr jointName = new idStr();
             idAngles jointScale;
             int/*jointHandle_t*/ joint;
-            idVec3 local_dir = new idVec3();
-            boolean[] talks = {false};
+            final idVec3 local_dir = new idVec3();
+            final boolean[] talks = {false};
 
             if (!g_monsters.GetBool()) {
                 PostEventMS(EV_Remove, 0);
                 return;
             }
 
-            team = spawnArgs.GetInt("team", "1");
-            rank = spawnArgs.GetInt("rank", "0");
-            fly_offset = spawnArgs.GetInt("fly_offset", "0");
-            fly_speed = spawnArgs.GetFloat("fly_speed", "100");
-            fly_bob_strength = spawnArgs.GetFloat("fly_bob_strength", "50");
-            fly_bob_horz = spawnArgs.GetFloat("fly_bob_vert", "2");
-            fly_bob_vert = spawnArgs.GetFloat("fly_bob_horz", "2.7");
-            fly_seek_scale = spawnArgs.GetFloat("fly_seek_scale", "4");
-            fly_roll_scale = spawnArgs.GetFloat("fly_roll_scale", "90");
-            fly_roll_max = spawnArgs.GetFloat("fly_roll_max", "60");
-            fly_pitch_scale = spawnArgs.GetFloat("fly_pitch_scale", "45");
-            fly_pitch_max = spawnArgs.GetFloat("fly_pitch_max", "30");
+            this.team = this.spawnArgs.GetInt("team", "1");
+            this.rank = this.spawnArgs.GetInt("rank", "0");
+            this.fly_offset = this.spawnArgs.GetInt("fly_offset", "0");
+            this.fly_speed = this.spawnArgs.GetFloat("fly_speed", "100");
+            this.fly_bob_strength = this.spawnArgs.GetFloat("fly_bob_strength", "50");
+            this.fly_bob_horz = this.spawnArgs.GetFloat("fly_bob_vert", "2");
+            this.fly_bob_vert = this.spawnArgs.GetFloat("fly_bob_horz", "2.7");
+            this.fly_seek_scale = this.spawnArgs.GetFloat("fly_seek_scale", "4");
+            this.fly_roll_scale = this.spawnArgs.GetFloat("fly_roll_scale", "90");
+            this.fly_roll_max = this.spawnArgs.GetFloat("fly_roll_max", "60");
+            this.fly_pitch_scale = this.spawnArgs.GetFloat("fly_pitch_scale", "45");
+            this.fly_pitch_max = this.spawnArgs.GetFloat("fly_pitch_max", "30");
 
-            melee_range = spawnArgs.GetFloat("melee_range", "64");
-            projectile_height_to_distance_ratio = spawnArgs.GetFloat("projectile_height_to_distance_ratio", "1");
+            this.melee_range = this.spawnArgs.GetFloat("melee_range", "64");
+            this.projectile_height_to_distance_ratio = this.spawnArgs.GetFloat("projectile_height_to_distance_ratio", "1");
 
-            turnRate = spawnArgs.GetFloat("turn_rate", "360");
+            this.turnRate = this.spawnArgs.GetFloat("turn_rate", "360");
 
-            spawnArgs.GetBool("talks", "0", talks);
-            if (spawnArgs.GetString("npc_name", null) != null) {
+            this.spawnArgs.GetBool("talks", "0", talks);
+            if (this.spawnArgs.GetString("npc_name", null) != null) {
                 if (talks[0]) {
-                    talk_state = TALK_OK;
+                    this.talk_state = TALK_OK;
                 } else {
-                    talk_state = TALK_BUSY;
+                    this.talk_state = TALK_BUSY;
                 }
             } else {
-                talk_state = TALK_NEVER;
+                this.talk_state = TALK_NEVER;
             }
 
-            disableGravity = spawnArgs.GetBool("animate_z", "0");
-            af_push_moveables = spawnArgs.GetBool("af_push_moveables", "0");
-            kickForce = spawnArgs.GetFloat("kick_force", "4096");
-            ignore_obstacles = spawnArgs.GetBool("ignore_obstacles", "0");
-            blockedRadius = spawnArgs.GetFloat("blockedRadius", "-1");
-            blockedMoveTime = spawnArgs.GetInt("blockedMoveTime", "750");
-            blockedAttackTime = spawnArgs.GetInt("blockedAttackTime", "750");
+            this.disableGravity = this.spawnArgs.GetBool("animate_z", "0");
+            this.af_push_moveables = this.spawnArgs.GetBool("af_push_moveables", "0");
+            this.kickForce = this.spawnArgs.GetFloat("kick_force", "4096");
+            this.ignore_obstacles = this.spawnArgs.GetBool("ignore_obstacles", "0");
+            this.blockedRadius = this.spawnArgs.GetFloat("blockedRadius", "-1");
+            this.blockedMoveTime = this.spawnArgs.GetInt("blockedMoveTime", "750");
+            this.blockedAttackTime = this.spawnArgs.GetInt("blockedAttackTime", "750");
 
-            num_cinematics = spawnArgs.GetInt("num_cinematics", "0");
-            current_cinematic = 0;
+            this.num_cinematics = this.spawnArgs.GetInt("num_cinematics", "0");
+            this.current_cinematic = 0;
 
             LinkScriptVariables();
 
-            fl.takedamage = !spawnArgs.GetBool("noDamage");
-            enemy.oSet(null);
-            allowMove = true;
-            allowHiddenMovement = false;
+            this.fl.takedamage = !this.spawnArgs.GetBool("noDamage");
+            this.enemy.oSet(null);
+            this.allowMove = true;
+            this.allowHiddenMovement = false;
 
-            animator.RemoveOriginOffset(true);
+            this.animator.RemoveOriginOffset(true);
 
             // create combat collision hull for exact collision detection
             SetCombatModel();
 
-            lookMin = spawnArgs.GetAngles("look_min", "-80 -75 0");
-            lookMax = spawnArgs.GetAngles("look_max", "80 75 0");
+            this.lookMin = this.spawnArgs.GetAngles("look_min", "-80 -75 0");
+            this.lookMax = this.spawnArgs.GetAngles("look_max", "80 75 0");
 
-            lookJoints.SetGranularity(1);
-            lookJointAngles.SetGranularity(1);
-            kv = spawnArgs.MatchPrefix("look_joint", null);
+            this.lookJoints.SetGranularity(1);
+            this.lookJointAngles.SetGranularity(1);
+            kv = this.spawnArgs.MatchPrefix("look_joint", null);
             while (kv != null) {
                 jointName.oSet(kv.GetKey());
                 jointName.StripLeadingOnce("look_joint ");
-                joint = animator.GetJointHandle(jointName);
+                joint = this.animator.GetJointHandle(jointName);
                 if (joint == INVALID_JOINT) {
-                    gameLocal.Warning("Unknown look_joint '%s' on entity %s", jointName, name);
+                    gameLocal.Warning("Unknown look_joint '%s' on entity %s", jointName, this.name);
                 } else {
-                    jointScale = spawnArgs.GetAngles(kv.GetKey().toString(), "0 0 0");
+                    jointScale = this.spawnArgs.GetAngles(kv.GetKey().toString(), "0 0 0");
                     jointScale.roll = 0.0f;
 
                     // if no scale on any component, then don't bother adding it.  this may be done to
                     // zero out rotation from an inherited entitydef.
                     if (!jointScale.equals(getAng_zero())) {
-                        lookJoints.Append(joint);
-                        lookJointAngles.Append(jointScale);
+                        this.lookJoints.Append(joint);
+                        this.lookJointAngles.Append(jointScale);
                     }
                 }
-                kv = spawnArgs.MatchPrefix("look_joint", kv);
+                kv = this.spawnArgs.MatchPrefix("look_joint", kv);
             }
 
             // calculate joint positions on attack frames so we can do proper "can hit" tests
             CalculateAttackOffsets();
 
-            eyeMin = spawnArgs.GetAngles("eye_turn_min", "-10 -30 0");
-            eyeMax = spawnArgs.GetAngles("eye_turn_max", "10 30 0");
-            eyeVerticalOffset = spawnArgs.GetFloat("eye_verticle_offset", "5");
-            eyeHorizontalOffset = spawnArgs.GetFloat("eye_horizontal_offset", "-8");
-            eyeFocusRate = spawnArgs.GetFloat("eye_focus_rate", "0.5");
-            headFocusRate = spawnArgs.GetFloat("head_focus_rate", "0.1");
-            focusAlignTime = (int) SEC2MS(spawnArgs.GetFloat("focus_align_time", "1"));
+            this.eyeMin = this.spawnArgs.GetAngles("eye_turn_min", "-10 -30 0");
+            this.eyeMax = this.spawnArgs.GetAngles("eye_turn_max", "10 30 0");
+            this.eyeVerticalOffset = this.spawnArgs.GetFloat("eye_verticle_offset", "5");
+            this.eyeHorizontalOffset = this.spawnArgs.GetFloat("eye_horizontal_offset", "-8");
+            this.eyeFocusRate = this.spawnArgs.GetFloat("eye_focus_rate", "0.5");
+            this.headFocusRate = this.spawnArgs.GetFloat("head_focus_rate", "0.1");
+            this.focusAlignTime = (int) SEC2MS(this.spawnArgs.GetFloat("focus_align_time", "1"));
 
-            flashJointWorld = animator.GetJointHandle("flash");
+            this.flashJointWorld = this.animator.GetJointHandle("flash");
 
-            if (head.GetEntity() != null) {
-                idAnimator headAnimator = head.GetEntity().GetAnimator();
+            if (this.head.GetEntity() != null) {
+                final idAnimator headAnimator = this.head.GetEntity().GetAnimator();
 
-                jointName.oSet(spawnArgs.GetString("bone_focus"));
+                jointName.oSet(this.spawnArgs.GetString("bone_focus"));
                 if (isNotNullOrEmpty(jointName)) {
-                    focusJoint = headAnimator.GetJointHandle(jointName);
-                    if (focusJoint == INVALID_JOINT) {
-                        gameLocal.Warning("Joint '%s' not found on head on '%s'", jointName, name);
+                    this.focusJoint = headAnimator.GetJointHandle(jointName);
+                    if (this.focusJoint == INVALID_JOINT) {
+                        gameLocal.Warning("Joint '%s' not found on head on '%s'", jointName, this.name);
                     }
                 }
             } else {
-                jointName.oSet(spawnArgs.GetString("bone_focus"));
+                jointName.oSet(this.spawnArgs.GetString("bone_focus"));
                 if (isNotNullOrEmpty(jointName)) {
-                    focusJoint = animator.GetJointHandle(jointName);
-                    if (focusJoint == INVALID_JOINT) {
-                        gameLocal.Warning("Joint '%s' not found on '%s'", jointName, name);
+                    this.focusJoint = this.animator.GetJointHandle(jointName);
+                    if (this.focusJoint == INVALID_JOINT) {
+                        gameLocal.Warning("Joint '%s' not found on '%s'", jointName, this.name);
                     }
                 }
             }
 
-            jointName.oSet(spawnArgs.GetString("bone_orientation"));
+            jointName.oSet(this.spawnArgs.GetString("bone_orientation"));
             if (isNotNullOrEmpty(jointName)) {
-                orientationJoint = animator.GetJointHandle(jointName);
-                if (orientationJoint == INVALID_JOINT) {
-                    gameLocal.Warning("Joint '%s' not found on '%s'", jointName, name);
+                this.orientationJoint = this.animator.GetJointHandle(jointName);
+                if (this.orientationJoint == INVALID_JOINT) {
+                    gameLocal.Warning("Joint '%s' not found on '%s'", jointName, this.name);
                 }
             }
 
-            jointName.oSet(spawnArgs.GetString("bone_flytilt"));
+            jointName.oSet(this.spawnArgs.GetString("bone_flytilt"));
             if (isNotNullOrEmpty(jointName)) {
-                flyTiltJoint = animator.GetJointHandle(jointName);
-                if (flyTiltJoint == INVALID_JOINT) {
-                    gameLocal.Warning("Joint '%s' not found on '%s'", jointName, name);
+                this.flyTiltJoint = this.animator.GetJointHandle(jointName);
+                if (this.flyTiltJoint == INVALID_JOINT) {
+                    gameLocal.Warning("Joint '%s' not found on '%s'", jointName, this.name);
                 }
             }
 
             InitMuzzleFlash();
 
-            physicsObj.SetSelf(this);
-            physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
-            physicsObj.SetMass(spawnArgs.GetFloat("mass", "100"));
+            this.physicsObj.SetSelf(this);
+            this.physicsObj.SetClipModel(new idClipModel(GetPhysics().GetClipModel()), 1.0f);
+            this.physicsObj.SetMass(this.spawnArgs.GetFloat("mass", "100"));
 
-            if (spawnArgs.GetBool("big_monster")) {
-                physicsObj.SetContents(0);
-                physicsObj.SetClipMask(MASK_MONSTERSOLID & ~CONTENTS_BODY);
+            if (this.spawnArgs.GetBool("big_monster")) {
+                this.physicsObj.SetContents(0);
+                this.physicsObj.SetClipMask(MASK_MONSTERSOLID & ~CONTENTS_BODY);
             } else {
-                if (use_combat_bbox) {
-                    physicsObj.SetContents(CONTENTS_BODY | CONTENTS_SOLID);
+                if (this.use_combat_bbox) {
+                    this.physicsObj.SetContents(CONTENTS_BODY | CONTENTS_SOLID);
                 } else {
-                    physicsObj.SetContents(CONTENTS_BODY);
+                    this.physicsObj.SetContents(CONTENTS_BODY);
                 }
-                physicsObj.SetClipMask(MASK_MONSTERSOLID);
+                this.physicsObj.SetClipMask(MASK_MONSTERSOLID);
             }
 
             // move up to make sure the monster is at least an epsilon above the floor
-            physicsObj.SetOrigin(GetPhysics().GetOrigin().oPlus(new idVec3(0, 0, CM_CLIP_EPSILON)));
+            this.physicsObj.SetOrigin(GetPhysics().GetOrigin().oPlus(new idVec3(0, 0, CM_CLIP_EPSILON)));
 
-            if (num_cinematics != 0) {
-                physicsObj.SetGravity(getVec3_origin());
+            if (this.num_cinematics != 0) {
+                this.physicsObj.SetGravity(getVec3_origin());
             } else {
-                idVec3 gravity = spawnArgs.GetVector("gravityDir", "0 0 -1");
+                final idVec3 gravity = this.spawnArgs.GetVector("gravityDir", "0 0 -1");
                 gravity.oMulSet(g_gravity.GetFloat());
-                physicsObj.SetGravity(gravity);
+                this.physicsObj.SetGravity(gravity);
             }
 
-            SetPhysics(physicsObj);
+            SetPhysics(this.physicsObj);
 
-            physicsObj.GetGravityAxis().ProjectVector(viewAxis.oGet(0), local_dir);
-            current_yaw = local_dir.ToYaw();
-            ideal_yaw = idMath.AngleNormalize180(current_yaw);
+            this.physicsObj.GetGravityAxis().ProjectVector(this.viewAxis.oGet(0), local_dir);
+            this.current_yaw = local_dir.ToYaw();
+            this.ideal_yaw = idMath.AngleNormalize180(this.current_yaw);
 
-            move.blockTime = 0;
+            this.move.blockTime = 0;
 
             SetAAS();
 
-            projectile.oSet(null);
-            projectileDef = null;
-            projectileClipModel = null;
-            idStr projectileName = new idStr();
-            if (spawnArgs.GetString("def_projectile", "", projectileName) && projectileName.Length() != 0) {
-                projectileDef = gameLocal.FindEntityDefDict(projectileName);
-                CreateProjectile(getVec3_origin(), viewAxis.oGet(0));
-                projectileRadius = projectile.GetEntity().GetPhysics().GetClipModel().GetBounds().GetRadius();
-                projectileVelocity = idProjectile.GetVelocity(projectileDef);
-                projectileGravity = idProjectile.GetGravity(projectileDef);
-                projectileSpeed = projectileVelocity.Length();
-		        idEntity.delete(projectile.GetEntity());
-                projectile.oSet(null);
+            this.projectile.oSet(null);
+            this.projectileDef = null;
+            this.projectileClipModel = null;
+            final idStr projectileName = new idStr();
+            if (this.spawnArgs.GetString("def_projectile", "", projectileName) && (projectileName.Length() != 0)) {
+                this.projectileDef = gameLocal.FindEntityDefDict(projectileName);
+                CreateProjectile(getVec3_origin(), this.viewAxis.oGet(0));
+                this.projectileRadius = this.projectile.GetEntity().GetPhysics().GetClipModel().GetBounds().GetRadius();
+                this.projectileVelocity = idProjectile.GetVelocity(this.projectileDef);
+                this.projectileGravity = idProjectile.GetGravity(this.projectileDef);
+                this.projectileSpeed = this.projectileVelocity.Length();
+		        idEntity.delete(this.projectile.GetEntity());
+                this.projectile.oSet(null);
             }
 
-            particles.Clear();
-            restartParticles = true;
-            useBoneAxis = spawnArgs.GetBool("useBoneAxis");
+            this.particles.Clear();
+            this.restartParticles = true;
+            this.useBoneAxis = this.spawnArgs.GetBool("useBoneAxis");
             SpawnParticles("smokeParticleSystem");
 
-            if (num_cinematics != 0 || spawnArgs.GetBool("hide") || spawnArgs.GetBool("teleport") || spawnArgs.GetBool("trigger_anim")) {
-                fl.takedamage = false;
-                physicsObj.SetContents(0);
-                physicsObj.GetClipModel().Unlink();
+            if ((this.num_cinematics != 0) || this.spawnArgs.GetBool("hide") || this.spawnArgs.GetBool("teleport") || this.spawnArgs.GetBool("trigger_anim")) {
+                this.fl.takedamage = false;
+                this.physicsObj.SetContents(0);
+                this.physicsObj.GetClipModel().Unlink();
                 Hide();
             } else {
                 // play a looping ambient sound if we have one
                 StartSound("snd_ambient", SND_CHANNEL_AMBIENT, 0, false, null);
             }
 
-            if (health <= 0) {
-                gameLocal.Warning("entity '%s' doesn't have health set", name);
-                health = 1;
+            if (this.health <= 0) {
+                gameLocal.Warning("entity '%s' doesn't have health set", this.name);
+                this.health = 1;
             }
 
             // set up monster chatter
@@ -1510,9 +1510,9 @@ public class AI {
 
             BecomeActive(TH_THINK);
 
-            if (af_push_moveables) {
-                af.SetupPose(this, gameLocal.time);
-                af.GetPhysics().EnableClip();
+            if (this.af_push_moveables) {
+                this.af.SetupPose(this, gameLocal.time);
+                this.af.GetPhysics().EnableClip();
             }
 
             // init the move variables
@@ -1523,26 +1523,26 @@ public class AI {
 //
 
         public idActor GetEnemy() {
-            return enemy.GetEntity();
+            return this.enemy.GetEntity();
         }
 
         public void TalkTo(idActor actor) {
-            if (talk_state != TALK_OK) {
+            if (this.talk_state != TALK_OK) {
                 return;
             }
 
-            talkTarget.oSet(actor);
-            AI_TALK.operator(actor != null);
+            this.talkTarget.oSet(actor);
+            this.AI_TALK.operator(actor != null);
         }
 
         public talkState_t GetTalkState() {
-            if ((talk_state != TALK_NEVER) && AI_DEAD.operator()) {
+            if ((this.talk_state != TALK_NEVER) && this.AI_DEAD.operator()) {
                 return TALK_DEAD;
             }
             if (IsHidden()) {
                 return TALK_NEVER;
             }
-            return talk_state;
+            return this.talk_state;
         }
 
         public boolean GetAimDir(final idVec3 firePos, idEntity aimAtEnt, final idEntity ignore, idVec3 aimDir) {
@@ -1553,17 +1553,17 @@ public class AI {
             boolean result;
 
             // if no aimAtEnt or projectile set
-            if (null == aimAtEnt || null == projectileDef) {
-                aimDir.oSet(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis()));
+            if ((null == aimAtEnt) || (null == this.projectileDef)) {
+                aimDir.oSet(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis()));
                 return false;
             }
 
-            if (projectileClipModel == null) {
+            if (this.projectileClipModel == null) {
                 CreateProjectileClipModel();
             }
 
-            if (aimAtEnt.equals(enemy.GetEntity())) {
-                ((idActor) aimAtEnt).GetAIAimTargets(lastVisibleEnemyPos, targetPos1, targetPos2);
+            if (aimAtEnt.equals(this.enemy.GetEntity())) {
+                ((idActor) aimAtEnt).GetAIAimTargets(this.lastVisibleEnemyPos, targetPos1, targetPos2);
             } else if (aimAtEnt.IsType(idActor.class)) {
                 ((idActor) aimAtEnt).GetAIAimTargets(aimAtEnt.GetPhysics().GetOrigin(), targetPos1, targetPos2);
             } else {
@@ -1573,22 +1573,22 @@ public class AI {
 
             // try aiming for chest
             delta = firePos.oMinus(targetPos1);
-            max_height = delta.LengthFast() * projectile_height_to_distance_ratio;
-            result = PredictTrajectory(firePos, targetPos1, projectileSpeed, projectileGravity, projectileClipModel, MASK_SHOT_RENDERMODEL, max_height, ignore, aimAtEnt, ai_debugTrajectory.GetBool() ? 1000 : 0, aimDir);
+            max_height = delta.LengthFast() * this.projectile_height_to_distance_ratio;
+            result = PredictTrajectory(firePos, targetPos1, this.projectileSpeed, this.projectileGravity, this.projectileClipModel, MASK_SHOT_RENDERMODEL, max_height, ignore, aimAtEnt, ai_debugTrajectory.GetBool() ? 1000 : 0, aimDir);
             if (result || !aimAtEnt.IsType(idActor.class)) {
                 return result;
             }
 
             // try aiming for head
             delta = firePos.oMinus(targetPos2);
-            max_height = delta.LengthFast() * projectile_height_to_distance_ratio;
-            result = PredictTrajectory(firePos, targetPos2, projectileSpeed, projectileGravity, projectileClipModel, MASK_SHOT_RENDERMODEL, max_height, ignore, aimAtEnt, ai_debugTrajectory.GetBool() ? 1000 : 0, aimDir);
+            max_height = delta.LengthFast() * this.projectile_height_to_distance_ratio;
+            result = PredictTrajectory(firePos, targetPos2, this.projectileSpeed, this.projectileGravity, this.projectileClipModel, MASK_SHOT_RENDERMODEL, max_height, ignore, aimAtEnt, ai_debugTrajectory.GetBool() ? 1000 : 0, aimDir);
 
             return result;
         }
 
         public void TouchedByFlashlight(idActor flashlight_owner) {
-            if (wakeOnFlashlight) {
+            if (this.wakeOnFlashlight) {
                 Activate(flashlight_owner);
             }
         }
@@ -1634,7 +1634,7 @@ public class AI {
 
                 gameLocal.Printf("...%d monsters\n", count);
             }
-        };
+        }
 
         /*
          ============
@@ -1645,10 +1645,10 @@ public class AI {
          */
         public static boolean FindPathAroundObstacles(final idPhysics physics, final idAAS aas, final idEntity ignore, final idVec3 startPos, final idVec3 seekPos, obstaclePath_s path) {
             int numObstacles, areaNum;
-            int[] insideObstacle = {0};
-            obstacle_s[] obstacles = Stream.generate(obstacle_s::new).limit(MAX_OBSTACLES).toArray(obstacle_s[]::new);
-            idBounds clipBounds = new idBounds();
-            idBounds bounds = new idBounds();
+            final int[] insideObstacle = {0};
+            final obstacle_s[] obstacles = Stream.generate(obstacle_s::new).limit(MAX_OBSTACLES).toArray(obstacle_s[]::new);
+            final idBounds clipBounds = new idBounds();
+            final idBounds bounds = new idBounds();
             pathNode_s root;
             boolean pathToGoalExists;
 
@@ -1731,9 +1731,9 @@ public class AI {
             idVec3 delta, curStart, curEnd, curVelocity, lastEnd = new idVec3(), stepUp = new idVec3(), tmpStart;
             idVec3 gravity, gravityDir, invGravityDir;
             float maxStepHeight, minFloorCos;
-            pathTrace_s trace = new pathTrace_s();
+            final pathTrace_s trace = new pathTrace_s();
 
-            if (aas != null && aas.GetSettings() != null) {
+            if ((aas != null) && (aas.GetSettings() != null)) {
                 gravity = aas.GetSettings().gravity;
                 gravityDir = aas.GetSettings().gravityDir;
                 invGravityDir = aas.GetSettings().invGravityDir;
@@ -1757,12 +1757,12 @@ public class AI {
             curStart = start;
             curVelocity = velocity;
 
-            numFrames = (totalTime + frameTime - 1) / frameTime;
+            numFrames = ((totalTime + frameTime) - 1) / frameTime;
             curFrameTime = frameTime;
             for (i = 0; i < numFrames; i++) {
 
-                if (i == numFrames - 1) {
-                    curFrameTime = totalTime - i * curFrameTime;
+                if (i == (numFrames - 1)) {
+                    curFrameTime = totalTime - (i * curFrameTime);
                 }
 
                 delta = curVelocity.oMultiply(curFrameTime).oMultiply(0.001f);
@@ -1773,7 +1773,7 @@ public class AI {
                 // allow sliding along a few surfaces per frame
                 for (j = 0; j < MAX_FRAME_SLIDE; j++) {
 
-                    idVec3 lineStart = curStart;
+                    final idVec3 lineStart = curStart;
 
                     // allow stepping up three times per frame
                     for (step = 0; step < 3; step++) {
@@ -1793,8 +1793,8 @@ public class AI {
                             }
 
                             // if not moved any further than without stepping up, or if not on a floor surface
-                            if ((lastEnd.oMinus(start)).LengthSqr() > (trace.endPos.oMinus(start)).LengthSqr() - 0.1f
-                                    || (trace.normal.oMultiply(invGravityDir)) < minFloorCos) {
+                            if (((lastEnd.oMinus(start)).LengthSqr() > ((trace.endPos.oMinus(start)).LengthSqr() - 0.1f))
+                                    || ((trace.normal.oMultiply(invGravityDir)) < minFloorCos)) {
                                 if ((stopEvent & SE_BLOCKED) != 0) {
                                     path.endPos.oSet(lastEnd);
                                     path.endEvent = SE_BLOCKED;
@@ -1815,7 +1815,7 @@ public class AI {
                         path.blockingEntity = trace.blockingEntity;
 
                         // if the trace is not blocked or blocked by a floor surface
-                        if (trace.fraction >= 1.0f || (trace.normal.oMultiply(invGravityDir)) > minFloorCos) {
+                        if ((trace.fraction >= 1.0f) || ((trace.normal.oMultiply(invGravityDir)) > minFloorCos)) {
                             curStart = trace.endPos;
                             break;
                         }
@@ -1889,13 +1889,13 @@ public class AI {
         public static boolean TestTrajectory(final idVec3 start, final idVec3 end, float zVel, float gravity, float time, float max_height, final idClipModel clip, int clipmask, final idEntity ignore, final idEntity targetEntity, int drawtime) {
             int i, numSegments;
             float maxHeight, t, t2;
-            idVec3[] points = new idVec3[5];
-            trace_s[] trace = {null};
+            final idVec3[] points = new idVec3[5];
+            final trace_s[] trace = {null};
             boolean result;
 
             t = zVel / gravity;
             // maximum height of projectile
-            maxHeight = start.z - 0.5f * gravity * (t * t);
+            maxHeight = start.z - (0.5f * gravity * (t * t));
             // time it takes to fall from the top to the end height
             t = idMath.Sqrt((maxHeight - end.z) / (0.5f * -gravity));
 
@@ -1907,21 +1907,21 @@ public class AI {
                 // point in the middle between top and start
                 t2 = (time - t) * 0.5f;
                 points[1].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
-                points[1].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
+                points[1].z = start.z + (t2 * zVel) + (0.5f * gravity * t2 * t2);
                 // top of parabolic
                 t2 = time - t;
                 points[2].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
-                points[2].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
+                points[2].z = start.z + (t2 * zVel) + (0.5f * gravity * t2 * t2);
                 // point in the middel between top and end
-                t2 = time - t * 0.5f;
+                t2 = time - (t * 0.5f);
                 points[3].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(t2 / time)));
-                points[3].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
+                points[3].z = start.z + (t2 * zVel) + (0.5f * gravity * t2 * t2);
             } else {
                 numSegments = 2;
                 // point halfway through
                 t2 = time * 0.5f;
                 points[1].oSet(start.ToVec2().oPlus((end.ToVec2().oMinus(start.ToVec2())).oMultiply(0.5f)));
-                points[1].z = start.z + t2 * zVel + 0.5f * gravity * t2 * t2;
+                points[1].z = start.z + (t2 * zVel) + (0.5f * gravity * t2 * t2);
             }
 
             // end of parabolic
@@ -1954,7 +1954,7 @@ public class AI {
                 if (clip != null) {
                     gameRenderWorld.DebugBounds(result ? colorGreen : colorYellow, clip.GetBounds().Expand(1.0f), trace[0].endpos, drawtime);
                 } else {
-                    idBounds bnds = new idBounds(trace[0].endpos);
+                    final idBounds bnds = new idBounds(trace[0].endpos);
                     bnds.ExpandSelf(1.0f);
                     gameRenderWorld.DebugBounds(result ? colorGreen : colorYellow, bnds, getVec3_zero(), drawtime);
                 }
@@ -1975,10 +1975,10 @@ public class AI {
         public static boolean PredictTrajectory(final idVec3 firePos, final idVec3 target, float projectileSpeed, final idVec3 projGravity, final idClipModel clip, int clipmask, float max_height, final idEntity ignore, final idEntity targetEntity, int drawtime, idVec3 aimDir) {
             int n, i, j;
             float zVel, a, t, pitch;
-            float[] s = {0}, c = {0};
-            trace_s[] trace = {null};
-            ballistics_s[] ballistics = new ballistics_s[2];
-            idVec3[] dir = new idVec3[2];
+            final float[] s = {0}, c = {0};
+            final trace_s[] trace = {null};
+            final ballistics_s[] ballistics = new ballistics_s[2];
+            final idVec3[] dir = new idVec3[2];
             idVec3 velocity;
             idVec3 lastPos, pos;
 
@@ -1992,7 +1992,7 @@ public class AI {
             }
 
             // if no velocity or the projectile is not affected by gravity
-            if (projectileSpeed <= 0.0f || projGravity.equals(getVec3_origin())) {
+            if ((projectileSpeed <= 0.0f) || projGravity.equals(getVec3_origin())) {
 
                 aimDir.oSet(target.oMinus(firePos));
                 aimDir.Normalize();
@@ -2001,12 +2001,12 @@ public class AI {
 
                 if (drawtime != 0) {
                     gameRenderWorld.DebugLine(colorRed, firePos, target, drawtime);
-                    idBounds bnds = new idBounds(trace[0].endpos);
+                    final idBounds bnds = new idBounds(trace[0].endpos);
                     bnds.ExpandSelf(1.0f);
-                    gameRenderWorld.DebugBounds((trace[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(trace[0]) == targetEntity)) ? colorGreen : colorYellow, bnds, getVec3_zero(), drawtime);
+                    gameRenderWorld.DebugBounds(((trace[0].fraction >= 1.0f) || (gameLocal.GetTraceEntity(trace[0]) == targetEntity)) ? colorGreen : colorYellow, bnds, getVec3_zero(), drawtime);
                 }
 
-                return (trace[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(trace[0]) == targetEntity));
+                return ((trace[0].fraction >= 1.0f) || (gameLocal.GetTraceEntity(trace[0]) == targetEntity));
             }
 
             n = Ballistics(firePos, target, projectileSpeed, projGravity.oGet(2), ballistics);
@@ -2031,7 +2031,7 @@ public class AI {
 
             // test if there is a collision free trajectory
             for (i = 0; i < n; i++) {
-                pitch = (float) DEG2RAD(ballistics[i].angle);
+                pitch = DEG2RAD(ballistics[i].angle);
                 idMath.SinCos(pitch, s, c);
                 dir[i] = target.oMinus(firePos);
                 dir[i].z = 0.0f;
@@ -2069,24 +2069,24 @@ public class AI {
         // ai/ai.cpp
         //
         protected void SetAAS() {
-            idStr use_aas = new idStr();
+            final idStr use_aas = new idStr();
 
-            spawnArgs.GetString("use_aas", null, use_aas);
-            aas = gameLocal.GetAAS(use_aas.toString());
-            if (aas != null) {
-                final idAASSettings settings = aas.GetSettings();
+            this.spawnArgs.GetString("use_aas", null, use_aas);
+            this.aas = gameLocal.GetAAS(use_aas.toString());
+            if (this.aas != null) {
+                final idAASSettings settings = this.aas.GetSettings();
                 if (settings != null) {
-                    if (!ValidForBounds(settings, physicsObj.GetBounds())) {
-                        gameLocal.Error("%s cannot use use_aas %s\n", name, use_aas);
+                    if (!ValidForBounds(settings, this.physicsObj.GetBounds())) {
+                        gameLocal.Error("%s cannot use use_aas %s\n", this.name, use_aas);
                     }
-                    float height = settings.maxStepHeight[0];
-                    physicsObj.SetMaxStepHeight(height);
+                    final float height = settings.maxStepHeight[0];
+                    this.physicsObj.SetMaxStepHeight(height);
                     return;
                 } else {
-                    aas = null;
+                    this.aas = null;
                 }
             }
-            gameLocal.Printf("WARNING: %s has no AAS file\n", name);
+            gameLocal.Printf("WARNING: %s has no AAS file\n", this.name);
         }
 
         /*
@@ -2100,15 +2100,15 @@ public class AI {
         public void DormantBegin() {
             // since dormant happens on a timer, we wont get to update particles to
             // hidden through the think loop, but we need to hide them though.
-            if (particles.Num() != 0) {
-                for (int i = 0; i < particles.Num(); i++) {
-                    particles.oGet(i).time = 0;
+            if (this.particles.Num() != 0) {
+                for (int i = 0; i < this.particles.Num(); i++) {
+                    this.particles.oGet(i).time = 0;
                 }
             }
 
-            if (enemyNode.InList()) {
+            if (this.enemyNode.InList()) {
                 // remove ourselves from the enemy's enemylist
-                enemyNode.Remove();
+                this.enemyNode.Remove();
             }
             super.DormantBegin();
         }
@@ -2122,14 +2122,14 @@ public class AI {
          */
         @Override
         public void DormantEnd() {
-            if (enemy.GetEntity() != null && !enemyNode.InList()) {
+            if ((this.enemy.GetEntity() != null) && !this.enemyNode.InList()) {
                 // let our enemy know we're back on the trail
-                enemyNode.AddToEnd(enemy.GetEntity().enemyList);
+                this.enemyNode.AddToEnd(this.enemy.GetEntity().enemyList);
             }
 
-            if (particles.Num() != 0) {
-                for (int i = 0; i < particles.Num(); i++) {
-                    particles.oGet(i).time = gameLocal.time;
+            if (this.particles.Num() != 0) {
+                for (int i = 0; i < this.particles.Num(); i++) {
+                    this.particles.oGet(i).time = gameLocal.time;
                 }
             }
 
@@ -2143,33 +2143,33 @@ public class AI {
                 return;
             }
 
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 // clear out the enemy when he dies or is hidden
-                idActor enemyEnt = enemy.GetEntity();
+                final idActor enemyEnt = this.enemy.GetEntity();
                 if (enemyEnt != null) {
                     if (enemyEnt.health <= 0) {
                         EnemyDead();
                     }
                 }
 
-                current_yaw += deltaViewAngles.yaw;
-                ideal_yaw = idMath.AngleNormalize180(ideal_yaw + deltaViewAngles.yaw);
-                deltaViewAngles.Zero();
-                viewAxis = new idAngles(0, current_yaw, 0).ToMat3();
+                this.current_yaw += this.deltaViewAngles.yaw;
+                this.ideal_yaw = idMath.AngleNormalize180(this.ideal_yaw + this.deltaViewAngles.yaw);
+                this.deltaViewAngles.Zero();
+                this.viewAxis = new idAngles(0, this.current_yaw, 0).ToMat3();
 
-                if (num_cinematics != 0) {
-                    if (!IsHidden() && torsoAnim.AnimDone(0)) {
+                if (this.num_cinematics != 0) {
+                    if (!IsHidden() && this.torsoAnim.AnimDone(0)) {
                         PlayCinematic();
                     }
                     RunPhysics();
-                } else if (!allowHiddenMovement && IsHidden()) {
+                } else if (!this.allowHiddenMovement && IsHidden()) {
                     // hidden monsters
                     UpdateAIScript();
                 } else {
                     // clear the ik before we do anything else so the skeleton doesn't get updated twice
-                    walkIK.ClearJointMods();
+                    this.walkIK.ClearJointMods();
 
-                    switch (move.moveType) {
+                    switch (this.move.moveType) {
                         case MOVETYPE_DEAD:
                             // dead monsters
                             UpdateAIScript();
@@ -2218,20 +2218,20 @@ public class AI {
                 }
 
                 // clear pain flag so that we recieve any damage between now and the next time we run the script
-                AI_PAIN.operator(false);
-                AI_SPECIAL_DAMAGE.operator(0f);
-                AI_PUSHED.operator(false);
-            } else if ((thinkFlags & TH_PHYSICS) != 0) {
+                this.AI_PAIN.operator(false);
+                this.AI_SPECIAL_DAMAGE.operator(0f);
+                this.AI_PUSHED.operator(false);
+            } else if ((this.thinkFlags & TH_PHYSICS) != 0) {
                 RunPhysics();
             }
 
-            if (af_push_moveables) {
+            if (this.af_push_moveables) {
                 PushWithAF();
             }
 
-            if (fl.hidden && allowHiddenMovement) {
+            if (this.fl.hidden && this.allowHiddenMovement) {
                 // UpdateAnimation won't call frame commands when hidden, so call them here when we allow hidden movement
-                animator.ServiceAnims(gameLocal.previousTime, gameLocal.time);
+                this.animator.ServiceAnims(gameLocal.previousTime, gameLocal.time);
             }
             /*	this still draws in retail builds.. not sure why.. don't care at this point.
              if ( !aas && developer.GetBool() && !fl.hidden && !num_cinematics ) {
@@ -2257,18 +2257,18 @@ public class AI {
         protected void Activate(idEntity activator) {
             idPlayer player;
 
-            if (AI_DEAD.operator()) {
+            if (this.AI_DEAD.operator()) {
                 // ignore it when they're dead
                 return;
             }
 
             // make sure he's not dormant
-            dormantStart = 0;
+            this.dormantStart = 0;
 
-            if (num_cinematics != 0) {
+            if (this.num_cinematics != 0) {
                 PlayCinematic();
             } else {
-                AI_ACTIVATED.operator(true);
+                this.AI_ACTIVATED.operator(true);
                 if (NOT(activator) || !activator.IsType(idPlayer.class)) {
                     player = gameLocal.GetLocalPlayer();
                 } else {
@@ -2280,28 +2280,28 @@ public class AI {
                 }
 
                 // update the script in cinematics so that entities don't start anims or show themselves a frame late.
-                if (cinematic) {
+                if (this.cinematic) {
                     UpdateAIScript();
 
                     // make sure our model gets updated
-                    animator.ForceUpdate();
+                    this.animator.ForceUpdate();
 
                     // update the anim bounds
                     UpdateAnimation();
                     UpdateVisuals();
                     Present();
 
-                    if (head.GetEntity() != null) {
+                    if (this.head.GetEntity() != null) {
                         // since the body anim was updated, we need to run physics to update the position of the head
                         RunPhysics();
 
                         // make sure our model gets updated
-                        head.GetEntity().GetAnimator().ForceUpdate();
+                        this.head.GetEntity().GetAnimator().ForceUpdate();
 
                         // update the anim bounds
-                        head.GetEntity().UpdateAnimation();
-                        head.GetEntity().UpdateVisuals();
-                        head.GetEntity().Present();
+                        this.head.GetEntity().UpdateAnimation();
+                        this.head.GetEntity().UpdateVisuals();
+                        this.head.GetEntity().Present();
                     }
                 }
             }
@@ -2325,7 +2325,7 @@ public class AI {
             }
 
             // actors on different teams will always fight each other
-            if (actor.team != team) {
+            if (actor.team != this.team) {
                 if (actor.fl.notarget) {
                     // don't attack on sight when attacker is notargeted
                     return ATTACK_ON_DAMAGE | ATTACK_ON_ACTIVATE;
@@ -2334,7 +2334,7 @@ public class AI {
             }
 
             // monsters will fight when attacked by lower ranked monsters.  rank 0 never fights back.
-            if (rank != 0 && (actor.rank < rank)) {
+            if ((this.rank != 0) && (actor.rank < this.rank)) {
                 return ATTACK_ON_DAMAGE;
             }
 
@@ -2347,7 +2347,7 @@ public class AI {
 
         protected void EnemyDead() {
             ClearEnemy();
-            AI_ENEMY_DEAD.operator(true);
+            this.AI_ENEMY_DEAD.operator(true);
         }
 
         /*
@@ -2359,7 +2359,7 @@ public class AI {
          */
         @Override
         public boolean CanPlayChatterSounds() {
-            if (AI_DEAD.operator()) {
+            if (this.AI_DEAD.operator()) {
                 return false;
             }
 
@@ -2367,11 +2367,11 @@ public class AI {
                 return false;
             }
 
-            if (enemy.GetEntity() != null) {
+            if (this.enemy.GetEntity() != null) {
                 return true;
             }
 
-            return !spawnArgs.GetBool("no_idle_chatter");
+            return !this.spawnArgs.GetBool("no_idle_chatter");
         }
 
         protected void SetChatSound() {
@@ -2379,84 +2379,84 @@ public class AI {
 
             if (IsHidden()) {
                 snd = null;
-            } else if (enemy.GetEntity() != null) {
-                snd = spawnArgs.GetString("snd_chatter_combat", null);
-                chat_min = (int) SEC2MS(spawnArgs.GetFloat("chatter_combat_min", "5"));
-                chat_max = (int) SEC2MS(spawnArgs.GetFloat("chatter_combat_max", "10"));
-            } else if (!spawnArgs.GetBool("no_idle_chatter")) {
-                snd = spawnArgs.GetString("snd_chatter", null);
-                chat_min = (int) SEC2MS(spawnArgs.GetFloat("chatter_min", "5"));
-                chat_max = (int) SEC2MS(spawnArgs.GetFloat("chatter_max", "10"));
+            } else if (this.enemy.GetEntity() != null) {
+                snd = this.spawnArgs.GetString("snd_chatter_combat", null);
+                this.chat_min = (int) SEC2MS(this.spawnArgs.GetFloat("chatter_combat_min", "5"));
+                this.chat_max = (int) SEC2MS(this.spawnArgs.GetFloat("chatter_combat_max", "10"));
+            } else if (!this.spawnArgs.GetBool("no_idle_chatter")) {
+                snd = this.spawnArgs.GetString("snd_chatter", null);
+                this.chat_min = (int) SEC2MS(this.spawnArgs.GetFloat("chatter_min", "5"));
+                this.chat_max = (int) SEC2MS(this.spawnArgs.GetFloat("chatter_max", "10"));
             } else {
                 snd = null;
             }
 
             if (isNotNullOrEmpty(snd)) {
-                chat_snd = declManager.FindSound(snd);
+                this.chat_snd = declManager.FindSound(snd);
 
                 // set the next chat time
-                chat_time = (int) (gameLocal.time + chat_min + gameLocal.random.RandomFloat() * (chat_max - chat_min));
+                this.chat_time = (int) (gameLocal.time + this.chat_min + (gameLocal.random.RandomFloat() * (this.chat_max - this.chat_min)));
             } else {
-                chat_snd = null;
+                this.chat_snd = null;
             }
         }
 
         protected void PlayChatter() {
             // check if it's time to play a chat sound
-            if (AI_DEAD.operator() || NOT(chat_snd) || (chat_time > gameLocal.time)) {
+            if (this.AI_DEAD.operator() || NOT(this.chat_snd) || (this.chat_time > gameLocal.time)) {
                 return;
             }
 
-            StartSoundShader(chat_snd, SND_CHANNEL_VOICE, 0, false, null);
+            StartSoundShader(this.chat_snd, SND_CHANNEL_VOICE, 0, false, null);
 
             // set the next chat time
-            chat_time = (int) (gameLocal.time + chat_min + gameLocal.random.RandomFloat() * (chat_max - chat_min));
+            this.chat_time = (int) (gameLocal.time + this.chat_min + (gameLocal.random.RandomFloat() * (this.chat_max - this.chat_min)));
         }
 
         @Override
         public void Hide() {
             super.Hide();//TODO:expose multilayer inherited functions
-            fl.takedamage = false;
-            physicsObj.SetContents(0);
-            physicsObj.GetClipModel().Unlink();
+            this.fl.takedamage = false;
+            this.physicsObj.SetContents(0);
+            this.physicsObj.GetClipModel().Unlink();
             StopSound(etoi(SND_CHANNEL_AMBIENT), false);
             SetChatSound();
 
-            AI_ENEMY_IN_FOV.operator(false);
-            AI_ENEMY_VISIBLE.operator(false);
+            this.AI_ENEMY_IN_FOV.operator(false);
+            this.AI_ENEMY_VISIBLE.operator(false);
             StopMove(MOVE_STATUS_DONE);
         }
 
         @Override
         public void Show() {
             super.Show();
-            if (spawnArgs.GetBool("big_monster")) {
-                physicsObj.SetContents(0);
-            } else if (use_combat_bbox) {
-                physicsObj.SetContents(CONTENTS_BODY | CONTENTS_SOLID);
+            if (this.spawnArgs.GetBool("big_monster")) {
+                this.physicsObj.SetContents(0);
+            } else if (this.use_combat_bbox) {
+                this.physicsObj.SetContents(CONTENTS_BODY | CONTENTS_SOLID);
             } else {
-                physicsObj.SetContents(CONTENTS_BODY);
+                this.physicsObj.SetContents(CONTENTS_BODY);
             }
-            physicsObj.GetClipModel().Link(gameLocal.clip);
-            fl.takedamage = !spawnArgs.GetBool("noDamage");
+            this.physicsObj.GetClipModel().Link(gameLocal.clip);
+            this.fl.takedamage = !this.spawnArgs.GetBool("noDamage");
             SetChatSound();
             StartSound("snd_ambient", SND_CHANNEL_AMBIENT, 0, false, null);
         }
 
         protected idVec3 FirstVisiblePointOnPath(final idVec3 origin, final idVec3 target, int travelFlags) {
             int i, areaNum, targetAreaNum, curAreaNum;
-            int[] travelTime = {0};
+            final int[] travelTime = {0};
             idVec3 curOrigin;
-            idReachability[] reach = {null};
+            final idReachability[] reach = {null};
 
-            if (NOT(aas)) {
+            if (NOT(this.aas)) {
                 return origin;
             }
 
             areaNum = PointReachableAreaNum(origin);
             targetAreaNum = PointReachableAreaNum(target);
 
-            if (0 == areaNum || 0 == targetAreaNum) {
+            if ((0 == areaNum) || (0 == targetAreaNum)) {
                 return origin;
             }
 
@@ -2469,7 +2469,7 @@ public class AI {
 
             for (i = 0; i < 10; i++) {
 
-                if (!aas.RouteToGoalArea(curAreaNum, curOrigin, targetAreaNum, travelFlags, travelTime, reach)) {
+                if (!this.aas.RouteToGoalArea(curAreaNum, curOrigin, targetAreaNum, travelFlags, travelTime, reach)) {
                     break;
                 }
 
@@ -2500,69 +2500,69 @@ public class AI {
             int num;
             int i;
             int frame;
-            frameCommand_t[] command = {null};
-            idMat3 axis = new idMat3();
+            final frameCommand_t[] command = {null};
+            final idMat3 axis = new idMat3();
             idAnim anim;
             int/*jointHandle_t*/ joint;
 
-            modelDef = animator.ModelDef();
+            modelDef = this.animator.ModelDef();
             if (null == modelDef) {
                 return;
             }
             num = modelDef.NumAnims();
 
             // needs to be off while getting the offsets so that we account for the distance the monster moves in the attack anim
-            animator.RemoveOriginOffset(false);
+            this.animator.RemoveOriginOffset(false);
 
             // anim number 0 is reserved for non-existant anims.  to avoid off by one issues, just allocate an extra spot for
             // launch offsets so that anim number can be used without subtracting 1.
-            missileLaunchOffset.SetGranularity(1);
-            missileLaunchOffset.SetNum(num + 1);
-            missileLaunchOffset.oSet(0, new idVec3());
+            this.missileLaunchOffset.SetGranularity(1);
+            this.missileLaunchOffset.SetNum(num + 1);
+            this.missileLaunchOffset.oSet(0, new idVec3());
 
             for (i = 1; i <= num; i++) {
-                missileLaunchOffset.oSet(i, new idVec3());
+                this.missileLaunchOffset.oSet(i, new idVec3());
                 anim = modelDef.GetAnim(i);
                 if (anim != null) {
                     frame = anim.FindFrameForFrameCommand(FC_LAUNCHMISSILE, command);
                     if (frame >= 0) {
-                        joint = animator.GetJointHandle(command[0].string.toString());
+                        joint = this.animator.GetJointHandle(command[0].string.toString());
                         if (joint == INVALID_JOINT) {
                             gameLocal.Error("Invalid joint '%s' on 'launch_missile' frame command on frame %d of model '%s'", command[0].string.toString(), frame, modelDef.GetName());
                         }
-                        GetJointTransformForAnim(joint, i, FRAME2MS(frame), missileLaunchOffset.oGet(i), axis);
+                        GetJointTransformForAnim(joint, i, FRAME2MS(frame), this.missileLaunchOffset.oGet(i), axis);
                     }
                 }
             }
 
-            animator.RemoveOriginOffset(true);
+            this.animator.RemoveOriginOffset(true);
         }
 
         protected void PlayCinematic() {
-            String[] animName = {null};
+            final String[] animName = {null};
 
-            if (current_cinematic >= num_cinematics) {
+            if (this.current_cinematic >= this.num_cinematics) {
                 if (g_debugCinematic.GetBool()) {
                     gameLocal.Printf("%d: '%s' stop\n", gameLocal.framenum, GetName());
                 }
-                if (!spawnArgs.GetBool("cinematic_no_hide")) {
+                if (!this.spawnArgs.GetBool("cinematic_no_hide")) {
                     Hide();
                 }
-                current_cinematic = 0;
+                this.current_cinematic = 0;
                 ActivateTargets(gameLocal.GetLocalPlayer());
-                fl.neverDormant = false;
+                this.fl.neverDormant = false;
                 return;
             }
 
             Show();
-            current_cinematic++;
+            this.current_cinematic++;
 
-            allowJointMod = false;
-            allowEyeFocus = false;
+            this.allowJointMod = false;
+            this.allowEyeFocus = false;
 
-            spawnArgs.GetString(va("anim%d", current_cinematic), null, animName);
+            this.spawnArgs.GetString(va("anim%d", this.current_cinematic), null, animName);
             if (null == animName[0]) {
-                gameLocal.Warning("missing 'anim%d' key on %s", current_cinematic, name);
+                gameLocal.Warning("missing 'anim%d' key on %s", this.current_cinematic, this.name);
                 return;
             }
 
@@ -2570,40 +2570,40 @@ public class AI {
                 gameLocal.Printf("%d: '%s' start '%s'\n", gameLocal.framenum, GetName(), animName[0]);
             }
 
-            headAnim.animBlendFrames = 0;
-            headAnim.lastAnimBlendFrames = 0;
-            headAnim.BecomeIdle();
+            this.headAnim.animBlendFrames = 0;
+            this.headAnim.lastAnimBlendFrames = 0;
+            this.headAnim.BecomeIdle();
 
-            legsAnim.animBlendFrames = 0;
-            legsAnim.lastAnimBlendFrames = 0;
-            legsAnim.BecomeIdle();
+            this.legsAnim.animBlendFrames = 0;
+            this.legsAnim.lastAnimBlendFrames = 0;
+            this.legsAnim.BecomeIdle();
 
-            torsoAnim.animBlendFrames = 0;
-            torsoAnim.lastAnimBlendFrames = 0;
+            this.torsoAnim.animBlendFrames = 0;
+            this.torsoAnim.lastAnimBlendFrames = 0;
             ProcessEvent(AI_PlayAnim, ANIMCHANNEL_TORSO, animName[0]);
 
             // make sure our model gets updated
-            animator.ForceUpdate();
+            this.animator.ForceUpdate();
 
             // update the anim bounds
             UpdateAnimation();
             UpdateVisuals();
             Present();
 
-            if (head.GetEntity() != null) {
+            if (this.head.GetEntity() != null) {
                 // since the body anim was updated, we need to run physics to update the position of the head
                 RunPhysics();
 
                 // make sure our model gets updated
-                head.GetEntity().GetAnimator().ForceUpdate();
+                this.head.GetEntity().GetAnimator().ForceUpdate();
 
                 // update the anim bounds
-                head.GetEntity().UpdateAnimation();
-                head.GetEntity().UpdateVisuals();
-                head.GetEntity().Present();
+                this.head.GetEntity().UpdateAnimation();
+                this.head.GetEntity().UpdateVisuals();
+                this.head.GetEntity().Present();
             }
 
-            fl.neverDormant = true;
+            this.fl.neverDormant = true;
         }
 
         // movement
@@ -2612,7 +2612,7 @@ public class AI {
             // FIXME: Jim take a look at this and see if this is a reasonable thing to do
             // instead of a spawnArg flag.. Sabaoth is the only slide monster ( and should be the only one for D3 )
             // and we don't want him taking physics impulses as it can knock him off the path
-            if (move.moveType != MOVETYPE_STATIC && move.moveType != MOVETYPE_SLIDE) {
+            if ((this.move.moveType != MOVETYPE_STATIC) && (this.move.moveType != MOVETYPE_SLIDE)) {
                 super.ApplyImpulse(ent, id, point, impulse);
             }
         }
@@ -2621,39 +2621,39 @@ public class AI {
             idVec3 oldModelOrigin;
             idVec3 modelOrigin;
 
-            animator.GetDelta(gameLocal.time - gameLocal.msec, gameLocal.time, delta);
+            this.animator.GetDelta(gameLocal.time - gameLocal.msec, gameLocal.time, delta);
             delta.oSet(axis.oMultiply(delta));
 
-            if (!modelOffset.equals(getVec3_zero())) {
+            if (!this.modelOffset.equals(getVec3_zero())) {
                 // the pivot of the monster's model is around its origin, and not around the bounding
                 // box's origin, so we have to compensate for this when the model is offset so that
                 // the monster still appears to rotate around it's origin.
-                oldModelOrigin = modelOffset.oMultiply(oldaxis);
-                modelOrigin = modelOffset.oMultiply(axis);
+                oldModelOrigin = this.modelOffset.oMultiply(oldaxis);
+                modelOrigin = this.modelOffset.oMultiply(axis);
                 delta.oPluSet(oldModelOrigin.oMinus(modelOrigin));
             }
 
-            delta.oMulSet(physicsObj.GetGravityAxis());
+            delta.oMulSet(this.physicsObj.GetGravityAxis());
         }
 
         protected void CheckObstacleAvoidance(final idVec3 goalPos, idVec3 newPos) {
             idEntity obstacle;
-            obstaclePath_s path = new obstaclePath_s();
+            final obstaclePath_s path = new obstaclePath_s();
             idVec3 dir;
             float dist;
             boolean foundPath;
 
-            if (ignore_obstacles) {
+            if (this.ignore_obstacles) {
                 newPos.oSet(goalPos);
-                move.obstacle.oSet(null);
+                this.move.obstacle.oSet(null);
                 return;
             }
 
-            final idVec3 origin = physicsObj.GetOrigin();
+            final idVec3 origin = this.physicsObj.GetOrigin();
 
             obstacle = null;
-            AI_OBSTACLE_IN_PATH.operator(false);
-            foundPath = FindPathAroundObstacles(physicsObj, aas, enemy.GetEntity(), origin, goalPos, path);
+            this.AI_OBSTACLE_IN_PATH.operator(false);
+            foundPath = FindPathAroundObstacles(this.physicsObj, this.aas, this.enemy.GetEntity(), origin, goalPos, path);
             if (ai_showObstacleAvoidance.GetBool()) {
                 gameRenderWorld.DebugLine(colorBlue, goalPos.oPlus(new idVec3(1.0f, 1.0f, 0.0f)), goalPos.oPlus(new idVec3(1.0f, 1.0f, 64.0f)), gameLocal.msec);
                 gameRenderWorld.DebugLine(foundPath ? colorYellow : colorRed, path.seekPos, path.seekPos.oPlus(new idVec3(0.0f, 0.0f, 64.0f)), gameLocal.msec);
@@ -2662,18 +2662,18 @@ public class AI {
             if (!foundPath) {
                 // couldn't get around obstacles
                 if (path.firstObstacle != null) {
-                    AI_OBSTACLE_IN_PATH.operator(true);
-                    if (physicsObj.GetAbsBounds().Expand(2.0f).IntersectsBounds(path.firstObstacle.GetPhysics().GetAbsBounds())) {
+                    this.AI_OBSTACLE_IN_PATH.operator(true);
+                    if (this.physicsObj.GetAbsBounds().Expand(2.0f).IntersectsBounds(path.firstObstacle.GetPhysics().GetAbsBounds())) {
                         obstacle = path.firstObstacle;
                     }
                 } else if (path.startPosObstacle != null) {
-                    AI_OBSTACLE_IN_PATH.operator(true);
-                    if (physicsObj.GetAbsBounds().Expand(2.0f).IntersectsBounds(path.startPosObstacle.GetPhysics().GetAbsBounds())) {
+                    this.AI_OBSTACLE_IN_PATH.operator(true);
+                    if (this.physicsObj.GetAbsBounds().Expand(2.0f).IntersectsBounds(path.startPosObstacle.GetPhysics().GetAbsBounds())) {
                         obstacle = path.startPosObstacle;
                     }
                 } else {
                     // Blocked by wall
-                    move.moveStatus = MOVE_STATUS_BLOCKED_BY_WALL;
+                    this.move.moveStatus = MOVE_STATUS_BLOCKED_BY_WALL;
                 }
 //#if 0
 //	} else if ( path.startPosObstacle ) {
@@ -2689,7 +2689,7 @@ public class AI {
             } else if (path.seekPosObstacle != null) {
                 // if the AI is very close to the path.seekPos already and path.seekPosObstacle != NULL
                 // then we want to push the path.seekPosObstacle entity out of the way
-                AI_OBSTACLE_IN_PATH.operator(true);
+                this.AI_OBSTACLE_IN_PATH.operator(true);
 
                 // check if we're past where the goalPos was pushed out of the obstacle
                 dir = goalPos.oMinus(origin);
@@ -2704,37 +2704,37 @@ public class AI {
             if (obstacle != null) {
                 if (obstacle.IsType(idActor.class)) {
                     // monsters aren't kickable
-                    if (obstacle == enemy.GetEntity()) {
-                        move.moveStatus = MOVE_STATUS_BLOCKED_BY_ENEMY;
+                    if (obstacle == this.enemy.GetEntity()) {
+                        this.move.moveStatus = MOVE_STATUS_BLOCKED_BY_ENEMY;
                     } else {
-                        move.moveStatus = MOVE_STATUS_BLOCKED_BY_MONSTER;
+                        this.move.moveStatus = MOVE_STATUS_BLOCKED_BY_MONSTER;
                     }
                 } else {
                     // try kicking the object out of the way
-                    move.moveStatus = MOVE_STATUS_BLOCKED_BY_OBJECT;
+                    this.move.moveStatus = MOVE_STATUS_BLOCKED_BY_OBJECT;
                 }
                 newPos.oSet(obstacle.GetPhysics().GetOrigin());
                 //newPos = path.seekPos;
-                move.obstacle.oSet(obstacle);
+                this.move.obstacle.oSet(obstacle);
             } else {
                 newPos.oSet(path.seekPos);
-                move.obstacle.oSet(null);
+                this.move.obstacle.oSet(null);
             }
         }
 
         protected void DeadMove() {
-            idVec3 delta = new idVec3();
+            final idVec3 delta = new idVec3();
             monsterMoveResult_t moveResult;
 
-            idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
 
-            GetMoveDelta(viewAxis, viewAxis, delta);
-            physicsObj.SetDelta(delta);
+            GetMoveDelta(this.viewAxis, this.viewAxis, delta);
+            this.physicsObj.SetDelta(delta);
 
             RunPhysics();
 
-            moveResult = physicsObj.GetMoveResult();
-            AI_ONGROUND.operator(physicsObj.OnGround());
+            moveResult = this.physicsObj.GetMoveResult();
+            this.AI_ONGROUND.operator(this.physicsObj.OnGround());
         }
 
         protected void AnimMove() {
@@ -2743,27 +2743,27 @@ public class AI {
             idVec3 goalDelta;
             float goalDist;
             monsterMoveResult_t moveResult;
-            idVec3 newDest = new idVec3();
+            final idVec3 newDest = new idVec3();
 
-            idVec3 oldOrigin = physicsObj.GetOrigin();
-            idMat3 oldAxis = viewAxis;
+            final idVec3 oldOrigin = this.physicsObj.GetOrigin();
+            final idMat3 oldAxis = this.viewAxis;
 
-            AI_BLOCKED.operator(false);
+            this.AI_BLOCKED.operator(false);
 
-            if (etoi(move.moveCommand) < etoi(NUM_NONMOVING_COMMANDS)) {
-                move.lastMoveOrigin.Zero();
-                move.lastMoveTime = gameLocal.time;
+            if (etoi(this.move.moveCommand) < etoi(NUM_NONMOVING_COMMANDS)) {
+                this.move.lastMoveOrigin.Zero();
+                this.move.lastMoveTime = gameLocal.time;
             }
 
-            move.obstacle.oSet(null);
-            if ((move.moveCommand == MOVE_FACE_ENEMY) && enemy.GetEntity() != null) {
-                TurnToward(lastVisibleEnemyPos);
+            this.move.obstacle.oSet(null);
+            if ((this.move.moveCommand == MOVE_FACE_ENEMY) && (this.enemy.GetEntity() != null)) {
+                TurnToward(this.lastVisibleEnemyPos);
                 goalPos = oldOrigin;
-            } else if ((move.moveCommand == MOVE_FACE_ENTITY) && move.goalEntity.GetEntity() != null) {
-                TurnToward(move.goalEntity.GetEntity().GetPhysics().GetOrigin());
+            } else if ((this.move.moveCommand == MOVE_FACE_ENTITY) && (this.move.goalEntity.GetEntity() != null)) {
+                TurnToward(this.move.goalEntity.GetEntity().GetPhysics().GetOrigin());
                 goalPos = oldOrigin;
             } else if (GetMovePos(goalPos)) {
-                if (move.moveCommand != MOVE_WANDER) {
+                if (this.move.moveCommand != MOVE_WANDER) {
                     CheckObstacleAvoidance(goalPos, newDest);
                     TurnToward(newDest);
                 } else {
@@ -2773,62 +2773,62 @@ public class AI {
 
             Turn();
 
-            if (move.moveCommand == MOVE_SLIDE_TO_POSITION) {
-                if (gameLocal.time < move.startTime + move.duration) {
-                    goalPos = move.moveDest.oMinus(move.moveDir.oMultiply(MS2SEC(move.startTime + move.duration - gameLocal.time)));
+            if (this.move.moveCommand == MOVE_SLIDE_TO_POSITION) {
+                if (gameLocal.time < (this.move.startTime + this.move.duration)) {
+                    goalPos = this.move.moveDest.oMinus(this.move.moveDir.oMultiply(MS2SEC((this.move.startTime + this.move.duration) - gameLocal.time)));
                     delta = goalPos.oMinus(oldOrigin);
                     delta.z = 0.0f;
                 } else {
-                    delta = move.moveDest.oMinus(oldOrigin);
+                    delta = this.move.moveDest.oMinus(oldOrigin);
                     delta.z = 0.0f;
                     StopMove(MOVE_STATUS_DONE);
                 }
-            } else if (allowMove) {
-                GetMoveDelta(oldAxis, viewAxis, delta);
+            } else if (this.allowMove) {
+                GetMoveDelta(oldAxis, this.viewAxis, delta);
             } else {
                 delta.Zero();
             }
 
-            if (move.moveCommand == MOVE_TO_POSITION) {
-                goalDelta = move.moveDest.oMinus(oldOrigin);
+            if (this.move.moveCommand == MOVE_TO_POSITION) {
+                goalDelta = this.move.moveDest.oMinus(oldOrigin);
                 goalDist = goalDelta.LengthFast();
                 if (goalDist < delta.LengthFast()) {
                     delta = goalDelta;
                 }
             }
 
-            physicsObj.SetDelta(delta);
-            physicsObj.ForceDeltaMove(disableGravity);
+            this.physicsObj.SetDelta(delta);
+            this.physicsObj.ForceDeltaMove(this.disableGravity);
 
             RunPhysics();
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorCyan, oldOrigin, physicsObj.GetOrigin(), 5000);
+                gameRenderWorld.DebugLine(colorCyan, oldOrigin, this.physicsObj.GetOrigin(), 5000);
             }
 
-            moveResult = physicsObj.GetMoveResult();
-            if (!af_push_moveables && attack.Length() != 0 && TestMelee()) {
-                DirectDamage(attack, enemy.GetEntity());
+            moveResult = this.physicsObj.GetMoveResult();
+            if (!this.af_push_moveables && (this.attack.Length() != 0) && TestMelee()) {
+                DirectDamage(this.attack, this.enemy.GetEntity());
             } else {
-                idEntity blockEnt = physicsObj.GetSlideMoveEntity();
-                if (blockEnt != null && blockEnt.IsType(idMoveable.class) && blockEnt.GetPhysics().IsPushable()) {
-                    KickObstacles(viewAxis.oGet(0), kickForce, blockEnt);
+                final idEntity blockEnt = this.physicsObj.GetSlideMoveEntity();
+                if ((blockEnt != null) && blockEnt.IsType(idMoveable.class) && blockEnt.GetPhysics().IsPushable()) {
+                    KickObstacles(this.viewAxis.oGet(0), this.kickForce, blockEnt);
                 }
             }
 
             BlockedFailSafe();
 
-            AI_ONGROUND.operator(physicsObj.OnGround());
+            this.AI_ONGROUND.operator(this.physicsObj.OnGround());
 
-            idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             if (!oldOrigin.equals(org)) {//FIXME: so this checks value instead of refs which COULD go wrong!
                 TouchTriggers();
             }
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugBounds(colorMagenta, physicsObj.GetBounds(), org, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorMagenta, physicsObj.GetBounds(), move.moveDest, gameLocal.msec);
-                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
                 DrawRoute();
             }
         }
@@ -2839,51 +2839,51 @@ public class AI {
             idVec3 goalDelta;
             float goalDist;
             monsterMoveResult_t moveResult;
-            idVec3 newDest = new idVec3();
+            final idVec3 newDest = new idVec3();
 
-            idVec3 oldOrigin = physicsObj.GetOrigin();
-            idMat3 oldAxis = viewAxis;
+            final idVec3 oldOrigin = this.physicsObj.GetOrigin();
+            final idMat3 oldAxis = this.viewAxis;
 
-            AI_BLOCKED.operator(false);
+            this.AI_BLOCKED.operator(false);
 
-            if (etoi(move.moveCommand) < etoi(NUM_NONMOVING_COMMANDS)) {
-                move.lastMoveOrigin.Zero();
-                move.lastMoveTime = gameLocal.time;
+            if (etoi(this.move.moveCommand) < etoi(NUM_NONMOVING_COMMANDS)) {
+                this.move.lastMoveOrigin.Zero();
+                this.move.lastMoveTime = gameLocal.time;
             }
 
-            move.obstacle.oSet(null);
-            if ((move.moveCommand == MOVE_FACE_ENEMY) && enemy.GetEntity() != null) {
-                TurnToward(lastVisibleEnemyPos);
-                goalPos = move.moveDest;
-            } else if ((move.moveCommand == MOVE_FACE_ENTITY) && move.goalEntity.GetEntity() != null) {
-                TurnToward(move.goalEntity.GetEntity().GetPhysics().GetOrigin());
-                goalPos = move.moveDest;
+            this.move.obstacle.oSet(null);
+            if ((this.move.moveCommand == MOVE_FACE_ENEMY) && (this.enemy.GetEntity() != null)) {
+                TurnToward(this.lastVisibleEnemyPos);
+                goalPos = this.move.moveDest;
+            } else if ((this.move.moveCommand == MOVE_FACE_ENTITY) && (this.move.goalEntity.GetEntity() != null)) {
+                TurnToward(this.move.goalEntity.GetEntity().GetPhysics().GetOrigin());
+                goalPos = this.move.moveDest;
             } else if (GetMovePos(goalPos)) {
                 CheckObstacleAvoidance(goalPos, newDest);
                 TurnToward(newDest);
                 goalPos = newDest;
             }
 
-            if (move.moveCommand == MOVE_SLIDE_TO_POSITION) {
-                if (gameLocal.time < move.startTime + move.duration) {
-                    goalPos = move.moveDest.oMinus(move.moveDir.oMultiply(MS2SEC(move.startTime + move.duration - gameLocal.time)));
+            if (this.move.moveCommand == MOVE_SLIDE_TO_POSITION) {
+                if (gameLocal.time < (this.move.startTime + this.move.duration)) {
+                    goalPos = this.move.moveDest.oMinus(this.move.moveDir.oMultiply(MS2SEC((this.move.startTime + this.move.duration) - gameLocal.time)));
                 } else {
-                    goalPos = move.moveDest;
+                    goalPos = this.move.moveDest;
                     StopMove(MOVE_STATUS_DONE);
                 }
             }
 
-            if (move.moveCommand == MOVE_TO_POSITION) {
-                goalDelta = move.moveDest.oMinus(oldOrigin);
+            if (this.move.moveCommand == MOVE_TO_POSITION) {
+                goalDelta = this.move.moveDest.oMinus(oldOrigin);
                 goalDist = goalDelta.LengthFast();
                 if (goalDist < delta.LengthFast()) {
                     delta = goalDelta;
                 }
             }
 
-            idVec3 vel = physicsObj.GetLinearVelocity();
-            float z = vel.z;
-            idVec3 predictedPos = oldOrigin.oPlus(vel.oMultiply(AI_SEEK_PREDICTION));
+            final idVec3 vel = this.physicsObj.GetLinearVelocity();
+            final float z = vel.z;
+            final idVec3 predictedPos = oldOrigin.oPlus(vel.oMultiply(AI_SEEK_PREDICTION));
 
             // seek the goal position
             goalDelta = goalPos.oMinus(predictedPos);
@@ -2891,17 +2891,17 @@ public class AI {
             vel.oPluSet(goalDelta.oMultiply(MS2SEC(gameLocal.msec)));
 
             // cap our speed
-            vel.Truncate(fly_speed);
+            vel.Truncate(this.fly_speed);
             vel.z = z;
-            physicsObj.SetLinearVelocity(vel);
-            physicsObj.UseVelocityMove(true);
+            this.physicsObj.SetLinearVelocity(vel);
+            this.physicsObj.UseVelocityMove(true);
             RunPhysics();
 
-            if ((move.moveCommand == MOVE_FACE_ENEMY) && enemy.GetEntity() != null) {
-                TurnToward(lastVisibleEnemyPos);
-            } else if ((move.moveCommand == MOVE_FACE_ENTITY) && move.goalEntity.GetEntity() != null) {
-                TurnToward(move.goalEntity.GetEntity().GetPhysics().GetOrigin());
-            } else if (move.moveCommand != MOVE_NONE) {
+            if ((this.move.moveCommand == MOVE_FACE_ENEMY) && (this.enemy.GetEntity() != null)) {
+                TurnToward(this.lastVisibleEnemyPos);
+            } else if ((this.move.moveCommand == MOVE_FACE_ENTITY) && (this.move.goalEntity.GetEntity() != null)) {
+                TurnToward(this.move.goalEntity.GetEntity().GetPhysics().GetOrigin());
+            } else if (this.move.moveCommand != MOVE_NONE) {
                 if (vel.ToVec2().LengthSqr() > 0.1f) {
                     TurnToward(vel.ToYaw());
                 }
@@ -2909,32 +2909,32 @@ public class AI {
             Turn();
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorCyan, oldOrigin, physicsObj.GetOrigin(), 5000);
+                gameRenderWorld.DebugLine(colorCyan, oldOrigin, this.physicsObj.GetOrigin(), 5000);
             }
 
-            moveResult = physicsObj.GetMoveResult();
-            if (!af_push_moveables && attack.Length() != 0 && TestMelee()) {
-                DirectDamage(attack, enemy.GetEntity());
+            moveResult = this.physicsObj.GetMoveResult();
+            if (!this.af_push_moveables && (this.attack.Length() != 0) && TestMelee()) {
+                DirectDamage(this.attack, this.enemy.GetEntity());
             } else {
-                idEntity blockEnt = physicsObj.GetSlideMoveEntity();
-                if (blockEnt != null && blockEnt.IsType(idMoveable.class) && blockEnt.GetPhysics().IsPushable()) {
-                    KickObstacles(viewAxis.oGet(0), kickForce, blockEnt);
+                final idEntity blockEnt = this.physicsObj.GetSlideMoveEntity();
+                if ((blockEnt != null) && blockEnt.IsType(idMoveable.class) && blockEnt.GetPhysics().IsPushable()) {
+                    KickObstacles(this.viewAxis.oGet(0), this.kickForce, blockEnt);
                 }
             }
 
             BlockedFailSafe();
 
-            AI_ONGROUND.operator(physicsObj.OnGround());
+            this.AI_ONGROUND.operator(this.physicsObj.OnGround());
 
-            idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             if (oldOrigin != org) {
                 TouchTriggers();
             }
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugBounds(colorMagenta, physicsObj.GetBounds(), org, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorMagenta, physicsObj.GetBounds(), move.moveDest, gameLocal.msec);
-                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
                 DrawRoute();
             }
         }
@@ -2945,35 +2945,35 @@ public class AI {
             float roll;
             float pitch;
 
-            vel = physicsObj.GetLinearVelocity();
+            vel = this.physicsObj.GetLinearVelocity();
 
             speed = vel.Length();
             if (speed < 5.0f) {
                 roll = 0.0f;
                 pitch = 0.0f;
             } else {
-                roll = vel.oMultiply(viewAxis.oGet(1).oMultiply(-fly_roll_scale / fly_speed));
-                if (roll > fly_roll_max) {
-                    roll = fly_roll_max;
-                } else if (roll < -fly_roll_max) {
-                    roll = -fly_roll_max;
+                roll = vel.oMultiply(this.viewAxis.oGet(1).oMultiply(-this.fly_roll_scale / this.fly_speed));
+                if (roll > this.fly_roll_max) {
+                    roll = this.fly_roll_max;
+                } else if (roll < -this.fly_roll_max) {
+                    roll = -this.fly_roll_max;
                 }
 
-                pitch = vel.oMultiply(viewAxis.oGet(2).oMultiply(-fly_pitch_scale / fly_speed));
-                if (pitch > fly_pitch_max) {
-                    pitch = fly_pitch_max;
-                } else if (pitch < -fly_pitch_max) {
-                    pitch = -fly_pitch_max;
+                pitch = vel.oMultiply(this.viewAxis.oGet(2).oMultiply(-this.fly_pitch_scale / this.fly_speed));
+                if (pitch > this.fly_pitch_max) {
+                    pitch = this.fly_pitch_max;
+                } else if (pitch < -this.fly_pitch_max) {
+                    pitch = -this.fly_pitch_max;
                 }
             }
 
-            fly_roll = fly_roll * 0.95f + roll * 0.05f;
-            fly_pitch = fly_pitch * 0.95f + pitch * 0.05f;
+            this.fly_roll = (this.fly_roll * 0.95f) + (roll * 0.05f);
+            this.fly_pitch = (this.fly_pitch * 0.95f) + (pitch * 0.05f);
 
-            if (flyTiltJoint != INVALID_JOINT) {
-                animator.SetJointAxis(flyTiltJoint, JOINTMOD_WORLD, new idAngles(fly_pitch, 0.0f, fly_roll).ToMat3());
+            if (this.flyTiltJoint != INVALID_JOINT) {
+                this.animator.SetJointAxis(this.flyTiltJoint, JOINTMOD_WORLD, new idAngles(this.fly_pitch, 0.0f, this.fly_roll).ToMat3());
             } else {
-                viewAxis = new idAngles(fly_pitch, current_yaw, fly_roll).ToMat3();
+                this.viewAxis = new idAngles(this.fly_pitch, this.current_yaw, this.fly_roll).ToMat3();
             }
         }
 
@@ -2981,23 +2981,23 @@ public class AI {
             idVec3 fly_bob_add;
             float t;
 
-            if (fly_bob_strength != 0) {
-                t = MS2SEC(gameLocal.time + entityNumber * 497);
-                fly_bob_add = (viewAxis.oGet(1).oMultiply(idMath.Sin16(t * fly_bob_horz)).oPlus(viewAxis.oGet(2).oMultiply(idMath.Sin16(t * fly_bob_vert)))).oMultiply(fly_bob_strength);
+            if (this.fly_bob_strength != 0) {
+                t = MS2SEC(gameLocal.time + (this.entityNumber * 497));
+                fly_bob_add = (this.viewAxis.oGet(1).oMultiply(idMath.Sin16(t * this.fly_bob_horz)).oPlus(this.viewAxis.oGet(2).oMultiply(idMath.Sin16(t * this.fly_bob_vert)))).oMultiply(this.fly_bob_strength);
                 vel.oPluSet(fly_bob_add.oMultiply(MS2SEC(gameLocal.msec)));
                 if (ai_debugMove.GetBool()) {
-                    final idVec3 origin = physicsObj.GetOrigin();
+                    final idVec3 origin = this.physicsObj.GetOrigin();
                     gameRenderWorld.DebugArrow(colorOrange, origin, origin.oPlus(fly_bob_add), 0);
                 }
             }
         }
 
         protected void AdjustFlyHeight(idVec3 vel, final idVec3 goalPos) {
-            final idVec3 origin = physicsObj.GetOrigin();
-            predictedPath_s path = new predictedPath_s();
+            final idVec3 origin = this.physicsObj.GetOrigin();
+            final predictedPath_s path = new predictedPath_s();
             idVec3 end;
             idVec3 dest;
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
             idActor enemyEnt;
             boolean goLower;
 
@@ -3006,15 +3006,15 @@ public class AI {
             if (origin.z > goalPos.z) {
                 dest = goalPos;
                 dest.z = origin.z + 128.0f;
-                idAI.PredictPath(this, aas, goalPos, dest.oMinus(origin), 1000, 1000, SE_BLOCKED, path);
+                idAI.PredictPath(this, this.aas, goalPos, dest.oMinus(origin), 1000, 1000, SE_BLOCKED, path);
                 if (path.endPos.z < origin.z) {
-                    idVec3 addVel = Seek(vel, origin, path.endPos, AI_SEEK_PREDICTION);
+                    final idVec3 addVel = Seek(vel, origin, path.endPos, AI_SEEK_PREDICTION);
                     vel.z += addVel.z;
                     goLower = true;
                 }
 
                 if (ai_debugMove.GetBool()) {
-                    gameRenderWorld.DebugBounds(goLower ? colorRed : colorGreen, physicsObj.GetBounds(), path.endPos, gameLocal.msec);
+                    gameRenderWorld.DebugBounds(goLower ? colorRed : colorGreen, this.physicsObj.GetBounds(), path.endPos, gameLocal.msec);
                 }
             }
 
@@ -3022,15 +3022,15 @@ public class AI {
                 // make sure we don't fly too low
                 end = origin;
 
-                enemyEnt = enemy.GetEntity();
+                enemyEnt = this.enemy.GetEntity();
                 if (enemyEnt != null) {
-                    end.z = lastVisibleEnemyPos.z + lastVisibleEnemyEyeOffset.z + fly_offset;
+                    end.z = this.lastVisibleEnemyPos.z + this.lastVisibleEnemyEyeOffset.z + this.fly_offset;
                 } else {
                     // just use the default eye height for the player
-                    end.z = goalPos.z + DEFAULT_FLY_OFFSET + fly_offset;
+                    end.z = goalPos.z + DEFAULT_FLY_OFFSET + this.fly_offset;
                 }
 
-                gameLocal.clip.Translation(trace, origin, end, physicsObj.GetClipModel(), getMat3_identity(), MASK_MONSTERSOLID, this);
+                gameLocal.clip.Translation(trace, origin, end, this.physicsObj.GetClipModel(), getMat3_identity(), MASK_MONSTERSOLID, this);
                 vel.oPluSet(Seek(vel, origin, trace[0].endpos, AI_SEEK_PREDICTION));
             }
         }
@@ -3039,8 +3039,8 @@ public class AI {
             idVec3 seekVel;
 
             // seek the goal position
-            seekVel = Seek(vel, physicsObj.GetOrigin(), goalPos, AI_SEEK_PREDICTION);
-            seekVel.oMulSet(fly_seek_scale);
+            seekVel = Seek(vel, this.physicsObj.GetOrigin(), goalPos, AI_SEEK_PREDICTION);
+            seekVel.oMulSet(this.fly_seek_scale);
             vel.oPluSet(seekVel);
         }
 
@@ -3052,23 +3052,23 @@ public class AI {
 
             // gradually speed up/slow down to desired speed
             speed = vel.Normalize();
-            speed += (move.speed - speed) * MS2SEC(gameLocal.msec);
+            speed += (this.move.speed - speed) * MS2SEC(gameLocal.msec);
             if (speed < 0.0f) {
                 speed = 0.0f;
-            } else if (move.speed != 0 && (speed > move.speed)) {
-                speed = move.speed;
+            } else if ((this.move.speed != 0) && (speed > this.move.speed)) {
+                speed = this.move.speed;
             }
 
             vel.oMulSet(speed);
         }
 
         protected void FlyTurn() {
-            if (move.moveCommand == MOVE_FACE_ENEMY) {
-                TurnToward(lastVisibleEnemyPos);
-            } else if ((move.moveCommand == MOVE_FACE_ENTITY) && move.goalEntity.GetEntity() != null) {
-                TurnToward(move.goalEntity.GetEntity().GetPhysics().GetOrigin());
-            } else if (move.speed > 0.0f) {
-                final idVec3 vel = physicsObj.GetLinearVelocity();
+            if (this.move.moveCommand == MOVE_FACE_ENEMY) {
+                TurnToward(this.lastVisibleEnemyPos);
+            } else if ((this.move.moveCommand == MOVE_FACE_ENTITY) && (this.move.goalEntity.GetEntity() != null)) {
+                TurnToward(this.move.goalEntity.GetEntity().GetPhysics().GetOrigin());
+            } else if (this.move.speed > 0.0f) {
+                final idVec3 vel = this.physicsObj.GetLinearVelocity();
                 if (vel.ToVec2().LengthSqr() > 0.1f) {
                     TurnToward(vel.ToYaw());
                 }
@@ -3079,111 +3079,111 @@ public class AI {
         protected void FlyMove() {
             idVec3 goalPos = new idVec3();
             idVec3 oldorigin;
-            idVec3 newDest = new idVec3();
+            final idVec3 newDest = new idVec3();
 
-            AI_BLOCKED.operator(false);
-            if ((move.moveCommand != MOVE_NONE) && ReachedPos(move.moveDest, move.moveCommand)) {
+            this.AI_BLOCKED.operator(false);
+            if ((this.move.moveCommand != MOVE_NONE) && ReachedPos(this.move.moveDest, this.move.moveCommand)) {
                 StopMove(MOVE_STATUS_DONE);
             }
 
             if (ai_debugMove.GetBool()) {
-                gameLocal.Printf("%d: %s: %s, vel = %.2f, sp = %.2f, maxsp = %.2f\n", gameLocal.time, name, moveCommandString[etoi(move.moveCommand)], physicsObj.GetLinearVelocity().Length(), move.speed, fly_speed);
+                gameLocal.Printf("%d: %s: %s, vel = %.2f, sp = %.2f, maxsp = %.2f\n", gameLocal.time, this.name, moveCommandString[etoi(this.move.moveCommand)], this.physicsObj.GetLinearVelocity().Length(), this.move.speed, this.fly_speed);
             }
 
-            if (move.moveCommand != MOVE_TO_POSITION_DIRECT) {
-                idVec3 vel = physicsObj.GetLinearVelocity();
+            if (this.move.moveCommand != MOVE_TO_POSITION_DIRECT) {
+                final idVec3 vel = this.physicsObj.GetLinearVelocity();
 
                 if (GetMovePos(goalPos)) {
                     CheckObstacleAvoidance(goalPos, newDest);
                     goalPos = newDest;
                 }
 
-                if (move.speed != 0) {
+                if (this.move.speed != 0) {
                     FlySeekGoal(vel, goalPos);
                 }
 
                 // add in bobbing
                 AddFlyBob(vel);
 
-                if (enemy.GetEntity() != null && (move.moveCommand != MOVE_TO_POSITION)) {
+                if ((this.enemy.GetEntity() != null) && (this.move.moveCommand != MOVE_TO_POSITION)) {
                     AdjustFlyHeight(vel, goalPos);
                 }
 
                 AdjustFlySpeed(vel);
 
-                physicsObj.SetLinearVelocity(vel);
+                this.physicsObj.SetLinearVelocity(vel);
             }
 
             // turn
             FlyTurn();
 
             // run the physics for this frame
-            oldorigin = physicsObj.GetOrigin();
-            physicsObj.UseFlyMove(true);
-            physicsObj.UseVelocityMove(false);
-            physicsObj.SetDelta(getVec3_zero());
-            physicsObj.ForceDeltaMove(disableGravity);
+            oldorigin = this.physicsObj.GetOrigin();
+            this.physicsObj.UseFlyMove(true);
+            this.physicsObj.UseVelocityMove(false);
+            this.physicsObj.SetDelta(getVec3_zero());
+            this.physicsObj.ForceDeltaMove(this.disableGravity);
             RunPhysics();
 
-            monsterMoveResult_t moveResult = physicsObj.GetMoveResult();
-            if (!af_push_moveables && attack.Length() != 0 && TestMelee()) {
-                DirectDamage(attack, enemy.GetEntity());
+            final monsterMoveResult_t moveResult = this.physicsObj.GetMoveResult();
+            if (!this.af_push_moveables && (this.attack.Length() != 0) && TestMelee()) {
+                DirectDamage(this.attack, this.enemy.GetEntity());
             } else {
-                idEntity blockEnt = physicsObj.GetSlideMoveEntity();
-                if (blockEnt != null && blockEnt.IsType(idMoveable.class) && blockEnt.GetPhysics().IsPushable()) {
-                    KickObstacles(viewAxis.oGet(0), kickForce, blockEnt);
+                final idEntity blockEnt = this.physicsObj.GetSlideMoveEntity();
+                if ((blockEnt != null) && blockEnt.IsType(idMoveable.class) && blockEnt.GetPhysics().IsPushable()) {
+                    KickObstacles(this.viewAxis.oGet(0), this.kickForce, blockEnt);
                 } else if (moveResult == MM_BLOCKED) {
-                    move.blockTime = gameLocal.time + 500;
-                    AI_BLOCKED.operator(true);
+                    this.move.blockTime = gameLocal.time + 500;
+                    this.AI_BLOCKED.operator(true);
                 }
             }
 
-            idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             if (oldorigin != org) {
                 TouchTriggers();
             }
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorCyan, oldorigin, physicsObj.GetOrigin(), 4000);
-                gameRenderWorld.DebugBounds(colorOrange, physicsObj.GetBounds(), org, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorMagenta, physicsObj.GetBounds(), move.moveDest, gameLocal.msec);
-                gameRenderWorld.DebugLine(colorRed, org, org.oPlus(physicsObj.GetLinearVelocity()), gameLocal.msec, true);
+                gameRenderWorld.DebugLine(colorCyan, oldorigin, this.physicsObj.GetOrigin(), 4000);
+                gameRenderWorld.DebugBounds(colorOrange, this.physicsObj.GetBounds(), org, gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), this.move.moveDest, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorRed, org, org.oPlus(this.physicsObj.GetLinearVelocity()), gameLocal.msec, true);
                 gameRenderWorld.DebugLine(colorBlue, org, goalPos, gameLocal.msec, true);
-                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
+                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
                 DrawRoute();
             }
         }
 
         protected void StaticMove() {
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
-            if (AI_DEAD.operator()) {
+            if (this.AI_DEAD.operator()) {
                 return;
             }
 
-            if ((move.moveCommand == MOVE_FACE_ENEMY) && enemyEnt != null) {
-                TurnToward(lastVisibleEnemyPos);
-            } else if ((move.moveCommand == MOVE_FACE_ENTITY) && move.goalEntity.GetEntity() != null) {
-                TurnToward(move.goalEntity.GetEntity().GetPhysics().GetOrigin());
-            } else if (move.moveCommand != MOVE_NONE) {
-                TurnToward(move.moveDest);
+            if ((this.move.moveCommand == MOVE_FACE_ENEMY) && (enemyEnt != null)) {
+                TurnToward(this.lastVisibleEnemyPos);
+            } else if ((this.move.moveCommand == MOVE_FACE_ENTITY) && (this.move.goalEntity.GetEntity() != null)) {
+                TurnToward(this.move.goalEntity.GetEntity().GetPhysics().GetOrigin());
+            } else if (this.move.moveCommand != MOVE_NONE) {
+                TurnToward(this.move.moveDest);
             }
             Turn();
 
-            physicsObj.ForceDeltaMove(true); // disable gravity
+            this.physicsObj.ForceDeltaMove(true); // disable gravity
             RunPhysics();
 
-            AI_ONGROUND.operator(false);
+            this.AI_ONGROUND.operator(false);
 
-            if (!af_push_moveables && attack.Length() != 0 && TestMelee()) {
-                DirectDamage(attack, enemyEnt);
+            if (!this.af_push_moveables && (this.attack.Length() != 0) && TestMelee()) {
+                DirectDamage(this.attack, enemyEnt);
             }
 
             if (ai_debugMove.GetBool()) {
-                final idVec3 org = physicsObj.GetOrigin();
-                gameRenderWorld.DebugBounds(colorMagenta, physicsObj.GetBounds(), org, gameLocal.msec);
-                gameRenderWorld.DebugLine(colorBlue, org, move.moveDest, gameLocal.msec, true);
-                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
+                final idVec3 org = this.physicsObj.GetOrigin();
+                gameRenderWorld.DebugBounds(colorMagenta, this.physicsObj.GetBounds(), org, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorBlue, org, this.move.moveDest, gameLocal.msec, true);
+                gameRenderWorld.DebugLine(colorYellow, org.oPlus(EyeOffset()), org.oPlus(EyeOffset().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(16.0f)))), gameLocal.msec, true);
             }
         }
 
@@ -3192,21 +3192,21 @@ public class AI {
         public boolean Pain(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
             idActor actor;
 
-            AI_PAIN.operator(super.Pain(inflictor, attacker, damage, dir, location));
-            AI_DAMAGE.operator(true);
+            this.AI_PAIN.operator(super.Pain(inflictor, attacker, damage, dir, location));
+            this.AI_DAMAGE.operator(true);
 
             // force a blink
-            blink_time = 0;
+            this.blink_time = 0;
 
             // ignore damage from self
             if (attacker != this) {
                 if (inflictor != null) {
-                    AI_SPECIAL_DAMAGE.operator(inflictor.spawnArgs.GetInt("special_damage") * 1f);
+                    this.AI_SPECIAL_DAMAGE.operator(inflictor.spawnArgs.GetInt("special_damage") * 1f);
                 } else {
-                    AI_SPECIAL_DAMAGE.operator(0f);
+                    this.AI_SPECIAL_DAMAGE.operator(0f);
                 }
 
-                if (enemy.GetEntity() != attacker && attacker.IsType(idActor.class)) {
+                if ((this.enemy.GetEntity() != attacker) && attacker.IsType(idActor.class)) {
                     actor = (idActor) attacker;
                     if ((ReactionTo(actor) & ATTACK_ON_DAMAGE) != 0) {
                         gameLocal.AlertAI(actor);
@@ -3215,53 +3215,53 @@ public class AI {
                 }
             }
 
-            return (AI_PAIN.operator() /*!= 0*/);
+            return (this.AI_PAIN.operator() /*!= 0*/);
         }
 
         @Override
         public void Killed(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            idAngles ang;
-            String[] modelDeath = {null};
+            final idAngles ang;
+            final String[] modelDeath = {null};
 
             // make sure the monster is activated
             EndAttack();
 
             if (g_debugDamage.GetBool()) {
-                gameLocal.Printf("Damage: joint: '%s', zone '%s'\n", animator.GetJointName(location),
+                gameLocal.Printf("Damage: joint: '%s', zone '%s'\n", this.animator.GetJointName(location),
                         GetDamageGroup(location));
             }
 
             if (inflictor != null) {
-                AI_SPECIAL_DAMAGE.operator(inflictor.spawnArgs.GetInt("special_damage") * 1f);
+                this.AI_SPECIAL_DAMAGE.operator(inflictor.spawnArgs.GetInt("special_damage") * 1f);
             } else {
-                AI_SPECIAL_DAMAGE.operator(0f);
+                this.AI_SPECIAL_DAMAGE.operator(0f);
             }
 
-            if (AI_DEAD.operator()) {
-                AI_PAIN.operator(true);
-                AI_DAMAGE.operator(true);
+            if (this.AI_DEAD.operator()) {
+                this.AI_PAIN.operator(true);
+                this.AI_DAMAGE.operator(true);
                 return;
             }
 
             // stop all voice sounds
             StopSound(etoi(SND_CHANNEL_VOICE), false);
-            if (head.GetEntity() != null) {
-                head.GetEntity().StopSound(etoi(SND_CHANNEL_VOICE), false);
-                head.GetEntity().GetAnimator().ClearAllAnims(gameLocal.time, 100);
+            if (this.head.GetEntity() != null) {
+                this.head.GetEntity().StopSound(etoi(SND_CHANNEL_VOICE), false);
+                this.head.GetEntity().GetAnimator().ClearAllAnims(gameLocal.time, 100);
             }
 
-            disableGravity = false;
-            move.moveType = MOVETYPE_DEAD;
-            af_push_moveables = false;
+            this.disableGravity = false;
+            this.move.moveType = MOVETYPE_DEAD;
+            this.af_push_moveables = false;
 
-            physicsObj.UseFlyMove(false);
-            physicsObj.ForceDeltaMove(false);
+            this.physicsObj.UseFlyMove(false);
+            this.physicsObj.ForceDeltaMove(false);
 
             // end our looping ambient sound
             StopSound(etoi(SND_CHANNEL_AMBIENT), false);
 
-            if (attacker != null && attacker.IsType(idActor.class)) {
-                gameLocal.AlertAI((idActor) attacker);
+            if ((attacker != null) && attacker.IsType(idActor.class)) {
+                gameLocal.AlertAI(attacker);
             }
 
             // activate targets
@@ -3272,11 +3272,11 @@ public class AI {
             StopMove(MOVE_STATUS_DONE);
 
             ClearEnemy();
-            AI_DEAD.operator(true);
+            this.AI_DEAD.operator(true);
 
             // make monster nonsolid
-            physicsObj.SetContents(0);
-            physicsObj.GetClipModel().Unlink();
+            this.physicsObj.SetContents(0);
+            this.physicsObj.GetClipModel().Unlink();
 
             Unbind();
 
@@ -3284,33 +3284,33 @@ public class AI {
                 StartSound("snd_death", SND_CHANNEL_VOICE, 0, false, null);
             }
 
-            if (spawnArgs.GetString("model_death", "", modelDeath)) {
+            if (this.spawnArgs.GetString("model_death", "", modelDeath)) {
                 // lost soul is only case that does not use a ragdoll and has a model_death so get the death sound in here
                 StartSound("snd_death", SND_CHANNEL_VOICE, 0, false, null);
-                renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+                this.renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
                 SetModel(modelDeath[0]);
-                physicsObj.SetLinearVelocity(getVec3_zero());
-                physicsObj.PutToRest();
-                physicsObj.DisableImpact();
+                this.physicsObj.SetLinearVelocity(getVec3_zero());
+                this.physicsObj.PutToRest();
+                this.physicsObj.DisableImpact();
             }
 
-            restartParticles = false;
+            this.restartParticles = false;
 
-            state = GetScriptFunction("state_Killed");
-            SetState(state);
+            this.state = GetScriptFunction("state_Killed");
+            SetState(this.state);
             SetWaitState("");
 
-            idKeyValue kv = spawnArgs.MatchPrefix("def_drops", null);
+            idKeyValue kv = this.spawnArgs.MatchPrefix("def_drops", null);
             while (kv != null) {
-                idDict args = new idDict();
+                final idDict args = new idDict();
 
                 args.Set("classname", kv.GetValue());
-                args.Set("origin", physicsObj.GetOrigin().ToString());
+                args.Set("origin", this.physicsObj.GetOrigin().ToString());
                 gameLocal.SpawnEntityDef(args);
-                kv = spawnArgs.MatchPrefix("def_drops", kv);
+                kv = this.spawnArgs.MatchPrefix("def_drops", kv);
             }
 
-            if ((attacker != null && attacker.IsType(idPlayer.class)) && (inflictor != null && !inflictor.IsType(idSoulCubeMissile.class))) {
+            if (((attacker != null) && attacker.IsType(idPlayer.class)) && ((inflictor != null) && !inflictor.IsType(idSoulCubeMissile.class))) {
                 ((idPlayer) attacker).AddAIKill();
             }
         }
@@ -3321,21 +3321,21 @@ public class AI {
             idBounds clipBounds;
             idEntity obEnt;
             idClipModel clipModel;
-            idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
+            final idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
             int clipmask;
             idVec3 org;
             idVec3 forceVec;
             idVec3 delta;
-            idVec2 perpendicular = new idVec2();
+            final idVec2 perpendicular = new idVec2();
 
-            org = physicsObj.GetOrigin();
+            org = this.physicsObj.GetOrigin();
 
             // find all possible obstacles
-            clipBounds = physicsObj.GetAbsBounds();
+            clipBounds = this.physicsObj.GetAbsBounds();
             clipBounds.TranslateSelf(dir.oMultiply(32.0f));
             clipBounds.ExpandSelf(8.0f);
             clipBounds.AddPoint(org);
-            clipmask = physicsObj.GetClipMask();
+            clipmask = this.physicsObj.GetClipMask();
             numListedClipModels = gameLocal.clip.ClipModelsTouchingBounds(clipBounds, clipmask, clipModelList, MAX_GENTITIES);
             for (i = 0; i < numListedClipModels; i++) {
                 clipModel = clipModelList[i];
@@ -3374,20 +3374,20 @@ public class AI {
         }
 
         protected boolean ReachedPos(final idVec3 pos, final moveCommand_t moveCommand) {
-            if (move.moveType == MOVETYPE_SLIDE) {
-                idBounds bnds = new idBounds(new idVec3(-4, -4.0f, -8.0f), new idVec3(4.0f, 4.0f, 64.0f));
-                bnds.TranslateSelf(physicsObj.GetOrigin());
+            if (this.move.moveType == MOVETYPE_SLIDE) {
+                final idBounds bnds = new idBounds(new idVec3(-4, -4.0f, -8.0f), new idVec3(4.0f, 4.0f, 64.0f));
+                bnds.TranslateSelf(this.physicsObj.GetOrigin());
                 if (bnds.ContainsPoint(pos)) {
                     return true;
                 }
             } else {
                 if ((moveCommand == MOVE_TO_ENEMY) || (moveCommand == MOVE_TO_ENTITY)) {
-                    if (physicsObj.GetAbsBounds().IntersectsBounds(new idBounds(pos).Expand(8.0f))) {
+                    if (this.physicsObj.GetAbsBounds().IntersectsBounds(new idBounds(pos).Expand(8.0f))) {
                         return true;
                     }
                 } else {
-                    idBounds bnds = new idBounds(new idVec3(-16.0f, -16.0f, -8.0f), new idVec3(16.0f, 16.0f, 64.0f));
-                    bnds.TranslateSelf(physicsObj.GetOrigin());
+                    final idBounds bnds = new idBounds(new idVec3(-16.0f, -16.0f, -8.0f), new idVec3(16.0f, 16.0f, 64.0f));
+                    bnds.TranslateSelf(this.physicsObj.GetOrigin());
                     if (bnds.ContainsPoint(pos)) {
                         return true;
                     }
@@ -3413,7 +3413,7 @@ public class AI {
             idVec2 delta;
 //            aasPath_s path;
 
-            if (NOT(aas)) {
+            if (NOT(this.aas)) {
                 // no aas, so just take the straight line distance
                 delta = end.ToVec2().oMinus(start.ToVec2());
                 dist = delta.LengthFast();
@@ -3429,7 +3429,7 @@ public class AI {
             fromArea = PointReachableAreaNum(start);
             toArea = PointReachableAreaNum(end);
 
-            if (0 == fromArea || 0 == toArea) {
+            if ((0 == fromArea) || (0 == toArea)) {
                 // can't seem to get there
                 return -1;
             }
@@ -3447,17 +3447,17 @@ public class AI {
                 return dist;
             }
 
-            idReachability[] reach = {null};
-            int[] travelTime = {0};
-            if (!aas.RouteToGoalArea(fromArea, start, toArea, travelFlags, travelTime, reach)) {
+            final idReachability[] reach = {null};
+            final int[] travelTime = {0};
+            if (!this.aas.RouteToGoalArea(fromArea, start, toArea, this.travelFlags, travelTime, reach)) {
                 return -1;
             }
 
             if (ai_debugMove.GetBool()) {
-                if (move.moveType == MOVETYPE_FLY) {
-                    aas.ShowFlyPath(start, toArea, end);
+                if (this.move.moveType == MOVETYPE_FLY) {
+                    this.aas.ShowFlyPath(start, toArea, end);
                 } else {
-                    aas.ShowWalkPath(start, toArea, end);
+                    this.aas.ShowWalkPath(start, toArea, end);
                 }
             }
 
@@ -3467,21 +3467,21 @@ public class AI {
         protected int PointReachableAreaNum(final idVec3 pos, final float boundsScale /*= 2.0f*/) {
             int areaNum;
             idVec3 size;
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
 
-            if (NOT(aas)) {
+            if (NOT(this.aas)) {
                 return 0;
             }
 
-            size = aas.GetSettings().boundingBoxes[0].oGet(1).oMultiply(boundsScale);
+            size = this.aas.GetSettings().boundingBoxes[0].oGet(1).oMultiply(boundsScale);
             bounds.oSet(0, size.oNegative());
             size.z = 32.0f;
             bounds.oSet(1, size);
 
-            if (move.moveType == MOVETYPE_FLY) {
-                areaNum = aas.PointReachableAreaNum(pos, bounds, AREA_REACHABLE_WALK | AREA_REACHABLE_FLY);
+            if (this.move.moveType == MOVETYPE_FLY) {
+                areaNum = this.aas.PointReachableAreaNum(pos, bounds, AREA_REACHABLE_WALK | AREA_REACHABLE_FLY);
             } else {
-                areaNum = aas.PointReachableAreaNum(pos, bounds, AREA_REACHABLE_WALK);
+                areaNum = this.aas.PointReachableAreaNum(pos, bounds, AREA_REACHABLE_WALK);
             }
 
             return areaNum;
@@ -3495,62 +3495,62 @@ public class AI {
             idVec3 org;
             idVec3 goal;
 
-            if (NOT(aas)) {
+            if (NOT(this.aas)) {
                 return false;
             }
 
             org = origin;
-            aas.PushPointIntoAreaNum(areaNum, org);
+            this.aas.PushPointIntoAreaNum(areaNum, org);
             if (0 == areaNum) {
                 return false;
             }
 
             goal = goalOrigin;
-            aas.PushPointIntoAreaNum(goalAreaNum, goal);
+            this.aas.PushPointIntoAreaNum(goalAreaNum, goal);
             if (0 == goalAreaNum) {
                 return false;
             }
 
-            if (move.moveType == MOVETYPE_FLY) {
-                return aas.FlyPathToGoal(path, areaNum, org, goalAreaNum, goal, travelFlags);
+            if (this.move.moveType == MOVETYPE_FLY) {
+                return this.aas.FlyPathToGoal(path, areaNum, org, goalAreaNum, goal, this.travelFlags);
             } else {
-                return aas.WalkPathToGoal(path, areaNum, org, goalAreaNum, goal, travelFlags);
+                return this.aas.WalkPathToGoal(path, areaNum, org, goalAreaNum, goal, this.travelFlags);
             }
         }
 
         protected void DrawRoute() {
-            if (aas != null && move.toAreaNum != 0 && move.moveCommand != MOVE_NONE && move.moveCommand != MOVE_WANDER && move.moveCommand != MOVE_FACE_ENEMY
-                    && move.moveCommand != MOVE_FACE_ENTITY && move.moveCommand != MOVE_TO_POSITION_DIRECT) {
-                if (move.moveType == MOVETYPE_FLY) {
-                    aas.ShowFlyPath(physicsObj.GetOrigin(), move.toAreaNum, move.moveDest);
+            if ((this.aas != null) && (this.move.toAreaNum != 0) && (this.move.moveCommand != MOVE_NONE) && (this.move.moveCommand != MOVE_WANDER) && (this.move.moveCommand != MOVE_FACE_ENEMY)
+                    && (this.move.moveCommand != MOVE_FACE_ENTITY) && (this.move.moveCommand != MOVE_TO_POSITION_DIRECT)) {
+                if (this.move.moveType == MOVETYPE_FLY) {
+                    this.aas.ShowFlyPath(this.physicsObj.GetOrigin(), this.move.toAreaNum, this.move.moveDest);
                 } else {
-                    aas.ShowWalkPath(physicsObj.GetOrigin(), move.toAreaNum, move.moveDest);
+                    this.aas.ShowWalkPath(this.physicsObj.GetOrigin(), this.move.toAreaNum, this.move.moveDest);
                 }
             }
         }
 
         protected boolean GetMovePos(idVec3 seekPos) {
             int areaNum;
-            aasPath_s path = new aasPath_s();
+            final aasPath_s path = new aasPath_s();
             boolean result;
             idVec3 org;
 
-            org = physicsObj.GetOrigin();
+            org = this.physicsObj.GetOrigin();
             seekPos.oSet(org);
 
-            switch (move.moveCommand) {
+            switch (this.move.moveCommand) {
                 case MOVE_NONE:
-                    seekPos.oSet(move.moveDest);
+                    seekPos.oSet(this.move.moveDest);
                     return false;
 
                 case MOVE_FACE_ENEMY:
                 case MOVE_FACE_ENTITY:
-                    seekPos.oSet(move.moveDest);
+                    seekPos.oSet(this.move.moveDest);
                     return false;
 
                 case MOVE_TO_POSITION_DIRECT:
-                    seekPos.oSet(move.moveDest);
-                    if (ReachedPos(move.moveDest, move.moveCommand)) {
+                    seekPos.oSet(this.move.moveDest);
+                    if (ReachedPos(this.move.moveDest, this.move.moveCommand)) {
                         StopMove(MOVE_STATUS_DONE);
                     }
                     return false;
@@ -3563,42 +3563,42 @@ public class AI {
 				break;
             }
 
-            if (move.moveCommand == MOVE_TO_ENTITY) {
-                MoveToEntity(move.goalEntity.GetEntity());
+            if (this.move.moveCommand == MOVE_TO_ENTITY) {
+                MoveToEntity(this.move.goalEntity.GetEntity());
             }
 
-            move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
             result = false;
-            if (gameLocal.time > move.blockTime) {
-                if (move.moveCommand == MOVE_WANDER) {
-                    move.moveDest = org.oPlus(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis().oMultiply(256.0f)));
+            if (gameLocal.time > this.move.blockTime) {
+                if (this.move.moveCommand == MOVE_WANDER) {
+                    this.move.moveDest = org.oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(256.0f)));
                 } else {
-                    if (ReachedPos(move.moveDest, move.moveCommand)) {
+                    if (ReachedPos(this.move.moveDest, this.move.moveCommand)) {
                         StopMove(MOVE_STATUS_DONE);
                         seekPos.oSet(org);
                         return false;
                     }
                 }
 
-                if (aas != null && move.toAreaNum != 0) {
+                if ((this.aas != null) && (this.move.toAreaNum != 0)) {
                     areaNum = PointReachableAreaNum(org);
-                    if (PathToGoal(path, areaNum, org, move.toAreaNum, move.moveDest)) {
+                    if (PathToGoal(path, areaNum, org, this.move.toAreaNum, this.move.moveDest)) {
                         seekPos.oSet(path.moveGoal);
                         result = true;
-                        move.nextWanderTime = 0;
+                        this.move.nextWanderTime = 0;
                     } else {
-                        AI_DEST_UNREACHABLE.operator(true);
+                        this.AI_DEST_UNREACHABLE.operator(true);
                     }
                 }
             }
 
             if (!result) {
                 // wander around
-                if ((gameLocal.time > move.nextWanderTime) || !StepDirection(move.wanderYaw)) {
-                    result = NewWanderDir(move.moveDest);
+                if ((gameLocal.time > this.move.nextWanderTime) || !StepDirection(this.move.wanderYaw)) {
+                    result = NewWanderDir(this.move.moveDest);
                     if (!result) {
                         StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                        AI_DEST_UNREACHABLE.operator(true);
+                        this.AI_DEST_UNREACHABLE.operator(true);
                         seekPos.oSet(org);
                         return false;
                     }
@@ -3606,28 +3606,28 @@ public class AI {
                     result = true;
                 }
 
-                seekPos.oSet(org.oPlus(move.moveDir.oMultiply(2048.0f)));
+                seekPos.oSet(org.oPlus(this.move.moveDir.oMultiply(2048.0f)));
                 if (ai_debugMove.GetBool()) {
                     gameRenderWorld.DebugLine(colorYellow, org, seekPos, gameLocal.msec, true);
                 }
             } else {
-                AI_DEST_UNREACHABLE.operator(false);
+                this.AI_DEST_UNREACHABLE.operator(false);
             }
 
             if (result && (ai_debugMove.GetBool())) {
-                gameRenderWorld.DebugLine(colorCyan, physicsObj.GetOrigin(), seekPos);
+                gameRenderWorld.DebugLine(colorCyan, this.physicsObj.GetOrigin(), seekPos);
             }
 
             return result;
         }
 
         protected boolean MoveDone() {
-            return (move.moveCommand == MOVE_NONE);
+            return (this.move.moveCommand == MOVE_NONE);
         }
 
         protected boolean EntityCanSeePos(idActor actor, final idVec3 actorOrigin, final idVec3 pos) {
             idVec3 eye, point;
-            trace_s[] results = {null};
+            final trace_s[] results = {null};
             pvsHandle_t handle;
 
             handle = gameLocal.pvs.SetupCurrentPVS(actor.GetPVSAreas(), actor.GetNumPVSAreas());
@@ -3644,60 +3644,60 @@ public class AI {
             point = pos;
             point.oPluSet(2, 1.0f);
 
-            physicsObj.DisableClip();
+            this.physicsObj.DisableClip();
 
             gameLocal.clip.TracePoint(results, eye, point, MASK_SOLID, actor);
-            if (results[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(results[0]) == this)) {
-                physicsObj.EnableClip();
+            if ((results[0].fraction >= 1.0f) || (gameLocal.GetTraceEntity(results[0]) == this)) {
+                this.physicsObj.EnableClip();
                 return true;
             }
 
-            final idBounds bounds = physicsObj.GetBounds();
+            final idBounds bounds = this.physicsObj.GetBounds();
             point.oPluSet(2, bounds.oGet(1, 2) - bounds.oGet(0, 2));
 
             gameLocal.clip.TracePoint(results, eye, point, MASK_SOLID, actor);
-            physicsObj.EnableClip();
+            this.physicsObj.EnableClip();
 
-            return results[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(results[0]) == this);
+            return (results[0].fraction >= 1.0f) || (gameLocal.GetTraceEntity(results[0]) == this);
         }
 
         protected void BlockedFailSafe() {
-            if (!ai_blockedFailSafe.GetBool() || blockedRadius < 0.0f) {
+            if (!ai_blockedFailSafe.GetBool() || (this.blockedRadius < 0.0f)) {
                 return;
             }
-            if (!physicsObj.OnGround() || enemy.GetEntity() == null
-                    || (physicsObj.GetOrigin().oMinus(move.lastMoveOrigin)).LengthSqr() > Square(blockedRadius)) {
-                move.lastMoveOrigin = physicsObj.GetOrigin();
-                move.lastMoveTime = gameLocal.time;
+            if (!this.physicsObj.OnGround() || (this.enemy.GetEntity() == null)
+                    || ((this.physicsObj.GetOrigin().oMinus(this.move.lastMoveOrigin)).LengthSqr() > Square(this.blockedRadius))) {
+                this.move.lastMoveOrigin = this.physicsObj.GetOrigin();
+                this.move.lastMoveTime = gameLocal.time;
             }
-            if (move.lastMoveTime < gameLocal.time - blockedMoveTime) {
-                if (lastAttackTime < gameLocal.time - blockedAttackTime) {
-                    AI_BLOCKED.operator(true);
-                    move.lastMoveTime = gameLocal.time;
+            if (this.move.lastMoveTime < (gameLocal.time - this.blockedMoveTime)) {
+                if (this.lastAttackTime < (gameLocal.time - this.blockedAttackTime)) {
+                    this.AI_BLOCKED.operator(true);
+                    this.move.lastMoveTime = gameLocal.time;
                 }
             }
         }
 
         // movement control
         protected void StopMove(moveStatus_t status) {
-            AI_MOVE_DONE.operator(true);
-            AI_FORWARD.operator(false);
-            move.moveCommand = MOVE_NONE;
-            move.moveStatus = status;
-            move.toAreaNum = 0;
-            move.goalEntity.oSet(null);
-            move.moveDest = physicsObj.GetOrigin();
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_OBSTACLE_IN_PATH.operator(false);
-            AI_BLOCKED.operator(false);
-            move.startTime = gameLocal.time;
-            move.duration = 0;
-            move.range = 0.0f;
-            move.speed = 0.0f;
-            move.anim = 0;
-            move.moveDir.Zero();
-            move.lastMoveOrigin.Zero();
-            move.lastMoveTime = gameLocal.time;
+            this.AI_MOVE_DONE.operator(true);
+            this.AI_FORWARD.operator(false);
+            this.move.moveCommand = MOVE_NONE;
+            this.move.moveStatus = status;
+            this.move.toAreaNum = 0;
+            this.move.goalEntity.oSet(null);
+            this.move.moveDest = this.physicsObj.GetOrigin();
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_OBSTACLE_IN_PATH.operator(false);
+            this.AI_BLOCKED.operator(false);
+            this.move.startTime = gameLocal.time;
+            this.move.duration = 0;
+            this.move.range = 0.0f;
+            this.move.speed = 0.0f;
+            this.move.anim = 0;
+            this.move.moveDir.Zero();
+            this.move.lastMoveOrigin.Zero();
+            this.move.lastMoveTime = gameLocal.time;
         }
 
         /*
@@ -3708,22 +3708,22 @@ public class AI {
          =====================
          */
         protected boolean FaceEnemy() {
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
             if (null == enemyEnt) {
                 StopMove(MOVE_STATUS_DEST_NOT_FOUND);
                 return false;
             }
 
-            TurnToward(lastVisibleEnemyPos);
-            move.goalEntity.oSet(enemyEnt);
-            move.moveDest = physicsObj.GetOrigin();
-            move.moveCommand = MOVE_FACE_ENEMY;
-            move.moveStatus = MOVE_STATUS_WAITING;
-            move.startTime = gameLocal.time;
-            move.speed = 0.0f;
-            AI_MOVE_DONE.operator(true);
-            AI_FORWARD.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
+            TurnToward(this.lastVisibleEnemyPos);
+            this.move.goalEntity.oSet(enemyEnt);
+            this.move.moveDest = this.physicsObj.GetOrigin();
+            this.move.moveCommand = MOVE_FACE_ENEMY;
+            this.move.moveStatus = MOVE_STATUS_WAITING;
+            this.move.startTime = gameLocal.time;
+            this.move.speed = 0.0f;
+            this.AI_MOVE_DONE.operator(true);
+            this.AI_FORWARD.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
 
             return true;
         }
@@ -3741,237 +3741,237 @@ public class AI {
                 return false;
             }
 
-            idVec3 entityOrg = ent.GetPhysics().GetOrigin();
+            final idVec3 entityOrg = ent.GetPhysics().GetOrigin();
             TurnToward(entityOrg);
-            move.goalEntity.oSet(ent);
-            move.moveDest = physicsObj.GetOrigin();
-            move.moveCommand = MOVE_FACE_ENTITY;
-            move.moveStatus = MOVE_STATUS_WAITING;
-            move.startTime = gameLocal.time;
-            move.speed = 0.0f;
-            AI_MOVE_DONE.operator(true);
-            AI_FORWARD.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
+            this.move.goalEntity.oSet(ent);
+            this.move.moveDest = this.physicsObj.GetOrigin();
+            this.move.moveCommand = MOVE_FACE_ENTITY;
+            this.move.moveStatus = MOVE_STATUS_WAITING;
+            this.move.startTime = gameLocal.time;
+            this.move.speed = 0.0f;
+            this.AI_MOVE_DONE.operator(true);
+            this.AI_FORWARD.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
 
             return true;
         }
 
         protected boolean DirectMoveToPosition(final idVec3 pos) {
-            if (ReachedPos(pos, move.moveCommand)) {
+            if (ReachedPos(pos, this.move.moveCommand)) {
                 StopMove(MOVE_STATUS_DONE);
                 return true;
             }
 
-            move.moveDest.oSet(pos);
-            move.goalEntity.oSet(null);
-            move.moveCommand = MOVE_TO_POSITION_DIRECT;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.startTime = gameLocal.time;
-            move.speed = fly_speed;
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(true);
+            this.move.moveDest.oSet(pos);
+            this.move.goalEntity.oSet(null);
+            this.move.moveCommand = MOVE_TO_POSITION_DIRECT;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.startTime = gameLocal.time;
+            this.move.speed = this.fly_speed;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(true);
 
-            if (move.moveType == MOVETYPE_FLY) {
-                idVec3 dir = pos.oMinus(physicsObj.GetOrigin());
+            if (this.move.moveType == MOVETYPE_FLY) {
+                final idVec3 dir = pos.oMinus(this.physicsObj.GetOrigin());
                 dir.Normalize();
-                dir.oMulSet(fly_speed);
-                physicsObj.SetLinearVelocity(dir);
+                dir.oMulSet(this.fly_speed);
+                this.physicsObj.SetLinearVelocity(dir);
             }
 
             return true;
         }
 
         protected boolean MoveToEnemyHeight() {
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
-            if (null == enemyEnt || (move.moveType != MOVETYPE_FLY)) {
+            if ((null == enemyEnt) || (this.move.moveType != MOVETYPE_FLY)) {
                 StopMove(MOVE_STATUS_DEST_NOT_FOUND);
                 return false;
             }
 
-            move.moveDest.z = lastVisibleEnemyPos.z + enemyEnt.EyeOffset().z + fly_offset;
-            move.goalEntity.oSet(enemyEnt);
-            move.moveCommand = MOVE_TO_ENEMYHEIGHT;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.startTime = gameLocal.time;
-            move.speed = 0.0f;
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(false);
+            this.move.moveDest.z = this.lastVisibleEnemyPos.z + enemyEnt.EyeOffset().z + this.fly_offset;
+            this.move.goalEntity.oSet(enemyEnt);
+            this.move.moveCommand = MOVE_TO_ENEMYHEIGHT;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.startTime = gameLocal.time;
+            this.move.speed = 0.0f;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(false);
 
             return true;
         }
 
         protected boolean MoveOutOfRange(idEntity ent, float range) {
             int areaNum;
-            aasObstacle_s[] obstacle = new aasObstacle_s[1];
-            aasGoal_s goal = new aasGoal_s();
+            final aasObstacle_s[] obstacle = new aasObstacle_s[1];
+            final aasGoal_s goal = new aasGoal_s();
 //            idBounds bounds;
             idVec3 pos;
 
-            if (null == aas || null == ent) {
+            if ((null == this.aas) || (null == ent)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE.operator(true);
+                this.AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
-            final idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             areaNum = PointReachableAreaNum(org);
 
             // consider the entity the monster is getting close to as an obstacle
             obstacle[0].absBounds = ent.GetPhysics().GetAbsBounds();
 
-            if (ent == enemy.GetEntity()) {
-                pos = lastVisibleEnemyPos;
+            if (ent == this.enemy.GetEntity()) {
+                pos = this.lastVisibleEnemyPos;
             } else {
                 pos = ent.GetPhysics().GetOrigin();
             }
 
-            idAASFindAreaOutOfRange findGoal = new idAASFindAreaOutOfRange(pos, range);
-            if (!aas.FindNearestGoal(goal, areaNum, org, pos, travelFlags, obstacle, 1, findGoal)) {
+            final idAASFindAreaOutOfRange findGoal = new idAASFindAreaOutOfRange(pos, range);
+            if (!this.aas.FindNearestGoal(goal, areaNum, org, pos, this.travelFlags, obstacle, 1, findGoal)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE.operator(true);
+                this.AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
-            if (ReachedPos(goal.origin, move.moveCommand)) {
+            if (ReachedPos(goal.origin, this.move.moveCommand)) {
                 StopMove(MOVE_STATUS_DONE);
                 return true;
             }
 
-            move.moveDest.oSet(goal.origin);
-            move.toAreaNum = goal.areaNum;
-            move.goalEntity.oSet(ent);
-            move.moveCommand = MOVE_OUT_OF_RANGE;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.range = range;
-            move.speed = fly_speed;
-            move.startTime = gameLocal.time;
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(true);
+            this.move.moveDest.oSet(goal.origin);
+            this.move.toAreaNum = goal.areaNum;
+            this.move.goalEntity.oSet(ent);
+            this.move.moveCommand = MOVE_OUT_OF_RANGE;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.range = range;
+            this.move.speed = this.fly_speed;
+            this.move.startTime = gameLocal.time;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(true);
 
             return true;
         }
 
         protected boolean MoveToAttackPosition(idEntity ent, int attack_anim) {
             int areaNum;
-            aasObstacle_s[] obstacle = new aasObstacle_s[1];
-            aasGoal_s goal = new aasGoal_s();
-            idBounds bounds;
+            final aasObstacle_s[] obstacle = new aasObstacle_s[1];
+            final aasGoal_s goal = new aasGoal_s();
+            final idBounds bounds;
             idVec3 pos;
 
-            if (null == aas || null == ent) {
+            if ((null == this.aas) || (null == ent)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE.operator(true);
+                this.AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
-            final idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             areaNum = PointReachableAreaNum(org);
 
             // consider the entity the monster is getting close to as an obstacle
             obstacle[0].absBounds = ent.GetPhysics().GetAbsBounds();
 
-            if (ent == enemy.GetEntity()) {
-                pos = lastVisibleEnemyPos;
+            if (ent == this.enemy.GetEntity()) {
+                pos = this.lastVisibleEnemyPos;
             } else {
                 pos = ent.GetPhysics().GetOrigin();
             }
 
-            idAASFindAttackPosition findGoal = new idAASFindAttackPosition(this, physicsObj.GetGravityAxis(), ent, pos, missileLaunchOffset.oGet(attack_anim));
-            if (!aas.FindNearestGoal(goal, areaNum, org, pos, travelFlags, obstacle, 1, findGoal)) {
+            final idAASFindAttackPosition findGoal = new idAASFindAttackPosition(this, this.physicsObj.GetGravityAxis(), ent, pos, this.missileLaunchOffset.oGet(attack_anim));
+            if (!this.aas.FindNearestGoal(goal, areaNum, org, pos, this.travelFlags, obstacle, 1, findGoal)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE.operator(true);
+                this.AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
-            move.moveDest.oSet(goal.origin);
-            move.toAreaNum = goal.areaNum;
-            move.goalEntity.oSet(ent);
-            move.moveCommand = MOVE_TO_ATTACK_POSITION;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.speed = fly_speed;
-            move.startTime = gameLocal.time;
-            move.anim = attack_anim;
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(true);
+            this.move.moveDest.oSet(goal.origin);
+            this.move.toAreaNum = goal.areaNum;
+            this.move.goalEntity.oSet(ent);
+            this.move.moveCommand = MOVE_TO_ATTACK_POSITION;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.speed = this.fly_speed;
+            this.move.startTime = gameLocal.time;
+            this.move.anim = attack_anim;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(true);
 
             return true;
         }
 
         protected boolean MoveToEnemy() {
             int areaNum;
-            aasPath_s path = new aasPath_s();
-            idActor enemyEnt = enemy.GetEntity();
+            final aasPath_s path = new aasPath_s();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
             if (null == enemyEnt) {
                 StopMove(MOVE_STATUS_DEST_NOT_FOUND);
                 return false;
             }
 
-            if (ReachedPos(lastVisibleReachableEnemyPos, MOVE_TO_ENEMY)) {
-                if (!ReachedPos(lastVisibleEnemyPos, MOVE_TO_ENEMY) || !AI_ENEMY_VISIBLE.operator()) {
+            if (ReachedPos(this.lastVisibleReachableEnemyPos, MOVE_TO_ENEMY)) {
+                if (!ReachedPos(this.lastVisibleEnemyPos, MOVE_TO_ENEMY) || !this.AI_ENEMY_VISIBLE.operator()) {
                     StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                    AI_DEST_UNREACHABLE.operator(true);
+                    this.AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
                 StopMove(MOVE_STATUS_DONE);
                 return true;
             }
 
-            idVec3 pos = lastVisibleReachableEnemyPos;
+            final idVec3 pos = this.lastVisibleReachableEnemyPos;
 
-            move.toAreaNum = 0;
-            if (aas != null) {
-                move.toAreaNum = PointReachableAreaNum(pos);
-                aas.PushPointIntoAreaNum(move.toAreaNum, pos);
+            this.move.toAreaNum = 0;
+            if (this.aas != null) {
+                this.move.toAreaNum = PointReachableAreaNum(pos);
+                this.aas.PushPointIntoAreaNum(this.move.toAreaNum, pos);
 
-                areaNum = PointReachableAreaNum(physicsObj.GetOrigin());
-                if (!PathToGoal(path, areaNum, physicsObj.GetOrigin(), move.toAreaNum, pos)) {
-                    AI_DEST_UNREACHABLE.operator(true);
+                areaNum = PointReachableAreaNum(this.physicsObj.GetOrigin());
+                if (!PathToGoal(path, areaNum, this.physicsObj.GetOrigin(), this.move.toAreaNum, pos)) {
+                    this.AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
 
-            if (0 == move.toAreaNum) {
+            if (0 == this.move.toAreaNum) {
                 // if only trying to update the enemy position
-                if (move.moveCommand == MOVE_TO_ENEMY) {
-                    if (NOT(aas)) {
+                if (this.move.moveCommand == MOVE_TO_ENEMY) {
+                    if (NOT(this.aas)) {
                         // keep the move destination up to date for wandering
-                        move.moveDest.oSet(pos);
+                        this.move.moveDest.oSet(pos);
                     }
                     return false;
                 }
 
                 if (!NewWanderDir(pos)) {
                     StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                    AI_DEST_UNREACHABLE.operator(true);
+                    this.AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
 
-            if (move.moveCommand != MOVE_TO_ENEMY) {
-                move.moveCommand = MOVE_TO_ENEMY;
-                move.startTime = gameLocal.time;
+            if (this.move.moveCommand != MOVE_TO_ENEMY) {
+                this.move.moveCommand = MOVE_TO_ENEMY;
+                this.move.startTime = gameLocal.time;
             }
 
-            move.moveDest.oSet(pos);
-            move.goalEntity.oSet(enemyEnt);
-            move.speed = fly_speed;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(true);
+            this.move.moveDest.oSet(pos);
+            this.move.goalEntity.oSet(enemyEnt);
+            this.move.speed = this.fly_speed;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(true);
 
             return true;
         }
 
         protected boolean MoveToEntity(idEntity ent) {
             int areaNum;
-            aasPath_s path = new aasPath_s();
+            final aasPath_s path = new aasPath_s();
             idVec3 pos;
 
             if (null == ent) {
@@ -3980,7 +3980,7 @@ public class AI {
             }
 
             pos = ent.GetPhysics().GetOrigin();
-            if ((move.moveType != MOVETYPE_FLY) && ((move.moveCommand != MOVE_TO_ENTITY) || (move.goalEntityOrigin != pos))) {
+            if ((this.move.moveType != MOVETYPE_FLY) && ((this.move.moveCommand != MOVE_TO_ENTITY) || (this.move.goalEntityOrigin != pos))) {
                 ent.GetFloorPos(64.0f, pos);
             }
 
@@ -3989,48 +3989,48 @@ public class AI {
                 return true;
             }
 
-            move.toAreaNum = 0;
-            if (aas != null) {
-                move.toAreaNum = PointReachableAreaNum(pos);
-                aas.PushPointIntoAreaNum(move.toAreaNum, pos);
+            this.move.toAreaNum = 0;
+            if (this.aas != null) {
+                this.move.toAreaNum = PointReachableAreaNum(pos);
+                this.aas.PushPointIntoAreaNum(this.move.toAreaNum, pos);
 
-                areaNum = PointReachableAreaNum(physicsObj.GetOrigin());
-                if (!PathToGoal(path, areaNum, physicsObj.GetOrigin(), move.toAreaNum, pos)) {
-                    AI_DEST_UNREACHABLE.operator(true);
+                areaNum = PointReachableAreaNum(this.physicsObj.GetOrigin());
+                if (!PathToGoal(path, areaNum, this.physicsObj.GetOrigin(), this.move.toAreaNum, pos)) {
+                    this.AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
 
-            if (0 == move.toAreaNum) {
+            if (0 == this.move.toAreaNum) {
                 // if only trying to update the entity position
-                if (move.moveCommand == MOVE_TO_ENTITY) {
-                    if (NOT(aas)) {
+                if (this.move.moveCommand == MOVE_TO_ENTITY) {
+                    if (NOT(this.aas)) {
                         // keep the move destination up to date for wandering
-                        move.moveDest.oSet(pos);
+                        this.move.moveDest.oSet(pos);
                     }
                     return false;
                 }
 
                 if (!NewWanderDir(pos)) {
                     StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                    AI_DEST_UNREACHABLE.operator(true);
+                    this.AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
 
-            if ((move.moveCommand != MOVE_TO_ENTITY) || (!move.goalEntity.GetEntity().equals(ent))) {
-                move.startTime = gameLocal.time;
-                move.goalEntity.oSet(ent);
-                move.moveCommand = MOVE_TO_ENTITY;
+            if ((this.move.moveCommand != MOVE_TO_ENTITY) || (!this.move.goalEntity.GetEntity().equals(ent))) {
+                this.move.startTime = gameLocal.time;
+                this.move.goalEntity.oSet(ent);
+                this.move.moveCommand = MOVE_TO_ENTITY;
             }
 
-            move.moveDest.oSet(pos);
-            move.goalEntityOrigin = ent.GetPhysics().GetOrigin();
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.speed = fly_speed;
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(true);
+            this.move.moveDest.oSet(pos);
+            this.move.goalEntityOrigin = ent.GetPhysics().GetOrigin();
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.speed = this.fly_speed;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(true);
 
             return true;
         }
@@ -4038,86 +4038,86 @@ public class AI {
         protected boolean MoveToPosition(final idVec3 pos) {
             idVec3 org;
             int areaNum;
-            aasPath_s path = new aasPath_s();
+            final aasPath_s path = new aasPath_s();
 
-            if (ReachedPos(pos, move.moveCommand)) {
+            if (ReachedPos(pos, this.move.moveCommand)) {
                 StopMove(MOVE_STATUS_DONE);
                 return true;
             }
 
             org = pos;
-            move.toAreaNum = 0;
-            if (aas != null) {
-                move.toAreaNum = PointReachableAreaNum(org);
-                aas.PushPointIntoAreaNum(move.toAreaNum, org);
+            this.move.toAreaNum = 0;
+            if (this.aas != null) {
+                this.move.toAreaNum = PointReachableAreaNum(org);
+                this.aas.PushPointIntoAreaNum(this.move.toAreaNum, org);
 
-                areaNum = PointReachableAreaNum(physicsObj.GetOrigin());
-                if (!PathToGoal(path, areaNum, physicsObj.GetOrigin(), move.toAreaNum, org)) {
+                areaNum = PointReachableAreaNum(this.physicsObj.GetOrigin());
+                if (!PathToGoal(path, areaNum, this.physicsObj.GetOrigin(), this.move.toAreaNum, org)) {
                     StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                    AI_DEST_UNREACHABLE.operator(true);
+                    this.AI_DEST_UNREACHABLE.operator(true);
                     return false;
                 }
             }
 
-            if (0 == move.toAreaNum && !NewWanderDir(org)) {
+            if ((0 == this.move.toAreaNum) && !NewWanderDir(org)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE.operator(true);
+                this.AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
-            move.moveDest.oSet(org);
-            move.goalEntity.oSet(null);
-            move.moveCommand = MOVE_TO_POSITION;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.startTime = gameLocal.time;
-            move.speed = fly_speed;
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(true);
+            this.move.moveDest.oSet(org);
+            this.move.goalEntity.oSet(null);
+            this.move.moveCommand = MOVE_TO_POSITION;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.startTime = gameLocal.time;
+            this.move.speed = this.fly_speed;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(true);
 
             return true;
         }
 
         protected boolean MoveToCover(idEntity entity, final idVec3 hideFromPos) {
             int areaNum;
-            aasObstacle_s[] obstacle = {new aasObstacle_s()};
-            aasGoal_s hideGoal = new aasGoal_s();
+            final aasObstacle_s[] obstacle = {new aasObstacle_s()};
+            final aasGoal_s hideGoal = new aasGoal_s();
 //            idBounds bounds;
 
-            if (null == aas || null == entity) {
+            if ((null == this.aas) || (null == entity)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE.operator(true);
+                this.AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
-            final idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             areaNum = PointReachableAreaNum(org);
 
             // consider the entity the monster tries to hide from as an obstacle
             obstacle[0].absBounds = entity.GetPhysics().GetAbsBounds();
 
-            idAASFindCover findCover = new idAASFindCover(hideFromPos);
-            if (!aas.FindNearestGoal(hideGoal, areaNum, org, hideFromPos, travelFlags, obstacle, 1, findCover)) {
+            final idAASFindCover findCover = new idAASFindCover(hideFromPos);
+            if (!this.aas.FindNearestGoal(hideGoal, areaNum, org, hideFromPos, this.travelFlags, obstacle, 1, findCover)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE.operator(true);
+                this.AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
-            if (ReachedPos(hideGoal.origin, move.moveCommand)) {
+            if (ReachedPos(hideGoal.origin, this.move.moveCommand)) {
                 StopMove(MOVE_STATUS_DONE);
                 return true;
             }
 
-            move.moveDest.oSet(hideGoal.origin);
-            move.toAreaNum = hideGoal.areaNum;
-            move.goalEntity.oSet(entity);
-            move.moveCommand = MOVE_TO_COVER;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.startTime = gameLocal.time;
-            move.speed = fly_speed;
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(true);
+            this.move.moveDest.oSet(hideGoal.origin);
+            this.move.toAreaNum = hideGoal.areaNum;
+            this.move.goalEntity.oSet(entity);
+            this.move.moveCommand = MOVE_TO_COVER;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.startTime = gameLocal.time;
+            this.move.speed = this.fly_speed;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(true);
 
             return true;
         }
@@ -4125,22 +4125,22 @@ public class AI {
         protected boolean SlideToPosition(final idVec3 pos, float time) {
             StopMove(MOVE_STATUS_DONE);
 
-            move.moveDest.oSet(pos);
-            move.goalEntity.oSet(null);
-            move.moveCommand = MOVE_SLIDE_TO_POSITION;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.startTime = gameLocal.time;
-            move.duration = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time));
-            AI_MOVE_DONE.operator(false);
-            AI_DEST_UNREACHABLE.operator(false);
-            AI_FORWARD.operator(false);
+            this.move.moveDest.oSet(pos);
+            this.move.goalEntity.oSet(null);
+            this.move.moveCommand = MOVE_SLIDE_TO_POSITION;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.startTime = gameLocal.time;
+            this.move.duration = idPhysics.SnapTimeToPhysicsFrame((int) SEC2MS(time));
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_DEST_UNREACHABLE.operator(false);
+            this.AI_FORWARD.operator(false);
 
-            if (move.duration > 0) {
-                move.moveDir = (pos.oMinus(physicsObj.GetOrigin())).oDivide(MS2SEC(move.duration));
-                if (move.moveType != MOVETYPE_FLY) {
-                    move.moveDir.z = 0.0f;
+            if (this.move.duration > 0) {
+                this.move.moveDir = (pos.oMinus(this.physicsObj.GetOrigin())).oDivide(MS2SEC(this.move.duration));
+                if (this.move.moveType != MOVETYPE_FLY) {
+                    this.move.moveDir.z = 0.0f;
                 }
-                move.speed = move.moveDir.LengthFast();
+                this.move.speed = this.move.moveDir.LengthFast();
             }
 
             return true;
@@ -4149,60 +4149,60 @@ public class AI {
         protected boolean WanderAround() {
             StopMove(MOVE_STATUS_DONE);
 
-            move.moveDest = physicsObj.GetOrigin().oPlus(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis().oMultiply(256.0f)));
-            if (!NewWanderDir(move.moveDest)) {
+            this.move.moveDest = this.physicsObj.GetOrigin().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(256.0f)));
+            if (!NewWanderDir(this.move.moveDest)) {
                 StopMove(MOVE_STATUS_DEST_UNREACHABLE);
-                AI_DEST_UNREACHABLE.operator(true);
+                this.AI_DEST_UNREACHABLE.operator(true);
                 return false;
             }
 
-            move.moveCommand = MOVE_WANDER;
-            move.moveStatus = MOVE_STATUS_MOVING;
-            move.startTime = gameLocal.time;
-            move.speed = fly_speed;
-            AI_MOVE_DONE.operator(false);
-            AI_FORWARD.operator(true);
+            this.move.moveCommand = MOVE_WANDER;
+            this.move.moveStatus = MOVE_STATUS_MOVING;
+            this.move.startTime = gameLocal.time;
+            this.move.speed = this.fly_speed;
+            this.AI_MOVE_DONE.operator(false);
+            this.AI_FORWARD.operator(true);
 
             return true;
         }
 
         protected boolean StepDirection(float dir) {
-            predictedPath_s path = new predictedPath_s();
+            final predictedPath_s path = new predictedPath_s();
             idVec3 org;
 
-            move.wanderYaw = dir;
-            move.moveDir = new idAngles(0, move.wanderYaw, 0).ToForward();
+            this.move.wanderYaw = dir;
+            this.move.moveDir = new idAngles(0, this.move.wanderYaw, 0).ToForward();
 
-            org = physicsObj.GetOrigin();
+            org = this.physicsObj.GetOrigin();
 
-            idAI.PredictPath(this, aas, org, move.moveDir.oMultiply(48.0f), 1000, 1000, (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
+            idAI.PredictPath(this, this.aas, org, this.move.moveDir.oMultiply(48.0f), 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
-            if (path.blockingEntity != null && ((move.moveCommand == MOVE_TO_ENEMY) || (move.moveCommand == MOVE_TO_ENTITY)) && (path.blockingEntity == move.goalEntity.GetEntity())) {
+            if ((path.blockingEntity != null) && ((this.move.moveCommand == MOVE_TO_ENEMY) || (this.move.moveCommand == MOVE_TO_ENTITY)) && (path.blockingEntity == this.move.goalEntity.GetEntity())) {
                 // don't report being blocked if we ran into our goal entity
                 return true;
             }
 
-            if ((move.moveType == MOVETYPE_FLY) && (path.endEvent == SE_BLOCKED)) {
+            if ((this.move.moveType == MOVETYPE_FLY) && (path.endEvent == SE_BLOCKED)) {
                 float z;
 
-                move.moveDir = path.endVelocity.oMultiply(1.0f / 48.0f);
+                this.move.moveDir = path.endVelocity.oMultiply(1.0f / 48.0f);
 
                 // trace down to the floor and see if we can go forward
-                idAI.PredictPath(this, aas, org, new idVec3(0.0f, 0.0f, -1024.0f), 1000, 1000, SE_BLOCKED, path);
+                idAI.PredictPath(this, this.aas, org, new idVec3(0.0f, 0.0f, -1024.0f), 1000, 1000, SE_BLOCKED, path);
 
-                idVec3 floorPos = path.endPos;
-                idAI.PredictPath(this, aas, floorPos, move.moveDir.oMultiply(48.0f), 1000, 1000, SE_BLOCKED, path);
+                final idVec3 floorPos = path.endPos;
+                idAI.PredictPath(this, this.aas, floorPos, this.move.moveDir.oMultiply(48.0f), 1000, 1000, SE_BLOCKED, path);
                 if (0 == path.endEvent) {
-                    move.moveDir.z = -1.0f;
+                    this.move.moveDir.z = -1.0f;
                     return true;
                 }
 
                 // trace up to see if we can go over something and go forward
-                idAI.PredictPath(this, aas, org, new idVec3(0.0f, 0.0f, 256.0f), 1000, 1000, SE_BLOCKED, path);
+                idAI.PredictPath(this, this.aas, org, new idVec3(0.0f, 0.0f, 256.0f), 1000, 1000, SE_BLOCKED, path);
 
-                idVec3 ceilingPos = path.endPos;
+                final idVec3 ceilingPos = path.endPos;
 
-                for (z = org.z; z <= ceilingPos.z + 64.0f; z += 64.0f) {
+                for (z = org.z; z <= (ceilingPos.z + 64.0f); z += 64.0f) {
                     idVec3 start = new idVec3();
                     if (z <= ceilingPos.z) {
                         start.x = org.x;
@@ -4211,9 +4211,9 @@ public class AI {
                     } else {
                         start = ceilingPos;
                     }
-                    idAI.PredictPath(this, aas, start, move.moveDir.oMultiply(48.0f), 1000, 1000, SE_BLOCKED, path);
+                    idAI.PredictPath(this, this.aas, start, this.move.moveDir.oMultiply(48.0f), 1000, 1000, SE_BLOCKED, path);
                     if (0 == path.endEvent) {
-                        move.moveDir.z = 1.0f;
+                        this.move.moveDir.z = 1.0f;
                         return true;
                     }
                 }
@@ -4225,15 +4225,15 @@ public class AI {
 
         protected boolean NewWanderDir(final idVec3 dest) {
             float deltax, deltay;
-            float[] d = new float[3];
+            final float[] d = new float[3];
             float tdir, olddir, turnaround;
 
-            move.nextWanderTime = (int) (gameLocal.time + (gameLocal.random.RandomFloat() * 500 + 500));
+            this.move.nextWanderTime = (int) (gameLocal.time + ((gameLocal.random.RandomFloat() * 500) + 500));
 
-            olddir = idMath.AngleNormalize360((int) (current_yaw / 45) * 45);
+            olddir = idMath.AngleNormalize360((int) (this.current_yaw / 45) * 45);
             turnaround = idMath.AngleNormalize360(olddir - 180);
 
-            idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             deltax = dest.x - org.x;
             deltay = dest.y - org.y;
             if (deltax > 10) {
@@ -4253,54 +4253,54 @@ public class AI {
             }
 
             // try direct route
-            if (d[ 1] != DI_NODIR && d[ 2] != DI_NODIR) {
+            if ((d[ 1] != DI_NODIR) && (d[ 2] != DI_NODIR)) {
                 if (d[ 1] == 0) {
                     tdir = d[ 2] == 90 ? 45 : 315;
                 } else {
                     tdir = d[ 2] == 90 ? 135 : 215;
                 }
 
-                if (tdir != turnaround && StepDirection(tdir)) {
+                if ((tdir != turnaround) && StepDirection(tdir)) {
                     return true;
                 }
             }
 
             // try other directions
-            if (((gameLocal.random.RandomInt() & 1) != 0) || abs(deltay) > abs(deltax)) {
+            if (((gameLocal.random.RandomInt() & 1) != 0) || (abs(deltay) > abs(deltax))) {
                 tdir = d[ 1];
                 d[ 1] = d[ 2];
                 d[ 2] = tdir;
             }
 
-            if (d[ 1] != DI_NODIR && d[ 1] != turnaround && StepDirection(d[1])) {
+            if ((d[ 1] != DI_NODIR) && (d[ 1] != turnaround) && StepDirection(d[1])) {
                 return true;
             }
 
-            if (d[ 2] != DI_NODIR && d[ 2] != turnaround && StepDirection(d[ 2])) {
+            if ((d[ 2] != DI_NODIR) && (d[ 2] != turnaround) && StepDirection(d[ 2])) {
                 return true;
             }
 
             // there is no direct path to the player, so pick another direction
-            if (olddir != DI_NODIR && StepDirection(olddir)) {
+            if ((olddir != DI_NODIR) && StepDirection(olddir)) {
                 return true;
             }
 
             // randomly determine direction of search
             if ((gameLocal.random.RandomInt() & 1) == 1) {
                 for (tdir = 0; tdir <= 315; tdir += 45) {
-                    if (tdir != turnaround && StepDirection(tdir)) {
+                    if ((tdir != turnaround) && StepDirection(tdir)) {
                         return true;
                     }
                 }
             } else {
                 for (tdir = 315; tdir >= 0; tdir -= 45) {
-                    if (tdir != turnaround && StepDirection(tdir)) {
+                    if ((tdir != turnaround) && StepDirection(tdir)) {
                         return true;
                     }
                 }
             }
 
-            if (turnaround != DI_NODIR && StepDirection(turnaround)) {
+            if ((turnaround != DI_NODIR) && StepDirection(turnaround)) {
                 return true;
             }
 
@@ -4312,21 +4312,21 @@ public class AI {
         // effects
         protected idDeclParticle SpawnParticlesOnJoint(particleEmitter_s pe, final idStr particleName, final String jointName) {
             idVec3 origin = new idVec3();
-            idMat3 axis = new idMat3();
+            final idMat3 axis = new idMat3();
 
             if (!isNotNullOrEmpty(particleName)) {
 //		memset( &pe, 0, sizeof( pe ) );//TODO:
                 return pe.particle;
             }
 
-            pe.joint = animator.GetJointHandle(jointName);
+            pe.joint = this.animator.GetJointHandle(jointName);
             if (pe.joint == INVALID_JOINT) {
-                gameLocal.Warning("Unknown particleJoint '%s' on '%s'", jointName, name);
+                gameLocal.Warning("Unknown particleJoint '%s' on '%s'", jointName, this.name);
                 pe.time = 0;
                 pe.particle = null;
             } else {
-                animator.GetJointTransform(pe.joint, gameLocal.time, origin, axis);
-                origin = renderEntity.origin.oPlus(origin.oMultiply(renderEntity.axis));
+                this.animator.GetJointTransform(pe.joint, gameLocal.time, origin, axis);
+                origin = this.renderEntity.origin.oPlus(origin.oMultiply(this.renderEntity.axis));
 
                 BecomeActive(TH_UPDATEPARTICLES);
                 if (0 == gameLocal.time) {
@@ -4343,26 +4343,26 @@ public class AI {
         }
 
         protected void SpawnParticles(final String keyName) {
-            idKeyValue kv = spawnArgs.MatchPrefix(keyName, null);
+            idKeyValue kv = this.spawnArgs.MatchPrefix(keyName, null);
             while (kv != null) {
-                particleEmitter_s pe = new particleEmitter_s();
+                final particleEmitter_s pe = new particleEmitter_s();
 
                 idStr particleName = kv.GetValue();
 
                 if (particleName.Length() != 0) {
 
                     idStr jointName = kv.GetValue();
-                    int dash = jointName.Find('-');
+                    final int dash = jointName.Find('-');
                     if (dash > 0) {
                         particleName = particleName.Left(dash);
                         jointName = jointName.Right(jointName.Length() - dash - 1);
                     }
 
                     SpawnParticlesOnJoint(pe, particleName, jointName.toString());
-                    particles.Append(pe);
+                    this.particles.Append(pe);
                 }
 
-                kv = spawnArgs.MatchPrefix(keyName, kv);
+                kv = this.spawnArgs.MatchPrefix(keyName, kv);
             }
         }
 //
@@ -4373,14 +4373,14 @@ public class AI {
         protected boolean FacingIdeal() {
             float diff;
 
-            if (0 == turnRate) {
+            if (0 == this.turnRate) {
                 return true;
             }
 
-            diff = idMath.AngleNormalize180(current_yaw - ideal_yaw);
+            diff = idMath.AngleNormalize180(this.current_yaw - this.ideal_yaw);
             if (idMath.Fabs(diff) < 0.01f) {
                 // force it to be exact
-                current_yaw = ideal_yaw;
+                this.current_yaw = this.ideal_yaw;
                 return true;
             }
 
@@ -4393,119 +4393,119 @@ public class AI {
             float turnAmount;
             animFlags_t animflags;
 
-            if (0 == turnRate) {
+            if (0 == this.turnRate) {
                 return;
             }
 
             // check if the animator has marker this anim as non-turning
-            if (!legsAnim.Disabled() && !legsAnim.AnimDone(0)) {
-                animflags = legsAnim.GetAnimFlags();
+            if (!this.legsAnim.Disabled() && !this.legsAnim.AnimDone(0)) {
+                animflags = this.legsAnim.GetAnimFlags();
             } else {
-                animflags = torsoAnim.GetAnimFlags();
+                animflags = this.torsoAnim.GetAnimFlags();
             }
             if (animflags.ai_no_turn) {
                 return;
             }
 
-            if (anim_turn_angles != 0 && animflags.anim_turn) {
-                idMat3 rotateAxis = new idMat3();
+            if ((this.anim_turn_angles != 0) && animflags.anim_turn) {
+                final idMat3 rotateAxis = new idMat3();
 
                 // set the blend between no turn and full turn
-                float frac = anim_turn_amount / anim_turn_angles;
-                animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(0, 1.0f - frac);
-                animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(1, frac);
-                animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(0, 1.0f - frac);
-                animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(1, frac);
+                final float frac = this.anim_turn_amount / this.anim_turn_angles;
+                this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(0, 1.0f - frac);
+                this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(1, frac);
+                this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(0, 1.0f - frac);
+                this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(1, frac);
 
                 // get the total rotation from the start of the anim
-                animator.GetDeltaRotation(0, gameLocal.time, rotateAxis);
-                current_yaw = idMath.AngleNormalize180(anim_turn_yaw + rotateAxis.oGet(0).ToYaw());
+                this.animator.GetDeltaRotation(0, gameLocal.time, rotateAxis);
+                this.current_yaw = idMath.AngleNormalize180(this.anim_turn_yaw + rotateAxis.oGet(0).ToYaw());
             } else {
-                diff = idMath.AngleNormalize180(ideal_yaw - current_yaw);
-                turnVel += AI_TURN_SCALE * diff * MS2SEC(gameLocal.msec);
-                if (turnVel > turnRate) {
-                    turnVel = turnRate;
-                } else if (turnVel < -turnRate) {
-                    turnVel = -turnRate;
+                diff = idMath.AngleNormalize180(this.ideal_yaw - this.current_yaw);
+                this.turnVel += AI_TURN_SCALE * diff * MS2SEC(gameLocal.msec);
+                if (this.turnVel > this.turnRate) {
+                    this.turnVel = this.turnRate;
+                } else if (this.turnVel < -this.turnRate) {
+                    this.turnVel = -this.turnRate;
                 }
-                turnAmount = turnVel * MS2SEC(gameLocal.msec);
+                turnAmount = this.turnVel * MS2SEC(gameLocal.msec);
                 if ((diff >= 0.0f) && (turnAmount >= diff)) {
-                    turnVel = diff / MS2SEC(gameLocal.msec);
+                    this.turnVel = diff / MS2SEC(gameLocal.msec);
                     turnAmount = diff;
                 } else if ((diff <= 0.0f) && (turnAmount <= diff)) {
-                    turnVel = diff / MS2SEC(gameLocal.msec);
+                    this.turnVel = diff / MS2SEC(gameLocal.msec);
                     turnAmount = diff;
                 }
-                current_yaw += turnAmount;
-                current_yaw = idMath.AngleNormalize180(current_yaw);
-                diff2 = idMath.AngleNormalize180(ideal_yaw - current_yaw);
+                this.current_yaw += turnAmount;
+                this.current_yaw = idMath.AngleNormalize180(this.current_yaw);
+                diff2 = idMath.AngleNormalize180(this.ideal_yaw - this.current_yaw);
                 if (idMath.Fabs(diff2) < 0.1f) {
-                    current_yaw = ideal_yaw;
+                    this.current_yaw = this.ideal_yaw;
                 }
             }
 
-            viewAxis = new idAngles(0, current_yaw, 0).ToMat3();
+            this.viewAxis = new idAngles(0, this.current_yaw, 0).ToMat3();
 
             if (ai_debugMove.GetBool()) {
-                final idVec3 org = physicsObj.GetOrigin();
-                gameRenderWorld.DebugLine(colorRed, org, org.oPlus(new idAngles(0, ideal_yaw, 0).ToForward().oMultiply(64)), gameLocal.msec);
-                gameRenderWorld.DebugLine(colorGreen, org, org.oPlus(new idAngles(0, current_yaw, 0).ToForward().oMultiply(48)), gameLocal.msec);
-                gameRenderWorld.DebugLine(colorYellow, org, org.oPlus(new idAngles(0, current_yaw + turnVel, 0).ToForward().oMultiply(32)), gameLocal.msec);
+                final idVec3 org = this.physicsObj.GetOrigin();
+                gameRenderWorld.DebugLine(colorRed, org, org.oPlus(new idAngles(0, this.ideal_yaw, 0).ToForward().oMultiply(64)), gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, org, org.oPlus(new idAngles(0, this.current_yaw, 0).ToForward().oMultiply(48)), gameLocal.msec);
+                gameRenderWorld.DebugLine(colorYellow, org, org.oPlus(new idAngles(0, this.current_yaw + this.turnVel, 0).ToForward().oMultiply(32)), gameLocal.msec);
             }
         }
 
         protected boolean TurnToward(float yaw) {
-            ideal_yaw = idMath.AngleNormalize180(yaw);
-            boolean result = FacingIdeal();
+            this.ideal_yaw = idMath.AngleNormalize180(yaw);
+            final boolean result = FacingIdeal();
             return result;
         }
 
         protected boolean TurnToward(final idVec3 pos) {
             idVec3 dir;
-            idVec3 local_dir = new idVec3();
+            final idVec3 local_dir = new idVec3();
             float lengthSqr;
 
-            dir = pos.oMinus(physicsObj.GetOrigin());
-            physicsObj.GetGravityAxis().ProjectVector(dir, local_dir);
+            dir = pos.oMinus(this.physicsObj.GetOrigin());
+            this.physicsObj.GetGravityAxis().ProjectVector(dir, local_dir);
             local_dir.z = 0.0f;
             lengthSqr = local_dir.LengthSqr();
-            if (lengthSqr > Square(2.0f) || (lengthSqr > Square(0.1f) && enemy.GetEntity() == null)) {
-                ideal_yaw = idMath.AngleNormalize180(local_dir.ToYaw());
+            if ((lengthSqr > Square(2.0f)) || ((lengthSqr > Square(0.1f)) && (this.enemy.GetEntity() == null))) {
+                this.ideal_yaw = idMath.AngleNormalize180(local_dir.ToYaw());
             }
 
-            boolean result = FacingIdeal();
+            final boolean result = FacingIdeal();
             return result;
         }
 
         // enemy management
         protected void ClearEnemy() {
-            if (move.moveCommand == MOVE_TO_ENEMY) {
+            if (this.move.moveCommand == MOVE_TO_ENEMY) {
                 StopMove(MOVE_STATUS_DEST_NOT_FOUND);
             }
 
-            enemyNode.Remove();
-            enemy.oSet(null);
-            AI_ENEMY_IN_FOV.operator(false);
-            AI_ENEMY_VISIBLE.operator(false);
-            AI_ENEMY_DEAD.operator(true);
+            this.enemyNode.Remove();
+            this.enemy.oSet(null);
+            this.AI_ENEMY_IN_FOV.operator(false);
+            this.AI_ENEMY_VISIBLE.operator(false);
+            this.AI_ENEMY_DEAD.operator(true);
 
             SetChatSound();
         }
 
         protected boolean EnemyPositionValid() {
-            trace_s[] tr = {null};
-            idVec3 muzzle;
-            idMat3 axis;
+            final trace_s[] tr = {null};
+            final idVec3 muzzle;
+            final idMat3 axis;
 
-            if (null == enemy.GetEntity()) {
+            if (null == this.enemy.GetEntity()) {
                 return false;
             }
 
-            if (AI_ENEMY_VISIBLE.operator()) {
+            if (this.AI_ENEMY_VISIBLE.operator()) {
                 return true;
             }
 
-            gameLocal.clip.TracePoint(tr, GetEyePosition(), lastVisibleEnemyPos.oPlus(lastVisibleEnemyEyeOffset), MASK_OPAQUE, this);
+            gameLocal.clip.TracePoint(tr, GetEyePosition(), this.lastVisibleEnemyPos.oPlus(this.lastVisibleEnemyEyeOffset), MASK_OPAQUE, this);
             if (tr[0].fraction < 1.0f) {
                 // can't see the area yet, so don't know if he's there or not
                 return true;
@@ -4515,11 +4515,11 @@ public class AI {
         }
 
         protected void SetEnemyPosition() {
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
             int enemyAreaNum;
             int areaNum;
             int lastVisibleReachableEnemyAreaNum = 0;
-            aasPath_s path = new aasPath_s();
+            final aasPath_s path = new aasPath_s();
             idVec3 pos = new idVec3();
             boolean onGround;
 
@@ -4527,11 +4527,11 @@ public class AI {
                 return;
             }
 
-            lastVisibleReachableEnemyPos = lastReachableEnemyPos;
-            lastVisibleEnemyEyeOffset = enemyEnt.EyeOffset();
-            lastVisibleEnemyPos = enemyEnt.GetPhysics().GetOrigin();
-            if (move.moveType == MOVETYPE_FLY) {
-                pos = lastVisibleEnemyPos;
+            this.lastVisibleReachableEnemyPos = this.lastReachableEnemyPos;
+            this.lastVisibleEnemyEyeOffset = enemyEnt.EyeOffset();
+            this.lastVisibleEnemyPos = enemyEnt.GetPhysics().GetOrigin();
+            if (this.move.moveType == MOVETYPE_FLY) {
+                pos = this.lastVisibleEnemyPos;
                 onGround = true;
             } else {
                 onGround = enemyEnt.GetFloorPos(64.0f, pos);
@@ -4541,74 +4541,74 @@ public class AI {
             }
 
             if (!onGround) {
-                if (move.moveCommand == MOVE_TO_ENEMY) {
-                    AI_DEST_UNREACHABLE.operator(true);
+                if (this.move.moveCommand == MOVE_TO_ENEMY) {
+                    this.AI_DEST_UNREACHABLE.operator(true);
                 }
                 return;
             }
 
             // when we don't have an AAS, we can't tell if an enemy is reachable or not,
             // so just assume that he is.
-            if (NOT(aas)) {
-                lastVisibleReachableEnemyPos = lastVisibleEnemyPos;
-                if (move.moveCommand == MOVE_TO_ENEMY) {
-                    AI_DEST_UNREACHABLE.operator(false);
+            if (NOT(this.aas)) {
+                this.lastVisibleReachableEnemyPos = this.lastVisibleEnemyPos;
+                if (this.move.moveCommand == MOVE_TO_ENEMY) {
+                    this.AI_DEST_UNREACHABLE.operator(false);
                 }
                 enemyAreaNum = 0;
 //                areaNum = 0;
             } else {
-                lastVisibleReachableEnemyAreaNum = move.toAreaNum;
-                enemyAreaNum = PointReachableAreaNum(lastVisibleEnemyPos, 1.0f);
+                lastVisibleReachableEnemyAreaNum = this.move.toAreaNum;
+                enemyAreaNum = PointReachableAreaNum(this.lastVisibleEnemyPos, 1.0f);
                 if (0 == enemyAreaNum) {
-                    enemyAreaNum = PointReachableAreaNum(lastReachableEnemyPos, 1.0f);
-                    pos = lastReachableEnemyPos;
+                    enemyAreaNum = PointReachableAreaNum(this.lastReachableEnemyPos, 1.0f);
+                    pos = this.lastReachableEnemyPos;
                 }
                 if (0 == enemyAreaNum) {
-                    if (move.moveCommand == MOVE_TO_ENEMY) {
-                        AI_DEST_UNREACHABLE.operator(true);
+                    if (this.move.moveCommand == MOVE_TO_ENEMY) {
+                        this.AI_DEST_UNREACHABLE.operator(true);
                     }
 //                    areaNum = 0;
                 } else {
-                    final idVec3 org = physicsObj.GetOrigin();
+                    final idVec3 org = this.physicsObj.GetOrigin();
                     areaNum = PointReachableAreaNum(org);
                     if (PathToGoal(path, areaNum, org, enemyAreaNum, pos)) {
-                        lastVisibleReachableEnemyPos = pos;
+                        this.lastVisibleReachableEnemyPos = pos;
                         lastVisibleReachableEnemyAreaNum = enemyAreaNum;
-                        if (move.moveCommand == MOVE_TO_ENEMY) {
-                            AI_DEST_UNREACHABLE.operator(false);
+                        if (this.move.moveCommand == MOVE_TO_ENEMY) {
+                            this.AI_DEST_UNREACHABLE.operator(false);
                         }
-                    } else if (move.moveCommand == MOVE_TO_ENEMY) {
-                        AI_DEST_UNREACHABLE.operator(true);
+                    } else if (this.move.moveCommand == MOVE_TO_ENEMY) {
+                        this.AI_DEST_UNREACHABLE.operator(true);
                     }
                 }
             }
 
-            if (move.moveCommand == MOVE_TO_ENEMY) {
-                if (NOT(aas)) {
+            if (this.move.moveCommand == MOVE_TO_ENEMY) {
+                if (NOT(this.aas)) {
                     // keep the move destination up to date for wandering
-                    move.moveDest.oSet(lastVisibleReachableEnemyPos);
+                    this.move.moveDest.oSet(this.lastVisibleReachableEnemyPos);
                 } else if (enemyAreaNum != 0) {
-                    move.toAreaNum = lastVisibleReachableEnemyAreaNum;
-                    move.moveDest.oSet(lastVisibleReachableEnemyPos);
+                    this.move.toAreaNum = lastVisibleReachableEnemyAreaNum;
+                    this.move.moveDest.oSet(this.lastVisibleReachableEnemyPos);
                 }
 
-                if (move.moveType == MOVETYPE_FLY) {
-                    predictedPath_s path2 = new predictedPath_s();
-                    idVec3 end = move.moveDest;
-                    end.z += enemyEnt.EyeOffset().z + fly_offset;
-                    idAI.PredictPath(this, aas, move.moveDest, end.oMinus(move.moveDest), 1000, 1000, SE_BLOCKED, path2);
-                    move.moveDest.oSet(path2.endPos);
-                    move.toAreaNum = PointReachableAreaNum(move.moveDest, 1.0f);
+                if (this.move.moveType == MOVETYPE_FLY) {
+                    final predictedPath_s path2 = new predictedPath_s();
+                    final idVec3 end = this.move.moveDest;
+                    end.z += enemyEnt.EyeOffset().z + this.fly_offset;
+                    idAI.PredictPath(this, this.aas, this.move.moveDest, end.oMinus(this.move.moveDest), 1000, 1000, SE_BLOCKED, path2);
+                    this.move.moveDest.oSet(path2.endPos);
+                    this.move.toAreaNum = PointReachableAreaNum(this.move.moveDest, 1.0f);
                 }
             }
         }
 
         protected void UpdateEnemyPosition() {
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
             int enemyAreaNum;
             int areaNum;
-            aasPath_s path = new aasPath_s();
-            predictedPath_s predictedPath;
+            final aasPath_s path = new aasPath_s();
+            final predictedPath_s predictedPath;
             idVec3 enemyPos = new idVec3();
             boolean onGround;
 
@@ -4616,9 +4616,9 @@ public class AI {
                 return;
             }
 
-            final idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
 
-            if (move.moveType == MOVETYPE_FLY) {
+            if (this.move.moveType == MOVETYPE_FLY) {
                 enemyPos = enemyEnt.GetPhysics().GetOrigin();
                 onGround = true;
             } else {
@@ -4631,34 +4631,34 @@ public class AI {
             if (onGround) {
                 // when we don't have an AAS, we can't tell if an enemy is reachable or not,
                 // so just assume that he is.
-                if (NOT(aas)) {
+                if (NOT(this.aas)) {
 //                    enemyAreaNum = 0;
-                    lastReachableEnemyPos = enemyPos;
+                    this.lastReachableEnemyPos = enemyPos;
                 } else {
                     enemyAreaNum = PointReachableAreaNum(enemyPos, 1.0f);
                     if (enemyAreaNum != 0) {
                         areaNum = PointReachableAreaNum(org);
                         if (PathToGoal(path, areaNum, org, enemyAreaNum, enemyPos)) {
-                            lastReachableEnemyPos = enemyPos;
+                            this.lastReachableEnemyPos = enemyPos;
                         }
                     }
                 }
             }
 
-            AI_ENEMY_IN_FOV.operator(false);
-            AI_ENEMY_VISIBLE.operator(false);
+            this.AI_ENEMY_IN_FOV.operator(false);
+            this.AI_ENEMY_VISIBLE.operator(false);
 
             if (CanSee(enemyEnt, false)) {
-                AI_ENEMY_VISIBLE.operator(true);
+                this.AI_ENEMY_VISIBLE.operator(true);
                 if (CheckFOV(enemyEnt.GetPhysics().GetOrigin())) {
-                    AI_ENEMY_IN_FOV.operator(true);
+                    this.AI_ENEMY_IN_FOV.operator(true);
                 }
 
                 SetEnemyPosition();
             } else {
                 // check if we heard any sounds in the last frame
                 if (enemyEnt == gameLocal.GetAlertEntity()) {
-                    float dist = (enemyEnt.GetPhysics().GetOrigin().oMinus(org)).LengthSqr();
+                    final float dist = (enemyEnt.GetPhysics().GetOrigin().oMinus(org)).LengthSqr();
                     if (dist < Square(AI_HEARING_RANGE)) {
                         SetEnemyPosition();
                     }
@@ -4666,61 +4666,61 @@ public class AI {
             }
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugBounds(colorLtGrey, enemyEnt.GetPhysics().GetBounds(), lastReachableEnemyPos, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorWhite, enemyEnt.GetPhysics().GetBounds(), lastVisibleReachableEnemyPos, gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorLtGrey, enemyEnt.GetPhysics().GetBounds(), this.lastReachableEnemyPos, gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorWhite, enemyEnt.GetPhysics().GetBounds(), this.lastVisibleReachableEnemyPos, gameLocal.msec);
             }
         }
 
         protected void SetEnemy(idActor newEnemy) {
-            int[] enemyAreaNum = {0};
+            final int[] enemyAreaNum = {0};
 
-            if (AI_DEAD.operator()) {
+            if (this.AI_DEAD.operator()) {
                 ClearEnemy();
                 return;
             }
 
-            AI_ENEMY_DEAD.operator(false);
+            this.AI_ENEMY_DEAD.operator(false);
             if (null == newEnemy) {
                 ClearEnemy();
-            } else if (enemy.GetEntity() != newEnemy) {
-                enemy.oSet(newEnemy);
-                enemyNode.AddToEnd(newEnemy.enemyList);
+            } else if (this.enemy.GetEntity() != newEnemy) {
+                this.enemy.oSet(newEnemy);
+                this.enemyNode.AddToEnd(newEnemy.enemyList);
                 if (newEnemy.health <= 0) {
                     EnemyDead();
                     return;
                 }
                 // let the monster know where the enemy is
-                newEnemy.GetAASLocation(aas, lastReachableEnemyPos, enemyAreaNum);
+                newEnemy.GetAASLocation(this.aas, this.lastReachableEnemyPos, enemyAreaNum);
                 SetEnemyPosition();
                 SetChatSound();
 
-                lastReachableEnemyPos = lastVisibleEnemyPos;
-                lastVisibleReachableEnemyPos = lastReachableEnemyPos;
-                enemyAreaNum[0] = PointReachableAreaNum(lastReachableEnemyPos, 1.0f);
-                if (aas != null && enemyAreaNum[0] != 0) {
-                    aas.PushPointIntoAreaNum(enemyAreaNum[0], lastReachableEnemyPos);
-                    lastVisibleReachableEnemyPos = lastReachableEnemyPos;
+                this.lastReachableEnemyPos = this.lastVisibleEnemyPos;
+                this.lastVisibleReachableEnemyPos = this.lastReachableEnemyPos;
+                enemyAreaNum[0] = PointReachableAreaNum(this.lastReachableEnemyPos, 1.0f);
+                if ((this.aas != null) && (enemyAreaNum[0] != 0)) {
+                    this.aas.PushPointIntoAreaNum(enemyAreaNum[0], this.lastReachableEnemyPos);
+                    this.lastVisibleReachableEnemyPos = this.lastReachableEnemyPos;
                 }
             }
         }
 
         // attacks
         protected void CreateProjectileClipModel() {
-            if (projectileClipModel == null) {
-                idBounds projectileBounds = new idBounds(getVec3_origin());
-                projectileBounds.ExpandSelf(projectileRadius);
-                projectileClipModel = new idClipModel(new idTraceModel(projectileBounds));
+            if (this.projectileClipModel == null) {
+                final idBounds projectileBounds = new idBounds(getVec3_origin());
+                projectileBounds.ExpandSelf(this.projectileRadius);
+                this.projectileClipModel = new idClipModel(new idTraceModel(projectileBounds));
             }
         }
 
         protected idProjectile CreateProjectile(final idVec3 pos, final idVec3 dir) {
-            idEntity[] ent = {null};
+            final idEntity[] ent = {null};
             String clsname;
 
-            if (null == projectile.GetEntity()) {
-                gameLocal.SpawnEntityDef(projectileDef, ent, false);
+            if (null == this.projectile.GetEntity()) {
+                gameLocal.SpawnEntityDef(this.projectileDef, ent, false);
                 if (null == ent[0]) {
-                    clsname = projectileDef.GetString("classname");
+                    clsname = this.projectileDef.GetString("classname");
                     gameLocal.Error("Could not spawn entityDef '%s'", clsname);
                 }
 
@@ -4728,18 +4728,18 @@ public class AI {
                     clsname = ent[0].GetClassname();
                     gameLocal.Error("'%s' is not an idProjectile", clsname);
                 }
-                projectile.oSet((idProjectile) ent[0]);
+                this.projectile.oSet((idProjectile) ent[0]);
             }
 
-            projectile.GetEntity().Create(this, pos, dir);
+            this.projectile.GetEntity().Create(this, pos, dir);
 
-            return projectile.GetEntity();
+            return this.projectile.GetEntity();
         }
 
         protected void RemoveProjectile() {
-            if (projectile.GetEntity() != null) {
-                projectile.GetEntity().PostEventMS(EV_Remove, 0);
-                projectile.oSet(null);
+            if (this.projectile.GetEntity() != null) {
+                this.projectile.GetEntity().PostEventMS(EV_Remove, 0);
+                this.projectile.oSet(null);
             }
         }
 
@@ -4747,9 +4747,9 @@ public class AI {
             idVec3 muzzle = new idVec3();
             idVec3 dir = new idVec3();
             idVec3 start;
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
             idBounds projBounds;
-            float[] distance = {0};
+            final float[] distance = {0};
             idClipModel projClip;
             float attack_accuracy;
             float attack_cone;
@@ -4764,30 +4764,30 @@ public class AI {
             idVec3 tmp;
             idProjectile lastProjectile;
 
-            if (null == projectileDef) {
-                gameLocal.Warning("%s (%s) doesn't have a projectile specified", name, GetEntityDefName());
+            if (null == this.projectileDef) {
+                gameLocal.Warning("%s (%s) doesn't have a projectile specified", this.name, GetEntityDefName());
                 return null;
             }
 
-            attack_accuracy = spawnArgs.GetFloat("attack_accuracy", "7");
-            attack_cone = spawnArgs.GetFloat("attack_cone", "70");
-            projectile_spread = spawnArgs.GetFloat("projectile_spread", "0");
-            num_projectiles = spawnArgs.GetInt("num_projectiles", "1");
+            attack_accuracy = this.spawnArgs.GetFloat("attack_accuracy", "7");
+            attack_cone = this.spawnArgs.GetFloat("attack_cone", "70");
+            projectile_spread = this.spawnArgs.GetFloat("projectile_spread", "0");
+            num_projectiles = this.spawnArgs.GetInt("num_projectiles", "1");
 
             GetMuzzle(jointname, muzzle, axis);
 
-            if (null == projectile.GetEntity()) {
+            if (null == this.projectile.GetEntity()) {
                 CreateProjectile(muzzle, axis.oGet(0));
             }
 
-            lastProjectile = projectile.GetEntity();
+            lastProjectile = this.projectile.GetEntity();
 
             if (target != null) {
                 tmp = target.GetPhysics().GetAbsBounds().GetCenter().oMinus(muzzle);
                 tmp.Normalize();
                 axis = tmp.ToMat3();
             } else {
-                axis = viewAxis;
+                axis = this.viewAxis;
             }
 
             // rotate it because the cone points up by default
@@ -4796,7 +4796,7 @@ public class AI {
             axis.oSet(0, tmp.oNegative());
 
             // make sure the projectile starts inside the monster bounding box
-            final idBounds ownerBounds = physicsObj.GetAbsBounds();
+            final idBounds ownerBounds = this.physicsObj.GetAbsBounds();
             projClip = lastProjectile.GetPhysics().GetClipModel();
             projBounds = projClip.GetBounds().Rotate(axis);
 
@@ -4804,8 +4804,8 @@ public class AI {
             if (((ownerBounds.oGet(1, 0) - ownerBounds.oGet(0, 0)) > (projBounds.oGet(1, 0) - projBounds.oGet(0, 0)))
                     && ((ownerBounds.oGet(1, 1) - ownerBounds.oGet(0, 1)) > (projBounds.oGet(1, 1) - projBounds.oGet(0, 1)))
                     && ((ownerBounds.oGet(1, 2) - ownerBounds.oGet(0, 2)) > (projBounds.oGet(1, 2) - projBounds.oGet(0, 2)))) {
-                if ((ownerBounds.oMinus(projBounds)).RayIntersection(muzzle, viewAxis.oGet(0), distance)) {
-                    start = muzzle.oPlus(viewAxis.oGet(0).oMultiply(distance[0]));
+                if ((ownerBounds.oMinus(projBounds)).RayIntersection(muzzle, this.viewAxis.oGet(0), distance)) {
+                    start = muzzle.oPlus(this.viewAxis.oGet(0).oMultiply(distance[0]));
                 } else {
                     start = ownerBounds.GetCenter();
                 }
@@ -4822,43 +4822,43 @@ public class AI {
             ang = dir.ToAngles();
 
             // adjust his aim so it's not perfect.  uses sine based movement so the tracers appear less random in their spread.
-            float t = MS2SEC(gameLocal.time + entityNumber * 497);
+            final float t = MS2SEC(gameLocal.time + (this.entityNumber * 497));
             ang.pitch += idMath.Sin16(t * 5.1f) * attack_accuracy;
             ang.yaw += idMath.Sin16(t * 6.7f) * attack_accuracy;
 
             if (clampToAttackCone) {
                 // clamp the attack direction to be within monster's attack cone so he doesn't do
                 // things like throw the missile backwards if you're behind him
-                diff = idMath.AngleDelta(ang.yaw, current_yaw);
+                diff = idMath.AngleDelta(ang.yaw, this.current_yaw);
                 if (diff > attack_cone) {
-                    ang.yaw = current_yaw + attack_cone;
+                    ang.yaw = this.current_yaw + attack_cone;
                 } else if (diff < -attack_cone) {
-                    ang.yaw = current_yaw - attack_cone;
+                    ang.yaw = this.current_yaw - attack_cone;
                 }
             }
 
             axis = ang.ToMat3();
 
-            float spreadRad = (float) DEG2RAD(projectile_spread);
+            final float spreadRad = DEG2RAD(projectile_spread);
             for (i = 0; i < num_projectiles; i++) {
                 // spread the projectiles out
                 angle = idMath.Sin(spreadRad * gameLocal.random.RandomFloat());
-                spin = (float) DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
+                spin = DEG2RAD(360.0f) * gameLocal.random.RandomFloat();
                 dir = axis.oGet(0).oPlus(axis.oGet(2).oMultiply(angle * idMath.Sin(spin)).oMinus(axis.oGet(1).oMultiply(angle * idMath.Cos(spin))));
                 dir.Normalize();
 
                 // launch the projectile
-                if (null == projectile.GetEntity()) {
+                if (null == this.projectile.GetEntity()) {
                     CreateProjectile(muzzle, dir);
                 }
-                lastProjectile = projectile.GetEntity();
+                lastProjectile = this.projectile.GetEntity();
                 lastProjectile.Launch(muzzle, dir, getVec3_origin());
-                projectile.oSet(null);
+                this.projectile.oSet(null);
             }
 
             TriggerWeaponEffects(muzzle);
 
-            lastAttackTime = gameLocal.time;
+            this.lastAttackTime = gameLocal.time;
 
             return lastProjectile;
         }
@@ -4879,8 +4879,8 @@ public class AI {
                 // monsters only get half damage from their own projectiles
                 damage[0] = (damage[0] + 1) / 2;  // round up so we don't do 0 damage
 
-            } else if (victim.equals(enemy.GetEntity())) {
-                AI_HIT_ENEMY.operator(true);
+            } else if (victim.equals(this.enemy.GetEntity())) {
+                this.AI_HIT_ENEMY.operator(true);
             }
         }
 
@@ -4901,7 +4901,7 @@ public class AI {
 
             meleeDef = gameLocal.FindEntityDefDict(meleeDefName, false);
             if (null == meleeDef) {
-                gameLocal.Error("Unknown damage def '%s' on '%s'", meleeDefName, name);
+                gameLocal.Error("Unknown damage def '%s' on '%s'", meleeDefName, this.name);
             }
 
             if (!ent.fl.takedamage) {
@@ -4919,11 +4919,11 @@ public class AI {
                 StartSoundShader(shader, SND_CHANNEL_DAMAGE, 0, false, null);
             }
 
-            idVec3 kickDir = new idVec3();
+            final idVec3 kickDir = new idVec3();
             meleeDef.GetVector("kickDir", "0 0 0", kickDir);
 
             idVec3 globalKickDir;
-            globalKickDir = (viewAxis.oMultiply(physicsObj.GetGravityAxis())).oMultiply(kickDir);
+            globalKickDir = (this.viewAxis.oMultiply(this.physicsObj.GetGravityAxis())).oMultiply(kickDir);
 
             ent.Damage(this, this, globalKickDir, meleeDefName, 1.0f, INVALID_JOINT);
 
@@ -4936,29 +4936,29 @@ public class AI {
         }
 
         protected boolean TestMelee() {
-            trace_s[] trace = {null};
-            idActor enemyEnt = enemy.GetEntity();
+            final trace_s[] trace = {null};
+            final idActor enemyEnt = this.enemy.GetEntity();
 
-            if (null == enemyEnt || 0 == melee_range) {
+            if ((null == enemyEnt) || (0 == this.melee_range)) {
                 return false;
             }
 
             //FIXME: make work with gravity vector
-            idVec3 org = physicsObj.GetOrigin();
-            final idBounds myBounds = physicsObj.GetBounds();
-            idBounds bounds = new idBounds();
+            final idVec3 org = this.physicsObj.GetOrigin();
+            final idBounds myBounds = this.physicsObj.GetBounds();
+            final idBounds bounds = new idBounds();
 
             // expand the bounds out by our melee range
-            bounds.oSet(0, 0, -melee_range);
-            bounds.oSet(0, 1, -melee_range);
+            bounds.oSet(0, 0, -this.melee_range);
+            bounds.oSet(0, 1, -this.melee_range);
             bounds.oSet(0, 2, myBounds.oGet(0, 2) - 4.0f);
-            bounds.oSet(1, 0, -melee_range);
-            bounds.oSet(1, 1, -melee_range);
+            bounds.oSet(1, 0, -this.melee_range);
+            bounds.oSet(1, 1, -this.melee_range);
             bounds.oSet(1, 2, myBounds.oGet(1, 2) - 4.0f);
             bounds.TranslateSelf(org);
 
-            idVec3 enemyOrg = enemyEnt.GetPhysics().GetOrigin();
-            idBounds enemyBounds = enemyEnt.GetPhysics().GetBounds();
+            final idVec3 enemyOrg = enemyEnt.GetPhysics().GetOrigin();
+            final idBounds enemyBounds = enemyEnt.GetPhysics().GetBounds();
             enemyBounds.TranslateSelf(enemyOrg);
 
             if (ai_debugMove.GetBool()) {
@@ -4969,8 +4969,8 @@ public class AI {
                 return false;
             }
 
-            idVec3 start = GetEyePosition();
-            idVec3 end = enemyEnt.GetEyePosition();
+            final idVec3 start = GetEyePosition();
+            final idVec3 end = enemyEnt.GetEyePosition();
 
             gameLocal.clip.TracePoint(trace, start, end, MASK_SHOT_BOUNDINGBOX, this);
 
@@ -4991,7 +4991,7 @@ public class AI {
          */
         protected boolean AttackMelee(final String meleeDefName) {
             idDict meleeDef;
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
             String p;
             idSoundShader shader;
 
@@ -5012,9 +5012,9 @@ public class AI {
             // check for the "saving throw" automatic melee miss on lethal blow
             // stupid place for this.
             boolean forceMiss = false;
-            if (enemyEnt.IsType(idPlayer.class) && g_skill.GetInteger() < 2) {
-                int[] damage = {0}, armor = {0};
-                idPlayer player = (idPlayer) enemyEnt;
+            if (enemyEnt.IsType(idPlayer.class) && (g_skill.GetInteger() < 2)) {
+                final int[] damage = {0}, armor = {0};
+                final idPlayer player = (idPlayer) enemyEnt;
                 player.CalcDamagePoints(this, this, meleeDef, 1.0f, INVALID_JOINT, damage, armor);
 
                 if (enemyEnt.health <= damage[0]) {
@@ -5050,39 +5050,39 @@ public class AI {
                 StartSoundShader(shader, SND_CHANNEL_DAMAGE, 0, false, null);
             }
 
-            idVec3 kickDir = new idVec3();
+            final idVec3 kickDir = new idVec3();
             meleeDef.GetVector("kickDir", "0 0 0", kickDir);
 
             idVec3 globalKickDir;
-            globalKickDir = (viewAxis.oMultiply(physicsObj.GetGravityAxis())).oMultiply(kickDir);
+            globalKickDir = (this.viewAxis.oMultiply(this.physicsObj.GetGravityAxis())).oMultiply(kickDir);
 
             enemyEnt.Damage(this, this, globalKickDir, meleeDefName, 1.0f, INVALID_JOINT);
 
-            lastAttackTime = gameLocal.time;
+            this.lastAttackTime = gameLocal.time;
 
             return true;
         }
 
         protected void BeginAttack(final String name) {
-            attack.oSet(name);
-            lastAttackTime = gameLocal.time;
+            this.attack.oSet(name);
+            this.lastAttackTime = gameLocal.time;
         }
 
         protected void EndAttack() {
-            attack.oSet("");
+            this.attack.oSet("");
         }
 
         protected void PushWithAF() {
             int i, j;
-            afTouch_s[] touchList = new afTouch_s[MAX_GENTITIES];
-            idEntity[] pushed_ents = new idEntity[MAX_GENTITIES];
+            final afTouch_s[] touchList = new afTouch_s[MAX_GENTITIES];
+            final idEntity[] pushed_ents = new idEntity[MAX_GENTITIES];
             idEntity ent;
             idVec3 vel;
             int num_pushed;
 
             num_pushed = 0;
-            af.ChangePose(this, gameLocal.time);
-            int num = af.EntitiesTouchingAF(touchList);
+            this.af.ChangePose(this, gameLocal.time);
+            final int num = this.af.EntitiesTouchingAF(touchList);
             for (i = 0; i < num; i++) {
                 if (touchList[ i].touchedEnt.IsType(idProjectile.class)) {
                     // skip projectiles
@@ -5100,8 +5100,8 @@ public class AI {
                     pushed_ents[num_pushed++] = ent;
                     vel = ent.GetPhysics().GetAbsBounds().GetCenter().oMinus(touchList[i].touchedByBody.GetWorldOrigin());
                     vel.Normalize();
-                    if (attack.Length() != 0 && ent.IsType(idActor.class)) {
-                        ent.Damage(this, this, vel, attack.toString(), 1.0f, INVALID_JOINT);
+                    if ((this.attack.Length() != 0) && ent.IsType(idActor.class)) {
+                        ent.Damage(this, this, vel, this.attack.toString(), 1.0f, INVALID_JOINT);
                     } else {
                         ent.GetPhysics().SetLinearVelocity(vel.oMultiply(100.0f), touchList[ i].touchedClipModel.GetId());
                     }
@@ -5114,10 +5114,10 @@ public class AI {
             int /*jointHandle_t*/ joint;
 
             if (!isNotNullOrEmpty(jointname)) {
-                muzzle.oSet(physicsObj.GetOrigin().oPlus(viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis().oMultiply(14))));
-                muzzle.oMinSet(physicsObj.GetGravityNormal().oMultiply(physicsObj.GetBounds().oGet(1).z * 0.5f));
+                muzzle.oSet(this.physicsObj.GetOrigin().oPlus(this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis().oMultiply(14))));
+                muzzle.oMinSet(this.physicsObj.GetGravityNormal().oMultiply(this.physicsObj.GetBounds().oGet(1).z * 0.5f));
             } else {
-                joint = animator.GetJointHandle(jointname);
+                joint = this.animator.GetJointHandle(jointname);
                 if (joint == INVALID_JOINT) {
                     gameLocal.Error("Unknown joint '%s' on %s", jointname, GetEntityDefName());
                 }
@@ -5126,34 +5126,34 @@ public class AI {
         }
 
         protected void InitMuzzleFlash() {
-            idStr shader = new idStr();
-            idVec3 flashColor = new idVec3();
+            final idStr shader = new idStr();
+            final idVec3 flashColor = new idVec3();
 
-            spawnArgs.GetString("mtr_flashShader", "muzzleflash", shader);
-            spawnArgs.GetVector("flashColor", "0 0 0", flashColor);
-            float flashRadius = spawnArgs.GetFloat("flashRadius");
-            flashTime = (int) SEC2MS(spawnArgs.GetFloat("flashTime", "0.25"));
+            this.spawnArgs.GetString("mtr_flashShader", "muzzleflash", shader);
+            this.spawnArgs.GetVector("flashColor", "0 0 0", flashColor);
+            final float flashRadius = this.spawnArgs.GetFloat("flashRadius");
+            this.flashTime = (int) SEC2MS(this.spawnArgs.GetFloat("flashTime", "0.25"));
 
 //	memset( &worldMuzzleFlash, 0, sizeof ( worldMuzzleFlash ) );
-            worldMuzzleFlash = new renderLight_s();
+            this.worldMuzzleFlash = new renderLight_s();
 
-            worldMuzzleFlash.pointLight = true;
-            worldMuzzleFlash.shader = declManager.FindMaterial(shader, false);
-            worldMuzzleFlash.shaderParms[SHADERPARM_RED] = flashColor.oGet(0);
-            worldMuzzleFlash.shaderParms[SHADERPARM_GREEN] = flashColor.oGet(1);
-            worldMuzzleFlash.shaderParms[SHADERPARM_BLUE] = flashColor.oGet(2);
-            worldMuzzleFlash.shaderParms[SHADERPARM_ALPHA] = 1.0f;
-            worldMuzzleFlash.shaderParms[SHADERPARM_TIMESCALE] = 1.0f;
-            worldMuzzleFlash.lightRadius.oSet(0, flashRadius);
-            worldMuzzleFlash.lightRadius.oSet(1, flashRadius);
-            worldMuzzleFlash.lightRadius.oSet(2, flashRadius);
+            this.worldMuzzleFlash.pointLight = true;
+            this.worldMuzzleFlash.shader = declManager.FindMaterial(shader, false);
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_RED] = flashColor.oGet(0);
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_GREEN] = flashColor.oGet(1);
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_BLUE] = flashColor.oGet(2);
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_ALPHA] = 1.0f;
+            this.worldMuzzleFlash.shaderParms[SHADERPARM_TIMESCALE] = 1.0f;
+            this.worldMuzzleFlash.lightRadius.oSet(0, flashRadius);
+            this.worldMuzzleFlash.lightRadius.oSet(1, flashRadius);
+            this.worldMuzzleFlash.lightRadius.oSet(2, flashRadius);
 
-            worldMuzzleFlashHandle = -1;
+            this.worldMuzzleFlashHandle = -1;
         }
 
         protected void TriggerWeaponEffects(final idVec3 muzzle) {
-            idVec3 org = new idVec3();
-            idMat3 axis = new idMat3();
+            final idVec3 org = new idVec3();
+            final idMat3 axis = new idMat3();
 
             if (!g_muzzleFlash.GetBool()) {
                 return;
@@ -5161,84 +5161,84 @@ public class AI {
 
             // muzzle flash
             // offset the shader parms so muzzle flashes show up
-            renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
-            renderEntity.shaderParms[ SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat();
+            this.renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+            this.renderEntity.shaderParms[ SHADERPARM_DIVERSITY] = gameLocal.random.CRandomFloat();
 
-            if (flashJointWorld != INVALID_JOINT) {
-                GetJointWorldTransform(flashJointWorld, gameLocal.time, org, axis);
+            if (this.flashJointWorld != INVALID_JOINT) {
+                GetJointWorldTransform(this.flashJointWorld, gameLocal.time, org, axis);
 
-                if (worldMuzzleFlash.lightRadius.x > 0.0f) {
-                    worldMuzzleFlash.axis = axis;
-                    worldMuzzleFlash.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
-                    if (worldMuzzleFlashHandle != - 1) {
-                        gameRenderWorld.UpdateLightDef(worldMuzzleFlashHandle, worldMuzzleFlash);
+                if (this.worldMuzzleFlash.lightRadius.x > 0.0f) {
+                    this.worldMuzzleFlash.axis = axis;
+                    this.worldMuzzleFlash.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+                    if (this.worldMuzzleFlashHandle != - 1) {
+                        gameRenderWorld.UpdateLightDef(this.worldMuzzleFlashHandle, this.worldMuzzleFlash);
                     } else {
-                        worldMuzzleFlashHandle = gameRenderWorld.AddLightDef(worldMuzzleFlash);
+                        this.worldMuzzleFlashHandle = gameRenderWorld.AddLightDef(this.worldMuzzleFlash);
                     }
-                    muzzleFlashEnd = gameLocal.time + flashTime;
+                    this.muzzleFlashEnd = gameLocal.time + this.flashTime;
                     UpdateVisuals();
                 }
             }
         }
 
         protected void UpdateMuzzleFlash() {
-            if (worldMuzzleFlashHandle != -1) {
-                if (gameLocal.time >= muzzleFlashEnd) {
-                    gameRenderWorld.FreeLightDef(worldMuzzleFlashHandle);
-                    worldMuzzleFlashHandle = -1;
+            if (this.worldMuzzleFlashHandle != -1) {
+                if (gameLocal.time >= this.muzzleFlashEnd) {
+                    gameRenderWorld.FreeLightDef(this.worldMuzzleFlashHandle);
+                    this.worldMuzzleFlashHandle = -1;
                 } else {
                     idVec3 muzzle = new idVec3();
-                    animator.GetJointTransform(flashJointWorld, gameLocal.time, muzzle, worldMuzzleFlash.axis);
-                    animator.GetJointTransform(flashJointWorld, gameLocal.time, muzzle, worldMuzzleFlash.axis);
-                    muzzle = physicsObj.GetOrigin().oPlus((muzzle.oPlus(modelOffset)).oMultiply(viewAxis.oMultiply(physicsObj.GetGravityAxis())));
-                    worldMuzzleFlash.origin = muzzle;
-                    gameRenderWorld.UpdateLightDef(worldMuzzleFlashHandle, worldMuzzleFlash);
+                    this.animator.GetJointTransform(this.flashJointWorld, gameLocal.time, muzzle, this.worldMuzzleFlash.axis);
+                    this.animator.GetJointTransform(this.flashJointWorld, gameLocal.time, muzzle, this.worldMuzzleFlash.axis);
+                    muzzle = this.physicsObj.GetOrigin().oPlus((muzzle.oPlus(this.modelOffset)).oMultiply(this.viewAxis.oMultiply(this.physicsObj.GetGravityAxis())));
+                    this.worldMuzzleFlash.origin = muzzle;
+                    gameRenderWorld.UpdateLightDef(this.worldMuzzleFlashHandle, this.worldMuzzleFlash);
                 }
             }
         }
 
         @Override
         public boolean UpdateAnimationControllers() {
-            idVec3 local;
+            final idVec3 local;
             idVec3 focusPos;
-            idQuat jawQuat;
+            final idQuat jawQuat;
             idVec3 left;
             idVec3 dir;
             idVec3 orientationJointPos = new idVec3();
-            idVec3 localDir = new idVec3();
-            idAngles newLookAng = new idAngles();
+            final idVec3 localDir = new idVec3();
+            final idAngles newLookAng = new idAngles();
             idAngles diff;
-            idMat3 mat;
+            final idMat3 mat;
             idMat3 axis = new idMat3();
             idMat3 orientationJointAxis = new idMat3();
-            idAFAttachment headEnt = head.GetEntity();
+            final idAFAttachment headEnt = this.head.GetEntity();
             idVec3 eyepos = new idVec3();
-            idVec3 pos;
+            final idVec3 pos;
             int i;
-            idAngles jointAng = new idAngles();
+            final idAngles jointAng = new idAngles();
             float orientationJointYaw;
 
-            if (AI_DEAD.operator()) {
+            if (this.AI_DEAD.operator()) {
                 return super.UpdateAnimationControllers();
             }
 
-            if (orientationJoint == INVALID_JOINT) {
-                orientationJointAxis = viewAxis;
-                orientationJointPos = physicsObj.GetOrigin();
-                orientationJointYaw = current_yaw;
+            if (this.orientationJoint == INVALID_JOINT) {
+                orientationJointAxis = this.viewAxis;
+                orientationJointPos = this.physicsObj.GetOrigin();
+                orientationJointYaw = this.current_yaw;
             } else {
-                GetJointWorldTransform(orientationJoint, gameLocal.time, orientationJointPos, orientationJointAxis);
+                GetJointWorldTransform(this.orientationJoint, gameLocal.time, orientationJointPos, orientationJointAxis);
                 orientationJointYaw = orientationJointAxis.oGet(2).ToYaw();
                 orientationJointAxis = new idAngles(0.0f, orientationJointYaw, 0.0f).ToMat3();
             }
 
-            if (focusJoint != INVALID_JOINT) {
+            if (this.focusJoint != INVALID_JOINT) {
                 if (headEnt != null) {
-                    headEnt.GetJointWorldTransform(focusJoint, gameLocal.time, eyepos, axis);
+                    headEnt.GetJointWorldTransform(this.focusJoint, gameLocal.time, eyepos, axis);
                 } else {
-                    GetJointWorldTransform(focusJoint, gameLocal.time, eyepos, axis);
+                    GetJointWorldTransform(this.focusJoint, gameLocal.time, eyepos, axis);
                 }
-                eyeOffset.z = eyepos.z - physicsObj.GetOrigin().z;
+                this.eyeOffset.z = eyepos.z - this.physicsObj.GetOrigin().z;
                 if (ai_debugMove.GetBool()) {
                     gameRenderWorld.DebugLine(colorRed, eyepos, eyepos.oPlus(orientationJointAxis.oGet(0).oMultiply(32.0f)), gameLocal.msec);
                 }
@@ -5259,20 +5259,20 @@ public class AI {
             // in order to see how many times an entity transforms the joints per frame.
             super.UpdateAnimationControllers();
 
-            idEntity focusEnt = focusEntity.GetEntity();
-            if (!allowJointMod || !allowEyeFocus || (gameLocal.time >= focusTime)) {
+            final idEntity focusEnt = this.focusEntity.GetEntity();
+            if (!this.allowJointMod || !this.allowEyeFocus || (gameLocal.time >= this.focusTime)) {
                 focusPos = GetEyePosition().oPlus(orientationJointAxis.oGet(0).oMultiply(512.0f));
             } else if (focusEnt == null) {
                 // keep looking at last position until focusTime is up
-                focusPos = currentFocusPos;
-            } else if (focusEnt.equals(enemy.GetEntity())) {
-                focusPos = lastVisibleEnemyPos.oPlus(lastVisibleEnemyEyeOffset).oMinus(enemy.GetEntity().GetPhysics().GetGravityNormal().oMultiply(eyeVerticalOffset));
+                focusPos = this.currentFocusPos;
+            } else if (focusEnt.equals(this.enemy.GetEntity())) {
+                focusPos = this.lastVisibleEnemyPos.oPlus(this.lastVisibleEnemyEyeOffset).oMinus(this.enemy.GetEntity().GetPhysics().GetGravityNormal().oMultiply(this.eyeVerticalOffset));
             } else if (focusEnt.IsType(idActor.class)) {
-                focusPos = ((idActor) focusEnt).GetEyePosition().oMinus(focusEnt.GetPhysics().GetGravityNormal().oMultiply(eyeVerticalOffset));
+                focusPos = ((idActor) focusEnt).GetEyePosition().oMinus(focusEnt.GetPhysics().GetGravityNormal().oMultiply(this.eyeVerticalOffset));
             } else {
                 focusPos = focusEnt.GetPhysics().GetOrigin();
             }
-            currentFocusPos = currentFocusPos.oPlus(focusPos.oMinus(currentFocusPos)).oMultiply(eyeFocusRate);
+            this.currentFocusPos = this.currentFocusPos.oPlus(focusPos.oMinus(this.currentFocusPos)).oMultiply(this.eyeFocusRate);
             // determine yaw from origin instead of from focus joint since joint may be offset, which can cause us to bounce between two angles
             dir = focusPos.oMinus(orientationJointPos);
             newLookAng.yaw = idMath.AngleNormalize180(dir.ToYaw() - orientationJointYaw);
@@ -5291,77 +5291,77 @@ public class AI {
             orientationJointAxis.ProjectVector(dir, localDir);
             newLookAng.pitch = -idMath.AngleNormalize180(localDir.ToPitch());
             newLookAng.roll = 0.0f;
-            diff = newLookAng.oMinus(lookAng);
-            if (!eyeAng.equals(diff)) {
-                eyeAng = diff;
-                eyeAng.Clamp(eyeMin, eyeMax);
-                idAngles angDelta = diff.oMinus(eyeAng);
+            diff = newLookAng.oMinus(this.lookAng);
+            if (!this.eyeAng.equals(diff)) {
+                this.eyeAng = diff;
+                this.eyeAng.Clamp(this.eyeMin, this.eyeMax);
+                final idAngles angDelta = diff.oMinus(this.eyeAng);
                 if (!angDelta.Compare(getAng_zero(), 0.1f)) {
-                    alignHeadTime = gameLocal.time;
+                    this.alignHeadTime = gameLocal.time;
                 } else {
-                    alignHeadTime = (int) (gameLocal.time + (0.5f + 0.5f * gameLocal.random.RandomFloat()) * focusAlignTime);
+                    this.alignHeadTime = (int) (gameLocal.time + ((0.5f + (0.5f * gameLocal.random.RandomFloat())) * this.focusAlignTime));
                 }
             }
             if (idMath.Fabs(newLookAng.yaw) < 0.1f) {
-                alignHeadTime = gameLocal.time;
+                this.alignHeadTime = gameLocal.time;
             }
-            if ((gameLocal.time >= alignHeadTime) || (gameLocal.time < forceAlignHeadTime)) {
-                alignHeadTime = (int) (gameLocal.time + (0.5f + 0.5f * gameLocal.random.RandomFloat()) * focusAlignTime);
-                destLookAng = newLookAng;
-                destLookAng.Clamp(lookMin, lookMax);
+            if ((gameLocal.time >= this.alignHeadTime) || (gameLocal.time < this.forceAlignHeadTime)) {
+                this.alignHeadTime = (int) (gameLocal.time + ((0.5f + (0.5f * gameLocal.random.RandomFloat())) * this.focusAlignTime));
+                this.destLookAng = newLookAng;
+                this.destLookAng.Clamp(this.lookMin, this.lookMax);
             }
-            diff = destLookAng.oMinus(lookAng);
-            if ((lookMin.pitch == -180.0f) && (lookMax.pitch == 180.0f)) {
+            diff = this.destLookAng.oMinus(this.lookAng);
+            if ((this.lookMin.pitch == -180.0f) && (this.lookMax.pitch == 180.0f)) {
                 if ((diff.pitch > 180.0f) || (diff.pitch <= -180.0f)) {
                     diff.pitch = 360.0f - diff.pitch;
                 }
             }
-            if ((lookMin.yaw == -180.0f) && (lookMax.yaw == 180.0f)) {
+            if ((this.lookMin.yaw == -180.0f) && (this.lookMax.yaw == 180.0f)) {
                 if (diff.yaw > 180.0f) {
                     diff.yaw -= 360.0f;
                 } else if (diff.yaw <= -180.0f) {
                     diff.yaw += 360.0f;
                 }
             }
-            lookAng = lookAng.oPlus(diff.oMultiply(headFocusRate));
+            this.lookAng = this.lookAng.oPlus(diff.oMultiply(this.headFocusRate));
 
-            lookAng.Normalize180();
+            this.lookAng.Normalize180();
             jointAng.roll = 0.0f;
-            for (i = 0; i < lookJoints.Num(); i++) {
-                jointAng.pitch = lookAng.pitch * lookJointAngles.oGet(i).pitch;
-                jointAng.yaw = lookAng.yaw * lookJointAngles.oGet(i).yaw;
-                animator.SetJointAxis(lookJoints.oGet(i), JOINTMOD_WORLD, jointAng.ToMat3());
+            for (i = 0; i < this.lookJoints.Num(); i++) {
+                jointAng.pitch = this.lookAng.pitch * this.lookJointAngles.oGet(i).pitch;
+                jointAng.yaw = this.lookAng.yaw * this.lookJointAngles.oGet(i).yaw;
+                this.animator.SetJointAxis(this.lookJoints.oGet(i), JOINTMOD_WORLD, jointAng.ToMat3());
             }
-            if (move.moveType == MOVETYPE_FLY) {
+            if (this.move.moveType == MOVETYPE_FLY) {
                 // lean into turns
                 AdjustFlyingAngles();
             }
             if (headEnt != null) {
-                idAnimator headAnimator = headEnt.GetAnimator();
+                final idAnimator headAnimator = headEnt.GetAnimator();
 
-                if (allowEyeFocus) {
-                    idMat3 eyeAxis = (lookAng.oPlus(eyeAng)).ToMat3();
-                    idMat3 headTranspose = headEnt.GetPhysics().GetAxis().Transpose();
+                if (this.allowEyeFocus) {
+                    final idMat3 eyeAxis = (this.lookAng.oPlus(this.eyeAng)).ToMat3();
+                    final idMat3 headTranspose = headEnt.GetPhysics().GetAxis().Transpose();
                     axis = eyeAxis.oMultiply(orientationJointAxis);
-                    left = axis.oGet(1).oMultiply(eyeHorizontalOffset);
+                    left = axis.oGet(1).oMultiply(this.eyeHorizontalOffset);
                     eyepos.oMinSet(headEnt.GetPhysics().GetOrigin());
-                    headAnimator.SetJointPos(leftEyeJoint, JOINTMOD_WORLD_OVERRIDE, eyepos.oPlus((axis.oGet(0).oMultiply(64.0f).oPlus(left)).oMultiply(headTranspose)));
-                    headAnimator.SetJointPos(rightEyeJoint, JOINTMOD_WORLD_OVERRIDE, eyepos.oPlus((axis.oGet(0).oMultiply(64.0f).oMinus(left)).oMultiply(headTranspose)));
+                    headAnimator.SetJointPos(this.leftEyeJoint, JOINTMOD_WORLD_OVERRIDE, eyepos.oPlus((axis.oGet(0).oMultiply(64.0f).oPlus(left)).oMultiply(headTranspose)));
+                    headAnimator.SetJointPos(this.rightEyeJoint, JOINTMOD_WORLD_OVERRIDE, eyepos.oPlus((axis.oGet(0).oMultiply(64.0f).oMinus(left)).oMultiply(headTranspose)));
                 } else {
-                    headAnimator.ClearJoint(leftEyeJoint);
-                    headAnimator.ClearJoint(rightEyeJoint);
+                    headAnimator.ClearJoint(this.leftEyeJoint);
+                    headAnimator.ClearJoint(this.rightEyeJoint);
                 }
             } else {
-                if (allowEyeFocus) {
-                    idMat3 eyeAxis = (lookAng.oPlus(eyeAng)).ToMat3();
+                if (this.allowEyeFocus) {
+                    final idMat3 eyeAxis = (this.lookAng.oPlus(this.eyeAng)).ToMat3();
                     axis = eyeAxis.oMultiply(orientationJointAxis);
-                    left = axis.oGet(1).oMultiply(eyeHorizontalOffset);
-                    eyepos.oPluSet(axis.oGet(0).oMultiply(64.0f).oMinus(physicsObj.GetOrigin()));
-                    animator.SetJointPos(leftEyeJoint, JOINTMOD_WORLD_OVERRIDE, eyepos.oPlus(left));
-                    animator.SetJointPos(rightEyeJoint, JOINTMOD_WORLD_OVERRIDE, eyepos.oMinus(left));
+                    left = axis.oGet(1).oMultiply(this.eyeHorizontalOffset);
+                    eyepos.oPluSet(axis.oGet(0).oMultiply(64.0f).oMinus(this.physicsObj.GetOrigin()));
+                    this.animator.SetJointPos(this.leftEyeJoint, JOINTMOD_WORLD_OVERRIDE, eyepos.oPlus(left));
+                    this.animator.SetJointPos(this.rightEyeJoint, JOINTMOD_WORLD_OVERRIDE, eyepos.oMinus(left));
                 } else {
-                    animator.ClearJoint(leftEyeJoint);
-                    animator.ClearJoint(rightEyeJoint);
+                    this.animator.ClearJoint(this.leftEyeJoint);
+                    this.animator.ClearJoint(this.rightEyeJoint);
                 }
             }
 
@@ -5369,28 +5369,28 @@ public class AI {
         }
 
         protected void UpdateParticles() {
-            if ((thinkFlags & TH_UPDATEPARTICLES) != 0 && !IsHidden()) {
+            if (((this.thinkFlags & TH_UPDATEPARTICLES) != 0) && !IsHidden()) {
                 idVec3 realVector = new idVec3();
                 idMat3 realAxis = new idMat3();
 
                 int particlesAlive = 0;
-                for (int i = 0; i < particles.Num(); i++) {
-                    if (particles.oGet(i).particle != null && particles.oGet(i).time != 0) {
+                for (int i = 0; i < this.particles.Num(); i++) {
+                    if ((this.particles.oGet(i).particle != null) && (this.particles.oGet(i).time != 0)) {
                         particlesAlive++;
-                        if (af.IsActive()) {
+                        if (this.af.IsActive()) {
                             realAxis = getMat3_identity();
                             realVector = GetPhysics().GetOrigin();
                         } else {
-                            animator.GetJointTransform(particles.oGet(i).joint, gameLocal.time, realVector, realAxis);
-                            realAxis.oMulSet(renderEntity.axis);
-                            realVector = physicsObj.GetOrigin().oPlus((realVector.oPlus(modelOffset)).oMultiply(viewAxis.oMultiply(physicsObj.GetGravityAxis())));
+                            this.animator.GetJointTransform(this.particles.oGet(i).joint, gameLocal.time, realVector, realAxis);
+                            realAxis.oMulSet(this.renderEntity.axis);
+                            realVector = this.physicsObj.GetOrigin().oPlus((realVector.oPlus(this.modelOffset)).oMultiply(this.viewAxis.oMultiply(this.physicsObj.GetGravityAxis())));
                         }
 
-                        if (!gameLocal.smokeParticles.EmitSmoke(particles.oGet(i).particle, particles.oGet(i).time, gameLocal.random.CRandomFloat(), realVector, realAxis)) {
-                            if (restartParticles) {
-                                particles.oGet(i).time = gameLocal.time;
+                        if (!gameLocal.smokeParticles.EmitSmoke(this.particles.oGet(i).particle, this.particles.oGet(i).time, gameLocal.random.CRandomFloat(), realVector, realAxis)) {
+                            if (this.restartParticles) {
+                                this.particles.oGet(i).time = gameLocal.time;
                             } else {
-                                particles.oGet(i).time = 0;
+                                this.particles.oGet(i).time = 0;
                                 particlesAlive--;
                             }
                         }
@@ -5405,10 +5405,10 @@ public class AI {
         protected void TriggerParticles(final String jointName) {
             int/*jointHandle_t*/ jointNum;
 
-            jointNum = animator.GetJointHandle(jointName);
-            for (int i = 0; i < particles.Num(); i++) {
-                if (particles.oGet(i).joint == jointNum) {
-                    particles.oGet(i).time = gameLocal.time;
+            jointNum = this.animator.GetJointHandle(jointName);
+            for (int i = 0; i < this.particles.Num(); i++) {
+                if (this.particles.oGet(i).joint == jointNum) {
+                    this.particles.oGet(i).time = gameLocal.time;
                     BecomeActive(TH_UPDATEPARTICLES);
                 }
             }
@@ -5416,33 +5416,33 @@ public class AI {
 
         // AI script state management
         protected void LinkScriptVariables() {
-            AI_TALK.LinkTo(scriptObject, "AI_TALK");
-            AI_DAMAGE.LinkTo(scriptObject, "AI_DAMAGE");
-            AI_PAIN.LinkTo(scriptObject, "AI_PAIN");
-            AI_SPECIAL_DAMAGE.LinkTo(scriptObject, "AI_SPECIAL_DAMAGE");
-            AI_DEAD.LinkTo(scriptObject, "AI_DEAD");
-            AI_ENEMY_VISIBLE.LinkTo(scriptObject, "AI_ENEMY_VISIBLE");
-            AI_ENEMY_IN_FOV.LinkTo(scriptObject, "AI_ENEMY_IN_FOV");
-            AI_ENEMY_DEAD.LinkTo(scriptObject, "AI_ENEMY_DEAD");
-            AI_MOVE_DONE.LinkTo(scriptObject, "AI_MOVE_DONE");
-            AI_ONGROUND.LinkTo(scriptObject, "AI_ONGROUND");
-            AI_ACTIVATED.LinkTo(scriptObject, "AI_ACTIVATED");
-            AI_FORWARD.LinkTo(scriptObject, "AI_FORWARD");
-            AI_JUMP.LinkTo(scriptObject, "AI_JUMP");
-            AI_BLOCKED.LinkTo(scriptObject, "AI_BLOCKED");
-            AI_DEST_UNREACHABLE.LinkTo(scriptObject, "AI_DEST_UNREACHABLE");
-            AI_HIT_ENEMY.LinkTo(scriptObject, "AI_HIT_ENEMY");
-            AI_OBSTACLE_IN_PATH.LinkTo(scriptObject, "AI_OBSTACLE_IN_PATH");
-            AI_PUSHED.LinkTo(scriptObject, "AI_PUSHED");
+            this.AI_TALK.LinkTo(this.scriptObject, "AI_TALK");
+            this.AI_DAMAGE.LinkTo(this.scriptObject, "AI_DAMAGE");
+            this.AI_PAIN.LinkTo(this.scriptObject, "AI_PAIN");
+            this.AI_SPECIAL_DAMAGE.LinkTo(this.scriptObject, "AI_SPECIAL_DAMAGE");
+            this.AI_DEAD.LinkTo(this.scriptObject, "AI_DEAD");
+            this.AI_ENEMY_VISIBLE.LinkTo(this.scriptObject, "AI_ENEMY_VISIBLE");
+            this.AI_ENEMY_IN_FOV.LinkTo(this.scriptObject, "AI_ENEMY_IN_FOV");
+            this.AI_ENEMY_DEAD.LinkTo(this.scriptObject, "AI_ENEMY_DEAD");
+            this.AI_MOVE_DONE.LinkTo(this.scriptObject, "AI_MOVE_DONE");
+            this.AI_ONGROUND.LinkTo(this.scriptObject, "AI_ONGROUND");
+            this.AI_ACTIVATED.LinkTo(this.scriptObject, "AI_ACTIVATED");
+            this.AI_FORWARD.LinkTo(this.scriptObject, "AI_FORWARD");
+            this.AI_JUMP.LinkTo(this.scriptObject, "AI_JUMP");
+            this.AI_BLOCKED.LinkTo(this.scriptObject, "AI_BLOCKED");
+            this.AI_DEST_UNREACHABLE.LinkTo(this.scriptObject, "AI_DEST_UNREACHABLE");
+            this.AI_HIT_ENEMY.LinkTo(this.scriptObject, "AI_HIT_ENEMY");
+            this.AI_OBSTACLE_IN_PATH.LinkTo(this.scriptObject, "AI_OBSTACLE_IN_PATH");
+            this.AI_PUSHED.LinkTo(this.scriptObject, "AI_PUSHED");
         }
 
         protected void UpdateAIScript() {
             UpdateScript();
 
             // clear the hit enemy flag so we catch the next time we hit someone
-            AI_HIT_ENEMY.operator(false);
+            this.AI_HIT_ENEMY.operator(false);
 
-            if (allowHiddenMovement || !IsHidden()) {
+            if (this.allowHiddenMovement || !IsHidden()) {
                 // update the animstate if we're not hidden
                 UpdateAnimState();
             }
@@ -5456,11 +5456,11 @@ public class AI {
         }
 
         protected void Event_Touch(idEventArg<idEntity> _other, idEventArg<trace_s> trace) {
-            idEntity other = _other.value;
-            if (null == enemy.GetEntity() && !other.fl.notarget && (ReactionTo(other) & ATTACK_ON_ACTIVATE) != 0) {
+            final idEntity other = _other.value;
+            if ((null == this.enemy.GetEntity()) && !other.fl.notarget && ((ReactionTo(other) & ATTACK_ON_ACTIVATE) != 0)) {
                 Activate(other);
             }
-            AI_PUSHED.operator(true);
+            this.AI_PUSHED.operator(true);
         }
 
         protected void Event_FindEnemy(idEventArg<Integer> useFOV) {
@@ -5472,7 +5472,7 @@ public class AI {
                 for (i = 0; i < gameLocal.numClients; i++) {
                     ent = gameLocal.entities[ i];
 
-                    if (null == ent || !ent.IsType(idActor.class)) {
+                    if ((null == ent) || !ent.IsType(idActor.class)) {
                         continue;
                     }
 
@@ -5510,7 +5510,7 @@ public class AI {
                 }
 
                 actor = (idActor) ent;
-                if ((actor.health <= 0) || 0 == (ReactionTo(actor) & ATTACK_ON_SIGHT)) {
+                if ((actor.health <= 0) || (0 == (ReactionTo(actor) & ATTACK_ON_SIGHT))) {
                     continue;
                 }
 
@@ -5518,7 +5518,7 @@ public class AI {
                     continue;
                 }
 
-                delta = physicsObj.GetOrigin().oMinus(actor.GetPhysics().GetOrigin());
+                delta = this.physicsObj.GetOrigin().oMinus(actor.GetPhysics().GetOrigin());
                 dist = delta.LengthSqr();
                 if ((dist < bestDist) && CanSee(actor, useFOV.value != 0)) {
                     bestDist = dist;
@@ -5546,7 +5546,7 @@ public class AI {
             for (i = 0; i < gameLocal.numClients; i++) {
                 ent = gameLocal.entities[ i];
 
-                if (null == ent || !ent.IsType(idActor.class)) {
+                if ((null == ent) || !ent.IsType(idActor.class)) {
                     continue;
                 }
 
@@ -5555,9 +5555,9 @@ public class AI {
                     continue;
                 }
 
-                for (j = 0; j < targets.Num(); j++) {
-                    targetEnt = targets.oGet(j).GetEntity();
-                    if (null == targetEnt || !targetEnt.IsType(idCombatNode.class)) {
+                for (j = 0; j < this.targets.Num(); j++) {
+                    targetEnt = this.targets.oGet(j).GetEntity();
+                    if ((null == targetEnt) || !targetEnt.IsType(idCombatNode.class)) {
                         continue;
                     }
 
@@ -5573,7 +5573,7 @@ public class AI {
         }
 
         protected void Event_ClosestReachableEnemyOfEntity(idEventArg<idEntity> _team_mate) {
-            idEntity team_mate = _team_mate.value;
+            final idEntity team_mate = _team_mate.value;
             idActor actor;
             idActor ent;
             idActor bestEnt;
@@ -5582,7 +5582,7 @@ public class AI {
             idVec3 delta;
             int areaNum;
             int enemyAreaNum;
-            aasPath_s path = new aasPath_s();
+            final aasPath_s path = new aasPath_s();
 
             if (!team_mate.IsType(idActor.class)) {
                 gameLocal.Error("Entity '%s' is not an AI character or player", team_mate.GetName());
@@ -5590,7 +5590,7 @@ public class AI {
 
             actor = (idActor) team_mate;
 
-            final idVec3 origin = physicsObj.GetOrigin();
+            final idVec3 origin = this.physicsObj.GetOrigin();
             areaNum = PointReachableAreaNum(origin);
 
             bestDistSquared = idMath.INFINITY;
@@ -5616,11 +5616,11 @@ public class AI {
 
         protected void Event_HeardSound(idEventArg<Integer> ignore_team) {
             // check if we heard any sounds in the last frame
-            idActor actor = gameLocal.GetAlertEntity();
-            if (actor != null && (0 == ignore_team.value || (ReactionTo(actor) & ATTACK_ON_SIGHT) != 0) && gameLocal.InPlayerPVS(this)) {
-                idVec3 pos = actor.GetPhysics().GetOrigin();
-                idVec3 org = physicsObj.GetOrigin();
-                float dist = (pos.oMinus(org)).LengthSqr();
+            final idActor actor = gameLocal.GetAlertEntity();
+            if ((actor != null) && ((0 == ignore_team.value) || ((ReactionTo(actor) & ATTACK_ON_SIGHT) != 0)) && gameLocal.InPlayerPVS(this)) {
+                final idVec3 pos = actor.GetPhysics().GetOrigin();
+                final idVec3 org = this.physicsObj.GetOrigin();
+                final float dist = (pos.oMinus(org)).LengthSqr();
                 if (dist < Square(AI_HEARING_RANGE)) {
                     idThread.ReturnEntity(actor);
                     return;
@@ -5631,7 +5631,7 @@ public class AI {
         }
 
         protected void Event_SetEnemy(idEventArg<idEntity> _ent) {
-            idEntity ent = _ent.value;
+            final idEntity ent = _ent.value;
             if (null == ent) {
                 ClearEnemy();
             } else if (!ent.IsType(idActor.class)) {
@@ -5646,39 +5646,39 @@ public class AI {
         }
 
         protected void Event_MuzzleFlash(final idEventArg<String> jointname) {
-            idVec3 muzzle = new idVec3();
-            idMat3 axis = new idMat3();
+            final idVec3 muzzle = new idVec3();
+            final idMat3 axis = new idMat3();
 
             GetMuzzle(jointname.value, muzzle, axis);
             TriggerWeaponEffects(muzzle);
         }
 
         protected void Event_CreateMissile(final idEventArg<String> _jointname) {
-            String jointname = _jointname.value;
-            idVec3 muzzle = new idVec3();
-            idMat3 axis = new idMat3();
+            final String jointname = _jointname.value;
+            final idVec3 muzzle = new idVec3();
+            final idMat3 axis = new idMat3();
 
-            if (null == projectileDef) {
-                gameLocal.Warning("%s (%s) doesn't have a projectile specified", name, GetEntityDefName());
+            if (null == this.projectileDef) {
+                gameLocal.Warning("%s (%s) doesn't have a projectile specified", this.name, GetEntityDefName());
                 idThread.ReturnEntity(null);
             }
 
             GetMuzzle(jointname, muzzle, axis);
-            CreateProjectile(muzzle, viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis()));
-            if (projectile.GetEntity() != null) {
+            CreateProjectile(muzzle, this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis()));
+            if (this.projectile.GetEntity() != null) {
                 if (!isNotNullOrEmpty(jointname)) {
-                    projectile.GetEntity().Bind(this, true);
+                    this.projectile.GetEntity().Bind(this, true);
                 } else {
-                    projectile.GetEntity().BindToJoint(this, jointname, true);
+                    this.projectile.GetEntity().BindToJoint(this, jointname, true);
                 }
             }
-            idThread.ReturnEntity(projectile.GetEntity());
+            idThread.ReturnEntity(this.projectile.GetEntity());
         }
 
         protected void Event_AttackMissile(final idEventArg<String> jointname) {
             idProjectile proj;
 
-            proj = LaunchProjectile(jointname.value, enemy.GetEntity(), true);
+            proj = LaunchProjectile(jointname.value, this.enemy.GetEntity(), true);
             idThread.ReturnEntity(proj);
         }
 
@@ -5699,34 +5699,34 @@ public class AI {
             final idVec3 muzzle = _muzzle.value;
             final idAngles ang = _ang.value;
             idVec3 start;
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
             idBounds projBounds;
             idClipModel projClip;
             idMat3 axis;
-            float[] distance = {0};
+            final float[] distance = {0};
 
-            if (null == projectileDef) {
-                gameLocal.Warning("%s (%s) doesn't have a projectile specified", name, GetEntityDefName());
+            if (null == this.projectileDef) {
+                gameLocal.Warning("%s (%s) doesn't have a projectile specified", this.name, GetEntityDefName());
                 idThread.ReturnEntity(null);
                 return;
             }
 
             axis = ang.ToMat3();
-            if (null == projectile.GetEntity()) {
+            if (null == this.projectile.GetEntity()) {
                 CreateProjectile(muzzle, axis.oGet(0));
             }
 
             // make sure the projectile starts inside the monster bounding box
-            final idBounds ownerBounds = physicsObj.GetAbsBounds();
-            projClip = projectile.GetEntity().GetPhysics().GetClipModel();
+            final idBounds ownerBounds = this.physicsObj.GetAbsBounds();
+            projClip = this.projectile.GetEntity().GetPhysics().GetClipModel();
             projBounds = projClip.GetBounds().Rotate(projClip.GetAxis());
 
             // check if the owner bounds is bigger than the projectile bounds
             if (((ownerBounds.oGet(1, 0) - ownerBounds.oGet(0, 0)) > (projBounds.oGet(1, 0) - projBounds.oGet(0, 0)))
                     && ((ownerBounds.oGet(1, 1) - ownerBounds.oGet(0, 1)) > (projBounds.oGet(1, 1) - projBounds.oGet(0, 1)))
                     && ((ownerBounds.oGet(1, 2) - ownerBounds.oGet(0, 2)) > (projBounds.oGet(1, 2) - projBounds.oGet(0, 2)))) {
-                if ((ownerBounds.oMinus(projBounds)).RayIntersection(muzzle, viewAxis.oGet(0), distance)) {
-                    start = muzzle.oPlus(viewAxis.oGet(0).oMultiply(distance[0]));
+                if ((ownerBounds.oMinus(projBounds)).RayIntersection(muzzle, this.viewAxis.oGet(0), distance)) {
+                    start = muzzle.oPlus(this.viewAxis.oGet(0).oMultiply(distance[0]));
                 } else {
                     start = ownerBounds.GetCenter();
                 }
@@ -5738,13 +5738,13 @@ public class AI {
             gameLocal.clip.Translation(tr, start, muzzle, projClip, projClip.GetAxis(), MASK_SHOT_RENDERMODEL, this);
 
             // launch the projectile
-            idThread.ReturnEntity(projectile.GetEntity());
-            projectile.GetEntity().Launch(tr[0].endpos, axis.oGet(0), getVec3_origin());
-            projectile.oSet(null);
+            idThread.ReturnEntity(this.projectile.GetEntity());
+            this.projectile.GetEntity().Launch(tr[0].endpos, axis.oGet(0), getVec3_origin());
+            this.projectile.oSet(null);
 
             TriggerWeaponEffects(tr[0].endpos);
 
-            lastAttackTime = gameLocal.time;
+            this.lastAttackTime = gameLocal.time;
         }
 
         protected void Event_AttackMelee(final idEventArg<String> meleeDefName) {
@@ -5761,12 +5761,12 @@ public class AI {
         protected void Event_RadiusDamageFromJoint(final idEventArg<String> jointname, final idEventArg<String> damageDefName) {
             int/*jointHandle_t*/ joint;
             idVec3 org = new idVec3();
-            idMat3 axis = new idMat3();
+            final idMat3 axis = new idMat3();
 
             if (!isNotNullOrEmpty(jointname.value)) {
-                org = physicsObj.GetOrigin();
+                org = this.physicsObj.GetOrigin();
             } else {
-                joint = animator.GetJointHandle(jointname.value);
+                joint = this.animator.GetJointHandle(jointname.value);
                 if (joint == INVALID_JOINT) {
                     gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
                 }
@@ -5788,16 +5788,16 @@ public class AI {
             int/*jointHandle_t*/ joint;
             idVec3 start;
             idVec3 end = new idVec3();
-            idMat3 axis = new idMat3();
-            trace_s trace = new trace_s();
+            final idMat3 axis = new idMat3();
+            final trace_s trace = new trace_s();
             idEntity hitEnt;
 
-            joint = animator.GetJointHandle(jointname.value);
+            joint = this.animator.GetJointHandle(jointname.value);
             if (joint == INVALID_JOINT) {
                 gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
             }
-            animator.GetJointTransform(joint, gameLocal.time, end, axis);
-            end = physicsObj.GetOrigin().oPlus((end.oPlus(modelOffset)).oMultiply(viewAxis).oMultiply(physicsObj.GetGravityAxis()));
+            this.animator.GetJointTransform(joint, gameLocal.time, end, axis);
+            end = this.physicsObj.GetOrigin().oPlus((end.oPlus(this.modelOffset)).oMultiply(this.viewAxis).oMultiply(this.physicsObj.GetGravityAxis()));
             start = GetEyePosition();
 
             if (ai_debugMove.GetBool()) {
@@ -5807,7 +5807,7 @@ public class AI {
             gameLocal.clip.TranslationEntities(trace, start, end, null, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
             if (trace.fraction < 1.0f) {
                 hitEnt = gameLocal.GetTraceEntity(trace);
-                if (hitEnt != null && hitEnt.IsType(idActor.class)) {
+                if ((hitEnt != null) && hitEnt.IsType(idActor.class)) {
                     DirectDamage(meleeDefName.value, hitEnt);
                     idThread.ReturnInt(true);
                     return;
@@ -5829,9 +5829,9 @@ public class AI {
             int num;
             idEntity hit;
             idClipModel cm;
-            idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
+            final idClipModel[] clipModels = new idClipModel[MAX_GENTITIES];
 
-            num = gameLocal.clip.ClipModelsTouchingBounds(physicsObj.GetAbsBounds(), MASK_MONSTERSOLID, clipModels, MAX_GENTITIES);
+            num = gameLocal.clip.ClipModelsTouchingBounds(this.physicsObj.GetAbsBounds(), MASK_MONSTERSOLID, clipModels, MAX_GENTITIES);
             for (i = 0; i < num; i++) {
                 cm = clipModels[ i];
 
@@ -5845,7 +5845,7 @@ public class AI {
                     continue;
                 }
 
-                if (physicsObj.ClipContents(cm) != 0) {
+                if (this.physicsObj.ClipContents(cm) != 0) {
                     idThread.ReturnFloat(0);//(false);
                     return;
                 }
@@ -5855,22 +5855,22 @@ public class AI {
         }
 
         protected void Event_BecomeSolid() {
-            physicsObj.EnableClip();
-            if (spawnArgs.GetBool("big_monster")) {
-                physicsObj.SetContents(0);
-            } else if (use_combat_bbox) {
-                physicsObj.SetContents(CONTENTS_BODY | CONTENTS_SOLID);
+            this.physicsObj.EnableClip();
+            if (this.spawnArgs.GetBool("big_monster")) {
+                this.physicsObj.SetContents(0);
+            } else if (this.use_combat_bbox) {
+                this.physicsObj.SetContents(CONTENTS_BODY | CONTENTS_SOLID);
             } else {
-                physicsObj.SetContents(CONTENTS_BODY);
+                this.physicsObj.SetContents(CONTENTS_BODY);
             }
-            physicsObj.GetClipModel().Link(gameLocal.clip);
-            fl.takedamage = !spawnArgs.GetBool("noDamage");
+            this.physicsObj.GetClipModel().Link(gameLocal.clip);
+            this.fl.takedamage = !this.spawnArgs.GetBool("noDamage");
         }
 
         protected void Event_BecomeNonSolid() {
-            fl.takedamage = false;
-            physicsObj.SetContents(0);
-            physicsObj.GetClipModel().Unlink();
+            this.fl.takedamage = false;
+            this.physicsObj.SetContents(0);
+            this.physicsObj.GetClipModel().Unlink();
         }
 
         protected void Event_BecomeRagdoll() {
@@ -5884,33 +5884,33 @@ public class AI {
             StopRagdoll();
 
             // set back the monster physics
-            SetPhysics(physicsObj);
+            SetPhysics(this.physicsObj);
         }
 
         protected void Event_SetHealth(idEventArg<Float> newHealth) {
-            health = newHealth.value.intValue();
-            fl.takedamage = true;
-            if (health > 0) {
-                AI_DEAD.operator(false);
+            this.health = newHealth.value.intValue();
+            this.fl.takedamage = true;
+            if (this.health > 0) {
+                this.AI_DEAD.operator(false);
             } else {
-                AI_DEAD.operator(true);
+                this.AI_DEAD.operator(true);
             }
         }
 
         protected void Event_GetHealth() {
-            idThread.ReturnFloat(health);
+            idThread.ReturnFloat(this.health);
         }
 
         protected void Event_AllowDamage() {
-            fl.takedamage = true;
+            this.fl.takedamage = true;
         }
 
         protected void Event_IgnoreDamage() {
-            fl.takedamage = false;
+            this.fl.takedamage = false;
         }
 
         protected void Event_GetCurrentYaw() {
-            idThread.ReturnFloat(current_yaw);
+            idThread.ReturnFloat(this.current_yaw);
         }
 
         protected void Event_TurnTo(idEventArg<Float> angle) {
@@ -5928,7 +5928,7 @@ public class AI {
         }
 
         protected void Event_MoveStatus() {
-            idThread.ReturnInt(etoi(move.moveStatus));
+            idThread.ReturnInt(etoi(this.move.moveStatus));
         }
 
         protected void Event_StopMove() {
@@ -5936,17 +5936,17 @@ public class AI {
         }
 
         protected void Event_MoveToCover() {
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
             StopMove(MOVE_STATUS_DEST_NOT_FOUND);
-            if (null == enemyEnt || !MoveToCover(enemyEnt, lastVisibleEnemyPos)) {
+            if ((null == enemyEnt) || !MoveToCover(enemyEnt, this.lastVisibleEnemyPos)) {
                 return;
             }
         }
 
         protected void Event_MoveToEnemy() {
             StopMove(MOVE_STATUS_DEST_NOT_FOUND);
-            if (null == enemy.GetEntity() || !MoveToEnemy()) {
+            if ((null == this.enemy.GetEntity()) || !MoveToEnemy()) {
                 return;
             }
         }
@@ -5995,7 +5995,7 @@ public class AI {
         }
 
         protected void Event_FacingIdeal() {
-            boolean facing = FacingIdeal();
+            final boolean facing = FacingIdeal();
             idThread.ReturnInt(facing);
         }
 
@@ -6024,15 +6024,15 @@ public class AI {
             idCombatNode node;
             float bestDist;
             idCombatNode bestNode;
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
-            if (0 == targets.Num()) {
+            if (0 == this.targets.Num()) {
                 // no combat nodes
                 idThread.ReturnEntity(null);
                 return;
             }
 
-            if (null == enemyEnt || !EnemyPositionValid()) {
+            if ((null == enemyEnt) || !EnemyPositionValid()) {
                 // don't return a combat node if we don't have an enemy or
                 // if we can see he's not in the last place we saw him
                 idThread.ReturnEntity(null);
@@ -6041,17 +6041,17 @@ public class AI {
 
             // find the closest attack node that can see our enemy and is closer than our enemy
             bestNode = null;
-            final idVec3 myPos = physicsObj.GetOrigin();
-            bestDist = (myPos.oMinus(lastVisibleEnemyPos)).LengthSqr();
-            for (i = 0; i < targets.Num(); i++) {
-                targetEnt = targets.oGet(i).GetEntity();
-                if (null == targetEnt || !targetEnt.IsType(idCombatNode.class)) {
+            final idVec3 myPos = this.physicsObj.GetOrigin();
+            bestDist = (myPos.oMinus(this.lastVisibleEnemyPos)).LengthSqr();
+            for (i = 0; i < this.targets.Num(); i++) {
+                targetEnt = this.targets.oGet(i).GetEntity();
+                if ((null == targetEnt) || !targetEnt.IsType(idCombatNode.class)) {
                     continue;
                 }
 
                 node = (idCombatNode) targetEnt;
-                if (!node.IsDisabled() && node.EntityInView(enemyEnt, lastVisibleEnemyPos)) {
-                    idVec3 org = node.GetPhysics().GetOrigin();
+                if (!node.IsDisabled() && node.EntityInView(enemyEnt, this.lastVisibleEnemyPos)) {
+                    final idVec3 org = node.GetPhysics().GetOrigin();
                     dist = (myPos.oMinus(org)).LengthSqr();
                     if (dist < bestDist) {
                         bestNode = node;
@@ -6064,12 +6064,12 @@ public class AI {
         }
 
         protected void Event_EnemyInCombatCone(idEventArg<idEntity> _ent, idEventArg<Integer> use_current_enemy_location) {
-            idEntity ent = _ent.value;
+            final idEntity ent = _ent.value;
             idCombatNode node;
             boolean result;
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
-            if (0 == targets.Num()) {
+            if (0 == this.targets.Num()) {
                 // no combat nodes
                 idThread.ReturnInt(false);
                 return;
@@ -6081,7 +6081,7 @@ public class AI {
                 return;
             }
 
-            if (null == ent || !ent.IsType(idCombatNode.class)) {
+            if ((null == ent) || !ent.IsType(idCombatNode.class)) {
                 // not a combat node
                 idThread.ReturnInt(false);
                 return;
@@ -6092,7 +6092,7 @@ public class AI {
                 final idVec3 pos = enemyEnt.GetPhysics().GetOrigin();
                 result = node.EntityInView(enemyEnt, pos);
             } else {
-                result = node.EntityInView(enemyEnt, lastVisibleEnemyPos);
+                result = node.EntityInView(enemyEnt, this.lastVisibleEnemyPos);
             }
 
             idThread.ReturnInt(result);
@@ -6107,15 +6107,15 @@ public class AI {
         }
 
         protected void Event_GetJumpVelocity(final idEventArg<idVec3> _pos, idEventArg<Float> _speed, idEventArg<Float> _max_height) {
-            idVec3 pos = _pos.value;
-            float speed = _speed.value;
-            float max_height = _max_height.value;
+            final idVec3 pos = _pos.value;
+            final float speed = _speed.value;
+            final float max_height = _max_height.value;
             idVec3 start;
             idVec3 end;
             idVec3 dir;
             float dist;
             boolean result;
-            idEntity enemyEnt = enemy.GetEntity();
+            final idEntity enemyEnt = this.enemy.GetEntity();
 
             if (null == enemyEnt) {
                 idThread.ReturnVector(getVec3_zero());
@@ -6126,7 +6126,7 @@ public class AI {
                 gameLocal.Error("Invalid speed.  speed must be > 0.");
             }
 
-            start = physicsObj.GetOrigin();
+            start = this.physicsObj.GetOrigin();
             end = pos;
             dir = end.oMinus(start);
             dist = dir.Normalize();
@@ -6135,7 +6135,7 @@ public class AI {
                 end.oMinus(dir.oMultiply(16.0f));
             }
 
-            result = PredictTrajectory(start, end, speed, physicsObj.GetGravity(), physicsObj.GetClipModel(), MASK_MONSTERSOLID, max_height, this, enemyEnt, ai_debugMove.GetBool() ? 4000 : 0, dir);
+            result = PredictTrajectory(start, end, speed, this.physicsObj.GetGravity(), this.physicsObj.GetClipModel(), MASK_MONSTERSOLID, max_height, this, enemyEnt, ai_debugMove.GetBool() ? 4000 : 0, dir);
             if (result) {
                 idThread.ReturnVector(dir.oMultiply(speed));
             } else {
@@ -6165,8 +6165,8 @@ public class AI {
             delta.Normalize();
             yaw = delta.ToYaw();
 
-            attack_cone = spawnArgs.GetFloat("attack_cone", "70");
-            relYaw = idMath.AngleNormalize180(ideal_yaw - yaw);
+            attack_cone = this.spawnArgs.GetFloat("attack_cone", "70");
+            relYaw = idMath.AngleNormalize180(this.ideal_yaw - yaw);
             if (idMath.Fabs(relYaw) < (attack_cone * 0.5f)) {
                 idThread.ReturnInt(true);
             } else {
@@ -6180,39 +6180,39 @@ public class AI {
                 return;
             }
 
-            boolean cansee = CanSee(ent.value, false);
+            final boolean cansee = CanSee(ent.value, false);
             idThread.ReturnInt(cansee);
         }
 
         protected void Event_SetTalkTarget(idEventArg<idEntity> _target) {
-            idEntity target = _target.value;
-            if (target != null && !target.IsType(idActor.class)) {
+            final idEntity target = _target.value;
+            if ((target != null) && !target.IsType(idActor.class)) {
                 gameLocal.Error("Cannot set talk target to '%s'.  Not a character or player.", target.GetName());
             }
-            talkTarget.oSet((idActor) target);
+            this.talkTarget.oSet((idActor) target);
             if (target != null) {
-                AI_TALK.operator(true);
+                this.AI_TALK.operator(true);
             } else {
-                AI_TALK.operator(false);
+                this.AI_TALK.operator(false);
             }
         }
 
         protected void Event_GetTalkTarget() {
-            idThread.ReturnEntity(talkTarget.GetEntity());
+            idThread.ReturnEntity(this.talkTarget.GetEntity());
         }
 
         protected void Event_SetTalkState(idEventArg<Integer> _state) {
-            int state = _state.value;
+            final int state = _state.value;
             if ((state < 0) || (state >= etoi(NUM_TALK_STATES))) {
                 gameLocal.Error("Invalid talk state (%d)", state);
             }
 
-            talk_state = talkState_t.values()[state];
+            this.talk_state = talkState_t.values()[state];
         }
 
         protected void Event_EnemyRange() {
             float dist;
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
             if (enemyEnt != null) {
                 dist = (enemyEnt.GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin()).Length());
@@ -6226,7 +6226,7 @@ public class AI {
 
         protected void Event_EnemyRange2D() {
             float dist;
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
             if (enemyEnt != null) {
                 dist = (enemyEnt.GetPhysics().GetOrigin().ToVec2().oMinus(GetPhysics().GetOrigin().ToVec2())).Length();
@@ -6239,55 +6239,55 @@ public class AI {
         }
 
         protected void Event_GetEnemy() {
-            idThread.ReturnEntity(enemy.GetEntity());
+            idThread.ReturnEntity(this.enemy.GetEntity());
         }
 
         protected void Event_GetEnemyPos() {
-            idThread.ReturnVector(lastVisibleEnemyPos);
+            idThread.ReturnVector(this.lastVisibleEnemyPos);
         }
 
         protected void Event_GetEnemyEyePos() {
-            idThread.ReturnVector(lastVisibleEnemyPos.oPlus(lastVisibleEnemyEyeOffset));
+            idThread.ReturnVector(this.lastVisibleEnemyPos.oPlus(this.lastVisibleEnemyEyeOffset));
         }
 
         protected void Event_PredictEnemyPos(idEventArg<Float> time) {
-            predictedPath_s path = new predictedPath_s();
-            idActor enemyEnt = enemy.GetEntity();
+            final predictedPath_s path = new predictedPath_s();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
             // if no enemy set
             if (null == enemyEnt) {
-                idThread.ReturnVector(physicsObj.GetOrigin());
+                idThread.ReturnVector(this.physicsObj.GetOrigin());
                 return;
             }
 
             // predict the enemy movement
-            idAI.PredictPath(enemyEnt, aas, lastVisibleEnemyPos, enemyEnt.GetPhysics().GetLinearVelocity(),
+            idAI.PredictPath(enemyEnt, this.aas, this.lastVisibleEnemyPos, enemyEnt.GetPhysics().GetLinearVelocity(),
                     (int) SEC2MS(time.value), (int) SEC2MS(time.value),
-                    (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
+                    (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             idThread.ReturnVector(path.endPos);
         }
 
         protected void Event_CanHitEnemy() {
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
             idEntity hit;
 
-            idActor enemyEnt = enemy.GetEntity();
-            if (!AI_ENEMY_VISIBLE.operator() || NOT(enemyEnt)) {
+            final idActor enemyEnt = this.enemy.GetEntity();
+            if (!this.AI_ENEMY_VISIBLE.operator() || NOT(enemyEnt)) {
                 idThread.ReturnInt(false);
                 return;
             }
 
             // don't check twice per frame
-            if (gameLocal.time == lastHitCheckTime) {
-                idThread.ReturnInt(lastHitCheckResult);
+            if (gameLocal.time == this.lastHitCheckTime) {
+                idThread.ReturnInt(this.lastHitCheckResult);
                 return;
             }
 
-            lastHitCheckTime = gameLocal.time;
+            this.lastHitCheckTime = gameLocal.time;
 
             idVec3 toPos = enemyEnt.GetEyePosition();
-            idVec3 eye = GetEyePosition();
+            final idVec3 eye = GetEyePosition();
             idVec3 dir;
 
             // expand the ray out as far as possible so we can detect anything behind the enemy
@@ -6296,30 +6296,30 @@ public class AI {
             toPos = eye.oPlus(dir.oMultiply(MAX_WORLD_SIZE));
             gameLocal.clip.TracePoint(tr, eye, toPos, MASK_SHOT_BOUNDINGBOX, this);
             hit = gameLocal.GetTraceEntity(tr[0]);
-            if (tr[0].fraction >= 1.0f || (hit.equals(enemyEnt))) {
-                lastHitCheckResult = true;
+            if ((tr[0].fraction >= 1.0f) || (hit.equals(enemyEnt))) {
+                this.lastHitCheckResult = true;
             } else if ((tr[0].fraction < 1.0f) && (hit.IsType(idAI.class))
-                    && (((idAI) hit).team != team)) {
-                lastHitCheckResult = true;
+                    && (((idAI) hit).team != this.team)) {
+                this.lastHitCheckResult = true;
             } else {
-                lastHitCheckResult = false;
+                this.lastHitCheckResult = false;
             }
 
-            idThread.ReturnInt(lastHitCheckResult);
+            idThread.ReturnInt(this.lastHitCheckResult);
         }
 
         protected void Event_CanHitEnemyFromAnim(final idEventArg<String> animname) {
             int anim;
             idVec3 dir;
-            idVec3 local_dir = new idVec3();
+            final idVec3 local_dir = new idVec3();
             idVec3 fromPos;
             idMat3 axis;
             idVec3 start;
-            trace_s[] tr = {null};
-            float[] distance = {0};
+            final trace_s[] tr = {null};
+            final float[] distance = {0};
 
-            idActor enemyEnt = enemy.GetEntity();
-            if (!AI_ENEMY_VISIBLE.operator() || NOT(enemyEnt)) {
+            final idActor enemyEnt = this.enemy.GetEntity();
+            if (!this.AI_ENEMY_VISIBLE.operator() || NOT(enemyEnt)) {
                 idThread.ReturnInt(false);
                 return;
             }
@@ -6331,32 +6331,32 @@ public class AI {
             }
 
             // just do a ray test if close enough
-            if (enemyEnt.GetPhysics().GetAbsBounds().IntersectsBounds(physicsObj.GetAbsBounds().Expand(16.0f))) {
+            if (enemyEnt.GetPhysics().GetAbsBounds().IntersectsBounds(this.physicsObj.GetAbsBounds().Expand(16.0f))) {
                 Event_CanHitEnemy();
                 return;
             }
 
             // calculate the world transform of the launch position
-            final idVec3 org = physicsObj.GetOrigin();
-            dir = lastVisibleEnemyPos.oMinus(org);
-            physicsObj.GetGravityAxis().ProjectVector(dir, local_dir);
+            final idVec3 org = this.physicsObj.GetOrigin();
+            dir = this.lastVisibleEnemyPos.oMinus(org);
+            this.physicsObj.GetGravityAxis().ProjectVector(dir, local_dir);
             local_dir.z = 0.0f;
             local_dir.ToVec2_Normalize();
             axis = local_dir.ToMat3();
-            fromPos = physicsObj.GetOrigin().oPlus(missileLaunchOffset.oGet(anim).oMultiply(axis));
+            fromPos = this.physicsObj.GetOrigin().oPlus(this.missileLaunchOffset.oGet(anim).oMultiply(axis));
 
-            if (projectileClipModel == null) {
+            if (this.projectileClipModel == null) {
                 CreateProjectileClipModel();
             }
 
             // check if the owner bounds is bigger than the projectile bounds
-            final idBounds ownerBounds = physicsObj.GetAbsBounds();
-            final idBounds projBounds = projectileClipModel.GetBounds();
+            final idBounds ownerBounds = this.physicsObj.GetAbsBounds();
+            final idBounds projBounds = this.projectileClipModel.GetBounds();
             if (((ownerBounds.oGet(1, 0) - ownerBounds.oGet(0, 0)) > (projBounds.oGet(1, 0) - projBounds.oGet(0, 0)))
                     && ((ownerBounds.oGet(1, 1) - ownerBounds.oGet(0, 1)) > (projBounds.oGet(1, 1) - projBounds.oGet(0, 1)))
                     && ((ownerBounds.oGet(1, 2) - ownerBounds.oGet(0, 2)) > (projBounds.oGet(1, 2) - projBounds.oGet(0, 2)))) {
-                if ((ownerBounds.oMinus(projBounds)).RayIntersection(org, viewAxis.oGet(0), distance)) {
-                    start = org.oPlus(viewAxis.oGet(0).oMultiply(distance[0]));
+                if ((ownerBounds.oMinus(projBounds)).RayIntersection(org, this.viewAxis.oGet(0), distance)) {
+                    start = org.oPlus(this.viewAxis.oGet(0).oMultiply(distance[0]));
                 } else {
                     start = ownerBounds.GetCenter();
                 }
@@ -6365,10 +6365,10 @@ public class AI {
                 start = ownerBounds.GetCenter();
             }
 
-            gameLocal.clip.Translation(tr, start, fromPos, projectileClipModel, getMat3_identity(), MASK_SHOT_RENDERMODEL, this);
+            gameLocal.clip.Translation(tr, start, fromPos, this.projectileClipModel, getMat3_identity(), MASK_SHOT_RENDERMODEL, this);
             fromPos = tr[0].endpos;
 
-            if (GetAimDir(fromPos, enemy.GetEntity(), this, dir)) {
+            if (GetAimDir(fromPos, this.enemy.GetEntity(), this, dir)) {
                 idThread.ReturnInt(true);
             } else {
                 idThread.ReturnInt(false);
@@ -6376,47 +6376,47 @@ public class AI {
         }
 
         protected void Event_CanHitEnemyFromJoint(final idEventArg<String> jointname) {
-            trace_s[] tr = {null};
+            final trace_s[] tr = {null};
             idVec3 muzzle = new idVec3();
-            idMat3 axis = new idMat3();
+            final idMat3 axis = new idMat3();
             idVec3 start;
-            float[] distance = {0};
+            final float[] distance = {0};
 
-            idActor enemyEnt = enemy.GetEntity();
-            if (!AI_ENEMY_VISIBLE.operator() || null == enemyEnt) {
+            final idActor enemyEnt = this.enemy.GetEntity();
+            if (!this.AI_ENEMY_VISIBLE.operator() || (null == enemyEnt)) {
                 idThread.ReturnInt(false);
                 return;
             }
 
             // don't check twice per frame
-            if (gameLocal.time == lastHitCheckTime) {
-                idThread.ReturnInt(lastHitCheckResult);
+            if (gameLocal.time == this.lastHitCheckTime) {
+                idThread.ReturnInt(this.lastHitCheckResult);
                 return;
             }
 
-            lastHitCheckTime = gameLocal.time;
+            this.lastHitCheckTime = gameLocal.time;
 
-            final idVec3 org = physicsObj.GetOrigin();
-            idVec3 toPos = enemyEnt.GetEyePosition();
-            int/*jointHandle_t*/ joint = animator.GetJointHandle(jointname.value);
+            final idVec3 org = this.physicsObj.GetOrigin();
+            final idVec3 toPos = enemyEnt.GetEyePosition();
+            final int/*jointHandle_t*/ joint = this.animator.GetJointHandle(jointname.value);
             if (joint == INVALID_JOINT) {
                 gameLocal.Error("Unknown joint '%s' on %s", jointname.value, GetEntityDefName());
             }
-            animator.GetJointTransform(joint, gameLocal.time, muzzle, axis);
-            muzzle = org.oPlus((muzzle.oPlus(modelOffset)).oMultiply(viewAxis).oMultiply(physicsObj.GetGravityAxis()));
+            this.animator.GetJointTransform(joint, gameLocal.time, muzzle, axis);
+            muzzle = org.oPlus((muzzle.oPlus(this.modelOffset)).oMultiply(this.viewAxis).oMultiply(this.physicsObj.GetGravityAxis()));
 
-            if (projectileClipModel == null) {
+            if (this.projectileClipModel == null) {
                 CreateProjectileClipModel();
             }
 
             // check if the owner bounds is bigger than the projectile bounds
-            final idBounds ownerBounds = physicsObj.GetAbsBounds();
-            final idBounds projBounds = projectileClipModel.GetBounds();
+            final idBounds ownerBounds = this.physicsObj.GetAbsBounds();
+            final idBounds projBounds = this.projectileClipModel.GetBounds();
             if (((ownerBounds.oGet(1, 0) - ownerBounds.oGet(0, 0)) > (projBounds.oGet(1, 0) - projBounds.oGet(0, 0)))
                     && ((ownerBounds.oGet(1, 1) - ownerBounds.oGet(0, 1)) > (projBounds.oGet(1, 1) - projBounds.oGet(0, 1)))
                     && ((ownerBounds.oGet(1, 2) - ownerBounds.oGet(0, 2)) > (projBounds.oGet(1, 2) - projBounds.oGet(0, 2)))) {
-                if ((ownerBounds.oMinus(projBounds)).RayIntersection(org, viewAxis.oGet(0), distance)) {
-                    start = org.oPlus(viewAxis.oGet(0).oMultiply(distance[0]));
+                if ((ownerBounds.oMinus(projBounds)).RayIntersection(org, this.viewAxis.oGet(0), distance)) {
+                    start = org.oPlus(this.viewAxis.oGet(0).oMultiply(distance[0]));
                 } else {
                     start = ownerBounds.GetCenter();
                 }
@@ -6425,17 +6425,17 @@ public class AI {
                 start = ownerBounds.GetCenter();
             }
 
-            gameLocal.clip.Translation(tr, start, muzzle, projectileClipModel, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
+            gameLocal.clip.Translation(tr, start, muzzle, this.projectileClipModel, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
             muzzle = tr[0].endpos;
 
-            gameLocal.clip.Translation(tr, muzzle, toPos, projectileClipModel, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
-            if (tr[0].fraction >= 1.0f || (gameLocal.GetTraceEntity(tr[0]).equals(enemyEnt))) {
-                lastHitCheckResult = true;
+            gameLocal.clip.Translation(tr, muzzle, toPos, this.projectileClipModel, getMat3_identity(), MASK_SHOT_BOUNDINGBOX, this);
+            if ((tr[0].fraction >= 1.0f) || (gameLocal.GetTraceEntity(tr[0]).equals(enemyEnt))) {
+                this.lastHitCheckResult = true;
             } else {
-                lastHitCheckResult = false;
+                this.lastHitCheckResult = false;
             }
 
-            idThread.ReturnInt(lastHitCheckResult);
+            idThread.ReturnInt(this.lastHitCheckResult);
         }
 
         protected void Event_EnemyPositionValid() {
@@ -6446,16 +6446,16 @@ public class AI {
         }
 
         protected void Event_ChargeAttack(final idEventArg<String> damageDef) {
-            idActor enemyEnt = enemy.GetEntity();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
             StopMove(MOVE_STATUS_DEST_NOT_FOUND);
             if (enemyEnt != null) {
                 idVec3 enemyOrg;
 
-                if (move.moveType == MOVETYPE_FLY) {
+                if (this.move.moveType == MOVETYPE_FLY) {
                     // position destination so that we're in the enemy's view
                     enemyOrg = enemyEnt.GetEyePosition();
-                    enemyOrg.oMinSet(enemyEnt.GetPhysics().GetGravityNormal().oMultiply(fly_offset));
+                    enemyOrg.oMinSet(enemyEnt.GetPhysics().GetGravityNormal().oMultiply(this.fly_offset));
                 } else {
                     enemyOrg = enemyEnt.GetPhysics().GetOrigin();
                 }
@@ -6467,9 +6467,9 @@ public class AI {
         }
 
         protected void Event_TestChargeAttack() {
-            trace_s trace = new trace_s();
-            idActor enemyEnt = enemy.GetEntity();
-            predictedPath_s path = new predictedPath_s();
+            final trace_s trace = new trace_s();
+            final idActor enemyEnt = this.enemy.GetEntity();
+            final predictedPath_s path = new predictedPath_s();
             idVec3 end;
 
             if (null == enemyEnt) {
@@ -6477,24 +6477,24 @@ public class AI {
                 return;
             }
 
-            if (move.moveType == MOVETYPE_FLY) {
+            if (this.move.moveType == MOVETYPE_FLY) {
                 // position destination so that we're in the enemy's view
                 end = enemyEnt.GetEyePosition();
-                end.oMinSet(enemyEnt.GetPhysics().GetGravityNormal().oMultiply(fly_offset));
+                end.oMinSet(enemyEnt.GetPhysics().GetGravityNormal().oMultiply(this.fly_offset));
             } else {
                 end = enemyEnt.GetPhysics().GetOrigin();
             }
 
-            idAI.PredictPath(this, aas, physicsObj.GetOrigin(), end.oMinus(physicsObj.GetOrigin()), 1000, 1000, (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
+            idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), end.oMinus(this.physicsObj.GetOrigin()), 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorGreen, physicsObj.GetOrigin(), end, gameLocal.msec);
-                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, physicsObj.GetBounds(), end, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), end, gameLocal.msec);
+                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), end, gameLocal.msec);
             }
 
             if ((path.endEvent == 0) || (path.blockingEntity.equals(enemyEnt))) {
-                idVec3 delta = end.oMinus(physicsObj.GetOrigin());
-                float time = delta.LengthFast();
+                final idVec3 delta = end.oMinus(this.physicsObj.GetOrigin());
+                final float time = delta.LengthFast();
                 idThread.ReturnFloat(time);
             } else {
                 idThread.ReturnFloat(0.0f);
@@ -6503,13 +6503,13 @@ public class AI {
 
         protected void Event_TestAnimMoveTowardEnemy(final idEventArg<String> animname) {
             int anim;
-            predictedPath_s path = new predictedPath_s();
+            final predictedPath_s path = new predictedPath_s();
             idVec3 moveVec;
             float yaw;
             idVec3 delta;
             idActor enemyEnt;
 
-            enemyEnt = enemy.GetEntity();
+            enemyEnt = this.enemy.GetEntity();
             if (null == enemyEnt) {
                 idThread.ReturnInt(false);
                 return;
@@ -6517,20 +6517,20 @@ public class AI {
 
             anim = GetAnim(ANIMCHANNEL_LEGS, animname.value);
             if (0 == anim) {
-                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, name, GetEntityDefName());
+                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, this.name, GetEntityDefName());
                 idThread.ReturnInt(false);
                 return;
             }
 
-            delta = enemyEnt.GetPhysics().GetOrigin().oMinus(physicsObj.GetOrigin());
+            delta = enemyEnt.GetPhysics().GetOrigin().oMinus(this.physicsObj.GetOrigin());
             yaw = delta.ToYaw();
 
-            moveVec = animator.TotalMovementDelta(anim).oMultiply(new idAngles(0.0f, yaw, 0.0f).ToMat3().oMultiply(physicsObj.GetGravityAxis()));
-            idAI.PredictPath(this, aas, physicsObj.GetOrigin(), moveVec, 1000, 1000, (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
+            moveVec = this.animator.TotalMovementDelta(anim).oMultiply(new idAngles(0.0f, yaw, 0.0f).ToMat3().oMultiply(this.physicsObj.GetGravityAxis()));
+            idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), moveVec, 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorGreen, physicsObj.GetOrigin(), physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
-                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, physicsObj.GetBounds(), physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), this.physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
+                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), this.physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
             }
 
             idThread.ReturnInt(path.endEvent == 0);
@@ -6538,38 +6538,38 @@ public class AI {
 
         protected void Event_TestAnimMove(final idEventArg<String> animname) {
             int anim;
-            predictedPath_s path = new predictedPath_s();
+            final predictedPath_s path = new predictedPath_s();
             idVec3 moveVec;
 
             anim = GetAnim(ANIMCHANNEL_LEGS, animname.value);
             if (0 == anim) {
-                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, name, GetEntityDefName());
+                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, this.name, GetEntityDefName());
                 idThread.ReturnInt(false);
                 return;
             }
 
-            moveVec = animator.TotalMovementDelta(anim).oMultiply(new idAngles(0.0f, ideal_yaw, 0.0f).ToMat3().oMultiply(physicsObj.GetGravityAxis()));
-            idAI.PredictPath(this, aas, physicsObj.GetOrigin(), moveVec, 1000, 1000, (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
+            moveVec = this.animator.TotalMovementDelta(anim).oMultiply(new idAngles(0.0f, this.ideal_yaw, 0.0f).ToMat3().oMultiply(this.physicsObj.GetGravityAxis()));
+            idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), moveVec, 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorGreen, physicsObj.GetOrigin(), physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
-                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, physicsObj.GetBounds(), physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), this.physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
+                gameRenderWorld.DebugBounds(path.endEvent == 0 ? colorYellow : colorRed, this.physicsObj.GetBounds(), this.physicsObj.GetOrigin().oPlus(moveVec), gameLocal.msec);
             }
 
             idThread.ReturnInt(path.endEvent == 0);
         }
 
         protected void Event_TestMoveToPosition(final idEventArg<idVec3> _position) {
-            idVec3 position = _position.value;
-            predictedPath_s path = new predictedPath_s();
+            final idVec3 position = _position.value;
+            final predictedPath_s path = new predictedPath_s();
 
-            idAI.PredictPath(this, aas, physicsObj.GetOrigin(), position.oMinus(physicsObj.GetOrigin()), 1000, 1000, (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
+            idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), position.oMinus(this.physicsObj.GetOrigin()), 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
             if (ai_debugMove.GetBool()) {
-                gameRenderWorld.DebugLine(colorGreen, physicsObj.GetOrigin(), position, gameLocal.msec);
-                gameRenderWorld.DebugBounds(colorYellow, physicsObj.GetBounds(), position, gameLocal.msec);
+                gameRenderWorld.DebugLine(colorGreen, this.physicsObj.GetOrigin(), position, gameLocal.msec);
+                gameRenderWorld.DebugBounds(colorYellow, this.physicsObj.GetBounds(), position, gameLocal.msec);
                 if (path.endEvent != 0) {
-                    gameRenderWorld.DebugBounds(colorRed, physicsObj.GetBounds(), path.endPos, gameLocal.msec);
+                    gameRenderWorld.DebugBounds(colorRed, this.physicsObj.GetBounds(), path.endPos, gameLocal.msec);
                 }
             }
 
@@ -6577,24 +6577,24 @@ public class AI {
         }
 
         protected void Event_TestMeleeAttack() {
-            boolean result = TestMelee();
+            final boolean result = TestMelee();
             idThread.ReturnInt(result);
         }
 
         protected void Event_TestAnimAttack(final idEventArg<String> animname) {
             int anim;
-            predictedPath_s path = new predictedPath_s();
+            final predictedPath_s path = new predictedPath_s();
 
             anim = GetAnim(ANIMCHANNEL_LEGS, animname.value);
             if (0 == anim) {
-                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, name, GetEntityDefName());
+                gameLocal.DWarning("missing '%s' animation on '%s' (%s)", animname.value, this.name, GetEntityDefName());
                 idThread.ReturnInt(false);
                 return;
             }
 
-            idAI.PredictPath(this, aas, physicsObj.GetOrigin(), animator.TotalMovementDelta(anim), 1000, 1000, (move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
+            idAI.PredictPath(this, this.aas, this.physicsObj.GetOrigin(), this.animator.TotalMovementDelta(anim), 1000, 1000, (this.move.moveType == MOVETYPE_FLY) ? SE_BLOCKED : (SE_ENTER_OBSTACLE | SE_BLOCKED | SE_ENTER_LEDGE_AREA), path);
 
-            idThread.ReturnInt(path.blockingEntity != null && (path.blockingEntity.equals(enemy.GetEntity())));
+            idThread.ReturnInt((path.blockingEntity != null) && (path.blockingEntity.equals(this.enemy.GetEntity())));
         }
 
         protected void Event_Shrivel(idEventArg<Float> shrivel_time) {
@@ -6606,47 +6606,47 @@ public class AI {
                     return;
                 }
 
-                shrivel_rate = 0.001f / shrivel_time.value;
-                shrivel_start = gameLocal.time;
+                this.shrivel_rate = 0.001f / shrivel_time.value;
+                this.shrivel_start = gameLocal.time;
             }
 
-            t = (gameLocal.time - shrivel_start) * shrivel_rate;
+            t = (gameLocal.time - this.shrivel_start) * this.shrivel_rate;
             if (t > 0.25f) {
-                renderEntity.noShadow = true;
+                this.renderEntity.noShadow = true;
             }
             if (t > 1.0f) {
                 t = 1.0f;
                 idThread.EndMultiFrameEvent(this, AI_Shrivel);
             }
 
-            renderEntity.shaderParms[SHADERPARM_MD5_SKINSCALE] = 1.0f - t * 0.5f;
+            this.renderEntity.shaderParms[SHADERPARM_MD5_SKINSCALE] = 1.0f - (t * 0.5f);
             UpdateVisuals();
         }
 
         protected void Event_Burn() {
-            renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = gameLocal.time * 0.001f;
+            this.renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = gameLocal.time * 0.001f;
             SpawnParticles("smoke_burnParticleSystem");
             UpdateVisuals();
         }
 
         protected void Event_PreBurn() {
             // for now this just turns shadows off
-            renderEntity.noShadow = true;
+            this.renderEntity.noShadow = true;
         }
 
         protected void Event_ClearBurn() {
-            renderEntity.noShadow = spawnArgs.GetBool("noshadows");
-            renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = 0.0f;
+            this.renderEntity.noShadow = this.spawnArgs.GetBool("noshadows");
+            this.renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = 0.0f;
             UpdateVisuals();
         }
 
         protected void Event_SetSmokeVisibility(idEventArg<Integer> _num, idEventArg<Integer> on) {
-            int num = _num.value;
+            final int num = _num.value;
             int i;
             int time;
 
-            if (num >= particles.Num()) {
-                gameLocal.Warning("Particle #%d out of range (%d particles) on entity '%s'", num, particles.Num(), name);
+            if (num >= this.particles.Num()) {
+                gameLocal.Warning("Particle #%d out of range (%d particles) on entity '%s'", num, this.particles.Num(), this.name);
                 return;
             }
 
@@ -6658,10 +6658,10 @@ public class AI {
             }
 
             if (num >= 0) {
-                particles.oGet(num).time = time;
+                this.particles.oGet(num).time = time;
             } else {
-                for (i = 0; i < particles.Num(); i++) {
-                    particles.oGet(i).time = time;
+                for (i = 0; i < this.particles.Num(); i++) {
+                    this.particles.oGet(i).time = time;
                 }
             }
 
@@ -6669,12 +6669,12 @@ public class AI {
         }
 
         protected void Event_NumSmokeEmitters() {
-            idThread.ReturnInt(particles.Num());
+            idThread.ReturnInt(this.particles.Num());
         }
 
         protected void Event_StopThinking() {
             BecomeInactive(TH_THINK);
-            idThread thread = idThread.CurrentThread();
+            final idThread thread = idThread.CurrentThread();
             if (thread != null) {
                 thread.DoneProcessing();
             }
@@ -6683,8 +6683,8 @@ public class AI {
         protected void Event_GetTurnDelta() {
             float amount;
 
-            if (turnRate != 0) {
-                amount = idMath.AngleNormalize180(ideal_yaw - current_yaw);
+            if (this.turnRate != 0) {
+                amount = idMath.AngleNormalize180(this.ideal_yaw - this.current_yaw);
                 idThread.ReturnFloat(amount);
             } else {
                 idThread.ReturnFloat(0.0f);
@@ -6692,34 +6692,34 @@ public class AI {
         }
 
         protected void Event_GetMoveType() {
-            idThread.ReturnInt(etoi(move.moveType));
+            idThread.ReturnInt(etoi(this.move.moveType));
         }
 
         protected void Event_SetMoveType(idEventArg<Integer> _moveType) {
-            int moveType = _moveType.value;
+            final int moveType = _moveType.value;
             if ((moveType < 0) || (moveType >= etoi(NUM_MOVETYPES))) {
                 gameLocal.Error("Invalid movetype %d", moveType);
             }
 
-            move.moveType = moveType_t.values()[moveType];
-            if (move.moveType == MOVETYPE_FLY) {
-                travelFlags = TFL_WALK | TFL_AIR | TFL_FLY;
+            this.move.moveType = moveType_t.values()[moveType];
+            if (this.move.moveType == MOVETYPE_FLY) {
+                this.travelFlags = TFL_WALK | TFL_AIR | TFL_FLY;
             } else {
-                travelFlags = TFL_WALK | TFL_AIR;
+                this.travelFlags = TFL_WALK | TFL_AIR;
             }
         }
 
         protected void Event_SaveMove() {
-            savedMove = move;
+            this.savedMove = this.move;
         }
 
         protected void Event_RestoreMove() {
-            idVec3 goalPos = new idVec3();
-            idVec3 dest = new idVec3();
+            final idVec3 goalPos = new idVec3();
+            final idVec3 dest = new idVec3();
 
-            switch (savedMove.moveCommand) {
+            switch (this.savedMove.moveCommand) {
                 case MOVE_NONE:
-                    StopMove(savedMove.moveStatus);
+                    StopMove(this.savedMove.moveStatus);
                     break;
 
                 case MOVE_FACE_ENEMY:
@@ -6727,7 +6727,7 @@ public class AI {
                     break;
 
                 case MOVE_FACE_ENTITY:
-                    FaceEntity(savedMove.goalEntity.GetEntity());
+                    FaceEntity(this.savedMove.goalEntity.GetEntity());
                     break;
 
                 case MOVE_TO_ENEMY:
@@ -6739,31 +6739,31 @@ public class AI {
                     break;
 
                 case MOVE_TO_ENTITY:
-                    MoveToEntity(savedMove.goalEntity.GetEntity());
+                    MoveToEntity(this.savedMove.goalEntity.GetEntity());
                     break;
 
                 case MOVE_OUT_OF_RANGE:
-                    MoveOutOfRange(savedMove.goalEntity.GetEntity(), savedMove.range);
+                    MoveOutOfRange(this.savedMove.goalEntity.GetEntity(), this.savedMove.range);
                     break;
 
                 case MOVE_TO_ATTACK_POSITION:
-                    MoveToAttackPosition(savedMove.goalEntity.GetEntity(), savedMove.anim);
+                    MoveToAttackPosition(this.savedMove.goalEntity.GetEntity(), this.savedMove.anim);
                     break;
 
                 case MOVE_TO_COVER:
-                    MoveToCover(savedMove.goalEntity.GetEntity(), lastVisibleEnemyPos);
+                    MoveToCover(this.savedMove.goalEntity.GetEntity(), this.lastVisibleEnemyPos);
                     break;
 
                 case MOVE_TO_POSITION:
-                    MoveToPosition(savedMove.moveDest);
+                    MoveToPosition(this.savedMove.moveDest);
                     break;
 
                 case MOVE_TO_POSITION_DIRECT:
-                    DirectMoveToPosition(savedMove.moveDest);
+                    DirectMoveToPosition(this.savedMove.moveDest);
                     break;
 
                 case MOVE_SLIDE_TO_POSITION:
-                    SlideToPosition(savedMove.moveDest, savedMove.duration);
+                    SlideToPosition(this.savedMove.moveDest, this.savedMove.duration);
                     break;
 
                 case MOVE_WANDER:
@@ -6780,52 +6780,52 @@ public class AI {
         }
 
         protected void Event_AllowMovement(idEventArg<Float> flag) {
-            allowMove = (flag.value != 0.0f);
+            this.allowMove = (flag.value != 0.0f);
         }
 
         protected void Event_JumpFrame() {
-            AI_JUMP.operator(true);
+            this.AI_JUMP.operator(true);
         }
 
         protected void Event_EnableClip() {
-            physicsObj.SetClipMask(MASK_MONSTERSOLID);
-            disableGravity = false;
+            this.physicsObj.SetClipMask(MASK_MONSTERSOLID);
+            this.disableGravity = false;
         }
 
         protected void Event_DisableClip() {
-            physicsObj.SetClipMask(0);
-            disableGravity = true;
+            this.physicsObj.SetClipMask(0);
+            this.disableGravity = true;
         }
 
         protected void Event_EnableGravity() {
-            disableGravity = false;
+            this.disableGravity = false;
         }
 
         protected void Event_DisableGravity() {
-            disableGravity = true;
+            this.disableGravity = true;
         }
 
         protected void Event_EnableAFPush() {
-            af_push_moveables = true;
+            this.af_push_moveables = true;
         }
 
         protected void Event_DisableAFPush() {
-            af_push_moveables = false;
+            this.af_push_moveables = false;
         }
 
         protected void Event_SetFlySpeed(idEventArg<Float> speed) {
-            if (move.speed == fly_speed) {
-                move.speed = speed.value;
+            if (this.move.speed == this.fly_speed) {
+                this.move.speed = speed.value;
             }
-            fly_speed = speed.value;
+            this.fly_speed = speed.value;
         }
 
         protected void Event_SetFlyOffset(idEventArg<Integer> offset) {
-            fly_offset = offset.value;
+            this.fly_offset = offset.value;
         }
 
         protected void Event_ClearFlyOffset() {
-            fly_offset = spawnArgs.GetInt("fly_offset", "0");
+            this.fly_offset = this.spawnArgs.GetInt("fly_offset", "0");
         }
 
         protected void Event_GetClosestHiddenTarget(final idEventArg<String> type) {
@@ -6834,8 +6834,8 @@ public class AI {
             idEntity bestEnt;
             float time;
             float bestTime;
-            final idVec3 org = physicsObj.GetOrigin();
-            idActor enemyEnt = enemy.GetEntity();
+            final idVec3 org = this.physicsObj.GetOrigin();
+            final idActor enemyEnt = this.enemy.GetEntity();
 
             if (null == enemyEnt) {
                 // no enemy to hide from
@@ -6843,10 +6843,10 @@ public class AI {
                 return;
             }
 
-            if (targets.Num() == 1) {
-                ent = targets.oGet(0).GetEntity();
-                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type.value) == 0) {
-                    if (!EntityCanSeePos(enemyEnt, lastVisibleEnemyPos, ent.GetPhysics().GetOrigin())) {
+            if (this.targets.Num() == 1) {
+                ent = this.targets.oGet(0).GetEntity();
+                if ((ent != null) && (idStr.Cmp(ent.GetEntityDefName(), type.value) == 0)) {
+                    if (!EntityCanSeePos(enemyEnt, this.lastVisibleEnemyPos, ent.GetPhysics().GetOrigin())) {
                         idThread.ReturnEntity(ent);
                         return;
                     }
@@ -6857,13 +6857,13 @@ public class AI {
 
             bestEnt = null;
             bestTime = idMath.INFINITY;
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
-                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type.value) == 0) {
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
+                if ((ent != null) && (idStr.Cmp(ent.GetEntityDefName(), type.value) == 0)) {
                     final idVec3 destOrg = ent.GetPhysics().GetOrigin();
                     time = TravelDistance(org, destOrg);
                     if ((time >= 0.0f) && (time < bestTime)) {
-                        if (!EntityCanSeePos(enemyEnt, lastVisibleEnemyPos, destOrg)) {
+                        if (!EntityCanSeePos(enemyEnt, this.lastVisibleEnemyPos, destOrg)) {
                             bestEnt = ent;
                             bestTime = time;
                         }
@@ -6878,12 +6878,12 @@ public class AI {
             int num;
             int which;
             idEntity ent;
-            idEntity[] ents = new idEntity[MAX_GENTITIES];
+            final idEntity[] ents = new idEntity[MAX_GENTITIES];
 
             num = 0;
-            for (i = 0; i < targets.Num(); i++) {
-                ent = targets.oGet(i).GetEntity();
-                if (ent != null && idStr.Cmp(ent.GetEntityDefName(), type.value) == 0) {
+            for (i = 0; i < this.targets.Num(); i++) {
+                ent = this.targets.oGet(i).GetEntity();
+                if ((ent != null) && (idStr.Cmp(ent.GetEntityDefName(), type.value) == 0)) {
                     ents[ num++] = ent;
                     if (num >= MAX_GENTITIES) {
                         break;
@@ -6903,14 +6903,14 @@ public class AI {
         protected void Event_TravelDistanceToPoint(final idEventArg<idVec3> pos) {
             float time;
 
-            time = TravelDistance(physicsObj.GetOrigin(), pos.value);
+            time = TravelDistance(this.physicsObj.GetOrigin(), pos.value);
             idThread.ReturnFloat(time);
         }
 
         protected void Event_TravelDistanceToEntity(idEventArg<idEntity> ent) {
             float time;
 
-            time = TravelDistance(physicsObj.GetOrigin(), ent.value.GetPhysics().GetOrigin());
+            time = TravelDistance(this.physicsObj.GetOrigin(), ent.value.GetPhysics().GetOrigin());
             idThread.ReturnFloat(time);
         }
 
@@ -6934,32 +6934,32 @@ public class AI {
             idEntity ent = _ent.value;
             if (ent == this) {
                 ent = null;
-            } else if ((ent != focusEntity.GetEntity()) || (focusTime < gameLocal.time)) {
-                focusEntity.oSet(ent);
-                alignHeadTime = gameLocal.time;
-                forceAlignHeadTime = (int) (gameLocal.time + SEC2MS(1));
-                blink_time = 0;
+            } else if ((ent != this.focusEntity.GetEntity()) || (this.focusTime < gameLocal.time)) {
+                this.focusEntity.oSet(ent);
+                this.alignHeadTime = gameLocal.time;
+                this.forceAlignHeadTime = (int) (gameLocal.time + SEC2MS(1));
+                this.blink_time = 0;
             }
 
-            focusTime = (int) (gameLocal.time + SEC2MS(duration.value));
+            this.focusTime = (int) (gameLocal.time + SEC2MS(duration.value));
         }
 
         protected void Event_LookAtEnemy(idEventArg<Float> duration) {
             idActor enemyEnt;
 
-            enemyEnt = enemy.GetEntity();
-            if ((!enemyEnt.equals(focusEntity.GetEntity())) || (focusTime < gameLocal.time)) {
-                focusEntity.oSet(enemyEnt);
-                alignHeadTime = gameLocal.time;
-                forceAlignHeadTime = (int) (gameLocal.time + SEC2MS(1));
-                blink_time = 0;
+            enemyEnt = this.enemy.GetEntity();
+            if ((!enemyEnt.equals(this.focusEntity.GetEntity())) || (this.focusTime < gameLocal.time)) {
+                this.focusEntity.oSet(enemyEnt);
+                this.alignHeadTime = gameLocal.time;
+                this.forceAlignHeadTime = (int) (gameLocal.time + SEC2MS(1));
+                this.blink_time = 0;
             }
 
-            focusTime = (int) (gameLocal.time + SEC2MS(duration.value));
+            this.focusTime = (int) (gameLocal.time + SEC2MS(duration.value));
         }
 
         protected void Event_SetJointMod(idEventArg<Integer> allow) {
-            allowJointMod = itob(allow.value);
+            this.allowJointMod = itob(allow.value);
         }
 
         protected void Event_ThrowMoveable() {
@@ -6995,20 +6995,20 @@ public class AI {
         }
 
         protected void Event_SetAngles(final idEventArg<idAngles> ang) {
-            current_yaw = ang.value.yaw;
-            viewAxis = new idAngles(0, current_yaw, 0).ToMat3();
+            this.current_yaw = ang.value.yaw;
+            this.viewAxis = new idAngles(0, this.current_yaw, 0).ToMat3();
         }
 
         protected void Event_GetAngles() {
-            idThread.ReturnVector(new idVec3(0.0f, current_yaw, 0.0f));
+            idThread.ReturnVector(new idVec3(0.0f, this.current_yaw, 0.0f));
         }
 
         protected void Event_RealKill() {
-            health = 0;
+            this.health = 0;
 
-            if (af.IsLoaded()) {
+            if (this.af.IsLoaded()) {
                 // clear impacts
-                af.Rest();
+                this.af.Rest();
 
                 // physics is turned off by calling af.Rest()
                 BecomeActive(TH_PHYSICS);
@@ -7022,19 +7022,19 @@ public class AI {
         }
 
         protected void Event_WakeOnFlashlight(idEventArg<Integer> enable) {
-            wakeOnFlashlight = (enable.value != 0);
+            this.wakeOnFlashlight = (enable.value != 0);
         }
 
         protected void Event_LocateEnemy() {
             idActor enemyEnt;
-            int[] areaNum = {0};
+            final int[] areaNum = {0};
 
-            enemyEnt = enemy.GetEntity();
+            enemyEnt = this.enemy.GetEntity();
             if (null == enemyEnt) {
                 return;
             }
 
-            enemyEnt.GetAASLocation(aas, lastReachableEnemyPos, areaNum);
+            enemyEnt.GetAASLocation(this.aas, this.lastReachableEnemyPos, areaNum);
             SetEnemyPosition();
             UpdateEnemyPosition();
         }
@@ -7046,31 +7046,31 @@ public class AI {
             if (kickEnt.value != null) {
                 obEnt = kickEnt.value;
             } else {
-                obEnt = move.obstacle.GetEntity();
+                obEnt = this.move.obstacle.GetEntity();
             }
 
             if (obEnt != null) {
-                dir = obEnt.GetPhysics().GetOrigin().oMinus(physicsObj.GetOrigin());
+                dir = obEnt.GetPhysics().GetOrigin().oMinus(this.physicsObj.GetOrigin());
                 dir.Normalize();
             } else {
-                dir = viewAxis.oGet(0);
+                dir = this.viewAxis.oGet(0);
             }
             KickObstacles(dir, force.value, obEnt);
         }
 
         protected void Event_GetObstacle() {
-            idThread.ReturnEntity(move.obstacle.GetEntity());
+            idThread.ReturnEntity(this.move.obstacle.GetEntity());
         }
 
         protected void Event_PushPointIntoAAS(final idEventArg<idVec3> _pos) {
-            idVec3 pos = _pos.value;
+            final idVec3 pos = _pos.value;
             int areaNum;
             idVec3 newPos;
 
             areaNum = PointReachableAreaNum(pos);
             if (areaNum != 0) {
                 newPos = pos;
-                aas.PushPointIntoAreaNum(areaNum, newPos);
+                this.aas.PushPointIntoAreaNum(areaNum, newPos);
                 idThread.ReturnVector(newPos);
             } else {
                 idThread.ReturnVector(pos);
@@ -7078,33 +7078,33 @@ public class AI {
         }
 
         protected void Event_GetTurnRate() {
-            idThread.ReturnFloat(turnRate);
+            idThread.ReturnFloat(this.turnRate);
         }
 
         protected void Event_SetTurnRate(idEventArg<Float> rate) {
-            turnRate = rate.value;
+            this.turnRate = rate.value;
         }
 
         protected void Event_AnimTurn(idEventArg<Float> angles) {
-            turnVel = 0.0f;
-            anim_turn_angles = angles.value;
+            this.turnVel = 0.0f;
+            this.anim_turn_angles = angles.value;
             if (angles.value != 0) {
-                anim_turn_yaw = current_yaw;
-                anim_turn_amount = idMath.Fabs(idMath.AngleNormalize180(current_yaw - ideal_yaw));
-                if (anim_turn_amount > anim_turn_angles) {
-                    anim_turn_amount = anim_turn_angles;
+                this.anim_turn_yaw = this.current_yaw;
+                this.anim_turn_amount = idMath.Fabs(idMath.AngleNormalize180(this.current_yaw - this.ideal_yaw));
+                if (this.anim_turn_amount > this.anim_turn_angles) {
+                    this.anim_turn_amount = this.anim_turn_angles;
                 }
             } else {
-                anim_turn_amount = 0.0f;
-                animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(0, 1.0f);
-                animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(1, 0.0f);
-                animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(0, 1.0f);
-                animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(1, 0.0f);
+                this.anim_turn_amount = 0.0f;
+                this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(0, 1.0f);
+                this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(1, 0.0f);
+                this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(0, 1.0f);
+                this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(1, 0.0f);
             }
         }
 
         protected void Event_AllowHiddenMovement(idEventArg<Integer> enable) {
-            allowHiddenMovement = (enable.value != 0);
+            this.allowHiddenMovement = (enable.value != 0);
         }
 
         protected void Event_TriggerParticles(final idEventArg<String> jointName) {
@@ -7113,7 +7113,7 @@ public class AI {
 
         protected void Event_FindActorsInBounds(final idEventArg<idVec3> mins, final idEventArg<idVec3> maxs) {
             idEntity ent;
-            idEntity[] entityList = new idEntity[MAX_GENTITIES];
+            final idEntity[] entityList = new idEntity[MAX_GENTITIES];
             int numListedEntities;
             int i;
 
@@ -7130,13 +7130,13 @@ public class AI {
         }
 
         protected void Event_CanReachPosition(final idEventArg<idVec3> pos) {
-            aasPath_s path = new aasPath_s();
+            final aasPath_s path = new aasPath_s();
             int toAreaNum;
             int areaNum;
 
             toAreaNum = PointReachableAreaNum(pos.value);
-            areaNum = PointReachableAreaNum(physicsObj.GetOrigin());
-            if (0 == toAreaNum || !PathToGoal(path, areaNum, physicsObj.GetOrigin(), toAreaNum, pos.value)) {
+            areaNum = PointReachableAreaNum(this.physicsObj.GetOrigin());
+            if ((0 == toAreaNum) || !PathToGoal(path, areaNum, this.physicsObj.GetOrigin(), toAreaNum, pos.value)) {
                 idThread.ReturnInt(false);
             } else {
                 idThread.ReturnInt(true);
@@ -7144,8 +7144,8 @@ public class AI {
         }
 
         protected void Event_CanReachEntity(idEventArg<idEntity> _ent) {
-            idEntity ent = _ent.value;
-            aasPath_s path = new aasPath_s();
+            final idEntity ent = _ent.value;
+            final aasPath_s path = new aasPath_s();
             int toAreaNum;
             int areaNum;
             idVec3 pos = new idVec3();
@@ -7155,7 +7155,7 @@ public class AI {
                 return;
             }
 
-            if (move.moveType != MOVETYPE_FLY) {
+            if (this.move.moveType != MOVETYPE_FLY) {
                 if (!ent.GetFloorPos(64.0f, pos)) {
                     idThread.ReturnInt(false);
                     return;
@@ -7174,9 +7174,9 @@ public class AI {
                 return;
             }
 
-            final idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             areaNum = PointReachableAreaNum(org);
-            if (0 == toAreaNum || !PathToGoal(path, areaNum, org, toAreaNum, pos)) {
+            if ((0 == toAreaNum) || !PathToGoal(path, areaNum, org, toAreaNum, pos)) {
                 idThread.ReturnInt(false);
             } else {
                 idThread.ReturnInt(true);
@@ -7184,24 +7184,24 @@ public class AI {
         }
 
         protected void Event_CanReachEnemy() {
-            aasPath_s path = new aasPath_s();
-            int[] toAreaNum = {0};
+            final aasPath_s path = new aasPath_s();
+            final int[] toAreaNum = {0};
             int areaNum;
             idVec3 pos = new idVec3();
             idActor enemyEnt;
 
-            enemyEnt = enemy.GetEntity();
+            enemyEnt = this.enemy.GetEntity();
             if (null == enemyEnt) {
                 idThread.ReturnInt(false);
                 return;
             }
 
-            if (move.moveType != MOVETYPE_FLY) {
+            if (this.move.moveType != MOVETYPE_FLY) {
                 if (enemyEnt.OnLadder()) {
                     idThread.ReturnInt(false);
                     return;
                 }
-                enemyEnt.GetAASLocation(aas, pos, toAreaNum);
+                enemyEnt.GetAASLocation(this.aas, pos, toAreaNum);
             } else {
                 pos = enemyEnt.GetPhysics().GetOrigin();
                 toAreaNum[0] = PointReachableAreaNum(pos);
@@ -7212,7 +7212,7 @@ public class AI {
                 return;
             }
 
-            final idVec3 org = physicsObj.GetOrigin();
+            final idVec3 org = this.physicsObj.GetOrigin();
             areaNum = PointReachableAreaNum(org);
             if (!PathToGoal(path, areaNum, org, toAreaNum[0], pos)) {
                 idThread.ReturnInt(false);
@@ -7222,11 +7222,11 @@ public class AI {
         }
 
         protected void Event_GetReachableEntityPosition(idEventArg<idEntity> _ent) {
-            idEntity ent = _ent.value;
+            final idEntity ent = _ent.value;
             int toAreaNum;
             idVec3 pos = new idVec3();
 
-            if (move.moveType != MOVETYPE_FLY) {
+            if (this.move.moveType != MOVETYPE_FLY) {
                 if (!ent.GetFloorPos(64.0f, pos)) {
 
                     // NOTE: not a good way to return 'false'
@@ -7240,9 +7240,9 @@ public class AI {
                 pos = ent.GetPhysics().GetOrigin();
             }
 
-            if (aas != null) {
+            if (this.aas != null) {
                 toAreaNum = PointReachableAreaNum(pos);
-                aas.PushPointIntoAreaNum(toAreaNum, pos);
+                this.aas.PushPointIntoAreaNum(toAreaNum, pos);
             }
 
             idThread.ReturnVector(pos);
@@ -7264,18 +7264,20 @@ public class AI {
 
         @Override
         protected void _deconstructor() {
-            if (projectileClipModel != null) idClipModel.delete(projectileClipModel);
+            if (this.projectileClipModel != null) {
+				idClipModel.delete(this.projectileClipModel);
+			}
 
             DeconstructScriptObject();
-            scriptObject.Free();
-            if (worldMuzzleFlashHandle != -1) {
-                gameRenderWorld.FreeLightDef(worldMuzzleFlashHandle);
-                worldMuzzleFlashHandle = -1;
+            this.scriptObject.Free();
+            if (this.worldMuzzleFlashHandle != -1) {
+                gameRenderWorld.FreeLightDef(this.worldMuzzleFlashHandle);
+                this.worldMuzzleFlashHandle = -1;
             }
 
             super._deconstructor();
         }
-    };
+    }
 
     public static class idCombatNode extends idEntity {
         // CLASS_PROTOTYPE( idCombatNode );
@@ -7299,41 +7301,41 @@ public class AI {
         //
 
         public idCombatNode() {
-            min_dist = 0.0f;
-            max_dist = 0.0f;
-            cone_dist = 0.0f;
-            min_height = 0.0f;
-            max_height = 0.0f;
-            cone_left = new idVec3();
-            cone_right = new idVec3();
-            offset = new idVec3();
-            disabled = false;
+            this.min_dist = 0.0f;
+            this.max_dist = 0.0f;
+            this.cone_dist = 0.0f;
+            this.min_height = 0.0f;
+            this.max_height = 0.0f;
+            this.cone_left = new idVec3();
+            this.cone_right = new idVec3();
+            this.offset = new idVec3();
+            this.disabled = false;
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteFloat(min_dist);
-            savefile.WriteFloat(max_dist);
-            savefile.WriteFloat(cone_dist);
-            savefile.WriteFloat(min_height);
-            savefile.WriteFloat(max_height);
-            savefile.WriteVec3(cone_left);
-            savefile.WriteVec3(cone_right);
-            savefile.WriteVec3(offset);
-            savefile.WriteBool(disabled);
+            savefile.WriteFloat(this.min_dist);
+            savefile.WriteFloat(this.max_dist);
+            savefile.WriteFloat(this.cone_dist);
+            savefile.WriteFloat(this.min_height);
+            savefile.WriteFloat(this.max_height);
+            savefile.WriteVec3(this.cone_left);
+            savefile.WriteVec3(this.cone_right);
+            savefile.WriteVec3(this.offset);
+            savefile.WriteBool(this.disabled);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            min_dist = savefile.ReadFloat();
-            max_dist = savefile.ReadFloat();
-            cone_dist = savefile.ReadFloat();
-            min_height = savefile.ReadFloat();
-            max_height = savefile.ReadFloat();
-            savefile.ReadVec3(cone_left);
-            savefile.ReadVec3(cone_right);
-            savefile.ReadVec3(offset);
-            disabled = savefile.ReadBool();
+            this.min_dist = savefile.ReadFloat();
+            this.max_dist = savefile.ReadFloat();
+            this.cone_dist = savefile.ReadFloat();
+            this.min_height = savefile.ReadFloat();
+            this.max_height = savefile.ReadFloat();
+            savefile.ReadVec3(this.cone_left);
+            savefile.ReadVec3(this.cone_right);
+            savefile.ReadVec3(this.offset);
+            this.disabled = savefile.ReadBool();
         }
 
         @Override
@@ -7344,57 +7346,57 @@ public class AI {
             float yaw;
             float height;
 
-            min_dist = spawnArgs.GetFloat("min");
-            max_dist = spawnArgs.GetFloat("max");
-            height = spawnArgs.GetFloat("height");
-            fov = spawnArgs.GetFloat("fov", "60");
-            offset = spawnArgs.GetVector("offset");
+            this.min_dist = this.spawnArgs.GetFloat("min");
+            this.max_dist = this.spawnArgs.GetFloat("max");
+            height = this.spawnArgs.GetFloat("height");
+            fov = this.spawnArgs.GetFloat("fov", "60");
+            this.offset = this.spawnArgs.GetVector("offset");
 
-            final idVec3 org = GetPhysics().GetOrigin().oPlus(offset);
-            min_height = org.z - height * 0.5f;
-            max_height = min_height + height;
+            final idVec3 org = GetPhysics().GetOrigin().oPlus(this.offset);
+            this.min_height = org.z - (height * 0.5f);
+            this.max_height = this.min_height + height;
 
             final idMat3 axis = GetPhysics().GetAxis();
             yaw = axis.oGet(0).ToYaw();
 
-            idAngles leftang = new idAngles(0.0f, yaw + fov * 0.5f - 90.0f, 0.0f);
-            cone_left = leftang.ToForward();
+            final idAngles leftang = new idAngles(0.0f, (yaw + (fov * 0.5f)) - 90.0f, 0.0f);
+            this.cone_left = leftang.ToForward();
 
-            idAngles rightang = new idAngles(0.0f, yaw - fov * 0.5f + 90.0f, 0.0f);
-            cone_right = rightang.ToForward();
+            final idAngles rightang = new idAngles(0.0f, (yaw - (fov * 0.5f)) + 90.0f, 0.0f);
+            this.cone_right = rightang.ToForward();
 
-            disabled = spawnArgs.GetBool("start_off");
+            this.disabled = this.spawnArgs.GetBool("start_off");
         }
 
         public boolean IsDisabled() {
-            return disabled;
+            return this.disabled;
         }
 
         public boolean EntityInView(idActor actor, final idVec3 pos) {
-            if (null == actor || (actor.health <= 0)) {
+            if ((null == actor) || (actor.health <= 0)) {
                 return false;
             }
 
             final idBounds bounds = actor.GetPhysics().GetBounds();
-            if ((pos.z + bounds.oGet(1).z < min_height) || (pos.z + bounds.oGet(0).z >= max_height)) {
+            if (((pos.z + bounds.oGet(1).z) < this.min_height) || ((pos.z + bounds.oGet(0).z) >= this.max_height)) {
                 return false;
             }
 
-            final idVec3 org = GetPhysics().GetOrigin().oPlus(offset);
+            final idVec3 org = GetPhysics().GetOrigin().oPlus(this.offset);
             final idMat3 axis = GetPhysics().GetAxis();
-            idVec3 dir = pos.oMinus(org);
-            float dist = dir.oMultiply(axis.oGet(0));
+            final idVec3 dir = pos.oMinus(org);
+            final float dist = dir.oMultiply(axis.oGet(0));
 
-            if ((dist < min_dist) || (dist > max_dist)) {
+            if ((dist < this.min_dist) || (dist > this.max_dist)) {
                 return false;
             }
 
-            float left_dot = dir.oMultiply(cone_left);
+            final float left_dot = dir.oMultiply(this.cone_left);
             if (left_dot < 0.0f) {
                 return false;
             }
 
-            float right_dot = dir.oMultiply(cone_right);
+            final float right_dot = dir.oMultiply(this.cone_right);
             if (right_dot < 0.0f) {
                 return false;
             }
@@ -7405,9 +7407,9 @@ public class AI {
         public static void DrawDebugInfo() {
             idEntity ent;
             idCombatNode node;
-            idPlayer player = gameLocal.GetLocalPlayer();
+            final idPlayer player = gameLocal.GetLocalPlayer();
             idVec4 color;
-            idBounds bounds = new idBounds(new idVec3(-16, -16, 0), new idVec3(16, 16, 0));
+            final idBounds bounds = new idBounds(new idVec3(-16, -16, 0), new idVec3(16, 16, 0));
 
             for (ent = gameLocal.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                 if (!ent.IsType(idCombatNode.class)) {
@@ -7417,15 +7419,15 @@ public class AI {
                 node = (idCombatNode) ent;
                 if (node.disabled) {
                     color = colorMdGrey;
-                } else if (player != null && node.EntityInView(player, player.GetPhysics().GetOrigin())) {
+                } else if ((player != null) && node.EntityInView(player, player.GetPhysics().GetOrigin())) {
                     color = colorYellow;
                 } else {
                     color = colorRed;
                 }
 
-                idVec3 leftDir = new idVec3(-node.cone_left.y, node.cone_left.x, 0.0f);
-                idVec3 rightDir = new idVec3(node.cone_right.y, -node.cone_right.x, 0.0f);
-                idVec3 org = node.GetPhysics().GetOrigin().oPlus(node.offset);
+                final idVec3 leftDir = new idVec3(-node.cone_left.y, node.cone_left.x, 0.0f);
+                final idVec3 rightDir = new idVec3(node.cone_right.y, -node.cone_right.x, 0.0f);
+                final idVec3 org = node.GetPhysics().GetOrigin().oPlus(node.offset);
 
                 bounds.oGet(1).z = node.max_height;
 
@@ -7433,13 +7435,13 @@ public class AI {
                 rightDir.NormalizeFast();
 
                 final idMat3 axis = node.GetPhysics().GetAxis();
-                float cone_dot = node.cone_right.oMultiply(axis.oGet(1));
+                final float cone_dot = node.cone_right.oMultiply(axis.oGet(1));
                 if (idMath.Fabs(cone_dot) > 0.1) {
-                    float cone_dist = node.max_dist / cone_dot;
-                    idVec3 pos1 = org.oPlus(leftDir.oMultiply(node.min_dist));
-                    idVec3 pos2 = org.oPlus(leftDir.oMultiply(cone_dist));
-                    idVec3 pos3 = org.oPlus(rightDir.oMultiply(node.min_dist));
-                    idVec3 pos4 = org.oPlus(rightDir.oMultiply(cone_dist));
+                    final float cone_dist = node.max_dist / cone_dot;
+                    final idVec3 pos1 = org.oPlus(leftDir.oMultiply(node.min_dist));
+                    final idVec3 pos2 = org.oPlus(leftDir.oMultiply(cone_dist));
+                    final idVec3 pos3 = org.oPlus(rightDir.oMultiply(node.min_dist));
+                    final idVec3 pos4 = org.oPlus(rightDir.oMultiply(cone_dist));
 
                     gameRenderWorld.DebugLine(color, node.GetPhysics().GetOrigin(), (pos1.oPlus(pos3)).oMultiply(0.5f), gameLocal.msec);
                     gameRenderWorld.DebugLine(color, pos1, pos2, gameLocal.msec);
@@ -7452,12 +7454,12 @@ public class AI {
         }
 
         private void Event_Activate(idEventArg<idEntity> activator) {
-            disabled = !disabled;
+            this.disabled = !this.disabled;
         }
 
         private void Event_MarkUsed() {
-            if (spawnArgs.GetBool("use_once")) {
-                disabled = true;
+            if (this.spawnArgs.GetBool("use_once")) {
+                this.disabled = true;
             }
         }
 
@@ -7476,7 +7478,7 @@ public class AI {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ============

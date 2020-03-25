@@ -30,7 +30,7 @@ public class Image_process {
         int i, j;
         ByteBuffer inrow, inrow2;
         /*unsigned*/ int frac, fracstep;
-        /*unsigned*/ int[] p1 = new int[MAX_DIMENSION], p2 = new int[MAX_DIMENSION];
+        /*unsigned*/ final int[] p1 = new int[MAX_DIMENSION], p2 = new int[MAX_DIMENSION];
         ByteBuffer pix1, pix2, pix3, pix4;
         ByteBuffer out, out_p;
 
@@ -44,7 +44,7 @@ public class Image_process {
         out = ByteBuffer.allocate(outwidth * outheight * 4);//(byte *)R_StaticAlloc( outwidth * outheight * 4 );
         out_p = out;
 
-        fracstep = inwidth * 0x10000 / outwidth;
+        fracstep = (inwidth * 0x10000) / outwidth;
 
         frac = fracstep >> 2;
         for (i = 0; i < outwidth; i++) {
@@ -59,9 +59,9 @@ public class Image_process {
 
         for (i = 0; i < outheight; i++/*, out_p += outwidth*4*/) {
             inrow = in.duplicate();
-            inrow.position(4 * inwidth * (int) ((i + 0.25f) * inheight / outheight));
+            inrow.position(4 * inwidth * (int) (((i + 0.25f) * inheight) / outheight));
             inrow2 = in.duplicate();//
-            inrow2.position(4 * inwidth * (int) ((i + 0.75f) * inheight / outheight));
+            inrow2.position(4 * inwidth * (int) (((i + 0.75f) * inheight) / outheight));
             frac = fracstep >> 1;
             for (j = 0; j < outwidth; j++) {
                 pix1 = (ByteBuffer) inrow.duplicate().position(p1[j]);
@@ -97,14 +97,14 @@ public class Image_process {
         out_p = 0;
 
         for (i = 0; i < outheight; i++, out_p += outwidth * 4) {
-            inrow = /*in +*/ (4 * inwidth * (int) ((i + 0.25f) * inheight / outheight));
+            inrow = /*in +*/ (4 * inwidth * (int) (((i + 0.25f) * inheight) / outheight));
             for (j = 0; j < outwidth; j++) {
-                k = j * inwidth / outwidth;
-                pix1 = inrow + k * 4;
-                out[out_p + j * 4 + 0] = in.get(pix1 + 0);
-                out[out_p + j * 4 + 1] = in.get(pix1 + 1);
-                out[out_p + j * 4 + 2] = in.get(pix1 + 2);
-                out[out_p + j * 4 + 3] = in.get(pix1 + 3);
+                k = (j * inwidth) / outwidth;
+                pix1 = inrow + (k * 4);
+                out[out_p + (j * 4) + 0] = in.get(pix1 + 0);
+                out[out_p + (j * 4) + 1] = in.get(pix1 + 1);
+                out[out_p + (j * 4) + 2] = in.get(pix1 + 2);
+                out[out_p + (j * 4) + 3] = in.get(pix1 + 3);
             }
         }
 
@@ -165,7 +165,7 @@ public class Image_process {
         row = width * 4;
         plane = row * depth;
 
-        for (j = 1; j < depth - 1; j++) {
+        for (j = 1; j < (depth - 1); j++) {
             out = /*inBase +*/ j * plane;
             for (i = 0; i < height; i++, out += row) {
                 inBase.put(out + 0, border[0]);
@@ -173,7 +173,7 @@ public class Image_process {
                 inBase.put(out + 2, border[2]);
                 inBase.put(out + 3, border[3]);
             }
-            out = /*inBase+*/ (width - 1) * 4 + j * plane;
+            out = /*inBase+*/ ((width - 1) * 4) + (j * plane);
             for (i = 0; i < height; i++, out += row) {
                 inBase.put(out + 0, border[0]);
                 inBase.put(out + 1, border[1]);
@@ -187,7 +187,7 @@ public class Image_process {
                 inBase.put(out + 2, border[2]);
                 inBase.put(out + 3, border[3]);
             }
-            out = /*inBase+*/ width * 4 * (height - 1) + j * plane;
+            out = /*inBase+*/ (width * 4 * (height - 1)) + (j * plane);
             for (i = 0; i < width; i++, out += 4) {
                 inBase.put(out + 0, border[0]);
                 inBase.put(out + 1, border[1]);
@@ -231,10 +231,10 @@ public class Image_process {
         ByteBuffer out;
         int out_p;
         int row;
-        byte[] border = new byte[4];
+        final byte[] border = new byte[4];
         int newWidth, newHeight;
 
-        if (width < 1 || height < 1 || (width + height == 2)) {
+        if ((width < 1) || (height < 1) || ((width + height) == 2)) {
             common.FatalError("R_MipMap called with size %d,%d", width, height);
         }
 
@@ -261,7 +261,7 @@ public class Image_process {
         width >>= 1;
         height >>= 1;
 
-        if (width == 0 || height == 0) {
+        if ((width == 0) || (height == 0)) {
             width += height;	// get largest
             if (preserveBorder) {
                 for (i = 0; i < width; i++, out_p += 4) {
@@ -300,7 +300,7 @@ public class Image_process {
 
     static int addUnsignedBytes(byte... bytes) {
         int result = 0;
-        for (byte b : bytes) {
+        for (final byte b : bytes) {
             result += b & 0xFF;
         }
         return result;
@@ -333,7 +333,7 @@ public class Image_process {
         }
 
         // assume symetric for now
-        if (width < 2 || height < 2 || depth < 2) {
+        if ((width < 2) || (height < 2) || (depth < 2)) {
             common.FatalError("R_MipMap3D called with size %d,%d,%d", width, height, depth);
         }
 
@@ -423,9 +423,9 @@ public class Image_process {
         premult[2] = blend[2] * blend[3];
 
         for (i = 0; i < pixelCount; i++/*, data+=4*/) {
-            data.put(i * 4 + 0, (byte) ((data.get(i * 4 + 0) & 0xFF * inverseAlpha + premult[0]) >> 9));//TODO:signed byte arithmetic(overflow)
-            data.put(i * 4 + 1, (byte) ((data.get(i * 4 + 1) & 0xFF * inverseAlpha + premult[1]) >> 9));
-            data.put(i * 4 + 2, (byte) ((data.get(i * 4 + 2) & 0xFF * inverseAlpha + premult[2]) >> 9));
+            data.put((i * 4) + 0, (byte) ((data.get((i * 4) + 0) & ((0xFF * inverseAlpha) + premult[0])) >> 9));//TODO:signed byte arithmetic(overflow)
+            data.put((i * 4) + 1, (byte) ((data.get((i * 4) + 1) & ((0xFF * inverseAlpha) + premult[1])) >> 9));
+            data.put((i * 4) + 2, (byte) ((data.get((i * 4) + 2) & ((0xFF * inverseAlpha) + premult[2])) >> 9));
         }
     }
 
@@ -441,10 +441,10 @@ public class Image_process {
         int temp;
 
         for (i = 0; i < height; i++) {
-            for (j = 0; j < width / 2; j++) {
-                temp = data.getInt(i * width + j);
-                data.putInt(i * width + j, data.getInt(i * width + width - 1 - j));
-                data.putInt(i * width + width - 1 - j, temp);
+            for (j = 0; j < (width / 2); j++) {
+                temp = data.getInt((i * width) + j);
+                data.putInt((i * width) + j, data.getInt(((i * width) + width) - 1 - j));
+                data.putInt(((i * width) + width) - 1 - j, temp);
             }
         }
     }
@@ -454,10 +454,10 @@ public class Image_process {
         int temp;
 
         for (i = 0; i < width; i++) {
-            for (j = 0; j < height / 2; j++) {
-                temp = data.getInt(j * width + i);
-                final int index = (height - 1 - j) * width + i;
-                data.putInt(j * width + i, data.getInt(index));
+            for (j = 0; j < (height / 2); j++) {
+                temp = data.getInt((j * width) + i);
+                final int index = ((height - 1 - j) * width) + i;
+                data.putInt((j * width) + i, data.getInt(index));
                 data.putInt(index, temp);
             }
         }
@@ -471,7 +471,7 @@ public class Image_process {
 
         for (i = 0; i < width; i++) {
             for (j = 0; j < width; j++) {
-                temp.putInt(i * width + j, data.getInt(j * width + i));
+                temp.putInt((i * width) + j, data.getInt((j * width) + i));
             }
         }
 

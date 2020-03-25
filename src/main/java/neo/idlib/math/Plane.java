@@ -60,35 +60,35 @@ public class Plane {
         }
 
         public idPlane(float a, float b, float c, float d) {
-            abc.x = a;
-            abc.y = b;
-            abc.z = c;
+            this.abc.x = a;
+            this.abc.y = b;
+            this.abc.z = c;
             this.d = d;
         }
 
         public idPlane(final float[] array) {
-            abc.x = array[0];
-            abc.y = array[1];
-            abc.z = array[2];
+            this.abc.x = array[0];
+            this.abc.y = array[1];
+            this.abc.z = array[2];
             this.d = array[4];
         }
 
         public idPlane(final idVec3 normal, final float dist) {
-            abc.oSet(normal);
+            this.abc.oSet(normal);
             this.d = -dist;
         }
 
         public idPlane(final idVec4 vec) {
-            abc.x = vec.x;
-            abc.y = vec.y;
-            abc.z = vec.z;
+            this.abc.x = vec.x;
+            this.abc.y = vec.y;
+            this.abc.z = vec.z;
             this.d = vec.w;
         }
 
         public idPlane(final idPlane plane) {
-            abc.x = plane.abc.x;
-            abc.y = plane.abc.y;
-            abc.z = plane.abc.z;
+            this.abc.x = plane.abc.x;
+            this.abc.y = plane.abc.y;
+            this.abc.z = plane.abc.z;
             this.d = plane.d;
         }
 //
@@ -98,84 +98,84 @@ public class Plane {
         public float oGet(int index) {
             switch (index) {
                 case 0:
-                    return abc.x;
+                    return this.abc.x;
                 case 1:
-                    return abc.y;
+                    return this.abc.y;
                 case 2:
-                    return abc.z;
+                    return this.abc.z;
                 default:
-                    return d;
+                    return this.d;
             }
         }
 
         public float oSet(int index, final float value) {
             switch (index) {
                 case 0:
-                    return abc.x = value;
+                    return this.abc.x = value;
                 case 1:
-                    return abc.y = value;
+                    return this.abc.y = value;
                 case 2:
-                    return abc.z = value;
+                    return this.abc.z = value;
                 default:
-                    return d = value;
+                    return this.d = value;
             }
         }
 
         public float oPluSet(int index, final float value) {
             switch (index) {
                 case 0:
-                    return abc.x += value;
+                    return this.abc.x += value;
                 case 1:
-                    return abc.y += value;
+                    return this.abc.y += value;
                 case 2:
-                    return abc.z += value;
+                    return this.abc.z += value;
                 default:
-                    return d += value;
+                    return this.d += value;
             }
         }
 
         public float oMinSet(int index, final float value) {
             switch (index) {
                 case 0:
-                    return abc.x -= value;
+                    return this.abc.x -= value;
                 case 1:
-                    return abc.y -= value;
+                    return this.abc.y -= value;
                 case 2:
-                    return abc.z -= value;
+                    return this.abc.z -= value;
                 default:
-                    return d -= value;
+                    return this.d -= value;
             }
         }
 
         public float oDivSet(int index, final float value) {
             switch (index) {
                 case 0:
-                    return abc.x /= value;
+                    return this.abc.x /= value;
                 case 1:
-                    return abc.y /= value;
+                    return this.abc.y /= value;
                 case 2:
-                    return abc.z /= value;
+                    return this.abc.z /= value;
                 default:
-                    return d /= value;
+                    return this.d /= value;
             }
         }
 //public	idPlane			operator-() const;						// flips plane
 
         // flips plane
         public idPlane oNegative() {
-            return new idPlane(-abc.x, -abc.y, -abc.z, -d);
+            return new idPlane(-this.abc.x, -this.abc.y, -this.abc.z, -this.d);
         }
 //public	idPlane &		operator=( const idVec3 &v );			// sets normal and sets idPlane::d to zero
 
         // sets normal and sets idPlane::d to zero
         public idPlane oSet(final idVec3 v) {
-            abc.oSet(v);
-            d = 0;
+            this.abc.oSet(v);
+            this.d = 0;
             return this;
         }
         
         public idPlane oSet(final idPlane p) {
-            abc.oSet(p.abc);
+            this.abc.oSet(p.abc);
             this.d = p.d;
             return this;
         }
@@ -183,13 +183,13 @@ public class Plane {
 
         // add plane equations
         public idPlane oPlus(final idPlane p) {
-            return new idPlane(abc.x + p.abc.x, abc.y + p.abc.y, abc.z + p.abc.z, d + p.d);
+            return new idPlane(this.abc.x + p.abc.x, this.abc.y + p.abc.y, this.abc.z + p.abc.z, this.d + p.d);
         }
 //public	idPlane			operator-( const idPlane &p ) const;	// subtract plane equations
 
         // subtract plane equations
         public idPlane oMinus(final idPlane p) {
-            return new idPlane(abc.x - p.abc.x, abc.y - p.abc.y, abc.z - p.abc.z, d - p.d);
+            return new idPlane(this.abc.x - p.abc.x, this.abc.y - p.abc.y, this.abc.z - p.abc.z, this.d - p.d);
         }
 //public	idPlane &		operator*=( const idMat3 &m );			// Normal() *= m
 
@@ -201,24 +201,24 @@ public class Plane {
 
         // exact compare, no epsilon
         public boolean Compare(final idPlane p) {
-            return (abc.x == p.abc.x && abc.y == p.abc.y && abc.z == p.abc.z && d == p.d);
+            return ((this.abc.x == p.abc.x) && (this.abc.y == p.abc.y) && (this.abc.z == p.abc.z) && (this.d == p.d));
         }
 
         // compare with epsilon
         public boolean Compare(final idPlane p, final float epsilon) {
-            if (idMath.Fabs(abc.x - p.abc.x) > epsilon) {
+            if (idMath.Fabs(this.abc.x - p.abc.x) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(abc.y - p.abc.y) > epsilon) {
+            if (idMath.Fabs(this.abc.y - p.abc.y) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(abc.z - p.abc.z) > epsilon) {
+            if (idMath.Fabs(this.abc.z - p.abc.z) > epsilon) {
                 return false;
             }
 
-            if (idMath.Fabs(d - p.d) > epsilon) {
+            if (idMath.Fabs(this.d - p.d) > epsilon) {
                 return false;
             }
 
@@ -227,7 +227,7 @@ public class Plane {
 
         // compare with epsilon
         public boolean Compare(final idPlane p, final float normalEps, final float distEps) {
-            if (idMath.Fabs(d - p.d) > distEps) {
+            if (idMath.Fabs(this.d - p.d) > distEps) {
                 return false;
             }
             if (!Normal().Compare(p.Normal(), normalEps)) {
@@ -241,10 +241,10 @@ public class Plane {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 23 * hash + Float.floatToIntBits(abc.x);
-            hash = 23 * hash + Float.floatToIntBits(abc.y);
-            hash = 23 * hash + Float.floatToIntBits(abc.z);
-            hash = 23 * hash + Float.floatToIntBits(this.d);
+            hash = (23 * hash) + Float.floatToIntBits(this.abc.x);
+            hash = (23 * hash) + Float.floatToIntBits(this.abc.y);
+            hash = (23 * hash) + Float.floatToIntBits(this.abc.z);
+            hash = (23 * hash) + Float.floatToIntBits(this.d);
             return hash;
         }
 
@@ -274,36 +274,36 @@ public class Plane {
 
         // zero plane
         public void Zero() {
-            abc.x = abc.y = abc.z = d = 0.0f;
+            this.abc.x = this.abc.y = this.abc.z = this.d = 0.0f;
         }
 
         // sets the normal
         public void SetNormal(final idVec3 normal) {
-            abc.oSet(normal);
+            this.abc.oSet(normal);
         }
 
         // reference to const normal
         public idVec3 Normal() {
-            return abc;
+            return this.abc;
         }
 
         public float NormalX(final float value) {
-            return abc.x = value;
+            return this.abc.x = value;
         }
 
         public float NormalY(final float value) {
-            return abc.y = value;
+            return this.abc.y = value;
         }
 
         public float NormalZ(final float value) {
-            return abc.z = value;
+            return this.abc.z = value;
         }
 
         /**
          * sets the normal <b>ONLY</b>; a, b and c. d is ignored.
          */
         public idPlane oNorSet(final idVec3 v) {
-            abc.oSet(v);
+            this.abc.oSet(v);
             return this;
         }
 //public	idVec3 &		Normal( void );							// reference to normal
@@ -315,13 +315,13 @@ public class Plane {
 
         // only normalizes the plane normal, does not adjust d
         public float Normalize(boolean fixDegenerate) {
-            idVec3 vec3 = new idVec3(abc.x, abc.y, abc.z);
-            float length = vec3.Normalize();
+            final idVec3 vec3 = new idVec3(this.abc.x, this.abc.y, this.abc.z);
+            final float length = vec3.Normalize();
 
             {
-                final float oldD = d;//save old d
+                final float oldD = this.d;//save old d
                 this.oSet(vec3);     //set normalized values
-                d = oldD;            //replace the zeroed d with its original value
+                this.d = oldD;            //replace the zeroed d with its original value
             }
 
             if (fixDegenerate) {
@@ -332,23 +332,23 @@ public class Plane {
 
         // fix degenerate normal
         public boolean FixDegenerateNormal() {
-            idVec3 vec3 = new idVec3(abc.x, abc.y, abc.z);
-            boolean fixedNormal = vec3.FixDegenerateNormal();
+            final idVec3 vec3 = new idVec3(this.abc.x, this.abc.y, this.abc.z);
+            final boolean fixedNormal = vec3.FixDegenerateNormal();
             {
-                final float oldD = d;//save old d
+                final float oldD = this.d;//save old d
                 this.oSet(vec3);     //set new values
-                d = oldD;            //replace the zeroed d with its original value
+                this.d = oldD;            //replace the zeroed d with its original value
             }
             return fixedNormal;
         }
 
         // fix degenerate normal and dist
         public boolean FixDegeneracies(float distEpsilon) {
-            boolean fixedNormal = FixDegenerateNormal();
+            final boolean fixedNormal = FixDegenerateNormal();
             // only fix dist if the normal was degenerate
             if (fixedNormal) {
-                if (idMath.Fabs(d - idMath.Rint(d)) < distEpsilon) {
-                    d = idMath.Rint(d);
+                if (idMath.Fabs(this.d - idMath.Rint(this.d)) < distEpsilon) {
+                    this.d = idMath.Rint(this.d);
                 }
             }
             return fixedNormal;
@@ -356,12 +356,12 @@ public class Plane {
 
         // returns: -d
         public float Dist() {
-            return -d;
+            return -this.d;
         }
 
         // sets: d = -dist
         public void SetDist(final float dist) {
-            d = -dist;
+            this.d = -dist;
         }
 
         // returns plane type
@@ -397,7 +397,7 @@ public class Plane {
             if (Normalize(fixDegenerate) == 0.0f) {
                 return false;
             }
-            d = -(Normal().oMultiply(p2));
+            this.d = -(Normal().oMultiply(p2));
             return true;
         }
 
@@ -406,49 +406,50 @@ public class Plane {
         }
 
         public boolean FromVecs(final idVec3 dir1, final idVec3 dir2, final idVec3 p, boolean fixDegenerate) {
-            idVec3 vec3 = Normal().oSet(dir1.Cross(dir2));
+            final idVec3 vec3 = Normal().oSet(dir1.Cross(dir2));
 
             {
-                final float oldD = d;//save old d
+                final float oldD = this.d;//save old d
                 this.oSet(vec3);     //set new values
-                d = oldD;            //replace the zeroed d with its original value
+                this.d = oldD;            //replace the zeroed d with its original value
             }
 
             if (Normalize(fixDegenerate) == 0.0f) {
                 return false;
             }
-            d = -(Normal().oMultiply(p));
+            this.d = -(Normal().oMultiply(p));
             return true;
         }
 
         // assumes normal is valid
         public void FitThroughPoint(final idVec3 p) {
-            d = -(Normal().oMultiply(p));
+            this.d = -(Normal().oMultiply(p));
         }
 
         public boolean HeightFit(final idVec3[] points, final int numPoints) {
             int i;
             float sumXX = 0.0f, sumXY = 0.0f, sumXZ = 0.0f;
             float sumYY = 0.0f, sumYZ = 0.0f;
-            idVec3 sum = new idVec3(), average = new idVec3(), dir;
+            final idVec3 sum = new idVec3(), average = new idVec3();
+			idVec3 dir;
 
             if (numPoints == 1) {
-                abc.x = 0.0f;
-                abc.y = 0.0f;
-                abc.z = 1.0f;
-                d = -points[0].z;
+                this.abc.x = 0.0f;
+                this.abc.y = 0.0f;
+                this.abc.z = 1.0f;
+                this.d = -points[0].z;
                 return true;
             }
             if (numPoints == 2) {
                 dir = points[1].oMinus(points[0]);
 //		Normal() = dir.Cross( idVec3( 0, 0, 1 ) ).Cross( dir );
                 {
-                    final float oldD = d;//save old d
+                    final float oldD = this.d;//save old d
                     this.oSet(dir.Cross(new idVec3(0, 0, 1)).Cross(dir));
-                    d = oldD;            //replace the zeroed d with its original value
+                    this.d = oldD;            //replace the zeroed d with its original value
                 }
                 Normalize();
-                d = -(Normal().oMultiply(points[0]));
+                this.d = -(Normal().oMultiply(points[0]));
                 return true;
             }
 
@@ -467,50 +468,50 @@ public class Plane {
                 sumYZ += dir.y * dir.z;
             }
 
-            idMat2 m = new idMat2(sumXX, sumXY, sumXY, sumYY);
+            final idMat2 m = new idMat2(sumXX, sumXY, sumXY, sumYY);
             if (!m.InverseSelf()) {
                 return false;
             }
 
-            abc.x = -sumXZ * m.oGet(0).x - sumYZ * m.oGet(0).y;
-            abc.y = -sumXZ * m.oGet(1).x - sumYZ * m.oGet(1).y;
-            abc.z = 1.0f;
+            this.abc.x = (-sumXZ * m.oGet(0).x) - (sumYZ * m.oGet(0).y);
+            this.abc.y = (-sumXZ * m.oGet(1).x) - (sumYZ * m.oGet(1).y);
+            this.abc.z = 1.0f;
             Normalize();
-            d = -(abc.x * average.x + abc.y * average.y + abc.z * average.z);
+            this.d = -((this.abc.x * average.x) + (this.abc.y * average.y) + (this.abc.z * average.z));
             return true;
         }
 
         public idPlane Translate(final idVec3 translation) {
-            return new idPlane(abc.x, abc.y, abc.z, d - translation.oMultiply(Normal()));
+            return new idPlane(this.abc.x, this.abc.y, this.abc.z, this.d - translation.oMultiply(Normal()));
         }
 
         public idPlane TranslateSelf(final idVec3 translation) {
-            d -= translation.oMultiply(Normal());
+            this.d -= translation.oMultiply(Normal());
             return this;
         }
 
         public idPlane Rotate(final idVec3 origin, final idMat3 axis) {
-            idPlane p = new idPlane();
+            final idPlane p = new idPlane();
             p.oSet(axis.oMultiply(Normal()));
-            p.d = d + origin.oMultiply(Normal()) - origin.oMultiply(p.Normal());
+            p.d = (this.d + origin.oMultiply(Normal())) - origin.oMultiply(p.Normal());
             return p;
         }
 
         public idPlane RotateSelf(final idVec3 origin, final idMat3 axis) {
-            d += origin.oMultiply(Normal());
+            this.d += origin.oMultiply(Normal());
 
             {
-                final float oldD = d;//save old d
+                final float oldD = this.d;//save old d
                 this.oSet(axis.oMultiply(Normal()));     //set new values
-                d = oldD;            //replace the zeroed d with its original value
+                this.d = oldD;            //replace the zeroed d with its original value
             }
 
-            d -= origin.oMultiply(Normal());
+            this.d -= origin.oMultiply(Normal());
             return this;
         }
 
         public float Distance(final idVec3 v) {
-            return abc.x * v.x + abc.y * v.y + abc.z * v.z + d;
+            return (this.abc.x * v.x) + (this.abc.y * v.y) + (this.abc.z * v.z) + this.d;
         }
 
         public int Side(final idVec3 v) {
@@ -518,7 +519,7 @@ public class Plane {
         }
 
         public int Side(final idVec3 v, final float epsilon) {
-            float dist = Distance(v);
+            final float dist = Distance(v);
             if (dist > epsilon) {
                 return PLANESIDE_FRONT;
             } else if (dist < -epsilon) {
@@ -531,26 +532,26 @@ public class Plane {
         public boolean LineIntersection(final idVec3 start, final idVec3 end) {
             float d1, d2, fraction;
 
-            d1 = Normal().oMultiply(start.oPlus(d));
-            d2 = Normal().oMultiply(end.oPlus(d));
+            d1 = Normal().oMultiply(start.oPlus(this.d));
+            d2 = Normal().oMultiply(end.oPlus(this.d));
             if (d1 == d2) {
                 return false;
             }
-            if (d1 > 0.0f && d2 > 0.0f) {
+            if ((d1 > 0.0f) && (d2 > 0.0f)) {
                 return false;
             }
-            if (d1 < 0.0f && d2 < 0.0f) {
+            if ((d1 < 0.0f) && (d2 < 0.0f)) {
                 return false;
             }
             fraction = (d1 / (d1 - d2));
-            return (fraction >= 0.0f && fraction <= 1.0f);
+            return ((fraction >= 0.0f) && (fraction <= 1.0f));
         }
 
         // intersection point is start + dir * scale
         public boolean RayIntersection(final idVec3 start, final idVec3 dir, float[] scale) {
             float d1, d2;
 
-            d1 = Normal().oMultiply(start.oPlus(d));
+            d1 = Normal().oMultiply(start.oPlus(this.d));
             d2 = Normal().oMultiply(dir);
             if (d2 == 0.0f) {
                 return false;
@@ -565,15 +566,15 @@ public class Plane {
             n00 = Normal().LengthSqr();
             n01 = Normal().oMultiply(plane.Normal());
             n11 = plane.Normal().LengthSqr();
-            det = n00 * n11 - n01 * n01;
+            det = (n00 * n11) - (n01 * n01);
 
             if (idMath.Fabs(det) < 1e-6f) {
                 return false;
             }
 
             invDet = 1.0f / det;
-            f0 = (n01 * plane.d - n11 * d) * invDet;
-            f1 = (n01 * d - n00 * plane.d) * invDet;
+            f0 = ((n01 * plane.d) - (n11 * this.d)) * invDet;
+            f1 = ((n01 * this.d) - (n00 * plane.d)) * invDet;
 
             dir.oSet(Normal().Cross(plane.Normal()));
 //            start = f0 * Normal() + f1 * plane.Normal();
@@ -588,26 +589,26 @@ public class Plane {
 //public	const idVec4 &	ToVec4( void ) const;
 
         public idVec4 ToVec4() {
-            return new idVec4(abc.x, abc.y, abc.z, d);
+            return new idVec4(this.abc.x, this.abc.y, this.abc.z, this.d);
         }
 
         public void ToVec4_oPluSet(final idVec4 v) {
-            abc.x += v.x;
-            abc.y += v.y;
-            abc.z += v.z;
-            d += v.w;
+            this.abc.x += v.x;
+            this.abc.y += v.y;
+            this.abc.z += v.z;
+            this.d += v.w;
         }
 
         public void ToVec4_ToVec3_Cross(final idVec3 a, final idVec3 b) {
-            abc.Cross(a, b);
+            this.abc.Cross(a, b);
         }
 
         public void ToVec4_ToVec3_Normalize() {
-            abc.Normalize();
+            this.abc.Normalize();
         }
 
         public float[] ToFloatPtr() {
-            return new float[]{abc.x, abc.y, abc.z, d};
+            return new float[]{this.abc.x, this.abc.y, this.abc.z, this.d};
         }
 //public	float *			ToFloatPtr( void );
         
@@ -621,10 +622,10 @@ public class Plane {
         @Override
         public String toString() {
             return "idPlane{"
-                    + "a=" + abc.x
-                    + ", b=" + abc.y
-                    + ", c=" + abc.z
-                    + ", d=" + d + "}";
+                    + "a=" + this.abc.x
+                    + ", b=" + this.abc.y
+                    + ", c=" + this.abc.z
+                    + ", d=" + this.d + "}";
         }
-    };
+    }
 }

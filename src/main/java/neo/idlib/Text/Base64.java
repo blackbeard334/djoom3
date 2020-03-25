@@ -60,20 +60,20 @@ public class Base64 {
             byte[] to;
             int f_ptr = 0, t_ptr = 0;
 
-            EnsureAlloced(4 * (size + 3) / 3 + 2); // ratio and padding + trailing \0
-            to = data;
+            EnsureAlloced(((4 * (size + 3)) / 3) + 2); // ratio and padding + trailing \0
+            to = this.data;
 
             w = 0;
             i = 0;
             while (size > 0) {
-                w |= from[f_ptr] << i * 8;
+                w |= from[f_ptr] << (i * 8);
                 ++f_ptr;
                 --size;
                 ++i;
-                if (size == 0 || i == 3) {
-                    byte[] out = new byte[4];
+                if ((size == 0) || (i == 3)) {
+                    final byte[] out = new byte[4];
                     SixtetsForInt(out, (int) w);
-                    for (j = 0; j * 6 < i * 8; ++j) {
+                    for (j = 0; (j * 6) < (i * 8); ++j) {
                         to[t_ptr++] = (byte) sixtet_to_base64[ out[j]];
                     }
                     if (size == 0) {
@@ -87,7 +87,7 @@ public class Base64 {
             }
 
             to[t_ptr++] = '\0';
-            len = t_ptr;
+            this.len = t_ptr;
         }
 
         public void Encode(final idStr src) {
@@ -102,16 +102,16 @@ public class Base64 {
          ============
          */
         public int DecodeLength() {// minimum size in bytes of destination buffer for decoding
-            return 3 * len / 4;
+            return (3 * this.len) / 4;
         }
 
         public int Decode(byte[] to) {// does not append a \0 - needs a DecodeLength() bytes buffer
             long w;
             int i, j;
             int n;
-            char[] base64_to_sixtet = new char[256];
+            final char[] base64_to_sixtet = new char[256];
             boolean tab_init = false;//TODO:useless, remove?
-            byte[] from = data;
+            final byte[] from = this.data;
             int f_ptr = 0, t_ptr = 0;
 
             if (!tab_init) {
@@ -125,18 +125,18 @@ public class Base64 {
             w = 0;
             i = 0;
             n = 0;
-            byte[] in = {0, 0, 0, 0};
-            while (from[f_ptr] != '\0' && from[f_ptr] != '=') {
-                if (from[f_ptr] == ' ' || from[f_ptr] == '\n') {
+            final byte[] in = {0, 0, 0, 0};
+            while ((from[f_ptr] != '\0') && (from[f_ptr] != '=')) {
+                if ((from[f_ptr] == ' ') || (from[f_ptr] == '\n')) {
                     ++f_ptr;
                     continue;
                 }
                 in[i] = (byte) base64_to_sixtet[from[f_ptr]];
                 ++i;
                 ++f_ptr;
-                if (from[f_ptr] == '\0' || from[f_ptr] == '=' || i == 4) {
+                if ((from[f_ptr] == '\0') || (from[f_ptr] == '=') || (i == 4)) {
                     w = IntForSixtets(in);
-                    for (j = 0; j * 8 < i * 6; ++j) {
+                    for (j = 0; (j * 8) < (i * 6); ++j) {
                         to[t_ptr++] = (byte) (w & 0xff);
                         ++n;
                         w >>= 8;
@@ -149,23 +149,23 @@ public class Base64 {
         }
 
         public void Decode(idStr[] dest) {// decodes the binary content to an idStr (a bit dodgy, \0 and other non-ascii are possible in the decoded content) 
-            byte[] buf = new byte[DecodeLength() + 1]; // +1 for trailing \0
-            int out = Decode(buf);
+            final byte[] buf = new byte[DecodeLength() + 1]; // +1 for trailing \0
+            final int out = Decode(buf);
 //            buf[out] = '\0';
             dest[0] = new idStr(new String(buf));
 //	delete[] buf;
         }
 
         public void Decode(idFile dest) {
-            ByteBuffer buf = ByteBuffer.allocate(DecodeLength() + 1); // +1 for trailing \0
-            int out = Decode(buf.array());
+            final ByteBuffer buf = ByteBuffer.allocate(DecodeLength() + 1); // +1 for trailing \0
+            final int out = Decode(buf.array());
             dest.Write(buf, out);
 //	delete[] buf;
         }
 
 //
         public char[] c_str() {
-            return new String(data).toCharArray();
+            return new String(this.data).toCharArray();
         }
 //
 
@@ -173,7 +173,7 @@ public class Base64 {
             EnsureAlloced(s.Length() + 1); // trailing \0 - beware, this does a Release
 //	strcpy( (char *)data, s.c_str() );
             this.data = s.getData().getBytes();
-            len = s.Length();
+            this.len = s.Length();
         }
 //
         private byte[] data;
@@ -198,8 +198,8 @@ public class Base64 {
 //            if (size > alloced) {
 //                Release();
 //            }
-            data = new byte[size];
+            this.data = new byte[size];
 //            alloced = size;
         }
-    };
+    }
 }

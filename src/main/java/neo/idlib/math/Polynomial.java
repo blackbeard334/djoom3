@@ -30,58 +30,58 @@ public class Polynomial {
         //
 
         public idPolynomial() {
-            degree = -1;
-            allocated = 0;
-            coefficient = null;
+            this.degree = -1;
+            this.allocated = 0;
+            this.coefficient = null;
         }
 
         public idPolynomial(int d) {
-            degree = -1;
-            allocated = 0;
-            coefficient = null;
+            this.degree = -1;
+            this.allocated = 0;
+            this.coefficient = null;
             Resize(d, false);
         }
 
         public idPolynomial(float a, float b) {
-            degree = -1;
-            allocated = 0;
-            coefficient = null;
+            this.degree = -1;
+            this.allocated = 0;
+            this.coefficient = null;
             Resize(1, false);
-            coefficient[0] = b;
-            coefficient[1] = a;
+            this.coefficient[0] = b;
+            this.coefficient[1] = a;
         }
 
         public idPolynomial(float a, float b, float c) {
-            degree = -1;
-            allocated = 0;
-            coefficient = null;
+            this.degree = -1;
+            this.allocated = 0;
+            this.coefficient = null;
             Resize(2, false);
-            coefficient[0] = c;
-            coefficient[1] = b;
-            coefficient[2] = a;
+            this.coefficient[0] = c;
+            this.coefficient[1] = b;
+            this.coefficient[2] = a;
         }
 
         public idPolynomial(float a, float b, float c, float d) {
-            degree = -1;
-            allocated = 0;
-            coefficient = null;
+            this.degree = -1;
+            this.allocated = 0;
+            this.coefficient = null;
             Resize(3, false);
-            coefficient[0] = d;
-            coefficient[1] = c;
-            coefficient[2] = b;
-            coefficient[3] = a;
+            this.coefficient[0] = d;
+            this.coefficient[1] = c;
+            this.coefficient[2] = b;
+            this.coefficient[3] = a;
         }
 
         public idPolynomial(float a, float b, float c, float d, float e) {
-            degree = -1;
-            allocated = 0;
-            coefficient = null;
+            this.degree = -1;
+            this.allocated = 0;
+            this.coefficient = null;
             Resize(4, false);
-            coefficient[0] = e;
-            coefficient[1] = d;
-            coefficient[2] = c;
-            coefficient[3] = b;
-            coefficient[4] = a;
+            this.coefficient[0] = e;
+            this.coefficient[1] = d;
+            this.coefficient[2] = c;
+            this.coefficient[3] = b;
+            this.coefficient[4] = a;
         }
 
         public idPolynomial(idPolynomial p) {
@@ -93,17 +93,17 @@ public class Polynomial {
 //public	float			operator[]( int index ) const;
 
         public float oGet(int index) {
-            assert (index >= 0 && index <= degree);
-            return coefficient[ index];
+            assert ((index >= 0) && (index <= this.degree));
+            return this.coefficient[ index];
         }
 
         public idPolynomial oNegative() {
             int i;
-            idPolynomial n = new idPolynomial();
+            final idPolynomial n = new idPolynomial();
 
 //            n = new idPolynomial(this);
             n.oSet(this);
-            for (i = 0; i <= degree; i++) {
+            for (i = 0; i <= this.degree; i++) {
                 n.coefficient[i] = -n.coefficient[i];
             }
             return n;
@@ -111,37 +111,37 @@ public class Polynomial {
 
         public idPolynomial oSet(final idPolynomial p) {
             Resize(p.degree, false);
-            System.arraycopy(p.coefficient, 0, coefficient, 0, degree + 1);
+            System.arraycopy(p.coefficient, 0, this.coefficient, 0, this.degree + 1);
             return this;
         }
 
         public idPolynomial oPlus(final idPolynomial p) {
             int i;
-            idPolynomial n = new idPolynomial();
+            final idPolynomial n = new idPolynomial();
 
-            if (degree > p.degree) {
-                n.Resize(degree, false);
+            if (this.degree > p.degree) {
+                n.Resize(this.degree, false);
                 for (i = 0; i <= p.degree; i++) {
-                    n.coefficient[i] = coefficient[i] + p.coefficient[i];
+                    n.coefficient[i] = this.coefficient[i] + p.coefficient[i];
                 }
-                for (; i <= degree; i++) {
-                    n.coefficient[i] = coefficient[i];
+                for (; i <= this.degree; i++) {
+                    n.coefficient[i] = this.coefficient[i];
                 }
-                n.degree = degree;
-            } else if (p.degree > degree) {
+                n.degree = this.degree;
+            } else if (p.degree > this.degree) {
                 n.Resize(p.degree, false);
-                for (i = 0; i <= degree; i++) {
-                    n.coefficient[i] = coefficient[i] + p.coefficient[i];
+                for (i = 0; i <= this.degree; i++) {
+                    n.coefficient[i] = this.coefficient[i] + p.coefficient[i];
                 }
                 for (; i <= p.degree; i++) {
                     n.coefficient[i] = p.coefficient[i];
                 }
                 n.degree = p.degree;
             } else {
-                n.Resize(degree, false);
+                n.Resize(this.degree, false);
                 n.degree = 0;
-                for (i = 0; i <= degree; i++) {
-                    n.coefficient[i] = coefficient[i] + p.coefficient[i];
+                for (i = 0; i <= this.degree; i++) {
+                    n.coefficient[i] = this.coefficient[i] + p.coefficient[i];
                     if (n.coefficient[i] != 0.0f) {
                         n.degree = i;
                     }
@@ -152,31 +152,31 @@ public class Polynomial {
 
         public idPolynomial oMinus(final idPolynomial p) {
             int i;
-            idPolynomial n = new idPolynomial();
+            final idPolynomial n = new idPolynomial();
 
-            if (degree > p.degree) {
-                n.Resize(degree, false);
+            if (this.degree > p.degree) {
+                n.Resize(this.degree, false);
                 for (i = 0; i <= p.degree; i++) {
-                    n.coefficient[i] = coefficient[i] - p.coefficient[i];
+                    n.coefficient[i] = this.coefficient[i] - p.coefficient[i];
                 }
-                for (; i <= degree; i++) {
-                    n.coefficient[i] = coefficient[i];
+                for (; i <= this.degree; i++) {
+                    n.coefficient[i] = this.coefficient[i];
                 }
-                n.degree = degree;
-            } else if (p.degree >= degree) {
+                n.degree = this.degree;
+            } else if (p.degree >= this.degree) {
                 n.Resize(p.degree, false);
-                for (i = 0; i <= degree; i++) {
-                    n.coefficient[i] = coefficient[i] - p.coefficient[i];
+                for (i = 0; i <= this.degree; i++) {
+                    n.coefficient[i] = this.coefficient[i] - p.coefficient[i];
                 }
                 for (; i <= p.degree; i++) {
                     n.coefficient[i] = -p.coefficient[i];
                 }
                 n.degree = p.degree;
             } else {
-                n.Resize(degree, false);
+                n.Resize(this.degree, false);
                 n.degree = 0;
-                for (i = 0; i <= degree; i++) {
-                    n.coefficient[i] = coefficient[i] - p.coefficient[i];
+                for (i = 0; i <= this.degree; i++) {
+                    n.coefficient[i] = this.coefficient[i] - p.coefficient[i];
                     if (n.coefficient[i] != 0.0f) {
                         n.degree = i;
                     }
@@ -186,14 +186,14 @@ public class Polynomial {
         }
 
         public idPolynomial oMultiply(final float s) {
-            idPolynomial n = new idPolynomial();
+            final idPolynomial n = new idPolynomial();
 
             if (s == 0.0f) {
                 n.degree = 0;
             } else {
-                n.Resize(degree, false);
-                for (int i = 0; i <= degree; i++) {
-                    n.coefficient[i] = coefficient[i] * s;
+                n.Resize(this.degree, false);
+                for (int i = 0; i <= this.degree; i++) {
+                    n.coefficient[i] = this.coefficient[i] * s;
                 }
             }
             return n;
@@ -201,13 +201,13 @@ public class Polynomial {
 
         public idPolynomial oDivide(final float s) {
             float invs;
-            idPolynomial n = new idPolynomial();
+            final idPolynomial n = new idPolynomial();
 
             assert (s != 0.0f);
-            n.Resize(degree, false);
+            n.Resize(this.degree, false);
             invs = 1.0f / s;
-            for (int i = 0; i <= degree; i++) {
-                n.coefficient[i] = coefficient[i] * invs;
+            for (int i = 0; i <= this.degree; i++) {
+                n.coefficient[i] = this.coefficient[i] * invs;
             }
             return n;
         }
@@ -215,23 +215,23 @@ public class Polynomial {
         public idPolynomial oPluSet(final idPolynomial p) {
             int i;
 
-            if (degree > p.degree) {
+            if (this.degree > p.degree) {
                 for (i = 0; i <= p.degree; i++) {
-                    coefficient[i] += p.coefficient[i];
+                    this.coefficient[i] += p.coefficient[i];
                 }
-            } else if (p.degree > degree) {
+            } else if (p.degree > this.degree) {
                 Resize(p.degree, true);
-                for (i = 0; i <= degree; i++) {
-                    coefficient[i] += p.coefficient[i];
+                for (i = 0; i <= this.degree; i++) {
+                    this.coefficient[i] += p.coefficient[i];
                 }
                 for (; i <= p.degree; i++) {
-                    coefficient[i] = p.coefficient[i];
+                    this.coefficient[i] = p.coefficient[i];
                 }
             } else {
-                for (i = 0; i <= degree; i++) {
-                    coefficient[i] += p.coefficient[i];
-                    if (coefficient[i] != 0.0f) {
-                        degree = i;
+                for (i = 0; i <= this.degree; i++) {
+                    this.coefficient[i] += p.coefficient[i];
+                    if (this.coefficient[i] != 0.0f) {
+                        this.degree = i;
                     }
                 }
             }
@@ -241,23 +241,23 @@ public class Polynomial {
         public idPolynomial oMinSet(final idPolynomial p) {
             int i;
 
-            if (degree > p.degree) {
+            if (this.degree > p.degree) {
                 for (i = 0; i <= p.degree; i++) {
-                    coefficient[i] -= p.coefficient[i];
+                    this.coefficient[i] -= p.coefficient[i];
                 }
-            } else if (p.degree > degree) {
+            } else if (p.degree > this.degree) {
                 Resize(p.degree, true);
-                for (i = 0; i <= degree; i++) {
-                    coefficient[i] -= p.coefficient[i];
+                for (i = 0; i <= this.degree; i++) {
+                    this.coefficient[i] -= p.coefficient[i];
                 }
                 for (; i <= p.degree; i++) {
-                    coefficient[i] = -p.coefficient[i];
+                    this.coefficient[i] = -p.coefficient[i];
                 }
             } else {
-                for (i = 0; i <= degree; i++) {
-                    coefficient[i] -= p.coefficient[i];
-                    if (coefficient[i] != 0.0f) {
-                        degree = i;
+                for (i = 0; i <= this.degree; i++) {
+                    this.coefficient[i] -= p.coefficient[i];
+                    if (this.coefficient[i] != 0.0f) {
+                        this.degree = i;
                     }
                 }
             }
@@ -266,10 +266,10 @@ public class Polynomial {
 
         public idPolynomial oMulSet(final float s) {
             if (s == 0.0f) {
-                degree = 0;
+                this.degree = 0;
             } else {
-                for (int i = 0; i <= degree; i++) {
-                    coefficient[i] *= s;
+                for (int i = 0; i <= this.degree; i++) {
+                    this.coefficient[i] *= s;
                 }
             }
             return this;
@@ -280,18 +280,18 @@ public class Polynomial {
 
             assert (s != 0.0f);
             invs = 1.0f / s;
-            for (int i = 0; i <= degree; i++) {
-                coefficient[i] = invs;
+            for (int i = 0; i <= this.degree; i++) {
+                this.coefficient[i] = invs;
             }
             return this;
         }
 
         public boolean Compare(final idPolynomial p) {// exact compare, no epsilon
-            if (degree != p.degree) {
+            if (this.degree != p.degree) {
                 return false;
             }
-            for (int i = 0; i <= degree; i++) {
-                if (coefficient[i] != p.coefficient[i]) {
+            for (int i = 0; i <= this.degree; i++) {
+                if (this.coefficient[i] != p.coefficient[i]) {
                     return false;
                 }
             }
@@ -299,11 +299,11 @@ public class Polynomial {
         }
 
         public boolean Compare(final idPolynomial p, final float epsilon) {// compare with epsilon
-            if (degree != p.degree) {
+            if (this.degree != p.degree) {
                 return false;
             }
-            for (int i = 0; i <= degree; i++) {
-                if (idMath.Fabs(coefficient[i] - p.coefficient[i]) > epsilon) {
+            for (int i = 0; i <= this.degree; i++) {
+                if (idMath.Fabs(this.coefficient[i] - p.coefficient[i]) > epsilon) {
                     return false;
                 }
             }
@@ -315,8 +315,8 @@ public class Polynomial {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 43 * hash + this.degree;
-            hash = 43 * hash + Arrays.hashCode(this.coefficient);
+            hash = (43 * hash) + this.degree;
+            hash = (43 * hash) + Arrays.hashCode(this.coefficient);
             return hash;
         }
 
@@ -339,87 +339,87 @@ public class Polynomial {
         }
 
         public void Zero() {
-            degree = 0;
+            this.degree = 0;
         }
 
         public void Zero(int d) {
             Resize(d, false);
-            for (int i = 0; i <= degree; i++) {
-                coefficient[i] = 0.0f;
+            for (int i = 0; i <= this.degree; i++) {
+                this.coefficient[i] = 0.0f;
             }
         }
 
         public int GetDimension() {// get the degree of the polynomial
-            return degree;
+            return this.degree;
         }
 
         public int GetDegree() {// get the degree of the polynomial
-            return degree;
+            return this.degree;
         }
 
         public float GetValue(final float x) {// evaluate the polynomial with the given real value
             float y, z;
-            y = coefficient[0];
+            y = this.coefficient[0];
             z = x;
-            for (int i = 1; i <= degree; i++) {
-                y += coefficient[i] * z;
+            for (int i = 1; i <= this.degree; i++) {
+                y += this.coefficient[i] * z;
                 z *= x;
             }
             return y;
         }
 
         public idComplex GetValue(final idComplex x) {// evaluate the polynomial with the given complex value
-            idComplex y = new idComplex(), z = new idComplex();
-            y.Set(coefficient[0], 0.0f);
+            final idComplex y = new idComplex(), z = new idComplex();
+            y.Set(this.coefficient[0], 0.0f);
             z.oSet(x);
-            for (int i = 1; i <= degree; i++) {
-                y.oPluSet(z.oMultiply(coefficient[i]));
+            for (int i = 1; i <= this.degree; i++) {
+                y.oPluSet(z.oMultiply(this.coefficient[i]));
                 z.oMulSet(x);
             }
             return y;
         }
 
         public idPolynomial GetDerivative() {// get the first derivative of the polynomial
-            idPolynomial n = new idPolynomial();
+            final idPolynomial n = new idPolynomial();
 
-            if (degree == 0) {
+            if (this.degree == 0) {
                 return n;
             }
-            n.Resize(degree - 1, false);
-            for (int i = 1; i <= degree; i++) {
-                n.coefficient[i - 1] = i * coefficient[i];
+            n.Resize(this.degree - 1, false);
+            for (int i = 1; i <= this.degree; i++) {
+                n.coefficient[i - 1] = i * this.coefficient[i];
             }
             return n;
         }
 
         public idPolynomial GetAntiDerivative() {// get the anti derivative of the polynomial
-            idPolynomial n = new idPolynomial();
+            final idPolynomial n = new idPolynomial();
 
-            if (degree == 0) {
+            if (this.degree == 0) {
                 return n;
             }
-            n.Resize(degree + 1, false);
+            n.Resize(this.degree + 1, false);
             n.coefficient[0] = 0.0f;
-            for (int i = 0; i <= degree; i++) {
-                n.coefficient[i + 1] = coefficient[i] / (i + 1);
+            for (int i = 0; i <= this.degree; i++) {
+                n.coefficient[i + 1] = this.coefficient[i] / (i + 1);
             }
             return n;
         }
 
         public int GetRoots(idComplex[] roots) {// get all roots
             int i, j;
-            idComplex x = new idComplex(), b = new idComplex(), c = new idComplex();
+            final idComplex x = new idComplex(), b = new idComplex(), c = new idComplex();
             idComplex[] coef;
 
-            coef = new idComplex[degree + 1];//	coef = (idComplex *) _alloca16( ( degree + 1 ) * sizeof( idComplex ) );
-            for (i = 0; i <= degree; i++) {
-                coef[i] = new idComplex(coefficient[i], 0.0f);
+            coef = new idComplex[this.degree + 1];//	coef = (idComplex *) _alloca16( ( degree + 1 ) * sizeof( idComplex ) );
+            for (i = 0; i <= this.degree; i++) {
+                coef[i] = new idComplex(this.coefficient[i], 0.0f);
             }
 
-            for (i = degree - 1; i >= 0; i--) {
+            for (i = this.degree - 1; i >= 0; i--) {
                 x.Zero();
                 Laguer(coef, i + 1, x);
-                if (idMath.Fabs(x.i) < 2.0f * EPSILON * idMath.Fabs(x.r)) {
+                if (idMath.Fabs(x.i) < (2.0f * EPSILON * idMath.Fabs(x.r))) {
                     x.i = 0.0f;
                 }
                 roots[i].oSet(x);
@@ -431,14 +431,14 @@ public class Polynomial {
                 }
             }
 
-            for (i = 0; i <= degree; i++) {
-                coef[i].Set(coefficient[i], 0.0f);
+            for (i = 0; i <= this.degree; i++) {
+                coef[i].Set(this.coefficient[i], 0.0f);
             }
-            for (i = 0; i < degree; i++) {
-                Laguer(coef, degree, roots[i]);
+            for (i = 0; i < this.degree; i++) {
+                Laguer(coef, this.degree, roots[i]);
             }
 
-            for (i = 1; i < degree; i++) {
+            for (i = 1; i < this.degree; i++) {
                 x.oSet(roots[i]);
                 for (j = i - 1; j >= 0; j--) {
                     if (roots[j].r <= x.r) {
@@ -449,24 +449,24 @@ public class Polynomial {
                 roots[j + 1].oSet(x);
             }
 
-            return degree;
+            return this.degree;
         }
 
         public int GetRoots(float[] roots) {// get the real roots
             int i, num;
             idComplex[] complexRoots;
 
-            switch (degree) {
+            switch (this.degree) {
                 case 0:
                     return 0;
                 case 1:
-                    return GetRoots1(coefficient[1], coefficient[0], roots);
+                    return GetRoots1(this.coefficient[1], this.coefficient[0], roots);
                 case 2:
-                    return GetRoots2(coefficient[2], coefficient[1], coefficient[0], roots);
+                    return GetRoots2(this.coefficient[2], this.coefficient[1], this.coefficient[0], roots);
                 case 3:
-                    return GetRoots3(coefficient[3], coefficient[2], coefficient[1], coefficient[0], roots);
+                    return GetRoots3(this.coefficient[3], this.coefficient[2], this.coefficient[1], this.coefficient[0], roots);
                 case 4:
-                    return GetRoots4(coefficient[4], coefficient[3], coefficient[2], coefficient[1], coefficient[0], roots);
+                    return GetRoots4(this.coefficient[4], this.coefficient[3], this.coefficient[2], this.coefficient[1], this.coefficient[0], roots);
             }
 
             // The Abel-Ruffini theorem states that there is no general solution
@@ -474,11 +474,11 @@ public class Polynomial {
             // A polynomial equation can be solved by radicals if and only if
             // its Galois group is a solvable group.
 //	complexRoots = (idComplex *) _alloca16( degree * sizeof( idComplex ) );
-            complexRoots = new idComplex[degree];
+            complexRoots = new idComplex[this.degree];
 
             GetRoots(complexRoots);
 
-            for (num = i = 0; i < degree; i++) {
+            for (num = i = 0; i < this.degree; i++) {
                 if (complexRoots[i].i == 0.0f) {
                     roots[i] = complexRoots[i].r;
                     num++;
@@ -502,7 +502,7 @@ public class Polynomial {
                 c *= inva;
                 b *= inva;
             }
-            ds = b * b - 4.0f * c;
+            ds = (b * b) - (4.0f * c);
             if (ds < 0.0f) {
                 return 0;
             } else if (ds > 0.0f) {
@@ -527,20 +527,20 @@ public class Polynomial {
                 b *= inva;
             }
 
-            f = (1.0f / 3.0f) * (3.0f * c - b * b);
-            g = (1.0f / 27.0f) * (2.0f * b * b * b - 9.0f * c * b + 27.0f * d);
+            f = (1.0f / 3.0f) * ((3.0f * c) - (b * b));
+            g = (1.0f / 27.0f) * (((2.0f * b * b * b) - (9.0f * c * b)) + (27.0f * d));
             halfg = 0.5f * g;
             ofs = (1.0f / 3.0f) * b;
-            ds = 0.25f * g * g + (1.0f / 27.0f) * f * f * f;
+            ds = (0.25f * g * g) + ((1.0f / 27.0f) * f * f * f);
 
             if (ds < 0.0f) {
                 dist = idMath.Sqrt((-1.0f / 3.0f) * f);
                 angle = (1.0f / 3.0f) * idMath.ATan(idMath.Sqrt(-ds), -halfg);
                 cs = idMath.Cos(angle);
                 ss = idMath.Sin(angle);
-                roots[0] = 2.0f * dist * cs - ofs;
-                roots[1] = -dist * (cs + idMath.SQRT_THREE * ss) - ofs;
-                roots[2] = -dist * (cs - idMath.SQRT_THREE * ss) - ofs;
+                roots[0] = (2.0f * dist * cs) - ofs;
+                roots[1] = (-dist * (cs + (idMath.SQRT_THREE * ss))) - ofs;
+                roots[2] = (-dist * (cs - (idMath.SQRT_THREE * ss))) - ofs;
                 return 3;
             } else if (ds > 0.0f) {
                 ds = idMath.Sqrt(ds);
@@ -564,7 +564,7 @@ public class Polynomial {
                 } else {
                     t = idMath.Pow(-halfg, (1.0f / 3.0f));
                 }
-                roots[0] = 2.0f * t - ofs;
+                roots[0] = (2.0f * t) - ofs;
                 roots[1] = -t - ofs;
                 roots[2] = roots[1];
                 return 3;
@@ -574,7 +574,7 @@ public class Polynomial {
         public static int GetRoots4(float a, float b, float c, float d, float e, float[] roots) {
             int count;
             float inva, y, ds, r, s1, s2, t1, t2, tp, tm;
-            float roots3[] = new float[3];
+            final float roots3[] = new float[3];
 
             if (a != 1.0f) {
                 assert (a != 0.0f);
@@ -587,44 +587,44 @@ public class Polynomial {
 
             count = 0;
 
-            GetRoots3(1.0f, -c, b * d - 4.0f * e, -b * b * e + 4.0f * c * e - d * d, roots3);
+            GetRoots3(1.0f, -c, (b * d) - (4.0f * e), ((-b * b * e) + (4.0f * c * e)) - (d * d), roots3);
             y = roots3[0];
-            ds = 0.25f * b * b - c + y;
+            ds = ((0.25f * b * b) - c) + y;
 
             if (ds < 0.0f) {
                 return 0;
             } else if (ds > 0.0f) {
                 r = idMath.Sqrt(ds);
-                t1 = 0.75f * b * b - r * r - 2.0f * c;
-                t2 = (4.0f * b * c - 8.0f * d - b * b * b) / (4.0f * r);
+                t1 = (0.75f * b * b) - (r * r) - (2.0f * c);
+                t2 = ((4.0f * b * c) - (8.0f * d) - (b * b * b)) / (4.0f * r);
                 tp = t1 + t2;
                 tm = t1 - t2;
 
                 if (tp >= 0.0f) {
                     s1 = idMath.Sqrt(tp);
-                    roots[count++] = -0.25f * b + 0.5f * (r + s1);
-                    roots[count++] = -0.25f * b + 0.5f * (r - s1);
+                    roots[count++] = (-0.25f * b) + (0.5f * (r + s1));
+                    roots[count++] = (-0.25f * b) + (0.5f * (r - s1));
                 }
                 if (tm >= 0.0f) {
                     s2 = idMath.Sqrt(tm);
-                    roots[count++] = -0.25f * b + 0.5f * (s2 - r);
-                    roots[count++] = -0.25f * b - 0.5f * (s2 + r);
+                    roots[count++] = (-0.25f * b) + (0.5f * (s2 - r));
+                    roots[count++] = (-0.25f * b) - (0.5f * (s2 + r));
                 }
                 return count;
             } else {
-                t2 = y * y - 4.0f * e;
+                t2 = (y * y) - (4.0f * e);
                 if (t2 >= 0.0f) {
                     t2 = 2.0f * idMath.Sqrt(t2);
-                    t1 = 0.75f * b * b - 2.0f * c;
-                    if (t1 + t2 >= 0.0f) {
+                    t1 = (0.75f * b * b) - (2.0f * c);
+                    if ((t1 + t2) >= 0.0f) {
                         s1 = idMath.Sqrt(t1 + t2);
-                        roots[count++] = -0.25f * b + 0.5f * s1;
-                        roots[count++] = -0.25f * b - 0.5f * s1;
+                        roots[count++] = (-0.25f * b) + (0.5f * s1);
+                        roots[count++] = (-0.25f * b) - (0.5f * s1);
                     }
-                    if (t1 - t2 >= 0.0f) {
+                    if ((t1 - t2) >= 0.0f) {
                         s2 = idMath.Sqrt(t1 - t2);
-                        roots[count++] = -0.25f * b + 0.5f * s2;
-                        roots[count++] = -0.25f * b - 0.5f * s2;
+                        roots[count++] = (-0.25f * b) + (0.5f * s2);
+                        roots[count++] = (-0.25f * b) - (0.5f * s2);
                     }
                 }
                 return count;
@@ -639,19 +639,19 @@ public class Polynomial {
 //
 
         private void Resize(int d, boolean keep) {
-            int alloc = (d + 1 + 3) & ~3;
-            if (alloc > allocated) {
-                float[] ptr = new float[alloc];//float *ptr = (float *) Mem_Alloc16( alloc * sizeof( float ) );
-                if (coefficient != null) {
+            final int alloc = (d + 1 + 3) & ~3;
+            if (alloc > this.allocated) {
+                final float[] ptr = new float[alloc];//float *ptr = (float *) Mem_Alloc16( alloc * sizeof( float ) );
+                if (this.coefficient != null) {
                     if (keep) {
-                        System.arraycopy(coefficient, 0, ptr, 0, degree + 1);
+                        System.arraycopy(this.coefficient, 0, ptr, 0, this.degree + 1);
                     }
 //			Mem_Free16( coefficient );
                 }
-                allocated = alloc;
-                coefficient = ptr;
+                this.allocated = alloc;
+                this.coefficient = ptr;
             }
-            degree = d;
+            this.degree = d;
         }
 
         private int Laguer(final idComplex[] coef, final int degree, idComplex x) {
@@ -671,9 +671,9 @@ public class Polynomial {
                     f = x.oMultiply(f).oPlus(d);
                     d = x.oMultiply(d).oPlus(b);
                     b = x.oMultiply(b).oPlus(coef[j]);
-                    err = b.Abs() + abx * err;
+                    err = b.Abs() + (abx * err);
                 }
-                if (b.Abs() < err * EPSILON) {
+                if (b.Abs() < (err * EPSILON)) {
                     return i;
                 }
                 g = d.oDivide(b);
@@ -695,7 +695,7 @@ public class Polynomial {
                 if (x == cx) {
                     return i;
                 }
-                if (i % MT == 0) {
+                if ((i % MT) == 0) {
                     x.oSet(cx);
                 } else {
                     x.oMinSet(dx.oMultiply(frac[i / MT]));
@@ -706,9 +706,9 @@ public class Polynomial {
 
         public static void Test() {
             int i, num;
-            float roots[] = new float[4];
+            final float roots[] = new float[4];
             float value;
-            idComplex[] complexRoots = Stream.generate(idComplex::new).limit(4).toArray(idComplex[]::new);
+            final idComplex[] complexRoots = Stream.generate(idComplex::new).limit(4).toArray(idComplex[]::new);
             idComplex complexValue;
             idPolynomial p;
 
@@ -751,15 +751,15 @@ public class Polynomial {
             num = p.GetRoots(complexRoots);
             for (i = 0; i < num; i++) {
                 complexValue = p.GetValue(complexRoots[i]);
-                assert (idMath.Fabs(complexValue.r) < 1e-4f && idMath.Fabs(complexValue.i) < 1e-4f);
+                assert ((idMath.Fabs(complexValue.r) < 1e-4f) && (idMath.Fabs(complexValue.i) < 1e-4f));
             }
 
             p = new idPolynomial(5.0f, 4.0f, 3.0f, -2.0f);
             num = p.GetRoots(complexRoots);
             for (i = 0; i < num; i++) {
                 complexValue = p.GetValue(complexRoots[i]);
-                assert (idMath.Fabs(complexValue.r) < 1e-4f && idMath.Fabs(complexValue.i) < 1e-4f);
+                assert ((idMath.Fabs(complexValue.r) < 1e-4f) && (idMath.Fabs(complexValue.i) < 1e-4f));
             }
         }
-    };
+    }
 }

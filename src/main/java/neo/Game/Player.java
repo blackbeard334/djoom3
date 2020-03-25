@@ -362,8 +362,6 @@ public class Player {
         idStr levelName = new idStr();
         idStr triggerName = new idStr();
     }
-
-    ;
     //
 // powerups - the "type" in item .def must match
 // enum {
@@ -437,12 +435,12 @@ public class Player {
         public idList<idObjectiveInfo> objectiveNames  = new idList<>();
 
         public idInventory() {
-            items = new idList<>();
-            pdas = new idStrList();
-            pdaSecurity = new idStrList();
-            videos = new idStrList();
-            emails = new idStrList();
-            levelTriggers = new idList<>();
+            this.items = new idList<>();
+            this.pdas = new idStrList();
+            this.pdaSecurity = new idStrList();
+            this.videos = new idStrList();
+            this.emails = new idStrList();
+            this.levelTriggers = new idList<>();
             Clear();
         }
         // ~idInventory() { Clear(); }
@@ -452,92 +450,92 @@ public class Player {
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteInt(maxHealth);
-            savefile.WriteInt(weapons);
-            savefile.WriteInt(powerups);
-            savefile.WriteInt(armor);
-            savefile.WriteInt(maxarmor);
-            savefile.WriteInt(ammoPredictTime);
-            savefile.WriteInt(deplete_armor);
-            savefile.WriteFloat(deplete_rate);
-            savefile.WriteInt(deplete_ammount);
-            savefile.WriteInt(nextArmorDepleteTime);
+            savefile.WriteInt(this.maxHealth);
+            savefile.WriteInt(this.weapons);
+            savefile.WriteInt(this.powerups);
+            savefile.WriteInt(this.armor);
+            savefile.WriteInt(this.maxarmor);
+            savefile.WriteInt(this.ammoPredictTime);
+            savefile.WriteInt(this.deplete_armor);
+            savefile.WriteFloat(this.deplete_rate);
+            savefile.WriteInt(this.deplete_ammount);
+            savefile.WriteInt(this.nextArmorDepleteTime);
 
             for (i = 0; i < AMMO_NUMTYPES; i++) {
-                savefile.WriteInt(ammo[i]);
+                savefile.WriteInt(this.ammo[i]);
             }
             for (i = 0; i < MAX_WEAPONS; i++) {
-                savefile.WriteInt(clip[i]);
+                savefile.WriteInt(this.clip[i]);
             }
             for (i = 0; i < MAX_POWERUPS; i++) {
-                savefile.WriteInt(powerupEndTime[i]);
+                savefile.WriteInt(this.powerupEndTime[i]);
             }
 
-            savefile.WriteInt(items.Num());
-            for (i = 0; i < items.Num(); i++) {
-                savefile.WriteDict(items.oGet(i));
+            savefile.WriteInt(this.items.Num());
+            for (i = 0; i < this.items.Num(); i++) {
+                savefile.WriteDict(this.items.oGet(i));
             }
 
-            savefile.WriteInt(pdasViewed[0]);
-            savefile.WriteInt(pdasViewed[1]);
-            savefile.WriteInt(pdasViewed[2]);
-            savefile.WriteInt(pdasViewed[3]);
+            savefile.WriteInt(this.pdasViewed[0]);
+            savefile.WriteInt(this.pdasViewed[1]);
+            savefile.WriteInt(this.pdasViewed[2]);
+            savefile.WriteInt(this.pdasViewed[3]);
 
-            savefile.WriteInt(selPDA);
-            savefile.WriteInt(selVideo);
-            savefile.WriteInt(selEMail);
-            savefile.WriteInt(selAudio);
-            savefile.WriteBool(pdaOpened);
-            savefile.WriteBool(turkeyScore);
+            savefile.WriteInt(this.selPDA);
+            savefile.WriteInt(this.selVideo);
+            savefile.WriteInt(this.selEMail);
+            savefile.WriteInt(this.selAudio);
+            savefile.WriteBool(this.pdaOpened);
+            savefile.WriteBool(this.turkeyScore);
 
-            savefile.WriteInt(pdas.Num());
-            for (i = 0; i < pdas.Num(); i++) {
-                savefile.WriteString(pdas.oGet(i));
+            savefile.WriteInt(this.pdas.Num());
+            for (i = 0; i < this.pdas.Num(); i++) {
+                savefile.WriteString(this.pdas.oGet(i));
             }
 
-            savefile.WriteInt(pdaSecurity.Num());
-            for (i = 0; i < pdaSecurity.Num(); i++) {
-                savefile.WriteString(pdaSecurity.oGet(i));
+            savefile.WriteInt(this.pdaSecurity.Num());
+            for (i = 0; i < this.pdaSecurity.Num(); i++) {
+                savefile.WriteString(this.pdaSecurity.oGet(i));
             }
 
-            savefile.WriteInt(videos.Num());
-            for (i = 0; i < videos.Num(); i++) {
-                savefile.WriteString(videos.oGet(i));
+            savefile.WriteInt(this.videos.Num());
+            for (i = 0; i < this.videos.Num(); i++) {
+                savefile.WriteString(this.videos.oGet(i));
             }
 
-            savefile.WriteInt(emails.Num());
-            for (i = 0; i < emails.Num(); i++) {
-                savefile.WriteString(emails.oGet(i));
+            savefile.WriteInt(this.emails.Num());
+            for (i = 0; i < this.emails.Num(); i++) {
+                savefile.WriteString(this.emails.oGet(i));
             }
 
-            savefile.WriteInt(nextItemPickup);
-            savefile.WriteInt(nextItemNum);
-            savefile.WriteInt(onePickupTime);
+            savefile.WriteInt(this.nextItemPickup);
+            savefile.WriteInt(this.nextItemNum);
+            savefile.WriteInt(this.onePickupTime);
 
-            savefile.WriteInt(pickupItemNames.Num());
-            for (i = 0; i < pickupItemNames.Num(); i++) {
-                savefile.WriteString(pickupItemNames.oGet(i).icon);
-                savefile.WriteString(pickupItemNames.oGet(i).name);
+            savefile.WriteInt(this.pickupItemNames.Num());
+            for (i = 0; i < this.pickupItemNames.Num(); i++) {
+                savefile.WriteString(this.pickupItemNames.oGet(i).icon);
+                savefile.WriteString(this.pickupItemNames.oGet(i).name);
             }
 
-            savefile.WriteInt(objectiveNames.Num());
-            for (i = 0; i < objectiveNames.Num(); i++) {
-                savefile.WriteString(objectiveNames.oGet(i).screenshot);
-                savefile.WriteString(objectiveNames.oGet(i).text);
-                savefile.WriteString(objectiveNames.oGet(i).title);
+            savefile.WriteInt(this.objectiveNames.Num());
+            for (i = 0; i < this.objectiveNames.Num(); i++) {
+                savefile.WriteString(this.objectiveNames.oGet(i).screenshot);
+                savefile.WriteString(this.objectiveNames.oGet(i).text);
+                savefile.WriteString(this.objectiveNames.oGet(i).title);
             }
 
-            savefile.WriteInt(levelTriggers.Num());
-            for (i = 0; i < levelTriggers.Num(); i++) {
-                savefile.WriteString(levelTriggers.oGet(i).levelName);
-                savefile.WriteString(levelTriggers.oGet(i).triggerName);
+            savefile.WriteInt(this.levelTriggers.Num());
+            for (i = 0; i < this.levelTriggers.Num(); i++) {
+                savefile.WriteString(this.levelTriggers.oGet(i).levelName);
+                savefile.WriteString(this.levelTriggers.oGet(i).triggerName);
             }
 
-            savefile.WriteBool(ammoPulse);
-            savefile.WriteBool(weaponPulse);
-            savefile.WriteBool(armorPulse);
+            savefile.WriteBool(this.ammoPulse);
+            savefile.WriteBool(this.weaponPulse);
+            savefile.WriteBool(this.armorPulse);
 
-            savefile.WriteInt(lastGiveTime);
+            savefile.WriteInt(this.lastGiveTime);
         }
 
         // unarchives object from save game file
@@ -545,163 +543,163 @@ public class Player {
             int i;
             int num;
 
-            maxHealth = savefile.ReadInt();
-            weapons = savefile.ReadInt();
-            powerups = savefile.ReadInt();
-            armor = savefile.ReadInt();
-            maxarmor = savefile.ReadInt();
-            ammoPredictTime = savefile.ReadInt();
-            deplete_armor = savefile.ReadInt();
-            deplete_rate = savefile.ReadFloat();
-            deplete_ammount = savefile.ReadInt();
-            nextArmorDepleteTime = savefile.ReadInt();
+            this.maxHealth = savefile.ReadInt();
+            this.weapons = savefile.ReadInt();
+            this.powerups = savefile.ReadInt();
+            this.armor = savefile.ReadInt();
+            this.maxarmor = savefile.ReadInt();
+            this.ammoPredictTime = savefile.ReadInt();
+            this.deplete_armor = savefile.ReadInt();
+            this.deplete_rate = savefile.ReadFloat();
+            this.deplete_ammount = savefile.ReadInt();
+            this.nextArmorDepleteTime = savefile.ReadInt();
 
             for (i = 0; i < AMMO_NUMTYPES; i++) {
-                ammo[i] = savefile.ReadInt();
+                this.ammo[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_WEAPONS; i++) {
-                clip[i] = savefile.ReadInt();
+                this.clip[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_POWERUPS; i++) {
-                powerupEndTime[i] = savefile.ReadInt();
+                this.powerupEndTime[i] = savefile.ReadInt();
             }
 
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idDict itemdict = new idDict();
+                final idDict itemdict = new idDict();
 
                 savefile.ReadDict(itemdict);
-                items.Append(itemdict);
+                this.items.Append(itemdict);
             }
 
             // pdas
-            pdasViewed[0] = savefile.ReadInt();
-            pdasViewed[1] = savefile.ReadInt();
-            pdasViewed[2] = savefile.ReadInt();
-            pdasViewed[3] = savefile.ReadInt();
+            this.pdasViewed[0] = savefile.ReadInt();
+            this.pdasViewed[1] = savefile.ReadInt();
+            this.pdasViewed[2] = savefile.ReadInt();
+            this.pdasViewed[3] = savefile.ReadInt();
 
-            selPDA = savefile.ReadInt();
-            selVideo = savefile.ReadInt();
-            selEMail = savefile.ReadInt();
-            selAudio = savefile.ReadInt();
-            pdaOpened = savefile.ReadBool();
-            turkeyScore = savefile.ReadBool();
+            this.selPDA = savefile.ReadInt();
+            this.selVideo = savefile.ReadInt();
+            this.selEMail = savefile.ReadInt();
+            this.selAudio = savefile.ReadInt();
+            this.pdaOpened = savefile.ReadBool();
+            this.turkeyScore = savefile.ReadBool();
 
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idStr strPda = new idStr();
+                final idStr strPda = new idStr();
                 savefile.ReadString(strPda);
-                pdas.Append(strPda);
+                this.pdas.Append(strPda);
             }
 
             // pda security clearances
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idStr invName = new idStr();
+                final idStr invName = new idStr();
                 savefile.ReadString(invName);
-                pdaSecurity.Append(invName);
+                this.pdaSecurity.Append(invName);
             }
 
             // videos
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idStr strVideo = new idStr();
+                final idStr strVideo = new idStr();
                 savefile.ReadString(strVideo);
-                videos.Append(strVideo);
+                this.videos.Append(strVideo);
             }
 
             // email
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idStr strEmail = new idStr();
+                final idStr strEmail = new idStr();
                 savefile.ReadString(strEmail);
-                emails.Append(strEmail);
+                this.emails.Append(strEmail);
             }
 
-            nextItemPickup = savefile.ReadInt();
-            nextItemNum = savefile.ReadInt();
-            onePickupTime = savefile.ReadInt();
+            this.nextItemPickup = savefile.ReadInt();
+            this.nextItemNum = savefile.ReadInt();
+            this.onePickupTime = savefile.ReadInt();
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idItemInfo info = new idItemInfo();
+                final idItemInfo info = new idItemInfo();
 
                 savefile.ReadString(info.icon);
                 savefile.ReadString(info.name);
 
-                pickupItemNames.Append(info);
+                this.pickupItemNames.Append(info);
             }
 
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idObjectiveInfo obj = new idObjectiveInfo();
+                final idObjectiveInfo obj = new idObjectiveInfo();
 
                 savefile.ReadString(obj.screenshot);
                 savefile.ReadString(obj.text);
                 savefile.ReadString(obj.title);
 
-                objectiveNames.Append(obj);
+                this.objectiveNames.Append(obj);
             }
 
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idLevelTriggerInfo lti = new idLevelTriggerInfo();
+                final idLevelTriggerInfo lti = new idLevelTriggerInfo();
                 savefile.ReadString(lti.levelName);
                 savefile.ReadString(lti.triggerName);
-                levelTriggers.Append(lti);
+                this.levelTriggers.Append(lti);
             }
 
-            ammoPulse = savefile.ReadBool();
-            weaponPulse = savefile.ReadBool();
-            armorPulse = savefile.ReadBool();
+            this.ammoPulse = savefile.ReadBool();
+            this.weaponPulse = savefile.ReadBool();
+            this.armorPulse = savefile.ReadBool();
 
-            lastGiveTime = savefile.ReadInt();
+            this.lastGiveTime = savefile.ReadInt();
         }
 
         public void Clear() {
-            maxHealth = 0;
-            weapons = 0;
-            powerups = 0;
-            armor = 0;
-            maxarmor = 0;
-            deplete_armor = 0;
-            deplete_rate = 0;
-            deplete_ammount = 0;
-            nextArmorDepleteTime = 0;
+            this.maxHealth = 0;
+            this.weapons = 0;
+            this.powerups = 0;
+            this.armor = 0;
+            this.maxarmor = 0;
+            this.deplete_armor = 0;
+            this.deplete_rate = 0;
+            this.deplete_ammount = 0;
+            this.nextArmorDepleteTime = 0;
 
 //	memset( ammo, 0, sizeof( ammo ) );
             ClearPowerUps();
 
             // set to -1 so that the gun knows to have a full clip the first time we get it and at the start of the level
 //	memset( clip, -1, sizeof( clip ) );
-            Arrays.asList(clip, -1);
+            Arrays.asList(this.clip, -1);
 
-            items.DeleteContents(true);
+            this.items.DeleteContents(true);
 //	memset(pdasViewed, 0, 4 * sizeof( pdasViewed[0] ) );
-            pdas.Clear();
-            videos.Clear();
-            emails.Clear();
-            selVideo = 0;
-            selEMail = 0;
-            selPDA = 0;
-            selAudio = 0;
-            pdaOpened = false;
-            turkeyScore = false;
+            this.pdas.Clear();
+            this.videos.Clear();
+            this.emails.Clear();
+            this.selVideo = 0;
+            this.selEMail = 0;
+            this.selPDA = 0;
+            this.selAudio = 0;
+            this.pdaOpened = false;
+            this.turkeyScore = false;
 
-            levelTriggers.Clear();
+            this.levelTriggers.Clear();
 
-            nextItemPickup = 0;
-            nextItemNum = 1;
-            onePickupTime = 0;
-            pickupItemNames.Clear();
-            objectiveNames.Clear();
+            this.nextItemPickup = 0;
+            this.nextItemNum = 1;
+            this.onePickupTime = 0;
+            this.pickupItemNames.Clear();
+            this.objectiveNames.Clear();
 
-            ammoPredictTime = 0;
+            this.ammoPredictTime = 0;
 
-            lastGiveTime = 0;
+            this.lastGiveTime = 0;
 
-            ammoPulse = false;
-            weaponPulse = false;
-            armorPulse = false;
+            this.ammoPulse = false;
+            this.weaponPulse = false;
+            this.armorPulse = false;
         }
 
         public void GivePowerUp(idPlayer player, int powerup, int msec) {
@@ -725,16 +723,16 @@ public class Player {
                 assert (def != null);
                 msec = def.dict.GetInt("time") * 1000;
             }
-            powerups |= 1 << powerup;
-            powerupEndTime[powerup] = gameLocal.time + msec;
+            this.powerups |= 1 << powerup;
+            this.powerupEndTime[powerup] = gameLocal.time + msec;
         }
 
         public void ClearPowerUps() {
             int i;
             for (i = 0; i < MAX_POWERUPS; i++) {
-                powerupEndTime[i] = 0;
+                this.powerupEndTime[i] = 0;
             }
-            powerups = 0;
+            this.powerups = 0;
         }
 
         public void GetPersistantData(idDict dict) {
@@ -746,21 +744,21 @@ public class Player {
             String name;
 
             // armor
-            dict.SetInt("armor", armor);
+            dict.SetInt("armor", this.armor);
 
             // don't bother with powerups, maxhealth, maxarmor, or the clip
             // ammo
             for (i = 0; i < AMMO_NUMTYPES; i++) {
                 name = idWeapon.GetAmmoNameForNum(i);
                 if (name != null) {
-                    dict.SetInt(name, ammo[i]);
+                    dict.SetInt(name, this.ammo[i]);
                 }
             }
 
             // items
             num = 0;
-            for (i = 0; i < items.Num(); i++) {
-                item = items.oGet(i);
+            for (i = 0; i < this.items.Num(); i++) {
+                item = this.items.oGet(i);
 
                 // copy all keys with "inv_"
                 kv = item.MatchPrefix("inv_");
@@ -777,46 +775,46 @@ public class Player {
 
             // pdas viewed
             for (i = 0; i < 4; i++) {
-                dict.SetInt(va("pdasViewed_%d", i), pdasViewed[i]);
+                dict.SetInt(va("pdasViewed_%d", i), this.pdasViewed[i]);
             }
 
-            dict.SetInt("selPDA", selPDA);
-            dict.SetInt("selVideo", selVideo);
-            dict.SetInt("selEmail", selEMail);
-            dict.SetInt("selAudio", selAudio);
-            dict.SetInt("pdaOpened", btoi(pdaOpened));
-            dict.SetInt("turkeyScore", btoi(turkeyScore));
+            dict.SetInt("selPDA", this.selPDA);
+            dict.SetInt("selVideo", this.selVideo);
+            dict.SetInt("selEmail", this.selEMail);
+            dict.SetInt("selAudio", this.selAudio);
+            dict.SetInt("pdaOpened", btoi(this.pdaOpened));
+            dict.SetInt("turkeyScore", btoi(this.turkeyScore));
 
             // pdas
-            for (i = 0; i < pdas.Num(); i++) {
+            for (i = 0; i < this.pdas.Num(); i++) {
                 key = String.format("pda_%d", i);
-                dict.Set(key, pdas.oGet(i));
+                dict.Set(key, this.pdas.oGet(i));
             }
-            dict.SetInt("pdas", pdas.Num());
+            dict.SetInt("pdas", this.pdas.Num());
 
             // video cds
-            for (i = 0; i < videos.Num(); i++) {
+            for (i = 0; i < this.videos.Num(); i++) {
                 key = String.format("video_%d", i);
-                dict.Set(key, videos.oGet(i));
+                dict.Set(key, this.videos.oGet(i));
             }
-            dict.SetInt("videos", videos.Num());
+            dict.SetInt("videos", this.videos.Num());
 
             // emails
-            for (i = 0; i < emails.Num(); i++) {
+            for (i = 0; i < this.emails.Num(); i++) {
                 key = String.format("email_%d", i);
-                dict.Set(key, emails.oGet(i));
+                dict.Set(key, this.emails.oGet(i));
             }
-            dict.SetInt("emails", emails.Num());
+            dict.SetInt("emails", this.emails.Num());
 
             // weapons
-            dict.SetInt("weapon_bits", weapons);
+            dict.SetInt("weapon_bits", this.weapons);
 
-            dict.SetInt("levelTriggers", levelTriggers.Num());
-            for (i = 0; i < levelTriggers.Num(); i++) {
+            dict.SetInt("levelTriggers", this.levelTriggers.Num());
+            for (i = 0; i < this.levelTriggers.Num(); i++) {
                 key = String.format("levelTrigger_Level_%d", i);
-                dict.Set(key, levelTriggers.oGet(i).levelName);
+                dict.Set(key, this.levelTriggers.oGet(i).levelName);
                 key = String.format("levelTrigger_Trigger_%d", i);
-                dict.Set(key, levelTriggers.oGet(i).triggerName);
+                dict.Set(key, this.levelTriggers.oGet(i).triggerName);
             }
         }
 
@@ -824,7 +822,7 @@ public class Player {
             int i;
             int num;
             idDict item;
-            idStr key = new idStr();
+            final idStr key = new idStr();
             String itemname;
             idKeyValue kv;
             String name;
@@ -832,28 +830,28 @@ public class Player {
             Clear();
 
             // health/armor
-            maxHealth = dict.GetInt("maxhealth", "100");
-            armor = dict.GetInt("armor", "50");
-            maxarmor = dict.GetInt("maxarmor", "100");
-            deplete_armor = dict.GetInt("deplete_armor", "0");
-            deplete_rate = dict.GetFloat("deplete_rate", "2.0");
-            deplete_ammount = dict.GetInt("deplete_ammount", "1");
+            this.maxHealth = dict.GetInt("maxhealth", "100");
+            this.armor = dict.GetInt("armor", "50");
+            this.maxarmor = dict.GetInt("maxarmor", "100");
+            this.deplete_armor = dict.GetInt("deplete_armor", "0");
+            this.deplete_rate = dict.GetFloat("deplete_rate", "2.0");
+            this.deplete_ammount = dict.GetInt("deplete_ammount", "1");
 
             // the clip and powerups aren't restored
             // ammo
             for (i = 0; i < AMMO_NUMTYPES; i++) {
                 name = idWeapon.GetAmmoNameForNum(i);
                 if (name != null) {
-                    ammo[i] = dict.GetInt(name);
+                    this.ammo[i] = dict.GetInt(name);
                 }
             }
 
             // items
             num = dict.GetInt("items");
-            items.SetNum(num);
+            this.items.SetNum(num);
             for (i = 0; i < num; i++) {
                 item = new idDict();
-                items.oSet(i, item);
+                this.items.oSet(i, item);
                 itemname = String.format("item_%d ", i);
                 kv = dict.MatchPrefix(itemname);
                 while (kv != null) {
@@ -866,42 +864,42 @@ public class Player {
 
             // pdas viewed
             for (i = 0; i < 4; i++) {
-                pdasViewed[i] = dict.GetInt(va("pdasViewed_%d", i));
+                this.pdasViewed[i] = dict.GetInt(va("pdasViewed_%d", i));
             }
 
-            selPDA = dict.GetInt("selPDA");
-            selEMail = dict.GetInt("selEmail");
-            selVideo = dict.GetInt("selVideo");
-            selAudio = dict.GetInt("selAudio");
-            pdaOpened = dict.GetBool("pdaOpened");
-            turkeyScore = dict.GetBool("turkeyScore");
+            this.selPDA = dict.GetInt("selPDA");
+            this.selEMail = dict.GetInt("selEmail");
+            this.selVideo = dict.GetInt("selVideo");
+            this.selAudio = dict.GetInt("selAudio");
+            this.pdaOpened = dict.GetBool("pdaOpened");
+            this.turkeyScore = dict.GetBool("turkeyScore");
 
             // pdas
             num = dict.GetInt("pdas");
-            pdas.SetNum(num);
+            this.pdas.SetNum(num);
             for (i = 0; i < num; i++) {
                 itemname = String.format("pda_%d", i);
-                pdas.oSetType(i, dict.GetString(itemname, "default"));
+                this.pdas.oSetType(i, dict.GetString(itemname, "default"));
             }
 
             // videos
             num = dict.GetInt("videos");
-            videos.SetNum(num);
+            this.videos.SetNum(num);
             for (i = 0; i < num; i++) {
                 itemname = String.format("video_%d", i);
-                videos.oSetType(i, dict.GetString(itemname, "default"));
+                this.videos.oSetType(i, dict.GetString(itemname, "default"));
             }
 
             // emails
             num = dict.GetInt("emails");
-            emails.SetNum(num);
+            this.emails.SetNum(num);
             for (i = 0; i < num; i++) {
                 itemname = String.format("email_%d", i);
-                emails.oSetType(i, dict.GetString(itemname, "default"));
+                this.emails.oSetType(i, dict.GetString(itemname, "default"));
             }
 
             // weapons are stored as a number for persistant data, but as strings in the entityDef
-            weapons = dict.GetInt("weapon_bits", "0");
+            this.weapons = dict.GetInt("weapon_bits", "0");
 
             if (BuildDefines.ID_DEMO_BUILD) {
                 Give(owner, dict, "weapon", dict.GetString("weapon"), null, false);
@@ -916,11 +914,11 @@ public class Player {
             num = dict.GetInt("levelTriggers");
             for (i = 0; i < num; i++) {
                 itemname = String.format("levelTrigger_Level_%d", i);
-                idLevelTriggerInfo lti = new idLevelTriggerInfo();
+                final idLevelTriggerInfo lti = new idLevelTriggerInfo();
                 lti.levelName.oSet(dict.GetString(itemname));
                 itemname = String.format("levelTrigger_Trigger_%d", i);
                 lti.triggerName.oSet(dict.GetString(itemname));
-                levelTriggers.Append(lti);
+                this.levelTriggers.Append(lti);
             }
 
         }
@@ -930,51 +928,51 @@ public class Player {
             int pos;
             int end;
             int len;
-            idStr weaponString;
+            final idStr weaponString;
             int max;
             idDeclEntityDef weaponDecl;
             boolean tookWeapon;
             int amount;
-            idItemInfo info;
+            final idItemInfo info;
             final String name;
 
             if (0 == idStr.Icmpn(statname, "ammo_", 5)) {
                 i = AmmoIndexForAmmoClass(statname);
                 max = MaxAmmoForAmmoClass(owner, statname);
-                if (ammo[i] >= max) {
+                if (this.ammo[i] >= max) {
                     return false;
                 }
                 amount = Integer.parseInt(value);
                 if (amount != 0) {
-                    ammo[i] += amount;
-                    if ((max > 0) && (ammo[i] > max)) {
-                        ammo[i] = max;
+                    this.ammo[i] += amount;
+                    if ((max > 0) && (this.ammo[i] > max)) {
+                        this.ammo[i] = max;
                     }
-                    ammoPulse = true;
+                    this.ammoPulse = true;
 
                     name = AmmoPickupNameForIndex(i);
-                    if (name != null && !name.isEmpty()) {
+                    if ((name != null) && !name.isEmpty()) {
                         AddPickupName(name, "");
                     }
                 }
             } else if (0 == idStr.Icmp(statname, "armor")) {
-                if (armor >= maxarmor) {
+                if (this.armor >= this.maxarmor) {
                     return false;	// can't hold any more, so leave the item
                 }
                 amount = Integer.parseInt(value);
                 if (amount != 0) {
-                    armor += amount;
-                    if (armor > maxarmor) {
-                        armor = maxarmor;
+                    this.armor += amount;
+                    if (this.armor > this.maxarmor) {
+                        this.armor = this.maxarmor;
                     }
-                    nextArmorDepleteTime = 0;
-                    armorPulse = true;
+                    this.nextArmorDepleteTime = 0;
+                    this.armorPulse = true;
                 }
             } else if (idStr.FindText(statname, "inclip_") == 0) {
                 i = WeaponIndexForAmmoClass(spawnArgs, statname + 7);
                 if (i != -1) {
                     // set, don't add. not going over the clip size limit.
-                    clip[i] = Integer.parseInt(value);
+                    this.clip[i] = Integer.parseInt(value);
                 }
             } else if (0 == idStr.Icmp(statname, "berserk")) {
                 GivePowerUp(owner, BERSERK, (int) SEC2MS(Float.parseFloat(value)));
@@ -1011,29 +1009,29 @@ public class Player {
                     // don't pickup "no ammo" weapon types twice
                     // not for D3 SP .. there is only one case in the game where you can get a no ammo
                     // weapon when you might already have it, in that case it is more conistent to pick it up
-                    if (gameLocal.isMultiplayer && weaponDecl != null && ((weapons & (1 << i)) != 0) && 0 == weaponDecl.dict.GetInt("ammoRequired")) {
+                    if (gameLocal.isMultiplayer && (weaponDecl != null) && ((this.weapons & (1 << i)) != 0) && (0 == weaponDecl.dict.GetInt("ammoRequired"))) {
                         continue;
                     }
 
                     if (!gameLocal.world.spawnArgs.GetBool("no_Weapons") || ("weapon_fists".equals(weaponName)) || ("weapon_soulcube".equals(weaponName))) {//TODO:string in global vars, or local constants.
-                        if ((weapons & (1 << i)) == 0 || gameLocal.isMultiplayer) {
-                            if (owner.GetUserInfo().GetBool("ui_autoSwitch") && idealWeapon != null) {
+                        if (((this.weapons & (1 << i)) == 0) || gameLocal.isMultiplayer) {
+                            if (owner.GetUserInfo().GetBool("ui_autoSwitch") && (idealWeapon != null)) {
                                 assert (!gameLocal.isClient);
                                 idealWeapon[0] = i;
                             }
-                            if (owner.hud != null && updateHud && lastGiveTime + 1000 < gameLocal.time) {
+                            if ((owner.hud != null) && updateHud && ((this.lastGiveTime + 1000) < gameLocal.time)) {
                                 owner.hud.SetStateInt("newWeapon", i);
                                 owner.hud.HandleNamedEvent("newWeapon");
-                                lastGiveTime = gameLocal.time;
+                                this.lastGiveTime = gameLocal.time;
                             }
-                            weaponPulse = true;
-                            weapons |= (1 << i);
+                            this.weaponPulse = true;
+                            this.weapons |= (1 << i);
                             tookWeapon = true;
                         }
                     }
                 }
                 return tookWeapon;
-            } else if (0 == idStr.Icmp(statname, "item") || 0 == idStr.Icmp(statname, "icon") || 0 == idStr.Icmp(statname, "name")) {
+            } else if ((0 == idStr.Icmp(statname, "item")) || (0 == idStr.Icmp(statname, "icon")) || (0 == idStr.Icmp(statname, "name"))) {
                 // ignore these as they're handled elsewhere
                 return false;
             } else {
@@ -1048,7 +1046,7 @@ public class Player {
         public void Drop(final idDict spawnArgs, final String[] weapon_classname, int weapon_index) {
             // remove the weapon bit
             // also remove the ammo associated with the weapon as we pushed it in the item
-            assert (weapon_index != -1 || weapon_classname[0] != null);
+            assert ((weapon_index != -1) || (weapon_classname[0] != null));
             if (weapon_index == -1) {
                 for (weapon_index = 0; weapon_index < MAX_WEAPONS; weapon_index++) {
                     if (NOT(idStr.Icmp(weapon_classname[0], spawnArgs.GetString(va("def_weapon%d", weapon_index))))) {
@@ -1061,11 +1059,11 @@ public class Player {
             } else if (null == weapon_classname[0]) {
                 weapon_classname[0] = spawnArgs.GetString(va("def_weapon%d", weapon_index));
             }
-            weapons &= (0xffffffff ^ (1 << weapon_index));
-            int ammo_i = AmmoIndexForWeaponClass(weapon_classname[0], null);
+            this.weapons &= (0xffffffff ^ (1 << weapon_index));
+            final int ammo_i = AmmoIndexForWeaponClass(weapon_classname[0], null);
             if (ammo_i != 0) {
-                clip[weapon_index] = -1;
-                ammo[ammo_i] = 0;
+                this.clip[weapon_index] = -1;
+                this.ammo[ammo_i] = 0;
             }
         }
 
@@ -1110,7 +1108,7 @@ public class Player {
             if (ammoRequired != null) {
                 ammoRequired[0] = decl.dict.GetInt("ammoRequired");
             }
-            int ammo_i = AmmoIndexForAmmoClass(decl.dict.GetString("ammoType"));
+            final int ammo_i = AmmoIndexForAmmoClass(decl.dict.GetString("ammoType"));
             return ammo_i;
         }
 
@@ -1121,9 +1119,9 @@ public class Player {
         public void AddPickupName(final String name, final String icon) {
             int num;
 
-            num = pickupItemNames.Num();
-            if ((num == 0) || (pickupItemNames.oGet(num - 1).name.Icmp(name) != 0)) {
-                idItemInfo info = pickupItemNames.Alloc();
+            num = this.pickupItemNames.Num();
+            if ((num == 0) || (this.pickupItemNames.oGet(num - 1).name.Icmp(name) != 0)) {
+                final idItemInfo info = this.pickupItemNames.Alloc();
 
                 if (idStr.Cmpn(name, STRTABLE_ID, STRTABLE_ID_LENGTH) == 0) {
                     info.name = new idStr(common.GetLanguageDict().GetString(name));
@@ -1135,18 +1133,18 @@ public class Player {
         }
 
         public int HasAmmo(int type, int amount) {
-            if ((type == 0) || 0 == amount) {
+            if ((type == 0) || (0 == amount)) {
                 // always allow weapons that don't use ammo to fire
                 return -1;
             }
 
             // check if we have infinite ammo
-            if (ammo[type] < 0) {
+            if (this.ammo[type] < 0) {
                 return -1;
             }
 
             // return how many shots we can fire
-            return ammo[type] / amount;
+            return this.ammo[type] / amount;
         }
 
         public boolean UseAmmo(int type, int amount) {
@@ -1155,34 +1153,34 @@ public class Player {
             }
 
             // take an ammo away if not infinite
-            if (ammo[type] >= 0) {
-                ammo[type] -= amount;
-                ammoPredictTime = gameLocal.time; // mp client: we predict this. mark time so we're not confused by snapshots
+            if (this.ammo[type] >= 0) {
+                this.ammo[type] -= amount;
+                this.ammoPredictTime = gameLocal.time; // mp client: we predict this. mark time so we're not confused by snapshots
             }
 
             return true;
         }
 
         public int HasAmmo(final String weapon_classname) {			// looks up the ammo information for the weapon class first
-            int[] ammoRequired = new int[1];
-            int ammo_i = AmmoIndexForWeaponClass(weapon_classname, ammoRequired);
+            final int[] ammoRequired = new int[1];
+            final int ammo_i = AmmoIndexForWeaponClass(weapon_classname, ammoRequired);
             return HasAmmo(ammo_i, ammoRequired[0]);
         }
 
         public void UpdateArmor() {
-            if (deplete_armor != 0 && deplete_armor < armor) {
-                if (0 == nextArmorDepleteTime) {
-                    nextArmorDepleteTime = (int) (gameLocal.time + deplete_rate * 1000);
-                } else if (gameLocal.time > nextArmorDepleteTime) {
-                    armor -= deplete_ammount;
-                    if (armor < deplete_armor) {
-                        armor = deplete_armor;
+            if ((this.deplete_armor != 0) && (this.deplete_armor < this.armor)) {
+                if (0 == this.nextArmorDepleteTime) {
+                    this.nextArmorDepleteTime = (int) (gameLocal.time + (this.deplete_rate * 1000));
+                } else if (gameLocal.time > this.nextArmorDepleteTime) {
+                    this.armor -= this.deplete_ammount;
+                    if (this.armor < this.deplete_armor) {
+                        this.armor = this.deplete_armor;
                     }
-                    nextArmorDepleteTime = (int) (gameLocal.time + deplete_rate * 1000);
+                    this.nextArmorDepleteTime = (int) (gameLocal.time + (this.deplete_rate * 1000));
                 }
             }
         }
-    };
+    }
 
     public static class loggedAccel_t {
 
@@ -1190,15 +1188,15 @@ public class Player {
         idVec3 dir;        // scaled larger for running
 
         public loggedAccel_t() {
-            dir = new idVec3();
+            this.dir = new idVec3();
         }
-    };
+    }
 
     public static class aasLocation_t {
 
         int areaNum;
         idVec3 pos;
-    };
+    }
 
     public static class idPlayer extends idActor {
         /**
@@ -1359,9 +1357,9 @@ public class Player {
         private int/*jointHandle_t*/  chestJoint;
         private int/*jointHandle_t*/  headJoint;
         //
-        private idPhysics_Player      physicsObj;               // player physics
+        private final idPhysics_Player      physicsObj;               // player physics
         //
-        private idList<aasLocation_t> aasLocation;              // for AI tracking the player
+        private final idList<aasLocation_t> aasLocation;              // for AI tracking the player
         //
         private int                   bobFoot;
         private float                 bobFrac;
@@ -1374,8 +1372,8 @@ public class Player {
         private float                 legsYaw;
         private boolean               legsForward;
         private float                 oldViewYaw;
-        private idAngles              viewBobAngles;
-        private idVec3                viewBob;
+        private final idAngles              viewBobAngles;
+        private final idVec3                viewBob;
         private int                   landChange;
         private int                   landTime;
         //
@@ -1386,9 +1384,9 @@ public class Player {
         private boolean               weaponEnabled;
         private boolean               showWeaponViewModel;
         //
-        private idDeclSkin            skin;
+        private final idDeclSkin            skin;
         private idDeclSkin            powerUpSkin;
-        private idStr                 baseSkinName;
+        private final idStr                 baseSkinName;
         //
         private int                   numProjectilesFired;      // number of projectiles fired
         private int                   numProjectileHits;        // number of hits on mobs
@@ -1401,8 +1399,8 @@ public class Player {
         private boolean               gibsLaunched;
         private idVec3                gibsDir;
         //
-        private idInterpolate<Float>  zoomFov;
-        private idInterpolate<Float>  centerView;
+        private final idInterpolate<Float>  zoomFov;
+        private final idInterpolate<Float>  centerView;
         private boolean               fxFov;
         //
         private float                 influenceFov;
@@ -1433,9 +1431,9 @@ public class Player {
         private              int                oldMouseX;
         private              int                oldMouseY;
         //
-        private              idStr              pdaAudio;
-        private              idStr              pdaVideo;
-        private              idStr              pdaVideoWave;
+        private final              idStr              pdaAudio;
+        private final              idStr              pdaVideo;
+        private final              idStr              pdaVideoWave;
         //
         private              boolean            tipUp;
         private              boolean            objectiveUp;
@@ -1470,201 +1468,201 @@ public class Player {
         //
 
         public idPlayer() {
-            usercmd = new usercmd_t();//memset( &usercmd, 0, sizeof( usercmd ) );
+            this.usercmd = new usercmd_t();//memset( &usercmd, 0, sizeof( usercmd ) );
 
-            playerView = new idPlayerView();
+            this.playerView = new idPlayerView();
 
-            noclip = false;
-            godmode = false;
+            this.noclip = false;
+            this.godmode = false;
 
-            spawnAnglesSet = false;
-            spawnAngles = getAng_zero();
-            viewAngles = getAng_zero();
-            cmdAngles = getAng_zero();
+            this.spawnAnglesSet = false;
+            this.spawnAngles = getAng_zero();
+            this.viewAngles = getAng_zero();
+            this.cmdAngles = getAng_zero();
 
-            oldButtons = 0;
-            buttonMask = 0;
-            oldFlags = 0;
+            this.oldButtons = 0;
+            this.buttonMask = 0;
+            this.oldFlags = 0;
 
-            lastHitTime = 0;
-            lastSndHitTime = 0;
-            lastSavingThrowTime = 0;
+            this.lastHitTime = 0;
+            this.lastSndHitTime = 0;
+            this.lastSavingThrowTime = 0;
 
-            inventory = new idInventory();
+            this.inventory = new idInventory();
 
-            weapon = new idEntityPtr<>(null);
+            this.weapon = new idEntityPtr<>(null);
 
-            hud = null;
-            objectiveSystem = null;
-            objectiveSystemOpen = false;
+            this.hud = null;
+            this.objectiveSystem = null;
+            this.objectiveSystemOpen = false;
 
-            heartRate = BASE_HEARTRATE;
-            heartInfo = new idInterpolate<>();
-            heartInfo.Init(0, 0, 0f, 0f);
-            lastHeartAdjust = 0;
-            lastHeartBeat = 0;
-            lastDmgTime = 0;
-            deathClearContentsTime = 0;
-            lastArmorPulse = -10000;
-            stamina = 0;
-            healthPool = 0;
-            nextHealthPulse = 0;
-            healthPulse = false;
-            nextHealthTake = 0;
-            healthTake = false;
+            this.heartRate = BASE_HEARTRATE;
+            this.heartInfo = new idInterpolate<>();
+            this.heartInfo.Init(0, 0, 0f, 0f);
+            this.lastHeartAdjust = 0;
+            this.lastHeartBeat = 0;
+            this.lastDmgTime = 0;
+            this.deathClearContentsTime = 0;
+            this.lastArmorPulse = -10000;
+            this.stamina = 0;
+            this.healthPool = 0;
+            this.nextHealthPulse = 0;
+            this.healthPulse = false;
+            this.nextHealthTake = 0;
+            this.healthTake = false;
 
-            scoreBoardOpen = false;
-            forceScoreBoard = false;
-            forceRespawn = false;
-            spectating = false;
-            spectator = 0;
-            colorBar = getVec3_zero();
-            colorBarIndex = 0;
-            forcedReady = false;
-            wantSpectate = false;
+            this.scoreBoardOpen = false;
+            this.forceScoreBoard = false;
+            this.forceRespawn = false;
+            this.spectating = false;
+            this.spectator = 0;
+            this.colorBar = getVec3_zero();
+            this.colorBarIndex = 0;
+            this.forcedReady = false;
+            this.wantSpectate = false;
 
-            lastHitToggle = false;
+            this.lastHitToggle = false;
 
-            minRespawnTime = 0;
-            maxRespawnTime = 0;
+            this.minRespawnTime = 0;
+            this.maxRespawnTime = 0;
 
-            firstPersonViewOrigin = getVec3_zero();
-            firstPersonViewAxis = getMat3_identity();
+            this.firstPersonViewOrigin = getVec3_zero();
+            this.firstPersonViewAxis = getMat3_identity();
             
-            dragEntity = new idDragEntity();
+            this.dragEntity = new idDragEntity();
             
-            physicsObj = new idPhysics_Player();
+            this.physicsObj = new idPhysics_Player();
             
-            aasLocation = new idList<>();
+            this.aasLocation = new idList<>();
 
-            hipJoint = INVALID_JOINT;
-            chestJoint = INVALID_JOINT;
-            headJoint = INVALID_JOINT;
+            this.hipJoint = INVALID_JOINT;
+            this.chestJoint = INVALID_JOINT;
+            this.headJoint = INVALID_JOINT;
 
-            bobFoot = 0;
-            bobFrac = 0;
-            bobfracsin = 0;
-            bobCycle = 0;
-            xyspeed = 0;
-            stepUpTime = 0;
-            stepUpDelta = 0;
-            idealLegsYaw = 0;
-            legsYaw = 0;
-            legsForward = true;
-            oldViewYaw = 0;
-            viewBobAngles = getAng_zero();
-            viewBob = getVec3_zero();
-            landChange = 0;
-            landTime = 0;
+            this.bobFoot = 0;
+            this.bobFrac = 0;
+            this.bobfracsin = 0;
+            this.bobCycle = 0;
+            this.xyspeed = 0;
+            this.stepUpTime = 0;
+            this.stepUpDelta = 0;
+            this.idealLegsYaw = 0;
+            this.legsYaw = 0;
+            this.legsForward = true;
+            this.oldViewYaw = 0;
+            this.viewBobAngles = getAng_zero();
+            this.viewBob = getVec3_zero();
+            this.landChange = 0;
+            this.landTime = 0;
 
-            currentWeapon = -1;
-            idealWeapon = -1;
-            previousWeapon = -1;
-            weaponSwitchTime = 0;
-            weaponEnabled = true;
-            weapon_soulcube = -1;
-            weapon_pda = -1;
-            weapon_fists = -1;
-            showWeaponViewModel = true;
+            this.currentWeapon = -1;
+            this.idealWeapon = -1;
+            this.previousWeapon = -1;
+            this.weaponSwitchTime = 0;
+            this.weaponEnabled = true;
+            this.weapon_soulcube = -1;
+            this.weapon_pda = -1;
+            this.weapon_fists = -1;
+            this.showWeaponViewModel = true;
 
-            skin = new idDeclSkin();
-            powerUpSkin = new idDeclSkin();
-            baseSkinName = new idStr("");
+            this.skin = new idDeclSkin();
+            this.powerUpSkin = new idDeclSkin();
+            this.baseSkinName = new idStr("");
 
-            numProjectilesFired = 0;
-            numProjectileHits = 0;
+            this.numProjectilesFired = 0;
+            this.numProjectileHits = 0;
 
-            airless = false;
-            airTics = 0;
-            lastAirDamage = 0;
+            this.airless = false;
+            this.airTics = 0;
+            this.lastAirDamage = 0;
 
-            gibDeath = false;
-            gibsLaunched = false;
-            gibsDir = getVec3_zero();
+            this.gibDeath = false;
+            this.gibsLaunched = false;
+            this.gibsDir = getVec3_zero();
 
-            zoomFov = new idInterpolate<>();
-            zoomFov.Init(0, 0, 0f, 0f);
-            centerView = new idInterpolate<>();
-            centerView.Init(0, 0, 0f, 0f);
-            fxFov = false;
+            this.zoomFov = new idInterpolate<>();
+            this.zoomFov.Init(0, 0, 0f, 0f);
+            this.centerView = new idInterpolate<>();
+            this.centerView.Init(0, 0, 0f, 0f);
+            this.fxFov = false;
 
-            influenceFov = 0;
-            influenceActive = 0;
-            influenceRadius = 0;
-            influenceEntity = null;
-            influenceMaterial = null;
-            influenceSkin = null;
+            this.influenceFov = 0;
+            this.influenceActive = 0;
+            this.influenceRadius = 0;
+            this.influenceEntity = null;
+            this.influenceMaterial = null;
+            this.influenceSkin = null;
 
-            privateCameraView = null;
+            this.privateCameraView = null;
 
 //	memset( loggedViewAngles, 0, sizeof( loggedViewAngles ) );
-            loggedViewAngles = Stream.generate(idAngles::new).limit(NUM_LOGGED_VIEW_ANGLES).toArray(idAngles[]::new);
+            this.loggedViewAngles = Stream.generate(idAngles::new).limit(NUM_LOGGED_VIEW_ANGLES).toArray(idAngles[]::new);
 //	memset( loggedAccel, 0, sizeof( loggedAccel ) );
-            loggedAccel = Stream.generate(loggedAccel_t::new).limit(NUM_LOGGED_ACCELS).toArray(loggedAccel_t[]::new);
-            currentLoggedAccel = 0;
+            this.loggedAccel = Stream.generate(loggedAccel_t::new).limit(NUM_LOGGED_ACCELS).toArray(loggedAccel_t[]::new);
+            this.currentLoggedAccel = 0;
 
-            focusTime = 0;
-            focusGUIent = null;
-            focusUI = null;
-            focusCharacter = null;
-            talkCursor = 0;
-            focusVehicle = null;
-            cursor = null;
+            this.focusTime = 0;
+            this.focusGUIent = null;
+            this.focusUI = null;
+            this.focusCharacter = null;
+            this.talkCursor = 0;
+            this.focusVehicle = null;
+            this.cursor = null;
 
-            oldMouseX = 0;
-            oldMouseY = 0;
+            this.oldMouseX = 0;
+            this.oldMouseY = 0;
 
-            pdaAudio = new idStr("");
-            pdaVideo = new idStr("");
-            pdaVideoWave = new idStr("");
+            this.pdaAudio = new idStr("");
+            this.pdaVideo = new idStr("");
+            this.pdaVideoWave = new idStr("");
 
-            lastDamageDef = 0;
-            lastDamageDir = getVec3_zero();
-            lastDamageLocation = 0;
-            smoothedFrame = 0;
-            smoothedOriginUpdated = false;
-            smoothedOrigin = getVec3_zero();
-            smoothedAngles = getAng_zero();
+            this.lastDamageDef = 0;
+            this.lastDamageDir = getVec3_zero();
+            this.lastDamageLocation = 0;
+            this.smoothedFrame = 0;
+            this.smoothedOriginUpdated = false;
+            this.smoothedOrigin = getVec3_zero();
+            this.smoothedAngles = getAng_zero();
 
-            fl.networkSync = true;
+            this.fl.networkSync = true;
 
-            latchedTeam = -1;
-            doingDeathSkin = false;
-            weaponGone = false;
-            useInitialSpawns = false;
-            tourneyRank = 0;
-            lastSpectateTeleport = 0;
-            tourneyLine = 0;
-            hiddenWeapon = false;
-            tipUp = false;
-            objectiveUp = false;
-            teleportEntity = new idEntityPtr<>(null);
-            teleportKiller = -1;
-            respawning = false;
-            ready = false;
-            leader = false;
-            lastSpectateChange = 0;
-            lastTeleFX = -9999;
-            weaponCatchup = false;
-            lastSnapshotSequence = 0;
+            this.latchedTeam = -1;
+            this.doingDeathSkin = false;
+            this.weaponGone = false;
+            this.useInitialSpawns = false;
+            this.tourneyRank = 0;
+            this.lastSpectateTeleport = 0;
+            this.tourneyLine = 0;
+            this.hiddenWeapon = false;
+            this.tipUp = false;
+            this.objectiveUp = false;
+            this.teleportEntity = new idEntityPtr<>(null);
+            this.teleportKiller = -1;
+            this.respawning = false;
+            this.ready = false;
+            this.leader = false;
+            this.lastSpectateChange = 0;
+            this.lastTeleFX = -9999;
+            this.weaponCatchup = false;
+            this.lastSnapshotSequence = 0;
 
-            MPAim = -1;
-            lastMPAim = -1;
-            lastMPAimTime = 0;
-            MPAimFadeTime = 0;
-            MPAimHighlight = false;
+            this.MPAim = -1;
+            this.lastMPAim = -1;
+            this.lastMPAimTime = 0;
+            this.MPAimFadeTime = 0;
+            this.MPAimHighlight = false;
 
-            spawnedTime = 0;
-            lastManOver = false;
-            lastManPlayAgain = false;
-            lastManPresent = false;
+            this.spawnedTime = 0;
+            this.lastManOver = false;
+            this.lastManPlayAgain = false;
+            this.lastManPresent = false;
 
-            isTelefragged = false;
+            this.isTelefragged = false;
 
-            isLagged = false;
-            isChatting = false;
+            this.isLagged = false;
+            this.isChatting = false;
 
-            selfSmooth = false;
+            this.selfSmooth = false;
         }
 //	virtual					~idPlayer();
 //
@@ -1680,56 +1678,56 @@ public class Player {
         public void Spawn() {
             super.Spawn();
             
-            idStr temp = new idStr();
+            final idStr temp = new idStr();
 //            idBounds bounds;
 
-            if (entityNumber >= MAX_CLIENTS) {
+            if (this.entityNumber >= MAX_CLIENTS) {
                 gameLocal.Error("entityNum > MAX_CLIENTS for player.  Player may only be spawned with a client.");
             }
 
             // allow thinking during cinematics
-            cinematic = true;
+            this.cinematic = true;
 
             if (gameLocal.isMultiplayer) {
                 // always start in spectating state waiting to be spawned in
                 // do this before SetClipModel to get the right bounding box
-                spectating = true;
+                this.spectating = true;
             }
 
             // set our collision model
-            physicsObj.SetSelf(this);
+            this.physicsObj.SetSelf(this);
             SetClipModel();
-            physicsObj.SetMass(spawnArgs.GetFloat("mass", "100"));
-            physicsObj.SetContents(CONTENTS_BODY);
-            physicsObj.SetClipMask(MASK_PLAYERSOLID);
-            SetPhysics(physicsObj);
+            this.physicsObj.SetMass(this.spawnArgs.GetFloat("mass", "100"));
+            this.physicsObj.SetContents(CONTENTS_BODY);
+            this.physicsObj.SetClipMask(MASK_PLAYERSOLID);
+            SetPhysics(this.physicsObj);
             InitAASLocation();
 
-            skin.oSet(renderEntity.customSkin);
+            this.skin.oSet(this.renderEntity.customSkin);
 
             // only the local player needs guis
-            if (!gameLocal.isMultiplayer || entityNumber == gameLocal.localClientNum) {
+            if (!gameLocal.isMultiplayer || (this.entityNumber == gameLocal.localClientNum)) {
 
                 // load HUD
                 if (gameLocal.isMultiplayer) {
-                    hud = uiManager.FindGui("guis/mphud.gui", true, false, true);
-                } else if (spawnArgs.GetString("hud", "", temp)) {
-                    hud = uiManager.FindGui(temp.toString(), true, false, true);
+                    this.hud = uiManager.FindGui("guis/mphud.gui", true, false, true);
+                } else if (this.spawnArgs.GetString("hud", "", temp)) {
+                    this.hud = uiManager.FindGui(temp.toString(), true, false, true);
                 }
-                if (hud != null) {
-                    hud.Activate(true, gameLocal.time);
+                if (this.hud != null) {
+                    this.hud.Activate(true, gameLocal.time);
                 }
 
                 // load cursor
-                if (spawnArgs.GetString("cursor", "", temp)) {
-                    cursor = uiManager.FindGui(temp.toString(), true, gameLocal.isMultiplayer, gameLocal.isMultiplayer);
+                if (this.spawnArgs.GetString("cursor", "", temp)) {
+                    this.cursor = uiManager.FindGui(temp.toString(), true, gameLocal.isMultiplayer, gameLocal.isMultiplayer);
                 }
-                if (cursor != null) {
-                    cursor.Activate(true, gameLocal.time);
+                if (this.cursor != null) {
+                    this.cursor.Activate(true, gameLocal.time);
                 }
 
-                objectiveSystem = uiManager.FindGui("guis/pda.gui", true, false, true);
-                objectiveSystemOpen = false;
+                this.objectiveSystem = uiManager.FindGui("guis/pda.gui", true, false, true);
+                this.objectiveSystemOpen = false;
             }
 
             SetLastHitTime(0);
@@ -1740,11 +1738,11 @@ public class Player {
             // set up conditions for animation
             LinkScriptVariables();
 
-            animator.RemoveOriginOffset(true);
+            this.animator.RemoveOriginOffset(true);
 
             // initialize user info related settings
             // on server, we wait for the userinfo broadcast, as this controls when the player is initially spawned in game
-            if (gameLocal.isClient || entityNumber == gameLocal.localClientNum) {
+            if (gameLocal.isClient || (this.entityNumber == gameLocal.localClientNum)) {
                 UserInfoChanged(false);
             }
 
@@ -1752,17 +1750,17 @@ public class Player {
             SetCombatModel();
 
             // init the damage effects
-            playerView.SetPlayerEntity(this);
+            this.playerView.SetPlayerEntity(this);
 
             // supress model in non-player views, but allow it in mirrors and remote views
-            renderEntity.suppressSurfaceInViewID = entityNumber + 1;
+            this.renderEntity.suppressSurfaceInViewID = this.entityNumber + 1;
 
             // don't project shadow on self or weapon
-            renderEntity.noSelfShadow = true;
+            this.renderEntity.noSelfShadow = true;
 
-            idAFAttachment headEnt = head.GetEntity();
+            final idAFAttachment headEnt = this.head.GetEntity();
             if (headEnt != null) {
-                headEnt.GetRenderEntity().suppressSurfaceInViewID = entityNumber + 1;
+                headEnt.GetRenderEntity().suppressSurfaceInViewID = this.entityNumber + 1;
                 headEnt.GetRenderEntity().noSelfShadow = true;
             }
 
@@ -1773,8 +1771,8 @@ public class Player {
                     // set yourself ready to spawn. idMultiplayerGame will decide when/if appropriate and call SpawnFromSpawnSpot
                     SetupWeaponEntity();
                     SpawnFromSpawnSpot();
-                    forceRespawn = true;
-                    assert (spectating);
+                    this.forceRespawn = true;
+                    assert (this.spectating);
                 }
             } else {
                 SetupWeaponEntity();
@@ -1784,61 +1782,61 @@ public class Player {
             // trigger playtesting item gives, if we didn't get here from a previous level
             // the devmap key will be set on the first devmap, but cleared on any level
             // transitions
-            if (!gameLocal.isMultiplayer && gameLocal.serverInfo.FindKey("devmap") != null) {
+            if (!gameLocal.isMultiplayer && (gameLocal.serverInfo.FindKey("devmap") != null)) {
                 // fire a trigger with the name "devmap"
-                idEntity ent = gameLocal.FindEntity("devmap");
+                final idEntity ent = gameLocal.FindEntity("devmap");
                 if (ent != null) {
                     ent.ActivateTargets(this);
                 }
             }
-            if (hud != null) {
+            if (this.hud != null) {
                 // We can spawn with a full soul cube, so we need to make sure the hud knows this
-                if (weapon_soulcube > 0 && (inventory.weapons & (1 << weapon_soulcube)) != 0) {
-                    int max_souls = inventory.MaxAmmoForAmmoClass(this, "ammo_souls");
-                    if (inventory.ammo[idWeapon.GetAmmoNumForName("ammo_souls")] >= max_souls) {
-                        hud.HandleNamedEvent("soulCubeReady");
+                if ((this.weapon_soulcube > 0) && ((this.inventory.weapons & (1 << this.weapon_soulcube)) != 0)) {
+                    final int max_souls = this.inventory.MaxAmmoForAmmoClass(this, "ammo_souls");
+                    if (this.inventory.ammo[idWeapon.GetAmmoNumForName("ammo_souls")] >= max_souls) {
+                        this.hud.HandleNamedEvent("soulCubeReady");
                     }
                 }
-                hud.HandleNamedEvent("itemPickup");
+                this.hud.HandleNamedEvent("itemPickup");
             }
 
             if (GetPDA() != null) {
                 // Add any emails from the inventory
-                for (int i = 0; i < inventory.emails.Num(); i++) {
-                    GetPDA().AddEmail(inventory.emails.oGet(i).toString());
+                for (int i = 0; i < this.inventory.emails.Num(); i++) {
+                    GetPDA().AddEmail(this.inventory.emails.oGet(i).toString());
                 }
                 GetPDA().SetSecurity(common.GetLanguageDict().GetString("#str_00066"));
             }
 
             if (gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
-                hiddenWeapon = true;
-                if (weapon.GetEntity() != null) {
-                    weapon.GetEntity().LowerWeapon();
+                this.hiddenWeapon = true;
+                if (this.weapon.GetEntity() != null) {
+                    this.weapon.GetEntity().LowerWeapon();
                 }
-                idealWeapon = 0;
+                this.idealWeapon = 0;
             } else {
-                hiddenWeapon = false;
+                this.hiddenWeapon = false;
             }
 
-            if (hud != null) {
+            if (this.hud != null) {
                 UpdateHudWeapon();
-                hud.StateChanged(gameLocal.time);
+                this.hud.StateChanged(gameLocal.time);
             }
 
-            tipUp = false;
-            objectiveUp = false;
+            this.tipUp = false;
+            this.objectiveUp = false;
 
-            if (inventory.levelTriggers.Num() != 0) {
+            if (this.inventory.levelTriggers.Num() != 0) {
                 PostEventMS(EV_Player_LevelTrigger, 0);
             }
 
-            inventory.pdaOpened = false;
-            inventory.selPDA = 0;
+            this.inventory.pdaOpened = false;
+            this.inventory.selPDA = 0;
 
             if (!gameLocal.isMultiplayer) {
                 if (g_skill.GetInteger() < 2) {
-                    if (health < 25) {
-                        health = 25;
+                    if (this.health < 25) {
+                        this.health = 25;
                     }
                     if (g_useDynamicProtection.GetBool()) {
                         g_damageScale.SetFloat(1.0f);
@@ -1848,8 +1846,8 @@ public class Player {
                     g_armorProtection.SetFloat((g_skill.GetInteger() < 2) ? 0.4f : 0.2f);
                     if (BuildDefines.ID_DEMO_BUILD) {
                         if (g_skill.GetInteger() == 3) {
-                            healthTake = true;
-                            nextHealthTake = gameLocal.time + g_healthTakeTime.GetInteger() * 1000;
+                            this.healthTake = true;
+                            this.nextHealthTake = gameLocal.time + (g_healthTakeTime.GetInteger() * 1000);
                         }
                     }
                 }
@@ -1870,84 +1868,84 @@ public class Player {
             UpdatePlayerIcons();
 
             // latch button actions
-            oldButtons = usercmd.buttons;
+            this.oldButtons = this.usercmd.buttons;
 
             // grab out usercmd
-            usercmd_t oldCmd = usercmd;
-            usercmd = gameLocal.usercmds[entityNumber];
-            buttonMask &= usercmd.buttons;
-            usercmd.buttons &= ~buttonMask;
+            final usercmd_t oldCmd = this.usercmd;
+            this.usercmd = gameLocal.usercmds[this.entityNumber];
+            this.buttonMask &= this.usercmd.buttons;
+            this.usercmd.buttons &= ~this.buttonMask;
 
             if (gameLocal.inCinematic && gameLocal.skipCinematic) {
                 return;
             }
 
             // clear the ik before we do anything else so the skeleton doesn't get updated twice
-            walkIK.ClearJointMods();
+            this.walkIK.ClearJointMods();
 
             // if this is the very first frame of the map, set the delta view angles
             // based on the usercmd angles
-            if (!spawnAnglesSet && (gameLocal.GameState() != GAMESTATE_STARTUP)) {
-                spawnAnglesSet = true;
-                SetViewAngles(spawnAngles);
-                oldFlags = usercmd.flags;
+            if (!this.spawnAnglesSet && (gameLocal.GameState() != GAMESTATE_STARTUP)) {
+                this.spawnAnglesSet = true;
+                SetViewAngles(this.spawnAngles);
+                this.oldFlags = this.usercmd.flags;
             }
 
-            if (objectiveSystemOpen || gameLocal.inCinematic || influenceActive != 0) {
-                if (objectiveSystemOpen && AI_PAIN.operator()) {
+            if (this.objectiveSystemOpen || gameLocal.inCinematic || (this.influenceActive != 0)) {
+                if (this.objectiveSystemOpen && this.AI_PAIN.operator()) {
                     TogglePDA();
                 }
-                usercmd.forwardmove = 0;
-                usercmd.rightmove = 0;
-                usercmd.upmove = 0;
+                this.usercmd.forwardmove = 0;
+                this.usercmd.rightmove = 0;
+                this.usercmd.upmove = 0;
             }
 
             // log movement changes for weapon bobbing effects
-            if (usercmd.forwardmove != oldCmd.forwardmove) {
-                loggedAccel_t acc = loggedAccel[currentLoggedAccel & (NUM_LOGGED_ACCELS - 1)];
-                currentLoggedAccel++;
+            if (this.usercmd.forwardmove != oldCmd.forwardmove) {
+                final loggedAccel_t acc = this.loggedAccel[this.currentLoggedAccel & (NUM_LOGGED_ACCELS - 1)];
+                this.currentLoggedAccel++;
                 acc.time = gameLocal.time;
-                acc.dir.oSet(0, usercmd.forwardmove - oldCmd.forwardmove);
+                acc.dir.oSet(0, this.usercmd.forwardmove - oldCmd.forwardmove);
                 acc.dir.oSet(1, acc.dir.oSet(2, 0));
             }
 
-            if (usercmd.rightmove != oldCmd.rightmove) {
-                loggedAccel_t acc = loggedAccel[currentLoggedAccel & (NUM_LOGGED_ACCELS - 1)];
-                currentLoggedAccel++;
+            if (this.usercmd.rightmove != oldCmd.rightmove) {
+                final loggedAccel_t acc = this.loggedAccel[this.currentLoggedAccel & (NUM_LOGGED_ACCELS - 1)];
+                this.currentLoggedAccel++;
                 acc.time = gameLocal.time;
-                acc.dir.oSet(0, usercmd.forwardmove - oldCmd.forwardmove);
+                acc.dir.oSet(0, this.usercmd.forwardmove - oldCmd.forwardmove);
                 acc.dir.oSet(1, acc.dir.oSet(2, 0));
             }
 
             // freelook centering
-            if (((usercmd.buttons ^ oldCmd.buttons) & BUTTON_MLOOK) != 0) {
-                centerView.Init(gameLocal.time, 200, viewAngles.pitch, 0f);
+            if (((this.usercmd.buttons ^ oldCmd.buttons) & BUTTON_MLOOK) != 0) {
+                this.centerView.Init(gameLocal.time, 200, this.viewAngles.pitch, 0f);
             }
 
             // zooming
-            if (((usercmd.buttons ^ oldCmd.buttons) & BUTTON_ZOOM) != 0) {
-                if (((usercmd.buttons & BUTTON_ZOOM) != 0) && weapon.GetEntity() != null) {
-                    zoomFov.Init(gameLocal.time, 200, CalcFov(false), (float) weapon.GetEntity().GetZoomFov());
+            if (((this.usercmd.buttons ^ oldCmd.buttons) & BUTTON_ZOOM) != 0) {
+                if (((this.usercmd.buttons & BUTTON_ZOOM) != 0) && (this.weapon.GetEntity() != null)) {
+                    this.zoomFov.Init(gameLocal.time, 200, CalcFov(false), (float) this.weapon.GetEntity().GetZoomFov());
                 } else {
-                    zoomFov.Init(gameLocal.time, 200, zoomFov.GetCurrentValue(gameLocal.time), DefaultFov());
+                    this.zoomFov.Init(gameLocal.time, 200, this.zoomFov.GetCurrentValue(gameLocal.time), DefaultFov());
                 }
             }
 
             // if we have an active gui, we will unrotate the view angles as
             // we turn the mouse movements into gui events
-            idUserInterface gui = ActiveGui();
-            if (gui != null && gui != focusUI) {
+            final idUserInterface gui = ActiveGui();
+            if ((gui != null) && (gui != this.focusUI)) {
                 RouteGuiMouse(gui);
             }
 
             // set the push velocity on the weapon before running the physics
-            if (weapon.GetEntity() != null) {
-                weapon.GetEntity().SetPushVelocity(physicsObj.GetPushedLinearVelocity());
+            if (this.weapon.GetEntity() != null) {
+                this.weapon.GetEntity().SetPushVelocity(this.physicsObj.GetPushedLinearVelocity());
             }
 
             EvaluateControls();
 
-            if (!af.IsActive()) {
+            if (!this.af.IsActive()) {
                 AdjustBodyAngles();
                 CopyJointsFromBodyToHead();
             }
@@ -1956,7 +1954,7 @@ public class Player {
 
             if (!g_stopTime.GetBool()) {
 
-                if (!noclip && !spectating && (health > 0) && !IsHidden()) {
+                if (!this.noclip && !this.spectating && (this.health > 0) && !IsHidden()) {
                     TouchTriggers();
                 }
 
@@ -1964,7 +1962,7 @@ public class Player {
                 if (!gameLocal.isMultiplayer) {
                     SetCurrentHeartRate();
                     float scale = g_damageScale.GetFloat();
-                    if (g_useDynamicProtection.GetBool() && scale < 1.0f && gameLocal.time - lastDmgTime > 500) {
+                    if (g_useDynamicProtection.GetBool() && (scale < 1.0f) && ((gameLocal.time - this.lastDmgTime) > 500)) {
                         if (scale < 1.0f) {
                             scale += 0.05f;
                         }
@@ -1984,14 +1982,14 @@ public class Player {
                 UpdateScript();
 
                 // service animations
-                if (!spectating && !af.IsActive() && !gameLocal.inCinematic) {
+                if (!this.spectating && !this.af.IsActive() && !gameLocal.inCinematic) {
                     UpdateConditions();
                     UpdateAnimState();
                     CheckBlink();
                 }
 
                 // clear out our pain flag so we can tell if we recieve any damage between now and the next time we think
-                AI_PAIN.operator(false);
+                this.AI_PAIN.operator(false);
             }
 
             // calculate the exact bobbed view position, which is used to
@@ -2001,11 +1999,11 @@ public class Player {
             // this may use firstPersonView, or a thirdPeroson / camera view
             CalculateRenderView();
 
-            inventory.UpdateArmor();
+            this.inventory.UpdateArmor();
 
-            if (spectating) {
+            if (this.spectating) {
                 UpdateSpectating();
-            } else if (health > 0) {
+            } else if (this.health > 0) {
                 UpdateWeapon();
             }
 
@@ -2021,35 +2019,35 @@ public class Player {
                 DrawPlayerIcons();
             }
 
-            if (head.GetEntity() != null) {
-                headRenderEnt = head.GetEntity().GetRenderEntity();
+            if (this.head.GetEntity() != null) {
+                headRenderEnt = this.head.GetEntity().GetRenderEntity();
             } else {
                 headRenderEnt = null;
             }
 
             if (headRenderEnt != null) {
-                if (influenceSkin != null) {
-                    headRenderEnt.customSkin = influenceSkin;
+                if (this.influenceSkin != null) {
+                    headRenderEnt.customSkin = this.influenceSkin;
                 } else {
                     headRenderEnt.customSkin = null;
                 }
             }
 
             if (gameLocal.isMultiplayer || g_showPlayerShadow.GetBool()) {
-                renderEntity.suppressShadowInViewID = 0;
+                this.renderEntity.suppressShadowInViewID = 0;
                 if (headRenderEnt != null) {
                     headRenderEnt.suppressShadowInViewID = 0;
                 }
             } else {
-                renderEntity.suppressShadowInViewID = entityNumber + 1;
+                this.renderEntity.suppressShadowInViewID = this.entityNumber + 1;
                 if (headRenderEnt != null) {
-                    headRenderEnt.suppressShadowInViewID = entityNumber + 1;
+                    headRenderEnt.suppressShadowInViewID = this.entityNumber + 1;
                 }
             }
             // never cast shadows from our first-person muzzle flashes
-            renderEntity.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + entityNumber;
+            this.renderEntity.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + this.entityNumber;
             if (headRenderEnt != null) {
-                headRenderEnt.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + entityNumber;
+                headRenderEnt.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + this.entityNumber;
             }
 
             if (!g_stopTime.GetBool()) {
@@ -2061,17 +2059,17 @@ public class Player {
 
                 LinkCombat();
 
-                playerView.CalculateShake();
+                this.playerView.CalculateShake();
             }
 
-            if (0 == (thinkFlags & TH_THINK)) {
-                gameLocal.Printf("player %d not thinking?\n", entityNumber);
+            if (0 == (this.thinkFlags & TH_THINK)) {
+                gameLocal.Printf("player %d not thinking?\n", this.entityNumber);
             }
 
             if (g_showEnemies.GetBool()) {
                 idActor ent;
                 int num = 0;
-                for (ent = enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
+                for (ent = this.enemyList.Next(); ent != null; ent = ent.enemyNode.Next()) {
                     gameLocal.Printf("enemy (%d)'%s'\n", ent.entityNumber, ent.name);
                     gameRenderWorld.DebugBounds(colorRed, ent.GetPhysics().GetBounds().Expand(2), ent.GetPhysics().GetOrigin());
                     num++;
@@ -2085,443 +2083,443 @@ public class Player {
         public void Save(idSaveGame savefile) {                    // archives object for save game file
             int i;
 
-            savefile.WriteUsercmd(usercmd);
-            playerView.Save(savefile);
+            savefile.WriteUsercmd(this.usercmd);
+            this.playerView.Save(savefile);
 
-            savefile.WriteBool(noclip);
-            savefile.WriteBool(godmode);
+            savefile.WriteBool(this.noclip);
+            savefile.WriteBool(this.godmode);
 
             // don't save spawnAnglesSet, since we'll have to reset them after loading the savegame
-            savefile.WriteAngles(spawnAngles);
-            savefile.WriteAngles(viewAngles);
-            savefile.WriteAngles(cmdAngles);
+            savefile.WriteAngles(this.spawnAngles);
+            savefile.WriteAngles(this.viewAngles);
+            savefile.WriteAngles(this.cmdAngles);
 
-            savefile.WriteInt(buttonMask);
-            savefile.WriteInt(oldButtons);
-            savefile.WriteInt(oldFlags);
+            savefile.WriteInt(this.buttonMask);
+            savefile.WriteInt(this.oldButtons);
+            savefile.WriteInt(this.oldFlags);
 
-            savefile.WriteInt(lastHitTime);
-            savefile.WriteInt(lastSndHitTime);
-            savefile.WriteInt(lastSavingThrowTime);
+            savefile.WriteInt(this.lastHitTime);
+            savefile.WriteInt(this.lastSndHitTime);
+            savefile.WriteInt(this.lastSavingThrowTime);
 
             // idBoolFields don't need to be saved, just re-linked in Restore
-            inventory.Save(savefile);
-            weapon.Save(savefile);
+            this.inventory.Save(savefile);
+            this.weapon.Save(savefile);
 
-            savefile.WriteUserInterface(hud, false);
-            savefile.WriteUserInterface(objectiveSystem, false);
-            savefile.WriteBool(objectiveSystemOpen);
+            savefile.WriteUserInterface(this.hud, false);
+            savefile.WriteUserInterface(this.objectiveSystem, false);
+            savefile.WriteBool(this.objectiveSystemOpen);
 
-            savefile.WriteInt(weapon_soulcube);
-            savefile.WriteInt(weapon_pda);
-            savefile.WriteInt(weapon_fists);
+            savefile.WriteInt(this.weapon_soulcube);
+            savefile.WriteInt(this.weapon_pda);
+            savefile.WriteInt(this.weapon_fists);
 
-            savefile.WriteInt(heartRate);
+            savefile.WriteInt(this.heartRate);
 
-            savefile.WriteFloat(heartInfo.GetStartTime());
-            savefile.WriteFloat(heartInfo.GetDuration());
-            savefile.WriteFloat(heartInfo.GetStartValue());
-            savefile.WriteFloat(heartInfo.GetEndValue());
+            savefile.WriteFloat(this.heartInfo.GetStartTime());
+            savefile.WriteFloat(this.heartInfo.GetDuration());
+            savefile.WriteFloat(this.heartInfo.GetStartValue());
+            savefile.WriteFloat(this.heartInfo.GetEndValue());
 
-            savefile.WriteInt(lastHeartAdjust);
-            savefile.WriteInt(lastHeartBeat);
-            savefile.WriteInt(lastDmgTime);
-            savefile.WriteInt(deathClearContentsTime);
-            savefile.WriteBool(doingDeathSkin);
-            savefile.WriteInt(lastArmorPulse);
-            savefile.WriteFloat(stamina);
-            savefile.WriteFloat(healthPool);
-            savefile.WriteInt(nextHealthPulse);
-            savefile.WriteBool(healthPulse);
-            savefile.WriteInt(nextHealthTake);
-            savefile.WriteBool(healthTake);
+            savefile.WriteInt(this.lastHeartAdjust);
+            savefile.WriteInt(this.lastHeartBeat);
+            savefile.WriteInt(this.lastDmgTime);
+            savefile.WriteInt(this.deathClearContentsTime);
+            savefile.WriteBool(this.doingDeathSkin);
+            savefile.WriteInt(this.lastArmorPulse);
+            savefile.WriteFloat(this.stamina);
+            savefile.WriteFloat(this.healthPool);
+            savefile.WriteInt(this.nextHealthPulse);
+            savefile.WriteBool(this.healthPulse);
+            savefile.WriteInt(this.nextHealthTake);
+            savefile.WriteBool(this.healthTake);
 
-            savefile.WriteBool(hiddenWeapon);
-            soulCubeProjectile.Save(savefile);
+            savefile.WriteBool(this.hiddenWeapon);
+            this.soulCubeProjectile.Save(savefile);
 
-            savefile.WriteInt(spectator);
-            savefile.WriteVec3(colorBar);
-            savefile.WriteInt(colorBarIndex);
-            savefile.WriteBool(scoreBoardOpen);
-            savefile.WriteBool(forceScoreBoard);
-            savefile.WriteBool(forceRespawn);
-            savefile.WriteBool(spectating);
-            savefile.WriteInt(lastSpectateTeleport);
-            savefile.WriteBool(lastHitToggle);
-            savefile.WriteBool(forcedReady);
-            savefile.WriteBool(wantSpectate);
-            savefile.WriteBool(weaponGone);
-            savefile.WriteBool(useInitialSpawns);
-            savefile.WriteInt(latchedTeam);
-            savefile.WriteInt(tourneyRank);
-            savefile.WriteInt(tourneyLine);
+            savefile.WriteInt(this.spectator);
+            savefile.WriteVec3(this.colorBar);
+            savefile.WriteInt(this.colorBarIndex);
+            savefile.WriteBool(this.scoreBoardOpen);
+            savefile.WriteBool(this.forceScoreBoard);
+            savefile.WriteBool(this.forceRespawn);
+            savefile.WriteBool(this.spectating);
+            savefile.WriteInt(this.lastSpectateTeleport);
+            savefile.WriteBool(this.lastHitToggle);
+            savefile.WriteBool(this.forcedReady);
+            savefile.WriteBool(this.wantSpectate);
+            savefile.WriteBool(this.weaponGone);
+            savefile.WriteBool(this.useInitialSpawns);
+            savefile.WriteInt(this.latchedTeam);
+            savefile.WriteInt(this.tourneyRank);
+            savefile.WriteInt(this.tourneyLine);
 
-            teleportEntity.Save(savefile);
-            savefile.WriteInt(teleportKiller);
+            this.teleportEntity.Save(savefile);
+            savefile.WriteInt(this.teleportKiller);
 
-            savefile.WriteInt(minRespawnTime);
-            savefile.WriteInt(maxRespawnTime);
+            savefile.WriteInt(this.minRespawnTime);
+            savefile.WriteInt(this.maxRespawnTime);
 
-            savefile.WriteVec3(firstPersonViewOrigin);
-            savefile.WriteMat3(firstPersonViewAxis);
+            savefile.WriteVec3(this.firstPersonViewOrigin);
+            savefile.WriteMat3(this.firstPersonViewAxis);
 
             // don't bother saving dragEntity since it's a dev tool
-            savefile.WriteJoint(hipJoint);
-            savefile.WriteJoint(chestJoint);
-            savefile.WriteJoint(headJoint);
+            savefile.WriteJoint(this.hipJoint);
+            savefile.WriteJoint(this.chestJoint);
+            savefile.WriteJoint(this.headJoint);
 
-            savefile.WriteStaticObject(physicsObj);
+            savefile.WriteStaticObject(this.physicsObj);
 
-            savefile.WriteInt(aasLocation.Num());
-            for (i = 0; i < aasLocation.Num(); i++) {
-                savefile.WriteInt(aasLocation.oGet(i).areaNum);
-                savefile.WriteVec3(aasLocation.oGet(i).pos);
+            savefile.WriteInt(this.aasLocation.Num());
+            for (i = 0; i < this.aasLocation.Num(); i++) {
+                savefile.WriteInt(this.aasLocation.oGet(i).areaNum);
+                savefile.WriteVec3(this.aasLocation.oGet(i).pos);
             }
 
-            savefile.WriteInt(bobFoot);
-            savefile.WriteFloat(bobFrac);
-            savefile.WriteFloat(bobfracsin);
-            savefile.WriteInt(bobCycle);
-            savefile.WriteFloat(xyspeed);
-            savefile.WriteInt(stepUpTime);
-            savefile.WriteFloat(stepUpDelta);
-            savefile.WriteFloat(idealLegsYaw);
-            savefile.WriteFloat(legsYaw);
-            savefile.WriteBool(legsForward);
-            savefile.WriteFloat(oldViewYaw);
-            savefile.WriteAngles(viewBobAngles);
-            savefile.WriteVec3(viewBob);
-            savefile.WriteInt(landChange);
-            savefile.WriteInt(landTime);
+            savefile.WriteInt(this.bobFoot);
+            savefile.WriteFloat(this.bobFrac);
+            savefile.WriteFloat(this.bobfracsin);
+            savefile.WriteInt(this.bobCycle);
+            savefile.WriteFloat(this.xyspeed);
+            savefile.WriteInt(this.stepUpTime);
+            savefile.WriteFloat(this.stepUpDelta);
+            savefile.WriteFloat(this.idealLegsYaw);
+            savefile.WriteFloat(this.legsYaw);
+            savefile.WriteBool(this.legsForward);
+            savefile.WriteFloat(this.oldViewYaw);
+            savefile.WriteAngles(this.viewBobAngles);
+            savefile.WriteVec3(this.viewBob);
+            savefile.WriteInt(this.landChange);
+            savefile.WriteInt(this.landTime);
 
-            savefile.WriteInt(currentWeapon);
-            savefile.WriteInt(idealWeapon);
-            savefile.WriteInt(previousWeapon);
-            savefile.WriteInt(weaponSwitchTime);
-            savefile.WriteBool(weaponEnabled);
-            savefile.WriteBool(showWeaponViewModel);
+            savefile.WriteInt(this.currentWeapon);
+            savefile.WriteInt(this.idealWeapon);
+            savefile.WriteInt(this.previousWeapon);
+            savefile.WriteInt(this.weaponSwitchTime);
+            savefile.WriteBool(this.weaponEnabled);
+            savefile.WriteBool(this.showWeaponViewModel);
 
-            savefile.WriteSkin(skin);
-            savefile.WriteSkin(powerUpSkin);
-            savefile.WriteString(baseSkinName);
+            savefile.WriteSkin(this.skin);
+            savefile.WriteSkin(this.powerUpSkin);
+            savefile.WriteString(this.baseSkinName);
 
-            savefile.WriteInt(numProjectilesFired);
-            savefile.WriteInt(numProjectileHits);
+            savefile.WriteInt(this.numProjectilesFired);
+            savefile.WriteInt(this.numProjectileHits);
 
-            savefile.WriteBool(airless);
-            savefile.WriteInt(airTics);
-            savefile.WriteInt(lastAirDamage);
+            savefile.WriteBool(this.airless);
+            savefile.WriteInt(this.airTics);
+            savefile.WriteInt(this.lastAirDamage);
 
-            savefile.WriteBool(gibDeath);
-            savefile.WriteBool(gibsLaunched);
-            savefile.WriteVec3(gibsDir);
+            savefile.WriteBool(this.gibDeath);
+            savefile.WriteBool(this.gibsLaunched);
+            savefile.WriteVec3(this.gibsDir);
 
-            savefile.WriteFloat(zoomFov.GetStartTime());
-            savefile.WriteFloat(zoomFov.GetDuration());
-            savefile.WriteFloat(zoomFov.GetStartValue());
-            savefile.WriteFloat(zoomFov.GetEndValue());
+            savefile.WriteFloat(this.zoomFov.GetStartTime());
+            savefile.WriteFloat(this.zoomFov.GetDuration());
+            savefile.WriteFloat(this.zoomFov.GetStartValue());
+            savefile.WriteFloat(this.zoomFov.GetEndValue());
 
-            savefile.WriteFloat(centerView.GetStartTime());
-            savefile.WriteFloat(centerView.GetDuration());
-            savefile.WriteFloat(centerView.GetStartValue());
-            savefile.WriteFloat(centerView.GetEndValue());
+            savefile.WriteFloat(this.centerView.GetStartTime());
+            savefile.WriteFloat(this.centerView.GetDuration());
+            savefile.WriteFloat(this.centerView.GetStartValue());
+            savefile.WriteFloat(this.centerView.GetEndValue());
 
-            savefile.WriteBool(fxFov);
+            savefile.WriteBool(this.fxFov);
 
-            savefile.WriteFloat(influenceFov);
-            savefile.WriteInt(influenceActive);
-            savefile.WriteFloat(influenceRadius);
-            savefile.WriteObject(influenceEntity);
-            savefile.WriteMaterial(influenceMaterial);
-            savefile.WriteSkin(influenceSkin);
+            savefile.WriteFloat(this.influenceFov);
+            savefile.WriteInt(this.influenceActive);
+            savefile.WriteFloat(this.influenceRadius);
+            savefile.WriteObject(this.influenceEntity);
+            savefile.WriteMaterial(this.influenceMaterial);
+            savefile.WriteSkin(this.influenceSkin);
 
-            savefile.WriteObject(privateCameraView);
+            savefile.WriteObject(this.privateCameraView);
 
             for (i = 0; i < NUM_LOGGED_VIEW_ANGLES; i++) {
-                savefile.WriteAngles(loggedViewAngles[i]);
+                savefile.WriteAngles(this.loggedViewAngles[i]);
             }
             for (i = 0; i < NUM_LOGGED_ACCELS; i++) {
-                savefile.WriteInt(loggedAccel[i].time);
-                savefile.WriteVec3(loggedAccel[i].dir);
+                savefile.WriteInt(this.loggedAccel[i].time);
+                savefile.WriteVec3(this.loggedAccel[i].dir);
             }
-            savefile.WriteInt(currentLoggedAccel);
+            savefile.WriteInt(this.currentLoggedAccel);
 
-            savefile.WriteObject(focusGUIent);
+            savefile.WriteObject(this.focusGUIent);
             // can't save focusUI
-            savefile.WriteObject(focusCharacter);
-            savefile.WriteInt(talkCursor);
-            savefile.WriteInt(focusTime);
-            savefile.WriteObject(focusVehicle);
-            savefile.WriteUserInterface(cursor, false);
+            savefile.WriteObject(this.focusCharacter);
+            savefile.WriteInt(this.talkCursor);
+            savefile.WriteInt(this.focusTime);
+            savefile.WriteObject(this.focusVehicle);
+            savefile.WriteUserInterface(this.cursor, false);
 
-            savefile.WriteInt(oldMouseX);
-            savefile.WriteInt(oldMouseY);
+            savefile.WriteInt(this.oldMouseX);
+            savefile.WriteInt(this.oldMouseY);
 
-            savefile.WriteString(pdaAudio);
-            savefile.WriteString(pdaVideo);
-            savefile.WriteString(pdaVideoWave);
+            savefile.WriteString(this.pdaAudio);
+            savefile.WriteString(this.pdaVideo);
+            savefile.WriteString(this.pdaVideoWave);
 
-            savefile.WriteBool(tipUp);
-            savefile.WriteBool(objectiveUp);
+            savefile.WriteBool(this.tipUp);
+            savefile.WriteBool(this.objectiveUp);
 
-            savefile.WriteInt(lastDamageDef);
-            savefile.WriteVec3(lastDamageDir);
-            savefile.WriteInt(lastDamageLocation);
-            savefile.WriteInt(smoothedFrame);
-            savefile.WriteBool(smoothedOriginUpdated);
-            savefile.WriteVec3(smoothedOrigin);
-            savefile.WriteAngles(smoothedAngles);
+            savefile.WriteInt(this.lastDamageDef);
+            savefile.WriteVec3(this.lastDamageDir);
+            savefile.WriteInt(this.lastDamageLocation);
+            savefile.WriteInt(this.smoothedFrame);
+            savefile.WriteBool(this.smoothedOriginUpdated);
+            savefile.WriteVec3(this.smoothedOrigin);
+            savefile.WriteAngles(this.smoothedAngles);
 
-            savefile.WriteBool(ready);
-            savefile.WriteBool(respawning);
-            savefile.WriteBool(leader);
-            savefile.WriteInt(lastSpectateChange);
-            savefile.WriteInt(lastTeleFX);
+            savefile.WriteBool(this.ready);
+            savefile.WriteBool(this.respawning);
+            savefile.WriteBool(this.leader);
+            savefile.WriteInt(this.lastSpectateChange);
+            savefile.WriteInt(this.lastTeleFX);
 
             savefile.WriteFloat(pm_stamina.GetFloat());
 
-            if (hud != null) {
-                hud.SetStateString("message", common.GetLanguageDict().GetString("#str_02916"));
-                hud.HandleNamedEvent("Message");
+            if (this.hud != null) {
+                this.hud.SetStateString("message", common.GetLanguageDict().GetString("#str_02916"));
+                this.hud.HandleNamedEvent("Message");
             }
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {                    // unarchives object from save game file
             int i;
-            int[] num = {0};
-            float[] set = {0};
+            final int[] num = {0};
+            final float[] set = {0};
 
-            savefile.ReadUsercmd(usercmd);
-            playerView.Restore(savefile);
+            savefile.ReadUsercmd(this.usercmd);
+            this.playerView.Restore(savefile);
 
-            noclip = savefile.ReadBool();
-            godmode = savefile.ReadBool();
+            this.noclip = savefile.ReadBool();
+            this.godmode = savefile.ReadBool();
 
-            savefile.ReadAngles(spawnAngles);
-            savefile.ReadAngles(viewAngles);
-            savefile.ReadAngles(cmdAngles);
+            savefile.ReadAngles(this.spawnAngles);
+            savefile.ReadAngles(this.viewAngles);
+            savefile.ReadAngles(this.cmdAngles);
 
 //	memset( usercmd.angles, 0, sizeof( usercmd.angles ) );
-            Arrays.fill(usercmd.angles, (short) 0);//damn you type safety!!
-            SetViewAngles(viewAngles);
-            spawnAnglesSet = true;
+            Arrays.fill(this.usercmd.angles, (short) 0);//damn you type safety!!
+            SetViewAngles(this.viewAngles);
+            this.spawnAnglesSet = true;
 
-            buttonMask = savefile.ReadInt();
-            oldButtons = savefile.ReadInt();
-            oldFlags = savefile.ReadInt();
+            this.buttonMask = savefile.ReadInt();
+            this.oldButtons = savefile.ReadInt();
+            this.oldFlags = savefile.ReadInt();
 
-            usercmd.flags = 0;
-            oldFlags = 0;
+            this.usercmd.flags = 0;
+            this.oldFlags = 0;
 
-            lastHitTime = savefile.ReadInt();
-            lastSndHitTime = savefile.ReadInt();
-            lastSavingThrowTime = savefile.ReadInt();
+            this.lastHitTime = savefile.ReadInt();
+            this.lastSndHitTime = savefile.ReadInt();
+            this.lastSavingThrowTime = savefile.ReadInt();
 
             // Re-link idBoolFields to the scriptObject, values will be restored in scriptObject's restore
             LinkScriptVariables();
 
-            inventory.Restore(savefile);
-            weapon.Restore(savefile);
+            this.inventory.Restore(savefile);
+            this.weapon.Restore(savefile);
 
-            for (i = 0; i < inventory.emails.Num(); i++) {
-                GetPDA().AddEmail(inventory.emails.oGet(i).toString());
+            for (i = 0; i < this.inventory.emails.Num(); i++) {
+                GetPDA().AddEmail(this.inventory.emails.oGet(i).toString());
             }
 
-            savefile.ReadUserInterface(hud);
-            savefile.ReadUserInterface(objectiveSystem);
-            objectiveSystemOpen = savefile.ReadBool();
+            savefile.ReadUserInterface(this.hud);
+            savefile.ReadUserInterface(this.objectiveSystem);
+            this.objectiveSystemOpen = savefile.ReadBool();
 
-            weapon_soulcube = savefile.ReadInt();
-            weapon_pda = savefile.ReadInt();
-            weapon_fists = savefile.ReadInt();
+            this.weapon_soulcube = savefile.ReadInt();
+            this.weapon_pda = savefile.ReadInt();
+            this.weapon_fists = savefile.ReadInt();
 
-            heartRate = savefile.ReadInt();
+            this.heartRate = savefile.ReadInt();
 
             savefile.ReadFloat(set);
-            heartInfo.SetStartTime(set[0]);
+            this.heartInfo.SetStartTime(set[0]);
             savefile.ReadFloat(set);
-            heartInfo.SetDuration(set[0]);
+            this.heartInfo.SetDuration(set[0]);
             savefile.ReadFloat(set);
-            heartInfo.SetStartValue(set[0]);
+            this.heartInfo.SetStartValue(set[0]);
             savefile.ReadFloat(set);
-            heartInfo.SetEndValue(set[0]);
+            this.heartInfo.SetEndValue(set[0]);
 
-            lastHeartAdjust = savefile.ReadInt();
-            lastHeartBeat = savefile.ReadInt();
-            lastDmgTime = savefile.ReadInt();
-            deathClearContentsTime = savefile.ReadInt();
-            doingDeathSkin = savefile.ReadBool();
-            lastArmorPulse = savefile.ReadInt();
-            stamina = savefile.ReadFloat();
-            healthPool = savefile.ReadFloat();
-            nextHealthPulse = savefile.ReadInt();
-            healthPulse = savefile.ReadBool();
-            nextHealthTake = savefile.ReadInt();
-            healthTake = savefile.ReadBool();
+            this.lastHeartAdjust = savefile.ReadInt();
+            this.lastHeartBeat = savefile.ReadInt();
+            this.lastDmgTime = savefile.ReadInt();
+            this.deathClearContentsTime = savefile.ReadInt();
+            this.doingDeathSkin = savefile.ReadBool();
+            this.lastArmorPulse = savefile.ReadInt();
+            this.stamina = savefile.ReadFloat();
+            this.healthPool = savefile.ReadFloat();
+            this.nextHealthPulse = savefile.ReadInt();
+            this.healthPulse = savefile.ReadBool();
+            this.nextHealthTake = savefile.ReadInt();
+            this.healthTake = savefile.ReadBool();
 
-            hiddenWeapon = savefile.ReadBool();
-            soulCubeProjectile.Restore(savefile);
+            this.hiddenWeapon = savefile.ReadBool();
+            this.soulCubeProjectile.Restore(savefile);
 
-            spectator = savefile.ReadInt();
-            savefile.ReadVec3(colorBar);
-            colorBarIndex = savefile.ReadInt();
-            scoreBoardOpen = savefile.ReadBool();
-            forceScoreBoard = savefile.ReadBool();
-            forceRespawn = savefile.ReadBool();
-            spectating = savefile.ReadBool();
-            lastSpectateTeleport = savefile.ReadInt();
-            lastHitToggle = savefile.ReadBool();
-            forcedReady = savefile.ReadBool();
-            wantSpectate = savefile.ReadBool();
-            weaponGone = savefile.ReadBool();
-            useInitialSpawns = savefile.ReadBool();
-            latchedTeam = savefile.ReadInt();
-            tourneyRank = savefile.ReadInt();
-            tourneyLine = savefile.ReadInt();
+            this.spectator = savefile.ReadInt();
+            savefile.ReadVec3(this.colorBar);
+            this.colorBarIndex = savefile.ReadInt();
+            this.scoreBoardOpen = savefile.ReadBool();
+            this.forceScoreBoard = savefile.ReadBool();
+            this.forceRespawn = savefile.ReadBool();
+            this.spectating = savefile.ReadBool();
+            this.lastSpectateTeleport = savefile.ReadInt();
+            this.lastHitToggle = savefile.ReadBool();
+            this.forcedReady = savefile.ReadBool();
+            this.wantSpectate = savefile.ReadBool();
+            this.weaponGone = savefile.ReadBool();
+            this.useInitialSpawns = savefile.ReadBool();
+            this.latchedTeam = savefile.ReadInt();
+            this.tourneyRank = savefile.ReadInt();
+            this.tourneyLine = savefile.ReadInt();
 
-            teleportEntity.Restore(savefile);
-            teleportKiller = savefile.ReadInt();
+            this.teleportEntity.Restore(savefile);
+            this.teleportKiller = savefile.ReadInt();
 
-            minRespawnTime = savefile.ReadInt();
-            maxRespawnTime = savefile.ReadInt();
+            this.minRespawnTime = savefile.ReadInt();
+            this.maxRespawnTime = savefile.ReadInt();
 
-            savefile.ReadVec3(firstPersonViewOrigin);
-            savefile.ReadMat3(firstPersonViewAxis);
+            savefile.ReadVec3(this.firstPersonViewOrigin);
+            savefile.ReadMat3(this.firstPersonViewAxis);
 
             // don't bother saving dragEntity since it's a dev tool
-            dragEntity.Clear();
+            this.dragEntity.Clear();
 
-            hipJoint = savefile.ReadJoint();
-            chestJoint = savefile.ReadJoint();
-            headJoint = savefile.ReadJoint();
+            this.hipJoint = savefile.ReadJoint();
+            this.chestJoint = savefile.ReadJoint();
+            this.headJoint = savefile.ReadJoint();
 
-            savefile.ReadStaticObject(physicsObj);
-            RestorePhysics(physicsObj);
+            savefile.ReadStaticObject(this.physicsObj);
+            RestorePhysics(this.physicsObj);
 
             savefile.ReadInt(num);
-            aasLocation.SetGranularity(1);
-            aasLocation.SetNum(num[0]);
+            this.aasLocation.SetGranularity(1);
+            this.aasLocation.SetNum(num[0]);
             for (i = 0; i < num[0]; i++) {
-                aasLocation.oGet(i).areaNum = savefile.ReadInt();
-                savefile.ReadVec3(aasLocation.oGet(i).pos);
+                this.aasLocation.oGet(i).areaNum = savefile.ReadInt();
+                savefile.ReadVec3(this.aasLocation.oGet(i).pos);
             }
 
-            bobFoot = savefile.ReadInt();
-            bobFrac = savefile.ReadFloat();
-            bobfracsin = savefile.ReadFloat();
-            bobCycle = savefile.ReadInt();
-            xyspeed = savefile.ReadFloat();
-            stepUpTime = savefile.ReadInt();
-            stepUpDelta = savefile.ReadFloat();
-            idealLegsYaw = savefile.ReadFloat();
-            legsYaw = savefile.ReadFloat();
-            legsForward = savefile.ReadBool();
-            oldViewYaw = savefile.ReadFloat();
-            savefile.ReadAngles(viewBobAngles);
-            savefile.ReadVec3(viewBob);
-            landChange = savefile.ReadInt();
-            landTime = savefile.ReadInt();
+            this.bobFoot = savefile.ReadInt();
+            this.bobFrac = savefile.ReadFloat();
+            this.bobfracsin = savefile.ReadFloat();
+            this.bobCycle = savefile.ReadInt();
+            this.xyspeed = savefile.ReadFloat();
+            this.stepUpTime = savefile.ReadInt();
+            this.stepUpDelta = savefile.ReadFloat();
+            this.idealLegsYaw = savefile.ReadFloat();
+            this.legsYaw = savefile.ReadFloat();
+            this.legsForward = savefile.ReadBool();
+            this.oldViewYaw = savefile.ReadFloat();
+            savefile.ReadAngles(this.viewBobAngles);
+            savefile.ReadVec3(this.viewBob);
+            this.landChange = savefile.ReadInt();
+            this.landTime = savefile.ReadInt();
 
-            currentWeapon = savefile.ReadInt();
-            idealWeapon = savefile.ReadInt();
-            previousWeapon = savefile.ReadInt();
-            weaponSwitchTime = savefile.ReadInt();
-            weaponEnabled = savefile.ReadBool();
-            showWeaponViewModel = savefile.ReadBool();
+            this.currentWeapon = savefile.ReadInt();
+            this.idealWeapon = savefile.ReadInt();
+            this.previousWeapon = savefile.ReadInt();
+            this.weaponSwitchTime = savefile.ReadInt();
+            this.weaponEnabled = savefile.ReadBool();
+            this.showWeaponViewModel = savefile.ReadBool();
 
-            savefile.ReadSkin(skin);
-            savefile.ReadSkin(powerUpSkin);
-            savefile.ReadString(baseSkinName);
+            savefile.ReadSkin(this.skin);
+            savefile.ReadSkin(this.powerUpSkin);
+            savefile.ReadString(this.baseSkinName);
 
-            numProjectilesFired = savefile.ReadInt();
-            numProjectileHits = savefile.ReadInt();
+            this.numProjectilesFired = savefile.ReadInt();
+            this.numProjectileHits = savefile.ReadInt();
 
-            airless = savefile.ReadBool();
-            airTics = savefile.ReadInt();
-            lastAirDamage = savefile.ReadInt();
+            this.airless = savefile.ReadBool();
+            this.airTics = savefile.ReadInt();
+            this.lastAirDamage = savefile.ReadInt();
 
-            gibDeath = savefile.ReadBool();
-            gibsLaunched = savefile.ReadBool();
-            savefile.ReadVec3(gibsDir);
-
-            savefile.ReadFloat(set);
-            zoomFov.SetStartTime(set[0]);
-            savefile.ReadFloat(set);
-            zoomFov.SetDuration(set[0]);
-            savefile.ReadFloat(set);
-            zoomFov.SetStartValue(set[0]);
-            savefile.ReadFloat(set);
-            zoomFov.SetEndValue(set[0]);
+            this.gibDeath = savefile.ReadBool();
+            this.gibsLaunched = savefile.ReadBool();
+            savefile.ReadVec3(this.gibsDir);
 
             savefile.ReadFloat(set);
-            centerView.SetStartTime(set[0]);
+            this.zoomFov.SetStartTime(set[0]);
             savefile.ReadFloat(set);
-            centerView.SetDuration(set[0]);
+            this.zoomFov.SetDuration(set[0]);
             savefile.ReadFloat(set);
-            centerView.SetStartValue(set[0]);
+            this.zoomFov.SetStartValue(set[0]);
             savefile.ReadFloat(set);
-            centerView.SetEndValue(set[0]);
+            this.zoomFov.SetEndValue(set[0]);
 
-            fxFov = savefile.ReadBool();
+            savefile.ReadFloat(set);
+            this.centerView.SetStartTime(set[0]);
+            savefile.ReadFloat(set);
+            this.centerView.SetDuration(set[0]);
+            savefile.ReadFloat(set);
+            this.centerView.SetStartValue(set[0]);
+            savefile.ReadFloat(set);
+            this.centerView.SetEndValue(set[0]);
 
-            influenceFov = savefile.ReadFloat();
-            influenceActive = savefile.ReadInt();
-            influenceRadius = savefile.ReadFloat();
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/influenceEntity);
-            savefile.ReadMaterial(influenceMaterial);
-            savefile.ReadSkin(influenceSkin);
+            this.fxFov = savefile.ReadBool();
 
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/privateCameraView);
+            this.influenceFov = savefile.ReadFloat();
+            this.influenceActive = savefile.ReadInt();
+            this.influenceRadius = savefile.ReadFloat();
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/influenceEntity);
+            savefile.ReadMaterial(this.influenceMaterial);
+            savefile.ReadSkin(this.influenceSkin);
+
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/privateCameraView);
 
             for (i = 0; i < NUM_LOGGED_VIEW_ANGLES; i++) {
-                savefile.ReadAngles(loggedViewAngles[i]);
+                savefile.ReadAngles(this.loggedViewAngles[i]);
             }
             for (i = 0; i < NUM_LOGGED_ACCELS; i++) {
-                loggedAccel[i].time = savefile.ReadInt();
-                savefile.ReadVec3(loggedAccel[i].dir);
+                this.loggedAccel[i].time = savefile.ReadInt();
+                savefile.ReadVec3(this.loggedAccel[i].dir);
             }
-            currentLoggedAccel = savefile.ReadInt();
+            this.currentLoggedAccel = savefile.ReadInt();
 
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/focusGUIent);
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/focusGUIent);
             // can't save focusUI
-            focusUI = null;
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/focusCharacter);
-            talkCursor = savefile.ReadInt();
-            focusTime = savefile.ReadInt();
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/focusVehicle);
-            savefile.ReadUserInterface(cursor);
+            this.focusUI = null;
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/focusCharacter);
+            this.talkCursor = savefile.ReadInt();
+            this.focusTime = savefile.ReadInt();
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/focusVehicle);
+            savefile.ReadUserInterface(this.cursor);
 
-            oldMouseX = savefile.ReadInt();
-            oldMouseY = savefile.ReadInt();
+            this.oldMouseX = savefile.ReadInt();
+            this.oldMouseY = savefile.ReadInt();
 
-            savefile.ReadString(pdaAudio);
-            savefile.ReadString(pdaVideo);
-            savefile.ReadString(pdaVideoWave);
+            savefile.ReadString(this.pdaAudio);
+            savefile.ReadString(this.pdaVideo);
+            savefile.ReadString(this.pdaVideoWave);
 
-            tipUp = savefile.ReadBool();
-            objectiveUp = savefile.ReadBool();
+            this.tipUp = savefile.ReadBool();
+            this.objectiveUp = savefile.ReadBool();
 
-            lastDamageDef = savefile.ReadInt();
-            savefile.ReadVec3(lastDamageDir);
-            lastDamageLocation = savefile.ReadInt();
-            smoothedFrame = savefile.ReadInt();
-            smoothedOriginUpdated = savefile.ReadBool();
-            savefile.ReadVec3(smoothedOrigin);
-            savefile.ReadAngles(smoothedAngles);
+            this.lastDamageDef = savefile.ReadInt();
+            savefile.ReadVec3(this.lastDamageDir);
+            this.lastDamageLocation = savefile.ReadInt();
+            this.smoothedFrame = savefile.ReadInt();
+            this.smoothedOriginUpdated = savefile.ReadBool();
+            savefile.ReadVec3(this.smoothedOrigin);
+            savefile.ReadAngles(this.smoothedAngles);
 
-            ready = savefile.ReadBool();
-            respawning = savefile.ReadBool();
-            leader = savefile.ReadBool();
-            lastSpectateChange = savefile.ReadInt();
-            lastTeleFX = savefile.ReadInt();
+            this.ready = savefile.ReadBool();
+            this.respawning = savefile.ReadBool();
+            this.leader = savefile.ReadBool();
+            this.lastSpectateChange = savefile.ReadInt();
+            this.lastTeleFX = savefile.ReadInt();
 
             // set the pm_ cvars
             idKeyValue kv;
-            kv = spawnArgs.MatchPrefix("pm_", null);
+            kv = this.spawnArgs.MatchPrefix("pm_", null);
             while (kv != null) {
                 cvarSystem.SetCVarString(kv.GetKey().toString(), kv.GetValue().toString());
-                kv = spawnArgs.MatchPrefix("pm_", kv);
+                kv = this.spawnArgs.MatchPrefix("pm_", kv);
             }
 
             savefile.ReadFloat(set);
@@ -2536,7 +2534,7 @@ public class Player {
             idWeapon weap;
 
             super.Hide();
-            weap = weapon.GetEntity();
+            weap = this.weapon.GetEntity();
             if (weap != null) {
                 weap.HideWorldModel();
             }
@@ -2547,7 +2545,7 @@ public class Player {
             idWeapon weap;
 
             super.Show();
-            weap = weapon.GetEntity();
+            weap = this.weapon.GetEntity();
             if (weap != null) {
                 weap.ShowWorldModel();
             }
@@ -2555,214 +2553,214 @@ public class Player {
 
         @Override
         public void Init() {
-            String[] value = {null};
+            final String[] value = {null};
             idKeyValue kv;
 
-            noclip = false;
-            godmode = false;
+            this.noclip = false;
+            this.godmode = false;
 
-            oldButtons = 0;
-            oldFlags = 0;
+            this.oldButtons = 0;
+            this.oldFlags = 0;
 
-            currentWeapon = -1;
-            idealWeapon = -1;
-            previousWeapon = -1;
-            weaponSwitchTime = 0;
-            weaponEnabled = true;
-            weapon_soulcube = SlotForWeapon("weapon_soulcube");
-            weapon_pda = SlotForWeapon("weapon_pda");
-            weapon_fists = SlotForWeapon("weapon_fists");
-            showWeaponViewModel = GetUserInfo().GetBool("ui_showGun");
+            this.currentWeapon = -1;
+            this.idealWeapon = -1;
+            this.previousWeapon = -1;
+            this.weaponSwitchTime = 0;
+            this.weaponEnabled = true;
+            this.weapon_soulcube = SlotForWeapon("weapon_soulcube");
+            this.weapon_pda = SlotForWeapon("weapon_pda");
+            this.weapon_fists = SlotForWeapon("weapon_fists");
+            this.showWeaponViewModel = GetUserInfo().GetBool("ui_showGun");
 
-            lastDmgTime = 0;
-            lastArmorPulse = -10000;
-            lastHeartAdjust = 0;
-            lastHeartBeat = 0;
-            heartInfo.Init(0, 0, 0f, 0f);
+            this.lastDmgTime = 0;
+            this.lastArmorPulse = -10000;
+            this.lastHeartAdjust = 0;
+            this.lastHeartBeat = 0;
+            this.heartInfo.Init(0, 0, 0f, 0f);
 
-            bobCycle = 0;
-            bobFrac = 0;
-            landChange = 0;
-            landTime = 0;
-            zoomFov.Init(0, 0, 0f, 0f);
-            centerView.Init(0, 0, 0f, 0f);
-            fxFov = false;
+            this.bobCycle = 0;
+            this.bobFrac = 0;
+            this.landChange = 0;
+            this.landTime = 0;
+            this.zoomFov.Init(0, 0, 0f, 0f);
+            this.centerView.Init(0, 0, 0f, 0f);
+            this.fxFov = false;
 
-            influenceFov = 0;
-            influenceActive = 0;
-            influenceRadius = 0;
-            influenceEntity = null;
-            influenceMaterial = null;
-            influenceSkin = null;
+            this.influenceFov = 0;
+            this.influenceActive = 0;
+            this.influenceRadius = 0;
+            this.influenceEntity = null;
+            this.influenceMaterial = null;
+            this.influenceSkin = null;
 
-            currentLoggedAccel = 0;
+            this.currentLoggedAccel = 0;
 
-            focusTime = 0;
-            focusGUIent = null;
-            focusUI = null;
-            focusCharacter = null;
-            talkCursor = 0;
-            focusVehicle = null;
+            this.focusTime = 0;
+            this.focusGUIent = null;
+            this.focusUI = null;
+            this.focusCharacter = null;
+            this.talkCursor = 0;
+            this.focusVehicle = null;
 
             // remove any damage effects
-            playerView.ClearEffects();
+            this.playerView.ClearEffects();
 
             // damage values
-            fl.takedamage = true;
+            this.fl.takedamage = true;
             ClearPain();
 
             // restore persistent data
             RestorePersistantInfo();
 
-            bobCycle = 0;
-            stamina = 0;
-            healthPool = 0;
-            nextHealthPulse = 0;
-            healthPulse = false;
-            nextHealthTake = 0;
-            healthTake = false;
+            this.bobCycle = 0;
+            this.stamina = 0;
+            this.healthPool = 0;
+            this.nextHealthPulse = 0;
+            this.healthPulse = false;
+            this.nextHealthTake = 0;
+            this.healthTake = false;
 
             SetupWeaponEntity();
-            currentWeapon = -1;
-            previousWeapon = -1;
+            this.currentWeapon = -1;
+            this.previousWeapon = -1;
 
-            heartRate = BASE_HEARTRATE;
+            this.heartRate = BASE_HEARTRATE;
             AdjustHeartRate(BASE_HEARTRATE, 0, 0, true);
 
-            idealLegsYaw = 0;
-            legsYaw = 0;
-            legsForward = true;
-            oldViewYaw = 0;
+            this.idealLegsYaw = 0;
+            this.legsYaw = 0;
+            this.legsForward = true;
+            this.oldViewYaw = 0;
 
             // set the pm_ cvars
             if (!gameLocal.isMultiplayer || gameLocal.isServer) {
-                kv = spawnArgs.MatchPrefix("pm_", null);
+                kv = this.spawnArgs.MatchPrefix("pm_", null);
                 while (kv != null) {
                     cvarSystem.SetCVarString(kv.GetKey().toString(), kv.GetValue().toString());
-                    kv = spawnArgs.MatchPrefix("pm_", kv);
+                    kv = this.spawnArgs.MatchPrefix("pm_", kv);
                 }
             }
 
             // disable stamina on hell levels
-            if (gameLocal.world != null && gameLocal.world.spawnArgs.GetBool("no_stamina")) {
+            if ((gameLocal.world != null) && gameLocal.world.spawnArgs.GetBool("no_stamina")) {
                 pm_stamina.SetFloat(0);
             }
 
             // stamina always initialized to maximum
-            stamina = pm_stamina.GetFloat();
+            this.stamina = pm_stamina.GetFloat();
 
             // air always initialized to maximum too
-            airTics = (int) pm_airTics.GetFloat();
-            airless = false;
+            this.airTics = (int) pm_airTics.GetFloat();
+            this.airless = false;
 
-            gibDeath = false;
-            gibsLaunched = false;
-            gibsDir.Zero();
+            this.gibDeath = false;
+            this.gibsLaunched = false;
+            this.gibsDir.Zero();
 
             // set the gravity
-            physicsObj.SetGravity(gameLocal.GetGravity());
+            this.physicsObj.SetGravity(gameLocal.GetGravity());
 
             // start out standing
             SetEyeHeight(pm_normalviewheight.GetFloat());
 
-            stepUpTime = 0;
-            stepUpDelta = 0;
-            viewBobAngles.Zero();
-            viewBob.Zero();
+            this.stepUpTime = 0;
+            this.stepUpDelta = 0;
+            this.viewBobAngles.Zero();
+            this.viewBob.Zero();
 
-            value[0] = spawnArgs.GetString("model");
-            if (value[0] != null && (!value[0].isEmpty())) {
+            value[0] = this.spawnArgs.GetString("model");
+            if ((value[0] != null) && (!value[0].isEmpty())) {
                 SetModel(value[0]);
             }
 
-            if (cursor != null) {
-                cursor.SetStateInt("talkcursor", 0);
-                cursor.SetStateString("combatcursor", "1");
-                cursor.SetStateString("itemcursor", "0");
-                cursor.SetStateString("guicursor", "0");
+            if (this.cursor != null) {
+                this.cursor.SetStateInt("talkcursor", 0);
+                this.cursor.SetStateString("combatcursor", "1");
+                this.cursor.SetStateString("itemcursor", "0");
+                this.cursor.SetStateString("guicursor", "0");
             }
 
-            if ((gameLocal.isMultiplayer || g_testDeath.GetBool()) && skin != null) {
-                SetSkin(skin);
-                renderEntity.shaderParms[6] = 0;
-            } else if (spawnArgs.GetString("spawn_skin", null, value)) {
-                skin.oSet(declManager.FindSkin(value[0]));
-                SetSkin(skin);
-                renderEntity.shaderParms[6] = 0;
+            if ((gameLocal.isMultiplayer || g_testDeath.GetBool()) && (this.skin != null)) {
+                SetSkin(this.skin);
+                this.renderEntity.shaderParms[6] = 0;
+            } else if (this.spawnArgs.GetString("spawn_skin", null, value)) {
+                this.skin.oSet(declManager.FindSkin(value[0]));
+                SetSkin(this.skin);
+                this.renderEntity.shaderParms[6] = 0;
             }
 
-            value[0] = spawnArgs.GetString("bone_hips", "");
-            hipJoint = animator.GetJointHandle(value[0]);
-            if (hipJoint == INVALID_JOINT) {
-                gameLocal.Error("Joint '%s' not found for 'bone_hips' on '%s'", value[0], name);
+            value[0] = this.spawnArgs.GetString("bone_hips", "");
+            this.hipJoint = this.animator.GetJointHandle(value[0]);
+            if (this.hipJoint == INVALID_JOINT) {
+                gameLocal.Error("Joint '%s' not found for 'bone_hips' on '%s'", value[0], this.name);
             }
 
-            value[0] = spawnArgs.GetString("bone_chest", "");
-            chestJoint = animator.GetJointHandle(value[0]);
-            if (chestJoint == INVALID_JOINT) {
-                gameLocal.Error("Joint '%s' not found for 'bone_chest' on '%s'", value[0], name);
+            value[0] = this.spawnArgs.GetString("bone_chest", "");
+            this.chestJoint = this.animator.GetJointHandle(value[0]);
+            if (this.chestJoint == INVALID_JOINT) {
+                gameLocal.Error("Joint '%s' not found for 'bone_chest' on '%s'", value[0], this.name);
             }
 
-            value[0] = spawnArgs.GetString("bone_head", "");
-            headJoint = animator.GetJointHandle(value[0]);
-            if (headJoint == INVALID_JOINT) {
-                gameLocal.Error("Joint '%s' not found for 'bone_head' on '%s'", value[0], name);
+            value[0] = this.spawnArgs.GetString("bone_head", "");
+            this.headJoint = this.animator.GetJointHandle(value[0]);
+            if (this.headJoint == INVALID_JOINT) {
+                gameLocal.Error("Joint '%s' not found for 'bone_head' on '%s'", value[0], this.name);
             }
 
             // initialize the script variables
-            AI_FORWARD.operator(false);
-            AI_BACKWARD.operator(false);
-            AI_STRAFE_LEFT.operator(false);
-            AI_STRAFE_RIGHT.operator(false);
-            AI_ATTACK_HELD.operator(false);
-            AI_WEAPON_FIRED.operator(false);
-            AI_JUMP.operator(false);
-            AI_DEAD.operator(false);
-            AI_CROUCH.operator(false);
-            AI_ONGROUND.operator(false);
-            AI_ONLADDER.operator(false);
-            AI_HARDLANDING.operator(false);
-            AI_SOFTLANDING.operator(false);
-            AI_RUN.operator(false);
-            AI_PAIN.operator(false);
-            AI_RELOAD.operator(false);
-            AI_TELEPORT.operator(false);
-            AI_TURN_LEFT.operator(false);
-            AI_TURN_RIGHT.operator(false);
+            this.AI_FORWARD.operator(false);
+            this.AI_BACKWARD.operator(false);
+            this.AI_STRAFE_LEFT.operator(false);
+            this.AI_STRAFE_RIGHT.operator(false);
+            this.AI_ATTACK_HELD.operator(false);
+            this.AI_WEAPON_FIRED.operator(false);
+            this.AI_JUMP.operator(false);
+            this.AI_DEAD.operator(false);
+            this.AI_CROUCH.operator(false);
+            this.AI_ONGROUND.operator(false);
+            this.AI_ONLADDER.operator(false);
+            this.AI_HARDLANDING.operator(false);
+            this.AI_SOFTLANDING.operator(false);
+            this.AI_RUN.operator(false);
+            this.AI_PAIN.operator(false);
+            this.AI_RELOAD.operator(false);
+            this.AI_TELEPORT.operator(false);
+            this.AI_TURN_LEFT.operator(false);
+            this.AI_TURN_RIGHT.operator(false);
 
             // reset the script object
             ConstructScriptObject();
 
             // execute the script so the script object's constructor takes effect immediately
-            scriptThread.Execute();
+            this.scriptThread.Execute();
 
-            forceScoreBoard = false;
-            forcedReady = false;
+            this.forceScoreBoard = false;
+            this.forcedReady = false;
 
-            privateCameraView = null;
+            this.privateCameraView = null;
 
-            lastSpectateChange = 0;
-            lastTeleFX = -9999;
+            this.lastSpectateChange = 0;
+            this.lastTeleFX = -9999;
 
-            hiddenWeapon = false;
-            tipUp = false;
-            objectiveUp = false;
-            teleportEntity.oSet(null);
-            teleportKiller = -1;
-            leader = false;
+            this.hiddenWeapon = false;
+            this.tipUp = false;
+            this.objectiveUp = false;
+            this.teleportEntity.oSet(null);
+            this.teleportKiller = -1;
+            this.leader = false;
 
             SetPrivateCameraView(null);
 
-            lastSnapshotSequence = 0;
+            this.lastSnapshotSequence = 0;
 
-            MPAim = -1;
-            lastMPAim = -1;
-            lastMPAimTime = 0;
-            MPAimFadeTime = 0;
-            MPAimHighlight = false;
+            this.MPAim = -1;
+            this.lastMPAim = -1;
+            this.lastMPAimTime = 0;
+            this.MPAimFadeTime = 0;
+            this.MPAimHighlight = false;
 
-            if (hud != null) {
-                hud.HandleNamedEvent("aim_clear");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("aim_clear");
             }
 
             cvarSystem.SetCVarBool("ui_chat", false);
@@ -2771,7 +2769,7 @@ public class Player {
         public void PrepareForRestart() {
             ClearPowerUps();
             Spectate(true);
-            forceRespawn = true;
+            this.forceRespawn = true;
 
             // we will be restarting program, clear the client entities from program-related things first
             ShutdownThreads();
@@ -2789,11 +2787,11 @@ public class Player {
                 Init();
             } else {
                 // choose a random spot and prepare the point of view in case player is left spectating
-                assert (spectating);
+                assert (this.spectating);
                 SpawnFromSpawnSpot();
             }
 
-            useInitialSpawns = true;
+            this.useInitialSpawns = true;
             UpdateSkinSetup(true);
         }
 
@@ -2805,44 +2803,44 @@ public class Player {
          ==============
          */
         public void LinkScriptVariables() {
-            AI_FORWARD.LinkTo(scriptObject, "AI_FORWARD");
-            AI_BACKWARD.LinkTo(scriptObject, "AI_BACKWARD");
-            AI_STRAFE_LEFT.LinkTo(scriptObject, "AI_STRAFE_LEFT");
-            AI_STRAFE_RIGHT.LinkTo(scriptObject, "AI_STRAFE_RIGHT");
-            AI_ATTACK_HELD.LinkTo(scriptObject, "AI_ATTACK_HELD");
-            AI_WEAPON_FIRED.LinkTo(scriptObject, "AI_WEAPON_FIRED");
-            AI_JUMP.LinkTo(scriptObject, "AI_JUMP");
-            AI_DEAD.LinkTo(scriptObject, "AI_DEAD");
-            AI_CROUCH.LinkTo(scriptObject, "AI_CROUCH");
-            AI_ONGROUND.LinkTo(scriptObject, "AI_ONGROUND");
-            AI_ONLADDER.LinkTo(scriptObject, "AI_ONLADDER");
-            AI_HARDLANDING.LinkTo(scriptObject, "AI_HARDLANDING");
-            AI_SOFTLANDING.LinkTo(scriptObject, "AI_SOFTLANDING");
-            AI_RUN.LinkTo(scriptObject, "AI_RUN");
-            AI_PAIN.LinkTo(scriptObject, "AI_PAIN");
-            AI_RELOAD.LinkTo(scriptObject, "AI_RELOAD");
-            AI_TELEPORT.LinkTo(scriptObject, "AI_TELEPORT");
-            AI_TURN_LEFT.LinkTo(scriptObject, "AI_TURN_LEFT");
-            AI_TURN_RIGHT.LinkTo(scriptObject, "AI_TURN_RIGHT");
+            this.AI_FORWARD.LinkTo(this.scriptObject, "AI_FORWARD");
+            this.AI_BACKWARD.LinkTo(this.scriptObject, "AI_BACKWARD");
+            this.AI_STRAFE_LEFT.LinkTo(this.scriptObject, "AI_STRAFE_LEFT");
+            this.AI_STRAFE_RIGHT.LinkTo(this.scriptObject, "AI_STRAFE_RIGHT");
+            this.AI_ATTACK_HELD.LinkTo(this.scriptObject, "AI_ATTACK_HELD");
+            this.AI_WEAPON_FIRED.LinkTo(this.scriptObject, "AI_WEAPON_FIRED");
+            this.AI_JUMP.LinkTo(this.scriptObject, "AI_JUMP");
+            this.AI_DEAD.LinkTo(this.scriptObject, "AI_DEAD");
+            this.AI_CROUCH.LinkTo(this.scriptObject, "AI_CROUCH");
+            this.AI_ONGROUND.LinkTo(this.scriptObject, "AI_ONGROUND");
+            this.AI_ONLADDER.LinkTo(this.scriptObject, "AI_ONLADDER");
+            this.AI_HARDLANDING.LinkTo(this.scriptObject, "AI_HARDLANDING");
+            this.AI_SOFTLANDING.LinkTo(this.scriptObject, "AI_SOFTLANDING");
+            this.AI_RUN.LinkTo(this.scriptObject, "AI_RUN");
+            this.AI_PAIN.LinkTo(this.scriptObject, "AI_PAIN");
+            this.AI_RELOAD.LinkTo(this.scriptObject, "AI_RELOAD");
+            this.AI_TELEPORT.LinkTo(this.scriptObject, "AI_TELEPORT");
+            this.AI_TURN_LEFT.LinkTo(this.scriptObject, "AI_TURN_LEFT");
+            this.AI_TURN_RIGHT.LinkTo(this.scriptObject, "AI_TURN_RIGHT");
         }
 
         public void SetupWeaponEntity() {
             int w;
             String weap;
 
-            if (weapon.GetEntity() != null) {
+            if (this.weapon.GetEntity() != null) {
                 // get rid of old weapon
-                weapon.GetEntity().Clear();
-                currentWeapon = -1;
+                this.weapon.GetEntity().Clear();
+                this.currentWeapon = -1;
             } else if (!gameLocal.isClient) {
-                weapon.oSet((idWeapon) gameLocal.SpawnEntityType(idWeapon.class, null));
-                weapon.GetEntity().SetOwner(this);
-                currentWeapon = -1;
+                this.weapon.oSet((idWeapon) gameLocal.SpawnEntityType(idWeapon.class, null));
+                this.weapon.GetEntity().SetOwner(this);
+                this.currentWeapon = -1;
             }
 
             for (w = 0; w < MAX_WEAPONS; w++) {
-                weap = spawnArgs.GetString(va("def_weapon%d", w));
-                if (weap != null && !weap.isEmpty()) {
+                weap = this.spawnArgs.GetString(va("def_weapon%d", w));
+                if ((weap != null) && !weap.isEmpty()) {
                     idWeapon.CacheWeapon(weap);
                 }
             }
@@ -2859,13 +2857,13 @@ public class Player {
          */
         public void SelectInitialSpawnPoint(idVec3 origin, idAngles angles) {
             idEntity spot;
-            idStr skin = new idStr();
+            final idStr skin = new idStr();
 
             spot = gameLocal.SelectInitialSpawnPoint(this);
 
             // set the player skin from the spawn location
             if (spot.spawnArgs.GetString("skin", null, skin)) {
-                spawnArgs.Set("spawn_skin", skin);
+                this.spawnArgs.Set("spawn_skin", skin);
             }
 
             // activate the spawn locations targets
@@ -2884,8 +2882,8 @@ public class Player {
          ============
          */
         public void SpawnFromSpawnSpot() {
-            idVec3 spawn_origin = new idVec3();
-            idAngles spawn_angles = new idAngles();
+            final idVec3 spawn_origin = new idVec3();
+            final idAngles spawn_angles = new idAngles();
 
             SelectInitialSpawnPoint(spawn_origin, spawn_angles);
             SpawnToPoint(spawn_origin, spawn_angles);
@@ -2907,29 +2905,29 @@ public class Player {
 
             assert (!gameLocal.isClient);
 
-            respawning = true;
+            this.respawning = true;
 
             Init();
 
-            fl.noknockback = false;
+            this.fl.noknockback = false;
 
             // stop any ragdolls being used
             StopRagdoll();
 
             // set back the player physics
-            SetPhysics(physicsObj);
+            SetPhysics(this.physicsObj);
 
-            physicsObj.SetClipModelAxis();
-            physicsObj.EnableClip();
+            this.physicsObj.SetClipModelAxis();
+            this.physicsObj.EnableClip();
 
-            if (!spectating) {
+            if (!this.spectating) {
                 SetCombatContents(true);
             }
 
-            physicsObj.SetLinearVelocity(getVec3_origin());
+            this.physicsObj.SetLinearVelocity(getVec3_origin());
 
             // setup our initial view
-            if (!spectating) {
+            if (!this.spectating) {
                 SetOrigin(spawn_origin);
             } else {
                 spec_origin = spawn_origin;
@@ -2940,53 +2938,53 @@ public class Player {
 
             // if this is the first spawn of the map, we don't have a usercmd yet,
             // so the delta angles won't be correct.  This will be fixed on the first think.
-            viewAngles = getAng_zero();
+            this.viewAngles = getAng_zero();
             SetDeltaViewAngles(getAng_zero());
             SetViewAngles(spawn_angles);
-            spawnAngles = spawn_angles;
-            spawnAnglesSet = false;
+            this.spawnAngles = spawn_angles;
+            this.spawnAnglesSet = false;
 
-            legsForward = true;
-            legsYaw = 0;
-            idealLegsYaw = 0;
-            oldViewYaw = viewAngles.yaw;
+            this.legsForward = true;
+            this.legsYaw = 0;
+            this.idealLegsYaw = 0;
+            this.oldViewYaw = this.viewAngles.yaw;
 
-            if (spectating) {
+            if (this.spectating) {
                 Hide();
             } else {
                 Show();
             }
 
             if (gameLocal.isMultiplayer) {
-                if (!spectating) {
+                if (!this.spectating) {
                     // we may be called twice in a row in some situations. avoid a double fx and 'fly to the roof'
-                    if (lastTeleFX < gameLocal.time - 1000) {
-                        idEntityFx.StartFx(spawnArgs.GetString("fx_spawn"), spawn_origin, null, this, true);
-                        lastTeleFX = gameLocal.time;
+                    if (this.lastTeleFX < (gameLocal.time - 1000)) {
+                        idEntityFx.StartFx(this.spawnArgs.GetString("fx_spawn"), spawn_origin, null, this, true);
+                        this.lastTeleFX = gameLocal.time;
                     }
                 }
-                AI_TELEPORT.operator(true);
+                this.AI_TELEPORT.operator(true);
             } else {
-                AI_TELEPORT.operator(false);
+                this.AI_TELEPORT.operator(false);
             }
 
             // kill anything at the new position
-            if (!spectating) {
-                physicsObj.SetClipMask(MASK_PLAYERSOLID); // the clip mask is usually maintained in Move(), but KillBox requires it
+            if (!this.spectating) {
+                this.physicsObj.SetClipMask(MASK_PLAYERSOLID); // the clip mask is usually maintained in Move(), but KillBox requires it
                 gameLocal.KillBox(this);
             }
 
             // don't allow full run speed for a bit
-            physicsObj.SetKnockBack(100);
+            this.physicsObj.SetKnockBack(100);
 
             // set our respawn time and buttons so that if we're killed we don't respawn immediately
-            minRespawnTime = gameLocal.time;
-            maxRespawnTime = gameLocal.time;
-            if (!spectating) {
-                forceRespawn = false;
+            this.minRespawnTime = gameLocal.time;
+            this.maxRespawnTime = gameLocal.time;
+            if (!this.spectating) {
+                this.forceRespawn = false;
             }
 
-            privateCameraView = null;
+            this.privateCameraView = null;
 
             BecomeActive(TH_THINK);
 
@@ -2994,16 +2992,16 @@ public class Player {
             // initialize animations and other things
             Think();
 
-            respawning = false;
-            lastManOver = false;
-            lastManPlayAgain = false;
-            isTelefragged = false;
+            this.respawning = false;
+            this.lastManOver = false;
+            this.lastManPlayAgain = false;
+            this.isTelefragged = false;
         }
 
         public void SetClipModel() {
             idBounds bounds = new idBounds();
 
-            if (spectating) {
+            if (this.spectating) {
                 bounds = new idBounds(getVec3_origin()).Expand(pm_spectatebbox.GetFloat() * 0.5f);
             } else {
                 bounds.oGet(0).Set(-pm_bboxwidth.GetFloat() * 0.5f, -pm_bboxwidth.GetFloat() * 0.5f, 0);
@@ -3014,12 +3012,12 @@ public class Player {
             idClipModel newClip;
             if (pm_usecylinder.GetBool()) {
                 newClip = new idClipModel(new idTraceModel(bounds, 8));
-                newClip.Translate(physicsObj.PlayerGetOrigin());
-                physicsObj.SetClipModel(newClip, 1.0f);
+                newClip.Translate(this.physicsObj.PlayerGetOrigin());
+                this.physicsObj.SetClipModel(newClip, 1.0f);
             } else {
                 newClip = new idClipModel(new idTraceModel(bounds));
-                newClip.Translate(physicsObj.PlayerGetOrigin());
-                physicsObj.SetClipModel(newClip, 1.0f);
+                newClip.Translate(this.physicsObj.PlayerGetOrigin());
+                this.physicsObj.SetClipModel(newClip, 1.0f);
             }
         }
 
@@ -3031,12 +3029,12 @@ public class Player {
          ===============
          */
         public void SavePersistantInfo() {
-            idDict playerInfo = gameLocal.persistentPlayerInfo[entityNumber];
+            final idDict playerInfo = gameLocal.persistentPlayerInfo[this.entityNumber];
 
             playerInfo.Clear();
-            inventory.GetPersistantData(playerInfo);
-            playerInfo.SetInt("health", health);
-            playerInfo.SetInt("current_weapon", currentWeapon);
+            this.inventory.GetPersistantData(playerInfo);
+            playerInfo.SetInt("health", this.health);
+            playerInfo.SetInt("current_weapon", this.currentWeapon);
         }
 
         /*
@@ -3048,24 +3046,24 @@ public class Player {
          */
         public void RestorePersistantInfo() {
             if (gameLocal.isMultiplayer) {
-                gameLocal.persistentPlayerInfo[entityNumber].Clear();
+                gameLocal.persistentPlayerInfo[this.entityNumber].Clear();
             }
 
-            spawnArgs.Copy(gameLocal.persistentPlayerInfo[entityNumber]);
+            this.spawnArgs.Copy(gameLocal.persistentPlayerInfo[this.entityNumber]);
 
-            inventory.RestoreInventory(this, spawnArgs);
-            health = spawnArgs.GetInt("health", "100");
+            this.inventory.RestoreInventory(this, this.spawnArgs);
+            this.health = this.spawnArgs.GetInt("health", "100");
             if (!gameLocal.isClient) {
-                idealWeapon = spawnArgs.GetInt("current_weapon", "1");
+                this.idealWeapon = this.spawnArgs.GetInt("current_weapon", "1");
             }
         }
 
         public void SetLevelTrigger(final String levelName, final String triggerName) {
-            if (levelName != null && !levelName.isEmpty() && triggerName != null && !triggerName.isEmpty()) {
-                idLevelTriggerInfo lti = new idLevelTriggerInfo();
+            if ((levelName != null) && !levelName.isEmpty() && (triggerName != null) && !triggerName.isEmpty()) {
+                final idLevelTriggerInfo lti = new idLevelTriggerInfo();
                 lti.levelName.oSet(levelName);
                 lti.triggerName.oSet(triggerName);
-                inventory.levelTriggers.Append(lti);
+                this.inventory.levelTriggers.Append(lti);
             }
         }
 
@@ -3076,7 +3074,7 @@ public class Player {
             boolean newready;
 
             userInfo = GetUserInfo();
-            showWeaponViewModel = userInfo.GetBool("ui_showGun");
+            this.showWeaponViewModel = userInfo.GetBool("ui_showGun");
 
             if (!gameLocal.isMultiplayer) {
                 return false;
@@ -3087,43 +3085,43 @@ public class Player {
             spec = (idStr.Icmp(userInfo.GetString("ui_spectate"), "Spectate") == 0);
             if (gameLocal.serverInfo.GetBool("si_spectators")) {
                 // never let spectators go back to game while sudden death is on
-                if (canModify && gameLocal.mpGame.GetGameState() == SUDDENDEATH && !spec && wantSpectate == true) {
+                if (canModify && (gameLocal.mpGame.GetGameState() == SUDDENDEATH) && !spec && (this.wantSpectate == true)) {
                     userInfo.Set("ui_spectate", "Spectate");
                     modifiedInfo |= true;
                 } else {
-                    if (spec != wantSpectate && !spec) {
+                    if ((spec != this.wantSpectate) && !spec) {
                         // returning from spectate, set forceRespawn so we don't get stuck in spectate forever
-                        forceRespawn = true;
+                        this.forceRespawn = true;
                     }
-                    wantSpectate = spec;
+                    this.wantSpectate = spec;
                 }
             } else {
                 if (canModify && spec) {
                     userInfo.Set("ui_spectate", "Play");
                     modifiedInfo |= true;
-                } else if (spectating) {
+                } else if (this.spectating) {
                     // allow player to leaving spectator mode if they were in it when si_spectators got turned off
-                    forceRespawn = true;
+                    this.forceRespawn = true;
                 }
-                wantSpectate = false;
+                this.wantSpectate = false;
             }
 
             newready = (idStr.Icmp(userInfo.GetString("ui_ready"), "Ready") == 0);
-            if (ready != newready && gameLocal.mpGame.GetGameState() == WARMUP && !wantSpectate) {
+            if ((this.ready != newready) && (gameLocal.mpGame.GetGameState() == WARMUP) && !this.wantSpectate) {
                 gameLocal.mpGame.AddChatLine(common.GetLanguageDict().GetString("#str_07180"), userInfo.GetString("ui_name"), newready ? common.GetLanguageDict().GetString("#str_04300") : common.GetLanguageDict().GetString("#str_04301"));
             }
-            ready = newready;
-            team = (idStr.Icmp(userInfo.GetString("ui_team"), "Blue") & 1);//== 0);
+            this.ready = newready;
+            this.team = (idStr.Icmp(userInfo.GetString("ui_team"), "Blue") & 1);//== 0);
             // server maintains TDM balance
-            if (canModify && gameLocal.gameType == GAME_TDM && !gameLocal.mpGame.IsInGame(entityNumber) && g_balanceTDM.GetBool()) {
+            if (canModify && (gameLocal.gameType == GAME_TDM) && !gameLocal.mpGame.IsInGame(this.entityNumber) && g_balanceTDM.GetBool()) {
                 modifiedInfo |= BalanceTDM();
             }
             UpdateSkinSetup(false);
 
-            isChatting = userInfo.GetBool("ui_chat", "0");
-            if (canModify && isChatting && AI_DEAD.operator()) {
+            this.isChatting = userInfo.GetBool("ui_chat", "0");
+            if (canModify && this.isChatting && this.AI_DEAD.operator()) {
                 // if dead, always force chat icon off.
-                isChatting = false;
+                this.isChatting = false;
                 userInfo.SetBool("ui_chat", false);
                 modifiedInfo |= true;
             }
@@ -3132,18 +3130,18 @@ public class Player {
         }
 
         public idDict GetUserInfo() {
-            return gameLocal.userInfo[entityNumber];
+            return gameLocal.userInfo[this.entityNumber];
         }
 
         public boolean BalanceTDM() {
             int i, balanceTeam;
-            int[] teamCount = new int[2];
+            final int[] teamCount = new int[2];
             idEntity ent;
 
             teamCount[ 0] = teamCount[ 1] = 0;
             for (i = 0; i < gameLocal.numClients; i++) {
                 ent = gameLocal.entities[i];
-                if (ent != null && ent.IsType(idPlayer.class)) {
+                if ((ent != null) && ent.IsType(idPlayer.class)) {
                     teamCount[((idPlayer) ent).team]++;
                 }
             }
@@ -3153,10 +3151,10 @@ public class Player {
             } else if (teamCount[ 0] > teamCount[ 1]) {
                 balanceTeam = 1;
             }
-            if (balanceTeam != -1 && team != balanceTeam) {
-                common.DPrintf("team balance: forcing player %d to %s team\n", entityNumber, itob(balanceTeam) ? "blue" : "red");
-                team = balanceTeam;
-                GetUserInfo().Set("ui_team", itob(team) ? "Blue" : "Red");
+            if ((balanceTeam != -1) && (this.team != balanceTeam)) {
+                common.DPrintf("team balance: forcing player %d to %s team\n", this.entityNumber, itob(balanceTeam) ? "blue" : "red");
+                this.team = balanceTeam;
+                GetUserInfo().Set("ui_team", itob(this.team) ? "Blue" : "Red");
                 return true;
             }
             return false;
@@ -3167,17 +3165,17 @@ public class Player {
             int w;
 
             // check if we have any weapons
-            if (0 == inventory.weapons) {
+            if (0 == this.inventory.weapons) {
                 return;
             }
 
             for (w = 0; w < MAX_WEAPONS; w++) {
-                if ((inventory.weapons & (1 << w)) != 0) {
-                    weap = spawnArgs.GetString(va("def_weapon%d", w));
+                if ((this.inventory.weapons & (1 << w)) != 0) {
+                    weap = this.spawnArgs.GetString(va("def_weapon%d", w));
                     if (!"".equals(weap)) {
                         idWeapon.CacheWeapon(weap);
                     } else {
-                        inventory.weapons &= ~(1 << w);
+                        this.inventory.weapons &= ~(1 << w);
                     }
                 }
             }
@@ -3187,46 +3185,46 @@ public class Player {
             Hide();
             StopAudioLog();
             StopSound(etoi(SND_CHANNEL_PDA), false);
-            if (hud != null) {
-                hud.HandleNamedEvent("radioChatterDown");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("radioChatterDown");
             }
 
-            physicsObj.SetLinearVelocity(getVec3_origin());
+            this.physicsObj.SetLinearVelocity(getVec3_origin());
 
             SetState("EnterCinematic");
             UpdateScript();
 
-            if (weaponEnabled && weapon.GetEntity() != null) {
-                weapon.GetEntity().EnterCinematic();
+            if (this.weaponEnabled && (this.weapon.GetEntity() != null)) {
+                this.weapon.GetEntity().EnterCinematic();
             }
 
-            AI_FORWARD.operator(false);
-            AI_BACKWARD.operator(false);
-            AI_STRAFE_LEFT.operator(false);
-            AI_STRAFE_RIGHT.operator(false);
-            AI_RUN.operator(false);
-            AI_ATTACK_HELD.operator(false);
-            AI_WEAPON_FIRED.operator(false);
-            AI_JUMP.operator(false);
-            AI_CROUCH.operator(false);
-            AI_ONGROUND.operator(true);
-            AI_ONLADDER.operator(false);
-            AI_DEAD.operator(health <= 0);
-            AI_RUN.operator(false);
-            AI_PAIN.operator(false);
-            AI_HARDLANDING.operator(false);
-            AI_SOFTLANDING.operator(false);
-            AI_RELOAD.operator(false);
-            AI_TELEPORT.operator(false);
-            AI_TURN_LEFT.operator(false);
-            AI_TURN_RIGHT.operator(false);
+            this.AI_FORWARD.operator(false);
+            this.AI_BACKWARD.operator(false);
+            this.AI_STRAFE_LEFT.operator(false);
+            this.AI_STRAFE_RIGHT.operator(false);
+            this.AI_RUN.operator(false);
+            this.AI_ATTACK_HELD.operator(false);
+            this.AI_WEAPON_FIRED.operator(false);
+            this.AI_JUMP.operator(false);
+            this.AI_CROUCH.operator(false);
+            this.AI_ONGROUND.operator(true);
+            this.AI_ONLADDER.operator(false);
+            this.AI_DEAD.operator(this.health <= 0);
+            this.AI_RUN.operator(false);
+            this.AI_PAIN.operator(false);
+            this.AI_HARDLANDING.operator(false);
+            this.AI_SOFTLANDING.operator(false);
+            this.AI_RELOAD.operator(false);
+            this.AI_TELEPORT.operator(false);
+            this.AI_TURN_LEFT.operator(false);
+            this.AI_TURN_RIGHT.operator(false);
         }
 
         public void ExitCinematic() {
             Show();
 
-            if (weaponEnabled && weapon.GetEntity() != null) {
-                weapon.GetEntity().ExitCinematic();
+            if (this.weaponEnabled && (this.weapon.GetEntity() != null)) {
+                this.weapon.GetEntity().ExitCinematic();
             }
 
             SetState("ExitCinematic");
@@ -3238,7 +3236,7 @@ public class Player {
                 return SkipCinematic();
             }
 
-            if (objectiveSystemOpen) {
+            if (this.objectiveSystemOpen) {
                 TogglePDA();
                 return true;
             }
@@ -3258,48 +3256,48 @@ public class Player {
             float sidespeed;
 
             // minus the push velocity to avoid playing the walking animation and sounds when riding a mover
-            velocity = physicsObj.GetLinearVelocity().oMinus(physicsObj.GetPushedLinearVelocity());
-            fallspeed = velocity.oMultiply(physicsObj.GetGravityNormal());
+            velocity = this.physicsObj.GetLinearVelocity().oMinus(this.physicsObj.GetPushedLinearVelocity());
+            fallspeed = velocity.oMultiply(this.physicsObj.GetGravityNormal());
 
-            if (influenceActive != 0) {
-                AI_FORWARD.operator(false);
-                AI_BACKWARD.operator(false);
-                AI_STRAFE_LEFT.operator(false);
-                AI_STRAFE_RIGHT.operator(false);
-            } else if (gameLocal.time - lastDmgTime < 500) {
-                forwardspeed = velocity.oMultiply(viewAxis.oGet(0));
-                sidespeed = velocity.oMultiply(viewAxis.oGet(1));
-                AI_FORWARD.operator(AI_ONGROUND.operator() && (forwardspeed > 20.01f));
-                AI_BACKWARD.operator(AI_ONGROUND.operator() && (forwardspeed < -20.01f));
-                AI_STRAFE_LEFT.operator(AI_ONGROUND.operator() && (sidespeed > 20.01f));
-                AI_STRAFE_RIGHT.operator(AI_ONGROUND.operator() && (sidespeed < -20.01f));
-            } else if (xyspeed > MIN_BOB_SPEED) {
-                AI_FORWARD.operator(AI_ONGROUND.operator() && (usercmd.forwardmove > 0));
-                AI_BACKWARD.operator(AI_ONGROUND.operator() && (usercmd.forwardmove < 0));
-                AI_STRAFE_LEFT.operator(AI_ONGROUND.operator() && (usercmd.rightmove < 0));
-                AI_STRAFE_RIGHT.operator(AI_ONGROUND.operator() && (usercmd.rightmove > 0));
+            if (this.influenceActive != 0) {
+                this.AI_FORWARD.operator(false);
+                this.AI_BACKWARD.operator(false);
+                this.AI_STRAFE_LEFT.operator(false);
+                this.AI_STRAFE_RIGHT.operator(false);
+            } else if ((gameLocal.time - this.lastDmgTime) < 500) {
+                forwardspeed = velocity.oMultiply(this.viewAxis.oGet(0));
+                sidespeed = velocity.oMultiply(this.viewAxis.oGet(1));
+                this.AI_FORWARD.operator(this.AI_ONGROUND.operator() && (forwardspeed > 20.01f));
+                this.AI_BACKWARD.operator(this.AI_ONGROUND.operator() && (forwardspeed < -20.01f));
+                this.AI_STRAFE_LEFT.operator(this.AI_ONGROUND.operator() && (sidespeed > 20.01f));
+                this.AI_STRAFE_RIGHT.operator(this.AI_ONGROUND.operator() && (sidespeed < -20.01f));
+            } else if (this.xyspeed > MIN_BOB_SPEED) {
+                this.AI_FORWARD.operator(this.AI_ONGROUND.operator() && (this.usercmd.forwardmove > 0));
+                this.AI_BACKWARD.operator(this.AI_ONGROUND.operator() && (this.usercmd.forwardmove < 0));
+                this.AI_STRAFE_LEFT.operator(this.AI_ONGROUND.operator() && (this.usercmd.rightmove < 0));
+                this.AI_STRAFE_RIGHT.operator(this.AI_ONGROUND.operator() && (this.usercmd.rightmove > 0));
             } else {
-                AI_FORWARD.operator(false);
-                AI_BACKWARD.operator(false);
-                AI_STRAFE_LEFT.operator(false);
-                AI_STRAFE_RIGHT.operator(false);
+                this.AI_FORWARD.operator(false);
+                this.AI_BACKWARD.operator(false);
+                this.AI_STRAFE_LEFT.operator(false);
+                this.AI_STRAFE_RIGHT.operator(false);
             }
 
-            AI_RUN.operator(((usercmd.buttons & BUTTON_RUN) != 0) && ((NOT(pm_stamina.GetFloat())) || (stamina > pm_staminathreshold.GetFloat())));
-            AI_DEAD.operator(health <= 0);
+            this.AI_RUN.operator(((this.usercmd.buttons & BUTTON_RUN) != 0) && ((NOT(pm_stamina.GetFloat())) || (this.stamina > pm_staminathreshold.GetFloat())));
+            this.AI_DEAD.operator(this.health <= 0);
         }
 
         public void SetViewAngles(final idAngles angles) {
             UpdateDeltaViewAngles(angles);
-            viewAngles = angles;
+            this.viewAngles = angles;
         }
 
         // delta view angles to allow movers to rotate the view of the player
         public void UpdateDeltaViewAngles(final idAngles angles) {
             // set the delta angle
-            idAngles delta = new idAngles();
+            final idAngles delta = new idAngles();
             for (int i = 0; i < 3; i++) {
-                delta.oSet(i, (float) (angles.oGet(i) - SHORT2ANGLE(usercmd.angles[i])));
+                delta.oSet(i, angles.oGet(i) - SHORT2ANGLE(this.usercmd.angles[i]));
             }
             SetDeltaViewAngles(delta);
         }
@@ -3315,7 +3313,7 @@ public class Player {
             other = gameLocal.entities[collision.c.entityNum];
             if (other != null) {
                 other.Signal(SIG_TOUCH);
-                if (!spectating) {
+                if (!this.spectating) {
                     if (other.RespondsTo(EV_Touch)) {
                         other.ProcessEvent(EV_Touch, this, collision);
                     }
@@ -3333,17 +3331,17 @@ public class Player {
             int i;
 
             if (aas != null) {
-                for (i = 0; i < aasLocation.Num(); i++) {
+                for (i = 0; i < this.aasLocation.Num(); i++) {
                     if (aas == gameLocal.GetAAS(i)) {
-                        areaNum[0] = aasLocation.oGet(i).areaNum;
-                        pos = aasLocation.oGet(i).pos;
+                        areaNum[0] = this.aasLocation.oGet(i).areaNum;
+                        pos = this.aasLocation.oGet(i).pos;
                         return;
                     }
                 }
             }
 
             areaNum[0] = 0;
-            pos = physicsObj.GetOrigin();
+            pos = this.physicsObj.GetOrigin();
         }
 
         /*
@@ -3355,16 +3353,16 @@ public class Player {
          */
         @Override
         public void GetAIAimTargets(final idVec3 lastSightPos, idVec3 headPos, idVec3 chestPos) {
-            idVec3 offset = new idVec3();
-            idMat3 axis = new idMat3();
+            final idVec3 offset = new idVec3();
+            final idMat3 axis = new idMat3();
             idVec3 origin;
 
-            origin = lastSightPos.oMinus(physicsObj.GetOrigin());
+            origin = lastSightPos.oMinus(this.physicsObj.GetOrigin());
 
-            GetJointWorldTransform(chestJoint, gameLocal.time, offset, axis);
+            GetJointWorldTransform(this.chestJoint, gameLocal.time, offset, axis);
             headPos = offset.oPlus(origin);
 
-            GetJointWorldTransform(headJoint, gameLocal.time, offset, axis);
+            GetJointWorldTransform(this.headJoint, gameLocal.time, offset, axis);
             chestPos = offset.oPlus(origin);
         }
 
@@ -3379,7 +3377,7 @@ public class Player {
         public void DamageFeedback(idEntity victim, idEntity inflictor, int[] damage) {
             assert (!gameLocal.isClient);
             damage[0] *= PowerUpModifier(BERSERK);
-            if (damage[0] != 0 && (victim != this) && victim.IsType(idActor.class)) {
+            if ((damage[0] != 0) && (victim != this) && victim.IsType(idActor.class)) {
                 SetLastHitTime(gameLocal.time);
             }
         }
@@ -3395,13 +3393,13 @@ public class Player {
          */
         public void CalcDamagePoints(idEntity inflictor, idEntity attacker, final idDict damageDef,
                 final float damageScale, final int location, int[] health, int[] armor) {
-            int[] damage = {0};
+            final int[] damage = {0};
             int armorSave;
 
             damageDef.GetInt("damage", "20", damage);
             damage[0] = GetDamageForLocation(damage[0], location);
 
-            idPlayer player = attacker.IsType(idPlayer.class) ? (idPlayer) attacker : null;
+            final idPlayer player = attacker.IsType(idPlayer.class) ? (idPlayer) attacker : null;
             if (!gameLocal.isMultiplayer) {
                 if (inflictor != gameLocal.world) {
                     switch (g_skill.GetInteger()) {
@@ -3438,7 +3436,7 @@ public class Player {
             // check for completely getting out of the damage
             if (!damageDef.GetBool("noGod")) {
                 // check for godmode
-                if (godmode) {
+                if (this.godmode) {
                     damage[0] = 0;
                 }
             }
@@ -3453,8 +3451,8 @@ public class Player {
                 armor_protection = gameLocal.isMultiplayer ? g_armorProtectionMP.GetFloat() : g_armorProtection.GetFloat();
 
                 armorSave = (int) ceil(damage[0] * armor_protection);
-                if (armorSave >= inventory.armor) {
-                    armorSave = inventory.armor;
+                if (armorSave >= this.inventory.armor) {
+                    armorSave = this.inventory.armor;
                 }
 
                 if (0 == damage[0]) {
@@ -3470,12 +3468,12 @@ public class Player {
             }
 
             // check for team damage
-            if (gameLocal.gameType == GAME_TDM
+            if ((gameLocal.gameType == GAME_TDM)
                     && !gameLocal.serverInfo.GetBool("si_teamDamage")
                     && !damageDef.GetBool("noTeam")
-                    && player != null
+                    && (player != null)
                     && !player.equals(this)// you get self damage no matter what
-                    && player.team == team) {
+                    && (player.team == this.team)) {
                 damage[0] = 0;
             }
 
@@ -3502,19 +3500,19 @@ public class Player {
         @Override
         public void Damage(idEntity inflictor, idEntity attacker, final idVec3 dir, final String damageDefName, final float damageScale, final int location) {
             idVec3 kick;
-            int[] damage = {0};
-            int[] armorSave = {0};
-            int[] knockback = {0};
+            final int[] damage = {0};
+            final int[] armorSave = {0};
+            final int[] knockback = {0};
             idVec3 damage_from;
-            idVec3 localDamageVector = new idVec3();
-            float[] attackerPushScale = {0};
+            final idVec3 localDamageVector = new idVec3();
+            final float[] attackerPushScale = {0};
 
             // damage is only processed on server
             if (gameLocal.isClient) {
                 return;
             }
 
-            if (!fl.takedamage || noclip || spectating || gameLocal.inCinematic) {
+            if (!this.fl.takedamage || this.noclip || this.spectating || gameLocal.inCinematic) {
                 return;
             }
 
@@ -3530,7 +3528,7 @@ public class Player {
                     return;
                 }
                 // don't take damage from monsters during influences
-                if (influenceActive != 0) {
+                if (this.influenceActive != 0) {
                     return;
                 }
             }
@@ -3550,7 +3548,7 @@ public class Player {
             // determine knockback
             damageDef.dict.GetInt("knockback", "20", knockback);
 
-            if (knockback[0] != 0 && !fl.noknockback) {
+            if ((knockback[0] != 0) && !this.fl.noknockback) {
                 if (attacker == this) {
                     damageDef.dict.GetFloat("attackerPushScale", "0", attackerPushScale);
                 } else {
@@ -3559,47 +3557,47 @@ public class Player {
 
                 kick = dir;
                 kick.Normalize();
-                kick.oMulSet(g_knockback.GetFloat() * knockback[0] * attackerPushScale[0] / 200);
-                physicsObj.SetLinearVelocity(physicsObj.GetLinearVelocity().oPlus(kick));
+                kick.oMulSet((g_knockback.GetFloat() * knockback[0] * attackerPushScale[0]) / 200);
+                this.physicsObj.SetLinearVelocity(this.physicsObj.GetLinearVelocity().oPlus(kick));
 
                 // set the timer so that the player can't cancel out the movement immediately
-                physicsObj.SetKnockBack(idMath.ClampInt(50, 200, knockback[0] * 2));
+                this.physicsObj.SetKnockBack(idMath.ClampInt(50, 200, knockback[0] * 2));
             }
 
             // give feedback on the player view and audibly when armor is helping
             if (armorSave[0] != 0) {
-                inventory.armor -= armorSave[0];
+                this.inventory.armor -= armorSave[0];
 
-                if (gameLocal.time > lastArmorPulse + 200) {
+                if (gameLocal.time > (this.lastArmorPulse + 200)) {
                     StartSound("snd_hitArmor", SND_CHANNEL_ITEM, 0, false, null);
                 }
-                lastArmorPulse = gameLocal.time;
+                this.lastArmorPulse = gameLocal.time;
             }
 
             if (damageDef.dict.GetBool("burn")) {
                 StartSound("snd_burn", SND_CHANNEL_BODY3, 0, false, null);
             } else if (damageDef.dict.GetBool("no_air")) {
-                if (0 == armorSave[0] && health > 0) {
+                if ((0 == armorSave[0]) && (this.health > 0)) {
                     StartSound("snd_airGasp", SND_CHANNEL_ITEM, 0, false, null);
                 }
             }
 
             if (g_debugDamage.GetInteger() != 0) {
                 gameLocal.Printf("client:%d health:%d damage:%d armor:%d\n",
-                        entityNumber, health, damage[0], armorSave[0]);
+                        this.entityNumber, this.health, damage[0], armorSave[0]);
             }
 
             // move the world direction vector to local coordinates
             damage_from = dir;
             damage_from.Normalize();
 
-            viewAxis.ProjectVector(damage_from, localDamageVector);
+            this.viewAxis.ProjectVector(damage_from, localDamageVector);
 
             // add to the damage inflicted on a player this frame
             // the total will be turned into screen blends and view angle kicks
             // at the end of the frame
-            if (health > 0) {
-                playerView.DamageImpulse(localDamageVector, damageDef.dict);
+            if (this.health > 0) {
+                this.playerView.DamageImpulse(localDamageVector, damageDef.dict);
             }
 
             // do the damage
@@ -3607,8 +3605,8 @@ public class Player {
 
                 if (!gameLocal.isMultiplayer) {
                     float scale = g_damageScale.GetFloat();
-                    if (g_useDynamicProtection.GetBool() && g_skill.GetInteger() < 2) {
-                        if (gameLocal.time > lastDmgTime + 500 && scale > 0.25f) {
+                    if (g_useDynamicProtection.GetBool() && (g_skill.GetInteger() < 2)) {
+                        if ((gameLocal.time > (this.lastDmgTime + 500)) && (scale > 0.25f)) {
                             scale -= 0.05f;
                             g_damageScale.SetFloat(scale);
                         }
@@ -3623,53 +3621,53 @@ public class Player {
                     damage[0] = 1;
                 }
 
-                int oldHealth = health;
-                health -= damage[0];
+                final int oldHealth = this.health;
+                this.health -= damage[0];
 
-                if (health <= 0) {
+                if (this.health <= 0) {
 
-                    if (health < -999) {
-                        health = -999;
+                    if (this.health < -999) {
+                        this.health = -999;
                     }
 
-                    isTelefragged = damageDef.dict.GetBool("telefrag");
+                    this.isTelefragged = damageDef.dict.GetBool("telefrag");
 
-                    lastDmgTime = gameLocal.time;
+                    this.lastDmgTime = gameLocal.time;
                     Killed(inflictor, attacker, damage[0], dir, location);
 
                 } else {
                     // force a blink
-                    blink_time = 0;
+                    this.blink_time = 0;
 
                     // let the anim script know we took damage
-                    AI_PAIN.operator(Pain(inflictor, attacker, damage[0], dir, location));
+                    this.AI_PAIN.operator(Pain(inflictor, attacker, damage[0], dir, location));
                     if (!g_testDeath.GetBool()) {
-                        lastDmgTime = gameLocal.time;
+                        this.lastDmgTime = gameLocal.time;
                     }
                 }
             } else {
                 // don't accumulate impulses
-                if (af.IsLoaded()) {
+                if (this.af.IsLoaded()) {
                     // clear impacts
-                    af.Rest();
+                    this.af.Rest();
 
                     // physics is turned off by calling af.Rest()
                     BecomeActive(TH_PHYSICS);
                 }
             }
 
-            lastDamageDef = damageDef.Index();
-            lastDamageDir = damage_from;
-            lastDamageLocation = location;
+            this.lastDamageDef = damageDef.Index();
+            this.lastDamageDir = damage_from;
+            this.lastDamageLocation = location;
         }
 
         // use exitEntityNum to specify a teleport with private camera view and delayed exit
         @Override
         public void Teleport(final idVec3 origin, final idAngles angles, idEntity destination) {
-            idVec3 org = new idVec3();
+            final idVec3 org = new idVec3();
 
-            if (weapon.GetEntity() != null) {
-                weapon.GetEntity().LowerWeapon();
+            if (this.weapon.GetEntity() != null) {
+                this.weapon.GetEntity().LowerWeapon();
             }
 
             SetOrigin(origin.oPlus(new idVec3(0, 0, CM_CLIP_EPSILON)));
@@ -3678,25 +3676,25 @@ public class Player {
             }
 
             // clear the ik heights so model doesn't appear in the wrong place
-            walkIK.EnableAll();
+            this.walkIK.EnableAll();
 
             GetPhysics().SetLinearVelocity(getVec3_origin());
 
             SetViewAngles(angles);
 
-            legsYaw = 0;
-            idealLegsYaw = 0;
-            oldViewYaw = viewAngles.yaw;
+            this.legsYaw = 0;
+            this.idealLegsYaw = 0;
+            this.oldViewYaw = this.viewAngles.yaw;
 
             if (gameLocal.isMultiplayer) {
-                playerView.Flash(colorWhite, 140);
+                this.playerView.Flash(colorWhite, 140);
             }
 
             UpdateVisuals();
 
-            teleportEntity.oSet(destination);
+            this.teleportEntity.oSet(destination);
 
-            if (!gameLocal.isClient && !noclip) {
+            if (!gameLocal.isClient && !this.noclip) {
                 if (gameLocal.isMultiplayer) {
                     // kill anything at the new position or mark for kill depending on immediate or delayed teleport
                     gameLocal.KillBox(this, destination != null);
@@ -3708,20 +3706,20 @@ public class Player {
         }
 
         public void Kill(boolean delayRespawn, boolean nodamage) {
-            if (spectating) {
+            if (this.spectating) {
                 SpectateFreeFly(false);
-            } else if (health > 0) {
-                godmode = false;
+            } else if (this.health > 0) {
+                this.godmode = false;
                 if (nodamage) {
                     ServerSpectate(true);
-                    forceRespawn = true;
+                    this.forceRespawn = true;
                 } else {
                     Damage(this, this, getVec3_origin(), "damage_suicide", 1.0f, INVALID_JOINT);
                     if (delayRespawn) {
-                        forceRespawn = false;
-                        float delay = spawnArgs.GetFloat("respawn_delay");
-                        minRespawnTime = (int) (gameLocal.time + SEC2MS(delay));
-                        maxRespawnTime = minRespawnTime + MAX_RESPAWN_TIME;
+                        this.forceRespawn = false;
+                        final float delay = this.spawnArgs.GetFloat("respawn_delay");
+                        this.minRespawnTime = (int) (gameLocal.time + SEC2MS(delay));
+                        this.maxRespawnTime = this.minRespawnTime + MAX_RESPAWN_TIME;
                     }
                 }
             }
@@ -3734,50 +3732,50 @@ public class Player {
             assert (!gameLocal.isClient);
 
             // stop taking knockback once dead
-            fl.noknockback = true;
-            if (health < -999) {
-                health = -999;
+            this.fl.noknockback = true;
+            if (this.health < -999) {
+                this.health = -999;
             }
 
-            if (AI_DEAD.operator()) {
-                AI_PAIN.operator(true);
+            if (this.AI_DEAD.operator()) {
+                this.AI_PAIN.operator(true);
                 return;
             }
 
-            heartInfo.Init(0, 0, 0f, 0f + BASE_HEARTRATE);
+            this.heartInfo.Init(0, 0, 0f, 0f + BASE_HEARTRATE);
             AdjustHeartRate(DEAD_HEARTRATE, 10, 0, true);
 
             if (!g_testDeath.GetBool()) {
-                playerView.Fade(colorBlack, 12000);
+                this.playerView.Fade(colorBlack, 12000);
             }
 
-            AI_DEAD.operator(true);
+            this.AI_DEAD.operator(true);
             SetAnimState(ANIMCHANNEL_LEGS, "Legs_Death", 4);
             SetAnimState(ANIMCHANNEL_TORSO, "Torso_Death", 4);
             SetWaitState("");
 
-            animator.ClearAllJoints();
+            this.animator.ClearAllJoints();
 
             if (StartRagdoll()) {
                 pm_modelView.SetInteger(0);
-                minRespawnTime = gameLocal.time + RAGDOLL_DEATH_TIME;
-                maxRespawnTime = minRespawnTime + MAX_RESPAWN_TIME;
+                this.minRespawnTime = gameLocal.time + RAGDOLL_DEATH_TIME;
+                this.maxRespawnTime = this.minRespawnTime + MAX_RESPAWN_TIME;
             } else {
                 // don't allow respawn until the death anim is done
                 // g_forcerespawn may force spawning at some later time
-                delay = spawnArgs.GetFloat("respawn_delay");
-                minRespawnTime = (int) (gameLocal.time + SEC2MS(delay));
-                maxRespawnTime = minRespawnTime + MAX_RESPAWN_TIME;
+                delay = this.spawnArgs.GetFloat("respawn_delay");
+                this.minRespawnTime = (int) (gameLocal.time + SEC2MS(delay));
+                this.maxRespawnTime = this.minRespawnTime + MAX_RESPAWN_TIME;
             }
 
-            physicsObj.SetMovementType(PM_DEAD);
+            this.physicsObj.SetMovementType(PM_DEAD);
             StartSound("snd_death", SND_CHANNEL_VOICE, 0, false, null);
             StopSound(etoi(SND_CHANNEL_BODY2), false);
 
-            fl.takedamage = true;		// can still be gibbed
+            this.fl.takedamage = true;		// can still be gibbed
 
             // get rid of weapon
-            weapon.GetEntity().OwnerDied();
+            this.weapon.GetEntity().OwnerDied();
 
             // drop the weapon as an item
             DropWeapon(true);
@@ -3791,28 +3789,28 @@ public class Player {
                 // no gibbing in MP. Event_Gib will early out in MP
                 if (attacker.IsType(idPlayer.class)) {
                     killer = (idPlayer) attacker;
-                    if (health < -20 || killer.PowerUpActive(BERSERK)) {
-                        gibDeath = true;
-                        gibsDir = dir;
-                        gibsLaunched = false;
+                    if ((this.health < -20) || killer.PowerUpActive(BERSERK)) {
+                        this.gibDeath = true;
+                        this.gibsDir = dir;
+                        this.gibsLaunched = false;
                     }
                 }
-                gameLocal.mpGame.PlayerDeath(this, killer, isTelefragged);
+                gameLocal.mpGame.PlayerDeath(this, killer, this.isTelefragged);
             } else {
-                physicsObj.SetContents(CONTENTS_CORPSE | CONTENTS_MONSTERCLIP);
+                this.physicsObj.SetContents(CONTENTS_CORPSE | CONTENTS_MONSTERCLIP);
             }
 
             ClearPowerUps();
 
             UpdateVisuals();
 
-            isChatting = false;
+            this.isChatting = false;
         }
 
         public void StartFxOnBone(final String fx, final String bone) {
             idVec3 offset = new idVec3();
             idMat3 axis = new idMat3();
-            int/*jointHandle_t*/ jointHandle = GetAnimator().GetJointHandle(bone);
+            final int/*jointHandle_t*/ jointHandle = GetAnimator().GetJointHandle(bone);
 
             if (jointHandle == INVALID_JOINT) {
                 gameLocal.Printf("Cannot find bone %s\n", bone);
@@ -3836,7 +3834,7 @@ public class Player {
          */
         @Override
         public renderView_s GetRenderView() {
-            return renderView;
+            return this.renderView;
         }
 
         /*
@@ -3850,73 +3848,73 @@ public class Player {
             int i;
             float range;
 
-            if (NOT(renderView)) {
-                renderView = new renderView_s();
+            if (NOT(this.renderView)) {
+                this.renderView = new renderView_s();
             }
 //	memset( renderView, 0, sizeof( *renderView ) );
 
             // copy global shader parms
             for (i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++) {
-                renderView.shaderParms[i] = gameLocal.globalShaderParms[i];
+                this.renderView.shaderParms[i] = gameLocal.globalShaderParms[i];
             }
-            renderView.globalMaterial = gameLocal.GetGlobalMaterial();
-            renderView.time = gameLocal.time;
+            this.renderView.globalMaterial = gameLocal.GetGlobalMaterial();
+            this.renderView.time = gameLocal.time;
 
             // calculate size of 3D view
-            renderView.x = 0;
-            renderView.y = 0;
-            renderView.width = SCREEN_WIDTH;
-            renderView.height = SCREEN_HEIGHT;
-            renderView.viewID = 0;
+            this.renderView.x = 0;
+            this.renderView.y = 0;
+            this.renderView.width = SCREEN_WIDTH;
+            this.renderView.height = SCREEN_HEIGHT;
+            this.renderView.viewID = 0;
 
             // check if we should be drawing from a camera's POV
-            if (!noclip && (gameLocal.GetCamera() != null || privateCameraView != null)) {
+            if (!this.noclip && ((gameLocal.GetCamera() != null) || (this.privateCameraView != null))) {
                 // get origin, axis, and fov
-                if (privateCameraView != null) {
-                    privateCameraView.GetViewParms(renderView);
+                if (this.privateCameraView != null) {
+                    this.privateCameraView.GetViewParms(this.renderView);
                 } else {
-                    gameLocal.GetCamera().GetViewParms(renderView);
+                    gameLocal.GetCamera().GetViewParms(this.renderView);
                 }
             } else {
                 if (g_stopTime.GetBool()) {
-                    renderView.vieworg = new idVec3(firstPersonViewOrigin);
-                    renderView.viewaxis = new idMat3(firstPersonViewAxis);
+                    this.renderView.vieworg = new idVec3(this.firstPersonViewOrigin);
+                    this.renderView.viewaxis = new idMat3(this.firstPersonViewAxis);
 
                     if (!pm_thirdPerson.GetBool()) {
                         // set the viewID to the clientNum + 1, so we can suppress the right player bodies and
                         // allow the right player view weapons
-                        renderView.viewID = entityNumber + 1;
+                        this.renderView.viewID = this.entityNumber + 1;
                     }
                 } else if (pm_thirdPerson.GetBool()) {
                     OffsetThirdPersonView(pm_thirdPersonAngle.GetFloat(), pm_thirdPersonRange.GetFloat(), pm_thirdPersonHeight.GetFloat(), pm_thirdPersonClip.GetBool());
                 } else if (pm_thirdPersonDeath.GetBool()) {
-                    range = gameLocal.time < minRespawnTime ? (gameLocal.time + RAGDOLL_DEATH_TIME - minRespawnTime) * (120 / RAGDOLL_DEATH_TIME) : 120;
+                    range = gameLocal.time < this.minRespawnTime ? ((gameLocal.time + RAGDOLL_DEATH_TIME) - this.minRespawnTime) * (120 / RAGDOLL_DEATH_TIME) : 120;
                     OffsetThirdPersonView(0, 20 + range, 0, false);
                 } else {
-                    renderView.vieworg = new idVec3(firstPersonViewOrigin);
-                    renderView.viewaxis = new idMat3(firstPersonViewAxis);
+                    this.renderView.vieworg = new idVec3(this.firstPersonViewOrigin);
+                    this.renderView.viewaxis = new idMat3(this.firstPersonViewAxis);
 
                     // set the viewID to the clientNum + 1, so we can suppress the right player bodies and
                     // allow the right player view weapons
-                    renderView.viewID = entityNumber + 1;
+                    this.renderView.viewID = this.entityNumber + 1;
                 }
 
                 // field of view
                 {
-                    float[] fov_x = {renderView.fov_x};
-                    float[] fov_y = {renderView.fov_y};
+                    final float[] fov_x = {this.renderView.fov_x};
+                    final float[] fov_y = {this.renderView.fov_y};
                     gameLocal.CalcFov(CalcFov(true), fov_x, fov_y);
-                    renderView.fov_x = fov_x[0];
-                    renderView.fov_y = fov_y[0];
+                    this.renderView.fov_x = fov_x[0];
+                    this.renderView.fov_y = fov_y[0];
                 }
             }
 
-            if (renderView.fov_y == 0) {
+            if (this.renderView.fov_y == 0) {
                 common.Error("renderView.fov_y == 0");
             }
 
             if (g_showviewpos.GetBool()) {
-                gameLocal.Printf("%s : %s\n", renderView.vieworg.ToString(), renderView.viewaxis.ToAngles().ToString());
+                gameLocal.Printf("%s : %s\n", this.renderView.vieworg.ToString(), this.renderView.viewaxis.ToAngles().ToString());
             }
         }
 
@@ -3926,53 +3924,53 @@ public class Player {
         ===============
         */
         public void CalculateFirstPersonView() {
-            if ((pm_modelView.GetInteger() == 1) || ((pm_modelView.GetInteger() == 2) && (health <= 0))) {
+            if ((pm_modelView.GetInteger() == 1) || ((pm_modelView.GetInteger() == 2) && (this.health <= 0))) {
                 //	Displays the view from the point of view of the "camera" joint in the player model
 
-                idMat3 axis = new idMat3();
-                idVec3 origin = new idVec3();
+                final idMat3 axis = new idMat3();
+                final idVec3 origin = new idVec3();
                 idAngles ang;
 
-                ang = viewBobAngles.oPlus(playerView.AngleOffset());
-                ang.yaw += viewAxis.oGet(0).ToYaw();
+                ang = this.viewBobAngles.oPlus(this.playerView.AngleOffset());
+                ang.yaw += this.viewAxis.oGet(0).ToYaw();
 
-                int joint = animator.GetJointHandle("camera");
-                animator.GetJointTransform(joint, gameLocal.time, origin, axis);
-                firstPersonViewOrigin = (origin.oPlus(modelOffset)).oMultiply(viewAxis.oMultiply(physicsObj.GetGravityAxis())).oPlus(physicsObj.GetOrigin()).oPlus(viewBob);
-                firstPersonViewAxis = axis.oMultiply(ang.ToMat3()).oMultiply(physicsObj.GetGravityAxis());
+                final int joint = this.animator.GetJointHandle("camera");
+                this.animator.GetJointTransform(joint, gameLocal.time, origin, axis);
+                this.firstPersonViewOrigin = (origin.oPlus(this.modelOffset)).oMultiply(this.viewAxis.oMultiply(this.physicsObj.GetGravityAxis())).oPlus(this.physicsObj.GetOrigin()).oPlus(this.viewBob);
+                this.firstPersonViewAxis = axis.oMultiply(ang.ToMat3()).oMultiply(this.physicsObj.GetGravityAxis());
             } else {
                 // offset for local bobbing and kicks
-                GetViewPos(firstPersonViewOrigin, firstPersonViewAxis);
+                GetViewPos(this.firstPersonViewOrigin, this.firstPersonViewAxis);
                 if (false) {
                     // shakefrom sound stuff only happens in first person
-                    firstPersonViewAxis = firstPersonViewAxis.oMultiply(playerView.ShakeAxis());
+                    this.firstPersonViewAxis = this.firstPersonViewAxis.oMultiply(this.playerView.ShakeAxis());
                 }
             }
         }
 
         public void DrawHUD(idUserInterface _hud) {
 
-            if (NOT(weapon.GetEntity()) || influenceActive != INFLUENCE_NONE || privateCameraView != null || gameLocal.GetCamera() != null || NOT(_hud) || !g_showHud.GetBool()) {
+            if (NOT(this.weapon.GetEntity()) || (this.influenceActive != INFLUENCE_NONE) || (this.privateCameraView != null) || (gameLocal.GetCamera() != null) || NOT(_hud) || !g_showHud.GetBool()) {
                 return;
             }
 
             UpdateHudStats(_hud);
 
-            _hud.SetStateString("weapicon", weapon.GetEntity().Icon());
+            _hud.SetStateString("weapicon", this.weapon.GetEntity().Icon());
 
             // FIXME: this is temp to allow the sound meter to show up in the hud
             // it should be commented out before shipping but the code can remain
             // for mod developers to enable for the same functionality
             _hud.SetStateInt("s_debug", cvarSystem.GetCVarInteger("s_showLevelMeter"));
 
-            weapon.GetEntity().UpdateGUI();
+            this.weapon.GetEntity().UpdateGUI();
 
             _hud.Redraw(gameLocal.realClientTime);
 
             // weapon targeting crosshair
             if (!GuiActive()) {
-                if (cursor != null && weapon.GetEntity().ShowCrosshair()) {
-                    cursor.Redraw(gameLocal.realClientTime);
+                if ((this.cursor != null) && this.weapon.GetEntity().ShowCrosshair()) {
+                    this.cursor.Redraw(gameLocal.realClientTime);
                 }
             }
         }
@@ -3986,13 +3984,13 @@ public class Player {
          */
         public void WeaponFireFeedback(final idDict weaponDef) {
             // force a blink
-            blink_time = 0;
+            this.blink_time = 0;
 
             // play the fire animation
-            AI_WEAPON_FIRED.operator(true);
+            this.AI_WEAPON_FIRED.operator(true);
 
             // update view feedback
-            playerView.WeaponFireFeedback(weaponDef);
+            this.playerView.WeaponFireFeedback(weaponDef);
         }
 
 
@@ -4028,18 +4026,18 @@ public class Player {
         public float CalcFov(boolean honorZoom) {
             float fov;
 
-            if (fxFov) {
-                return (float) (DefaultFov() + 10 + cos((gameLocal.time + 2000) * 0.01) * 10);
+            if (this.fxFov) {
+                return (float) (DefaultFov() + 10 + (cos((gameLocal.time + 2000) * 0.01) * 10));
             }
 
-            if (influenceFov != 0) {
-                return influenceFov;
+            if (this.influenceFov != 0) {
+                return this.influenceFov;
             }
 
-            if (zoomFov.IsDone(gameLocal.time)) {
-                fov = ((honorZoom && ((usercmd.buttons & BUTTON_ZOOM) != 0)) && weapon.GetEntity() != null) ? weapon.GetEntity().GetZoomFov() : DefaultFov();
+            if (this.zoomFov.IsDone(gameLocal.time)) {
+                fov = ((honorZoom && ((this.usercmd.buttons & BUTTON_ZOOM) != 0)) && (this.weapon.GetEntity() != null)) ? this.weapon.GetEntity().GetZoomFov() : DefaultFov();
             } else {
-                fov = zoomFov.GetCurrentValue(gameLocal.time);
+                fov = this.zoomFov.GetCurrentValue(gameLocal.time);
             }
 
             // bound normal viewsize
@@ -4062,53 +4060,53 @@ public class Player {
         public void CalculateViewWeaponPos(idVec3 origin, idMat3 axis) {
             float scale;
             float fracsin;
-            idAngles angles = new idAngles();
+            final idAngles angles = new idAngles();
             int delta;
 
             // CalculateRenderView must have been called first
-            final idVec3 viewOrigin = firstPersonViewOrigin;
-            final idMat3 viewAxis = firstPersonViewAxis;
+            final idVec3 viewOrigin = this.firstPersonViewOrigin;
+            final idMat3 viewAxis = this.firstPersonViewAxis;
 
             // these cvars are just for hand tweaking before moving a value to the weapon def
-            idVec3 gunpos = new idVec3(g_gun_x.GetFloat(), g_gun_y.GetFloat(), g_gun_z.GetFloat());
+            final idVec3 gunpos = new idVec3(g_gun_x.GetFloat(), g_gun_y.GetFloat(), g_gun_z.GetFloat());
 
             // as the player changes direction, the gun will take a small lag
-            idVec3 gunOfs = GunAcceleratingOffset();
+            final idVec3 gunOfs = GunAcceleratingOffset();
             origin.oSet(viewOrigin.oPlus(gunpos.oPlus(gunOfs).oMultiply(viewAxis)));
 
             // on odd legs, invert some angles
-            if ((bobCycle & 128) != 0) {
-                scale = -xyspeed;
+            if ((this.bobCycle & 128) != 0) {
+                scale = -this.xyspeed;
             } else {
-                scale = xyspeed;
+                scale = this.xyspeed;
             }
 
             // gun angles from bobbing
-            angles.roll = scale * bobfracsin * 0.005f;
-            angles.yaw = scale * bobfracsin * 0.01f;
-            angles.pitch = xyspeed * bobfracsin * 0.005f;
+            angles.roll = scale * this.bobfracsin * 0.005f;
+            angles.yaw = scale * this.bobfracsin * 0.01f;
+            angles.pitch = this.xyspeed * this.bobfracsin * 0.005f;
 
             // gun angles from turning
             if (gameLocal.isMultiplayer) {
-                idAngles offset = GunTurningOffset();
+                final idAngles offset = GunTurningOffset();
                 offset.oMulSet(g_mpWeaponAngleScale.GetFloat());
                 angles.oPluSet(offset);
             } else {
                 angles.oPluSet(GunTurningOffset());
             }
 
-            idVec3 gravity = physicsObj.GetGravityNormal();
+            final idVec3 gravity = this.physicsObj.GetGravityNormal();
 
             // drop the weapon when landing after a jump / fall
-            delta = gameLocal.time - landTime;
+            delta = gameLocal.time - this.landTime;
             if (delta < LAND_DEFLECT_TIME) {
-                origin.oMinSet(gravity.oMultiply(landChange * 0.25f * delta / LAND_DEFLECT_TIME));
-            } else if (delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME) {
-                origin.oMinSet(gravity.oMultiply(landChange * 0.25f * (LAND_DEFLECT_TIME + LAND_RETURN_TIME - delta) / LAND_RETURN_TIME));
+                origin.oMinSet(gravity.oMultiply((this.landChange * 0.25f * delta) / LAND_DEFLECT_TIME));
+            } else if (delta < (LAND_DEFLECT_TIME + LAND_RETURN_TIME)) {
+                origin.oMinSet(gravity.oMultiply((this.landChange * 0.25f * ((LAND_DEFLECT_TIME + LAND_RETURN_TIME) - delta)) / LAND_RETURN_TIME));
             }
 
             // speed sensitive idle drift
-            scale = xyspeed + 40;
+            scale = this.xyspeed + 40;
             fracsin = (float) (scale * sin(MS2SEC(gameLocal.time)) * 0.01f);
             angles.roll += fracsin;
             angles.yaw += fracsin;
@@ -4122,12 +4120,12 @@ public class Player {
             idVec3 org;
 
             // use the smoothed origin if spectating another player in multiplayer
-            if (gameLocal.isClient && entityNumber != gameLocal.localClientNum) {
-                org = smoothedOrigin;
+            if (gameLocal.isClient && (this.entityNumber != gameLocal.localClientNum)) {
+                org = this.smoothedOrigin;
             } else {
                 org = GetPhysics().GetOrigin();
             }
-            return org.oPlus(GetPhysics().GetGravityNormal().oMultiply(-eyeOffset.z));
+            return org.oPlus(GetPhysics().GetGravityNormal().oMultiply(-this.eyeOffset.z));
         }
 
         @Override
@@ -4135,20 +4133,20 @@ public class Player {
             idAngles angles = new idAngles();
 
             // if dead, fix the angle and don't add any kick
-            if (health <= 0) {
-                angles.yaw = viewAngles.yaw;
+            if (this.health <= 0) {
+                angles.yaw = this.viewAngles.yaw;
                 angles.roll = 40;
                 angles.pitch = -15;
                 axis.oSet(angles.ToMat3());//TODO:null check
                 origin.oSet(GetEyePosition());
             } else {
-                origin.oSet(GetEyePosition().oPlus(viewBob));
-                angles = viewAngles.oPlus(viewBobAngles).oPlus(playerView.AngleOffset());
+                origin.oSet(GetEyePosition().oPlus(this.viewBob));
+                angles = this.viewAngles.oPlus(this.viewBobAngles).oPlus(this.playerView.AngleOffset());
 
-                axis.oSet(angles.ToMat3().oMultiply(physicsObj.GetGravityAxis()));
+                axis.oSet(angles.ToMat3().oMultiply(this.physicsObj.GetGravityAxis()));
 
                 // adjust the origin based on the camera nodal distance (eye distance from neck)
-                origin.oPluSet(physicsObj.GetGravityNormal().oMultiply(g_viewNodalZ.GetFloat()));
+                origin.oPluSet(this.physicsObj.GetGravityNormal().oMultiply(g_viewNodalZ.GetFloat()));
                 origin.oPluSet(axis.oGet(0).oMultiply(g_viewNodalX.GetFloat()).oPlus(axis.oGet(2).oMultiply(g_viewNodalZ.GetFloat())));
             }
         }
@@ -4156,16 +4154,16 @@ public class Player {
         public void OffsetThirdPersonView(float angle, float range, float height, boolean clip) {
             idVec3 view;
 //            idVec3 focusAngles;
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
             idVec3 focusPoint;
             float focusDist;
-            float[] forwardScale = {0}, sideScale = {0};
-            idVec3 origin = new idVec3();
+            final float[] forwardScale = {0}, sideScale = {0};
+            final idVec3 origin = new idVec3();
             idAngles angles;
-            idMat3 axis = new idMat3();
+            final idMat3 axis = new idMat3();
             idBounds bounds;
 
-            angles = viewAngles;
+            angles = this.viewAngles;
             GetViewPos(origin, axis);
 
             if (angle != 0) {
@@ -4182,11 +4180,11 @@ public class Player {
             view.z += 8 + height;
 
             angles.pitch *= 0.5f;
-            renderView.viewaxis = angles.ToMat3().oMultiply(physicsObj.GetGravityAxis());
+            this.renderView.viewaxis = angles.ToMat3().oMultiply(this.physicsObj.GetGravityAxis());
 
-            idMath.SinCos((float) DEG2RAD(angle), sideScale, forwardScale);
-            view.oMinSet(renderView.viewaxis.oGet(0).oMultiply(range * forwardScale[0]));
-            view.oPluSet(renderView.viewaxis.oGet(1).oMultiply(range * sideScale[0]));
+            idMath.SinCos(DEG2RAD(angle), sideScale, forwardScale);
+            view.oMinSet(this.renderView.viewaxis.oGet(0).oMultiply(range * forwardScale[0]));
+            view.oPluSet(this.renderView.viewaxis.oGet(1).oMultiply(range * sideScale[0]));
 
             if (clip) {
                 // trace a ray from the origin to the viewpoint to make sure the view isn't
@@ -4206,7 +4204,7 @@ public class Player {
 
             // select pitch to look at focus point from vieword
             focusPoint.oMinSet(view);
-            focusDist = idMath.Sqrt(focusPoint.oGet(0) * focusPoint.oGet(0) + focusPoint.oGet(1) * focusPoint.oGet(1));
+            focusDist = idMath.Sqrt((focusPoint.oGet(0) * focusPoint.oGet(0)) + (focusPoint.oGet(1) * focusPoint.oGet(1)));
             if (focusDist < 1.0f) {
                 focusDist = 1.0f;	// should never happen
             }
@@ -4214,59 +4212,59 @@ public class Player {
             angles.pitch = -RAD2DEG(atan2(focusPoint.z, focusDist));
             angles.yaw -= angle;
 
-            renderView.vieworg = new idVec3(view);
-            renderView.viewaxis = angles.ToMat3().oMulSet(physicsObj.GetGravityAxis());
-            renderView.viewID = 0;
+            this.renderView.vieworg = new idVec3(view);
+            this.renderView.viewaxis = angles.ToMat3().oMulSet(this.physicsObj.GetGravityAxis());
+            this.renderView.viewID = 0;
         }
 
         public boolean Give(final String statname, final String value) {
             int amount;
 
-            if (AI_DEAD.operator()) {
+            if (this.AI_DEAD.operator()) {
                 return false;
             }
 
             if (0 == idStr.Icmp(statname, "health")) {
-                if (health >= inventory.maxHealth) {
+                if (this.health >= this.inventory.maxHealth) {
                     return false;
                 }
                 amount = Integer.parseInt(value);
                 if (amount != 0) {
-                    health += amount;
-                    if (health > inventory.maxHealth) {
-                        health = inventory.maxHealth;
+                    this.health += amount;
+                    if (this.health > this.inventory.maxHealth) {
+                        this.health = this.inventory.maxHealth;
                     }
-                    if (hud != null) {
-                        hud.HandleNamedEvent("healthPulse");
+                    if (this.hud != null) {
+                        this.hud.HandleNamedEvent("healthPulse");
                     }
                 }
 
             } else if (0 == idStr.Icmp(statname, "stamina")) {
-                if (stamina >= 100) {
+                if (this.stamina >= 100) {
                     return false;
                 }
-                stamina += Float.parseFloat(value);
-                if (stamina > 100) {
-                    stamina = 100;
+                this.stamina += Float.parseFloat(value);
+                if (this.stamina > 100) {
+                    this.stamina = 100;
                 }
 
             } else if (0 == idStr.Icmp(statname, "heartRate")) {
-                heartRate += Integer.parseInt(value);
-                if (heartRate > MAX_HEARTRATE) {
-                    heartRate = MAX_HEARTRATE;
+                this.heartRate += Integer.parseInt(value);
+                if (this.heartRate > MAX_HEARTRATE) {
+                    this.heartRate = MAX_HEARTRATE;
                 }
 
             } else if (0 == idStr.Icmp(statname, "air")) {
-                if (airTics >= pm_airTics.GetInteger()) {
+                if (this.airTics >= pm_airTics.GetInteger()) {
                     return false;
                 }
-                airTics += Integer.parseInt(value) / 100.0 * pm_airTics.GetInteger();
-                if (airTics > pm_airTics.GetInteger()) {
-                    airTics = pm_airTics.GetInteger();
+                this.airTics += (Integer.parseInt(value) / 100.0) * pm_airTics.GetInteger();
+                if (this.airTics > pm_airTics.GetInteger()) {
+                    this.airTics = pm_airTics.GetInteger();
                 }
             } else {
-                int[] idealWeapon = {this.idealWeapon};
-                boolean result = inventory.Give(this, spawnArgs, statname, value, idealWeapon, true);
+                final int[] idealWeapon = {this.idealWeapon};
+                final boolean result = this.inventory.Give(this, this.spawnArgs, statname, value, idealWeapon, true);
                 this.idealWeapon = idealWeapon[0];
                 return result;
             }
@@ -4288,18 +4286,18 @@ public class Player {
         public boolean GiveItem(idItem item) {
             int i;
             idKeyValue arg;
-            idDict attr = new idDict();
+            final idDict attr = new idDict();
             boolean gave;
             int numPickup;
 
-            if (gameLocal.isMultiplayer && spectating) {
+            if (gameLocal.isMultiplayer && this.spectating) {
                 return false;
             }
 
             item.GetAttributes(attr);
 
             gave = false;
-            numPickup = inventory.pickupItemNames.Num();
+            numPickup = this.inventory.pickupItemNames.Num();
             for (i = 0; i < attr.GetNumKeyVals(); i++) {
                 arg = attr.GetKeyVal(i);
                 if (Give(arg.GetKey(), arg.GetValue())) {
@@ -4308,30 +4306,30 @@ public class Player {
             }
 
             arg = item.spawnArgs.MatchPrefix("inv_weapon", null);
-            if (arg != null && hud != null) {
+            if ((arg != null) && (this.hud != null)) {
                 // We need to update the weapon hud manually, but not
                 // the armor/ammo/health because they are updated every
                 // frame no matter what
                 UpdateHudWeapon(false);
-                hud.HandleNamedEvent("weaponPulse");
+                this.hud.HandleNamedEvent("weaponPulse");
             }
 
             // display the pickup feedback on the hud
-            if (gave && (numPickup == inventory.pickupItemNames.Num())) {
-                inventory.AddPickupName(item.spawnArgs.GetString("inv_name"), item.spawnArgs.GetString("inv_icon"));
+            if (gave && (numPickup == this.inventory.pickupItemNames.Num())) {
+                this.inventory.AddPickupName(item.spawnArgs.GetString("inv_name"), item.spawnArgs.GetString("inv_icon"));
             }
 
             return gave;
         }
 
         public void GiveItem(final String itemName) {
-            idDict args = new idDict();
+            final idDict args = new idDict();
 
             args.Set("classname", itemName);
-            args.Set("owner", name);
+            args.Set("owner", this.name);
             gameLocal.SpawnEntityDef(args);
-            if (hud != null) {
-                hud.HandleNamedEvent("itemPickup");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("itemPickup");
             }
         }
 
@@ -4344,25 +4342,25 @@ public class Player {
          */
         public void GiveHealthPool(float amt) {
 
-            if (AI_DEAD.operator()) {
+            if (this.AI_DEAD.operator()) {
                 return;
             }
 
-            if (health > 0) {
-                healthPool += amt;
-                if (healthPool > inventory.maxHealth - health) {
-                    healthPool = inventory.maxHealth - health;
+            if (this.health > 0) {
+                this.healthPool += amt;
+                if (this.healthPool > (this.inventory.maxHealth - this.health)) {
+                    this.healthPool = this.inventory.maxHealth - this.health;
                 }
-                nextHealthPulse = gameLocal.time;
+                this.nextHealthPulse = gameLocal.time;
             }
         }
 
         public boolean GiveInventoryItem(idDict item) {
-            if (gameLocal.isMultiplayer && spectating) {
+            if (gameLocal.isMultiplayer && this.spectating) {
                 return false;
             }
-            inventory.items.Append(new idDict(item));
-            idItemInfo info = new idItemInfo();
+            this.inventory.items.Append(new idDict(item));
+            final idItemInfo info = new idItemInfo();
             final String itemName = item.GetString("inv_name");
             if (idStr.Cmpn(itemName, STRTABLE_ID, STRTABLE_ID_LENGTH) == 0) {
                 info.name.oSet(common.GetLanguageDict().GetString(itemName));
@@ -4370,21 +4368,21 @@ public class Player {
                 info.name.oSet(itemName);
             }
             info.icon.oSet(item.GetString("inv_icon"));
-            inventory.pickupItemNames.Append(info);
-            if (hud != null) {
-                hud.SetStateString("itemicon", info.icon.toString());
-                hud.HandleNamedEvent("invPickup");
+            this.inventory.pickupItemNames.Append(info);
+            if (this.hud != null) {
+                this.hud.SetStateString("itemicon", info.icon.toString());
+                this.hud.HandleNamedEvent("invPickup");
             }
             return true;
         }
 
         public void RemoveInventoryItem(idDict item) {
-            inventory.items.Remove(item);
+            this.inventory.items.Remove(item);
 //	delete item;
         }
 
         public boolean GiveInventoryItem(final String name) {
-            idDict args = new idDict();
+            final idDict args = new idDict();
 
             args.Set("classname", name);
             args.Set("owner", this.name);
@@ -4393,18 +4391,18 @@ public class Player {
         }
 
         public void RemoveInventoryItem(final String name) {
-            idDict item = FindInventoryItem(name);
+            final idDict item = FindInventoryItem(name);
             if (item != null) {
                 RemoveInventoryItem(item);
             }
         }
 
         public idDict FindInventoryItem(final String name) {
-            for (int i = 0; i < inventory.items.Num(); i++) {
-                final String iname = inventory.items.oGet(i).GetString("inv_name");
-                if (iname != null && !iname.isEmpty()) {
+            for (int i = 0; i < this.inventory.items.Num(); i++) {
+                final String iname = this.inventory.items.oGet(i).GetString("inv_name");
+                if ((iname != null) && !iname.isEmpty()) {
                     if (idStr.Icmp(name, iname) == 0) {
-                        return inventory.items.oGet(i);
+                        return this.inventory.items.oGet(i);
                     }
                 }
             }
@@ -4416,134 +4414,134 @@ public class Player {
         }
 
         public void GivePDA(final idStr pdaName, idDict item) {
-            if (gameLocal.isMultiplayer && spectating) {
+            if (gameLocal.isMultiplayer && this.spectating) {
                 return;
             }
 
             if (item != null) {
-                inventory.pdaSecurity.AddUnique(item.GetString("inv_name"));
+                this.inventory.pdaSecurity.AddUnique(item.GetString("inv_name"));
             }
 
             if (isNotNullOrEmpty(pdaName)) {
                 pdaName.oSet("personal");
             }
 
-            idDeclPDA pda = (idDeclPDA) declManager.FindType(DECL_PDA, pdaName);
+            final idDeclPDA pda = (idDeclPDA) declManager.FindType(DECL_PDA, pdaName);
 
-            inventory.pdas.AddUnique(pdaName);
+            this.inventory.pdas.AddUnique(pdaName);
 
             // Copy any videos over
             for (int i = 0; i < pda.GetNumVideos(); i++) {
                 final idDeclVideo video = pda.GetVideoByIndex(i);
                 if (video != null) {
-                    inventory.videos.AddUnique(video.GetName());
+                    this.inventory.videos.AddUnique(video.GetName());
                 }
             }
 
             // This is kind of a hack, but it works nicely
             // We don't want to display the 'you got a new pda' message during a map load
             if (gameLocal.GetFrameNum() > 10) {
-                if (pda != null && hud != null) {
+                if ((pda != null) && (this.hud != null)) {
                     pdaName.oSet(pda.GetPdaName());
                     pdaName.RemoveColors();
-                    hud.SetStateString("pda", "1");
-                    hud.SetStateString("pda_text", pdaName.toString());
+                    this.hud.SetStateString("pda", "1");
+                    this.hud.SetStateString("pda_text", pdaName.toString());
                     final String sec = pda.GetSecurity();
-                    hud.SetStateString("pda_security", (sec != null && !sec.isEmpty()) ? "1" : "0");//TODO:!= null and !usEmpty, check that this combination isn't the wrong way around anywhere. null== instead of !=null
-                    hud.HandleNamedEvent("pdaPickup");
+                    this.hud.SetStateString("pda_security", ((sec != null) && !sec.isEmpty()) ? "1" : "0");//TODO:!= null and !usEmpty, check that this combination isn't the wrong way around anywhere. null== instead of !=null
+                    this.hud.HandleNamedEvent("pdaPickup");
                 }
 
-                if (inventory.pdas.Num() == 1) {
+                if (this.inventory.pdas.Num() == 1) {
                     GetPDA().RemoveAddedEmailsAndVideos();
-                    if (!objectiveSystemOpen) {
+                    if (!this.objectiveSystemOpen) {
                         TogglePDA();
                     }
-                    objectiveSystem.HandleNamedEvent("showPDATip");
+                    this.objectiveSystem.HandleNamedEvent("showPDATip");
                     //ShowTip( spawnArgs.GetString( "text_infoTitle" ), spawnArgs.GetString( "text_firstPDA" ), true );
                 }
 
-                if (inventory.pdas.Num() > 1 && pda.GetNumVideos() > 0 && hud != null) {
-                    hud.HandleNamedEvent("videoPickup");
+                if ((this.inventory.pdas.Num() > 1) && (pda.GetNumVideos() > 0) && (this.hud != null)) {
+                    this.hud.HandleNamedEvent("videoPickup");
                 }
             }
         }
 
         public void GiveVideo(final String videoName, idDict item) {
 
-            if (videoName == null || videoName.isEmpty()) {
+            if ((videoName == null) || videoName.isEmpty()) {
                 return;
             }
 
-            inventory.videos.AddUnique(videoName);
+            this.inventory.videos.AddUnique(videoName);
 
             if (item != null) {
-                idItemInfo info = new idItemInfo();
+                final idItemInfo info = new idItemInfo();
                 info.name.oSet(item.GetString("inv_name"));
                 info.icon.oSet(item.GetString("inv_icon"));
-                inventory.pickupItemNames.Append(info);
+                this.inventory.pickupItemNames.Append(info);
             }
-            if (hud != null) {
-                hud.HandleNamedEvent("videoPickup");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("videoPickup");
             }
         }
 
         public void GiveEmail(final String emailName) {
 
-            if (emailName == null || emailName.isEmpty()) {
+            if ((emailName == null) || emailName.isEmpty()) {
                 return;
             }
 
-            inventory.emails.AddUnique(emailName);
+            this.inventory.emails.AddUnique(emailName);
             GetPDA().AddEmail(emailName);
 
-            if (hud != null) {
-                hud.HandleNamedEvent("emailPickup");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("emailPickup");
             }
         }
 
         public void GiveSecurity(final String security) {
             GetPDA().SetSecurity(security);
-            if (hud != null) {
-                hud.SetStateString("pda_security", "1");
-                hud.HandleNamedEvent("securityPickup");
+            if (this.hud != null) {
+                this.hud.SetStateString("pda_security", "1");
+                this.hud.HandleNamedEvent("securityPickup");
             }
         }
 
         public void GiveObjective(final String title, final String text, final String screenshot) {
-            idObjectiveInfo info = new idObjectiveInfo();
+            final idObjectiveInfo info = new idObjectiveInfo();
             info.title = new idStr(title);
             info.text = new idStr(text);
             info.screenshot = new idStr(screenshot);
-            inventory.objectiveNames.Append(info);
+            this.inventory.objectiveNames.Append(info);
             ShowObjective("newObjective");
-            if (hud != null) {
-                hud.HandleNamedEvent("newObjective");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("newObjective");
             }
         }
 
         public void CompleteObjective(final String title) {
-            int c = inventory.objectiveNames.Num();
+            final int c = this.inventory.objectiveNames.Num();
             for (int i = 0; i < c; i++) {
-                if (idStr.Icmp(inventory.objectiveNames.oGet(i).title.toString(), title) == 0) {
-                    inventory.objectiveNames.RemoveIndex(i);
+                if (idStr.Icmp(this.inventory.objectiveNames.oGet(i).title.toString(), title) == 0) {
+                    this.inventory.objectiveNames.RemoveIndex(i);
                     break;
                 }
             }
             ShowObjective("newObjectiveComplete");
 
-            if (hud != null) {
-                hud.HandleNamedEvent("newObjectiveComplete");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("newObjectiveComplete");
             }
         }
 
         public boolean GivePowerUp(int powerup, int time) {
-            String[] sound = {null};
-            String[] skin = {null};
+            final String[] sound = {null};
+            final String[] skin = {null};
 
-            if (powerup >= 0 && powerup < MAX_POWERUPS) {
+            if ((powerup >= 0) && (powerup < MAX_POWERUPS)) {
 
                 if (gameLocal.isServer) {
-                    idBitMsg msg = new idBitMsg();
+                    final idBitMsg msg = new idBitMsg();
                     final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                     msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
@@ -4553,57 +4551,57 @@ public class Player {
                 }
 
                 if (powerup != MEGAHEALTH) {
-                    inventory.GivePowerUp(this, powerup, time);
+                    this.inventory.GivePowerUp(this, powerup, time);
                 }
 
                 idDeclEntityDef def;
 
                 switch (powerup) {
                     case BERSERK: {
-                        if (spawnArgs.GetString("snd_berserk_third", "", sound)) {
+                        if (this.spawnArgs.GetString("snd_berserk_third", "", sound)) {
                             StartSoundShader(declManager.FindSound(sound[0]), SND_CHANNEL_DEMONIC, 0, false, null);
                         }
-                        if (baseSkinName.Length() != 0) {
-                            powerUpSkin.oSet(declManager.FindSkin(baseSkinName + "_berserk"));
+                        if (this.baseSkinName.Length() != 0) {
+                            this.powerUpSkin.oSet(declManager.FindSkin(this.baseSkinName + "_berserk"));
                         }
                         if (!gameLocal.isClient) {
-                            idealWeapon = 0;
+                            this.idealWeapon = 0;
                         }
                         break;
                     }
                     case INVISIBILITY: {
-                        spawnArgs.GetString("skin_invisibility", "", skin);
-                        powerUpSkin.oSet(declManager.FindSkin(skin[0]));
+                        this.spawnArgs.GetString("skin_invisibility", "", skin);
+                        this.powerUpSkin.oSet(declManager.FindSkin(skin[0]));
                         // remove any decals from the model
-                        if (modelDefHandle != -1) {
-                            gameRenderWorld.RemoveDecals(modelDefHandle);
+                        if (this.modelDefHandle != -1) {
+                            gameRenderWorld.RemoveDecals(this.modelDefHandle);
                         }
-                        if (weapon.GetEntity() != null) {
-                            weapon.GetEntity().UpdateSkin();
+                        if (this.weapon.GetEntity() != null) {
+                            this.weapon.GetEntity().UpdateSkin();
                         }
-                        if (spawnArgs.GetString("snd_invisibility", "", sound)) {
+                        if (this.spawnArgs.GetString("snd_invisibility", "", sound)) {
                             StartSoundShader(declManager.FindSound(sound[0]), SND_CHANNEL_ANY, 0, false, null);
                         }
                         break;
                     }
                     case ADRENALINE: {
-                        stamina = 100;
+                        this.stamina = 100;
                         break;
                     }
                     case MEGAHEALTH: {
-                        if (spawnArgs.GetString("snd_megahealth", "", sound)) {
+                        if (this.spawnArgs.GetString("snd_megahealth", "", sound)) {
                             StartSoundShader(declManager.FindSound(sound[0]), SND_CHANNEL_ANY, 0, false, null);
                         }
                         def = gameLocal.FindEntityDef("powerup_megahealth", false);
                         if (def != null) {
-                            health = def.dict.GetInt("inv_health");
+                            this.health = def.dict.GetInt("inv_health");
                         }
                         break;
                     }
                 }
 
-                if (hud != null) {
-                    hud.HandleNamedEvent("itemPickup");
+                if (this.hud != null) {
+                    this.hud.HandleNamedEvent("itemPickup");
                 }
 
                 return true;
@@ -4620,11 +4618,11 @@ public class Player {
                     ClearPowerup(i);
                 }
             }
-            inventory.ClearPowerUps();
+            this.inventory.ClearPowerUps();
         }
 
         public boolean PowerUpActive(int powerup) {
-            return (inventory.powerups & (1 << powerup)) != 0;
+            return (this.inventory.powerups & (1 << powerup)) != 0;
         }
 
         public float PowerUpModifier(int type) {
@@ -4653,11 +4651,11 @@ public class Player {
 
             if (gameLocal.isMultiplayer && !gameLocal.isClient) {
                 if (PowerUpActive(MEGAHEALTH)) {
-                    if (healthPool <= 0) {
+                    if (this.healthPool <= 0) {
                         GiveHealthPool(100);
                     }
                 } else {
-                    healthPool = 0;
+                    this.healthPool = 0;
                 }
             }
 
@@ -4668,7 +4666,7 @@ public class Player {
             int i;
 
             for (i = 0; i < MAX_WEAPONS; i++) {
-                final String weap = spawnArgs.GetString(va("def_weapon%d", i));
+                final String weap = this.spawnArgs.GetString(va("def_weapon%d", i));
                 if (0 == idStr.Cmp(weap, weaponName)) {
                     return i;
                 }
@@ -4683,12 +4681,12 @@ public class Player {
                 return;
             }
 
-            if (spectating || gameLocal.inCinematic || influenceActive != 0) {
+            if (this.spectating || gameLocal.inCinematic || (this.influenceActive != 0)) {
                 return;
             }
 
-            if (weapon.GetEntity() != null && weapon.GetEntity().IsLinked()) {
-                weapon.GetEntity().Reload();
+            if ((this.weapon.GetEntity() != null) && this.weapon.GetEntity().IsLinked()) {
+                this.weapon.GetEntity().Reload();
             }
         }
 
@@ -4696,7 +4694,7 @@ public class Player {
             String weap;
             int w;
 
-            if (!weaponEnabled || spectating || hiddenWeapon || gameLocal.inCinematic || gameLocal.world.spawnArgs.GetBool("no_Weapons") || health < 0) {
+            if (!this.weaponEnabled || this.spectating || this.hiddenWeapon || gameLocal.inCinematic || gameLocal.world.spawnArgs.GetBool("no_Weapons") || (this.health < 0)) {
                 return;
             }
 
@@ -4705,34 +4703,34 @@ public class Player {
             }
 
             // check if we have any weapons
-            if (0 == inventory.weapons) {
+            if (0 == this.inventory.weapons) {
                 return;
             }
 
-            w = idealWeapon;
+            w = this.idealWeapon;
             while (true) {
                 w++;
                 if (w >= MAX_WEAPONS) {
                     w = 0;
                 }
-                weap = spawnArgs.GetString(va("def_weapon%d", w));
-                if (!spawnArgs.GetBool(va("weapon%d_cycle", w))) {
+                weap = this.spawnArgs.GetString(va("def_weapon%d", w));
+                if (!this.spawnArgs.GetBool(va("weapon%d_cycle", w))) {
                     continue;
                 }
                 if (weap.isEmpty()) {
                     continue;
                 }
-                if ((inventory.weapons & (1 << w)) == 0) {
+                if ((this.inventory.weapons & (1 << w)) == 0) {
                     continue;
                 }
-                if (inventory.HasAmmo(weap) != 0) {
+                if (this.inventory.HasAmmo(weap) != 0) {
                     break;
                 }
             }
 
-            if ((w != currentWeapon) && (w != idealWeapon)) {
-                idealWeapon = w;
-                weaponSwitchTime = gameLocal.time + WEAPON_SWITCH_DELAY;
+            if ((w != this.currentWeapon) && (w != this.idealWeapon)) {
+                this.idealWeapon = w;
+                this.weaponSwitchTime = gameLocal.time + WEAPON_SWITCH_DELAY;
                 UpdateHudWeapon();
             }
         }
@@ -4741,23 +4739,23 @@ public class Player {
             String weap;
             int w = MAX_WEAPONS;
 
-            if (gameLocal.isClient || !weaponEnabled) {
+            if (gameLocal.isClient || !this.weaponEnabled) {
                 return;
             }
 
             while (w > 0) {
                 w--;
-                weap = spawnArgs.GetString(va("def_weapon%d", w));
-                if (weap.isEmpty() || ((inventory.weapons & (1 << w)) == 0) || (0 == inventory.HasAmmo(weap))) {
+                weap = this.spawnArgs.GetString(va("def_weapon%d", w));
+                if (weap.isEmpty() || ((this.inventory.weapons & (1 << w)) == 0) || (0 == this.inventory.HasAmmo(weap))) {
                     continue;
                 }
-                if (!spawnArgs.GetBool(va("weapon%d_best", w))) {
+                if (!this.spawnArgs.GetBool(va("weapon%d_best", w))) {
                     continue;
                 }
                 break;
             }
-            idealWeapon = w;
-            weaponSwitchTime = gameLocal.time + WEAPON_SWITCH_DELAY;
+            this.idealWeapon = w;
+            this.weaponSwitchTime = gameLocal.time + WEAPON_SWITCH_DELAY;
             UpdateHudWeapon();
         }
 
@@ -4765,7 +4763,7 @@ public class Player {
             String weap;
             int w;
 
-            if (!weaponEnabled || spectating || hiddenWeapon || gameLocal.inCinematic || gameLocal.world.spawnArgs.GetBool("no_Weapons") || health < 0) {
+            if (!this.weaponEnabled || this.spectating || this.hiddenWeapon || gameLocal.inCinematic || gameLocal.world.spawnArgs.GetBool("no_Weapons") || (this.health < 0)) {
                 return;
             }
 
@@ -4774,34 +4772,34 @@ public class Player {
             }
 
             // check if we have any weapons
-            if (0 == inventory.weapons) {
+            if (0 == this.inventory.weapons) {
                 return;
             }
 
-            w = idealWeapon;
+            w = this.idealWeapon;
             while (true) {
                 w--;
                 if (w < 0) {
                     w = MAX_WEAPONS - 1;
                 }
-                weap = spawnArgs.GetString(va("def_weapon%d", w));
-                if (!spawnArgs.GetBool(va("weapon%d_cycle", w))) {
+                weap = this.spawnArgs.GetString(va("def_weapon%d", w));
+                if (!this.spawnArgs.GetBool(va("weapon%d_cycle", w))) {
                     continue;
                 }
                 if (weap.isEmpty()) {
                     continue;
                 }
-                if ((inventory.weapons & (1 << w)) == 0) {
+                if ((this.inventory.weapons & (1 << w)) == 0) {
                     continue;
                 }
-                if (inventory.HasAmmo(weap) != 0) {
+                if (this.inventory.HasAmmo(weap) != 0) {
                     break;
                 }
             }
 
-            if ((w != currentWeapon) && (w != idealWeapon)) {
-                idealWeapon = w;
-                weaponSwitchTime = gameLocal.time + WEAPON_SWITCH_DELAY;
+            if ((w != this.currentWeapon) && (w != this.idealWeapon)) {
+                this.idealWeapon = w;
+                this.weaponSwitchTime = gameLocal.time + WEAPON_SWITCH_DELAY;
                 UpdateHudWeapon();
             }
         }
@@ -4809,7 +4807,7 @@ public class Player {
         public void SelectWeapon(int num, boolean force) {
             String weap;
 
-            if (!weaponEnabled || spectating || gameLocal.inCinematic || health < 0) {
+            if (!this.weaponEnabled || this.spectating || gameLocal.inCinematic || (this.health < 0)) {
                 return;
             }
 
@@ -4821,62 +4819,62 @@ public class Player {
                 return;
             }
 
-            if ((num != weapon_pda) && gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
-                num = weapon_fists;
-                hiddenWeapon ^= true;//1;
-                if (hiddenWeapon && weapon.GetEntity() != null) {
-                    weapon.GetEntity().LowerWeapon();
+            if ((num != this.weapon_pda) && gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
+                num = this.weapon_fists;
+                this.hiddenWeapon ^= true;//1;
+                if (this.hiddenWeapon && (this.weapon.GetEntity() != null)) {
+                    this.weapon.GetEntity().LowerWeapon();
                 } else {
-                    weapon.GetEntity().RaiseWeapon();
+                    this.weapon.GetEntity().RaiseWeapon();
                 }
             }
 
-            weap = spawnArgs.GetString(va("def_weapon%d", num));
+            weap = this.spawnArgs.GetString(va("def_weapon%d", num));
             if (weap.isEmpty()) {
                 gameLocal.Printf("Invalid weapon\n");
                 return;
             }
 
-            if (force || (inventory.weapons & (1 << num)) != 0) {
-                if (0 == inventory.HasAmmo(weap) && !spawnArgs.GetBool(va("weapon%d_allowempty", num))) {
+            if (force || ((this.inventory.weapons & (1 << num)) != 0)) {
+                if ((0 == this.inventory.HasAmmo(weap)) && !this.spawnArgs.GetBool(va("weapon%d_allowempty", num))) {
                     return;
                 }
-                if ((previousWeapon >= 0) && (idealWeapon == num) && (spawnArgs.GetBool(va("weapon%d_toggle", num)))) {
-                    weap = spawnArgs.GetString(va("def_weapon%d", previousWeapon));
-                    if (0 == inventory.HasAmmo(weap) && !spawnArgs.GetBool(va("weapon%d_allowempty", previousWeapon))) {
+                if ((this.previousWeapon >= 0) && (this.idealWeapon == num) && (this.spawnArgs.GetBool(va("weapon%d_toggle", num)))) {
+                    weap = this.spawnArgs.GetString(va("def_weapon%d", this.previousWeapon));
+                    if ((0 == this.inventory.HasAmmo(weap)) && !this.spawnArgs.GetBool(va("weapon%d_allowempty", this.previousWeapon))) {
                         return;
                     }
-                    idealWeapon = previousWeapon;
-                } else if ((weapon_pda >= 0) && (num == weapon_pda) && (inventory.pdas.Num() == 0)) {
-                    ShowTip(spawnArgs.GetString("text_infoTitle"), spawnArgs.GetString("text_noPDA"), true);
+                    this.idealWeapon = this.previousWeapon;
+                } else if ((this.weapon_pda >= 0) && (num == this.weapon_pda) && (this.inventory.pdas.Num() == 0)) {
+                    ShowTip(this.spawnArgs.GetString("text_infoTitle"), this.spawnArgs.GetString("text_noPDA"), true);
                     return;
                 } else {
-                    idealWeapon = num;
+                    this.idealWeapon = num;
                 }
                 UpdateHudWeapon();
             }
         }
 
         public void DropWeapon(boolean died) {
-            idVec3 forward = new idVec3(), up = new idVec3();
+            final idVec3 forward = new idVec3(), up = new idVec3();
             int inclip, ammoavailable;
 
             assert (!gameLocal.isClient);
 
-            if (spectating || weaponGone || weapon.GetEntity() == null) {
+            if (this.spectating || this.weaponGone || (this.weapon.GetEntity() == null)) {
                 return;
             }
 
-            if ((!died && !weapon.GetEntity().IsReady()) || weapon.GetEntity().IsReloading()) {
+            if ((!died && !this.weapon.GetEntity().IsReady()) || this.weapon.GetEntity().IsReloading()) {
                 return;
             }
             // ammoavailable is how many shots we can fire
             // inclip is which amount is in clip right now
-            ammoavailable = weapon.GetEntity().AmmoAvailable();
-            inclip = weapon.GetEntity().AmmoInClip();
+            ammoavailable = this.weapon.GetEntity().AmmoAvailable();
+            inclip = this.weapon.GetEntity().AmmoInClip();
 
             // don't drop a grenade if we have none left
-            if (NOT(idStr.Icmp(idWeapon.GetAmmoNameForNum(weapon.GetEntity().GetAmmoType()), "ammo_grenades")) && (ammoavailable - inclip <= 0)) {
+            if (NOT(idStr.Icmp(idWeapon.GetAmmoNameForNum(this.weapon.GetEntity().GetAmmoType()), "ammo_grenades")) && ((ammoavailable - inclip) <= 0)) {
                 return;
             }
 
@@ -4884,17 +4882,17 @@ public class Player {
             // ammoavailable is -1 for infinite ammo, and weapons like chainsaw
             // a bad ammo config usually indicates a bad weapon state, so we should not drop
             // used to be an assertion check, but it still happens in edge cases
-            if ((ammoavailable != -1) && (ammoavailable - inclip < 0)) {
+            if ((ammoavailable != -1) && ((ammoavailable - inclip) < 0)) {
                 common.DPrintf("idPlayer::DropWeapon: bad ammo setup\n");
                 return;
             }
             idEntity item;
             if (died) {
                 // ain't gonna throw you no weapon if I'm dead
-                item = weapon.GetEntity().DropItem(getVec3_origin(), 0, WEAPON_DROP_TIME, died);
+                item = this.weapon.GetEntity().DropItem(getVec3_origin(), 0, WEAPON_DROP_TIME, died);
             } else {
-                viewAngles.ToVectors(forward, null, up);
-                item = weapon.GetEntity().DropItem(forward.oMultiply(250).oPlus(up.oMultiply(150)), 500, WEAPON_DROP_TIME, died);
+                this.viewAngles.ToVectors(forward, null, up);
+                item = this.weapon.GetEntity().DropItem(forward.oMultiply(250).oPlus(up.oMultiply(150)), 500, WEAPON_DROP_TIME, died);
             }
             if (null == item) {
                 return;
@@ -4903,21 +4901,21 @@ public class Player {
             final idKeyValue keyval = item.spawnArgs.MatchPrefix("inv_ammo_");
             if (keyval != null) {
                 item.spawnArgs.SetInt(keyval.GetKey().toString(), ammoavailable);
-                idStr inclipKey = keyval.GetKey();
+                final idStr inclipKey = keyval.GetKey();
                 inclipKey.Insert("inclip_", 4);
                 item.spawnArgs.SetInt(inclipKey.toString(), inclip);
             }
             if (!died) {
                 // remove from our local inventory completely
                 {
-                    String[] inv_weapon = {item.spawnArgs.GetString("inv_weapon")};
-                    inventory.Drop(spawnArgs, inv_weapon, -1);
+                    final String[] inv_weapon = {item.spawnArgs.GetString("inv_weapon")};
+                    this.inventory.Drop(this.spawnArgs, inv_weapon, -1);
                     item.spawnArgs.Set("inv_weapon", inv_weapon[0]);
                 }
-                weapon.GetEntity().ResetAmmoClip();
+                this.weapon.GetEntity().ResetAmmoClip();
                 NextWeapon();
-                weapon.GetEntity().WeaponStolen();
-                weaponGone = true;
+                this.weapon.GetEntity().WeaponStolen();
+                this.weaponGone = true;
             }
         }
 
@@ -4931,12 +4929,12 @@ public class Player {
             assert (!gameLocal.isClient);
 
             // make sure there's something to steal
-            idWeapon player_weapon = (idWeapon) player.weapon.GetEntity();
-            if (NOT(player_weapon) || !player_weapon.CanDrop() || weaponGone) {
+            final idWeapon player_weapon = player.weapon.GetEntity();
+            if (NOT(player_weapon) || !player_weapon.CanDrop() || this.weaponGone) {
                 return;
             }
             // steal - we need to effectively force the other player to abandon his weapon
-            int newweap = player.currentWeapon;
+            final int newweap = player.currentWeapon;
             if (newweap == -1) {
                 return;
             }
@@ -4944,11 +4942,11 @@ public class Player {
             if (0 == (player.inventory.weapons & (1 << newweap))) {
                 return;
             }
-            final String weapon_classname = spawnArgs.GetString(va("def_weapon%d", newweap));
+            final String weapon_classname = this.spawnArgs.GetString(va("def_weapon%d", newweap));
             assert (weapon_classname != null);
             int ammoavailable = player.weapon.GetEntity().AmmoAvailable();
             int inclip = player.weapon.GetEntity().AmmoInClip();
-            if ((ammoavailable != -1) && (ammoavailable - inclip < 0)) {
+            if ((ammoavailable != -1) && ((ammoavailable - inclip) < 0)) {
                 // see DropWeapon
                 common.DPrintf("idPlayer::StealWeapon: bad ammo setup\n");
                 // we still steal the weapon, so let's use the default ammo levels
@@ -4962,86 +4960,86 @@ public class Player {
 
             player.weapon.GetEntity().WeaponStolen();
             player.inventory.Drop(player.spawnArgs, null, newweap);
-            player.SelectWeapon(weapon_fists, false);
+            player.SelectWeapon(this.weapon_fists, false);
             // in case the robbed player is firing rounds with a continuous fire weapon like the chaingun/plasma etc.
             // this will ensure the firing actually stops
             player.weaponGone = true;
 
             // give weapon, setup the ammo count
             Give("weapon", weapon_classname);
-            int ammo_i = player.inventory.AmmoIndexForWeaponClass(weapon_classname, null);
-            idealWeapon = newweap;
-            inventory.ammo[ ammo_i] += ammoavailable;
-            inventory.clip[ newweap] = inclip;
+            final int ammo_i = player.inventory.AmmoIndexForWeaponClass(weapon_classname, null);
+            this.idealWeapon = newweap;
+            this.inventory.ammo[ ammo_i] += ammoavailable;
+            this.inventory.clip[ newweap] = inclip;
         }
 
         public void AddProjectilesFired(int count) {
-            numProjectilesFired += count;
+            this.numProjectilesFired += count;
         }
 
         public void AddProjectileHits(int count) {
-            numProjectileHits += count;
+            this.numProjectileHits += count;
         }
 
         public void SetLastHitTime(int time) {
             idPlayer aimed = null;
 
-            if (time != 0 && lastHitTime != time) {
-                lastHitToggle ^= true;//1;
+            if ((time != 0) && (this.lastHitTime != time)) {
+                this.lastHitToggle ^= true;//1;
             }
-            lastHitTime = time;
+            this.lastHitTime = time;
             if (0 == time) {
                 // level start and inits
                 return;
             }
-            if (gameLocal.isMultiplayer && (time - lastSndHitTime) > 10) {
-                lastSndHitTime = time;
+            if (gameLocal.isMultiplayer && ((time - this.lastSndHitTime) > 10)) {
+                this.lastSndHitTime = time;
                 StartSound("snd_hit_feedback", SND_CHANNEL_ANY, SSF_PRIVATE_SOUND, false, null);
             }
-            if (cursor != null) {
-                cursor.HandleNamedEvent("hitTime");
+            if (this.cursor != null) {
+                this.cursor.HandleNamedEvent("hitTime");
             }
-            if (hud != null) {
-                if (MPAim != -1) {
-                    if (gameLocal.entities[MPAim] != null && gameLocal.entities[MPAim].IsType(idPlayer.class)) {
-                        aimed = (idPlayer) gameLocal.entities[MPAim];
+            if (this.hud != null) {
+                if (this.MPAim != -1) {
+                    if ((gameLocal.entities[this.MPAim] != null) && gameLocal.entities[this.MPAim].IsType(idPlayer.class)) {
+                        aimed = (idPlayer) gameLocal.entities[this.MPAim];
                     }
                     assert (aimed != null);
                     // full highlight, no fade till loosing aim
-                    hud.SetStateString("aim_text", gameLocal.userInfo[ MPAim].GetString("ui_name"));
+                    this.hud.SetStateString("aim_text", gameLocal.userInfo[ this.MPAim].GetString("ui_name"));
                     if (aimed != null) {
-                        hud.SetStateFloat("aim_color", aimed.colorBarIndex);
+                        this.hud.SetStateFloat("aim_color", aimed.colorBarIndex);
                     }
-                    hud.HandleNamedEvent("aim_flash");
-                    MPAimHighlight = true;
-                    MPAimFadeTime = 0;
-                } else if (lastMPAim != -1) {
-                    if (gameLocal.entities[lastMPAim] != null && gameLocal.entities[lastMPAim].IsType(idPlayer.class)) {
-                        aimed = (idPlayer) gameLocal.entities[lastMPAim];
+                    this.hud.HandleNamedEvent("aim_flash");
+                    this.MPAimHighlight = true;
+                    this.MPAimFadeTime = 0;
+                } else if (this.lastMPAim != -1) {
+                    if ((gameLocal.entities[this.lastMPAim] != null) && gameLocal.entities[this.lastMPAim].IsType(idPlayer.class)) {
+                        aimed = (idPlayer) gameLocal.entities[this.lastMPAim];
                     }
                     assert (aimed != null);
                     // start fading right away
-                    hud.SetStateString("aim_text", gameLocal.userInfo[ lastMPAim].GetString("ui_name"));
+                    this.hud.SetStateString("aim_text", gameLocal.userInfo[ this.lastMPAim].GetString("ui_name"));
                     if (aimed != null) {
-                        hud.SetStateFloat("aim_color", aimed.colorBarIndex);
+                        this.hud.SetStateFloat("aim_color", aimed.colorBarIndex);
                     }
-                    hud.HandleNamedEvent("aim_flash");
-                    hud.HandleNamedEvent("aim_fade");
-                    MPAimHighlight = false;
-                    MPAimFadeTime = gameLocal.realClientTime;
+                    this.hud.HandleNamedEvent("aim_flash");
+                    this.hud.HandleNamedEvent("aim_fade");
+                    this.MPAimHighlight = false;
+                    this.MPAimFadeTime = gameLocal.realClientTime;
                 }
             }
         }
 
         public void LowerWeapon() {
-            if (weapon.GetEntity() != null && !weapon.GetEntity().IsHidden()) {
-                weapon.GetEntity().LowerWeapon();
+            if ((this.weapon.GetEntity() != null) && !this.weapon.GetEntity().IsHidden()) {
+                this.weapon.GetEntity().LowerWeapon();
             }
         }
 
         public void RaiseWeapon() {
-            if (weapon.GetEntity() != null && weapon.GetEntity().IsHidden()) {
-                weapon.GetEntity().RaiseWeapon();
+            if ((this.weapon.GetEntity() != null) && this.weapon.GetEntity().IsHidden()) {
+                this.weapon.GetEntity().RaiseWeapon();
             }
         }
 
@@ -5056,40 +5054,40 @@ public class Player {
         }
 
         public void RemoveWeapon(final String weap) {
-            if (weap != null && !weap.isEmpty()) {
-                String[] w = {spawnArgs.GetString(weap)};
-                inventory.Drop(spawnArgs, w, -1);
-                spawnArgs.Set(weap, w[0]);
+            if ((weap != null) && !weap.isEmpty()) {
+                final String[] w = {this.spawnArgs.GetString(weap)};
+                this.inventory.Drop(this.spawnArgs, w, -1);
+                this.spawnArgs.Set(weap, w[0]);
             }
         }
 
         public boolean CanShowWeaponViewmodel() {
-            return showWeaponViewModel;
+            return this.showWeaponViewModel;
         }
 
         public void AddAIKill() {
             int max_souls;
             int ammo_souls;
 
-            if ((weapon_soulcube < 0) || (inventory.weapons & (1 << weapon_soulcube)) == 0) {
+            if ((this.weapon_soulcube < 0) || ((this.inventory.weapons & (1 << this.weapon_soulcube)) == 0)) {
                 return;
             }
 
-            assert (hud != null);
+            assert (this.hud != null);
 
             ammo_souls = idWeapon.GetAmmoNumForName("ammo_souls");
-            max_souls = inventory.MaxAmmoForAmmoClass(this, "ammo_souls");
-            if (inventory.ammo[ ammo_souls] < max_souls) {
-                inventory.ammo[ ammo_souls]++;
-                if (inventory.ammo[ ammo_souls] >= max_souls) {
-                    hud.HandleNamedEvent("soulCubeReady");
+            max_souls = this.inventory.MaxAmmoForAmmoClass(this, "ammo_souls");
+            if (this.inventory.ammo[ ammo_souls] < max_souls) {
+                this.inventory.ammo[ ammo_souls]++;
+                if (this.inventory.ammo[ ammo_souls] >= max_souls) {
+                    this.hud.HandleNamedEvent("soulCubeReady");
                     StartSound("snd_soulcube_ready", SND_CHANNEL_ANY, 0, false, null);
                 }
             }
         }
 
         public void SetSoulCubeProjectile(idProjectile projectile) {
-            soulCubeProjectile.oSet(projectile);
+            this.soulCubeProjectile.oSet(projectile);
         }
 
         /*
@@ -5123,44 +5121,44 @@ public class Player {
          */
         public void AdjustHeartRate(int target, float timeInSecs, float delay, boolean force) {
 
-            if (heartInfo.GetEndValue() == target) {
+            if (this.heartInfo.GetEndValue() == target) {
                 return;
             }
 
-            if (AI_DEAD.operator() && !force) {
+            if (this.AI_DEAD.operator() && !force) {
                 return;
             }
 
-            lastHeartAdjust = gameLocal.time;
+            this.lastHeartAdjust = gameLocal.time;
 
-            heartInfo.Init((int) (gameLocal.time + delay * 1000), (int) (timeInSecs * 1000), 0f + heartRate, (float) target);
+            this.heartInfo.Init((int) (gameLocal.time + (delay * 1000)), (int) (timeInSecs * 1000), 0f + this.heartRate, (float) target);
         }
 
         public void SetCurrentHeartRate() {
 
-            int base = idMath.FtoiFast((BASE_HEARTRATE + LOWHEALTH_HEARTRATE_ADJ) - ((float) health / 100) * LOWHEALTH_HEARTRATE_ADJ);
+            final int base = idMath.FtoiFast((BASE_HEARTRATE + LOWHEALTH_HEARTRATE_ADJ) - (((float) this.health / 100) * LOWHEALTH_HEARTRATE_ADJ));
 
             if (PowerUpActive(ADRENALINE)) {
-                heartRate = 135;
+                this.heartRate = 135;
             } else {
-                heartRate = idMath.FtoiFast(heartInfo.GetCurrentValue(gameLocal.time));
-                int currentRate = GetBaseHeartRate();
-                if (health >= 0 && gameLocal.time > lastHeartAdjust + 2500) {
+                this.heartRate = idMath.FtoiFast(this.heartInfo.GetCurrentValue(gameLocal.time));
+                final int currentRate = GetBaseHeartRate();
+                if ((this.health >= 0) && (gameLocal.time > (this.lastHeartAdjust + 2500))) {
                     AdjustHeartRate(currentRate, 2.5f, 0, false);
                 }
             }
 
-            int bps = idMath.FtoiFast(60f / heartRate * 1000f);
-            if (gameLocal.time - lastHeartBeat > bps) {
-                int dmgVol = DMG_VOLUME;
-                int deathVol = DEATH_VOLUME;
-                int zeroVol = ZERO_VOLUME;
+            final int bps = idMath.FtoiFast((60f / this.heartRate) * 1000f);
+            if ((gameLocal.time - this.lastHeartBeat) > bps) {
+                final int dmgVol = DMG_VOLUME;
+                final int deathVol = DEATH_VOLUME;
+                final int zeroVol = ZERO_VOLUME;
                 float pct = 0;
-                if (heartRate > BASE_HEARTRATE && health > 0) {
-                    pct = (float) (heartRate - base) / (MAX_HEARTRATE - base);
+                if ((this.heartRate > BASE_HEARTRATE) && (this.health > 0)) {
+                    pct = (float) (this.heartRate - base) / (MAX_HEARTRATE - base);
                     pct *= ((float) dmgVol - (float) zeroVol);
-                } else if (health <= 0) {
-                    pct = (float) (heartRate - DYING_HEARTRATE) / (BASE_HEARTRATE - DYING_HEARTRATE);
+                } else if (this.health <= 0) {
+                    pct = (float) (this.heartRate - DYING_HEARTRATE) / (BASE_HEARTRATE - DYING_HEARTRATE);
                     if (pct > 1.0f) {
                         pct = 1.0f;
                     } else if (pct < 0) {
@@ -5169,30 +5167,30 @@ public class Player {
                     pct *= ((float) deathVol - (float) zeroVol);
                 }
 
-                pct += (float) zeroVol;
+                pct += zeroVol;
 
                 if (pct != zeroVol) {
                     StartSound("snd_heartbeat", SND_CHANNEL_HEART, SSF_PRIVATE_SOUND, false, null);
                     // modify just this channel to a custom volume
-                    soundShaderParms_t parms = new soundShaderParms_t();//memset( &parms, 0, sizeof( parms ) );
+                    final soundShaderParms_t parms = new soundShaderParms_t();//memset( &parms, 0, sizeof( parms ) );
                     parms.volume = pct;
-                    refSound.referenceSound.ModifySound(etoi(SND_CHANNEL_HEART), parms);
+                    this.refSound.referenceSound.ModifySound(etoi(SND_CHANNEL_HEART), parms);
                 }
 
-                lastHeartBeat = gameLocal.time;
+                this.lastHeartBeat = gameLocal.time;
             }
         }
 
         public int GetBaseHeartRate() {
-            int base = idMath.FtoiFast((BASE_HEARTRATE + LOWHEALTH_HEARTRATE_ADJ) - ((float) health / 100) * LOWHEALTH_HEARTRATE_ADJ);
-            int rate = idMath.FtoiFast(base + (ZEROSTAMINA_HEARTRATE - base) * (1.0f - stamina / pm_stamina.GetFloat()));
-            int diff = (lastDmgTime != 0) ? gameLocal.time - lastDmgTime : 99999;
+            final int base = idMath.FtoiFast((BASE_HEARTRATE + LOWHEALTH_HEARTRATE_ADJ) - (((float) this.health / 100) * LOWHEALTH_HEARTRATE_ADJ));
+            int rate = idMath.FtoiFast(base + ((ZEROSTAMINA_HEARTRATE - base) * (1.0f - (this.stamina / pm_stamina.GetFloat()))));
+            final int diff = (this.lastDmgTime != 0) ? gameLocal.time - this.lastDmgTime : 99999;
             rate += (diff < 5000) ? (diff < 2500) ? (diff < 1000) ? 15 : 10 : 5 : 0;
             return rate;
         }
 
         public void UpdateAir() {
-            if (health <= 0) {
+            if (this.health <= 0) {
                 return;
             }
 
@@ -5200,7 +5198,7 @@ public class Player {
             boolean newAirless = false;
 
             if (gameLocal.vacuumAreaNum != -1) {
-                int num = GetNumPVSAreas();
+                final int num = GetNumPVSAreas();
                 if (num > 0) {
                     int areaNum;
 
@@ -5217,49 +5215,49 @@ public class Player {
             }
 
             if (newAirless) {
-                if (!airless) {
+                if (!this.airless) {
                     StartSound("snd_decompress", SND_CHANNEL_ANY, SSF_GLOBAL, false, null);
                     StartSound("snd_noAir", SND_CHANNEL_BODY2, 0, false, null);
-                    if (hud != null) {
-                        hud.HandleNamedEvent("noAir");
+                    if (this.hud != null) {
+                        this.hud.HandleNamedEvent("noAir");
                     }
                 }
-                airTics--;
-                if (airTics < 0) {
-                    airTics = 0;
+                this.airTics--;
+                if (this.airTics < 0) {
+                    this.airTics = 0;
                     // check for damage
                     final idDict damageDef = gameLocal.FindEntityDefDict("damage_noair", false);
-                    int dmgTiming = (int) (1000 * ((damageDef != null) ? damageDef.GetFloat("delay", "3.0") : 3));
-                    if (gameLocal.time > lastAirDamage + dmgTiming) {
+                    final int dmgTiming = (int) (1000 * ((damageDef != null) ? damageDef.GetFloat("delay", "3.0") : 3));
+                    if (gameLocal.time > (this.lastAirDamage + dmgTiming)) {
                         Damage(null, null, getVec3_origin(), "damage_noair", 1.0f, 0);
-                        lastAirDamage = gameLocal.time;
+                        this.lastAirDamage = gameLocal.time;
                     }
                 }
 
             } else {
-                if (airless) {
+                if (this.airless) {
                     StartSound("snd_recompress", SND_CHANNEL_ANY, SSF_GLOBAL, false, null);
                     StopSound(etoi(SND_CHANNEL_BODY2), false);
-                    if (hud != null) {
-                        hud.HandleNamedEvent("Air");
+                    if (this.hud != null) {
+                        this.hud.HandleNamedEvent("Air");
                     }
                 }
-                airTics += 2;	// regain twice as fast as lose
-                if (airTics > pm_airTics.GetInteger()) {
-                    airTics = pm_airTics.GetInteger();
+                this.airTics += 2;	// regain twice as fast as lose
+                if (this.airTics > pm_airTics.GetInteger()) {
+                    this.airTics = pm_airTics.GetInteger();
                 }
             }
 
-            airless = newAirless;
+            this.airless = newAirless;
 
-            if (hud != null) {
-                hud.SetStateInt("player_air", 100 * airTics / pm_airTics.GetInteger());
+            if (this.hud != null) {
+                this.hud.SetStateInt("player_air", (100 * this.airTics) / pm_airTics.GetInteger());
             }
         }
 
         @Override
         public boolean HandleSingleGuiCommand(idEntity entityGui, idLexer src) {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             if (!src.ReadToken(token)) {
                 return false;
@@ -5270,17 +5268,17 @@ public class Player {
             }
 
             if (token.Icmp("addhealth") == 0) {
-                if (entityGui != null && health < 100) {
+                if ((entityGui != null) && (this.health < 100)) {
                     int _health = entityGui.spawnArgs.GetInt("gui_parm1");
-                    int amt = Math.min(_health, HEALTH_PER_DOSE);
+                    final int amt = Math.min(_health, HEALTH_PER_DOSE);
                     _health -= amt;
                     entityGui.spawnArgs.SetInt("gui_parm1", _health);
-                    if (entityGui.GetRenderEntity() != null && entityGui.GetRenderEntity().gui[0] != null) {
+                    if ((entityGui.GetRenderEntity() != null) && (entityGui.GetRenderEntity().gui[0] != null)) {
                         entityGui.GetRenderEntity().gui[ 0].SetStateInt("gui_parm1", _health);
                     }
-                    health += amt;
-                    if (health > 100) {
-                        health = 100;
+                    this.health += amt;
+                    if (this.health > 100) {
+                        this.health = 100;
                     }
                 }
                 return true;
@@ -5302,31 +5300,31 @@ public class Player {
             }
 
             if (token.Icmp("stoppdavideo") == 0) {
-                if (objectiveSystem != null && objectiveSystemOpen && pdaVideoWave.Length() > 0) {
+                if ((this.objectiveSystem != null) && this.objectiveSystemOpen && (this.pdaVideoWave.Length() > 0)) {
                     StopSound(etoi(SND_CHANNEL_PDA), false);
                 }
                 return true;
             }
 
             if (token.Icmp("close") == 0) {
-                if (objectiveSystem != null && objectiveSystemOpen) {
+                if ((this.objectiveSystem != null) && this.objectiveSystemOpen) {
                     TogglePDA();
                 }
             }
 
             if (token.Icmp("playpdavideo") == 0) {
-                if (objectiveSystem != null && objectiveSystemOpen && pdaVideo.Length() > 0) {
-                    final idMaterial mat = declManager.FindMaterial(pdaVideo);
+                if ((this.objectiveSystem != null) && this.objectiveSystemOpen && (this.pdaVideo.Length() > 0)) {
+                    final idMaterial mat = declManager.FindMaterial(this.pdaVideo);
                     if (mat != null) {
-                        int c = mat.GetNumStages();
+                        final int c = mat.GetNumStages();
                         for (int i = 0; i < c; i++) {
                             final shaderStage_t stage = mat.GetStage(i);
-                            if (stage != null && stage.texture.cinematic[0] != null) {
+                            if ((stage != null) && (stage.texture.cinematic[0] != null)) {
                                 stage.texture.cinematic[0].ResetTime(gameLocal.time);
                             }
                         }
-                        if (pdaVideoWave.Length() != 0) {
-                            final idSoundShader shader = declManager.FindSound(pdaVideoWave);
+                        if (this.pdaVideoWave.Length() != 0) {
+                            final idSoundShader shader = declManager.FindSound(this.pdaVideoWave);
                             StartSoundShader(shader, SND_CHANNEL_PDA, 0, false, null);
                         }
                     }
@@ -5334,8 +5332,8 @@ public class Player {
             }
 
             if (token.Icmp("playpdaaudio") == 0) {
-                if (objectiveSystem != null && objectiveSystemOpen && pdaAudio.Length() > 0) {
-                    final idSoundShader shader = declManager.FindSound(pdaAudio);
+                if ((this.objectiveSystem != null) && this.objectiveSystemOpen && (this.pdaAudio.Length() > 0)) {
+                    final idSoundShader shader = declManager.FindSound(this.pdaAudio);
                     final int[] ms = new int[1];
                     StartSoundShader(shader, SND_CHANNEL_PDA, 0, false, ms);
                     StartAudioLog();
@@ -5346,7 +5344,7 @@ public class Player {
             }
 
             if (token.Icmp("stoppdaaudio") == 0) {
-                if (objectiveSystem != null && objectiveSystemOpen && pdaAudio.Length() > 0) {
+                if ((this.objectiveSystem != null) && this.objectiveSystemOpen && (this.pdaAudio.Length() > 0)) {
                     // idSoundShader *shader = declManager.FindSound( pdaAudio );
                     StopAudioLog();
                     StopSound(etoi(SND_CHANNEL_PDA), false);
@@ -5359,23 +5357,23 @@ public class Player {
         }
 
         public boolean GuiActive() {
-            return focusGUIent != null;
+            return this.focusGUIent != null;
         }
 
         public void PerformImpulse(int impulse) {
 
             if (gameLocal.isClient) {
-                idBitMsg msg = new idBitMsg();
-                ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+                final idBitMsg msg = new idBitMsg();
+                final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
-                assert (entityNumber == gameLocal.localClientNum);
+                assert (this.entityNumber == gameLocal.localClientNum);
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                 msg.BeginWriting();
                 msg.WriteBits(impulse, 6);
                 ClientSendEvent(EVENT_IMPULSE, msg);
             }
 
-            if (impulse >= IMPULSE_0 && impulse <= IMPULSE_12) {
+            if ((impulse >= IMPULSE_0) && (impulse <= IMPULSE_12)) {
                 SelectWeapon(impulse, false);
                 return;
             }
@@ -5394,47 +5392,47 @@ public class Player {
                     break;
                 }
                 case IMPULSE_17: {
-                    if (gameLocal.isClient || entityNumber == gameLocal.localClientNum) {
+                    if (gameLocal.isClient || (this.entityNumber == gameLocal.localClientNum)) {
                         gameLocal.mpGame.ToggleReady();
                     }
                     break;
                 }
                 case IMPULSE_18: {
-                    centerView.Init(gameLocal.time, 200, viewAngles.pitch, 0f);
+                    this.centerView.Init(gameLocal.time, 200, this.viewAngles.pitch, 0f);
                     break;
                 }
                 case IMPULSE_19: {
                     // when we're not in single player, IMPULSE_19 is used for showScores
                     // otherwise it opens the pda
                     if (!gameLocal.isMultiplayer) {
-                        if (objectiveSystemOpen) {
+                        if (this.objectiveSystemOpen) {
                             TogglePDA();
-                        } else if (weapon_pda >= 0) {
-                            SelectWeapon(weapon_pda, true);
+                        } else if (this.weapon_pda >= 0) {
+                            SelectWeapon(this.weapon_pda, true);
                         }
                     }
                     break;
                 }
                 case IMPULSE_20: {
-                    if (gameLocal.isClient || entityNumber == gameLocal.localClientNum) {
+                    if (gameLocal.isClient || (this.entityNumber == gameLocal.localClientNum)) {
                         gameLocal.mpGame.ToggleTeam();
                     }
                     break;
                 }
                 case IMPULSE_22: {
-                    if (gameLocal.isClient || entityNumber == gameLocal.localClientNum) {
+                    if (gameLocal.isClient || (this.entityNumber == gameLocal.localClientNum)) {
                         gameLocal.mpGame.ToggleSpectate();
                     }
                     break;
                 }
                 case IMPULSE_28: {
-                    if (gameLocal.isClient || entityNumber == gameLocal.localClientNum) {
+                    if (gameLocal.isClient || (this.entityNumber == gameLocal.localClientNum)) {
                         gameLocal.mpGame.CastVote(gameLocal.localClientNum, true);
                     }
                     break;
                 }
                 case IMPULSE_29: {
-                    if (gameLocal.isClient || entityNumber == gameLocal.localClientNum) {
+                    if (gameLocal.isClient || (this.entityNumber == gameLocal.localClientNum)) {
                         gameLocal.mpGame.CastVote(gameLocal.localClientNum, false);
                     }
                     break;
@@ -5447,43 +5445,43 @@ public class Player {
         }
 
         public void Spectate(boolean spectate) {
-            idBitMsg msg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+            final idBitMsg msg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
             // track invisible player bug
             // all hiding and showing should be performed through Spectate calls
             // except for the private camera view, which is used for teleports
-            assert ((teleportEntity.GetEntity() != null) || (IsHidden() == spectating));
+            assert ((this.teleportEntity.GetEntity() != null) || (IsHidden() == this.spectating));
 
-            if (spectating == spectate) {
+            if (this.spectating == spectate) {
                 return;
             }
 
-            spectating = spectate;
+            this.spectating = spectate;
 
             if (gameLocal.isServer) {
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
-                msg.WriteBits(btoi(spectating), 1);
+                msg.WriteBits(btoi(this.spectating), 1);
                 ServerSendEvent(EVENT_SPECTATE, msg, false, -1);
             }
 
-            if (spectating) {
+            if (this.spectating) {
                 // join the spectators
                 ClearPowerUps();
-                spectator = this.entityNumber;
+                this.spectator = this.entityNumber;
                 Init();
                 StopRagdoll();
-                SetPhysics(physicsObj);
-                physicsObj.DisableClip();
+                SetPhysics(this.physicsObj);
+                this.physicsObj.DisableClip();
                 Hide();
                 Event_DisableWeapon();
-                if (hud != null) {
-                    hud.HandleNamedEvent("aim_clear");
-                    MPAimFadeTime = 0;
+                if (this.hud != null) {
+                    this.hud.HandleNamedEvent("aim_clear");
+                    this.MPAimFadeTime = 0;
                 }
             } else {
                 // put everything back together again
-                currentWeapon = -1;	// to make sure the def will be loaded if necessary
+                this.currentWeapon = -1;	// to make sure the def will be loaded if necessary
                 Show();
                 Event_EnableWeapon();
             }
@@ -5491,37 +5489,38 @@ public class Player {
         }
 
         public void TogglePDA() {
-            if (objectiveSystem == null) {
+            if (this.objectiveSystem == null) {
                 return;
             }
 
-            if (inventory.pdas.Num() == 0) {
-                ShowTip(spawnArgs.GetString("text_infoTitle"), spawnArgs.GetString("text_noPDA"), true);
+            if (this.inventory.pdas.Num() == 0) {
+                ShowTip(this.spawnArgs.GetString("text_infoTitle"), this.spawnArgs.GetString("text_noPDA"), true);
                 return;
             }
 
-            assert (hud != null);
+            assert (this.hud != null);
 
-            if (!objectiveSystemOpen) {
-                int j, c = inventory.items.Num();
-                objectiveSystem.SetStateInt("inv_count", c);
+            if (!this.objectiveSystemOpen) {
+                int j;
+				final int c = this.inventory.items.Num();
+                this.objectiveSystem.SetStateInt("inv_count", c);
                 for (j = 0; j < MAX_INVENTORY_ITEMS; j++) {
-                    objectiveSystem.SetStateString(va("inv_name_%d", j), "");
-                    objectiveSystem.SetStateString(va("inv_icon_%d", j), "");
-                    objectiveSystem.SetStateString(va("inv_text_%d", j), "");
+                    this.objectiveSystem.SetStateString(va("inv_name_%d", j), "");
+                    this.objectiveSystem.SetStateString(va("inv_icon_%d", j), "");
+                    this.objectiveSystem.SetStateString(va("inv_text_%d", j), "");
                 }
                 for (j = 0; j < c; j++) {
-                    idDict item = inventory.items.oGet(j);
+                    final idDict item = this.inventory.items.oGet(j);
                     if (!item.GetBool("inv_pda")) {
                         final String iname = item.GetString("inv_name");
                         final String iicon = item.GetString("inv_icon");
                         final String itext = item.GetString("inv_text");
-                        objectiveSystem.SetStateString(va("inv_name_%d", j), iname);
-                        objectiveSystem.SetStateString(va("inv_icon_%d", j), iicon);
-                        objectiveSystem.SetStateString(va("inv_text_%d", j), itext);
+                        this.objectiveSystem.SetStateString(va("inv_name_%d", j), iname);
+                        this.objectiveSystem.SetStateString(va("inv_icon_%d", j), iicon);
+                        this.objectiveSystem.SetStateString(va("inv_text_%d", j), itext);
                         final idKeyValue kv = item.MatchPrefix("inv_id", null);
                         if (kv != null) {
-                            objectiveSystem.SetStateString(va("inv_id_%d", j), kv.GetValue().toString());
+                            this.objectiveSystem.SetStateString(va("inv_id_%d", j), kv.GetValue().toString());
                         }
                     }
                 }
@@ -5530,163 +5529,163 @@ public class Player {
                     final String weapnum = va("def_weapon%d", j);
                     final String hudWeap = va("weapon%d", j);
                     int weapstate = 0;
-                    if ((inventory.weapons & (1 << j)) != 0) {
-                        final String weap = spawnArgs.GetString(weapnum);
-                        if (weap != null && !weap.isEmpty()) {
+                    if ((this.inventory.weapons & (1 << j)) != 0) {
+                        final String weap = this.spawnArgs.GetString(weapnum);
+                        if ((weap != null) && !weap.isEmpty()) {
                             weapstate++;
                         }
                     }
-                    objectiveSystem.SetStateInt(hudWeap, weapstate);
+                    this.objectiveSystem.SetStateInt(hudWeap, weapstate);
                 }
 
-                objectiveSystem.SetStateInt("listPDA_sel_0", inventory.selPDA);
-                objectiveSystem.SetStateInt("listPDAVideo_sel_0", inventory.selVideo);
-                objectiveSystem.SetStateInt("listPDAAudio_sel_0", inventory.selAudio);
-                objectiveSystem.SetStateInt("listPDAEmail_sel_0", inventory.selEMail);
+                this.objectiveSystem.SetStateInt("listPDA_sel_0", this.inventory.selPDA);
+                this.objectiveSystem.SetStateInt("listPDAVideo_sel_0", this.inventory.selVideo);
+                this.objectiveSystem.SetStateInt("listPDAAudio_sel_0", this.inventory.selAudio);
+                this.objectiveSystem.SetStateInt("listPDAEmail_sel_0", this.inventory.selEMail);
                 UpdatePDAInfo(false);
                 UpdateObjectiveInfo();
-                objectiveSystem.Activate(true, gameLocal.time);
-                hud.HandleNamedEvent("pdaPickupHide");
-                hud.HandleNamedEvent("videoPickupHide");
+                this.objectiveSystem.Activate(true, gameLocal.time);
+                this.hud.HandleNamedEvent("pdaPickupHide");
+                this.hud.HandleNamedEvent("videoPickupHide");
             } else {
-                inventory.selPDA = objectiveSystem.State().GetInt("listPDA_sel_0");
-                inventory.selVideo = objectiveSystem.State().GetInt("listPDAVideo_sel_0");
-                inventory.selAudio = objectiveSystem.State().GetInt("listPDAAudio_sel_0");
-                inventory.selEMail = objectiveSystem.State().GetInt("listPDAEmail_sel_0");
-                objectiveSystem.Activate(false, gameLocal.time);
+                this.inventory.selPDA = this.objectiveSystem.State().GetInt("listPDA_sel_0");
+                this.inventory.selVideo = this.objectiveSystem.State().GetInt("listPDAVideo_sel_0");
+                this.inventory.selAudio = this.objectiveSystem.State().GetInt("listPDAAudio_sel_0");
+                this.inventory.selEMail = this.objectiveSystem.State().GetInt("listPDAEmail_sel_0");
+                this.objectiveSystem.Activate(false, gameLocal.time);
             }
-            objectiveSystemOpen ^= true;//1;
+            this.objectiveSystemOpen ^= true;//1;
         }
 
         public void ToggleScoreboard() {
-            scoreBoardOpen ^= true;//1;
+            this.scoreBoardOpen ^= true;//1;
         }
 
         public void RouteGuiMouse(idUserInterface gui) {
             sysEvent_s ev;
             String command;
 
-            if (usercmd.mx != oldMouseX || usercmd.my != oldMouseY) {
-                ev = sys.GenerateMouseMoveEvent(usercmd.mx - oldMouseX, usercmd.my - oldMouseY);
+            if ((this.usercmd.mx != this.oldMouseX) || (this.usercmd.my != this.oldMouseY)) {
+                ev = sys.GenerateMouseMoveEvent(this.usercmd.mx - this.oldMouseX, this.usercmd.my - this.oldMouseY);
                 command = gui.HandleEvent(ev, gameLocal.time);
-                oldMouseX = usercmd.mx;
-                oldMouseY = usercmd.my;
+                this.oldMouseX = this.usercmd.mx;
+                this.oldMouseY = this.usercmd.my;
             }
         }
 
         public void UpdateHud() {
             idPlayer aimed;
 
-            if (null == hud) {
+            if (null == this.hud) {
                 return;
             }
 
-            if (entityNumber != gameLocal.localClientNum) {
+            if (this.entityNumber != gameLocal.localClientNum) {
                 return;
             }
 
-            int c = inventory.pickupItemNames.Num();
+            final int c = this.inventory.pickupItemNames.Num();
             if (c > 0) {
-                if (gameLocal.time > inventory.nextItemPickup) {
-                    if (inventory.nextItemPickup != 0 && gameLocal.time - inventory.nextItemPickup > 2000) {
-                        inventory.nextItemNum = 1;
+                if (gameLocal.time > this.inventory.nextItemPickup) {
+                    if ((this.inventory.nextItemPickup != 0) && ((gameLocal.time - this.inventory.nextItemPickup) > 2000)) {
+                        this.inventory.nextItemNum = 1;
                     }
                     int i;
-                    for (i = 0; i < 5 && i < c; i++) {
-                        hud.SetStateString(va("itemtext%d", inventory.nextItemNum), inventory.pickupItemNames.oGet(0).name.toString());
-                        hud.SetStateString(va("itemicon%d", inventory.nextItemNum), inventory.pickupItemNames.oGet(0).icon.toString());
-                        hud.HandleNamedEvent(va("itemPickup%d", inventory.nextItemNum++));
-                        inventory.pickupItemNames.RemoveIndex(0);
-                        if (inventory.nextItemNum == 1) {
-                            inventory.onePickupTime = gameLocal.time;
-                        } else if (inventory.nextItemNum > 5) {
-                            inventory.nextItemNum = 1;
-                            inventory.nextItemPickup = inventory.onePickupTime + 2000;
+                    for (i = 0; (i < 5) && (i < c); i++) {
+                        this.hud.SetStateString(va("itemtext%d", this.inventory.nextItemNum), this.inventory.pickupItemNames.oGet(0).name.toString());
+                        this.hud.SetStateString(va("itemicon%d", this.inventory.nextItemNum), this.inventory.pickupItemNames.oGet(0).icon.toString());
+                        this.hud.HandleNamedEvent(va("itemPickup%d", this.inventory.nextItemNum++));
+                        this.inventory.pickupItemNames.RemoveIndex(0);
+                        if (this.inventory.nextItemNum == 1) {
+                            this.inventory.onePickupTime = gameLocal.time;
+                        } else if (this.inventory.nextItemNum > 5) {
+                            this.inventory.nextItemNum = 1;
+                            this.inventory.nextItemPickup = this.inventory.onePickupTime + 2000;
                         } else {
-                            inventory.nextItemPickup = gameLocal.time + 400;
+                            this.inventory.nextItemPickup = gameLocal.time + 400;
                         }
                     }
                 }
             }
 
-            if (gameLocal.realClientTime == lastMPAimTime) {
-                if (MPAim != -1 && gameLocal.gameType == GAME_TDM
-                        && gameLocal.entities[MPAim] != null && gameLocal.entities[MPAim].IsType(idPlayer.class)
-                        && ((idPlayer) gameLocal.entities[MPAim]).team == team) {
-                    aimed = (idPlayer) gameLocal.entities[MPAim];
-                    hud.SetStateString("aim_text", gameLocal.userInfo[MPAim].GetString("ui_name"));
-                    hud.SetStateFloat("aim_color", aimed.colorBarIndex);
-                    hud.HandleNamedEvent("aim_flash");
-                    MPAimHighlight = true;
-                    MPAimFadeTime = 0;	// no fade till loosing focus
-                } else if (MPAimHighlight) {
-                    hud.HandleNamedEvent("aim_fade");
-                    MPAimFadeTime = gameLocal.realClientTime;
-                    MPAimHighlight = false;
+            if (gameLocal.realClientTime == this.lastMPAimTime) {
+                if ((this.MPAim != -1) && (gameLocal.gameType == GAME_TDM)
+                        && (gameLocal.entities[this.MPAim] != null) && gameLocal.entities[this.MPAim].IsType(idPlayer.class)
+                        && (((idPlayer) gameLocal.entities[this.MPAim]).team == this.team)) {
+                    aimed = (idPlayer) gameLocal.entities[this.MPAim];
+                    this.hud.SetStateString("aim_text", gameLocal.userInfo[this.MPAim].GetString("ui_name"));
+                    this.hud.SetStateFloat("aim_color", aimed.colorBarIndex);
+                    this.hud.HandleNamedEvent("aim_flash");
+                    this.MPAimHighlight = true;
+                    this.MPAimFadeTime = 0;	// no fade till loosing focus
+                } else if (this.MPAimHighlight) {
+                    this.hud.HandleNamedEvent("aim_fade");
+                    this.MPAimFadeTime = gameLocal.realClientTime;
+                    this.MPAimHighlight = false;
                 }
             }
-            if (MPAimFadeTime != 0) {
-                assert (!MPAimHighlight);
-                if (gameLocal.realClientTime - MPAimFadeTime > 2000) {
-                    MPAimFadeTime = 0;
+            if (this.MPAimFadeTime != 0) {
+                assert (!this.MPAimHighlight);
+                if ((gameLocal.realClientTime - this.MPAimFadeTime) > 2000) {
+                    this.MPAimFadeTime = 0;
                 }
             }
 
-            hud.SetStateInt("g_showProjectilePct", g_showProjectilePct.GetInteger());
-            if (numProjectilesFired != 0) {
-                hud.SetStateString("projectilepct", va("Hit %% %.1f", ((float) numProjectileHits / numProjectilesFired) * 100));
+            this.hud.SetStateInt("g_showProjectilePct", g_showProjectilePct.GetInteger());
+            if (this.numProjectilesFired != 0) {
+                this.hud.SetStateString("projectilepct", va("Hit %% %.1f", ((float) this.numProjectileHits / this.numProjectilesFired) * 100));
             } else {
-                hud.SetStateString("projectilepct", "Hit % 0.0");
+                this.hud.SetStateString("projectilepct", "Hit % 0.0");
             }
 
-            if (isLagged && gameLocal.isMultiplayer && gameLocal.localClientNum == entityNumber) {
-                hud.SetStateString("hudLag", "1");
+            if (this.isLagged && gameLocal.isMultiplayer && (gameLocal.localClientNum == this.entityNumber)) {
+                this.hud.SetStateString("hudLag", "1");
             } else {
-                hud.SetStateString("hudLag", "0");
+                this.hud.SetStateString("hudLag", "0");
             }
         }
 
         public idDeclPDA GetPDA() {
-            if (inventory.pdas.Num() != 0) {
-                return (idDeclPDA) declManager.FindType(DECL_PDA, inventory.pdas.oGet(0));
+            if (this.inventory.pdas.Num() != 0) {
+                return (idDeclPDA) declManager.FindType(DECL_PDA, this.inventory.pdas.oGet(0));
             } else {
                 return null;
             }
         }
 
         public idDeclVideo GetVideo(int index) {
-            if (index >= 0 && index < inventory.videos.Num()) {
-                return (idDeclVideo) declManager.FindType(DECL_VIDEO, inventory.videos.oGet(index), false);
+            if ((index >= 0) && (index < this.inventory.videos.Num())) {
+                return (idDeclVideo) declManager.FindType(DECL_VIDEO, this.inventory.videos.oGet(index), false);
             }
             return null;
         }
 
         public void SetInfluenceFov(float fov) {
-            influenceFov = fov;
+            this.influenceFov = fov;
         }
 
         public void SetInfluenceView(final String mtr, final String skinname, float radius, idEntity ent) {
-            influenceMaterial = null;
-            influenceEntity = null;
-            influenceSkin = null;
-            if (mtr != null && !mtr.isEmpty()) {
-                influenceMaterial = declManager.FindMaterial(mtr);
+            this.influenceMaterial = null;
+            this.influenceEntity = null;
+            this.influenceSkin = null;
+            if ((mtr != null) && !mtr.isEmpty()) {
+                this.influenceMaterial = declManager.FindMaterial(mtr);
             }
-            if (skinname != null && !skinname.isEmpty()) {
-                influenceSkin = declManager.FindSkin(skinname);
-                if (head.GetEntity() != null) {
-                    head.GetEntity().GetRenderEntity().shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
+            if ((skinname != null) && !skinname.isEmpty()) {
+                this.influenceSkin = declManager.FindSkin(skinname);
+                if (this.head.GetEntity() != null) {
+                    this.head.GetEntity().GetRenderEntity().shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.time);
                 }
                 UpdateVisuals();
             }
-            influenceRadius = radius;
+            this.influenceRadius = radius;
             if (radius > 0) {
-                influenceEntity = ent;
+                this.influenceEntity = ent;
             }
         }
 
         public void SetInfluenceLevel(int level) {
-            if (level != influenceActive) {
+            if (level != this.influenceActive) {
                 if (level != 0) {
                     for (idEntity ent = gameLocal.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
                         if (ent.IsType(idProjectile.class)) {
@@ -5694,41 +5693,41 @@ public class Player {
                             ent.PostEventMS(EV_Remove, 0);
                         }
                     }
-                    if (weaponEnabled && weapon.GetEntity() != null) {
-                        weapon.GetEntity().EnterCinematic();
+                    if (this.weaponEnabled && (this.weapon.GetEntity() != null)) {
+                        this.weapon.GetEntity().EnterCinematic();
                     }
                 } else {
-                    physicsObj.SetLinearVelocity(getVec3_origin());
-                    if (weaponEnabled && weapon.GetEntity() != null) {
-                        weapon.GetEntity().ExitCinematic();
+                    this.physicsObj.SetLinearVelocity(getVec3_origin());
+                    if (this.weaponEnabled && (this.weapon.GetEntity() != null)) {
+                        this.weapon.GetEntity().ExitCinematic();
                     }
                 }
-                influenceActive = level;
+                this.influenceActive = level;
             }
         }
 
         public int GetInfluenceLevel() {
-            return influenceActive;
+            return this.influenceActive;
         }
 
         public void SetPrivateCameraView(idCamera camView) {
-            privateCameraView = camView;
+            this.privateCameraView = camView;
             if (camView != null) {
                 StopFiring();
                 Hide();
             } else {
-                if (!spectating) {
+                if (!this.spectating) {
                     Show();
                 }
             }
         }
 
         public idCamera GetPrivateCameraView() {
-            return privateCameraView;
+            return this.privateCameraView;
         }
 
         public void StartFxFov(float duration) {
-            fxFov = true;
+            this.fxFov = true;
             PostEventSec(EV_Player_StopFxFov, duration);
         }
 
@@ -5736,9 +5735,9 @@ public class Player {
             idUserInterface hud = this.hud;
 
             // if updating the hud of a followed client
-            if (gameLocal.localClientNum >= 0 && gameLocal.entities[gameLocal.localClientNum] != null && gameLocal.entities[gameLocal.localClientNum].IsType(idPlayer.class)) {
-                idPlayer p = (idPlayer) gameLocal.entities[gameLocal.localClientNum];
-                if (p.spectating && p.spectator == entityNumber) {
+            if ((gameLocal.localClientNum >= 0) && (gameLocal.entities[gameLocal.localClientNum] != null) && gameLocal.entities[gameLocal.localClientNum].IsType(idPlayer.class)) {
+                final idPlayer p = (idPlayer) gameLocal.entities[gameLocal.localClientNum];
+                if (p.spectating && (p.spectator == this.entityNumber)) {
                     assert (p.hud != null);
                     hud = p.hud;
                 }
@@ -5752,12 +5751,12 @@ public class Player {
                 final String weapnum = va("def_weapon%d", i);
                 final String hudWeap = va("weapon%d", i);
                 int weapstate = 0;
-                if ((inventory.weapons & (1 << i)) != 0) {
-                    final String weap = spawnArgs.GetString(weapnum);
-                    if (weap != null && !weap.isEmpty()) {
+                if ((this.inventory.weapons & (1 << i)) != 0) {
+                    final String weap = this.spawnArgs.GetString(weapnum);
+                    if ((weap != null) && !weap.isEmpty()) {
                         weapstate++;
                     }
-                    if (idealWeapon == i) {
+                    if (this.idealWeapon == i) {
                         weapstate++;
                     }
                 }
@@ -5783,44 +5782,44 @@ public class Player {
                 // stamina disabled, so show full stamina bar
                 staminapercentage = 100;
             } else {
-                staminapercentage = idMath.FtoiFast(100 * stamina / max_stamina);
+                staminapercentage = idMath.FtoiFast((100 * this.stamina) / max_stamina);
             }
 
-            _hud.SetStateInt("player_health", health);
+            _hud.SetStateInt("player_health", this.health);
             _hud.SetStateInt("player_stamina", staminapercentage);
-            _hud.SetStateInt("player_armor", inventory.armor);
-            _hud.SetStateInt("player_hr", heartRate);
+            _hud.SetStateInt("player_armor", this.inventory.armor);
+            _hud.SetStateInt("player_hr", this.heartRate);
             _hud.SetStateInt("player_nostamina", (max_stamina == 0) ? 1 : 0);
 
             _hud.HandleNamedEvent("updateArmorHealthAir");
 
-            if (healthPulse) {
+            if (this.healthPulse) {
                 _hud.HandleNamedEvent("healthPulse");
                 StartSound("snd_healthpulse", SND_CHANNEL_ITEM, 0, false, null);
-                healthPulse = false;
+                this.healthPulse = false;
             }
 
-            if (healthTake) {
+            if (this.healthTake) {
                 _hud.HandleNamedEvent("healthPulse");
                 StartSound("snd_healthtake", SND_CHANNEL_ITEM, 0, false, null);
-                healthTake = false;
+                this.healthTake = false;
             }
 
-            if (inventory.ammoPulse) {
+            if (this.inventory.ammoPulse) {
                 _hud.HandleNamedEvent("ammoPulse");
-                inventory.ammoPulse = false;
+                this.inventory.ammoPulse = false;
             }
-            if (inventory.weaponPulse) {
+            if (this.inventory.weaponPulse) {
                 // We need to update the weapon hud manually, but not
                 // the armor/ammo/health because they are updated every
                 // frame no matter what
                 UpdateHudWeapon();
                 _hud.HandleNamedEvent("weaponPulse");
-                inventory.weaponPulse = false;
+                this.inventory.weaponPulse = false;
             }
-            if (inventory.armorPulse) {
+            if (this.inventory.armorPulse) {
                 _hud.HandleNamedEvent("armorPulse");
-                inventory.armorPulse = false;
+                this.inventory.armorPulse = false;
             }
 
             UpdateHudAmmo(_hud);
@@ -5830,26 +5829,26 @@ public class Player {
             int inclip;
             int ammoamount;
 
-            assert (weapon.GetEntity() != null);
+            assert (this.weapon.GetEntity() != null);
             assert (_hud != null);
 
-            inclip = weapon.GetEntity().AmmoInClip();
-            ammoamount = weapon.GetEntity().AmmoAvailable();
-            if (ammoamount < 0 || !weapon.GetEntity().IsReady()) {
+            inclip = this.weapon.GetEntity().AmmoInClip();
+            ammoamount = this.weapon.GetEntity().AmmoAvailable();
+            if ((ammoamount < 0) || !this.weapon.GetEntity().IsReady()) {
                 // show infinite ammo
                 _hud.SetStateString("player_ammo", "");
                 _hud.SetStateString("player_totalammo", "");
             } else {
                 // show remaining ammo
                 _hud.SetStateString("player_totalammo", va("%d", ammoamount - inclip));
-                _hud.SetStateString("player_ammo", (weapon.GetEntity().ClipSize() != 0) ? va("%d", inclip) : "--");		// how much in the current clip
-                _hud.SetStateString("player_clips", (weapon.GetEntity().ClipSize() != 0) ? va("%d", ammoamount / weapon.GetEntity().ClipSize()) : "--");
+                _hud.SetStateString("player_ammo", (this.weapon.GetEntity().ClipSize() != 0) ? va("%d", inclip) : "--");		// how much in the current clip
+                _hud.SetStateString("player_clips", (this.weapon.GetEntity().ClipSize() != 0) ? va("%d", ammoamount / this.weapon.GetEntity().ClipSize()) : "--");
                 _hud.SetStateString("player_allammo", va("%d/%d", inclip, ammoamount - inclip));
             }
 
             _hud.SetStateBool("player_ammo_empty", (ammoamount == 0));
-            _hud.SetStateBool("player_clip_empty", ((weapon.GetEntity().ClipSize() != 0) ? inclip == 0 : false));
-            _hud.SetStateBool("player_clip_low", ((weapon.GetEntity().ClipSize() != 0) ? inclip <= weapon.GetEntity().LowAmmo() : false));
+            _hud.SetStateBool("player_clip_empty", ((this.weapon.GetEntity().ClipSize() != 0) ? inclip == 0 : false));
+            _hud.SetStateBool("player_clip_low", ((this.weapon.GetEntity().ClipSize() != 0) ? inclip <= this.weapon.GetEntity().LowAmmo() : false));
 
             _hud.HandleNamedEvent("updateAmmo");
         }
@@ -5859,105 +5858,105 @@ public class Player {
         }
 
         public void StartAudioLog() {
-            if (hud != null) {
-                hud.HandleNamedEvent("audioLogUp");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("audioLogUp");
             }
         }
 
         public void StopAudioLog() {
-            if (hud != null) {
-                hud.HandleNamedEvent("audioLogDown");
+            if (this.hud != null) {
+                this.hud.HandleNamedEvent("audioLogDown");
             }
         }
 
         public void ShowTip(final String title, final String tip, boolean autoHide) {
-            if (tipUp) {
+            if (this.tipUp) {
                 return;
             }
-            hud.SetStateString("tip", tip);
-            hud.SetStateString("tiptitle", title);
-            hud.HandleNamedEvent("tipWindowUp");
+            this.hud.SetStateString("tip", tip);
+            this.hud.SetStateString("tiptitle", title);
+            this.hud.HandleNamedEvent("tipWindowUp");
             if (autoHide) {
                 PostEventSec(EV_Player_HideTip, 5.0f);
             }
-            tipUp = true;
+            this.tipUp = true;
         }
 
         public void HideTip() {
-            hud.HandleNamedEvent("tipWindowDown");
-            tipUp = false;
+            this.hud.HandleNamedEvent("tipWindowDown");
+            this.tipUp = false;
         }
 
         public boolean IsTipVisible() {
-            return tipUp;
+            return this.tipUp;
         }
 
         public void ShowObjective(final String obj) {
-            hud.HandleNamedEvent(obj);
-            objectiveUp = true;
+            this.hud.HandleNamedEvent(obj);
+            this.objectiveUp = true;
         }
 
         public void HideObjective() {
-            hud.HandleNamedEvent("closeObjective");
-            objectiveUp = false;
+            this.hud.HandleNamedEvent("closeObjective");
+            this.objectiveUp = false;
         }
 
         @Override
         public void ClientPredictionThink() {
             renderEntity_s headRenderEnt;
 
-            oldFlags = usercmd.flags;
-            oldButtons = usercmd.buttons;
+            this.oldFlags = this.usercmd.flags;
+            this.oldButtons = this.usercmd.buttons;
 
-            usercmd = gameLocal.usercmds[entityNumber];
+            this.usercmd = gameLocal.usercmds[this.entityNumber];
 
-            if (entityNumber != gameLocal.localClientNum) {
+            if (this.entityNumber != gameLocal.localClientNum) {
                 // ignore attack button of other clients. that's no good for predictions
-                usercmd.buttons &= ~BUTTON_ATTACK;
+                this.usercmd.buttons &= ~BUTTON_ATTACK;
             }
 
-            buttonMask &= usercmd.buttons;
-            usercmd.buttons &= ~buttonMask;
+            this.buttonMask &= this.usercmd.buttons;
+            this.usercmd.buttons &= ~this.buttonMask;
 
-            if (objectiveSystemOpen) {
-                usercmd.forwardmove = 0;
-                usercmd.rightmove = 0;
-                usercmd.upmove = 0;
+            if (this.objectiveSystemOpen) {
+                this.usercmd.forwardmove = 0;
+                this.usercmd.rightmove = 0;
+                this.usercmd.upmove = 0;
             }
 
             // clear the ik before we do anything else so the skeleton doesn't get updated twice
-            walkIK.ClearJointMods();
+            this.walkIK.ClearJointMods();
 
             if (gameLocal.isNewFrame) {
-                if ((usercmd.flags & UCF_IMPULSE_SEQUENCE) != (oldFlags & UCF_IMPULSE_SEQUENCE)) {
-                    PerformImpulse(usercmd.impulse);
+                if ((this.usercmd.flags & UCF_IMPULSE_SEQUENCE) != (this.oldFlags & UCF_IMPULSE_SEQUENCE)) {
+                    PerformImpulse(this.usercmd.impulse);
                 }
             }
 
-            scoreBoardOpen = ((usercmd.buttons & BUTTON_SCORES) != 0 || forceScoreBoard);
+            this.scoreBoardOpen = (((this.usercmd.buttons & BUTTON_SCORES) != 0) || this.forceScoreBoard);
 
             AdjustSpeed();
 
             UpdateViewAngles();
 
             // update the smoothed view angles
-            if (gameLocal.framenum >= smoothedFrame && entityNumber != gameLocal.localClientNum) {
-                idAngles anglesDiff = viewAngles.oMinus(smoothedAngles);
+            if ((gameLocal.framenum >= this.smoothedFrame) && (this.entityNumber != gameLocal.localClientNum)) {
+                final idAngles anglesDiff = this.viewAngles.oMinus(this.smoothedAngles);
                 anglesDiff.Normalize180();
-                if (idMath.Fabs(anglesDiff.yaw) < 90 && idMath.Fabs(anglesDiff.pitch) < 90) {
+                if ((idMath.Fabs(anglesDiff.yaw) < 90) && (idMath.Fabs(anglesDiff.pitch) < 90)) {
                     // smoothen by pushing back to the previous angles
-                    viewAngles.oMinSet(anglesDiff.oMultiply(gameLocal.clientSmoothing));
-                    viewAngles.Normalize180();
+                    this.viewAngles.oMinSet(anglesDiff.oMultiply(gameLocal.clientSmoothing));
+                    this.viewAngles.Normalize180();
                 }
-                smoothedAngles = viewAngles;
+                this.smoothedAngles = this.viewAngles;
             }
-            smoothedOriginUpdated = false;
+            this.smoothedOriginUpdated = false;
 
-            if (!af.IsActive()) {
+            if (!this.af.IsActive()) {
                 AdjustBodyAngles();
             }
 
-            if (!isLagged) {
+            if (!this.isLagged) {
                 // don't allow client to move when lagged
                 Move();
             }
@@ -5966,14 +5965,14 @@ public class Player {
             UpdateFocus();
 
             // service animations
-            if (!spectating && !af.IsActive()) {
+            if (!this.spectating && !this.af.IsActive()) {
                 UpdateConditions();
                 UpdateAnimState();
                 CheckBlink();
             }
 
             // clear out our pain flag so we can tell if we recieve any damage between now and the next time we think
-            AI_PAIN.operator(false);
+            this.AI_PAIN.operator(false);
 
             // calculate the exact bobbed view position, which is used to
             // position the view weapon, among other things
@@ -5982,7 +5981,7 @@ public class Player {
             // this may use firstPersonView, or a thirdPerson / camera view
             CalculateRenderView();
 
-            if (!gameLocal.inCinematic && weapon.GetEntity() != null && (health > 0) && !(gameLocal.isMultiplayer && spectating)) {
+            if (!gameLocal.inCinematic && (this.weapon.GetEntity() != null) && (this.health > 0) && !(gameLocal.isMultiplayer && this.spectating)) {
                 UpdateWeapon();
             }
 
@@ -5994,35 +5993,35 @@ public class Player {
 
             UpdateDeathSkin(false);
 
-            if (head.GetEntity() != null) {
-                headRenderEnt = head.GetEntity().GetRenderEntity();
+            if (this.head.GetEntity() != null) {
+                headRenderEnt = this.head.GetEntity().GetRenderEntity();
             } else {
                 headRenderEnt = null;
             }
 
             if (headRenderEnt != null) {
-                if (influenceSkin != null) {
-                    headRenderEnt.customSkin = influenceSkin;
+                if (this.influenceSkin != null) {
+                    headRenderEnt.customSkin = this.influenceSkin;
                 } else {
                     headRenderEnt.customSkin = null;
                 }
             }
 
             if (gameLocal.isMultiplayer || g_showPlayerShadow.GetBool()) {
-                renderEntity.suppressShadowInViewID = 0;
+                this.renderEntity.suppressShadowInViewID = 0;
                 if (headRenderEnt != null) {
                     headRenderEnt.suppressShadowInViewID = 0;
                 }
             } else {
-                renderEntity.suppressShadowInViewID = entityNumber + 1;
+                this.renderEntity.suppressShadowInViewID = this.entityNumber + 1;
                 if (headRenderEnt != null) {
-                    headRenderEnt.suppressShadowInViewID = entityNumber + 1;
+                    headRenderEnt.suppressShadowInViewID = this.entityNumber + 1;
                 }
             }
             // never cast shadows from our first-person muzzle flashes
-            renderEntity.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + entityNumber;
+            this.renderEntity.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + this.entityNumber;
             if (headRenderEnt != null) {
-                headRenderEnt.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + entityNumber;
+                headRenderEnt.suppressShadowInLightID = LIGHTID_VIEW_MUZZLE_FLASH + this.entityNumber;
             }
 
             if (!gameLocal.inCinematic) {
@@ -6039,30 +6038,30 @@ public class Player {
 
             LinkCombat();
 
-            if (gameLocal.isNewFrame && entityNumber == gameLocal.localClientNum) {
-                playerView.CalculateShake();
+            if (gameLocal.isNewFrame && (this.entityNumber == gameLocal.localClientNum)) {
+                this.playerView.CalculateShake();
             }
         }
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            physicsObj.WriteToSnapshot(msg);
+            this.physicsObj.WriteToSnapshot(msg);
             WriteBindToSnapshot(msg);
-            msg.WriteDeltaFloat(0, deltaViewAngles.oGet(0));
-            msg.WriteDeltaFloat(0, deltaViewAngles.oGet(1));
-            msg.WriteDeltaFloat(0, deltaViewAngles.oGet(2));
-            msg.WriteShort(health);
-            msg.WriteBits(gameLocal.ServerRemapDecl(-1, DECL_ENTITYDEF, lastDamageDef), gameLocal.entityDefBits);
-            msg.WriteDir(lastDamageDir, 9);
-            msg.WriteShort(lastDamageLocation);
-            msg.WriteBits(idealWeapon, idMath.BitsForInteger(MAX_WEAPONS));
-            msg.WriteBits(inventory.weapons, MAX_WEAPONS);
-            msg.WriteBits(weapon.GetSpawnId(), 32);
-            msg.WriteBits(spectator, idMath.BitsForInteger(MAX_CLIENTS));
-            msg.WriteBits(btoi(lastHitToggle), 1);
-            msg.WriteBits(btoi(weaponGone), 1);
-            msg.WriteBits(btoi(isLagged), 1);
-            msg.WriteBits(btoi(isChatting), 1);
+            msg.WriteDeltaFloat(0, this.deltaViewAngles.oGet(0));
+            msg.WriteDeltaFloat(0, this.deltaViewAngles.oGet(1));
+            msg.WriteDeltaFloat(0, this.deltaViewAngles.oGet(2));
+            msg.WriteShort(this.health);
+            msg.WriteBits(gameLocal.ServerRemapDecl(-1, DECL_ENTITYDEF, this.lastDamageDef), gameLocal.entityDefBits);
+            msg.WriteDir(this.lastDamageDir, 9);
+            msg.WriteShort(this.lastDamageLocation);
+            msg.WriteBits(this.idealWeapon, idMath.BitsForInteger(MAX_WEAPONS));
+            msg.WriteBits(this.inventory.weapons, MAX_WEAPONS);
+            msg.WriteBits(this.weapon.GetSpawnId(), 32);
+            msg.WriteBits(this.spectator, idMath.BitsForInteger(MAX_CLIENTS));
+            msg.WriteBits(btoi(this.lastHitToggle), 1);
+            msg.WriteBits(btoi(this.weaponGone), 1);
+            msg.WriteBits(btoi(this.isLagged), 1);
+            msg.WriteBits(btoi(this.isChatting), 1);
         }
 
         @Override
@@ -6070,110 +6069,110 @@ public class Player {
             int i, oldHealth, newIdealWeapon, weaponSpawnId;
             boolean newHitToggle, stateHitch;
 
-            stateHitch = snapshotSequence - lastSnapshotSequence > 1;
-            lastSnapshotSequence = snapshotSequence;
+            stateHitch = (this.snapshotSequence - this.lastSnapshotSequence) > 1;
+            this.lastSnapshotSequence = this.snapshotSequence;
 
-            oldHealth = health;
+            oldHealth = this.health;
 
-            physicsObj.ReadFromSnapshot(msg);
+            this.physicsObj.ReadFromSnapshot(msg);
             ReadBindFromSnapshot(msg);
-            deltaViewAngles.oSet(0, msg.ReadDeltaFloat(0));
-            deltaViewAngles.oSet(1, msg.ReadDeltaFloat(0));
-            deltaViewAngles.oSet(2, msg.ReadDeltaFloat(0));
-            health = msg.ReadShort();
-            lastDamageDef = gameLocal.ClientRemapDecl(DECL_ENTITYDEF, msg.ReadBits(gameLocal.entityDefBits));
-            lastDamageDir = msg.ReadDir(9);
-            lastDamageLocation = msg.ReadShort();
+            this.deltaViewAngles.oSet(0, msg.ReadDeltaFloat(0));
+            this.deltaViewAngles.oSet(1, msg.ReadDeltaFloat(0));
+            this.deltaViewAngles.oSet(2, msg.ReadDeltaFloat(0));
+            this.health = msg.ReadShort();
+            this.lastDamageDef = gameLocal.ClientRemapDecl(DECL_ENTITYDEF, msg.ReadBits(gameLocal.entityDefBits));
+            this.lastDamageDir = msg.ReadDir(9);
+            this.lastDamageLocation = msg.ReadShort();
             newIdealWeapon = msg.ReadBits(idMath.BitsForInteger(MAX_WEAPONS));
-            inventory.weapons = msg.ReadBits(MAX_WEAPONS);
+            this.inventory.weapons = msg.ReadBits(MAX_WEAPONS);
             weaponSpawnId = msg.ReadBits(32);
-            spectator = msg.ReadBits(idMath.BitsForInteger(MAX_CLIENTS));
+            this.spectator = msg.ReadBits(idMath.BitsForInteger(MAX_CLIENTS));
             newHitToggle = msg.ReadBits(1) != 0;
-            weaponGone = msg.ReadBits(1) != 0;
-            isLagged = msg.ReadBits(1) != 0;
-            isChatting = msg.ReadBits(1) != 0;
+            this.weaponGone = msg.ReadBits(1) != 0;
+            this.isLagged = msg.ReadBits(1) != 0;
+            this.isChatting = msg.ReadBits(1) != 0;
 
             // no msg reading below this
-            if (weapon.SetSpawnId(weaponSpawnId)) {
-                if (weapon.GetEntity() != null) {
+            if (this.weapon.SetSpawnId(weaponSpawnId)) {
+                if (this.weapon.GetEntity() != null) {
                     // maintain ownership locally
-                    weapon.GetEntity().SetOwner(this);
+                    this.weapon.GetEntity().SetOwner(this);
                 }
-                currentWeapon = -1;
+                this.currentWeapon = -1;
             }
             // if not a local client assume the client has all ammo types
-            if (entityNumber != gameLocal.localClientNum) {
+            if (this.entityNumber != gameLocal.localClientNum) {
                 for (i = 0; i < AMMO_NUMTYPES; i++) {
-                    inventory.ammo[ i] = 999;
+                    this.inventory.ammo[ i] = 999;
                 }
             }
 
-            if (oldHealth > 0 && health <= 0) {
+            if ((oldHealth > 0) && (this.health <= 0)) {
                 if (stateHitch) {
                     // so we just hide and don't show a death skin
                     UpdateDeathSkin(true);
                 }
                 // die
-                AI_DEAD.operator(true);
+                this.AI_DEAD.operator(true);
                 ClearPowerUps();
                 SetAnimState(ANIMCHANNEL_LEGS, "Legs_Death", 4);
                 SetAnimState(ANIMCHANNEL_TORSO, "Torso_Death", 4);
                 SetWaitState("");
-                animator.ClearAllJoints();
-                if (entityNumber == gameLocal.localClientNum) {
-                    playerView.Fade(colorBlack, 12000);
+                this.animator.ClearAllJoints();
+                if (this.entityNumber == gameLocal.localClientNum) {
+                    this.playerView.Fade(colorBlack, 12000);
                 }
                 StartRagdoll();
-                physicsObj.SetMovementType(PM_DEAD);
+                this.physicsObj.SetMovementType(PM_DEAD);
                 if (!stateHitch) {
                     StartSound("snd_death", SND_CHANNEL_VOICE, 0, false, null);
                 }
-                if (weapon.GetEntity() != null) {
-                    weapon.GetEntity().OwnerDied();
+                if (this.weapon.GetEntity() != null) {
+                    this.weapon.GetEntity().OwnerDied();
                 }
-            } else if (oldHealth <= 0 && health > 0) {
+            } else if ((oldHealth <= 0) && (this.health > 0)) {
                 // respawn
                 Init();
                 StopRagdoll();
-                SetPhysics(physicsObj);
-                physicsObj.EnableClip();
+                SetPhysics(this.physicsObj);
+                this.physicsObj.EnableClip();
                 SetCombatContents(true);
-            } else if (health < oldHealth && health > 0) {
+            } else if ((this.health < oldHealth) && (this.health > 0)) {
                 if (stateHitch) {
-                    lastDmgTime = gameLocal.time;
+                    this.lastDmgTime = gameLocal.time;
                 } else {
                     // damage feedback
-                    final idDeclEntityDef def = (idDeclEntityDef) declManager.DeclByIndex(DECL_ENTITYDEF, lastDamageDef, false);
+                    final idDeclEntityDef def = (idDeclEntityDef) declManager.DeclByIndex(DECL_ENTITYDEF, this.lastDamageDef, false);
                     if (def != null) {
-                        playerView.DamageImpulse(lastDamageDir.oMultiply(viewAxis.Transpose()), def.dict);
-                        AI_PAIN.operator(Pain(null, null, oldHealth - health, lastDamageDir, lastDamageLocation));
-                        lastDmgTime = gameLocal.time;
+                        this.playerView.DamageImpulse(this.lastDamageDir.oMultiply(this.viewAxis.Transpose()), def.dict);
+                        this.AI_PAIN.operator(Pain(null, null, oldHealth - this.health, this.lastDamageDir, this.lastDamageLocation));
+                        this.lastDmgTime = gameLocal.time;
                     } else {
-                        common.Warning("NET: no damage def for damage feedback '%d'\n", lastDamageDef);
+                        common.Warning("NET: no damage def for damage feedback '%d'\n", this.lastDamageDef);
                     }
                 }
-            } else if (health > oldHealth && PowerUpActive(MEGAHEALTH) && !stateHitch) {
+            } else if ((this.health > oldHealth) && PowerUpActive(MEGAHEALTH) && !stateHitch) {
                 // just pulse, for any health raise
-                healthPulse = true;
+                this.healthPulse = true;
             }
 
             // If the player is alive, restore proper physics object
-            if (health > 0 && IsActiveAF()) {
+            if ((this.health > 0) && IsActiveAF()) {
                 StopRagdoll();
-                SetPhysics(physicsObj);
-                physicsObj.EnableClip();
+                SetPhysics(this.physicsObj);
+                this.physicsObj.EnableClip();
                 SetCombatContents(true);
             }
 
-            if (idealWeapon != newIdealWeapon) {
+            if (this.idealWeapon != newIdealWeapon) {
                 if (stateHitch) {
-                    weaponCatchup = true;
+                    this.weaponCatchup = true;
                 }
-                idealWeapon = newIdealWeapon;
+                this.idealWeapon = newIdealWeapon;
                 UpdateHudWeapon();
             }
 
-            if (lastHitToggle != newHitToggle) {
+            if (this.lastHitToggle != newHitToggle) {
                 SetLastHitTime(gameLocal.realClientTime);
             }
 
@@ -6185,37 +6184,37 @@ public class Player {
         public void WritePlayerStateToSnapshot(idBitMsgDelta msg) {
             int i;
 
-            msg.WriteByte(bobCycle);
-            msg.WriteLong(stepUpTime);
-            msg.WriteFloat(stepUpDelta);
-            msg.WriteShort(inventory.weapons);
-            msg.WriteByte(inventory.armor);
+            msg.WriteByte(this.bobCycle);
+            msg.WriteLong(this.stepUpTime);
+            msg.WriteFloat(this.stepUpDelta);
+            msg.WriteShort(this.inventory.weapons);
+            msg.WriteByte(this.inventory.armor);
 
             for (i = 0; i < AMMO_NUMTYPES; i++) {
-                msg.WriteBits(inventory.ammo[i], ASYNC_PLAYER_INV_AMMO_BITS);
+                msg.WriteBits(this.inventory.ammo[i], ASYNC_PLAYER_INV_AMMO_BITS);
             }
             for (i = 0; i < MAX_WEAPONS; i++) {
-                msg.WriteBits(inventory.clip[i], ASYNC_PLAYER_INV_CLIP_BITS);
+                msg.WriteBits(this.inventory.clip[i], ASYNC_PLAYER_INV_CLIP_BITS);
             }
         }
 
         public void ReadPlayerStateFromSnapshot(final idBitMsgDelta msg) {
             int i, ammo;
 
-            bobCycle = msg.ReadByte();
-            stepUpTime = msg.ReadLong();
-            stepUpDelta = msg.ReadFloat();
-            inventory.weapons = msg.ReadShort();
-            inventory.armor = msg.ReadByte();
+            this.bobCycle = msg.ReadByte();
+            this.stepUpTime = msg.ReadLong();
+            this.stepUpDelta = msg.ReadFloat();
+            this.inventory.weapons = msg.ReadShort();
+            this.inventory.armor = msg.ReadByte();
 
             for (i = 0; i < AMMO_NUMTYPES; i++) {
                 ammo = msg.ReadBits(ASYNC_PLAYER_INV_AMMO_BITS);
-                if (gameLocal.time >= inventory.ammoPredictTime) {
-                    inventory.ammo[ i] = ammo;
+                if (gameLocal.time >= this.inventory.ammoPredictTime) {
+                    this.inventory.ammo[ i] = ammo;
                 }
             }
             for (i = 0; i < MAX_WEAPONS; i++) {
-                inventory.clip[i] = msg.ReadBits(ASYNC_PLAYER_INV_CLIP_BITS);
+                this.inventory.clip[i] = msg.ReadBits(ASYNC_PLAYER_INV_CLIP_BITS);
             }
         }
 
@@ -6240,43 +6239,43 @@ public class Player {
 
         @Override
         public boolean GetPhysicsToVisualTransform(idVec3 origin, idMat3 axis) {
-            if (af.IsActive()) {
-                af.GetPhysicsToVisualTransform(origin, axis);
+            if (this.af.IsActive()) {
+                this.af.GetPhysicsToVisualTransform(origin, axis);
                 return true;
             }
 
             // smoothen the rendered origin and angles of other clients
             // smooth self origin if snapshots are telling us prediction is off
-            if (gameLocal.isClient && gameLocal.framenum >= smoothedFrame && (entityNumber != gameLocal.localClientNum || selfSmooth)) {
+            if (gameLocal.isClient && (gameLocal.framenum >= this.smoothedFrame) && ((this.entityNumber != gameLocal.localClientNum) || this.selfSmooth)) {
                 // render origin and axis
-                idMat3 renderAxis = viewAxis.oMultiply(GetPhysics().GetAxis());
-                idVec3 renderOrigin = GetPhysics().GetOrigin().oPlus(modelOffset.oMultiply(renderAxis));
+                final idMat3 renderAxis = this.viewAxis.oMultiply(GetPhysics().GetAxis());
+                final idVec3 renderOrigin = GetPhysics().GetOrigin().oPlus(this.modelOffset.oMultiply(renderAxis));
 
                 // update the smoothed origin
-                if (!smoothedOriginUpdated) {
-                    idVec2 originDiff = renderOrigin.ToVec2().oMinus(smoothedOrigin.ToVec2());
+                if (!this.smoothedOriginUpdated) {
+                    final idVec2 originDiff = renderOrigin.ToVec2().oMinus(this.smoothedOrigin.ToVec2());
                     if (originDiff.LengthSqr() < Square(100)) {
                         // smoothen by pushing back to the previous position
-                        if (selfSmooth) {
-                            assert (entityNumber == gameLocal.localClientNum);
+                        if (this.selfSmooth) {
+                            assert (this.entityNumber == gameLocal.localClientNum);
                             renderOrigin.ToVec2_oMinSet(originDiff.oMultiply(net_clientSelfSmoothing.GetFloat()));
                         } else {
                             renderOrigin.ToVec2_oMinSet(originDiff.oMultiply(gameLocal.clientSmoothing));
                         }
                     }
-                    smoothedOrigin = renderOrigin;
+                    this.smoothedOrigin = renderOrigin;
 
-                    smoothedFrame = gameLocal.framenum;
-                    smoothedOriginUpdated = true;
+                    this.smoothedFrame = gameLocal.framenum;
+                    this.smoothedOriginUpdated = true;
                 }
 
-                axis.oSet(new idAngles(0, smoothedAngles.yaw, 0).ToMat3());
-                origin.oSet(axis.Transpose().oMultiply(smoothedOrigin.oMinus(GetPhysics().GetOrigin())));
+                axis.oSet(new idAngles(0, this.smoothedAngles.yaw, 0).ToMat3());
+                origin.oSet(axis.Transpose().oMultiply(this.smoothedOrigin.oMinus(GetPhysics().GetOrigin())));
 
             } else {
 
-                axis.oSet(viewAxis);
-                origin.oSet(modelOffset);
+                axis.oSet(this.viewAxis);
+                origin.oSet(this.modelOffset);
             }
             return true;
         }
@@ -6285,14 +6284,14 @@ public class Player {
         public boolean GetPhysicsToSoundTransform(idVec3 origin, idMat3 axis) {
             idCamera camera;
 
-            if (privateCameraView != null) {
-                camera = privateCameraView;
+            if (this.privateCameraView != null) {
+                camera = this.privateCameraView;
             } else {
                 camera = gameLocal.GetCamera();
             }
 
             if (camera != null) {
-                renderView_s view = new renderView_s();
+                final renderView_s view = new renderView_s();
 
 //		memset( &view, 0, sizeof( view ) );
                 camera.GetViewParms(view);
@@ -6327,12 +6326,12 @@ public class Player {
                     return true;
                 }
                 case EVENT_SPECTATE: {
-                    boolean spectate = (msg.ReadBits(1) != 0);
+                    final boolean spectate = (msg.ReadBits(1) != 0);
                     Spectate(spectate);
                     return true;
                 }
                 case EVENT_ADD_DAMAGE_EFFECT: {
-                    if (spectating) {
+                    if (this.spectating) {
                         // if we're spectating, ignore
                         // happens if the event and the spectate change are written on the server during the same frame (fraglimit)
                         return true;
@@ -6347,34 +6346,34 @@ public class Player {
         }
 
         public boolean IsReady() {
-            return ready || forcedReady;
+            return this.ready || this.forcedReady;
         }
 
         public boolean IsRespawning() {
-            return respawning;
+            return this.respawning;
         }
 
         public boolean IsInTeleport() {
-            return (teleportEntity.GetEntity() != null);
+            return (this.teleportEntity.GetEntity() != null);
         }
 
         public idEntity GetInfluenceEntity() {
-            return influenceEntity;
+            return this.influenceEntity;
         }
 
         public idMaterial GetInfluenceMaterial() {
-            return influenceMaterial;
+            return this.influenceMaterial;
         }
 
         public float GetInfluenceRadius() {
-            return influenceRadius;
+            return this.influenceRadius;
         }
 
         // server side work for in/out of spectate. takes care of spawning it into the world as well
         public void ServerSpectate(boolean spectate) {
             assert (!gameLocal.isClient);
 
-            if (spectating != spectate) {
+            if (this.spectating != spectate) {
                 Spectate(spectate);
                 if (spectate) {
                     SetSpectateOrigin();
@@ -6382,7 +6381,7 @@ public class Player {
                     if (gameLocal.gameType == GAME_DM) {
                         // make sure the scores are reset so you can't exploit by spectating and entering the game back
                         // other game types don't matter, as you either can't join back, or it's team scores
-                        gameLocal.mpGame.ClearFrags(entityNumber);
+                        gameLocal.mpGame.ClearFrags(this.entityNumber);
                     }
                 }
             }
@@ -6393,98 +6392,98 @@ public class Player {
 
         // for very specific usage. != GetPhysics()
         public idPhysics GetPlayerPhysics() {
-            return physicsObj;
+            return this.physicsObj;
         }
 
         public void TeleportDeath(int killer) {
-            teleportKiller = killer;
+            this.teleportKiller = killer;
         }
 
         public void SetLeader(boolean lead) {
-            leader = lead;
+            this.leader = lead;
         }
 
         public boolean IsLeader() {
-            return leader;
+            return this.leader;
         }
 
         public void UpdateSkinSetup(boolean restart) {
             if (restart) {
-                team = (idStr.Icmp(GetUserInfo().GetString("ui_team"), "Blue") == 0) ? 1 : 0;
+                this.team = (idStr.Icmp(GetUserInfo().GetString("ui_team"), "Blue") == 0) ? 1 : 0;
             }
             if (gameLocal.gameType == GAME_TDM) {
-                if (team != 0) {
-                    baseSkinName.oSet("skins/characters/player/marine_mp_blue");
+                if (this.team != 0) {
+                    this.baseSkinName.oSet("skins/characters/player/marine_mp_blue");
                 } else {
-                    baseSkinName.oSet("skins/characters/player/marine_mp_red");
+                    this.baseSkinName.oSet("skins/characters/player/marine_mp_red");
                 }
-                if (!gameLocal.isClient && team != latchedTeam) {
-                    gameLocal.mpGame.SwitchToTeam(entityNumber, latchedTeam, team);
+                if (!gameLocal.isClient && (this.team != this.latchedTeam)) {
+                    gameLocal.mpGame.SwitchToTeam(this.entityNumber, this.latchedTeam, this.team);
                 }
-                latchedTeam = team;
+                this.latchedTeam = this.team;
             } else {
-                baseSkinName.oSet(GetUserInfo().GetString("ui_skin"));
+                this.baseSkinName.oSet(GetUserInfo().GetString("ui_skin"));
             }
-            if (0 == baseSkinName.Length()) {
-                baseSkinName.oSet("skins/characters/player/marine_mp");
+            if (0 == this.baseSkinName.Length()) {
+                this.baseSkinName.oSet("skins/characters/player/marine_mp");
             }
-            skin.oSet(declManager.FindSkin(baseSkinName, false));
-            assert (skin != null);
+            this.skin.oSet(declManager.FindSkin(this.baseSkinName, false));
+            assert (this.skin != null);
             // match the skin to a color band for scoreboard
-            if (baseSkinName.Find("red") != -1) {
-                colorBarIndex = 1;
-            } else if (baseSkinName.Find("green") != -1) {
-                colorBarIndex = 2;
-            } else if (baseSkinName.Find("blue") != -1) {
-                colorBarIndex = 3;
-            } else if (baseSkinName.Find("yellow") != -1) {
-                colorBarIndex = 4;
+            if (this.baseSkinName.Find("red") != -1) {
+                this.colorBarIndex = 1;
+            } else if (this.baseSkinName.Find("green") != -1) {
+                this.colorBarIndex = 2;
+            } else if (this.baseSkinName.Find("blue") != -1) {
+                this.colorBarIndex = 3;
+            } else if (this.baseSkinName.Find("yellow") != -1) {
+                this.colorBarIndex = 4;
             } else {
-                colorBarIndex = 0;
+                this.colorBarIndex = 0;
             }
-            colorBar = colorBarTable[ colorBarIndex];
+            this.colorBar = colorBarTable[ this.colorBarIndex];
             if (PowerUpActive(BERSERK)) {
-                powerUpSkin.oSet(declManager.FindSkin(baseSkinName + "_berserk"));
+                this.powerUpSkin.oSet(declManager.FindSkin(this.baseSkinName + "_berserk"));
             }
         }
 
         @Override
         public boolean OnLadder() {
-            return physicsObj.OnLadder();
+            return this.physicsObj.OnLadder();
         }
 
         public void UpdatePlayerIcons() {
-            int time = networkSystem.ServerGetClientTimeSinceLastPacket(entityNumber);
+            final int time = networkSystem.ServerGetClientTimeSinceLastPacket(this.entityNumber);
             if (time > cvarSystem.GetCVarInteger("net_clientMaxPrediction")) {
-                isLagged = true;
+                this.isLagged = true;
             } else {
-                isLagged = false;
+                this.isLagged = false;
             }
         }
 
         public void DrawPlayerIcons() {
             if (!NeedsIcon()) {
-                playerIcon.FreeIcon();
+                this.playerIcon.FreeIcon();
                 return;
             }
-            playerIcon.Draw(this, headJoint);
+            this.playerIcon.Draw(this, this.headJoint);
         }
 
         public void HidePlayerIcons() {
-            playerIcon.FreeIcon();
+            this.playerIcon.FreeIcon();
         }
 
         public boolean NeedsIcon() {
             // local clients don't render their own icons... they're only info for other clients
-            return entityNumber != gameLocal.localClientNum && (isLagged || isChatting);
+            return (this.entityNumber != gameLocal.localClientNum) && (this.isLagged || this.isChatting);
         }
 
         public boolean SelfSmooth() {
-            return selfSmooth;
+            return this.selfSmooth;
         }
 
         public void SetSelfSmooth(boolean b) {
-            selfSmooth = b;
+            this.selfSmooth = b;
         }
 
         private void LookAtKiller(idEntity inflictor, idEntity attacker) {
@@ -6495,27 +6494,27 @@ public class Player {
             } else if (!this.equals(inflictor)) {
                 dir = inflictor.GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
             } else {
-                dir = viewAxis.oGet(0);
+                dir = this.viewAxis.oGet(0);
             }
 
-            idAngles ang = new idAngles(0, dir.ToYaw(), 0);
+            final idAngles ang = new idAngles(0, dir.ToYaw(), 0);
             SetViewAngles(ang);
         }
 
         private void StopFiring() {
-            AI_ATTACK_HELD.operator(false);
-            AI_WEAPON_FIRED.operator(false);
-            AI_RELOAD.operator(false);
-            if (weapon.GetEntity() != null) {
-                weapon.GetEntity().EndAttack();
+            this.AI_ATTACK_HELD.operator(false);
+            this.AI_WEAPON_FIRED.operator(false);
+            this.AI_RELOAD.operator(false);
+            if (this.weapon.GetEntity() != null) {
+                this.weapon.GetEntity().EndAttack();
             }
         }
 
         private void FireWeapon() {
-            idMat3 axis = new idMat3();
-            idVec3 muzzle = new idVec3();
+            final idMat3 axis = new idMat3();
+            final idVec3 muzzle = new idVec3();
 
-            if (privateCameraView != null) {
+            if (this.privateCameraView != null) {
                 return;
             }
 
@@ -6526,148 +6525,148 @@ public class Player {
                 }
             }
 
-            if (!hiddenWeapon && weapon.GetEntity().IsReady()) {
-                if (weapon.GetEntity().AmmoInClip() != 0 || weapon.GetEntity().AmmoAvailable() != 0) {
-                    AI_ATTACK_HELD.operator(true);
-                    weapon.GetEntity().BeginAttack();
-                    if ((weapon_soulcube >= 0) && (currentWeapon == weapon_soulcube)) {
-                        if (hud != null) {
-                            hud.HandleNamedEvent("soulCubeNotReady");
+            if (!this.hiddenWeapon && this.weapon.GetEntity().IsReady()) {
+                if ((this.weapon.GetEntity().AmmoInClip() != 0) || (this.weapon.GetEntity().AmmoAvailable() != 0)) {
+                    this.AI_ATTACK_HELD.operator(true);
+                    this.weapon.GetEntity().BeginAttack();
+                    if ((this.weapon_soulcube >= 0) && (this.currentWeapon == this.weapon_soulcube)) {
+                        if (this.hud != null) {
+                            this.hud.HandleNamedEvent("soulCubeNotReady");
                         }
-                        SelectWeapon(previousWeapon, false);
+                        SelectWeapon(this.previousWeapon, false);
                     }
                 } else {
                     NextBestWeapon();
                 }
             }
 
-            if (hud != null) {
-                if (tipUp) {
+            if (this.hud != null) {
+                if (this.tipUp) {
                     HideTip();
                 }
                 // may want to track with with a bool as well
                 // keep from looking up named events so often
-                if (objectiveUp) {
+                if (this.objectiveUp) {
                     HideObjective();
                 }
             }
         }
 
         private void Weapon_Combat() {
-            if (influenceActive != 0 || !weaponEnabled || gameLocal.inCinematic || privateCameraView != null) {
+            if ((this.influenceActive != 0) || !this.weaponEnabled || gameLocal.inCinematic || (this.privateCameraView != null)) {
                 return;
             }
 
-            weapon.GetEntity().RaiseWeapon();
-            if (weapon.GetEntity().IsReloading()) {
-                if (!AI_RELOAD.operator()) {
-                    AI_RELOAD.operator(true);
+            this.weapon.GetEntity().RaiseWeapon();
+            if (this.weapon.GetEntity().IsReloading()) {
+                if (!this.AI_RELOAD.operator()) {
+                    this.AI_RELOAD.operator(true);
                     SetState("ReloadWeapon");
                     UpdateScript();
                 }
             } else {
-                AI_RELOAD.operator(false);
+                this.AI_RELOAD.operator(false);
             }
 
-            if (idealWeapon == weapon_soulcube && soulCubeProjectile.GetEntity() != null) {
-                idealWeapon = currentWeapon;
+            if ((this.idealWeapon == this.weapon_soulcube) && (this.soulCubeProjectile.GetEntity() != null)) {
+                this.idealWeapon = this.currentWeapon;
             }
 
-            if (idealWeapon != currentWeapon) {
-                if (weaponCatchup) {
+            if (this.idealWeapon != this.currentWeapon) {
+                if (this.weaponCatchup) {
                     assert (gameLocal.isClient);
 
-                    currentWeapon = idealWeapon;
-                    weaponGone = false;
-                    animPrefix.oSet(spawnArgs.GetString(va("def_weapon%d", currentWeapon)));
-                    weapon.GetEntity().GetWeaponDef(animPrefix.toString(), inventory.clip[ currentWeapon]);
-                    animPrefix.Strip("weapon_");
+                    this.currentWeapon = this.idealWeapon;
+                    this.weaponGone = false;
+                    this.animPrefix.oSet(this.spawnArgs.GetString(va("def_weapon%d", this.currentWeapon)));
+                    this.weapon.GetEntity().GetWeaponDef(this.animPrefix.toString(), this.inventory.clip[ this.currentWeapon]);
+                    this.animPrefix.Strip("weapon_");
 
-                    weapon.GetEntity().NetCatchup();
+                    this.weapon.GetEntity().NetCatchup();
                     final function_t newstate = GetScriptFunction("NetCatchup");
                     if (newstate != null) {
                         SetState(newstate);
                         UpdateScript();
                     }
-                    weaponCatchup = false;
+                    this.weaponCatchup = false;
                 } else {
-                    if (weapon.GetEntity().IsReady()) {
-                        weapon.GetEntity().PutAway();
+                    if (this.weapon.GetEntity().IsReady()) {
+                        this.weapon.GetEntity().PutAway();
                     }
 
-                    if (weapon.GetEntity().IsHolstered()) {
-                        assert (idealWeapon >= 0);
-                        assert (idealWeapon < MAX_WEAPONS);
+                    if (this.weapon.GetEntity().IsHolstered()) {
+                        assert (this.idealWeapon >= 0);
+                        assert (this.idealWeapon < MAX_WEAPONS);
 
-                        if (currentWeapon != weapon_pda && !spawnArgs.GetBool(va("weapon%d_toggle", currentWeapon))) {
-                            previousWeapon = currentWeapon;
+                        if ((this.currentWeapon != this.weapon_pda) && !this.spawnArgs.GetBool(va("weapon%d_toggle", this.currentWeapon))) {
+                            this.previousWeapon = this.currentWeapon;
                         }
-                        currentWeapon = idealWeapon;
-                        weaponGone = false;
-                        animPrefix.oSet(spawnArgs.GetString(va("def_weapon%d", currentWeapon)));
-                        weapon.GetEntity().GetWeaponDef(animPrefix.toString(), inventory.clip[ currentWeapon]);
-                        animPrefix.Strip("weapon_");
+                        this.currentWeapon = this.idealWeapon;
+                        this.weaponGone = false;
+                        this.animPrefix.oSet(this.spawnArgs.GetString(va("def_weapon%d", this.currentWeapon)));
+                        this.weapon.GetEntity().GetWeaponDef(this.animPrefix.toString(), this.inventory.clip[ this.currentWeapon]);
+                        this.animPrefix.Strip("weapon_");
 
-                        weapon.GetEntity().Raise();
+                        this.weapon.GetEntity().Raise();
                     }
                 }
             } else {
-                weaponGone = false;	// if you drop and re-get weap, you may miss the = false above 
-                if (weapon.GetEntity().IsHolstered()) {
-                    if (NOT(weapon.GetEntity().AmmoAvailable())) {
+                this.weaponGone = false;	// if you drop and re-get weap, you may miss the = false above 
+                if (this.weapon.GetEntity().IsHolstered()) {
+                    if (NOT(this.weapon.GetEntity().AmmoAvailable())) {
                         // weapons can switch automatically if they have no more ammo
                         NextBestWeapon();
                     } else {
-                        weapon.GetEntity().Raise();
-                        state = GetScriptFunction("RaiseWeapon");
-                        if (state != null) {
-                            SetState(state);
+                        this.weapon.GetEntity().Raise();
+                        this.state = GetScriptFunction("RaiseWeapon");
+                        if (this.state != null) {
+                            SetState(this.state);
                         }
                     }
                 }
             }
 
             // check for attack
-            AI_WEAPON_FIRED.operator(false);
-            if (0 == influenceActive) {
-                if (((usercmd.buttons & BUTTON_ATTACK) != 0) && !weaponGone) {
+            this.AI_WEAPON_FIRED.operator(false);
+            if (0 == this.influenceActive) {
+                if (((this.usercmd.buttons & BUTTON_ATTACK) != 0) && !this.weaponGone) {
                     FireWeapon();
-                } else if ((oldButtons & BUTTON_ATTACK) != 0) {
-                    AI_ATTACK_HELD.operator(false);
-                    weapon.GetEntity().EndAttack();
+                } else if ((this.oldButtons & BUTTON_ATTACK) != 0) {
+                    this.AI_ATTACK_HELD.operator(false);
+                    this.weapon.GetEntity().EndAttack();
                 }
             }
 
             // update our ammo clip in our inventory
-            if ((currentWeapon >= 0) && (currentWeapon < MAX_WEAPONS)) {
-                inventory.clip[ currentWeapon] = weapon.GetEntity().AmmoInClip();
-                if (hud != null && (currentWeapon == idealWeapon)) {
-                    UpdateHudAmmo(hud);
+            if ((this.currentWeapon >= 0) && (this.currentWeapon < MAX_WEAPONS)) {
+                this.inventory.clip[ this.currentWeapon] = this.weapon.GetEntity().AmmoInClip();
+                if ((this.hud != null) && (this.currentWeapon == this.idealWeapon)) {
+                    UpdateHudAmmo(this.hud);
                 }
             }
         }
 
         private void Weapon_NPC() {
-            if (idealWeapon != currentWeapon) {
+            if (this.idealWeapon != this.currentWeapon) {
                 Weapon_Combat();
             }
             StopFiring();
-            weapon.GetEntity().LowerWeapon();
+            this.weapon.GetEntity().LowerWeapon();
 
-            if (((usercmd.buttons & BUTTON_ATTACK) != 0) && (0 == (oldButtons & BUTTON_ATTACK))) {
-                buttonMask |= BUTTON_ATTACK;
-                focusCharacter.TalkTo(this);
+            if (((this.usercmd.buttons & BUTTON_ATTACK) != 0) && (0 == (this.oldButtons & BUTTON_ATTACK))) {
+                this.buttonMask |= BUTTON_ATTACK;
+                this.focusCharacter.TalkTo(this);
             }
         }
 
         private void Weapon_GUI() {
 
-            if (!objectiveSystemOpen) {
-                if (idealWeapon != currentWeapon) {
+            if (!this.objectiveSystemOpen) {
+                if (this.idealWeapon != this.currentWeapon) {
                     Weapon_Combat();
                 }
                 StopFiring();
-                weapon.GetEntity().LowerWeapon();
+                this.weapon.GetEntity().LowerWeapon();
             }
 
             // disable click prediction for the GUIs. handy to check the state sync does the right thing
@@ -6675,25 +6674,25 @@ public class Player {
                 return;
             }
 
-            if (((oldButtons ^ usercmd.buttons) & BUTTON_ATTACK) != 0) {
+            if (((this.oldButtons ^ this.usercmd.buttons) & BUTTON_ATTACK) != 0) {
                 sysEvent_s ev;
                 String command = null;
-                boolean[] updateVisuals = {false};
+                final boolean[] updateVisuals = {false};
 
-                idUserInterface ui = ActiveGui();
+                final idUserInterface ui = ActiveGui();
                 if (ui != null) {
-                    ev = sys.GenerateMouseButtonEvent(1, (usercmd.buttons & BUTTON_ATTACK) != 0);
+                    ev = sys.GenerateMouseButtonEvent(1, (this.usercmd.buttons & BUTTON_ATTACK) != 0);
                     command = ui.HandleEvent(ev, gameLocal.time, updateVisuals);
-                    if (updateVisuals[0] && focusGUIent != null && ui.equals(focusUI)) {
-                        focusGUIent.UpdateVisuals();
+                    if (updateVisuals[0] && (this.focusGUIent != null) && ui.equals(this.focusUI)) {
+                        this.focusGUIent.UpdateVisuals();
                     }
                 }
                 if (gameLocal.isClient) {
                     // we predict enough, but don't want to execute commands
                     return;
                 }
-                if (focusGUIent != null) {
-                    HandleGuiCommands(focusGUIent, command);
+                if (this.focusGUIent != null) {
+                    HandleGuiCommands(this.focusGUIent, command);
                 } else {
                     HandleGuiCommands(this, command);
                 }
@@ -6701,70 +6700,70 @@ public class Player {
         }
 
         private void UpdateWeapon() {
-            if (health <= 0) {
+            if (this.health <= 0) {
                 return;
             }
 
-            assert (!spectating);
+            assert (!this.spectating);
 
             if (gameLocal.isClient) {
                 // clients need to wait till the weapon and it's world model entity
                 // are present and synchronized ( weapon.worldModel idEntityPtr to idAnimatedEntity )
-                if (!weapon.GetEntity().IsWorldModelReady()) {
+                if (!this.weapon.GetEntity().IsWorldModelReady()) {
                     return;
                 }
             }
 
             // always make sure the weapon is correctly setup before accessing it
-            if (!weapon.GetEntity().IsLinked()) {
-                if (idealWeapon != -1) {
-                    animPrefix.oSet(spawnArgs.GetString(va("def_weapon%d", idealWeapon)));
-                    weapon.GetEntity().GetWeaponDef(animPrefix.toString(), inventory.clip[ idealWeapon]);
-                    assert (weapon.GetEntity().IsLinked());
+            if (!this.weapon.GetEntity().IsLinked()) {
+                if (this.idealWeapon != -1) {
+                    this.animPrefix.oSet(this.spawnArgs.GetString(va("def_weapon%d", this.idealWeapon)));
+                    this.weapon.GetEntity().GetWeaponDef(this.animPrefix.toString(), this.inventory.clip[ this.idealWeapon]);
+                    assert (this.weapon.GetEntity().IsLinked());
                 } else {
                     return;
                 }
             }
 
-            if (hiddenWeapon && tipUp && (usercmd.buttons & BUTTON_ATTACK) != 0) {
+            if (this.hiddenWeapon && this.tipUp && ((this.usercmd.buttons & BUTTON_ATTACK) != 0)) {
                 HideTip();
             }
 
             if (g_dragEntity.GetBool()) {
                 StopFiring();
-                weapon.GetEntity().LowerWeapon();
-                dragEntity.Update(this);
+                this.weapon.GetEntity().LowerWeapon();
+                this.dragEntity.Update(this);
             } else if (ActiveGui() != null) {
                 // gui handling overrides weapon use
                 Weapon_GUI();
-            } else if (focusCharacter != null && (focusCharacter.health > 0)) {
+            } else if ((this.focusCharacter != null) && (this.focusCharacter.health > 0)) {
                 Weapon_NPC();
             } else {
                 Weapon_Combat();
             }
 
-            if (hiddenWeapon) {
-                weapon.GetEntity().LowerWeapon();
+            if (this.hiddenWeapon) {
+                this.weapon.GetEntity().LowerWeapon();
             }
 
             // update weapon state, particles, dlights, etc
-            weapon.GetEntity().PresentWeapon(showWeaponViewModel);
+            this.weapon.GetEntity().PresentWeapon(this.showWeaponViewModel);
         }
 
         private void UpdateSpectating() {
-            assert (spectating);
+            assert (this.spectating);
             assert (!gameLocal.isClient);
             assert (IsHidden());
             idPlayer player;
             if (!gameLocal.isMultiplayer) {
                 return;
             }
-            player = gameLocal.GetClientByNum(spectator);
-            if (null == player || (player.spectating && player != this)) {//TODO:equals instead of != or ==
+            player = gameLocal.GetClientByNum(this.spectator);
+            if ((null == player) || (player.spectating && (player != this))) {//TODO:equals instead of != or ==
                 SpectateFreeFly(true);
-            } else if (usercmd.upmove > 0) {
+            } else if (this.usercmd.upmove > 0) {
                 SpectateFreeFly(false);
-            } else if ((usercmd.buttons & BUTTON_ATTACK) != 0) {
+            } else if ((this.usercmd.buttons & BUTTON_ATTACK) != 0) {
                 SpectateCycle();
             }
         }
@@ -6772,13 +6771,13 @@ public class Player {
         private void SpectateFreeFly(boolean force) {	// ignore the timeout to force when followed spec is no longer valid
             idPlayer player;
             idVec3 newOrig;
-            idVec3 spawn_origin = new idVec3();
-            idAngles spawn_angles = new idAngles();
+            final idVec3 spawn_origin = new idVec3();
+            final idAngles spawn_angles = new idAngles();
 
-            player = gameLocal.GetClientByNum(spectator);
-            if (force || gameLocal.time > lastSpectateChange) {
-                spectator = entityNumber;
-                if (player != null && player != this && !player.spectating && !player.IsInTeleport()) {
+            player = gameLocal.GetClientByNum(this.spectator);
+            if (force || (gameLocal.time > this.lastSpectateChange)) {
+                this.spectator = this.entityNumber;
+                if ((player != null) && (player != this) && !player.spectating && !player.IsInTeleport()) {
                     newOrig = player.GetPhysics().GetOrigin();
                     if (player.physicsObj.IsCrouching()) {
                         newOrig.oPluSet(2, pm_crouchviewheight.GetFloat());
@@ -6786,15 +6785,15 @@ public class Player {
                         newOrig.oPluSet(2, pm_normalviewheight.GetFloat());
                     }
                     newOrig.oPluSet(2, SPECTATE_RAISE);
-                    idBounds b = new idBounds(getVec3_origin()).Expand(pm_spectatebbox.GetFloat() * 0.5f);
-                    idVec3 start = player.GetPhysics().GetOrigin();
+                    final idBounds b = new idBounds(getVec3_origin()).Expand(pm_spectatebbox.GetFloat() * 0.5f);
+                    final idVec3 start = player.GetPhysics().GetOrigin();
                     start.oPluSet(2, pm_spectatebbox.GetFloat() * 0.5f);
-                    trace_s[] t = {null};
+                    final trace_s[] t = {null};
                     // assuming spectate bbox is inside stand or crouch box
                     gameLocal.clip.TraceBounds(t, start, newOrig, b, MASK_PLAYERSOLID, player);
                     newOrig.Lerp(start, newOrig, t[0].fraction);
                     SetOrigin(newOrig);
-                    idAngles angle = player.viewAngles;
+                    final idAngles angle = player.viewAngles;
                     angle.oSet(2, 0);
                     SetViewAngles(angle);
                 } else {
@@ -6804,24 +6803,24 @@ public class Player {
                     SetOrigin(spawn_origin);
                     SetViewAngles(spawn_angles);
                 }
-                lastSpectateChange = gameLocal.time + 500;
+                this.lastSpectateChange = gameLocal.time + 500;
             }
         }
 
         private void SpectateCycle() {
             idPlayer player;
 
-            if (gameLocal.time > lastSpectateChange) {
-                int latchedSpectator = spectator;
-                spectator = gameLocal.GetNextClientNum(spectator);
-                player = gameLocal.GetClientByNum(spectator);
+            if (gameLocal.time > this.lastSpectateChange) {
+                final int latchedSpectator = this.spectator;
+                this.spectator = gameLocal.GetNextClientNum(this.spectator);
+                player = gameLocal.GetClientByNum(this.spectator);
                 assert (player != null); // never call here when the current spectator is wrong
                 // ignore other spectators
-                while (latchedSpectator != spectator && player.spectating) {
-                    spectator = gameLocal.GetNextClientNum(spectator);
-                    player = gameLocal.GetClientByNum(spectator);
+                while ((latchedSpectator != this.spectator) && player.spectating) {
+                    this.spectator = gameLocal.GetNextClientNum(this.spectator);
+                    player = gameLocal.GetClientByNum(this.spectator);
                 }
-                lastSpectateChange = gameLocal.time + 500;
+                this.lastSpectateChange = gameLocal.time + 500;
             }
         }
 
@@ -6841,21 +6840,21 @@ public class Player {
                 return a;
             }
 
-            idAngles current = loggedViewAngles[ gameLocal.framenum & (NUM_LOGGED_VIEW_ANGLES - 1)];
+            final idAngles current = this.loggedViewAngles[ gameLocal.framenum & (NUM_LOGGED_VIEW_ANGLES - 1)];
 
             idAngles av;//, base;
-            int[] weaponAngleOffsetAverages = {0};
-            float[] weaponAngleOffsetScale = {0}, weaponAngleOffsetMax = {0};
+            final int[] weaponAngleOffsetAverages = {0};
+            final float[] weaponAngleOffsetScale = {0}, weaponAngleOffsetMax = {0};
 
-            weapon.GetEntity().GetWeaponAngleOffsets(weaponAngleOffsetAverages, weaponAngleOffsetScale, weaponAngleOffsetMax);
+            this.weapon.GetEntity().GetWeaponAngleOffsets(weaponAngleOffsetAverages, weaponAngleOffsetScale, weaponAngleOffsetMax);
 
             av = current;
 
             // calcualte this so the wrap arounds work properly
             for (int j = 1; j < weaponAngleOffsetAverages[0]; j++) {
-                idAngles a2 = loggedViewAngles[ (gameLocal.framenum - j) & (NUM_LOGGED_VIEW_ANGLES - 1)];
+                final idAngles a2 = this.loggedViewAngles[ (gameLocal.framenum - j) & (NUM_LOGGED_VIEW_ANGLES - 1)];
 
-                idAngles delta = a2.oMinus(current);
+                final idAngles delta = a2.oMinus(current);
 
                 if (delta.oGet(1) > 180) {
                     delta.oMinSet(1, 360);
@@ -6888,23 +6887,23 @@ public class Player {
          ==============
          */
         private idVec3 GunAcceleratingOffset() {
-            idVec3 ofs = new idVec3();
+            final idVec3 ofs = new idVec3();
 
-            float[] weaponOffsetTime = {0}, weaponOffsetScale = {0};
+            final float[] weaponOffsetTime = {0}, weaponOffsetScale = {0};
 
             ofs.Zero();
 
-            weapon.GetEntity().GetWeaponTimeOffsets(weaponOffsetTime, weaponOffsetScale);
+            this.weapon.GetEntity().GetWeaponTimeOffsets(weaponOffsetTime, weaponOffsetScale);
 
-            int stop = currentLoggedAccel - NUM_LOGGED_ACCELS;
+            int stop = this.currentLoggedAccel - NUM_LOGGED_ACCELS;
             if (stop < 0) {
                 stop = 0;
             }
-            for (int i = currentLoggedAccel - 1; i > stop; i--) {
-                loggedAccel_t acc = loggedAccel[i & (NUM_LOGGED_ACCELS - 1)];
+            for (int i = this.currentLoggedAccel - 1; i > stop; i--) {
+                final loggedAccel_t acc = this.loggedAccel[i & (NUM_LOGGED_ACCELS - 1)];
 
                 float f;
-                float t = gameLocal.time - acc.time;
+                final float t = gameLocal.time - acc.time;
                 if (t >= weaponOffsetTime[0]) {
                     break;	// remainder are too old to care about
                 }
@@ -6929,7 +6928,8 @@ public class Player {
          =================
          */
         private void CrashLand(final idVec3 oldOrigin, final idVec3 oldVelocity) {
-            idVec3 origin, velocity;
+            idVec3 origin;
+			final idVec3 velocity;
             idVec3 gravityVector, gravityNormal;
             float delta;
             float hardDelta, fatalDelta;
@@ -6940,22 +6940,22 @@ public class Player {
             waterLevel_t waterLevel;
             boolean noDamage;
 
-            AI_SOFTLANDING.operator(false);
-            AI_HARDLANDING.operator(false);
+            this.AI_SOFTLANDING.operator(false);
+            this.AI_HARDLANDING.operator(false);
 
             // if the player is not on the ground
-            if (!physicsObj.HasGroundContacts()) {
+            if (!this.physicsObj.HasGroundContacts()) {
                 return;
             }
 
-            gravityNormal = physicsObj.GetGravityNormal();
+            gravityNormal = this.physicsObj.GetGravityNormal();
 
             // if the player wasn't going down
             if ((oldVelocity.oMultiply(gravityNormal.oNegative())) >= 0) {
                 return;
             }
 
-            waterLevel = physicsObj.GetWaterLevel();
+            waterLevel = this.physicsObj.GetWaterLevel();
 
             // never take falling damage if completely underwater
             if (waterLevel == WATERLEVEL_HEAD) {
@@ -6964,8 +6964,8 @@ public class Player {
 
             // no falling damage if touching a nodamage surface
             noDamage = false;
-            for (int i = 0; i < physicsObj.GetNumContacts(); i++) {
-                final contactInfo_t contact = physicsObj.GetContact(i);
+            for (int i = 0; i < this.physicsObj.GetNumContacts(); i++) {
+                final contactInfo_t contact = this.physicsObj.GetContact(i);
                 if ((contact.material.GetSurfaceFlags() & SURF_NODAMAGE) != 0) {
                     noDamage = true;
                     StartSound("snd_land_hard", SND_CHANNEL_ANY, 0, false, null);
@@ -6974,7 +6974,7 @@ public class Player {
             }
 
             origin = GetPhysics().GetOrigin();
-            gravityVector = physicsObj.GetGravity();
+            gravityVector = this.physicsObj.GetGravity();
 
             // calculate the exact velocity on landing
             dist = (origin.oMinus(oldOrigin)).oMultiply(gravityNormal.oNegative());
@@ -6985,13 +6985,13 @@ public class Player {
             b = vel;
             c = -dist;
 
-            den = b * b - 4.0f * a * c;
+            den = (b * b) - (4.0f * a * c);
             if (den < 0) {
                 return;
             }
             t = (-b - idMath.Sqrt(den)) / (2.0f * a);
 
-            delta = vel + t * acc;
+            delta = vel + (t * acc);
             delta = delta * delta * 0.0001f;
 
             // reduce falling damage if there is standing water
@@ -7016,33 +7016,33 @@ public class Player {
             }
 
             if (delta > fatalDelta) {
-                AI_HARDLANDING.operator(true);
-                landChange = -32;
-                landTime = gameLocal.time;
+                this.AI_HARDLANDING.operator(true);
+                this.landChange = -32;
+                this.landTime = gameLocal.time;
                 if (!noDamage) {
-                    pain_debounce_time = gameLocal.time + pain_delay + 1;  // ignore pain since we'll play our landing anim
+                    this.pain_debounce_time = gameLocal.time + this.pain_delay + 1;  // ignore pain since we'll play our landing anim
                     Damage(null, null, new idVec3(0, 0, -1), "damage_fatalfall", 1.0f, 0);
                 }
             } else if (delta > hardDelta) {
-                AI_HARDLANDING.operator(true);
-                landChange = -24;
-                landTime = gameLocal.time;
+                this.AI_HARDLANDING.operator(true);
+                this.landChange = -24;
+                this.landTime = gameLocal.time;
                 if (!noDamage) {
-                    pain_debounce_time = gameLocal.time + pain_delay + 1;  // ignore pain since we'll play our landing anim
+                    this.pain_debounce_time = gameLocal.time + this.pain_delay + 1;  // ignore pain since we'll play our landing anim
                     Damage(null, null, new idVec3(0, 0, -1), "damage_hardfall", 1.0f, 0);
                 }
             } else if (delta > 30) {
-                AI_HARDLANDING.operator(true);
-                landChange = -16;
-                landTime = gameLocal.time;
+                this.AI_HARDLANDING.operator(true);
+                this.landChange = -16;
+                this.landTime = gameLocal.time;
                 if (!noDamage) {
-                    pain_debounce_time = gameLocal.time + pain_delay + 1;  // ignore pain since we'll play our landing anim
+                    this.pain_debounce_time = gameLocal.time + this.pain_delay + 1;  // ignore pain since we'll play our landing anim
                     Damage(null, null, new idVec3(0, 0, -1), "damage_softfall", 1.0f, 0);
                 }
             } else if (delta > 7) {
-                AI_SOFTLANDING.operator(true);
-                landChange = -8;
-                landTime = gameLocal.time;
+                this.AI_SOFTLANDING.operator(true);
+                this.landChange = -8;
+                this.landTime = gameLocal.time;
             } else if (delta > 3) {
                 // just walk on
             }
@@ -7062,208 +7062,208 @@ public class Player {
             // calculate speed and cycle to be used for
             // all cyclic walking effects
             //
-            velocity = physicsObj.GetLinearVelocity().oMinus(pushVelocity);
+            velocity = this.physicsObj.GetLinearVelocity().oMinus(pushVelocity);
 
-            gravityDir = physicsObj.GetGravityNormal();
+            gravityDir = this.physicsObj.GetGravityNormal();
             vel = velocity.oMinus(gravityDir.oMultiply(velocity.oMultiply(gravityDir)));
-            xyspeed = vel.LengthFast();
+            this.xyspeed = vel.LengthFast();
 
             // do not evaluate the bob for other clients
             // when doing a spectate follow, don't do any weapon bobbing
-            if (gameLocal.isClient && entityNumber != gameLocal.localClientNum) {
-                viewBobAngles.Zero();
-                viewBob.Zero();
+            if (gameLocal.isClient && (this.entityNumber != gameLocal.localClientNum)) {
+                this.viewBobAngles.Zero();
+                this.viewBob.Zero();
                 return;
             }
 
-            if (!physicsObj.HasGroundContacts() || influenceActive == INFLUENCE_LEVEL2 || (gameLocal.isMultiplayer && spectating)) {
+            if (!this.physicsObj.HasGroundContacts() || (this.influenceActive == INFLUENCE_LEVEL2) || (gameLocal.isMultiplayer && this.spectating)) {
                 // airborne
-                bobCycle = 0;
-                bobFoot = 0;
-                bobfracsin = 0;
-            } else if ((0 == usercmd.forwardmove && 0 == usercmd.rightmove) || (xyspeed <= MIN_BOB_SPEED)) {
+                this.bobCycle = 0;
+                this.bobFoot = 0;
+                this.bobfracsin = 0;
+            } else if (((0 == this.usercmd.forwardmove) && (0 == this.usercmd.rightmove)) || (this.xyspeed <= MIN_BOB_SPEED)) {
                 // start at beginning of cycle again
-                bobCycle = 0;
-                bobFoot = 0;
-                bobfracsin = 0;
+                this.bobCycle = 0;
+                this.bobFoot = 0;
+                this.bobfracsin = 0;
             } else {
-                if (physicsObj.IsCrouching()) {
+                if (this.physicsObj.IsCrouching()) {
                     bobmove = pm_crouchbob.GetFloat();
                     // ducked characters never play footsteps
                 } else {
                     // vary the bobbing based on the speed of the player
-                    bobmove = pm_walkbob.GetFloat() * (1.0f - bobFrac) + pm_runbob.GetFloat() * bobFrac;
+                    bobmove = (pm_walkbob.GetFloat() * (1.0f - this.bobFrac)) + (pm_runbob.GetFloat() * this.bobFrac);
                 }
 
                 // check for footstep / splash sounds
-                old = bobCycle;
-                bobCycle = (int) (old + bobmove * gameLocal.msec) & 255;
-                bobFoot = (bobCycle & 128) >> 7;
-                bobfracsin = idMath.Fabs((float) Math.sin((bobCycle & 127) / 127.0 * idMath.PI));
+                old = this.bobCycle;
+                this.bobCycle = (int) (old + (bobmove * gameLocal.msec)) & 255;
+                this.bobFoot = (this.bobCycle & 128) >> 7;
+                this.bobfracsin = idMath.Fabs((float) Math.sin(((this.bobCycle & 127) / 127.0) * idMath.PI));
             }
 
             // calculate angles for view bobbing
-            viewBobAngles.Zero();
+            this.viewBobAngles.Zero();
 
-            viewaxis = viewAngles.ToMat3().oMultiply(physicsObj.GetGravityAxis());
+            viewaxis = this.viewAngles.ToMat3().oMultiply(this.physicsObj.GetGravityAxis());
 
             // add angles based on velocity
             delta = velocity.oMultiply(viewaxis.oGet(0));
-            viewBobAngles.pitch += delta * pm_runpitch.GetFloat();
+            this.viewBobAngles.pitch += delta * pm_runpitch.GetFloat();
 
             delta = velocity.oMultiply(viewaxis.oGet(1));
-            viewBobAngles.roll -= delta * pm_runroll.GetFloat();
+            this.viewBobAngles.roll -= delta * pm_runroll.GetFloat();
 
             // add angles based on bob
             // make sure the bob is visible even at low speeds
-            speed = xyspeed > 200 ? xyspeed : 200;
+            speed = this.xyspeed > 200 ? this.xyspeed : 200;
 
-            delta = bobfracsin * pm_bobpitch.GetFloat() * speed;
-            if (physicsObj.IsCrouching()) {
+            delta = this.bobfracsin * pm_bobpitch.GetFloat() * speed;
+            if (this.physicsObj.IsCrouching()) {
                 delta *= 3;		// crouching
             }
-            viewBobAngles.pitch += delta;
-            delta = bobfracsin * pm_bobroll.GetFloat() * speed;
-            if (physicsObj.IsCrouching()) {
+            this.viewBobAngles.pitch += delta;
+            delta = this.bobfracsin * pm_bobroll.GetFloat() * speed;
+            if (this.physicsObj.IsCrouching()) {
                 delta *= 3;		// crouching accentuates roll
             }
-            if ((bobFoot & 1) != 0) {
+            if ((this.bobFoot & 1) != 0) {
                 delta = -delta;
             }
-            viewBobAngles.roll += delta;
+            this.viewBobAngles.roll += delta;
 
             // calculate position for view bobbing
-            viewBob.Zero();
+            this.viewBob.Zero();
 
-            if (physicsObj.HasSteppedUp()) {
+            if (this.physicsObj.HasSteppedUp()) {
 
                 // check for stepping up before a previous step is completed
-                deltaTime = gameLocal.time - stepUpTime;
+                deltaTime = gameLocal.time - this.stepUpTime;
                 if (deltaTime < STEPUP_TIME) {
-                    stepUpDelta = stepUpDelta * (STEPUP_TIME - deltaTime) / STEPUP_TIME + physicsObj.GetStepUp();
+                    this.stepUpDelta = ((this.stepUpDelta * (STEPUP_TIME - deltaTime)) / STEPUP_TIME) + this.physicsObj.GetStepUp();
                 } else {
-                    stepUpDelta = physicsObj.GetStepUp();
+                    this.stepUpDelta = this.physicsObj.GetStepUp();
                 }
-                if (stepUpDelta > 2.0f * pm_stepsize.GetFloat()) {
-                    stepUpDelta = 2.0f * pm_stepsize.GetFloat();
+                if (this.stepUpDelta > (2.0f * pm_stepsize.GetFloat())) {
+                    this.stepUpDelta = 2.0f * pm_stepsize.GetFloat();
                 }
-                stepUpTime = gameLocal.time;
+                this.stepUpTime = gameLocal.time;
             }
 
-            idVec3 gravity = physicsObj.GetGravityNormal();
+            final idVec3 gravity = this.physicsObj.GetGravityNormal();
 
             // if the player stepped up recently
-            deltaTime = gameLocal.time - stepUpTime;
+            deltaTime = gameLocal.time - this.stepUpTime;
             if (deltaTime < STEPUP_TIME) {
-                viewBob.oPluSet(gravity.oMultiply(stepUpDelta * (STEPUP_TIME - deltaTime) / STEPUP_TIME));
+                this.viewBob.oPluSet(gravity.oMultiply((this.stepUpDelta * (STEPUP_TIME - deltaTime)) / STEPUP_TIME));
             }
 
             // add bob height after any movement smoothing
-            bob = bobfracsin * xyspeed * pm_bobup.GetFloat();
+            bob = this.bobfracsin * this.xyspeed * pm_bobup.GetFloat();
             if (bob > 6) {
                 bob = 6;
             }
-            viewBob.oPluSet(2, bob);
+            this.viewBob.oPluSet(2, bob);
 
             // add fall height
-            delta = gameLocal.time - landTime;
+            delta = gameLocal.time - this.landTime;
             if (delta < LAND_DEFLECT_TIME) {
                 f = delta / LAND_DEFLECT_TIME;
-                viewBob.oMinSet(gravity.oMultiply(landChange * f));
-            } else if (delta < LAND_DEFLECT_TIME + LAND_RETURN_TIME) {
+                this.viewBob.oMinSet(gravity.oMultiply(this.landChange * f));
+            } else if (delta < (LAND_DEFLECT_TIME + LAND_RETURN_TIME)) {
                 delta -= LAND_DEFLECT_TIME;
                 f = 1.0f - (delta / LAND_RETURN_TIME);
-                viewBob.oMinSet(gravity.oMultiply(landChange * f));
+                this.viewBob.oMinSet(gravity.oMultiply(this.landChange * f));
             }
         }
 
         private void UpdateViewAngles() {
             int i;
-            idAngles delta = new idAngles();
+            final idAngles delta = new idAngles();
 
-            if (!noclip && (gameLocal.inCinematic || privateCameraView != null || gameLocal.GetCamera() != null || influenceActive == INFLUENCE_LEVEL2 || objectiveSystemOpen)) {
+            if (!this.noclip && (gameLocal.inCinematic || (this.privateCameraView != null) || (gameLocal.GetCamera() != null) || (this.influenceActive == INFLUENCE_LEVEL2) || this.objectiveSystemOpen)) {
                 // no view changes at all, but we still want to update the deltas or else when
                 // we get out of this mode, our view will snap to a kind of random angle
-                UpdateDeltaViewAngles(viewAngles);
+                UpdateDeltaViewAngles(this.viewAngles);
                 return;
             }
 
             // if dead
-            if (health <= 0) {
+            if (this.health <= 0) {
                 if (pm_thirdPersonDeath.GetBool()) {
-                    viewAngles.roll = 0.0f;
-                    viewAngles.pitch = 30.0f;
+                    this.viewAngles.roll = 0.0f;
+                    this.viewAngles.pitch = 30.0f;
                 } else {
-                    viewAngles.roll = 40.0f;
-                    viewAngles.pitch = -15.0f;
+                    this.viewAngles.roll = 40.0f;
+                    this.viewAngles.pitch = -15.0f;
                 }
                 return;
             }
 
             // circularly clamp the angles with deltas
             for (i = 0; i < 3; i++) {
-                cmdAngles.oSet(i, (float) SHORT2ANGLE(usercmd.angles[i]));
-                if (influenceActive == INFLUENCE_LEVEL3) {
-                    viewAngles.oPluSet(i, idMath.ClampFloat(-1.0f, 1.0f, idMath.AngleDelta(idMath.AngleNormalize180((float) (SHORT2ANGLE(usercmd.angles[i]) + deltaViewAngles.oGet(i))), viewAngles.oGet(i))));
+                this.cmdAngles.oSet(i, SHORT2ANGLE(this.usercmd.angles[i]));
+                if (this.influenceActive == INFLUENCE_LEVEL3) {
+                    this.viewAngles.oPluSet(i, idMath.ClampFloat(-1.0f, 1.0f, idMath.AngleDelta(idMath.AngleNormalize180(SHORT2ANGLE(this.usercmd.angles[i]) + this.deltaViewAngles.oGet(i)), this.viewAngles.oGet(i))));
                 } else {
-                    viewAngles.oSet(i, idMath.AngleNormalize180((float) (SHORT2ANGLE(usercmd.angles[i]) + deltaViewAngles.oGet(i))));
+                    this.viewAngles.oSet(i, idMath.AngleNormalize180(SHORT2ANGLE(this.usercmd.angles[i]) + this.deltaViewAngles.oGet(i)));
                 }
             }
-            if (!centerView.IsDone(gameLocal.time)) {
-                viewAngles.pitch = centerView.GetCurrentValue(gameLocal.time);
+            if (!this.centerView.IsDone(gameLocal.time)) {
+                this.viewAngles.pitch = this.centerView.GetCurrentValue(gameLocal.time);
             }
 
             // clamp the pitch
-            if (noclip) {
-                if (viewAngles.pitch > 89.0f) {
+            if (this.noclip) {
+                if (this.viewAngles.pitch > 89.0f) {
                     // don't let the player look down more than 89 degrees while noclipping
-                    viewAngles.pitch = 89.0f;
-                } else if (viewAngles.pitch < -89.0f) {
+                    this.viewAngles.pitch = 89.0f;
+                } else if (this.viewAngles.pitch < -89.0f) {
                     // don't let the player look up more than 89 degrees while noclipping
-                    viewAngles.pitch = -89.0f;
+                    this.viewAngles.pitch = -89.0f;
                 }
             } else {
-                if (viewAngles.pitch > pm_maxviewpitch.GetFloat()) {
+                if (this.viewAngles.pitch > pm_maxviewpitch.GetFloat()) {
                     // don't let the player look down enough to see the shadow of his (non-existant) feet
-                    viewAngles.pitch = pm_maxviewpitch.GetFloat();
-                } else if (viewAngles.pitch < pm_minviewpitch.GetFloat()) {
+                    this.viewAngles.pitch = pm_maxviewpitch.GetFloat();
+                } else if (this.viewAngles.pitch < pm_minviewpitch.GetFloat()) {
                     // don't let the player look up more than 89 degrees
-                    viewAngles.pitch = pm_minviewpitch.GetFloat();
+                    this.viewAngles.pitch = pm_minviewpitch.GetFloat();
                 }
             }
 
-            UpdateDeltaViewAngles(viewAngles);
+            UpdateDeltaViewAngles(this.viewAngles);
 
             // orient the model towards the direction we're looking
-            SetAngles(new idAngles(0, viewAngles.yaw, 0));
+            SetAngles(new idAngles(0, this.viewAngles.yaw, 0));
 
             // save in the log for analyzing weapon angle offsets
-            loggedViewAngles[ gameLocal.framenum & (NUM_LOGGED_VIEW_ANGLES - 1)] = viewAngles;
+            this.loggedViewAngles[ gameLocal.framenum & (NUM_LOGGED_VIEW_ANGLES - 1)] = this.viewAngles;
         }
 
         private void EvaluateControls() {
             // check for respawning
-            if (health <= 0) {
-                if ((gameLocal.time > minRespawnTime) && ((usercmd.buttons & BUTTON_ATTACK) != 0)) {
-                    forceRespawn = true;
-                } else if (gameLocal.time > maxRespawnTime) {
-                    forceRespawn = true;
+            if (this.health <= 0) {
+                if ((gameLocal.time > this.minRespawnTime) && ((this.usercmd.buttons & BUTTON_ATTACK) != 0)) {
+                    this.forceRespawn = true;
+                } else if (gameLocal.time > this.maxRespawnTime) {
+                    this.forceRespawn = true;
                 }
             }
 
             // in MP, idMultiplayerGame decides spawns
-            if (forceRespawn && !gameLocal.isMultiplayer && !g_testDeath.GetBool()) {
+            if (this.forceRespawn && !gameLocal.isMultiplayer && !g_testDeath.GetBool()) {
                 // in single player, we let the session handle restarting the level or loading a game
                 gameLocal.sessionCommand.oSet("died");
             }
 
-            if ((usercmd.flags & UCF_IMPULSE_SEQUENCE) != (oldFlags & UCF_IMPULSE_SEQUENCE)) {
-                PerformImpulse(usercmd.impulse);
+            if ((this.usercmd.flags & UCF_IMPULSE_SEQUENCE) != (this.oldFlags & UCF_IMPULSE_SEQUENCE)) {
+                PerformImpulse(this.usercmd.impulse);
             }
 
-            scoreBoardOpen = ((usercmd.buttons & BUTTON_SCORES) != 0 || forceScoreBoard);
+            this.scoreBoardOpen = (((this.usercmd.buttons & BUTTON_SCORES) != 0) || this.forceScoreBoard);
 
-            oldFlags = usercmd.flags;
+            this.oldFlags = this.usercmd.flags;
 
             AdjustSpeed();
 
@@ -7275,50 +7275,50 @@ public class Player {
             float speed;
             float rate;
 
-            if (spectating) {
+            if (this.spectating) {
                 speed = pm_spectatespeed.GetFloat();
-                bobFrac = 0;
-            } else if (noclip) {
+                this.bobFrac = 0;
+            } else if (this.noclip) {
                 speed = pm_noclipspeed.GetFloat();
-                bobFrac = 0;
-            } else if (!physicsObj.OnLadder() && ((usercmd.buttons & BUTTON_RUN) != 0) && (usercmd.forwardmove != 0 || usercmd.rightmove != 0) && (usercmd.upmove >= 0)) {
-                if (!gameLocal.isMultiplayer && !physicsObj.IsCrouching() && !PowerUpActive(ADRENALINE)) {
-                    stamina -= MS2SEC(gameLocal.msec);
+                this.bobFrac = 0;
+            } else if (!this.physicsObj.OnLadder() && ((this.usercmd.buttons & BUTTON_RUN) != 0) && ((this.usercmd.forwardmove != 0) || (this.usercmd.rightmove != 0)) && (this.usercmd.upmove >= 0)) {
+                if (!gameLocal.isMultiplayer && !this.physicsObj.IsCrouching() && !PowerUpActive(ADRENALINE)) {
+                    this.stamina -= MS2SEC(gameLocal.msec);
                 }
-                if (stamina < 0) {
-                    stamina = 0;
+                if (this.stamina < 0) {
+                    this.stamina = 0;
                 }
-                if ((NOT(pm_stamina.GetFloat())) || (stamina > pm_staminathreshold.GetFloat())) {
-                    bobFrac = 1.0f;
+                if ((NOT(pm_stamina.GetFloat())) || (this.stamina > pm_staminathreshold.GetFloat())) {
+                    this.bobFrac = 1.0f;
                 } else if (pm_staminathreshold.GetFloat() <= 0.0001f) {
-                    bobFrac = 0;
+                    this.bobFrac = 0;
                 } else {
-                    bobFrac = stamina / pm_staminathreshold.GetFloat();
+                    this.bobFrac = this.stamina / pm_staminathreshold.GetFloat();
                 }
-                speed = pm_walkspeed.GetFloat() * (1.0f - bobFrac) + pm_runspeed.GetFloat() * bobFrac;
+                speed = (pm_walkspeed.GetFloat() * (1.0f - this.bobFrac)) + (pm_runspeed.GetFloat() * this.bobFrac);
             } else {
                 rate = pm_staminarate.GetFloat();
 
                 // increase 25% faster when not moving
-                if ((usercmd.forwardmove == 0) && (usercmd.rightmove == 0) && (!physicsObj.OnLadder() || (usercmd.upmove == 0))) {
+                if ((this.usercmd.forwardmove == 0) && (this.usercmd.rightmove == 0) && (!this.physicsObj.OnLadder() || (this.usercmd.upmove == 0))) {
                     rate *= 1.25f;
                 }
 
-                stamina += rate * MS2SEC(gameLocal.msec);
-                if (stamina > pm_stamina.GetFloat()) {
-                    stamina = pm_stamina.GetFloat();
+                this.stamina += rate * MS2SEC(gameLocal.msec);
+                if (this.stamina > pm_stamina.GetFloat()) {
+                    this.stamina = pm_stamina.GetFloat();
                 }
                 speed = pm_walkspeed.GetFloat();
-                bobFrac = 0;
+                this.bobFrac = 0;
             }
 
             speed *= PowerUpModifier(SPEED);
 
-            if (influenceActive == INFLUENCE_LEVEL3) {
+            if (this.influenceActive == INFLUENCE_LEVEL3) {
                 speed *= 0.33f;
             }
 
-            physicsObj.SetSpeed(speed, pm_crouchspeed.GetFloat());
+            this.physicsObj.SetSpeed(speed, pm_crouchspeed.GetFloat());
         }
 
         private void AdjustBodyAngles() {
@@ -7331,66 +7331,66 @@ public class Player {
             float forwardBlend;
             float downBlend;
 
-            if (health < 0) {
+            if (this.health < 0) {
                 return;
             }
 
             blend = true;
 
-            if (!physicsObj.HasGroundContacts()) {
-                idealLegsYaw = 0;
-                legsForward = true;
-            } else if (usercmd.forwardmove < 0) {
-                idealLegsYaw = idMath.AngleNormalize180(new idVec3(-usercmd.forwardmove, usercmd.rightmove, 0).ToYaw());
-                legsForward = false;
-            } else if (usercmd.forwardmove > 0) {
-                idealLegsYaw = idMath.AngleNormalize180(new idVec3(usercmd.forwardmove, -usercmd.rightmove, 0).ToYaw());
-                legsForward = true;
-            } else if ((usercmd.rightmove != 0) && physicsObj.IsCrouching()) {
-                if (!legsForward) {
-                    idealLegsYaw = idMath.AngleNormalize180(new idVec3(idMath.Abs(usercmd.rightmove), usercmd.rightmove, 0).ToYaw());
+            if (!this.physicsObj.HasGroundContacts()) {
+                this.idealLegsYaw = 0;
+                this.legsForward = true;
+            } else if (this.usercmd.forwardmove < 0) {
+                this.idealLegsYaw = idMath.AngleNormalize180(new idVec3(-this.usercmd.forwardmove, this.usercmd.rightmove, 0).ToYaw());
+                this.legsForward = false;
+            } else if (this.usercmd.forwardmove > 0) {
+                this.idealLegsYaw = idMath.AngleNormalize180(new idVec3(this.usercmd.forwardmove, -this.usercmd.rightmove, 0).ToYaw());
+                this.legsForward = true;
+            } else if ((this.usercmd.rightmove != 0) && this.physicsObj.IsCrouching()) {
+                if (!this.legsForward) {
+                    this.idealLegsYaw = idMath.AngleNormalize180(new idVec3(idMath.Abs(this.usercmd.rightmove), this.usercmd.rightmove, 0).ToYaw());
                 } else {
-                    idealLegsYaw = idMath.AngleNormalize180(new idVec3(idMath.Abs(usercmd.rightmove), -usercmd.rightmove, 0).ToYaw());
+                    this.idealLegsYaw = idMath.AngleNormalize180(new idVec3(idMath.Abs(this.usercmd.rightmove), -this.usercmd.rightmove, 0).ToYaw());
                 }
-            } else if (usercmd.rightmove != 0) {
-                idealLegsYaw = 0;
-                legsForward = true;
+            } else if (this.usercmd.rightmove != 0) {
+                this.idealLegsYaw = 0;
+                this.legsForward = true;
             } else {
-                legsForward = true;
-                diff = idMath.Fabs(idealLegsYaw - legsYaw);
-                idealLegsYaw = idealLegsYaw - idMath.AngleNormalize180(viewAngles.yaw - oldViewYaw);
+                this.legsForward = true;
+                diff = idMath.Fabs(this.idealLegsYaw - this.legsYaw);
+                this.idealLegsYaw = this.idealLegsYaw - idMath.AngleNormalize180(this.viewAngles.yaw - this.oldViewYaw);
                 if (diff < 0.1f) {
-                    legsYaw = idealLegsYaw;
+                    this.legsYaw = this.idealLegsYaw;
                     blend = false;
                 }
             }
 
-            if (!physicsObj.IsCrouching()) {
-                legsForward = true;
+            if (!this.physicsObj.IsCrouching()) {
+                this.legsForward = true;
             }
 
-            oldViewYaw = viewAngles.yaw;
+            this.oldViewYaw = this.viewAngles.yaw;
 
-            AI_TURN_LEFT.operator(false);
-            AI_TURN_RIGHT.operator(false);
-            if (idealLegsYaw < -45.0f) {
-                idealLegsYaw = 0;
-                AI_TURN_RIGHT.operator(true);
+            this.AI_TURN_LEFT.operator(false);
+            this.AI_TURN_RIGHT.operator(false);
+            if (this.idealLegsYaw < -45.0f) {
+                this.idealLegsYaw = 0;
+                this.AI_TURN_RIGHT.operator(true);
                 blend = true;
-            } else if (idealLegsYaw > 45.0f) {
-                idealLegsYaw = 0;
-                AI_TURN_LEFT.operator(true);
+            } else if (this.idealLegsYaw > 45.0f) {
+                this.idealLegsYaw = 0;
+                this.AI_TURN_LEFT.operator(true);
                 blend = true;
             }
 
             if (blend) {
-                legsYaw = legsYaw * 0.9f + idealLegsYaw * 0.1f;
+                this.legsYaw = (this.legsYaw * 0.9f) + (this.idealLegsYaw * 0.1f);
             }
-            legsAxis = new idAngles(0, legsYaw, 0).ToMat3();
-            animator.SetJointAxis(hipJoint, JOINTMOD_WORLD, legsAxis);
+            legsAxis = new idAngles(0, this.legsYaw, 0).ToMat3();
+            this.animator.SetJointAxis(this.hipJoint, JOINTMOD_WORLD, legsAxis);
 
             // calculate the blending between down, straight, and up
-            frac = viewAngles.pitch / 90;
+            frac = this.viewAngles.pitch / 90;
             if (frac > 0) {
                 downBlend = frac;
                 forwardBlend = 1.0f - frac;
@@ -7401,40 +7401,40 @@ public class Player {
                 upBlend = -frac;
             }
 
-            animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(0, downBlend);
-            animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(1, forwardBlend);
-            animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(2, upBlend);
+            this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(0, downBlend);
+            this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(1, forwardBlend);
+            this.animator.CurrentAnim(ANIMCHANNEL_TORSO).SetSyncedAnimWeight(2, upBlend);
 
-            animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(0, downBlend);
-            animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(1, forwardBlend);
-            animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(2, upBlend);
+            this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(0, downBlend);
+            this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(1, forwardBlend);
+            this.animator.CurrentAnim(ANIMCHANNEL_LEGS).SetSyncedAnimWeight(2, upBlend);
         }
 
         private void InitAASLocation() {
             int i;
             int num;
             idVec3 size;
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
             idAAS aas;
-            idVec3 origin = new idVec3();
+            final idVec3 origin = new idVec3();
 
             GetFloorPos(64.0f, origin);
 
             num = gameLocal.NumAAS();
-            aasLocation.SetGranularity(1);
-            aasLocation.SetNum(num);
-            for (i = 0; i < aasLocation.Num(); i++) {
-                aasLocation.oSet(i, new aasLocation_t());
-                aasLocation.oGet(i).areaNum = 0;
-                aasLocation.oGet(i).pos = new idVec3(origin);
+            this.aasLocation.SetGranularity(1);
+            this.aasLocation.SetNum(num);
+            for (i = 0; i < this.aasLocation.Num(); i++) {
+                this.aasLocation.oSet(i, new aasLocation_t());
+                this.aasLocation.oGet(i).areaNum = 0;
+                this.aasLocation.oGet(i).pos = new idVec3(origin);
                 aas = gameLocal.GetAAS(i);
-                if (aas != null && aas.GetSettings() != null) {
+                if ((aas != null) && (aas.GetSettings() != null)) {
                     size = aas.GetSettings().boundingBoxes[0].oGet(1);
                     bounds.oSet(0, size.oNegative());
                     size.z = 32.0f;
                     bounds.oSet(1, size);
 
-                    aasLocation.oGet(i).areaNum = aas.PointReachableAreaNum(origin, bounds, AREA_REACHABLE_WALK);
+                    this.aasLocation.oGet(i).areaNum = aas.PointReachableAreaNum(origin, bounds, AREA_REACHABLE_WALK);
                 }
             }
         }
@@ -7443,15 +7443,15 @@ public class Player {
             int i;
             int areaNum;
             idVec3 size;
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
             idAAS aas;
-            idVec3 origin = new idVec3();
+            final idVec3 origin = new idVec3();
 
             if (!GetFloorPos(64.0f, origin)) {
                 return;
             }
 
-            for (i = 0; i < aasLocation.Num(); i++) {
+            for (i = 0; i < this.aasLocation.Num(); i++) {
                 aas = gameLocal.GetAAS(i);
                 if (NOT(aas)) {
                     continue;
@@ -7464,8 +7464,8 @@ public class Player {
 
                 areaNum = aas.PointReachableAreaNum(origin, bounds, AREA_REACHABLE_WALK);
                 if (areaNum != 0) {
-                    aasLocation.oGet(i).pos = origin;
-                    aasLocation.oGet(i).areaNum = areaNum;
+                    this.aasLocation.oGet(i).pos = origin;
+                    this.aasLocation.oGet(i).areaNum = areaNum;
                 }
             }
         }
@@ -7477,41 +7477,41 @@ public class Player {
             idVec3 pushVelocity;
 
             // save old origin and velocity for crashlanding
-            oldOrigin = physicsObj.GetOrigin();
-            oldVelocity = physicsObj.GetLinearVelocity();
-            pushVelocity = physicsObj.GetPushedLinearVelocity();
+            oldOrigin = this.physicsObj.GetOrigin();
+            oldVelocity = this.physicsObj.GetLinearVelocity();
+            pushVelocity = this.physicsObj.GetPushedLinearVelocity();
 
             // set physics variables
-            physicsObj.SetMaxStepHeight(pm_stepsize.GetFloat());
-            physicsObj.SetMaxJumpHeight(pm_jumpheight.GetFloat());
+            this.physicsObj.SetMaxStepHeight(pm_stepsize.GetFloat());
+            this.physicsObj.SetMaxJumpHeight(pm_jumpheight.GetFloat());
 
-            if (noclip) {
-                physicsObj.SetContents(0);
-                physicsObj.SetMovementType(PM_NOCLIP);
-            } else if (spectating) {
-                physicsObj.SetContents(0);
-                physicsObj.SetMovementType(PM_SPECTATOR);
-            } else if (health <= 0) {
-                physicsObj.SetContents(CONTENTS_CORPSE | CONTENTS_MONSTERCLIP);
-                physicsObj.SetMovementType(PM_DEAD);
-            } else if (gameLocal.inCinematic || gameLocal.GetCamera() != null || privateCameraView != null || (influenceActive == INFLUENCE_LEVEL2)) {
-                physicsObj.SetContents(CONTENTS_BODY);
-                physicsObj.SetMovementType(PM_FREEZE);
+            if (this.noclip) {
+                this.physicsObj.SetContents(0);
+                this.physicsObj.SetMovementType(PM_NOCLIP);
+            } else if (this.spectating) {
+                this.physicsObj.SetContents(0);
+                this.physicsObj.SetMovementType(PM_SPECTATOR);
+            } else if (this.health <= 0) {
+                this.physicsObj.SetContents(CONTENTS_CORPSE | CONTENTS_MONSTERCLIP);
+                this.physicsObj.SetMovementType(PM_DEAD);
+            } else if (gameLocal.inCinematic || (gameLocal.GetCamera() != null) || (this.privateCameraView != null) || (this.influenceActive == INFLUENCE_LEVEL2)) {
+                this.physicsObj.SetContents(CONTENTS_BODY);
+                this.physicsObj.SetMovementType(PM_FREEZE);
             } else {
-                physicsObj.SetContents(CONTENTS_BODY);
-                physicsObj.SetMovementType(PM_NORMAL);
+                this.physicsObj.SetContents(CONTENTS_BODY);
+                this.physicsObj.SetMovementType(PM_NORMAL);
             }
 
-            if (spectating) {
-                physicsObj.SetClipMask(MASK_DEADSOLID);
-            } else if (health <= 0) {
-                physicsObj.SetClipMask(MASK_DEADSOLID);
+            if (this.spectating) {
+                this.physicsObj.SetClipMask(MASK_DEADSOLID);
+            } else if (this.health <= 0) {
+                this.physicsObj.SetClipMask(MASK_DEADSOLID);
             } else {
-                physicsObj.SetClipMask(MASK_PLAYERSOLID);
+                this.physicsObj.SetClipMask(MASK_PLAYERSOLID);
             }
 
-            physicsObj.SetDebugLevel(g_debugMove.GetBool());
-            physicsObj.SetPlayerInput(usercmd, viewAngles);
+            this.physicsObj.SetDebugLevel(g_debugMove.GetBool());
+            this.physicsObj.SetPlayerInput(this.usercmd, this.viewAngles);
 
             // FIXME: physics gets disabled somehow
             BecomeActive(TH_PHYSICS);
@@ -7520,66 +7520,66 @@ public class Player {
             // update our last valid AAS location for the AI
             SetAASLocation();
 
-            if (spectating) {
+            if (this.spectating) {
                 newEyeOffset = 0.0f;
-            } else if (health <= 0) {
+            } else if (this.health <= 0) {
                 newEyeOffset = pm_deadviewheight.GetFloat();
-            } else if (physicsObj.IsCrouching()) {
+            } else if (this.physicsObj.IsCrouching()) {
                 newEyeOffset = pm_crouchviewheight.GetFloat();
-            } else if (GetBindMaster() != null && GetBindMaster().IsType(idAFEntity_Vehicle.class)) {
+            } else if ((GetBindMaster() != null) && GetBindMaster().IsType(idAFEntity_Vehicle.class)) {
                 newEyeOffset = 0.0f;
             } else {
                 newEyeOffset = pm_normalviewheight.GetFloat();
             }
 
             if (EyeHeight() != newEyeOffset) {
-                if (spectating) {
+                if (this.spectating) {
                     SetEyeHeight(newEyeOffset);
                 } else {
                     // smooth out duck height changes
-                    SetEyeHeight(EyeHeight() * pm_crouchrate.GetFloat() + newEyeOffset * (1.0f - pm_crouchrate.GetFloat()));
+                    SetEyeHeight((EyeHeight() * pm_crouchrate.GetFloat()) + (newEyeOffset * (1.0f - pm_crouchrate.GetFloat())));
                 }
             }
 
-            if (noclip || gameLocal.inCinematic || (influenceActive == INFLUENCE_LEVEL2)) {
-                AI_CROUCH.operator(false);
-                AI_ONGROUND.operator(influenceActive == INFLUENCE_LEVEL2);
-                AI_ONLADDER.operator(false);
-                AI_JUMP.operator(false);
+            if (this.noclip || gameLocal.inCinematic || (this.influenceActive == INFLUENCE_LEVEL2)) {
+                this.AI_CROUCH.operator(false);
+                this.AI_ONGROUND.operator(this.influenceActive == INFLUENCE_LEVEL2);
+                this.AI_ONLADDER.operator(false);
+                this.AI_JUMP.operator(false);
             } else {
-                AI_CROUCH.operator(physicsObj.IsCrouching());
-                AI_ONGROUND.operator(physicsObj.HasGroundContacts());
-                AI_ONLADDER.operator(physicsObj.OnLadder());
-                AI_JUMP.operator(physicsObj.HasJumped());
+                this.AI_CROUCH.operator(this.physicsObj.IsCrouching());
+                this.AI_ONGROUND.operator(this.physicsObj.HasGroundContacts());
+                this.AI_ONLADDER.operator(this.physicsObj.OnLadder());
+                this.AI_JUMP.operator(this.physicsObj.HasJumped());
 
                 // check if we're standing on top of a monster and give a push if we are
-                idEntity groundEnt = physicsObj.GetGroundEntity();
-                if (groundEnt != null && groundEnt.IsType(idAI.class)) {
-                    idVec3 vel = physicsObj.GetLinearVelocity();
+                final idEntity groundEnt = this.physicsObj.GetGroundEntity();
+                if ((groundEnt != null) && groundEnt.IsType(idAI.class)) {
+                    final idVec3 vel = this.physicsObj.GetLinearVelocity();
                     if (vel.ToVec2().LengthSqr() < 0.1f) {
-                        vel.oSet(physicsObj.GetOrigin().ToVec2().oMinus(groundEnt.GetPhysics().GetAbsBounds().GetCenter().ToVec2()));
+                        vel.oSet(this.physicsObj.GetOrigin().ToVec2().oMinus(groundEnt.GetPhysics().GetAbsBounds().GetCenter().ToVec2()));
                         vel.ToVec2_NormalizeFast();
                         vel.ToVec2_oMulSet(pm_walkspeed.GetFloat());//TODO:ToVec2 back ref.
                     } else {
                         // give em a push in the direction they're going
                         vel.oMulSet(1.1f);
                     }
-                    physicsObj.SetLinearVelocity(vel);
+                    this.physicsObj.SetLinearVelocity(vel);
                 }
             }
 
-            if (AI_JUMP.operator()) {
+            if (this.AI_JUMP.operator()) {
                 // bounce the view weapon
-                loggedAccel_t acc = loggedAccel[currentLoggedAccel & (NUM_LOGGED_ACCELS - 1)];
-                currentLoggedAccel++;
+                final loggedAccel_t acc = this.loggedAccel[this.currentLoggedAccel & (NUM_LOGGED_ACCELS - 1)];
+                this.currentLoggedAccel++;
                 acc.time = gameLocal.time;
                 acc.dir.oSet(2, 200);
                 acc.dir.oSet(0, acc.dir.oSet(1, 0));
             }
 
-            if (AI_ONLADDER.operator()) {
-                int old_rung = (int) (oldOrigin.z / LADDER_RUNG_DISTANCE);
-                int new_rung = (int) (physicsObj.GetOrigin().z / LADDER_RUNG_DISTANCE);
+            if (this.AI_ONLADDER.operator()) {
+                final int old_rung = (int) (oldOrigin.z / LADDER_RUNG_DISTANCE);
+                final int new_rung = (int) (this.physicsObj.GetOrigin().z / LADDER_RUNG_DISTANCE);
 
                 if (old_rung != new_rung) {
                     StartSound("snd_stepladder", SND_CHANNEL_ANY, 0, false, null);
@@ -7595,42 +7595,42 @@ public class Player {
 
             if (!gameLocal.isClient) {
                 for (i = 0; i < MAX_POWERUPS; i++) {
-                    if (PowerUpActive(i) && inventory.powerupEndTime[i] <= gameLocal.time) {
+                    if (PowerUpActive(i) && (this.inventory.powerupEndTime[i] <= gameLocal.time)) {
                         ClearPowerup(i);
                     }
                 }
             }
 
-            if (health > 0) {
-                if (powerUpSkin != null) {
-                    renderEntity.customSkin = powerUpSkin;
+            if (this.health > 0) {
+                if (this.powerUpSkin != null) {
+                    this.renderEntity.customSkin = this.powerUpSkin;
                 } else {
-                    renderEntity.customSkin = skin;
+                    this.renderEntity.customSkin = this.skin;
                 }
             }
 
-            if (healthPool != 0 && gameLocal.time > nextHealthPulse && !AI_DEAD.operator() && health > 0) {
+            if ((this.healthPool != 0) && (gameLocal.time > this.nextHealthPulse) && !this.AI_DEAD.operator() && (this.health > 0)) {
                 assert (!gameLocal.isClient);	// healthPool never be set on client
-                int amt = (int) ((healthPool > 5) ? 5 : healthPool);
-                health += amt;
-                if (health > inventory.maxHealth) {
-                    health = inventory.maxHealth;
-                    healthPool = 0;
+                final int amt = (int) ((this.healthPool > 5) ? 5 : this.healthPool);
+                this.health += amt;
+                if (this.health > this.inventory.maxHealth) {
+                    this.health = this.inventory.maxHealth;
+                    this.healthPool = 0;
                 } else {
-                    healthPool -= amt;
+                    this.healthPool -= amt;
                 }
-                nextHealthPulse = gameLocal.time + HEALTHPULSE_TIME;
-                healthPulse = true;
+                this.nextHealthPulse = gameLocal.time + HEALTHPULSE_TIME;
+                this.healthPulse = true;
             }
             if (BuildDefines.ID_DEMO_BUILD) {
-                if (!gameLocal.inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal.time > nextHealthTake && !AI_DEAD.operator() && health > g_healthTakeLimit.GetInteger()) {
+                if (!gameLocal.inCinematic && (this.influenceActive == 0) && (g_skill.GetInteger() == 3) && (gameLocal.time > this.nextHealthTake) && !this.AI_DEAD.operator() && (this.health > g_healthTakeLimit.GetInteger())) {
                     assert (!gameLocal.isClient);	// healthPool never be set on client
-                    health -= g_healthTakeAmt.GetInteger();
-                    if (health < g_healthTakeLimit.GetInteger()) {
-                        health = g_healthTakeLimit.GetInteger();
+                    this.health -= g_healthTakeAmt.GetInteger();
+                    if (this.health < g_healthTakeLimit.GetInteger()) {
+                        this.health = g_healthTakeLimit.GetInteger();
                     }
-                    nextHealthTake = gameLocal.time + g_healthTakeTime.GetInteger() * 1000;
-                    healthTake = true;
+                    this.nextHealthTake = gameLocal.time + (g_healthTakeTime.GetInteger() * 1000);
+                    this.healthTake = true;
                 }
             }
         }
@@ -7639,36 +7639,36 @@ public class Player {
             if (!(gameLocal.isMultiplayer || g_testDeath.GetBool())) {
                 return;
             }
-            if (health <= 0) {
-                if (!doingDeathSkin) {
-                    deathClearContentsTime = spawnArgs.GetInt("deathSkinTime");
-                    doingDeathSkin = true;
-                    renderEntity.noShadow = true;
+            if (this.health <= 0) {
+                if (!this.doingDeathSkin) {
+                    this.deathClearContentsTime = this.spawnArgs.GetInt("deathSkinTime");
+                    this.doingDeathSkin = true;
+                    this.renderEntity.noShadow = true;
                     if (state_hitch) {
-                        renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = gameLocal.time * 0.001f - 2.0f;
+                        this.renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = (gameLocal.time * 0.001f) - 2.0f;
                     } else {
-                        renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = gameLocal.time * 0.001f;
+                        this.renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = gameLocal.time * 0.001f;
                     }
                     UpdateVisuals();
                 }
 
                 // wait a bit before switching off the content
-                if (deathClearContentsTime != 0 && gameLocal.time > deathClearContentsTime) {
+                if ((this.deathClearContentsTime != 0) && (gameLocal.time > this.deathClearContentsTime)) {
                     SetCombatContents(false);
-                    deathClearContentsTime = 0;
+                    this.deathClearContentsTime = 0;
                 }
             } else {
-                renderEntity.noShadow = false;
-                renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = 0.0f;
+                this.renderEntity.noShadow = false;
+                this.renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH] = 0.0f;
                 UpdateVisuals();
-                doingDeathSkin = false;
+                this.doingDeathSkin = false;
             }
         }
 
         private void ClearPowerup(int i) {
 
             if (gameLocal.isServer) {
-                idBitMsg msg = new idBitMsg();
+                final idBitMsg msg = new idBitMsg();
                 final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                 msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
@@ -7677,17 +7677,17 @@ public class Player {
                 ServerSendEvent(EVENT_POWERUP, msg, false, -1);
             }
 
-            powerUpSkin = null;
-            inventory.powerups &= ~(1 << i);
-            inventory.powerupEndTime[ i] = 0;
+            this.powerUpSkin = null;
+            this.inventory.powerups &= ~(1 << i);
+            this.inventory.powerupEndTime[ i] = 0;
             switch (i) {
                 case BERSERK: {
                     StopSound(etoi(SND_CHANNEL_DEMONIC), false);
                     break;
                 }
                 case INVISIBILITY: {
-                    if (weapon.GetEntity() != null) {
-                        weapon.GetEntity().UpdateSkin();
+                    if (this.weapon.GetEntity() != null) {
+                        this.weapon.GetEntity().UpdateSkin();
                     }
                     break;
                 }
@@ -7711,11 +7711,11 @@ public class Player {
          ================
          */
         private void ClearFocus() {
-            focusCharacter = null;
-            focusGUIent = null;
-            focusUI = null;
-            focusVehicle = null;
-            talkCursor = 0;
+            this.focusCharacter = null;
+            this.focusGUIent = null;
+            this.focusUI = null;
+            this.focusVehicle = null;
+            this.talkCursor = 0;
         }
 
         /*
@@ -7727,7 +7727,7 @@ public class Player {
          ================
          */
         private void UpdateFocus() {
-            idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
+            final idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
             idClipModel clip;
             int listedClipModels;
             idEntity oldFocus;
@@ -7740,7 +7740,7 @@ public class Player {
             idVec3 start, end;
             boolean allowFocus;
             String command;
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
             guiPoint_t pt;
             idKeyValue kv;
             sysEvent_s ev;
@@ -7752,46 +7752,46 @@ public class Player {
 
             // only update the focus character when attack button isn't pressed so players
             // can still chainsaw NPC's
-            if (gameLocal.isMultiplayer || (NOT(focusCharacter) && ((usercmd.buttons & BUTTON_ATTACK) != 0))) {
+            if (gameLocal.isMultiplayer || (NOT(this.focusCharacter) && ((this.usercmd.buttons & BUTTON_ATTACK) != 0))) {
                 allowFocus = false;
             } else {
                 allowFocus = true;
             }
 
-            oldFocus = focusGUIent;
-            oldUI = focusUI;
-            oldChar = focusCharacter;
-            oldTalkCursor = talkCursor;
-            oldVehicle = focusVehicle;
+            oldFocus = this.focusGUIent;
+            oldUI = this.focusUI;
+            oldChar = this.focusCharacter;
+            oldTalkCursor = this.talkCursor;
+            oldVehicle = this.focusVehicle;
 
-            if (focusTime <= gameLocal.time) {
+            if (this.focusTime <= gameLocal.time) {
                 ClearFocus();
             }
 
             // don't let spectators interact with GUIs
-            if (spectating) {
+            if (this.spectating) {
                 return;
             }
 
             start = GetEyePosition();
-            end = start.oPlus(viewAngles.ToForward().oMultiply(80.0f));
+            end = start.oPlus(this.viewAngles.ToForward().oMultiply(80.0f));
 
             // player identification . names to the hud
-            if (gameLocal.isMultiplayer && entityNumber == gameLocal.localClientNum) {
-                idVec3 end2 = start.oPlus(viewAngles.ToForward().oMultiply(768.0f));
+            if (gameLocal.isMultiplayer && (this.entityNumber == gameLocal.localClientNum)) {
+                final idVec3 end2 = start.oPlus(this.viewAngles.ToForward().oMultiply(768.0f));
                 gameLocal.clip.TracePoint(trace, start, end2, MASK_SHOT_BOUNDINGBOX, this);
                 int iclient = -1;
                 if ((trace[0].fraction < 1.0f) && (trace[0].c.entityNum < MAX_CLIENTS)) {
                     iclient = trace[0].c.entityNum;
                 }
-                if (MPAim != iclient) {
-                    lastMPAim = MPAim;
-                    MPAim = iclient;
-                    lastMPAimTime = gameLocal.realClientTime;
+                if (this.MPAim != iclient) {
+                    this.lastMPAim = this.MPAim;
+                    this.MPAim = iclient;
+                    this.lastMPAimTime = gameLocal.realClientTime;
                 }
             }
 
-            idBounds bounds = new idBounds(start);
+            final idBounds bounds = new idBounds(start);
             bounds.AddPoint(end);
 
             listedClipModels = gameLocal.clip.ClipModelsTouchingBounds(bounds, -1, clipModelList, MAX_GENTITIES);
@@ -7808,15 +7808,15 @@ public class Player {
 
                 if (allowFocus) {
                     if (ent.IsType(idAFAttachment.class)) {
-                        idEntity body = ((idAFAttachment) ent).GetBody();
-                        if (body != null && body.IsType(idAI.class)
-                                && etoi(((idAI) body).GetTalkState()) >= etoi(TALK_OK)) {
+                        final idEntity body = ((idAFAttachment) ent).GetBody();
+                        if ((body != null) && body.IsType(idAI.class)
+                                && (etoi(((idAI) body).GetTalkState()) >= etoi(TALK_OK))) {
                             gameLocal.clip.TracePoint(trace, start, end, MASK_SHOT_RENDERMODEL, this);
                             if ((trace[0].fraction < 1.0f) && (trace[0].c.entityNum == ent.entityNumber)) {
                                 ClearFocus();
-                                focusCharacter = (idAI) body;
-                                talkCursor = 1;
-                                focusTime = gameLocal.time + FOCUS_TIME;
+                                this.focusCharacter = (idAI) body;
+                                this.talkCursor = 1;
+                                this.focusTime = gameLocal.time + FOCUS_TIME;
                                 break;
                             }
                         }
@@ -7828,9 +7828,9 @@ public class Player {
                             gameLocal.clip.TracePoint(trace, start, end, MASK_SHOT_RENDERMODEL, this);
                             if ((trace[0].fraction < 1.0f) && (trace[0].c.entityNum == ent.entityNumber)) {
                                 ClearFocus();
-                                focusCharacter = (idAI) ent;
-                                talkCursor = 1;
-                                focusTime = gameLocal.time + FOCUS_TIME;
+                                this.focusCharacter = (idAI) ent;
+                                this.talkCursor = 1;
+                                this.focusTime = gameLocal.time + FOCUS_TIME;
                                 break;
                             }
                         }
@@ -7841,8 +7841,8 @@ public class Player {
                         gameLocal.clip.TracePoint(trace, start, end, MASK_SHOT_RENDERMODEL, this);
                         if ((trace[0].fraction < 1.0f) && (trace[0].c.entityNum == ent.entityNumber)) {
                             ClearFocus();
-                            focusVehicle = (idAFEntity_Vehicle) ent;
-                            focusTime = gameLocal.time + FOCUS_TIME;
+                            this.focusVehicle = (idAFEntity_Vehicle) ent;
+                            this.focusTime = gameLocal.time + FOCUS_TIME;
                             break;
                         }
                         continue;
@@ -7861,7 +7861,7 @@ public class Player {
                 pt = gameRenderWorld.GuiTrace(ent.GetModelDefHandle(), start, end);
                 if (pt.x != -1) {
                     // we have a hit
-                    renderEntity_s focusGUIrenderEntity = ent.GetRenderEntity();
+                    final renderEntity_s focusGUIrenderEntity = ent.GetRenderEntity();
                     if (NOT(focusGUIrenderEntity)) {
                         continue;
                     }
@@ -7879,90 +7879,90 @@ public class Player {
                     }
 
                     ClearFocus();
-                    focusGUIent = ent;
-                    focusUI = ui;
+                    this.focusGUIent = ent;
+                    this.focusUI = ui;
 
                     if (oldFocus != ent) {
                         // new activation
                         // going to see if we have anything in inventory a gui might be interested in
                         // need to enumerate inventory items
-                        focusUI.SetStateInt("inv_count", inventory.items.Num());
-                        for (j = 0; j < inventory.items.Num(); j++) {
-                            idDict item = inventory.items.oGet(j);
+                        this.focusUI.SetStateInt("inv_count", this.inventory.items.Num());
+                        for (j = 0; j < this.inventory.items.Num(); j++) {
+                            final idDict item = this.inventory.items.oGet(j);
                             final String iname = item.GetString("inv_name");
                             final String iicon = item.GetString("inv_icon");
                             final String itext = item.GetString("inv_text");
 
-                            focusUI.SetStateString(va("inv_name_%d", j), iname);
-                            focusUI.SetStateString(va("inv_icon_%d", j), iicon);
-                            focusUI.SetStateString(va("inv_text_%d", j), itext);
+                            this.focusUI.SetStateString(va("inv_name_%d", j), iname);
+                            this.focusUI.SetStateString(va("inv_icon_%d", j), iicon);
+                            this.focusUI.SetStateString(va("inv_text_%d", j), itext);
                             kv = item.MatchPrefix("inv_id", null);
                             if (kv != null) {
-                                focusUI.SetStateString(va("inv_id_%d", j), kv.GetValue().toString());
+                                this.focusUI.SetStateString(va("inv_id_%d", j), kv.GetValue().toString());
                             }
-                            focusUI.SetStateInt(iname, 1);
+                            this.focusUI.SetStateInt(iname, 1);
                         }
 
-                        for (j = 0; j < inventory.pdaSecurity.Num(); j++) {
-                            final String p = inventory.pdaSecurity.oGet(j).toString();
+                        for (j = 0; j < this.inventory.pdaSecurity.Num(); j++) {
+                            final String p = this.inventory.pdaSecurity.oGet(j).toString();
                             if (isNotNullOrEmpty(p)) {
-                                focusUI.SetStateInt(p, 1);
+                                this.focusUI.SetStateInt(p, 1);
                             }
                         }
 
-                        int staminapercentage = (int) (100.0f * stamina / pm_stamina.GetFloat());
-                        focusUI.SetStateString("player_health", va("%d", health));
-                        focusUI.SetStateString("player_stamina", va("%d%%", staminapercentage));
-                        focusUI.SetStateString("player_armor", va("%d%%", inventory.armor));
+                        final int staminapercentage = (int) ((100.0f * this.stamina) / pm_stamina.GetFloat());
+                        this.focusUI.SetStateString("player_health", va("%d", this.health));
+                        this.focusUI.SetStateString("player_stamina", va("%d%%", staminapercentage));
+                        this.focusUI.SetStateString("player_armor", va("%d%%", this.inventory.armor));
 
-                        kv = focusGUIent.spawnArgs.MatchPrefix("gui_parm", null);
+                        kv = this.focusGUIent.spawnArgs.MatchPrefix("gui_parm", null);
                         while (kv != null) {
-                            focusUI.SetStateString(kv.GetKey().toString(), kv.GetValue().toString());
-                            kv = focusGUIent.spawnArgs.MatchPrefix("gui_parm", kv);
+                            this.focusUI.SetStateString(kv.GetKey().toString(), kv.GetValue().toString());
+                            kv = this.focusGUIent.spawnArgs.MatchPrefix("gui_parm", kv);
                         }
                     }
 
                     // clamp the mouse to the corner
                     ev = sys.GenerateMouseMoveEvent(-2000, -2000);
-                    command = focusUI.HandleEvent(ev, gameLocal.time);
-                    HandleGuiCommands(focusGUIent, command);
+                    command = this.focusUI.HandleEvent(ev, gameLocal.time);
+                    HandleGuiCommands(this.focusGUIent, command);
 
                     // move to an absolute position
                     ev = sys.GenerateMouseMoveEvent((int) (pt.x * SCREEN_WIDTH), (int) (pt.y * SCREEN_HEIGHT));
-                    command = focusUI.HandleEvent(ev, gameLocal.time);
-                    HandleGuiCommands(focusGUIent, command);
-                    focusTime = gameLocal.time + FOCUS_GUI_TIME;
+                    command = this.focusUI.HandleEvent(ev, gameLocal.time);
+                    HandleGuiCommands(this.focusGUIent, command);
+                    this.focusTime = gameLocal.time + FOCUS_GUI_TIME;
                     break;
                 }
             }
 
-            if (focusGUIent != null && focusUI != null) {
-                if (NOT(oldFocus) || !oldFocus.equals(focusGUIent)) {
-                    command = focusUI.Activate(true, gameLocal.time);
-                    HandleGuiCommands(focusGUIent, command);
+            if ((this.focusGUIent != null) && (this.focusUI != null)) {
+                if (NOT(oldFocus) || !oldFocus.equals(this.focusGUIent)) {
+                    command = this.focusUI.Activate(true, gameLocal.time);
+                    HandleGuiCommands(this.focusGUIent, command);
                     StartSound("snd_guienter", SND_CHANNEL_ANY, 0, false, null);
                     // HideTip();
                     // HideObjective();
                 }
-            } else if (oldFocus != null && oldUI != null) {
+            } else if ((oldFocus != null) && (oldUI != null)) {
                 command = oldUI.Activate(false, gameLocal.time);
                 HandleGuiCommands(oldFocus, command);
                 StartSound("snd_guiexit", SND_CHANNEL_ANY, 0, false, null);
             }
 
-            if (cursor != null && (oldTalkCursor != talkCursor)) {
-                cursor.SetStateInt("talkcursor", talkCursor);
+            if ((this.cursor != null) && (oldTalkCursor != this.talkCursor)) {
+                this.cursor.SetStateInt("talkcursor", this.talkCursor);
             }
 
-            if (oldChar != focusCharacter && hud != null) {
-                if (focusCharacter != null) {
-                    hud.SetStateString("npc", focusCharacter.spawnArgs.GetString("npc_name", "Joe"));
-                    hud.HandleNamedEvent("showNPC");
+            if ((oldChar != this.focusCharacter) && (this.hud != null)) {
+                if (this.focusCharacter != null) {
+                    this.hud.SetStateString("npc", this.focusCharacter.spawnArgs.GetString("npc_name", "Joe"));
+                    this.hud.HandleNamedEvent("showNPC");
                     // HideTip();
                     // HideObjective();
                 } else {
-                    hud.SetStateString("npc", "");
-                    hud.HandleNamedEvent("hideNPC");
+                    this.hud.SetStateString("npc", "");
+                    this.hud.HandleNamedEvent("hideNPC");
                 }
             }
         }
@@ -7975,181 +7975,182 @@ public class Player {
          ================
          */
         private void UpdateLocation() {
-            if (hud != null) {
-                idLocationEntity locationEntity = gameLocal.LocationForPoint(GetEyePosition());
+            if (this.hud != null) {
+                final idLocationEntity locationEntity = gameLocal.LocationForPoint(GetEyePosition());
                 if (locationEntity != null) {
-                    hud.SetStateString("location", locationEntity.GetLocation());
+                    this.hud.SetStateString("location", locationEntity.GetLocation());
                 } else {
-                    hud.SetStateString("location", common.GetLanguageDict().GetString("#str_02911"));
+                    this.hud.SetStateString("location", common.GetLanguageDict().GetString("#str_02911"));
                 }
             }
         }
 
         private idUserInterface ActiveGui() {
-            if (objectiveSystemOpen) {
-                return objectiveSystem;
+            if (this.objectiveSystemOpen) {
+                return this.objectiveSystem;
             }
 
-            return focusUI;
+            return this.focusUI;
         }
 
         private void UpdatePDAInfo(boolean updatePDASel) {
             int j, sel;
 
-            if (objectiveSystem == null) {
+            if (this.objectiveSystem == null) {
                 return;
             }
 
-            assert (hud != null);
+            assert (this.hud != null);
 
-            int currentPDA = objectiveSystem.State().GetInt("listPDA_sel_0", "0");
+            int currentPDA = this.objectiveSystem.State().GetInt("listPDA_sel_0", "0");
             if (currentPDA == -1) {
                 currentPDA = 0;
             }
 
             if (updatePDASel) {
-                objectiveSystem.SetStateInt("listPDAVideo_sel_0", 0);
-                objectiveSystem.SetStateInt("listPDAEmail_sel_0", 0);
-                objectiveSystem.SetStateInt("listPDAAudio_sel_0", 0);
+                this.objectiveSystem.SetStateInt("listPDAVideo_sel_0", 0);
+                this.objectiveSystem.SetStateInt("listPDAEmail_sel_0", 0);
+                this.objectiveSystem.SetStateInt("listPDAAudio_sel_0", 0);
             }
 
             if (currentPDA > 0) {
-                currentPDA = inventory.pdas.Num() - currentPDA;
+                currentPDA = this.inventory.pdas.Num() - currentPDA;
             }
 
             // Mark in the bit array that this pda has been read
             if (currentPDA < 128) {
-                inventory.pdasViewed[currentPDA >> 5] |= 1 << (currentPDA & 31);
+                this.inventory.pdasViewed[currentPDA >> 5] |= 1 << (currentPDA & 31);
             }
 
-            pdaAudio.oSet("");
-            pdaVideo.oSet("");
-            pdaVideoWave.oSet("");
-            String name, data, preview, info, wave;
+            this.pdaAudio.oSet("");
+            this.pdaVideo.oSet("");
+            this.pdaVideoWave.oSet("");
+            String name, data;
+			final String preview, info, wave;
             for (j = 0; j < MAX_PDAS; j++) {
-                objectiveSystem.SetStateString(va("listPDA_item_%d", j), "");
+                this.objectiveSystem.SetStateString(va("listPDA_item_%d", j), "");
             }
             for (j = 0; j < MAX_PDA_ITEMS; j++) {
-                objectiveSystem.SetStateString(va("listPDAVideo_item_%d", j), "");
-                objectiveSystem.SetStateString(va("listPDAAudio_item_%d", j), "");
-                objectiveSystem.SetStateString(va("listPDAEmail_item_%d", j), "");
-                objectiveSystem.SetStateString(va("listPDASecurity_item_%d", j), "");
+                this.objectiveSystem.SetStateString(va("listPDAVideo_item_%d", j), "");
+                this.objectiveSystem.SetStateString(va("listPDAAudio_item_%d", j), "");
+                this.objectiveSystem.SetStateString(va("listPDAEmail_item_%d", j), "");
+                this.objectiveSystem.SetStateString(va("listPDASecurity_item_%d", j), "");
             }
-            for (j = 0; j < inventory.pdas.Num(); j++) {
+            for (j = 0; j < this.inventory.pdas.Num(); j++) {
 
-                final idDeclPDA pda = (idDeclPDA) declManager.FindType(DECL_PDA, inventory.pdas.oGet(j), false);
+                final idDeclPDA pda = (idDeclPDA) declManager.FindType(DECL_PDA, this.inventory.pdas.oGet(j), false);
 
                 if (pda == null) {
                     continue;
                 }
 
-                int index = inventory.pdas.Num() - j;
+                int index = this.inventory.pdas.Num() - j;
                 if (j == 0) {
                     // Special case for the first PDA
                     index = 0;
                 }
 
-                if (j != currentPDA && j < 128 && (inventory.pdasViewed[j >> 5] & (1 << (j & 31))) != 0) {
+                if ((j != currentPDA) && (j < 128) && ((this.inventory.pdasViewed[j >> 5] & (1 << (j & 31))) != 0)) {
                     // This pda has been read already, mark in gray
-                    objectiveSystem.SetStateString(va("listPDA_item_%d", index), va(S_COLOR_GRAY, "%s", pda.GetPdaName()));
+                    this.objectiveSystem.SetStateString(va("listPDA_item_%d", index), va(S_COLOR_GRAY, "%s", pda.GetPdaName()));
                 } else {
                     // This pda has not been read yet
-                    objectiveSystem.SetStateString(va("listPDA_item_%d", index), pda.GetPdaName());
+                    this.objectiveSystem.SetStateString(va("listPDA_item_%d", index), pda.GetPdaName());
                 }
 
                 String security = pda.GetSecurity();
-                if (j == currentPDA || (currentPDA == 0 && security != null && !security.isEmpty())) {
+                if ((j == currentPDA) || ((currentPDA == 0) && (security != null) && !security.isEmpty())) {
                     if (security.isEmpty()) {
                         security = common.GetLanguageDict().GetString("#str_00066");
                     }
-                    objectiveSystem.SetStateString("PDASecurityClearance", security);
+                    this.objectiveSystem.SetStateString("PDASecurityClearance", security);
                 }
 
                 if (j == currentPDA) {
 
-                    objectiveSystem.SetStateString("pda_icon", pda.GetIcon());
-                    objectiveSystem.SetStateString("pda_id", pda.GetID());
-                    objectiveSystem.SetStateString("pda_title", pda.GetTitle());
+                    this.objectiveSystem.SetStateString("pda_icon", pda.GetIcon());
+                    this.objectiveSystem.SetStateString("pda_id", pda.GetID());
+                    this.objectiveSystem.SetStateString("pda_title", pda.GetTitle());
 
                     if (j == 0) {
                         // Selected, personal pda
                         // Add videos
-                        if (updatePDASel || !inventory.pdaOpened) {
-                            objectiveSystem.HandleNamedEvent("playerPDAActive");
-                            objectiveSystem.SetStateString("pda_personal", "1");
-                            inventory.pdaOpened = true;
+                        if (updatePDASel || !this.inventory.pdaOpened) {
+                            this.objectiveSystem.HandleNamedEvent("playerPDAActive");
+                            this.objectiveSystem.SetStateString("pda_personal", "1");
+                            this.inventory.pdaOpened = true;
                         }
-                        objectiveSystem.SetStateString("pda_location", hud.State().GetString("location"));
-                        objectiveSystem.SetStateString("pda_name", cvarSystem.GetCVarString("ui_name"));
-                        AddGuiPDAData(DECL_VIDEO, "listPDAVideo", pda, objectiveSystem);
-                        sel = objectiveSystem.State().GetInt("listPDAVideo_sel_0", "0");
+                        this.objectiveSystem.SetStateString("pda_location", this.hud.State().GetString("location"));
+                        this.objectiveSystem.SetStateString("pda_name", cvarSystem.GetCVarString("ui_name"));
+                        AddGuiPDAData(DECL_VIDEO, "listPDAVideo", pda, this.objectiveSystem);
+                        sel = this.objectiveSystem.State().GetInt("listPDAVideo_sel_0", "0");
                         idDeclVideo vid = null;
-                        if (sel >= 0 && sel < inventory.videos.Num()) {
-                            vid = (idDeclVideo) declManager.FindType(DECL_VIDEO, inventory.videos.oGet(sel), false);
+                        if ((sel >= 0) && (sel < this.inventory.videos.Num())) {
+                            vid = (idDeclVideo) declManager.FindType(DECL_VIDEO, this.inventory.videos.oGet(sel), false);
                         }
                         if (vid != null) {
-                            pdaVideo.oSet(vid.GetRoq());
-                            pdaVideoWave.oSet(vid.GetWave());
-                            objectiveSystem.SetStateString("PDAVideoTitle", vid.GetVideoName());
-                            objectiveSystem.SetStateString("PDAVideoVid", vid.GetRoq());
-                            objectiveSystem.SetStateString("PDAVideoIcon", vid.GetPreview());
-                            objectiveSystem.SetStateString("PDAVideoInfo", vid.GetInfo());
+                            this.pdaVideo.oSet(vid.GetRoq());
+                            this.pdaVideoWave.oSet(vid.GetWave());
+                            this.objectiveSystem.SetStateString("PDAVideoTitle", vid.GetVideoName());
+                            this.objectiveSystem.SetStateString("PDAVideoVid", vid.GetRoq());
+                            this.objectiveSystem.SetStateString("PDAVideoIcon", vid.GetPreview());
+                            this.objectiveSystem.SetStateString("PDAVideoInfo", vid.GetInfo());
                         } else {
                             //FIXME: need to precache these in the player def
-                            objectiveSystem.SetStateString("PDAVideoVid", "sound/vo/video/welcome.tga");
-                            objectiveSystem.SetStateString("PDAVideoIcon", "sound/vo/video/welcome.tga");
-                            objectiveSystem.SetStateString("PDAVideoTitle", "");
-                            objectiveSystem.SetStateString("PDAVideoInfo", "");
+                            this.objectiveSystem.SetStateString("PDAVideoVid", "sound/vo/video/welcome.tga");
+                            this.objectiveSystem.SetStateString("PDAVideoIcon", "sound/vo/video/welcome.tga");
+                            this.objectiveSystem.SetStateString("PDAVideoTitle", "");
+                            this.objectiveSystem.SetStateString("PDAVideoInfo", "");
                         }
                     } else {
                         // Selected, non-personal pda
                         // Add audio logs
                         if (updatePDASel) {
-                            objectiveSystem.HandleNamedEvent("playerPDANotActive");
-                            objectiveSystem.SetStateString("pda_personal", "0");
-                            inventory.pdaOpened = true;
+                            this.objectiveSystem.HandleNamedEvent("playerPDANotActive");
+                            this.objectiveSystem.SetStateString("pda_personal", "0");
+                            this.inventory.pdaOpened = true;
                         }
-                        objectiveSystem.SetStateString("pda_location", pda.GetPost());
-                        objectiveSystem.SetStateString("pda_name", pda.GetFullName());
-                        int audioCount = AddGuiPDAData(DECL_AUDIO, "listPDAAudio", pda, objectiveSystem);
-                        objectiveSystem.SetStateInt("audioLogCount", audioCount);
-                        sel = objectiveSystem.State().GetInt("listPDAAudio_sel_0", "0");
+                        this.objectiveSystem.SetStateString("pda_location", pda.GetPost());
+                        this.objectiveSystem.SetStateString("pda_name", pda.GetFullName());
+                        final int audioCount = AddGuiPDAData(DECL_AUDIO, "listPDAAudio", pda, this.objectiveSystem);
+                        this.objectiveSystem.SetStateInt("audioLogCount", audioCount);
+                        sel = this.objectiveSystem.State().GetInt("listPDAAudio_sel_0", "0");
                         idDeclAudio aud = null;
                         if (sel >= 0) {
                             aud = pda.GetAudioByIndex(sel);
                         }
                         if (aud != null) {
-                            pdaAudio.oSet(aud.GetWave());
-                            objectiveSystem.SetStateString("PDAAudioTitle", aud.GetAudioName());
-                            objectiveSystem.SetStateString("PDAAudioIcon", aud.GetPreview());
-                            objectiveSystem.SetStateString("PDAAudioInfo", aud.GetInfo());
+                            this.pdaAudio.oSet(aud.GetWave());
+                            this.objectiveSystem.SetStateString("PDAAudioTitle", aud.GetAudioName());
+                            this.objectiveSystem.SetStateString("PDAAudioIcon", aud.GetPreview());
+                            this.objectiveSystem.SetStateString("PDAAudioInfo", aud.GetInfo());
                         } else {
-                            objectiveSystem.SetStateString("PDAAudioIcon", "sound/vo/video/welcome.tga");
-                            objectiveSystem.SetStateString("PDAAutioTitle", "");
-                            objectiveSystem.SetStateString("PDAAudioInfo", "");
+                            this.objectiveSystem.SetStateString("PDAAudioIcon", "sound/vo/video/welcome.tga");
+                            this.objectiveSystem.SetStateString("PDAAutioTitle", "");
+                            this.objectiveSystem.SetStateString("PDAAudioInfo", "");
                         }
                     }
                     // add emails
                     name = "";
                     data = "";
-                    int numEmails = pda.GetNumEmails();
+                    final int numEmails = pda.GetNumEmails();
                     if (numEmails > 0) {
-                        AddGuiPDAData(DECL_EMAIL, "listPDAEmail", pda, objectiveSystem);
-                        sel = objectiveSystem.State().GetInt("listPDAEmail_sel_0", "-1");
-                        if (sel >= 0 && sel < numEmails) {
+                        AddGuiPDAData(DECL_EMAIL, "listPDAEmail", pda, this.objectiveSystem);
+                        sel = this.objectiveSystem.State().GetInt("listPDAEmail_sel_0", "-1");
+                        if ((sel >= 0) && (sel < numEmails)) {
                             final idDeclEmail email = pda.GetEmailByIndex(sel);
                             name = email.GetSubject();
                             data = email.GetBody();
                         }
                     }
-                    objectiveSystem.SetStateString("PDAEmailTitle", name);
-                    objectiveSystem.SetStateString("PDAEmailText", data);
+                    this.objectiveSystem.SetStateString("PDAEmailTitle", name);
+                    this.objectiveSystem.SetStateString("PDAEmailText", data);
                 }
             }
-            if (objectiveSystem.State().GetInt("listPDA_sel_0", "-1") == -1) {
-                objectiveSystem.SetStateInt("listPDA_sel_0", 0);
+            if (this.objectiveSystem.State().GetInt("listPDA_sel_0", "-1") == -1) {
+                this.objectiveSystem.SetStateInt("listPDA_sel_0", 0);
             }
-            objectiveSystem.StateChanged(gameLocal.time);
+            this.objectiveSystem.StateChanged(gameLocal.time);
         }
 
         private int AddGuiPDAData(final declType_t dataType, final String listName, final idDeclPDA src, idUserInterface gui) {
@@ -8184,11 +8185,11 @@ public class Player {
                 }
                 return c;
             } else if (dataType == DECL_VIDEO) {
-                c = inventory.videos.Num();
+                c = this.inventory.videos.Num();
                 for (i = 0; i < c; i++) {
                     final idDeclVideo video = GetVideo(i);
                     if (video == null) {
-                        work = va("Video CD %s not found", inventory.videos.oGet(i).toString());
+                        work = va("Video CD %s not found", this.inventory.videos.oGet(i).toString());
                     } else {
                         work = video.GetVideoName();
                     }
@@ -8203,36 +8204,36 @@ public class Player {
 //
 
         private void UpdateObjectiveInfo() {
-            if (objectiveSystem == null) {
+            if (this.objectiveSystem == null) {
                 return;
             }
-            objectiveSystem.SetStateString("objective1", "");
-            objectiveSystem.SetStateString("objective2", "");
-            objectiveSystem.SetStateString("objective3", "");
-            for (int i = 0; i < inventory.objectiveNames.Num(); i++) {
-                objectiveSystem.SetStateString(va("objective%d", i + 1), "1");
-                objectiveSystem.SetStateString(va("objectivetitle%d", i + 1), inventory.objectiveNames.oGet(i).title.toString());
-                objectiveSystem.SetStateString(va("objectivetext%d", i + 1), inventory.objectiveNames.oGet(i).text.toString());
-                objectiveSystem.SetStateString(va("objectiveshot%d", i + 1), inventory.objectiveNames.oGet(i).screenshot.toString());
+            this.objectiveSystem.SetStateString("objective1", "");
+            this.objectiveSystem.SetStateString("objective2", "");
+            this.objectiveSystem.SetStateString("objective3", "");
+            for (int i = 0; i < this.inventory.objectiveNames.Num(); i++) {
+                this.objectiveSystem.SetStateString(va("objective%d", i + 1), "1");
+                this.objectiveSystem.SetStateString(va("objectivetitle%d", i + 1), this.inventory.objectiveNames.oGet(i).title.toString());
+                this.objectiveSystem.SetStateString(va("objectivetext%d", i + 1), this.inventory.objectiveNames.oGet(i).text.toString());
+                this.objectiveSystem.SetStateString(va("objectiveshot%d", i + 1), this.inventory.objectiveNames.oGet(i).screenshot.toString());
             }
-            objectiveSystem.StateChanged(gameLocal.time);
+            this.objectiveSystem.StateChanged(gameLocal.time);
         }
 
         private void UseVehicle() {
-            trace_s[] trace = {null};
+            final trace_s[] trace = {null};
             idVec3 start, end;
             idEntity ent;
 
-            if (GetBindMaster() != null && GetBindMaster().IsType(idAFEntity_Vehicle.class)) {
+            if ((GetBindMaster() != null) && GetBindMaster().IsType(idAFEntity_Vehicle.class)) {
                 Show();
                 ((idAFEntity_Vehicle) GetBindMaster()).Use(this);
             } else {
                 start = GetEyePosition();
-                end = start.oPlus(viewAngles.ToForward().oMultiply(80.0f));
+                end = start.oPlus(this.viewAngles.ToForward().oMultiply(80.0f));
                 gameLocal.clip.TracePoint(trace, start, end, MASK_SHOT_RENDERMODEL, this);
                 if (trace[0].fraction < 1.0f) {
                     ent = gameLocal.entities[ trace[0].c.entityNum];
-                    if (ent != null && ent.IsType(idAFEntity_Vehicle.class)) {
+                    if ((ent != null) && ent.IsType(idAFEntity_Vehicle.class)) {
                         Hide();
                         ((idAFEntity_Vehicle) ent).Use(this);
                     }
@@ -8241,43 +8242,43 @@ public class Player {
         }
 
         private void Event_GetButtons() {
-            idThread.ReturnInt(usercmd.buttons);
+            idThread.ReturnInt(this.usercmd.buttons);
         }
 
         private void Event_GetMove() {
-            idVec3 move = new idVec3(usercmd.forwardmove, usercmd.rightmove, usercmd.upmove);
+            final idVec3 move = new idVec3(this.usercmd.forwardmove, this.usercmd.rightmove, this.usercmd.upmove);
             idThread.ReturnVector(move);
         }
 
         private void Event_GetViewAngles() {
-            idThread.ReturnVector(new idVec3(viewAngles.oGet(0), viewAngles.oGet(1), viewAngles.oGet(2)));
+            idThread.ReturnVector(new idVec3(this.viewAngles.oGet(0), this.viewAngles.oGet(1), this.viewAngles.oGet(2)));
         }
 
         private void Event_StopFxFov() {
-            fxFov = false;
+            this.fxFov = false;
         }
 
         private void Event_EnableWeapon() {
-            hiddenWeapon = gameLocal.world.spawnArgs.GetBool("no_Weapons");
-            weaponEnabled = true;
-            if (weapon.GetEntity() != null) {
-                weapon.GetEntity().ExitCinematic();
+            this.hiddenWeapon = gameLocal.world.spawnArgs.GetBool("no_Weapons");
+            this.weaponEnabled = true;
+            if (this.weapon.GetEntity() != null) {
+                this.weapon.GetEntity().ExitCinematic();
             }
         }
 
         private void Event_DisableWeapon() {
-            hiddenWeapon = gameLocal.world.spawnArgs.GetBool("no_Weapons");
-            weaponEnabled = false;
-            if (weapon.GetEntity() != null) {
-                weapon.GetEntity().EnterCinematic();
+            this.hiddenWeapon = gameLocal.world.spawnArgs.GetBool("no_Weapons");
+            this.weaponEnabled = false;
+            if (this.weapon.GetEntity() != null) {
+                this.weapon.GetEntity().EnterCinematic();
             }
         }
 
         private void Event_GetCurrentWeapon() {
             final String weapon;
 
-            if (currentWeapon >= 0) {
-                weapon = spawnArgs.GetString(va("def_weapon%d", currentWeapon));
+            if (this.currentWeapon >= 0) {
+                weapon = this.spawnArgs.GetString(va("def_weapon%d", this.currentWeapon));
                 idThread.ReturnString(weapon);
             } else {
                 idThread.ReturnString("");
@@ -8287,12 +8288,12 @@ public class Player {
         private void Event_GetPreviousWeapon() {
             final String weapon;
 
-            if (previousWeapon >= 0) {
-                int pw = (gameLocal.world.spawnArgs.GetBool("no_Weapons")) ? 0 : previousWeapon;
-                weapon = spawnArgs.GetString(va("def_weapon%d", pw));
+            if (this.previousWeapon >= 0) {
+                final int pw = (gameLocal.world.spawnArgs.GetBool("no_Weapons")) ? 0 : this.previousWeapon;
+                weapon = this.spawnArgs.GetString(va("def_weapon%d", pw));
                 idThread.ReturnString(weapon);
             } else {
-                idThread.ReturnString(spawnArgs.GetString("def_weapon0"));
+                idThread.ReturnString(this.spawnArgs.GetString("def_weapon0"));
             }
         }
 
@@ -8305,16 +8306,16 @@ public class Player {
                 return;
             }
 
-            if (hiddenWeapon && gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
-                idealWeapon = weapon_fists;
-                weapon.GetEntity().HideWeapon();
+            if (this.hiddenWeapon && gameLocal.world.spawnArgs.GetBool("no_Weapons")) {
+                this.idealWeapon = this.weapon_fists;
+                this.weapon.GetEntity().HideWeapon();
                 return;
             }
 
             weaponNum = -1;
             for (i = 0; i < MAX_WEAPONS; i++) {
-                if ((inventory.weapons & (1 << i)) != 0) {
-                    final String weap = spawnArgs.GetString(va("def_weapon%d", i));
+                if ((this.inventory.weapons & (1 << i)) != 0) {
+                    final String weap = this.spawnArgs.GetString(va("def_weapon%d", i));
                     if (NOT(idStr.Cmp(weap, weaponName.value))) {
                         weaponNum = i;
                         break;
@@ -8323,18 +8324,18 @@ public class Player {
             }
 
             if (weaponNum < 0) {
-                gameLocal.Warning("%s is not carrying weapon '%s'", name, weaponName.value);
+                gameLocal.Warning("%s is not carrying weapon '%s'", this.name, weaponName.value);
                 return;
             }
 
-            hiddenWeapon = false;
-            idealWeapon = weaponNum;
+            this.hiddenWeapon = false;
+            this.idealWeapon = weaponNum;
 
             UpdateHudWeapon();
         }
 
         private void Event_GetWeaponEntity() {
-            idThread.ReturnEntity(weapon.GetEntity());
+            idThread.ReturnEntity(this.weapon.GetEntity());
         }
 
         private void Event_OpenPDA() {
@@ -8347,7 +8348,7 @@ public class Player {
 //
 
         private void Event_InPDA() {
-            idThread.ReturnInt(objectiveSystemOpen);
+            idThread.ReturnInt(this.objectiveSystemOpen);
         }
 
         private void Event_ExitTeleporter() {
@@ -8355,9 +8356,9 @@ public class Player {
             float pushVel;
 
             // verify and setup
-            exitEnt = teleportEntity.GetEntity();
+            exitEnt = this.teleportEntity.GetEntity();
             if (NOT(exitEnt)) {
-                common.DPrintf("Event_ExitTeleporter player %d while not being teleported\n", entityNumber);
+                common.DPrintf("Event_ExitTeleporter player %d while not being teleported\n", this.entityNumber);
                 return;
             }
 
@@ -8371,27 +8372,27 @@ public class Player {
             // setup origin and push according to the exit target
             SetOrigin(exitEnt.GetPhysics().GetOrigin().oPlus(new idVec3(0, 0, CM_CLIP_EPSILON)));
             SetViewAngles(exitEnt.GetPhysics().GetAxis().ToAngles());
-            physicsObj.SetLinearVelocity(exitEnt.GetPhysics().GetAxis().oGet(0).oMultiply(pushVel));
-            physicsObj.ClearPushedVelocity();
+            this.physicsObj.SetLinearVelocity(exitEnt.GetPhysics().GetAxis().oGet(0).oMultiply(pushVel));
+            this.physicsObj.ClearPushedVelocity();
             // teleport fx
-            playerView.Flash(colorWhite, 120);
+            this.playerView.Flash(colorWhite, 120);
 
             // clear the ik heights so model doesn't appear in the wrong place
-            walkIK.EnableAll();
+            this.walkIK.EnableAll();
 
             UpdateVisuals();
 
             StartSound("snd_teleport_exit", SND_CHANNEL_ANY, 0, false, null);
 
-            if (teleportKiller != -1) {
+            if (this.teleportKiller != -1) {
                 // we got killed while being teleported
-                Damage(gameLocal.entities[ teleportKiller], gameLocal.entities[ teleportKiller], getVec3_origin(), "damage_telefrag", 1.0f, INVALID_JOINT);
-                teleportKiller = -1;
+                Damage(gameLocal.entities[ this.teleportKiller], gameLocal.entities[ this.teleportKiller], getVec3_origin(), "damage_telefrag", 1.0f, INVALID_JOINT);
+                this.teleportKiller = -1;
             } else {
                 // kill anything that would have waited at teleport exit
                 gameLocal.KillBox(this);
             }
-            teleportEntity.oSet(null);
+            this.teleportEntity.oSet(null);
         }
 
         private void Event_HideTip() {
@@ -8399,12 +8400,12 @@ public class Player {
         }
 
         private void Event_LevelTrigger() {
-            idStr mapName = new idStr(gameLocal.GetMapName());
+            final idStr mapName = new idStr(gameLocal.GetMapName());
             mapName.StripPath();
             mapName.StripFileExtension();
-            for (int i = inventory.levelTriggers.Num() - 1; i >= 0; i--) {
-                if (idStr.Icmp(mapName, inventory.levelTriggers.oGet(i).levelName) == 0) {
-                    idEntity ent = gameLocal.FindEntity(inventory.levelTriggers.oGet(i).triggerName);
+            for (int i = this.inventory.levelTriggers.Num() - 1; i >= 0; i--) {
+                if (idStr.Icmp(mapName, this.inventory.levelTriggers.oGet(i).levelName) == 0) {
+                    final idEntity ent = gameLocal.FindEntity(this.inventory.levelTriggers.oGet(i).triggerName);
                     if (ent != null) {
                         ent.PostEventMS(EV_Activate, 1, this);
                     }
@@ -8418,8 +8419,8 @@ public class Player {
         private void Event_GetIdealWeapon() {
             final String weapon;
 
-            if (idealWeapon >= 0) {
-                weapon = spawnArgs.GetString(va("def_weapon%d", idealWeapon));
+            if (this.idealWeapon >= 0) {
+                weapon = this.spawnArgs.GetString(va("def_weapon%d", this.idealWeapon));
                 idThread.ReturnString(weapon);
             } else {
                 idThread.ReturnString("");
@@ -8435,5 +8436,5 @@ public class Player {
             return eventCallbacks;
         }
 
-    };
+    }
 }

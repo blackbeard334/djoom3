@@ -30,5 +30,5 @@ public class AASBuild_File {
         int numFaceIndexes;
         int numAreas;
         int numNodes;
-    };
+    }
 }

@@ -49,8 +49,8 @@ public class Bounds {
         }
 
         public idBounds(final idVec3 mins, final idVec3 maxs) {
-            b[0] = mins;
-            b[1] = maxs;
+            this.b[0] = mins;
+            this.b[1] = maxs;
         }
 
         public idBounds(final idBounds bounds) {
@@ -58,13 +58,13 @@ public class Bounds {
         }
 
         public idBounds(final idVec3 point) {
-            b[0].oSet(point);
-            b[1].oSet(point);
+            this.b[0].oSet(point);
+            this.b[1].oSet(point);
         }
 
         public void set(final float v0, final float v1, final float v2, final float v3, final float v4, final float v5) {
-            b[0] = new idVec3(v0, v1, v2);
-            b[1] = new idVec3(v3, v4, v5);
+            this.b[0] = new idVec3(v0, v1, v2);
+            this.b[1] = new idVec3(v3, v4, v5);
         }
 
         public final void oSet(final idBounds bounds) {
@@ -75,40 +75,40 @@ public class Bounds {
 //public	final idVec3 	operator[]( final int index ) ;
 
         public idVec3 oGet(final int index) {
-            return b[index];
+            return this.b[index];
         }
 
         public float oGet(final int index1, final int index2) {
-            return b[index1].oGet(index2);
+            return this.b[index1].oGet(index2);
         }
 
         public idVec3 oSet(final int index, final idVec3 t) {
-            return b[index].oSet(t);
+            return this.b[index].oSet(t);
         }
 
         public float oSet(final int x, final int y, final float value) {
-            return b[x].oSet(y, value);
+            return this.b[x].oSet(y, value);
         }
 
         // returns translated bounds
         public idBounds oPlus(final idVec3 t) {
-            return new idBounds(b[0].oPlus(t), b[1].oPlus(t));
+            return new idBounds(this.b[0].oPlus(t), this.b[1].oPlus(t));
         }
 
         // translate the bounds
         public idBounds oPluSet(final idVec3 t) {
-            b[0].oPluSet(t);
-            b[1].oPluSet(t);
+            this.b[0].oPluSet(t);
+            this.b[1].oPluSet(t);
             return this;
         }
 
         public idVec3 oPluSet(final int index, final idVec3 t) {
-            return b[index].oPluSet(t);
+            return this.b[index].oPluSet(t);
         }
 
         // returns rotated bounds
         public idBounds oMultiply(final idMat3 r) {
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
             bounds.FromTransformedBounds(this, getVec3_origin(), r);
             return bounds;
         }
@@ -132,39 +132,39 @@ public class Bounds {
         }
 
         public idBounds oMinus(final idBounds a) {
-            assert (b[1].oGet(0) - b[0].oGet(0) > a.b[1].oGet(0) - a.b[0].oGet(0)
-                    && b[1].oGet(1) - b[0].oGet(1) > a.b[1].oGet(1) - a.b[0].oGet(1)
-                    && b[1].oGet(2) - b[0].oGet(2) > a.b[1].oGet(2) - a.b[0].oGet(2));
+            assert (((this.b[1].oGet(0) - this.b[0].oGet(0)) > (a.b[1].oGet(0) - a.b[0].oGet(0)))
+                    && ((this.b[1].oGet(1) - this.b[0].oGet(1)) > (a.b[1].oGet(1) - a.b[0].oGet(1)))
+                    && ((this.b[1].oGet(2) - this.b[0].oGet(2)) > (a.b[1].oGet(2) - a.b[0].oGet(2))));
             return new idBounds(
-                    new idVec3(b[0].oGet(0) + a.b[1].oGet(0), b[0].oGet(1) + a.b[1].oGet(1), b[0].oGet(2) + a.b[1].oGet(2)),
-                    new idVec3(b[1].oGet(0) + a.b[0].oGet(0), b[1].oGet(1) + a.b[0].oGet(1), b[1].oGet(2) + a.b[0].oGet(2)));
+                    new idVec3(this.b[0].oGet(0) + a.b[1].oGet(0), this.b[0].oGet(1) + a.b[1].oGet(1), this.b[0].oGet(2) + a.b[1].oGet(2)),
+                    new idVec3(this.b[1].oGet(0) + a.b[0].oGet(0), this.b[1].oGet(1) + a.b[0].oGet(1), this.b[1].oGet(2) + a.b[0].oGet(2)));
         }
 
         public idBounds oMinSet(final idBounds a) {
-            assert (b[1].oGet(0) - b[0].oGet(0) > a.b[1].oGet(0) - a.b[0].oGet(0)
-                    && b[1].oGet(1) - b[0].oGet(1) > a.b[1].oGet(1) - a.b[0].oGet(1)
-                    && b[1].oGet(2) - b[0].oGet(2) > a.b[1].oGet(2) - a.b[0].oGet(2));
-            b[0].oPluSet(a.b[1]);
-            b[1].oPluSet(a.b[0]);
+            assert (((this.b[1].oGet(0) - this.b[0].oGet(0)) > (a.b[1].oGet(0) - a.b[0].oGet(0)))
+                    && ((this.b[1].oGet(1) - this.b[0].oGet(1)) > (a.b[1].oGet(1) - a.b[0].oGet(1)))
+                    && ((this.b[1].oGet(2) - this.b[0].oGet(2)) > (a.b[1].oGet(2) - a.b[0].oGet(2))));
+            this.b[0].oPluSet(a.b[1]);
+            this.b[1].oPluSet(a.b[0]);
             return this;
         }
 
         public idBounds oMinSet(final idVec3 t) {
-            b[0].oMinSet(t);
-            b[1].oMinSet(t);
+            this.b[0].oMinSet(t);
+            this.b[1].oMinSet(t);
             return this;
         }
 
         public idVec3 oMinSet(final int index, final idVec3 t) {
-            return b[index].oMinSet(t);
+            return this.b[index].oMinSet(t);
         }
 
         public boolean Compare(final idBounds a) {							// exact compare, no epsilon
-            return (b[0].Compare(a.b[0]) && b[1].Compare(a.b[1]));
+            return (this.b[0].Compare(a.b[0]) && this.b[1].Compare(a.b[1]));
         }
 
         public boolean Compare(final idBounds a, final float epsilon) {	// compare with epsilon
-            return (b[0].Compare(a.b[0], epsilon) && b[1].Compare(a.b[1], epsilon));
+            return (this.b[0].Compare(a.b[0], epsilon) && this.b[1].Compare(a.b[1], epsilon));
         }
 //public	boolean			operator==(	final idBounds a ) ;						// exact compare, no epsilon
 //public	boolean			operator!=(	final idBounds a ) ;						// exact compare, no epsilon
@@ -172,7 +172,7 @@ public class Bounds {
         @Override
         public int hashCode() {
             int hash = 5;
-            hash = 11 * hash + Arrays.deepHashCode(this.b);
+            hash = (11 * hash) + Arrays.deepHashCode(this.b);
             return hash;
         }
 
@@ -193,18 +193,18 @@ public class Bounds {
 
         // inside out bounds
         public void Clear() {
-            b[0] = new idVec3(idMath.INFINITY, idMath.INFINITY, idMath.INFINITY);
-            b[1] = new idVec3(-idMath.INFINITY, -idMath.INFINITY, -idMath.INFINITY);//TODO:set faster than new objects?
+            this.b[0] = new idVec3(idMath.INFINITY, idMath.INFINITY, idMath.INFINITY);
+            this.b[1] = new idVec3(-idMath.INFINITY, -idMath.INFINITY, -idMath.INFINITY);//TODO:set faster than new objects?
         }
 
         // single point at origin
         public void Zero() {
-            b[0].x = b[0].y = b[0].z = b[1].x = b[1].y = b[1].z = 0;
+            this.b[0].x = this.b[0].y = this.b[0].z = this.b[1].x = this.b[1].y = this.b[1].z = 0;
         }
 
         // returns center of bounds
         public idVec3 GetCenter() {
-            return new idVec3((b[1].oGet(0) + b[0].oGet(0)) * 0.5f, (b[1].oGet(1) + b[0].oGet(1)) * 0.5f, (b[1].oGet(2) + b[0].oGet(2)) * 0.5f);
+            return new idVec3((this.b[1].oGet(0) + this.b[0].oGet(0)) * 0.5f, (this.b[1].oGet(1) + this.b[0].oGet(1)) * 0.5f, (this.b[1].oGet(2) + this.b[0].oGet(2)) * 0.5f);
         }
 
         // returns the radius relative to the bounds origin
@@ -214,8 +214,8 @@ public class Bounds {
 
             total = 0.0f;
             for (i = 0; i < 3; i++) {
-                b0 = idMath.Fabs(b[0].oGet(i));
-                b1 = idMath.Fabs(b[1].oGet(i));
+                b0 = idMath.Fabs(this.b[0].oGet(i));
+                b1 = idMath.Fabs(this.b[1].oGet(i));
                 if (b0 > b1) {
                     total += b0 * b0;
                 } else {
@@ -232,8 +232,8 @@ public class Bounds {
 
             total = 0.0f;
             for (i = 0; i < 3; i++) {
-                b0 = (float) idMath.Fabs(center.oGet(i) - b[0].oGet(i));
-                b1 = (float) idMath.Fabs(b[1].oGet(i) - center.oGet(i));
+                b0 = idMath.Fabs(center.oGet(i) - this.b[0].oGet(i));
+                b1 = idMath.Fabs(this.b[1].oGet(i) - center.oGet(i));
                 if (b0 > b1) {
                     total += b0 * b0;
                 } else {
@@ -245,42 +245,42 @@ public class Bounds {
 
         // returns the volume of the bounds
         public float GetVolume() {
-            if (b[0].oGet(0) >= b[1].oGet(0) || b[0].oGet(1) >= b[1].oGet(1) || b[0].oGet(2) >= b[1].oGet(2)) {
+            if ((this.b[0].oGet(0) >= this.b[1].oGet(0)) || (this.b[0].oGet(1) >= this.b[1].oGet(1)) || (this.b[0].oGet(2) >= this.b[1].oGet(2))) {
                 return 0.0f;
             }
-            return ((b[1].oGet(0) - b[0].oGet(0)) * (b[1].oGet(1) - b[0].oGet(1)) * (b[1].oGet(2) - b[0].oGet(2)));
+            return ((this.b[1].oGet(0) - this.b[0].oGet(0)) * (this.b[1].oGet(1) - this.b[0].oGet(1)) * (this.b[1].oGet(2) - this.b[0].oGet(2)));
         }
 
         // returns true if bounds are inside out
         public boolean IsCleared() {
-            return b[0].oGet(0) > b[1].oGet(0);
+            return this.b[0].oGet(0) > this.b[1].oGet(0);
         }
 
         // add the point, returns true if the bounds expanded
         public boolean AddPoint(final idVec3 v) {
             boolean expanded = false;
-            if (v.oGet(0) < b[0].oGet(0)) {
-                b[0].oSet(0, v.oGet(0));
+            if (v.oGet(0) < this.b[0].oGet(0)) {
+                this.b[0].oSet(0, v.oGet(0));
                 expanded = true;
             }
-            if (v.oGet(0) > b[1].oGet(0)) {
-                b[1].oSet(0, v.oGet(0));
+            if (v.oGet(0) > this.b[1].oGet(0)) {
+                this.b[1].oSet(0, v.oGet(0));
                 expanded = true;
             }
-            if (v.oGet(1) < b[0].oGet(1)) {
-                b[0].oSet(1, v.oGet(1));
+            if (v.oGet(1) < this.b[0].oGet(1)) {
+                this.b[0].oSet(1, v.oGet(1));
                 expanded = true;
             }
-            if (v.oGet(1) > b[1].oGet(1)) {
-                b[1].oSet(1, v.oGet(1));
+            if (v.oGet(1) > this.b[1].oGet(1)) {
+                this.b[1].oSet(1, v.oGet(1));
                 expanded = true;
             }
-            if (v.oGet(2) < b[0].oGet(2)) {
-                b[0].oSet(2, v.oGet(2));
+            if (v.oGet(2) < this.b[0].oGet(2)) {
+                this.b[0].oSet(2, v.oGet(2));
                 expanded = true;
             }
-            if (v.oGet(2) > b[1].oGet(2)) {
-                b[1].oSet(2, v.oGet(2));
+            if (v.oGet(2) > this.b[1].oGet(2)) {
+                this.b[1].oSet(2, v.oGet(2));
                 expanded = true;
             }
             return expanded;
@@ -289,28 +289,28 @@ public class Bounds {
         // add the bounds, returns true if the bounds expanded
         public boolean AddBounds(final idBounds a) {
             boolean expanded = false;
-            if (a.b[0].oGet(0) < b[0].oGet(0)) {
-                b[0].oSet(0, a.b[0].oGet(0));
+            if (a.b[0].oGet(0) < this.b[0].oGet(0)) {
+                this.b[0].oSet(0, a.b[0].oGet(0));
                 expanded = true;
             }
-            if (a.b[0].oGet(1) < b[0].oGet(1)) {
-                b[0].oSet(1, a.b[0].oGet(1));
+            if (a.b[0].oGet(1) < this.b[0].oGet(1)) {
+                this.b[0].oSet(1, a.b[0].oGet(1));
                 expanded = true;
             }
-            if (a.b[0].oGet(2) < b[0].oGet(2)) {
-                b[0].oSet(2, a.b[0].oGet(2));
+            if (a.b[0].oGet(2) < this.b[0].oGet(2)) {
+                this.b[0].oSet(2, a.b[0].oGet(2));
                 expanded = true;
             }
-            if (a.b[1].oGet(0) > b[1].oGet(0)) {
-                b[1].oSet(0, a.b[1].oGet(0));
+            if (a.b[1].oGet(0) > this.b[1].oGet(0)) {
+                this.b[1].oSet(0, a.b[1].oGet(0));
                 expanded = true;
             }
-            if (a.b[1].oGet(1) > b[1].oGet(1)) {
-                b[1].oSet(1, a.b[1].oGet(1));
+            if (a.b[1].oGet(1) > this.b[1].oGet(1)) {
+                this.b[1].oSet(1, a.b[1].oGet(1));
                 expanded = true;
             }
-            if (a.b[1].oGet(2) > b[1].oGet(2)) {
-                b[1].oSet(2, a.b[1].oGet(2));
+            if (a.b[1].oGet(2) > this.b[1].oGet(2)) {
+                this.b[1].oSet(2, a.b[1].oGet(2));
                 expanded = true;
             }
             return expanded;
@@ -318,35 +318,35 @@ public class Bounds {
 
         // return intersection of this bounds with the given bounds
         public idBounds Intersect(final idBounds a) {
-            idBounds n = new idBounds();
-            n.b[0].oSet(0, (a.b[0].oGet(0) > b[0].oGet(0)) ? a.b[0].oGet(0) : b[0].oGet(0));
-            n.b[0].oSet(1, (a.b[0].oGet(1) > b[0].oGet(1)) ? a.b[0].oGet(1) : b[0].oGet(1));
-            n.b[0].oSet(2, (a.b[0].oGet(2) > b[0].oGet(2)) ? a.b[0].oGet(2) : b[0].oGet(2));
-            n.b[1].oSet(0, (a.b[1].oGet(0) < b[1].oGet(0)) ? a.b[1].oGet(0) : b[1].oGet(0));
-            n.b[1].oSet(1, (a.b[1].oGet(1) < b[1].oGet(1)) ? a.b[1].oGet(1) : b[1].oGet(1));
-            n.b[1].oSet(2, (a.b[1].oGet(2) < b[1].oGet(2)) ? a.b[1].oGet(2) : b[1].oGet(2));
+            final idBounds n = new idBounds();
+            n.b[0].oSet(0, (a.b[0].oGet(0) > this.b[0].oGet(0)) ? a.b[0].oGet(0) : this.b[0].oGet(0));
+            n.b[0].oSet(1, (a.b[0].oGet(1) > this.b[0].oGet(1)) ? a.b[0].oGet(1) : this.b[0].oGet(1));
+            n.b[0].oSet(2, (a.b[0].oGet(2) > this.b[0].oGet(2)) ? a.b[0].oGet(2) : this.b[0].oGet(2));
+            n.b[1].oSet(0, (a.b[1].oGet(0) < this.b[1].oGet(0)) ? a.b[1].oGet(0) : this.b[1].oGet(0));
+            n.b[1].oSet(1, (a.b[1].oGet(1) < this.b[1].oGet(1)) ? a.b[1].oGet(1) : this.b[1].oGet(1));
+            n.b[1].oSet(2, (a.b[1].oGet(2) < this.b[1].oGet(2)) ? a.b[1].oGet(2) : this.b[1].oGet(2));
             return n;
         }
 
         // intersect this bounds with the given bounds
         public idBounds IntersectSelf(final idBounds a) {
-            if (a.b[0].oGet(0) > b[0].oGet(0)) {
-                b[0].oSet(0, a.b[0].oGet(0));
+            if (a.b[0].oGet(0) > this.b[0].oGet(0)) {
+                this.b[0].oSet(0, a.b[0].oGet(0));
             }
-            if (a.b[0].oGet(1) > b[0].oGet(1)) {
-                b[0].oSet(1, a.b[0].oGet(1));
+            if (a.b[0].oGet(1) > this.b[0].oGet(1)) {
+                this.b[0].oSet(1, a.b[0].oGet(1));
             }
-            if (a.b[0].oGet(2) > b[0].oGet(2)) {
-                b[0].oSet(2, a.b[0].oGet(2));
+            if (a.b[0].oGet(2) > this.b[0].oGet(2)) {
+                this.b[0].oSet(2, a.b[0].oGet(2));
             }
-            if (a.b[1].oGet(0) < b[1].oGet(0)) {
-                b[1].oSet(0, a.b[1].oGet(0));
+            if (a.b[1].oGet(0) < this.b[1].oGet(0)) {
+                this.b[1].oSet(0, a.b[1].oGet(0));
             }
-            if (a.b[1].oGet(1) < b[1].oGet(1)) {
-                b[1].oSet(1, a.b[1].oGet(1));
+            if (a.b[1].oGet(1) < this.b[1].oGet(1)) {
+                this.b[1].oSet(1, a.b[1].oGet(1));
             }
-            if (a.b[1].oGet(2) < b[1].oGet(2)) {
-                b[1].oSet(2, a.b[1].oGet(2));
+            if (a.b[1].oGet(2) < this.b[1].oGet(2)) {
+                this.b[1].oSet(2, a.b[1].oGet(2));
             }
             return this;
         }
@@ -356,35 +356,35 @@ public class Bounds {
          */
         public idBounds Expand(final float d) {
             return new idBounds(
-                    new idVec3(b[0].oGet(0) - d, b[0].oGet(1) - d, b[0].oGet(2) - d),
-                    new idVec3(b[1].oGet(0) + d, b[1].oGet(1) + d, b[1].oGet(2) + d));
+                    new idVec3(this.b[0].oGet(0) - d, this.b[0].oGet(1) - d, this.b[0].oGet(2) - d),
+                    new idVec3(this.b[1].oGet(0) + d, this.b[1].oGet(1) + d, this.b[1].oGet(2) + d));
         }
 
         /**
          * expand bounds in all directions with the given value
          */
         public idBounds ExpandSelf(final float d) {
-            b[0].oMinSet(new idVec3(d, d, d));
-            b[1].x += d;
-            b[1].y += d;
-            b[1].z += d;
+            this.b[0].oMinSet(new idVec3(d, d, d));
+            this.b[1].x += d;
+            this.b[1].y += d;
+            this.b[1].z += d;
             return this;
         }
 
         public idBounds Translate(final idVec3 translation) {// return translated bounds
-            return new idBounds(b[0].oPlus(translation), b[1].oPlus(translation));
+            return new idBounds(this.b[0].oPlus(translation), this.b[1].oPlus(translation));
         }
 
         // translate this bounds
         public idBounds TranslateSelf(final idVec3 translation) {
-            b[0].oPluSet(translation);
-            b[1].oPluSet(translation);
+            this.b[0].oPluSet(translation);
+            this.b[1].oPluSet(translation);
             return this;
         }
 
         // return rotated bounds
         public idBounds Rotate(final idMat3 rotation) {
-            idBounds bounds = new idBounds();
+            final idBounds bounds = new idBounds();
             bounds.FromTransformedBounds(this, getVec3_origin(), rotation);
             return bounds;
         }
@@ -399,17 +399,17 @@ public class Bounds {
             idVec3 center;
             float d1, d2;
 
-            center = (b[0].oPlus(b[1])).oMultiply(0.5f);
+            center = (this.b[0].oPlus(this.b[1])).oMultiply(0.5f);
 
             d1 = plane.Distance(center);
-            d2 = idMath.Fabs((b[1].oGet(0) - center.oGet(0)) * plane.Normal().oGet(0))
-                    + idMath.Fabs((b[1].oGet(1) - center.oGet(1)) * plane.Normal().oGet(1))
-                    + idMath.Fabs((b[1].oGet(2) - center.oGet(2)) * plane.Normal().oGet(2));
+            d2 = idMath.Fabs((this.b[1].oGet(0) - center.oGet(0)) * plane.Normal().oGet(0))
+                    + idMath.Fabs((this.b[1].oGet(1) - center.oGet(1)) * plane.Normal().oGet(1))
+                    + idMath.Fabs((this.b[1].oGet(2) - center.oGet(2)) * plane.Normal().oGet(2));
 
-            if (d1 - d2 > 0.0f) {
+            if ((d1 - d2) > 0.0f) {
                 return d1 - d2;
             }
-            if (d1 + d2 < 0.0f) {
+            if ((d1 + d2) < 0.0f) {
                 return d1 + d2;
             }
             return 0.0f;
@@ -423,17 +423,17 @@ public class Bounds {
             idVec3 center;
             float d1, d2;
 
-            center = (b[0].oPlus(b[1])).oMultiply(0.5f);
+            center = (this.b[0].oPlus(this.b[1])).oMultiply(0.5f);
 
             d1 = plane.Distance(center);
-            d2 = idMath.Fabs((b[1].oGet(0) - center.oGet(0)) * plane.Normal().oGet(0))
-                    + idMath.Fabs((b[1].oGet(1) - center.oGet(1)) * plane.Normal().oGet(1))
-                    + idMath.Fabs((b[1].oGet(2) - center.oGet(2)) * plane.Normal().oGet(2));
+            d2 = idMath.Fabs((this.b[1].oGet(0) - center.oGet(0)) * plane.Normal().oGet(0))
+                    + idMath.Fabs((this.b[1].oGet(1) - center.oGet(1)) * plane.Normal().oGet(1))
+                    + idMath.Fabs((this.b[1].oGet(2) - center.oGet(2)) * plane.Normal().oGet(2));
 
-            if (d1 - d2 > epsilon) {
+            if ((d1 - d2) > epsilon) {
                 return PLANESIDE_FRONT;
             }
-            if (d1 + d2 < -epsilon) {
+            if ((d1 + d2) < -epsilon) {
                 return PLANESIDE_BACK;
             }
             return PLANESIDE_CROSS;
@@ -441,8 +441,8 @@ public class Bounds {
 
         // includes touching
         public boolean ContainsPoint(final idVec3 p) {
-            if (p.oGet(0) < b[0].oGet(0) || p.oGet(1) < b[0].oGet(1) || p.oGet(2) < b[0].oGet(2)
-                    || p.oGet(0) > b[1].oGet(0) || p.oGet(1) > b[1].oGet(1) || p.oGet(2) > b[1].oGet(2)) {
+            if ((p.oGet(0) < this.b[0].oGet(0)) || (p.oGet(1) < this.b[0].oGet(1)) || (p.oGet(2) < this.b[0].oGet(2))
+                    || (p.oGet(0) > this.b[1].oGet(0)) || (p.oGet(1) > this.b[1].oGet(1)) || (p.oGet(2) > this.b[1].oGet(2))) {
                 return false;
             }
             return true;
@@ -450,8 +450,8 @@ public class Bounds {
 
         // includes touching
         public boolean IntersectsBounds(final idBounds a) {
-            if (a.b[1].oGet(0) < b[0].oGet(0) || a.b[1].oGet(1) < b[0].oGet(1) || a.b[1].oGet(2) < b[0].oGet(2)
-                    || a.b[0].oGet(0) > b[1].oGet(0) || a.b[0].oGet(1) > b[1].oGet(1) || a.b[0].oGet(2) > b[1].oGet(2)) {
+            if ((a.b[1].oGet(0) < this.b[0].oGet(0)) || (a.b[1].oGet(1) < this.b[0].oGet(1)) || (a.b[1].oGet(2) < this.b[0].oGet(2))
+                    || (a.b[0].oGet(0) > this.b[1].oGet(0)) || (a.b[0].oGet(1) > this.b[1].oGet(1)) || (a.b[0].oGet(2) > this.b[1].oGet(2))) {
                 return false;
             }
             return true;
@@ -465,39 +465,39 @@ public class Bounds {
          ============
          */
         public boolean LineIntersection(final idVec3 start, final idVec3 end) {
-            float[] ld = new float[3];
-            idVec3 center = (b[0].oPlus(b[1])).oMultiply(0.5f);
-            idVec3 extents = b[1].oMinus(center);
-            idVec3 lineDir = (end.oMinus(start)).oMultiply(0.5f);
-            idVec3 lineCenter = start.oPlus(lineDir);
-            idVec3 dir = lineCenter.oMinus(center);
+            final float[] ld = new float[3];
+            final idVec3 center = (this.b[0].oPlus(this.b[1])).oMultiply(0.5f);
+            final idVec3 extents = this.b[1].oMinus(center);
+            final idVec3 lineDir = (end.oMinus(start)).oMultiply(0.5f);
+            final idVec3 lineCenter = start.oPlus(lineDir);
+            final idVec3 dir = lineCenter.oMinus(center);
 
             ld[0] = idMath.Fabs(lineDir.oGet(0));
-            if (idMath.Fabs(dir.oGet(0)) > extents.oGet(0) + ld[0]) {
+            if (idMath.Fabs(dir.oGet(0)) > (extents.oGet(0) + ld[0])) {
                 return false;
             }
 
             ld[1] = idMath.Fabs(lineDir.oGet(1));
-            if (idMath.Fabs(dir.oGet(1)) > extents.oGet(1) + ld[1]) {
+            if (idMath.Fabs(dir.oGet(1)) > (extents.oGet(1) + ld[1])) {
                 return false;
             }
 
             ld[2] = idMath.Fabs(lineDir.oGet(2));
-            if (idMath.Fabs(dir.oGet(2)) > extents.oGet(2) + ld[2]) {
+            if (idMath.Fabs(dir.oGet(2)) > (extents.oGet(2) + ld[2])) {
                 return false;
             }
 
-            idVec3 cross = lineDir.Cross(dir);
+            final idVec3 cross = lineDir.Cross(dir);
 
-            if (idMath.Fabs(cross.oGet(0)) > extents.oGet(1) * ld[2] + extents.oGet(2) * ld[1]) {
+            if (idMath.Fabs(cross.oGet(0)) > ((extents.oGet(1) * ld[2]) + (extents.oGet(2) * ld[1]))) {
                 return false;
             }
 
-            if (idMath.Fabs(cross.oGet(1)) > extents.oGet(0) * ld[2] + extents.oGet(2) * ld[0]) {
+            if (idMath.Fabs(cross.oGet(1)) > ((extents.oGet(0) * ld[2]) + (extents.oGet(2) * ld[0]))) {
                 return false;
             }
 
-            if (idMath.Fabs(cross.oGet(2)) > extents.oGet(0) * ld[1] + extents.oGet(1) * ld[0]) {
+            if (idMath.Fabs(cross.oGet(2)) > ((extents.oGet(0) * ld[1]) + (extents.oGet(1) * ld[0]))) {
                 return false;
             }
 
@@ -516,14 +516,14 @@ public class Bounds {
         public boolean RayIntersection(final idVec3 start, final idVec3 dir, float scale[]) {// intersection point is start + dir * scale
             int i, ax0, ax1, ax2, side, inside;
             float f;
-            idVec3 hit = new idVec3();
+            final idVec3 hit = new idVec3();
 
             ax0 = -1;
             inside = 0;
             for (i = 0; i < 3; i++) {
-                if (start.oGet(i) < b[0].oGet(i)) {
+                if (start.oGet(i) < this.b[0].oGet(i)) {
                     side = 0;
-                } else if (start.oGet(i) > b[1].oGet(i)) {
+                } else if (start.oGet(i) > this.b[1].oGet(i)) {
                     side = 1;
                 } else {
                     inside++;
@@ -532,8 +532,8 @@ public class Bounds {
                 if (dir.oGet(i) == 0.0f) {
                     continue;
                 }
-                f = (start.oGet(i) - b[side].oGet(i));
-                if (ax0 < 0 || idMath.Fabs(f) > idMath.Fabs(scale[0] * dir.oGet(i))) {
+                f = (start.oGet(i) - this.b[side].oGet(i));
+                if ((ax0 < 0) || (idMath.Fabs(f) > idMath.Fabs(scale[0] * dir.oGet(i)))) {
                     scale[0] = -(f / dir.oGet(i));
                     ax0 = i;
                 }
@@ -547,17 +547,18 @@ public class Bounds {
 
             ax1 = (ax0 + 1) % 3;
             ax2 = (ax0 + 2) % 3;
-            hit.oSet(ax1, start.oGet(ax1) + scale[0] * dir.oGet(ax1));
-            hit.oSet(ax2, start.oGet(ax2) + scale[0] * dir.oGet(ax2));
+            hit.oSet(ax1, start.oGet(ax1) + (scale[0] * dir.oGet(ax1)));
+            hit.oSet(ax2, start.oGet(ax2) + (scale[0] * dir.oGet(ax2)));
 
-            return (hit.oGet(ax1) >= b[0].oGet(ax1) && hit.oGet(ax1) <= b[1].oGet(ax1)
-                    && hit.oGet(ax2) >= b[0].oGet(ax2) && hit.oGet(ax2) <= b[1].oGet(ax2));
+            return ((hit.oGet(ax1) >= this.b[0].oGet(ax1)) && (hit.oGet(ax1) <= this.b[1].oGet(ax1))
+                    && (hit.oGet(ax2) >= this.b[0].oGet(ax2)) && (hit.oGet(ax2) <= this.b[1].oGet(ax2)));
         }
 
         // most tight bounds for the given transformed bounds
         public void FromTransformedBounds(final idBounds bounds, final idVec3 origin, final idMat3 axis) {
             int i;
-            idVec3 center, extents, rotatedExtents = new idVec3();
+            idVec3 center, extents;
+			final idVec3 rotatedExtents = new idVec3();
 
             center = bounds.oGet(0).oPlus(bounds.oGet(1)).oMultiply(0.5f);
             extents = bounds.oGet(1).oMinus(center);
@@ -569,8 +570,8 @@ public class Bounds {
             }
 
             center = origin.oPlus(axis.oMultiply(center));
-            b[0] = center.oMinus(rotatedExtents);
-            b[1] = center.oPlus(rotatedExtents);
+            this.b[0] = center.oMinus(rotatedExtents);
+            this.b[1] = center.oPlus(rotatedExtents);
         }
 
         /*
@@ -581,7 +582,7 @@ public class Bounds {
          ============
          */
         public void FromPoints(final idVec3[] points, final int numPoints) {// most tight bounds for a point set
-            Simd.SIMDProcessor.MinMax(b[0], b[1], points, numPoints);
+            Simd.SIMDProcessor.MinMax(this.b[0], this.b[1], points, numPoints);
         }
 
         /*
@@ -596,11 +597,11 @@ public class Bounds {
 
             for (i = 0; i < 3; i++) {
                 if (translation.oGet(i) < 0.0f) {
-                    b[0].oSet(i, point.oGet(i) + translation.oGet(i));
-                    b[1].oSet(i, point.oGet(i));
+                    this.b[0].oSet(i, point.oGet(i) + translation.oGet(i));
+                    this.b[1].oSet(i, point.oGet(i));
                 } else {
-                    b[0].oSet(i, point.oGet(i));
-                    b[1].oSet(i, point.oGet(i) + translation.oGet(i));
+                    this.b[0].oSet(i, point.oGet(i));
+                    this.b[1].oSet(i, point.oGet(i) + translation.oGet(i));
                 }
             }
         }
@@ -618,14 +619,14 @@ public class Bounds {
             if (axis.IsRotated()) {
                 FromTransformedBounds(bounds, origin, axis);
             } else {
-                b[0] = bounds.oGet(0).oPlus(origin);
-                b[1] = bounds.oGet(1).oPlus(origin);
+                this.b[0] = bounds.oGet(0).oPlus(origin);
+                this.b[1] = bounds.oGet(1).oPlus(origin);
             }
             for (i = 0; i < 3; i++) {
                 if (translation.oGet(i) < 0.0f) {
-                    b[0].oPluSet(i, translation.oGet(i));
+                    this.b[0].oPluSet(i, translation.oGet(i));
                 } else {
-                    b[1].oPluSet(i, translation.oGet(i));
+                    this.b[1].oPluSet(i, translation.oGet(i));
                 }
             }
         }
@@ -647,8 +648,8 @@ public class Bounds {
                 radius = (point.oMinus(rotation.GetOrigin())).Length();
 
                 // FIXME: these bounds are usually way larger
-                b[0].Set(-radius, -radius, -radius);
-                b[1].Set(radius, radius, radius);
+                this.b[0].Set(-radius, -radius, -radius);
+                this.b[1].Set(radius, radius, radius);
             }
         }
 
@@ -663,7 +664,7 @@ public class Bounds {
             int i;
             float radius;
             idVec3 point = new idVec3();
-            idBounds rBounds;
+            final idBounds rBounds;
 
             if (idMath.Fabs(rotation.GetAngle()) < 180.0f) {
 
@@ -680,23 +681,23 @@ public class Bounds {
                 radius = (bounds.oGet(1).oMinus(point)).Length() + (point.oMinus(rotation.GetOrigin())).Length();
 
                 // FIXME: these bounds are usually way larger
-                b[0].Set(-radius, -radius, -radius);
-                b[1].Set(radius, radius, radius);
+                this.b[0].Set(-radius, -radius, -radius);
+                this.b[1].Set(radius, radius, radius);
             }
         }
 
         public void ToPoints(idVec3 points[]) {
             for (int i = 0; i < 8; i++) {
-                points[i].oSet(0, b[(i ^ (i >> 1)) & 1].oGet(0));
-                points[i].oSet(1, b[(i >> 1) & 1].oGet(1));
-                points[i].oSet(2, b[(i >> 2) & 1].oGet(2));
+                points[i].oSet(0, this.b[(i ^ (i >> 1)) & 1].oGet(0));
+                points[i].oSet(1, this.b[(i >> 1) & 1].oGet(1));
+                points[i].oSet(2, this.b[(i >> 2) & 1].oGet(2));
             }
         }
 
         public idSphere ToSphere() {
-            idSphere sphere = new idSphere();
-            sphere.SetOrigin((b[0].oPlus(b[1])).oMultiply(0.5f));
-            sphere.SetRadius((b[1].oMinus(sphere.GetOrigin())).Length());
+            final idSphere sphere = new idSphere();
+            sphere.SetOrigin((this.b[0].oPlus(this.b[1])).oMultiply(0.5f));
+            sphere.SetRadius((this.b[1].oMinus(sphere.GetOrigin())).Length());
             return sphere;
         }
 
@@ -704,8 +705,8 @@ public class Bounds {
             float d1, d2;
             idVec3 center, extents;
 
-            center = (b[0].oPlus(b[1])).oMultiply(0.5f);
-            extents = b[1].oMinus(center);
+            center = (this.b[0].oPlus(this.b[1])).oMultiply(0.5f);
+            extents = this.b[1].oMinus(center);
 
             d1 = dir.oMultiply(center);
             d2 = idMath.Fabs(extents.oGet(0) * dir.oGet(0))
@@ -720,8 +721,8 @@ public class Bounds {
             float d1, d2;
             idVec3 center, extents;
 
-            center = (b[0].oPlus(b[1])).oMultiply(0.5f);
-            extents = b[1].oMinus(center);
+            center = (this.b[0].oPlus(this.b[1])).oMultiply(0.5f);
+            extents = this.b[1].oMinus(center);
             center = origin.oPlus(axis.oMultiply(center));
 
             d1 = dir.oMultiply(center);
@@ -735,7 +736,7 @@ public class Bounds {
 
         @Override
         public String toString() {
-            return Arrays.toString(b);
+            return Arrays.toString(this.b);
         }
 
         @Override
@@ -745,24 +746,24 @@ public class Bounds {
 
         @Override
         public void Read(ByteBuffer buffer) {
-            b[0].Read(buffer);
-            b[1].Read(buffer);
+            this.b[0].Read(buffer);
+            this.b[1].Read(buffer);
         }
 
         @Override
         public ByteBuffer Write() {
-            ByteBuffer buffer = AllocBuffer();
-            buffer.put(b[0].Write()).put(b[1].Write()).flip();
+            final ByteBuffer buffer = AllocBuffer();
+            buffer.put(this.b[0].Write()).put(this.b[1].Write()).flip();
 
             return buffer;
         }
 
         public static idBounds ClearBounds(){
-            idBounds idBounds = new idBounds();
+            final idBounds idBounds = new idBounds();
             idBounds.Clear();
             return idBounds;
         }
-    };
+    }
 
     /*
      ================
@@ -776,7 +777,7 @@ public class Bounds {
         float radiusSqr;
         idVec3 v1, v2;
         idVec3 origin, axis, end;
-        idBounds bounds = new idBounds();
+        final idBounds bounds = new idBounds();
 
         end = rotation.oMultiply(start);
         axis = rotation.GetVec();
@@ -787,13 +788,13 @@ public class Bounds {
 
         for (i = 0; i < 3; i++) {
             // if the derivative changes sign along this axis during the rotation from start to end
-            if ((v1.oGet(i) > 0.0f && v2.oGet(i) < 0.0f) || (v1.oGet(i) < 0.0f && v2.oGet(i) > 0.0f)) {
-                if ((0.5f * (start.oGet(i) + end.oGet(i)) - origin.oGet(i)) > 0.0f) {
-                    bounds.oSet(0, i, (float) Lib.Min(start.oGet(i), end.oGet(i)));
-                    bounds.oSet(1, i, origin.oGet(i) + idMath.Sqrt(radiusSqr * (1.0f - axis.oGet(i) * axis.oGet(i))));
+            if (((v1.oGet(i) > 0.0f) && (v2.oGet(i) < 0.0f)) || ((v1.oGet(i) < 0.0f) && (v2.oGet(i) > 0.0f))) {
+                if (((0.5f * (start.oGet(i) + end.oGet(i))) - origin.oGet(i)) > 0.0f) {
+                    bounds.oSet(0, i, Lib.Min(start.oGet(i), end.oGet(i)));
+                    bounds.oSet(1, i, origin.oGet(i) + idMath.Sqrt(radiusSqr * (1.0f - (axis.oGet(i) * axis.oGet(i)))));
                 } else {
-                    bounds.oSet(0, i, origin.oGet(i) - idMath.Sqrt(radiusSqr * (1.0f - axis.oGet(i) * axis.oGet(i))));
-                    bounds.oSet(1, i, (float) Lib.Max(start.oGet(i), end.oGet(i)));
+                    bounds.oSet(0, i, origin.oGet(i) - idMath.Sqrt(radiusSqr * (1.0f - (axis.oGet(i) * axis.oGet(i)))));
+                    bounds.oSet(1, i, Lib.Max(start.oGet(i), end.oGet(i)));
                 }
             } else if (start.oGet(i) > end.oGet(i)) {
                 bounds.oSet(0, i, end.oGet(i));

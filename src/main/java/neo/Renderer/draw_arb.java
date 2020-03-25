@@ -142,11 +142,11 @@ public class draw_arb {
 
         @Override
         public void run(final drawInteraction_t din) {
-            drawSurf_s surf = din.surf;
-            srfTriangles_s tri = din.surf.geo;
+            final drawSurf_s surf = din.surf;
+            final srfTriangles_s tri = din.surf.geo;
 
             // set the vertex arrays, which may not all be enabled on a given pass
-            idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+            final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
             qglVertexPointer(3, GL_FLOAT, 0/*sizeof(idDrawVert)*/, ac.xyz.ToFloatPtr());
             GL_SelectTexture(0);
             qglTexCoordPointer(2, GL_FLOAT, 0/*sizeof(idDrawVert)*/, /*(void *)&*/ ac.st.ToFloatPtr());
@@ -172,7 +172,7 @@ public class draw_arb {
             final boolean NO_MIXED_TEXGEN = true;
 
             if (NO_MIXED_TEXGEN) {
-                idVec4 plane = new idVec4(0, 0, 0, 0.5f);
+                final idVec4 plane = new idVec4(0, 0, 0, 0.5f);
 //plane[0] = 0;
 //plane[1] = 0;
 //plane[2] = 0;
@@ -236,7 +236,7 @@ public class draw_arb {
                 }
                 qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
                 //TODO:figure out how to work these damn casts.
-                lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));
+                final lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));
                 qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.ToFloatPtr());
 
                 // I just want alpha = Dot( texture0, texture1 )
@@ -327,7 +327,7 @@ public class draw_arb {
 
 //	RB_FinishStageTexture( &surfaceStage.texture, surf );
         }
-    };
+    }
 
     /*
      ==================
@@ -351,11 +351,11 @@ public class draw_arb {
 
         @Override
         public void run(final drawInteraction_t din) {
-            drawSurf_s surf = din.surf;
-            srfTriangles_s tri = din.surf.geo;
+            final drawSurf_s surf = din.surf;
+            final srfTriangles_s tri = din.surf.geo;
 
             // set the vertex arrays, which may not all be enabled on a given pass
-            idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+            final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
             qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             GL_SelectTexture(0);
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
@@ -382,7 +382,7 @@ public class draw_arb {
                 globalImages.normalCubeMapImage.Bind();
             }
             qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-            lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));//{//TODO:figure out how to work these damn casts.
+            final lightingCache_s c = new lightingCache_s(vertexCache.Position(tri.lightingCache));//{//TODO:figure out how to work these damn casts.
             qglTexCoordPointer(3, GL_FLOAT, 0/*sizeof(lightingCache_s)*/, c.localLightVector.ToFloatPtr());
 
             // I just want alpha = Dot( texture0, texture1 )
@@ -463,7 +463,7 @@ public class draw_arb {
 
             qglTexGenfv(GL_S, GL_OBJECT_PLANE, din.lightProjection[3].ToFloatPtr());
 
-            idVec4 plane = new idVec4();
+            final idVec4 plane = new idVec4();
             plane.oSet(0, 0f);
             plane.oSet(1, 0f);
             plane.oSet(2, 0f);
@@ -501,7 +501,7 @@ public class draw_arb {
 
 //	RB_FinishStageTexture( &surfaceStage.texture, surf );
         }
-    };
+    }
 
 
     /*
@@ -518,7 +518,7 @@ public class draw_arb {
         // force a space calculation
         backEnd.currentSpace = null;
 
-        if (r_useTripleTextureARB.GetBool() && glConfig.maxTextureUnits >= 3) {
+        if (r_useTripleTextureARB.GetBool() && (glConfig.maxTextureUnits >= 3)) {
             for (; surf != null; surf = surf.nextOnLight) {
                 // break it up into multiple primitive draw interactions if necessary
                 RB_CreateSingleDrawInteractions(surf, RB_ARB_DrawThreeTextureInteraction.INSTANCE);
@@ -551,13 +551,13 @@ public class draw_arb {
         RB_LogComment("---------- RB_RenderViewLight 0x%p ----------\n", vLight);
 
         // clear the stencil buffer if needed
-        if (vLight.globalShadows[0] != null || vLight.localShadows[0] != null) {
+        if ((vLight.globalShadows[0] != null) || (vLight.localShadows[0] != null)) {
             backEnd.currentScissor = new idScreenRect(vLight.scissorRect);
             if (RenderSystem_init.r_useScissor.GetBool()) {
                 qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                         backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                        backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                        backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                        (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                        (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
             }
             qglClear(GL_STENCIL_BUFFER_BIT);
         } else {

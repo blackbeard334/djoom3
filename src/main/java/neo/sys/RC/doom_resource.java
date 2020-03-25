@@ -18,7 +18,7 @@ public class doom_resource {
     static {
         try {
             IDI_ICON1 = ImageIO.read(doom_resource.class.getResource("res/doom.bmp"));//TODO: use a transparent png instead yo!
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             Logger.getLogger(doom_resource.class.getName()).log(Level.SEVERE, null, ex);//TODO: log to doom console.
         }
     }

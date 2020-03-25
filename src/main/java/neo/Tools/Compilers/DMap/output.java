@@ -89,7 +89,7 @@ public class output {
         a1 = PruneNodes_r(node.children[0]);
         a2 = PruneNodes_r(node.children[1]);
 
-        if (a1 != a2 || a1 == AREANUM_DIFFERENT) {
+        if ((a1 != a2) || (a1 == AREANUM_DIFFERENT)) {
             return AREANUM_DIFFERENT;
         }
 
@@ -180,8 +180,8 @@ public class output {
         }
 
         // if the normal is 0 (smoothed normals), consider it a match
-        if (a.normal.oGet(0) == 0 && a.normal.oGet(1) == 0 && a.normal.oGet(2) == 0
-                && b.normal.oGet(0) == 0 && b.normal.oGet(1) == 0 && b.normal.oGet(2) == 0) {
+        if ((a.normal.oGet(0) == 0) && (a.normal.oGet(1) == 0) && (a.normal.oGet(2) == 0)
+                && (b.normal.oGet(0) == 0) && (b.normal.oGet(1) == 0) && (b.normal.oGet(2) == 0)) {
             return true;
         }
 
@@ -283,7 +283,7 @@ public class output {
         // verts
         col = 0;
         for (i = 0; i < uTris.numVerts; i++) {
-            float[] vec = new float[8];
+            final float[] vec = new float[8];
             final idDrawVert dv;
 
             dv = uTris.verts[i];
@@ -407,7 +407,7 @@ public class output {
             interactionTris_s next;
             mapTri_s triList;
             mapLight_t light;
-        };
+        }
 
         interactionTris_s interactions, checkInter; //, *nextInter;
 
@@ -420,7 +420,7 @@ public class output {
             procFile.WriteFloatString("model { /* name = */ \"_area%d\" /* numSurfaces = */ %d\n\n",
                     areaNum, numSurfaces);
         } else {
-            String[] name = {null};
+            final String[] name = {null};
 
             entity.epairs.GetString("name", "", name);
             if (isNotNullOrEmpty(name[0])) {
@@ -511,7 +511,7 @@ public class output {
      ===============
      */
     static void WriteNode_r(node_s node) {
-        int[] child = new int[2];
+        final int[] child = new int[2];
         int i;
         idPlane plane;
 
@@ -629,7 +629,7 @@ public class output {
         }
 
         // we will completely skip the portals and nodes if it is a single area
-        if (entityNum == 0 && e.numAreas > 1) {
+        if ((entityNum == 0) && (e.numAreas > 1)) {
             // output the area portals
             WriteOutputPortals(e);
 
@@ -676,7 +676,7 @@ public class output {
 
         // write the shadow volumes
         for (i = 0; i < dmapGlobals.mapLights.Num(); i++) {
-            mapLight_t light = dmapGlobals.mapLights.oGet(i);
+            final mapLight_t light = dmapGlobals.mapLights.oGet(i);
             if (NOT(light.shadowTris)) {
                 continue;
             }

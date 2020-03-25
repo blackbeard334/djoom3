@@ -84,7 +84,7 @@ public class Session {
         public ByteBuffer Write() {
             throw new TODO_Exception();
         }
-    };
+    }
     public static final int MAX_LOGGED_STATS = 60 * 120;		// log every half second 
 
     public enum msgBoxType_t {
@@ -97,7 +97,7 @@ public class Session {
         MSG_CDKEY,
         MSG_INFO,
         MSG_WAIT
-    };
+    }
 
 //typedef const char * (*HandleGuiCommand_t)( const char * );
     public static abstract class HandleGuiCommand_t {
@@ -225,7 +225,7 @@ public class Session {
         public abstract String GetCurrentMapName();
 
         public abstract int GetSaveGameVersion();
-    };
+    }
 //    
 //    
 //    
@@ -252,10 +252,10 @@ public class Session {
 
     void RandomizeStack() {
         // attempt to force uninitialized stack memory bugs
-        int bytes = 4000000;
-        byte[] buf = new byte[bytes];
+        final int bytes = 4000000;
+        final byte[] buf = new byte[bytes];
 
-        byte fill = (byte) ((int) (Math.random()) & 255);
+        final byte fill = (byte) ((int) (Math.random()) & 255);
         for (int i = 0; i < bytes; i++) {
             buf[i] = fill;
         }
@@ -281,11 +281,11 @@ public class Session {
         @Override
         public void run(idCmdArgs args) throws idException {
             sessLocal.mapSpawnData.serverInfo = cvarSystem.MoveCVarsToDict(CVAR_SERVERINFO);
-            if (game != null && idAsyncNetwork.server.IsActive()) {
+            if ((game != null) && idAsyncNetwork.server.IsActive()) {
                 game.SetServerInfo(sessLocal.mapSpawnData.serverInfo);
             }
         }
-    };
+    }
 
     /*
      ==================
@@ -307,7 +307,7 @@ public class Session {
             idStr map;
             String string;
             findFile_t ff;
-            idCmdArgs rl_args = new idCmdArgs();
+            final idCmdArgs rl_args = new idCmdArgs();
 
             map = new idStr(args.Argv(1));
             if (0 == map.Length()) {
@@ -337,7 +337,7 @@ public class Session {
             cvarSystem.SetCVarBool("developer", false);
             sessLocal.StartNewGame(map.toString(), true);
         }
-    };
+    }
 
     /*
      ==================
@@ -359,7 +359,7 @@ public class Session {
             idStr map;
             String string;
             findFile_t ff;
-            idCmdArgs rl_args = new idCmdArgs();
+            final idCmdArgs rl_args = new idCmdArgs();
 
             map = new idStr(args.Argv(1));
             if (0 == map.Length()) {
@@ -389,7 +389,7 @@ public class Session {
             cvarSystem.SetCVarBool("developer", true);
             sessLocal.StartNewGame(map.toString(), true);
         }
-    };
+    }
 
     /*
      ==================
@@ -423,7 +423,7 @@ public class Session {
             string = String.format("devmap %s", map);//TODO:can this shit format char*?
             cmdSystem.BufferCommandText(CMD_EXEC_NOW, string);
         }
-    };
+    }
 
     /*
      ==================
@@ -444,16 +444,16 @@ public class Session {
                 common.Printf("USAGE: writePrecache <execFile>\n");
                 return;
             }
-            idStr str = new idStr(args.Argv(1));
+            final idStr str = new idStr(args.Argv(1));
             str.DefaultFileExtension(".cfg");
-            idFile f = fileSystem.OpenFileWrite(str.toString());
+            final idFile f = fileSystem.OpenFileWrite(str.toString());
             declManager.WritePrecacheCommands(f);
             renderModelManager.WritePrecacheCommands(f);
             uiManager.WritePrecacheCommands(f);
 
             fileSystem.CloseFile(f);
         }
-    };
+    }
     /*
      ===================
      Session_PromptKey_f
@@ -470,8 +470,8 @@ public class Session {
 
         @Override
         public void run(idCmdArgs args) throws idException {
-            String retkey;
-            boolean[] valid = new boolean[2];
+            final String retkey;
+            final boolean[] valid = new boolean[2];
 
             if (recursed) {
                 common.Warning("promptKey recursed - aborted");
@@ -532,7 +532,7 @@ public class Session {
 //            } while (retkey != null);
             recursed = false;
         }
-    };
+    }
 
     /*
      ================
@@ -550,13 +550,13 @@ public class Session {
         @Override
         public void run(idCmdArgs args) {
             if (args.Argc() != 2) {
-                String filename = FindUnusedFileName("demos/shot%03i.demo");
+                final String filename = FindUnusedFileName("demos/shot%03i.demo");
                 sessLocal.DemoShot(filename);
             } else {
                 sessLocal.DemoShot(va("demos/shot_%s.demo", args.Argv(1)));
             }
         }
-    };
+    }
 
     /*
      ================
@@ -574,13 +574,13 @@ public class Session {
         @Override
         public void run(idCmdArgs args) {
             if (args.Argc() != 2) {
-                String filename = FindUnusedFileName("demos/demo%03i.demo");
+                final String filename = FindUnusedFileName("demos/demo%03i.demo");
                 sessLocal.StartRecordingRenderDemo(filename);
             } else {
                 sessLocal.StartRecordingRenderDemo(va("demos/%s.demo", args.Argv(1)));
             }
         }
-    };
+    }
 
     /*
      ================
@@ -605,7 +605,7 @@ public class Session {
                 common.Printf("use: CompressDemo <file> [scheme]\nscheme is the same as com_compressDemo, defaults to 2");
             }
         }
-    };
+    }
 
     /*
      ================
@@ -624,7 +624,7 @@ public class Session {
         public void run(idCmdArgs args) {
             sessLocal.StopRecordingRenderDemo();
         }
-    };
+    }
 
     /*
      ================
@@ -645,7 +645,7 @@ public class Session {
                 sessLocal.StartPlayingRenderDemo(va("demos/%s", args.Argv(1)));
             }
         }
-    };
+    }
 
     /*
      ================
@@ -666,7 +666,7 @@ public class Session {
                 sessLocal.TimeRenderDemo(va("demos/%s", args.Argv(1)), (args.Argc() > 2));
             }
         }
-    };
+    }
 
     /*
      ================
@@ -689,7 +689,7 @@ public class Session {
                 sessLocal.timeDemo = TD_YES_THEN_QUIT;
             }
         }
-    };
+    }
 
     /*
      ================
@@ -708,7 +708,7 @@ public class Session {
         public void run(idCmdArgs args) {
             sessLocal.AVIRenderDemo(va("demos/%s", args.Argv(1)));
         }
-    };
+    }
 
     /*
      ================
@@ -725,7 +725,7 @@ public class Session {
 
         @Override
         public void run(idCmdArgs args) {
-            String[] Argv = {args.Argv(1)};
+            final String[] Argv = {args.Argv(1)};
             final boolean empty = !isNotNullOrEmpty(Argv[0]);
             sessLocal.AVIGame(Argv);//TODO:back reference
 
@@ -733,7 +733,7 @@ public class Session {
                 args.oSet(Argv[0]);
             }
         }
-    };
+    }
 
     /*
      ================
@@ -752,7 +752,7 @@ public class Session {
         public void run(idCmdArgs args) {
             sessLocal.AVICmdDemo(args.Argv(1));
         }
-    };
+    }
 
     /*
      ================
@@ -770,7 +770,7 @@ public class Session {
         @Override
         public void run(idCmdArgs args) throws idException {
             if (args.Argc() == 1) {
-                String filename = FindUnusedFileName("demos/cmdDemo%03i.cdemo");
+                final String filename = FindUnusedFileName("demos/cmdDemo%03i.cdemo");
                 sessLocal.WriteCmdDemo(filename);
             } else if (args.Argc() == 2) {
                 sessLocal.WriteCmdDemo(va("demos/%s.cdemo", args.Argv(1)));
@@ -778,7 +778,7 @@ public class Session {
                 common.Printf("usage: writeCmdDemo [demoName]\n");
             }
         }
-    };
+    }
 
     /*
      ================
@@ -797,7 +797,7 @@ public class Session {
         public void run(idCmdArgs args) {
             sessLocal.StartPlayingCmdDemo(args.Argv(1));
         }
-    };
+    }
 
     /*
      ================
@@ -816,7 +816,7 @@ public class Session {
         public void run(idCmdArgs args) {
             sessLocal.TimeCmdDemo(args.Argv(1));
         }
-    };
+    }
 
     /*
      ================
@@ -839,7 +839,7 @@ public class Session {
                 soundSystem.SetMute(false);
             }
         }
-    };
+    }
 
     /*
      ================
@@ -865,7 +865,7 @@ public class Session {
                 sessLocal.guiActive.HandleNamedEvent("endOfDemo");
             }
         }
-    };
+    }
 
     /*
      ================
@@ -890,7 +890,7 @@ public class Session {
             common.Printf("Command demo exited at logIndex %d\n", sessLocal.logIndex);
             sessLocal.cmdDemoFile = null;
         }
-    };
+    }
 
     /*
      ================
@@ -909,7 +909,7 @@ public class Session {
         public void run(idCmdArgs args) {
             sessLocal.TestGUI(args.Argv(1));
         }
-    };
+    }
 
     /*
      ===============
@@ -927,14 +927,14 @@ public class Session {
         @Override
         public void run(idCmdArgs args) throws idException {
             console.Close();
-            if (args.Argc() < 2 || idStr.Icmp(args.Argv(1), "quick") == 0) {
-                String saveName = common.GetLanguageDict().GetString("#str_07178");
+            if ((args.Argc() < 2) || (idStr.Icmp(args.Argv(1), "quick") == 0)) {
+                final String saveName = common.GetLanguageDict().GetString("#str_07178");
                 sessLocal.LoadGame(saveName);
             } else {
                 sessLocal.LoadGame(args.Argv(1));
             }
         }
-    };
+    }
 
     /*
      ===============
@@ -951,8 +951,8 @@ public class Session {
 
         @Override
         public void run(idCmdArgs args) throws idException {
-            if (args.Argc() < 2 || idStr.Icmp(args.Argv(1), "quick") == 0) {
-                String saveName = common.GetLanguageDict().GetString("#str_07178");
+            if ((args.Argc() < 2) || (idStr.Icmp(args.Argv(1), "quick") == 0)) {
+                final String saveName = common.GetLanguageDict().GetString("#str_07178");
                 if (sessLocal.SaveGame(saveName)) {
                     common.Printf("%s\n", saveName);
                 }
@@ -962,7 +962,7 @@ public class Session {
                 }
             }
         }
-    };
+    }
 
     /*
      ===============
@@ -982,7 +982,7 @@ public class Session {
             final String p = (args.Argc() > 1) ? args.Argv(1) : "";
             sessLocal.TakeNotes(p);
         }
-    };
+    }
 
     /*
      ===============
@@ -1002,7 +1002,7 @@ public class Session {
             final String p = (args.Argc() > 1) ? args.Argv(1) : "";
             sessLocal.TakeNotes(p, true);
         }
-    };
+    }
 
     /*
      ===============
@@ -1019,7 +1019,7 @@ public class Session {
 
         @Override
         public void run(idCmdArgs args) {
-            idSoundWorld sw = soundSystem.GetPlayingSoundWorld();
+            final idSoundWorld sw = soundSystem.GetPlayingSoundWorld();
             if (sw != null) {
                 soundSystem.SetMute(true);
                 sw.Pause();
@@ -1036,7 +1036,7 @@ public class Session {
                 soundSystem.SetMute(false);
             }
         }
-    };
+    }
 
 //
     //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1053,7 +1053,7 @@ public class Session {
 
         for (i = 0; i < 999; i++) {
             filename = String.format(format, i);
-            int len = fileSystem.ReadFile(filename, null, null);
+            final int len = fileSystem.ReadFile(filename, null, null);
             if (len <= 0) {
                 return filename;	// file doesn't exist
             }

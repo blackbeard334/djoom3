@@ -30,7 +30,7 @@ public class StrPool {
         //
 
         public idPoolStr() {
-            numUsers = 0;
+            this.numUsers = 0;
         }
 //public						~idPoolStr() { assert( numUsers == 0 ); }
 
@@ -48,19 +48,19 @@ public class StrPool {
 
         // returns a pointer to the pool this string was allocated from
         public idStrPool GetPool() {
-            return pool;
+            return this.pool;
         }
 
-    };
+    }
 
     public static class idStrPool {
 
         private boolean caseSensitive;
-        private idList<idPoolStr> pool;
-        private idHashIndex poolHash;
+        private final idList<idPoolStr> pool;
+        private final idHashIndex poolHash;
 
         public idStrPool() {
-            caseSensitive = true;
+            this.caseSensitive = true;
             this.pool = new idList<>();
             this.poolHash = new idHashIndex();
         }
@@ -70,16 +70,16 @@ public class StrPool {
         }
 
         public int Num() {
-            return pool.Num();
+            return this.pool.Num();
         }
 
         public int Allocated() {
             int i;
             int size;
 
-            size = pool.Allocated() + poolHash.Allocated();
-            for (i = 0; i < pool.Num(); i++) {
-                size += pool.oGet(i).Allocated();
+            size = this.pool.Allocated() + this.poolHash.Allocated();
+            for (i = 0; i < this.pool.Num(); i++) {
+                size += this.pool.oGet(i).Allocated();
             }
             return size;
         }
@@ -88,35 +88,35 @@ public class StrPool {
             int i;
             int size;
 
-            size = pool.Size() + poolHash.Size();
-            for (i = 0; i < pool.Num(); i++) {
-                size += pool.oGet(i).Size();
+            size = this.pool.Size() + this.poolHash.Size();
+            for (i = 0; i < this.pool.Num(); i++) {
+                size += this.pool.oGet(i).Size();
             }
             return size;
         }
 
         public idPoolStr oGet(int index) {
-            return pool.oGet(index);
+            return this.pool.oGet(index);
         }
 
         public idPoolStr AllocString(final String string) {
             int i, hash;
             idPoolStr poolStr;
 
-            hash = poolHash.GenerateKey(string, caseSensitive);
-            if (caseSensitive) {
-                for (i = poolHash.First(hash); i != -1; i = poolHash.Next(i)) {
-                    if (pool.oGet(i).Cmp(string) == 0) {
-                        pool.oGet(i).numUsers++;
-                        return pool.oGet(i);
+            hash = this.poolHash.GenerateKey(string, this.caseSensitive);
+            if (this.caseSensitive) {
+                for (i = this.poolHash.First(hash); i != -1; i = this.poolHash.Next(i)) {
+                    if (this.pool.oGet(i).Cmp(string) == 0) {
+                        this.pool.oGet(i).numUsers++;
+                        return this.pool.oGet(i);
                     }
                 }
             } else {
-                for (i = poolHash.First(hash); i != -1; i = poolHash.Next(i)) {
-                    if (pool.oGet(i).Icmp(string) == 0) {
-                        pool.oGet(i).numUsers++;
+                for (i = this.poolHash.First(hash); i != -1; i = this.poolHash.Next(i)) {
+                    if (this.pool.oGet(i).Icmp(string) == 0) {
+                        this.pool.oGet(i).numUsers++;
 //                        System.out.printf("AllocString, i = %d\n", i);
-                        return pool.oGet(i);
+                        return this.pool.oGet(i);
                     }
                 }
             }
@@ -125,7 +125,7 @@ public class StrPool {
             poolStr.oSet(string);//TODO:*static_cast<idStr *>(poolStr) = string;
             poolStr.pool = this;
             poolStr.numUsers = 1;
-            poolHash.Add(hash, pool.Append(poolStr));
+            this.poolHash.Add(hash, this.pool.Append(poolStr));
             return poolStr;
         }
 
@@ -137,25 +137,25 @@ public class StrPool {
 
             poolStr.numUsers--;
             if (poolStr.numUsers <= 0) {
-                hash = poolHash.GenerateKey(poolStr.c_str(), caseSensitive);
-                if (caseSensitive) {
-                    for (i = poolHash.First(hash); i != -1; i = poolHash.Next(i)) {
-                        if (pool.oGet(i).Cmp(poolStr.toString()) == 0) {
+                hash = this.poolHash.GenerateKey(poolStr.c_str(), this.caseSensitive);
+                if (this.caseSensitive) {
+                    for (i = this.poolHash.First(hash); i != -1; i = this.poolHash.Next(i)) {
+                        if (this.pool.oGet(i).Cmp(poolStr.toString()) == 0) {
                             break;
                         }
                     }
                 } else {
-                    for (i = poolHash.First(hash); i != -1; i = poolHash.Next(i)) {
-                        if (pool.oGet(i).Icmp(poolStr.toString()) == 0) {
+                    for (i = this.poolHash.First(hash); i != -1; i = this.poolHash.Next(i)) {
+                        if (this.pool.oGet(i).Icmp(poolStr.toString()) == 0) {
                             break;
                         }
                     }
                 }
                 assert (i != -1);
-                assert (pool.oGet(i) == poolStr);
+                assert (this.pool.oGet(i) == poolStr);
 //		delete pool[i];
-                pool.RemoveIndex(i);
-                poolHash.RemoveIndex(hash, i);
+                this.pool.RemoveIndex(i);
+                this.poolHash.RemoveIndex(hash, i);
             }
         }
 
@@ -176,11 +176,11 @@ public class StrPool {
         public void Clear() {
             int i;
 
-            for (i = 0; i < pool.Num(); i++) {
-                pool.oGet(i).numUsers = 0;
+            for (i = 0; i < this.pool.Num(); i++) {
+                this.pool.oGet(i).numUsers = 0;
             }
-            pool.DeleteContents(true);
-            poolHash.Free();
+            this.pool.DeleteContents(true);
+            this.poolHash.Free();
         }
-    };
+    }
 }

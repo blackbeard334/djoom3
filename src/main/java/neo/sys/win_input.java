@@ -344,7 +344,7 @@ static char[] keyScanTable = s_scantokey;
      */
     public static int IN_DIMapKey(final int key, final int scancode, final int mods) {
 
-        if (key >= 260 && scancode >= 128) {
+        if ((key >= 260) && (scancode >= 128)) {
             switch (key) {
                 case GLFW.GLFW_KEY_HOME:
                     return K_HOME;
@@ -421,7 +421,9 @@ static char[] keyScanTable = s_scantokey;
                     return 0;
             }
         }
-        if (scancode > 256) return 0;
+        if (scancode > 256) {
+			return 0;
+		}
 
         return keyScanTable[getShiftedScancode(key, scancode, mods)];
     }
@@ -429,22 +431,24 @@ static char[] keyScanTable = s_scantokey;
     private static int getShiftedScancode(final int key, final int scancode, final int mods) {
         int shiftedCode = scancode;
         if (isShiftableKey(key)) {
-            if ((GLFW.GLFW_MOD_CAPS_LOCK & mods) != 0 && isShiftableLetter(key))
-                shiftedCode += 128;
-            if ((GLFW.GLFW_MOD_SHIFT & mods) != 0)
-                shiftedCode += 128;
+            if (((GLFW.GLFW_MOD_CAPS_LOCK & mods) != 0) && isShiftableLetter(key)) {
+				shiftedCode += 128;
+			}
+            if ((GLFW.GLFW_MOD_SHIFT & mods) != 0) {
+				shiftedCode += 128;
+			}
         }
         return shiftedCode % 256;
     }
 
     private static boolean isShiftableKey(final int key) {
-        return key == GLFW.GLFW_KEY_APOSTROPHE || key == GLFW.GLFW_KEY_COMMA || key == GLFW.GLFW_KEY_MINUS || key == GLFW.GLFW_KEY_PERIOD || key == GLFW.GLFW_KEY_SLASH || key == GLFW.GLFW_KEY_0 || key == GLFW.GLFW_KEY_1 || key == GLFW.GLFW_KEY_2 || key == GLFW.GLFW_KEY_3 || key == GLFW.GLFW_KEY_4 || key == GLFW.GLFW_KEY_5 || key == GLFW.GLFW_KEY_6 || key == GLFW.GLFW_KEY_7 || key == GLFW.GLFW_KEY_8 || key == GLFW.GLFW_KEY_9 || key == GLFW.GLFW_KEY_SEMICOLON || key == GLFW.GLFW_KEY_EQUAL ||
+        return (key == GLFW.GLFW_KEY_APOSTROPHE) || (key == GLFW.GLFW_KEY_COMMA) || (key == GLFW.GLFW_KEY_MINUS) || (key == GLFW.GLFW_KEY_PERIOD) || (key == GLFW.GLFW_KEY_SLASH) || (key == GLFW.GLFW_KEY_0) || (key == GLFW.GLFW_KEY_1) || (key == GLFW.GLFW_KEY_2) || (key == GLFW.GLFW_KEY_3) || (key == GLFW.GLFW_KEY_4) || (key == GLFW.GLFW_KEY_5) || (key == GLFW.GLFW_KEY_6) || (key == GLFW.GLFW_KEY_7) || (key == GLFW.GLFW_KEY_8) || (key == GLFW.GLFW_KEY_9) || (key == GLFW.GLFW_KEY_SEMICOLON) || (key == GLFW.GLFW_KEY_EQUAL) ||
                 isShiftableLetter(key)
-                || key == GLFW.GLFW_KEY_LEFT_BRACKET || key == GLFW.GLFW_KEY_BACKSLASH || key == GLFW.GLFW_KEY_RIGHT_BRACKET || key == GLFW.GLFW_KEY_GRAVE_ACCENT || key == GLFW.GLFW_KEY_WORLD_1 || key == GLFW.GLFW_KEY_WORLD_2;
+                || (key == GLFW.GLFW_KEY_LEFT_BRACKET) || (key == GLFW.GLFW_KEY_BACKSLASH) || (key == GLFW.GLFW_KEY_RIGHT_BRACKET) || (key == GLFW.GLFW_KEY_GRAVE_ACCENT) || (key == GLFW.GLFW_KEY_WORLD_1) || (key == GLFW.GLFW_KEY_WORLD_2);
     }
 
     private static boolean isShiftableLetter(final int key) {
-        return key >= GLFW.GLFW_KEY_A && key <= GLFW.GLFW_KEY_Z;
+        return (key >= GLFW.GLFW_KEY_A) && (key <= GLFW.GLFW_KEY_Z);
     }
 
     /*
@@ -626,7 +630,7 @@ static char[] keyScanTable = s_scantokey;
      */
     public static void Sys_InitScanTable() {
 
-        idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
+        final idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
         if (lang.Length() == 0) {
             lang.oSet("english");
         }
@@ -766,10 +770,11 @@ static char[] keyScanTable = s_scantokey;
 				Sys_QueEvent(GetTickCount(), SE_KEY, ch[0], action, 0, null);//TODO:enable this
 				break;
 			default:// nabbed from MainWndProc.
-                if (action == GLFW_RELEASE && ch[0] > 31 && ch[0] != '~' && ch[0] != '`' && ch[0] < 128)
-                    Sys_QueEvent(System.currentTimeMillis(), SE_CHAR, ch[0], action, 0, null);
-                else
-                    Sys_QueEvent(System.currentTimeMillis(), SE_KEY, ch[0], action, 0, null);
+                if ((action == GLFW_RELEASE) && (ch[0] > 31) && (ch[0] != '~') && (ch[0] != '`') && (ch[0] < 128)) {
+					Sys_QueEvent(System.currentTimeMillis(), SE_CHAR, ch[0], action, 0, null);
+				} else {
+					Sys_QueEvent(System.currentTimeMillis(), SE_KEY, ch[0], action, 0, null);
+				}
 		}
 		return ch[0];
 	}

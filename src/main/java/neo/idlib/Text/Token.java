@@ -90,13 +90,13 @@ public class Token {
 
         // double value of TT_NUMBER
         public double GetDoubleValue() {
-            if (type != TT_NUMBER) {
+            if (this.type != TT_NUMBER) {
                 return 0.0;
             }
-            if (0 == (subtype & TT_VALUESVALID)) {
+            if (0 == (this.subtype & TT_VALUESVALID)) {
                 NumberValue();
             }
-            return floatValue;
+            return this.floatValue;
         }
 
         // float value of TT_NUMBER
@@ -105,13 +105,13 @@ public class Token {
         }
 
         public long GetUnsignedLongValue() {        // unsigned long value of TT_NUMBER
-            if (type != TT_NUMBER) {
+            if (this.type != TT_NUMBER) {
                 return 0;
             }
-            if (0 == (subtype & TT_VALUESVALID)) {
+            if (0 == (this.subtype & TT_VALUESVALID)) {
                 NumberValue();
             }
-            return intValue;
+            return this.intValue;
         }
 
         public int GetIntValue() {                // int value of TT_NUMBER
@@ -119,13 +119,13 @@ public class Token {
         }
 
         public boolean WhiteSpaceBeforeToken() {// returns length of whitespace before token
-            return (whiteSpaceEnd_p > whiteSpaceStart_p);
+            return (this.whiteSpaceEnd_p > this.whiteSpaceStart_p);
         }
 
         public void ClearTokenWhiteSpace() {        // forget whitespace before token
-            whiteSpaceStart_p = 0;
-            whiteSpaceEnd_p = 0;
-            linesCrossed = 0;
+            this.whiteSpaceStart_p = 0;
+            this.whiteSpaceEnd_p = 0;
+            this.linesCrossed = 0;
         }
 //
 
@@ -136,36 +136,36 @@ public class Token {
             int pIndex = 0;
             double m;
 
-            assert (type == TT_NUMBER);
+            assert (this.type == TT_NUMBER);
             p = c_str();
-            floatValue = 0;
-            intValue = 0;
+            this.floatValue = 0;
+            this.intValue = 0;
             // floating point number
-            if ((subtype & TT_FLOAT) != 0) {
-                if ((subtype & (TT_INFINITE | TT_INDEFINITE | TT_NAN)) != 0) {
-                    if ((subtype & TT_INFINITE) != 0) {            // 1.#INF
-                        int inf = 0x7f800000;
-                        floatValue = (double) ((float) inf);//TODO:WHY THE DOUBLE CAST?
-                    } else if ((subtype & TT_INDEFINITE) != 0) {    // 1.#IND
-                        int ind = 0xffc00000;
-                        floatValue = (double) ((float) ind);
-                    } else if ((subtype & TT_NAN) != 0) {			// 1.#QNAN
-                        int nan = 0x7fc00000;
-                        floatValue = (double) ((float) nan);
+            if ((this.subtype & TT_FLOAT) != 0) {
+                if ((this.subtype & (TT_INFINITE | TT_INDEFINITE | TT_NAN)) != 0) {
+                    if ((this.subtype & TT_INFINITE) != 0) {            // 1.#INF
+                        final int inf = 0x7f800000;
+                        this.floatValue = (inf);//TODO:WHY THE DOUBLE CAST?
+                    } else if ((this.subtype & TT_INDEFINITE) != 0) {    // 1.#IND
+                        final int ind = 0xffc00000;
+                        this.floatValue = (ind);
+                    } else if ((this.subtype & TT_NAN) != 0) {			// 1.#QNAN
+                        final int nan = 0x7fc00000;
+                        this.floatValue = (nan);
                     }
                 } else {
-                    while ( /*p[pIndex]!=null &&*/p[pIndex] != '.' && p[pIndex] != 'e') {
-                        floatValue = floatValue * 10.0 + (double) (p[pIndex] - '0');
+                    while ( /*p[pIndex]!=null &&*/(p[pIndex] != '.') && (p[pIndex] != 'e')) {
+                        this.floatValue = (this.floatValue * 10.0) + (p[pIndex] - '0');
                         pIndex++;
                     }
                     if (p[pIndex] == '.') {
                         pIndex++;
-                        for (m = 0.1; pIndex < p.length && p[pIndex] != 'e'; pIndex++) {
-                            floatValue = floatValue + (double) (p[pIndex] - '0') * m;
+                        for (m = 0.1; (pIndex < p.length) && (p[pIndex] != 'e'); pIndex++) {
+                            this.floatValue = this.floatValue + ((p[pIndex] - '0') * m);
                             m *= 0.1;
                         }
                     }
-                    if (pIndex < p.length && p[pIndex] == 'e') {
+                    if ((pIndex < p.length) && (p[pIndex] == 'e')) {
                         pIndex++;
                         if (p[pIndex] == '-') {
                             div = true;
@@ -178,78 +178,78 @@ public class Token {
                         }
 
                         for (pow = 0; pIndex < p.length; pIndex++) {
-                            pow = pow * 10 + (int) (p[pIndex] - '0');
+                            pow = (pow * 10) + p[pIndex] - '0';
                         }
                         for (m = 1.0, i = 0; i < pow; i++) {
                             m *= 10.0;
                         }
                         if (div) {
-                            floatValue /= m;
+                            this.floatValue /= m;
                         } else {
-                            floatValue *= m;
+                            this.floatValue *= m;
                         }
                     }
                 }
-                intValue = idMath.Ftol((float) floatValue);
-            } else if ((subtype & TT_DECIMAL) != 0) {
+                this.intValue = idMath.Ftol((float) this.floatValue);
+            } else if ((this.subtype & TT_DECIMAL) != 0) {
                 while (pIndex < p.length) {
-                    intValue = intValue * 10 + (p[pIndex] - '0');
+                    this.intValue = (this.intValue * 10) + (p[pIndex] - '0');
                     pIndex++;
                 }
-                floatValue = intValue;
-            } else if ((subtype & TT_IPADDRESS) != 0) {
+                this.floatValue = this.intValue;
+            } else if ((this.subtype & TT_IPADDRESS) != 0) {
                 c = 0;
                 while (/*p[pIndex] &&*/p[pIndex] != ':') {
                     if (p[pIndex] == '.') {
                         while (c != 3) {
-                            intValue = intValue * 10;
+                            this.intValue = this.intValue * 10;
                             c++;
                         }
                         c = 0;
                     } else {
-                        intValue = intValue * 10 + (p[pIndex] - '0');
+                        this.intValue = (this.intValue * 10) + (p[pIndex] - '0');
                         c++;
                     }
                     pIndex++;
                 }
                 while (c != 3) {
-                    intValue = intValue * 10;
+                    this.intValue = this.intValue * 10;
                     c++;
                 }
-                floatValue = intValue;
-            } else if ((subtype & TT_OCTAL) != 0) {
+                this.floatValue = this.intValue;
+            } else if ((this.subtype & TT_OCTAL) != 0) {
                 // step over the first zero
                 pIndex += 1;
                 while (pIndex < p.length) {
-                    intValue = (intValue << 3) + (p[pIndex] - '0');
+                    this.intValue = (this.intValue << 3) + (p[pIndex] - '0');
                     pIndex++;
                 }
-                floatValue = intValue;
-            } else if ((subtype & TT_HEX) != 0) {
+                this.floatValue = this.intValue;
+            } else if ((this.subtype & TT_HEX) != 0) {
                 // step over the leading 0x or 0X
                 pIndex += 2;
                 while (pIndex < p.length) {
-                    intValue <<= 4;
-                    if (p[pIndex] >= 'a' && p[pIndex] <= 'f') {
-                        intValue += p[pIndex] - 'a' + 10;
-                    } else if (p[pIndex] >= 'A' && p[pIndex] <= 'F') {
-                        intValue += p[pIndex] - 'A' + 10;
+                    this.intValue <<= 4;
+                    if ((p[pIndex] >= 'a') && (p[pIndex] <= 'f')) {
+                        this.intValue += (p[pIndex] - 'a') + 10;
+                    } else if ((p[pIndex] >= 'A') && (p[pIndex] <= 'F')) {
+                        this.intValue += (p[pIndex] - 'A') + 10;
                     } else {
-                        intValue += p[pIndex] - '0';
+                        this.intValue += p[pIndex] - '0';
                     }
                     p[pIndex]++;
                 }
-                floatValue = intValue;
-            } else if ((subtype & TT_BINARY) != 0) {
+                this.floatValue = this.intValue;
+            } else if ((this.subtype & TT_BINARY) != 0) {
                 // step over the leading 0b or 0B
                 pIndex += 2;
                 while (pIndex < p.length) {
-                    intValue = (intValue << 1) + (p[pIndex] - '0');
+                    this.intValue = (this.intValue << 1) + (p[pIndex] - '0');
                     pIndex++;
                 }
-                floatValue = intValue;
+                this.floatValue = this.intValue;
             }
-            subtype |= TT_VALUESVALID;
+            this.subtype |= TT_VALUESVALID;
         }
 
         // append character without adding trailing zero
@@ -295,5 +295,5 @@ public class Token {
             return this.getData().startsWith(other.getData());
         }
 
-    };
+    }
 }

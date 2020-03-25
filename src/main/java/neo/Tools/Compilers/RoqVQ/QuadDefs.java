@@ -48,7 +48,7 @@ public class QuadDefs {
         byte size;                                      //  32, 16, 8, or 4
         int/*word*/ xat;                // where is it at on the screen
         int/*word*/ yat;				// 
-    };
+    }
 
     static class quadcel {
 
@@ -79,20 +79,20 @@ public class QuadDefs {
         int     status;
         boolean mark;
         float[] snr = new float[DEAD + 1];        // snrssss
-    };
+    }
 
     static class dataQuadCel {
 
         float[]                snr     = new float[DEAD + 1];        // snrssss
         long/*unsigned int*/[] cols    = new long[8];
         long/*unsigned int*/[] bitmaps = new long[7];    // ccc bitmap
-    };
+    }
 
     static class norm {
 
         float normal;
         /*unsigned short*/ int index;
-    };
+    }
 
     static class dtlCel {
         /*unsigned*/ char[] dtlMap = new char[256];
@@ -101,10 +101,10 @@ public class QuadDefs {
         int[] b = new int[4];
         int[] a = new int[4];
         float ymean;
-    };
+    }
 
     static class pPixel {
 
         byte r, g, b, a;
-    };
+    }
 }

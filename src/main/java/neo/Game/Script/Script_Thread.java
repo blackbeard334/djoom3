@@ -242,12 +242,12 @@ public class Script_Thread {
         private        idThread      waitingForThread;
         private        int           waitingFor;
         private        int           waitingUntil;
-        private        idInterpreter interpreter = new idInterpreter();
+        private final        idInterpreter interpreter = new idInterpreter();
         //
         private        idDict        spawnArgs;
         //
         private        int           threadNum;
-        private        idStr         threadName = new idStr();
+        private final        idStr         threadName = new idStr();
         //
         private        int           lastExecuteTime;
         private        int           creationTime;
@@ -271,21 +271,21 @@ public class Script_Thread {
                 }
             } while (GetThread(threadIndex) != null);
 
-            threadNum = threadIndex;
+            this.threadNum = threadIndex;
             threadList.Append(this);
 
-            creationTime = gameLocal.time;
-            lastExecuteTime = 0;
-            manualControl = false;
+            this.creationTime = gameLocal.time;
+            this.lastExecuteTime = 0;
+            this.manualControl = false;
 
             ClearWaitFor();
 
-            interpreter.SetThread(this);
+            this.interpreter.SetThread(this);
         }
 
         private void Pause() {
             ClearWaitFor();
-            interpreter.doneProcessing = true;
+            this.interpreter.doneProcessing = true;
         }
 
         private void Event_Execute() {
@@ -319,8 +319,8 @@ public class Script_Thread {
         }
 
         private static void Event_WaitFor(idThread t, idEventArg<idEntity> e) {
-            idEntity ent = e.value;
-            if (ent != null && ent.RespondsTo(EV_Thread_SetCallback)) {
+            final idEntity ent = e.value;
+            if ((ent != null) && ent.RespondsTo(EV_Thread_SetCallback)) {
                 ent.ProcessEvent(EV_Thread_SetCallback);
                 if (gameLocal.program.GetReturnedInteger() != 0) {
                     t.Pause();
@@ -361,7 +361,7 @@ public class Script_Thread {
         }
 
         private static void Event_Trigger(idThread t, idEventArg<idEntity> e) {
-            idEntity ent = e.value;
+            final idEntity ent = e.value;
             if (ent != null) {
                 ent.Signal(SIG_TRIGGER);
                 ent.ProcessEvent(EV_Activate, gameLocal.GetLocalPlayer());
@@ -395,7 +395,7 @@ public class Script_Thread {
         private static void Event_GetEntity(idThread t, final idEventArg<String> n) {
             int entnum;
             idEntity ent;
-            String name = n.value;
+            final String name = n.value;
 
             assert (name != null);
 
@@ -412,7 +412,7 @@ public class Script_Thread {
         }
 
         private static void Event_Spawn(idThread t, final idEventArg<String> classname) {
-            idEntity[] ent = {null};
+            final idEntity[] ent = {null};
 
             t.spawnArgs.Set("classname", classname.value);
             gameLocal.SpawnEntityDef(t.spawnArgs, ent);
@@ -429,22 +429,22 @@ public class Script_Thread {
         }
 
         private static void Event_SpawnString(idThread t, final idEventArg<String> key, final idEventArg<String> defaultvalue) {
-            String[] result = {null};
+            final String[] result = {null};
 
             t.spawnArgs.GetString(key.value, defaultvalue.value, result);
             ReturnString(result[0]);
         }
 
         private static void Event_SpawnFloat(idThread t, final idEventArg<String> key, idEventArg<Float> defaultvalue) {
-            float[] result = {0};
+            final float[] result = {0};
 
             t.spawnArgs.GetFloat(key.value, va("%f", defaultvalue.value), result);
             ReturnFloat(result[0]);
         }
 
         private static void Event_SpawnVector(idThread t, final idEventArg<String> key, idEventArg<idVec3> d) {
-            idVec3 result = new idVec3();
-            idVec3 defaultvalue = d.value;
+            final idVec3 result = new idVec3();
+            final idVec3 defaultvalue = d.value;
 
             t.spawnArgs.GetVector(key.value, va("%f %f %f", defaultvalue.x, defaultvalue.y, defaultvalue.z), result);
             ReturnVector(result);
@@ -459,21 +459,21 @@ public class Script_Thread {
         }
 
         private static void Event_GetPersistantString(idThread t, final idEventArg<String> key) {
-            String[] result = {null};
+            final String[] result = {null};
 
             gameLocal.persistentLevelInfo.GetString(key.value, "", result);
             ReturnString(result[0]);
         }
 
         private static void Event_GetPersistantFloat(idThread t, final idEventArg<String> key) {
-            float[] result = {0};
+            final float[] result = {0};
 
             gameLocal.persistentLevelInfo.GetFloat(key.value, "0", result);
             ReturnFloat(result[0]);
         }
 
         private static void Event_GetPersistantVector(idThread t, final idEventArg<String> key) {
-            idVec3 result = new idVec3();
+            final idVec3 result = new idVec3();
 
             gameLocal.persistentLevelInfo.GetVector(key.value, "0 0 0", result);
             ReturnVector(result);
@@ -488,14 +488,14 @@ public class Script_Thread {
         }
 
         private static void Event_AngToRight(idThread t, idEventArg<idAngles> ang) {
-            idVec3 vec = new idVec3();
+            final idVec3 vec = new idVec3();
 
             ang.value.ToVectors(null, vec);
             ReturnVector(vec);
         }
 
         private static void Event_AngToUp(idThread t, idEventArg<idAngles> ang) {
-            idVec3 vec = new idVec3();
+            final idVec3 vec = new idVec3();
 
             ang.value.ToVectors(null, null, vec);
             ReturnVector(vec);
@@ -534,15 +534,15 @@ public class Script_Thread {
         }
 
         private static void Event_VecToAngles(idThread t, idEventArg<idVec3> vec) {
-            idAngles ang = vec.value.ToAngles();
+            final idAngles ang = vec.value.ToAngles();
             ReturnVector(new idVec3(ang.oGet(0), ang.oGet(1), ang.oGet(2)));
         }
 
         private static void Event_OnSignal(idThread t, idEventArg<Integer> s, idEventArg<idEntity> e, final idEventArg<String> f) {
             function_t function;
-            int signal = s.value;
-            idEntity ent = e.value;
-            String func = f.value;
+            final int signal = s.value;
+            final idEntity ent = e.value;
+            final String func = f.value;
 
             assert (func != null);
 
@@ -563,8 +563,8 @@ public class Script_Thread {
         }
 
         private static void Event_ClearSignalThread(idThread t, idEventArg<Integer> s, idEventArg<idEntity> e) {
-            int signal = s.value;
-            idEntity ent = e.value;
+            final int signal = s.value;
+            final idEntity ent = e.value;
 
             if (null == ent) {
                 t.Error("Entity not found");
@@ -578,7 +578,7 @@ public class Script_Thread {
         }
 
         private static void Event_SetCamera(idThread t, idEventArg<idEntity> e) {
-            idEntity ent = e.value;
+            final idEntity ent = e.value;
 
             if (null == ent) {
                 t.Error("Entity not found");
@@ -599,15 +599,15 @@ public class Script_Thread {
 
         private static void Event_Trace(idThread t, final idEventArg<idVec3> s, final idEventArg<idVec3> e, final idEventArg<idVec3> mi,
                                         final idEventArg<idVec3> ma, idEventArg<Integer> c, idEventArg<idEntity> p) {
-            idVec3 start = s.value;
-            idVec3 end = e.value;
-            idVec3 mins = mi.value;
-            idVec3 maxs = ma.value;
-            int contents_mask = c.value;
-            idEntity passEntity = p.value;
+            final idVec3 start = s.value;
+            final idVec3 end = e.value;
+            final idVec3 mins = mi.value;
+            final idVec3 maxs = ma.value;
+            final int contents_mask = c.value;
+            final idEntity passEntity = p.value;
 
             {
-                trace_s[] trace = {t.trace};
+                final trace_s[] trace = {t.trace};
                 if (mins.equals(getVec3_origin()) && maxs.equals(getVec3_origin())) {
                     gameLocal.clip.TracePoint(trace, start, end, contents_mask, passEntity);
                 } else {
@@ -619,12 +619,12 @@ public class Script_Thread {
         }
 
         private static void Event_TracePoint(idThread t, final idEventArg<idVec3> startA, final idEventArg<idVec3> endA, idEventArg<Integer> c, idEventArg<idEntity> p) {
-            idVec3 start = startA.value;
-            idVec3 end = endA.value;
-            int contents_mask = c.value;
-            idEntity passEntity = p.value;
+            final idVec3 start = startA.value;
+            final idVec3 end = endA.value;
+            final int contents_mask = c.value;
+            final idEntity passEntity = p.value;
             {
-                trace_s[] trace = {t.trace};
+                final trace_s[] trace = {t.trace};
                 gameLocal.clip.TracePoint(trace, start, end, contents_mask, passEntity);
                 t.trace = trace[0];
             }
@@ -656,9 +656,9 @@ public class Script_Thread {
         }
 
         private void Event_GetTraceJoint() {
-            if (trace.fraction < 1.0f && trace.c.id < 0) {
-                idAFEntity_Base af = (idAFEntity_Base) gameLocal.entities[trace.c.entityNum];
-                if (af != null && af.IsType(idAFEntity_Base.class) && af.IsActiveAF()) {
+            if ((trace.fraction < 1.0f) && (trace.c.id < 0)) {
+                final idAFEntity_Base af = (idAFEntity_Base) gameLocal.entities[trace.c.entityNum];
+                if ((af != null) && af.IsType(idAFEntity_Base.class) && af.IsActiveAF()) {
                     ReturnString(af.GetAnimator().GetJointName(CLIPMODEL_ID_TO_JOINT_HANDLE(trace.c.id)));
                     return;
                 }
@@ -667,11 +667,11 @@ public class Script_Thread {
         }
 
         private void Event_GetTraceBody() {
-            if (trace.fraction < 1.0f && trace.c.id < 0) {
-                idAFEntity_Base af = (idAFEntity_Base) gameLocal.entities[ trace.c.entityNum];
-                if (af != null && af.IsType(idAFEntity_Base.class) && af.IsActiveAF()) {
-                    int bodyId = af.BodyForClipModelId(trace.c.id);
-                    idAFBody body = af.GetAFPhysics().GetBody(bodyId);
+            if ((trace.fraction < 1.0f) && (trace.c.id < 0)) {
+                final idAFEntity_Base af = (idAFEntity_Base) gameLocal.entities[ trace.c.entityNum];
+                if ((af != null) && af.IsType(idAFEntity_Base.class) && af.IsActiveAF()) {
+                    final int bodyId = af.BodyForClipModelId(trace.c.id);
+                    final idAFBody body = af.GetAFPhysics().GetBody(bodyId);
                     if (body != null) {
                         ReturnString(body.GetName());
                         return;
@@ -682,9 +682,9 @@ public class Script_Thread {
         }
 
         private static void Event_FadeIn(idThread t, idEventArg<idVec3> colorA, idEventArg<Float> time) {
-            idVec4 fadeColor = new idVec4();
+            final idVec4 fadeColor = new idVec4();
             idPlayer player;
-            idVec3 color = colorA.value;
+            final idVec3 color = colorA.value;
 
             player = gameLocal.GetLocalPlayer();
             if (player != null) {
@@ -694,9 +694,9 @@ public class Script_Thread {
         }
 
         private static void Event_FadeOut(idThread t, idEventArg<idVec3> colorA, idEventArg<Float> time) {
-            idVec4 fadeColor = new idVec4();
+            final idVec4 fadeColor = new idVec4();
             idPlayer player;
-            idVec3 color = colorA.value;
+            final idVec3 color = colorA.value;
 
             player = gameLocal.GetLocalPlayer();
             if (player != null) {
@@ -706,9 +706,9 @@ public class Script_Thread {
         }
 
         private static void Event_FadeTo(idThread t, idEventArg<idVec3> colorA, idEventArg<Float> alpha, idEventArg<Float> time) {
-            idVec4 fadeColor = new idVec4();
+            final idVec4 fadeColor = new idVec4();
             idPlayer player;
-            idVec3 color = colorA.value;
+            final idVec3 color = colorA.value;
 
             player = gameLocal.GetLocalPlayer();
             if (player != null) {
@@ -718,7 +718,7 @@ public class Script_Thread {
         }
 
         private static void Event_SetShaderParm(idThread t, idEventArg<Integer> parmnumA, idEventArg<Float> value) {
-            int parmnum = parmnumA.value;
+            final int parmnum = parmnumA.value;
 
             if ((parmnum < 0) || (parmnum >= MAX_GLOBAL_SHADER_PARMS)) {
                 t.Error("shader parm index (%d) out of range", parmnum);
@@ -748,8 +748,8 @@ public class Script_Thread {
 
         private static void Event_StrLeft(idThread t, final idEventArg<String> stringA, idEventArg<Integer> numA) {
             int len;
-            String string = stringA.value;
-            int num = numA.value;
+            final String string = stringA.value;
+            final int num = numA.value;
 
             if (num < 0) {
                 idThread.ReturnString("");
@@ -762,14 +762,14 @@ public class Script_Thread {
                 return;
             }
 
-            idStr result = new idStr(string, 0, num);
+            final idStr result = new idStr(string, 0, num);
             idThread.ReturnString(result);
         }
 
         private static void Event_StrRight(idThread t, final idEventArg<String> stringA, idEventArg<Integer> numA) {
             int len;
-            String string = stringA.value;
-            int num = numA.value;
+            final String string = stringA.value;
+            final int num = numA.value;
 
             if (num < 0) {
                 idThread.ReturnString("");
@@ -787,8 +787,8 @@ public class Script_Thread {
 
         private static void Event_StrSkip(idThread t, final idEventArg<String> stringA, idEventArg<Integer> numA) {
             int len;
-            String string = stringA.value;
-            int num = numA.value;
+            final String string = stringA.value;
+            final int num = numA.value;
 
             if (num < 0) {
                 idThread.ReturnString(string);
@@ -806,7 +806,7 @@ public class Script_Thread {
 
         private static void Event_StrMid(idThread t, final idEventArg<String> stringA, idEventArg<Integer> startA, idEventArg<Integer> numA) {
             int len;
-            String string = stringA.value;
+            final String string = stringA.value;
             int start = startA.value;
             int num = numA.value;
 
@@ -823,11 +823,11 @@ public class Script_Thread {
                 start = len;
             }
 
-            if (start + num > len) {
+            if ((start + num) > len) {
                 num = len - start;
             }
 
-            idStr result = new idStr(string, start, start + num);
+            final idStr result = new idStr(string, start, start + num);
             idThread.ReturnString(result);
         }
 
@@ -864,27 +864,27 @@ public class Script_Thread {
         }
 
         private static void Event_DebugLine(idThread t, final idEventArg<idVec3> colorA, final idEventArg<idVec3> start, final idEventArg<idVec3> end, final idEventArg<Float> lifetime) {
-            idVec3 color = colorA.value;
+            final idVec3 color = colorA.value;
             gameRenderWorld.DebugLine(new idVec4(color.x, color.y, color.z, 0.0f), start.value, end.value, (int) SEC2MS(lifetime.value));
         }
 
         private static void Event_DebugArrow(idThread t, final idEventArg<idVec3> colorA, final idEventArg<idVec3> start, final idEventArg<idVec3> end, final idEventArg<Integer> size, final idEventArg<Float> lifetime) {
-            idVec3 color = colorA.value;
+            final idVec3 color = colorA.value;
             gameRenderWorld.DebugArrow(new idVec4(color.x, color.y, color.z, 0.0f), start.value, end.value, size.value, (int) SEC2MS(lifetime.value));
         }
 
         private static void Event_DebugCircle(idThread t, final idEventArg<idVec3> colorA, final idEventArg<idVec3> origin, final idEventArg<idVec3> dir, final idEventArg<Float> radius, final idEventArg<Integer> numSteps, final idEventArg<Float> lifetime) {
-            idVec3 color = colorA.value;
+            final idVec3 color = colorA.value;
             gameRenderWorld.DebugCircle(new idVec4(color.x, color.y, color.z, 0.0f), origin.value, dir.value, radius.value, numSteps.value, (int) SEC2MS(lifetime.value));
         }
 
         private static void Event_DebugBounds(idThread t, final idEventArg<idVec3> colorA, final idEventArg<idVec3> mins, final idEventArg<idVec3> maxs, final idEventArg<Float> lifetime) {
-            idVec3 color = colorA.value;
+            final idVec3 color = colorA.value;
             gameRenderWorld.DebugBounds(new idVec4(color.x, color.y, color.z, 0.0f), new idBounds(mins.value, maxs.value), getVec3_origin(), (int) SEC2MS(lifetime.value));
         }
 
         private static void Event_DrawText(idThread t, final idEventArg<String> text, final idEventArg<idVec3> origin, idEventArg<Float> scale, final idEventArg<idVec3> colorA, final idEventArg<Integer> align, final idEventArg<Float> lifetime) {
-            idVec3 color = colorA.value;
+            final idVec3 color = colorA.value;
             gameRenderWorld.DrawText(text.value, origin.value, scale.value, new idVec4(color.x, color.y, color.z, 0.0f), gameLocal.GetLocalPlayer().viewAngles.ToMat3(), align.value, (int) SEC2MS(lifetime.value));
         }
 
@@ -892,7 +892,7 @@ public class Script_Thread {
             idPlayer player;
 
             player = gameLocal.GetLocalPlayer();
-            if (player != null && player.GetInfluenceLevel() != 0) {
+            if ((player != null) && (player.GetInfluenceLevel() != 0)) {
                 idThread.ReturnInt(true);
             } else {
                 idThread.ReturnInt(false);
@@ -903,7 +903,7 @@ public class Script_Thread {
             Init();
             SetThreadName(va("thread_%d", threadIndex));
             if (g_debugScript.GetBool()) {
-                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, threadNum, threadName);
+                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, this.threadNum, this.threadName);
             }
         }
 
@@ -912,9 +912,9 @@ public class Script_Thread {
 
             Init();
             SetThreadName(self.name.toString());
-            interpreter.EnterObjectFunction(self, func, false);
+            this.interpreter.EnterObjectFunction(self, func, false);
             if (g_debugScript.GetBool()) {
-                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, threadNum, threadName);
+                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, this.threadNum, this.threadName);
             }
         }
 
@@ -923,17 +923,17 @@ public class Script_Thread {
 
             Init();
             SetThreadName(func.Name());
-            interpreter.EnterFunction(func, false);
+            this.interpreter.EnterFunction(func, false);
             if (g_debugScript.GetBool()) {
-                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, threadNum, threadName);
+                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, this.threadNum, this.threadName);
             }
         }
 
         public idThread(idInterpreter source, final function_t func, int args) {
             Init();
-            interpreter.ThreadCall(source, func, args);
+            this.interpreter.ThreadCall(source, func, args);
             if (g_debugScript.GetBool()) {
-                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, threadNum, threadName);
+                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, this.threadNum, this.threadName);
             }
         }
 
@@ -942,9 +942,9 @@ public class Script_Thread {
 
             Init();
             SetThreadName(self.name.toString());
-            interpreter.ThreadCall(source, func, args);
+            this.interpreter.ThreadCall(source, func, args);
             if (g_debugScript.GetBool()) {
-                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, threadNum, threadName);
+                gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, this.threadNum, this.threadName);
             }
         }
 
@@ -956,7 +956,7 @@ public class Script_Thread {
             int n;
 
             if (g_debugScript.GetBool()) {
-                gameLocal.Printf("%d: end thread (%d) '%s'\n", gameLocal.time, threadNum, threadName);
+                gameLocal.Printf("%d: end thread (%d) '%s'\n", gameLocal.time, this.threadNum, this.threadName);
             }
             threadList.Remove(this);
             n = threadList.Num();
@@ -976,7 +976,7 @@ public class Script_Thread {
 
         // tells the thread manager not to delete this thread when it ends
         public void ManualDelete() {
-            interpreter.terminateOnExit = false;
+            this.interpreter.terminateOnExit = false;
         }
 
         // save games
@@ -985,53 +985,53 @@ public class Script_Thread {
 
             // We will check on restore that threadNum is still the same,
             // threads should have been restored in the same order.
-            savefile.WriteInt(threadNum);
+            savefile.WriteInt(this.threadNum);
 
-            savefile.WriteObject(waitingForThread);
-            savefile.WriteInt(waitingFor);
-            savefile.WriteInt(waitingUntil);
+            savefile.WriteObject(this.waitingForThread);
+            savefile.WriteInt(this.waitingFor);
+            savefile.WriteInt(this.waitingUntil);
 
-            interpreter.Save(savefile);
+            this.interpreter.Save(savefile);
 
-            savefile.WriteDict(spawnArgs);
-            savefile.WriteString(threadName);
+            savefile.WriteDict(this.spawnArgs);
+            savefile.WriteString(this.threadName);
 
-            savefile.WriteInt(lastExecuteTime);
-            savefile.WriteInt(creationTime);
+            savefile.WriteInt(this.lastExecuteTime);
+            savefile.WriteInt(this.creationTime);
 
-            savefile.WriteBool(manualControl);
+            savefile.WriteBool(this.manualControl);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {				// unarchives object from save game file
-            threadNum = savefile.ReadInt();
+            this.threadNum = savefile.ReadInt();
 
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/waitingForThread);
-            waitingFor = savefile.ReadInt();
-            waitingUntil = savefile.ReadInt();
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/waitingForThread);
+            this.waitingFor = savefile.ReadInt();
+            this.waitingUntil = savefile.ReadInt();
 
-            interpreter.Restore(savefile);
+            this.interpreter.Restore(savefile);
 
-            savefile.ReadDict(spawnArgs);
-            savefile.ReadString(threadName);
+            savefile.ReadDict(this.spawnArgs);
+            savefile.ReadString(this.threadName);
 
-            lastExecuteTime = savefile.ReadInt();
-            creationTime = savefile.ReadInt();
+            this.lastExecuteTime = savefile.ReadInt();
+            this.creationTime = savefile.ReadInt();
 
-            manualControl = savefile.ReadBool();
+            this.manualControl = savefile.ReadBool();
         }
 
         public void EnableDebugInfo() {
-            interpreter.debug = true;
+            this.interpreter.debug = true;
         }
 
         public void DisableDebugInfo() {
-            interpreter.debug = false;
+            this.interpreter.debug = false;
         }
 
         public void WaitMS(int time) {
             Pause();
-            waitingUntil = gameLocal.time + time;
+            this.waitingUntil = gameLocal.time + time;
         }
 
         public void WaitSec(float time) {
@@ -1043,8 +1043,8 @@ public class Script_Thread {
 
             // manual control threads don't set waitingUntil so that they can be run again
             // that frame if necessary.
-            if (!manualControl) {
-                waitingUntil = gameLocal.time + gameLocal.msec;
+            if (!this.manualControl) {
+                this.waitingUntil = gameLocal.time + gameLocal.msec;
             }
         }
 
@@ -1057,7 +1057,7 @@ public class Script_Thread {
          */
         public void CallFunction(final function_t func, boolean clearStack) {
             ClearWaitFor();
-            interpreter.EnterFunction(func, clearStack);
+            this.interpreter.EnterFunction(func, clearStack);
         }
 
         /*
@@ -1070,7 +1070,7 @@ public class Script_Thread {
         public void CallFunction(idEntity self, final function_t func, boolean clearStack) {
             assert (self != null);
             ClearWaitFor();
-            interpreter.EnterObjectFunction(self, func, clearStack);
+            this.interpreter.EnterObjectFunction(self, func, clearStack);
         }
 
         public void DisplayInfo() {
@@ -1079,22 +1079,22 @@ public class Script_Thread {
                     + "        File: %s(%d)\n"
                     + "     Created: %d (%d ms ago)\n"
                     + "      Status: ",
-                    threadNum, threadName,
-                    interpreter.CurrentFile(), interpreter.CurrentLine(),
-                    creationTime, gameLocal.time - creationTime);
+                    this.threadNum, this.threadName,
+                    this.interpreter.CurrentFile(), this.interpreter.CurrentLine(),
+                    this.creationTime, gameLocal.time - this.creationTime);
 
-            if (interpreter.threadDying) {
+            if (this.interpreter.threadDying) {
                 gameLocal.Printf("Dying\n");
-            } else if (interpreter.doneProcessing) {
+            } else if (this.interpreter.doneProcessing) {
                 gameLocal.Printf(
                         "Paused since %d (%d ms)\n"
-                        + "      Reason: ", lastExecuteTime, gameLocal.time - lastExecuteTime);
-                if (waitingForThread != null) {
-                    gameLocal.Printf("Waiting for thread #%3d '%s'\n", waitingForThread.GetThreadNum(), waitingForThread.GetThreadName());
-                } else if ((waitingFor != ENTITYNUM_NONE) && (gameLocal.entities[ waitingFor] != null)) {
-                    gameLocal.Printf("Waiting for entity #%3d '%s'\n", waitingFor, gameLocal.entities[ waitingFor].name);
-                } else if (waitingUntil != 0) {
-                    gameLocal.Printf("Waiting until %d (%d ms total wait time)\n", waitingUntil, waitingUntil - lastExecuteTime);
+                        + "      Reason: ", this.lastExecuteTime, gameLocal.time - this.lastExecuteTime);
+                if (this.waitingForThread != null) {
+                    gameLocal.Printf("Waiting for thread #%3d '%s'\n", this.waitingForThread.GetThreadNum(), this.waitingForThread.GetThreadName());
+                } else if ((this.waitingFor != ENTITYNUM_NONE) && (gameLocal.entities[ this.waitingFor] != null)) {
+                    gameLocal.Printf("Waiting for entity #%3d '%s'\n", this.waitingFor, gameLocal.entities[ this.waitingFor].name);
+                } else if (this.waitingUntil != 0) {
+                    gameLocal.Printf("Waiting until %d (%d ms total wait time)\n", this.waitingUntil, this.waitingUntil - this.lastExecuteTime);
                 } else {
                     gameLocal.Printf("None\n");
                 }
@@ -1102,7 +1102,7 @@ public class Script_Thread {
                 gameLocal.Printf("Processing\n");
             }
 
-            interpreter.DisplayInfo();
+            this.interpreter.DisplayInfo();
 
             gameLocal.Printf("\n");
         }
@@ -1176,10 +1176,10 @@ public class Script_Thread {
                 }
                 gameLocal.Printf("%d active threads\n\n", n);
             }
-        };
+        }
 
         public static void Restart() {
-            int i;
+            final int i;
             int n;
 
             // reset the threadIndex
@@ -1215,17 +1215,17 @@ public class Script_Thread {
         }
 
         public boolean IsDoneProcessing() {
-            return interpreter.doneProcessing;
+            return this.interpreter.doneProcessing;
         }
 
         public boolean IsDying() {
-            return interpreter.threadDying;
+            return this.interpreter.threadDying;
         }
 
         public void End() {
             // Tell thread to die.  It will exit on its own.
             Pause();
-            interpreter.threadDying = true;
+            this.interpreter.threadDying = true;
         }
 
         public static void KillThread(final String name) {
@@ -1268,25 +1268,25 @@ public class Script_Thread {
             idThread oldThread;
             boolean done;
 
-            if (manualControl && (waitingUntil > gameLocal.time)) {
+            if (this.manualControl && (this.waitingUntil > gameLocal.time)) {
                 return false;
             }
 
             oldThread = currentThread;
             currentThread = this;
 
-            lastExecuteTime = gameLocal.time;
+            this.lastExecuteTime = gameLocal.time;
             ClearWaitFor();
-            done = interpreter.Execute();
+            done = this.interpreter.Execute();
             if (done) {
                 End();
-                if (interpreter.terminateOnExit) {
+                if (this.interpreter.terminateOnExit) {
                     PostEventMS(EV_Remove, 0);
                 }
-            } else if (!manualControl) {
-                if (waitingUntil > lastExecuteTime) {
-                    PostEventMS(EV_Thread_Execute, waitingUntil - lastExecuteTime);
-                } else if (interpreter.MultiFrameEventInProgress()) {
+            } else if (!this.manualControl) {
+                if (this.waitingUntil > this.lastExecuteTime) {
+                    PostEventMS(EV_Thread_Execute, this.waitingUntil - this.lastExecuteTime);
+                } else if (this.interpreter.MultiFrameEventInProgress()) {
                     PostEventMS(EV_Thread_Execute, gameLocal.msec);
                 }
             }
@@ -1297,24 +1297,24 @@ public class Script_Thread {
         }
 
         public void ManualControl() {
-            manualControl = true;
+            this.manualControl = true;
             CancelEvents(EV_Thread_Execute);
         }
 
         public void DoneProcessing() {
-            interpreter.doneProcessing = true;
+            this.interpreter.doneProcessing = true;
         }
 
         public void ContinueProcessing() {
-            interpreter.doneProcessing = false;
+            this.interpreter.doneProcessing = false;
         }
 
         public boolean ThreadDying() {
-            return interpreter.threadDying;
+            return this.interpreter.threadDying;
         }
 
         public void EndThread() {
-            interpreter.threadDying = true;
+            this.interpreter.threadDying = true;
         }
 
         /*
@@ -1325,11 +1325,11 @@ public class Script_Thread {
          ================
          */
         public boolean IsWaiting() {
-            if (waitingForThread != null || (waitingFor != ENTITYNUM_NONE)) {
+            if ((this.waitingForThread != null) || (this.waitingFor != ENTITYNUM_NONE)) {
                 return true;
             }
 
-            if (waitingUntil != 0 && (waitingUntil > gameLocal.time)) {
+            if ((this.waitingUntil != 0) && (this.waitingUntil > gameLocal.time)) {
                 return true;
             }
 
@@ -1337,14 +1337,14 @@ public class Script_Thread {
         }
 
         public void ClearWaitFor() {
-            waitingFor = ENTITYNUM_NONE;
-            waitingForThread = null;
-            waitingUntil = 0;
+            this.waitingFor = ENTITYNUM_NONE;
+            this.waitingForThread = null;
+            this.waitingUntil = 0;
         }
 
         public boolean IsWaitingFor(idEntity obj) {
             assert (obj != null);
-            return waitingFor == obj.entityNumber;
+            return this.waitingFor == obj.entityNumber;
         }
 
         public void ObjectMoveDone(idEntity obj) {
@@ -1357,11 +1357,11 @@ public class Script_Thread {
         }
 
         public void ThreadCallback(idThread thread) {
-            if (interpreter.threadDying) {
+            if (this.interpreter.threadDying) {
                 return;
             }
 
-            if (thread == waitingForThread) {
+            if (thread == this.waitingForThread) {
                 ClearWaitFor();
                 DelayedStart(0);
             }
@@ -1385,33 +1385,33 @@ public class Script_Thread {
         }
 
         public idThread WaitingOnThread() {
-            return waitingForThread;
+            return this.waitingForThread;
         }
 
         public void SetThreadNum(int num) {
-            threadNum = num;
+            this.threadNum = num;
         }
 
         public int GetThreadNum() {
-            return threadNum;
+            return this.threadNum;
         }
 
         public void SetThreadName(final String name) {
-            threadName.oSet(name);
+            this.threadName.oSet(name);
         }
 
         public String GetThreadName() {
-            return threadName.toString();
+            return this.threadName.toString();
         }
 
         public void Error(final String fmt, Object... objects) {// const id_attribute((format(printf,2,3)));
-            String text = String.format(fmt, objects);
-            interpreter.Error(text);
+            final String text = String.format(fmt, objects);
+            this.interpreter.Error(text);
         }
 
         public void Warning(final String fmt, Object... objects) {// const id_attribute((format(printf,2,3)));
-            String text = String.format(fmt, objects);
-            interpreter.Warning(text);
+            final String text = String.format(fmt, objects);
+            this.interpreter.Warning(text);
         }
 
         public static idThread CurrentThread() {
@@ -1473,5 +1473,5 @@ public class Script_Thread {
         public static void delete(final idThread thread){
             thread._deconstructor();
         }
-    };
+    }
 }

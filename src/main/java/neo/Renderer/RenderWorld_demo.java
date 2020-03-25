@@ -12,6 +12,6 @@ public class RenderWorld_demo {
         int[] sizeofRenderEntity = {0};
         int[] sizeofRenderLight = {0};
         char[] mapname = new char[256];
-    };
+    }
 
 }

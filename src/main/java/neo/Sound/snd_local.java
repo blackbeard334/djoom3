@@ -36,10 +36,10 @@ public class snd_local {
         SCMD_MODIFY,
         SCMD_STOP,
         SCMD_FADE
-    };
+    }
 
     static final        int   SOUND_MAX_CHANNELS       = 8;
-    static final        int   SOUND_DECODER_FREE_DELAY = 1000 * MIXBUFFER_SAMPLES / USERCMD_MSEC;        // four seconds
+    static final        int   SOUND_DECODER_FREE_DELAY = (1000 * MIXBUFFER_SAMPLES) / USERCMD_MSEC;        // four seconds
     //
     public static final int   PRIMARYFREQ              = 44100;              // samples per second
     static final        float SND_EPSILON              = 1.0f / 32768.0f;    // if volume is below this, it will always multiply to zero
@@ -88,7 +88,7 @@ public class snd_local {
             this.wBitsPerSample = mpwfx.wBitsPerSample;
             this.cbSize = mpwfx.cbSize;
         }
-    };
+    }
 
 
     /* OLD general waveform format structure (information common to all formats) */
@@ -108,7 +108,7 @@ public class snd_local {
         public int/*dword*/nSamplesPerSec;  // sample rate
         public int/*dword*/nAvgBytesPerSec; // for buffer estimation
         public int/*word*/ nBlockAlign;     // block size of data
-    };
+    }
 
 
     /* flags for wFormatTag field of WAVEFORMAT */
@@ -152,20 +152,20 @@ public class snd_local {
 
         @Override
         public ByteBuffer Write() {
-            ByteBuffer data = ByteBuffer.allocate(pcmwaveformat_s.BYTES);
+            final ByteBuffer data = ByteBuffer.allocate(pcmwaveformat_s.BYTES);
             data.order(ByteOrder.LITTLE_ENDIAN);//very importante.
 
-            data.putShort((short) wf.wFormatTag);
-            data.putShort((short) wf.nChannels);
-            data.putInt(wf.nSamplesPerSec);
-            data.putInt(wf.nAvgBytesPerSec);
-            data.putShort((short) wf.nBlockAlign);
+            data.putShort((short) this.wf.wFormatTag);
+            data.putShort((short) this.wf.nChannels);
+            data.putInt(this.wf.nSamplesPerSec);
+            data.putInt(this.wf.nAvgBytesPerSec);
+            data.putShort((short) this.wf.nBlockAlign);
 
-            data.putShort((short) wBitsPerSample);
+            data.putShort((short) this.wBitsPerSample);
 
             return data;
         }
-    };
+    }
 
 // #ifndef mmioFOURCC
 // #define mmioFOURCC( ch0, ch1, ch2, ch3 )				\
@@ -206,7 +206,7 @@ public class snd_local {
             this.Format.nBlockAlign = pcmWaveFormat.wf.nBlockAlign;
             this.Format.wBitsPerSample = pcmWaveFormat.wBitsPerSample;
         }
-    };
+    }
 
 // typedef dword fourcc;
 
@@ -250,17 +250,17 @@ public class snd_local {
 
         @Override
         public ByteBuffer Write() {
-            ByteBuffer data = ByteBuffer.allocate(mminfo_s.BYTES);
+            final ByteBuffer data = ByteBuffer.allocate(mminfo_s.BYTES);
             data.order(ByteOrder.LITTLE_ENDIAN);//very importante.
 
-            data.putInt((int) ckid);
-            data.putInt(cksize);
-            data.putInt((int) fccType);
-            data.putInt(dwDataOffset);
+            data.putInt((int) this.ckid);
+            data.putInt(this.cksize);
+            data.putInt((int) this.fccType);
+            data.putInt(this.dwDataOffset);
 
             return data;
         }
-    };
+    }
 
     /*
      ===================================================================================
@@ -283,13 +283,13 @@ public class snd_local {
         }
 
         public static idSampleDecoder Alloc() {
-            idSampleDecoderLocal decoder = new idSampleDecoderLocal();//sampleDecoderAllocator.Alloc();
+            final idSampleDecoderLocal decoder = new idSampleDecoderLocal();//sampleDecoderAllocator.Alloc();
             decoder.Clear();
             return decoder;
         }
 
         public static void Free(idSampleDecoder decoder) {
-            idSampleDecoderLocal localDecoder = (idSampleDecoderLocal) decoder;
+            final idSampleDecoderLocal localDecoder = (idSampleDecoderLocal) decoder;
             localDecoder.ClearDecoder();
 //            sampleDecoderAllocator.Free(localDecoder);
         }
@@ -314,7 +314,7 @@ public class snd_local {
         public abstract idSoundSample GetSample();
 
         public abstract int GetLastDecodeTime();
-    };
+    }
 
     /*
      ===================================================================================
@@ -349,5 +349,5 @@ public class snd_local {
         public abstract int GetMixBufferSize();
 
         public abstract short[] GetMixBuffer();
-    };
+    }
 }

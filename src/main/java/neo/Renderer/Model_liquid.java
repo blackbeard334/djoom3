@@ -91,83 +91,83 @@ public class Model_liquid {
         //
 
         public idRenderModelLiquid() {
-            verts_x = 32;
-            verts_y = 32;
-            scale_x = 256.0f;
-            scale_y = 256.0f;
-            liquid_type = 0;
-            density = 0.97f;
-            drop_height = 4;
-            drop_radius = 4;
-            drop_delay = 1000;
-            shader = declManager.FindMaterial((String) null);
-            update_tics = 33;  // ~30 hz
-            time = 0;
-            seed = 0;
+            this.verts_x = 32;
+            this.verts_y = 32;
+            this.scale_x = 256.0f;
+            this.scale_y = 256.0f;
+            this.liquid_type = 0;
+            this.density = 0.97f;
+            this.drop_height = 4;
+            this.drop_radius = 4;
+            this.drop_delay = 1000;
+            this.shader = declManager.FindMaterial((String) null);
+            this.update_tics = 33;  // ~30 hz
+            this.time = 0;
+            this.seed = 0;
 
-            random.SetSeed(0);
+            this.random.SetSeed(0);
         }
 
         @Override
         public void InitFromFile(String fileName) throws idException {
             int i, x, y;
-            idToken token = new idToken();
-            idParser parser = new idParser(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS);
-            idList<Integer> tris = new idList<>();
+            final idToken token = new idToken();
+            final idParser parser = new idParser(LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS);
+            final idList<Integer> tris = new idList<>();
             float size_x, size_y;
             float rate;
 
-            name = new idStr(fileName);
+            this.name = new idStr(fileName);
 
             if (!parser.LoadFile(fileName)) {
                 MakeDefaultModel();
                 return;
             }
 
-            size_x = scale_x * verts_x;
-            size_y = scale_y * verts_y;
+            size_x = this.scale_x * this.verts_x;
+            size_y = this.scale_y * this.verts_y;
 
             while (parser.ReadToken(token)) {
                 if (0 == token.Icmp("seed")) {
-                    seed = parser.ParseInt();
+                    this.seed = parser.ParseInt();
                 } else if (0 == token.Icmp("size_x")) {
                     size_x = parser.ParseFloat();
                 } else if (0 == token.Icmp("size_y")) {
                     size_y = parser.ParseFloat();
                 } else if (0 == token.Icmp("verts_x")) {
-                    verts_x = (int) parser.ParseFloat();
-                    if (verts_x < 2) {
+                    this.verts_x = (int) parser.ParseFloat();
+                    if (this.verts_x < 2) {
                         parser.Warning("Invalid # of verts.  Using default model.");
                         MakeDefaultModel();
                         return;
                     }
                 } else if (0 == token.Icmp("verts_y")) {
-                    verts_y = (int) parser.ParseFloat();
-                    if (verts_y < 2) {
+                    this.verts_y = (int) parser.ParseFloat();
+                    if (this.verts_y < 2) {
                         parser.Warning("Invalid # of verts.  Using default model.");
                         MakeDefaultModel();
                         return;
                     }
                 } else if (0 == token.Icmp("liquid_type")) {
-                    liquid_type = parser.ParseInt() - 1;
-                    if ((liquid_type < 0) || (liquid_type >= LIQUID_MAX_TYPES)) {
+                    this.liquid_type = parser.ParseInt() - 1;
+                    if ((this.liquid_type < 0) || (this.liquid_type >= LIQUID_MAX_TYPES)) {
                         parser.Warning("Invalid liquid_type.  Using default model.");
                         MakeDefaultModel();
                         return;
                     }
                 } else if (0 == token.Icmp("density")) {
-                    density = parser.ParseFloat();
+                    this.density = parser.ParseFloat();
                 } else if (0 == token.Icmp("drop_height")) {
-                    drop_height = parser.ParseFloat();
+                    this.drop_height = parser.ParseFloat();
                 } else if (0 == token.Icmp("drop_radius")) {
-                    drop_radius = parser.ParseInt();
+                    this.drop_radius = parser.ParseInt();
                 } else if (0 == token.Icmp("drop_delay")) {
-                    drop_delay = (float) SEC2MS(parser.ParseFloat());
+                    this.drop_delay = SEC2MS(parser.ParseFloat());
                 } else if (0 == token.Icmp("shader")) {
                     parser.ReadToken(token);
-                    shader = declManager.FindMaterial(token);
+                    this.shader = declManager.FindMaterial(token);
                 } else if (0 == token.Icmp("seed")) {
-                    seed = parser.ParseInt();
+                    this.seed = parser.ParseInt();
                 } else if (0 == token.Icmp("update_rate")) {
                     rate = parser.ParseFloat();
                     if ((rate <= 0.0f) || (rate > 60.0f)) {
@@ -175,7 +175,7 @@ public class Model_liquid {
                         MakeDefaultModel();
                         return;
                     }
-                    update_tics = (int) (1000 / rate);
+                    this.update_tics = (int) (1000 / rate);
                 } else {
                     parser.Warning("Unknown parameter '%s'.  Using default model.", token);
                     MakeDefaultModel();
@@ -183,47 +183,47 @@ public class Model_liquid {
                 }
             }
 
-            scale_x = size_x / (verts_x - 1);
-            scale_y = size_y / (verts_y - 1);
+            this.scale_x = size_x / (this.verts_x - 1);
+            this.scale_y = size_y / (this.verts_y - 1);
 
-            pages.SetNum(2 * verts_x * verts_y);
-            page1 = pages.Ptr();
-            page2 = Arrays.copyOfRange(page1, verts_x * verts_y, page1.length);
+            this.pages.SetNum(2 * this.verts_x * this.verts_y);
+            this.page1 = this.pages.Ptr();
+            this.page2 = Arrays.copyOfRange(this.page1, this.verts_x * this.verts_y, this.page1.length);
 
-            verts.SetNum(verts_x * verts_y);
-            for (i = 0, y = 0; y < verts_y; y++) {
-                for (x = 0; x < verts_x; x++, i++) {
-                    page1[ i] = 0.0f;
-                    page2[ i] = 0.0f;
-                    verts.oGet(i).Clear();
-                    verts.oGet(i).xyz.Set(x * scale_x, y * scale_y, 0.0f);
-                    verts.oGet(i).st.Set((float) x / (float) (verts_x - 1), (float) -y / (float) (verts_y - 1));
+            this.verts.SetNum(this.verts_x * this.verts_y);
+            for (i = 0, y = 0; y < this.verts_y; y++) {
+                for (x = 0; x < this.verts_x; x++, i++) {
+                    this.page1[ i] = 0.0f;
+                    this.page2[ i] = 0.0f;
+                    this.verts.oGet(i).Clear();
+                    this.verts.oGet(i).xyz.Set(x * this.scale_x, y * this.scale_y, 0.0f);
+                    this.verts.oGet(i).st.Set((float) x / (float) (this.verts_x - 1), (float) -y / (float) (this.verts_y - 1));
                 }
             }
 
-            tris.SetNum((verts_x - 1) * (verts_y - 1) * 6);
-            for (i = 0, y = 0; y < verts_y - 1; y++) {
-                for (x = 1; x < verts_x; x++, i += 6) {
-                    tris.oSet(i + 0, y * verts_x + x);
-                    tris.oSet(i + 1, y * verts_x + x - 1);
-                    tris.oSet(i + 2, (y + 1) * verts_x + x - 1);
+            tris.SetNum((this.verts_x - 1) * (this.verts_y - 1) * 6);
+            for (i = 0, y = 0; y < (this.verts_y - 1); y++) {
+                for (x = 1; x < this.verts_x; x++, i += 6) {
+                    tris.oSet(i + 0, (y * this.verts_x) + x);
+                    tris.oSet(i + 1, ((y * this.verts_x) + x) - 1);
+                    tris.oSet(i + 2, (((y + 1) * this.verts_x) + x) - 1);
 
-                    tris.oSet(i + 3, (y + 1) * verts_x + x - 1);
-                    tris.oSet(i + 4, (y + 1) * verts_x + x);
-                    tris.oSet(i + 0, y * verts_x + x);
+                    tris.oSet(i + 3, (((y + 1) * this.verts_x) + x) - 1);
+                    tris.oSet(i + 4, ((y + 1) * this.verts_x) + x);
+                    tris.oSet(i + 0, (y * this.verts_x) + x);
                 }
             }
 
             // build the information that will be common to all animations of this mesh:
             // sil edge connectivity and normal / tangent generation information
-            deformInfo = R_BuildDeformInfo(verts.Num(), verts.Ptr(), tris.Num(), tris, true);
+            this.deformInfo = R_BuildDeformInfo(this.verts.Num(), this.verts.Ptr(), tris.Num(), tris, true);
 
-            bounds.Clear();
-            bounds.AddPoint(new idVec3(0.0f, 0.0f, drop_height * -10.0f));
-            bounds.AddPoint(new idVec3((verts_x - 1) * scale_x, (verts_y - 1) * scale_y, drop_height * 10.0f));
+            this.bounds.Clear();
+            this.bounds.AddPoint(new idVec3(0.0f, 0.0f, this.drop_height * -10.0f));
+            this.bounds.AddPoint(new idVec3((this.verts_x - 1) * this.scale_x, (this.verts_y - 1) * this.scale_y, this.drop_height * 10.0f));
 
             // set the timestamp for reloadmodels
-            fileSystem.ReadFile(name, null, timeStamp);
+            fileSystem.ReadFile(this.name, null, this.timeStamp);
 
             Reset();
         }
@@ -245,7 +245,7 @@ public class Model_liquid {
                 cachedModel = null;
             }
 
-            if (NOT(deformInfo)) {
+            if (NOT(this.deformInfo)) {
                 return null;
             }
 
@@ -256,10 +256,10 @@ public class Model_liquid {
             }
 
             // update the liquid model
-            frames = (t - time) / update_tics;
+            frames = (t - this.time) / this.update_tics;
             if (frames > LIQUID_MAX_SKIP_FRAMES) {
                 // don't let time accumalate when skipping frames
-                time += update_tics * (frames - LIQUID_MAX_SKIP_FRAMES);
+                this.time += this.update_tics * (frames - LIQUID_MAX_SKIP_FRAMES);
 
                 frames = LIQUID_MAX_SKIP_FRAMES;
             }
@@ -270,8 +270,8 @@ public class Model_liquid {
             }
 
             // create the surface
-            lerp = (float) (t - time) / (float) update_tics;
-            modelSurface_s surf = GenerateSurface(lerp);
+            lerp = (float) (t - this.time) / (float) this.update_tics;
+            final modelSurface_s surf = GenerateSurface(lerp);
 
             staticModel = new idRenderModelStatic();
             staticModel.AddSurface(surf);
@@ -283,29 +283,29 @@ public class Model_liquid {
         @Override
         public idBounds Bounds(renderEntity_s ent) {
             // FIXME: need to do this better
-            return bounds;
+            return this.bounds;
         }
 
         @Override
         public void Reset() {
             int i, x, y;
 
-            if (pages.Num() < 2 * verts_x * verts_y) {
+            if (this.pages.Num() < (2 * this.verts_x * this.verts_y)) {
                 return;
             }
 
-            nextDropTime = 0;
-            time = 0;
-            random.SetSeed(seed);
+            this.nextDropTime = 0;
+            this.time = 0;
+            this.random.SetSeed(this.seed);
 
-            page1 = pages.Ptr();
-            page2 = Arrays.copyOfRange(page1, verts_x * verts_y, page1.length);
+            this.page1 = this.pages.Ptr();
+            this.page2 = Arrays.copyOfRange(this.page1, this.verts_x * this.verts_y, this.page1.length);
 
-            for (i = 0, y = 0; y < verts_y; y++) {
-                for (x = 0; x < verts_x; x++, i++) {
-                    page1[ i] = 0.0f;
-                    page2[ i] = 0.0f;
-                    verts.oGet(i).xyz.z = 0.0f;
+            for (i = 0, y = 0; y < this.verts_y; y++) {
+                for (x = 0; x < this.verts_x; x++, i++) {
+                    this.page1[ i] = 0.0f;
+                    this.page2[ i] = 0.0f;
+                    this.verts.oGet(i).xyz.z = 0.0f;
                 }
             }
         }
@@ -316,14 +316,14 @@ public class Model_liquid {
             float up, down;
             float pos;
 
-            left = (int) (bounds.oGet(0).x / scale_x);
-            right = (int) (bounds.oGet(1).x / scale_x);
-            top = (int) (bounds.oGet(0).y / scale_y);
-            bottom = (int) (bounds.oGet(1).y / scale_y);
+            left = (int) (bounds.oGet(0).x / this.scale_x);
+            right = (int) (bounds.oGet(1).x / this.scale_x);
+            top = (int) (bounds.oGet(0).y / this.scale_y);
+            bottom = (int) (bounds.oGet(1).y / this.scale_y);
             down = bounds.oGet(0).z;
             up = bounds.oGet(1).z;
 
-            if ((right < 1) || (left >= verts_x) || (bottom < 1) || (top >= verts_x)) {
+            if ((right < 1) || (left >= this.verts_x) || (bottom < 1) || (top >= this.verts_x)) {
                 return;
             }
 
@@ -331,21 +331,21 @@ public class Model_liquid {
             if (left < 1) {
                 left = 1;
             }
-            if (right >= verts_x) {
-                right = verts_x - 1;
+            if (right >= this.verts_x) {
+                right = this.verts_x - 1;
             }
             if (top < 1) {
                 top = 1;
             }
-            if (bottom >= verts_y) {
-                bottom = verts_y - 1;
+            if (bottom >= this.verts_y) {
+                bottom = this.verts_y - 1;
             }
 
             for (cy = top; cy < bottom; cy++) {
                 for (cx = left; cx < right; cx++) {
-                    pos = page1[ verts_x * cy + cx];
+                    pos = this.page1[ (this.verts_x * cy) + cx];
                     if (pos > down) {//&& ( *pos < up ) ) {
-                        page1[ verts_x * cy + cx] = down;
+                        this.page1[ (this.verts_x * cy) + cx] = down;
                     }
                 }
             }
@@ -355,43 +355,43 @@ public class Model_liquid {
             srfTriangles_s tri;
             int i, base;
             idDrawVert vert;
-            modelSurface_s surf = new modelSurface_s();
+            final modelSurface_s surf = new modelSurface_s();
             float inv_lerp;
 
             inv_lerp = 1.0f - lerp;
-            vert = verts.oGet(0);
-            for (i = 0; i < verts.Num(); vert = verts.oGet(++i)) {
-                vert.xyz.z = page1[ i] * lerp + page2[ i] * inv_lerp;
+            vert = this.verts.oGet(0);
+            for (i = 0; i < this.verts.Num(); vert = this.verts.oGet(++i)) {
+                vert.xyz.z = (this.page1[ i] * lerp) + (this.page2[ i] * inv_lerp);
             }
 
             tr.pc.c_deformedSurfaces++;
-            tr.pc.c_deformedVerts += deformInfo.numOutputVerts;
-            tr.pc.c_deformedIndexes += deformInfo.numIndexes;
+            tr.pc.c_deformedVerts += this.deformInfo.numOutputVerts;
+            tr.pc.c_deformedIndexes += this.deformInfo.numIndexes;
 
             tri = R_AllocStaticTriSurf();
 
             // note that some of the data is references, and should not be freed
             tri.deformedSurface = true;
 
-            tri.numIndexes = deformInfo.numIndexes;
-            tri.indexes = deformInfo.indexes;
-            tri.silIndexes = deformInfo.silIndexes;
-            tri.numMirroredVerts = deformInfo.numMirroredVerts;
-            tri.mirroredVerts = deformInfo.mirroredVerts;
-            tri.numDupVerts = deformInfo.numDupVerts;
-            tri.dupVerts = deformInfo.dupVerts;
-            tri.numSilEdges = deformInfo.numSilEdges;
-            tri.silEdges = deformInfo.silEdges;
-            tri.dominantTris = deformInfo.dominantTris;
+            tri.numIndexes = this.deformInfo.numIndexes;
+            tri.indexes = this.deformInfo.indexes;
+            tri.silIndexes = this.deformInfo.silIndexes;
+            tri.numMirroredVerts = this.deformInfo.numMirroredVerts;
+            tri.mirroredVerts = this.deformInfo.mirroredVerts;
+            tri.numDupVerts = this.deformInfo.numDupVerts;
+            tri.dupVerts = this.deformInfo.dupVerts;
+            tri.numSilEdges = this.deformInfo.numSilEdges;
+            tri.silEdges = this.deformInfo.silEdges;
+            tri.dominantTris = this.deformInfo.dominantTris;
 
-            tri.numVerts = deformInfo.numOutputVerts;
+            tri.numVerts = this.deformInfo.numOutputVerts;
             R_AllocStaticTriSurfVerts(tri, tri.numVerts);
-            SIMDProcessor.Memcpy(tri.verts, verts.Ptr(), deformInfo.numSourceVerts);
+            SIMDProcessor.Memcpy(tri.verts, this.verts.Ptr(), this.deformInfo.numSourceVerts);
 
             // replicate the mirror seam vertexes
-            base = deformInfo.numOutputVerts - deformInfo.numMirroredVerts;
-            for (i = 0; i < deformInfo.numMirroredVerts; i++) {
-                tri.verts[base + i] = tri.verts[deformInfo.mirroredVerts[i]];
+            base = this.deformInfo.numOutputVerts - this.deformInfo.numMirroredVerts;
+            for (i = 0; i < this.deformInfo.numMirroredVerts; i++) {
+                tri.verts[base + i] = tri.verts[this.deformInfo.mirroredVerts[i]];
             }
 
             R_BoundTriSurf(tri);
@@ -406,7 +406,7 @@ public class Model_liquid {
             }
 
             surf.geometry = tri;
-            surf.shader = shader;
+            surf.shader = this.shader;
 
             return surf;
         }
@@ -415,42 +415,42 @@ public class Model_liquid {
             int cx, cy;
             int left, top, right, bottom;
             int square;
-            int radsquare = drop_radius * drop_radius;
-            float invlength = 1.0f / (float) radsquare;
+            final int radsquare = this.drop_radius * this.drop_radius;
+            final float invlength = 1.0f / radsquare;
             float dist;
 
             if (x < 0) {
-                x = 1 + drop_radius + random.RandomInt(verts_x - 2 * drop_radius - 1);
+                x = 1 + this.drop_radius + this.random.RandomInt(this.verts_x - (2 * this.drop_radius) - 1);
             }
             if (y < 0) {
-                y = 1 + drop_radius + random.RandomInt(verts_y - 2 * drop_radius - 1);
+                y = 1 + this.drop_radius + this.random.RandomInt(this.verts_y - (2 * this.drop_radius) - 1);
             }
 
-            left = -drop_radius;
-            right = drop_radius;
-            top = -drop_radius;
-            bottom = drop_radius;
+            left = -this.drop_radius;
+            right = this.drop_radius;
+            top = -this.drop_radius;
+            bottom = this.drop_radius;
 
             // Perform edge clipping...
-            if (x - drop_radius < 1) {
-                left -= (x - drop_radius - 1);
+            if ((x - this.drop_radius) < 1) {
+                left -= (x - this.drop_radius - 1);
             }
-            if (y - drop_radius < 1) {
-                top -= (y - drop_radius - 1);
+            if ((y - this.drop_radius) < 1) {
+                top -= (y - this.drop_radius - 1);
             }
-            if (x + drop_radius > verts_x - 1) {
-                right -= (x + drop_radius - verts_x + 1);
+            if ((x + this.drop_radius) > (this.verts_x - 1)) {
+                right -= (((x + this.drop_radius) - this.verts_x) + 1);
             }
-            if (y + drop_radius > verts_y - 1) {
-                bottom -= (y + drop_radius - verts_y + 1);
+            if ((y + this.drop_radius) > (this.verts_y - 1)) {
+                bottom -= (((y + this.drop_radius) - this.verts_y) + 1);
             }
 
             for (cy = top; cy < bottom; cy++) {
                 for (cx = left; cx < right; cx++) {
-                    square = cy * cy + cx * cx;
+                    square = (cy * cy) + (cx * cx);
                     if (square < radsquare) {
-                        dist = idMath.Sqrt((float) square * invlength);
-                        page[verts_x * (cy + y) + cx + x] += idMath.Cos16(dist * idMath.PI * 0.5f) * drop_height;
+                        dist = idMath.Sqrt(square * invlength);
+                        page[(this.verts_x * (cy + y)) + cx + x] += idMath.Cos16(dist * idMath.PI * 0.5f) * this.drop_height;
                     }
                 }
             }
@@ -462,85 +462,85 @@ public class Model_liquid {
             int p1;
             float value;
 
-            time += update_tics;
+            this.time += this.update_tics;
 
-            idSwap(page1, page2);
+            idSwap(this.page1, this.page2);
 
-            if (time > nextDropTime) {
-                WaterDrop(-1, -1, page2);
-                nextDropTime = (int) (time + drop_delay);
-            } else if (time < nextDropTime - drop_delay) {
-                nextDropTime = (int) (time + drop_delay);
+            if (this.time > this.nextDropTime) {
+                WaterDrop(-1, -1, this.page2);
+                this.nextDropTime = (int) (this.time + this.drop_delay);
+            } else if (this.time < (this.nextDropTime - this.drop_delay)) {
+                this.nextDropTime = (int) (this.time + this.drop_delay);
             }
 
 //            p1 = page1;
 //            p2 = page2;
             p1 = p2 = 0;
-            switch (liquid_type) {
+            switch (this.liquid_type) {
                 case 0:
-                    for (y = 1; y < verts_y - 1; y++) {
-                        p2 += verts_x;
-                        p1 += verts_x;
-                        for (x = 1; x < verts_x - 1; x++) {
+                    for (y = 1; y < (this.verts_y - 1); y++) {
+                        p2 += this.verts_x;
+                        p1 += this.verts_x;
+                        for (x = 1; x < (this.verts_x - 1); x++) {
                             value
-                                    = (page2[p2 + x + verts_x]
-                                    + page2[p2 + x - verts_x]
-                                    + page2[p2 + x + 1]
-                                    + page2[p2 + x - 1]
-                                    + page2[p2 + x - verts_x - 1]
-                                    + page2[p2 + x - verts_x + 1]
-                                    + page2[p2 + x + verts_x - 1]
-                                    + page2[p2 + x + verts_x + 1]
-                                    + page2[p2 + x]) * (2.0f / 9.0f)
-                                    - page1[p1 + x];
+                                    = ((this.page2[p2 + x + this.verts_x]
+                                    + this.page2[(p2 + x) - this.verts_x]
+                                    + this.page2[p2 + x + 1]
+                                    + this.page2[(p2 + x) - 1]
+                                    + this.page2[(p2 + x) - this.verts_x - 1]
+                                    + this.page2[((p2 + x) - this.verts_x) + 1]
+                                    + this.page2[(p2 + x + this.verts_x) - 1]
+                                    + this.page2[p2 + x + this.verts_x + 1]
+                                    + this.page2[p2 + x]) * (2.0f / 9.0f))
+                                    - this.page1[p1 + x];
 
-                            page1[p1 + x] = value * density;
+                            this.page1[p1 + x] = value * this.density;
                         }
                     }
                     break;
 
                 case 1:
-                    for (y = 1; y < verts_y - 1; y++) {
-                        p2 += verts_x;
-                        p1 += verts_x;
-                        for (x = 1; x < verts_x - 1; x++) {
+                    for (y = 1; y < (this.verts_y - 1); y++) {
+                        p2 += this.verts_x;
+                        p1 += this.verts_x;
+                        for (x = 1; x < (this.verts_x - 1); x++) {
                             value
-                                    = (page2[p2 + x + verts_x]
-                                    + page2[p2 + x - verts_x]
-                                    + page2[p2 + x + 1]
-                                    + page2[p2 + x - 1]
-                                    + page2[p2 + x - verts_x - 1]
-                                    + page2[p2 + x - verts_x + 1]
-                                    + page2[p2 + x + verts_x - 1]
-                                    + page2[p2 + x + verts_x + 1]) * 0.25f
-                                    - page1[p1 + x];
+                                    = ((this.page2[p2 + x + this.verts_x]
+                                    + this.page2[(p2 + x) - this.verts_x]
+                                    + this.page2[p2 + x + 1]
+                                    + this.page2[(p2 + x) - 1]
+                                    + this.page2[(p2 + x) - this.verts_x - 1]
+                                    + this.page2[((p2 + x) - this.verts_x) + 1]
+                                    + this.page2[(p2 + x + this.verts_x) - 1]
+                                    + this.page2[p2 + x + this.verts_x + 1]) * 0.25f)
+                                    - this.page1[p1 + x];
 
-                            page1[p1 + x] = value * density;
+                            this.page1[p1 + x] = value * this.density;
                         }
                     }
                     break;
 
                 case 2:
-                    for (y = 1; y < verts_y - 1; y++) {
-                        p2 += verts_x;
-                        p1 += verts_x;
-                        for (x = 1; x < verts_x - 1; x++) {
+                    for (y = 1; y < (this.verts_y - 1); y++) {
+                        p2 += this.verts_x;
+                        p1 += this.verts_x;
+                        for (x = 1; x < (this.verts_x - 1); x++) {
                             value
-                                    = (page2[p2 + x + verts_x]
-                                    + page2[p2 + x - verts_x]
-                                    + page2[p2 + x + 1]
-                                    + page2[p2 + x - 1]
-                                    + page2[p2 + x - verts_x - 1]
-                                    + page2[p2 + x - verts_x + 1]
-                                    + page2[p2 + x + verts_x - 1]
-                                    + page2[p2 + x + verts_x + 1]
-                                    + page2[p2 + x]) * (1.0f / 9.0f);
+                                    = (this.page2[p2 + x + this.verts_x]
+                                    + this.page2[(p2 + x) - this.verts_x]
+                                    + this.page2[p2 + x + 1]
+                                    + this.page2[(p2 + x) - 1]
+                                    + this.page2[(p2 + x) - this.verts_x - 1]
+                                    + this.page2[((p2 + x) - this.verts_x) + 1]
+                                    + this.page2[(p2 + x + this.verts_x) - 1]
+                                    + this.page2[p2 + x + this.verts_x + 1]
+                                    + this.page2[p2 + x]) * (1.0f / 9.0f);
 
-                            page1[p1 + x] = value * density;
+                            this.page1[p1 + x] = value * this.density;
                         }
                     }
                     break;
             }
         }
-    };
+    }
 }

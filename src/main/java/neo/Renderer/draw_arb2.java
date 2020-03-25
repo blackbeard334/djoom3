@@ -221,7 +221,7 @@ public class draw_arb2 {
             // draw it
             RB_DrawElementsWithCounters(din.surf.geo);
         }
-    };
+    }
 
 
     /*
@@ -277,7 +277,7 @@ public class draw_arb2 {
             // perform setup here that will not change over multiple interaction passes
 
             // set the vertex pointers
-            idDrawVert ac = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
+            final idDrawVert ac = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
 //            qglColorPointer(4, GL_UNSIGNED_BYTE, 0/*sizeof(idDrawVert)*/, ac.colorOffset());
 //            qglVertexAttribPointerARB(11, 3, GL_FLOAT, false, 0/*sizeof(idDrawVert)*/, ac.normalOffset());
 //            qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, 0/*sizeof(idDrawVert)*/, ac.tangentsOffset_1());
@@ -364,13 +364,13 @@ public class draw_arb2 {
             lightShader = vLight.lightShader;
 
             // clear the stencil buffer if needed
-            if (vLight.globalShadows[0] != null || vLight.localShadows[0] != null) {
+            if ((vLight.globalShadows[0] != null) || (vLight.localShadows[0] != null)) {
                 backEnd.currentScissor = new idScreenRect(vLight.scissorRect);
                 if (r_useScissor.GetBool()) {
                     qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                             backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                            backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                            backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                            (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                            (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
                 }
                 qglClear(GL_STENCIL_BUFFER_BIT);
             } else {
@@ -433,7 +433,7 @@ public class draw_arb2 {
             this.ident = ident;
             this.name = name;
         }
-    };
+    }
     static final int MAX_GLPROGS = 200;
     // a single file can have both a vertex program and a fragment program
     static progDef_t[] progs = new progDef_t[MAX_GLPROGS];
@@ -468,10 +468,10 @@ public class draw_arb2 {
      =================
      */
     public static void R_LoadARBProgram(int progIndex) {
-        IntBuffer ofs = BufferUtils.createIntBuffer(16);
+        final IntBuffer ofs = BufferUtils.createIntBuffer(16);
         int err;
-        idStr fullPath = new idStr("glprogs/" + progs[progIndex].name);
-        ByteBuffer[] fileBuffer = {null};
+        final idStr fullPath = new idStr("glprogs/" + progs[progIndex].name);
+        final ByteBuffer[] fileBuffer = {null};
         String buffer;
         int start = 0, end;
 
@@ -529,7 +529,7 @@ public class draw_arb2 {
             return;
         }
         buffer = buffer.substring(start, end + 3);//end[3] = 0;
-        ByteBuffer substring = BufferUtils.createByteBuffer(buffer.length());
+        final ByteBuffer substring = BufferUtils.createByteBuffer(buffer.length());
         substring.put(buffer.getBytes()).flip();
 
         qglBindProgramARB(progs[progIndex].target, progs[progIndex].ident);
@@ -540,7 +540,7 @@ public class draw_arb2 {
         err = qglGetError();
         qglGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, ofs);
         if (err == GL_INVALID_OPERATION) {
-            String/*GLubyte*/ str = qglGetString(GL_PROGRAM_ERROR_STRING_ARB);
+            final String/*GLubyte*/ str = qglGetString(GL_PROGRAM_ERROR_STRING_ARB);
             common.Printf("\nGL_PROGRAM_ERROR_STRING_ARB: %s\n", str);
             if (ofs.get(0) < 0) {
                 common.Printf("GL_PROGRAM_ERROR_POSITION_ARB < 0 with error\n");
@@ -569,17 +569,17 @@ public class draw_arb2 {
      */
     public static int R_FindARBProgram( /*GLenum */int target, final String program) {
         int i;
-        idStr stripped = new idStr(program);
+        final idStr stripped = new idStr(program);
 
         stripped.StripFileExtension();
 
         // see if it is already loaded
-        for (i = 0; progs[i] != null && isNotNullOrEmpty(progs[i].name); i++) {
+        for (i = 0; (progs[i] != null) && isNotNullOrEmpty(progs[i].name); i++) {
             if (progs[i].target != target) {
                 continue;
             }
 
-            idStr compare = new idStr(progs[i].name);
+            final idStr compare = new idStr(progs[i].name);
             compare.StripFileExtension();
 
             if (NOT(idStr.Icmp(stripped, compare))) {
@@ -620,7 +620,7 @@ public class draw_arb2 {
             int i;
 
             common.Printf("----- R_ReloadARBPrograms -----\n");
-            for (i = 0; progs[i] != null && isNotNullOrEmpty(progs[i].name); i++) {
+            for (i = 0; (progs[i] != null) && isNotNullOrEmpty(progs[i].name); i++) {
                 R_LoadARBProgram(i);
             }
             common.Printf("-------------------------------\n");

@@ -45,10 +45,10 @@ public class GuiScript {
         public boolean own;
 
         public idGSWinVar() {
-            var = null;
-            own = false;
+            this.var = null;
+            this.own = false;
         }
-    };
+    }
 
     static class guiCommandDef_t {
 
@@ -64,7 +64,7 @@ public class GuiScript {
             this.mMinParms = mMinParms;
             this.mMaxParms = mMaxParms;
         }
-    };
+    }
     static final guiCommandDef_t[] commandList = {
         new guiCommandDef_t("set", Script_Set.getInstance(), 2, 999),
         new guiCommandDef_t("setFocus", Script_SetFocus.getInstance(), 1, 1),
@@ -86,18 +86,18 @@ public class GuiScript {
         protected int conditionReg;
         protected idGuiScriptList ifList;
         protected idGuiScriptList elseList;
-        private idList<idGSWinVar> parms;
+        private final idList<idGSWinVar> parms;
         private Handler handler;
         //
         //
 
         public idGuiScript() {
-            ifList = null;
-            elseList = null;
-            conditionReg = -1;
-            handler = null;
+            this.ifList = null;
+            this.elseList = null;
+            this.conditionReg = -1;
+            this.handler = null;
             this.parms = new idList<>();
-            parms.SetGranularity(2);
+            this.parms.SetGranularity(2);
         }
 
         // ~idGuiScript();
@@ -113,16 +113,16 @@ public class GuiScript {
                 return false;
             }
 
-            handler = null;
+            this.handler = null;
 
             for (i = 0; i < scriptCommandCount; i++) {
                 if (idStr.Icmp(token, commandList[i].name) == 0) {
-                    handler = commandList[i].handler;
+                    this.handler = commandList[i].handler;
                     break;
                 }
             }
 
-            if (handler == null) {
+            if (this.handler == null) {
                 src.Error("Uknown script call %s", token);
             }
             // now read parms til ;
@@ -143,17 +143,17 @@ public class GuiScript {
                     break;
                 }
 
-                idWinStr str = new idWinStr();
+                final idWinStr str = new idWinStr();
                 str.data = token;
-                idGSWinVar wv = new idGSWinVar();
+                final idGSWinVar wv = new idGSWinVar();
                 wv.own = true;
                 wv.var = str;
-                parms.Append(wv);
+                this.parms.Append(wv);
             }
 
             // 
             //  verify min/max params
-            if (handler != null && (parms.Num() < commandList[i].mMinParms || parms.Num() > commandList[i].mMaxParms)) {
+            if ((this.handler != null) && ((this.parms.Num() < commandList[i].mMinParms) || (this.parms.Num() > commandList[i].mMaxParms))) {
                 src.Error("incorrect number of parameters for script %s", commandList[i].name);
             }
             // 
@@ -162,22 +162,22 @@ public class GuiScript {
         }
 
         public void Execute(idWindow win) {
-            if (handler != null) {
-                handler.run(win, parms);
+            if (this.handler != null) {
+                this.handler.run(win, this.parms);
             }
         }
 
         public void FixupParms(idWindow win) {
-            if (handler == Script_Set.getInstance()) {
+            if (this.handler == Script_Set.getInstance()) {
                 boolean precacheBackground = false;
                 boolean precacheSounds = false;
-                idWinStr str = (idWinStr) parms.oGet(0).var;
+                idWinStr str = (idWinStr) this.parms.oGet(0).var;
                 assert (str != null);
                 idWinVar dest = win.GetWinVarByName(str.data.toString(), true);
                 if (dest != null) {
 //			delete parms[0].var;
-                    parms.oGet(0).var = dest;
-                    parms.oGet(0).own = false;
+                    this.parms.oGet(0).var = dest;
+                    this.parms.oGet(0).own = false;
 
                     if (dest instanceof idWinBackground) {//TODO:cast null comparison. EDIT: not possible with static typing, use "instanceof" instead.
                         precacheBackground = true;
@@ -185,20 +185,20 @@ public class GuiScript {
                 } else if (idStr.Icmp(str.c_str(), "cmd") == 0) {
                     precacheSounds = true;
                 }
-                int parmCount = parms.Num();
+                final int parmCount = this.parms.Num();
                 for (int i = 1; i < parmCount; i++) {
-                    str = (idWinStr) parms.oGet(i).var;
+                    str = (idWinStr) this.parms.oGet(i).var;
                     if (idStr.Icmpn(str.data, "gui::", 5) == 0) {
 
                         //  always use a string here, no point using a float if it is one
                         //  FIXME: This creates duplicate variables, while not technically a problem since they
                         //  are all bound to the same guiDict, it does consume extra memory and is generally a bad thing
-                        idWinStr defvar = new idWinStr();
+                        final idWinStr defvar = new idWinStr();
                         defvar.Init(str.data.toString(), win);
                         win.AddDefinedVar(defvar);
 //				delete parms[i].var;
-                        parms.oGet(0).var = defvar;
-                        parms.oGet(0).own = false;
+                        this.parms.oGet(0).var = defvar;
+                        this.parms.oGet(0).own = false;
 
                         //dest = win.GetWinVarByName(*str, true);
                         //if (dest) {
@@ -214,18 +214,18 @@ public class GuiScript {
                         // 					
                         if (dest != null) {
 //					delete parms[i].var;
-                            parms.oGet(i).var = dest;
-                            parms.oGet(i).own = false;
+                            this.parms.oGet(i).var = dest;
+                            this.parms.oGet(i).own = false;
                         }
                     } else if (idStr.Cmpn(str.c_str(), STRTABLE_ID, STRTABLE_ID_LENGTH) == 0) {
                         str.Set(common.GetLanguageDict().GetString(str.c_str()));
                     } else if (precacheBackground) {
-                        idMaterial mat = declManager.FindMaterial(str.c_str());
+                        final idMaterial mat = declManager.FindMaterial(str.c_str());
                         mat.SetSort(SS_GUI);
                     } else if (precacheSounds) {
                         // Search for "play <...>"
-                        idToken token = new idToken();
-                        idParser parser = new idParser(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
+                        final idToken token = new idToken();
+                        final idParser parser = new idParser(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
                         parser.LoadMemory(str.c_str(), str.Length(), "command");
 
                         while (parser.ReadToken(token)) {
@@ -237,22 +237,22 @@ public class GuiScript {
                         }
                     }
                 }
-            } else if (handler == Script_Transition.getInstance()) {
-                if (parms.Num() < 4) {
+            } else if (this.handler == Script_Transition.getInstance()) {
+                if (this.parms.Num() < 4) {
                     common.Warning("Window %s in gui %s has a bad transition definition", win.GetName(), win.GetGui().GetSourceFile());
                 }
-                idWinStr str = (idWinStr) parms.oGet(0).var;
+                idWinStr str = (idWinStr) this.parms.oGet(0).var;
                 assert (str != null);
 
                 // 
-                drawWin_t[] destOwner = {null};
+                final drawWin_t[] destOwner = {null};
                 idWinVar dest = win.GetWinVarByName(str.data.toString(), true, destOwner);
                 // 
 
                 if (dest != null) {
 //			delete parms[0].var;
-                    parms.oGet(0).var = dest;
-                    parms.oGet(0).own = false;
+                    this.parms.oGet(0).var = dest;
+                    this.parms.oGet(0).own = false;
                 } else {
                     common.Warning("Window %s in gui %s: a transition does not have a valid destination var %s", win.GetName(), win.GetGui().GetSourceFile(), str.c_str());
                 }
@@ -261,13 +261,13 @@ public class GuiScript {
                 //  support variables as parameters		
                 int c;
                 for (c = 1; c < 3; c++) {
-                    str = (idWinStr) parms.oGet(c).var;
+                    str = (idWinStr) this.parms.oGet(c).var;
 
-                    idWinVec4 v4 = new idWinVec4();
-                    parms.oGet(c).var = v4;
-                    parms.oGet(c).own = true;
+                    final idWinVec4 v4 = new idWinVec4();
+                    this.parms.oGet(c).var = v4;
+                    this.parms.oGet(c).own = true;
 
-                    drawWin_t[] owner = {null};
+                    final drawWin_t[] owner = {null};
 
                     if (str.data.oGet(0) == '$') {
                         dest = win.GetWinVarByName(str.c_str().substring(1), true, owner);
@@ -283,7 +283,7 @@ public class GuiScript {
                             destparent = destOwner[0].simp != null ? destOwner[0].simp.GetParent() : destOwner[0].win.GetParent();
 
                             // If its the rectangle they are referencing then adjust it 
-                            if (ownerparent != null && destparent != null
+                            if ((ownerparent != null) && (destparent != null)
                                     && (dest == (owner[0].simp != null ? owner[0].simp.GetWinVarByName("rect") : owner[0].win.GetWinVarByName("rect")))) {
                                 idRectangle rect;
                                 rect = ((idWinRectangle) dest).data;
@@ -305,17 +305,17 @@ public class GuiScript {
                 // 
 
             } else {
-                int c = parms.Num();
+                final int c = this.parms.Num();
                 for (int i = 0; i < c; i++) {
-                    parms.oGet(i).var.Init(parms.oGet(i).var.c_str(), win);
+                    this.parms.oGet(i).var.Init(this.parms.oGet(i).var.c_str(), win);
                 }
             }
         }
 
         public int/*size_t*/ Size() {
             int sz = sizeof(this);
-            for (int i = 0; i < parms.Num(); i++) {
-                sz += parms.oGet(i).var.Size();
+            for (int i = 0; i < this.parms.Num(); i++) {
+                sz += this.parms.oGet(i).var.Size();
             }
             return sz;
         }
@@ -323,18 +323,18 @@ public class GuiScript {
         public void WriteToSaveGame(idFile savefile) {
             int i;
 
-            if (ifList != null) {
-                ifList.WriteToSaveGame(savefile);
+            if (this.ifList != null) {
+                this.ifList.WriteToSaveGame(savefile);
             }
-            if (elseList != null) {
-                elseList.WriteToSaveGame(savefile);
+            if (this.elseList != null) {
+                this.elseList.WriteToSaveGame(savefile);
             }
 
-            savefile.WriteInt(conditionReg);
+            savefile.WriteInt(this.conditionReg);
 
-            for (i = 0; i < parms.Num(); i++) {
-                if (parms.oGet(i).own) {
-                    parms.oGet(i).var.WriteToSaveGame(savefile);
+            for (i = 0; i < this.parms.Num(); i++) {
+                if (this.parms.oGet(i).own) {
+                    this.parms.oGet(i).var.WriteToSaveGame(savefile);
                 }
             }
         }
@@ -342,24 +342,24 @@ public class GuiScript {
         public void ReadFromSaveGame(idFile savefile) {
             int i;
 
-            if (ifList != null) {
-                ifList.ReadFromSaveGame(savefile);
+            if (this.ifList != null) {
+                this.ifList.ReadFromSaveGame(savefile);
             }
-            if (elseList != null) {
-                elseList.ReadFromSaveGame(savefile);
+            if (this.elseList != null) {
+                this.elseList.ReadFromSaveGame(savefile);
             }
 
-            conditionReg = savefile.ReadInt();
+            this.conditionReg = savefile.ReadInt();
 
-            for (i = 0; i < parms.Num(); i++) {
-                if (parms.oGet(i).own) {
-                    parms.oGet(i).var.ReadFromSaveGame(savefile);
+            for (i = 0; i < this.parms.Num(); i++) {
+                if (this.parms.oGet(i).own) {
+                    this.parms.oGet(i).var.ReadFromSaveGame(savefile);
                 }
             }
         }
 
 //protected	void (*handler) (idWindow *window, idList<idGSWinVar> *src);
-    };
+    }
 
     static class idGuiScriptList {
 
@@ -367,18 +367,18 @@ public class GuiScript {
 
         public idGuiScriptList() {
             this.list = new idList<>();
-            list.SetGranularity(4);
+            this.list.SetGranularity(4);
         }
 
         // ~idGuiScriptList() { list.DeleteContents(true); };
         public void Execute(idWindow win) {
-            int c = list.Num();
+            final int c = this.list.Num();
             for (int i = 0; i < c; i++) {
-                idGuiScript gs = list.oGet(i);
+                final idGuiScript gs = this.list.oGet(i);
                 assert (gs != null);
                 if (gs.conditionReg >= 0) {
                     if (win.HasOps()) {
-                        float f = win.EvalRegs(gs.conditionReg);
+                        final float f = win.EvalRegs(gs.conditionReg);
                         if (f != 0) {
                             if (gs.ifList != null) {
                                 win.RunScriptList(gs.ifList);
@@ -393,21 +393,21 @@ public class GuiScript {
         }
 
         public void Append(idGuiScript gs) {
-            list.Append(gs);
+            this.list.Append(gs);
         }
 
         public int/*size_t*/ Size() {
             int sz = sizeof(this);
-            for (int i = 0; i < list.Num(); i++) {
-                sz += list.oGet(i).Size();
+            for (int i = 0; i < this.list.Num(); i++) {
+                sz += this.list.oGet(i).Size();
             }
             return sz;
         }
 
         public void FixupParms(idWindow win) {
-            int c = list.Num();
+            final int c = this.list.Num();
             for (int i = 0; i < c; i++) {
-                idGuiScript gs = list.oGet(i);
+                final idGuiScript gs = this.list.oGet(i);
                 gs.FixupParms(win);
                 if (gs.ifList != null) {
                     gs.ifList.FixupParms(win);
@@ -427,19 +427,19 @@ public class GuiScript {
         public void WriteToSaveGame(idFile savefile) {
             int i;
 
-            for (i = 0; i < list.Num(); i++) {
-                list.oGet(i).WriteToSaveGame(savefile);
+            for (i = 0; i < this.list.Num(); i++) {
+                this.list.oGet(i).WriteToSaveGame(savefile);
             }
         }
 
         public void ReadFromSaveGame(idFile savefile) {
             int i;
 
-            for (i = 0; i < list.Num(); i++) {
-                list.oGet(i).ReadFromSaveGame(savefile);
+            for (i = 0; i < this.list.Num(); i++) {
+                this.list.oGet(i).ReadFromSaveGame(savefile);
             }
         }
-    };
+    }
 
     static abstract class Handler {
 
@@ -466,12 +466,13 @@ public class GuiScript {
         @Override
         public void run(idWindow window, idList<idGSWinVar> src) {
             scriptSetTotal++;
-            String key, val;
+            final String key;
+			String val;
             idWinStr dest = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(0).var);
             if (dest != null) {
                 if (idStr.Icmp(dest.data, "cmd") == 0) {
                     dest = (idWinStr) src.oGet(1).var;
-                    int parmCount = src.Num();
+                    final int parmCount = src.Num();
                     if (parmCount > 2) {
                         val = dest.c_str();
                         int i = 2;
@@ -491,7 +492,7 @@ public class GuiScript {
             src.oGet(0).var.Set(src.oGet(1).var.c_str());
             src.oGet(0).var.SetEval(false);
         }
-    };
+    }
 
     /*
      =========================
@@ -511,15 +512,15 @@ public class GuiScript {
 
         @Override
         public void run(idWindow window, idList<idGSWinVar> src) {
-            idWinStr parm = (idWinStr) src.oGet(0).var;
+            final idWinStr parm = (idWinStr) src.oGet(0).var;
             if (parm != null) {
-                drawWin_t win = window.GetGui().GetDesktop().FindChildByName(parm.data.toString());
-                if (win != null && win.win != null) {
+                final drawWin_t win = window.GetGui().GetDesktop().FindChildByName(parm.data.toString());
+                if ((win != null) && (win.win != null)) {
                     window.SetFocus(win.win);
                 }
             }
         }
-    };
+    }
 
     /*
      =========================
@@ -539,7 +540,7 @@ public class GuiScript {
 
         @Override
         public void run(idWindow window, idList<idGSWinVar> src) {
-            idWinStr parm = (idWinStr) src.oGet(0).var;
+            final idWinStr parm = (idWinStr) src.oGet(0).var;
             if (parm != null) {
                 if (Integer.parseInt(parm.data.toString()) != 0) {
                     window.GetGui().GetDesktop().ClearFlag(WIN_NOCURSOR);
@@ -548,7 +549,7 @@ public class GuiScript {
                 }
             }
         }
-    };
+    }
 
     /*
      =========================
@@ -570,7 +571,7 @@ public class GuiScript {
 
         @Override
         public void run(idWindow window, idList<idGSWinVar> src) {
-            idWinStr parm = (idWinStr) src.oGet(0).var;
+            final idWinStr parm = (idWinStr) src.oGet(0).var;
             if (parm != null) {
                 String str = window.cmd.toString();
                 str += " ; runScript ";
@@ -578,7 +579,7 @@ public class GuiScript {
                 window.cmd.oSet(str);
             }
         }
-    };
+    }
 
     /*
      =========================
@@ -598,12 +599,12 @@ public class GuiScript {
 
         @Override
         public void run(idWindow window, idList<idGSWinVar> src) {
-            idWinStr parm = (idWinStr) src.oGet(0).var;
+            final idWinStr parm = (idWinStr) src.oGet(0).var;
             if (parm != null) {
                 session.sw.PlayShaderDirectly(parm.data.toString());
             }
         }
-    };
+    }
 
     /*
      =========================
@@ -625,7 +626,7 @@ public class GuiScript {
         public void run(idWindow window, idList<idGSWinVar> src) {
             window.EvalRegs(-1, true);
         }
-    };
+    }
 
     /*
      =========================
@@ -648,7 +649,7 @@ public class GuiScript {
             cvarSystem.SetCVarBool("g_nightmare", true);
             cmdSystem.BufferCommandText(CMD_EXEC_APPEND, "disconnect\n");
         }
-    };
+    }
 
     /*
      =========================
@@ -670,11 +671,11 @@ public class GuiScript {
         public void run(idWindow window, idList<idGSWinVar> src) {
             idWinStr parm = (idWinStr) src.oGet(0).var;
             drawWin_t win = null;
-            if (parm != null && src.Num() > 1) {
+            if ((parm != null) && (src.Num() > 1)) {
                 win = window.GetGui().GetDesktop().FindChildByName(parm.data.toString());
                 parm = (idWinStr) src.oGet(1).var;
             }
-            if (win != null && win.win != null) {
+            if ((win != null) && (win.win != null)) {
                 win.win.ResetTime(Integer.parseInt(parm.data.toString()));
                 win.win.EvalRegs(-1, true);
             } else {
@@ -682,7 +683,7 @@ public class GuiScript {
                 window.EvalRegs(-1, true);
             }
         }
-    };
+    }
 
     /*
      =========================
@@ -704,7 +705,7 @@ public class GuiScript {
         public void run(idWindow window, idList<idGSWinVar> src) {
             window.ResetCinematics();
         }
-    };
+    }
 
     /*
      =========================
@@ -727,7 +728,7 @@ public class GuiScript {
             // transitions always affect rect or vec4 vars
             if (src.Num() >= 4) {
                 idWinRectangle rect = null;
-                idWinVec4 vec4 = (idWinVec4) dynamic_cast(idWinVec4.class, src.oGet(0).var);
+                final idWinVec4 vec4 = (idWinVec4) dynamic_cast(idWinVec4.class, src.oGet(0).var);
                 // 
                 //  added float variable
                 idWinFloat val = null;
@@ -741,24 +742,24 @@ public class GuiScript {
                     }
                     // 
                 }
-                idWinVec4 from = (idWinVec4) dynamic_cast(idWinVec4.class, src.oGet(1).var);
-                idWinVec4 to = (idWinVec4) dynamic_cast(idWinVec4.class, src.oGet(2).var);
-                idWinStr timeStr = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(3).var);
+                final idWinVec4 from = (idWinVec4) dynamic_cast(idWinVec4.class, src.oGet(1).var);
+                final idWinVec4 to = (idWinVec4) dynamic_cast(idWinVec4.class, src.oGet(2).var);
+                final idWinStr timeStr = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(3).var);
                 // 
                 //  added float variable					
-                if (!((vec4 != null || rect != null || val != null)
-                        && from != null && to != null && timeStr != null)) {
+                if (!(((vec4 != null) || (rect != null) || (val != null))
+                        && (from != null) && (to != null) && (timeStr != null))) {
                     // 
                     common.Warning("Bad transition in gui %s in window %s\n", window.GetGui().GetSourceFile(), window.GetName());
                     return;
                 }
-                int time = atoi(timeStr.data.toString());
+                final int time = atoi(timeStr.data.toString());
                 float ac = 0.0f;
                 float dc = 0.0f;
                 if (src.Num() > 4) {
-                    idWinStr acv = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(4).var);
-                    idWinStr dcv = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(5).var);
-                    assert (acv != null && dcv != null);
+                    final idWinStr acv = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(4).var);
+                    final idWinStr dcv = (idWinStr) dynamic_cast(idWinStr.class, src.oGet(5).var);
+                    assert ((acv != null) && (dcv != null));
                     ac = Float.parseFloat(acv.data.toString());
                     dc = Float.parseFloat(dcv.data.toString());
                 }
@@ -779,5 +780,5 @@ public class GuiScript {
                 window.StartTransition();
             }
         }
-    };
+    }
 }

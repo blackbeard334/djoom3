@@ -68,7 +68,7 @@ public class snd_shader {
         public float shakes;
         public int   soundShaderFlags;        // SSF_* bit flags
         public int   soundClass;            // for global fading of sounds
-    };
+    }
     //
     //
     static final int SOUND_MAX_LIST_WAVS = 32;
@@ -93,7 +93,7 @@ public class snd_shader {
         private boolean onDemand;                   // only load when played, and free when finished
         int speakerMask;
         private idSoundShader altSound;
-        private idStr         desc;                 // description
+        private final idStr         desc;                 // description
         private boolean       errorDuringParse;
         float leadinVolume;                         // allows light breaking leadin sounds to be much louder than the broken loop
         //
@@ -125,7 +125,7 @@ public class snd_shader {
 
             // if there exists a wav file with the same name
             if (true) { //fileSystem->ReadFile( wavname, NULL ) != -1 ) {
-                StringBuilder generated = new StringBuilder(2048);
+                final StringBuilder generated = new StringBuilder(2048);
                 idStr.snPrintf(generated, generated.capacity(),
                         "sound %s // IMPLICITLY GENERATED\n"
                         + "{\n"
@@ -154,16 +154,16 @@ public class snd_shader {
          */
         @Override
         public boolean Parse(final String text, final int textLength) {
-            idLexer src = new idLexer();
+            final idLexer src = new idLexer();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
             src.SkipUntilString("{");
 
             // deeper functions can set this, which will cause MakeDefault() to be called at the end
-            errorDuringParse = false;
+            this.errorDuringParse = false;
 
-            if (!ParseShader(src) || errorDuringParse) {
+            if (!ParseShader(src) || this.errorDuringParse) {
                 MakeDefault();
                 return false;
             }
@@ -172,26 +172,26 @@ public class snd_shader {
 
         @Override
         public void FreeData() {
-            numEntries = 0;
-            numLeadins = 0;
+            this.numEntries = 0;
+            this.numLeadins = 0;
         }
 
         @Override
         public void List() {
-            idStrList shaders;
+            final idStrList shaders;
 
             common.Printf("%4d: %s\n", Index(), GetName());
             if (idStr.Icmp(GetDescription(), "<no description>") != 0) {
                 common.Printf("      description: %s\n", GetDescription());
             }
-            for (int k = 0; k < numLeadins; k++) {
-                final idSoundSample objectp = leadins[k];
+            for (int k = 0; k < this.numLeadins; k++) {
+                final idSoundSample objectp = this.leadins[k];
                 if (objectp != null) {
                     common.Printf("      %5dms %4dKb %s (LEADIN)\n", soundSystemLocal.SamplesToMilliseconds(objectp.LengthIn44kHzSamples()), (objectp.objectMemSize / 1024), objectp.name);
                 }
             }
-            for (int k = 0; k < numEntries; k++) {
-                final idSoundSample objectp = entries[k];
+            for (int k = 0; k < this.numEntries; k++) {
+                final idSoundSample objectp = this.entries[k];
                 if (objectp != null) {
                     common.Printf("      %5dms %4dKb %s\n", soundSystemLocal.SamplesToMilliseconds(objectp.LengthIn44kHzSamples()), (objectp.objectMemSize / 1024), objectp.name);
                 }
@@ -199,28 +199,28 @@ public class snd_shader {
         }
 
         public String GetDescription() {
-            return desc.toString();
+            return this.desc.toString();
         }
 
         // so the editor can draw correct default sound spheres
         // this is currently defined as meters, which sucks, IMHO.
         public float GetMinDistance() {        // FIXME: replace this with a GetSoundShaderParms()
-            return parms.minDistance;
+            return this.parms.minDistance;
         }
 
         public float GetMaxDistance() {
-            return parms.maxDistance;
+            return this.parms.maxDistance;
         }
 
         // returns NULL if an AltSound isn't defined in the shader.
         // we use this for pairing a specific broken light sound with a normal light sound
         public idSoundShader GetAltSound() {
-            return altSound;
+            return this.altSound;
         }
 
         public boolean HasDefaultSound() {
-            for (int i = 0; i < numEntries; i++) {
-                if (entries[i] != null && entries[i].defaultSound) {
+            for (int i = 0; i < this.numEntries; i++) {
+                if ((this.entries[i] != null) && this.entries[i].defaultSound) {
                     return true;
                 }
             }
@@ -228,21 +228,21 @@ public class snd_shader {
         }
 
         public soundShaderParms_t GetParms() {
-            return parms;
+            return this.parms;
         }
 
         public int GetNumSounds() {
-            return numLeadins + numEntries;
+            return this.numLeadins + this.numEntries;
         }
 
         public String GetSound(int index) {
             if (index >= 0) {
-                if (index < numLeadins) {
-                    return leadins[index].name.toString();
+                if (index < this.numLeadins) {
+                    return this.leadins[index].name.toString();
                 }
-                index -= numLeadins;
-                if (index < numEntries) {
-                    return entries[index].name.toString();
+                index -= this.numLeadins;
+                if (index < this.numEntries) {
+                    return this.entries[index].name.toString();
                 }
             }
             return "";
@@ -252,17 +252,17 @@ public class snd_shader {
             int i;
             boolean ret = false;
 
-            for (i = 0; i < numLeadins; i++) {
-                if (leadins[i].objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
+            for (i = 0; i < this.numLeadins; i++) {
+                if (this.leadins[i].objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
                     common.Warning("sound shader '%s' has shakes and uses OGG file '%s'",
-                            GetName(), leadins[ i].name);
+                            GetName(), this.leadins[ i].name);
                     ret = true;
                 }
             }
-            for (i = 0; i < numEntries; i++) {
-                if (entries[i].objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
+            for (i = 0; i < this.numEntries; i++) {
+                if (this.entries[i].objectInfo.wFormatTag == WAVE_FORMAT_TAG_OGG) {
                     common.Warning("sound shader '%s' has shakes and uses OGG file '%s'",
-                            GetName(), entries[ i].name);
+                            GetName(), this.entries[ i].name);
                     ret = true;
                 }
             }
@@ -270,38 +270,38 @@ public class snd_shader {
         }
 
         private void Init() {
-            desc.oSet("<no description>");
-            errorDuringParse = false;
-            onDemand = false;
-            numEntries = 0;
-            numLeadins = 0;
-            leadinVolume = 0;
-            altSound = null;
+            this.desc.oSet("<no description>");
+            this.errorDuringParse = false;
+            this.onDemand = false;
+            this.numEntries = 0;
+            this.numLeadins = 0;
+            this.leadinVolume = 0;
+            this.altSound = null;
         }
 
         private boolean ParseShader(idLexer src) {
             int i;
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
-            parms.minDistance = 1;
-            parms.maxDistance = 10;
-            parms.volume = 1;
-            parms.shakes = 0;
-            parms.soundShaderFlags = 0;
-            parms.soundClass = 0;
+            this.parms.minDistance = 1;
+            this.parms.maxDistance = 10;
+            this.parms.volume = 1;
+            this.parms.shakes = 0;
+            this.parms.soundShaderFlags = 0;
+            this.parms.soundClass = 0;
 
-            speakerMask = 0;
-            altSound = null;
+            this.speakerMask = 0;
+            this.altSound = null;
 
             for (i = 0; i < SOUND_MAX_LIST_WAVS; i++) {
-                leadins[i] = null;
-                entries[i] = null;
+                this.leadins[i] = null;
+                this.entries[i] = null;
             }
-            numEntries = 0;
-            numLeadins = 0;
+            this.numEntries = 0;
+            this.numLeadins = 0;
 
             int maxSamples = idSoundSystemLocal.s_maxSoundsPerShader.GetInteger();
-            if (com_makingBuild.GetBool() || maxSamples <= 0 || maxSamples > SOUND_MAX_LIST_WAVS) {
+            if (com_makingBuild.GetBool() || (maxSamples <= 0) || (maxSamples > SOUND_MAX_LIST_WAVS)) {
                 maxSamples = SOUND_MAX_LIST_WAVS;
             }
 
@@ -317,59 +317,59 @@ public class snd_shader {
                 } // description
                 else if (0 == token.Icmp("description")) {
                     src.ReadTokenOnLine(token);
-                    desc.oSet(token);
+                    this.desc.oSet(token);
                 } // mindistance
                 else if (0 == token.Icmp("mindistance")) {
-                    parms.minDistance = src.ParseFloat();
+                    this.parms.minDistance = src.ParseFloat();
                 } // maxdistance
                 else if (0 == token.Icmp("maxdistance")) {
-                    parms.maxDistance = src.ParseFloat();
+                    this.parms.maxDistance = src.ParseFloat();
                 } // shakes screen
                 else if (0 == token.Icmp("shakes")) {
                     src.ExpectAnyToken(token);
                     if (token.type == TT_NUMBER) {
-                        parms.shakes = token.GetFloatValue();
+                        this.parms.shakes = token.GetFloatValue();
                     } else {
                         src.UnreadToken(token);
-                        parms.shakes = 1.0f;
+                        this.parms.shakes = 1.0f;
                     }
                 } // reverb
                 else if (0 == token.Icmp("reverb")) {
-                    float reg0 = src.ParseFloat();
+                    final float reg0 = src.ParseFloat();
                     if (!src.ExpectTokenString(",")) {
                         src.FreeSource();
                         return false;
                     }
-                    float reg1 = src.ParseFloat();
+                    final float reg1 = src.ParseFloat();
                     // no longer supported
                 } // volume
                 else if (0 == token.Icmp("volume")) {
-                    parms.volume = src.ParseFloat();
+                    this.parms.volume = src.ParseFloat();
                 } // leadinVolume is used to allow light breaking leadin sounds to be much louder than the broken loop
                 else if (0 == token.Icmp("leadinVolume")) {
-                    leadinVolume = src.ParseFloat();
+                    this.leadinVolume = src.ParseFloat();
                 } // speaker mask
                 else if (0 == token.Icmp("mask_center")) {
-                    speakerMask |= 1 << etoi(SPEAKER_CENTER);
+                    this.speakerMask |= 1 << etoi(SPEAKER_CENTER);
                 } // speaker mask
                 else if (0 == token.Icmp("mask_left")) {
-                    speakerMask |= 1 << etoi(SPEAKER_LEFT);
+                    this.speakerMask |= 1 << etoi(SPEAKER_LEFT);
                 } // speaker mask
                 else if (0 == token.Icmp("mask_right")) {
-                    speakerMask |= 1 << etoi(SPEAKER_RIGHT);
+                    this.speakerMask |= 1 << etoi(SPEAKER_RIGHT);
                 } // speaker mask
                 else if (0 == token.Icmp("mask_backright")) {
-                    speakerMask |= 1 << etoi(SPEAKER_BACKRIGHT);
+                    this.speakerMask |= 1 << etoi(SPEAKER_BACKRIGHT);
                 } // speaker mask
                 else if (0 == token.Icmp("mask_backleft")) {
-                    speakerMask |= 1 << etoi(SPEAKER_BACKLEFT);
+                    this.speakerMask |= 1 << etoi(SPEAKER_BACKLEFT);
                 } // speaker mask
                 else if (0 == token.Icmp("mask_lfe")) {
-                    speakerMask |= 1 << etoi(SPEAKER_LFE);
+                    this.speakerMask |= 1 << etoi(SPEAKER_LFE);
                 } // soundClass
                 else if (0 == token.Icmp("soundClass")) {
-                    parms.soundClass = src.ParseInt();
-                    if (parms.soundClass < 0 || parms.soundClass >= SOUND_MAX_CLASSES) {
+                    this.parms.soundClass = src.ParseInt();
+                    if ((this.parms.soundClass < 0) || (this.parms.soundClass >= SOUND_MAX_CLASSES)) {
                         src.Warning("SoundClass out of range");
                         return false;
                     }
@@ -378,43 +378,43 @@ public class snd_shader {
                     if (!src.ExpectAnyToken(token)) {
                         return false;
                     }
-                    altSound = declManager.FindSound(token);
+                    this.altSound = declManager.FindSound(token);
                 } // ordered
                 else if (0 == token.Icmp("ordered")) {
                     // no longer supported
                 } // no_dups
                 else if (0 == token.Icmp("no_dups")) {
-                    parms.soundShaderFlags |= SSF_NO_DUPS;
+                    this.parms.soundShaderFlags |= SSF_NO_DUPS;
                 } // no_flicker
                 else if (0 == token.Icmp("no_flicker")) {
-                    parms.soundShaderFlags |= SSF_NO_FLICKER;
+                    this.parms.soundShaderFlags |= SSF_NO_FLICKER;
                 } // plain
                 else if (0 == token.Icmp("plain")) {
                     // no longer supported
                 } // looping
                 else if (0 == token.Icmp("looping")) {
-                    parms.soundShaderFlags |= SSF_LOOPING;
+                    this.parms.soundShaderFlags |= SSF_LOOPING;
                 } // no occlusion
                 else if (0 == token.Icmp("no_occlusion")) {
-                    parms.soundShaderFlags |= SSF_NO_OCCLUSION;
+                    this.parms.soundShaderFlags |= SSF_NO_OCCLUSION;
                 } // private
                 else if (0 == token.Icmp("private")) {
-                    parms.soundShaderFlags |= SSF_PRIVATE_SOUND;
+                    this.parms.soundShaderFlags |= SSF_PRIVATE_SOUND;
                 } // antiPrivate
                 else if (0 == token.Icmp("antiPrivate")) {
-                    parms.soundShaderFlags |= SSF_ANTI_PRIVATE_SOUND;
+                    this.parms.soundShaderFlags |= SSF_ANTI_PRIVATE_SOUND;
                 } // once
                 else if (0 == token.Icmp("playonce")) {
-                    parms.soundShaderFlags |= SSF_PLAY_ONCE;
+                    this.parms.soundShaderFlags |= SSF_PLAY_ONCE;
                 } // global
                 else if (0 == token.Icmp("global")) {
-                    parms.soundShaderFlags |= SSF_GLOBAL;
+                    this.parms.soundShaderFlags |= SSF_GLOBAL;
                 } // unclamped
                 else if (0 == token.Icmp("unclamped")) {
-                    parms.soundShaderFlags |= SSF_UNCLAMPED;
+                    this.parms.soundShaderFlags |= SSF_UNCLAMPED;
                 } // omnidirectional
                 else if (0 == token.Icmp("omnidirectional")) {
-                    parms.soundShaderFlags |= SSF_OMNIDIRECTIONAL;
+                    this.parms.soundShaderFlags |= SSF_OMNIDIRECTIONAL;
                 } // onDemand can't be a parms, because we must track all references and overrides would confuse it
                 else if (0 == token.Icmp("onDemand")) {
                     // no longer loading sounds on demand
@@ -426,17 +426,17 @@ public class snd_shader {
                         src.Warning("Expected sound after leadin");
                         return false;
                     }
-                    if (soundSystemLocal.soundCache != null && numLeadins < maxSamples) {
-                        leadins[ numLeadins] = soundSystemLocal.soundCache.FindSound(token, onDemand);
-                        numLeadins++;
+                    if ((soundSystemLocal.soundCache != null) && (this.numLeadins < maxSamples)) {
+                        this.leadins[ this.numLeadins] = soundSystemLocal.soundCache.FindSound(token, this.onDemand);
+                        this.numLeadins++;
                     }
-                } else if (token.Find(".wav", false) != -1 || token.Find(".ogg", false) != -1) {
+                } else if ((token.Find(".wav", false) != -1) || (token.Find(".ogg", false) != -1)) {
                     // add to the wav list
-                    if (soundSystemLocal.soundCache != null && numEntries < maxSamples) {
+                    if ((soundSystemLocal.soundCache != null) && (this.numEntries < maxSamples)) {
                         token.BackSlashesToSlashes();
-                        idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
-                        if (lang.Icmp("english") != 0 && token.Find("sound/vo/", false) >= 0) {
-                            idStr work = new idStr(token);
+                        final idStr lang = new idStr(cvarSystem.GetCVarString("sys_lang"));
+                        if ((lang.Icmp("english") != 0) && (token.Find("sound/vo/", false) >= 0)) {
+                            final idStr work = new idStr(token);
                             work.ToLower();
                             work.StripLeading("sound/vo/");
                             work.oSet(va("sound/vo/%s/%s", lang.toString(), work.toString()));
@@ -450,8 +450,8 @@ public class snd_shader {
                                 }
                             }
                         }
-                        entries[ numEntries] = soundSystemLocal.soundCache.FindSound(token, onDemand);
-                        numEntries++;
+                        this.entries[ this.numEntries] = soundSystemLocal.soundCache.FindSound(token, this.onDemand);
+                        this.numEntries++;
                     }
                 } else {
                     src.Warning("unknown token '%s'", token);
@@ -459,7 +459,7 @@ public class snd_shader {
                 }
             }
 
-            if (parms.shakes > 0.0f) {
+            if (this.parms.shakes > 0.0f) {
                 CheckShakesAndOgg();
             }
 
@@ -469,5 +469,5 @@ public class snd_shader {
         public void oSet(idSoundShader FindSound) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
-    };
+    }
 }

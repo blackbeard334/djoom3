@@ -50,20 +50,20 @@ public class ChoiceWindow {
 
         private int currentChoice;
         private int choiceType;
-        private idStr latchedChoices = new idStr();
-        private idWinStr choicesStr = new idWinStr();
-        private idStr latchedVals = new idStr();
-        private idWinStr choiceVals = new idWinStr();
-        private idStrList choices = new idStrList();
-        private idStrList values = new idStrList();
+        private final idStr latchedChoices = new idStr();
+        private final idWinStr choicesStr = new idWinStr();
+        private final idStr latchedVals = new idStr();
+        private final idWinStr choiceVals = new idWinStr();
+        private final idStrList choices = new idStrList();
+        private final idStrList values = new idStrList();
         //
-        private idWinStr guiStr = new idWinStr();
-        private idWinStr cvarStr = new idWinStr();
+        private final idWinStr guiStr = new idWinStr();
+        private final idWinStr cvarStr = new idWinStr();
         private idCVar cvar;
-        private idMultiWinVar updateStr = new idMultiWinVar();
+        private final idMultiWinVar updateStr = new idMultiWinVar();
         //
-        private idWinBool liveUpdate = new idWinBool();
-        private idWinStr updateGroup = new idWinStr();
+        private final idWinBool liveUpdate = new idWinBool();
+        private final idWinStr updateGroup = new idWinStr();
         //
         //
 
@@ -91,28 +91,28 @@ public class ChoiceWindow {
             if (event.evType == SE_KEY) {
                 key = event.evValue;
 
-                if (key == K_RIGHTARROW || key == K_KP_RIGHTARROW || key == K_MOUSE1) {
+                if ((key == K_RIGHTARROW) || (key == K_KP_RIGHTARROW) || (key == K_MOUSE1)) {
                     // never affects the state, but we want to execute script handlers anyway
                     if (0 == event.evValue2) {
                         RunScript(etoi(ON_ACTIONRELEASE));
-                        return cmd.toString();
+                        return this.cmd.toString();
                     }
-                    currentChoice++;
-                    if (currentChoice >= choices.Num()) {
-                        currentChoice = 0;
+                    this.currentChoice++;
+                    if (this.currentChoice >= this.choices.Num()) {
+                        this.currentChoice = 0;
                     }
                     runAction = true;
                 }
 
-                if (key == K_LEFTARROW || key == K_KP_LEFTARROW || key == K_MOUSE2) {
+                if ((key == K_LEFTARROW) || (key == K_KP_LEFTARROW) || (key == K_MOUSE2)) {
                     // never affects the state, but we want to execute script handlers anyway
                     if (0 == event.evValue2) {
                         RunScript(etoi(ON_ACTIONRELEASE));
-                        return cmd.toString();
+                        return this.cmd.toString();
                     }
-                    currentChoice--;
-                    if (currentChoice < 0) {
-                        currentChoice = choices.Num() - 1;
+                    this.currentChoice--;
+                    if (this.currentChoice < 0) {
+                        this.currentChoice = this.choices.Num() - 1;
                     }
                     runAction = true;
                 }
@@ -127,19 +127,19 @@ public class ChoiceWindow {
                 key = event.evValue;
 
                 int potentialChoice = -1;
-                for (int i = 0; i < choices.Num(); i++) {
-                    if (Character.toUpperCase(key) == Character.toUpperCase(choices.oGet(i).oGet(0))) {
-                        if (i < currentChoice && potentialChoice < 0) {
+                for (int i = 0; i < this.choices.Num(); i++) {
+                    if (Character.toUpperCase(key) == Character.toUpperCase(this.choices.oGet(i).oGet(0))) {
+                        if ((i < this.currentChoice) && (potentialChoice < 0)) {
                             potentialChoice = i;
-                        } else if (i > currentChoice) {
+                        } else if (i > this.currentChoice) {
                             potentialChoice = -1;
-                            currentChoice = i;
+                            this.currentChoice = i;
                             break;
                         }
                     }
                 }
                 if (potentialChoice >= 0) {
-                    currentChoice = potentialChoice;
+                    this.currentChoice = potentialChoice;
                 }
 
                 runAction = true;
@@ -153,12 +153,12 @@ public class ChoiceWindow {
                 RunScript(etoi(ON_ACTION));
             }
 
-            if (choiceType == 0) {
-                cvarStr.Set(va("%d", currentChoice));
-            } else if (values.Num() != 0) {
-                cvarStr.Set(values.oGet(currentChoice));
+            if (this.choiceType == 0) {
+                this.cvarStr.Set(va("%d", this.currentChoice));
+            } else if (this.values.Num() != 0) {
+                this.cvarStr.Set(this.values.oGet(this.currentChoice));
             } else {
-                cvarStr.Set(choices.oGet(currentChoice));
+                this.cvarStr.Set(this.choices.oGet(this.currentChoice));
             }
 
             UpdateVars(false);
@@ -167,7 +167,7 @@ public class ChoiceWindow {
                 RunScript(etoi(ON_ACTIONRELEASE));
             }
 
-            return cmd.toString();
+            return this.cmd.toString();
         }
 
         @Override
@@ -179,40 +179,40 @@ public class ChoiceWindow {
             UpdateChoice();
             UpdateVars(false);
 
-            flags |= WIN_CANFOCUS;
+            this.flags |= WIN_CANFOCUS;
         }
 
         @Override
         public void Draw(int time, float x, float y) {
-            idVec4 color = foreColor.oCastIdVec4();
+            idVec4 color = this.foreColor.oCastIdVec4();
 
             UpdateChoicesAndVals();
             UpdateChoice();
 
             // FIXME: It'd be really cool if textAlign worked, but a lot of the guis have it set wrong because it used to not work
-            textAlign = 0;
+            this.textAlign = 0;
 
-            if (textShadow != 0) {
-                idStr shadowText = choices.oGet(currentChoice);
-                idRectangle shadowRect = textRect;
+            if (this.textShadow != 0) {
+                final idStr shadowText = this.choices.oGet(this.currentChoice);
+                final idRectangle shadowRect = this.textRect;
 
                 shadowText.RemoveColors();
-                shadowRect.x += textShadow;
-                shadowRect.y += textShadow;
+                shadowRect.x += this.textShadow;
+                shadowRect.y += this.textShadow;
 
-                dc.DrawText(shadowText, textScale.data, textAlign, colorBlack, shadowRect, false, -1);
+                this.dc.DrawText(shadowText, this.textScale.data, this.textAlign, colorBlack, shadowRect, false, -1);
             }
 
-            if (hover && NOT(noEvents) && Contains(gui.CursorX(), gui.CursorY())) {
-                color = hoverColor.oCastIdVec4();
+            if (this.hover && NOT(this.noEvents) && Contains(this.gui.CursorX(), this.gui.CursorY())) {
+                color = this.hoverColor.oCastIdVec4();
             } else {
-                hover = false;
+                this.hover = false;
             }
-            if ((flags & WIN_FOCUS) != 0) {
-                color = hoverColor.oCastIdVec4();
+            if ((this.flags & WIN_FOCUS) != 0) {
+                color = this.hoverColor.oCastIdVec4();
             }
 
-            dc.DrawText(choices.oGet(currentChoice), textScale.data, textAlign, color, textRect, false, -1);
+            this.dc.DrawText(this.choices.oGet(this.currentChoice), this.textScale.data, this.textAlign, color, this.textRect, false, -1);
         }
 
         @Override
@@ -232,22 +232,22 @@ public class ChoiceWindow {
         @Override
         public idWinVar GetWinVarByName(final String _name, boolean winLookup /*= false*/, drawWin_t[] owner /*= NULL*/) {
             if (idStr.Icmp(_name, "choices") == 0) {
-                return choicesStr;
+                return this.choicesStr;
             }
             if (idStr.Icmp(_name, "values") == 0) {
-                return choiceVals;
+                return this.choiceVals;
             }
             if (idStr.Icmp(_name, "cvar") == 0) {
-                return cvarStr;
+                return this.cvarStr;
             }
             if (idStr.Icmp(_name, "gui") == 0) {
-                return guiStr;
+                return this.guiStr;
             }
             if (idStr.Icmp(_name, "liveUpdate") == 0) {
-                return liveUpdate;
+                return this.liveUpdate;
             }
             if (idStr.Icmp(_name, "updateGroup") == 0) {
-                return updateGroup;
+                return this.updateGroup;
             }
 
             return super.GetWinVarByName(_name, winLookup, owner);
@@ -260,13 +260,13 @@ public class ChoiceWindow {
             if (0 == idStr.Cmpn(eventName, "cvar read ", 10)) {
                 event = new idStr(eventName);
                 group = event.Mid(10, event.Length() - 10);
-                if (0 == group.Cmp(updateGroup.data)) {
+                if (0 == group.Cmp(this.updateGroup.data)) {
                     UpdateVars(true, true);
                 }
             } else if (0 == idStr.Cmpn(eventName, "cvar write ", 11)) {
                 event = new idStr(eventName);
                 group = event.Mid(11, event.Length() - 11);
-                if (0 == group.Cmp(updateGroup.data)) {
+                if (0 == group.Cmp(this.updateGroup.data)) {
                     UpdateVars(false, true);
                 }
             }
@@ -275,97 +275,97 @@ public class ChoiceWindow {
         @Override
         protected boolean ParseInternalVar(final String _name, idParser src) {
             if (idStr.Icmp(_name, "choicetype") == 0) {
-                choiceType = src.ParseInt();
+                this.choiceType = src.ParseInt();
                 return true;
             }
             if (idStr.Icmp(_name, "currentchoice") == 0) {
-                currentChoice = src.ParseInt();
+                this.currentChoice = src.ParseInt();
                 return true;
             }
             return super.ParseInternalVar(_name, src);
         }
 
         private void CommonInit() {
-            currentChoice = 0;
-            choiceType = 0;
-            cvar = null;
-            liveUpdate.data = true;
-            choices.Clear();
+            this.currentChoice = 0;
+            this.choiceType = 0;
+            this.cvar = null;
+            this.liveUpdate.data = true;
+            this.choices.Clear();
         }
 
         private void UpdateChoice() {
-            if (0 == updateStr.Num()) {
+            if (0 == this.updateStr.Num()) {
                 return;
             }
             UpdateVars(true);
-            updateStr.Update();
-            if (choiceType == 0) {
+            this.updateStr.Update();
+            if (this.choiceType == 0) {
                 // ChoiceType 0 stores current as an integer in either cvar or gui
                 // If both cvar and gui are defined then cvar wins, but they are both updated
-                if (updateStr.oGet(0).NeedsUpdate()) {
+                if (this.updateStr.oGet(0).NeedsUpdate()) {
                     try {
-                        currentChoice = Integer.parseInt(updateStr.oGet(0).c_str());
-                    } catch (NumberFormatException e) {
-                        currentChoice = 0;
+                        this.currentChoice = Integer.parseInt(this.updateStr.oGet(0).c_str());
+                    } catch (final NumberFormatException e) {
+                        this.currentChoice = 0;
                     }
                 }
                 ValidateChoice();
             } else {
                 // ChoiceType 1 stores current as a cvar string
-                int c = (values.Num() != 0) ? values.Num() : choices.Num();
+                final int c = (this.values.Num() != 0) ? this.values.Num() : this.choices.Num();
                 int i;
                 for (i = 0; i < c; i++) {
-                    if (idStr.Icmp(cvarStr.c_str(), ((values.Num() != 0) ? values.oGet(i) : choices.oGet(i)).toString()) == 0) {
+                    if (idStr.Icmp(this.cvarStr.c_str(), ((this.values.Num() != 0) ? this.values.oGet(i) : this.choices.oGet(i)).toString()) == 0) {
                         break;
                     }
                 }
                 if (i == c) {
                     i = 0;
                 }
-                currentChoice = i;
+                this.currentChoice = i;
                 ValidateChoice();
             }
         }
 
         private void ValidateChoice() {
-            if (currentChoice < 0 || currentChoice >= choices.Num()) {
-                currentChoice = 0;
+            if ((this.currentChoice < 0) || (this.currentChoice >= this.choices.Num())) {
+                this.currentChoice = 0;
             }
-            if (choices.Num() == 0) {
-                choices.Append("No Choices Defined");
+            if (this.choices.Num() == 0) {
+                this.choices.Append("No Choices Defined");
             }
         }
 
         private void InitVars() {
-            if (cvarStr.Length() != 0) {
-                cvar = cvarSystem.Find(cvarStr.c_str());
-                if (null == cvar) {
-                    common.Warning("idChoiceWindow::InitVars: gui '%s' window '%s' references undefined cvar '%s'", gui.GetSourceFile(), name, cvarStr.c_str());
+            if (this.cvarStr.Length() != 0) {
+                this.cvar = cvarSystem.Find(this.cvarStr.c_str());
+                if (null == this.cvar) {
+                    common.Warning("idChoiceWindow::InitVars: gui '%s' window '%s' references undefined cvar '%s'", this.gui.GetSourceFile(), this.name, this.cvarStr.c_str());
                     return;
                 }
-                updateStr.Append(cvarStr);
+                this.updateStr.Append(this.cvarStr);
             }
-            if (guiStr.Length() != 0) {
-                updateStr.Append(guiStr);
+            if (this.guiStr.Length() != 0) {
+                this.updateStr.Append(this.guiStr);
             }
-            updateStr.SetGuiInfo(gui.GetStateDict());
-            updateStr.Update();
+            this.updateStr.SetGuiInfo(this.gui.GetStateDict());
+            this.updateStr.Update();
         }
 
         // true: read the updated cvar from cvar system, gui from dict
         // false: write to the cvar system, to the gui dict
         // force == true overrides liveUpdate 0
         private void UpdateVars(boolean read, boolean force /*= false*/) {
-            if (force || liveUpdate.data) {
-                if (cvar != null && cvarStr.NeedsUpdate()) {
+            if (force || this.liveUpdate.data) {
+                if ((this.cvar != null) && this.cvarStr.NeedsUpdate()) {
                     if (read) {
-                        cvarStr.Set(cvar.GetString());
+                        this.cvarStr.Set(this.cvar.GetString());
                     } else {
-                        cvar.SetString(cvarStr.c_str());
+                        this.cvar.SetString(this.cvarStr.c_str());
                     }
                 }
-                if (!read && guiStr.NeedsUpdate()) {
-                    guiStr.Set(va("%d", currentChoice));
+                if (!read && this.guiStr.NeedsUpdate()) {
+                    this.guiStr.Set(va("%d", this.currentChoice));
                 }
             }
         }
@@ -375,22 +375,22 @@ public class ChoiceWindow {
         }
 
         private void UpdateChoicesAndVals() {
-            idToken token = new idToken();
-            idStr str2 = new idStr(), str3 = new idStr();
-            idLexer src = new idLexer();
+            final idToken token = new idToken();
+            final idStr str2 = new idStr(), str3 = new idStr();
+            final idLexer src = new idLexer();
 
-            if (latchedChoices.Icmp(choicesStr.data) != 0) {
-                choices.Clear();
+            if (this.latchedChoices.Icmp(this.choicesStr.data) != 0) {
+                this.choices.Clear();
                 src.FreeSource();
                 src.SetFlags(LEXFL_NOFATALERRORS | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
-                src.LoadMemory(choicesStr.data, choicesStr.Length(), "<ChoiceList>");
+                src.LoadMemory(this.choicesStr.data, this.choicesStr.Length(), "<ChoiceList>");
                 if (src.IsLoaded()) {
                     while (src.ReadToken(token)) {
                         if (token.equals(";")) {
                             if (str2.Length() != 0) {
                                 str2.StripTrailingWhitespace();
                                 str2.oSet(common.GetLanguageDict().GetString(str2));
-                                choices.Append(str2);
+                                this.choices.Append(str2);
                                 str2.oSet("");
                             }
                             continue;
@@ -400,16 +400,16 @@ public class ChoiceWindow {
                     }
                     if (str2.Length() != 0) {
                         str2.StripTrailingWhitespace();
-                        choices.Append(str2);
+                        this.choices.Append(str2);
                     }
                 }
-                latchedChoices.oSet(choicesStr.c_str());
+                this.latchedChoices.oSet(this.choicesStr.c_str());
             }
-            if (choiceVals.Length() != 0 && latchedVals.Icmp(choiceVals.data) != 0) {
-                values.Clear();
+            if ((this.choiceVals.Length() != 0) && (this.latchedVals.Icmp(this.choiceVals.data) != 0)) {
+                this.values.Clear();
                 src.FreeSource();
                 src.SetFlags(LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
-                src.LoadMemory(choiceVals.data, choiceVals.Length(), "<ChoiceVals>");
+                src.LoadMemory(this.choiceVals.data, this.choiceVals.Length(), "<ChoiceVals>");
                 str2.oSet("");
                 boolean negNum = false;
                 if (src.IsLoaded()) {
@@ -421,7 +421,7 @@ public class ChoiceWindow {
                         if (token.equals(";")) {
                             if (str2.Length() != 0) {
                                 str2.StripTrailingWhitespace();
-                                values.Append(str2);
+                                this.values.Append(str2);
                                 str2.oSet("");//TODO:what Da fuk? EDIT:yes yes, vision gets blury at 4 in teh morning!
                             }
                             continue;
@@ -435,14 +435,14 @@ public class ChoiceWindow {
                     }
                     if (str2.Length() != 0) {
                         str2.StripTrailingWhitespace();
-                        values.Append(str2);
+                        this.values.Append(str2);
                     }
                 }
-                if (choices.Num() != values.Num()) {
-                    common.Warning("idChoiceWindow:: gui '%s' window '%s' has value count unequal to choices count", gui.GetSourceFile(), name);
+                if (this.choices.Num() != this.values.Num()) {
+                    common.Warning("idChoiceWindow:: gui '%s' window '%s' has value count unequal to choices count", this.gui.GetSourceFile(), this.name);
                 }
-                latchedVals.oSet(choiceVals.c_str());
+                this.latchedVals.oSet(this.choiceVals.c_str());
             }
         }
-    };
+    }
 }

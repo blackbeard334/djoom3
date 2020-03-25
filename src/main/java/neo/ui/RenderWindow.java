@@ -89,25 +89,25 @@ public class RenderWindow {
             Render(time);
 
 //            memset(refdef, 0, sizeof(refdef));
-            refdef = new renderView_s();
-            refdef.vieworg = viewOffset.ToVec3();
+            this.refdef = new renderView_s();
+            this.refdef.vieworg = this.viewOffset.ToVec3();
             //refdef.vieworg.Set(-128, 0, 0);
 
-            refdef.viewaxis.Identity();
-            refdef.shaderParms[0] = 1;
-            refdef.shaderParms[1] = 1;
-            refdef.shaderParms[2] = 1;
-            refdef.shaderParms[3] = 1;
+            this.refdef.viewaxis.Identity();
+            this.refdef.shaderParms[0] = 1;
+            this.refdef.shaderParms[1] = 1;
+            this.refdef.shaderParms[2] = 1;
+            this.refdef.shaderParms[3] = 1;
 
-            refdef.x = (int) drawRect.x;
-            refdef.y = (int) drawRect.y;
-            refdef.width = (int) drawRect.w;
-            refdef.height = (int) drawRect.h;
-            refdef.fov_x = 90;
-            refdef.fov_y = (float) (2 * Math.atan((float) drawRect.h / drawRect.w) * idMath.M_RAD2DEG);
+            this.refdef.x = (int) this.drawRect.x;
+            this.refdef.y = (int) this.drawRect.y;
+            this.refdef.width = (int) this.drawRect.w;
+            this.refdef.height = (int) this.drawRect.h;
+            this.refdef.fov_x = 90;
+            this.refdef.fov_y = (float) (2 * Math.atan(this.drawRect.h / this.drawRect.w) * idMath.M_RAD2DEG);
 
-            refdef.time = time;
-            world.RenderScene(refdef);
+            this.refdef.time = time;
+            this.world.RenderScene(this.refdef);
         }
 
         @Override
@@ -119,51 +119,51 @@ public class RenderWindow {
         public idWinVar GetWinVarByName(final String _name, boolean winLookup /*= false*/, drawWin_t[] owner /*= NULL*/) {
 
             if (idStr.Icmp(_name, "model") == 0) {
-                return modelName;
+                return this.modelName;
             }
             if (idStr.Icmp(_name, "anim") == 0) {
-                return animName;
+                return this.animName;
             }
             if (idStr.Icmp(_name, "lightOrigin") == 0) {
-                return lightOrigin;
+                return this.lightOrigin;
             }
             if (idStr.Icmp(_name, "lightColor") == 0) {
-                return lightColor;
+                return this.lightColor;
             }
             if (idStr.Icmp(_name, "modelOrigin") == 0) {
-                return modelOrigin;
+                return this.modelOrigin;
             }
             if (idStr.Icmp(_name, "modelRotate") == 0) {
-                return modelRotate;
+                return this.modelRotate;
             }
             if (idStr.Icmp(_name, "viewOffset") == 0) {
-                return viewOffset;
+                return this.viewOffset;
             }
             if (idStr.Icmp(_name, "needsRender") == 0) {
-                return needsRender;
+                return this.needsRender;
             }
 
             return super.GetWinVarByName(_name, winLookup, owner);
         }
 
         private void CommonInit() {
-            world = renderSystem.AllocRenderWorld();
-            needsRender.data = true;
-            lightOrigin.oSet(new idVec4(-128.0f, 0.0f, 0.0f, 1.0f));
-            lightColor.oSet(new idVec4(1.0f, 1.0f, 1.0f, 1.0f));
-            modelOrigin.Zero();
-            viewOffset.oSet(new idVec4(-128.0f, 0.0f, 0.0f, 1.0f));
-            modelAnim = null;
-            animLength = 0;
-            animEndTime = -1;
-            modelDef = -1;
-            updateAnimation = true;
+            this.world = renderSystem.AllocRenderWorld();
+            this.needsRender.data = true;
+            this.lightOrigin.oSet(new idVec4(-128.0f, 0.0f, 0.0f, 1.0f));
+            this.lightColor.oSet(new idVec4(1.0f, 1.0f, 1.0f, 1.0f));
+            this.modelOrigin.Zero();
+            this.viewOffset.oSet(new idVec4(-128.0f, 0.0f, 0.0f, 1.0f));
+            this.modelAnim = null;
+            this.animLength = 0;
+            this.animEndTime = -1;
+            this.modelDef = -1;
+            this.updateAnimation = true;
         }
 
         @Override
         protected boolean ParseInternalVar(final String _name, idParser src) {
             if (idStr.Icmp(_name, "animClass") == 0) {
-                ParseString(src, animClass);
+                ParseString(src, this.animClass);
                 return true;
             }
             return super.ParseInternalVar(_name, src);
@@ -174,75 +174,75 @@ public class RenderWindow {
          * @param time 
          */
         private void Render(int time) {
-            rLight.origin = lightOrigin.ToVec3();//TODO:ref?
-            rLight.shaderParms[SHADERPARM_RED] = lightColor.x();
-            rLight.shaderParms[SHADERPARM_GREEN] = lightColor.y();
-            rLight.shaderParms[SHADERPARM_BLUE] = lightColor.z();
-            world.UpdateLightDef(lightDef, rLight);
-            if (worldEntity.hModel != null) {
-                if (updateAnimation) {
+            this.rLight.origin = this.lightOrigin.ToVec3();//TODO:ref?
+            this.rLight.shaderParms[SHADERPARM_RED] = this.lightColor.x();
+            this.rLight.shaderParms[SHADERPARM_GREEN] = this.lightColor.y();
+            this.rLight.shaderParms[SHADERPARM_BLUE] = this.lightColor.z();
+            this.world.UpdateLightDef(this.lightDef, this.rLight);
+            if (this.worldEntity.hModel != null) {
+                if (this.updateAnimation) {
                     BuildAnimation(time);
                 }
-                if (modelAnim != null) {
-                    if (time > animEndTime) {
-                        animEndTime = time + animLength;
+                if (this.modelAnim != null) {
+                    if (time > this.animEndTime) {
+                        this.animEndTime = time + this.animLength;
                     }
-                    gameEdit.ANIM_CreateAnimFrame(worldEntity.hModel, modelAnim, worldEntity.numJoints, worldEntity.joints, animLength - (animEndTime - time), getVec3_origin(), false);
+                    gameEdit.ANIM_CreateAnimFrame(this.worldEntity.hModel, this.modelAnim, this.worldEntity.numJoints, this.worldEntity.joints, this.animLength - (this.animEndTime - time), getVec3_origin(), false);
                 }
-                worldEntity.axis.oSet(new idAngles(modelRotate.x(), modelRotate.y(), modelRotate.z()).ToMat3());
+                this.worldEntity.axis.oSet(new idAngles(this.modelRotate.x(), this.modelRotate.y(), this.modelRotate.z()).ToMat3());
 //                System.out.printf("x=%f, y=%f, z=%f\n", modelRotate.x(), modelRotate.y(), modelRotate.z());
-                world.UpdateEntityDef(modelDef, worldEntity);
+                this.world.UpdateEntityDef(this.modelDef, this.worldEntity);
             }
         }
 
         private void PreRender() {
-            if (needsRender.oCastBoolean()) {
-                world.InitFromMap(null);
-                idDict spawnArgs = new idDict();
+            if (this.needsRender.oCastBoolean()) {
+                this.world.InitFromMap(null);
+                final idDict spawnArgs = new idDict();
                 spawnArgs.Set("classname", "light");
                 spawnArgs.Set("name", "light_1");
-                spawnArgs.Set("origin", lightOrigin.ToVec3().ToString());
-                spawnArgs.Set("_color", lightColor.ToVec3().ToString());
-                gameEdit.ParseSpawnArgsToRenderLight(spawnArgs, rLight);
-                lightDef = world.AddLightDef(rLight);
-                if (!isNotNullOrEmpty(modelName.c_str())) {
+                spawnArgs.Set("origin", this.lightOrigin.ToVec3().ToString());
+                spawnArgs.Set("_color", this.lightColor.ToVec3().ToString());
+                gameEdit.ParseSpawnArgsToRenderLight(spawnArgs, this.rLight);
+                this.lightDef = this.world.AddLightDef(this.rLight);
+                if (!isNotNullOrEmpty(this.modelName.c_str())) {
                     common.Warning("Window '%s' in gui '%s': no model set", GetName(), GetGui().GetSourceFile());
                 }
-                worldEntity = new renderEntity_s();
+                this.worldEntity = new renderEntity_s();
                 spawnArgs.Clear();
                 spawnArgs.Set("classname", "func_static");
-                spawnArgs.Set("model", modelName.c_str());
-                spawnArgs.Set("origin", modelOrigin.c_str());
-                gameEdit.ParseSpawnArgsToRenderEntity(spawnArgs, worldEntity);
-                if (worldEntity.hModel != null) {
-                    idVec3 v = modelRotate.ToVec3();
-                    worldEntity.axis.oSet(v.ToMat3());
-                    worldEntity.shaderParms[0] = 1;
-                    worldEntity.shaderParms[1] = 1;
-                    worldEntity.shaderParms[2] = 1;
-                    worldEntity.shaderParms[3] = 1;
-                    modelDef = world.AddEntityDef(worldEntity);
+                spawnArgs.Set("model", this.modelName.c_str());
+                spawnArgs.Set("origin", this.modelOrigin.c_str());
+                gameEdit.ParseSpawnArgsToRenderEntity(spawnArgs, this.worldEntity);
+                if (this.worldEntity.hModel != null) {
+                    final idVec3 v = this.modelRotate.ToVec3();
+                    this.worldEntity.axis.oSet(v.ToMat3());
+                    this.worldEntity.shaderParms[0] = 1;
+                    this.worldEntity.shaderParms[1] = 1;
+                    this.worldEntity.shaderParms[2] = 1;
+                    this.worldEntity.shaderParms[3] = 1;
+                    this.modelDef = this.world.AddEntityDef(this.worldEntity);
                 }
-                needsRender.data = false;
+                this.needsRender.data = false;
             }
         }
 
         private void BuildAnimation(int time) {
 
-            if (!updateAnimation) {
+            if (!this.updateAnimation) {
                 return;
             }
 
-            if (animName.Length() != 0 && animClass.Length() != 0) {
-                worldEntity.numJoints = worldEntity.hModel.NumJoints();
-                worldEntity.joints = new idJointMat[worldEntity.numJoints];
-                modelAnim = gameEdit.ANIM_GetAnimFromEntityDef(animClass.toString(), animName.toString());
-                if (modelAnim != null) {
-                    animLength = gameEdit.ANIM_GetLength(modelAnim);
-                    animEndTime = time + animLength;
+            if ((this.animName.Length() != 0) && (this.animClass.Length() != 0)) {
+                this.worldEntity.numJoints = this.worldEntity.hModel.NumJoints();
+                this.worldEntity.joints = new idJointMat[this.worldEntity.numJoints];
+                this.modelAnim = gameEdit.ANIM_GetAnimFromEntityDef(this.animClass.toString(), this.animName.toString());
+                if (this.modelAnim != null) {
+                    this.animLength = gameEdit.ANIM_GetLength(this.modelAnim);
+                    this.animEndTime = time + this.animLength;
                 }
             }
-            updateAnimation = false;
+            this.updateAnimation = false;
         }
-    };
+    }
 }

@@ -113,12 +113,12 @@ public class tr_render {
     static abstract class DrawInteraction {
 
         abstract void run(final drawInteraction_t din);
-    };
+    }
 
     static abstract class triFunc {
 
         abstract void run(final drawSurf_s surf);
-    };
+    }
 
     /*
      =================
@@ -174,7 +174,7 @@ public class tr_render {
         }
 
         final int count = r_singleTriangle.GetBool() ? 3 : tri.numIndexes;
-        if (tri.indexCache != null && r_useIndexBuffers.GetBool()) {
+        if ((tri.indexCache != null) && r_useIndexBuffers.GetBool()) {
             qglDrawElements(GL_TRIANGLES, count, GL_INDEX_TYPE, vertexCache.Position(tri.indexCache));
             backEnd.pc.c_vboIndexes += tri.numIndexes;
         } else {
@@ -198,7 +198,7 @@ public class tr_render {
         backEnd.pc.c_shadowIndexes += numIndexes;
         backEnd.pc.c_shadowVertexes += tri.numVerts;
 
-        if (tri.indexCache != null && r_useIndexBuffers.GetBool()) {
+        if ((tri.indexCache != null) && r_useIndexBuffers.GetBool()) {
             qglDrawElements(GL_TRIANGLES,
                     r_singleTriangle.GetBool() ? 3 : numIndexes,
                     GL_INDEX_TYPE,
@@ -229,7 +229,7 @@ public class tr_render {
             return;
         }
 
-        idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+        final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
         qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
         qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
 
@@ -253,7 +253,7 @@ public class tr_render {
         void run(final drawSurf_s surf) {
             RB_RenderTriangleSurface(surf.geo);
         }
-    };
+    }
 
     /*
      ===============
@@ -263,7 +263,7 @@ public class tr_render {
     public static void RB_EnterWeaponDepthHack() {
         qglDepthRange(0, 0.5);
 
-        float[] matrix = new float[16];
+        final float[] matrix = new float[16];
 
 //	memcpy( matrix, backEnd.viewDef.projectionMatrix, sizeof( matrix ) );
         System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
@@ -281,7 +281,7 @@ public class tr_render {
     public static void RB_EnterModelDepthHack(float depth) {
         qglDepthRange(0.0f, 1.0f);
 
-        float[] matrix = new float[16];
+        final float[] matrix = new float[16];
 
 //	memcpy( matrix, backEnd.viewDef.projectionMatrix, sizeof( matrix ) );
         System.arraycopy(backEnd.viewDef.projectionMatrix, 0, matrix, 0, matrix.length);
@@ -343,14 +343,14 @@ public class tr_render {
                 backEnd.currentScissor = drawSurf.scissorRect;
                 qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                         backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                        backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                        backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                        (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                        (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
             }
 
             // render it
             triFunc_.run(drawSurf);
 
-            if (drawSurf.space.weaponDepthHack || drawSurf.space.modelDepthHack != 0.0f) {
+            if (drawSurf.space.weaponDepthHack || (drawSurf.space.modelDepthHack != 0.0f)) {
                 RB_LeaveDepthHack();
             }
 
@@ -387,14 +387,14 @@ public class tr_render {
                 backEnd.currentScissor = new idScreenRect(drawSurf.scissorRect);
                 qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                         backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                        backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                        backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                        (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                        (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
             }
 
             // render it
             triFunc_.run(drawSurf);
 
-            if (drawSurf.space.weaponDepthHack || drawSurf.space.modelDepthHack != 0.0f) {
+            if (drawSurf.space.weaponDepthHack || (drawSurf.space.modelDepthHack != 0.0f)) {
                 RB_LeaveDepthHack();
             }
 
@@ -421,7 +421,7 @@ public class tr_render {
 
         // we attempt to keep scrolls from generating incredibly large texture values, but
         // center rotations and center scales can still generate offsets that need to be > 1
-        if (matrix[12] < -40 || matrix[12] > 40) {
+        if ((matrix[12] < -40) || (matrix[12] > 40)) {
             matrix[12] -= (int) matrix[12];
         }
 
@@ -429,7 +429,7 @@ public class tr_render {
         matrix[5] = shaderRegisters[texture.matrix[1][1]];
         matrix[9] = 0;
         matrix[13] = shaderRegisters[texture.matrix[1][2]];
-        if (matrix[13] < -40 || matrix[13] > 40) {
+        if ((matrix[13] < -40) || (matrix[13] > 40)) {
             matrix[13] -= (int) matrix[13];
         }
 
@@ -521,11 +521,11 @@ public class tr_render {
 
         // texgens
         if (texture.texgen == TG_DIFFUSE_CUBE) {
-            idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
+            final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));//TODO:figure out how to work these damn casts.
             qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, vert.normal.ToFloatPtr());
 
         }
-        if (texture.texgen == TG_SKYBOX_CUBE || texture.texgen == TG_WOBBLESKY_CUBE) {
+        if ((texture.texgen == TG_SKYBOX_CUBE) || (texture.texgen == TG_WOBBLESKY_CUBE)) {
             qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(surf.dynamicTexCoords));
         }
         if (texture.texgen == TG_REFLECT_CUBE) {
@@ -536,11 +536,11 @@ public class tr_render {
             qglTexGenf(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP/*_EXT*/);
             qglTexGenf(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP/*_EXT*/);
             qglEnableClientState(GL_NORMAL_ARRAY);
-            idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
+            final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
             qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, vert.normalOffset());
 
             qglMatrixMode(GL_TEXTURE);
-            float[] mat = new float[16];
+            final float[] mat = new float[16];
 
             R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix, mat);
 
@@ -560,9 +560,9 @@ public class tr_render {
      ======================
      */
     public static void RB_FinishStageTexture(final textureStage_t texture, final drawSurf_s surf) {
-        if (texture.texgen == TG_DIFFUSE_CUBE || texture.texgen == TG_SKYBOX_CUBE
-                || texture.texgen == TG_WOBBLESKY_CUBE) {
-            idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
+        if ((texture.texgen == TG_DIFFUSE_CUBE) || (texture.texgen == TG_SKYBOX_CUBE)
+                || (texture.texgen == TG_WOBBLESKY_CUBE)) {
+            final idDrawVert vert = new idDrawVert(vertexCache.Position(surf.geo.ambientCache));// {//TODO:figure out how to work these damn casts.
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES,
                     //			(void *)&(((idDrawVert *)vertexCache.Position( surf.geo.ambientCache )).st) );
                     vert.st.ToFloatPtr());//TODO:WDF?
@@ -623,8 +623,8 @@ public class tr_render {
         for (vLight = backEnd.viewDef.viewLights; vLight != null; vLight = vLight.next) {
             // lights with no surfaces or shaderparms may still be present
             // for debug display
-            if (null == vLight.localInteractions[0] && null == vLight.globalInteractions[0]
-                    && null == vLight.translucentInteractions[0]) {
+            if ((null == vLight.localInteractions[0]) && (null == vLight.globalInteractions[0])
+                    && (null == vLight.translucentInteractions[0])) {
                 continue;
             }
 
@@ -633,7 +633,7 @@ public class tr_render {
             for (i = 0; i < numStages; i++) {
                 stage = shader.GetStage(i);
                 for (j = 0; j < 3; j++) {
-                    float v = r_lightScale.GetFloat() * vLight.shaderRegisters[stage.color.registers[j]];
+                    final float v = r_lightScale.GetFloat() * vLight.shaderRegisters[stage.color.registers[j]];
                     if (v > max) {
                         max = v;
                     }
@@ -646,7 +646,7 @@ public class tr_render {
             backEnd.lightScale = r_lightScale.GetFloat();
             backEnd.overBright = 1.0f;
         } else {
-            backEnd.lightScale = r_lightScale.GetFloat() * tr.backEndRendererMaxLight / max;
+            backEnd.lightScale = (r_lightScale.GetFloat() * tr.backEndRendererMaxLight) / max;
             backEnd.overBright = max / tr.backEndRendererMaxLight;
         }
     }
@@ -669,14 +669,14 @@ public class tr_render {
         // set the window clipping
         qglViewport(tr.viewportOffset[0] + backEnd.viewDef.viewport.x1,
                 tr.viewportOffset[1] + backEnd.viewDef.viewport.y1,
-                backEnd.viewDef.viewport.x2 + 1 - backEnd.viewDef.viewport.x1,
-                backEnd.viewDef.viewport.y2 + 1 - backEnd.viewDef.viewport.y1);
+                (backEnd.viewDef.viewport.x2 + 1) - backEnd.viewDef.viewport.x1,
+                (backEnd.viewDef.viewport.y2 + 1) - backEnd.viewDef.viewport.y1);
 
         // the scissor may be smaller than the viewport for subviews
         qglScissor(tr.viewportOffset[0] + backEnd.viewDef.viewport.x1 + backEnd.viewDef.scissor.x1,
                 tr.viewportOffset[1] + backEnd.viewDef.viewport.y1 + backEnd.viewDef.scissor.y1,
-                backEnd.viewDef.scissor.x2 + 1 - backEnd.viewDef.scissor.x1,
-                backEnd.viewDef.scissor.y2 + 1 - backEnd.viewDef.scissor.y1);
+                (backEnd.viewDef.scissor.x2 + 1) - backEnd.viewDef.scissor.x1,
+                (backEnd.viewDef.scissor.y2 + 1) - backEnd.viewDef.scissor.y1);
         backEnd.currentScissor = backEnd.viewDef.scissor;
 
         // ensures that depth writes are enabled for the depth clear
@@ -719,10 +719,10 @@ public class tr_render {
 
             // we attempt to keep scrolls from generating incredibly large texture values, but
             // center rotations and center scales can still generate offsets that need to be > 1
-            if (matrix[0].oGet(3) < -40 || matrix[0].oGet(3) > 40) {
+            if ((matrix[0].oGet(3) < -40) || (matrix[0].oGet(3) > 40)) {
                 matrix[0].oMinSet(3, (int) matrix[0].oGet(3));
             }
-            if (matrix[1].oGet(3) < -40 || matrix[1].oGet(3) > 40) {
+            if ((matrix[1].oGet(3) < -40) || (matrix[1].oGet(3) > 40)) {
                 matrix[1].oMinSet(3, (int) matrix[1].oGet(3));
             }
         } else {
@@ -762,23 +762,23 @@ public class tr_render {
             return;
         }
 
-        if (null == din.diffuseImage || r_skipDiffuse.GetBool()) {
+        if ((null == din.diffuseImage) || r_skipDiffuse.GetBool()) {
             din.diffuseImage = globalImages.blackImage;
         }
-        if (null == din.specularImage || r_skipSpecular.GetBool() || din.ambientLight != 0) {
+        if ((null == din.specularImage) || r_skipSpecular.GetBool() || (din.ambientLight != 0)) {
             din.specularImage = globalImages.blackImage;
         }
-        if (null == din.bumpImage || r_skipBump.GetBool()) {
+        if ((null == din.bumpImage) || r_skipBump.GetBool()) {
             din.bumpImage = globalImages.flatNormalMap;
         }
 
         // if we wouldn't draw anything, don't call the Draw function
-        if (((din.diffuseColor.oGet(0) > 0
-                || din.diffuseColor.oGet(1) > 0
-                || din.diffuseColor.oGet(2) > 0) && din.diffuseImage != globalImages.blackImage)
-                || ((din.specularColor.oGet(0) > 0
-                || din.specularColor.oGet(1) > 0
-                || din.specularColor.oGet(2) > 0) && din.specularImage != globalImages.blackImage)) {
+        if ((((din.diffuseColor.oGet(0) > 0)
+                || (din.diffuseColor.oGet(1) > 0)
+                || (din.diffuseColor.oGet(2) > 0)) && (din.diffuseImage != globalImages.blackImage))
+                || (((din.specularColor.oGet(0) > 0)
+                || (din.specularColor.oGet(1) > 0)
+                || (din.specularColor.oGet(2) > 0)) && (din.specularImage != globalImages.blackImage))) {
             DBG_RB_SubmittInteraction++;
             drawInteraction.run(din);
         }
@@ -798,7 +798,7 @@ public class tr_render {
         final viewLight_s vLight = backEnd.vLight;
         final idMaterial lightShader = vLight.lightShader;
         final float[] lightRegs = vLight.shaderRegisters;
-        drawInteraction_t inter = new drawInteraction_t();
+        final drawInteraction_t inter = new drawInteraction_t();
 
         if (r_skipInteractions.GetBool() || NOT(surf.geo) || NOT(surf.geo.ambientCache)) {
             return;
@@ -819,8 +819,8 @@ public class tr_render {
             backEnd.currentScissor = surf.scissorRect;
             qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                     backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                    backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                    backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                    (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                    (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
         }
 
         // hack depth range if needed
@@ -842,7 +842,7 @@ public class tr_render {
         inter.ambientLight = btoi(lightShader.IsAmbientLight());
 
         // the base projections may be modified by texture matrix on light stages
-        idPlane[] lightProject = idPlane.generateArray(4);
+        final idPlane[] lightProject = idPlane.generateArray(4);
         for (int i = 0; i < 4; i++) {
             R_GlobalPlaneToLocal(surf.space.modelMatrix, backEnd.vLight.lightProject[i], lightProject[i]);
         }
@@ -873,7 +873,7 @@ public class tr_render {
             inter.diffuseColor.Set(0, 0, 0, 0);
             inter.specularColor.Set(0, 0, 0, 0);
 
-            float[] lightColor = new float[4];
+            final float[] lightColor = new float[4];
 
             // backEnd.lightScale is calculated so that lightColor[] will never exceed
             // tr.backEndRendererMaxLight
@@ -901,7 +901,7 @@ public class tr_render {
                         inter.diffuseImage = null;
                         inter.specularImage = null;
                         {
-                            idImage[] bumpImage = {null};
+                            final idImage[] bumpImage = {null};
                             R_SetDrawInteraction(surfaceStage, surfaceRegs, bumpImage, inter.bumpMatrix, null);
                             inter.bumpImage = bumpImage[0];
                         }
@@ -916,7 +916,7 @@ public class tr_render {
                             RB_SubmittInteraction(inter, drawInteraction);
                         }
                         {
-                            idImage[] diffuseImage = {null};
+                            final idImage[] diffuseImage = {null};
                             R_SetDrawInteraction(surfaceStage, surfaceRegs, diffuseImage, inter.diffuseMatrix, inter.diffuseColor);
                             inter.diffuseImage = diffuseImage[0];
                         }
@@ -936,7 +936,7 @@ public class tr_render {
                             RB_SubmittInteraction(inter, drawInteraction);
                         }
                         {
-                            idImage[] specularImage = {null};
+                            final idImage[] specularImage = {null};
                             R_SetDrawInteraction(surfaceStage, surfaceRegs, specularImage, inter.specularMatrix, inter.specularColor);
                             inter.specularImage = specularImage[0];
                         }
@@ -955,7 +955,7 @@ public class tr_render {
         }
 
         // unhack depth range if needed
-        if (surf.space.weaponDepthHack || surf.space.modelDepthHack != 0.0f) {
+        if (surf.space.weaponDepthHack || (surf.space.modelDepthHack != 0.0f)) {
             RB_LeaveDepthHack();
         }
     }
@@ -983,14 +983,14 @@ public class tr_render {
 
         // skip render bypasses everything that has models, assuming
         // them to be 3D views, but leaves 2D rendering visible
-        if (r_skipRender.GetBool() && backEnd.viewDef.viewEntitys != null) {
+        if (r_skipRender.GetBool() && (backEnd.viewDef.viewEntitys != null)) {
             return;
         }
 
         // skip render context sets the wgl context to NULL,
         // which should factor out the API cost, under the assumption
         // that all gl calls just return if the context isn't valid
-        if (r_skipRenderContext.GetBool() && backEnd.viewDef.viewEntitys != null) {
+        if (r_skipRenderContext.GetBool() && (backEnd.viewDef.viewEntitys != null)) {
             GLimp_DeactivateContext();
         }
 
@@ -1002,7 +1002,7 @@ public class tr_render {
         RB_STD_DrawView();
 
         // restore the context for 2D drawing if we were stubbing it out
-        if (r_skipRenderContext.GetBool() && backEnd.viewDef.viewEntitys != null) {
+        if (r_skipRenderContext.GetBool() && (backEnd.viewDef.viewEntitys != null)) {
             GLimp_ActivateContext();
             RB_SetDefaultGLState();
         }

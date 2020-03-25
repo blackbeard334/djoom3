@@ -31,14 +31,14 @@ public class Rectangle {
 //
 
         public idRectangle() {
-            x = y = w = h = 0.0f;
+            this.x = this.y = this.w = this.h = 0.0f;
         }
 
         public idRectangle(float ix, float iy, float iw, float ih) {
-            x = ix;
-            y = iy;
-            w = iw;
-            h = ih;
+            this.x = ix;
+            this.y = iy;
+            this.w = iw;
+            this.h = ih;
         }
 
         //copy constructor
@@ -47,11 +47,11 @@ public class Rectangle {
         }
 
         public float Bottom() {
-            return y + h;
+            return this.y + this.h;
         }
 
         public float Right() {
-            return x + w;
+            return this.x + this.w;
         }
 
         public void Offset(float x, float y) {
@@ -60,43 +60,43 @@ public class Rectangle {
         }
 
         public boolean Contains(float xt, float yt) {
-            if (w == 0.0 && h == 0.0) {
+            if ((this.w == 0.0) && (this.h == 0.0)) {
                 return false;
             }
-            if (xt >= x && xt <= Right() && yt >= y && yt <= Bottom()) {
+            if ((xt >= this.x) && (xt <= Right()) && (yt >= this.y) && (yt <= Bottom())) {
                 return true;
             }
             return false;
         }
 
         public void Empty() {
-            x = y = w = h = 0.0f;
+            this.x = this.y = this.w = this.h = 0.0f;
         }
 
         public void ClipAgainst(idRectangle r, boolean sizeOnly) {
             if (!sizeOnly) {
-                if (x < r.x) {
-                    x = r.x;
+                if (this.x < r.x) {
+                    this.x = r.x;
                 }
-                if (y < r.y) {
-                    y = r.y;
+                if (this.y < r.y) {
+                    this.y = r.y;
                 }
             }
-            if (x + w > r.x + r.w) {
-                w = (r.x + r.w) - x;
+            if ((this.x + this.w) > (r.x + r.w)) {
+                this.w = (r.x + r.w) - this.x;
             }
-            if (y + h > r.y + r.h) {
-                h = (r.y + r.h) - y;
+            if ((this.y + this.h) > (r.y + r.h)) {
+                this.h = (r.y + r.h) - this.y;
             }
         }
 
         public void Rotate(float a, idRectangle out) {
-            idVec3 p1 = new idVec3(), p2 = new idVec3(), p3, p4 = new idVec3(), p5;
+            final idVec3 p1 = new idVec3(), p2 = new idVec3(), p3, p4 = new idVec3(), p5;
             float c, s;
-            idVec3 center = new idVec3((x + w) / 2.0f, (y + h) / 2.0f, 0);
-            p1.Set(x, y, 0);
-            p2.Set(Right(), y, 0);
-            p4.Set(x, Bottom(), 0);
+            final idVec3 center = new idVec3((this.x + this.w) / 2.0f, (this.y + this.h) / 2.0f, 0);
+            p1.Set(this.x, this.y, 0);
+            p2.Set(Right(), this.y, 0);
+            p4.Set(this.x, Bottom(), 0);
             if (a != 0) {
                 s = (float) Math.sin(DEG2RAD(a));
                 c = (float) Math.cos(DEG2RAD(a));
@@ -113,56 +113,56 @@ public class Rectangle {
         }
 
         public idRectangle oPluSet(final idRectangle a) {
-            x += a.x;
-            y += a.y;
-            w += a.w;
-            h += a.h;
+            this.x += a.x;
+            this.y += a.y;
+            this.w += a.w;
+            this.h += a.h;
 
             return this;
         }
 
         public idRectangle oMinSet(final idRectangle a) {
-            x -= a.x;
-            y -= a.y;
-            w -= a.w;
-            h -= a.h;
+            this.x -= a.x;
+            this.y -= a.y;
+            this.w -= a.w;
+            this.h -= a.h;
 
             return this;
         }
 
         public idRectangle oDivSet(final idRectangle a) {
-            x /= a.x;
-            y /= a.y;
-            w /= a.w;
-            h /= a.h;
+            this.x /= a.x;
+            this.y /= a.y;
+            this.w /= a.w;
+            this.h /= a.h;
 
             return this;
         }
 
         public idRectangle oDivSet(final float a) {
             final float inva = 1.0f / a;
-            x *= inva;
-            y *= inva;
-            w *= inva;
-            h *= inva;
+            this.x *= inva;
+            this.y *= inva;
+            this.w *= inva;
+            this.h *= inva;
 
             return this;
         }
 
         public idRectangle oMulSet(final float a) {
-            x *= a;
-            y *= a;
-            w *= a;
-            h *= a;
+            this.x *= a;
+            this.y *= a;
+            this.w *= a;
+            this.h *= a;
 
             return this;
         }
 
         public idRectangle oSet(final idVec4 v) {
-            x = v.x;
-            y = v.y;
-            w = v.z;
-            h = v.w;
+            this.x = v.x;
+            this.y = v.y;
+            this.w = v.z;
+            this.h = v.w;
 
             return this;
         }
@@ -180,10 +180,10 @@ public class Rectangle {
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 19 * hash + Float.floatToIntBits(this.x);
-            hash = 19 * hash + Float.floatToIntBits(this.y);
-            hash = 19 * hash + Float.floatToIntBits(this.w);
-            hash = 19 * hash + Float.floatToIntBits(this.h);
+            hash = (19 * hash) + Float.floatToIntBits(this.x);
+            hash = (19 * hash) + Float.floatToIntBits(this.y);
+            hash = (19 * hash) + Float.floatToIntBits(this.w);
+            hash = (19 * hash) + Float.floatToIntBits(this.h);
             return hash;
         }
 
@@ -214,13 +214,13 @@ public class Rectangle {
         public float oGet(final int index) {
             switch (index) {
                 default:
-                    return x;
+                    return this.x;
                 case 1:
-                    return y;
+                    return this.y;
                 case 2:
-                    return w;
+                    return this.w;
                 case 3:
-                    return h;
+                    return this.h;
             }
         }
         private static int index = 0;
@@ -232,7 +232,7 @@ public class Rectangle {
             char[] temp;
 
             // use an array so that multiple toString's won't collide
-            s = String.format("%.2f %.2f %.2f %.2f", x, y, w, h);
+            s = String.format("%.2f %.2f %.2f %.2f", this.x, this.y, this.w, this.h);
             temp = s.toCharArray();
             System.arraycopy(temp, 0, str[index], 0, temp.length);
 
@@ -242,7 +242,7 @@ public class Rectangle {
         }
 
         public idVec4 ToVec4() {
-            return new idVec4(x, y, w, h);
+            return new idVec4(this.x, this.y, this.w, this.h);
         }
 
         @Override
@@ -259,7 +259,7 @@ public class Rectangle {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 
     static class idRegion {
 
@@ -271,13 +271,13 @@ public class Rectangle {
         }
 
         public void Empty() {
-            rects.Clear();
+            this.rects.Clear();
         }
 
         public boolean Contains(float xt, float yt) {
-            int c = rects.Num();
+            final int c = this.rects.Num();
             for (int i = 0; i < c; i++) {
-                if (rects.oGet(i).Contains(xt, yt)) {
+                if (this.rects.oGet(i).Contains(xt, yt)) {
                     return true;
                 }
             }
@@ -285,20 +285,20 @@ public class Rectangle {
         }
 
         public void AddRect(float x, float y, float w, float h) {
-            rects.Append(new idRectangle(x, y, w, h));
+            this.rects.Append(new idRectangle(x, y, w, h));
         }
 
         int GetRectCount() {
-            return rects.Num();
+            return this.rects.Num();
         }
 
         public idRectangle GetRect(int index) {
-            if (index >= 0 && index < rects.Num()) {
-                return rects.oGet(index);
+            if ((index >= 0) && (index < this.rects.Num())) {
+                return this.rects.oGet(index);
             }
             return null;
         }
-    };
+    }
 
     /*
      ================
@@ -309,8 +309,8 @@ public class Rectangle {
         float x = v.oGet(0);
         float y = v.oGet(1);
         if (a != 0) {
-            float x2 = (((x - origin.oGet(0)) * c) - ((y - origin.oGet(1)) * s)) + origin.oGet(0);
-            float y2 = (((x - origin.oGet(0)) * s) + ((y - origin.oGet(1)) * c)) + origin.oGet(1);
+            final float x2 = (((x - origin.oGet(0)) * c) - ((y - origin.oGet(1)) * s)) + origin.oGet(0);
+            final float y2 = (((x - origin.oGet(0)) * s) + ((y - origin.oGet(1)) * c)) + origin.oGet(1);
             x = x2;
             y = y2;
         }

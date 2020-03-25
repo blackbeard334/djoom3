@@ -142,27 +142,27 @@ public class shadowopt3 {
         int/*glIndex_t*/[] index = new int[3];
         idPlane plane;                              // positive side is forward for the triangle, which is away from the light
         int     planeNum;                           // from original triangle, not calculated from the clipped verts
-    };
+    }
 
     static class shadowOptEdge_s {
 
         int/*glIndex_t*/[] index = new int[2];
         shadowOptEdge_s nextEdge;
-    };
+    }
 
     static class silQuad_s {
 
         int[] nearV = new int[2];
         int[] farV  = new int[2];        // will always be a projection of near[]
         silQuad_s nextQuad;
-    };
+    }
 
     static class silPlane_t {
 
         idVec3          normal;    // all sil planes go through the projection origin
         shadowOptEdge_s edges;
         silQuad_s       fragmentedQuads;
-    };
+    }
 
 //static int FindUniqueVert( idVec3 v );
 //=====================================================================================
@@ -174,8 +174,8 @@ public class shadowopt3 {
      */
     static void CreateEdgesForTri(shadowTri_t tri) {
         for (int j = 0; j < 3; j++) {
-            idVec3 v1 = tri.v[j];
-            idVec3 v2 = tri.v[(j + 1) % 3];
+            final idVec3 v1 = tri.v[j];
+            final idVec3 v2 = tri.v[(j + 1) % 3];
 
             tri.edge[j].Cross(v2, v1);
             tri.edge[j].Normalize();
@@ -203,7 +203,7 @@ public class shadowopt3 {
         for (int i = 0; i < 3; i++) {
             int j;
             for (j = 0; j < 3; j++) {
-                float d = a.v[j].oMultiply(b.edge[i]);
+                final float d = a.v[j].oMultiply(b.edge[i]);
                 if (d > EDGE_EPSILON) {
                     break;
                 }
@@ -268,8 +268,8 @@ public class shadowopt3 {
             // clip it
             idWinding w = new idWinding(tri.v, 3);
 
-            for (int j = 0; j < 4 && !w.isNULL(); j++) {
-                idWinding front = new idWinding(), back = new idWinding();
+            for (int j = 0; (j < 4) && !w.isNULL(); j++) {
+                final idWinding front = new idWinding(), back = new idWinding();
 
                 // keep any portion in front of other's plane
                 if (j == 0) {
@@ -280,7 +280,7 @@ public class shadowopt3 {
                 if (!back.isNULL()) {
                     // recursively clip these triangles to all subsequent triangles
                     for (int k = 2; k < back.GetNumPoints(); k++) {
-                        shadowTri_t fragment = tri;
+                        final shadowTri_t fragment = tri;
 
                         fragment.v[0] = back.oGet(0).ToVec3();
                         fragment.v[1] = back.oGet(k - 1).ToVec3();
@@ -322,9 +322,9 @@ public class shadowopt3 {
      ====================
      */
     static void ClipOccluders(idVec4[] verts, int/*glIndex_t*/[] indexes, int numIndexes, idVec3 projectionOrigin) {
-        int numTris = numIndexes / 3;
+        final int numTris = numIndexes / 3;
         int i;
-        shadowTri_t[] tris = new shadowTri_t[numTris];
+        final shadowTri_t[] tris = new shadowTri_t[numTris];
         shadowTri_t tri;
 
         common.Printf("ClipOccluders: %d triangles\n", numTris);
@@ -333,12 +333,12 @@ public class shadowopt3 {
             tri = tris[i];
 
             // the indexes are in reversed order from tr_stencilshadow
-            tri.v[0] = verts[indexes[i * 3 + 2]].ToVec3().oMinus(projectionOrigin);
-            tri.v[1] = verts[indexes[i * 3 + 1]].ToVec3().oMinus(projectionOrigin);
-            tri.v[2] = verts[indexes[i * 3 + 0]].ToVec3().oMinus(projectionOrigin);
+            tri.v[0] = verts[indexes[(i * 3) + 2]].ToVec3().oMinus(projectionOrigin);
+            tri.v[1] = verts[indexes[(i * 3) + 1]].ToVec3().oMinus(projectionOrigin);
+            tri.v[2] = verts[indexes[(i * 3) + 0]].ToVec3().oMinus(projectionOrigin);
 
-            idVec3 d1 = tri.v[1].oMinus(tri.v[0]);
-            idVec3 d2 = tri.v[2].oMinus(tri.v[0]);
+            final idVec3 d1 = tri.v[1].oMinus(tri.v[0]);
+            final idVec3 d2 = tri.v[2].oMinus(tri.v[0]);
 
             tri.plane.ToVec4_ToVec3_Cross(d2, d1);
             tri.plane.ToVec4_ToVec3_Normalize();
@@ -361,7 +361,7 @@ public class shadowopt3 {
         int numFragmented = 0;
 
         for (i = 0; i < numTris; i++) {
-            int oldOutput = numOutputTris;
+            final int oldOutput = numOutputTris;
             c_removedFragments = 0;
             ClipTriangle_r(tris[i], 0, i, numTris, tris);
             if (numOutputTris == oldOutput) {
@@ -369,7 +369,7 @@ public class shadowopt3 {
             } else if (c_removedFragments == 0) {
                 // the entire triangle is visible
                 numComplete++;
-                shadowTri_t out = outputTris[oldOutput] = tris[i];
+                final shadowTri_t out = outputTris[oldOutput] = tris[i];
                 numOutputTris = oldOutput + 1;
             } else {
                 numFragmented++;
@@ -378,7 +378,7 @@ public class shadowopt3 {
                 // if we are at the low optimization level, just use a single
                 // triangle if it produced any fragments
                 if (dmapGlobals.shadowOptLevel == SO_CULL_OCCLUDED) {
-                    shadowTri_t out = outputTris[oldOutput] = tris[i];//TODO:useless
+                    final shadowTri_t out = outputTris[oldOutput] = tris[i];//TODO:useless
                     numOutputTris = oldOutput + 1;
                 }
             }
@@ -404,9 +404,9 @@ public class shadowopt3 {
         optimizeGroup_s checkGroup;
 
         for (i = 0; i < numOutputTris; i++) {
-            shadowTri_t tri = outputTris[i];
+            final shadowTri_t tri = outputTris[i];
 
-            int planeNum = tri.planeNum;
+            final int planeNum = tri.planeNum;
 
             // add it to an optimize group
             for (checkGroup = optGroups; checkGroup != null; checkGroup = checkGroup.nextGroup) {
@@ -423,7 +423,7 @@ public class shadowopt3 {
             }
 
             // create a mapTri for the optGroup
-            mapTri_s mtri = new mapTri_s();// Mem_ClearedAlloc(sizeof(mtri));
+            final mapTri_s mtri = new mapTri_s();// Mem_ClearedAlloc(sizeof(mtri));
             mtri.v[0].xyz = tri.v[0];
             mtri.v[1].xyz = tri.v[1];
             mtri.v[2].xyz = tri.v[2];
@@ -436,7 +436,7 @@ public class shadowopt3 {
         numOutputTris = 0;
         for (checkGroup = optGroups; checkGroup != null; checkGroup = checkGroup.nextGroup) {
             for (mapTri_s mtri = checkGroup.triList; mtri != null; mtri = mtri.next) {
-                shadowTri_t tri = outputTris[numOutputTris];
+                final shadowTri_t tri = outputTris[numOutputTris];
                 numOutputTris++;
                 tri.v[0] = mtri.v[0].xyz;
                 tri.v[1] = mtri.v[1].xyz;
@@ -483,16 +483,16 @@ public class shadowopt3 {
         int i, j;
 
 //	unsigned	*edges = (unsigned *)_alloca( (numOutputTris*3+1)*sizeof(*edges) );
-        long[] edges = new long[numOutputTris * 3 + 1];
+        final long[] edges = new long[(numOutputTris * 3) + 1];
         int numEdges = 0;
 
         numSilEdges = 0;
 
         for (i = 0; i < numOutputTris; i++) {
-            int a = outputTris[i].index[0];
-            int b = outputTris[i].index[1];
-            int c = outputTris[i].index[2];
-            if (a == b || a == c || b == c) {
+            final int a = outputTris[i].index[0];
+            final int b = outputTris[i].index[1];
+            final int c = outputTris[i].index[2];
+            if ((a == b) || (a == c) || (b == c)) {
                 continue;		// degenerate
             }
 
@@ -563,17 +563,17 @@ public class shadowopt3 {
                 continue;	// degenerate
             }
 
-            idVec3 v1 = uniqued[silEdges[i].index[0]];
-            idVec3 v2 = uniqued[silEdges[i].index[1]];
+            final idVec3 v1 = uniqued[silEdges[i].index[0]];
+            final idVec3 v2 = uniqued[silEdges[i].index[1]];
 
             // search for an existing plane
             int j;
             for (j = 0; j < numSilPlanes; j++) {
-                float d = v1.oMultiply(silPlanes[j].normal);
-                float d2 = v2.oMultiply(silPlanes[j].normal);
+                final float d = v1.oMultiply(silPlanes[j].normal);
+                final float d2 = v2.oMultiply(silPlanes[j].normal);
 
-                if (Math.abs(d) < EDGE_PLANE_EPSILON
-                        && Math.abs(d2) < EDGE_PLANE_EPSILON) {
+                if ((Math.abs(d) < EDGE_PLANE_EPSILON)
+                        && (Math.abs(d2) < EDGE_PLANE_EPSILON)) {
                     silEdges[i].nextEdge = silPlanes[j].edges;
                     silPlanes[j].edges = silEdges[i];
                     break;
@@ -675,32 +675,32 @@ public class shadowopt3 {
                     plane = plane.oNegative();
                 }
 
-                float d1 = uniqued[quad.nearV[0]].oMultiply(plane);
-                float d2 = uniqued[quad.nearV[1]].oMultiply(plane);
+                final float d1 = uniqued[quad.nearV[0]].oMultiply(plane);
+                final float d2 = uniqued[quad.nearV[1]].oMultiply(plane);
 
-                float d3 = uniqued[quad.farV[0]].oMultiply(plane);
-                float d4 = uniqued[quad.farV[1]].oMultiply(plane);
+                final float d3 = uniqued[quad.farV[0]].oMultiply(plane);
+                final float d4 = uniqued[quad.farV[1]].oMultiply(plane);
 
                 // it is better to conservatively NOT split the quad, which, at worst,
                 // will leave some extra overdraw
                 // if the plane divides the incoming edge, split it and recurse
                 // with the outside fraction before continuing with the inside fraction
-                if ((d1 > EDGE_PLANE_EPSILON && d3 > EDGE_PLANE_EPSILON && d2 < -EDGE_PLANE_EPSILON && d4 < -EDGE_PLANE_EPSILON)
-                        || (d2 > EDGE_PLANE_EPSILON && d4 > EDGE_PLANE_EPSILON && d1 < -EDGE_PLANE_EPSILON && d3 < -EDGE_PLANE_EPSILON)) {
+                if (((d1 > EDGE_PLANE_EPSILON) && (d3 > EDGE_PLANE_EPSILON) && (d2 < -EDGE_PLANE_EPSILON) && (d4 < -EDGE_PLANE_EPSILON))
+                        || ((d2 > EDGE_PLANE_EPSILON) && (d4 > EDGE_PLANE_EPSILON) && (d1 < -EDGE_PLANE_EPSILON) && (d3 < -EDGE_PLANE_EPSILON))) {
                     float f = d1 / (d1 - d2);
-                    float f2 = d3 / (d3 - d4);
+                    final float f2 = d3 / (d3 - d4);
                     f = f2;
-                    if (f <= 0.0001 || f >= 0.9999) {
+                    if ((f <= 0.0001) || (f >= 0.9999)) {
                         common.Error("Bad silQuad fraction");
                     }
 
                     // finding uniques may be causing problems here
-                    idVec3 nearMid = uniqued[quad.nearV[0]].oMultiply(1 - f).oPlus(uniqued[quad.nearV[1]].oMultiply(f));
-                    int nearMidIndex = FindUniqueVert(nearMid);
-                    idVec3 farMid = uniqued[quad.farV[0]].oMultiply(1 - f).oPlus(uniqued[quad.farV[1]].oMultiply(f));
-                    int farMidIndex = FindUniqueVert(farMid);
+                    final idVec3 nearMid = uniqued[quad.nearV[0]].oMultiply(1 - f).oPlus(uniqued[quad.nearV[1]].oMultiply(f));
+                    final int nearMidIndex = FindUniqueVert(nearMid);
+                    final idVec3 farMid = uniqued[quad.farV[0]].oMultiply(1 - f).oPlus(uniqued[quad.farV[1]].oMultiply(f));
+                    final int farMidIndex = FindUniqueVert(farMid);
 
-                    silQuad_s clipped = quad;
+                    final silQuad_s clipped = quad;
 
                     if (d1 > EDGE_PLANE_EPSILON) {
                         clipped.nearV[1] = nearMidIndex;
@@ -719,9 +719,9 @@ public class shadowopt3 {
             }
 
             // make a plane through the line of check
-            idPlane separate = new idPlane();
+            final idPlane separate = new idPlane();
 
-            idVec3 dir = uniqued[check.index[1]].oMinus(uniqued[check.index[0]]);
+            final idVec3 dir = uniqued[check.index[1]].oMinus(uniqued[check.index[0]]);
             separate.Normal().Cross(dir, silPlane.normal);
             separate.Normal().Normalize();
             separate.oSet(3, -uniqued[check.index[1]].oMultiply(separate.Normal()));
@@ -731,27 +731,27 @@ public class shadowopt3 {
             float d1 = separate.Distance(uniqued[quad.nearV[0]]);
             float d2 = separate.Distance(uniqued[quad.farV[0]]);
 
-            if ((d1 < EDGE_PLANE_EPSILON && d2 < EDGE_PLANE_EPSILON)
-                    || (d1 > -EDGE_PLANE_EPSILON && d2 > -EDGE_PLANE_EPSILON)) {
+            if (((d1 < EDGE_PLANE_EPSILON) && (d2 < EDGE_PLANE_EPSILON))
+                    || ((d1 > -EDGE_PLANE_EPSILON) && (d2 > -EDGE_PLANE_EPSILON))) {
                 continue;
             }
 
             // split the quad at this plane
             float f = d1 / (d1 - d2);
-            idVec3 mid0 = uniqued[quad.nearV[0]].oMultiply(1 - f).oPlus(uniqued[quad.farV[0]].oMultiply(f));
-            int mid0Index = FindUniqueVert(mid0);
+            final idVec3 mid0 = uniqued[quad.nearV[0]].oMultiply(1 - f).oPlus(uniqued[quad.farV[0]].oMultiply(f));
+            final int mid0Index = FindUniqueVert(mid0);
 
             d1 = separate.Distance(uniqued[quad.nearV[1]]);
             d2 = separate.Distance(uniqued[quad.farV[1]]);
             f = d1 / (d1 - d2);
-            if (f < 0 || f > 1) {
+            if ((f < 0) || (f > 1)) {
                 continue;
             }
 
-            idVec3 mid1 = uniqued[quad.nearV[1]].oMultiply(1 - f).oPlus(uniqued[quad.farV[1]].oMultiply(f));
-            int mid1Index = FindUniqueVert(mid1);
+            final idVec3 mid1 = uniqued[quad.nearV[1]].oMultiply(1 - f).oPlus(uniqued[quad.farV[1]].oMultiply(f));
+            final int mid1Index = FindUniqueVert(mid1);
 
-            silQuad_s clipped = quad;
+            final silQuad_s clipped = quad;
 
             clipped.nearV[0] = mid0Index;
             clipped.nearV[1] = mid1Index;
@@ -777,10 +777,10 @@ public class shadowopt3 {
 
         // fragment overlapping edges
         for (int i = 0; i < numSilPlanes; i++) {
-            silPlane_t sil = silPlanes[i];
+            final silPlane_t sil = silPlanes[i];
 
             for (shadowOptEdge_s e1 = sil.edges; e1 != null; e1 = e1.nextEdge) {
-                silQuad_s quad = new silQuad_s();
+                final silQuad_s quad = new silQuad_s();
 
                 quad.nearV[0] = e1.index[0];
                 quad.nearV[1] = e1.index[1];
@@ -807,12 +807,12 @@ public class shadowopt3 {
         mapTri_s mtri;
 
         for (i = 0; i < numSilPlanes; i++) {
-            silPlane_t sil = silPlanes[i];
+            final silPlane_t sil = silPlanes[i];
 
             // prepare for optimizing the sil quads on each side of the sil plane
-            optimizeGroup_s[] groups = new optimizeGroup_s[2];
+            final optimizeGroup_s[] groups = new optimizeGroup_s[2];
 //		memset( &groups, 0, sizeof( groups ) );
-            idPlane[] planes = new idPlane[2];
+            final idPlane[] planes = new idPlane[2];
             planes[0].SetNormal(sil.normal);//TODO:reinterpret cast
             planes[0].oSet(3, 0);
             planes[1] = planes[0].oNegative();
@@ -828,14 +828,15 @@ public class shadowopt3 {
                     }
                     // in theory, this is sufficient, but we might
                     // have some cases of tripple+ matching, or unclipped rear projections
-                    if (f1.nearV[0] == f2.nearV[1] && f1.nearV[1] == f2.nearV[0]) {
+                    if ((f1.nearV[0] == f2.nearV[1]) && (f1.nearV[1] == f2.nearV[0])) {
                         break;
                     }
                 }
                 // if we went through all the quads without finding a match, emit the quad
                 if (NOT(f2)) {
                     optimizeGroup_s gr;
-                    idVec3 v1, v2, normal = new idVec3();
+                    idVec3 v1, v2;
+					final idVec3 normal = new idVec3();
 
                     mtri = new mapTri_s();// Mem_ClearedAlloc(sizeof(mtri));
                     mtri.v[0].xyz = uniqued[f1.nearV[0]];
@@ -915,9 +916,9 @@ public class shadowopt3 {
         int i;
 
         for (i = 0; i < numSilEdges; i++) {
-            int v1 = silEdges[i].index[0];
-            int v2 = silEdges[i].index[1];
-            int index = ret.totalIndexes;
+            final int v1 = silEdges[i].index[0];
+            final int v2 = silEdges[i].index[1];
+            final int index = ret.totalIndexes;
             ret.indexes[index + 0] = v1;
             ret.indexes[index + 1] = v2;
             ret.indexes[index + 2] = v2 + numUniquedBeforeProjection;
@@ -939,10 +940,10 @@ public class shadowopt3 {
         int k;
 
         for (k = 0; k < numUniqued; k++) {
-            idVec3 check = uniqued[k];
-            if (Math.abs(v.oGet(0) - check.oGet(0)) < UNIQUE_EPSILON
-                    && Math.abs(v.oGet(1) - check.oGet(1)) < UNIQUE_EPSILON
-                    && Math.abs(v.oGet(2) - check.oGet(2)) < UNIQUE_EPSILON) {
+            final idVec3 check = uniqued[k];
+            if ((Math.abs(v.oGet(0) - check.oGet(0)) < UNIQUE_EPSILON)
+                    && (Math.abs(v.oGet(1) - check.oGet(1)) < UNIQUE_EPSILON)
+                    && (Math.abs(v.oGet(2) - check.oGet(2)) < UNIQUE_EPSILON)) {
                 return k;
             }
         }
@@ -987,11 +988,11 @@ public class shadowopt3 {
      */
     static void ProjectUniqued(idVec3 projectionOrigin, idPlane projectionPlane) {
         // calculate the projection 
-        idVec4[] mat = new idVec4[4];
+        final idVec4[] mat = new idVec4[4];
 
         R_LightProjectionMatrix(projectionOrigin, projectionPlane, mat);
 
-        if (numUniqued * 2 > maxUniqued) {
+        if ((numUniqued * 2) > maxUniqued) {
             common.Error("ProjectUniqued: numUniqued * 2 > maxUniqued");
         }
 
@@ -999,11 +1000,11 @@ public class shadowopt3 {
         // but I don't want to change R_LightProjectionMatrix righ tnow...
         for (int i = 0; i < numUniqued; i++) {
             // put the vert back in global space, instead of light centered space
-            idVec3 in = uniqued[i].oPlus(projectionOrigin);
+            final idVec3 in = uniqued[i].oPlus(projectionOrigin);
 
             // project to far plane
             float w, oow;
-            idVec3 out = new idVec3();
+            final idVec3 out = new idVec3();
 
             w = in.oMultiply(mat[3].ToVec3()) + mat[3].oGet(3);
 
@@ -1070,13 +1071,13 @@ public class shadowopt3 {
         ret.indexes = new int/*glIndex_t*/[maxRetIndexes];// Mem_Alloc(maxRetIndexes);
         for (int i = 0; i < numOutputTris; i++) {
             // flip the indexes so the surface triangle faces outside the shadow volume
-            ret.indexes[i * 3 + 0] = outputTris[i].index[2];
-            ret.indexes[i * 3 + 1] = outputTris[i].index[1];
-            ret.indexes[i * 3 + 2] = outputTris[i].index[0];
+            ret.indexes[(i * 3) + 0] = outputTris[i].index[2];
+            ret.indexes[(i * 3) + 1] = outputTris[i].index[1];
+            ret.indexes[(i * 3) + 2] = outputTris[i].index[0];
 
-            ret.indexes[(numOutputTris + i) * 3 + 0] = numUniquedBeforeProjection + outputTris[i].index[0];
-            ret.indexes[(numOutputTris + i) * 3 + 1] = numUniquedBeforeProjection + outputTris[i].index[1];
-            ret.indexes[(numOutputTris + i) * 3 + 2] = numUniquedBeforeProjection + outputTris[i].index[2];
+            ret.indexes[((numOutputTris + i) * 3) + 0] = numUniquedBeforeProjection + outputTris[i].index[0];
+            ret.indexes[((numOutputTris + i) * 3) + 1] = numUniquedBeforeProjection + outputTris[i].index[1];
+            ret.indexes[((numOutputTris + i) * 3) + 2] = numUniquedBeforeProjection + outputTris[i].index[2];
         }
         // emit the sil planes
         ret.totalIndexes = ret.numFrontCapIndexes + ret.numRearCapIndexes;
@@ -1123,7 +1124,7 @@ public class shadowopt3 {
             a = tri.indexes[i];
             b = tri.indexes[i + 1];
             c = tri.indexes[i + 2];
-            if (a == b || a == c || b == c) {
+            if ((a == b) || (a == c) || (b == c)) {
                 c_removed++;
 //			memmove( tri.indexes + i, tri.indexes + i + 3, ( tri.numIndexes - i - 3 ) * sizeof( tri.indexes[0] ) );
                 System.arraycopy(tri.indexes, i + 3, tri.indexes, i, tri.numIndexes - i - 3);
@@ -1161,10 +1162,10 @@ public class shadowopt3 {
         uniqued = new idVec3[maxUniqued];
         numUniqued = 0;
 
-        int/*glIndex_t*/[] remap = new int[tri.numVerts];
+        final int/*glIndex_t*/[] remap = new int[tri.numVerts];
 
         for (i = 0; i < tri.numIndexes; i++) {
-            if (tri.indexes[i] > tri.numVerts || tri.indexes[i] < 0) {
+            if ((tri.indexes[i] > tri.numVerts) || (tri.indexes[i] < 0)) {
                 common.Error("CleanupOptimizedShadowTris: index out of range");
             }
         }
@@ -1190,12 +1191,12 @@ public class shadowopt3 {
                 // if there is a reversed quad match, we can throw both of them out
                 // this is not a robust check, it relies on the exact ordering of
                 // quad indexes
-                if (tri.indexes[i2 + 0] == tri.indexes[j + 1]
-                        && tri.indexes[i2 + 1] == tri.indexes[j + 0]
-                        && tri.indexes[i2 + 2] == tri.indexes[j + 3]
-                        && tri.indexes[i2 + 3] == tri.indexes[j + 5]
-                        && tri.indexes[i2 + 4] == tri.indexes[j + 1]
-                        && tri.indexes[i2 + 5] == tri.indexes[j + 3]) {
+                if ((tri.indexes[i2 + 0] == tri.indexes[j + 1])
+                        && (tri.indexes[i2 + 1] == tri.indexes[j + 0])
+                        && (tri.indexes[i2 + 2] == tri.indexes[j + 3])
+                        && (tri.indexes[i2 + 3] == tri.indexes[j + 5])
+                        && (tri.indexes[i2 + 4] == tri.indexes[j + 1])
+                        && (tri.indexes[i2 + 5] == tri.indexes[j + 3])) {
                     break;
                 }
             }
@@ -1215,7 +1216,7 @@ public class shadowopt3 {
             i2 -= 6;
         }
 
-        int removed = tri.numShadowIndexesNoCaps - numSilIndexes;
+        final int removed = tri.numShadowIndexesNoCaps - numSilIndexes;
 
         tri.numIndexes -= removed;
         tri.numShadowIndexesNoCaps -= removed;
@@ -1236,7 +1237,7 @@ public class shadowopt3 {
      lightShadow_t list is a further culling and optimization of the data.
      ========================
      */
-    static srfTriangles_s CreateLightShadow(optimizeGroup_s shadowerGroups, final mapLight_t light) {;
+    static srfTriangles_s CreateLightShadow(optimizeGroup_s shadowerGroups, final mapLight_t light) {
 
         common.Printf("----- CreateLightShadow %p -----\n", light);
 
@@ -1256,7 +1257,7 @@ public class shadowopt3 {
         }
 
         // find uniqued vertexes
-        srfTriangles_s occluders = ShareMapTriVerts(combined);
+        final srfTriangles_s occluders = ShareMapTriVerts(combined);
 
         FreeTriList(combined);
 
@@ -1264,14 +1265,14 @@ public class shadowopt3 {
         R_CleanupTriangles(occluders, false, true, false);
 
         // let the renderer build the shadow volume normally
-        idRenderEntityLocal space = new idRenderEntityLocal();
+        final idRenderEntityLocal space = new idRenderEntityLocal();
 
         space.modelMatrix[0] = 1;
         space.modelMatrix[5] = 1;
         space.modelMatrix[10] = 1;
         space.modelMatrix[15] = 1;
 
-        srfCullInfo_t cullInfo = new srfCullInfo_t();
+        final srfCullInfo_t cullInfo = new srfCullInfo_t();
 //	memset( &cullInfo, 0, sizeof( cullInfo ) );
 
         // call the normal shadow creation, but with the superOptimize flag set, which will

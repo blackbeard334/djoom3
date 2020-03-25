@@ -34,5 +34,5 @@ public class Session_menu {
 
             return (int) (b.timeStamp - a.timeStamp);
         }
-    };
+    }
 }

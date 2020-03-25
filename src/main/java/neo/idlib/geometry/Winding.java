@@ -44,14 +44,14 @@ public class Winding {
         //
 
         public idWinding() {
-            numPoints = allocedSize = 0;
-            p = null;
+            this.numPoints = this.allocedSize = 0;
+            this.p = null;
         }
 
         // allocate for n points
         public idWinding(final int n) {
-            numPoints = allocedSize = 0;
-            p = null;
+            this.numPoints = this.allocedSize = 0;
+            this.p = null;
             EnsureAlloced(n);
         }
 
@@ -59,44 +59,44 @@ public class Winding {
         public idWinding(final idVec3[] verts, final int n) {
             int i;
 
-            numPoints = allocedSize = 0;
-            p = null;
+            this.numPoints = this.allocedSize = 0;
+            this.p = null;
             if (!EnsureAlloced(n)) {
-                numPoints = 0;
+                this.numPoints = 0;
                 return;
             }
             for (i = 0; i < n; i++) {
-                p[i].oSet(verts[i]);
-                p[i].s = p[i].t = 0.0f;
+                this.p[i].oSet(verts[i]);
+                this.p[i].s = this.p[i].t = 0.0f;
             }
-            numPoints = n;
+            this.numPoints = n;
 
         }
 
         // base winding for plane
         public idWinding(final idVec3 normal, final float dist) {
-            numPoints = allocedSize = 0;
-            p = null;
+            this.numPoints = this.allocedSize = 0;
+            this.p = null;
             BaseForPlane(normal, dist);
         }
 
         // base winding for plane
         public idWinding(final idPlane plane) {
-            numPoints = allocedSize = 0;
-            p = null;
+            this.numPoints = this.allocedSize = 0;
+            this.p = null;
             BaseForPlane(plane);
         }
 
         public idWinding(final idWinding winding) {
             int i;
             if (!EnsureAlloced(winding.GetNumPoints())) {
-                numPoints = 0;
+                this.numPoints = 0;
                 return;
             }
             for (i = 0; i < winding.GetNumPoints(); i++) {
-                p[i] = new idVec5(winding.oGet(i));
+                this.p[i] = new idVec5(winding.oGet(i));
             }
-            numPoints = winding.GetNumPoints();
+            this.numPoints = winding.GetNumPoints();
         }
 
 //public				~idWinding();
@@ -107,34 +107,34 @@ public class Winding {
             this.NULL = false;
 
             if (!EnsureAlloced(winding.numPoints)) {
-                numPoints = 0;
+                this.numPoints = 0;
                 return this;
             }
             for (i = 0; i < winding.numPoints; i++) {
-                p[i] = new idVec5(winding.p[i]);
+                this.p[i] = new idVec5(winding.p[i]);
             }
-            numPoints = winding.numPoints;
+            this.numPoints = winding.numPoints;
             return this;
         }
 
 //public	final idVec5 	operator[]( final int index ) ;
         public idVec5 oGet(final int index) {
-            return p[ index];
+            return this.p[ index];
         }
 
         public float oGet(final int index, final int index2) {
-            return p[index].oGet(index2);
+            return this.p[index].oGet(index2);
         }
 
         public idVec5 oSet(final int index, final idVec5 value) {
-            return p[index] = value;
+            return this.p[index] = value;
         }
 
         public idVec5 oSet(final int index, final idVec3 value) {
-            if (null == p[index]) {
-                p[index] = new idVec5();//lazy init.
+            if (null == this.p[index]) {
+                this.p[index] = new idVec5();//lazy init.
             }
-            return p[index].oSet(value);
+            return this.p[index].oSet(value);
         }
 
         // add a point to the end of the winding point array
@@ -149,42 +149,43 @@ public class Winding {
         }
 
         public void AddPoint(final idVec3 v) {
-            if (!EnsureAlloced(numPoints + 1, true)) {
+            if (!EnsureAlloced(this.numPoints + 1, true)) {
                 return;
             }
-            p[numPoints] = new idVec5(v);
-            numPoints++;
+            this.p[this.numPoints] = new idVec5(v);
+            this.numPoints++;
         }
 
         public void AddPoint(final idVec5 v) {
-            if (!EnsureAlloced(numPoints + 1, true)) {
+            if (!EnsureAlloced(this.numPoints + 1, true)) {
                 return;
             }
-            p[numPoints] = v;
-            numPoints++;
+            this.p[this.numPoints] = v;
+            this.numPoints++;
         }
 
         // number of points on winding
         public int GetNumPoints() {
-            return numPoints;
+            return this.numPoints;
         }
 
         public void SetNumPoints(int n) {
             if (!EnsureAlloced(n, true)) {
                 return;
             }
-            numPoints = n;
+            this.numPoints = n;
         }
 
         public void Clear() {
-            numPoints = 0;
+            this.numPoints = 0;
 //	delete[] p;
-            p = null;
+            this.p = null;
         }
 
         // huge winding for plane, the points go counter clockwise when facing the front of the plane
         public void BaseForPlane(final idVec3 normal, final float dist) {
-            idVec3 org, vRight = new idVec3(), vUp = new idVec3();
+            idVec3 org;
+			final idVec3 vRight = new idVec3(), vUp = new idVec3();
 
             org = normal.oMultiply(dist);
 
@@ -193,15 +194,15 @@ public class Winding {
             vRight.oMulSet(MAX_WORLD_SIZE);
 
             EnsureAlloced(4);
-            numPoints = 4;
-            p[0] = new idVec5(org.oMinus(vRight).oPlus(vUp));
-            p[0].s = p[0].t = 0.0f;
-            p[1] = new idVec5(org.oPlus(vRight).oPlus(vUp));
-            p[1].s = p[1].t = 0.0f;
-            p[2] = new idVec5(org.oPlus(vRight).oMinus(vUp));
-            p[2].s = p[2].t = 0.0f;
-            p[3] = new idVec5(org.oMinus(vRight).oMinus(vUp));
-            p[3].s = p[3].t = 0.0f;
+            this.numPoints = 4;
+            this.p[0] = new idVec5(org.oMinus(vRight).oPlus(vUp));
+            this.p[0].s = this.p[0].t = 0.0f;
+            this.p[1] = new idVec5(org.oPlus(vRight).oPlus(vUp));
+            this.p[1].s = this.p[1].t = 0.0f;
+            this.p[2] = new idVec5(org.oPlus(vRight).oMinus(vUp));
+            this.p[2].s = this.p[2].t = 0.0f;
+            this.p[3] = new idVec5(org.oMinus(vRight).oMinus(vUp));
+            this.p[3].s = this.p[3].t = 0.0f;
         }
 
         public void BaseForPlane(final idPlane plane) {
@@ -213,23 +214,23 @@ public class Winding {
         public int Split(final idPlane plane, final float epsilon, idWinding front, idWinding back) {
             float[] dists;
             byte[] sides;
-            int[] counts = new int[3];
+            final int[] counts = new int[3];
             float dot;
             int i, j;
             idVec5 p1, p2;
-            idVec5 mid = new idVec5();
+            final idVec5 mid = new idVec5();
             idWinding f, b;
             int maxpts;
 
 //	assert( this );
-            dists = new float[numPoints + 4];
-            sides = new byte[numPoints + 4];
+            dists = new float[this.numPoints + 4];
+            sides = new byte[this.numPoints + 4];
 
             counts[0] = counts[1] = counts[2] = 0;
 
             // determine sides for each point
-            for (i = 0; i < numPoints; i++) {
-                dists[i] = dot = plane.Distance(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                dists[i] = dot = plane.Distance(this.p[i].ToVec3());
                 if (dot > epsilon) {
                     sides[i] = SIDE_FRONT;
                 } else if (dot < -epsilon) {
@@ -245,8 +246,8 @@ public class Winding {
 //            front[0] = back[0] = null;//TODO:check the double pointers!!!
             //
             // if coplanar, put on the front side if the normals match
-            if (0 == counts[SIDE_FRONT] && 0 == counts[SIDE_BACK]) {
-                idPlane windingPlane = new idPlane();
+            if ((0 == counts[SIDE_FRONT]) && (0 == counts[SIDE_BACK])) {
+                final idPlane windingPlane = new idPlane();
 
                 GetPlane(windingPlane);
                 if (windingPlane.Normal().oMultiply(plane.Normal()) > 0.0f) {
@@ -268,13 +269,13 @@ public class Winding {
                 return SIDE_FRONT;
             }
 
-            maxpts = numPoints + 4;	// cant use counts[0]+2 because of fp grouping errors
+            maxpts = this.numPoints + 4;	// cant use counts[0]+2 because of fp grouping errors
 
             front.oSet(f = new idWinding(maxpts));
             back.oSet(b = new idWinding(maxpts));
 
-            for (i = 0; i < numPoints; i++) {
-                p1 = p[i];
+            for (i = 0; i < this.numPoints; i++) {
+                p1 = this.p[i];
 
                 if (sides[i] == SIDE_ON) {
                     f.p[f.numPoints] = p1;
@@ -294,12 +295,12 @@ public class Winding {
                     b.numPoints++;
                 }
 
-                if (sides[i + 1] == SIDE_ON || sides[i + 1] == sides[i]) {
+                if ((sides[i + 1] == SIDE_ON) || (sides[i + 1] == sides[i])) {
                     continue;
                 }
 
                 // generate a split point
-                p2 = p[(i + 1) % numPoints];
+                p2 = this.p[(i + 1) % this.numPoints];
 
                 // always calculate the split going from the same side
                 // or minor epsilon issues can happen
@@ -312,11 +313,11 @@ public class Winding {
                         } else if (plane.Normal().oGet(j) == -1.0f) {
                             mid.oSet(j, -plane.Dist());
                         } else {
-                            mid.oSet(j, p1.oGet(j) + dot * (p2.oGet(j) - p1.oGet(j)));
+                            mid.oSet(j, p1.oGet(j) + (dot * (p2.oGet(j) - p1.oGet(j))));
                         }
                     }
-                    mid.s = p1.s + dot * (p2.s - p1.s);
-                    mid.t = p1.t + dot * (p2.t - p1.t);
+                    mid.s = p1.s + (dot * (p2.s - p1.s));
+                    mid.t = p1.t + (dot * (p2.t - p1.t));
                 } else {
                     dot = dists[i + 1] / (dists[i + 1] - dists[i]);
                     for (j = 0; j < 3; j++) {
@@ -326,11 +327,11 @@ public class Winding {
                         } else if (plane.Normal().oGet(j) == -1.0f) {
                             mid.oSet(j, -plane.Dist());
                         } else {
-                            mid.oSet(j, p2.oGet(j) + dot * (p1.oGet(j) - p2.oGet(j)));
+                            mid.oSet(j, p2.oGet(j) + (dot * (p1.oGet(j) - p2.oGet(j))));
                         }
                     }
-                    mid.s = p2.s + dot * (p1.s - p2.s);
-                    mid.t = p2.t + dot * (p1.t - p2.t);
+                    mid.s = p2.s + (dot * (p1.s - p2.s));
+                    mid.t = p2.t + (dot * (p1.t - p2.t));
                 }
 
                 f.p[f.numPoints] = mid;
@@ -339,7 +340,7 @@ public class Winding {
                 b.numPoints++;
             }
 
-            if (f.numPoints > maxpts || b.numPoints > maxpts) {
+            if ((f.numPoints > maxpts) || (b.numPoints > maxpts)) {
 		idLib.common.FatalError( "idWinding::Split: points exceeded estimate." );
             }
 
@@ -361,22 +362,22 @@ public class Winding {
             byte[] sides;
             idVec5[] newPoints;
             int newNumPoints;
-            int[] counts = new int[3];
+            final int[] counts = new int[3];
             float dot;
             int i, j;
             idVec5 p1, p2;
-            idVec5 mid = new idVec5();
+            final idVec5 mid = new idVec5();
             int maxpts;
 
 //	assert( this );
-            dists = new float[numPoints + 4];
-            sides = new byte[numPoints + 4];
+            dists = new float[this.numPoints + 4];
+            sides = new byte[this.numPoints + 4];
 
             counts[SIDE_FRONT] = counts[SIDE_BACK] = counts[SIDE_ON] = 0;
 
             // determine sides for each point
-            for (i = 0; i < numPoints; i++) {
-                dists[i] = dot = plane.Distance(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                dists[i] = dot = plane.Distance(this.p[i].ToVec3());
                 if (dot > epsilon) {
                     sides[i] = SIDE_FRONT;
                 } else if (dot < -epsilon) {
@@ -390,7 +391,7 @@ public class Winding {
             dists[i] = dists[0];
 
             // if the winding is on the plane and we should keep it
-            if (keepOn && 0 == counts[SIDE_FRONT] && 0 == counts[SIDE_BACK]) {
+            if (keepOn && (0 == counts[SIDE_FRONT]) && (0 == counts[SIDE_BACK])) {
                 return this;
             }
             // if nothing at the front of the clipping plane
@@ -403,15 +404,15 @@ public class Winding {
                 return this;
             }
 
-            maxpts = numPoints + 4;		// cant use counts[0]+2 because of fp grouping errors
+            maxpts = this.numPoints + 4;		// cant use counts[0]+2 because of fp grouping errors
 
             newPoints = new idVec5[maxpts];
             newNumPoints = 0;
 
-            for (i = 0; i < numPoints; i++) {
-                p1 = p[i];
+            for (i = 0; i < this.numPoints; i++) {
+                p1 = this.p[i];
 
-                if (newNumPoints + 1 > maxpts) {
+                if ((newNumPoints + 1) > maxpts) {
                     return this;		// can't split -- fall back to original
                 }
 
@@ -426,16 +427,16 @@ public class Winding {
                     newNumPoints++;
                 }
 
-                if (sides[i + 1] == SIDE_ON || sides[i + 1] == sides[i]) {
+                if ((sides[i + 1] == SIDE_ON) || (sides[i + 1] == sides[i])) {
                     continue;
                 }
 
-                if (newNumPoints + 1 > maxpts) {
+                if ((newNumPoints + 1) > maxpts) {
                     return this;		// can't split -- fall back to original
                 }
 
                 // generate a split point
-                p2 = p[(i + 1) % numPoints];
+                p2 = this.p[(i + 1) % this.numPoints];
 
                 dot = dists[i] / (dists[i] - dists[i + 1]);
                 for (j = 0; j < 3; j++) {
@@ -445,11 +446,11 @@ public class Winding {
                     } else if (plane.Normal().oGet(j) == -1.0f) {
                         mid.oSet(j, -plane.Dist());
                     } else {
-                        mid.oSet(j, p1.oGet(j) + dot * (p2.oGet(j) - p1.oGet(j)));
+                        mid.oSet(j, p1.oGet(j) + (dot * (p2.oGet(j) - p1.oGet(j))));
                     }
                 }
-                mid.s = p1.s + dot * (p2.s - p1.s);
-                mid.t = p1.t + dot * (p2.t - p1.t);
+                mid.s = p1.s + (dot * (p2.s - p1.s));
+                mid.t = p1.t + (dot * (p2.t - p1.t));
 
                 newPoints[newNumPoints] = mid;
                 newNumPoints++;
@@ -459,8 +460,8 @@ public class Winding {
                 return this;
             }
 
-            numPoints = newNumPoints;
-            System.arraycopy(newPoints, 0, p, 0, newNumPoints);//memcpy( p, newPoints, newNumPoints * sizeof(idVec5) );
+            this.numPoints = newNumPoints;
+            System.arraycopy(newPoints, 0, this.p, 0, newNumPoints);//memcpy( p, newPoints, newNumPoints * sizeof(idVec5) );
 
             return this;
         }
@@ -480,22 +481,22 @@ public class Winding {
             byte[] sides;
             idVec5[] newPoints;
             int newNumPoints;
-            int[] counts = new int[3];
+            final int[] counts = new int[3];
             float dot;
             int i, j;
             idVec5 p1, p2;
-            idVec5 mid = new idVec5();
+            final idVec5 mid = new idVec5();
             int maxpts;
 
 //	assert( this );
-            dists = new float[numPoints + 4];
-            sides = new byte[numPoints + 4];
+            dists = new float[this.numPoints + 4];
+            sides = new byte[this.numPoints + 4];
 
             counts[SIDE_FRONT] = counts[SIDE_BACK] = counts[SIDE_ON] = 0;
 
             // determine sides for each point
-            for (i = 0; i < numPoints; i++) {
-                dists[i] = dot = plane.Distance(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                dists[i] = dot = plane.Distance(this.p[i].ToVec3());
                 if (dot > epsilon) {
                     sides[i] = SIDE_FRONT;
                 } else if (dot < -epsilon) {
@@ -509,12 +510,12 @@ public class Winding {
             dists[i] = dists[0];
 
             // if the winding is on the plane and we should keep it
-            if (keepOn && 0 == counts[SIDE_FRONT] && 0 == counts[SIDE_BACK]) {
+            if (keepOn && (0 == counts[SIDE_FRONT]) && (0 == counts[SIDE_BACK])) {
                 return true;
             }
             // if nothing at the front of the clipping plane
             if (0 == counts[SIDE_FRONT]) {
-                numPoints = 0;
+                this.numPoints = 0;
                 return false;
             }
             // if nothing at the back of the clipping plane
@@ -522,15 +523,15 @@ public class Winding {
                 return true;
             }
 
-            maxpts = numPoints + 4;		// cant use counts[0]+2 because of fp grouping errors
+            maxpts = this.numPoints + 4;		// cant use counts[0]+2 because of fp grouping errors
 
             newPoints = idVec5.generateArray(maxpts);
             newNumPoints = 0;
 
-            for (i = 0; i < numPoints; i++) {
-                p1 = p[i];
+            for (i = 0; i < this.numPoints; i++) {
+                p1 = this.p[i];
 
-                if (newNumPoints + 1 > maxpts) {
+                if ((newNumPoints + 1) > maxpts) {
                     return true;		// can't split -- fall back to original
                 }
 
@@ -545,16 +546,16 @@ public class Winding {
                     newNumPoints++;
                 }
 
-                if (sides[i + 1] == SIDE_ON || sides[i + 1] == sides[i]) {
+                if ((sides[i + 1] == SIDE_ON) || (sides[i + 1] == sides[i])) {
                     continue;
                 }
 
-                if (newNumPoints + 1 > maxpts) {
+                if ((newNumPoints + 1) > maxpts) {
                     return true;		// can't split -- fall back to original
                 }
 
                 // generate a split point
-                p2 = p[(i + 1) % numPoints];
+                p2 = this.p[(i + 1) % this.numPoints];
 
                 dot = dists[i] / (dists[i] - dists[i + 1]);
                 for (j = 0; j < 3; j++) {
@@ -564,11 +565,11 @@ public class Winding {
                     } else if (plane.Normal().oGet(j) == -1.0f) {
                         mid.oSet(j, -plane.Dist());
                     } else {
-                        mid.oSet(j, p1.oGet(j) + dot * (p2.oGet(j) - p1.oGet(j)));
+                        mid.oSet(j, p1.oGet(j) + (dot * (p2.oGet(j) - p1.oGet(j))));
                     }
                 }
-                mid.s = p1.s + dot * (p2.s - p1.s);
-                mid.t = p1.t + dot * (p2.t - p1.t);
+                mid.s = p1.s + (dot * (p2.s - p1.s));
+                mid.t = p1.t + (dot * (p2.t - p1.t));
 
                 newPoints[newNumPoints].oSet(mid);
                 newNumPoints++;
@@ -578,8 +579,8 @@ public class Winding {
                 return true;
             }
 
-            numPoints = newNumPoints;
-            System.arraycopy(newPoints, 0, p, 0, newNumPoints);//memcpy( p, newPoints, newNumPoints * sizeof(idVec5) );
+            this.numPoints = newNumPoints;
+            System.arraycopy(newPoints, 0, this.p, 0, newNumPoints);//memcpy( p, newPoints, newNumPoints * sizeof(idVec5) );
 
             return true;
         }
@@ -589,9 +590,9 @@ public class Winding {
         public idWinding Copy() {
             idWinding w;
 
-            w = new idWinding(numPoints);
-            w.numPoints = numPoints;
-            System.arraycopy(p, 0, w.p, 0, numPoints);//memcpy( w->p, p, numPoints * sizeof(p[0]) );
+            w = new idWinding(this.numPoints);
+            w.numPoints = this.numPoints;
+            System.arraycopy(this.p, 0, w.p, 0, this.numPoints);//memcpy( w->p, p, numPoints * sizeof(p[0]) );
             return w;
         }
 
@@ -599,10 +600,10 @@ public class Winding {
             idWinding w;
             int i;
 
-            w = new idWinding(numPoints);
-            w.numPoints = numPoints;
-            for (i = 0; i < numPoints; i++) {
-                w.p[ numPoints - i - 1] = p[i];
+            w = new idWinding(this.numPoints);
+            w.numPoints = this.numPoints;
+            for (i = 0; i < this.numPoints; i++) {
+                w.p[ this.numPoints - i - 1] = this.p[i];
             }
             return w;
         }
@@ -611,10 +612,10 @@ public class Winding {
             idVec5 v;
             int i;
 
-            for (i = 0; i < (numPoints >> 1); i++) {
-                v = p[i];
-                p[i] = p[numPoints - i - 1];
-                p[numPoints - i - 1] = v;
+            for (i = 0; i < (this.numPoints >> 1); i++) {
+                v = this.p[i];
+                this.p[i] = this.p[this.numPoints - i - 1];
+                this.p[this.numPoints - i - 1] = v;
             }
         }
 
@@ -625,13 +626,13 @@ public class Winding {
         public void RemoveEqualPoints(final float epsilon) {
             int i, j;
 
-            for (i = 0; i < numPoints; i++) {
-                if ((p[i].ToVec3().oMinus(p[(i + numPoints - 1) % numPoints].ToVec3())).LengthSqr() >= Math_h.Square(epsilon)) {
+            for (i = 0; i < this.numPoints; i++) {
+                if ((this.p[i].ToVec3().oMinus(this.p[((i + this.numPoints) - 1) % this.numPoints].ToVec3())).LengthSqr() >= Math_h.Square(epsilon)) {
                     continue;
                 }
-                numPoints--;
-                for (j = i; j < numPoints; j++) {
-                    p[j] = p[j + 1];
+                this.numPoints--;
+                for (j = i; j < this.numPoints; j++) {
+                    this.p[j] = this.p[j + 1];
                 }
                 i--;
             }
@@ -646,44 +647,44 @@ public class Winding {
             idVec3 edgeNormal;
             float dist;
 
-            if (numPoints <= 3) {
+            if (this.numPoints <= 3) {
                 return;
             }
 
-            for (i = 0; i < numPoints; i++) {
+            for (i = 0; i < this.numPoints; i++) {
 
                 // create plane through edge orthogonal to winding plane
-                edgeNormal = (p[i].ToVec3().oMinus(p[(i + numPoints - 1) % numPoints].ToVec3()).Cross(normal));
+                edgeNormal = (this.p[i].ToVec3().oMinus(this.p[((i + this.numPoints) - 1) % this.numPoints].ToVec3()).Cross(normal));
                 edgeNormal.Normalize();
-                dist = edgeNormal.oMultiply(p[i].ToVec3());
+                dist = edgeNormal.oMultiply(this.p[i].ToVec3());
 
-                if (idMath.Fabs(edgeNormal.oMultiply(p[(i + 1) % numPoints].ToVec3()) - dist) > epsilon) {
+                if (idMath.Fabs(edgeNormal.oMultiply(this.p[(i + 1) % this.numPoints].ToVec3()) - dist) > epsilon) {
                     continue;
                 }
 
-                numPoints--;
-                for (j = i; j < numPoints; j++) {
-                    p[j] = p[j + 1];
+                this.numPoints--;
+                for (j = i; j < this.numPoints; j++) {
+                    this.p[j] = this.p[j + 1];
                 }
                 i--;
             }
         }
 
         public void RemovePoint(int point) {
-            if (point < 0 || point >= numPoints) {
+            if ((point < 0) || (point >= this.numPoints)) {
                 idLib.common.FatalError("idWinding::removePoint: point out of range");
             }
-            if (point < numPoints - 1) {
+            if (point < (this.numPoints - 1)) {
 //		memmove(&p[point], &p[point+1], (numPoints - point - 1) * sizeof(p[0]) );
-                p[point] = new idVec5().oSet(p[point + 1]);
+                this.p[point] = new idVec5().oSet(this.p[point + 1]);
             }
-            numPoints--;
+            this.numPoints--;
         }
 
         public void InsertPoint(final idVec3 point, int spot) {
             int i;
 
-            if (spot > numPoints) {
+            if (spot > this.numPoints) {
                 idLib.common.FatalError("idWinding::insertPoint: spot > numPoints");
             }
 
@@ -691,12 +692,12 @@ public class Winding {
                 idLib.common.FatalError("idWinding::insertPoint: spot < 0");
             }
 
-            EnsureAlloced(numPoints + 1, true);
-            for (i = numPoints; i > spot; i--) {
-                p[i] = p[i - 1];
+            EnsureAlloced(this.numPoints + 1, true);
+            for (i = this.numPoints; i > spot; i--) {
+                this.p[i] = this.p[i - 1];
             }
-            p[spot].oSet(point);
-            numPoints++;
+            this.p[spot].oSet(point);
+            this.numPoints++;
         }
 
         public boolean InsertPointIfOnEdge(final idVec3 point, final idPlane plane) {
@@ -713,12 +714,12 @@ public class Winding {
                 return false;
             }
 
-            for (i = 0; i < numPoints; i++) {
+            for (i = 0; i < this.numPoints; i++) {
 
                 // create plane through edge orthogonal to winding plane
-                normal = (p[(i + 1) % numPoints].ToVec3().oMinus(p[i].ToVec3())).Cross(plane.Normal());
+                normal = (this.p[(i + 1) % this.numPoints].ToVec3().oMinus(this.p[i].ToVec3())).Cross(plane.Normal());
                 normal.Normalize();
-                dist = normal.oMultiply(p[i].ToVec3());
+                dist = normal.oMultiply(this.p[i].ToVec3());
 
                 if (idMath.Fabs(normal.oMultiply(point) - dist) > epsilon) {
                     continue;
@@ -727,7 +728,7 @@ public class Winding {
                 normal = plane.Normal().Cross(normal);
                 dot = normal.oMultiply(point);
 
-                dist = dot - normal.oMultiply(p[i].ToVec3());
+                dist = dot - normal.oMultiply(this.p[i].ToVec3());
 
                 if (dist < epsilon) {
                     // if the winding already has the point
@@ -737,7 +738,7 @@ public class Winding {
                     continue;
                 }
 
-                dist = dot - normal.oMultiply(p[(i + 1) % numPoints].ToVec3());
+                dist = dot - normal.oMultiply(this.p[(i + 1) % this.numPoints].ToVec3());
 
                 if (dist > -epsilon) {
                     // if the winding already has the point
@@ -872,57 +873,57 @@ public class Winding {
             idVec5[] hullPoints;
             boolean outside;
 
-            switch (numPoints) {
+            switch (this.numPoints) {
                 case 0: {
-                    p[0] = new idVec5(point);
-                    numPoints++;
+                    this.p[0] = new idVec5(point);
+                    this.numPoints++;
                     return;
                 }
                 case 1: {
                     // don't add the same point second
-                    if (p[0].ToVec3().Compare(point, epsilon)) {
+                    if (this.p[0].ToVec3().Compare(point, epsilon)) {
                         return;
                     }
-                    p[1] = new idVec5(point);
-                    numPoints++;
+                    this.p[1] = new idVec5(point);
+                    this.numPoints++;
                     return;
                 }
                 case 2: {
                     // don't add a point if it already exists
-                    if (p[0].ToVec3().Compare(point, epsilon) || p[1].ToVec3().Compare(point, epsilon)) {
+                    if (this.p[0].ToVec3().Compare(point, epsilon) || this.p[1].ToVec3().Compare(point, epsilon)) {
                         return;
                     }
                     // if only two points make sure we have the right ordering according to the normal
-                    dir = point.oMinus(p[0].ToVec3());
-                    dir = dir.Cross(p[1].ToVec3().oMinus(p[0].ToVec3()));
-                    if (dir.oGet(0) == 0.0f && dir.oGet(1) == 0.0f && dir.oGet(2) == 0.0f) {
+                    dir = point.oMinus(this.p[0].ToVec3());
+                    dir = dir.Cross(this.p[1].ToVec3().oMinus(this.p[0].ToVec3()));
+                    if ((dir.oGet(0) == 0.0f) && (dir.oGet(1) == 0.0f) && (dir.oGet(2) == 0.0f)) {
                         // points don't make a plane
                         return;
                     }
                     if (dir.oMultiply(normal) > 0.0f) {
-                        p[2] = new idVec5(point);
+                        this.p[2] = new idVec5(point);
                     } else {
-                        p[2] = p[1];
-                        p[1] = new idVec5(point);
+                        this.p[2] = this.p[1];
+                        this.p[1] = new idVec5(point);
                     }
-                    numPoints++;
+                    this.numPoints++;
                     return;
                 }
             }
 
-            hullDirs = new idVec3[numPoints];
-            hullSide = new boolean[numPoints];
+            hullDirs = new idVec3[this.numPoints];
+            hullSide = new boolean[this.numPoints];
 
             // calculate hull edge vectors
-            for (j = 0; j < numPoints; j++) {
-                dir = p[(j + 1) % numPoints].ToVec3().oMinus(p[j].ToVec3());
+            for (j = 0; j < this.numPoints; j++) {
+                dir = this.p[(j + 1) % this.numPoints].ToVec3().oMinus(this.p[j].ToVec3());
                 hullDirs[j] = normal.Cross(dir);
             }
 
             // calculate side for each hull edge
             outside = false;
-            for (j = 0; j < numPoints; j++) {
-                dir = point.oMinus(p[j].ToVec3());
+            for (j = 0; j < this.numPoints; j++) {
+                dir = point.oMinus(this.p[j].ToVec3());
                 d = dir.oMultiply(hullDirs[j]);
                 if (d >= epsilon) {
                     outside = true;
@@ -940,35 +941,35 @@ public class Winding {
             }
 
             // find the back side to front side transition
-            for (j = 0; j < numPoints; j++) {
-                if (!hullSide[ j] && hullSide[ (j + 1) % numPoints]) {
+            for (j = 0; j < this.numPoints; j++) {
+                if (!hullSide[ j] && hullSide[ (j + 1) % this.numPoints]) {
                     break;
                 }
             }
-            if (j >= numPoints) {
+            if (j >= this.numPoints) {
                 return;
             }
 
-            hullPoints = new idVec5[numPoints + 1];
+            hullPoints = new idVec5[this.numPoints + 1];
 
             // insert the point here
             hullPoints[0] = new idVec5(point);
             numHullPoints = 1;
 
             // copy over all points that aren't double fronts
-            j = (j + 1) % numPoints;
-            for (k = 0; k < numPoints; k++) {
-                if (hullSide[ (j + k) % numPoints] && hullSide[ (j + k + 1) % numPoints]) {
+            j = (j + 1) % this.numPoints;
+            for (k = 0; k < this.numPoints; k++) {
+                if (hullSide[ (j + k) % this.numPoints] && hullSide[ (j + k + 1) % this.numPoints]) {
                     continue;
                 }
-                hullPoints[numHullPoints] = p[ (j + k + 1) % numPoints];
+                hullPoints[numHullPoints] = this.p[ (j + k + 1) % this.numPoints];
                 numHullPoints++;
             }
 
             if (!EnsureAlloced(numHullPoints, false)) {
                 return;
             }
-            numPoints = numHullPoints;
+            this.numPoints = numHullPoints;
 //	memcpy( p, hullPoints, numHullPoints * sizeof(idVec5) );
             System.arraycopy(hullPoints, 0, this.p, 0, numHullPoints);
         }
@@ -1028,7 +1029,7 @@ public class Winding {
             // check slope of connected lines
             // if the slopes are colinear, the point can be removed
             //
-            back = f1.p[(i + f1.numPoints - 1) % f1.numPoints].ToVec3();
+            back = f1.p[((i + f1.numPoints) - 1) % f1.numPoints].ToVec3();
             delta = p1.oMinus(back);
             normal = planenormal.Cross(delta);
             normal.Normalize();
@@ -1047,7 +1048,7 @@ public class Winding {
             normal = planenormal.Cross(delta);
             normal.Normalize();
 
-            back = f2.p[(j + f2.numPoints - 1) % f2.numPoints].ToVec3();
+            back = f2.p[((j + f2.numPoints) - 1) % f2.numPoints].ToVec3();
             delta = back.oMinus(p2);
             dot = delta.oMultiply(normal);
             if (dot > CONTINUOUS_EPSILON) {
@@ -1063,7 +1064,7 @@ public class Winding {
 
             // copy first polygon
             for (k = (i + 1) % f1.numPoints; k != i; k = (k + 1) % f1.numPoints) {
-                if (0 == keep && k == (i + 1) % f1.numPoints && !keep2) {
+                if ((0 == keep) && (k == ((i + 1) % f1.numPoints)) && !keep2) {
                     continue;
                 }
 
@@ -1073,7 +1074,7 @@ public class Winding {
 
             // copy second polygon
             for (l = (j + 1) % f2.numPoints; l != j; l = (l + 1) % f2.numPoints) {
-                if (0 == keep && l == (j + 1) % f2.numPoints && !keep1) {
+                if ((0 == keep) && (l == ((j + 1) % f2.numPoints)) && !keep1) {
                     continue;
                 }
                 newf.p[newf.numPoints] = f2.p[l];
@@ -1093,11 +1094,11 @@ public class Winding {
             float d, edgedist;
             idVec3 dir, edgenormal;
             float area;
-            idPlane plane = new idPlane();
+            final idPlane plane = new idPlane();
 
-            if (numPoints < 3) {
+            if (this.numPoints < 3) {
                 if (print) {
-                    idLib.common.Printf("idWinding::Check: only %d points.", numPoints);
+                    idLib.common.Printf("idWinding::Check: only %d points.", this.numPoints);
                 }
                 return false;
             }
@@ -1112,12 +1113,12 @@ public class Winding {
 
             GetPlane(plane);
 
-            for (i = 0; i < numPoints; i++) {
-                final idVec3 p1 = p[i].ToVec3();
+            for (i = 0; i < this.numPoints; i++) {
+                final idVec3 p1 = this.p[i].ToVec3();
 
                 // check if the winding is huge
                 for (j = 0; j < 3; j++) {
-                    if (p1.oGet(j) >= MAX_WORLD_COORD || p1.oGet(j) <= MIN_WORLD_COORD) {
+                    if ((p1.oGet(j) >= MAX_WORLD_COORD) || (p1.oGet(j) <= MIN_WORLD_COORD)) {
                         if (print) {
                             idLib.common.Printf("idWinding::Check: point %d outside world %c-axis: %f", i, 'X' + j, p1.oGet(j));
                         }
@@ -1125,11 +1126,11 @@ public class Winding {
                     }
                 }
 
-                j = i + 1 == numPoints ? 0 : i + 1;
+                j = (i + 1) == this.numPoints ? 0 : i + 1;
 
                 // check if the point is on the face plane
                 d = p1.oMultiply(plane.Normal()) + plane.oGet(3);
-                if (d < -ON_EPSILON || d > ON_EPSILON) {
+                if ((d < -ON_EPSILON) || (d > ON_EPSILON)) {
                     if (print) {
                         idLib.common.Printf("idWinding::Check: point %d off plane.", i);
                     }
@@ -1137,7 +1138,7 @@ public class Winding {
                 }
 
                 // check if the edge isn't degenerate
-                final idVec3 p2 = p[j].ToVec3();
+                final idVec3 p2 = this.p[j].ToVec3();
                 dir = p2.oMinus(p1);
 
                 if (dir.Length() < ON_EPSILON) {
@@ -1154,11 +1155,11 @@ public class Winding {
                 edgedist += ON_EPSILON;
 
                 // all other points must be on front side
-                for (j = 0; j < numPoints; j++) {
+                for (j = 0; j < this.numPoints; j++) {
                     if (j == i) {
                         continue;
                     }
-                    d = p[j].ToVec3().oMultiply(edgenormal);
+                    d = this.p[j].ToVec3().oMultiply(edgenormal);
                     if (d > edgedist) {
                         if (print) {
                             idLib.common.Printf("idWinding::Check: non-convex.");
@@ -1176,9 +1177,9 @@ public class Winding {
             float total;
 
             total = 0.0f;
-            for (i = 2; i < numPoints; i++) {
-                d1 = p[i - 1].ToVec3().oMinus(p[0].ToVec3());
-                d2 = p[i].ToVec3().oMinus(p[0].ToVec3());
+            for (i = 2; i < this.numPoints; i++) {
+                d1 = this.p[i - 1].ToVec3().oMinus(this.p[0].ToVec3());
+                d2 = this.p[i].ToVec3().oMinus(this.p[0].ToVec3());
                 cross = d1.Cross(d2);
                 total += cross.Length();
             }
@@ -1187,13 +1188,13 @@ public class Winding {
 
         public idVec3 GetCenter() {
             int i;
-            idVec3 center = new idVec3();
+            final idVec3 center = new idVec3();
 
             center.Zero();
-            for (i = 0; i < numPoints; i++) {
-                center.oPluSet(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                center.oPluSet(this.p[i].ToVec3());
             }
-            center.oMulSet(1.0f / numPoints);
+            center.oMulSet(1.0f / this.numPoints);
             return center;
         }
 
@@ -1203,8 +1204,8 @@ public class Winding {
             idVec3 dir;
 
             radius = 0.0f;
-            for (i = 0; i < numPoints; i++) {
-                dir = p[i].ToVec3().oMinus(center);
+            for (i = 0; i < this.numPoints; i++) {
+                dir = this.p[i].ToVec3().oMinus(center);
                 r = dir.oMultiply(dir);
                 if (r > radius) {
                     radius = r;
@@ -1216,61 +1217,61 @@ public class Winding {
         public void GetPlane(idVec3 normal, float[]dist) {
             idVec3 v1, v2, center;
 
-            if (numPoints < 3) {
+            if (this.numPoints < 3) {
                 normal.Zero();
                 dist[0] = 0.0f;
                 return;
             }
 
             center = GetCenter();
-            v1 = p[0].ToVec3().oMinus(center);
-            v2 = p[1].ToVec3().oMinus(center);
+            v1 = this.p[0].ToVec3().oMinus(center);
+            v2 = this.p[1].ToVec3().oMinus(center);
             normal = v2.Cross(v1);
             normal.Normalize();
-            dist[0] = p[0].ToVec3().oMultiply(normal);
+            dist[0] = this.p[0].ToVec3().oMultiply(normal);
         }
 
         public void GetPlane(idPlane plane) {
             idVec3 v1, v2;
             idVec3 center;
 
-            if (numPoints < 3) {
+            if (this.numPoints < 3) {
                 plane.Zero();
                 return;
             }
 
             center = GetCenter();
-            v1 = p[0].ToVec3().oMinus(center);
-            v2 = p[1].ToVec3().oMinus(center);
+            v1 = this.p[0].ToVec3().oMinus(center);
+            v2 = this.p[1].ToVec3().oMinus(center);
             plane.SetNormal(v2.Cross(v1));
             plane.Normalize();
-            plane.FitThroughPoint(p[0].ToVec3());
+            plane.FitThroughPoint(this.p[0].ToVec3());
         }
 
         public void GetBounds(idBounds bounds) {
             int i;
 
-            if (0 == numPoints) {
+            if (0 == this.numPoints) {
                 bounds.Clear();
                 return;
             }
 
-            bounds.oSet(0, bounds.oSet(1, p[0].ToVec3()));
-            for (i = 1; i < numPoints; i++) {
-                if (p[i].x < bounds.oGet(0).x) {
-                    bounds.oGet(0).x = p[i].x;
-                } else if (p[i].x > bounds.oGet(1).x) {
-                    bounds.oGet(1).x = p[i].x;
+            bounds.oSet(0, bounds.oSet(1, this.p[0].ToVec3()));
+            for (i = 1; i < this.numPoints; i++) {
+                if (this.p[i].x < bounds.oGet(0).x) {
+                    bounds.oGet(0).x = this.p[i].x;
+                } else if (this.p[i].x > bounds.oGet(1).x) {
+                    bounds.oGet(1).x = this.p[i].x;
                 }
-                if (p[i].y < bounds.oGet(0).y) {
-                    bounds.oGet(0).y = p[i].y;
-                } else if (p[i].y > bounds.oGet(1).y) {
-                    bounds.oGet(1).y = p[i].y;
+                if (this.p[i].y < bounds.oGet(0).y) {
+                    bounds.oGet(0).y = this.p[i].y;
+                } else if (this.p[i].y > bounds.oGet(1).y) {
+                    bounds.oGet(1).y = this.p[i].y;
                 }
-                if (p[i].z < bounds.oGet(0).z) {
-                    bounds.oGet(0).z = p[i].z;
-                } else if (p[i].z > bounds.oGet(1).z) {
-                    bounds.oGet(1).z = p[i].z;
+                if (this.p[i].z < bounds.oGet(0).z) {
+                    bounds.oGet(0).z = this.p[i].z;
+                } else if (this.p[i].z > bounds.oGet(1).z) {
+                    bounds.oGet(1).z = this.p[i].z;
                 }
             }
         }
@@ -1284,8 +1285,8 @@ public class Winding {
             int edges;
 
             edges = 0;
-            for (i = 0; i < numPoints; i++) {
-                delta = p[(i + 1) % numPoints].ToVec3().oMinus(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                delta = this.p[(i + 1) % this.numPoints].ToVec3().oMinus(this.p[i].ToVec3());
                 len = delta.Length();
                 if (len > EDGE_LENGTH) {
                     if (++edges == 3) {
@@ -1299,9 +1300,9 @@ public class Winding {
         public boolean IsHuge() {	// base winding for a plane is typically huge
             int i, j;
 
-            for (i = 0; i < numPoints; i++) {
+            for (i = 0; i < this.numPoints; i++) {
                 for (j = 0; j < 3; j++) {
-                    if (p[i].oGet(j) <= MIN_WORLD_COORD || p[i].oGet(j) >= MAX_WORLD_COORD) {
+                    if ((this.p[i].oGet(j) <= MIN_WORLD_COORD) || (this.p[i].oGet(j) >= MAX_WORLD_COORD)) {
                         return true;
                     }
                 }
@@ -1312,8 +1313,8 @@ public class Winding {
         public void Print() {
             int i;
 
-            for (i = 0; i < numPoints; i++) {
-                idLib.common.Printf("(%5.1f, %5.1f, %5.1f)\n", p[i].oGet(0), p[i].oGet(1), p[i].oGet(2));
+            for (i = 0; i < this.numPoints; i++) {
+                idLib.common.Printf("(%5.1f, %5.1f, %5.1f)\n", this.p[i].oGet(0), this.p[i].oGet(1), this.p[i].oGet(2));
             }
         }
 
@@ -1323,8 +1324,8 @@ public class Winding {
 
             min = idMath.INFINITY;
             max = -min;
-            for (i = 0; i < numPoints; i++) {
-                d = plane.Distance(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                d = plane.Distance(this.p[i].ToVec3());
                 if (d < min) {
                     min = d;
                     if ((FLOATSIGNBITSET(min) & FLOATSIGNBITNOTSET(max)) != 0) {
@@ -1358,8 +1359,8 @@ public class Winding {
 
             front = false;
             back = false;
-            for (i = 0; i < numPoints; i++) {
-                d = plane.Distance(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                d = plane.Distance(this.p[i].ToVec3());
                 if (d < -epsilon) {
                     if (front) {
                         return SIDE_CROSS;
@@ -1390,14 +1391,14 @@ public class Winding {
             int i;
 
             // check if one of the points of winding 1 is at the back of the plane of winding 2
-            for (i = 0; i < numPoints; i++) {
-                if (normal2.oMultiply(p[i].ToVec3()) - dist2 > WCONVEX_EPSILON) {
+            for (i = 0; i < this.numPoints; i++) {
+                if ((normal2.oMultiply(this.p[i].ToVec3()) - dist2) > WCONVEX_EPSILON) {
                     return true;
                 }
             }
             // check if one of the points of winding 2 is at the back of the plane of winding 1
             for (i = 0; i < w2.numPoints; i++) {
-                if (normal1.oMultiply(w2.p[i].ToVec3()) - dist1 > WCONVEX_EPSILON) {
+                if ((normal1.oMultiply(w2.p[i].ToVec3()) - dist1) > WCONVEX_EPSILON) {
                     return true;
                 }
             }
@@ -1409,9 +1410,9 @@ public class Winding {
             int i;
             idVec3 dir, n, pointvec;
 
-            for (i = 0; i < numPoints; i++) {
-                dir = p[(i + 1) % numPoints].ToVec3().oMinus(p[i].ToVec3());
-                pointvec = point.oMinus(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                dir = this.p[(i + 1) % this.numPoints].ToVec3().oMinus(this.p[i].ToVec3());
+                pointvec = point.oMinus(this.p[i].ToVec3());
 
                 n = dir.Cross(normal);
 
@@ -1435,16 +1436,16 @@ public class Winding {
             back = windingPlane.Distance(end);
 
             // if both points at the same side of the plane
-            if (front < 0.0f && back < 0.0f) {
+            if ((front < 0.0f) && (back < 0.0f)) {
                 return false;
             }
 
-            if (front > 0.0f && back > 0.0f) {
+            if ((front > 0.0f) && (back > 0.0f)) {
                 return false;
             }
 
             // if back face culled
-            if (backFaceCull && front < 0.0f) {
+            if (backFaceCull && (front < 0.0f)) {
                 return false;
             }
 
@@ -1453,9 +1454,9 @@ public class Winding {
                 mid = end;
             } else {
                 frac = front / (front - back);
-                mid.oSet(0, start.oGet(0) + (end.oGet(0) - start.oGet(0)) * frac);
-                mid.oSet(1, start.oGet(1) + (end.oGet(1) - start.oGet(1)) * frac);
-                mid.oSet(2, start.oGet(2) + (end.oGet(2) - start.oGet(2)) * frac);
+                mid.oSet(0, start.oGet(0) + ((end.oGet(0) - start.oGet(0)) * frac));
+                mid.oSet(1, start.oGet(1) + ((end.oGet(1) - start.oGet(1)) * frac));
+                mid.oSet(2, start.oGet(2) + ((end.oGet(2) - start.oGet(2)) * frac));
             }
 
             return PointInside(windingPlane.Normal(), mid, 0.0f);
@@ -1469,14 +1470,14 @@ public class Winding {
         public boolean RayIntersection(final idPlane windingPlane, final idVec3 start, final idVec3 dir, float[] scale, boolean backFaceCull) {
             int i;
             boolean side, lastside = false;
-            idPluecker pl1 = new idPluecker(), pl2 = new idPluecker();
+            final idPluecker pl1 = new idPluecker(), pl2 = new idPluecker();
 
             scale[0] = 0.0f;
             pl1.FromRay(start, dir);
-            for (i = 0; i < numPoints; i++) {
-                pl2.FromLine(p[i].ToVec3(), p[(i + 1) % numPoints].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                pl2.FromLine(this.p[i].ToVec3(), this.p[(i + 1) % this.numPoints].ToVec3());
                 side = pl1.PermutedInnerProduct(pl2) > 0.0f;
-                if (i != 0 && side != lastside) {
+                if ((i != 0) && (side != lastside)) {
                     return false;
                 }
                 lastside = side;
@@ -1503,7 +1504,7 @@ public class Winding {
         }
 
         protected boolean EnsureAlloced(int n, boolean keep) {
-            if (n > allocedSize) {
+            if (n > this.allocedSize) {
                 return ReAllocate(n, keep);
             }
             return true;
@@ -1516,23 +1517,23 @@ public class Winding {
         protected boolean ReAllocate(int n, boolean keep) {
             idVec5[] oldP;
 
-            oldP = p;
+            oldP = this.p;
             n = (n + 3) & ~3;	// align up to multiple of four
-            p = TempDump.allocArray(idVec5.class, n);
-            if (oldP != null && keep) {
+            this.p = TempDump.allocArray(idVec5.class, n);
+            if ((oldP != null) && keep) {
 //			memcpy( p, oldP, numPoints * sizeof(p[0]) );
-                System.arraycopy(oldP, 0, p, 0, numPoints);
+                System.arraycopy(oldP, 0, this.p, 0, this.numPoints);
             }
-            allocedSize = n;
+            this.allocedSize = n;
 
             return true;
         }
 
         @Override
         public boolean isNULL() {
-            return NULL;
+            return this.NULL;
         }
-    };
+    }
     /*
      ===============================================================================
 
@@ -1549,76 +1550,76 @@ public class Winding {
     public static class idFixedWinding extends idWinding {
 
         public idFixedWinding() {
-            numPoints = 0;
-            p = data;
-            allocedSize = MAX_POINTS_ON_WINDING;
+            this.numPoints = 0;
+            this.p = this.data;
+            this.allocedSize = MAX_POINTS_ON_WINDING;
         }
 
         public idFixedWinding(final int n) {
-            numPoints = 0;
-            p = data;
-            allocedSize = MAX_POINTS_ON_WINDING;
+            this.numPoints = 0;
+            this.p = this.data;
+            this.allocedSize = MAX_POINTS_ON_WINDING;
         }
 
         public idFixedWinding(final idVec3[] verts, final int n) {
             int i;
 
-            numPoints = 0;
-            p = data;
-            allocedSize = MAX_POINTS_ON_WINDING;
+            this.numPoints = 0;
+            this.p = this.data;
+            this.allocedSize = MAX_POINTS_ON_WINDING;
             if (!EnsureAlloced(n)) {
-                numPoints = 0;
+                this.numPoints = 0;
                 return;
             }
             for (i = 0; i < n; i++) {
-                p[i].oSet(verts[i]);
-                p[i].s = p[i].t = 0;
+                this.p[i].oSet(verts[i]);
+                this.p[i].s = this.p[i].t = 0;
             }
-            numPoints = n;
+            this.numPoints = n;
         }
 
         public idFixedWinding(final idVec3 normal, final float dist) {
-            numPoints = 0;
-            p = data;
-            allocedSize = MAX_POINTS_ON_WINDING;
+            this.numPoints = 0;
+            this.p = this.data;
+            this.allocedSize = MAX_POINTS_ON_WINDING;
             BaseForPlane(normal, dist);
         }
 
         public idFixedWinding(final idPlane plane) {
-            numPoints = 0;
-            p = data;
-            allocedSize = MAX_POINTS_ON_WINDING;
+            this.numPoints = 0;
+            this.p = this.data;
+            this.allocedSize = MAX_POINTS_ON_WINDING;
             BaseForPlane(plane);
         }
 
         public idFixedWinding(final idWinding winding) {
             int i;
 
-            p = data;
-            allocedSize = MAX_POINTS_ON_WINDING;
+            this.p = this.data;
+            this.allocedSize = MAX_POINTS_ON_WINDING;
             if (!EnsureAlloced(winding.GetNumPoints())) {
-                numPoints = 0;
+                this.numPoints = 0;
                 return;
             }
             for (i = 0; i < winding.GetNumPoints(); i++) {
-                p[i] = new idVec5(winding.oGet(i));
+                this.p[i] = new idVec5(winding.oGet(i));
             }
-            numPoints = winding.GetNumPoints();
+            this.numPoints = winding.GetNumPoints();
         }
 
         public idFixedWinding(final idFixedWinding winding) {
             int i;
 
-            p = data;
-            allocedSize = MAX_POINTS_ON_WINDING;
+            this.p = this.data;
+            this.allocedSize = MAX_POINTS_ON_WINDING;
             if (!EnsureAlloced(winding.GetNumPoints())) {
-                numPoints = 0;
+                this.numPoints = 0;
                 return;
             }
             for (i = 0; i < winding.GetNumPoints(); i++) {
-                p[i] = new idVec5(winding.oGet(i));
+                this.p[i] = new idVec5(winding.oGet(i));
             }
-            numPoints = winding.GetNumPoints();
+            this.numPoints = winding.GetNumPoints();
         }
 //public	virtual			~idFixedWinding( void );
 //
@@ -1628,19 +1629,19 @@ public class Winding {
             int i;
 
             if (!EnsureAlloced(winding.GetNumPoints())) {
-                numPoints = 0;
+                this.numPoints = 0;
                 return this;
             }
             for (i = 0; i < winding.GetNumPoints(); i++) {
-                p[i] = new idVec5(winding.oGet(i));
+                this.p[i] = new idVec5(winding.oGet(i));
             }
-            numPoints = winding.GetNumPoints();
+            this.numPoints = winding.GetNumPoints();
             return this;
         }
 
         @Override
         public void Clear() {
-            numPoints = 0;
+            this.numPoints = 0;
         }
 
         public int Split(idFixedWinding back, final idPlane plane) {
@@ -1650,20 +1651,20 @@ public class Winding {
         // splits the winding in a back and front part, 'this' becomes the front part
         // returns a SIDE_?
         public int Split(idFixedWinding back, final idPlane plane, final float epsilon) {
-            int[] counts = new int[3];
-            float[] dists = new float[MAX_POINTS_ON_WINDING + 4];
-            byte[] sides = new byte[MAX_POINTS_ON_WINDING + 4];
+            final int[] counts = new int[3];
+            final float[] dists = new float[MAX_POINTS_ON_WINDING + 4];
+            final byte[] sides = new byte[MAX_POINTS_ON_WINDING + 4];
             float dot;
             int i, j;
             idVec5 p1, p2;
-            idVec5 mid = new idVec5();
-            idFixedWinding out = new idFixedWinding();
+            final idVec5 mid = new idVec5();
+            final idFixedWinding out = new idFixedWinding();
 
             counts[SIDE_FRONT] = counts[SIDE_BACK] = counts[SIDE_ON] = 0;
 
             // determine sides for each point
-            for (i = 0; i < numPoints; i++) {
-                dists[i] = dot = plane.Distance(p[i].ToVec3());
+            for (i = 0; i < this.numPoints; i++) {
+                dists[i] = dot = plane.Distance(this.p[i].ToVec3());
                 if (dot > epsilon) {
                     sides[i] = SIDE_FRONT;
                 } else if (dot < -epsilon) {
@@ -1692,8 +1693,8 @@ public class Winding {
             out.numPoints = 0;
             back.numPoints = 0;
 
-            for (i = 0; i < numPoints; i++) {
-                p1 = p[i];
+            for (i = 0; i < this.numPoints; i++) {
+                p1 = this.p[i];
 
                 if (!out.EnsureAlloced(out.numPoints + 1, true)) {
                     return SIDE_FRONT;		// can't split -- fall back to original
@@ -1719,7 +1720,7 @@ public class Winding {
                     back.numPoints++;
                 }
 
-                if (sides[i + 1] == SIDE_ON || sides[i + 1] == sides[i]) {
+                if ((sides[i + 1] == SIDE_ON) || (sides[i + 1] == sides[i])) {
                     continue;
                 }
 
@@ -1733,10 +1734,10 @@ public class Winding {
 
                 // generate a split point
                 j = i + 1;
-                if (j >= numPoints) {
-                    p2 = p[0];
+                if (j >= this.numPoints) {
+                    p2 = this.p[0];
                 } else {
-                    p2 = p[j];
+                    p2 = this.p[j];
                 }
 
                 dot = dists[i] / (dists[i] - dists[i + 1]);
@@ -1747,11 +1748,11 @@ public class Winding {
                     } else if (plane.Normal().oGet(j) == -1.0f) {
                         mid.oSet(j, -plane.Dist());
                     } else {
-                        mid.oSet(j, p1.oGet(j) + dot * (p2.oGet(j) - p1.oGet(j)));
+                        mid.oSet(j, p1.oGet(j) + (dot * (p2.oGet(j) - p1.oGet(j))));
                     }
                 }
-                mid.s = p1.s + dot * (p2.s - p1.s);
-                mid.t = p1.t + dot * (p2.t - p1.t);
+                mid.s = p1.s + (dot * (p2.s - p1.s));
+                mid.t = p1.t + (dot * (p2.t - p1.t));
 
                 out.p[out.numPoints] = mid;
                 out.numPoints++;
@@ -1759,9 +1760,9 @@ public class Winding {
                 back.numPoints++;
             }
             for (i = 0; i < out.numPoints; i++) {
-                p[i] = out.p[i];
+                this.p[i] = out.p[i];
             }
-            numPoints = out.numPoints;
+            this.numPoints = out.numPoints;
 
             return SIDE_CROSS;
         }
@@ -1783,5 +1784,5 @@ public class Winding {
             }
             return true;
         }
-    };
+    }
 }

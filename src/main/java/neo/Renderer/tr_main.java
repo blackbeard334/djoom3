@@ -66,7 +66,7 @@ public class tr_main {
      ======================
      */
     public static idScreenRect R_ScreenRectFromViewFrustumBounds(final idBounds bounds) {
-        idScreenRect screenRect = new idScreenRect();
+        final idScreenRect screenRect = new idScreenRect();
 
         screenRect.x1 = idMath.FtoiFast(0.5f * (1.0f - bounds.oGet(1).y) * (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1));
         screenRect.x2 = idMath.FtoiFast(0.5f * (1.0f - bounds.oGet(0).y) * (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1));
@@ -74,7 +74,7 @@ public class tr_main {
         screenRect.y2 = idMath.FtoiFast(0.5f * (1.0f + bounds.oGet(1).z) * (tr.viewDef.viewport.y2 - tr.viewDef.viewport.y1));
 
         if (r_useDepthBoundsTest.GetInteger() != 0) {
-            float[] zmin = {screenRect.zmin}, zmax = {screenRect.zmax};
+            final float[] zmin = {screenRect.zmin}, zmax = {screenRect.zmax};
             R_TransformEyeZToWin(-bounds.oGet(0).x, tr.viewDef.projectionMatrix, zmin);
             R_TransformEyeZToWin(-bounds.oGet(1).x, tr.viewDef.projectionMatrix, zmax);
             screenRect.zmin = zmin[0];
@@ -242,11 +242,11 @@ public class tr_main {
      */
     @Deprecated
     private static <T> T[] R_ClearedStaticAlloc(int length, Class<T> clazz) {
-        T[] array = (T[]) Array.newInstance(clazz, length);
+        final T[] array = (T[]) Array.newInstance(clazz, length);
 
         for (int a = 0; a < length; a++) {
             try {
-                array[a] = (T) clazz.getConstructor().newInstance();
+                array[a] = clazz.getConstructor().newInstance();
             } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 throw new TODO_Exception();
 //                Logger.getLogger(tr_main.class.getName()).log(Level.SEVERE, null, ex);
@@ -428,23 +428,23 @@ public class tr_main {
 // }else
         {
             out = new idVec3(
-                    (in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8] + modelMatrix[12]),
-                    (in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9] + modelMatrix[13]),
-                    (in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10] + modelMatrix[14])
+                    ((in.oGet(0) * modelMatrix[0]) + (in.oGet(1) * modelMatrix[4]) + (in.oGet(2) * modelMatrix[ 8]) + modelMatrix[12]),
+                    ((in.oGet(0) * modelMatrix[1]) + (in.oGet(1) * modelMatrix[5]) + (in.oGet(2) * modelMatrix[ 9]) + modelMatrix[13]),
+                    ((in.oGet(0) * modelMatrix[2]) + (in.oGet(1) * modelMatrix[6]) + (in.oGet(2) * modelMatrix[10]) + modelMatrix[14])
             );
         }
         return out;
     }
 
     public static void R_PointTimesMatrix(final float[] modelMatrix/*[16]*/, final idVec4 in, idVec4 out) {
-        out.oSet(0, in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8] + modelMatrix[12]);
-        out.oSet(1, in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9] + modelMatrix[13]);
-        out.oSet(2, in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10] + modelMatrix[14]);
-        out.oSet(3, in.oGet(0) * modelMatrix[3] + in.oGet(1) * modelMatrix[7] + in.oGet(2) * modelMatrix[11] + modelMatrix[15]);
+        out.oSet(0, (in.oGet(0) * modelMatrix[0]) + (in.oGet(1) * modelMatrix[4]) + (in.oGet(2) * modelMatrix[ 8]) + modelMatrix[12]);
+        out.oSet(1, (in.oGet(0) * modelMatrix[1]) + (in.oGet(1) * modelMatrix[5]) + (in.oGet(2) * modelMatrix[ 9]) + modelMatrix[13]);
+        out.oSet(2, (in.oGet(0) * modelMatrix[2]) + (in.oGet(1) * modelMatrix[6]) + (in.oGet(2) * modelMatrix[10]) + modelMatrix[14]);
+        out.oSet(3, (in.oGet(0) * modelMatrix[3]) + (in.oGet(1) * modelMatrix[7]) + (in.oGet(2) * modelMatrix[11]) + modelMatrix[15]);
     }
 
     public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec out) {
-        float[] temp = new float[4];
+        final float[] temp = new float[4];
 
         VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
 
@@ -454,7 +454,7 @@ public class tr_main {
     }
 
     public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, float[] out) {
-        float[] temp = new float[4];
+        final float[] temp = new float[4];
 
         VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
 
@@ -464,7 +464,7 @@ public class tr_main {
     }
 
     public static void R_GlobalPointToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, FloatBuffer out) {
-        float[] temp = new float[4];
+        final float[] temp = new float[4];
 
         VectorSubtract(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 12, 16), temp);
 
@@ -474,9 +474,9 @@ public class tr_main {
     }
 
     public static void R_LocalVectorToGlobal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec3 out) {
-        out.oSet(0, in.oGet(0) * modelMatrix[0] + in.oGet(1) * modelMatrix[4] + in.oGet(2) * modelMatrix[ 8]);
-        out.oSet(1, in.oGet(0) * modelMatrix[1] + in.oGet(1) * modelMatrix[5] + in.oGet(2) * modelMatrix[ 9]);
-        out.oSet(2, in.oGet(0) * modelMatrix[2] + in.oGet(1) * modelMatrix[6] + in.oGet(2) * modelMatrix[10]);
+        out.oSet(0, (in.oGet(0) * modelMatrix[0]) + (in.oGet(1) * modelMatrix[4]) + (in.oGet(2) * modelMatrix[ 8]));
+        out.oSet(1, (in.oGet(0) * modelMatrix[1]) + (in.oGet(1) * modelMatrix[5]) + (in.oGet(2) * modelMatrix[ 9]));
+        out.oSet(2, (in.oGet(0) * modelMatrix[2]) + (in.oGet(1) * modelMatrix[6]) + (in.oGet(2) * modelMatrix[10]));
     }
 
     public static void R_GlobalVectorToLocal(final float[] modelMatrix/*[16]*/, final idVec3 in, idVec3 out) {
@@ -489,7 +489,7 @@ public class tr_main {
         out.oSet(0, DotProduct(in.ToFloatPtr(), modelMatrix));
         out.oSet(1, DotProduct(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 4, 8)));
         out.oSet(2, DotProduct(in.ToFloatPtr(), Arrays.copyOfRange(modelMatrix, 8, 12)));
-        out.oSet(3, in.oGet(3) + modelMatrix[12] * in.oGet(0) + modelMatrix[13] * in.oGet(1) + modelMatrix[14] * in.oGet(2));
+        out.oSet(3, in.oGet(3) + (modelMatrix[12] * in.oGet(0)) + (modelMatrix[13] * in.oGet(1)) + (modelMatrix[14] * in.oGet(2)));
     }
 
     public static void R_LocalPlaneToGlobal(final float[] modelMatrix/*[16]*/, final idPlane in, idPlane out) {
@@ -497,7 +497,7 @@ public class tr_main {
 
         R_LocalVectorToGlobal(modelMatrix, in.Normal(), out.Normal());
 
-        offset = modelMatrix[12] * out.oGet(0) + modelMatrix[13] * out.oGet(1) + modelMatrix[14] * out.oGet(2);
+        offset = (modelMatrix[12] * out.oGet(0)) + (modelMatrix[13] * out.oGet(1)) + (modelMatrix[14] * out.oGet(2));
         out.oSet(3, in.oGet(3) - offset);
     }
 
@@ -506,14 +506,14 @@ public class tr_main {
         final float clip_z, clip_w;
 
         // projection
-        clip_z = src_z * projectionMatrix[2 + 2 * 4] + projectionMatrix[2 + 3 * 4];
-        clip_w = src_z * projectionMatrix[3 + 2 * 4] + projectionMatrix[3 + 3 * 4];
+        clip_z = (src_z * projectionMatrix[2 + (2 * 4)]) + projectionMatrix[2 + (3 * 4)];
+        clip_w = (src_z * projectionMatrix[3 + (2 * 4)]) + projectionMatrix[3 + (3 * 4)];
 
         if (clip_w <= 0.0f) {
             dst_z[0] = 0.0f;					// clamp to near plane
         } else {
             dst_z[0] = clip_z / clip_w;
-            dst_z[0] = dst_z[0] * 0.5f + 0.5f;	// convert to window coords
+            dst_z[0] = (dst_z[0] * 0.5f) + 0.5f;	// convert to window coords
         }
     }
 
@@ -537,7 +537,7 @@ public class tr_main {
         }
 
         // transform the surface bounds into world space
-        idVec3 localOrigin = (bounds.oGet(0).oPlus(bounds.oGet(1))).oMultiply(0.5f);
+        final idVec3 localOrigin = (bounds.oGet(0).oPlus(bounds.oGet(1))).oMultiply(0.5f);
 
         worldOrigin = R_LocalPointToGlobal(modelMatrix, localOrigin);
 
@@ -565,9 +565,9 @@ public class tr_main {
      */    private static int DBG_R_CornerCullLocalBox = 0;
     public static boolean R_CornerCullLocalBox(final idBounds bounds, final float[] modelMatrix/*[16]*/, int numPlanes, final idPlane[] planes) {
         int i, j;
-        idVec3[] transformed = idVec3.generateArray(8);
-        float[] dists = new float[8];
-        idVec3 v = new idVec3();
+        final idVec3[] transformed = idVec3.generateArray(8);
+        final float[] dists = new float[8];
+        final idVec3 v = new idVec3();
         idPlane frust;
         
         DBG_R_CornerCullLocalBox++;
@@ -640,18 +640,18 @@ public class tr_main {
 
         for (i = 0; i < 4; i++) {
             eye.oSet(i,
-                    src.oGet(0) * modelMatrix[i + 0 * 4]
-                    + src.oGet(1) * modelMatrix[i + 1 * 4]
-                    + src.oGet(2) * modelMatrix[i + 2 * 4]
-                    + 1 * modelMatrix[i + 3 * 4]);
+                    (src.oGet(0) * modelMatrix[i + (0 * 4)])
+                    + (src.oGet(1) * modelMatrix[i + (1 * 4)])
+                    + (src.oGet(2) * modelMatrix[i + (2 * 4)])
+                    + (1 * modelMatrix[i + (3 * 4)]));
         }
 
         for (i = 0; i < 4; i++) {
             dst.oSet(i,
-                    eye.oGet(0) * projectionMatrix[i + 0 * 4]
-                    + eye.oGet(1) * projectionMatrix[i + 1 * 4]
-                    + eye.oGet(2) * projectionMatrix[i + 2 * 4]
-                    + eye.oGet(3) * projectionMatrix[i + 3 * 4]);
+                    (eye.oGet(0) * projectionMatrix[i + (0 * 4)])
+                    + (eye.oGet(1) * projectionMatrix[i + (1 * 4)])
+                    + (eye.oGet(2) * projectionMatrix[i + (2 * 4)])
+                    + (eye.oGet(3) * projectionMatrix[i + (3 * 4)]));
         }
     }
 
@@ -664,44 +664,44 @@ public class tr_main {
      */
     public static void R_GlobalToNormalizedDeviceCoordinates(final idVec3 global, idVec3 ndc) {
         int i;
-        idPlane view = new idPlane();
-        idPlane clip = new idPlane();
+        final idPlane view = new idPlane();
+        final idPlane clip = new idPlane();
 
         // _D3XP added work on primaryView when no viewDef
         if (null == tr.viewDef) {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        global.oGet(0) * tr.primaryView.worldSpace.modelViewMatrix[i + 0 * 4]
-                        + global.oGet(1) * tr.primaryView.worldSpace.modelViewMatrix[i + 1 * 4]
-                        + global.oGet(2) * tr.primaryView.worldSpace.modelViewMatrix[i + 2 * 4]
-                        + tr.primaryView.worldSpace.modelViewMatrix[i + 3 * 4]);
+                        (global.oGet(0) * tr.primaryView.worldSpace.modelViewMatrix[i + (0 * 4)])
+                        + (global.oGet(1) * tr.primaryView.worldSpace.modelViewMatrix[i + (1 * 4)])
+                        + (global.oGet(2) * tr.primaryView.worldSpace.modelViewMatrix[i + (2 * 4)])
+                        + tr.primaryView.worldSpace.modelViewMatrix[i + (3 * 4)]);
             }
 
             for (i = 0; i < 4; i++) {
                 clip.oSet(i,
-                        view.oGet(0) * tr.primaryView.projectionMatrix[i + 0 * 4]
-                        + view.oGet(1) * tr.primaryView.projectionMatrix[i + 1 * 4]
-                        + view.oGet(2) * tr.primaryView.projectionMatrix[i + 2 * 4]
-                        + view.oGet(3) * tr.primaryView.projectionMatrix[i + 3 * 4]);
+                        (view.oGet(0) * tr.primaryView.projectionMatrix[i + (0 * 4)])
+                        + (view.oGet(1) * tr.primaryView.projectionMatrix[i + (1 * 4)])
+                        + (view.oGet(2) * tr.primaryView.projectionMatrix[i + (2 * 4)])
+                        + (view.oGet(3) * tr.primaryView.projectionMatrix[i + (3 * 4)]));
             }
 
         } else {
 
             for (i = 0; i < 4; i++) {
                 view.oSet(i,
-                        global.oGet(0) * tr.viewDef.worldSpace.modelViewMatrix[i + 0 * 4]
-                        + global.oGet(1) * tr.viewDef.worldSpace.modelViewMatrix[i + 1 * 4]
-                        + global.oGet(2) * tr.viewDef.worldSpace.modelViewMatrix[i + 2 * 4]
-                        + tr.viewDef.worldSpace.modelViewMatrix[i + 3 * 4]);
+                        (global.oGet(0) * tr.viewDef.worldSpace.modelViewMatrix[i + (0 * 4)])
+                        + (global.oGet(1) * tr.viewDef.worldSpace.modelViewMatrix[i + (1 * 4)])
+                        + (global.oGet(2) * tr.viewDef.worldSpace.modelViewMatrix[i + (2 * 4)])
+                        + tr.viewDef.worldSpace.modelViewMatrix[i + (3 * 4)]);
             }
 
             for (i = 0; i < 4; i++) {
                 clip.oSet(i,
-                        view.oGet(0) * tr.viewDef.projectionMatrix[i + 0 * 4]
-                        + view.oGet(1) * tr.viewDef.projectionMatrix[i + 1 * 4]
-                        + view.oGet(2) * tr.viewDef.projectionMatrix[i + 2 * 4]
-                        + view.oGet(3) * tr.viewDef.projectionMatrix[i + 3 * 4]);
+                        (view.oGet(0) * tr.viewDef.projectionMatrix[i + (0 * 4)])
+                        + (view.oGet(1) * tr.viewDef.projectionMatrix[i + (1 * 4)])
+                        + (view.oGet(2) * tr.viewDef.projectionMatrix[i + (2 * 4)])
+                        + (view.oGet(3) * tr.viewDef.projectionMatrix[i + (3 * 4)]));
             }
 
         }
@@ -743,22 +743,22 @@ public class tr_main {
 //                }
 //            }
         } else {
-            out[0 * 4 + 0] = a[0 * 4 + 0] * b[0 * 4 + 0] + a[0 * 4 + 1] * b[1 * 4 + 0] + a[0 * 4 + 2] * b[2 * 4 + 0] + a[0 * 4 + 3] * b[3 * 4 + 0];
-            out[0 * 4 + 1] = a[0 * 4 + 0] * b[0 * 4 + 1] + a[0 * 4 + 1] * b[1 * 4 + 1] + a[0 * 4 + 2] * b[2 * 4 + 1] + a[0 * 4 + 3] * b[3 * 4 + 1];
-            out[0 * 4 + 2] = a[0 * 4 + 0] * b[0 * 4 + 2] + a[0 * 4 + 1] * b[1 * 4 + 2] + a[0 * 4 + 2] * b[2 * 4 + 2] + a[0 * 4 + 3] * b[3 * 4 + 2];
-            out[0 * 4 + 3] = a[0 * 4 + 0] * b[0 * 4 + 3] + a[0 * 4 + 1] * b[1 * 4 + 3] + a[0 * 4 + 2] * b[2 * 4 + 3] + a[0 * 4 + 3] * b[3 * 4 + 3];
-            out[1 * 4 + 0] = a[1 * 4 + 0] * b[0 * 4 + 0] + a[1 * 4 + 1] * b[1 * 4 + 0] + a[1 * 4 + 2] * b[2 * 4 + 0] + a[1 * 4 + 3] * b[3 * 4 + 0];
-            out[1 * 4 + 1] = a[1 * 4 + 0] * b[0 * 4 + 1] + a[1 * 4 + 1] * b[1 * 4 + 1] + a[1 * 4 + 2] * b[2 * 4 + 1] + a[1 * 4 + 3] * b[3 * 4 + 1];
-            out[1 * 4 + 2] = a[1 * 4 + 0] * b[0 * 4 + 2] + a[1 * 4 + 1] * b[1 * 4 + 2] + a[1 * 4 + 2] * b[2 * 4 + 2] + a[1 * 4 + 3] * b[3 * 4 + 2];
-            out[1 * 4 + 3] = a[1 * 4 + 0] * b[0 * 4 + 3] + a[1 * 4 + 1] * b[1 * 4 + 3] + a[1 * 4 + 2] * b[2 * 4 + 3] + a[1 * 4 + 3] * b[3 * 4 + 3];
-            out[2 * 4 + 0] = a[2 * 4 + 0] * b[0 * 4 + 0] + a[2 * 4 + 1] * b[1 * 4 + 0] + a[2 * 4 + 2] * b[2 * 4 + 0] + a[2 * 4 + 3] * b[3 * 4 + 0];
-            out[2 * 4 + 1] = a[2 * 4 + 0] * b[0 * 4 + 1] + a[2 * 4 + 1] * b[1 * 4 + 1] + a[2 * 4 + 2] * b[2 * 4 + 1] + a[2 * 4 + 3] * b[3 * 4 + 1];
-            out[2 * 4 + 2] = a[2 * 4 + 0] * b[0 * 4 + 2] + a[2 * 4 + 1] * b[1 * 4 + 2] + a[2 * 4 + 2] * b[2 * 4 + 2] + a[2 * 4 + 3] * b[3 * 4 + 2];
-            out[2 * 4 + 3] = a[2 * 4 + 0] * b[0 * 4 + 3] + a[2 * 4 + 1] * b[1 * 4 + 3] + a[2 * 4 + 2] * b[2 * 4 + 3] + a[2 * 4 + 3] * b[3 * 4 + 3];
-            out[3 * 4 + 0] = a[3 * 4 + 0] * b[0 * 4 + 0] + a[3 * 4 + 1] * b[1 * 4 + 0] + a[3 * 4 + 2] * b[2 * 4 + 0] + a[3 * 4 + 3] * b[3 * 4 + 0];
-            out[3 * 4 + 1] = a[3 * 4 + 0] * b[0 * 4 + 1] + a[3 * 4 + 1] * b[1 * 4 + 1] + a[3 * 4 + 2] * b[2 * 4 + 1] + a[3 * 4 + 3] * b[3 * 4 + 1];
-            out[3 * 4 + 2] = a[3 * 4 + 0] * b[0 * 4 + 2] + a[3 * 4 + 1] * b[1 * 4 + 2] + a[3 * 4 + 2] * b[2 * 4 + 2] + a[3 * 4 + 3] * b[3 * 4 + 2];
-            out[3 * 4 + 3] = a[3 * 4 + 0] * b[0 * 4 + 3] + a[3 * 4 + 1] * b[1 * 4 + 3] + a[3 * 4 + 2] * b[2 * 4 + 3] + a[3 * 4 + 3] * b[3 * 4 + 3];
+            out[(0 * 4) + 0] = (a[(0 * 4) + 0] * b[(0 * 4) + 0]) + (a[(0 * 4) + 1] * b[(1 * 4) + 0]) + (a[(0 * 4) + 2] * b[(2 * 4) + 0]) + (a[(0 * 4) + 3] * b[(3 * 4) + 0]);
+            out[(0 * 4) + 1] = (a[(0 * 4) + 0] * b[(0 * 4) + 1]) + (a[(0 * 4) + 1] * b[(1 * 4) + 1]) + (a[(0 * 4) + 2] * b[(2 * 4) + 1]) + (a[(0 * 4) + 3] * b[(3 * 4) + 1]);
+            out[(0 * 4) + 2] = (a[(0 * 4) + 0] * b[(0 * 4) + 2]) + (a[(0 * 4) + 1] * b[(1 * 4) + 2]) + (a[(0 * 4) + 2] * b[(2 * 4) + 2]) + (a[(0 * 4) + 3] * b[(3 * 4) + 2]);
+            out[(0 * 4) + 3] = (a[(0 * 4) + 0] * b[(0 * 4) + 3]) + (a[(0 * 4) + 1] * b[(1 * 4) + 3]) + (a[(0 * 4) + 2] * b[(2 * 4) + 3]) + (a[(0 * 4) + 3] * b[(3 * 4) + 3]);
+            out[(1 * 4) + 0] = (a[(1 * 4) + 0] * b[(0 * 4) + 0]) + (a[(1 * 4) + 1] * b[(1 * 4) + 0]) + (a[(1 * 4) + 2] * b[(2 * 4) + 0]) + (a[(1 * 4) + 3] * b[(3 * 4) + 0]);
+            out[(1 * 4) + 1] = (a[(1 * 4) + 0] * b[(0 * 4) + 1]) + (a[(1 * 4) + 1] * b[(1 * 4) + 1]) + (a[(1 * 4) + 2] * b[(2 * 4) + 1]) + (a[(1 * 4) + 3] * b[(3 * 4) + 1]);
+            out[(1 * 4) + 2] = (a[(1 * 4) + 0] * b[(0 * 4) + 2]) + (a[(1 * 4) + 1] * b[(1 * 4) + 2]) + (a[(1 * 4) + 2] * b[(2 * 4) + 2]) + (a[(1 * 4) + 3] * b[(3 * 4) + 2]);
+            out[(1 * 4) + 3] = (a[(1 * 4) + 0] * b[(0 * 4) + 3]) + (a[(1 * 4) + 1] * b[(1 * 4) + 3]) + (a[(1 * 4) + 2] * b[(2 * 4) + 3]) + (a[(1 * 4) + 3] * b[(3 * 4) + 3]);
+            out[(2 * 4) + 0] = (a[(2 * 4) + 0] * b[(0 * 4) + 0]) + (a[(2 * 4) + 1] * b[(1 * 4) + 0]) + (a[(2 * 4) + 2] * b[(2 * 4) + 0]) + (a[(2 * 4) + 3] * b[(3 * 4) + 0]);
+            out[(2 * 4) + 1] = (a[(2 * 4) + 0] * b[(0 * 4) + 1]) + (a[(2 * 4) + 1] * b[(1 * 4) + 1]) + (a[(2 * 4) + 2] * b[(2 * 4) + 1]) + (a[(2 * 4) + 3] * b[(3 * 4) + 1]);
+            out[(2 * 4) + 2] = (a[(2 * 4) + 0] * b[(0 * 4) + 2]) + (a[(2 * 4) + 1] * b[(1 * 4) + 2]) + (a[(2 * 4) + 2] * b[(2 * 4) + 2]) + (a[(2 * 4) + 3] * b[(3 * 4) + 2]);
+            out[(2 * 4) + 3] = (a[(2 * 4) + 0] * b[(0 * 4) + 3]) + (a[(2 * 4) + 1] * b[(1 * 4) + 3]) + (a[(2 * 4) + 2] * b[(2 * 4) + 3]) + (a[(2 * 4) + 3] * b[(3 * 4) + 3]);
+            out[(3 * 4) + 0] = (a[(3 * 4) + 0] * b[(0 * 4) + 0]) + (a[(3 * 4) + 1] * b[(1 * 4) + 0]) + (a[(3 * 4) + 2] * b[(2 * 4) + 0]) + (a[(3 * 4) + 3] * b[(3 * 4) + 0]);
+            out[(3 * 4) + 1] = (a[(3 * 4) + 0] * b[(0 * 4) + 1]) + (a[(3 * 4) + 1] * b[(1 * 4) + 1]) + (a[(3 * 4) + 2] * b[(2 * 4) + 1]) + (a[(3 * 4) + 3] * b[(3 * 4) + 1]);
+            out[(3 * 4) + 2] = (a[(3 * 4) + 0] * b[(0 * 4) + 2]) + (a[(3 * 4) + 1] * b[(1 * 4) + 2]) + (a[(3 * 4) + 2] * b[(2 * 4) + 2]) + (a[(3 * 4) + 3] * b[(3 * 4) + 2]);
+            out[(3 * 4) + 3] = (a[(3 * 4) + 0] * b[(0 * 4) + 3]) + (a[(3 * 4) + 1] * b[(1 * 4) + 3]) + (a[(3 * 4) + 2] * b[(2 * 4) + 3]) + (a[(3 * 4) + 3] * b[(3 * 4) + 3]);
         }
     }
 
@@ -772,7 +772,7 @@ public class tr_main {
 
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                out[i * 4 + j] = in[j * 4 + i];
+                out[(i * 4) + j] = in[(j * 4) + i];
             }
         }
     }
@@ -796,14 +796,14 @@ public class tr_main {
     public static void R_SetViewMatrix(viewDef_s viewDef) {
         idVec3 origin;
         viewEntity_s world;
-        float[] viewerMatrix = new float[16];
+        final float[] viewerMatrix = new float[16];
 
         world = viewDef.worldSpace = new viewEntity_s();//memset(world, 0, sizeof(world));
 
         // the model matrix is an identity
-        world.modelMatrix[0 * 4 + 0] = 1;
-        world.modelMatrix[1 * 4 + 1] = 1;
-        world.modelMatrix[2 * 4 + 2] = 1;
+        world.modelMatrix[(0 * 4) + 0] = 1;
+        world.modelMatrix[(1 * 4) + 1] = 1;
+        world.modelMatrix[(2 * 4) + 2] = 1;
 
         // transform by the camera placement
         origin = viewDef.renderView.vieworg;
@@ -811,17 +811,17 @@ public class tr_main {
         viewerMatrix[ 0] = viewDef.renderView.viewaxis.oGet(0, 0);
         viewerMatrix[ 4] = viewDef.renderView.viewaxis.oGet(0, 1);
         viewerMatrix[ 8] = viewDef.renderView.viewaxis.oGet(0, 2);
-        viewerMatrix[12] = -origin.oGet(0) * viewerMatrix[0] + -origin.oGet(1) * viewerMatrix[4] + -origin.oGet(2) * viewerMatrix[8];
+        viewerMatrix[12] = (-origin.oGet(0) * viewerMatrix[0]) + (-origin.oGet(1) * viewerMatrix[4]) + (-origin.oGet(2) * viewerMatrix[8]);
 
         viewerMatrix[ 1] = viewDef.renderView.viewaxis.oGet(1, 0);
         viewerMatrix[ 5] = viewDef.renderView.viewaxis.oGet(1, 1);
         viewerMatrix[ 9] = viewDef.renderView.viewaxis.oGet(1, 2);
-        viewerMatrix[13] = -origin.oGet(0) * viewerMatrix[1] + -origin.oGet(1) * viewerMatrix[5] + -origin.oGet(2) * viewerMatrix[9];
+        viewerMatrix[13] = (-origin.oGet(0) * viewerMatrix[1]) + (-origin.oGet(1) * viewerMatrix[5]) + (-origin.oGet(2) * viewerMatrix[9]);
 
         viewerMatrix[ 2] = viewDef.renderView.viewaxis.oGet(2, 0);
         viewerMatrix[ 6] = viewDef.renderView.viewaxis.oGet(2, 1);
         viewerMatrix[10] = viewDef.renderView.viewaxis.oGet(2, 2);
-        viewerMatrix[14] = -origin.oGet(0) * viewerMatrix[2] + -origin.oGet(1) * viewerMatrix[6] + -origin.oGet(2) * viewerMatrix[10];
+        viewerMatrix[14] = (-origin.oGet(0) * viewerMatrix[2]) + (-origin.oGet(1) * viewerMatrix[6]) + (-origin.oGet(2) * viewerMatrix[10]);
 
         viewerMatrix[ 3] = 0;
         viewerMatrix[ 7] = 0;
@@ -865,29 +865,29 @@ public class tr_main {
             zNear *= 0.25;
         }
 
-        ymax = (float) (zNear * Math.tan(tr.viewDef.renderView.fov_y * idMath.PI / 360.0f));
+        ymax = (float) (zNear * Math.tan((tr.viewDef.renderView.fov_y * idMath.PI) / 360.0f));
         ymin = -ymax;
 
-        xmax = (float) (zNear * Math.tan(tr.viewDef.renderView.fov_x * idMath.PI / 360.0f));
+        xmax = (float) (zNear * Math.tan((tr.viewDef.renderView.fov_x * idMath.PI) / 360.0f));
         xmin = -xmax;
 
         width = xmax - xmin;
         height = ymax - ymin;
 
-        jitterx = jitterx * width / (tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1 + 1);
+        jitterx = (jitterx * width) / ((tr.viewDef.viewport.x2 - tr.viewDef.viewport.x1) + 1);
         xmin += jitterx;
         xmax += jitterx;
-        jittery = jittery * height / (tr.viewDef.viewport.y2 - tr.viewDef.viewport.y1 + 1);
+        jittery = (jittery * height) / ((tr.viewDef.viewport.y2 - tr.viewDef.viewport.y1) + 1);
         ymin += jittery;
         ymax += jittery;
 
-        tr.viewDef.projectionMatrix[ 0] = 2 * zNear / width;
+        tr.viewDef.projectionMatrix[ 0] = (2 * zNear) / width;
         tr.viewDef.projectionMatrix[ 4] = 0;
         tr.viewDef.projectionMatrix[ 8] = (xmax + xmin) / width;	// normally 0
         tr.viewDef.projectionMatrix[12] = 0;
 
         tr.viewDef.projectionMatrix[ 1] = 0;
-        tr.viewDef.projectionMatrix[ 5] = 2 * zNear / height;
+        tr.viewDef.projectionMatrix[ 5] = (2 * zNear) / height;
         tr.viewDef.projectionMatrix[ 9] = (ymax + ymin) / height;	// normally 0
         tr.viewDef.projectionMatrix[13] = 0;
 
@@ -915,16 +915,16 @@ public class tr_main {
      */
     public static void R_SetupViewFrustum() {
         int i;
-        float[] xs = {0.0f}, xc = {0.00f};
+        final float[] xs = {0.0f}, xc = {0.00f};
         float ang;
 
-        ang = (float) (DEG2RAD(tr.viewDef.renderView.fov_x) * 0.5f);
+        ang = DEG2RAD(tr.viewDef.renderView.fov_x) * 0.5f;
         idMath.SinCos(ang, xs, xc);
 
         tr.viewDef.frustum[0].oSet(tr.viewDef.renderView.viewaxis.oGet(0).oMultiply(xs[0]).oPlus(tr.viewDef.renderView.viewaxis.oGet(1).oMultiply(xc[0])));
         tr.viewDef.frustum[1].oSet(tr.viewDef.renderView.viewaxis.oGet(0).oMultiply(xs[0]).oMinus(tr.viewDef.renderView.viewaxis.oGet(1).oMultiply(xc[0])));
 
-        ang = (float) (DEG2RAD(tr.viewDef.renderView.fov_y) * 0.5f);
+        ang = DEG2RAD(tr.viewDef.renderView.fov_y) * 0.5f;
         idMath.SinCos(ang, xs, xc);
 
         tr.viewDef.frustum[2].oSet(tr.viewDef.renderView.viewaxis.oGet(0).oMultiply(xs[0]).oPlus(tr.viewDef.renderView.viewaxis.oGet(2).oMultiply(xc[0])));
@@ -962,7 +962,7 @@ public class tr_main {
      ===================
      */
     public static void R_ConstrainViewFrustum() {
-        idBounds bounds = new idBounds();
+        final idBounds bounds = new idBounds();
 
         // constrain the view frustum to the total bounds of all visible lights and visible entities
         bounds.Clear();
@@ -998,19 +998,19 @@ public class tr_main {
         public int compare(drawSurf_s a, drawSurf_s b) {
 
             //this check assumes that the array contains nothing but nulls from this point.
-            if (null == a && null == b) {
+            if ((null == a) && (null == b)) {
                 return 0;
             }
 
-            if (null == b || (null != a && a.sort < b.sort)) {
+            if ((null == b) || ((null != a) && (a.sort < b.sort))) {
                 return -1;
             }
-            if (null == a || (null != b && a.sort > b.sort)) {
+            if ((null == a) || ((null != b) && (a.sort > b.sort))) {
                 return 1;
             }
             return 0;
         }
-    };
+    }
 
     /*
      =================
@@ -1061,7 +1061,7 @@ public class tr_main {
         viewDef_s oldView;
         DEBUG_R_RenderView++;
 
-        if (parms.renderView.width <= 0 || parms.renderView.height <= 0) {
+        if ((parms.renderView.width <= 0) || (parms.renderView.height <= 0)) {
             return;
         }
 
@@ -1089,7 +1089,7 @@ public class tr_main {
         // identify all the visible portalAreas, and the entityDefs and
         // lightDefs that are in them and pass culling.
 //	static_cast<idRenderWorldLocal *>(parms.renderWorld).FindViewLightsAndEntities();
-        ((idRenderWorldLocal) parms.renderWorld).FindViewLightsAndEntities();
+        parms.renderWorld.FindViewLightsAndEntities();
 
         // constrain the view frustum to the view lights and entities
         R_ConstrainViewFrustum();
@@ -1121,7 +1121,7 @@ public class tr_main {
         // write everything needed to the demo file
         if (session.writeDemo != null) {
 //		static_cast<idRenderWorldLocal *>(parms.renderWorld)->WriteVisibleDefs( tr.viewDef );
-            ((idRenderWorldLocal) parms.renderWorld).WriteVisibleDefs(tr.viewDef);
+            parms.renderWorld.WriteVisibleDefs(tr.viewDef);
         }
 
         // add the rendering commands for this viewDef

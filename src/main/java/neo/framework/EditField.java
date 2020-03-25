@@ -62,228 +62,228 @@ public class EditField {
         private int cursor;
         private int scroll;
         private int widthInChars;
-        private char[] buffer = new char[MAX_EDIT_LINE];
+        private final char[] buffer = new char[MAX_EDIT_LINE];
         private autoComplete_s autoComplete;
         //
         //
 
         public idEditField() {
-            widthInChars = 0;
-            autoComplete = new autoComplete_s();
+            this.widthInChars = 0;
+            this.autoComplete = new autoComplete_s();
             Clear();
         }
 //public					~idEditField();
 
         public void Clear() {
-            buffer[0] = 0;
-            cursor = 0;
-            scroll = 0;
-            autoComplete.length = 0;
-            autoComplete.valid = false;
+            this.buffer[0] = 0;
+            this.cursor = 0;
+            this.scroll = 0;
+            this.autoComplete.length = 0;
+            this.autoComplete.valid = false;
         }
 
         public void SetWidthInChars(int w) {
             assert (w <= MAX_EDIT_LINE);
-            widthInChars = w;
+            this.widthInChars = w;
         }
 
         public void SetCursor(int c) {
             assert (c <= MAX_EDIT_LINE);
-            cursor = c;
+            this.cursor = c;
         }
 
         public int GetCursor() {
-            return cursor;
+            return this.cursor;
         }
 
         public void ClearAutoComplete() {
-            if (autoComplete.length > 0 && autoComplete.length <= ctos(buffer).length()) {
-                buffer[autoComplete.length] = '\0';
-                if (cursor > autoComplete.length) {
-                    cursor = autoComplete.length;
+            if ((this.autoComplete.length > 0) && (this.autoComplete.length <= ctos(this.buffer).length())) {
+                this.buffer[this.autoComplete.length] = '\0';
+                if (this.cursor > this.autoComplete.length) {
+                    this.cursor = this.autoComplete.length;
                 }
             }
-            autoComplete.length = 0;
-            autoComplete.valid = false;
+            this.autoComplete.length = 0;
+            this.autoComplete.valid = false;
         }
 
         public int GetAutoCompleteLength() {
-            return autoComplete.length;
+            return this.autoComplete.length;
         }
 
         public void AutoComplete() throws idException {
-            char[] completionArgString = new char[MAX_EDIT_LINE];
-            idCmdArgs args = new idCmdArgs();
+            final char[] completionArgString = new char[MAX_EDIT_LINE];
+            final idCmdArgs args = new idCmdArgs();
             final void_callback findMatches = FindMatches.getInstance();
             final void_callback findIndexMatch = FindIndexMatch.getInstance();
             final void_callback printMatches = PrintMatches.getInstance();
 
-            if (!autoComplete.valid) {
-                args.TokenizeString(ctos(buffer), false);
-                idStr.Copynz(autoComplete.completionString, args.Argv(0), autoComplete.completionString.length);
+            if (!this.autoComplete.valid) {
+                args.TokenizeString(ctos(this.buffer), false);
+                idStr.Copynz(this.autoComplete.completionString, args.Argv(0), this.autoComplete.completionString.length);
                 idStr.Copynz(completionArgString, args.Args(), completionArgString.length);
-                autoComplete.matchCount = 0;
-                autoComplete.matchIndex = 0;
-                autoComplete.currentMatch[0] = 0;
+                this.autoComplete.matchCount = 0;
+                this.autoComplete.matchIndex = 0;
+                this.autoComplete.currentMatch[0] = 0;
 
-                if (strLen(autoComplete.completionString) == 0) {
+                if (strLen(this.autoComplete.completionString) == 0) {
                     return;
                 }
 
-                globalAutoComplete = autoComplete;
+                globalAutoComplete = this.autoComplete;
 
                 cmdSystem.CommandCompletion(findMatches);
                 cvarSystem.CommandCompletion(findMatches);
 
-                autoComplete = globalAutoComplete;
+                this.autoComplete = globalAutoComplete;
 
-                if (autoComplete.matchCount == 0) {
+                if (this.autoComplete.matchCount == 0) {
                     return;	// no matches
                 }
 
                 // when there's only one match or there's an argument
-                if (autoComplete.matchCount == 1 || completionArgString[0] != '\0') {
+                if ((this.autoComplete.matchCount == 1) || (completionArgString[0] != '\0')) {
 
                     /// try completing arguments
-                    idStr.Append(autoComplete.completionString, autoComplete.completionString.length, " ");
-                    idStr.Append(autoComplete.completionString, autoComplete.completionString.length, ctos(completionArgString));
-                    autoComplete.matchCount = 0;
+                    idStr.Append(this.autoComplete.completionString, this.autoComplete.completionString.length, " ");
+                    idStr.Append(this.autoComplete.completionString, this.autoComplete.completionString.length, ctos(completionArgString));
+                    this.autoComplete.matchCount = 0;
 
-                    globalAutoComplete = autoComplete;
+                    globalAutoComplete = this.autoComplete;
 
-                    cmdSystem.ArgCompletion(ctos(autoComplete.completionString), findMatches);
-                    cvarSystem.ArgCompletion(ctos(autoComplete.completionString), findMatches);
+                    cmdSystem.ArgCompletion(ctos(this.autoComplete.completionString), findMatches);
+                    cvarSystem.ArgCompletion(ctos(this.autoComplete.completionString), findMatches);
 
-                    autoComplete = globalAutoComplete;
+                    this.autoComplete = globalAutoComplete;
 
-                    idStr.snPrintf(buffer, buffer.length, "%s", autoComplete.currentMatch);
+                    idStr.snPrintf(this.buffer, this.buffer.length, "%s", this.autoComplete.currentMatch);
 
-                    if (autoComplete.matchCount == 0) {
+                    if (this.autoComplete.matchCount == 0) {
                         // no argument matches
-                        idStr.Append(buffer, buffer.length, " ");
-                        idStr.Append(buffer, buffer.length, ctos(completionArgString));
-                        SetCursor(strLen(buffer));
+                        idStr.Append(this.buffer, this.buffer.length, " ");
+                        idStr.Append(this.buffer, this.buffer.length, ctos(completionArgString));
+                        SetCursor(strLen(this.buffer));
                         return;
                     }
                 } else {
 
                     // multiple matches, complete to shortest
-                    idStr.snPrintf(buffer, buffer.length, "%s", ctos(autoComplete.currentMatch));
+                    idStr.snPrintf(this.buffer, this.buffer.length, "%s", ctos(this.autoComplete.currentMatch));
                     if (strLen(completionArgString) != 0) {
-                        idStr.Append(buffer, buffer.length, " ");
-                        idStr.Append(buffer, buffer.length, ctos(completionArgString));
+                        idStr.Append(this.buffer, this.buffer.length, " ");
+                        idStr.Append(this.buffer, this.buffer.length, ctos(completionArgString));
                     }
                 }
 
-                autoComplete.length = strLen(buffer);
-                autoComplete.valid = (autoComplete.matchCount != 1);
-                SetCursor(autoComplete.length);
+                this.autoComplete.length = strLen(this.buffer);
+                this.autoComplete.valid = (this.autoComplete.matchCount != 1);
+                SetCursor(this.autoComplete.length);
 
-                common.Printf("]%s\n", ctos(buffer));
+                common.Printf("]%s\n", ctos(this.buffer));
 
                 // run through again, printing matches
-                globalAutoComplete = autoComplete;
+                globalAutoComplete = this.autoComplete;
 
                 cmdSystem.CommandCompletion(printMatches);
-                cmdSystem.ArgCompletion(ctos(autoComplete.completionString), printMatches);
+                cmdSystem.ArgCompletion(ctos(this.autoComplete.completionString), printMatches);
                 cvarSystem.CommandCompletion(PrintCvarMatches.getInstance());
-                cmdSystem.ArgCompletion(ctos(autoComplete.completionString), printMatches);
+                cmdSystem.ArgCompletion(ctos(this.autoComplete.completionString), printMatches);
 
-            } else if (autoComplete.matchCount != 1) {
+            } else if (this.autoComplete.matchCount != 1) {
 
                 // get the next match and show instead
-                autoComplete.matchIndex++;
-                if (autoComplete.matchIndex == autoComplete.matchCount) {
-                    autoComplete.matchIndex = 0;
+                this.autoComplete.matchIndex++;
+                if (this.autoComplete.matchIndex == this.autoComplete.matchCount) {
+                    this.autoComplete.matchIndex = 0;
                 }
-                autoComplete.findMatchIndex = 0;
+                this.autoComplete.findMatchIndex = 0;
 
-                globalAutoComplete = autoComplete;
+                globalAutoComplete = this.autoComplete;
 
                 cmdSystem.CommandCompletion(findIndexMatch);
-                cmdSystem.ArgCompletion(ctos(autoComplete.completionString), findIndexMatch);
+                cmdSystem.ArgCompletion(ctos(this.autoComplete.completionString), findIndexMatch);
                 cvarSystem.CommandCompletion(findIndexMatch);
-                cmdSystem.ArgCompletion(ctos(autoComplete.completionString), findIndexMatch);
+                cmdSystem.ArgCompletion(ctos(this.autoComplete.completionString), findIndexMatch);
 
-                autoComplete = globalAutoComplete;
+                this.autoComplete = globalAutoComplete;
 
                 // and print it
-                idStr.snPrintf(buffer, buffer.length, ctos(autoComplete.currentMatch));
-                if (autoComplete.length > (int) strLen(buffer)) {
-                    autoComplete.length = strLen(buffer);
+                idStr.snPrintf(this.buffer, this.buffer.length, ctos(this.autoComplete.currentMatch));
+                if (this.autoComplete.length > strLen(this.buffer)) {
+                    this.autoComplete.length = strLen(this.buffer);
                 }
-                SetCursor(autoComplete.length);
+                SetCursor(this.autoComplete.length);
             }
         }
 
         public void CharEvent(int ch) {
             int len;
 
-            if (ch == 'v' - 'a' + 1) {	// ctrl-v is paste
+            if (ch == (('v' - 'a') + 1)) {	// ctrl-v is paste
                 Paste();
                 return;
             }
 
-            if (ch == 'c' - 'a' + 1) {	// ctrl-c clears the field
+            if (ch == (('c' - 'a') + 1)) {	// ctrl-c clears the field
                 Clear();
                 return;
             }
 
-            len = strLen(buffer);
+            len = strLen(this.buffer);
 
-            if (ch == 'h' - 'a' + 1 || ch == K_BACKSPACE) {	// ctrl-h is backspace
-                if (cursor > 0) {
+            if ((ch == (('h' - 'a') + 1)) || (ch == K_BACKSPACE)) {	// ctrl-h is backspace
+                if (this.cursor > 0) {
 //			memmove( buffer + cursor - 1, buffer + cursor, len + 1 - cursor );
-                    System.arraycopy(buffer, cursor, buffer, cursor - 1, len + 1 - cursor);
-                    cursor--;
-                    if (cursor < scroll) {
-                        scroll--;
+                    System.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor - 1, (len + 1) - this.cursor);
+                    this.cursor--;
+                    if (this.cursor < this.scroll) {
+                        this.scroll--;
                     }
                 }
                 return;
             }
 
-            if (ch == 'a' - 'a' + 1) {	// ctrl-a is home
-                cursor = 0;
-                scroll = 0;
+            if (ch == (('a' - 'a') + 1)) {	// ctrl-a is home
+                this.cursor = 0;
+                this.scroll = 0;
                 return;
             }
 
-            if (ch == 'e' - 'a' + 1) {	// ctrl-e is end
-                cursor = len;
-                scroll = cursor - widthInChars;
+            if (ch == (('e' - 'a') + 1)) {	// ctrl-e is end
+                this.cursor = len;
+                this.scroll = this.cursor - this.widthInChars;
                 return;
             }
 
             //
             // ignore any other non printable chars
             //
-            if (ch < 32 || ch > 125) {
+            if ((ch < 32) || (ch > 125)) {
                 return;
             }
 
             if (idKeyInput.GetOverstrikeMode()) {
-                if (cursor == MAX_EDIT_LINE - 1) {
+                if (this.cursor == (MAX_EDIT_LINE - 1)) {
                     return;
                 }
-                buffer[cursor] = (char) ch;
-                cursor++;
+                this.buffer[this.cursor] = (char) ch;
+                this.cursor++;
             } else {	// insert mode
-                if (len == MAX_EDIT_LINE - 1) {
+                if (len == (MAX_EDIT_LINE - 1)) {
                     return; // all full
                 }
 //		memmove( buffer + cursor + 1, buffer + cursor, len + 1 - cursor );
-                System.arraycopy(buffer, cursor, buffer, cursor + 1, len + 1 - cursor);
-                buffer[cursor] = (char) ch;
-                cursor++;
+                System.arraycopy(this.buffer, this.cursor, this.buffer, this.cursor + 1, (len + 1) - this.cursor);
+                this.buffer[this.cursor] = (char) ch;
+                this.cursor++;
             }
 
-            if (cursor >= widthInChars) {
-                scroll++;
+            if (this.cursor >= this.widthInChars) {
+                this.scroll++;
             }
 
-            if (cursor == len + 1) {
-                buffer[cursor] = 0;
+            if (this.cursor == (len + 1)) {
+                this.buffer[this.cursor] = 0;
             }
         }
 
@@ -297,14 +297,14 @@ public class EditField {
                 return;
             }
 
-            len = strLen(buffer);
+            len = strLen(this.buffer);
 
             if (key == K_DEL) {
-                if (autoComplete.length != 0) {
+                if (this.autoComplete.length != 0) {
                     ClearAutoComplete();
-                } else if (cursor < len) {
+                } else if (this.cursor < len) {
 //			memmove( buffer + cursor, buffer + cursor + 1, len - cursor );
-                    System.arraycopy(buffer, cursor + 1, buffer, cursor, len - cursor);
+                    System.arraycopy(this.buffer, this.cursor + 1, this.buffer, this.cursor, len - this.cursor);
                 }
                 return;
             }
@@ -312,27 +312,27 @@ public class EditField {
             if (key == K_RIGHTARROW) {
                 if (idKeyInput.IsDown(K_CTRL)) {
                     // skip to next word
-                    while ((cursor < len) && (buffer[cursor] != ' ')) {
-                        cursor++;
+                    while ((this.cursor < len) && (this.buffer[this.cursor] != ' ')) {
+                        this.cursor++;
                     }
 
-                    while ((cursor < len) && (buffer[cursor] == ' ')) {
-                        cursor++;
+                    while ((this.cursor < len) && (this.buffer[this.cursor] == ' ')) {
+                        this.cursor++;
                     }
                 } else {
-                    cursor++;
+                    this.cursor++;
                 }
 
-                if (cursor > len) {
-                    cursor = len;
+                if (this.cursor > len) {
+                    this.cursor = len;
                 }
 
-                if (cursor >= scroll + widthInChars) {
-                    scroll = cursor - widthInChars + 1;
+                if (this.cursor >= (this.scroll + this.widthInChars)) {
+                    this.scroll = (this.cursor - this.widthInChars) + 1;
                 }
 
-                if (autoComplete.length > 0) {
-                    autoComplete.length = cursor;
+                if (this.autoComplete.length > 0) {
+                    this.autoComplete.length = this.cursor;
                 }
                 return;
             }
@@ -340,48 +340,48 @@ public class EditField {
             if (key == K_LEFTARROW) {
                 if (idKeyInput.IsDown(K_CTRL)) {
                     // skip to previous word
-                    while ((cursor > 0) && (buffer[cursor - 1] == ' ')) {
-                        cursor--;
+                    while ((this.cursor > 0) && (this.buffer[this.cursor - 1] == ' ')) {
+                        this.cursor--;
                     }
 
-                    while ((cursor > 0) && (buffer[cursor - 1] != ' ')) {
-                        cursor--;
+                    while ((this.cursor > 0) && (this.buffer[this.cursor - 1] != ' ')) {
+                        this.cursor--;
                     }
                 } else {
-                    cursor--;
+                    this.cursor--;
                 }
 
-                if (cursor < 0) {
-                    cursor = 0;
+                if (this.cursor < 0) {
+                    this.cursor = 0;
                 }
-                if (cursor < scroll) {
-                    scroll = cursor;
+                if (this.cursor < this.scroll) {
+                    this.scroll = this.cursor;
                 }
 
-                if (autoComplete.length != 0) {
-                    autoComplete.length = cursor;
+                if (this.autoComplete.length != 0) {
+                    this.autoComplete.length = this.cursor;
                 }
                 return;
             }
 
-            if (key == K_HOME || (Character.toLowerCase(key) == 'a' && idKeyInput.IsDown(K_CTRL))) {
-                cursor = 0;
-                scroll = 0;
-                if (autoComplete.length != 0) {
-                    autoComplete.length = cursor;
-                    autoComplete.valid = false;
+            if ((key == K_HOME) || ((Character.toLowerCase(key) == 'a') && idKeyInput.IsDown(K_CTRL))) {
+                this.cursor = 0;
+                this.scroll = 0;
+                if (this.autoComplete.length != 0) {
+                    this.autoComplete.length = this.cursor;
+                    this.autoComplete.valid = false;
                 }
                 return;
             }
 
-            if (key == K_END || (Character.toLowerCase(key) == 'e' && idKeyInput.IsDown(K_CTRL))) {
-                cursor = len;
-                if (cursor >= scroll + widthInChars) {
-                    scroll = cursor - widthInChars + 1;
+            if ((key == K_END) || ((Character.toLowerCase(key) == 'e') && idKeyInput.IsDown(K_CTRL))) {
+                this.cursor = len;
+                if (this.cursor >= (this.scroll + this.widthInChars)) {
+                    this.scroll = (this.cursor - this.widthInChars) + 1;
                 }
-                if (autoComplete.length != 0) {
-                    autoComplete.length = cursor;
-                    autoComplete.valid = false;
+                if (this.autoComplete.length != 0) {
+                    this.autoComplete.length = this.cursor;
+                    this.autoComplete.valid = false;
                 }
                 return;
             }
@@ -392,7 +392,7 @@ public class EditField {
             }
 
             // clear autocompletion buffer on normal key input
-            if (key != K_CAPSLOCK && key != K_ALT && key != K_CTRL && key != K_SHIFT) {
+            if ((key != K_CAPSLOCK) && (key != K_ALT) && (key != K_CTRL) && (key != K_SHIFT)) {
                 ClearAutoComplete();
             }
         }
@@ -417,7 +417,7 @@ public class EditField {
         }
 
         public char[] GetBuffer() {
-            return buffer;
+            return this.buffer;
         }
 
         public void Draw(int x, int y, int width, boolean showCursor, final idMaterial shader) throws idException {
@@ -425,36 +425,36 @@ public class EditField {
             int drawLen;
             int prestep;
             int cursorChar;
-            char[] str = new char[MAX_EDIT_LINE];
+            final char[] str = new char[MAX_EDIT_LINE];
             int size;
 
             size = SMALLCHAR_WIDTH;
 
-            drawLen = widthInChars;
-            len = strLen(buffer) + 1;
+            drawLen = this.widthInChars;
+            len = strLen(this.buffer) + 1;
 
             // guarantee that cursor will be visible
             if (len <= drawLen) {
                 prestep = 0;
             } else {
-                if (scroll + drawLen > len) {
-                    scroll = len - drawLen;
-                    if (scroll < 0) {
-                        scroll = 0;
+                if ((this.scroll + drawLen) > len) {
+                    this.scroll = len - drawLen;
+                    if (this.scroll < 0) {
+                        this.scroll = 0;
                     }
                 }
-                prestep = scroll;
+                prestep = this.scroll;
 
                 // Skip color code
-                if (idStr.IsColor(ctos(buffer).substring(prestep))) {
+                if (idStr.IsColor(ctos(this.buffer).substring(prestep))) {
                     prestep += 2;
                 }
-                if (prestep > 0 && idStr.IsColor(ctos(buffer).substring(prestep - 1))) {
+                if ((prestep > 0) && idStr.IsColor(ctos(this.buffer).substring(prestep - 1))) {
                     prestep++;
                 }
             }
 
-            if (prestep + drawLen > len) {
+            if ((prestep + drawLen) > len) {
                 drawLen = len - prestep;
             }
 
@@ -464,7 +464,7 @@ public class EditField {
             }
 
 //	memcpy( str, buffer + prestep, drawLen );
-            System.arraycopy(buffer, prestep, str, 0, drawLen);
+            System.arraycopy(this.buffer, prestep, str, 0, drawLen);
             str[drawLen] = 0;
 
             // draw it
@@ -486,22 +486,22 @@ public class EditField {
             }
 
             // Move the cursor back to account for color codes
-            for (int i = 0; i < cursor; i++) {
+            for (int i = 0; i < this.cursor; i++) {
                 if (idStr.IsColor(ctos(str[i]))) {//TODO:check
                     i++;
                     prestep += 2;
                 }
             }
 
-            renderSystem.DrawSmallChar(x + (cursor - prestep) * size, y, cursorChar, shader);
+            renderSystem.DrawSmallChar(x + ((this.cursor - prestep) * size), y, cursorChar, shader);
         }
 
         public void SetBuffer(final String buf) {
             Clear();
-            idStr.Copynz(buffer, buf, buffer.length);
-            SetCursor(strLen(buffer));
+            idStr.Copynz(this.buffer, buf, this.buffer.length);
+            SetCursor(strLen(this.buffer));
         }
-    };
+    }
 
     /*
      ===============
@@ -540,7 +540,7 @@ public class EditField {
             }
             globalAutoComplete.currentMatch[i] = 0;
         }
-    };
+    }
 
     /*
      ===============
@@ -570,7 +570,7 @@ public class EditField {
 
             globalAutoComplete.findMatchIndex++;
         }
-    };
+    }
 
     /*
      ===============
@@ -594,7 +594,7 @@ public class EditField {
                 common.Printf("    %s\n", s);
             }
         }
-    };
+    }
 
     /*
      ===============
@@ -618,5 +618,5 @@ public class EditField {
                 common.Printf("    %s" + S_COLOR_WHITE + " = \"%s\"\n", s, cvarSystem.GetCVarString(s));
             }
         }
-    };
+    }
 }

@@ -68,7 +68,7 @@ public class MsgChannel {
 
     class idMsgQueue {
 
-        private byte[] buffer = new byte[MAX_MSG_QUEUE_SIZE];
+        private final byte[] buffer = new byte[MAX_MSG_QUEUE_SIZE];
         private int first;      // sequence number of first message in queue
         private int last;       // sequence number of last message in queue
         private int startIndex; // index pointing to the first byte of the first message
@@ -81,24 +81,24 @@ public class MsgChannel {
         }
 
         public void Init(int sequence) {
-            first = last = sequence;
-            startIndex = endIndex = 0;
+            this.first = this.last = sequence;
+            this.startIndex = this.endIndex = 0;
         }
 
         public boolean Add(final byte[] data, final int size) {
-            if (GetSpaceLeft() < size + 8) {
+            if (GetSpaceLeft() < (size + 8)) {
                 return false;
             }
-            int sequence = last;
+            final int sequence = this.last;
             WriteShort(size);
             WriteLong(sequence);
             WriteData(data, size);
-            last++;
+            this.last++;
             return true;
         }
 
         public boolean Get(byte[] data, int[] size) {
-            if (first == last) {
+            if (this.first == this.last) {
                 size[0] = 0;
                 return false;
             }
@@ -106,55 +106,55 @@ public class MsgChannel {
 //	size = ReadShort();
             sequence = ReadLong();
             ReadData(data, size[0]);
-            assert (sequence == first);
-            first++;
+            assert (sequence == this.first);
+            this.first++;
             return true;
         }
 
         public int GetTotalSize() {
-            if (startIndex <= endIndex) {
-                return (endIndex - startIndex);
+            if (this.startIndex <= this.endIndex) {
+                return (this.endIndex - this.startIndex);
             } else {
-                return (buffer.length - startIndex + endIndex);
+                return ((this.buffer.length - this.startIndex) + this.endIndex);
             }
         }
 
         public int GetSpaceLeft() {
-            if (startIndex <= endIndex) {
-                return buffer.length - (endIndex - startIndex) - 1;
+            if (this.startIndex <= this.endIndex) {
+                return this.buffer.length - (this.endIndex - this.startIndex) - 1;
             } else {
-                return (startIndex - endIndex) - 1;
+                return (this.startIndex - this.endIndex) - 1;
             }
         }
 
         public int GetFirst() {
-            return first;
+            return this.first;
         }
 
         public int GetLast() {
-            return last;
+            return this.last;
         }
 
         public void CopyToBuffer(byte[] buf) {
-            if (startIndex <= endIndex) {
+            if (this.startIndex <= this.endIndex) {
 //		memcpy( buf, buffer + startIndex, endIndex - startIndex );
-                System.arraycopy(buffer, startIndex, buf, 0, endIndex - startIndex);
+                System.arraycopy(this.buffer, this.startIndex, buf, 0, this.endIndex - this.startIndex);
             } else {
 //		memcpy( buf, buffer + startIndex, sizeof( buffer ) - startIndex );
-                System.arraycopy(buffer, startIndex, buf, 0, buffer.length - startIndex);
+                System.arraycopy(this.buffer, this.startIndex, buf, 0, this.buffer.length - this.startIndex);
 //		memcpy( buf + sizeof( buffer ) - startIndex, buffer, endIndex );
-                System.arraycopy(buffer, 0, buf, buffer.length - startIndex, endIndex);
+                System.arraycopy(this.buffer, 0, buf, this.buffer.length - this.startIndex, this.endIndex);
             }
         }
 
         private void WriteByte(byte b) {
-            buffer[endIndex] = b;
-            endIndex = (endIndex + 1) & (MAX_MSG_QUEUE_SIZE - 1);
+            this.buffer[this.endIndex] = b;
+            this.endIndex = (this.endIndex + 1) & (MAX_MSG_QUEUE_SIZE - 1);
         }
 
         private byte ReadByte() {
-            byte b = buffer[startIndex];
-            startIndex = (startIndex + 1) & (MAX_MSG_QUEUE_SIZE - 1);
+            final byte b = this.buffer[this.startIndex];
+            this.startIndex = (this.startIndex + 1) & (MAX_MSG_QUEUE_SIZE - 1);
             return b;
         }
 
@@ -195,7 +195,7 @@ public class MsgChannel {
                 }
             }
         }
-    };
+    }
 
     static class idMsgChannel {
 
@@ -245,7 +245,7 @@ public class MsgChannel {
         //
 
         public idMsgChannel() {
-            id = -1;
+            this.id = -1;
         }
 
 
@@ -262,82 +262,82 @@ public class MsgChannel {
             this.maxRate = 50000;
             this.compressor = idCompressor.AllocRunLength_ZeroBased();
 
-            lastSendTime = 0;
-            lastDataBytes = 0;
-            outgoingRateTime = 0;
-            outgoingRateBytes = 0;
-            incomingRateTime = 0;
-            incomingRateBytes = 0;
-            incomingReceivedPackets = 0.0f;
-            incomingDroppedPackets = 0.0f;
-            incomingPacketLossTime = 0;
-            outgoingCompression = 0.0f;
-            incomingCompression = 0.0f;
-            outgoingSequence = 1;
-            incomingSequence = 0;
-            unsentFragments = false;
-            unsentFragmentStart = 0;
-            fragmentSequence = 0;
-            fragmentLength = 0;
-            reliableSend.Init(1);
-            reliableReceive.Init(0);
+            this.lastSendTime = 0;
+            this.lastDataBytes = 0;
+            this.outgoingRateTime = 0;
+            this.outgoingRateBytes = 0;
+            this.incomingRateTime = 0;
+            this.incomingRateBytes = 0;
+            this.incomingReceivedPackets = 0.0f;
+            this.incomingDroppedPackets = 0.0f;
+            this.incomingPacketLossTime = 0;
+            this.outgoingCompression = 0.0f;
+            this.incomingCompression = 0.0f;
+            this.outgoingSequence = 1;
+            this.incomingSequence = 0;
+            this.unsentFragments = false;
+            this.unsentFragmentStart = 0;
+            this.fragmentSequence = 0;
+            this.fragmentLength = 0;
+            this.reliableSend.Init(1);
+            this.reliableReceive.Init(0);
         }
 
         public void Shutdown() {
 //	delete compressor;
-            compressor = null;
+            this.compressor = null;
         }
 
         public void ResetRate() {
-            lastSendTime = 0;
-            lastDataBytes = 0;
-            outgoingRateTime = 0;
-            outgoingRateBytes = 0;
-            incomingRateTime = 0;
-            incomingRateBytes = 0;
+            this.lastSendTime = 0;
+            this.lastDataBytes = 0;
+            this.outgoingRateTime = 0;
+            this.outgoingRateBytes = 0;
+            this.incomingRateTime = 0;
+            this.incomingRateBytes = 0;
         }
 
         // Sets the maximum outgoing rate.
         public void SetMaxOutgoingRate(int rate) {
-            maxRate = rate;
+            this.maxRate = rate;
         }
 
         // Gets the maximum outgoing rate.
         public int GetMaxOutgoingRate() {
-            return maxRate;
+            return this.maxRate;
         }
 
         // Returns the address of the entity at the other side of the channel.
         public netadr_t GetRemoteAddress() {
-            return remoteAddress;
+            return this.remoteAddress;
         }
 
         // Returns the average outgoing rate over the last second.
         public int GetOutgoingRate() {
-            return outgoingRateBytes;
+            return this.outgoingRateBytes;
         }
 
         // Returns the average incoming rate over the last second.
         public int GetIncomingRate() {
-            return incomingRateBytes;
+            return this.incomingRateBytes;
         }
 
         // Returns the average outgoing compression ratio over the last second.
         public float GetOutgoingCompression() {
-            return outgoingCompression;
+            return this.outgoingCompression;
         }
 
         // Returns the average incoming compression ratio over the last second.
         public float GetIncomingCompression() {
-            return incomingCompression;
+            return this.incomingCompression;
         }
 
         // Returns the average incoming packet loss over the last 5 seconds.
         public float GetIncomingPacketLoss() {
-            if (incomingReceivedPackets == 0.0f && incomingDroppedPackets == 0.0f) {
+            if ((this.incomingReceivedPackets == 0.0f) && (this.incomingDroppedPackets == 0.0f)) {
                 return 0.0f;
             }
-            return incomingDroppedPackets * 100.0f / (incomingReceivedPackets + incomingDroppedPackets);
+            return (this.incomingDroppedPackets * 100.0f) / (this.incomingReceivedPackets + this.incomingDroppedPackets);
         }
 
 //
@@ -345,14 +345,14 @@ public class MsgChannel {
         public boolean ReadyToSend(final int time) {
             int deltaTime;
 
-            if (0 == maxRate) {
+            if (0 == this.maxRate) {
                 return true;
             }
-            deltaTime = time - lastSendTime;
+            deltaTime = time - this.lastSendTime;
             if (deltaTime > 1000) {
                 return true;
             }
-            return ((lastDataBytes - (deltaTime * maxRate) / 1000) <= 0);
+            return ((this.lastDataBytes - ((deltaTime * this.maxRate) / 1000)) <= 0);
         }
 //
 
@@ -368,59 +368,59 @@ public class MsgChannel {
         public int SendMessage(idPort port, final int time, final idBitMsg msg) throws idException {
             int totalLength;
 
-            if (remoteAddress.type == NA_BAD) {
+            if (this.remoteAddress.type == NA_BAD) {
                 return -1;
             }
 
-            if (unsentFragments) {
+            if (this.unsentFragments) {
                 common.Error("idMsgChannel::SendMessage: called with unsent fragments left");
                 return -1;
             }
 
-            totalLength = 4 + reliableSend.GetTotalSize() + 4 + msg.GetSize();
+            totalLength = 4 + this.reliableSend.GetTotalSize() + 4 + msg.GetSize();
 
             if (totalLength > MAX_MESSAGE_SIZE) {
                 common.Printf("idMsgChannel::SendMessage: message too large, length = %d\n", totalLength);
                 return -1;
             }
 
-            unsentMsg.Init(unsentBuffer, unsentBuffer.capacity());
-            unsentMsg.BeginWriting();
+            this.unsentMsg.Init(this.unsentBuffer, this.unsentBuffer.capacity());
+            this.unsentMsg.BeginWriting();
 
             // fragment large messages
             if (totalLength >= FRAGMENT_SIZE) {
-                unsentFragments = true;
-                unsentFragmentStart = 0;
+                this.unsentFragments = true;
+                this.unsentFragmentStart = 0;
 
                 // write out the message data
-                WriteMessageData(unsentMsg, msg);
+                WriteMessageData(this.unsentMsg, msg);
 
                 // send the first fragment now
                 SendNextFragment(port, time);
 
-                return outgoingSequence;
+                return this.outgoingSequence;
             }
 
             // write the header
-            unsentMsg.WriteShort(id);
-            unsentMsg.WriteLong(outgoingSequence);
+            this.unsentMsg.WriteShort(this.id);
+            this.unsentMsg.WriteLong(this.outgoingSequence);
 
             // write out the message data
-            WriteMessageData(unsentMsg, msg);
+            WriteMessageData(this.unsentMsg, msg);
 
             // send the packet
-            port.SendPacket(remoteAddress, unsentMsg.GetData(), unsentMsg.GetSize());
+            port.SendPacket(this.remoteAddress, this.unsentMsg.GetData(), this.unsentMsg.GetSize());
 
             // update rate control variables
-            UpdateOutgoingRate(time, unsentMsg.GetSize());
+            UpdateOutgoingRate(time, this.unsentMsg.GetSize());
 
             if (net_channelShowPackets.GetBool()) {
-                common.Printf("%d send %4d : s = %d ack = %d\n", id, unsentMsg.GetSize(), outgoingSequence - 1, incomingSequence);
+                common.Printf("%d send %4d : s = %d ack = %d\n", this.id, this.unsentMsg.GetSize(), this.outgoingSequence - 1, this.incomingSequence);
             }
 
-            outgoingSequence++;
+            this.outgoingSequence++;
 
-            return (outgoingSequence - 1);
+            return (this.outgoingSequence - 1);
         }
 //
 
@@ -433,57 +433,57 @@ public class MsgChannel {
          */
         // Sends the next fragment if the last message was too large to send at once.
         public void SendNextFragment(idPort port, final int time) throws idException {
-            idBitMsg msg = new idBitMsg();
-            ByteBuffer msgBuf = ByteBuffer.allocate(MAX_PACKETLEN);
+            final idBitMsg msg = new idBitMsg();
+            final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_PACKETLEN);
             int fragLength;
 
-            if (remoteAddress.type == NA_BAD) {
+            if (this.remoteAddress.type == NA_BAD) {
                 return;
             }
 
-            if (!unsentFragments) {
+            if (!this.unsentFragments) {
                 return;
             }
 
             // write the packet
             msg.Init(msgBuf, msgBuf.capacity());
-            msg.WriteShort(id);
-            msg.WriteLong(outgoingSequence | FRAGMENT_BIT);
+            msg.WriteShort(this.id);
+            msg.WriteLong(this.outgoingSequence | FRAGMENT_BIT);
 
             fragLength = FRAGMENT_SIZE;
-            if (unsentFragmentStart + fragLength > unsentMsg.GetSize()) {
-                fragLength = unsentMsg.GetSize() - unsentFragmentStart;
+            if ((this.unsentFragmentStart + fragLength) > this.unsentMsg.GetSize()) {
+                fragLength = this.unsentMsg.GetSize() - this.unsentFragmentStart;
             }
 
-            msg.WriteShort(unsentFragmentStart);
+            msg.WriteShort(this.unsentFragmentStart);
             msg.WriteShort(fragLength);
-            msg.WriteData(unsentMsg.GetData(), unsentFragmentStart, fragLength);
+            msg.WriteData(this.unsentMsg.GetData(), this.unsentFragmentStart, fragLength);
 
             // send the packet
-            port.SendPacket(remoteAddress, msg.GetData(), msg.GetSize());
+            port.SendPacket(this.remoteAddress, msg.GetData(), msg.GetSize());
 
             // update rate control variables
             UpdateOutgoingRate(time, msg.GetSize());
 
             if (net_channelShowPackets.GetBool()) {
-                common.Printf("%d send %4d : s = %d fragment = %d,%d\n", id, msg.GetSize(), outgoingSequence - 1, unsentFragmentStart, fragLength);
+                common.Printf("%d send %4d : s = %d fragment = %d,%d\n", this.id, msg.GetSize(), this.outgoingSequence - 1, this.unsentFragmentStart, fragLength);
             }
 
-            unsentFragmentStart += fragLength;
+            this.unsentFragmentStart += fragLength;
 
             // this exit condition is a little tricky, because a packet
             // that is exactly the fragment length still needs to send
             // a second packet of zero length so that the other side
             // can tell there aren't more to follow
-            if (unsentFragmentStart == unsentMsg.GetSize() && fragLength != FRAGMENT_SIZE) {
-                outgoingSequence++;
-                unsentFragments = false;
+            if ((this.unsentFragmentStart == this.unsentMsg.GetSize()) && (fragLength != FRAGMENT_SIZE)) {
+                this.outgoingSequence++;
+                this.unsentFragments = false;
             }
         }
 
         // Returns true if there are unsent fragments left.
         public boolean UnsentFragmentsLeft() {
-            return unsentFragments;
+            return this.unsentFragments;
         }
 
         /*
@@ -503,14 +503,14 @@ public class MsgChannel {
         public boolean Process(final netadr_t from, int time, idBitMsg msg, int[] sequence) {
             int fragStart, fragLength, dropped;
             boolean fragmented;
-            idBitMsg fragMsg = new idBitMsg();
+            final idBitMsg fragMsg = new idBitMsg();
 
             // the IP port can't be used to differentiate them, because
             // some address translating routers periodically change UDP
             // port assignments
-            if (remoteAddress.port != from.port) {
+            if (this.remoteAddress.port != from.port) {
                 common.Printf("idMsgChannel::Process: fixing up a translated port\n");
-                remoteAddress.port = from.port;
+                this.remoteAddress.port = from.port;
             }
 
             // update incoming rate
@@ -538,18 +538,18 @@ public class MsgChannel {
 
             if (net_channelShowPackets.GetBool()) {
                 if (fragmented) {
-                    common.Printf("%d recv %4d : s = %d fragment = %d,%d\n", id, msg.GetSize(), sequence[0], fragStart, fragLength);
+                    common.Printf("%d recv %4d : s = %d fragment = %d,%d\n", this.id, msg.GetSize(), sequence[0], fragStart, fragLength);
                 } else {
-                    common.Printf("%d recv %4d : s = %d\n", id, msg.GetSize(), sequence[0]);
+                    common.Printf("%d recv %4d : s = %d\n", this.id, msg.GetSize(), sequence[0]);
                 }
             }
 
             //
             // discard out of order or duplicated packets
             //
-            if (sequence[0] <= incomingSequence) {
+            if (sequence[0] <= this.incomingSequence) {
                 if (net_channelShowDrop.GetBool() || net_channelShowPackets.GetBool()) {
-                    common.Printf("%s: out of order packet %d at %d\n", Sys_NetAdrToString(remoteAddress), sequence[0], incomingSequence);
+                    common.Printf("%s: out of order packet %d at %d\n", Sys_NetAdrToString(this.remoteAddress), sequence[0], this.incomingSequence);
                 }
                 return false;
             }
@@ -557,10 +557,10 @@ public class MsgChannel {
             //
             // dropped packets don't keep this message from being used
             //
-            dropped = sequence[0] - (incomingSequence + 1);
+            dropped = sequence[0] - (this.incomingSequence + 1);
             if (dropped > 0) {
                 if (net_channelShowDrop.GetBool() || net_channelShowPackets.GetBool()) {
-                    common.Printf("%s: dropped %d packets at %d\n", Sys_NetAdrToString(remoteAddress), dropped, sequence[0]);
+                    common.Printf("%s: dropped %d packets at %d\n", Sys_NetAdrToString(this.remoteAddress), dropped, sequence[0]);
                 }
                 UpdatePacketLoss(time, 0, dropped);
             }
@@ -570,15 +570,15 @@ public class MsgChannel {
             //
             if (fragmented) {
                 // make sure we have the correct sequence number
-                if (sequence[0] != fragmentSequence) {
-                    fragmentSequence = sequence[0];
-                    fragmentLength = 0;
+                if (sequence[0] != this.fragmentSequence) {
+                    this.fragmentSequence = sequence[0];
+                    this.fragmentLength = 0;
                 }
 
                 // if we missed a fragment, dump the message
-                if (fragStart != fragmentLength) {
+                if (fragStart != this.fragmentLength) {
                     if (net_channelShowDrop.GetBool() || net_channelShowPackets.GetBool()) {
-                        common.Printf("%s: dropped a message fragment at seq %d\n", Sys_NetAdrToString(remoteAddress), sequence[0]);
+                        common.Printf("%s: dropped a message fragment at seq %d\n", Sys_NetAdrToString(this.remoteAddress), sequence[0]);
                     }
                     // we can still keep the part that we have so far,
                     // so we don't need to clear fragmentLength
@@ -587,9 +587,9 @@ public class MsgChannel {
                 }
 
                 // copy the fragment to the fragment buffer
-                if (fragLength < 0 || fragLength > msg.GetRemaingData() || fragmentLength + fragLength > fragmentBuffer.capacity()) {
+                if ((fragLength < 0) || (fragLength > msg.GetRemaingData()) || ((this.fragmentLength + fragLength) > this.fragmentBuffer.capacity())) {
                     if (net_channelShowDrop.GetBool() || net_channelShowPackets.GetBool()) {
-                        common.Printf("%s: illegal fragment length\n", Sys_NetAdrToString(remoteAddress));
+                        common.Printf("%s: illegal fragment length\n", Sys_NetAdrToString(this.remoteAddress));
                     }
                     UpdatePacketLoss(time, 0, 1);
                     return false;
@@ -597,9 +597,9 @@ public class MsgChannel {
 
 //		memcpy( fragmentBuffer + fragmentLength, msg.GetData() + msg.GetReadCount(), fragLength );
                 System.arraycopy(msg.GetData().array(), msg.GetReadCount(),
-                        fragmentBuffer.array(), fragmentLength, fragLength);
+                        this.fragmentBuffer.array(), this.fragmentLength, fragLength);
 
-                fragmentLength += fragLength;
+                this.fragmentLength += fragLength;
 
                 UpdatePacketLoss(time, 1, 0);
 
@@ -611,16 +611,16 @@ public class MsgChannel {
             } else {
 //		memcpy( fragmentBuffer, msg.GetData() + msg.GetReadCount(), msg.GetRemaingData() );
                 System.arraycopy(msg.GetData().array(), msg.GetReadCount(),
-                        fragmentBuffer.array(), 0, msg.GetRemaingData());
-                fragmentLength = msg.GetRemaingData();
+                        this.fragmentBuffer.array(), 0, msg.GetRemaingData());
+                this.fragmentLength = msg.GetRemaingData();
                 UpdatePacketLoss(time, 1, 0);
             }
 
-            fragMsg.Init(fragmentBuffer, fragmentLength);
-            fragMsg.SetSize(fragmentLength);
+            fragMsg.Init(this.fragmentBuffer, this.fragmentLength);
+            fragMsg.SetSize(this.fragmentLength);
             fragMsg.BeginReading();
 
-            incomingSequence = sequence[0];
+            this.incomingSequence = sequence[0];
 
             // read the message data
             if (!ReadMessageData(msg, fragMsg)) {
@@ -635,11 +635,11 @@ public class MsgChannel {
         public boolean SendReliableMessage(final idBitMsg msg) {
             boolean result;
 
-            assert (remoteAddress.type != NA_BAD);
-            if (remoteAddress.type == NA_BAD) {
+            assert (this.remoteAddress.type != NA_BAD);
+            if (this.remoteAddress.type == NA_BAD) {
                 return false;
             }
-            result = reliableSend.Add(msg.GetData().array(), msg.GetSize());
+            result = this.reliableSend.Add(msg.GetData().array(), msg.GetSize());
             if (!result) {
                 common.Warning("idMsgChannel::SendReliableMessage: overflowed");
                 return false;
@@ -650,10 +650,10 @@ public class MsgChannel {
         // Returns true if a new reliable message is available and stores the message.
 
         public boolean GetReliableMessage(idBitMsg msg) {
-            int[] size = new int[1];
+            final int[] size = new int[1];
             boolean result;
 
-            result = reliableReceive.Get(msg.GetData().array(), size);
+            result = this.reliableReceive.Get(msg.GetData().array(), size);
             msg.SetSize(msg.GetData().capacity());//TODO:phase out size and length fields.
             msg.BeginReading();
             return result;
@@ -662,22 +662,22 @@ public class MsgChannel {
 //
         // Removes any pending outgoing or incoming reliable messages.
         public void ClearReliableMessages() {
-            reliableSend.Init(1);
-            reliableReceive.Init(0);
+            this.reliableSend.Init(1);
+            this.reliableReceive.Init(0);
         }
 
         private void WriteMessageData(idBitMsg out, final idBitMsg msg) {
-            idBitMsg tmp = new idBitMsg();
-            ByteBuffer tmpBuf = ByteBuffer.allocate(MAX_MESSAGE_SIZE);
+            final idBitMsg tmp = new idBitMsg();
+            final ByteBuffer tmpBuf = ByteBuffer.allocate(MAX_MESSAGE_SIZE);
 
             tmp.Init(tmpBuf, tmpBuf.capacity());
 
             // write acknowledgement of last received reliable message
-            tmp.WriteLong(reliableReceive.GetLast());
+            tmp.WriteLong(this.reliableReceive.GetLast());
 
             // write reliable messages
-            reliableSend.CopyToBuffer(Arrays.copyOfRange(tmp.GetData().array(), tmp.GetSize(), tmp.GetData().capacity()));
-            tmp.SetSize(tmp.GetSize() + reliableSend.GetTotalSize());
+            this.reliableSend.CopyToBuffer(Arrays.copyOfRange(tmp.GetData().array(), tmp.GetSize(), tmp.GetData().capacity()));
+            tmp.SetSize(tmp.GetSize() + this.reliableSend.GetTotalSize());
             tmp.WriteShort(0);
 
             // write data
@@ -687,33 +687,33 @@ public class MsgChannel {
             out.WriteShort(tmp.GetSize());
 
             // compress message
-            idFile_BitMsg file = new idFile_BitMsg(out);
-            compressor.Init(file, true, 3);
-            compressor.Write(tmp.GetData(), tmp.GetSize());
-            compressor.FinishCompress();
-            outgoingCompression = compressor.GetCompressionRatio();
+            final idFile_BitMsg file = new idFile_BitMsg(out);
+            this.compressor.Init(file, true, 3);
+            this.compressor.Write(tmp.GetData(), tmp.GetSize());
+            this.compressor.FinishCompress();
+            this.outgoingCompression = this.compressor.GetCompressionRatio();
         }
 
         private boolean ReadMessageData(idBitMsg out, final idBitMsg msg) {
             int reliableAcknowledge, reliableSequence;
-            int[] reliableMessageSize = new int[1];
+            final int[] reliableMessageSize = new int[1];
 
             // read message size
             out.SetSize(msg.ReadShort());
 
             // decompress message
-            idFile_BitMsg file = new idFile_BitMsg(msg);
-            compressor.Init(file, false, 3);
-            compressor.Read(out.GetData(), out.GetSize());
-            incomingCompression = compressor.GetCompressionRatio();
+            final idFile_BitMsg file = new idFile_BitMsg(msg);
+            this.compressor.Init(file, false, 3);
+            this.compressor.Read(out.GetData(), out.GetSize());
+            this.incomingCompression = this.compressor.GetCompressionRatio();
             out.BeginReading();
 
             // read acknowledgement of sent reliable messages
             reliableAcknowledge = out.ReadLong();
 
             // remove acknowledged reliable messages
-            while (reliableSend.GetFirst() <= reliableAcknowledge) {
-                if (!reliableSend.Get(null, reliableMessageSize)) {
+            while (this.reliableSend.GetFirst() <= reliableAcknowledge) {
+                if (!this.reliableSend.Get(null, reliableMessageSize)) {
                     break;
                 }
             }
@@ -721,13 +721,13 @@ public class MsgChannel {
             // read reliable messages
             reliableMessageSize[0] = out.ReadShort();
             while (reliableMessageSize[0] != 0) {
-                if (reliableMessageSize[0] <= 0 || reliableMessageSize[0] > out.GetSize() - out.GetReadCount()) {
-                    common.Printf("%s: bad reliable message\n", Sys_NetAdrToString(remoteAddress));
+                if ((reliableMessageSize[0] <= 0) || (reliableMessageSize[0] > (out.GetSize() - out.GetReadCount()))) {
+                    common.Printf("%s: bad reliable message\n", Sys_NetAdrToString(this.remoteAddress));
                     return false;
                 }
                 reliableSequence = out.ReadLong();
-                if (reliableSequence == reliableReceive.GetLast() + 1) {
-                    reliableReceive.Add(Arrays.copyOfRange(out.GetData().array(), out.GetReadCount(), out.GetData().capacity()), reliableMessageSize[0]);
+                if (reliableSequence == (this.reliableReceive.GetLast() + 1)) {
+                    this.reliableReceive.Add(Arrays.copyOfRange(out.GetData().array(), out.GetReadCount(), out.GetData().capacity()), reliableMessageSize[0]);
                 }
                 out.ReadData(null, reliableMessageSize[0]);
                 reliableMessageSize[0] = out.ReadShort();
@@ -739,57 +739,57 @@ public class MsgChannel {
 
         private void UpdateOutgoingRate(final int time, final int size) {
             // update the outgoing rate control variables
-            int deltaTime = time - lastSendTime;
+            final int deltaTime = time - this.lastSendTime;
             if (deltaTime > 1000) {
-                lastDataBytes = 0;
+                this.lastDataBytes = 0;
             } else {
-                lastDataBytes -= (deltaTime * maxRate) / 1000;
-                if (lastDataBytes < 0) {
-                    lastDataBytes = 0;
+                this.lastDataBytes -= (deltaTime * this.maxRate) / 1000;
+                if (this.lastDataBytes < 0) {
+                    this.lastDataBytes = 0;
                 }
             }
-            lastDataBytes += size;
-            lastSendTime = time;
+            this.lastDataBytes += size;
+            this.lastSendTime = time;
 
             // update outgoing rate variables
-            if (time - outgoingRateTime > 1000) {
-                outgoingRateBytes -= outgoingRateBytes * (time - outgoingRateTime - 1000) / 1000;
-                if (outgoingRateBytes < 0) {
-                    outgoingRateBytes = 0;
+            if ((time - this.outgoingRateTime) > 1000) {
+                this.outgoingRateBytes -= (this.outgoingRateBytes * (time - this.outgoingRateTime - 1000)) / 1000;
+                if (this.outgoingRateBytes < 0) {
+                    this.outgoingRateBytes = 0;
                 }
             }
-            outgoingRateTime = time - 1000;
-            outgoingRateBytes += size;
+            this.outgoingRateTime = time - 1000;
+            this.outgoingRateBytes += size;
         }
 
         private void UpdateIncomingRate(final int time, final int size) {
             // update incoming rate variables
-            if (time - incomingRateTime > 1000) {
-                incomingRateBytes -= incomingRateBytes * (time - incomingRateTime - 1000) / 1000;
-                if (incomingRateBytes < 0) {
-                    incomingRateBytes = 0;
+            if ((time - this.incomingRateTime) > 1000) {
+                this.incomingRateBytes -= (this.incomingRateBytes * (time - this.incomingRateTime - 1000)) / 1000;
+                if (this.incomingRateBytes < 0) {
+                    this.incomingRateBytes = 0;
                 }
             }
-            incomingRateTime = time - 1000;
-            incomingRateBytes += size;
+            this.incomingRateTime = time - 1000;
+            this.incomingRateBytes += size;
         }
 
         private void UpdatePacketLoss(final int time, final int numReceived, final int numDropped) {
             // update incoming packet loss variables
-            if (time - incomingPacketLossTime > 5000) {
-                float scale = (time - incomingPacketLossTime - 5000) * (1.0f / 5000.0f);
-                incomingReceivedPackets -= incomingReceivedPackets * scale;
-                if (incomingReceivedPackets < 0.0f) {
-                    incomingReceivedPackets = 0.0f;
+            if ((time - this.incomingPacketLossTime) > 5000) {
+                final float scale = (time - this.incomingPacketLossTime - 5000) * (1.0f / 5000.0f);
+                this.incomingReceivedPackets -= this.incomingReceivedPackets * scale;
+                if (this.incomingReceivedPackets < 0.0f) {
+                    this.incomingReceivedPackets = 0.0f;
                 }
-                incomingDroppedPackets -= incomingDroppedPackets * scale;
-                if (incomingDroppedPackets < 0.0f) {
-                    incomingDroppedPackets = 0.0f;
+                this.incomingDroppedPackets -= this.incomingDroppedPackets * scale;
+                if (this.incomingDroppedPackets < 0.0f) {
+                    this.incomingDroppedPackets = 0.0f;
                 }
             }
-            incomingPacketLossTime = time - 5000;
-            incomingReceivedPackets += numReceived;
-            incomingDroppedPackets += numDropped;
+            this.incomingPacketLossTime = time - 5000;
+            this.incomingReceivedPackets += numReceived;
+            this.incomingDroppedPackets += numDropped;
         }
-    };
+    }
 }

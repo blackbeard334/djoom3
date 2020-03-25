@@ -37,18 +37,18 @@ public class RenderWorld_portals {
         // positive side is outside the visible frustum
 
         public portalStack_s() {
-            p = new portal_s();
-            rect = new idScreenRect();
+            this.p = new portal_s();
+            this.rect = new idScreenRect();
         }
 
         public portalStack_s(final portalStack_s p) {
             this.p = p.p;
             this.next = p.next;
             this.rect = new idScreenRect(p.rect);
-            for (int i = 0; i < portalPlanes.length; i++) {
+            for (int i = 0; i < this.portalPlanes.length; i++) {
                 this.portalPlanes[i].oSet(p.portalPlanes[i]);
             }
         }
-    };
+    }
 
 }

@@ -49,7 +49,7 @@ public class SimpleWindow {
         public drawWin_t() {
             this.DBG_index = DBG_counter++;
         }
-    };
+    }
 
     public static class idSimpleWindow {
 //	friend class idWindow;
@@ -103,174 +103,174 @@ public class SimpleWindow {
         public static int DBG_idSimpleWindow = 0;
 
         public idSimpleWindow(idWindow win) {
-            gui = win.GetGui();
-            dc = win.dc;
-            drawRect = new idRectangle(win.drawRect);
-            clientRect = new idRectangle(win.clientRect);
-            textRect = new idRectangle(win.textRect);
-            origin = new idVec2(win.origin);
-            fontNum = win.fontNum;
-            name = new idStr(win.name);
-            matScalex = win.matScalex;
-            matScaley = win.matScaley;
-            borderSize = win.borderSize;
-            textAlign = win.textAlign;
-            textAlignx = win.textAlignx;
-            textAligny = win.textAligny;
-            background = win.background;
-            flags = win.flags;
-            textShadow = win.textShadow;
+            this.gui = win.GetGui();
+            this.dc = win.dc;
+            this.drawRect = new idRectangle(win.drawRect);
+            this.clientRect = new idRectangle(win.clientRect);
+            this.textRect = new idRectangle(win.textRect);
+            this.origin = new idVec2(win.origin);
+            this.fontNum = win.fontNum;
+            this.name = new idStr(win.name);
+            this.matScalex = win.matScalex;
+            this.matScaley = win.matScaley;
+            this.borderSize = win.borderSize;
+            this.textAlign = win.textAlign;
+            this.textAlignx = win.textAlignx;
+            this.textAligny = win.textAligny;
+            this.background = win.background;
+            this.flags = win.flags;
+            this.textShadow = win.textShadow;
 
-            text.oSet(win.text);
-            visible.oSet(win.visible);
-            rect.oSet(win.rect);
-            backColor.oSet(win.backColor);
-            matColor.oSet(win.matColor);
-            foreColor.oSet(win.foreColor);
-            borderColor.oSet(win.borderColor);
-            textScale.oSet(win.textScale);
-            rotate.oSet(win.rotate);
-            shear.oSet(win.shear);
-            backGroundName.oSet(win.backGroundName);
-            if (backGroundName.Length() != 0) {
-                background = declManager.FindMaterial(backGroundName.data);
-                background.SetSort(SS_GUI);
-                background.SetImageClassifications(1);    // just for resource tracking
+            this.text.oSet(win.text);
+            this.visible.oSet(win.visible);
+            this.rect.oSet(win.rect);
+            this.backColor.oSet(win.backColor);
+            this.matColor.oSet(win.matColor);
+            this.foreColor.oSet(win.foreColor);
+            this.borderColor.oSet(win.borderColor);
+            this.textScale.oSet(win.textScale);
+            this.rotate.oSet(win.rotate);
+            this.shear.oSet(win.shear);
+            this.backGroundName.oSet(win.backGroundName);
+            if (this.backGroundName.Length() != 0) {
+                this.background = declManager.FindMaterial(this.backGroundName.data);
+                this.background.SetSort(SS_GUI);
+                this.background.SetImageClassifications(1);    // just for resource tracking
             }
-            backGroundName.SetMaterialPtr(background);
+            this.backGroundName.SetMaterialPtr(this.background);
 
             // 
             //  added parent
-            mParent = win.GetParent();
+            this.mParent = win.GetParent();
             // 
 
-            hideCursor.oSet(win.hideCursor);
+            this.hideCursor.oSet(win.hideCursor);
 
-            idWindow parent = win.GetParent();
+            final idWindow parent = win.GetParent();
             if (parent != null) {
-                if (text.NeedsUpdate()) {
+                if (this.text.NeedsUpdate()) {
                     DBG_idSimpleWindow++;
 //                    if(DBG_idSimpleWindow++==26)
 //                    if(DBG_idSimpleWindow++==27)
-                    parent.AddUpdateVar(text);
+                    parent.AddUpdateVar(this.text);
 //                    System.out.println(">>" + this);
                 }
-                if (visible.NeedsUpdate()) {
-                    parent.AddUpdateVar(visible);
+                if (this.visible.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.visible);
                 }
-                if (rect.NeedsUpdate()) {
-                    parent.AddUpdateVar(rect);
+                if (this.rect.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.rect);
                 }
-                if (backColor.NeedsUpdate()) {
-                    parent.AddUpdateVar(backColor);
+                if (this.backColor.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.backColor);
                 }
-                if (matColor.NeedsUpdate()) {
-                    parent.AddUpdateVar(matColor);
+                if (this.matColor.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.matColor);
                 }
-                if (foreColor.NeedsUpdate()) {
-                    parent.AddUpdateVar(foreColor);
+                if (this.foreColor.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.foreColor);
                 }
-                if (borderColor.NeedsUpdate()) {
-                    parent.AddUpdateVar(borderColor);
+                if (this.borderColor.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.borderColor);
                 }
-                if (textScale.NeedsUpdate()) {
-                    parent.AddUpdateVar(textScale);
+                if (this.textScale.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.textScale);
                 }
-                if (rotate.NeedsUpdate()) {
-                    parent.AddUpdateVar(rotate);
+                if (this.rotate.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.rotate);
                 }
-                if (shear.NeedsUpdate()) {
-                    parent.AddUpdateVar(shear);
+                if (this.shear.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.shear);
                 }
-                if (backGroundName.NeedsUpdate()) {
-                    parent.AddUpdateVar(backGroundName);
+                if (this.backGroundName.NeedsUpdate()) {
+                    parent.AddUpdateVar(this.backGroundName);
                 }
             }
         }
 //	virtual			~idSimpleWindow();
 
         public void Redraw(float x, float y) {
-            if (!visible.data) {
+            if (!this.visible.data) {
                 return;
             }
 
             CalcClientRect(0, 0);
-            dc.SetFont(fontNum);
-            drawRect.Offset(x, y);
-            clientRect.Offset(x, y);
-            textRect.Offset(x, y);
+            this.dc.SetFont(this.fontNum);
+            this.drawRect.Offset(x, y);
+            this.clientRect.Offset(x, y);
+            this.textRect.Offset(x, y);
             SetupTransforms(x, y);
-            if ((flags & WIN_NOCLIP) != 0) {
-                dc.EnableClipping(false);
+            if ((this.flags & WIN_NOCLIP) != 0) {
+                this.dc.EnableClipping(false);
             }
-            DrawBackground(drawRect);
-            DrawBorderAndCaption(drawRect);
-            if (textShadow != 0) {
-                idStr shadowText = text.data;
-                idRectangle shadowRect = new idRectangle(textRect);
+            DrawBackground(this.drawRect);
+            DrawBorderAndCaption(this.drawRect);
+            if (this.textShadow != 0) {
+                final idStr shadowText = this.text.data;
+                final idRectangle shadowRect = new idRectangle(this.textRect);
 
                 shadowText.RemoveColors();
-                shadowRect.x += textShadow;
-                shadowRect.y += textShadow;
+                shadowRect.x += this.textShadow;
+                shadowRect.y += this.textShadow;
 
-                dc.DrawText(shadowText, textScale.data, textAlign, colorBlack, shadowRect, !itob(flags & WIN_NOWRAP), -1);
+                this.dc.DrawText(shadowText, this.textScale.data, this.textAlign, colorBlack, shadowRect, !itob(this.flags & WIN_NOWRAP), -1);
             }
-            dc.DrawText(text.data, textScale.data, textAlign, foreColor.data, textRect, !itob(flags & WIN_NOWRAP), -1);
-            dc.SetTransformInfo(getVec3_origin(), getMat3_identity());
-            if ((flags & WIN_NOCLIP) != 0) {
-                dc.EnableClipping(true);
+            this.dc.DrawText(this.text.data, this.textScale.data, this.textAlign, this.foreColor.data, this.textRect, !itob(this.flags & WIN_NOWRAP), -1);
+            this.dc.SetTransformInfo(getVec3_origin(), getMat3_identity());
+            if ((this.flags & WIN_NOCLIP) != 0) {
+                this.dc.EnableClipping(true);
             }
-            drawRect.Offset(-x, -y);
-            clientRect.Offset(-x, -y);
-            textRect.Offset(-x, -y);
+            this.drawRect.Offset(-x, -y);
+            this.clientRect.Offset(-x, -y);
+            this.textRect.Offset(-x, -y);
         }
 
         public void StateChanged(boolean redraw) {
-            if (redraw && background != null && background.CinematicLength() != 0) {
-                background.UpdateCinematic(gui.GetTime());
+            if (redraw && (this.background != null) && (this.background.CinematicLength() != 0)) {
+                this.background.UpdateCinematic(this.gui.GetTime());
             }
         }
 
         public idWinVar GetWinVarByName(final String _name) {
             idWinVar retVar = null;
             if (idStr.Icmp(_name, "background") == 0) {//TODO:should this be a switch?
-                retVar = backGroundName;
+                retVar = this.backGroundName;
             }
             if (idStr.Icmp(_name, "visible") == 0) {
-                retVar = visible;
+                retVar = this.visible;
             }
             if (idStr.Icmp(_name, "rect") == 0) {
-                retVar = rect;
+                retVar = this.rect;
             }
             if (idStr.Icmp(_name, "backColor") == 0) {
-                retVar = backColor;
+                retVar = this.backColor;
             }
             if (idStr.Icmp(_name, "matColor") == 0) {
-                retVar = matColor;
+                retVar = this.matColor;
             }
             if (idStr.Icmp(_name, "foreColor") == 0) {
-                retVar = foreColor;
+                retVar = this.foreColor;
             }
             if (idStr.Icmp(_name, "borderColor") == 0) {
-                retVar = borderColor;
+                retVar = this.borderColor;
             }
             if (idStr.Icmp(_name, "textScale") == 0) {
-                retVar = textScale;
+                retVar = this.textScale;
             }
             if (idStr.Icmp(_name, "rotate") == 0) {
-                retVar = rotate;
+                retVar = this.rotate;
             }
             if (idStr.Icmp(_name, "shear") == 0) {
-                retVar = shear;
+                retVar = this.shear;
             }
             if (idStr.Icmp(_name, "text") == 0) {
-                retVar = text;
+                retVar = this.text;
             }
             return retVar;
         }
 
         public int GetWinVarOffset(idWinVar wv, drawWin_t owner) {
-            int ret = -1;
+            final int ret = -1;
 
 //	if ( wv == &rect ) {
 //		ret = (int)&( ( idSimpleWindow * ) 0 )->rect;
@@ -308,50 +308,50 @@ public class SimpleWindow {
 
         public int/*size_t*/ Size() {
             int sz = sizeof(this);
-            sz += name.Size();
-            sz += text.Size();
-            sz += backGroundName.Size();
+            sz += this.name.Size();
+            sz += this.text.Size();
+            sz += this.backGroundName.Size();
             return sz;
         }
 
         public idWindow GetParent() {
-            return mParent;
+            return this.mParent;
         }
 
         public void WriteToSaveGame(idFile savefile) {
 
-            savefile.WriteInt(flags);
-            savefile.Write(drawRect);
-            savefile.Write(clientRect);
-            savefile.Write(textRect);
-            savefile.Write(origin);
-            savefile.WriteInt(fontNum);
-            savefile.WriteFloat(matScalex);
-            savefile.WriteFloat(matScaley);
-            savefile.WriteFloat(borderSize);
-            savefile.WriteInt(textAlign);
-            savefile.WriteFloat(textAlignx);
-            savefile.WriteFloat(textAligny);
-            savefile.WriteInt(textShadow);
+            savefile.WriteInt(this.flags);
+            savefile.Write(this.drawRect);
+            savefile.Write(this.clientRect);
+            savefile.Write(this.textRect);
+            savefile.Write(this.origin);
+            savefile.WriteInt(this.fontNum);
+            savefile.WriteFloat(this.matScalex);
+            savefile.WriteFloat(this.matScaley);
+            savefile.WriteFloat(this.borderSize);
+            savefile.WriteInt(this.textAlign);
+            savefile.WriteFloat(this.textAlignx);
+            savefile.WriteFloat(this.textAligny);
+            savefile.WriteInt(this.textShadow);
 
-            text.WriteToSaveGame(savefile);
-            visible.WriteToSaveGame(savefile);
-            rect.WriteToSaveGame(savefile);
-            backColor.WriteToSaveGame(savefile);
-            matColor.WriteToSaveGame(savefile);
-            foreColor.WriteToSaveGame(savefile);
-            borderColor.WriteToSaveGame(savefile);
-            textScale.WriteToSaveGame(savefile);
-            rotate.WriteToSaveGame(savefile);
-            shear.WriteToSaveGame(savefile);
-            backGroundName.WriteToSaveGame(savefile);
+            this.text.WriteToSaveGame(savefile);
+            this.visible.WriteToSaveGame(savefile);
+            this.rect.WriteToSaveGame(savefile);
+            this.backColor.WriteToSaveGame(savefile);
+            this.matColor.WriteToSaveGame(savefile);
+            this.foreColor.WriteToSaveGame(savefile);
+            this.borderColor.WriteToSaveGame(savefile);
+            this.textScale.WriteToSaveGame(savefile);
+            this.rotate.WriteToSaveGame(savefile);
+            this.shear.WriteToSaveGame(savefile);
+            this.backGroundName.WriteToSaveGame(savefile);
 
             int stringLen;
 
-            if (background != null) {
-                stringLen = background.GetName().length();
+            if (this.background != null) {
+                stringLen = this.background.GetName().length();
                 savefile.WriteInt(stringLen);
-                savefile.WriteString(background.GetName());
+                savefile.WriteString(this.background.GetName());
             } else {
                 stringLen = 0;
                 savefile.WriteInt(stringLen);
@@ -361,131 +361,131 @@ public class SimpleWindow {
 
         public void ReadFromSaveGame(idFile savefile) {
 
-            flags = savefile.ReadInt();
-            savefile.Read(drawRect);
-            savefile.Read(clientRect);
-            savefile.Read(textRect);
-            savefile.Read(origin);
-            fontNum = savefile.ReadInt();
-            matScalex = savefile.ReadFloat();
-            matScaley = savefile.ReadFloat();
-            borderSize = savefile.ReadFloat();
-            textAlign = savefile.ReadInt();
-            textAlignx = savefile.ReadFloat();
-            textAligny = savefile.ReadFloat();
-            textShadow = savefile.ReadInt();
+            this.flags = savefile.ReadInt();
+            savefile.Read(this.drawRect);
+            savefile.Read(this.clientRect);
+            savefile.Read(this.textRect);
+            savefile.Read(this.origin);
+            this.fontNum = savefile.ReadInt();
+            this.matScalex = savefile.ReadFloat();
+            this.matScaley = savefile.ReadFloat();
+            this.borderSize = savefile.ReadFloat();
+            this.textAlign = savefile.ReadInt();
+            this.textAlignx = savefile.ReadFloat();
+            this.textAligny = savefile.ReadFloat();
+            this.textShadow = savefile.ReadInt();
 
-            text.ReadFromSaveGame(savefile);
-            visible.ReadFromSaveGame(savefile);
-            rect.ReadFromSaveGame(savefile);
-            backColor.ReadFromSaveGame(savefile);
-            matColor.ReadFromSaveGame(savefile);
-            foreColor.ReadFromSaveGame(savefile);
-            borderColor.ReadFromSaveGame(savefile);
-            textScale.ReadFromSaveGame(savefile);
-            rotate.ReadFromSaveGame(savefile);
-            shear.ReadFromSaveGame(savefile);
-            backGroundName.ReadFromSaveGame(savefile);
+            this.text.ReadFromSaveGame(savefile);
+            this.visible.ReadFromSaveGame(savefile);
+            this.rect.ReadFromSaveGame(savefile);
+            this.backColor.ReadFromSaveGame(savefile);
+            this.matColor.ReadFromSaveGame(savefile);
+            this.foreColor.ReadFromSaveGame(savefile);
+            this.borderColor.ReadFromSaveGame(savefile);
+            this.textScale.ReadFromSaveGame(savefile);
+            this.rotate.ReadFromSaveGame(savefile);
+            this.shear.ReadFromSaveGame(savefile);
+            this.backGroundName.ReadFromSaveGame(savefile);
 
             int stringLen;
 
             stringLen = savefile.ReadInt();
             if (stringLen > 0) {
-                idStr backName = new idStr();
+                final idStr backName = new idStr();
 
                 backName.Fill(' ', stringLen);
                 savefile.ReadString(backName);
 
-                background = declManager.FindMaterial(backName);
-                background.SetSort(SS_GUI);
+                this.background = declManager.FindMaterial(backName);
+                this.background.SetSort(SS_GUI);
             } else {
-                background = null;
+                this.background = null;
             }
 
         }
 
         protected void CalcClientRect(float xofs, float yofs) {
 
-            drawRect.oSet(rect.data);
+            this.drawRect.oSet(this.rect.data);
 
-            if ((flags & WIN_INVERTRECT) != 0) {
-                drawRect.x = rect.x() - rect.w();
-                drawRect.y = rect.y() - rect.h();
+            if ((this.flags & WIN_INVERTRECT) != 0) {
+                this.drawRect.x = this.rect.x() - this.rect.w();
+                this.drawRect.y = this.rect.y() - this.rect.h();
             }
 
-            drawRect.x += xofs;
-            drawRect.y += yofs;
+            this.drawRect.x += xofs;
+            this.drawRect.y += yofs;
 
-            clientRect.oSet(drawRect);
-            if (rect.h() > 0.0 && rect.w() > 0.0) {
+            this.clientRect.oSet(this.drawRect);
+            if ((this.rect.h() > 0.0) && (this.rect.w() > 0.0)) {
 
-                if (((flags & WIN_BORDER) != 0) && borderSize != 0) {
-                    clientRect.x += borderSize;
-                    clientRect.y += borderSize;
-                    clientRect.w -= borderSize;
-                    clientRect.h -= borderSize;
+                if (((this.flags & WIN_BORDER) != 0) && (this.borderSize != 0)) {
+                    this.clientRect.x += this.borderSize;
+                    this.clientRect.y += this.borderSize;
+                    this.clientRect.w -= this.borderSize;
+                    this.clientRect.h -= this.borderSize;
                 }
 
-                textRect.oSet(clientRect);
-                textRect.x += 2.0;
-                textRect.w -= 2.0;
-                textRect.y += 2.0;
-                textRect.h -= 2.0;
-                textRect.x += textAlignx;
-                textRect.y += textAligny;
+                this.textRect.oSet(this.clientRect);
+                this.textRect.x += 2.0;
+                this.textRect.w -= 2.0;
+                this.textRect.y += 2.0;
+                this.textRect.h -= 2.0;
+                this.textRect.x += this.textAlignx;
+                this.textRect.y += this.textAligny;
 
             }
-            origin.Set(rect.x() + (rect.w() / 2), rect.y() + (rect.h() / 2));
+            this.origin.Set(this.rect.x() + (this.rect.w() / 2), this.rect.y() + (this.rect.h() / 2));
         }
 
         protected void SetupTransforms(float x, float y) {
 
             trans.Identity();
-            org.Set(origin.x + x, origin.y + y, 0);
-            if (rotate != null && rotate.data != 0) {
+            org.Set(this.origin.x + x, this.origin.y + y, 0);
+            if ((this.rotate != null) && (this.rotate.data != 0)) {
 
-                rot.Set(org, vec, rotate.data);
+                rot.Set(org, vec, this.rotate.data);
                 trans = rot.ToMat3();
             }
 
             smat.Identity();
-            if (shear.x() != 0 || shear.y() != 0) {
-                smat.oSet(0, 1, shear.x());
-                smat.oSet(1, 0, shear.y());
+            if ((this.shear.x() != 0) || (this.shear.y() != 0)) {
+                smat.oSet(0, 1, this.shear.x());
+                smat.oSet(1, 0, this.shear.y());
                 trans.oMulSet(smat);
             }
 
             if (!trans.IsIdentity()) {
-                dc.SetTransformInfo(org, trans);
+                this.dc.SetTransformInfo(org, trans);
             }
         }
 
         protected void DrawBackground(final idRectangle drawRect) {
-            if (backColor.w() > 0) {
-                dc.DrawFilledRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, backColor.data);
+            if (this.backColor.w() > 0) {
+                this.dc.DrawFilledRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, this.backColor.data);
             }
 
-            if (background != null) {
-                if (matColor.w() > 0) {
+            if (this.background != null) {
+                if (this.matColor.w() > 0) {
                     float scaleX, scaleY;
-                    if ((flags & WIN_NATURALMAT) != 0) {
-                        scaleX = drawRect.w / background.GetImageWidth();
-                        scaleY = drawRect.h / background.GetImageHeight();
+                    if ((this.flags & WIN_NATURALMAT) != 0) {
+                        scaleX = drawRect.w / this.background.GetImageWidth();
+                        scaleY = drawRect.h / this.background.GetImageHeight();
                     } else {
-                        scaleX = matScalex;
-                        scaleY = matScaley;
+                        scaleX = this.matScalex;
+                        scaleY = this.matScaley;
                     }
-                    dc.DrawMaterial(drawRect.x, drawRect.y, drawRect.w, drawRect.h, background, matColor.data, scaleX, scaleY);
+                    this.dc.DrawMaterial(drawRect.x, drawRect.y, drawRect.w, drawRect.h, this.background, this.matColor.data, scaleX, scaleY);
                 }
             }
         }
 
         protected void DrawBorderAndCaption(final idRectangle drawRect) {
-            if ((flags & WIN_BORDER) != 0) {
-                if (borderSize != 0) {
-                    dc.DrawRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, borderSize, borderColor.data);
+            if ((this.flags & WIN_BORDER) != 0) {
+                if (this.borderSize != 0) {
+                    this.dc.DrawRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, this.borderSize, this.borderColor.data);
                 }
             }
         }
-    };
+    }
 }

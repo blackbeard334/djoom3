@@ -58,7 +58,7 @@ public class tritools {
         mapTri_s prev;
 
         prev = a;
-        while (prev != null && prev.next != null) {
+        while ((prev != null) && (prev.next != null)) {
             prev = prev.next;
         }
 
@@ -190,7 +190,7 @@ public class tritools {
      ================
      */
     static void DrawTri(final mapTri_s tri) {
-        idWinding w = new idWinding();
+        final idWinding w = new idWinding();
 
         w.SetNumPoints(3);
         VectorCopy(tri.v[0].xyz, w.oGet(0));
@@ -271,14 +271,14 @@ public class tritools {
             c = idWinding.TriangleArea(tri.v[i].xyz, original.v[0].xyz, original.v[1].xyz) / denom;
 
             // regenerate the interpolated values
-            tri.v[i].st.oSet(0, a * original.v[0].st.oGet(0)
-                    + b * original.v[1].st.oGet(0) + c * original.v[2].st.oGet(0));
-            tri.v[i].st.oSet(1, a * original.v[0].st.oGet(1)
-                    + b * original.v[1].st.oGet(1) + c * original.v[2].st.oGet(1));
+            tri.v[i].st.oSet(0, (a * original.v[0].st.oGet(0))
+                    + (b * original.v[1].st.oGet(0)) + (c * original.v[2].st.oGet(0)));
+            tri.v[i].st.oSet(1, (a * original.v[0].st.oGet(1))
+                    + (b * original.v[1].st.oGet(1)) + (c * original.v[2].st.oGet(1)));
 
             for (j = 0; j < 3; j++) {
-                tri.v[i].normal.oSet(j, a * original.v[0].normal.oGet(j)
-                        + b * original.v[1].normal.oGet(j) + c * original.v[2].normal.oGet(j));
+                tri.v[i].normal.oSet(j, (a * original.v[0].normal.oGet(j))
+                        + (b * original.v[1].normal.oGet(j)) + (c * original.v[2].normal.oGet(j)));
             }
             tri.v[i].normal.Normalize();
         }
@@ -345,7 +345,8 @@ public class tritools {
             mapTri_s front, mapTri_s back) {
         mapTri_s tri;
         mapTri_s newList;
-        idWinding w, frontW = new idWinding(), backW = new idWinding();
+        idWinding w;
+		final idWinding frontW = new idWinding(), backW = new idWinding();
 
 //        front[0] = null;
 //        back[0] = null;

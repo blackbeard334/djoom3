@@ -86,7 +86,7 @@ public class List {
 //
 
 		private type[] getArray() {
-			return array;
+			return this.array;
 		}
 
     	private type getArrayType(int index) {
@@ -102,7 +102,7 @@ public class List {
     	}
 
 		private int getSize() {
-			return size;
+			return this.size;
 		}
 
 
@@ -112,7 +112,7 @@ public class List {
 
 
 		private int getGranularity() {
-			return granularity;
+			return this.granularity;
 		}
 
 
@@ -121,7 +121,7 @@ public class List {
 		}
 
 		private Class<type> getType() {
-			return type;
+			return this.type;
 		}
 
 
@@ -131,7 +131,7 @@ public class List {
 
 
 		private int getNum() {
-			return num;
+			return this.num;
 		}
 
 
@@ -145,7 +145,7 @@ public class List {
 		}
 
 		private ArrayList<type> generateArray(int size) {
-			ArrayList<type> types = new ArrayList<type>();
+			final ArrayList<type> types = new ArrayList<type>();
 			addInitializedValues(types, size);
 			return types;
 		}
@@ -158,13 +158,14 @@ public class List {
 		}
 
 		private type instantiateType() {
-			return instantiateType(type);
+			return instantiateType(this.type);
 		}
 
 		private type instantiateType(Class<?> type) {
 			if (type != null) {
 	            try {
 	            	@SuppressWarnings("unchecked")
+					final
 					type instance = (type) type.newInstance();
 					return instance;//TODO: check if any of this is necessary?
 	            } catch (InstantiationException | IllegalAccessException ex) {
@@ -186,7 +187,7 @@ public class List {
                 	this.setGranularity(16);
                 }
                 newsize = getSize() + getGranularity();
-                Resize(newsize - newsize % getGranularity());
+                Resize(newsize - (newsize % getGranularity()));
             }
 		}
 
@@ -245,7 +246,7 @@ public class List {
 
             if (getArray() != null) {
                 // resize it to the closest level of granularity
-                newsize = Num() + getGranularity() - 1;
+                newsize = (Num() + getGranularity()) - 1;
                 newsize -= newsize % getGranularity();
                 if (newsize != getSize()) {
                     Resize(newsize);
@@ -277,7 +278,7 @@ public class List {
         }
 
         public /*size_t*/ int Size() {						// returns total size of allocated memory including size of array type
-            return size;
+            return this.size;
         }
 
         public /*size_t*/ int MemoryUsed() {					// returns size of the used elements in the array
@@ -347,7 +348,7 @@ public class List {
             assert (index >= 0);
             assert (index < Num());
 
-            return setArrayType(index, (type) value);
+            return setArrayType(index, value);
         }
 
         public type oPluSet(int index, type value) {
@@ -362,6 +363,7 @@ public class List {
 //            }
 //            if (array[index] instanceof Integer) {
             @SuppressWarnings("unchecked")
+			final
             type element = (type) (Object) (((Number) getArrayType(index)).doubleValue() + ((Number) value).doubleValue());//TODO:test thsi shit
             this.setArrayType(index, element);
             return element;
@@ -483,7 +485,7 @@ public class List {
          */
         public void SetNum(int newnum, boolean resize) {			// set number of elements in array and resize to exactly this number if necessary
             assert (newnum >= 0);
-            if (resize || newnum > getSize()) {
+            if (resize || (newnum > getSize())) {
                 Resize(newnum);
             }
             this.setNum(newnum);
@@ -497,7 +499,7 @@ public class List {
          ================
          */
         public void AssureSize(int newSize) {							// assure array has given number of elements, but leave them uninitialized
-            int newNum = newSize;
+            final int newNum = newSize;
 
             if (newSize > getSize()) {
 
@@ -521,7 +523,7 @@ public class List {
          ================
          */
         public void AssureSize(int newSize, final type initValue) {	// assure array has given number of elements and initialize any new elements
-            int oldNum = Num();
+            final int oldNum = Num();
 
             AssureSize(newSize);
 
@@ -543,7 +545,7 @@ public class List {
          ================
          */
         public void AssureSizeAlloc(int newSize, /*new_t*/ Class<type> allocator) {	// assure the pointer array has the given number of elements and allocate any new elements
-            int oldNum = Num();
+            final int oldNum = Num();
 
             AssureSize(newSize);
 
@@ -573,8 +575,9 @@ public class List {
         }
 
         public <T> T[] Ptr(final Class<? extends T[]> type) {
-            if (this.Num() == 0)
-                return null;
+            if (this.Num() == 0) {
+				return null;
+			}
             
             // returns a pointer to the array
             return Arrays.copyOf(this.getArray(), this.getNum(), type);
@@ -596,7 +599,7 @@ public class List {
             if (Num() == getSize()) {
                 Resize(getSize() + getGranularity());
             }
-            type instance = instantiateType();
+            final type instance = instantiateType();
             if (instance != null) {
             	this.setArrayType(this.num++, instance);
             	return instance;
@@ -651,7 +654,7 @@ public class List {
                 Resize(getGranularity());
             }
 
-            int n = other.Num();
+            final int n = other.Num();
             for (int i = 0; i < n; i++) {
                 Append(other.oGet(i));
             }
@@ -851,20 +854,23 @@ public class List {
                 return;
             }
 
-            if (getArray()[0] instanceof idStr
+            if ((getArray()[0] instanceof idStr)
             		//|| getArray()[0] instanceof idStrPtr
-                    || getArray()[0] instanceof idPoolStr) {
+                    || (getArray()[0] instanceof idPoolStr)) {
             	@SuppressWarnings("unchecked")
+				final
             	cmp_t<type> compare = (cmp_t<type>) new StrList.idListSortCompare();
             	this.Sort(compare);
 
             } else if (getArray()[0] instanceof idInternalCVar) {
             	@SuppressWarnings("unchecked")
+				final
             	cmp_t<type> compare = (cmp_t<type>) new CVarSystem.idListSortCompare();
                 this.Sort(compare);
 
             } else if (getArray()[0] instanceof commandDef_s) {
             	@SuppressWarnings("unchecked")
+				final
             	cmp_t<type> compare = (cmp_t<type>) new CmdSystem.idListSortCompare();
                 this.Sort(compare);
 
@@ -967,10 +973,10 @@ public class List {
                 Clear();
             } else {
 //		memset( array, 0, size * sizeof( type ) );
-            	this.setArray(castArrayType(generateArray(array.length)));
+            	this.setArray(castArrayType(generateArray(this.array.length)));
             }
         }
-    };
+    }
 
 //    @Deprecated
 //    public static <T> void idSwap(T a, T b) {

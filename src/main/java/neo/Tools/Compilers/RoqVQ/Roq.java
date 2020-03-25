@@ -45,23 +45,23 @@ public class Roq {
         private NSBitmapImageRep image;
         private int              numQuadCels;
         private boolean          quietMode;
-        private boolean          lastFrame;
+        private final boolean          lastFrame;
         private idStr            roqOutfile;
         private idStr            currentFile;
         private int              numberOfFrames;
         private int              previousSize;
-        private byte[] codes = new byte[4096];
+        private final byte[] codes = new byte[4096];
         private boolean dataStuff;
         //
         //
 
         public roq() {
-            image = null;//0;
-            quietMode = false;
-            encoder = null;//0;
-            previousSize = 0;
-            lastFrame = false;
-            dataStuff = false;
+            this.image = null;//0;
+            this.quietMode = false;
+            this.encoder = null;//0;
+            this.previousSize = 0;
+            this.lastFrame = false;
+            this.dataStuff = false;
         }
         // ~roq();
 
@@ -202,26 +202,26 @@ public class Roq {
 
             common.Printf("loadAndDisplayImage: %s\n", filename);
 
-            currentFile.oSet(filename);
+            this.currentFile.oSet(filename);
 
-            image = new NSBitmapImageRep(filename);
+            this.image = new NSBitmapImageRep(filename);
 
-            numQuadCels = ((image.pixelsWide() & 0xfff0) * (image.pixelsHigh() & 0xfff0)) / (MINSIZE * MINSIZE);
-            numQuadCels += numQuadCels / 4 + numQuadCels / 16;
+            this.numQuadCels = ((this.image.pixelsWide() & 0xfff0) * (this.image.pixelsHigh() & 0xfff0)) / (MINSIZE * MINSIZE);
+            this.numQuadCels += (this.numQuadCels / 4) + (this.numQuadCels / 16);
 
 //	if (paramFile->deltaFrames] == true && cleared == false && [image isPlanar] == false) {
 //		cleared = true;
 //		imageData = [image data];
 //		memset( imageData, 0, image->pixelsWide()*image->pixelsHigh()*[image samplesPerPixel]);
 //	}
-            if (!quietMode) {
-                common.Printf("loadAndDisplayImage: %dx%d\n", image.pixelsWide(), image.pixelsHigh());
+            if (!this.quietMode) {
+                common.Printf("loadAndDisplayImage: %dx%d\n", this.image.pixelsWide(), this.image.pixelsHigh());
             }
         }
 
         public void CloseRoQFile(boolean which) {
             common.Printf("closeRoQFile: closing RoQ file\n");
-            fileSystem.CloseFile(RoQFile);
+            fileSystem.CloseFile(this.RoQFile);
         }
         private static int finit = 0;
 
@@ -231,27 +231,27 @@ public class Roq {
             if (0 == finit) {
                 finit++;
                 common.Printf("initRoQFile: %s\n", RoQFilename);
-                RoQFile = fileSystem.OpenFileWrite(RoQFilename);
+                this.RoQFile = fileSystem.OpenFileWrite(RoQFilename);
 //		chmod(RoQFilename, S_IREAD|S_IWRITE|S_ISUID|S_ISGID|0070|0007 );
-                if (null == RoQFile) {
+                if (null == this.RoQFile) {
                     common.Error("Unable to open output file %s.\n", RoQFilename);
                 }
 
                 i = RoQ_ID;
-                Write16Word(i, RoQFile);
+                Write16Word(i, this.RoQFile);
 
                 i = 0xffff;
-                Write16Word(i, RoQFile);
-                Write16Word(i, RoQFile);
+                Write16Word(i, this.RoQFile);
+                Write16Word(i, this.RoQFile);
 
                 // to retain exact file format write out 32 for new roq's
                 // on loading this will be noted and converted to 1000 / 30
                 // as with any new sound dump avi demos we need to playback
                 // at the speed the sound engine dumps the audio
                 i = 30;						// framerate
-                Write16Word(i, RoQFile);
+                Write16Word(i, this.RoQFile);
             }
-            roqOutfile.oSet(RoQFilename);
+            this.roqOutfile.oSet(RoQFilename);
         }
 
         public void InitRoQPatterns() {
@@ -259,27 +259,27 @@ public class Roq {
             int/*word*/ direct;
 
             direct = RoQ_QUAD_INFO;
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
 
             j = 8;
 
-            Write32Word(j, RoQFile);
+            Write32Word(j, this.RoQFile);
             common.Printf("initRoQPatterns: outputting %d bytes to RoQ_INFO\n", j);
-            direct = image.hasAlpha() ? 1 : 0;
+            direct = this.image.hasAlpha() ? 1 : 0;
             if (ParamNoAlpha() == true) {
                 direct = 0;
             }
 
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
 
-            direct = image.pixelsWide();
-            Write16Word(direct, RoQFile);
-            direct = image.pixelsHigh();
-            Write16Word(direct, RoQFile);
+            direct = this.image.pixelsWide();
+            Write16Word(direct, this.RoQFile);
+            direct = this.image.pixelsHigh();
+            Write16Word(direct, this.RoQFile);
             direct = 8;
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
             direct = 4;
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
         }
 
         public void EncodeStream(final String paramInputFile) {
@@ -289,50 +289,50 @@ public class Roq {
 
             onFrame = 1;
 
-            encoder = new codec();
-            paramFile = new roqParam();
-            paramFile.numInputFiles = 0;
+            this.encoder = new codec();
+            this.paramFile = new roqParam();
+            this.paramFile.numInputFiles = 0;
 
-            paramFile.InitFromFile(paramInputFile);
+            this.paramFile.InitFromFile(paramInputFile);
 
-            if (NOT(paramFile.NumberOfFrames())) {
+            if (NOT(this.paramFile.NumberOfFrames())) {
                 return;
             }
 
-            InitRoQFile(paramFile.outputFilename.toString());
+            InitRoQFile(this.paramFile.outputFilename.toString());
 
-            numberOfFrames = paramFile.NumberOfFrames();
+            this.numberOfFrames = this.paramFile.NumberOfFrames();
 
-            if (paramFile.NoAlpha() == true) {
+            if (this.paramFile.NoAlpha() == true) {
                 common.Printf("encodeStream: eluding alpha\n");
             }
 
             f0 = "";
-            f1 = paramFile.GetNextImageFilename();
-            if ((paramFile.MoreFrames() == true)) {
-                f2 = paramFile.GetNextImageFilename();
+            f1 = this.paramFile.GetNextImageFilename();
+            if ((this.paramFile.MoreFrames() == true)) {
+                f2 = this.paramFile.GetNextImageFilename();
             }
-            morestuff = numberOfFrames;
+            morestuff = this.numberOfFrames;
 
             while (morestuff != 0) {
                 LoadAndDisplayImage(f1);
 
                 if (onFrame == 1) {
-                    encoder.SparseEncode();
+                    this.encoder.SparseEncode();
 //			WriteLossless();
                 } else {
                     if (f0.equals(f1) && !f1.equals(f2)) {
                         WriteHangFrame();
                     } else {
-                        encoder.SparseEncode();
+                        this.encoder.SparseEncode();
                     }
                 }
 
                 onFrame++;
                 f0 = f1;
                 f1 = f2;
-                if (paramFile.MoreFrames() == true) {
-                    f2 = paramFile.GetNextImageFilename();
+                if (this.paramFile.MoreFrames() == true) {
+                    f2 = this.paramFile.GetNextImageFilename();
                 }
                 morestuff--;
                 session.UpdateScreen();
@@ -350,19 +350,19 @@ public class Roq {
         }
 
         public void EncodeQuietly(boolean which) {
-            quietMode = which;
+            this.quietMode = which;
         }
 
         public boolean IsQuiet() {
-            return quietMode;
+            return this.quietMode;
         }
 
         public boolean IsLastFrame() {
-            return lastFrame;
+            return this.lastFrame;
         }
 
         public NSBitmapImageRep CurrentImage() {
-            return image;
+            return this.image;
         }
 
         public void MarkQuadx(int xat, int yat, int size, float cerror, int choice) {
@@ -378,9 +378,9 @@ public class Roq {
             byte[] cccList;
             boolean[] use2, use4;
             int dx, dy, dxMean, dyMean, dimension;
-            int[] index2 = new int[256], index4 = new int[256];
+            final int[] index2 = new int[256], index4 = new int[256];
 
-            cccList = new byte[numQuadCels * 8];// Mem_Alloc(numQuadCels * 8);					// maximum length 
+            cccList = new byte[this.numQuadCels * 8];// Mem_Alloc(numQuadCels * 8);					// maximum length 
             use2 = new boolean[256];// Mem_Alloc(256);
             use4 = new boolean[256];// Mem_Alloc(256);
 
@@ -393,31 +393,31 @@ public class Roq {
             j = onAction = 0;
             onCCC = 2;											// onAction going to go at zero
 
-            dxMean = encoder.MotMeanX();
-            dyMean = encoder.MotMeanY();
+            dxMean = this.encoder.MotMeanX();
+            dyMean = this.encoder.MotMeanY();
 
-            if (image.hasAlpha()) {
+            if (this.image.hasAlpha()) {
                 dimension = 10;
             } else {
                 dimension = 6;
             }
 
-            for (i = 0; i < numQuadCels; i++) {
-                if (pquad[i].size != 0 && pquad[i].size < 16) {
+            for (i = 0; i < this.numQuadCels; i++) {
+                if ((pquad[i].size != 0) && (pquad[i].size < 16)) {
                     switch (pquad[i].status) {
                         case SLD:
                             use4[pquad[i].patten[0]] = true;
-                            use2[codes[dimension * 256 + (pquad[i].patten[0] * 4) + 0]] = true;
-                            use2[codes[dimension * 256 + (pquad[i].patten[0] * 4) + 1]] = true;
-                            use2[codes[dimension * 256 + (pquad[i].patten[0] * 4) + 2]] = true;
-                            use2[codes[dimension * 256 + (pquad[i].patten[0] * 4) + 3]] = true;
+                            use2[this.codes[(dimension * 256) + (pquad[i].patten[0] * 4) + 0]] = true;
+                            use2[this.codes[(dimension * 256) + (pquad[i].patten[0] * 4) + 1]] = true;
+                            use2[this.codes[(dimension * 256) + (pquad[i].patten[0] * 4) + 2]] = true;
+                            use2[this.codes[(dimension * 256) + (pquad[i].patten[0] * 4) + 3]] = true;
                             break;
                         case PAT:
                             use4[pquad[i].patten[0]] = true;
-                            use2[codes[dimension * 256 + (pquad[i].patten[0] * 4) + 0]] = true;
-                            use2[codes[dimension * 256 + (pquad[i].patten[0] * 4) + 1]] = true;
-                            use2[codes[dimension * 256 + (pquad[i].patten[0] * 4) + 2]] = true;
-                            use2[codes[dimension * 256 + (pquad[i].patten[0] * 4) + 3]] = true;
+                            use2[this.codes[(dimension * 256) + (pquad[i].patten[0] * 4) + 0]] = true;
+                            use2[this.codes[(dimension * 256) + (pquad[i].patten[0] * 4) + 1]] = true;
+                            use2[this.codes[(dimension * 256) + (pquad[i].patten[0] * 4) + 2]] = true;
+                            use2[this.codes[(dimension * 256) + (pquad[i].patten[0] * 4) + 3]] = true;
                             break;
                         case CCC:
                             use2[pquad[i].patten[1]] = true;
@@ -428,15 +428,15 @@ public class Roq {
                 }
             }
 
-            if (!dataStuff) {
-                dataStuff = true;
+            if (!this.dataStuff) {
+                this.dataStuff = true;
                 InitRoQPatterns();
-                if (image.hasAlpha()) {
+                if (this.image.hasAlpha()) {
                     i = 3584;
                 } else {
                     i = 2560;
                 }
-                WriteCodeBookToStream(codes, i, 0);
+                WriteCodeBookToStream(this.codes, i, 0);
                 for (i = 0; i < 256; i++) {
                     index2[i] = i;
                     index4[i] = i;
@@ -447,7 +447,7 @@ public class Roq {
                     if (use2[i]) {
                         index2[i] = j;
                         for (dx = 0; dx < dimension; dx++) {
-                            cccList[j * dimension + dx] = codes[i * dimension + dx];
+                            cccList[(j * dimension) + dx] = this.codes[(i * dimension) + dx];
                         }
                         j++;
                     }
@@ -460,7 +460,7 @@ public class Roq {
                     if (use4[i]) {
                         index4[i] = j;
                         for (dx = 0; dx < 4; dx++) {
-                            cccList[j * 4 + code + dx] = (byte) index2[codes[i * 4 + (dimension * 256) + dx]];
+                            cccList[(j * 4) + code + dx] = (byte) index2[this.codes[(i * 4) + (dimension * 256) + dx]];
                         }
                         j++;
                     }
@@ -468,13 +468,13 @@ public class Roq {
                 code += j * 4;
                 direct = (direct << 8) + j;
                 common.Printf("writeFrame: really used %d 4x4 cels\n", j);
-                if (image.hasAlpha()) {
+                if (this.image.hasAlpha()) {
                     i = 3584;
                 } else {
                     i = 2560;
                 }
-                if (code == i || j == 256) {
-                    WriteCodeBookToStream(codes, i, 0);
+                if ((code == i) || (j == 256)) {
+                    WriteCodeBookToStream(this.codes, i, 0);
                 } else {
                     WriteCodeBookToStream(cccList, code, direct);
                 }
@@ -483,8 +483,8 @@ public class Roq {
             action = 0;
             j = onAction = 0;
 
-            for (i = 0; i < numQuadCels; i++) {
-                if (pquad[i].size != 0 && pquad[i].size < 16) {
+            for (i = 0; i < this.numQuadCels; i++) {
+                if ((pquad[i].size != 0) && (pquad[i].size < 16)) {
                     code = -1;
                     switch (pquad[i].status) {
                         case DEP:
@@ -499,9 +499,9 @@ public class Roq {
                             break;
                         case FCC:
                             code = 1;
-                            dx = ((pquad[i].domain >> 8)) - 128 - dxMean + 8;
-                            dy = ((pquad[i].domain & 0xff)) - 128 - dyMean + 8;
-                            if (dx > 15 || dx < 0 || dy > 15 || dy < 0) {
+                            dx = (((pquad[i].domain >> 8)) - 128 - dxMean) + 8;
+                            dy = (((pquad[i].domain & 0xff)) - 128 - dyMean) + 8;
+                            if ((dx > 15) || (dx < 0) || (dy > 15) || (dy < 0)) {
                                 common.Error("writeFrame: FCC error %d,%d mean %d,%d at %d,%d,%d rmse %f\n", dx, dy, dxMean, dyMean, pquad[i].xat, pquad[i].yat, pquad[i].size, pquad[i].snr[FCC]);
                             }
                             cccList[onCCC++] = (byte) ((dx << 4) + dy);
@@ -545,22 +545,22 @@ public class Roq {
 
             direct = RoQ_QUAD_VQ;
 
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
 
             j = onCCC;
-            Write32Word(j, RoQFile);
+            Write32Word(j, this.RoQFile);
 
             direct = dyMean;
             direct &= 0xff;
             direct += (dxMean << 8);		// flags
 
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
 
             common.Printf("writeFrame: outputting %d bytes to RoQ_QUAD_VQ\n", j);
 
-            previousSize = j;
+            this.previousSize = j;
 
-            RoQFile.Write(ByteBuffer.wrap(cccList), onCCC);
+            this.RoQFile.Write(ByteBuffer.wrap(cccList), onCCC);
 
             cccList = null;//Mem_Free(cccList);
             use2 = null;//Mem_Free(use2);
@@ -569,7 +569,7 @@ public class Roq {
 
         public void WriteCodeBook(byte[] codebook) {
 //	memcpy( codes, codebook, 4096 );
-            System.arraycopy(codebook, 0, codes, 0, 4096);
+            System.arraycopy(codebook, 0, this.codes, 0, 4096);
         }
 
         public void WriteCodeBookToStream(byte[] codebook, int csize, int/*word*/ cflags) {
@@ -583,21 +583,21 @@ public class Roq {
 
             direct = RoQ_QUAD_CODEBOOK;
 
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
 
             j = csize;
 
-            Write32Word(j, RoQFile);
+            Write32Word(j, this.RoQFile);
             common.Printf("writeCodeBook: outputting %d bytes to RoQ_QUAD_CODEBOOK\n", j);
 
             direct = cflags;
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
 
-            RoQFile.Write(ByteBuffer.wrap(codebook), j);
+            this.RoQFile.Write(ByteBuffer.wrap(codebook), j);
         }
 
         public int PreviousFrameSize() {
-            return previousSize;
+            return this.previousSize;
         }
 
         public boolean MakingVideo() {
@@ -605,31 +605,31 @@ public class Roq {
         }
 
         public boolean ParamNoAlpha() {
-            return paramFile.NoAlpha();
+            return this.paramFile.NoAlpha();
         }
 
         public boolean SearchType() {
-            return paramFile.SearchType();
+            return this.paramFile.SearchType();
         }
 
         public boolean HasSound() {
-            return paramFile.HasSound();
+            return this.paramFile.HasSound();
         }
 
         public String CurrentFilename() {
-            return currentFile.toString();
+            return this.currentFile.toString();
         }
 
         public int NormalFrameSize() {
-            return paramFile.NormalFrameSize();
+            return this.paramFile.NormalFrameSize();
         }
 
         public int FirstFrameSize() {
-            return paramFile.FirstFrameSize();
+            return this.paramFile.FirstFrameSize();
         }
 
         public boolean Scaleable() {
-            return paramFile.IsScaleable();
+            return this.paramFile.IsScaleable();
         }
 
         public void WriteHangFrame() {
@@ -637,15 +637,15 @@ public class Roq {
             int/*word*/ direct;
             common.Printf("*******************************************************************\n");
             direct = RoQ_QUAD_HANG;
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
             j = 0;
-            Write32Word(j, RoQFile);
+            Write32Word(j, this.RoQFile);
             direct = 0;
-            Write16Word(direct, RoQFile);
+            Write16Word(direct, this.RoQFile);
         }
 
         public int NumberOfFrames() {
-            return numberOfFrames;
+            return this.numberOfFrames;
         }
 
         private void Write16Word(int/*word*/ aWord, idFile stream) {
@@ -673,7 +673,7 @@ public class Roq {
 //            stream.Write(c, 1);
 //            stream.Write(d, 1);
 //            
-            ByteBuffer buffer = ByteBuffer.allocate(8);
+            final ByteBuffer buffer = ByteBuffer.allocate(8);
             buffer.putInt(aWord);
 
             stream.Write(buffer);
@@ -685,7 +685,7 @@ public class Roq {
 
         private void CloseRoQFile() {
             common.Printf("closeRoQFile: closing RoQ file\n");
-            fileSystem.CloseFile(RoQFile);
+            fileSystem.CloseFile(this.RoQFile);
         }
         /*
          * Initialize destination --- called by jpeg_start_compress
@@ -863,7 +863,7 @@ public class Roq {
         }
 
 //        private void JPEGSave(String[] filename, int quality, int image_width, int image_height, /*unsigned*/ char[] image_buffer);
-    };
+    }
     public static roq theRoQ;				// current roq 
 
     public static class RoQFileEncode_f extends cmdFunction_t {
@@ -881,9 +881,9 @@ public class Roq {
                 return;
             }
             theRoQ = new roq();
-            int startMsec = Sys_Milliseconds();
+            final int startMsec = Sys_Milliseconds();
             theRoQ.EncodeStream(args.Argv(1));
-            int stopMsec = Sys_Milliseconds();
+            final int stopMsec = Sys_Milliseconds();
             common.Printf("total encoding time: %d second\n", (stopMsec - startMsec) / 1000);
 
         }

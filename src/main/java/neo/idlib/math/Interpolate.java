@@ -31,7 +31,7 @@ public class Interpolate {
         //
 
         public idInterpolate() {
-            currentTime = startTime = duration = 0;
+            this.currentTime = this.startTime = this.duration = 0;
 //            memset( & currentValue, 0, sizeof(currentValue));
 //            startValue = endValue = currentValue;
         }
@@ -64,53 +64,53 @@ public class Interpolate {
         public type GetCurrentValue(float time) {
             float deltaTime;
 
-            deltaTime = time - startTime;
-            if (time != currentTime) {
-                currentTime = time;
+            deltaTime = time - this.startTime;
+            if (time != this.currentTime) {
+                this.currentTime = time;
                 if (deltaTime <= 0) {
-                    currentValue = TempDump.clone(startValue);
-                } else if (deltaTime >= duration) {
-                    currentValue = TempDump.clone(endValue);
+                    this.currentValue = TempDump.clone(this.startValue);
+                } else if (deltaTime >= this.duration) {
+                    this.currentValue = TempDump.clone(this.endValue);
                 } else {
-                    if (currentValue instanceof Integer) {
+                    if (this.currentValue instanceof Integer) {
                         final int e = (Integer) this.endValue;
                         final int s = (Integer) this.startValue;
-                        currentValue = (type) (Integer) (int) (s + (e - s) * ((float) deltaTime / duration));
+                        this.currentValue = (type) (Integer) (int) (s + ((e - s) * (deltaTime / this.duration)));
                     }
-                    if (currentValue instanceof Float) {
+                    if (this.currentValue instanceof Float) {
                         final float e = (Float) this.endValue;
                         final float s = (Float) this.startValue;
-                        currentValue = (type) (Float) (s + (e - s) * ((float) deltaTime / duration));
+                        this.currentValue = (type) (Float) (s + ((e - s) * (deltaTime / this.duration)));
                     }
                 }
             }
-            return currentValue;
+            return this.currentValue;
         }
 
         public boolean IsDone(float time) {
-            return (time >= startTime + duration);
+            return (time >= (this.startTime + this.duration));
         }
 
         public float GetStartTime() {
-            return startTime;
+            return this.startTime;
         }
 
         public float GetEndTime() {
-            return startTime + duration;
+            return this.startTime + this.duration;
         }
 
         public float GetDuration() {
-            return duration;
+            return this.duration;
         }
 
         public type GetStartValue() {
-            return startValue;
+            return this.startValue;
         }
 
         public type GetEndValue() {
-            return endValue;
+            return this.endValue;
         }
-    };
+    }
 
     /*
      ==============================================================================================
@@ -132,14 +132,14 @@ public class Interpolate {
         private float decelTime;
         private type startValue;
         private type endValue;
-        private idExtrapolate<type> extrapolate;
+        private final idExtrapolate<type> extrapolate;
         //
         //
 
         public idInterpolateAccelDecelLinear() {
-            startTime = accelTime = linearTime = decelTime = 0;
+            this.startTime = this.accelTime = this.linearTime = this.decelTime = 0;
 //	memset( &startValue, 0, sizeof( startValue ) );
-            endValue = startValue;
+            this.endValue = this.startValue;
             this.extrapolate = new idExtrapolate<>();
         }
 
@@ -156,24 +156,24 @@ public class Interpolate {
                 return;
             }
 
-            if (this.accelTime + this.decelTime > duration) {
-                this.accelTime = this.accelTime * duration / (this.accelTime + this.decelTime);
+            if ((this.accelTime + this.decelTime) > duration) {
+                this.accelTime = (this.accelTime * duration) / (this.accelTime + this.decelTime);
                 this.decelTime = duration - this.accelTime;
             }
             this.linearTime = duration - this.accelTime - this.decelTime;
-            speed = (type) _Multiply(_Minus(endValue, startValue), (1000.0f / (this.linearTime + (this.accelTime + this.decelTime) * 0.5f)));
+            speed = _Multiply(_Minus(endValue, startValue), (1000.0f / (this.linearTime + ((this.accelTime + this.decelTime) * 0.5f))));
 
             if (0.0f != this.accelTime) {
-                extrapolate.Init(startTime, this.accelTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_ACCELLINEAR);
+                this.extrapolate.Init(startTime, this.accelTime, startValue, _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_ACCELLINEAR);
             } else if (0.0f != this.linearTime) {
-                extrapolate.Init(startTime, this.linearTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_LINEAR);
+                this.extrapolate.Init(startTime, this.linearTime, startValue, _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_LINEAR);
             } else {
-                extrapolate.Init(startTime, this.decelTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_DECELLINEAR);
+                this.extrapolate.Init(startTime, this.decelTime, startValue, _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_DECELLINEAR);
             }
         }
 
         public void SetStartTime(float time) {
-            startTime = time;
+            this.startTime = time;
             Invalidate();
         }
 
@@ -189,65 +189,65 @@ public class Interpolate {
 
         public type GetCurrentValue(float time) {
             SetPhase(time);
-            return extrapolate.GetCurrentValue(time);
+            return this.extrapolate.GetCurrentValue(time);
         }
 
         public type GetCurrentSpeed(float time) {
             SetPhase(time);
-            return extrapolate.GetCurrentSpeed(time);
+            return this.extrapolate.GetCurrentSpeed(time);
         }
 
         public boolean IsDone(float time) {
-            return (time >= startTime + accelTime + linearTime + decelTime);
+            return (time >= (this.startTime + this.accelTime + this.linearTime + this.decelTime));
         }
 
         public float GetStartTime() {
-            return startTime;
+            return this.startTime;
         }
 
         public float GetEndTime() {
-            return startTime + accelTime + linearTime + decelTime;
+            return this.startTime + this.accelTime + this.linearTime + this.decelTime;
         }
 
         public float GetDuration() {
-            return accelTime + linearTime + decelTime;
+            return this.accelTime + this.linearTime + this.decelTime;
         }
 
         public float GetAcceleration() {
-            return accelTime;
+            return this.accelTime;
         }
 
         public float GetDeceleration() {
-            return decelTime;
+            return this.decelTime;
         }
 
         public type GetStartValue() {
-            return startValue;
+            return this.startValue;
         }
 
         public type GetEndValue() {
-            return endValue;
+            return this.endValue;
         }
 
         private void Invalidate() {
-            extrapolate.Init(0, 0, extrapolate.GetStartValue(), extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_NONE);
+            this.extrapolate.Init(0, 0, this.extrapolate.GetStartValue(), this.extrapolate.GetBaseSpeed(), this.extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_NONE);
         }
 
         private void SetPhase(float time) {
             float deltaTime;
 
-            deltaTime = time - startTime;
-            if (deltaTime < accelTime) {
-                if (extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_ACCELLINEAR) {
-                    extrapolate.Init(startTime, accelTime, startValue, extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_ACCELLINEAR);
+            deltaTime = time - this.startTime;
+            if (deltaTime < this.accelTime) {
+                if (this.extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_ACCELLINEAR) {
+                    this.extrapolate.Init(this.startTime, this.accelTime, this.startValue, this.extrapolate.GetBaseSpeed(), this.extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_ACCELLINEAR);
                 }
-            } else if (deltaTime < accelTime + linearTime) {
-                if (extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_LINEAR) {
-                    extrapolate.Init(startTime + accelTime, linearTime, (type) _Plus(startValue, _Multiply(extrapolate.GetSpeed(), (accelTime * 0.001f * 0.5f))), extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_LINEAR);
+            } else if (deltaTime < (this.accelTime + this.linearTime)) {
+                if (this.extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_LINEAR) {
+                    this.extrapolate.Init(this.startTime + this.accelTime, this.linearTime, _Plus(this.startValue, _Multiply(this.extrapolate.GetSpeed(), (this.accelTime * 0.001f * 0.5f))), this.extrapolate.GetBaseSpeed(), this.extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_LINEAR);
                 }
             } else {
-                if (extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_DECELLINEAR) {
-                    extrapolate.Init(startTime + accelTime + linearTime, decelTime, (type) _Minus(endValue, _Multiply(extrapolate.GetSpeed(), (decelTime * 0.001f * 0.5f))), extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_DECELLINEAR);
+                if (this.extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_DECELLINEAR) {
+                    this.extrapolate.Init(this.startTime + this.accelTime + this.linearTime, this.decelTime, _Minus(this.endValue, _Multiply(this.extrapolate.GetSpeed(), (this.decelTime * 0.001f * 0.5f))), this.extrapolate.GetBaseSpeed(), this.extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_DECELLINEAR);
                 }
             }
         }
@@ -306,7 +306,7 @@ public class Interpolate {
 
             return (type) Float.valueOf((Float) t1 - (Float) t2);
         }
-    };
+    }
 
     /*
      ==============================================================================================
@@ -329,9 +329,9 @@ public class Interpolate {
         //
 
         public idInterpolateAccelDecelSine() {
-            startTime = accelTime = linearTime = decelTime = 0;
+            this.startTime = this.accelTime = this.linearTime = this.decelTime = 0;
 //	memset( &startValue, 0, sizeof( startValue ) );
-            endValue = startValue;
+            this.endValue = this.startValue;
         }
 
         public void Init(final float startTime, final float accelTime, final float decelTime, final float duration, final type startValue, final type endValue) {
@@ -347,24 +347,24 @@ public class Interpolate {
                 return;
             }
 
-            if (this.accelTime + this.decelTime > duration) {
-                this.accelTime = this.accelTime * duration / (this.accelTime + this.decelTime);
+            if ((this.accelTime + this.decelTime) > duration) {
+                this.accelTime = (this.accelTime * duration) / (this.accelTime + this.decelTime);
                 this.decelTime = duration - this.accelTime;
             }
             this.linearTime = duration - this.accelTime - this.decelTime;
-            speed = (type) _Multiply(_Minus(endValue, startValue), (1000.0f / (this.linearTime + (this.accelTime + this.decelTime) * idMath.SQRT_1OVER2)));
+            speed = _Multiply(_Minus(endValue, startValue), (1000.0f / (this.linearTime + ((this.accelTime + this.decelTime) * idMath.SQRT_1OVER2))));
 
             if (0 != this.accelTime) {
-                extrapolate.Init(startTime, this.accelTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_ACCELSINE);
+                this.extrapolate.Init(startTime, this.accelTime, startValue, _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_ACCELSINE);
             } else if (0 != this.linearTime) {
-                extrapolate.Init(startTime, this.linearTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_LINEAR);
+                this.extrapolate.Init(startTime, this.linearTime, startValue, _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_LINEAR);
             } else {
-                extrapolate.Init(startTime, this.decelTime, startValue, (type) _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_DECELSINE);
+                this.extrapolate.Init(startTime, this.decelTime, startValue, _Minus(startValue, startValue), speed, Extrapolate.EXTRAPOLATION_DECELSINE);
             }
         }
 
         public void SetStartTime(float time) {
-            startTime = time;
+            this.startTime = time;
             Invalidate();
         }
 
@@ -380,66 +380,66 @@ public class Interpolate {
 
         public type GetCurrentValue(float time) {
             SetPhase(time);
-            return extrapolate.GetCurrentValue(time);
+            return this.extrapolate.GetCurrentValue(time);
         }
 
         public type GetCurrentSpeed(float time) {
             SetPhase(time);
-            return extrapolate.GetCurrentSpeed(time);
+            return this.extrapolate.GetCurrentSpeed(time);
         }
 
         public boolean IsDone(float time) {
-            return (time >= startTime + accelTime + linearTime + decelTime);
+            return (time >= (this.startTime + this.accelTime + this.linearTime + this.decelTime));
         }
 
         public float GetStartTime() {
-            return startTime;
+            return this.startTime;
         }
 
         public float GetEndTime() {
-            return startTime + accelTime + linearTime + decelTime;
+            return this.startTime + this.accelTime + this.linearTime + this.decelTime;
         }
 
         public float GetDuration() {
-            return accelTime + linearTime + decelTime;
+            return this.accelTime + this.linearTime + this.decelTime;
         }
 
         public float GetAcceleration() {
-            return accelTime;
+            return this.accelTime;
         }
 
         public float GetDeceleration() {
-            return decelTime;
+            return this.decelTime;
         }
 
         public type GetStartValue() {
-            return startValue;
+            return this.startValue;
         }
 
         public type GetEndValue() {
-            return endValue;
+            return this.endValue;
         }
 
         private void Invalidate() {
-            extrapolate.Init(0, 0, extrapolate.GetStartValue(), extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_NONE);
+            this.extrapolate.Init(0, 0, this.extrapolate.GetStartValue(), this.extrapolate.GetBaseSpeed(), this.extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_NONE);
         }
 
         private void SetPhase(float time) {
             float deltaTime;
 
-            deltaTime = time - startTime;
-            if (deltaTime < accelTime) {
-                if (extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_ACCELSINE) {
-                    extrapolate.Init(startTime, accelTime, startValue, extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_ACCELSINE);
+            deltaTime = time - this.startTime;
+            if (deltaTime < this.accelTime) {
+                if (this.extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_ACCELSINE) {
+                    this.extrapolate.Init(this.startTime, this.accelTime, this.startValue, this.extrapolate.GetBaseSpeed(), this.extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_ACCELSINE);
                 }
-            } else if (deltaTime < accelTime + linearTime) {
-                if (extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_LINEAR) {
-                    extrapolate.Init(startTime + accelTime, linearTime, (type) _Plus(startValue, _Plus(extrapolate.GetSpeed(), (accelTime * 0.001f * idMath.SQRT_1OVER2))), extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_LINEAR);
+            } else if (deltaTime < (this.accelTime + this.linearTime)) {
+                if (this.extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_LINEAR) {
+                    this.extrapolate.Init(this.startTime + this.accelTime, this.linearTime, _Plus(this.startValue, _Plus(this.extrapolate.GetSpeed(), (this.accelTime * 0.001f * idMath.SQRT_1OVER2))), this.extrapolate.GetBaseSpeed(), this.extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_LINEAR);
 
                 }
             } else {
-                if (extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_DECELSINE) {
-                    extrapolate.Init(startTime + accelTime + linearTime, decelTime, (type) _Plus(endValue, _Minus(extrapolate.GetSpeed(), (decelTime * 0.001f * idMath.SQRT_1OVER2))), extrapolate.GetBaseSpeed(), extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_DECELSINE);
+                if (this.extrapolate.GetExtrapolationType() != Extrapolate.EXTRAPOLATION_DECELSINE) {
+                    this.extrapolate.Init(this.startTime + this.accelTime + this.linearTime, this.decelTime, _Plus(this.endValue, _Minus(this.extrapolate.GetSpeed(), (this.decelTime * 0.001f * idMath.SQRT_1OVER2))), this.extrapolate.GetBaseSpeed(), this.extrapolate.GetSpeed(), Extrapolate.EXTRAPOLATION_DECELSINE);
                 }
             }
         }
@@ -483,5 +483,5 @@ public class Interpolate {
 
             return (type) Float.valueOf((Float) t1 - (Float) t2);
         }
-    };
+    }
 }

@@ -57,13 +57,13 @@ public class Game_network {
             OUTOFORDER_IGNORE,
             OUTOFORDER_DROP,
             OUTOFORDER_SORT
-        };
+        }
 
         public idEventQueue() {//: start( NULL ), end( NULL ) {}
         }
 
         public entityNetEvent_s Alloc() {
-            entityNetEvent_s event = new entityNetEvent_s();// eventAllocator.Alloc();
+            final entityNetEvent_s event = new entityNetEvent_s();// eventAllocator.Alloc();
             event.prev = null;
             event.next = null;
             return event;
@@ -71,7 +71,7 @@ public class Game_network {
 
         public void Free(entityNetEvent_s event) {
             // should only be called on an unlinked event!
-            assert (null == event.next && null == event.prev);
+            assert ((null == event.next) && (null == event.prev));
 //            eventAllocator.Free(event);
         }
 
@@ -81,33 +81,33 @@ public class Game_network {
         }
 
         public void Init() {
-            start = null;
-            end = null;
+            this.start = null;
+            this.end = null;
         }
 
         public void Enqueue(entityNetEvent_s event, outOfOrderBehaviour_t oooBehaviour) {
             if (oooBehaviour.equals(OUTOFORDER_DROP)) {
                 // go backwards through the queue and determine if there are
                 // any out-of-order events
-                while (end != null && end.time > event.time) {
-                    entityNetEvent_s outOfOrder = RemoveLast();
+                while ((this.end != null) && (this.end.time > event.time)) {
+                    final entityNetEvent_s outOfOrder = RemoveLast();
                     common.DPrintf("WARNING: new event with id %d ( time %d ) caused removal of event with id %d ( time %d ), game time = %d.\n", event.event, event.time, outOfOrder.event, outOfOrder.time, gameLocal.time);
                     Free(outOfOrder);
                 }
-            } else if (oooBehaviour.equals(OUTOFORDER_SORT) && end != null) {
+            } else if (oooBehaviour.equals(OUTOFORDER_SORT) && (this.end != null)) {
                 // NOT TESTED -- sorting out of order packets hasn't been
                 //				 tested yet... wasn't strictly necessary for
                 //				 the patch fix.
-                entityNetEvent_s cur = end;
+                entityNetEvent_s cur = this.end;
                 // iterate until we find a time < the new event's
-                while (cur != null && cur.time > event.time) {
+                while ((cur != null) && (cur.time > event.time)) {
                     cur = cur.prev;
                 }
                 if (null == cur) {
                     // add to start
-                    event.next = start;
+                    event.next = this.start;
                     event.prev = null;
-                    start = event;
+                    this.start = event;
                 } else {
                     // insert
                     event.prev = cur;
@@ -121,27 +121,27 @@ public class Game_network {
             event.next = null;
             event.prev = null;
 
-            if (end != null) {
-                end.next = event;
-                event.prev = end;
+            if (this.end != null) {
+                this.end.next = event;
+                event.prev = this.end;
             } else {
-                start = event;
+                this.start = event;
             }
-            end = event;
+            this.end = event;
         }
 
         public entityNetEvent_s Dequeue() {
-            entityNetEvent_s event = start;
+            final entityNetEvent_s event = this.start;
             if (null == event) {
                 return null;
             }
 
-            start = start.next;
+            this.start = this.start.next;
 
-            if (null == start) {
-                end = null;
+            if (null == this.start) {
+                this.end = null;
             } else {
-                start.prev = null;
+                this.start.prev = null;
             }
 
             event.next = null;
@@ -151,17 +151,17 @@ public class Game_network {
         }
 
         public entityNetEvent_s RemoveLast() {
-            entityNetEvent_s event = end;
+            final entityNetEvent_s event = this.end;
             if (null == event) {
                 return null;
             }
 
-            end = event.prev;
+            this.end = event.prev;
 
-            if (null == end) {
-                start = null;
+            if (null == this.end) {
+                this.start = null;
             } else {
-                end.next = null;
+                this.end.next = null;
             }
 
             event.next = null;
@@ -171,8 +171,8 @@ public class Game_network {
         }
 
         public entityNetEvent_s Start() {
-            return start;
+            return this.start;
         }
-    };
+    }
 //============================================================================
 }

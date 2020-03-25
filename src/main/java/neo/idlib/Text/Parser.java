@@ -105,8 +105,6 @@ public class Parser {
         define_s hashnext;                    // next define in the hash chain
     }
 
-    ;
-
     // indents used for conditional compilation directives:
 // #if, #else, #elif, #ifdef, #ifndef
     static class indent_s {
@@ -116,8 +114,6 @@ public class Parser {
         idLexer  script;                      // script the indent was in
         indent_s next;                        // next indent on the indent stack
     }
-
-    ;
 
     public static class idParser {
 
@@ -328,40 +324,40 @@ public class Parser {
             int i;
 
             // free all the scripts
-            while (scriptstack != null) {
-                script = scriptstack;
-                scriptstack = scriptstack.next;
+            while (this.scriptstack != null) {
+                script = this.scriptstack;
+                this.scriptstack = this.scriptstack.next;
 //		delete script;
             }
             // free all the tokens
-            while (tokens != null) {
-                token = tokens;
-                tokens = tokens.next;
+            while (this.tokens != null) {
+                token = this.tokens;
+                this.tokens = this.tokens.next;
 //		delete token;
             }
             // free all indents
-            while (indentstack != null) {
-                indent = indentstack;
-                indentstack = indentstack.next;
+            while (this.indentstack != null) {
+                indent = this.indentstack;
+                this.indentstack = this.indentstack.next;
 //                Mem_Free(indent);
             }
             if (!keepDefines) {
                 // free hash table
-                if (definehash != null) {
+                if (this.definehash != null) {
                     // free defines
                     for (i = 0; i < DEFINEHASHSIZE; i++) {
-                        while (definehash[i] != null) {
-                            define = definehash[i];
-                            definehash[i] = definehash[i].hashnext;
+                        while (this.definehash[i] != null) {
+                            define = this.definehash[i];
+                            this.definehash[i] = this.definehash[i].hashnext;
                             FreeDefine(define);
                         }
                     }
-                    defines = null;
+                    this.defines = null;
 //                    Mem_Free(this.definehash);
-                    definehash = null;
+                    this.definehash = null;
                 }
             }
-            loaded = false;
+            this.loaded = false;
         }
 
         // returns true if a source is loaded
@@ -378,8 +374,8 @@ public class Parser {
                     return false;
                 }
                 // check for precompiler directives
-                if (token.type == TT_PUNCTUATION
-                        && (token.oGet(0) == '#' && (token.Length() == 1 || token.oGet(1) == '\0'))) {
+                if ((token.type == TT_PUNCTUATION)
+                        && ((token.oGet(0) == '#') && ((token.Length() == 1) || (token.oGet(1) == '\0')))) {
                     // read the precompiler directive
                     if (!this.ReadDirective()) {
                         return false;
@@ -391,8 +387,8 @@ public class Parser {
                     continue;
                 }
                 // recursively concatenate strings that are behind each other still resolving defines
-                if (token.type == TT_STRING && (NOT(this.scriptstack.GetFlags() & LEXFL_NOSTRINGCONCAT))) {
-                    idToken newtoken = new idToken();
+                if ((token.type == TT_STRING) && (NOT(this.scriptstack.GetFlags() & LEXFL_NOSTRINGCONCAT))) {
+                    final idToken newtoken = new idToken();
                     if (this.ReadToken(newtoken)) {
                         if (newtoken.type == TT_STRING) {
                             token.Append(newtoken.c_str());
@@ -404,8 +400,8 @@ public class Parser {
                 //
                 if (0 == (this.scriptstack.GetFlags() & LEXFL_NODOLLARPRECOMPILE)) {
                     // check for special precompiler directives
-                    if (token.type == TT_PUNCTUATION
-                            && (token.oGet(0) == '$' && (token.Length() == 1 || token.oGet(1) == '\0'))) {
+                    if ((token.type == TT_PUNCTUATION)
+                            && ((token.oGet(0) == '$') && ((token.Length() == 1) || (token.oGet(1) == '\0')))) {
                         // read the precompiler directive
                         if (this.ReadDollarDirective()) {
                             continue;
@@ -413,7 +409,7 @@ public class Parser {
                     }
                 }
                 // if the token is a name
-                if (token.type == TT_NAME && 0 == (token.flags & TOKEN_FL_RECURSIVE_DEFINE)) {
+                if ((token.type == TT_NAME) && (0 == (token.flags & TOKEN_FL_RECURSIVE_DEFINE))) {
                     // check if the name is a define macro
                     define = FindHashedDefine(this.definehash, token.toString());
                     // if it is a define macro
@@ -432,7 +428,7 @@ public class Parser {
 
         // expect a certain token, reads the token when available
         public boolean ExpectTokenString(final String string) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             if (!this.ReadToken(token)) {
                 this.Error("couldn't find expected '%s'", string);
@@ -517,7 +513,7 @@ public class Parser {
                     return false;
                 }
                 if (token.subtype != subtype) {
-                    this.Error("expected '%s' but found '%s'", scriptstack.GetPunctuationFromId(subtype), token.toString());
+                    this.Error("expected '%s' but found '%s'", this.scriptstack.GetPunctuationFromId(subtype), token.toString());
                     return false;
                 }
             }
@@ -536,7 +532,7 @@ public class Parser {
 
         // returns true if the next token equals the given string and removes the token from the source
         public boolean CheckTokenString(final String string) throws idException {
-            idToken tok = new idToken();
+            final idToken tok = new idToken();
 
             if (!ReadToken(tok)) {
                 return false;
@@ -552,13 +548,13 @@ public class Parser {
 
         // returns true if the next token equals the given type and removes the token from the source
         public boolean CheckTokenType(int type, int subtype, idToken token) throws idException {
-            idToken tok = new idToken();
+            final idToken tok = new idToken();
 
             if (!ReadToken(tok)) {
                 return false;
             }
             //if the type matches
-            if (tok.type == type && (tok.subtype & subtype) == subtype) {
+            if ((tok.type == type) && ((tok.subtype & subtype) == subtype)) {
                 token.oSet(tok);
                 return true;
             }
@@ -569,7 +565,7 @@ public class Parser {
 
         // returns true if the next token equals the given string but does not remove the token from the source
         public boolean PeekTokenString(final String string) throws idException {
-            idToken tok = new idToken();
+            final idToken tok = new idToken();
 
             if (!ReadToken(tok)) {
                 return false;
@@ -586,7 +582,7 @@ public class Parser {
 
         // returns true if the next token equals the given type but does not remove the token from the source
         public boolean PeekTokenType(int type, int subtype, idToken token) throws idException {
-            idToken tok = new idToken();
+            final idToken tok = new idToken();
 
             if (!ReadToken(tok)) {
                 return false;
@@ -595,7 +591,7 @@ public class Parser {
             UnreadSourceToken(tok);
 
             // if the type matches
-            if (tok.type == type && (tok.subtype & subtype) == subtype) {
+            if ((tok.type == type) && ((tok.subtype & subtype) == subtype)) {
                 token.oSet(tok);
                 return true;
             }
@@ -604,7 +600,7 @@ public class Parser {
 
         // skip tokens until the given token string is read
         public boolean SkipUntilString(final String string) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             while (this.ReadToken(token)) {
                 if (token.equals(string)) {
@@ -616,7 +612,7 @@ public class Parser {
 
         // skip the rest of the current line
         public boolean SkipRestOfLine() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             while (this.ReadToken(token)) {
                 if (token.linesCrossed != 0) {
@@ -637,7 +633,7 @@ public class Parser {
          */
         // skip the braced section
         public boolean SkipBracedSection(boolean parseFirstBrace/*= true*/) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             int depth;
 
             depth = parseFirstBrace ? 0 : 1;
@@ -671,7 +667,7 @@ public class Parser {
          */
         // parse a braced section into a string
         public String ParseBracedSection(idStr out, int tabs/*= -1*/) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             int i, depth;
             boolean doTabs = false;
             if (tabs >= 0) {
@@ -695,9 +691,9 @@ public class Parser {
                     out.Append("\r\n");
                 }
 
-                if (doTabs && token.linesCrossed != 0) {
+                if (doTabs && (token.linesCrossed != 0)) {
                     i = tabs;
-                    if (token.equals("}") && i > 0) {
+                    if (token.equals("}") && (i > 0)) {
                         i--;
                     }
                     while (i-- > 0) {
@@ -742,12 +738,12 @@ public class Parser {
          */
         // parse a braced section into a string, maintaining indents and newlines
         public String ParseBracedSectionExact(idStr out, int tabs/*= -1*/) throws idException {
-            return scriptstack.ParseBracedSectionExact(out, tabs);
+            return this.scriptstack.ParseBracedSectionExact(out, tabs);
         }
 
         // parse the rest of the line
         public String ParseRestOfLine(idStr out) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             out.Empty();
             while (this.ReadToken(token)) {
@@ -770,7 +766,7 @@ public class Parser {
 
         // read a token only if on the current line
         public boolean ReadTokenOnLine(idToken token) throws idException {
-            idToken tok = new idToken();
+            final idToken tok = new idToken();
 
             if (!this.ReadToken(tok)) {
                 return false;
@@ -787,16 +783,16 @@ public class Parser {
 
         // read a signed integer
         public int ParseInt() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             if (!this.ReadToken(token)) {
                 this.Error("couldn't read expected integer");
                 return 0;
             }
-            if (token.type == TT_PUNCTUATION && token.equals("-")) {
+            if ((token.type == TT_PUNCTUATION) && token.equals("-")) {
                 this.ExpectTokenType(TT_NUMBER, TT_INTEGER, token);
                 return -token.GetIntValue();
-            } else if (token.type != TT_NUMBER || token.subtype == TT_FLOAT) {
+            } else if ((token.type != TT_NUMBER) || (token.subtype == TT_FLOAT)) {
                 this.Error("expected integer value, found '%s'", token);
             }
             return token.GetIntValue();
@@ -804,7 +800,7 @@ public class Parser {
 
         // read a boolean
         public boolean ParseBool() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             if (!this.ExpectTokenType(TT_NUMBER, 0, token)) {
                 this.Error("couldn't read expected boolean");
@@ -815,13 +811,13 @@ public class Parser {
 
         // read a floating point number
         public float ParseFloat() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             if (!this.ReadToken(token)) {
                 this.Error("couldn't read expected floating point number");
                 return 0.0f;
             }
-            if (token.type == TT_PUNCTUATION && token.equals("-")) {
+            if ((token.type == TT_PUNCTUATION) && token.equals("-")) {
                 this.ExpectTokenType(TT_NUMBER, 0, token);
                 return -token.GetFloatValue();
             } else if (token.type != TT_NUMBER) {
@@ -856,7 +852,7 @@ public class Parser {
             }
 
             for (i = 0; i < y; i++) {
-                float[] tempM = new float[m.length - i * x];
+                final float[] tempM = new float[m.length - (i * x)];
                 System.arraycopy(m, i * x, tempM, 0, tempM.length);
                 if (!this.Parse1DMatrix(x, tempM)) {
                     System.arraycopy(tempM, 0, m, i * x, tempM.length);
@@ -879,7 +875,7 @@ public class Parser {
             }
 
             for (i = 0; i < z; i++) {
-                float[] tempM = new float[m.length - i * x * y];
+                final float[] tempM = new float[m.length - (i * x * y)];
                 System.arraycopy(m, i * x * y, tempM, 0, tempM.length);
                 if (!this.Parse2DMatrix(y, x, tempM)) {
                     System.arraycopy(tempM, 0, m, i * x * y, tempM.length);
@@ -896,8 +892,8 @@ public class Parser {
 
         // get the white space before the last read token
         public int GetLastWhiteSpace(idStr whiteSpace) {
-            if (scriptstack != null) {
-                scriptstack.GetLastWhiteSpace(whiteSpace);
+            if (this.scriptstack != null) {
+                this.scriptstack.GetLastWhiteSpace(whiteSpace);
             } else {
                 whiteSpace.Clear();
             }
@@ -906,7 +902,7 @@ public class Parser {
 
         // Set a marker in the source file (there is only one marker)
         public void SetMarker() {
-            marker_p = null;
+            this.marker_p = null;
         }
 
         /*
@@ -921,14 +917,14 @@ public class Parser {
             final int p;//marker
 //            int save;
 
-            if (marker_p == null) {
-                marker_p = scriptstack.buffer.toString();
+            if (this.marker_p == null) {
+                this.marker_p = this.scriptstack.buffer.toString();
             }
 
-            if (tokens != null) {
-                p = tokens.whiteSpaceStart_p;
+            if (this.tokens != null) {
+                p = this.tokens.whiteSpaceStart_p;
             } else {
-                p = scriptstack.script_p;
+                p = this.scriptstack.script_p;
             }
 
             // Set the end character to NULL to give us a complete string
@@ -936,13 +932,13 @@ public class Parser {
 //            p = 0;
             // If cleaning then reparse
             if (clean) {
-                idParser temp = new idParser(marker_p, p, "temp", flags);//TODO:check whether this substringing works
-                idToken token = new idToken();
+                final idParser temp = new idParser(this.marker_p, p, "temp", this.flags);//TODO:check whether this substringing works
+                final idToken token = new idToken();
                 while (temp.ReadToken(token)) {
                     out.oPluSet(token);
                 }
             } else {
-                out.oSet(marker_p);
+                out.oSet(this.marker_p);
             }
 
             // restore the character we set to NULL
@@ -973,8 +969,8 @@ public class Parser {
                 }
                 String string;
                 int id;
-            };
-            builtin[] builtin = {
+            }
+            final builtin[] builtin = {
                 new builtin("__LINE__", BUILTIN_LINE),
                 new builtin("__FILE__", BUILTIN_DATE),
                 new builtin("__TIME__", BUILTIN_TIME),
@@ -1001,8 +997,8 @@ public class Parser {
         public void SetIncludePath(final String path) {
             this.includepath = new idStr(path);
             // add trailing path seperator
-            if (this.includepath.oGet(this.includepath.Length() - 1) != '\\'
-                    && this.includepath.oGet(this.includepath.Length() - 1) != '/') {
+            if ((this.includepath.oGet(this.includepath.Length() - 1) != '\\')
+                    && (this.includepath.oGet(this.includepath.Length() - 1) != '/')) {
                 this.includepath.Append(sys_public.PATHSEPERATOR_STR);
             }
         }
@@ -1017,7 +1013,7 @@ public class Parser {
             int i;
 
             if (null == this.punctuations) {
-                idLexer lex = new idLexer();
+                final idLexer lex = new idLexer();
                 return lex.GetPunctuationFromId(id);
             }
 
@@ -1034,7 +1030,7 @@ public class Parser {
             int i;
 
             if (null == this.punctuations) {
-                idLexer lex = new idLexer();
+                final idLexer lex = new idLexer();
                 return lex.GetPunctuationId(p);
             }
 
@@ -1108,7 +1104,7 @@ public class Parser {
 //            va_end(ap);
 
             if (this.scriptstack != null) {
-                String text = String.format(fmt, args);
+                final String text = String.format(fmt, args);
                 this.scriptstack.Error(text);
             }
         }
@@ -1117,7 +1113,7 @@ public class Parser {
         public void Error(final String str, final char[] chr, final char[]   ... chrs) throws idException {
             this.Error(str);
             this.Error(ctos(chr));
-            for (char[] charoal : chrs) {
+            for (final char[] charoal : chrs) {
                 this.Error(ctos(charoal));
             }
         }
@@ -1131,7 +1127,7 @@ public class Parser {
 //            vsprintf(text, str, ap);
 //            va_end(ap);
             if (this.scriptstack != null) {
-                String text = String.format(fmt, args);
+                final String text = String.format(fmt, args);
                 this.scriptstack.Warning(text);
             }
         }
@@ -1140,7 +1136,7 @@ public class Parser {
         public void Warning(final String str, final char[] chr, final char[]   ... chrs) throws idException {
             this.Warning(str);
             this.Warning(ctos(chr));
-            for (char[] charoal : chrs) {
+            for (final char[] charoal : chrs) {
                 this.Warning(ctos(charoal));
             }
         }
@@ -1247,7 +1243,7 @@ public class Parser {
         private boolean ReadSourceToken(idToken token) throws idException {
             idToken t;
             idLexer script;
-            int[] type = {0}, skip = {0};
+            final int[] type = {0}, skip = {0};
             int changedScript;
 
             if (NOT(this.scriptstack)) {
@@ -1262,15 +1258,15 @@ public class Parser {
                     token.linesCrossed += changedScript;
 
                     // set the marker based on the start of the token read in
-                    if (isNotNullOrEmpty(marker_p)) {
-                        marker_p = "";//token.whiteSpaceEnd_p;//TODO:does marker_p do anythning???
+                    if (isNotNullOrEmpty(this.marker_p)) {
+                        this.marker_p = "";//token.whiteSpaceEnd_p;//TODO:does marker_p do anythning???
                     }
                     return true;
                 }
                 // if at the end of the script
                 if (this.scriptstack.EndOfFile()) {
                     // remove all indents of the script
-                    while (this.indentstack != null && this.indentstack.script == this.scriptstack) {
+                    while ((this.indentstack != null) && (this.indentstack.script == this.scriptstack)) {
                         this.Warning("missing #endif");
                         this.PopIndent(type, skip);
                     }
@@ -1331,7 +1327,7 @@ public class Parser {
 
         private boolean ReadDefineParms(define_s define, idToken[] parms, int maxparms) throws idException {
             define_s newdefine;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idToken t, last;
             int i, done, lastcomma, numparms, indent;
 
@@ -1436,21 +1432,21 @@ public class Parser {
 
         private boolean MergeTokens(idToken t1, idToken t2) {
             // merging of a name with a name or number
-            if (t1.type == TT_NAME && (t2.type == TT_NAME || (t2.type == TT_NUMBER && (t2.subtype & TT_FLOAT) == 0))) {
+            if ((t1.type == TT_NAME) && ((t2.type == TT_NAME) || ((t2.type == TT_NUMBER) && ((t2.subtype & TT_FLOAT) == 0)))) {
                 t1.Append(t2.c_str());
                 return true;
             }
             // merging of two strings
-            if (t1.type == TT_STRING && t2.type == TT_STRING) {
+            if ((t1.type == TT_STRING) && (t2.type == TT_STRING)) {
                 t1.Append(t2.c_str());
                 return true;
             }
             // merging of two numbers
-            if (t1.type == TT_NUMBER && t2.type == TT_NUMBER
-                    && (t1.subtype & (TT_HEX | TT_BINARY)) == 0
-                    && (t2.subtype & (TT_HEX | TT_BINARY)) == 0
-                    && ((t1.subtype & TT_FLOAT) == 0
-                    || (t2.subtype & TT_FLOAT) == 0)) {
+            if ((t1.type == TT_NUMBER) && (t2.type == TT_NUMBER)
+                    && ((t1.subtype & (TT_HEX | TT_BINARY)) == 0)
+                    && ((t2.subtype & (TT_HEX | TT_BINARY)) == 0)
+                    && (((t1.subtype & TT_FLOAT) == 0)
+                    || ((t2.subtype & TT_FLOAT) == 0))) {
                 t1.Append(t2.c_str());
                 return true;
             }
@@ -1460,7 +1456,7 @@ public class Parser {
 
         private boolean ExpandBuiltinDefine(idToken defToken, define_s define, idToken[] firstToken, idToken[] lastToken) throws idException {
             idToken token;
-            /*ID_TIME_T*/ long t;
+            /*ID_TIME_T*/ final long t;
             String curtime;
             String buf;//[MAX_STRING_CHARS];
 
@@ -1545,9 +1541,10 @@ public class Parser {
         }
 
         private boolean ExpandDefine(idToken deftoken, define_s define, idToken[] firstToken, idToken[] lastToken) throws idException {
-            idToken[] parms = new idToken[MAX_DEFINEPARMS];
+            final idToken[] parms = new idToken[MAX_DEFINEPARMS];
             idToken dt, pt, t;
-            idToken t1, t2, first, last, nextpt, token = new idToken();
+            idToken t1, t2, first, last, nextpt;
+			final idToken token = new idToken();
             int parmnum, i;
 
             // if it is a builtin define
@@ -1672,13 +1669,13 @@ public class Parser {
         }
 
         private boolean ExpandDefineIntoSource(idToken deftoken, define_s define) throws idException {
-            idToken[] firstToken = {null}, lastToken = {null};
+            final idToken[] firstToken = {null}, lastToken = {null};
 
             if (!this.ExpandDefine(deftoken, define, firstToken, lastToken)) {
                 return false;
             }
             // if the define is not empty
-            if (firstToken[0] != null && lastToken[0] != null) {
+            if ((firstToken[0] != null) && (lastToken[0] != null)) {
                 firstToken[0].linesCrossed += deftoken.linesCrossed;
                 lastToken[0].next = this.tokens;
                 this.tokens = firstToken[0];
@@ -1780,7 +1777,7 @@ public class Parser {
         }
 
         private static void FreeDefine(define_s define) {
-            idToken t, next;
+            final idToken t, next;
 
             //free the define parameters
 //            for (t = define.parms; t; t = next) {
@@ -1809,7 +1806,7 @@ public class Parser {
         }
 
         private static define_s DefineFromString(final String string) throws idException {
-            idParser src = new idParser();
+            final idParser src = new idParser();
             define_s def;
 
             if (!src.LoadMemory(string, string.length(), "*defineString")) {
@@ -1839,8 +1836,8 @@ public class Parser {
 
         private boolean Directive_include() throws Lib.idException {
             idLexer script;
-            idToken token = new idToken();
-            idStr path = new idStr();
+            final idToken token = new idToken();
+            final idStr path = new idStr();
 
             if (!this.ReadSourceToken(token)) {
                 this.Error("#include without file name");
@@ -1853,30 +1850,30 @@ public class Parser {
             if (token.type == TT_STRING) {
                 script = new idLexer();
                 // try relative to the current file
-                path.oSet(scriptstack.GetFileName());
+                path.oSet(this.scriptstack.GetFileName());
                 path.StripFilename();
                 path.oPluSet("/");
                 path.oPluSet(token);
-                if (!script.LoadFile(path.toString(), OSPath)) {
+                if (!script.LoadFile(path.toString(), this.OSPath)) {
                     // try absolute path
                     path.oSet(token);
-                    if (!script.LoadFile(path.toString(), OSPath)) {
+                    if (!script.LoadFile(path.toString(), this.OSPath)) {
                         // try from the include path
-                        path.oSet(includepath.oPlus(token));
-                        if (!script.LoadFile(path.toString(), OSPath)) {
+                        path.oSet(this.includepath.oPlus(token));
+                        if (!script.LoadFile(path.toString(), this.OSPath)) {
 //					delete script;
                             script = null;
                         }
                     }
                 }
-            } else if (token.type == TT_PUNCTUATION && token.equals("<")) {
+            } else if ((token.type == TT_PUNCTUATION) && token.equals("<")) {
                 path.oSet(this.includepath);
                 while (this.ReadSourceToken(token)) {
                     if (token.linesCrossed > 0) {
                         this.UnreadSourceToken(token);
                         break;
                     }
-                    if (token.type == TT_PUNCTUATION && token.equals(">")) {
+                    if ((token.type == TT_PUNCTUATION) && token.equals(">")) {
                         break;
                     }
                     path.oPluSet(token);
@@ -1892,7 +1889,7 @@ public class Parser {
                     return true;
                 }
                 script = new idLexer();
-                if (!script.LoadFile(includepath.oPlus(path).toString(), OSPath)) {
+                if (!script.LoadFile(this.includepath.oPlus(path).toString(), this.OSPath)) {
 //			delete script;
                     script = null;
                 }
@@ -1911,7 +1908,7 @@ public class Parser {
         }
 
         private boolean Directive_undef() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             define_s define, lastdefine;
             int hash;
 
@@ -1947,7 +1944,7 @@ public class Parser {
         }
 
         private boolean Directive_if_def(int type) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             define_s d;
             int skip;
 
@@ -1975,7 +1972,7 @@ public class Parser {
         }
 
         private boolean Directive_else() throws idException {
-            int[] type = new int[1], skip = new int[1];
+            final int[] type = new int[1], skip = new int[1];
 
             this.PopIndent(type, skip);
             if (0 == type[0]) {
@@ -1991,7 +1988,7 @@ public class Parser {
         }
 
         private boolean Directive_endif() throws idException {
-            int[] type = new int[1], skip = new int[1];
+            final int[] type = new int[1], skip = new int[1];
 
             this.PopIndent(type, skip);
             if (0 == type[0]) {
@@ -2012,7 +2009,7 @@ public class Parser {
             int priority;
             int parentheses;
             operator_s prev, next;
-        };
+        }
 
         class value_s {
 
@@ -2020,7 +2017,7 @@ public class Parser {
             double floatValue;
             int parentheses;
             value_s prev, next;
-        };
+        }
 
         int PC_OperatorPriority(int op) {
             switch (op) {
@@ -2113,12 +2110,12 @@ public class Parser {
             boolean questmarkintvalue = false;
             double questmarkfloatvalue = 0;
             boolean gotquestmarkvalue = false;
-            boolean lastoperatortype = false;
+            final boolean lastoperatortype = false;
             //
-            operator_s[] operator_heap = new operator_s[MAX_OPERATORS];
-            int[] numoperators = new int[1];
-            value_s[] value_heap = new value_s[MAX_VALUES];
-            int[] numvalues = new int[1];
+            final operator_s[] operator_heap = new operator_s[MAX_OPERATORS];
+            final int[] numoperators = new int[1];
+            final value_s[] value_heap = new value_s[MAX_VALUES];
+            final int[] numvalues = new int[1];
 
             firstOperator = lastOperator = null;
             firstValue = lastValue = null;
@@ -2146,7 +2143,7 @@ public class Parser {
                             brace = true;
                             t = t.next;
                         }
-                        if (null == t || t.type != TT_NAME) {
+                        if ((null == t) || (t.type != TT_NAME)) {
                             this.Error("defined() without name in #if/#elif");
                             error = true;
                             break;
@@ -2171,7 +2168,7 @@ public class Parser {
                         lastValue = v;
                         if (brace) {
                             t = t.next;
-                            if (null == t || !t.equals(")")) {
+                            if ((null == t) || !t.equals(")")) {
                                 this.Error("defined missing ) in #if/#elif");
                                 error = true;
                                 break;
@@ -2231,10 +2228,10 @@ public class Parser {
                         }
                         //check for invalid operators on floating point values
                         if (0 == integer) {
-                            if (t.subtype == P_BIN_NOT || t.subtype == P_MOD
-                                    || t.subtype == P_RSHIFT || t.subtype == P_LSHIFT
-                                    || t.subtype == P_BIN_AND || t.subtype == P_BIN_OR
-                                    || t.subtype == P_BIN_XOR) {
+                            if ((t.subtype == P_BIN_NOT) || (t.subtype == P_MOD)
+                                    || (t.subtype == P_RSHIFT) || (t.subtype == P_LSHIFT)
+                                    || (t.subtype == P_BIN_AND) || (t.subtype == P_BIN_OR)
+                                    || (t.subtype == P_BIN_XOR)) {
                                 this.Error("illigal operator '%s' on floating point operands\n", t);
                                 error = true;
                                 break;
@@ -2341,7 +2338,7 @@ public class Parser {
             questmarkintvalue = false;
             questmarkfloatvalue = 0;
             //while there are operators
-            while (!error && firstOperator != null) {
+            while (!error && (firstOperator != null)) {
                 v = firstValue;
                 for (o = firstOperator; o.next != null; o = o.next) {
                     //if the current operator is nested deeper in parentheses
@@ -2358,7 +2355,7 @@ public class Parser {
                         }
                     }
                     //if the arity of the operator isn't equal to 1
-                    if (o.op != P_LOGIC_NOT && o.op != P_BIN_NOT) {
+                    if ((o.op != P_LOGIC_NOT) && (o.op != P_BIN_NOT)) {
                         v = v.next;
                     }
                     //if there's no value or no next value
@@ -2421,12 +2418,12 @@ public class Parser {
                         v1.floatValue -= v2.floatValue;
                         break;
                     case P_LOGIC_AND:
-                        v1.intValue = (v1.intValue != 0 && v2.intValue != 0) ? 1 : 0;
-                        v1.floatValue = (v1.floatValue != 0 && v2.floatValue != 0) ? 1 : 0;
+                        v1.intValue = ((v1.intValue != 0) && (v2.intValue != 0)) ? 1 : 0;
+                        v1.floatValue = ((v1.floatValue != 0) && (v2.floatValue != 0)) ? 1 : 0;
                         break;
                     case P_LOGIC_OR:
-                        v1.intValue = (v1.intValue != 0 || v2.intValue != 0) ? 1 : 0;
-                        v1.floatValue = (v1.floatValue != 0 || v2.floatValue != 0) ? 1 : 0;
+                        v1.intValue = ((v1.intValue != 0) || (v2.intValue != 0)) ? 1 : 0;
+                        v1.floatValue = ((v1.floatValue != 0) || (v2.floatValue != 0)) ? 1 : 0;
                         break;
                     case P_LOGIC_GEQ:
                         v1.intValue = (v1.intValue >= v2.intValue) ? 1 : 0;
@@ -2506,7 +2503,7 @@ public class Parser {
                 }
 //                lastoperatortype = o.op;
                 //if not an operator with arity 1
-                if (o.op != P_LOGIC_NOT && o.op != P_BIN_NOT) {
+                if ((o.op != P_LOGIC_NOT) && (o.op != P_BIN_NOT)) {
                     //remove the second value if not question mark operator
                     if (o.op != P_QUESTIONMARK) {
                         v = v.next;
@@ -2570,9 +2567,10 @@ public class Parser {
         }
 
         private boolean Evaluate(long[] intvalue, double[] floatvalue, int integer) throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idToken firstToken, lastToken;
-            idToken t, nextToken;
+            idToken t;
+			final idToken nextToken;
             define_s define;
             boolean defined = false;
 
@@ -2624,7 +2622,7 @@ public class Parser {
                         }
                     }
                 } //if the token is a number or a punctuation
-                else if (token.type == TT_NUMBER || token.type == TT_PUNCTUATION) {
+                else if ((token.type == TT_NUMBER) || (token.type == TT_PUNCTUATION)) {
                     t = new idToken(token);
                     t.next = null;
                     if (lastToken != null) {
@@ -2664,9 +2662,10 @@ public class Parser {
         private boolean DollarEvaluate(long[] intValue, double[] floatValue, int integer) throws idException {
             int indent;
             boolean defined = false;
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idToken firstToken, lasttoken;
-            idToken t, nexttoken;
+            idToken t;
+			final idToken nexttoken;
             define_s define;
 
             if (intValue != null) {
@@ -2722,7 +2721,7 @@ public class Parser {
                         }
                     }
                 } //if the token is a number or a punctuation
-                else if (token.type == TT_NUMBER || token.type == TT_PUNCTUATION) {
+                else if ((token.type == TT_NUMBER) || (token.type == TT_PUNCTUATION)) {
                     if (token.oGet(0) == '(') {
                         indent++;
                     } else if (token.oGet(0) == ')') {
@@ -2768,7 +2767,7 @@ public class Parser {
         }
 
         private boolean Directive_define() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idToken t, last;
             define_s define;
 
@@ -2863,7 +2862,7 @@ public class Parser {
             last = null;
             do {
                 t = new idToken(token);
-                if (t.type == TT_NAME && t.toString().equals(define.name)) {
+                if ((t.type == TT_NAME) && t.toString().equals(define.name)) {
                     t.flags |= TOKEN_FL_RECURSIVE_DEFINE;
                     this.Warning("recursive define (removed recursion)");
                 }
@@ -2888,8 +2887,8 @@ public class Parser {
         }
 
         private boolean Directive_elif() throws idException {
-            long[] value = new long[1];
-            int[] type = new int[1], skip = new int[1];
+            final long[] value = new long[1];
+            final int[] type = new int[1], skip = new int[1];
 
             this.PopIndent(type, skip);
             if (type[0] == INDENT_ELSE) {
@@ -2905,8 +2904,8 @@ public class Parser {
         }
 
         private boolean Directive_if() throws idException {
-            long[] value = new long[1];
-            int[] skip = new int[1];
+            final long[] value = new long[1];
+            final int[] skip = new int[1];
 
             if (!this.Evaluate(value, null, 1)) {
                 return false;
@@ -2917,7 +2916,7 @@ public class Parser {
         }
 
         private boolean Directive_line() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             this.Error("#line directive not supported");
             while (this.ReadLine(token)) {
@@ -2927,9 +2926,9 @@ public class Parser {
         }
 
         private boolean Directive_error() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
-            if (!this.ReadLine(token) || token.type != TT_STRING) {
+            if (!this.ReadLine(token) || (token.type != TT_STRING)) {
                 this.Error("#error without string");
                 return false;
             }
@@ -2938,9 +2937,9 @@ public class Parser {
         }
 
         private boolean Directive_warning() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
-            if (!this.ReadLine(token) || token.type != TT_STRING) {
+            if (!this.ReadLine(token) || (token.type != TT_STRING)) {
                 this.Error("#warning without string");
                 return false;
             }
@@ -2949,7 +2948,7 @@ public class Parser {
         }
 
         private boolean Directive_pragma() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             this.Warning("#pragma directive not supported");
             while (this.ReadLine(token)) {
@@ -2959,7 +2958,7 @@ public class Parser {
         }
 
         private void UnreadSignToken() {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             token.line = this.scriptstack.GetLineNum();
             token.whiteSpaceStart_p = 0;
@@ -2973,8 +2972,8 @@ public class Parser {
         }
 
         private boolean Directive_eval() throws idException {
-            long[] value = new long[1];
-            idToken token = new idToken();
+            final long[] value = new long[1];
+            final idToken token = new idToken();
             String buf;//[128];
 
             if (!this.Evaluate(value, null, 1)) {
@@ -2998,8 +2997,8 @@ public class Parser {
         }
 
         private boolean Directive_evalfloat() throws idException {
-            double[] value = new double[1];
-            idToken token = new idToken();
+            final double[] value = new double[1];
+            final idToken token = new idToken();
             String buf;//[128];
 
             if (!this.Evaluate(null, value, 1)) {
@@ -3023,7 +3022,7 @@ public class Parser {
         }
 
         private boolean ReadDirective() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             //read the directive name
             if (!this.ReadSourceToken(token)) {
@@ -3083,8 +3082,8 @@ public class Parser {
         }
 
         private boolean DollarDirective_evalint() throws idException {
-            long[] value = new long[1];
-            idToken token = new idToken();
+            final long[] value = new long[1];
+            final idToken token = new idToken();
             String buf;//[128];
 
             if (!this.DollarEvaluate(value, null, 1)) {
@@ -3110,8 +3109,8 @@ public class Parser {
         }
 
         private boolean DollarDirective_evalfloat() throws idException {
-            double[] value = new double[1];
-            idToken token = new idToken();
+            final double[] value = new double[1];
+            final idToken token = new idToken();
             String buf;//[128];
 
             if (!this.DollarEvaluate(null, value, 1)) {
@@ -3137,7 +3136,7 @@ public class Parser {
         }
 
         private boolean ReadDollarDirective() throws idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             // read the directive name
             if (!this.ReadSourceToken(token)) {
@@ -3161,7 +3160,7 @@ public class Parser {
             this.UnreadSourceToken(token);
             return false;
         }
-    };
+    }
 
     /*
      ================
@@ -3176,7 +3175,7 @@ public class Parser {
         int hash, i;
 
         hash = 0;
-        for (i = 0; i < name.length && name[i] != '\0'; i++) {
+        for (i = 0; (i < name.length) && (name[i] != '\0'); i++) {
             hash += name[i] * (119 + i);
         }
         hash = (hash ^ (hash >> 10) ^ (hash >> 20)) & (DEFINEHASHSIZE - 1);

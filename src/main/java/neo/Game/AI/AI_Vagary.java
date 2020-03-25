@@ -54,22 +54,22 @@ public class AI_Vagary {
         private void Event_ChooseObjectToThrow(final idEventArg<idVec3> mins, final idEventArg<idVec3> maxs,
                                                idEventArg<Float> speed, idEventArg<Float> minDist, idEventArg<Float> offset) {
             idEntity ent;
-            idEntity[] entityList = new idEntity[MAX_GENTITIES];
+            final idEntity[] entityList = new idEntity[MAX_GENTITIES];
             int numListedEntities;
             int i, index;
             float dist;
-            idVec3 vel = new idVec3();
-            idVec3 offsetVec = new idVec3(0, 0, offset.value);
-            idEntity enemyEnt = enemy.GetEntity();
+            final idVec3 vel = new idVec3();
+            final idVec3 offsetVec = new idVec3(0, 0, offset.value);
+            final idEntity enemyEnt = this.enemy.GetEntity();
 
             if (null == enemyEnt) {
                 idThread.ReturnEntity(null);
             }
 
-            idVec3 enemyEyePos = lastVisibleEnemyPos.oPlus(lastVisibleEnemyEyeOffset);
-            final idBounds myBounds = physicsObj.GetAbsBounds();
-            idBounds checkBounds = new idBounds(mins.value, maxs.value);
-            checkBounds.TranslateSelf(physicsObj.GetOrigin());
+            final idVec3 enemyEyePos = this.lastVisibleEnemyPos.oPlus(this.lastVisibleEnemyEyeOffset);
+            final idBounds myBounds = this.physicsObj.GetAbsBounds();
+            final idBounds checkBounds = new idBounds(mins.value, maxs.value);
+            checkBounds.TranslateSelf(this.physicsObj.GetOrigin());
             numListedEntities = gameLocal.clip.EntitiesTouchingBounds(checkBounds, -1, entityList, MAX_GENTITIES);
 
             index = gameLocal.random.RandomInt(numListedEntities);
@@ -87,14 +87,14 @@ public class AI_Vagary {
                     continue;
                 }
 
-                idPhysics entPhys = ent.GetPhysics();
+                final idPhysics entPhys = ent.GetPhysics();
                 final idVec3 entOrg = entPhys.GetOrigin();
                 dist = (entOrg.oMinus(enemyEyePos)).LengthFast();
                 if (dist < minDist.value) {
                     continue;
                 }
 
-                idBounds expandedBounds = myBounds.Expand(entPhys.GetBounds().GetRadius());
+                final idBounds expandedBounds = myBounds.Expand(entPhys.GetBounds().GetRadius());
                 if (expandedBounds.LineIntersection(entOrg, enemyEyePos)) {
                     // ignore objects that are behind us
                     continue;
@@ -111,18 +111,18 @@ public class AI_Vagary {
         }
 
         private void Event_ThrowObjectAtEnemy(idEventArg<idEntity> _ent, idEventArg<Float> _speed) {
-            idEntity ent = _ent.value;
-            float speed = _speed.value;
+            final idEntity ent = _ent.value;
+            final float speed = _speed.value;
             idVec3 vel = new idVec3();
             idEntity enemyEnt;
             idPhysics entPhys;
 
             entPhys = ent.GetPhysics();
-            enemyEnt = enemy.GetEntity();
+            enemyEnt = this.enemy.GetEntity();
             if (NOT(enemyEnt)) {
-                vel = (viewAxis.oGet(0).oMultiply(physicsObj.GetGravityAxis())).oMultiply(speed);
+                vel = (this.viewAxis.oGet(0).oMultiply(this.physicsObj.GetGravityAxis())).oMultiply(speed);
             } else {
-                PredictTrajectory(entPhys.GetOrigin(), lastVisibleEnemyPos.oPlus(lastVisibleEnemyEyeOffset), speed, entPhys.GetGravity(),
+                PredictTrajectory(entPhys.GetOrigin(), this.lastVisibleEnemyPos.oPlus(this.lastVisibleEnemyEyeOffset), speed, entPhys.GetGravity(),
                         entPhys.GetClipModel(), entPhys.GetClipMask(), MAX_WORLD_SIZE, null, enemyEnt, ai_debugTrajectory.GetBool() ? 4000 : 0, vel);
                 vel.oMulSet(speed);
             }
@@ -130,7 +130,7 @@ public class AI_Vagary {
             entPhys.SetLinearVelocity(vel);
 
             if (ent.IsType(idMoveable.class)) {
-                idMoveable ment = (idMoveable) ent;
+                final idMoveable ment = (idMoveable) ent;
                 ment.EnableDamage(true, 2.5f);
             }
         }
@@ -145,5 +145,5 @@ public class AI_Vagary {
             return eventCallbacks;
         }
 
-    };
+    }
 }

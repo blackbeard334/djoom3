@@ -50,11 +50,11 @@ public class tr_trace {
     public static localTrace_t R_LocalTrace(final idVec3 start, final idVec3 end, final float radius, final srfTriangles_s tri) {
         int i, j;
         byte[] cullBits;
-        idPlane[] planes = idPlane.generateArray(4);
-        localTrace_t hit = new localTrace_t();
+        final idPlane[] planes = idPlane.generateArray(4);
+        final localTrace_t hit = new localTrace_t();
         int c_testEdges, c_testPlanes, c_intersect;
         idVec3 startDir;
-        byte[] totalOr = new byte[1];
+        final byte[] totalOr = new byte[1];
         float radiusSqr;
         idTimer trace_timer = null;
 
@@ -99,10 +99,10 @@ public class tr_trace {
         c_testEdges = 0;
         c_intersect = 0;
 
-        radiusSqr = (float) Math_h.Square(radius);
+        radiusSqr = Math_h.Square(radius);
         startDir = end.oMinus(start);
 
-        if (null == tri.facePlanes || !tri.facePlanesCalculated) {
+        if ((null == tri.facePlanes) || !tri.facePlanesCalculated) {
             R_DeriveFacePlanes(tri);
         }
 
@@ -111,7 +111,7 @@ public class tr_trace {
             float edgeLengthSqr;
             idPlane plane;
             idVec3 point;
-            idVec3[] dir = new idVec3[3];
+            final idVec3[] dir = new idVec3[3];
             idVec3 cross;
             idVec3 edge;
             byte triOr;
@@ -177,7 +177,7 @@ public class tr_trace {
                 }
                 edge = tri.verts[tri.indexes[i + 0]].xyz.oMinus(tri.verts[tri.indexes[i + 1]].xyz);
                 edgeLengthSqr = edge.LengthSqr();
-                if (cross.LengthSqr() > edgeLengthSqr * radiusSqr) {
+                if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[0].oMultiply(edge);
@@ -210,7 +210,7 @@ public class tr_trace {
                 }
                 edge = tri.verts[tri.indexes[i + 1]].xyz.oMinus(tri.verts[tri.indexes[i + 2]].xyz);
                 edgeLengthSqr = edge.LengthSqr();
-                if (cross.LengthSqr() > edgeLengthSqr * radiusSqr) {
+                if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[1].oMultiply(edge);
@@ -241,7 +241,7 @@ public class tr_trace {
                 }
                 edge = tri.verts[tri.indexes[i + 2]].xyz.oMinus(tri.verts[tri.indexes[i + 0]].xyz);
                 edgeLengthSqr = edge.LengthSqr();
-                if (cross.LengthSqr() > edgeLengthSqr * radiusSqr) {
+                if (cross.LengthSqr() > (edgeLengthSqr * radiusSqr)) {
                     continue;
                 }
                 d = dir[2].oMultiply(edge);
@@ -291,12 +291,12 @@ public class tr_trace {
      */
     public static void RB_DrawExpandedTriangles(final srfTriangles_s tri, final float radius, final idVec3 vieworg) {
         int i, j, k;
-        idVec3[] dir = new idVec3[6];
+        final idVec3[] dir = new idVec3[6];
         idVec3 normal, point;
 
         for (i = 0; i < tri.numIndexes; i += 3) {
 
-            idVec3[] p/*[3]*/ = {
+            final idVec3[] p/*[3]*/ = {
                         tri.verts[tri.indexes[i + 0]].xyz,
                         tri.verts[tri.indexes[i + 1]].xyz,
                         tri.verts[tri.indexes[i + 2]].xyz};
@@ -365,7 +365,7 @@ public class tr_trace {
         srfTriangles_s tri;
         drawSurf_s surf;
         idVec3 start, end;
-        idVec3 localStart = new idVec3(), localEnd = new idVec3();
+        final idVec3 localStart = new idVec3(), localEnd = new idVec3();
         localTrace_t hit;
         float radius;
 
@@ -394,9 +394,11 @@ public class tr_trace {
             surf = drawSurfs[i];
             tri = surf.geo;
 
-            if (i > 211) continue;
+            if (i > 211) {
+				continue;
+			}
             
-            if (tri == null || tri.verts == null) {
+            if ((tri == null) || (tri.verts == null)) {
                 continue;
             }
 

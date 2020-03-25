@@ -25,7 +25,7 @@ public class BTree {
         public int numChildren;                 // number of children
         public idBTreeNode<objType, keyType> firstChild;		// first child
         public idBTreeNode<objType, keyType> lastChild;		// last child
-    };
+    }
 
     public static class idBTree<objType, keyType> {
 
@@ -37,40 +37,40 @@ public class BTree {
         public idBTree(int maxChildrenPerNode) {
 //            assert (maxChildrenPerNode.intValue()>= 4);
             this.maxChildrenPerNode = maxChildrenPerNode;
-            root = null;
+            this.root = null;
         }
 //public									~idBTree( void );
 //
 
         public void Init() {
-            root = AllocNode();
+            this.root = AllocNode();
         }
 
         public void Shutdown() {
-            nodeAllocator.Shutdown();
-            root = null;
+            this.nodeAllocator.Shutdown();
+            this.root = null;
         }
 //
 
         public idBTreeNode<objType, keyType> Add(objType object, keyType key) {						// add an object to the tree
             idBTreeNode<objType, keyType> node, child, newNode;
 
-            if (root.numChildren >= maxChildrenPerNode) {
+            if (this.root.numChildren >= this.maxChildrenPerNode) {
                 newNode = AllocNode();
-                newNode.key = root.key;
-                newNode.firstChild = root;
-                newNode.lastChild = root;
+                newNode.key = this.root.key;
+                newNode.firstChild = this.root;
+                newNode.lastChild = this.root;
                 newNode.numChildren = 1;
-                root.parent = newNode;
-                SplitNode(root);
-                root = newNode;
+                this.root.parent = newNode;
+                SplitNode(this.root);
+                this.root = newNode;
             }
 
             newNode = AllocNode();
             newNode.key = key;
             newNode.object = object;
 
-            for (node = root; node.firstChild != null; node = child) {
+            for (node = this.root; node.firstChild != null; node = child) {
 
                 if (GT(key,/*>*/ node.key)) {
                     node.key = key;
@@ -117,7 +117,7 @@ public class BTree {
                 }
 
                 // make sure the child has room to store another node
-                if (child.numChildren >= maxChildrenPerNode) {
+                if (child.numChildren >= this.maxChildrenPerNode) {
                     SplitNode(child);
                     if (LTE(key,/*<=*/ child.prev.key)) {
                         child = child.prev;
@@ -126,11 +126,11 @@ public class BTree {
             }
 
             // we only end up here if the root node is empty
-            newNode.parent = root;
-            root.key = key;
-            root.firstChild = newNode;
-            root.lastChild = newNode;
-            root.numChildren++;
+            newNode.parent = this.root;
+            this.root.key = key;
+            this.root.firstChild = newNode;
+            this.root.lastChild = newNode;
+            this.root.numChildren++;
 
 //#ifdef BTREE_CHECK
 //	CheckTree();
@@ -157,7 +157,7 @@ public class BTree {
             node.parent.numChildren--;
 
             // make sure there are no parent nodes with a single child
-            for (parent = node.parent; parent != root && parent.numChildren <= 1; parent = parent.parent) {
+            for (parent = node.parent; (parent != this.root) && (parent.numChildren <= 1); parent = parent.parent) {
 
                 if (parent.next != null) {
                     parent = MergeNodes(parent, parent.next);
@@ -167,18 +167,18 @@ public class BTree {
 
                 // a parent may not use a key higher than the key of it's last child
                 if (GT(parent.key /*>*/, parent.lastChild.key)) {
-                    parent.key = (keyType) parent.lastChild.key;
+                    parent.key = parent.lastChild.key;
                 }
 
-                if (parent.numChildren > maxChildrenPerNode) {
+                if (parent.numChildren > this.maxChildrenPerNode) {
                     SplitNode(parent);
                     break;
                 }
             }
-            for (; parent != null && parent.lastChild != null; parent = parent.parent) {
+            for (; (parent != null) && (parent.lastChild != null); parent = parent.parent) {
                 // a parent may not use a key higher than the key of it's last child
                 if (GT(parent.key /*>*/, parent.lastChild.key)) {
-                    parent.key = (keyType) parent.lastChild.key;
+                    parent.key = parent.lastChild.key;
                 }
             }
 
@@ -186,10 +186,10 @@ public class BTree {
             FreeNode(node);
 
             // remove the root node if it has a single internal node as child
-            if (root.numChildren == 1 && root.firstChild.object == null) {
-                idBTreeNode<objType, keyType> oldRoot = root;
-                root.firstChild.parent = null;
-                root = root.firstChild;
+            if ((this.root.numChildren == 1) && (this.root.firstChild.object == null)) {
+                final idBTreeNode<objType, keyType> oldRoot = this.root;
+                this.root.firstChild.parent = null;
+                this.root = this.root.firstChild;
                 FreeNode(oldRoot);
             }
 
@@ -202,7 +202,7 @@ public class BTree {
         public objType Find(keyType key) {									// find an object using the given key
             idBTreeNode<objType, keyType> node;
 
-            for (node = root.firstChild; node != null; node = node.firstChild) {
+            for (node = this.root.firstChild; node != null; node = node.firstChild) {
                 while (node.next != null) {
                     if (GTE(node.key, /*>=*/ key)) {
                         break;
@@ -223,7 +223,7 @@ public class BTree {
         public objType FindSmallestLargerEqual(keyType key) {				// find an object with the smallest key larger equal the given key
             idBTreeNode<objType, keyType> node;
 
-            for (node = root.firstChild; node != null; node = node.firstChild) {
+            for (node = this.root.firstChild; node != null; node = node.firstChild) {
                 while (node.next != null) {
                     if (GTE(node.key, key)) {
                         break;
@@ -244,7 +244,7 @@ public class BTree {
         public objType FindLargestSmallerEqual(keyType key) {				// find an object with the largest key smaller equal the given key
             idBTreeNode<objType, keyType> node;
 
-            for (node = root.lastChild; node != null; node = node.lastChild) {
+            for (node = this.root.lastChild; node != null; node = node.lastChild) {
                 while (node.prev != null) {
                     if (LTE(node.key, key)) {
                         break;
@@ -264,18 +264,18 @@ public class BTree {
 //
 
         public idBTreeNode<objType, keyType> GetRoot() {										// returns the root node of the tree
-            return root;
+            return this.root;
         }
 
         public int GetNodeCount() {									// returns the total number of nodes in the tree
-            return nodeAllocator.GetAllocCount();
+            return this.nodeAllocator.GetAllocCount();
         }
 
         public idBTreeNode<objType, keyType> GetNext(idBTreeNode<objType, keyType> node) {		// goes through all nodes of the tree
             if (node.firstChild != null) {
                 return node.firstChild;
             } else {
-                while (node != null && node.next == null) {
+                while ((node != null) && (node.next == null)) {
                     node = node.parent;
                 }
                 return node;
@@ -289,7 +289,7 @@ public class BTree {
                 }
                 return node;
             } else {
-                while (node != null && node.next == null) {
+                while ((node != null) && (node.next == null)) {
                     node = node.parent;
                 }
                 if (node != null) {
@@ -305,7 +305,7 @@ public class BTree {
         }
 
         private idBTreeNode<objType, keyType> AllocNode() {
-            idBTreeNode<objType, keyType> node = nodeAllocator.Alloc();
+            final idBTreeNode<objType, keyType> node = this.nodeAllocator.Alloc();
             node.key = null;
             node.parent = null;
             node.next = null;
@@ -318,7 +318,7 @@ public class BTree {
         }
 
         private void FreeNode(idBTreeNode<objType, keyType> node) {
-            nodeAllocator.Free(node);
+            this.nodeAllocator.Free(node);
         }
 
         private void SplitNode(idBTreeNode<objType, keyType> node) {
@@ -349,7 +349,7 @@ public class BTree {
             child.next = null;
 
             // add the new child to the parent before the split node
-            assert (node.parent.numChildren < maxChildrenPerNode);
+            assert (node.parent.numChildren < this.maxChildrenPerNode);
 
             if (node.prev != null) {
                 node.prev.next = newNode;
@@ -367,9 +367,9 @@ public class BTree {
             idBTreeNode<objType, keyType> child;
 
             assert (node1.parent == node2.parent);
-            assert (node1.next == node2 && node2.prev == node1);
-            assert (node1.object == null && node2.object == null);
-            assert (node1.numChildren >= 1 && node2.numChildren >= 1);
+            assert ((node1.next == node2) && (node2.prev == node1));
+            assert ((node1.object == null) && (node2.object == null));
+            assert ((node1.numChildren >= 1) && (node2.numChildren >= 1));
 
             for (child = node1.firstChild; child.next != null; child = child.next) {
                 child.parent = node2;
@@ -402,7 +402,7 @@ public class BTree {
             numNodes++;
 
             // the root node may have zero children and leaf nodes always have zero children, all other nodes should have at least 2 and at most maxChildrenPerNode children
-            assert ((node == root) || (node.object != null && node.numChildren == 0) || (node.numChildren >= 2 && node.numChildren <= maxChildrenPerNode));
+            assert ((node == this.root) || ((node.object != null) && (node.numChildren == 0)) || ((node.numChildren >= 2) && (node.numChildren <= this.maxChildrenPerNode)));
             // the key of a node may never be larger than the key of it's last child
             assert ((node.lastChild == null) || LTE(node.key, node.lastChild.key));
 
@@ -428,13 +428,13 @@ public class BTree {
         }
 
         private void CheckTree() {
-            int numNodes = 0;
+            final int numNodes = 0;
             idBTreeNode<objType, keyType> node, lastNode;
 
-            CheckTree_r(root, numNodes);
+            CheckTree_r(this.root, numNodes);
 
             // the number of nodes in the tree should equal the number of allocated nodes
-            assert (numNodes == nodeAllocator.GetAllocCount());
+            assert (numNodes == this.nodeAllocator.GetAllocCount());
 
             // all the leaf nodes should be ordered
             lastNode = GetNextLeaf(GetRoot());
@@ -445,7 +445,7 @@ public class BTree {
             }
         }
         private final int maxChildrenPerNode;
-    };
+    }
 
     //Greater Than
     static boolean GT(Object object1, Object object2) {

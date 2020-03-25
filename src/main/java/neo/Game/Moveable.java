@@ -145,19 +145,19 @@ public class Moveable {
         //
 
         public idMoveable() {
-            physicsObj = new idPhysics_RigidBody();
-            brokenModel = new idStr();
-            minDamageVelocity = 100.0f;
-            maxDamageVelocity = 200.0f;
-            nextCollideFxTime = 0;
-            nextDamageTime = 0;
-            nextSoundTime = 0;
-            initialSpline = null;
-            initialSplineDir = getVec3_zero();
-            explode = false;
-            unbindOnDeath = false;
-            allowStep = false;
-            canDamage = false;
+            this.physicsObj = new idPhysics_RigidBody();
+            this.brokenModel = new idStr();
+            this.minDamageVelocity = 100.0f;
+            this.maxDamageVelocity = 200.0f;
+            this.nextCollideFxTime = 0;
+            this.nextDamageTime = 0;
+            this.nextSoundTime = 0;
+            this.initialSpline = null;
+            this.initialSplineDir = getVec3_zero();
+            this.explode = false;
+            this.unbindOnDeath = false;
+            this.allowStep = false;
+            this.canDamage = false;
         }
         // ~idMoveable( void );
 
@@ -165,90 +165,90 @@ public class Moveable {
         public void Spawn() {
             super.Spawn();
             
-            idTraceModel trm = new idTraceModel();
-            float[] density = {0}, friction = {0}, bouncyness = {0}, mass = {0};
+            final idTraceModel trm = new idTraceModel();
+            final float[] density = {0}, friction = {0}, bouncyness = {0}, mass = {0};
             int clipShrink;
-            idStr clipModelName = new idStr();
+            final idStr clipModelName = new idStr();
 
             // check if a clip model is set
-            spawnArgs.GetString("clipmodel", "", clipModelName);
+            this.spawnArgs.GetString("clipmodel", "", clipModelName);
             if (!isNotNullOrEmpty(clipModelName)) {
-                clipModelName.oSet(spawnArgs.GetString("model"));		// use the visual model
+                clipModelName.oSet(this.spawnArgs.GetString("model"));		// use the visual model
             }
 
             if (!CollisionModel_local.collisionModelManager.TrmFromModel(clipModelName, trm)) {
-                gameLocal.Error("idMoveable '%s': cannot load collision model %s", name, clipModelName);
+                gameLocal.Error("idMoveable '%s': cannot load collision model %s", this.name, clipModelName);
                 return;
             }
 
             // if the model should be shrinked
-            clipShrink = spawnArgs.GetInt("clipshrink");
+            clipShrink = this.spawnArgs.GetInt("clipshrink");
             if (clipShrink != 0) {
                 trm.Shrink(clipShrink * CM_CLIP_EPSILON);
             }
 
             // get rigid body properties
-            spawnArgs.GetFloat("density", "0.5", density);
+            this.spawnArgs.GetFloat("density", "0.5", density);
             density[0] = idMath.ClampFloat(0.001f, 1000.0f, density[0]);
-            spawnArgs.GetFloat("friction", "0.05", friction);
+            this.spawnArgs.GetFloat("friction", "0.05", friction);
             friction[0] = idMath.ClampFloat(0.0f, 1.0f, friction[0]);
-            spawnArgs.GetFloat("bouncyness", "0.6", bouncyness);
+            this.spawnArgs.GetFloat("bouncyness", "0.6", bouncyness);
             bouncyness[0] = idMath.ClampFloat(0.0f, 1.0f, bouncyness[0]);
-            explode = spawnArgs.GetBool("explode");
-            unbindOnDeath = spawnArgs.GetBool("unbindondeath");
+            this.explode = this.spawnArgs.GetBool("explode");
+            this.unbindOnDeath = this.spawnArgs.GetBool("unbindondeath");
 
-            fxCollide = new idStr(spawnArgs.GetString("fx_collide"));
-            nextCollideFxTime = 0;
+            this.fxCollide = new idStr(this.spawnArgs.GetString("fx_collide"));
+            this.nextCollideFxTime = 0;
 
-            fl.takedamage = true;
-            damage = new idStr(spawnArgs.GetString("def_damage", ""));
-            canDamage = !spawnArgs.GetBool("damageWhenActive");
-            minDamageVelocity = spawnArgs.GetFloat("minDamageVelocity", "100");
-            maxDamageVelocity = spawnArgs.GetFloat("maxDamageVelocity", "200");
-            nextDamageTime = 0;
-            nextSoundTime = 0;
+            this.fl.takedamage = true;
+            this.damage = new idStr(this.spawnArgs.GetString("def_damage", ""));
+            this.canDamage = !this.spawnArgs.GetBool("damageWhenActive");
+            this.minDamageVelocity = this.spawnArgs.GetFloat("minDamageVelocity", "100");
+            this.maxDamageVelocity = this.spawnArgs.GetFloat("maxDamageVelocity", "200");
+            this.nextDamageTime = 0;
+            this.nextSoundTime = 0;
 
-            health = spawnArgs.GetInt("health", "0");
-            spawnArgs.GetString("broken", "", brokenModel);
+            this.health = this.spawnArgs.GetInt("health", "0");
+            this.spawnArgs.GetString("broken", "", this.brokenModel);
 
-            if (health != 0) {
-                if (!brokenModel.IsEmpty() && NOT(renderModelManager.CheckModel(brokenModel.toString()))) {
-                    gameLocal.Error("idMoveable '%s' at (%s): cannot load broken model '%s'", name, GetPhysics().GetOrigin().ToString(0), brokenModel);
+            if (this.health != 0) {
+                if (!this.brokenModel.IsEmpty() && NOT(renderModelManager.CheckModel(this.brokenModel.toString()))) {
+                    gameLocal.Error("idMoveable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), this.brokenModel);
                 }
             }
 
             // setup the physics
-            physicsObj.SetSelf(this);
-            physicsObj.SetClipModel(new idClipModel(trm), density[0]);
-            physicsObj.GetClipModel().SetMaterial(GetRenderModelMaterial());
-            physicsObj.SetOrigin(GetPhysics().GetOrigin());
-            physicsObj.SetAxis(GetPhysics().GetAxis());
-            physicsObj.SetBouncyness(bouncyness[0]);
-            physicsObj.SetFriction(0.6f, 0.6f, friction[0]);
-            physicsObj.SetGravity(gameLocal.GetGravity());
-            physicsObj.SetContents(CONTENTS_SOLID);
-            physicsObj.SetClipMask(MASK_SOLID | CONTENTS_BODY | CONTENTS_CORPSE | CONTENTS_MOVEABLECLIP);
-            SetPhysics(physicsObj);
+            this.physicsObj.SetSelf(this);
+            this.physicsObj.SetClipModel(new idClipModel(trm), density[0]);
+            this.physicsObj.GetClipModel().SetMaterial(GetRenderModelMaterial());
+            this.physicsObj.SetOrigin(GetPhysics().GetOrigin());
+            this.physicsObj.SetAxis(GetPhysics().GetAxis());
+            this.physicsObj.SetBouncyness(bouncyness[0]);
+            this.physicsObj.SetFriction(0.6f, 0.6f, friction[0]);
+            this.physicsObj.SetGravity(gameLocal.GetGravity());
+            this.physicsObj.SetContents(CONTENTS_SOLID);
+            this.physicsObj.SetClipMask(MASK_SOLID | CONTENTS_BODY | CONTENTS_CORPSE | CONTENTS_MOVEABLECLIP);
+            SetPhysics(this.physicsObj);
 
-            if (spawnArgs.GetFloat("mass", "10", mass)) {
-                physicsObj.SetMass(mass[0]);
+            if (this.spawnArgs.GetFloat("mass", "10", mass)) {
+                this.physicsObj.SetMass(mass[0]);
             }
 
-            if (spawnArgs.GetBool("nodrop")) {
-                physicsObj.PutToRest();
+            if (this.spawnArgs.GetBool("nodrop")) {
+                this.physicsObj.PutToRest();
             } else {
-                physicsObj.DropToFloor();
+                this.physicsObj.DropToFloor();
             }
 
-            if (spawnArgs.GetBool("noimpact") || spawnArgs.GetBool("notPushable")) {
-                physicsObj.DisableImpact();
+            if (this.spawnArgs.GetBool("noimpact") || this.spawnArgs.GetBool("notPushable")) {
+                this.physicsObj.DisableImpact();
             }
 
-            if (spawnArgs.GetBool("nonsolid")) {
+            if (this.spawnArgs.GetBool("nonsolid")) {
                 BecomeNonSolid();
             }
 
-            allowStep = spawnArgs.GetBool("allowStep", "1");
+            this.allowStep = this.spawnArgs.GetBool("allowStep", "1");
 
             PostEventMS(EV_SetOwnerFromSpawnArgs, 0);
         }
@@ -256,56 +256,56 @@ public class Moveable {
         @Override
         public void Save(idSaveGame savefile) {
 
-            savefile.WriteString(brokenModel);
-            savefile.WriteString(damage);
-            savefile.WriteString(fxCollide);
-            savefile.WriteInt(nextCollideFxTime);
-            savefile.WriteFloat(minDamageVelocity);
-            savefile.WriteFloat(maxDamageVelocity);
-            savefile.WriteBool(explode);
-            savefile.WriteBool(unbindOnDeath);
-            savefile.WriteBool(allowStep);
-            savefile.WriteBool(canDamage);
-            savefile.WriteInt(nextDamageTime);
-            savefile.WriteInt(nextSoundTime);
-            savefile.WriteInt((int) (initialSpline != null ? initialSpline.GetTime(0) : -1));
-            savefile.WriteVec3(initialSplineDir);
+            savefile.WriteString(this.brokenModel);
+            savefile.WriteString(this.damage);
+            savefile.WriteString(this.fxCollide);
+            savefile.WriteInt(this.nextCollideFxTime);
+            savefile.WriteFloat(this.minDamageVelocity);
+            savefile.WriteFloat(this.maxDamageVelocity);
+            savefile.WriteBool(this.explode);
+            savefile.WriteBool(this.unbindOnDeath);
+            savefile.WriteBool(this.allowStep);
+            savefile.WriteBool(this.canDamage);
+            savefile.WriteInt(this.nextDamageTime);
+            savefile.WriteInt(this.nextSoundTime);
+            savefile.WriteInt((int) (this.initialSpline != null ? this.initialSpline.GetTime(0) : -1));
+            savefile.WriteVec3(this.initialSplineDir);
 
-            savefile.WriteStaticObject(physicsObj);
+            savefile.WriteStaticObject(this.physicsObj);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            int[] initialSplineTime = {0};
+            final int[] initialSplineTime = {0};
 
-            savefile.ReadString(brokenModel);
-            savefile.ReadString(damage);
-            savefile.ReadString(fxCollide);
-            nextCollideFxTime = savefile.ReadInt();
-            minDamageVelocity = savefile.ReadFloat();
-            maxDamageVelocity = savefile.ReadFloat();
-            explode = savefile.ReadBool();
-            unbindOnDeath = savefile.ReadBool();
-            allowStep = savefile.ReadBool();
-            canDamage = savefile.ReadBool();
-            nextDamageTime = savefile.ReadInt();
-            nextSoundTime = savefile.ReadInt();
+            savefile.ReadString(this.brokenModel);
+            savefile.ReadString(this.damage);
+            savefile.ReadString(this.fxCollide);
+            this.nextCollideFxTime = savefile.ReadInt();
+            this.minDamageVelocity = savefile.ReadFloat();
+            this.maxDamageVelocity = savefile.ReadFloat();
+            this.explode = savefile.ReadBool();
+            this.unbindOnDeath = savefile.ReadBool();
+            this.allowStep = savefile.ReadBool();
+            this.canDamage = savefile.ReadBool();
+            this.nextDamageTime = savefile.ReadInt();
+            this.nextSoundTime = savefile.ReadInt();
             savefile.ReadInt(initialSplineTime);
-            savefile.ReadVec3(initialSplineDir);
+            savefile.ReadVec3(this.initialSplineDir);
 
             if (initialSplineTime[0] != -1) {
                 InitInitialSpline(initialSplineTime[0]);
             } else {
-                initialSpline = null;
+                this.initialSpline = null;
             }
 
-            savefile.ReadStaticObject(physicsObj);
-            RestorePhysics(physicsObj);
+            savefile.ReadStaticObject(this.physicsObj);
+            RestorePhysics(this.physicsObj);
         }
 
         @Override
         public void Think() {
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 if (!FollowInitialSplinePath()) {
                     BecomeInactive(TH_THINK);
                 }
@@ -316,23 +316,23 @@ public class Moveable {
         @Override
         public void Hide() {
             super.Hide();
-            physicsObj.SetContents(0);
+            this.physicsObj.SetContents(0);
         }
 
         @Override
         public void Show() {
             super.Show();
-            if (!spawnArgs.GetBool("nonsolid")) {
-                physicsObj.SetContents(CONTENTS_SOLID);
+            if (!this.spawnArgs.GetBool("nonsolid")) {
+                this.physicsObj.SetContents(CONTENTS_SOLID);
             }
         }
 
         public boolean AllowStep() {
-            return allowStep;
+            return this.allowStep;
         }
 
         public void EnableDamage(boolean enable, float duration) {
-            canDamage = enable;
+            this.canDamage = enable;
             if (duration != 0) {
                 PostEventSec(EV_EnableDamage, duration, (!enable) ? 0.0f : 1.0f);
             }
@@ -345,30 +345,30 @@ public class Moveable {
             idEntity ent;
 
             v = -(velocity.oMultiply(collision.c.normal));
-            if (v > BOUNCE_SOUND_MIN_VELOCITY && gameLocal.time > nextSoundTime) {
+            if ((v > BOUNCE_SOUND_MIN_VELOCITY) && (gameLocal.time > this.nextSoundTime)) {
                 f = v > BOUNCE_SOUND_MAX_VELOCITY ? 1.0f : idMath.Sqrt(v - BOUNCE_SOUND_MIN_VELOCITY) * (1.0f / idMath.Sqrt(BOUNCE_SOUND_MAX_VELOCITY - BOUNCE_SOUND_MIN_VELOCITY));
                 if (StartSound("snd_bounce", SND_CHANNEL_ANY, 0, false, null)) {
                     // don't set the volume unless there is a bounce sound as it overrides the entire channel
                     // which causes footsteps on ai's to not honor their shader parms
                     SetSoundVolume(f);
                 }
-                nextSoundTime = gameLocal.time + 500;
+                this.nextSoundTime = gameLocal.time + 500;
             }
 
-            if (canDamage && damage.Length() != 0 && gameLocal.time > nextDamageTime) {
+            if (this.canDamage && (this.damage.Length() != 0) && (gameLocal.time > this.nextDamageTime)) {
                 ent = gameLocal.entities[ collision.c.entityNum];
-                if (ent != null && v > minDamageVelocity) {
-                    f = v > maxDamageVelocity ? 1.0f : idMath.Sqrt(v - minDamageVelocity) * (1.0f / idMath.Sqrt(maxDamageVelocity - minDamageVelocity));
+                if ((ent != null) && (v > this.minDamageVelocity)) {
+                    f = v > this.maxDamageVelocity ? 1.0f : idMath.Sqrt(v - this.minDamageVelocity) * (1.0f / idMath.Sqrt(this.maxDamageVelocity - this.minDamageVelocity));
                     dir = velocity;
                     dir.NormalizeFast();
-                    ent.Damage(this, GetPhysics().GetClipModel().GetOwner(), dir, damage.toString(), f, INVALID_JOINT);
-                    nextDamageTime = gameLocal.time + 1000;
+                    ent.Damage(this, GetPhysics().GetClipModel().GetOwner(), dir, this.damage.toString(), f, INVALID_JOINT);
+                    this.nextDamageTime = gameLocal.time + 1000;
                 }
             }
 
-            if (fxCollide.Length() != 0 && gameLocal.time > nextCollideFxTime) {
-                idEntityFx.StartFx(fxCollide, collision.c.point, null, this, false);
-                nextCollideFxTime = gameLocal.time + 3500;
+            if ((this.fxCollide.Length() != 0) && (gameLocal.time > this.nextCollideFxTime)) {
+                idEntityFx.StartFx(this.fxCollide, collision.c.point, null, this, false);
+                this.nextCollideFxTime = gameLocal.time + 3500;
             }
 
             return false;
@@ -376,91 +376,91 @@ public class Moveable {
 
         @Override
         public void Killed(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
-            if (unbindOnDeath) {
+            if (this.unbindOnDeath) {
                 Unbind();
             }
 
-            if (!brokenModel.IsEmpty()) {
-                SetModel(brokenModel.toString());
+            if (!this.brokenModel.IsEmpty()) {
+                SetModel(this.brokenModel.toString());
             }
 
-            if (explode) {
-                if (brokenModel.IsEmpty()) {
+            if (this.explode) {
+                if (this.brokenModel.IsEmpty()) {
                     PostEventMS(EV_Remove, 1000);
                 }
             }
 
-            if (renderEntity.gui[ 0] != null) {
-                renderEntity.gui[ 0] = null;
+            if (this.renderEntity.gui[ 0] != null) {
+                this.renderEntity.gui[ 0] = null;
             }
 
             ActivateTargets(this);
 
-            fl.takedamage = false;
+            this.fl.takedamage = false;
         }
 
         @Override
         public void WriteToSnapshot(idBitMsgDelta msg) {
-            physicsObj.WriteToSnapshot(msg);
+            this.physicsObj.WriteToSnapshot(msg);
         }
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
-            physicsObj.ReadFromSnapshot(msg);
+            this.physicsObj.ReadFromSnapshot(msg);
             if (msg.HasChanged()) {
                 UpdateVisuals();
             }
         }
 
         protected idMaterial GetRenderModelMaterial() {
-            if (renderEntity.customShader != null) {
-                return renderEntity.customShader;
+            if (this.renderEntity.customShader != null) {
+                return this.renderEntity.customShader;
             }
-            if (renderEntity.hModel != null && renderEntity.hModel.NumSurfaces() != 0) {
-                return renderEntity.hModel.Surface(0).shader;
+            if ((this.renderEntity.hModel != null) && (this.renderEntity.hModel.NumSurfaces() != 0)) {
+                return this.renderEntity.hModel.Surface(0).shader;
             }
             return null;
         }
 
         protected void BecomeNonSolid() {
             // set CONTENTS_RENDERMODEL so bullets still collide with the moveable
-            physicsObj.SetContents(CONTENTS_CORPSE | CONTENTS_RENDERMODEL);
-            physicsObj.SetClipMask(MASK_SOLID | CONTENTS_CORPSE | CONTENTS_MOVEABLECLIP);
+            this.physicsObj.SetContents(CONTENTS_CORPSE | CONTENTS_RENDERMODEL);
+            this.physicsObj.SetClipMask(MASK_SOLID | CONTENTS_CORPSE | CONTENTS_MOVEABLECLIP);
         }
 
         protected void InitInitialSpline(int startTime) {
             int initialSplineTime;
 
-            initialSpline = GetSpline();
-            initialSplineTime = spawnArgs.GetInt("initialSplineTime", "300");
+            this.initialSpline = GetSpline();
+            initialSplineTime = this.spawnArgs.GetInt("initialSplineTime", "300");
 
-            if (initialSpline != null) {
-                initialSpline.MakeUniform(initialSplineTime);
-                initialSpline.ShiftTime(startTime - initialSpline.GetTime(0));
-                initialSplineDir = initialSpline.GetCurrentFirstDerivative(startTime);
-                initialSplineDir.oMulSet(physicsObj.GetAxis().Transpose());
-                initialSplineDir.Normalize();
+            if (this.initialSpline != null) {
+                this.initialSpline.MakeUniform(initialSplineTime);
+                this.initialSpline.ShiftTime(startTime - this.initialSpline.GetTime(0));
+                this.initialSplineDir = this.initialSpline.GetCurrentFirstDerivative(startTime);
+                this.initialSplineDir.oMulSet(this.physicsObj.GetAxis().Transpose());
+                this.initialSplineDir.Normalize();
                 BecomeActive(TH_THINK);
             }
         }
 
         protected boolean FollowInitialSplinePath() {
-            if (initialSpline != null) {
-                if (gameLocal.time < initialSpline.GetTime(initialSpline.GetNumValues() - 1)) {
-                    idVec3 splinePos = initialSpline.GetCurrentValue(gameLocal.time);
-                    idVec3 linearVelocity = (splinePos.oMinus(physicsObj.GetOrigin())).oMultiply(USERCMD_HZ);
-                    physicsObj.SetLinearVelocity(linearVelocity);
+            if (this.initialSpline != null) {
+                if (gameLocal.time < this.initialSpline.GetTime(this.initialSpline.GetNumValues() - 1)) {
+                    final idVec3 splinePos = this.initialSpline.GetCurrentValue(gameLocal.time);
+                    final idVec3 linearVelocity = (splinePos.oMinus(this.physicsObj.GetOrigin())).oMultiply(USERCMD_HZ);
+                    this.physicsObj.SetLinearVelocity(linearVelocity);
 
-                    idVec3 splineDir = initialSpline.GetCurrentFirstDerivative(gameLocal.time);
-                    idVec3 dir = initialSplineDir.oMultiply(physicsObj.GetAxis());
-                    idVec3 angularVelocity = dir.Cross(splineDir);
+                    final idVec3 splineDir = this.initialSpline.GetCurrentFirstDerivative(gameLocal.time);
+                    final idVec3 dir = this.initialSplineDir.oMultiply(this.physicsObj.GetAxis());
+                    final idVec3 angularVelocity = dir.Cross(splineDir);
                     angularVelocity.Normalize();
                     angularVelocity.oMulSet(idMath.ACos16(dir.oMultiply(splineDir) / splineDir.Length()) * USERCMD_HZ);//TODO:back reference from ACos16
-                    physicsObj.SetAngularVelocity(angularVelocity);
+                    this.physicsObj.SetAngularVelocity(angularVelocity);
                     return true;
                 } else {
 //			delete initialSpline;
-                    initialSpline = null;
+                    this.initialSpline = null;
                 }
             }
             return false;
@@ -468,29 +468,29 @@ public class Moveable {
 
         protected void Event_Activate(idEventArg<idEntity> activator) {
             float delay;
-            idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
+            final idVec3 init_velocity = new idVec3(), init_avelocity = new idVec3();
 
             Show();
 
-            if (0 == spawnArgs.GetInt("notPushable")) {
-                physicsObj.EnableImpact();
+            if (0 == this.spawnArgs.GetInt("notPushable")) {
+                this.physicsObj.EnableImpact();
             }
 
-            physicsObj.Activate();
+            this.physicsObj.Activate();
 
-            spawnArgs.GetVector("init_velocity", "0 0 0", init_velocity);
-            spawnArgs.GetVector("init_avelocity", "0 0 0", init_avelocity);
+            this.spawnArgs.GetVector("init_velocity", "0 0 0", init_velocity);
+            this.spawnArgs.GetVector("init_avelocity", "0 0 0", init_avelocity);
 
-            delay = spawnArgs.GetFloat("init_velocityDelay", "0");
+            delay = this.spawnArgs.GetFloat("init_velocityDelay", "0");
             if (delay == 0.0f) {
-                physicsObj.SetLinearVelocity(init_velocity);
+                this.physicsObj.SetLinearVelocity(init_velocity);
             } else {
                 PostEventSec(EV_SetLinearVelocity, delay, init_velocity);
             }
 
-            delay = spawnArgs.GetFloat("init_avelocityDelay", "0");
+            delay = this.spawnArgs.GetFloat("init_avelocityDelay", "0");
             if (delay == 0.0f) {
-                physicsObj.SetAngularVelocity(init_avelocity);
+                this.physicsObj.SetAngularVelocity(init_avelocity);
             } else {
                 PostEventSec(EV_SetAngularVelocity, delay, init_avelocity);
             }
@@ -503,19 +503,19 @@ public class Moveable {
         }
 
         protected void Event_SetOwnerFromSpawnArgs() {
-            String[] owner = {null};
+            final String[] owner = {null};
 
-            if (spawnArgs.GetString("owner", "", owner)) {
+            if (this.spawnArgs.GetString("owner", "", owner)) {
                 ProcessEvent(EV_SetOwner, gameLocal.FindEntity(owner[0]));
             }
         }
 
         protected void Event_IsAtRest() {
-            idThread.ReturnInt(physicsObj.IsAtRest());
+            idThread.ReturnInt(this.physicsObj.IsAtRest());
         }
 
         protected void Event_EnableDamage(idEventArg<Float> enable) {
-            canDamage = (enable.value != 0.0f);
+            this.canDamage = (enable.value != 0.0f);
         }
 
         @Override
@@ -539,7 +539,7 @@ public class Moveable {
             return eventCallbacks;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -573,13 +573,13 @@ public class Moveable {
         //
 
         public idBarrel() {
-            radius = 1.0f;
-            barrelAxis = 0;
-            lastOrigin = new idVec3();
-            lastAxis = idMat3.getMat3_identity();
-            additionalRotation = 0;
-            additionalAxis = idMat3.getMat3_identity();
-            fl.networkSync = true;
+            this.radius = 1.0f;
+            this.barrelAxis = 0;
+            this.lastOrigin = new idVec3();
+            this.lastAxis = idMat3.getMat3_identity();
+            this.additionalRotation = 0;
+            this.additionalAxis = idMat3.getMat3_identity();
+            this.fl.networkSync = true;
         }
 
         @Override
@@ -589,43 +589,44 @@ public class Moveable {
             final idBounds bounds = GetPhysics().GetBounds();
 
             // radius of the barrel cylinder
-            radius = (bounds.oGet(1, 0) - bounds.oGet(0, 0)) * 0.5f;
+            this.radius = (bounds.oGet(1, 0) - bounds.oGet(0, 0)) * 0.5f;
 
             // always a vertical barrel with cylinder axis parallel to the z-axis
-            barrelAxis = 2;
+            this.barrelAxis = 2;
 
-            lastOrigin = GetPhysics().GetOrigin();
-            lastAxis = GetPhysics().GetAxis();
+            this.lastOrigin = GetPhysics().GetOrigin();
+            this.lastAxis = GetPhysics().GetAxis();
 
-            additionalRotation = 0.0f;
-            additionalAxis.Identity();
+            this.additionalRotation = 0.0f;
+            this.additionalAxis.Identity();
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteFloat(radius);
-            savefile.WriteInt(barrelAxis);
-            savefile.WriteVec3(lastOrigin);
-            savefile.WriteMat3(lastAxis);
-            savefile.WriteFloat(additionalRotation);
-            savefile.WriteMat3(additionalAxis);
+            savefile.WriteFloat(this.radius);
+            savefile.WriteInt(this.barrelAxis);
+            savefile.WriteVec3(this.lastOrigin);
+            savefile.WriteMat3(this.lastAxis);
+            savefile.WriteFloat(this.additionalRotation);
+            savefile.WriteMat3(this.additionalAxis);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            radius = savefile.ReadFloat();
-            barrelAxis = savefile.ReadInt();
-            savefile.ReadVec3(lastOrigin);
-            savefile.ReadMat3(lastAxis);
-            additionalRotation = savefile.ReadFloat();
-            savefile.ReadMat3(additionalAxis);
+            this.radius = savefile.ReadFloat();
+            this.barrelAxis = savefile.ReadInt();
+            savefile.ReadVec3(this.lastOrigin);
+            savefile.ReadMat3(this.lastAxis);
+            this.additionalRotation = savefile.ReadFloat();
+            savefile.ReadMat3(this.additionalAxis);
         }
 
         public void BarrelThink() {
             boolean wasAtRest, onGround;
             float movedDistance, rotatedDistance, angle;
             idVec3 curOrigin, gravityNormal, dir;
-            idMat3 curAxis, axis;
+            idMat3 curAxis;
+			final idMat3 axis;
 
             wasAtRest = IsAtRest();
 
@@ -644,45 +645,45 @@ public class Moveable {
                 if (onGround) {
                     gravityNormal = GetPhysics().GetGravityNormal();
 
-                    dir = curOrigin.oMinus(lastOrigin);
+                    dir = curOrigin.oMinus(this.lastOrigin);
                     dir.oMinSet(gravityNormal.oMultiply(dir.oMultiply(gravityNormal)));
                     movedDistance = dir.LengthSqr();
 
                     // if the barrel moved and the barrel is not aligned with the gravity direction
-                    if (movedDistance > 0.0f && idMath.Fabs(gravityNormal.oMultiply(curAxis.oGet(barrelAxis))) < 0.7f) {
+                    if ((movedDistance > 0.0f) && (idMath.Fabs(gravityNormal.oMultiply(curAxis.oGet(this.barrelAxis))) < 0.7f)) {
 
                         // barrel movement since last think frame orthogonal to the barrel axis
                         movedDistance = idMath.Sqrt(movedDistance);
                         dir.oMulSet(1.0f / movedDistance);
-                        movedDistance = (1.0f - idMath.Fabs(dir.oMultiply(curAxis.oGet(barrelAxis)))) * movedDistance;
+                        movedDistance = (1.0f - idMath.Fabs(dir.oMultiply(curAxis.oGet(this.barrelAxis)))) * movedDistance;
 
                         // get rotation about barrel axis since last think frame
-                        angle = lastAxis.oGet((barrelAxis + 1) % 3).oMultiply(curAxis.oGet((barrelAxis + 1) % 3));
+                        angle = this.lastAxis.oGet((this.barrelAxis + 1) % 3).oMultiply(curAxis.oGet((this.barrelAxis + 1) % 3));
                         angle = idMath.ACos(angle);
                         // distance along cylinder hull
-                        rotatedDistance = angle * radius;
+                        rotatedDistance = angle * this.radius;
 
                         // if the barrel moved further than it rotated about it's axis
                         if (movedDistance > rotatedDistance) {
 
                             // additional rotation of the visual model to make it look
                             // like the barrel rolls instead of slides
-                            angle = 180.0f * (movedDistance - rotatedDistance) / (radius * idMath.PI);
-                            if (gravityNormal.Cross(curAxis.oGet(barrelAxis)).oMultiply(dir) < 0.0f) {
-                                additionalRotation += angle;
+                            angle = (180.0f * (movedDistance - rotatedDistance)) / (this.radius * idMath.PI);
+                            if (gravityNormal.Cross(curAxis.oGet(this.barrelAxis)).oMultiply(dir) < 0.0f) {
+                                this.additionalRotation += angle;
                             } else {
-                                additionalRotation -= angle;
+                                this.additionalRotation -= angle;
                             }
                             dir = getVec3_origin();
-                            dir.oSet(barrelAxis, 1.0f);
-                            additionalAxis = new idRotation(getVec3_origin(), dir, additionalRotation).ToMat3();
+                            dir.oSet(this.barrelAxis, 1.0f);
+                            this.additionalAxis = new idRotation(getVec3_origin(), dir, this.additionalRotation).ToMat3();
                         }
                     }
                 }
 
                 // save state for next think
-                lastOrigin = curOrigin;
-                lastAxis = curAxis;
+                this.lastOrigin = curOrigin;
+                this.lastAxis = curAxis;
             }
 
             Present();
@@ -690,7 +691,7 @@ public class Moveable {
 
         @Override
         public void Think() {
-            if ((thinkFlags & TH_THINK) != 0) {
+            if ((this.thinkFlags & TH_THINK) != 0) {
                 if (!FollowInitialSplinePath()) {
                     BecomeInactive(TH_THINK);
                 }
@@ -702,7 +703,7 @@ public class Moveable {
         @Override
         public boolean GetPhysicsToVisualTransform(idVec3 origin, idMat3 axis) {
             origin.oSet(getVec3_origin());
-            axis.oSet(additionalAxis);
+            axis.oSet(this.additionalAxis);
             return true;
         }
 
@@ -711,7 +712,7 @@ public class Moveable {
             Think();
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -760,7 +761,7 @@ public class Moveable {
             BURNING,
             BURNEXPIRED,
             EXPLODING
-        };
+        }
         private explode_state_t  state;
         private idVec3           spawnOrigin;
         private idMat3           spawnAxis;
@@ -775,28 +776,28 @@ public class Moveable {
         //
 
         public idExplodingBarrel() {
-            spawnOrigin = new idVec3();
-            spawnAxis = new idMat3();
-            state = NORMAL;
-            particleModelDefHandle = -1;
-            lightDefHandle = -1;
+            this.spawnOrigin = new idVec3();
+            this.spawnAxis = new idMat3();
+            this.state = NORMAL;
+            this.particleModelDefHandle = -1;
+            this.lightDefHandle = -1;
 //	memset( &particleRenderEntity, 0, sizeof( particleRenderEntity ) );
-            particleRenderEntity = new renderEntity_s();
+            this.particleRenderEntity = new renderEntity_s();
 //	memset( &light, 0, sizeof( light ) );
-            light = new renderLight_s();
-            particleTime = 0;
-            lightTime = 0;
-            time = 0.0f;
+            this.light = new renderLight_s();
+            this.particleTime = 0;
+            this.lightTime = 0;
+            this.time = 0.0f;
         }
 
         // ~idExplodingBarrel();
         @Override
         protected void _deconstructor() {
-            if (particleModelDefHandle >= 0) {
-                gameRenderWorld.FreeEntityDef(particleModelDefHandle);
+            if (this.particleModelDefHandle >= 0) {
+                gameRenderWorld.FreeEntityDef(this.particleModelDefHandle);
             }
-            if (lightDefHandle >= 0) {
-                gameRenderWorld.FreeLightDef(lightDefHandle);
+            if (this.lightDefHandle >= 0) {
+                gameRenderWorld.FreeLightDef(this.lightDefHandle);
             }
             super._deconstructor();
         }
@@ -805,90 +806,90 @@ public class Moveable {
         public void Spawn() {
             super.Spawn();
 
-            health = spawnArgs.GetInt("health", "5");
-            fl.takedamage = true;
-            spawnOrigin = GetPhysics().GetOrigin();
-            spawnAxis = GetPhysics().GetAxis();
-            state = NORMAL;
-            particleModelDefHandle = -1;
-            lightDefHandle = -1;
-            lightTime = 0;
-            particleTime = 0;
-            time = spawnArgs.GetFloat("time");
-            particleRenderEntity = new renderEntity_s();//	memset( &particleRenderEntity, 0, sizeof( particleRenderEntity ) );
-            light = new renderLight_s();//	memset( &light, 0, sizeof( light ) );
+            this.health = this.spawnArgs.GetInt("health", "5");
+            this.fl.takedamage = true;
+            this.spawnOrigin = GetPhysics().GetOrigin();
+            this.spawnAxis = GetPhysics().GetAxis();
+            this.state = NORMAL;
+            this.particleModelDefHandle = -1;
+            this.lightDefHandle = -1;
+            this.lightTime = 0;
+            this.particleTime = 0;
+            this.time = this.spawnArgs.GetFloat("time");
+            this.particleRenderEntity = new renderEntity_s();//	memset( &particleRenderEntity, 0, sizeof( particleRenderEntity ) );
+            this.light = new renderLight_s();//	memset( &light, 0, sizeof( light ) );
         }
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteVec3(spawnOrigin);
-            savefile.WriteMat3(spawnAxis);
+            savefile.WriteVec3(this.spawnOrigin);
+            savefile.WriteMat3(this.spawnAxis);
 
-            savefile.WriteInt(etoi(state));
-            savefile.WriteInt(particleModelDefHandle);
-            savefile.WriteInt(lightDefHandle);
+            savefile.WriteInt(etoi(this.state));
+            savefile.WriteInt(this.particleModelDefHandle);
+            savefile.WriteInt(this.lightDefHandle);
 
-            savefile.WriteRenderEntity(particleRenderEntity);
-            savefile.WriteRenderLight(light);
+            savefile.WriteRenderEntity(this.particleRenderEntity);
+            savefile.WriteRenderLight(this.light);
 
-            savefile.WriteInt(particleTime);
-            savefile.WriteInt(lightTime);
-            savefile.WriteFloat(time);
+            savefile.WriteInt(this.particleTime);
+            savefile.WriteInt(this.lightTime);
+            savefile.WriteFloat(this.time);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadVec3(spawnOrigin);
-            savefile.ReadMat3(spawnAxis);
+            savefile.ReadVec3(this.spawnOrigin);
+            savefile.ReadMat3(this.spawnAxis);
 
-            state = explode_state_t.values()[savefile.ReadInt()];
-            particleModelDefHandle = savefile.ReadInt();
-            lightDefHandle = savefile.ReadInt();
+            this.state = explode_state_t.values()[savefile.ReadInt()];
+            this.particleModelDefHandle = savefile.ReadInt();
+            this.lightDefHandle = savefile.ReadInt();
 
-            savefile.ReadRenderEntity(particleRenderEntity);
-            savefile.ReadRenderLight(light);
+            savefile.ReadRenderEntity(this.particleRenderEntity);
+            savefile.ReadRenderLight(this.light);
 
-            particleTime = savefile.ReadInt();
-            lightTime = savefile.ReadInt();
-            time = savefile.ReadFloat();
+            this.particleTime = savefile.ReadInt();
+            this.lightTime = savefile.ReadInt();
+            this.time = savefile.ReadFloat();
         }
 
         @Override
         public void Think() {
             super.BarrelThink();
 
-            if (lightDefHandle >= 0) {
-                if (state == BURNING) {
+            if (this.lightDefHandle >= 0) {
+                if (this.state == BURNING) {
                     // ramp the color up over 250 ms
-                    float pct = (gameLocal.time - lightTime) / 250.f;
+                    float pct = (gameLocal.time - this.lightTime) / 250.f;
                     if (pct > 1.0f) {
                         pct = 1.0f;
                     }
-                    light.origin = physicsObj.GetAbsBounds().GetCenter();
-                    light.axis = getMat3_identity();
-                    light.shaderParms[ SHADERPARM_RED] = pct;
-                    light.shaderParms[ SHADERPARM_GREEN] = pct;
-                    light.shaderParms[ SHADERPARM_BLUE] = pct;
-                    light.shaderParms[ SHADERPARM_ALPHA] = pct;
-                    gameRenderWorld.UpdateLightDef(lightDefHandle, light);
+                    this.light.origin = this.physicsObj.GetAbsBounds().GetCenter();
+                    this.light.axis = getMat3_identity();
+                    this.light.shaderParms[ SHADERPARM_RED] = pct;
+                    this.light.shaderParms[ SHADERPARM_GREEN] = pct;
+                    this.light.shaderParms[ SHADERPARM_BLUE] = pct;
+                    this.light.shaderParms[ SHADERPARM_ALPHA] = pct;
+                    gameRenderWorld.UpdateLightDef(this.lightDefHandle, this.light);
                 } else {
-                    if (gameLocal.time - lightTime > 250) {
-                        gameRenderWorld.FreeLightDef(lightDefHandle);
-                        lightDefHandle = -1;
+                    if ((gameLocal.time - this.lightTime) > 250) {
+                        gameRenderWorld.FreeLightDef(this.lightDefHandle);
+                        this.lightDefHandle = -1;
                     }
                     return;
                 }
             }
 
-            if (!gameLocal.isClient && state != BURNING && state != EXPLODING) {
+            if (!gameLocal.isClient && (this.state != BURNING) && (this.state != EXPLODING)) {
                 BecomeInactive(TH_THINK);
                 return;
             }
 
-            if (particleModelDefHandle >= 0) {
-                particleRenderEntity.origin.oSet(physicsObj.GetAbsBounds().GetCenter());
-                particleRenderEntity.axis.oSet(getMat3_identity());
-                gameRenderWorld.UpdateEntityDef(particleModelDefHandle, particleRenderEntity);
+            if (this.particleModelDefHandle >= 0) {
+                this.particleRenderEntity.origin.oSet(this.physicsObj.GetAbsBounds().GetCenter());
+                this.particleRenderEntity.axis.oSet(getMat3_identity());
+                gameRenderWorld.UpdateEntityDef(this.particleModelDefHandle, this.particleRenderEntity);
             }
         }
 
@@ -900,7 +901,7 @@ public class Moveable {
             if (null == damageDef) {
                 gameLocal.Error("Unknown damageDef '%s'\n", damageDefName);
             }
-            if (damageDef.FindKey("radius") != null && GetPhysics().GetContents() != 0 && GetBindMaster() == null) {
+            if ((damageDef.FindKey("radius") != null) && (GetPhysics().GetContents() != 0) && (GetBindMaster() == null)) {
                 PostEventMS(EV_Explode, 400);
             } else {
                 idEntity_Damage(inflictor, attacker, dir, damageDefName, damageScale, location);
@@ -910,22 +911,22 @@ public class Moveable {
         @Override
         public void Killed(idEntity inflictor, idEntity attacker, int damage, final idVec3 dir, int location) {
 
-            if (IsHidden() || state == EXPLODING || state == BURNING) {
+            if (IsHidden() || (this.state == EXPLODING) || (this.state == BURNING)) {
                 return;
             }
 
-            float f = spawnArgs.GetFloat("burn");
-            if (f > 0.0f && state == NORMAL) {
-                state = BURNING;
+            float f = this.spawnArgs.GetFloat("burn");
+            if ((f > 0.0f) && (this.state == NORMAL)) {
+                this.state = BURNING;
                 PostEventSec(EV_Explode, f);
                 StartSound("snd_burn", SND_CHANNEL_ANY, 0, false, null);
-                AddParticles(spawnArgs.GetString("model_burn", ""), true);
+                AddParticles(this.spawnArgs.GetString("model_burn", ""), true);
                 return;
             } else {
-                state = EXPLODING;
+                this.state = EXPLODING;
                 if (gameLocal.isServer) {
-                    idBitMsg msg = new idBitMsg();
-                    ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
+                    final idBitMsg msg = new idBitMsg();
+                    final ByteBuffer msgBuf = ByteBuffer.allocate(MAX_EVENT_PARAM_SIZE);
 
                     msg.Init(msgBuf, MAX_EVENT_PARAM_SIZE);
                     msg.WriteLong(gameLocal.time);
@@ -935,26 +936,26 @@ public class Moveable {
 
             // do this before applying radius damage so the ent can trace to any damagable ents nearby
             Hide();
-            physicsObj.SetContents(0);
+            this.physicsObj.SetContents(0);
 
-            final String splash = spawnArgs.GetString("def_splash_damage", "damage_explosion");
-            if (splash != null && !splash.isEmpty()) {
+            final String splash = this.spawnArgs.GetString("def_splash_damage", "damage_explosion");
+            if ((splash != null) && !splash.isEmpty()) {
                 gameLocal.RadiusDamage(GetPhysics().GetOrigin(), this, attacker, this, this, splash);
             }
 
             ExplodingEffects();
 
             //FIXME: need to precache all the debris stuff here and in the projectiles
-            idKeyValue kv = spawnArgs.MatchPrefix("def_debris");
+            idKeyValue kv = this.spawnArgs.MatchPrefix("def_debris");
             // bool first = true;
             while (kv != null) {
                 final idDict debris_args = gameLocal.FindEntityDefDict(kv.GetValue().toString(), false);
                 if (debris_args != null) {
-                    idEntity[] ent = {null};
+                    final idEntity[] ent = {null};
                     idVec3 dir2;
                     idDebris debris;
                     //if ( first ) {
-                    dir2 = physicsObj.GetAxis().oGet(1);
+                    dir2 = this.physicsObj.GetAxis().oGet(1);
                     //	first = false;
                     //} else {
                     dir2.x += gameLocal.random.CRandomFloat() * 4.0f;
@@ -964,32 +965,32 @@ public class Moveable {
                     dir2.Normalize();
 
                     gameLocal.SpawnEntityDef(debris_args, ent, false);
-                    if (null == ent[0] || !ent[0].IsType(idDebris.class)) {
+                    if ((null == ent[0]) || !ent[0].IsType(idDebris.class)) {
                         gameLocal.Error("'projectile_debris' is not an idDebris");
                     }
 
                     debris = (idDebris) ent[0];
-                    debris.Create(this, physicsObj.GetOrigin(), dir2.ToMat3());
+                    debris.Create(this, this.physicsObj.GetOrigin(), dir2.ToMat3());
                     debris.Launch();
                     debris.GetRenderEntity().shaderParms[ SHADERPARM_TIME_OF_DEATH] = (gameLocal.time + 1500) * 0.001f;
                     debris.UpdateVisuals();
 
                 }
-                kv = spawnArgs.MatchPrefix("def_debris", kv);
+                kv = this.spawnArgs.MatchPrefix("def_debris", kv);
             }
 
-            physicsObj.PutToRest();
+            this.physicsObj.PutToRest();
             CancelEvents(EV_Explode);
             CancelEvents(EV_Activate);
 
-            f = spawnArgs.GetFloat("respawn");
+            f = this.spawnArgs.GetFloat("respawn");
             if (f > 0.0f) {
                 PostEventSec(EV_Respawn, f);
             } else {
                 PostEventMS(EV_Remove, 5000);
             }
 
-            if (spawnArgs.GetBool("triggerTargets")) {
+            if (this.spawnArgs.GetBool("triggerTargets")) {
                 ActivateTargets(this);
             }
         }
@@ -1016,7 +1017,7 @@ public class Moveable {
 
             switch (event) {
                 case EVENT_EXPLODE: {
-                    if (gameLocal.realClientTime - msg.ReadLong() < spawnArgs.GetInt("explode_lapse", "1000")) {
+                    if ((gameLocal.realClientTime - msg.ReadLong()) < this.spawnArgs.GetInt("explode_lapse", "1000")) {
                         ExplodingEffects();
                     }
                     return true;
@@ -1029,55 +1030,55 @@ public class Moveable {
         }
 
         private void AddParticles(final String name, boolean burn) {
-            if (name != null && !name.isEmpty()) {
-                if (particleModelDefHandle >= 0) {
-                    gameRenderWorld.FreeEntityDef(particleModelDefHandle);
+            if ((name != null) && !name.isEmpty()) {
+                if (this.particleModelDefHandle >= 0) {
+                    gameRenderWorld.FreeEntityDef(this.particleModelDefHandle);
                 }
 //		memset( &particleRenderEntity, 0, sizeof ( particleRenderEntity ) );
-                particleRenderEntity = new renderEntity_s();//TODO:remove memset0 function from whatever fucking class got it!!!
+                this.particleRenderEntity = new renderEntity_s();//TODO:remove memset0 function from whatever fucking class got it!!!
                 final idDeclModelDef modelDef = (idDeclModelDef) declManager.FindType(DECL_MODELDEF, name);
                 if (modelDef != null) {
-                    particleRenderEntity.origin.oSet(physicsObj.GetAbsBounds().GetCenter());
-                    particleRenderEntity.axis.oSet(getMat3_identity());
-                    particleRenderEntity.hModel = modelDef.ModelHandle();
-                    float rgb = (burn) ? 0.0f : 1.0f;
-                    particleRenderEntity.shaderParms[ SHADERPARM_RED] = rgb;
-                    particleRenderEntity.shaderParms[ SHADERPARM_GREEN] = rgb;
-                    particleRenderEntity.shaderParms[ SHADERPARM_BLUE] = rgb;
-                    particleRenderEntity.shaderParms[ SHADERPARM_ALPHA] = rgb;
-                    particleRenderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.realClientTime);
-                    particleRenderEntity.shaderParms[ SHADERPARM_DIVERSITY] = (burn) ? 1.0f : gameLocal.random.RandomInt(90);
-                    if (null == particleRenderEntity.hModel) {
-                        particleRenderEntity.hModel = renderModelManager.FindModel(name);
+                    this.particleRenderEntity.origin.oSet(this.physicsObj.GetAbsBounds().GetCenter());
+                    this.particleRenderEntity.axis.oSet(getMat3_identity());
+                    this.particleRenderEntity.hModel = modelDef.ModelHandle();
+                    final float rgb = (burn) ? 0.0f : 1.0f;
+                    this.particleRenderEntity.shaderParms[ SHADERPARM_RED] = rgb;
+                    this.particleRenderEntity.shaderParms[ SHADERPARM_GREEN] = rgb;
+                    this.particleRenderEntity.shaderParms[ SHADERPARM_BLUE] = rgb;
+                    this.particleRenderEntity.shaderParms[ SHADERPARM_ALPHA] = rgb;
+                    this.particleRenderEntity.shaderParms[ SHADERPARM_TIMEOFFSET] = -MS2SEC(gameLocal.realClientTime);
+                    this.particleRenderEntity.shaderParms[ SHADERPARM_DIVERSITY] = (burn) ? 1.0f : gameLocal.random.RandomInt(90);
+                    if (null == this.particleRenderEntity.hModel) {
+                        this.particleRenderEntity.hModel = renderModelManager.FindModel(name);
                     }
-                    particleModelDefHandle = gameRenderWorld.AddEntityDef(particleRenderEntity);
+                    this.particleModelDefHandle = gameRenderWorld.AddEntityDef(this.particleRenderEntity);
                     if (burn) {
                         BecomeActive(TH_THINK);
                     }
-                    particleTime = gameLocal.realClientTime;
+                    this.particleTime = gameLocal.realClientTime;
                 }
             }
         }
 
         private void AddLight(final String name, boolean burn) {
-            if (lightDefHandle >= 0) {
-                gameRenderWorld.FreeLightDef(lightDefHandle);
+            if (this.lightDefHandle >= 0) {
+                gameRenderWorld.FreeLightDef(this.lightDefHandle);
             }
 //	memset( &light, 0, sizeof ( light ) );
-            light = new renderLight_s();
-            light.axis = getMat3_identity();
-            light.lightRadius.x = spawnArgs.GetFloat("light_radius");
-            light.lightRadius.y = light.lightRadius.z = light.lightRadius.x;
-            light.origin = physicsObj.GetOrigin();
-            light.origin.z += 128;
-            light.pointLight = true;
-            light.shader = declManager.FindMaterial(name);
-            light.shaderParms[ SHADERPARM_RED] = 2.0f;
-            light.shaderParms[ SHADERPARM_GREEN] = 2.0f;
-            light.shaderParms[ SHADERPARM_BLUE] = 2.0f;
-            light.shaderParms[ SHADERPARM_ALPHA] = 2.0f;
-            lightDefHandle = gameRenderWorld.AddLightDef(light);
-            lightTime = gameLocal.realClientTime;
+            this.light = new renderLight_s();
+            this.light.axis = getMat3_identity();
+            this.light.lightRadius.x = this.spawnArgs.GetFloat("light_radius");
+            this.light.lightRadius.y = this.light.lightRadius.z = this.light.lightRadius.x;
+            this.light.origin = this.physicsObj.GetOrigin();
+            this.light.origin.z += 128;
+            this.light.pointLight = true;
+            this.light.shader = declManager.FindMaterial(name);
+            this.light.shaderParms[ SHADERPARM_RED] = 2.0f;
+            this.light.shaderParms[ SHADERPARM_GREEN] = 2.0f;
+            this.light.shaderParms[ SHADERPARM_BLUE] = 2.0f;
+            this.light.shaderParms[ SHADERPARM_ALPHA] = 2.0f;
+            this.lightDefHandle = gameRenderWorld.AddLightDef(this.light);
+            this.lightTime = gameLocal.realClientTime;
             BecomeActive(TH_THINK);
         }
 
@@ -1086,23 +1087,23 @@ public class Moveable {
 
             StartSound("snd_explode", SND_CHANNEL_ANY, 0, false, null);
 
-            temp = spawnArgs.GetString("model_damage");
+            temp = this.spawnArgs.GetString("model_damage");
             if (!temp.isEmpty()) {// != '\0' ) {
                 SetModel(temp);
                 Show();
             }
 
-            temp = spawnArgs.GetString("model_detonate");
+            temp = this.spawnArgs.GetString("model_detonate");
             if (!temp.isEmpty()) {// != '\0' ) {
                 AddParticles(temp, false);
             }
 
-            temp = spawnArgs.GetString("mtr_lightexplode");
+            temp = this.spawnArgs.GetString("mtr_lightexplode");
             if (!temp.isEmpty()) {// != '\0' ) {
                 AddLight(temp, false);
             }
 
-            temp = spawnArgs.GetString("mtr_burnmark");
+            temp = this.spawnArgs.GetString("mtr_burnmark");
             if (!temp.isEmpty()) {// != '\0' ) {
                 gameLocal.ProjectDecal(GetPhysics().GetOrigin(), GetPhysics().GetGravity(), 128.0f, true, 96.0f, temp);
             }
@@ -1115,42 +1116,42 @@ public class Moveable {
 
         private void Event_Respawn() {
             int i;
-            int minRespawnDist = spawnArgs.GetInt("respawn_range", "256");
+            final int minRespawnDist = this.spawnArgs.GetInt("respawn_range", "256");
             if (minRespawnDist != 0) {
                 float minDist = -1;
                 for (i = 0; i < gameLocal.numClients; i++) {
                     if (NOT(gameLocal.entities[i]) || !gameLocal.entities[i].IsType(idPlayer.class)) {
                         continue;
                     }
-                    idVec3 v = gameLocal.entities[i].GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
-                    float dist = v.Length();
-                    if (minDist < 0 || dist < minDist) {
+                    final idVec3 v = gameLocal.entities[i].GetPhysics().GetOrigin().oMinus(GetPhysics().GetOrigin());
+                    final float dist = v.Length();
+                    if ((minDist < 0) || (dist < minDist)) {
                         minDist = dist;
                     }
                 }
                 if (minDist < minRespawnDist) {
-                    PostEventSec(EV_Respawn, spawnArgs.GetInt("respawn_again", "10"));
+                    PostEventSec(EV_Respawn, this.spawnArgs.GetInt("respawn_again", "10"));
                     return;
                 }
             }
-            final String temp = spawnArgs.GetString("model");
-            if (temp != null && !temp.isEmpty()) {
+            final String temp = this.spawnArgs.GetString("model");
+            if ((temp != null) && !temp.isEmpty()) {
                 SetModel(temp);
             }
-            health = spawnArgs.GetInt("health", "5");
-            fl.takedamage = true;
-            physicsObj.SetOrigin(spawnOrigin);
-            physicsObj.SetAxis(spawnAxis);
-            physicsObj.SetContents(CONTENTS_SOLID);
-            physicsObj.DropToFloor();
-            state = NORMAL;
+            this.health = this.spawnArgs.GetInt("health", "5");
+            this.fl.takedamage = true;
+            this.physicsObj.SetOrigin(this.spawnOrigin);
+            this.physicsObj.SetAxis(this.spawnAxis);
+            this.physicsObj.SetContents(CONTENTS_SOLID);
+            this.physicsObj.DropToFloor();
+            this.state = NORMAL;
             Show();
             UpdateVisuals();
         }
 
         private void Event_Explode() {
-            if (state == NORMAL || state == BURNING) {
-                state = BURNEXPIRED;
+            if ((this.state == NORMAL) || (this.state == BURNING)) {
+                this.state = BURNEXPIRED;
                 Killed(null, null, 0, getVec3_zero(), 0);
             }
         }
@@ -1168,5 +1169,5 @@ public class Moveable {
             return eventCallbacks;
         }
 
-    };
+    }
 }

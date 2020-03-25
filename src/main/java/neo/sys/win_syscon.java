@@ -110,7 +110,7 @@ public class win_syscon {
                 this.hWnd.removeWindowListener(QUIT_ON_CLOSE);
             }
         }
-    };
+    }
 
     static WinConData s_wcd = new WinConData();
 
@@ -329,8 +329,8 @@ public class win_syscon {
         sheight = screen.height;
 //	ReleaseDC( GetDesktopWindow(), hDC );
 //
-        s_wcd.windowWidth = rect.width - rect.x + 1;
-        s_wcd.windowHeight = rect.height - rect.y + 1;
+        s_wcd.windowWidth = (rect.width - rect.x) + 1;
+        s_wcd.windowHeight = (rect.height - rect.y) + 1;
 //
 //	//s_wcd.hbmLogo = LoadBitmap( win32.hInstance, MAKEINTRESOURCE( IDB_BITMAP_LOGO) );
 //
@@ -659,7 +659,7 @@ public class win_syscon {
      */
     static void Conbuf_AppendText(final String pMsg) {
 
-        StringBuilder buffer = new StringBuilder(CONSOLE_BUFFER_SIZE * 2);
+        final StringBuilder buffer = new StringBuilder(CONSOLE_BUFFER_SIZE * 2);
         int b = 0;//buffer;
         final String msg;
         int bufLen;
@@ -669,8 +669,8 @@ public class win_syscon {
         // if the message is REALLY long, use just the last portion of it
         //
         if (isNotNullOrEmpty(pMsg)
-                && pMsg.length() > CONSOLE_BUFFER_SIZE - 1) {
-            msg = pMsg.substring(pMsg.length() - CONSOLE_BUFFER_SIZE + 1);
+                && (pMsg.length() > (CONSOLE_BUFFER_SIZE - 1))) {
+            msg = pMsg.substring((pMsg.length() - CONSOLE_BUFFER_SIZE) + 1);
         } else {
             msg = pMsg;
         }
@@ -679,10 +679,10 @@ public class win_syscon {
         // copy into an intermediate buffer
         //
         while ((i < msg.length())//&& msg.charAt(i) != 0)//TODO: is the character ever '0' or '\0', or are we just wasting our fucking resources?
-                && (b < buffer.capacity() - 1)) {
-            if (msg.charAt(i) == '\n'
-                    && (i + 1 < msg.length()
-                    && msg.charAt(i + 1) == '\r')) {
+                && (b < (buffer.capacity() - 1))) {
+            if ((msg.charAt(i) == '\n')
+                    && (((i + 1) < msg.length())
+                    && (msg.charAt(i + 1) == '\r'))) {
                 buffer.insert(b + 0, '\r');
                 buffer.insert(b + 1, '\n');
                 b += 2;

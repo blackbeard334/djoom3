@@ -35,10 +35,10 @@ public class VectorSet {
 
         public idVectorSet(final int dimension) {
             this.dimension = dimension;
-            boxInvSize = new float[dimension];
-            boxHalfSize = new float[dimension];
-            hash.Clear(idMath.IPow(boxHashSize, dimension), 128);
-            boxHashSize = 16;
+            this.boxInvSize = new float[dimension];
+            this.boxHalfSize = new float[dimension];
+            this.hash.Clear(idMath.IPow(this.boxHashSize, dimension), 128);
+            this.boxHashSize = 16;
 //	memset( boxInvSize, 0, dimension * sizeof( boxInvSize[0] ) );
 //	memset( boxHalfSize, 0, dimension * sizeof( boxHalfSize[0] ) );
         }
@@ -61,72 +61,72 @@ public class VectorSet {
             super.AssureSize(initialSize);
             super.SetNum(0, false);
 
-            hash.Clear(idMath.IPow(boxHashSize, dimension), initialSize);
+            this.hash.Clear(idMath.IPow(boxHashSize, this.dimension), initialSize);
 
             this.mins = mins;
             this.maxs = maxs;
             this.boxHashSize = boxHashSize;
 
-            for (i = 0; i < dimension; i++) {
-                boxSize = ((float) maxs.oGet(i) - mins.oGet(i)) / (float) boxHashSize;
-                boxInvSize[i] = 1.0f / boxSize;
-                boxHalfSize[i] = boxSize * 0.5f;
+            for (i = 0; i < this.dimension; i++) {
+                boxSize = (maxs.oGet(i) - mins.oGet(i)) / boxHashSize;
+                this.boxInvSize[i] = 1.0f / boxSize;
+                this.boxHalfSize[i] = boxSize * 0.5f;
             }
         }
 
         public void ResizeIndex(final int newSize) {
             super.Resize(newSize);
-            hash.ResizeIndex(newSize);
+            this.hash.ResizeIndex(newSize);
         }
 
         @Override
         public void Clear() {
             super.Clear();
-            hash.Clear();
+            this.hash.Clear();
         }
 //
 
         public int FindVector(final idVec v, final float epsilon) {
             int i, j, k, hashKey;
-            int[] partialHashKey = new int[dimension];
+            final int[] partialHashKey = new int[this.dimension];
 
-            for (i = 0; i < dimension; i++) {
-                assert (epsilon <= boxHalfSize[i]);
-                partialHashKey[i] = (int) ((v.oGet(i) - mins.oGet(i) - boxHalfSize[i]) * boxInvSize[i]);
+            for (i = 0; i < this.dimension; i++) {
+                assert (epsilon <= this.boxHalfSize[i]);
+                partialHashKey[i] = (int) ((v.oGet(i) - this.mins.oGet(i) - this.boxHalfSize[i]) * this.boxInvSize[i]);
             }
 
-            for (i = 0; i < (1 << dimension); i++) {
+            for (i = 0; i < (1 << this.dimension); i++) {
 
                 hashKey = 0;
-                for (j = 0; j < dimension; j++) {
-                    hashKey *= boxHashSize;
+                for (j = 0; j < this.dimension; j++) {
+                    hashKey *= this.boxHashSize;
                     hashKey += partialHashKey[j] + ((i >> j) & 1);
                 }
 
-                for (j = hash.First(hashKey); j >= 0; j = hash.Next(j)) {
+                for (j = this.hash.First(hashKey); j >= 0; j = this.hash.Next(j)) {
                     final idVec lv = (idVec) this.oGet(j);
-                    for (k = 0; k < dimension; k++) {
+                    for (k = 0; k < this.dimension; k++) {
                         if (idMath.Fabs(lv.oGet(k) - v.oGet(k)) > epsilon) {
                             break;
                         }
                     }
-                    if (k >= dimension) {
+                    if (k >= this.dimension) {
                         return j;
                     }
                 }
             }
 
             hashKey = 0;
-            for (i = 0; i < dimension; i++) {
-                hashKey *= boxHashSize;
-                hashKey += (int) ((v.oGet(i) - mins.oGet(i)) * boxInvSize[i]);
+            for (i = 0; i < this.dimension; i++) {
+                hashKey *= this.boxHashSize;
+                hashKey += (int) ((v.oGet(i) - this.mins.oGet(i)) * this.boxInvSize[i]);
             }
 
-            hash.Add(hashKey, super.Num());
+            this.hash.Add(hashKey, super.Num());
             this.Append((type)v);
             return super.Num() - 1;
         }
-    };
+    }
 
     /*
      ===============================================================================
@@ -139,7 +139,7 @@ public class VectorSet {
      */
     public static class idVectorSubset<type> {
 
-        private idHashIndex   hash = new idHashIndex();
+        private final idHashIndex   hash = new idHashIndex();
         private       idVec   mins;
         private       idVec   maxs;
         private       int     boxHashSize;
@@ -156,10 +156,10 @@ public class VectorSet {
 
         public idVectorSubset(int dimension) {
             this.dimension = dimension;
-            boxInvSize = new float[dimension];
-            boxHalfSize = new float[dimension];
-            hash.Clear(idMath.IPow(boxHashSize, dimension), 128);
-            boxHashSize = 16;
+            this.boxInvSize = new float[dimension];
+            this.boxHalfSize = new float[dimension];
+            this.hash.Clear(idMath.IPow(this.boxHashSize, dimension), 128);
+            this.boxHashSize = 16;
 //	memset( boxInvSize, 0, dimension * sizeof( boxInvSize[0] ) );
 //	memset( boxHalfSize, 0, dimension * sizeof( boxHalfSize[0] ) );
         }
@@ -179,67 +179,65 @@ public class VectorSet {
             int i;
             float boxSize;
 
-            hash.Clear(idMath.IPow(boxHashSize, dimension), initialSize);
+            this.hash.Clear(idMath.IPow(boxHashSize, this.dimension), initialSize);
 
             this.mins = mins;
             this.maxs = maxs;
             this.boxHashSize = boxHashSize;
 
-            for (i = 0; i < dimension; i++) {
-                boxSize = (maxs.oGet(i) - mins.oGet(i)) / (float) boxHashSize;
-                boxInvSize[i] = 1.0f / boxSize;
-                boxHalfSize[i] = boxSize * 0.5f;
+            for (i = 0; i < this.dimension; i++) {
+                boxSize = (maxs.oGet(i) - mins.oGet(i)) / boxHashSize;
+                this.boxInvSize[i] = 1.0f / boxSize;
+                this.boxHalfSize[i] = boxSize * 0.5f;
             }
         }
 
         public void Clear() {
 //	idList<type>::Clear();
-            hash.Clear();
+            this.hash.Clear();
         }
 //
 
         // returns either vectorNum or an index to a previously found vector
         public int FindVector(final idVec[] vectorList, final int vectorNum, final float epsilon) {
             int i, j, k, hashKey;
-            int[] partialHashKey = new int[dimension];
+            final int[] partialHashKey = new int[this.dimension];
             final idVec v = vectorList[vectorNum];
 
-            for (i = 0; i < dimension; i++) {
-                assert (epsilon <= boxHalfSize[i]);
-                partialHashKey[i] = (int) (((v.oGet(i) - mins.oGet(i)) - boxHalfSize[i]) * boxInvSize[i]);
+            for (i = 0; i < this.dimension; i++) {
+                assert (epsilon <= this.boxHalfSize[i]);
+                partialHashKey[i] = (int) (((v.oGet(i) - this.mins.oGet(i)) - this.boxHalfSize[i]) * this.boxInvSize[i]);
             }
 
-            for (i = 0; i < (1 << dimension); i++) {
+            for (i = 0; i < (1 << this.dimension); i++) {
 
                 hashKey = 0;
-                for (j = 0; j < dimension; j++) {
-                    hashKey *= boxHashSize;
+                for (j = 0; j < this.dimension; j++) {
+                    hashKey *= this.boxHashSize;
                     hashKey += partialHashKey[j] + ((i >> j) & 1);
                 }
 
-                for (j = hash.First(hashKey); j >= 0; j = hash.Next(j)) {
+                for (j = this.hash.First(hashKey); j >= 0; j = this.hash.Next(j)) {
                     final idVec lv = vectorList[j];
-                    for (k = 0; k < dimension; k++) {
+                    for (k = 0; k < this.dimension; k++) {
                         if (idMath.Fabs(lv.oGet(k) - v.oGet(k)) > epsilon) {
                             break;
                         }
                     }
-                    if (k >= dimension) {
+                    if (k >= this.dimension) {
                         return j;
                     }
                 }
             }
 
             hashKey = 0;
-            for (i = 0; i < dimension; i++) {
-                hashKey *= boxHashSize;
-                hashKey += (int) ((v.oGet(i) - mins.oGet(i)) * boxInvSize[i]);
+            for (i = 0; i < this.dimension; i++) {
+                hashKey *= this.boxHashSize;
+                hashKey += (int) ((v.oGet(i) - this.mins.oGet(i)) * this.boxInvSize[i]);
             }
 
-            hash.Add(hashKey, vectorNum);
+            this.hash.Add(hashKey, vectorNum);
             return vectorNum;
         }
     }
-
-    ;
 }

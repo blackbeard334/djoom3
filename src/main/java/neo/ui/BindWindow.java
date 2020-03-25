@@ -25,7 +25,7 @@ public class BindWindow {
 
     static class idBindWindow extends idWindow {
 
-        private idWinStr bindName = new idWinStr();
+        private final idWinStr bindName = new idWinStr();
         private boolean waitingOnKey;
         //
         //
@@ -48,24 +48,24 @@ public class BindWindow {
         @Override
         public String HandleEvent(sysEvent_s event, boolean[] updateVisuals) {
 
-            if (!(event.evType == SE_KEY && event.evValue2 != 0)) {
+            if (!((event.evType == SE_KEY) && (event.evValue2 != 0))) {
                 return "";
             }
 
-            int key = event.evValue;
+            final int key = event.evValue;
 
-            if (waitingOnKey) {
-                waitingOnKey = false;
+            if (this.waitingOnKey) {
+                this.waitingOnKey = false;
                 if (key == K_ESCAPE) {
-                    idStr.snPrintf(ret, ret.capacity(), "clearbind \"%s\"", bindName.GetName());
+                    idStr.snPrintf(ret, ret.capacity(), "clearbind \"%s\"", this.bindName.GetName());
                 } else {
-                    idStr.snPrintf(ret, ret.capacity(), "bind %d \"%s\"", key, bindName.GetName());
+                    idStr.snPrintf(ret, ret.capacity(), "bind %d \"%s\"", key, this.bindName.GetName());
                 }
                 return ret.toString();
             } else {
                 if (key == K_MOUSE1) {
-                    waitingOnKey = true;
-                    gui.SetBindHandler(this);
+                    this.waitingOnKey = true;
+                    this.gui.SetBindHandler(this);
                     return "";
                 }
             }
@@ -76,32 +76,32 @@ public class BindWindow {
         @Override
         public void PostParse() {
             super.PostParse();
-            bindName.SetGuiInfo(gui.GetStateDict(), bindName.c_str());
-            bindName.Update();
+            this.bindName.SetGuiInfo(this.gui.GetStateDict(), this.bindName.c_str());
+            this.bindName.Update();
             //bindName = state.GetString("bind");
-            flags |= (WIN_HOLDCAPTURE | WIN_CANFOCUS);
+            this.flags |= (WIN_HOLDCAPTURE | WIN_CANFOCUS);
         }
 
         @Override
         public void Draw(int time, float x, float y) {
-            idVec4 color = foreColor.oCastIdVec4();
+            idVec4 color = this.foreColor.oCastIdVec4();
 
             String str;
-            if (waitingOnKey) {
+            if (this.waitingOnKey) {
                 str = common.GetLanguageDict().GetString("#str_07000");
-            } else if (bindName.Length() != 0) {
-                str = bindName.c_str();
+            } else if (this.bindName.Length() != 0) {
+                str = this.bindName.c_str();
             } else {
                 str = common.GetLanguageDict().GetString("#str_07001");
             }
 
-            if (waitingOnKey || (hover && NOT(noEvents) && Contains(gui.CursorX(), gui.CursorY()))) {
-                color = hoverColor.oCastIdVec4();
+            if (this.waitingOnKey || (this.hover && NOT(this.noEvents) && Contains(this.gui.CursorX(), this.gui.CursorY()))) {
+                color = this.hoverColor.oCastIdVec4();
             } else {
-                hover = false;
+                this.hover = false;
             }
 
-            dc.DrawText(str, textScale.data, textAlign, color, textRect, false, -1);
+            this.dc.DrawText(str, this.textScale.data, this.textAlign, color, this.textRect, false, -1);
         }
 
         @Override
@@ -113,7 +113,7 @@ public class BindWindow {
         public idWinVar GetWinVarByName(String _name, boolean winLookup, drawWin_t[] owner) {
 
             if (idStr.Icmp(_name, "bind") == 0) {
-                return bindName;
+                return this.bindName;
             }
 
             return super.GetWinVarByName(_name, winLookup, owner);
@@ -122,12 +122,12 @@ public class BindWindow {
         @Override
         public void Activate(boolean activate, idStr act) {
             super.Activate(activate, act);
-            bindName.Update();
+            this.bindName.Update();
         }
 
         private void CommonInit() {
-            bindName.data.oSet("");
-            waitingOnKey = false;
+            this.bindName.data.oSet("");
+            this.waitingOnKey = false;
         }
-    };
+    }
 }

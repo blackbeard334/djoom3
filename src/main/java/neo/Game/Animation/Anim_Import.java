@@ -65,14 +65,14 @@ public class Anim_Import {
         //
 
         private void Reset() {
-            force = false;
-            commandLine.oSet("");
-            src.oSet("");
-            dest.oSet("");
+            this.force = false;
+            this.commandLine.oSet("");
+            this.src.oSet("");
+            this.dest.oSet("");
         }
 
         private boolean ParseOptions(Lexer.idLexer lex) throws idException {
-            Token.idToken token = new Token.idToken();
+            final Token.idToken token = new Token.idToken();
             idStr destdir = new idStr();
             idStr sourcedir = new idStr();
 
@@ -81,8 +81,8 @@ public class Anim_Import {
                 return false;
             }
 
-            src = token;
-            dest = token;
+            this.src = token;
+            this.dest = token;
 
             while (lex.ReadToken(token)) {
                 if (token.equals("-")) {
@@ -107,37 +107,37 @@ public class Anim_Import {
                             lex.Error("Missing filename after -dest");
                             return false;
                         }
-                        dest = token;
+                        this.dest = token;
                     } else {
-                        commandLine.oPluSet(va(" -%s", token.toString()));
+                        this.commandLine.oPluSet(va(" -%s", token.toString()));
                     }
                 } else {
-                    commandLine.oPluSet(va(" %s", token.toString()));
+                    this.commandLine.oPluSet(va(" %s", token.toString()));
                 }
             }
 
             if (sourcedir.Length() != 0) {
-                src.StripPath();
+                this.src.StripPath();
                 sourcedir.BackSlashesToSlashes();
-                src.oSet(String.format("%s/%s", sourcedir.toString(), src.toString()));
+                this.src.oSet(String.format("%s/%s", sourcedir.toString(), this.src.toString()));
             }
 
             if (destdir.Length() != 0) {
-                dest.StripPath();
+                this.dest.StripPath();
                 destdir.BackSlashesToSlashes();
-                dest.oSet(String.format("%s/%s", destdir.toString(), dest.toString()));
+                this.dest.oSet(String.format("%s/%s", destdir.toString(), this.dest.toString()));
             }
 
             return true;
         }
 
         private int ParseExportSection(Parser.idParser parser) {
-            Token.idToken command = new idToken();
-            Token.idToken token = new idToken();
-            idStr defaultCommands = new idStr();
-            Lexer.idLexer lex = new idLexer();
+            final Token.idToken command = new idToken();
+            final Token.idToken token = new idToken();
+            final idStr defaultCommands = new idStr();
+            final Lexer.idLexer lex = new idLexer();
             idStr temp = new idStr();
-            idStr parms = new idStr();
+            final idStr parms = new idStr();
             int count;
 
             // only export sections that match our export mask
@@ -206,20 +206,20 @@ public class Anim_Import {
                         }
 
                         if (command.equals("mesh")) {
-                            dest.SetFileExtension(MD5_MESH_EXT);
+                            this.dest.SetFileExtension(MD5_MESH_EXT);
                         } else if (command.equals("anim")) {
-                            dest.SetFileExtension(MD5_ANIM_EXT);
+                            this.dest.SetFileExtension(MD5_ANIM_EXT);
                         } else if (command.equals("camera")) {
-                            dest.SetFileExtension(MD5_CAMERA_EXT);
+                            this.dest.SetFileExtension(MD5_CAMERA_EXT);
                         } else {
-                            dest.SetFileExtension(command.toString());
+                            this.dest.SetFileExtension(command.toString());
                         }
 //				idStr back = commandLine;
-                        commandLine.oSet(String.format("%s %s -dest %s -game %s%s", command.toString(), src.toString(), dest.toString(), game, commandLine.toString()));
+                        this.commandLine.oSet(String.format("%s %s -dest %s -game %s%s", command.toString(), this.src.toString(), this.dest.toString(), game, this.commandLine.toString()));
                         if (ConvertMayaToMD5()) {
                             count++;
                         } else {
-                            parser.Warning("Failed to export '%s' : %s", src, Maya_Error);
+                            parser.Warning("Failed to export '%s' : %s", this.src, Maya_Error);
                         }
                     }
                     lex.FreeSource();
@@ -437,8 +437,8 @@ public class Anim_Import {
         }
 
         public int ExportDefFile(final String filename) {
-            idParser parser = new idParser(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
-            idToken token = new idToken();
+            final idParser parser = new idParser(LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWPATHNAMES | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
+            final idToken token = new idToken();
             int count;
 
             count = 0;
@@ -467,13 +467,13 @@ public class Anim_Import {
             }
 
             Reset();
-            src.oSet(model);
-            dest.oSet(model);
-            dest.SetFileExtension(MD5_MESH_EXT);
+            this.src.oSet(model);
+            this.dest.oSet(model);
+            this.dest.SetFileExtension(MD5_MESH_EXT);
 
-            commandLine.oSet(String.format("mesh %s -dest %s -game %s", src.toString(), dest.toString(), game));
+            this.commandLine.oSet(String.format("mesh %s -dest %s -game %s", this.src.toString(), this.dest.toString(), game));
             if (!ConvertMayaToMD5()) {
-                gameLocal.Printf("Failed to export '%s' : %s", src, Maya_Error);
+                gameLocal.Printf("Failed to export '%s' : %s", this.src, Maya_Error);
                 return false;
             }
 
@@ -487,13 +487,13 @@ public class Anim_Import {
             }
 
             Reset();
-            src.oSet(anim);
-            dest.oSet(anim);
-            dest.SetFileExtension(MD5_ANIM_EXT);
+            this.src.oSet(anim);
+            this.dest.oSet(anim);
+            this.dest.SetFileExtension(MD5_ANIM_EXT);
 
-            commandLine.oSet(String.format("anim %s -dest %s -game %s", src, dest, game));
+            this.commandLine.oSet(String.format("anim %s -dest %s -game %s", this.src, this.dest, game));
             if (!ConvertMayaToMD5()) {
-                gameLocal.Printf("Failed to export '%s' : %s", src, Maya_Error);
+                gameLocal.Printf("Failed to export '%s' : %s", this.src, Maya_Error);
                 return false;
             }
 
@@ -530,5 +530,5 @@ public class Anim_Import {
 
             return count;
         }
-    };
+    }
 }

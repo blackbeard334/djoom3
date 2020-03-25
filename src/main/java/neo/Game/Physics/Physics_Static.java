@@ -48,7 +48,7 @@ public class Physics_Static {
             this.localOrigin = new idVec3();
             this.localAxis = new idMat3();
         }
-    };
+    }
 
     public static class idPhysics_Static extends idPhysics {
         // CLASS_PROTOTYPE( idPhysics_Static );
@@ -64,26 +64,26 @@ public class Physics_Static {
         //
 
         public idPhysics_Static() {
-            self = null;
-            clipModel = null;
-            current = new staticPState_s();
-            current.origin.Zero();
-            current.axis.Identity();
-            current.localOrigin.Zero();
-            current.localAxis.Identity();
-            hasMaster = false;
-            isOrientated = false;
+            this.self = null;
+            this.clipModel = null;
+            this.current = new staticPState_s();
+            this.current.origin.Zero();
+            this.current.axis.Identity();
+            this.current.localOrigin.Zero();
+            this.current.localAxis.Identity();
+            this.hasMaster = false;
+            this.isOrientated = false;
         }
 
         // ~idPhysics_Static();
         @Override
         protected void _deconstructor() {
-            if (self != null && self.GetPhysics() == this) {
-                self.SetPhysics(null);
+            if ((this.self != null) && (this.self.GetPhysics() == this)) {
+                this.self.SetPhysics(null);
             }
             idForce.DeletePhysics(this);
-            if (clipModel != null) {
-                idClipModel.delete(clipModel);
+            if (this.clipModel != null) {
+                idClipModel.delete(this.clipModel);
             }
 
             super._deconstructor();
@@ -91,63 +91,63 @@ public class Physics_Static {
 
         @Override
         public void Save(idSaveGame savefile) {
-            savefile.WriteObject(self);
+            savefile.WriteObject(this.self);
 
-            savefile.WriteVec3(current.origin);
-            savefile.WriteMat3(current.axis);
-            savefile.WriteVec3(current.localOrigin);
-            savefile.WriteMat3(current.localAxis);
-            savefile.WriteClipModel(clipModel);
+            savefile.WriteVec3(this.current.origin);
+            savefile.WriteMat3(this.current.axis);
+            savefile.WriteVec3(this.current.localOrigin);
+            savefile.WriteMat3(this.current.localAxis);
+            savefile.WriteClipModel(this.clipModel);
 
-            savefile.WriteBool(hasMaster);
-            savefile.WriteBool(isOrientated);
+            savefile.WriteBool(this.hasMaster);
+            savefile.WriteBool(this.isOrientated);
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
-            savefile.ReadObject(/*reinterpret_cast<idClass*&>*/self);
+            savefile.ReadObject(this./*reinterpret_cast<idClass*&>*/self);
 
-            savefile.ReadVec3(current.origin);
-            savefile.ReadMat3(current.axis);
-            savefile.ReadVec3(current.localOrigin);
-            savefile.ReadMat3(current.localAxis);
-            savefile.ReadClipModel(clipModel);
+            savefile.ReadVec3(this.current.origin);
+            savefile.ReadMat3(this.current.axis);
+            savefile.ReadVec3(this.current.localOrigin);
+            savefile.ReadMat3(this.current.localAxis);
+            savefile.ReadClipModel(this.clipModel);
 
-            hasMaster = savefile.ReadBool();
-            isOrientated = savefile.ReadBool();
+            this.hasMaster = savefile.ReadBool();
+            this.isOrientated = savefile.ReadBool();
         }
 
         // common physics interface
         @Override
         public void SetSelf(idEntity e) {
             assert (e != null);
-            self = e;
+            this.self = e;
         }
 
         @Override
         public void SetClipModel(idClipModel model, float density, int id /*= 0*/, boolean freeOld /*= true*/) {
-            assert (self != null);
+            assert (this.self != null);
 
-            if (clipModel != null && clipModel != model && freeOld) {
-                idClipModel.delete(clipModel);
+            if ((this.clipModel != null) && (this.clipModel != model) && freeOld) {
+                idClipModel.delete(this.clipModel);
             }
-            clipModel = model;
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            this.clipModel = model;
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
         @Override
         public idClipModel GetClipModel(int id /*= 0*/) {
-            if (clipModel != null) {
-                return clipModel;
+            if (this.clipModel != null) {
+                return this.clipModel;
             }
             return gameLocal.clip.DefaultClipModel();
         }
 
         @Override
         public int GetNumClipModels() {
-            return (clipModel != null ? 1 : 0);
+            return (this.clipModel != null ? 1 : 0);
         }
 
         @Override
@@ -161,15 +161,15 @@ public class Physics_Static {
 
         @Override
         public void SetContents(int contents, int id /*= -1*/) {
-            if (clipModel != null) {
-                clipModel.SetContents(contents);
+            if (this.clipModel != null) {
+                this.clipModel.SetContents(contents);
             }
         }
 
         @Override
         public int GetContents(int id /*= -1*/) {
-            if (clipModel != null) {
-                return clipModel.GetContents();
+            if (this.clipModel != null) {
+                return this.clipModel.GetContents();
             }
             return 0;
         }
@@ -185,8 +185,8 @@ public class Physics_Static {
 
         @Override
         public idBounds GetBounds(int id /*= -1*/) {
-            if (clipModel != null) {
-                return clipModel.GetBounds();
+            if (this.clipModel != null) {
+                return this.clipModel.GetBounds();
             }
             return bounds_zero;
         }
@@ -195,34 +195,34 @@ public class Physics_Static {
         @Override
         public idBounds GetAbsBounds(int id /*= -1*/) {
 
-            if (clipModel != null) {
-                return clipModel.GetAbsBounds();
+            if (this.clipModel != null) {
+                return this.clipModel.GetAbsBounds();
             }
-            absBounds = new idBounds(current.origin, current.origin);
+            absBounds = new idBounds(this.current.origin, this.current.origin);
             return absBounds;
         }
 
         @Override
         public boolean Evaluate(int timeStepMSec, int endTimeMSec) {
-            idVec3 masterOrigin = new idVec3(), oldOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3(), oldAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3(), oldOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3(), oldAxis = new idMat3();
 
-            if (hasMaster) {
-                oldOrigin.oSet(current.origin);
-                oldAxis.oSet(current.axis);
+            if (this.hasMaster) {
+                oldOrigin.oSet(this.current.origin);
+                oldAxis.oSet(this.current.axis);
 
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin.oSet(masterOrigin.oPlus(current.localOrigin.oMultiply(masterAxis)));
-                if (isOrientated) {
-                    current.axis.oSet(current.localAxis.oMultiply(masterAxis));
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.origin.oSet(masterOrigin.oPlus(this.current.localOrigin.oMultiply(masterAxis)));
+                if (this.isOrientated) {
+                    this.current.axis.oSet(this.current.localAxis.oMultiply(masterAxis));
                 } else {
-                    current.axis.oSet(current.localAxis);
+                    this.current.axis.oSet(this.current.localAxis);
                 }
-                if (clipModel != null) {
-                    clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+                if (this.clipModel != null) {
+                    this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
                 }
 
-                return (!current.origin.equals(oldOrigin) || !current.axis.equals(oldAxis));
+                return (!this.current.origin.equals(oldOrigin) || !this.current.axis.equals(oldAxis));
             }
             return false;
         }
@@ -282,82 +282,82 @@ public class Physics_Static {
 
         @Override
         public void SetOrigin(final idVec3 newOrigin, int id /*= -1*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
-            current.localOrigin.oSet(newOrigin);
+            this.current.localOrigin.oSet(newOrigin);
 
-            if (hasMaster) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
+            if (this.hasMaster) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.origin.oSet(masterOrigin.oPlus(newOrigin.oMultiply(masterAxis)));
             } else {
-                current.origin.oSet(newOrigin);
+                this.current.origin.oSet(newOrigin);
             }
 
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
         @Override
         public void SetAxis(final idMat3 newAxis, int id /*= -1*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
-            current.localAxis.oSet(newAxis);
+            this.current.localAxis.oSet(newAxis);
 
-            if (hasMaster && isOrientated) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.axis.oSet(newAxis.oMultiply(masterAxis));
+            if (this.hasMaster && this.isOrientated) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.axis.oSet(newAxis.oMultiply(masterAxis));
             } else {
-                current.axis.oSet(newAxis);
+                this.current.axis.oSet(newAxis);
             }
 
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
         @Override
         public void Translate(final idVec3 translation, int id /*= -1*/) {
-            current.localOrigin.oPluSet(translation);
-            current.origin.oPluSet(translation);
+            this.current.localOrigin.oPluSet(translation);
+            this.current.origin.oPluSet(translation);
 
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
         @Override
         public void Rotate(final idRotation rotation, int id /*= -1*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
-            current.origin.oMulSet(rotation);
-            current.axis.oMulSet(rotation.ToMat3());
+            this.current.origin.oMulSet(rotation);
+            this.current.axis.oMulSet(rotation.ToMat3());
 
-            if (hasMaster) {
-                self.GetMasterPosition(masterOrigin, masterAxis);
-                current.localAxis.oMulSet(rotation.ToMat3());
-                current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
+            if (this.hasMaster) {
+                this.self.GetMasterPosition(masterOrigin, masterAxis);
+                this.current.localAxis.oMulSet(rotation.ToMat3());
+                this.current.localOrigin.oSet((this.current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
             } else {
-                current.localAxis.oSet(current.axis);
-                current.localOrigin.oSet(current.origin);
+                this.current.localAxis.oSet(this.current.axis);
+                this.current.localOrigin.oSet(this.current.origin);
             }
 
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
         @Override
         public idVec3 GetOrigin(int id /*= 0*/) {
-            return new idVec3(current.origin);
+            return new idVec3(this.current.origin);
         }
 
         @Override
         public idMat3 GetAxis(int id /*= 0*/) {
-            return new idMat3(current.axis);
+            return new idMat3(this.current.axis);
         }
 
         @Override
@@ -397,32 +397,32 @@ public class Physics_Static {
         @Override
         public void ClipTranslation(trace_s[] results, final idVec3 translation, final idClipModel model) {
             if (model != null) {
-                gameLocal.clip.TranslationModel(results, current.origin, current.origin.oPlus(translation),
-                        clipModel, current.axis, MASK_SOLID, model.Handle(), model.GetOrigin(), model.GetAxis());
+                gameLocal.clip.TranslationModel(results, this.current.origin, this.current.origin.oPlus(translation),
+                        this.clipModel, this.current.axis, MASK_SOLID, model.Handle(), model.GetOrigin(), model.GetAxis());
             } else {
-                gameLocal.clip.Translation(results, current.origin, current.origin.oPlus(translation),
-                        clipModel, current.axis, MASK_SOLID, self);
+                gameLocal.clip.Translation(results, this.current.origin, this.current.origin.oPlus(translation),
+                        this.clipModel, this.current.axis, MASK_SOLID, this.self);
             }
         }
 
         @Override
         public void ClipRotation(trace_s[] results, final idRotation rotation, final idClipModel model) {
             if (model != null) {
-                gameLocal.clip.RotationModel(results, current.origin, rotation,
-                        clipModel, current.axis, MASK_SOLID, model.Handle(), model.GetOrigin(), model.GetAxis());
+                gameLocal.clip.RotationModel(results, this.current.origin, rotation,
+                        this.clipModel, this.current.axis, MASK_SOLID, model.Handle(), model.GetOrigin(), model.GetAxis());
             } else {
-                gameLocal.clip.Rotation(results, current.origin, rotation, clipModel, current.axis, MASK_SOLID, self);
+                gameLocal.clip.Rotation(results, this.current.origin, rotation, this.clipModel, this.current.axis, MASK_SOLID, this.self);
             }
         }
 
         @Override
         public int ClipContents(final idClipModel model) {
-            if (clipModel != null) {
+            if (this.clipModel != null) {
                 if (model != null) {
-                    return gameLocal.clip.ContentsModel(clipModel.GetOrigin(), clipModel, clipModel.GetAxis(), -1,
+                    return gameLocal.clip.ContentsModel(this.clipModel.GetOrigin(), this.clipModel, this.clipModel.GetAxis(), -1,
                             model.Handle(), model.GetOrigin(), model.GetAxis());
                 } else {
-                    return gameLocal.clip.Contents(clipModel.GetOrigin(), clipModel, clipModel.GetAxis(), -1, null);
+                    return gameLocal.clip.Contents(this.clipModel.GetOrigin(), this.clipModel, this.clipModel.GetAxis(), -1, null);
                 }
             }
             return 0;
@@ -430,29 +430,29 @@ public class Physics_Static {
 
         @Override
         public void DisableClip() {
-            if (clipModel != null) {
-                clipModel.Disable();
+            if (this.clipModel != null) {
+                this.clipModel.Disable();
             }
         }
 
         @Override
         public void EnableClip() {
-            if (clipModel != null) {
-                clipModel.Enable();
+            if (this.clipModel != null) {
+                this.clipModel.Enable();
             }
         }
 
         @Override
         public void UnlinkClip() {
-            if (clipModel != null) {
-                clipModel.Unlink();
+            if (this.clipModel != null) {
+                this.clipModel.Unlink();
             }
         }
 
         @Override
         public void LinkClip() {
-            if (clipModel != null) {
-                clipModel.Link(gameLocal.clip, self, 0, current.origin, current.axis);
+            if (this.clipModel != null) {
+                this.clipModel.Link(gameLocal.clip, this.self, 0, this.current.origin, this.current.axis);
             }
         }
 
@@ -516,25 +516,25 @@ public class Physics_Static {
 
         @Override
         public void SetMaster(idEntity master, final boolean orientated /*= true*/) {
-            idVec3 masterOrigin = new idVec3();
-            idMat3 masterAxis = new idMat3();
+            final idVec3 masterOrigin = new idVec3();
+            final idMat3 masterAxis = new idMat3();
 
             if (master != null) {
-                if (!hasMaster) {
+                if (!this.hasMaster) {
                     // transform from world space to master space
-                    self.GetMasterPosition(masterOrigin, masterAxis);
-                    current.localOrigin.oSet((current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
+                    this.self.GetMasterPosition(masterOrigin, masterAxis);
+                    this.current.localOrigin.oSet((this.current.origin.oMinus(masterOrigin)).oMultiply(masterAxis.Transpose()));
                     if (orientated) {
-                        current.localAxis.oSet(current.axis.oMultiply(masterAxis.Transpose()));
+                        this.current.localAxis.oSet(this.current.axis.oMultiply(masterAxis.Transpose()));
                     } else {
-                        current.localAxis.oSet(current.axis);
+                        this.current.localAxis.oSet(this.current.axis);
                     }
-                    hasMaster = true;
-                    isOrientated = orientated;
+                    this.hasMaster = true;
+                    this.isOrientated = orientated;
                 }
             } else {
-                if (hasMaster) {
-                    hasMaster = false;
+                if (this.hasMaster) {
+                    this.hasMaster = false;
                 }
             }
         }
@@ -563,18 +563,18 @@ public class Physics_Static {
         public void WriteToSnapshot(idBitMsgDelta msg) {
             idCQuat quat, localQuat;
 
-            quat = current.axis.ToCQuat();
-            localQuat = current.localAxis.ToCQuat();
+            quat = this.current.axis.ToCQuat();
+            localQuat = this.current.localAxis.ToCQuat();
 
-            msg.WriteFloat(current.origin.oGet(0));
-            msg.WriteFloat(current.origin.oGet(1));
-            msg.WriteFloat(current.origin.oGet(2));
+            msg.WriteFloat(this.current.origin.oGet(0));
+            msg.WriteFloat(this.current.origin.oGet(1));
+            msg.WriteFloat(this.current.origin.oGet(2));
             msg.WriteFloat(quat.x);
             msg.WriteFloat(quat.y);
             msg.WriteFloat(quat.z);
-            msg.WriteDeltaFloat(current.origin.oGet(0), current.localOrigin.oGet(0));
-            msg.WriteDeltaFloat(current.origin.oGet(1), current.localOrigin.oGet(1));
-            msg.WriteDeltaFloat(current.origin.oGet(2), current.localOrigin.oGet(2));
+            msg.WriteDeltaFloat(this.current.origin.oGet(0), this.current.localOrigin.oGet(0));
+            msg.WriteDeltaFloat(this.current.origin.oGet(1), this.current.localOrigin.oGet(1));
+            msg.WriteDeltaFloat(this.current.origin.oGet(2), this.current.localOrigin.oGet(2));
             msg.WriteDeltaFloat(quat.x, localQuat.x);
             msg.WriteDeltaFloat(quat.y, localQuat.y);
             msg.WriteDeltaFloat(quat.z, localQuat.z);
@@ -582,23 +582,23 @@ public class Physics_Static {
 
         @Override
         public void ReadFromSnapshot(final idBitMsgDelta msg) {
-            idCQuat quat = new idCQuat(), localQuat = new idCQuat();
+            final idCQuat quat = new idCQuat(), localQuat = new idCQuat();
 
-            current.origin.oSet(0, msg.ReadFloat());
-            current.origin.oSet(1, msg.ReadFloat());
-            current.origin.oSet(2, msg.ReadFloat());
+            this.current.origin.oSet(0, msg.ReadFloat());
+            this.current.origin.oSet(1, msg.ReadFloat());
+            this.current.origin.oSet(2, msg.ReadFloat());
             quat.x = msg.ReadFloat();
             quat.y = msg.ReadFloat();
             quat.z = msg.ReadFloat();
-            current.localOrigin.oSet(0, msg.ReadDeltaFloat(current.origin.oGet(0)));
-            current.localOrigin.oSet(1, msg.ReadDeltaFloat(current.origin.oGet(1)));
-            current.localOrigin.oSet(2, msg.ReadDeltaFloat(current.origin.oGet(2)));
+            this.current.localOrigin.oSet(0, msg.ReadDeltaFloat(this.current.origin.oGet(0)));
+            this.current.localOrigin.oSet(1, msg.ReadDeltaFloat(this.current.origin.oGet(1)));
+            this.current.localOrigin.oSet(2, msg.ReadDeltaFloat(this.current.origin.oGet(2)));
             localQuat.x = msg.ReadDeltaFloat(quat.x);
             localQuat.y = msg.ReadDeltaFloat(quat.y);
             localQuat.z = msg.ReadDeltaFloat(quat.z);
 
-            current.axis.oSet(quat.ToMat3());
-            current.localAxis.oSet(localQuat.ToMat3());
+            this.current.axis.oSet(quat.ToMat3());
+            this.current.localAxis.oSet(localQuat.ToMat3());
         }
 
         @Override
@@ -615,5 +615,5 @@ public class Physics_Static {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 }

@@ -38,7 +38,7 @@ public class tr_subview {
 
         idVec3 origin = new idVec3();
         idMat3 axis   = new idMat3();
-    };
+    }
 
 
     /*
@@ -112,17 +112,17 @@ public class tr_subview {
     public static boolean R_PreciseCullSurface(final drawSurf_s drawSurf, idBounds ndcBounds) {
         final srfTriangles_s tri;
         int numTriangles;
-        idPlane clip = new idPlane(), eye = new idPlane();
+        final idPlane clip = new idPlane(), eye = new idPlane();
         int i, j;
         int pointOr;
         int pointAnd;
-        idVec3 localView = new idVec3();
-        idFixedWinding w = new idFixedWinding();
+        final idVec3 localView = new idVec3();
+        final idFixedWinding w = new idFixedWinding();
 
         tri = drawSurf.geo;
 
         pointOr = 0;
-        pointAnd = (int) ~0;
+        pointAnd = ~0;
 
         // get an exact bounds of the triangles for scissor cropping
         ndcBounds.Clear();
@@ -139,7 +139,7 @@ public class tr_subview {
                 if (clip.oGet(j) >= clip.oGet(3)) {
                     pointFlags |= (1 << (j * 2));
                 } else if (clip.oGet(j) <= -clip.oGet(3)) {
-                    pointFlags |= (1 << (j * 2 + 1));
+                    pointFlags |= (1 << ((j * 2) + 1));
                 }
             }
 
@@ -197,7 +197,7 @@ public class tr_subview {
                 }
             }
             for (j = 0; j < w.GetNumPoints(); j++) {
-                idVec3 screen = new idVec3();
+                final idVec3 screen = new idVec3();
 
                 R_GlobalToNormalizedDeviceCoordinates(w.oGet(j).ToVec3(), screen);
                 ndcBounds.AddPoint(screen);
@@ -219,8 +219,8 @@ public class tr_subview {
      */
     public static viewDef_s R_MirrorViewBySurface(drawSurf_s drawSurf) {
         viewDef_s parms;
-        orientation_t surface = new orientation_t(), camera = new orientation_t();
-        idPlane originalPlane = new idPlane(), plane = new idPlane();
+        final orientation_t surface = new orientation_t(), camera = new orientation_t();
+        final idPlane originalPlane = new idPlane(), plane = new idPlane();
 
         // copy the viewport size from the original
         parms = new viewDef_s(tr.viewDef);//        parms = (viewDef_s) R_FrameAlloc(sizeof(parms));
@@ -251,7 +251,7 @@ public class tr_subview {
         R_MirrorVector(tr.viewDef.renderView.viewaxis.oGet(2), surface, camera, parms.renderView.viewaxis.oGet(2));
 
         // make the view origin 16 units away from the center of the surface
-        idVec3 viewOrigin = (drawSurf.geo.bounds.oGet(0).oPlus(drawSurf.geo.bounds.oGet(1))).oMultiply(0.5f);
+        final idVec3 viewOrigin = (drawSurf.geo.bounds.oGet(0).oPlus(drawSurf.geo.bounds.oGet(1))).oMultiply(0.5f);
         viewOrigin.oPluSet(originalPlane.Normal().oMultiply(16));
 
         parms.initialViewAreaOrigin = R_LocalPointToGlobal(drawSurf.space.modelMatrix, viewOrigin);
@@ -312,7 +312,7 @@ public class tr_subview {
         parms.isSubview = true;
         parms.isMirror = false;
 
-        parms.renderView = (renderView_s) surf.space.entityDef.parms.remoteRenderView;
+        parms.renderView = surf.space.entityDef.parms.remoteRenderView;
         parms.renderView.viewID = 0;	// clear to allow player bodies to show up, and suppress view weapons
         parms.initialViewAreaOrigin.oSet(parms.renderView.vieworg);
 
@@ -452,7 +452,7 @@ public class tr_subview {
      ==================
      */
     public static boolean R_GenerateSurfaceSubview(drawSurf_s drawSurf) {
-        idBounds ndcBounds = new idBounds();
+        final idBounds ndcBounds = new idBounds();
         viewDef_s parms;
         final idMaterial shader;
 
@@ -470,9 +470,9 @@ public class tr_subview {
         // never recurse through a subview surface that we are
         // already seeing through
         for (parms = tr.viewDef; parms != null; parms = parms.superView) {
-            if (parms.subviewSurface != null
-                    && parms.subviewSurface.geo == drawSurf.geo
-                    && parms.subviewSurface.space.entityDef == drawSurf.space.entityDef) {
+            if ((parms.subviewSurface != null)
+                    && (parms.subviewSurface.geo == drawSurf.geo)
+                    && (parms.subviewSurface.space.entityDef == drawSurf.space.entityDef)) {
                 break;
             }
         }
@@ -481,13 +481,13 @@ public class tr_subview {
         }
 
         // crop the scissor bounds based on the precise cull
-        idScreenRect scissor = new idScreenRect();
+        final idScreenRect scissor = new idScreenRect();
 
-        idScreenRect v = tr.viewDef.viewport;
-        scissor.x1 = v.x1 + (int) ((v.x2 - v.x1 + 1) * 0.5f * (ndcBounds.oGet(0, 0) + 1.0f));
-        scissor.y1 = v.y1 + (int) ((v.y2 - v.y1 + 1) * 0.5f * (ndcBounds.oGet(0, 1) + 1.0f));
-        scissor.x2 = v.x1 + (int) ((v.x2 - v.x1 + 1) * 0.5f * (ndcBounds.oGet(1, 0) + 1.0f));
-        scissor.y2 = v.y1 + (int) ((v.y2 - v.y1 + 1) * 0.5f * (ndcBounds.oGet(1, 1) + 1.0f));
+        final idScreenRect v = tr.viewDef.viewport;
+        scissor.x1 = v.x1 + (int) (((v.x2 - v.x1) + 1) * 0.5f * (ndcBounds.oGet(0, 0) + 1.0f));
+        scissor.y1 = v.y1 + (int) (((v.y2 - v.y1) + 1) * 0.5f * (ndcBounds.oGet(0, 1) + 1.0f));
+        scissor.x2 = v.x1 + (int) (((v.x2 - v.x1) + 1) * 0.5f * (ndcBounds.oGet(1, 0) + 1.0f));
+        scissor.y2 = v.y1 + (int) (((v.y2 - v.y1) + 1) * 0.5f * (ndcBounds.oGet(1, 1) + 1.0f));
 
         // nudge a bit for safety
         scissor.Expand();
@@ -571,7 +571,7 @@ public class tr_subview {
             drawSurf = tr.viewDef.drawSurfs[i];
             shader = drawSurf.material;
 
-            if (null == shader || !shader.HasSubview()) {
+            if ((null == shader) || !shader.HasSubview()) {
                 continue;
             }
 

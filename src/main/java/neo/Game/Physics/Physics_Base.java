@@ -44,7 +44,7 @@ public class Physics_Base {
      */
     public static class contactEntity_t extends idEntityPtr<idEntity> {
 
-    };
+    }
 
     public static class idPhysics_Base extends idPhysics {
         // CLASS_PROTOTYPE( idPhysics_Base );
@@ -59,22 +59,22 @@ public class Physics_Base {
         //
 
         public idPhysics_Base() {
-            self = null;
-            clipMask = 0;
+            this.self = null;
+            this.clipMask = 0;
             this.contacts = new idList<>(contactInfo_t.class);
             this.contactEntities = new idList<>(contactEntity_t.class);
 //            SetGravity(gameLocal.GetGravity());
-            gravityVector = new idVec3(gameLocal.GetGravity());
-            gravityNormal = new idVec3(gameLocal.GetGravity());
-            gravityNormal.Normalize();
+            this.gravityVector = new idVec3(gameLocal.GetGravity());
+            this.gravityNormal = new idVec3(gameLocal.GetGravity());
+            this.gravityNormal.Normalize();
             ClearContacts();
         }
 
         // ~idPhysics_Base( void );
         @Override
         protected void _deconstructor() {
-            if (self != null && self.GetPhysics() == this) {
-                self.SetPhysics(null);
+            if ((this.self != null) && (this.self.GetPhysics() == this)) {
+                this.self.SetPhysics(null);
             }
             idForce.DeletePhysics(this);
             ClearContacts();
@@ -86,42 +86,42 @@ public class Physics_Base {
         public void Save(idSaveGame savefile) {
             int i;
 
-            savefile.WriteObject(self);
-            savefile.WriteInt(clipMask);
-            savefile.WriteVec3(gravityVector);
-            savefile.WriteVec3(gravityNormal);
+            savefile.WriteObject(this.self);
+            savefile.WriteInt(this.clipMask);
+            savefile.WriteVec3(this.gravityVector);
+            savefile.WriteVec3(this.gravityNormal);
 
-            savefile.WriteInt(contacts.Num());
-            for (i = 0; i < contacts.Num(); i++) {
-                savefile.WriteContactInfo(contacts.oGet(i));
+            savefile.WriteInt(this.contacts.Num());
+            for (i = 0; i < this.contacts.Num(); i++) {
+                savefile.WriteContactInfo(this.contacts.oGet(i));
             }
 
-            savefile.WriteInt(contactEntities.Num());
-            for (i = 0; i < contactEntities.Num(); i++) {
-                contactEntities.oGet(i).Save(savefile);
+            savefile.WriteInt(this.contactEntities.Num());
+            for (i = 0; i < this.contactEntities.Num(); i++) {
+                this.contactEntities.oGet(i).Save(savefile);
             }
         }
 
         @Override
         public void Restore(idRestoreGame savefile) {
             int i;
-            int[] num = {0};
+            final int[] num = {0};
 
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/self);
-            clipMask = savefile.ReadInt();
-            savefile.ReadVec3(gravityVector);
-            savefile.ReadVec3(gravityNormal);
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/self);
+            this.clipMask = savefile.ReadInt();
+            savefile.ReadVec3(this.gravityVector);
+            savefile.ReadVec3(this.gravityNormal);
 
             savefile.ReadInt(num);
-            contacts.SetNum(num[0]);
-            for (i = 0; i < contacts.Num(); i++) {
-                savefile.ReadContactInfo(contacts.oGet(i));
+            this.contacts.SetNum(num[0]);
+            for (i = 0; i < this.contacts.Num(); i++) {
+                savefile.ReadContactInfo(this.contacts.oGet(i));
             }
 
             savefile.ReadInt(num);
-            contactEntities.SetNum(num[0]);
-            for (i = 0; i < contactEntities.Num(); i++) {
-                contactEntities.oGet(i).Restore(savefile);
+            this.contactEntities.SetNum(num[0]);
+            for (i = 0; i < this.contactEntities.Num(); i++) {
+                this.contactEntities.oGet(i).Restore(savefile);
             }
         }
 
@@ -129,7 +129,7 @@ public class Physics_Base {
         @Override
         public void SetSelf(idEntity e) {
             assert (e != null);
-            self = e;
+            this.self = e;
         }
 
         @Override
@@ -166,12 +166,12 @@ public class Physics_Base {
 
         @Override
         public void SetClipMask(int mask, int id /*= -1*/) {
-            clipMask = mask;
+            this.clipMask = mask;
         }
 
         @Override
         public int GetClipMask(int id /*= -1*/) {
-            return clipMask;
+            return this.clipMask;
         }
 
         @Override
@@ -298,19 +298,19 @@ public class Physics_Base {
 
         @Override
         public void SetGravity(final idVec3 newGravity) {
-            gravityVector.oSet(newGravity);
-            gravityNormal.oSet(newGravity);
-            gravityNormal.Normalize();
+            this.gravityVector.oSet(newGravity);
+            this.gravityNormal.oSet(newGravity);
+            this.gravityNormal.Normalize();
         }
 
         @Override
         public idVec3 GetGravity() {
-            return gravityVector;
+            return this.gravityVector;
         }
 
         @Override
         public idVec3 GetGravityNormal() {
-            return gravityNormal;
+            return this.gravityNormal;
         }
 
         @Override
@@ -353,12 +353,12 @@ public class Physics_Base {
 
         @Override
         public int GetNumContacts() {
-            return contacts.Num();
+            return this.contacts.Num();
         }
 
         @Override
         public contactInfo_t GetContact(int num) {
-            return contacts.oGet(num);
+            return this.contacts.oGet(num);
         }
 
         @Override
@@ -366,13 +366,13 @@ public class Physics_Base {
             int i;
             idEntity ent;
 
-            for (i = 0; i < contacts.Num(); i++) {
-                ent = gameLocal.entities[ contacts.oGet(i).entityNum];
+            for (i = 0; i < this.contacts.Num(); i++) {
+                ent = gameLocal.entities[ this.contacts.oGet(i).entityNum];
                 if (ent != null) {
-                    ent.RemoveContactEntity(self);
+                    ent.RemoveContactEntity(this.self);
                 }
             }
-            contacts.SetNum(0, false);
+            this.contacts.SetNum(0, false);
         }
 
         @Override
@@ -381,17 +381,17 @@ public class Physics_Base {
             idEntity ent;
             boolean found = false;
 
-            for (i = 0; i < contactEntities.Num(); i++) {
-                ent = contactEntities.oGet(i).GetEntity();
+            for (i = 0; i < this.contactEntities.Num(); i++) {
+                ent = this.contactEntities.oGet(i).GetEntity();
                 if (ent == null) {
-                    contactEntities.RemoveIndex(i--);
+                    this.contactEntities.RemoveIndex(i--);
                 }
                 if (ent == e) {
                     found = true;
                 }
             }
             if (!found) {
-                contactEntities.Alloc().oSet(e);
+                this.contactEntities.Alloc().oSet(e);
             }
         }
 
@@ -400,14 +400,14 @@ public class Physics_Base {
             int i;
             idEntity ent;
 
-            for (i = 0; i < contactEntities.Num(); i++) {
-                ent = contactEntities.oGet(i).GetEntity();
+            for (i = 0; i < this.contactEntities.Num(); i++) {
+                ent = this.contactEntities.oGet(i).GetEntity();
                 if (null == ent) {
-                    contactEntities.RemoveIndex(i--);
+                    this.contactEntities.RemoveIndex(i--);
                     continue;
                 }
                 if (ent == e) {
-                    contactEntities.RemoveIndex(i--);
+                    this.contactEntities.RemoveIndex(i--);
                     return;
                 }
             }
@@ -417,8 +417,8 @@ public class Physics_Base {
         public boolean HasGroundContacts() {
             int i;
 
-            for (i = 0; i < contacts.Num(); i++) {
-                if (contacts.oGet(i).normal.oMultiply(gravityNormal.oNegative()) > 0.0f) {
+            for (i = 0; i < this.contacts.Num(); i++) {
+                if (this.contacts.oGet(i).normal.oMultiply(this.gravityNormal.oNegative()) > 0.0f) {
                     return true;
                 }
             }
@@ -429,8 +429,8 @@ public class Physics_Base {
         public boolean IsGroundEntity(int entityNum) {
             int i;
 
-            for (i = 0; i < contacts.Num(); i++) {
-                if (contacts.oGet(i).entityNum == entityNum && (contacts.oGet(i).normal.oMultiply(gravityNormal.oNegative()) > 0.0f)) {
+            for (i = 0; i < this.contacts.Num(); i++) {
+                if ((this.contacts.oGet(i).entityNum == entityNum) && (this.contacts.oGet(i).normal.oMultiply(this.gravityNormal.oNegative()) > 0.0f)) {
                     return true;
                 }
             }
@@ -441,8 +441,8 @@ public class Physics_Base {
         public boolean IsGroundClipModel(int entityNum, int id) {
             int i;
 
-            for (i = 0; i < contacts.Num(); i++) {
-                if (contacts.oGet(i).entityNum == entityNum && contacts.oGet(i).id == id && (contacts.oGet(i).normal.oMultiply(gravityNormal.oNegative()) > 0.0f)) {
+            for (i = 0; i < this.contacts.Num(); i++) {
+                if ((this.contacts.oGet(i).entityNum == entityNum) && (this.contacts.oGet(i).id == id) && (this.contacts.oGet(i).normal.oMultiply(this.gravityNormal.oNegative()) > 0.0f)) {
                     return true;
                 }
             }
@@ -497,21 +497,21 @@ public class Physics_Base {
 
         // add ground contacts for the clip model
         protected void AddGroundContacts(final idClipModel clipModel) {
-            idVec6 dir = new idVec6();
+            final idVec6 dir = new idVec6();
             int index, num;
 
-            index = contacts.Num();
-            contacts.SetNum(index + 10, false);
+            index = this.contacts.Num();
+            this.contacts.SetNum(index + 10, false);
 
-            contactInfo_t[] contactz = new contactInfo_t[10];
+            final contactInfo_t[] contactz = new contactInfo_t[10];
 
-            dir.SubVec3_oSet(0, gravityNormal);
+            dir.SubVec3_oSet(0, this.gravityNormal);
             dir.SubVec3_oSet(1, getVec3_origin());
-            num = gameLocal.clip.Contacts(contactz, 10, clipModel.GetOrigin(), dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), clipMask, self);
+            num = gameLocal.clip.Contacts(contactz, 10, clipModel.GetOrigin(), dir, CONTACT_EPSILON, clipModel, clipModel.GetAxis(), this.clipMask, this.self);
             for (int i = 0; i < num; i++) {
-                contacts.oSet(index + i, contactz[i]);
+                this.contacts.oSet(index + i, contactz[i]);
             }
-            contacts.SetNum(index + num, false);
+            this.contacts.SetNum(index + num, false);
         }
 
         // add contact entity links to contact entities
@@ -519,10 +519,10 @@ public class Physics_Base {
             int i;
             idEntity ent;
 
-            for (i = 0; i < contacts.Num(); i++) {
-                ent = gameLocal.entities[ contacts.oGet(i).entityNum];
-                if (ent != null && !ent.equals(self)) {
-                    ent.AddContactEntity(self);
+            for (i = 0; i < this.contacts.Num(); i++) {
+                ent = gameLocal.entities[ this.contacts.oGet(i).entityNum];
+                if ((ent != null) && !ent.equals(this.self)) {
+                    ent.AddContactEntity(this.self);
                 }
             }
         }
@@ -532,12 +532,12 @@ public class Physics_Base {
             int i;
             idEntity ent;
 
-            for (i = 0; i < contactEntities.Num(); i++) {
-                ent = contactEntities.oGet(i).GetEntity();
+            for (i = 0; i < this.contactEntities.Num(); i++) {
+                ent = this.contactEntities.oGet(i).GetEntity();
                 if (ent != null) {
-                    ent.ActivatePhysics(self);
+                    ent.ActivatePhysics(this.self);
                 } else {
-                    contactEntities.RemoveIndex(i--);
+                    this.contactEntities.RemoveIndex(i--);
                 }
             }
         }
@@ -607,5 +607,5 @@ public class Physics_Base {
         public void oSet(idClass oGet) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 }

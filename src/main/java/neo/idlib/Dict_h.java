@@ -65,29 +65,29 @@ public class Dict_h {
         //
 
         public final idStr GetKey() {
-            return key;
+            return this.key;
         }
 
         public final idStr GetValue() {
-            return value;
+            return this.value;
         }
 
         @Override
         public long Allocated() {
-            return key.Allocated() + value.Allocated();
+            return this.key.Allocated() + this.value.Allocated();
         }
 
         @Override
         public long Size() {
-            return /*sizeof( *this ) +*/ key.Size() + value.Size();
+            return /*sizeof( *this ) +*/ this.key.Size() + this.value.Size();
         }
 //	public boolean				operator==( final idKeyValue &kv ) final { return ( key == kv.key && value == kv.value ); }
 
         @Override
         public int hashCode() {
             int hash = 3;
-            hash = 71 * hash + Objects.hashCode(this.key);
-            hash = 71 * hash + Objects.hashCode(this.value);
+            hash = (71 * hash) + Objects.hashCode(this.key);
+            hash = (71 * hash) + Objects.hashCode(this.value);
             return hash;
         }
 
@@ -109,7 +109,7 @@ public class Dict_h {
 
         @Override
         public String toString() {
-            return "idKeyValue{" + "key=" + key + ", value=" + value + '}';
+            return "idKeyValue{" + "key=" + this.key + ", value=" + this.value + '}';
         }       
 
         @Override
@@ -120,8 +120,8 @@ public class Dict_h {
 
     public static class idDict {
 
-        private idList<idKeyValue> args = new idList<>();
-        private idHashIndex argHash = new idHashIndex();
+        private final idList<idKeyValue> args = new idList<>();
+        private final idHashIndex argHash = new idHashIndex();
         //        
         private static final idStrPool globalKeys = new idStrPool();
         private static final idStrPool globalValues = new idStrPool();
@@ -131,9 +131,9 @@ public class Dict_h {
         private final  int DBG_count   = DBG_counter++;
 
         public idDict() {
-            args.SetGranularity(16);
-            argHash.SetGranularity(16);
-            argHash.Clear(128, 16);
+            this.args.SetGranularity(16);
+            this.argHash.SetGranularity(16);
+            this.argHash.Clear(128, 16);
         }
 
         // allow declaration with assignment
@@ -144,14 +144,14 @@ public class Dict_h {
 
         // set the granularity for the index
         public void SetGranularity(int granularity) {
-            args.SetGranularity(granularity);
-            argHash.SetGranularity(granularity);
+            this.args.SetGranularity(granularity);
+            this.argHash.SetGranularity(granularity);
         }
 
         // set hash size
         public void SetHashSize(int hashSize) {
-            if (args.Num() == 0) {
-                argHash.Clear(hashSize, 16);
+            if (this.args.Num() == 0) {
+                this.argHash.Clear(hashSize, 16);
             }
         }
 
@@ -173,12 +173,12 @@ public class Dict_h {
 
             Clear();
 
-            args.oSet(other.args);
-            argHash.oSet(other.argHash);
+            this.args.oSet(other.args);
+            this.argHash.oSet(other.argHash);
 
-            for (i = 0; i < args.Num(); i++) {
-                args.oGet(i).key = globalKeys.CopyString(args.oGet(i).key);
-                args.oGet(i).value = globalValues.CopyString(args.oGet(i).value);
+            for (i = 0; i < this.args.Num(); i++) {
+                this.args.oGet(i).key = globalKeys.CopyString(this.args.oGet(i).key);
+                this.args.oGet(i).value = globalValues.CopyString(this.args.oGet(i).value);
             }
 
             return this;
@@ -195,7 +195,7 @@ public class Dict_h {
         public void Copy(final idDict other) throws idException {
             int i, n;
             int[] found;
-            idKeyValue kv = new idKeyValue();
+            final idKeyValue kv = new idKeyValue();
 
             // check for assignment to self
             if (this == other) {
@@ -204,7 +204,7 @@ public class Dict_h {
 
             n = other.args.Num();
 
-            if (args.Num() != 0) {
+            if (this.args.Num() != 0) {
                 found = new int[other.args.Num()];
                 for (i = 0; i < n; i++) {
                     found[i] = FindKeyIndex(other.args.oGet(i).GetKey() + "");
@@ -214,15 +214,15 @@ public class Dict_h {
             }
 
             for (i = 0; i < n; i++) {
-                if (found != null && found[i] != -1) {
+                if ((found != null) && (found[i] != -1)) {
                     // first set the new value and then free the old value to allow proper self copying
-                    idPoolStr oldValue = args.oGet(found[i]).value;
-                    args.oGet(found[i]).value = globalValues.CopyString(other.args.oGet(i).value);
+                    final idPoolStr oldValue = this.args.oGet(found[i]).value;
+                    this.args.oGet(found[i]).value = globalValues.CopyString(other.args.oGet(i).value);
                     globalValues.FreeString(oldValue);
                 } else {
                     kv.key = globalKeys.CopyString(other.args.oGet(i).key);
                     kv.value = globalValues.CopyString(other.args.oGet(i).value);
-                    argHash.Add(argHash.GenerateKey(kv.GetKey() + "", false), args.Append(kv));
+                    this.argHash.Add(this.argHash.GenerateKey(kv.GetKey() + "", false), this.args.Append(kv));
                 }
             }
         }
@@ -242,7 +242,7 @@ public class Dict_h {
                 return;
             }
 
-            if (other.args.Num() != 0 && other.args.oGet(0).key.GetPool() != globalKeys) {
+            if ((other.args.Num() != 0) && (other.args.oGet(0).key.GetPool() != globalKeys)) {
                 common.FatalError("idDict::TransferKeyValues: can't transfer values across a DLL boundary");
                 return;
             }
@@ -250,15 +250,15 @@ public class Dict_h {
             Clear();
 
             n = other.args.Num();
-            args.SetNum(n);
+            this.args.SetNum(n);
             try {
                 for (i = 0; i < n; i++) {
-                    args.oSetType(i, other.args.oGet(i).clone());
+                    this.args.oSetType(i, other.args.oGet(i).clone());
                 }
-            } catch (CloneNotSupportedException ex) {
+            } catch (final CloneNotSupportedException ex) {
                 throw new idException(ex);
             }
-            argHash.oSet(other.argHash);
+            this.argHash.oSet(other.argHash);
 
             other.args.Clear();
             other.argHash.Free();
@@ -266,8 +266,8 @@ public class Dict_h {
 
         // parse dict from parser
         public boolean Parse(idParser parser) throws idException {
-            idToken token = new idToken();
-            idToken token2 = new idToken();
+            final idToken token = new idToken();
+            final idToken token2 = new idToken();
             boolean errors;
 
             errors = false;
@@ -302,13 +302,13 @@ public class Dict_h {
             final int n = dict.args.Num();
 
             for (int i = 0; i < n; i++) {
-                idKeyValue def = dict.args.oGet(i);
-                idKeyValue kv = FindKey(def.GetKey() + "");//TODO:override toString?
-                idKeyValue newkv = new idKeyValue();
+                final idKeyValue def = dict.args.oGet(i);
+                final idKeyValue kv = FindKey(def.GetKey() + "");//TODO:override toString?
+                final idKeyValue newkv = new idKeyValue();
                 if (null == kv) {
                     newkv.key = globalKeys.CopyString(def.key);
                     newkv.value = globalValues.CopyString(def.value);
-                    argHash.Add(argHash.GenerateKey(newkv.GetKey() + "", false), args.Append(newkv));
+                    this.argHash.Add(this.argHash.GenerateKey(newkv.GetKey() + "", false), this.args.Append(newkv));
                 }
             }
         }
@@ -317,13 +317,13 @@ public class Dict_h {
         public void Clear() {
             int i;
 
-            for (i = 0; i < args.Num(); i++) {
-                globalKeys.FreeString(args.oGet(i).key);
-                globalValues.FreeString(args.oGet(i).value);
+            for (i = 0; i < this.args.Num(); i++) {
+                globalKeys.FreeString(this.args.oGet(i).key);
+                globalValues.FreeString(this.args.oGet(i).value);
             }
 
-            args.Clear();
-            argHash.Free();
+            this.args.Clear();
+            this.argHash.Free();
         }
 
         // print the dict
@@ -331,9 +331,9 @@ public class Dict_h {
             int i;
             int n;
 
-            n = args.Num();
+            n = this.args.Num();
             for (i = 0; i < n; i++) {
-                idLib.common.Printf("%s = %s\n", args.oGet(i).GetKey().toString(), args.oGet(i).GetValue().toString());
+                idLib.common.Printf("%s = %s\n", this.args.oGet(i).GetKey().toString(), this.args.oGet(i).GetValue().toString());
             }
         }
 
@@ -341,9 +341,9 @@ public class Dict_h {
             int i;
             long size;
 
-            size = args.Allocated() + argHash.Allocated();
-            for (i = 0; i < args.Num(); i++) {
-                size += args.oGet(i).Size();
+            size = this.args.Allocated() + this.argHash.Allocated();
+            for (i = 0; i < this.args.Num(); i++) {
+                size += this.args.oGet(i).Size();
             }
 
             return size;
@@ -365,23 +365,23 @@ public class Dict_h {
         private static int DBG_Set = 0;
         public void Set(final String key, final String value) throws idException {
             int i;
-            idKeyValue kv = new idKeyValue();
+            final idKeyValue kv = new idKeyValue();
 
 //            System.out.println(DBG_Set++ + " " + key);
-            if (key == null || key.isEmpty() || key.charAt(0) == '\0') {
+            if ((key == null) || key.isEmpty() || (key.charAt(0) == '\0')) {
                 return;
             }
 
             i = FindKeyIndex(key);
             if (i != -1) {
                 // first set the new value and then free the old value to allow proper self copying
-                idPoolStr oldValue = args.oGet(i).value;
-                args.oGet(i).value = globalValues.AllocString(value);
+                final idPoolStr oldValue = this.args.oGet(i).value;
+                this.args.oGet(i).value = globalValues.AllocString(value);
                 globalValues.FreeString(oldValue);
             } else {
                 kv.key = globalKeys.AllocString(key);
                 kv.value = globalValues.AllocString(value);
-                argHash.Add(argHash.GenerateKey("" + kv.GetKey(), false), args.Append(kv));
+                this.argHash.Add(this.argHash.GenerateKey("" + kv.GetKey(), false), this.args.Append(kv));
             }
         }
 
@@ -423,7 +423,7 @@ public class Dict_h {
 
         // these return default values of 0.0, 0 and false
         public String GetString(final String key, final String defaultString) throws idException {
-            idKeyValue kv = FindKey(key);
+            final idKeyValue kv = FindKey(key);
             if (kv != null) {
                 return kv.GetValue().toString();
             }
@@ -455,7 +455,7 @@ public class Dict_h {
         }
 
         public idVec3 GetVector(final String key, final String defaultString) throws idException {
-            idVec3 out = new idVec3();
+            final idVec3 out = new idVec3();
             GetVector(key, defaultString, out);
             return out;
         }
@@ -465,7 +465,7 @@ public class Dict_h {
         }
 
         public idVec2 GetVec2(final String key, final String defaultString) throws idException {
-            idVec2 out = new idVec2();
+            final idVec2 out = new idVec2();
             GetVec2(key, defaultString, out);
             return out;
         }
@@ -475,7 +475,7 @@ public class Dict_h {
         }
 
         public idVec4 GetVec4(final String key, final String defaultString) throws idException {
-            idVec4 out = new idVec4();
+            final idVec4 out = new idVec4();
             GetVec4(key, defaultString, out);
             return out;
         }
@@ -485,7 +485,7 @@ public class Dict_h {
         }
 
         public idAngles GetAngles(final String key, final String defaultString) throws idException {
-            idAngles out = new idAngles();
+            final idAngles out = new idAngles();
             GetAngles(key, defaultString, out);
             return out;
         }
@@ -495,21 +495,21 @@ public class Dict_h {
         }
 
         public idMat3 GetMatrix(final String key, final String defaultString) throws idException {
-            idMat3 out = new idMat3();
+            final idMat3 out = new idMat3();
             GetMatrix(key, defaultString, out);
             return out;
         }
 
         static void WriteString(final String s, idFile f) throws idException {
-            int len = s.length();
-            if (len >= MAX_STRING_CHARS - 1) {
+            final int len = s.length();
+            if (len >= (MAX_STRING_CHARS - 1)) {
                 idLib.common.Error("idDict::WriteToFileHandle: bad string");
             }
             f.WriteString(s);//, len + 1);
         }
 
         public boolean GetString(final String key, final String defaultString, final String[] out) throws idException {
-            idKeyValue kv = FindKey(key);
+            final idKeyValue kv = FindKey(key);
             if (kv != null) {
                 out[0] = kv.GetValue().toString();
                 return true;
@@ -519,7 +519,7 @@ public class Dict_h {
         }
 
         public boolean GetString(final String key, final String defaultString, idStr out) throws idException {
-            idKeyValue kv = FindKey(key);
+            final idKeyValue kv = FindKey(key);
             if (kv != null) {
                 out.oSet(kv.GetValue());
                 return true;
@@ -529,7 +529,7 @@ public class Dict_h {
         }
 
         public boolean GetFloat(final String key, final String defaultString, float[] out) throws idException {
-            String[] s = new String[1];
+            final String[] s = new String[1];
             boolean found;
 
             found = GetString(key, defaultString, s);
@@ -538,7 +538,7 @@ public class Dict_h {
         }
 
         public boolean GetInt(final String key, final String defaultString, int[] out) throws idException {
-            String[] s = new String[1];
+            final String[] s = new String[1];
             boolean found;
 
             found = GetString(key, defaultString, s);
@@ -547,7 +547,7 @@ public class Dict_h {
         }
 
         public boolean GetBool(final String key, final String defaultString, boolean[] out) throws idException {
-            String[] s = new String[1];
+            final String[] s = new String[1];
             boolean found;
 
             found = GetString(key, defaultString, s);
@@ -557,7 +557,7 @@ public class Dict_h {
 
         public boolean GetVector(final String key, String defaultString, idVec3 out) throws idException {
             boolean found;
-            String[] s = {null};
+            final String[] s = {null};
 
             if (null == defaultString) {
                 defaultString = "0 0 0";
@@ -566,7 +566,7 @@ public class Dict_h {
             found = GetString(key, defaultString, s);
             out.Zero();
 
-            String[] sscanf = s[0].split(" ");
+            final String[] sscanf = s[0].split(" ");
             if (sscanf.length > 2) {
                 out.x = atof(sscanf[0]);
                 out.y = atof(sscanf[1]);
@@ -578,7 +578,7 @@ public class Dict_h {
 
         public boolean GetVec2(final String key, String defaultString, idVec2 out) throws idException {
             boolean found;
-            String[] s = new String[1];
+            final String[] s = new String[1];
 
             if (null == defaultString) {
                 defaultString = "0 0";
@@ -587,7 +587,7 @@ public class Dict_h {
             found = GetString(key, defaultString, s);
             out.Zero();
 
-            String[] sscanf = s[0].split(" ");
+            final String[] sscanf = s[0].split(" ");
             out.x = atof(sscanf[0]);
             out.y = atof(sscanf[1]);
 //	sscanf( s, "%f %f", &out.x, &out.y );
@@ -596,7 +596,7 @@ public class Dict_h {
 
         public boolean GetVec4(final String key, String defaultString, idVec4 out) throws idException {
             boolean found;
-            String[] s = new String[1];
+            final String[] s = new String[1];
 
             if (null == defaultString) {
                 defaultString = "0 0 0 0";
@@ -605,7 +605,7 @@ public class Dict_h {
             found = GetString(key, defaultString, s);
             out.Zero();
 
-            String[] sscanf = s[0].split(" ");
+            final String[] sscanf = s[0].split(" ");
             out.x = atof(sscanf[0]);
             out.y = atof(sscanf[1]);
             out.z = atof(sscanf[2]);
@@ -616,7 +616,7 @@ public class Dict_h {
 
         public boolean GetAngles(final String key, String defaultString, idAngles out) throws idException {
             boolean found;
-            String[] s = new String[1];
+            final String[] s = new String[1];
 
             if (null == defaultString) {
                 defaultString = "0 0 0";
@@ -625,7 +625,7 @@ public class Dict_h {
             found = GetString(key, defaultString, s);
             out.Zero();
 
-            String[] sscanf = s[0].split(" ");
+            final String[] sscanf = s[0].split(" ");
             out.pitch = atof(sscanf[0]);
             out.yaw = atof(sscanf[1]);
             out.roll = atof(sscanf[2]);
@@ -635,7 +635,7 @@ public class Dict_h {
 
         public boolean GetMatrix(final String key, String defaultString, idMat3 out) throws idException {
             boolean found;
-            String[] s = new String[1];
+            final String[] s = new String[1];
 
             if (null == defaultString) {
                 defaultString = "1 0 0 0 1 0 0 0 1";
@@ -644,7 +644,7 @@ public class Dict_h {
             found = GetString(key, defaultString, s);
             out.Zero();
 
-            String[] sscanf = s[0].split(" ");
+            final String[] sscanf = s[0].split(" ");
             out.oGet(0).x = atof(sscanf[0]);
             out.oGet(0).y = atof(sscanf[1]);
             out.oGet(0).z = atof(sscanf[2]);
@@ -659,12 +659,12 @@ public class Dict_h {
         }
 
         public int GetNumKeyVals() {
-            return args.Num();
+            return this.args.Num();
         }
 
         public idKeyValue GetKeyVal(int index) {
-            if (index >= 0 && index < args.Num()) {
-                return args.oGet(index);
+            if ((index >= 0) && (index < this.args.Num())) {
+                return this.args.oGet(index);
             }
             return null;
         }
@@ -674,15 +674,15 @@ public class Dict_h {
         public idKeyValue FindKey(final String key) throws idException {
             int i, hash;
 
-            if (key == null || key.isEmpty()/*[0] == '\0'*/) {
+            if ((key == null) || key.isEmpty()/*[0] == '\0'*/) {
                 idLib.common.DWarning("idDict::FindKey: empty key");
                 return null;
             }
 
-            hash = argHash.GenerateKey(key, false);
-            for (i = argHash.First(hash); i != -1; i = argHash.Next(i)) {
-                if (args.oGet(i).GetKey().Icmp(key) == 0) {
-                    return args.oGet(i);
+            hash = this.argHash.GenerateKey(key, false);
+            for (i = this.argHash.First(hash); i != -1; i = this.argHash.Next(i)) {
+                if (this.args.oGet(i).GetKey().Icmp(key) == 0) {
+                    return this.args.oGet(i);
                 }
             }
 
@@ -697,14 +697,14 @@ public class Dict_h {
         // returns -1 if the key/value pair does not exist
         public int FindKeyIndex(final String key) throws idException {
 
-            if (key == null || key.length() < 1/*[0] == '\0'*/) {
+            if ((key == null) || (key.length() < 1/*[0] == '\0'*/)) {
                 idLib.common.DWarning("idDict::FindKeyIndex: empty key");
                 return 0;
             }
 
-            int hash = argHash.GenerateKey(key, false);
-            for (int i = argHash.First(hash); i != -1; i = argHash.Next(i)) {
-                if (args.oGet(i).GetKey().Icmp(key) == 0) {
+            final int hash = this.argHash.GenerateKey(key, false);
+            for (int i = this.argHash.First(hash); i != -1; i = this.argHash.Next(i)) {
+                if (this.args.oGet(i).GetKey().Icmp(key) == 0) {
                     return i;
                 }
             }
@@ -716,13 +716,13 @@ public class Dict_h {
         public void Delete(final String key) {
             int hash, i;
 
-            hash = argHash.GenerateKey(key, false);
-            for (i = argHash.First(hash); i != -1; i = argHash.Next(i)) {
-                if (args.oGet(i).GetKey().Icmp(key) == 0) {
-                    globalKeys.FreeString(args.oGet(i).key);
-                    globalValues.FreeString(args.oGet(i).value);
-                    args.RemoveIndex(i);
-                    argHash.RemoveIndex(hash, i);
+            hash = this.argHash.GenerateKey(key, false);
+            for (i = this.argHash.First(hash); i != -1; i = this.argHash.Next(i)) {
+                if (this.args.oGet(i).GetKey().Icmp(key) == 0) {
+                    globalKeys.FreeString(this.args.oGet(i).key);
+                    globalValues.FreeString(this.args.oGet(i).value);
+                    this.args.RemoveIndex(i);
+                    this.argHash.RemoveIndex(hash, i);
                     break;
                 }
             }
@@ -757,16 +757,16 @@ public class Dict_h {
 
             start = -1;
             if (lastMatch != null) {
-                start = args.FindIndex(lastMatch);
+                start = this.args.FindIndex(lastMatch);
                 assert (start >= 0);
                 if (start < 1) {
                     start = 0;
                 }
             }
 
-            for (i = start + 1; i < args.Num(); i++) {
-                if (0 == args.oGet(i).GetKey().Icmpn(prefix, len)) {
-                    return args.oGet(i);
+            for (i = start + 1; i < this.args.Num(); i++) {
+                if (0 == this.args.oGet(i).GetKey().Icmpn(prefix, len)) {
+                    return this.args.oGet(i);
                 }
             }
             return null;
@@ -780,24 +780,24 @@ public class Dict_h {
             idKeyValue kv;
 
 //            list[0] = "";
-            for (count = 0, kv = MatchPrefix(prefix); kv != null && count < MAX_RANDOM_KEYS; kv = MatchPrefix(prefix, kv)) {
+            for (count = 0, kv = MatchPrefix(prefix); (kv != null) && (count < MAX_RANDOM_KEYS); kv = MatchPrefix(prefix, kv)) {
                 list[count++] = String.copyValueOf(kv.GetValue().c_str());
             }
             return list[random.RandomInt(count)];
         }
 
         public void WriteToFileHandle(idFile f) throws idException {
-            int c = LittleLong(args.Num());
+            final int c = LittleLong(this.args.Num());
             f.WriteInt(c);//, sizeof(c));
-            for (int i = 0; i < args.Num(); i++) {	// don't loop on the swapped count use the original
-                WriteString(args.oGet(i).GetKey().toString(), f);
-                WriteString(args.oGet(i).GetValue().toString(), f);
+            for (int i = 0; i < this.args.Num(); i++) {	// don't loop on the swapped count use the original
+                WriteString(this.args.oGet(i).GetKey().toString(), f);
+                WriteString(this.args.oGet(i).GetValue().toString(), f);
             }
         }
 
         static idStr ReadString(idFile f) throws idException {
-            char[] str = new char[MAX_STRING_CHARS];
-            short[] c = {0};
+            final char[] str = new char[MAX_STRING_CHARS];
+            final short[] c = {0};
             int len;
 
             for (len = 0; len < MAX_STRING_CHARS; len++) {
@@ -815,7 +815,7 @@ public class Dict_h {
         }
 
         public void ReadFromFileHandle(idFile f) throws idException {
-            int[] c = new int[1];
+            final int[] c = new int[1];
             idStr key, val;
 
             Clear();
@@ -832,10 +832,10 @@ public class Dict_h {
 
         // returns a unique checksum for this dictionary's content
         public long Checksum() {
-            long[] ret = new long[1];
+            final long[] ret = new long[1];
             int i, n;
 
-            idList<idKeyValue> sorted = args;
+            final idList<idKeyValue> sorted = this.args;
             sorted.Sort(new KeyCompare());
             n = sorted.Num();
             CRC32_InitChecksum(ret);
@@ -883,7 +883,7 @@ public class Dict_h {
             @Override
             public void run(idCmdArgs args) throws idException {
                 int i;
-                idList<idPoolStr> keyStrings = new idList<>();
+                final idList<idPoolStr> keyStrings = new idList<>();
 
                 for (i = 0; i < globalKeys.Num(); i++) {
                     keyStrings.Append(globalKeys.oGet(i));
@@ -894,7 +894,7 @@ public class Dict_h {
                 }
                 idLib.common.Printf("%5d keys\n", keyStrings.Num());
             }
-        };
+        }
 
         public static class ListValues_f extends cmdFunction_t {
 
@@ -907,7 +907,7 @@ public class Dict_h {
             @Override
             public void run(idCmdArgs args) throws idException {
                 int i;
-                idList<idPoolStr> valueStrings = new idList<>();
+                final idList<idPoolStr> valueStrings = new idList<>();
 
                 for (i = 0; i < globalValues.Num(); i++) {
                     valueStrings.Append(globalValues.oGet(i));
@@ -918,7 +918,7 @@ public class Dict_h {
                 }
                 idLib.common.Printf("%5d values\n", valueStrings.Num());
             }
-        };
+        }
     }
 
     static class KeyCompare implements cmp_t<idKeyValue> {

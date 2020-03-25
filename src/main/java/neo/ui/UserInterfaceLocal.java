@@ -19,7 +19,6 @@ import static neo.ui.Window.WIN_MENUGUI;
 
 import java.nio.ByteBuffer;
 
-import neo.TempDump.NeoFixStrings;
 import neo.Renderer.Material.idMaterial;
 import neo.framework.DemoFile.idDemoFile;
 import neo.framework.File_h.idFile;
@@ -66,15 +65,15 @@ public class UserInterfaceLocal {
         private boolean  interactive;
         private boolean  uniqued;
         //
-        private idDict   state;
+        private final idDict   state;
         private idWindow desktop;
         private idWindow bindHandler;
         //
-        private idStr  source;
-        private idStr  activateStr = new idStr();
-        private idStr  pendingCmd  = new idStr();
-        private idStr  returnCmd   = new idStr();
-        private long[] timeStamp   = {0};
+        private final idStr  source;
+        private final idStr  activateStr = new idStr();
+        private final idStr  pendingCmd  = new idStr();
+        private final idStr  returnCmd   = new idStr();
+        private final long[] timeStamp   = {0};
         //
         private float cursorX;
         private float cursorY;
@@ -86,16 +85,16 @@ public class UserInterfaceLocal {
         //
 
         public idUserInterfaceLocal() {
-            cursorX = cursorY = 0;
-            desktop = null;
-            loading = false;
-            active = false;
-            interactive = false;
-            uniqued = false;
-            bindHandler = null;
+            this.cursorX = this.cursorY = 0;
+            this.desktop = null;
+            this.loading = false;
+            this.active = false;
+            this.interactive = false;
+            this.uniqued = false;
+            this.bindHandler = null;
             //so the reg eval in gui parsing doesn't get bogus values
-            time = 0;
-            refs = 1;
+            this.time = 0;
+            this.refs = 1;
             this.source = new idStr();
             this.state = new idDict();
         }
@@ -103,83 +102,83 @@ public class UserInterfaceLocal {
         // ~idUserInterfaceLocal();
         @Override
         public String Name() {
-            return source.toString();
+            return this.source.toString();
         }
 
         @Override
         public String Comment() {
-            if (desktop != null) {
-                return desktop.GetComment();
+            if (this.desktop != null) {
+                return this.desktop.GetComment();
             }
             return "";
         }
 
         @Override
         public boolean IsInteractive() {
-            return interactive;
+            return this.interactive;
         }
 
         @Override
         public boolean InitFromFile(final String qpath, boolean rebuild /*= true*/, boolean cache /*= true*/) {
 
-            if (!(qpath != null && !qpath.isEmpty())) {
+            if (!((qpath != null) && !qpath.isEmpty())) {
                 // FIXME: Memory leak!!
                 return false;
             }
 
 //            int sz = sizeof(idWindow.class);
 //            sz = sizeof(idSimpleWindow.class);
-            loading = true;
+            this.loading = true;
 
-            if (rebuild || desktop == null) {
-                desktop = new idWindow(this);
+            if (rebuild || (this.desktop == null)) {
+                this.desktop = new idWindow(this);
             }
 //            System.out.println(NeoFixStrings.FAAAAAAAAAAAAAAAAAAR + " " + desktop);
 
-            source.oSet(qpath);
-            state.Set("text", "Test Text!");
+            this.source.oSet(qpath);
+            this.state.Set("text", "Test Text!");
 
-            idParser src = new idParser(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
+            final idParser src = new idParser(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
 
             //Load the timestamp so reload guis will work correctly
-            fileSystem.ReadFile(qpath, null, timeStamp);
+            fileSystem.ReadFile(qpath, null, this.timeStamp);
 
             src.LoadFile(qpath);
 
             if (src.IsLoaded()) {
-                idToken token = new idToken();
+                final idToken token = new idToken();
                 while (src.ReadToken(token)) {
                     if (idStr.Icmp(token, "windowDef") == 0) {
-                        desktop.SetDC(uiManagerLocal.dc);
-                        if (desktop.Parse(src, rebuild)) {
-                            desktop.SetFlag(WIN_DESKTOP);
-                            desktop.FixupParms();
+                        this.desktop.SetDC(uiManagerLocal.dc);
+                        if (this.desktop.Parse(src, rebuild)) {
+                            this.desktop.SetFlag(WIN_DESKTOP);
+                            this.desktop.FixupParms();
                         }
 //                        continue;
                     }
                 }
 
-                state.Set("name", qpath);
+                this.state.Set("name", qpath);
             } else {
-                desktop.SetDC(uiManagerLocal.dc);
-                desktop.SetFlag(WIN_DESKTOP);
-                desktop.name = new idStr("Desktop");
-                desktop.text = new idWinStr(va("Invalid GUI: %s", qpath));//TODO:clean this mess up.
-                desktop.rect.oSet(new idRectangle(0.0f, 0.0f, 640.0f, 480.0f));
-                desktop.drawRect.oSet(desktop.rect.data);
-                desktop.foreColor.oSet(new idVec4(1.0f, 1.0f, 1.0f, 1.0f));
-                desktop.backColor.oSet(new idVec4(0.0f, 0.0f, 0.0f, 1.0f));
-                desktop.SetupFromState();
+                this.desktop.SetDC(uiManagerLocal.dc);
+                this.desktop.SetFlag(WIN_DESKTOP);
+                this.desktop.name = new idStr("Desktop");
+                this.desktop.text = new idWinStr(va("Invalid GUI: %s", qpath));//TODO:clean this mess up.
+                this.desktop.rect.oSet(new idRectangle(0.0f, 0.0f, 640.0f, 480.0f));
+                this.desktop.drawRect.oSet(this.desktop.rect.data);
+                this.desktop.foreColor.oSet(new idVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                this.desktop.backColor.oSet(new idVec4(0.0f, 0.0f, 0.0f, 1.0f));
+                this.desktop.SetupFromState();
                 common.Warning("Couldn't load gui: '%s'", qpath);
             }
 
-            interactive = desktop.Interactive();
+            this.interactive = this.desktop.Interactive();
 
             if (uiManagerLocal.guis.Find(this) == null) {
                 uiManagerLocal.guis.Append(this);
             }
 
-            loading = false;
+            this.loading = false;
 
             return true;
         }
@@ -187,29 +186,29 @@ public class UserInterfaceLocal {
         @Override
         public String HandleEvent(final sysEvent_s event, int _time, boolean[] updateVisuals) {
 
-            time = _time;
+            this.time = _time;
 //            System.out.println(System.nanoTime()+"HandleEvent time="+_time+" "+Common.com_ticNumber);
 
-            if (bindHandler != null && event.evType == SE_KEY && event.evValue2 == 1) {
-                final String ret = bindHandler.HandleEvent(event, updateVisuals);
-                bindHandler = null;
+            if ((this.bindHandler != null) && (event.evType == SE_KEY) && (event.evValue2 == 1)) {
+                final String ret = this.bindHandler.HandleEvent(event, updateVisuals);
+                this.bindHandler = null;
                 return ret;
             }
 
             if (event.evType == SE_MOUSE) {
-                cursorX += event.evValue;
-                cursorY += event.evValue2;
+                this.cursorX += event.evValue;
+                this.cursorY += event.evValue2;
 
-                if (cursorX < 0) {
-                    cursorX = 0;
+                if (this.cursorX < 0) {
+                    this.cursorX = 0;
                 }
-                if (cursorY < 0) {
-                    cursorY = 0;
+                if (this.cursorY < 0) {
+                    this.cursorY = 0;
                 }
             }
 
-            if (desktop != null) {
-                return desktop.HandleEvent(event, updateVisuals);
+            if (this.desktop != null) {
+                return this.desktop.HandleEvent(event, updateVisuals);
             }
 
             return "";
@@ -217,7 +216,7 @@ public class UserInterfaceLocal {
 
         @Override
         public void HandleNamedEvent(final String namedEvent) {
-            desktop.RunNamedEvent(namedEvent);
+            this.desktop.RunNamedEvent(namedEvent);
         }
 
         @Override
@@ -225,18 +224,18 @@ public class UserInterfaceLocal {
             if (r_skipGuiShaders.GetInteger() > 5) {
                 return;
             }
-            if (!loading && desktop != null) {
-                time = _time;
+            if (!this.loading && (this.desktop != null)) {
+                this.time = _time;
                 uiManagerLocal.dc.PushClipRect(uiManagerLocal.screenRect);
-                desktop.Redraw(0, 0);
+                this.desktop.Redraw(0, 0);
                 uiManagerLocal.dc.PopClipRect();
             }
         }
 
         @Override
         public void DrawCursor() {
-            float[] cursorX = {this.cursorX}, cursorY = {this.cursorY};
-            if (null == desktop || (desktop.GetFlags() & WIN_MENUGUI) != 0) {
+            final float[] cursorX = {this.cursorX}, cursorY = {this.cursorY};
+            if ((null == this.desktop) || ((this.desktop.GetFlags() & WIN_MENUGUI) != 0)) {
                 uiManagerLocal.dc.DrawCursor(cursorX, cursorY, 32.0f);
             } else {
                 uiManagerLocal.dc.DrawCursor(cursorX, cursorY, 64.0f);
@@ -245,113 +244,113 @@ public class UserInterfaceLocal {
 
         @Override
         public idDict State() {
-            return state;
+            return this.state;
         }
 
         @Override
         public void DeleteStateVar(final String varName) {
-            state.Delete(varName);
+            this.state.Delete(varName);
         }
 
         @Override
         public void SetStateString(final String varName, final String value) {
-            state.Set(varName, value);
+            this.state.Set(varName, value);
         }
 
         @Override
         public void SetStateBool(final String varName, final boolean value) {
-            state.SetBool(varName, value);
+            this.state.SetBool(varName, value);
         }
 
         @Override
         public void SetStateInt(final String varName, final int value) {
-            state.SetInt(varName, value);
+            this.state.SetInt(varName, value);
         }
 
         @Override
         public void SetStateFloat(final String varName, final float value) {
-            state.SetFloat(varName, value);
+            this.state.SetFloat(varName, value);
         }
 
         // Gets a gui state variable
         @Override
         public String GetStateString(final String varName, final String defaultString /*= ""*/) {
-            return state.GetString(varName, defaultString);
+            return this.state.GetString(varName, defaultString);
         }
 
         public boolean GetStateBool(final String varName, final String defaultString /*= "0"*/) {
-            return state.GetBool(varName, defaultString);
+            return this.state.GetBool(varName, defaultString);
         }
 
         @Override
         public int GetStateInt(final String varName, final String defaultString /*= "0"*/) {
-            return state.GetInt(varName, defaultString);
+            return this.state.GetInt(varName, defaultString);
         }
 
         @Override
         public float GetStateFloat(final String varName, final String defaultString /*= "0"*/) {
-            return state.GetFloat(varName, defaultString);
+            return this.state.GetFloat(varName, defaultString);
         }
 
         @Override
         public void StateChanged(int _time, boolean redraw) {
-            time = _time;
-            if (desktop != null) {
-                desktop.StateChanged(redraw);
+            this.time = _time;
+            if (this.desktop != null) {
+                this.desktop.StateChanged(redraw);
             }
-            if (state.GetBool("noninteractive")) {
-                interactive = false;
+            if (this.state.GetBool("noninteractive")) {
+                this.interactive = false;
             } else {
-                if (desktop != null) {
-                    interactive = desktop.Interactive();
+                if (this.desktop != null) {
+                    this.interactive = this.desktop.Interactive();
                 } else {
-                    interactive = false;
+                    this.interactive = false;
                 }
             }
         }
 
         @Override
         public String Activate(boolean activate, int _time) {
-            time = _time;
-            active = activate;
-            if (desktop != null) {
-                activateStr.oSet("");
-                desktop.Activate(activate, activateStr);
-                return activateStr.toString();
+            this.time = _time;
+            this.active = activate;
+            if (this.desktop != null) {
+                this.activateStr.oSet("");
+                this.desktop.Activate(activate, this.activateStr);
+                return this.activateStr.toString();
             }
             return "";
         }
 
         @Override
         public void Trigger(int _time) {
-            time = _time;
-            if (desktop != null) {
-                desktop.Trigger();
+            this.time = _time;
+            if (this.desktop != null) {
+                this.desktop.Trigger();
             }
         }
 
         @Override
         public void ReadFromDemoFile(idDemoFile f) {
 //	idStr work;
-            f.ReadDict(state);
-            source.oSet(state.GetString("name"));
+            f.ReadDict(this.state);
+            this.source.oSet(this.state.GetString("name"));
 
-            if (desktop == null) {
+            if (this.desktop == null) {
                 f.Log("creating new gui\n");
-                desktop = new idWindow(this);
-                desktop.SetFlag(WIN_DESKTOP);
-                desktop.SetDC(uiManagerLocal.dc);
-                desktop.ReadFromDemoFile(f);
+                this.desktop = new idWindow(this);
+                this.desktop.SetFlag(WIN_DESKTOP);
+                this.desktop.SetDC(uiManagerLocal.dc);
+                this.desktop.ReadFromDemoFile(f);
             } else {
                 f.Log("re-using gui\n");
-                desktop.ReadFromDemoFile(f, false);
+                this.desktop.ReadFromDemoFile(f, false);
             }
 
-            cursorX = f.ReadFloat();
-            cursorY = f.ReadFloat();
+            this.cursorX = f.ReadFloat();
+            this.cursorY = f.ReadFloat();
 
             boolean add = true;
-            int c = uiManagerLocal.demoGuis.Num();
+            final int c = uiManagerLocal.demoGuis.Num();
             for (int i = 0; i < c; i++) {
                 if (uiManagerLocal.demoGuis.oGet(i).equals(this)) {
                     add = false;
@@ -367,13 +366,13 @@ public class UserInterfaceLocal {
         @Override
         public void WriteToDemoFile(idDemoFile f) {
 //	idStr work;
-            f.WriteDict(state);
-            if (desktop != null) {
-                desktop.WriteToDemoFile(f);
+            f.WriteDict(this.state);
+            if (this.desktop != null) {
+                this.desktop.WriteToDemoFile(f);
             }
 
-            f.WriteFloat(cursorX);
-            f.WriteFloat(cursorY);
+            f.WriteFloat(this.cursorX);
+            f.WriteFloat(this.cursorY);
         }
 
         @Override
@@ -382,11 +381,11 @@ public class UserInterfaceLocal {
             idKeyValue kv;
             String string;
 
-            int num = state.GetNumKeyVals();
+            final int num = this.state.GetNumKeyVals();
             savefile.WriteInt(num);
 
             for (int i = 0; i < num; i++) {
-                kv = state.GetKeyVal(i);
+                kv = this.state.GetKeyVal(i);
                 len = kv.GetKey().Length();
                 string = kv.GetKey().toString();
                 savefile.WriteInt(len);
@@ -398,24 +397,24 @@ public class UserInterfaceLocal {
                 savefile.WriteString(string);
             }
 
-            savefile.WriteBool(active);
-            savefile.WriteBool(interactive);
-            savefile.WriteBool(uniqued);
-            savefile.WriteInt(time);
-            len = activateStr.Length();
+            savefile.WriteBool(this.active);
+            savefile.WriteBool(this.interactive);
+            savefile.WriteBool(this.uniqued);
+            savefile.WriteInt(this.time);
+            len = this.activateStr.Length();
             savefile.WriteInt(len);
-            savefile.WriteString(activateStr);
-            len = pendingCmd.Length();
+            savefile.WriteString(this.activateStr);
+            len = this.pendingCmd.Length();
             savefile.WriteInt(len);
-            savefile.WriteString(pendingCmd);
-            len = returnCmd.Length();
+            savefile.WriteString(this.pendingCmd);
+            len = this.returnCmd.Length();
             savefile.WriteInt(len);
-            savefile.WriteString(returnCmd);
+            savefile.WriteString(this.returnCmd);
 
-            savefile.WriteFloat(cursorX);
-            savefile.WriteFloat(cursorY);
+            savefile.WriteFloat(this.cursorX);
+            savefile.WriteFloat(this.cursorY);
 
-            desktop.WriteToSaveGame(savefile);
+            this.desktop.WriteToSaveGame(savefile);
 
             return true;
         }
@@ -424,12 +423,12 @@ public class UserInterfaceLocal {
         public boolean ReadFromSaveGame(idFile savefile) {
             int num;
             int i, len;
-            idStr key = new idStr();
-            idStr value = new idStr();
+            final idStr key = new idStr();
+            final idStr value = new idStr();
 
             num = savefile.ReadInt();
 
-            state.Clear();
+            this.state.Clear();
             for (i = 0; i < num; i++) {
                 len = savefile.ReadInt();
                 key.Fill(' ', len);
@@ -439,128 +438,128 @@ public class UserInterfaceLocal {
                 value.Fill(' ', len);
                 savefile.ReadString(value);
 
-                state.Set(key, value);
+                this.state.Set(key, value);
             }
 
-            active = savefile.ReadBool();
-            interactive = savefile.ReadBool();
-            uniqued = savefile.ReadBool();
-            time = savefile.ReadInt();
+            this.active = savefile.ReadBool();
+            this.interactive = savefile.ReadBool();
+            this.uniqued = savefile.ReadBool();
+            this.time = savefile.ReadInt();
 
             len = savefile.ReadInt();
-            activateStr.Fill(' ', len);
-            savefile.ReadString(activateStr);
+            this.activateStr.Fill(' ', len);
+            savefile.ReadString(this.activateStr);
             len = savefile.ReadInt();
-            pendingCmd.Fill(' ', len);
-            savefile.ReadString(pendingCmd);
+            this.pendingCmd.Fill(' ', len);
+            savefile.ReadString(this.pendingCmd);
             len = savefile.ReadInt();
-            returnCmd.Fill(' ', len);
-            savefile.ReadString(returnCmd);
+            this.returnCmd.Fill(' ', len);
+            savefile.ReadString(this.returnCmd);
 
-            cursorX = savefile.ReadFloat();
-            cursorY = savefile.ReadFloat();
+            this.cursorX = savefile.ReadFloat();
+            this.cursorY = savefile.ReadFloat();
 
-            desktop.ReadFromSaveGame(savefile);
+            this.desktop.ReadFromSaveGame(savefile);
 
             return true;
         }
 
         @Override
         public void SetKeyBindingNames() {
-            if (null == desktop) {
+            if (null == this.desktop) {
                 return;
             }
             // walk the windows
-            RecurseSetKeyBindingNames(desktop);
+            RecurseSetKeyBindingNames(this.desktop);
         }
 
         @Override
         public boolean IsUniqued() {
-            return uniqued;
+            return this.uniqued;
         }
 
         @Override
         public void SetUniqued(boolean b) {
-            uniqued = b;
+            this.uniqued = b;
         }
 
         @Override
         public void SetCursor(float x, float y) {
-            cursorX = x;
-            cursorY = y;
+            this.cursorX = x;
+            this.cursorY = y;
         }
 
         @Override
         public float CursorX() {
-            return cursorX;
+            return this.cursorX;
         }
 
         @Override
         public float CursorY() {
-            return cursorY;
+            return this.cursorY;
         }
 
         public int/*size_t*/ Size() {
-            int sz = (int) (sizeof(this) + state.Size() + source.Allocated());
-            if (desktop != null) {
-                sz += desktop.Size();
+            int sz = (int) (sizeof(this) + this.state.Size() + this.source.Allocated());
+            if (this.desktop != null) {
+                sz += this.desktop.Size();
             }
             return sz;
         }
 
         public idDict GetStateDict() {
-            return state;
+            return this.state;
         }
 
         public String GetSourceFile() {
-            return source.toString();
+            return this.source.toString();
         }
 
         public long[]/*ID_TIME_T*/ GetTimeStamp() {
-            return timeStamp;
+            return this.timeStamp;
         }
 
         public idWindow GetDesktop() {
-            return desktop;
+            return this.desktop;
         }
 
         public void SetBindHandler(idWindow win) {
-            bindHandler = win;
+            this.bindHandler = win;
         }
 
         public boolean Active() {
-            return active;
+            return this.active;
         }
 
         public int GetTime() {
-            return time;
+            return this.time;
         }
 
         public void SetTime(int _time) {
-            time = _time;
+            this.time = _time;
         }
 
         public void ClearRefs() {
-            refs = 0;
+            this.refs = 0;
         }
 
         public void AddRef() {
-            refs++;
+            this.refs++;
         }
 
         public int GetRefs() {
-            return refs;
+            return this.refs;
         }
 
         public void RecurseSetKeyBindingNames(idWindow window) {
             int i;
-            idWinVar v = window.GetWinVarByName("bind");
+            final idWinVar v = window.GetWinVarByName("bind");
             if (v != null) {
                 SetStateString(v.GetName(), idKeyInput.KeysFromBinding(v.GetName()));
             }
             i = 0;
             while (i < window.GetChildCount()) {
-                idWindow next = window.GetChild(i);
+                final idWindow next = window.GetChild(i);
                 if (next != null) {
                     RecurseSetKeyBindingNames(next);
                 }
@@ -569,16 +568,16 @@ public class UserInterfaceLocal {
         }
 
         public idStr GetPendingCmd() {
-            return pendingCmd;
+            return this.pendingCmd;
         }
 
         public idStr GetReturnCmd() {
-            return returnCmd;
+            return this.returnCmd;
         }
 
         @Override
         public boolean GetStateboolean(String varName, String defaultString) {
-        	return state.GetBool(varName, defaultString);
+        	return this.state.GetBool(varName, defaultString);
         }
 
         @Override
@@ -600,7 +599,7 @@ public class UserInterfaceLocal {
         public ByteBuffer Write() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
-    };
+    }
 
     /*
      ===============================================================================
@@ -613,28 +612,28 @@ public class UserInterfaceLocal {
         // friend class idUserInterfaceLocal;
 
         private idRectangle screenRect = new idRectangle();
-        private idDeviceContext dc = new idDeviceContext();
-        private idList<idUserInterfaceLocal> guis = new idList<>();
-        private idList<idUserInterfaceLocal> demoGuis = new idList<>();
+        private final idDeviceContext dc = new idDeviceContext();
+        private final idList<idUserInterfaceLocal> guis = new idList<>();
+        private final idList<idUserInterfaceLocal> demoGuis = new idList<>();
         //
         //
 
         @Override
         public void Init() {
-            screenRect = new idRectangle(0, 0, 640, 480);
-            dc.Init();
+            this.screenRect = new idRectangle(0, 0, 640, 480);
+            this.dc.Init();
         }
 
         @Override
         public void Shutdown() {
-            guis.DeleteContents(true);
-            demoGuis.DeleteContents(true);
-            dc.Shutdown();
+            this.guis.DeleteContents(true);
+            this.demoGuis.DeleteContents(true);
+            this.dc.Shutdown();
         }
 
         @Override
         public void Touch(final String name) {
-            idUserInterface gui = Alloc();
+            final idUserInterface gui = Alloc();
             gui.InitFromFile(name);
 //	delete gui;
         }
@@ -642,9 +641,9 @@ public class UserInterfaceLocal {
         @Override
         public void WritePrecacheCommands(idFile f) {
 
-            int c = guis.Num();
+            final int c = this.guis.Num();
             for (int i = 0; i < c; i++) {
-                String str = String.format("touchGui %s\n", guis.oGet(i).Name());
+                final String str = String.format("touchGui %s\n", this.guis.oGet(i).Name());
                 common.Printf("%s", str);
                 f.Printf("%s", str);
             }
@@ -652,15 +651,15 @@ public class UserInterfaceLocal {
 
         @Override
         public void SetSize(float width, float height) {
-            dc.SetSize(width, height);
+            this.dc.SetSize(width, height);
         }
 
         @Override
         public void BeginLevelLoad() {
-            int c = guis.Num();
+            final int c = this.guis.Num();
             for (int i = 0; i < c; i++) {
-                if ((guis.oGet(i).GetDesktop().GetFlags() & WIN_MENUGUI) == 0) {
-                    guis.oGet(i).ClearRefs();
+                if ((this.guis.oGet(i).GetDesktop().GetFlags() & WIN_MENUGUI) == 0) {
+                    this.guis.oGet(i).ClearRefs();
                     /*
                      delete guis[ i ];
                      guis.RemoveIndex( i );
@@ -672,23 +671,23 @@ public class UserInterfaceLocal {
 
         @Override
         public void EndLevelLoad() {
-            int c = guis.Num();
+            int c = this.guis.Num();
             for (int i = 0; i < c; i++) {
-                if (guis.oGet(i).GetRefs() == 0) {
+                if (this.guis.oGet(i).GetRefs() == 0) {
                     //common.Printf( "purging %s.\n", guis[i].GetSourceFile() );
 
                     // use this to make sure no materials still reference this gui
                     boolean remove = true;
                     for (int j = 0; j < declManager.GetNumDecls(DECL_MATERIAL); j++) {
                         final idMaterial material = (idMaterial) (declManager.DeclByIndex(DECL_MATERIAL, j, false));
-                        if (material.GlobalGui() == guis.oGet(i)) {
+                        if (material.GlobalGui() == this.guis.oGet(i)) {
                             remove = false;
                             break;
                         }
                     }
                     if (remove) {
 //				delete guis[ i ];
-                        guis.RemoveIndex(i);
+                        this.guis.RemoveIndex(i);
                         i--;
                         c--;
                     }
@@ -698,39 +697,39 @@ public class UserInterfaceLocal {
 
         @Override
         public void Reload(boolean all) {
-            long[]/*ID_TIME_T*/ ts = new long[1];
+            final long[]/*ID_TIME_T*/ ts = new long[1];
 
-            int c = guis.Num();
+            final int c = this.guis.Num();
             for (int i = 0; i < c; i++) {
                 if (!all) {
-                    fileSystem.ReadFile(guis.oGet(i).GetSourceFile(), null, ts);
-                    if (ts[0] <= guis.oGet(i).GetTimeStamp()[0]) {
+                    fileSystem.ReadFile(this.guis.oGet(i).GetSourceFile(), null, ts);
+                    if (ts[0] <= this.guis.oGet(i).GetTimeStamp()[0]) {
                         continue;
                     }
                 }
 
-                guis.oGet(i).InitFromFile(guis.oGet(i).GetSourceFile());
-                common.Printf("reloading %s.\n", guis.oGet(i).GetSourceFile());
+                this.guis.oGet(i).InitFromFile(this.guis.oGet(i).GetSourceFile());
+                common.Printf("reloading %s.\n", this.guis.oGet(i).GetSourceFile());
             }
         }
 
         @Override
         public void ListGuis() {
-            int c = guis.Num();
+            final int c = this.guis.Num();
             common.Printf("\n   size   refs   name\n");
             int /*size_t*/ total = 0;
             int copies = 0;
             int unique = 0;
             for (int i = 0; i < c; i++) {
-                idUserInterfaceLocal gui = guis.oGet(i);
-                int /*size_t*/ sz = gui.Size();
-                boolean isUnique = guis.oGet(i).interactive;
+                final idUserInterfaceLocal gui = this.guis.oGet(i);
+                final int /*size_t*/ sz = gui.Size();
+                final boolean isUnique = this.guis.oGet(i).interactive;
                 if (isUnique) {
                     unique++;
                 } else {
                     copies++;
                 }
-                common.Printf("%6.1fk %4d (%s) %s ( %d transitions )\n", sz / 1024.0f, guis.oGet(i).GetRefs(), isUnique ? "unique" : "copy", guis.oGet(i).GetSourceFile(), guis.oGet(i).desktop.NumTransitions());
+                common.Printf("%6.1fk %4d (%s) %s ( %d transitions )\n", sz / 1024.0f, this.guis.oGet(i).GetRefs(), isUnique ? "unique" : "copy", this.guis.oGet(i).GetSourceFile(), this.guis.oGet(i).desktop.NumTransitions());
                 total += sz;
             }
             common.Printf("===========\n  %d total Guis ( %d copies, %d unique ), %.2f total Mbytes", c, copies, unique, total / (1024.0f * 1024.0f));
@@ -738,7 +737,7 @@ public class UserInterfaceLocal {
 
         @Override
         public boolean CheckGui(final String qpath) {
-            idFile file = fileSystem.OpenFileRead(qpath);
+            final idFile file = fileSystem.OpenFileRead(qpath);
             if (file != null) {
                 fileSystem.CloseFile(file);
                 return true;
@@ -754,11 +753,11 @@ public class UserInterfaceLocal {
         @Override
         public void DeAlloc(idUserInterface gui) {
             if (gui != null) {
-                int c = guis.Num();
+                final int c = this.guis.Num();
                 for (int i = 0; i < c; i++) {
-                    if (guis.oGet(i) == gui) {
+                    if (this.guis.oGet(i) == gui) {
 //				delete guis[i];
-                        guis.RemoveIndex(i);
+                        this.guis.RemoveIndex(i);
                         return;
                     }
                 }
@@ -767,21 +766,21 @@ public class UserInterfaceLocal {
 
         @Override
         public idUserInterface FindGui(final String qpath, boolean autoLoad /*= false*/, boolean needInteractive /*= false*/, boolean forceUnique /*= false*/) {
-            int c = guis.Num();
+            final int c = this.guis.Num();
 
             for (int i = 0; i < c; i++) {
 //		idUserInterfaceLocal gui = guis.oGet(i);
-                if (0 == idStr.Icmp(guis.oGet(i).GetSourceFile(), qpath)) {
-                    if (!forceUnique && (needInteractive || guis.oGet(i).IsInteractive())) {
+                if (0 == idStr.Icmp(this.guis.oGet(i).GetSourceFile(), qpath)) {
+                    if (!forceUnique && (needInteractive || this.guis.oGet(i).IsInteractive())) {
                         break;
                     }
-                    guis.oGet(i).AddRef();
-                    return guis.oGet(i);
+                    this.guis.oGet(i).AddRef();
+                    return this.guis.oGet(i);
                 }
             }
 
             if (autoLoad) {
-                idUserInterface gui = Alloc();
+                final idUserInterface gui = Alloc();
                 if (gui.InitFromFile(qpath)) {
                     gui.SetUniqued(forceUnique ? false : needInteractive);
                     return gui;
@@ -794,10 +793,10 @@ public class UserInterfaceLocal {
 
         @Override
         public idUserInterface FindDemoGui(final String qpath) {
-            int c = demoGuis.Num();
+            final int c = this.demoGuis.Num();
             for (int i = 0; i < c; i++) {
-                if (0 == idStr.Icmp(demoGuis.oGet(i).GetSourceFile(), qpath)) {
-                    return demoGuis.oGet(i);
+                if (0 == idStr.Icmp(this.demoGuis.oGet(i).GetSourceFile(), qpath)) {
+                    return this.demoGuis.oGet(i);
                 }
             }
             return null;
@@ -814,5 +813,5 @@ public class UserInterfaceLocal {
             listgui.Clear();
         }
 
-    };
+    }
 }

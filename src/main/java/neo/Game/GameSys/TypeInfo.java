@@ -248,7 +248,7 @@ public class TypeInfo {
                 return null;
             }
 
-            for (i = c = 0; i < buffers[0].length - 2; i++) {
+            for (i = c = 0; i < (buffers[0].length - 2); i++) {
                 c++;
                 switch (string.charAt(c)) {
                     case '\0':
@@ -286,7 +286,7 @@ public class TypeInfo {
 
         private static boolean ParseTemplateArguments(idLexer src, idStr arguments) {
             int indent;
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             arguments.oSet("");
 
@@ -324,7 +324,7 @@ public class TypeInfo {
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
                 common.Printf("%s%s::%s%s = \"%s\"\n", prefix, scope, varName, postfix, value);
             }
-        };
+        }
 
         private static class WriteVariable extends WriteVariableType_t {
 
@@ -337,18 +337,18 @@ public class TypeInfo {
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
 
                 for (int i = idStr.FindChar(value, '#', 0); i >= 0; i = idStr.FindChar(value, '#', i + 1)) {
-                    if (idStr.Icmpn(value + i + 1, "INF", 3) == 0
-                            || idStr.Icmpn(value + i + 1, "IND", 3) == 0
-                            || idStr.Icmpn(value + i + 1, "NAN", 3) == 0
-                            || idStr.Icmpn(value + i + 1, "QNAN", 4) == 0
-                            || idStr.Icmpn(value + i + 1, "SNAN", 4) == 0) {
+                    if ((idStr.Icmpn(value + i + 1, "INF", 3) == 0)
+                            || (idStr.Icmpn(value + i + 1, "IND", 3) == 0)
+                            || (idStr.Icmpn(value + i + 1, "NAN", 3) == 0)
+                            || (idStr.Icmpn(value + i + 1, "QNAN", 4) == 0)
+                            || (idStr.Icmpn(value + i + 1, "SNAN", 4) == 0)) {
                         common.Warning("%s%s::%s%s = \"%s\"", prefix, scope, varName, postfix, value);
                         break;
                     }
                 }
                 fp.WriteFloatString("%s%s::%s%s = \"%s\"\n", prefix, scope, varName, postfix, value);
             }
-        };
+        }
 
         private static class WriteGameStateVariable extends WriteVariableType_t {
 
@@ -361,11 +361,11 @@ public class TypeInfo {
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
 
                 for (int i = idStr.FindChar(value, '#', 0); i >= 0; i = idStr.FindChar(value, '#', i + 1)) {
-                    if (idStr.Icmpn(value + i + 1, "INF", 3) == 0
-                            || idStr.Icmpn(value + i + 1, "IND", 3) == 0
-                            || idStr.Icmpn(value + i + 1, "NAN", 3) == 0
-                            || idStr.Icmpn(value + i + 1, "QNAN", 4) == 0
-                            || idStr.Icmpn(value + i + 1, "SNAN", 4) == 0) {
+                    if ((idStr.Icmpn(value + i + 1, "INF", 3) == 0)
+                            || (idStr.Icmpn(value + i + 1, "IND", 3) == 0)
+                            || (idStr.Icmpn(value + i + 1, "NAN", 3) == 0)
+                            || (idStr.Icmpn(value + i + 1, "QNAN", 4) == 0)
+                            || (idStr.Icmpn(value + i + 1, "SNAN", 4) == 0)) {
                         common.Warning("%s%s::%s%s = \"%s\"", prefix, scope, varName, postfix, value);
                         break;
                     }
@@ -381,7 +381,7 @@ public class TypeInfo {
 
                 fp.WriteFloatString("%s%s::%s%s = \"%s\"\n", prefix, scope, varName, postfix, value);
             }
-        };
+        }
 
         private static class InitVariable extends WriteVariableType_t {
 
@@ -392,7 +392,7 @@ public class TypeInfo {
 
             @Override
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
-                if (varPtr != null && varSize > 0) {
+                if ((varPtr != null) && (varSize > 0)) {
                     // NOTE: skip renderer handles
                     if (IsRenderHandleVariable(varName, varType, scope, prefix, postfix, value)) {
                         return;
@@ -401,7 +401,7 @@ public class TypeInfo {
                     Arrays.fill(varPtr.array(), 0, varSize, (byte) initValue);
                 }
             }
-        };
+        }
 
         private static class VerifyVariable extends WriteVariableType_t {
 
@@ -412,7 +412,7 @@ public class TypeInfo {
 
             @Override
             public void run(String varName, String varType, String scope, String prefix, String postfix, String value, ByteBuffer varPtr, int varSize) {
-                idToken token = new idToken();
+                final idToken token = new idToken();
 
                 if (typeError) {
                     return;
@@ -435,7 +435,7 @@ public class TypeInfo {
                     typeError = true;
                 }
             }
-        };
+        }
 
         private static int WriteVariable_r(final ByteBuffer varPtr, final String varName, final String varType, final String scope, final String prefix, final int pointerDepth) {
             throw new UnsupportedOperationException();
@@ -1126,13 +1126,13 @@ public class TypeInfo {
             for (i = 0; classInfo.variables[i].name != null; i++) {
                 final classVariableInfo_t classVar = classInfo.variables[i];
 
-                ByteBuffer varPtr = /*(void *) (((byte *)*/ classPtr;
+                final ByteBuffer varPtr = /*(void *) (((byte *)*/ classPtr;
                 varPtr.position(classVar.offset);
 
                 WriteVariable_r(varPtr, classVar.name, classVar.type, classType, prefix, pointerDepth);
             }
         }
-    };
+    }
 
     /*
      ================
@@ -1163,7 +1163,7 @@ public class TypeInfo {
 
             idTypeInfoTools.WriteGameState(fileName.toString());
         }
-    };
+    }
 
     /*
      ================
@@ -1194,7 +1194,7 @@ public class TypeInfo {
 
             idTypeInfoTools.CompareGameState(fileName.toString());
         }
-    };
+    }
 
     /*
      ================
@@ -1229,12 +1229,12 @@ public class TypeInfo {
                 name.Replace("/", "_");
                 cmdSystem.BufferCommandText(CMD_EXEC_NOW, va("saveGame test_%s", name));
                 cmdSystem.BufferCommandText(CMD_EXEC_NOW, va("loadGame test_%s", name));
-            } catch (idException ex) {
+            } catch (final idException ex) {
                 // an ERR_DROP was thrown
             }
             cmdSystem.BufferCommandText(CMD_EXEC_NOW, "quit");
         }
-    };
+    }
 
     /*
      ================
@@ -1255,14 +1255,14 @@ public class TypeInfo {
         @Override
         public void run(idCmdArgs args) {
             int i, j;
-            idList<Integer> index = new idList<>();
+            final idList<Integer> index = new idList<>();
 
             common.Printf("%-32s : %-32s size (B)\n", "type name", "super type name");
             for (i = 0; classTypeInfo[i].typeName != null; i++) {
                 index.Append(i);
             }
 
-            if (args.Argc() > 1 && idStr.Icmp(args.Argv(1), "size") == 0) {
+            if ((args.Argc() > 1) && (idStr.Icmp(args.Argv(1), "size") == 0)) {
                 index.Sort(new SortTypeInfoBySize());
             } else {
                 index.Sort(new SortTypeInfoByName());
@@ -1280,7 +1280,7 @@ public class TypeInfo {
             public int compare(final Integer a, final Integer b) {
                 return idStr.Icmp(classTypeInfo[a].typeName, classTypeInfo[b].typeName);
             }
-        };
+        }
 
         private static class SortTypeInfoBySize implements cmp_t<Integer> {
 
@@ -1294,9 +1294,9 @@ public class TypeInfo {
                 }
                 return 0;
             }
-        };
+        }
 
-    };
+    }
 
     /*
      ================

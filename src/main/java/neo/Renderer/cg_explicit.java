@@ -400,7 +400,7 @@ public class cg_explicit {
         CG_INVALID_DIMENSION_ERROR,// = 21,
         CG_ARRAY_PARAM_ERROR,// = 22,
         CG_OUT_OF_ARRAY_BOUNDS_ERROR,// = 23,
-    };
+    }
 
     // typedef enum
     // {
@@ -442,6 +442,6 @@ public class cg_explicit {
         CG_GL_VERTEX,
         CG_GL_FRAGMENT,
 
-    };
+    }
 
 }

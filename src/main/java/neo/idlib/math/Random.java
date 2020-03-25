@@ -36,12 +36,12 @@ public class Random {
         }
 
         public int GetSeed() {
-            return seed;
+            return this.seed;
         }
 
         public int RandomInt() {// random integer in the range [0, MAX_RAND]
-            seed = 69069 * seed + 1;
-            return (seed & idRandom.MAX_RAND);
+            this.seed = (69069 * this.seed) + 1;
+            return (this.seed & idRandom.MAX_RAND);
         }
 
         public int RandomInt(double max) {// random integer in the range [0, max[
@@ -82,12 +82,12 @@ public class Random {
         }
 
         public long GetSeed() {
-            return seed;
+            return this.seed;
         }
 
         public int RandomInt() {// random integer in the range [0, MAX_RAND]
-            seed = 1664525L * seed + 1013904223L;
-            return ((int) seed & idRandom2.MAX_RAND);
+            this.seed = (1664525L * this.seed) + 1013904223L;
+            return ((int) this.seed & idRandom2.MAX_RAND);
         }
 
         public int RandomInt(int max) {// random integer in the range [0, max]
@@ -99,16 +99,16 @@ public class Random {
 
         public float RandomFloat() {// random number in the range [0.0f, 1.0f]
             long i;
-            seed = 1664525L * seed + 1013904223L;
-            i = idRandom2.IEEE_ONE | (seed & idRandom2.IEEE_MASK);
+            this.seed = (1664525L * this.seed) + 1013904223L;
+            i = idRandom2.IEEE_ONE | (this.seed & idRandom2.IEEE_MASK);
             return (i - 1.0f);
         }
 
         public float CRandomFloat() {// random number in the range [-1.0f, 1.0f]
             long i;
-            seed = 1664525L * seed + 1013904223L;
-            i = idRandom2.IEEE_ONE | (seed & idRandom2.IEEE_MASK);
-            return (2.0f * i - 3.0f);
+            this.seed = (1664525L * this.seed) + 1013904223L;
+            i = idRandom2.IEEE_ONE | (this.seed & idRandom2.IEEE_MASK);
+            return ((2.0f * i) - 3.0f);
         }
 
         public static final  int  MAX_RAND  = 0x7fff;

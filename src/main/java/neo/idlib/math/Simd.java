@@ -254,8 +254,8 @@ public class Simd {
 //                }/* _WIN32 */
 
             }
-        };
-    };
+        }
+    }
 //    
     static idSIMDProcessor p_simd;
     static idSIMDProcessor p_generic;
@@ -272,12 +272,12 @@ public class Simd {
         SPEAKER_LFE,
         SPEAKER_BACKLEFT,
         SPEAKER_BACKRIGHT
-    };
+    }
 
     public static abstract class idSIMDProcessor {
 
         public idSIMDProcessor() {
-            cpuid = CPUID_NONE;
+            this.cpuid = CPUID_NONE;
         }
 //
         public /*cpuid_t*/ int cpuid;
@@ -541,7 +541,8 @@ public class Simd {
         ============
         */
         public void CmpGE(byte[] facing, float[] planeSide, float f, int numFaces) {
-            int i, nm = numFaces & 0xfffffffc;
+            int i;
+			final int nm = numFaces & 0xfffffffc;
             for (i = 0; i < nm; i += 4) {
                 facing[i + 0] = (byte) btoi(planeSide[i + 0] >= f);
                 facing[i + 1] = (byte) btoi(planeSide[i + 1] >= f);
@@ -561,6 +562,6 @@ public class Simd {
             System.arraycopy(src, srcOffset, dst, dstOffset, count);
         }
 
-    };
+    }
     //TODO:add tests
 }

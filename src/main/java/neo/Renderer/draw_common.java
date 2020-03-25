@@ -226,8 +226,8 @@ public class draw_common {
      */
 
     public static void RB_BakeTextureMatrixIntoTexgen(idVec4[]/*idPlane[]*/ lightProject/*[3]*/, final float[] textureMatrix) {
-        float[] genMatrix = new float[16];
-        float[] finale = new float[16];
+        final float[] genMatrix = new float[16];
+        final float[] finale = new float[16];
 
         genMatrix[ 0] = lightProject[0].oGet(0);
         genMatrix[ 4] = lightProject[0].oGet(1);
@@ -283,7 +283,7 @@ public class draw_common {
         if (pStage.texture.texgen == TG_DIFFUSE_CUBE) {
             qglTexCoordPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
         }
-        if (pStage.texture.texgen == TG_SKYBOX_CUBE || pStage.texture.texgen == TG_WOBBLESKY_CUBE) {
+        if ((pStage.texture.texgen == TG_SKYBOX_CUBE) || (pStage.texture.texgen == TG_WOBBLESKY_CUBE)) {
             qglTexCoordPointer(3, GL_FLOAT, 0, vertexCache.Position(surf.dynamicTexCoords));
         }
         if (pStage.texture.texgen == TG_SCREEN) {
@@ -291,7 +291,7 @@ public class draw_common {
             qglEnable(GL_TEXTURE_GEN_T);
             qglEnable(GL_TEXTURE_GEN_Q);
 
-            float[] mat = new float[16], plane = new float[4];
+            final float[] mat = new float[16], plane = new float[4];
             myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
 
             plane[0] = mat[0];
@@ -318,7 +318,7 @@ public class draw_common {
             qglEnable(GL_TEXTURE_GEN_T);
             qglEnable(GL_TEXTURE_GEN_Q);
 
-            float[] mat = new float[16], plane = new float[4];
+            final float[] mat = new float[16], plane = new float[4];
             myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
 
             plane[0] = mat[0];
@@ -355,7 +355,7 @@ public class draw_common {
                 qglEnable(GL_TEXTURE_GEN_T);
                 qglEnable(GL_TEXTURE_GEN_Q);
 
-                float[] mat = new float[16], plane = new float[4];
+                final float[] mat = new float[16], plane = new float[4];
                 myGlMultMatrix(surf.space.modelViewMatrix, backEnd.viewDef.projectionMatrix, mat);
 
                 plane[0] = mat[ 0];
@@ -424,7 +424,7 @@ public class draw_common {
                 qglNormalPointer(GL_FLOAT, idDrawVert.BYTES, ac.normalOffset());
 
                 qglMatrixMode(GL_TEXTURE);
-                float[] mat = new float[16];
+                final float[] mat = new float[16];
 
                 R_TransposeGLMatrix(backEnd.viewDef.worldSpace.modelViewMatrix, mat);
 
@@ -442,12 +442,12 @@ public class draw_common {
     public static void RB_FinishStageTexturing(final shaderStage_t pStage, final drawSurf_s surf, idDrawVert ac) {
         DBG_RB_FinishStageTexturing++;
         // unset privatePolygonOffset if necessary
-        if (pStage.privatePolygonOffset != 0 && !surf.material.TestMaterialFlag(MF_POLYGONOFFSET)) {
+        if ((pStage.privatePolygonOffset != 0) && !surf.material.TestMaterialFlag(MF_POLYGONOFFSET)) {
             qglDisable(GL_POLYGON_OFFSET_FILL);
         }
 
-        if (pStage.texture.texgen == TG_DIFFUSE_CUBE || pStage.texture.texgen == TG_SKYBOX_CUBE
-                || pStage.texture.texgen == TG_WOBBLESKY_CUBE) {
+        if ((pStage.texture.texgen == TG_DIFFUSE_CUBE) || (pStage.texture.texgen == TG_SKYBOX_CUBE)
+                || (pStage.texture.texgen == TG_WOBBLESKY_CUBE)) {
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
         }
 
@@ -554,17 +554,17 @@ public class draw_common {
             idMaterial shader;
             shaderStage_t pStage;
             float[] regs;
-            float[] color = new float[4];
+            final float[] color = new float[4];
             srfTriangles_s tri;
 
             tri = surf.geo;
             shader = surf.material;
 
             // update the clip plane if needed
-            if (backEnd.viewDef.numClipPlanes != 0 && surf.space != backEnd.currentSpace) {
+            if ((backEnd.viewDef.numClipPlanes != 0) && (surf.space != backEnd.currentSpace)) {
                 GL_SelectTexture(1);
 
-                idPlane plane = new idPlane();
+                final idPlane plane = new idPlane();
 
                 R_GlobalPlaneToLocal(surf.space.modelMatrix, backEnd.viewDef.clipPlanes[0], plane);
                 plane.oPluSet(3, 0.5f);	// the notch is in the middle
@@ -624,7 +624,7 @@ public class draw_common {
                 color[3] = 1;
             }
 
-            idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+            final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
             qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, /*reinterpret_cast<void *>*/ ac.stOffset());
 
@@ -705,7 +705,7 @@ public class draw_common {
                 GL_State(GLS_DEPTHFUNC_LESS);
             }
         }
-    };
+    }
 
     /*
      =====================
@@ -773,7 +773,7 @@ public class draw_common {
      ==================
      */
     public static void RB_SetProgramEnvironment() {
-        FloatBuffer parm = BufferUtils.createFloatBuffer(4);
+        final FloatBuffer parm = BufferUtils.createFloatBuffer(4);
         int pot;
 
         if (!glConfig.ARBVertexProgramAvailable) {
@@ -805,11 +805,11 @@ public class draw_common {
 //}else{
         // screen power of two correction factor, assuming the copy to _currentRender
         // also copied an extra row and column for the bilerp
-        int w = backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1 + 1;
+        final int w = (backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1) + 1;
         pot = globalImages.currentRenderImage.uploadWidth;
         parm.put(0, (float) w / pot);
 
-        int h = backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1 + 1;
+        final int h = (backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1) + 1;
         pot = globalImages.currentRenderImage.uploadHeight;
         parm.put(1, (float) h / pot);
 
@@ -851,7 +851,7 @@ public class draw_common {
         }
 
         final viewEntity_s space = backEnd.currentSpace;
-        FloatBuffer parm = BufferUtils.createFloatBuffer(4);
+        final FloatBuffer parm = BufferUtils.createFloatBuffer(4);
 
         // set eye position in local space
         R_GlobalPointToLocal(space.modelMatrix, backEnd.viewDef.renderView.vieworg, /*(idVec3 *)*/ parm);
@@ -889,7 +889,7 @@ public class draw_common {
         idMaterial shader;
         shaderStage_t pStage;
         final float[] regs;
-        FloatBuffer color = BufferUtils.createFloatBuffer(4);
+        final FloatBuffer color = BufferUtils.createFloatBuffer(4);
         srfTriangles_s tri;
 
         tri = surf.geo;
@@ -915,8 +915,8 @@ public class draw_common {
             backEnd.currentScissor = surf.scissorRect;
             qglScissor(backEnd.viewDef.viewport.x1 + backEnd.currentScissor.x1,
                     backEnd.viewDef.viewport.y1 + backEnd.currentScissor.y1,
-                    backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-                    backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
+                    (backEnd.currentScissor.x2 + 1) - backEnd.currentScissor.x1,
+                    (backEnd.currentScissor.y2 + 1) - backEnd.currentScissor.y1);
         }
 
         // some deforms may disable themselves by setting numIndexes = 0
@@ -949,12 +949,12 @@ public class draw_common {
             RB_EnterModelDepthHack(surf.space.modelDepthHack);
         }
 
-        idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts. EDIT:easy peasy.
+        final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts. EDIT:easy peasy.
         qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
         qglTexCoordPointer(2, GL_FLOAT, idDrawVert.BYTES, ac.stOffset());
 
         for (stage = 0; stage < shader.GetNumStages(); stage++) {
-            if (stage == 2 || stage == 3) {
+            if ((stage == 2) || (stage == 3)) {
 //                System.out.printf("RB_STD_T_RenderShaderPasses(%d)\n", DBG_RB_STD_T_RenderShaderPasses++);
 //                continue;//HACKME::4:our blending doesn't seem to work properly.
             }
@@ -978,7 +978,7 @@ public class draw_common {
             }
 
             // see if we are a new-style stage
-            newShaderStage_t newStage = pStage.newStage;
+            final newShaderStage_t newStage = pStage.newStage;
             if (newStage != null) {
                 //--------------------------
                 //
@@ -1011,13 +1011,13 @@ public class draw_common {
                 // megaTextures bind a lot of images and set a lot of parameters
                 if (newStage.megaTexture != null) {
                     newStage.megaTexture.SetMappingForSurface(tri);
-                    idVec3 localViewer = new idVec3();
+                    final idVec3 localViewer = new idVec3();
                     R_GlobalPointToLocal(surf.space.modelMatrix, backEnd.viewDef.renderView.vieworg, localViewer);
                     newStage.megaTexture.BindForViewOrigin(localViewer);
                 }
 
                 for (int i = 0; i < newStage.numVertexParms; i++) {
-                    FloatBuffer parm = BufferUtils.createFloatBuffer(4);
+                    final FloatBuffer parm = BufferUtils.createFloatBuffer(4);
                     parm.put(0, regs[ newStage.vertexParms[i][0]]);
                     parm.put(1, regs[ newStage.vertexParms[i][1]]);
                     parm.put(2, regs[ newStage.vertexParms[i][2]]);
@@ -1073,14 +1073,14 @@ public class draw_common {
             color.put(3, regs[ pStage.color.registers[3]]);
 
             // skip the entire stage if an add would be black
-            if ((pStage.drawStateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) == (GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE)
-                    && color.get(0) <= 0 && color.get(1) <= 0 && color.get(2) <= 0) {
+            if (((pStage.drawStateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) == (GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE))
+                    && (color.get(0) <= 0) && (color.get(1) <= 0) && (color.get(2) <= 0)) {
                 continue;
             }
 
             // skip the entire stage if a blend would be completely transparent
-            if ((pStage.drawStateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) == (GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA)
-                    && color.get(3) <= 0) {
+            if (((pStage.drawStateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS)) == (GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA))
+                    && (color.get(3) <= 0)) {
                 continue;
             }
 
@@ -1104,7 +1104,7 @@ public class draw_common {
 
                 // for vertex color and modulated color, we need to enable a second
                 // texture stage
-                if (color.get(0) != 1 || color.get(1) != 1 || color.get(2) != 1 || color.get(3) != 1) {
+                if ((color.get(0) != 1) || (color.get(1) != 1) || (color.get(2) != 1) || (color.get(3) != 1)) {
                     GL_SelectTexture(1);
 
                     globalImages.whiteImage.Bind();
@@ -1158,7 +1158,7 @@ public class draw_common {
         if (shader.TestMaterialFlag(MF_POLYGONOFFSET)) {
             qglDisable(GL_POLYGON_OFFSET_FILL);
         }
-        if (surf.space.weaponDepthHack || surf.space.modelDepthHack != 0.0f) {
+        if (surf.space.weaponDepthHack || (surf.space.modelDepthHack != 0.0f)) {
             RB_LeaveDepthHack();
         }
     }
@@ -1174,7 +1174,7 @@ public class draw_common {
         int i;
 
         // only obey skipAmbient if we are rendering a view
-        if (backEnd.viewDef.viewEntitys != null && r_skipAmbient.GetBool()) {
+        if ((backEnd.viewDef.viewEntitys != null) && r_skipAmbient.GetBool()) {
             return numDrawSurfs;
         }
 
@@ -1188,9 +1188,9 @@ public class draw_common {
             }
 
             // only dump if in a 3d view
-            if (backEnd.viewDef.viewEntitys != null && tr.backEndRenderer == BE_ARB2) {
-                int[] imageWidth = {backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1 + 1};
-                int[] imageHeight = {backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1 + 1};
+            if ((backEnd.viewDef.viewEntitys != null) && (tr.backEndRenderer == BE_ARB2)) {
+                final int[] imageWidth = {(backEnd.viewDef.viewport.x2 - backEnd.viewDef.viewport.x1) + 1};
+                final int[] imageHeight = {(backEnd.viewDef.viewport.y2 - backEnd.viewDef.viewport.y1) + 1};
                 globalImages.currentRenderImage.CopyFramebuffer(backEnd.viewDef.viewport.x1, backEnd.viewDef.viewport.y1,
                         imageWidth, imageHeight, true);
             }
@@ -1214,14 +1214,14 @@ public class draw_common {
                 continue;
             }
 
-            if (backEnd.viewDef.isXraySubview && drawSurfs[i].space.entityDef != null) {
+            if (backEnd.viewDef.isXraySubview && (drawSurfs[i].space.entityDef != null)) {
                 if (drawSurfs[i].space.entityDef.parms.xrayIndex != 2) {
                     continue;
                 }
             }
 
             // we need to draw the post process shaders after we have drawn the fog lights
-            if (drawSurfs[i].material.GetSort() >= SS_POST_PROCESS
+            if ((drawSurfs[i].material.GetSort() >= SS_POST_PROCESS)
                     && !backEnd.currentRenderCopied) {
                 break;
             }
@@ -1263,9 +1263,9 @@ public class draw_common {
 
             // set the light position if we are using a vertex program to project the rear surfaces
             if (tr.backEndRendererHasVertexPrograms && r_useShadowVertexProgram.GetBool()
-                    && surf.space != backEnd.currentSpace) {
-                idVec4 localLight = new idVec4();
-                FloatBuffer lightBuffer = BufferUtils.createFloatBuffer(4);
+                    && (surf.space != backEnd.currentSpace)) {
+                final idVec4 localLight = new idVec4();
+                final FloatBuffer lightBuffer = BufferUtils.createFloatBuffer(4);
 
                 R_GlobalPointToLocal(surf.space.modelMatrix, backEnd.vLight.globalLightOrigin, localLight);
                 lightBuffer.put(localLight.ToFloatPtr()).rewind();//localLight.w = 0.0f;
@@ -1373,7 +1373,7 @@ public class draw_common {
             GL_Cull(CT_BACK_SIDED);
             RB_DrawShadowElementsWithCounters(tri, numIndexes);
         }
-    };
+    }
 
     /*
      =====================
@@ -1411,7 +1411,7 @@ public class draw_common {
             GL_State(GLS_DEPTHMASK | GLS_COLORMASK | GLS_ALPHAMASK | GLS_DEPTHFUNC_LESS);
         }
 
-        if (r_shadowPolygonFactor.GetFloat() != 0 || r_shadowPolygonOffset.GetFloat() != 0) {
+        if ((r_shadowPolygonFactor.GetFloat() != 0) || (r_shadowPolygonOffset.GetFloat() != 0)) {
             qglPolygonOffset(r_shadowPolygonFactor.GetFloat(), -r_shadowPolygonOffset.GetFloat());
             qglEnable(GL_POLYGON_OFFSET_FILL);
         }
@@ -1426,7 +1426,7 @@ public class draw_common {
 
         GL_Cull(CT_FRONT_SIDED);
 
-        if (r_shadowPolygonFactor.GetFloat() != 0 || r_shadowPolygonOffset.GetFloat() != 0) {
+        if ((r_shadowPolygonFactor.GetFloat() != 0) || (r_shadowPolygonOffset.GetFloat() != 0)) {
             qglDisable(GL_POLYGON_OFFSET_FILL);
         }
 
@@ -1468,7 +1468,7 @@ public class draw_common {
             tri = surf.geo;
 
             if (backEnd.currentSpace != surf.space) {
-                idPlane[] lightProject = new idPlane[4];
+                final idPlane[] lightProject = new idPlane[4];
                 int i;
 
                 for (i = 0; i < 4; i++) {
@@ -1487,16 +1487,16 @@ public class draw_common {
 
             // this gets used for both blend lights and shadow draws
             if (tri.ambientCache != null) {
-                idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
+                final idDrawVert ac = new idDrawVert(vertexCache.Position(tri.ambientCache));//TODO:figure out how to work these damn casts.
                 qglVertexPointer(3, GL_FLOAT, idDrawVert.BYTES, ac.xyzOffset());
             } else if (tri.shadowCache != null) {
-                shadowCache_s sc = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
+                final shadowCache_s sc = new shadowCache_s(vertexCache.Position(tri.shadowCache));//TODO:figure out how to work these damn casts.
                 qglVertexPointer(3, GL_FLOAT, shadowCache_s.BYTES, sc.xyz.ToFloatPtr());
             }
 
             RB_DrawElementsWithCounters(tri);
         }
-    };
+    }
 
 
     /*
@@ -1600,7 +1600,7 @@ public class draw_common {
         @Override
         void run(final drawSurf_s surf) {
             if (backEnd.currentSpace != surf.space) {
-                idPlane local = new idPlane();
+                final idPlane local = new idPlane();
 
                 GL_SelectTexture(0);
 
@@ -1626,7 +1626,7 @@ public class draw_common {
 
             RB_T_RenderTriangleSurface.INSTANCE.run(surf);
         }
-    };
+    }
 
     /*
      ==================
@@ -1635,7 +1635,7 @@ public class draw_common {
      */
     public static void RB_FogPass(final drawSurf_s drawSurfs, final drawSurf_s drawSurfs2) {
         srfTriangles_s frustumTris;
-        drawSurf_s ds = new drawSurf_s();//memset( &ds, 0, sizeof( ds ) );
+        final drawSurf_s ds = new drawSurf_s();//memset( &ds, 0, sizeof( ds ) );
         idMaterial lightShader;
         shaderStage_t stage;
         final float[] regs;
@@ -1712,7 +1712,7 @@ public class draw_common {
         fogPlanes[2].oSet(3, 0.001f * backEnd.vLight.fogPlane.oGet(3));
 
         // S is based on the view origin
-        float s = backEnd.viewDef.renderView.vieworg.oMultiply(fogPlanes[2].Normal()) + fogPlanes[2].oGet(3);
+        final float s = backEnd.viewDef.renderView.vieworg.oMultiply(fogPlanes[2].Normal()) + fogPlanes[2].oGet(3);
 
         fogPlanes[3].oSet(0, 0);
         fogPlanes[3].oSet(1, 0);
@@ -1751,7 +1751,7 @@ public class draw_common {
     public static void RB_STD_FogAllLights() {
         viewLight_s vLight;
 
-        if (r_skipFogLights.GetBool() || r_showOverDraw.GetInteger() != 0
+        if (r_skipFogLights.GetBool() || (r_showOverDraw.GetInteger() != 0)
                 || backEnd.viewDef.isXraySubview /* dont fog in xray mode*/) {
             return;
         }
@@ -1829,8 +1829,8 @@ public class draw_common {
         if (r_useScissor.GetBool()) {
             qglScissor(backEnd.viewDef.viewport.x1 + backEnd.viewDef.scissor.x1,
                     backEnd.viewDef.viewport.y1 + backEnd.viewDef.scissor.y1,
-                    backEnd.viewDef.scissor.x2 - backEnd.viewDef.scissor.x1 + 1,
-                    backEnd.viewDef.scissor.y2 - backEnd.viewDef.scissor.y1 + 1);
+                    (backEnd.viewDef.scissor.x2 - backEnd.viewDef.scissor.x1) + 1,
+                    (backEnd.viewDef.scissor.y2 - backEnd.viewDef.scissor.y1) + 1);
             backEnd.currentScissor = backEnd.viewDef.scissor;
         }
 
@@ -1929,7 +1929,7 @@ public class draw_common {
         RB_STD_LightScale();
 
         // now draw any non-light dependent shading passes
-        int processed = RB_STD_DrawShaderPasses(drawSurfs, numDrawSurfs);
+        final int processed = RB_STD_DrawShaderPasses(drawSurfs, numDrawSurfs);
 
         // fob and blend lights
         RB_STD_FogAllLights();

@@ -206,13 +206,13 @@ public class Window {
         WOP_TYPE_VARI,
         WOP_TYPE_VARB,
         WOP_TYPE_COND
-    };
+    }
 
     enum wexpRegister_t {
 
         WEXP_REG_TIME,
         WEXP_REG_NUM_PREDEFINED
-    };
+    }
 
     static class wexpOp_t {
 
@@ -225,25 +225,25 @@ public class Window {
          * @return
          */
         public int getA() {
-            if (a instanceof idWinFloat) {
-                return (int) ((idWinFloat) a).data;
-            } else if (a instanceof idWinInt) {
-                return ((idWinInt) a).data;
+            if (this.a instanceof idWinFloat) {
+                return (int) ((idWinFloat) this.a).data;
+            } else if (this.a instanceof idWinInt) {
+                return ((idWinInt) this.a).data;
             }
 
             return -1;
         }
 
         public int getD() {
-            if (d instanceof idWinFloat) {
-                return (int) ((idWinFloat) d).data;
-            } else if (d instanceof idWinInt) {
-                return ((idWinInt) d).data;
+            if (this.d instanceof idWinFloat) {
+                return (int) ((idWinFloat) this.d).data;
+            } else if (this.d instanceof idWinInt) {
+                return ((idWinInt) this.d).data;
             }
 
             return -1;
         }
-    };
+    }
 
     static class idRegEntry {
 
@@ -255,7 +255,7 @@ public class Window {
             this.name = name;
             this.type = type;
         }
-    };
+    }
 
     static class idTimeLineEvent {
 
@@ -264,22 +264,22 @@ public class Window {
         boolean         pending;
 
         idTimeLineEvent() {
-            event = new idGuiScriptList();
+            this.event = new idGuiScriptList();
         }
 //	~idTimeLineEvent() {
 //		delete event;
 //	}
 
         int/*size_t*/ Size() {
-            return sizeof(this) + event.Size();
+            return sizeof(this) + this.event.Size();
         }
-    };
+    }
 
     static class rvNamedEvent {
 
         public rvNamedEvent(final String name) {
-            mEvent = new idGuiScriptList();
-            mName = new idStr(name);
+            this.mEvent = new idGuiScriptList();
+            this.mName = new idStr(name);
         }
         // ~rvNamedEvent(void)
         // {
@@ -287,19 +287,19 @@ public class Window {
         // }
 
         public int /*size_t */ Size() {
-            return sizeof(this) + mEvent.Size();
+            return sizeof(this) + this.mEvent.Size();
         }
 
         idStr           mName;
         idGuiScriptList mEvent;
-    };
+    }
 
     static class idTransitionData {
 
         idWinVar data;
         int      offset;
         idInterpolateAccelDecelLinear<idVec4> interp = new idInterpolateAccelDecelLinear<>();
-    };
+    }
 
     public static class idWindow {
 
@@ -396,14 +396,14 @@ public class Window {
         private final  int DBG_COUNT= DBG_COUNTER++;
 
         public idWindow(idUserInterfaceLocal gui) {
-            dc = null;
+            this.dc = null;
             this.gui = gui;
             CommonInit();
         }
 
         public idWindow(idDeviceContext d, idUserInterfaceLocal ui) {
-            dc = d;
-            gui = ui;
+            this.dc = d;
+            this.gui = ui;
             CommonInit();
         }
 
@@ -426,7 +426,7 @@ public class Window {
             ON_ENTER,
             ON_ENTERRELEASE,
             SCRIPT_COUNT
-        };
+        }
 
         public enum ADJUST {
 
@@ -439,7 +439,7 @@ public class Window {
             ADJUST_BOTTOMRIGHT,
             ADJUST_TOPRIGHT,
             ADJUST_BOTTOMLEFT
-        };
+        }
 //        public static final String[] ScriptNames = new String[SCRIPT_COUNT.ordinal()];
         public static final String[] ScriptNames = {
             "onMouseEnter",
@@ -485,44 +485,44 @@ public class Window {
         public static final int NumRegisterVars = RegisterVars.length;
 
         public void SetDC(idDeviceContext d) {
-            dc = d;
+            this.dc = d;
             //if (flags & WIN_DESKTOP) {
-            dc.SetSize(forceAspectWidth, forceAspectHeight);
+            this.dc.SetSize(this.forceAspectWidth, this.forceAspectHeight);
             //}
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                children.oGet(i).SetDC(d);
+                this.children.oGet(i).SetDC(d);
             }
         }
 
         public idDeviceContext GetDC() {
-            return dc;
+            return this.dc;
         }
 
         public idWindow SetFocus(idWindow w, boolean scripts /*= true*/) {
             // only one child can have the focus
             idWindow lastFocus = null;
             if ((w.flags & WIN_CANFOCUS) != 0) {
-                lastFocus = gui.GetDesktop().focusedChild;
+                lastFocus = this.gui.GetDesktop().focusedChild;
                 if (lastFocus != null) {
                     lastFocus.flags &= ~WIN_FOCUS;
                     lastFocus.LoseFocus();
                 }
 
                 //  call on lose focus
-                if (scripts && lastFocus != null) {
+                if (scripts && (lastFocus != null)) {
                     // calling this broke all sorts of guis
                     // lastFocus.RunScript(ON_MOUSEEXIT);
                 }
                 //  call on gain focus
-                if (scripts && w != null) {
+                if (scripts && (w != null)) {
                     // calling this broke all sorts of guis
                     // w.RunScript(ON_MOUSEENTER);
                 }
 
                 w.flags |= WIN_FOCUS;
                 w.GainFocus();
-                gui.GetDesktop().focusedChild = w;
+                this.gui.GetDesktop().focusedChild = w;
             }
 
             return lastFocus;
@@ -536,10 +536,10 @@ public class Window {
             // only one child can have the focus
 
             idWindow last = null;
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                if ((children.oGet(i).flags & WIN_CAPTURE) != 0) {
-                    last = children.oGet(i);
+                if ((this.children.oGet(i).flags & WIN_CAPTURE) != 0) {
+                    last = this.children.oGet(i);
                     //last.flags &= ~WIN_CAPTURE;
                     last.LoseCapture();
                     break;
@@ -548,51 +548,51 @@ public class Window {
 
             w.flags |= WIN_CAPTURE;
             w.GainCapture();
-            gui.GetDesktop().captureChild = w;
+            this.gui.GetDesktop().captureChild = w;
             return last;
         }
 
         public void SetParent(idWindow w) {
-            parent = w;
+            this.parent = w;
         }
 
         public void SetFlag(/*unsigned*/int f) {
-            flags |= f;
+            this.flags |= f;
         }
 
         public void ClearFlag(/*unsigned*/int f) {
-            flags &= ~f;
+            this.flags &= ~f;
         }
 
         public /*unsigned*/ int GetFlags() {
-            return flags;
+            return this.flags;
         }
 
         public void Move(float x, float y) {
-            idRectangle rct = rect.data;
+            final idRectangle rct = this.rect.data;
             rct.x = x;
             rct.y = y;
-            idRegister reg = RegList().FindReg("rect");
+            final idRegister reg = RegList().FindReg("rect");
             if (reg != null) {
                 reg.Enable(false);
             }
-            rect.data = rct;
+            this.rect.data = rct;
         }
 
         public void BringToTop(idWindow w) {
 
-            if (w != null && 0 == (w.flags & WIN_MODAL)) {
+            if ((w != null) && (0 == (w.flags & WIN_MODAL))) {
                 return;
             }
 
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                if (children.oGet(i).equals(w)) {
+                if (this.children.oGet(i).equals(w)) {
                     // this is it move from i - 1 to 0 to i to 1 then shove this one into 0
                     for (int j = i + 1; j < c; j++) {
-                        children.oSet(j - 1, children.oGet(j));
+                        this.children.oSet(j - 1, this.children.oGet(j));
                     }
-                    children.oSet(c - 1, w);
+                    this.children.oSet(c - 1, w);
                     break;
                 }
             }
@@ -605,69 +605,69 @@ public class Window {
         }
 
         public void Size(float x, float y, float w, float h) {
-            idRectangle rct = rect.data;
+            final idRectangle rct = this.rect.data;
             rct.x = x;
             rct.y = y;
             rct.w = w;
             rct.h = h;
-            rect.data = rct;
+            this.rect.data = rct;
             CalcClientRect(0, 0);
         }
 
         public void SetupFromState() {
 //	idStr str;
-            background = null;
+            this.background = null;
 
             SetupBackground();
 
-            if (borderSize != 0) {
-                flags |= WIN_BORDER;
+            if (this.borderSize != 0) {
+                this.flags |= WIN_BORDER;
             }
 
-            if (regList.FindReg("rotate") != null || regList.FindReg("shear") != null) {
-                flags |= WIN_TRANSFORM;
+            if ((this.regList.FindReg("rotate") != null) || (this.regList.FindReg("shear") != null)) {
+                this.flags |= WIN_TRANSFORM;
             }
 
             CalcClientRect(0, 0);
-            if (scripts[etoi(ON_ACTION)] != null) {
-                cursor = (char) etoi(CURSOR_HAND);
-                flags |= WIN_CANFOCUS;
+            if (this.scripts[etoi(ON_ACTION)] != null) {
+                this.cursor = (char) etoi(CURSOR_HAND);
+                this.flags |= WIN_CANFOCUS;
             }
         }
 
         private static int DBG_SetupBackground = 0;
         public void SetupBackground() {    DBG_SetupBackground++;
-            if (backGroundName.Length() != 0) {
-                background = declManager.FindMaterial(backGroundName.data);
-                background.SetImageClassifications(1);    // just for resource tracking
-                if (background != null && !background.TestMaterialFlag(MF_DEFAULTED)) {
-                    background.SetSort(SS_GUI);
+            if (this.backGroundName.Length() != 0) {
+                this.background = declManager.FindMaterial(this.backGroundName.data);
+                this.background.SetImageClassifications(1);    // just for resource tracking
+                if ((this.background != null) && !this.background.TestMaterialFlag(MF_DEFAULTED)) {
+                    this.background.SetSort(SS_GUI);
                 }
             }
-            backGroundName.SetMaterialPtr(background);
+            this.backGroundName.SetMaterialPtr(this.background);
         }
 
         private static final drawWin_t dw = new drawWin_t();
 
         public drawWin_t FindChildByName(final String _name) {
-            if (idStr.Icmp(name.toString(), _name) == 0) {
+            if (idStr.Icmp(this.name.toString(), _name) == 0) {
                 dw.simp = null;
                 dw.win = this;
                 return dw;
             }
-            int c = drawWindows.Num();
+            final int c = this.drawWindows.Num();
             for (int i = 0; i < c; i++) {
-                if (drawWindows.oGet(i).win != null) {
-                    if (idStr.Icmp(drawWindows.oGet(i).win.name, _name) == 0) {
-                        return drawWindows.oGet(i);
+                if (this.drawWindows.oGet(i).win != null) {
+                    if (idStr.Icmp(this.drawWindows.oGet(i).win.name, _name) == 0) {
+                        return this.drawWindows.oGet(i);
                     }
-                    drawWin_t win = drawWindows.oGet(i).win.FindChildByName(_name);
+                    final drawWin_t win = this.drawWindows.oGet(i).win.FindChildByName(_name);
                     if (win != null) {
                         return win;
                     }
                 } else {
-                    if (idStr.Icmp(drawWindows.oGet(i).simp.name, _name) == 0) {
-                        return drawWindows.oGet(i);
+                    if (idStr.Icmp(this.drawWindows.oGet(i).simp.name, _name) == 0) {
+                        return this.drawWindows.oGet(i);
                     }
                 }
             }
@@ -679,25 +679,25 @@ public class Window {
         }
 
         public idWindow GetParent() {
-            return parent;
+            return this.parent;
         }
 
         public idUserInterfaceLocal GetGui() {
-            return gui;
+            return this.gui;
         }
 
         public boolean Contains(float x, float y) {
-            idRectangle r = new idRectangle(drawRect);
-            r.x = actualX;
-            r.y = actualY;
+            final idRectangle r = new idRectangle(this.drawRect);
+            r.x = this.actualX;
+            r.y = this.actualY;
             return r.Contains(x, y);
         }
 
         public int/*size_t*/ Size() {
-            int c = children.Num();
+            final int c = this.children.Num();
             int sz = 0;
             for (int i = 0; i < c; i++) {
-                sz += children.oGet(i).Size();
+                sz += this.children.oGet(i).Size();
             }
             sz += sizeof(this) + Allocated();
             return sz;
@@ -705,34 +705,34 @@ public class Window {
 
         public int/*size_t*/ Allocated() {
             int i, c;
-            int sz = name.Allocated();
-            sz += text.Size();
-            sz += backGroundName.Size();
+            int sz = this.name.Allocated();
+            sz += this.text.Size();
+            sz += this.backGroundName.Size();
 
-            c = definedVars.Num();
+            c = this.definedVars.Num();
             for (i = 0; i < c; i++) {
-                sz += definedVars.oGet(i).Size();
+                sz += this.definedVars.oGet(i).Size();
             }
 
             for (i = 0; i < SCRIPT_COUNT.ordinal(); i++) {
-                if (scripts[i] != null) {
-                    sz += scripts[i].Size();
+                if (this.scripts[i] != null) {
+                    sz += this.scripts[i].Size();
                 }
             }
-            c = timeLineEvents.Num();
+            c = this.timeLineEvents.Num();
             for (i = 0; i < c; i++) {
-                sz += timeLineEvents.oGet(i).Size();
+                sz += this.timeLineEvents.oGet(i).Size();
             }
 
-            c = namedEvents.Num();
+            c = this.namedEvents.Num();
             for (i = 0; i < c; i++) {
-                sz += namedEvents.oGet(i).Size();
+                sz += this.namedEvents.oGet(i).Size();
             }
 
-            c = drawWindows.Num();
+            c = this.drawWindows.Num();
             for (i = 0; i < c; i++) {
-                if (drawWindows.oGet(i).simp != null) {
-                    sz += drawWindows.oGet(i).simp.Size();
+                if (this.drawWindows.oGet(i).simp != null) {
+                    sz += this.drawWindows.oGet(i).simp.Size();
                 }
             }
 
@@ -751,85 +751,85 @@ public class Window {
             }
 
             if (idStr.Icmp(_name, "notime") == 0) {
-                retVar = noTime;
+                retVar = this.noTime;
             }
             if (idStr.Icmp(_name, "background") == 0) {
-                retVar = backGroundName;
+                retVar = this.backGroundName;
             }
             if (idStr.Icmp(_name, "visible") == 0) {
-                retVar = visible;
+                retVar = this.visible;
             }
             if (idStr.Icmp(_name, "rect") == 0) {
-                retVar = rect;
+                retVar = this.rect;
             }
             if (idStr.Icmp(_name, "backColor") == 0) {
-                retVar = backColor;
+                retVar = this.backColor;
             }
             if (idStr.Icmp(_name, "matColor") == 0) {
-                retVar = matColor;
+                retVar = this.matColor;
             }
             if (idStr.Icmp(_name, "foreColor") == 0) {
-                retVar = foreColor;
+                retVar = this.foreColor;
             }
             if (idStr.Icmp(_name, "hoverColor") == 0) {
-                retVar = hoverColor;
+                retVar = this.hoverColor;
             }
             if (idStr.Icmp(_name, "borderColor") == 0) {
-                retVar = borderColor;
+                retVar = this.borderColor;
             }
             if (idStr.Icmp(_name, "textScale") == 0) {
-                retVar = textScale;
+                retVar = this.textScale;
             }
             if (idStr.Icmp(_name, "rotate") == 0) {
-                retVar = rotate;
+                retVar = this.rotate;
             }
             if (idStr.Icmp(_name, "noEvents") == 0) {
-                retVar = noEvents;
+                retVar = this.noEvents;
             }
             if (idStr.Icmp(_name, "text") == 0) {
-                retVar = text;
+                retVar = this.text;
             }
             if (idStr.Icmp(_name, "backGroundName") == 0) {
-                retVar = backGroundName;
+                retVar = this.backGroundName;
             }
             if (idStr.Icmp(_name, "hidecursor") == 0) {
-                retVar = hideCursor;
+                retVar = this.hideCursor;
             }
 
-            idStr key = new idStr(_name);
-            boolean guiVar = (key.Find(VAR_GUIPREFIX) >= 0);
-            int c = definedVars.Num();
+            final idStr key = new idStr(_name);
+            final boolean guiVar = (key.Find(VAR_GUIPREFIX) >= 0);
+            final int c = this.definedVars.Num();
             for (int i = 0; i < c; i++) {
-                if (idStr.Icmp(_name, (guiVar) ? va("%s", definedVars.oGet(i).GetName()) : definedVars.oGet(i).GetName()) == 0) {
-                    retVar = definedVars.oGet(i);
+                if (idStr.Icmp(_name, (guiVar) ? va("%s", this.definedVars.oGet(i).GetName()) : this.definedVars.oGet(i).GetName()) == 0) {
+                    retVar = this.definedVars.oGet(i);
                     break;
                 }
             }
 
             if (retVar != null) {
-                if (fixup && _name.charAt(0) != '$') {
+                if (fixup && (_name.charAt(0) != '$')) {
                     DisableRegister(_name);
                 }
 
-                if (owner != null && parent != null) {
-                    owner[0] = parent.FindChildByName(name.toString());
+                if ((owner != null) && (this.parent != null)) {
+                    owner[0] = this.parent.FindChildByName(this.name.toString());
                 }
 
                 return retVar;
             }
 
-            int len = key.Length();
-            if (len > 5 && guiVar) {
-                idWinVar var = new idWinStr();
+            final int len = key.Length();
+            if ((len > 5) && guiVar) {
+                final idWinVar var = new idWinStr();
                 var.Init(_name, this);
-                definedVars.Append(var);
+                this.definedVars.Append(var);
                 return var;
             } else if (fixup) {
-                int n = key.Find("::");
+                final int n = key.Find("::");
                 if (n > 0) {
-                    idStr winName = key.Left(n);
-                    idStr var = key.Right(key.Length() - n - 2);
-                    drawWin_t win = GetGui().GetDesktop().FindChildByName(winName.toString());
+                    final idStr winName = key.Left(n);
+                    final idStr var = key.Right(key.Length() - n - 2);
+                    final drawWin_t win = GetGui().GetDesktop().FindChildByName(winName.toString());
                     if (win != null) {
                         if (win.win != null) {
                             return win.win.GetWinVarByName(var.toString(), false, owner);
@@ -893,11 +893,11 @@ public class Window {
                 return ret;
             }
 
-            for (int i = 0; i < drawWindows.Num(); i++) {
-                if (drawWindows.oGet(i).win != null) {
-                    ret = drawWindows.oGet(i).win.GetWinVarOffset(wv, owner);
+            for (int i = 0; i < this.drawWindows.Num(); i++) {
+                if (this.drawWindows.oGet(i).win != null) {
+                    ret = this.drawWindows.oGet(i).win.GetWinVarOffset(wv, owner);
                 } else {
-                    ret = drawWindows.oGet(i).simp.GetWinVarOffset(wv, owner);
+                    ret = this.drawWindows.oGet(i).simp.GetWinVarOffset(wv, owner);
                 }
                 if (ret != -1) {
                     break;
@@ -909,190 +909,191 @@ public class Window {
 
         public float GetMaxCharHeight() {
             SetFont();
-            return dc.MaxCharHeight(textScale.data);
+            return this.dc.MaxCharHeight(this.textScale.data);
         }
 
         public float GetMaxCharWidth() {
             SetFont();
-            return dc.MaxCharWidth(textScale.data);
+            return this.dc.MaxCharWidth(this.textScale.data);
         }
 
         public void SetFont() {
-            dc.SetFont(fontNum);
+            this.dc.SetFont(this.fontNum);
         }
 
         public void SetInitialState(final String _name) {
-            name = new idStr(_name);
-            matScalex = 1.0f;
-            matScaley = 1.0f;
-            forceAspectWidth = 640.0f;
-            forceAspectHeight = 480.0f;
-            noTime.data = false;
-            visible.data = true;
-            flags = 0;
+            this.name = new idStr(_name);
+            this.matScalex = 1.0f;
+            this.matScaley = 1.0f;
+            this.forceAspectWidth = 640.0f;
+            this.forceAspectHeight = 480.0f;
+            this.noTime.data = false;
+            this.visible.data = true;
+            this.flags = 0;
         }
 
         public void AddChild(idWindow win) {
-            win.childID = children.Append(win);
+            win.childID = this.children.Append(win);
         }
         private static String buff = "";//[16384];
 
         public void DebugDraw(int time, float x, float y) {
-            if (dc != null) {
-                dc.EnableClipping(false);
+            if (this.dc != null) {
+                this.dc.EnableClipping(false);
                 if (gui_debug.GetInteger() == 1) {
-                    dc.DrawRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, 1, idDeviceContext.colorRed);
+                    this.dc.DrawRect(this.drawRect.x, this.drawRect.y, this.drawRect.w, this.drawRect.h, 1, idDeviceContext.colorRed);
                 } else if (gui_debug.GetInteger() == 2) {
 //			char out[1024];
                     String out;//[1024];
                     idStr str;
-                    str = new idStr(text.c_str());
+                    str = new idStr(this.text.c_str());
 
                     if (str.Length() != 0) {
                         buff = String.format("%s\n", str);
                     }
 
-                    out = String.format("Rect: %0.1f, %0.1f, %0.1f, %0.1f\n", rect.x(), rect.y(), rect.w(), rect.h());
+                    out = String.format("Rect: %0.1f, %0.1f, %0.1f, %0.1f\n", this.rect.x(), this.rect.y(), this.rect.w(), this.rect.h());
                     buff += out;
-                    out = String.format("Draw Rect: %0.1f, %0.1f, %0.1f, %0.1f\n", drawRect.x, drawRect.y, drawRect.w, drawRect.h);
+                    out = String.format("Draw Rect: %0.1f, %0.1f, %0.1f, %0.1f\n", this.drawRect.x, this.drawRect.y, this.drawRect.w, this.drawRect.h);
                     buff += out;
-                    out = String.format("Client Rect: %0.1f, %0.1f, %0.1f, %0.1f\n", clientRect.x, clientRect.y, clientRect.w, clientRect.h);
+                    out = String.format("Client Rect: %0.1f, %0.1f, %0.1f, %0.1f\n", this.clientRect.x, this.clientRect.y, this.clientRect.w, this.clientRect.h);
                     buff += out;
-                    out = String.format("Cursor: %0.1f : %0.1f\n", gui.CursorX(), gui.CursorY());
+                    out = String.format("Cursor: %0.1f : %0.1f\n", this.gui.CursorX(), this.gui.CursorY());
                     buff += out;
 
                     //idRectangle tempRect = textRect;
                     //tempRect.x += offsetX;
                     //drawRect.y += offsetY;
-                    dc.DrawText(buff, textScale.data, textAlign, foreColor.data, textRect, true);
+                    this.dc.DrawText(buff, this.textScale.data, this.textAlign, this.foreColor.data, this.textRect, true);
                 }
-                dc.EnableClipping(true);
+                this.dc.EnableClipping(true);
             }
         }
 
         public void CalcClientRect(float xofs, float yofs) {
-            drawRect.oSet(rect.data);
+            this.drawRect.oSet(this.rect.data);
 //            if(rect.DBG_count==289425){
 //                int a = 1;
 //            }
 
-            if ((flags & WIN_INVERTRECT) != 0) {
-                drawRect.x = rect.x() - rect.w();
-                drawRect.y = rect.y() - rect.h();
+            if ((this.flags & WIN_INVERTRECT) != 0) {
+                this.drawRect.x = this.rect.x() - this.rect.w();
+                this.drawRect.y = this.rect.y() - this.rect.h();
             }
 
-            if ((flags & (WIN_HCENTER | WIN_VCENTER)) != 0 && parent != null) {
+            if (((this.flags & (WIN_HCENTER | WIN_VCENTER)) != 0) && (this.parent != null)) {
                 // in this case treat xofs and yofs as absolute top left coords
                 // and ignore the original positioning
-                if ((flags & WIN_HCENTER) != 0) {
-                    drawRect.x = (parent.rect.w() - rect.w()) / 2;
+                if ((this.flags & WIN_HCENTER) != 0) {
+                    this.drawRect.x = (this.parent.rect.w() - this.rect.w()) / 2;
                 } else {
-                    drawRect.y = (parent.rect.h() - rect.h()) / 2;
+                    this.drawRect.y = (this.parent.rect.h() - this.rect.h()) / 2;
                 }
             }
 
-            drawRect.x += xofs;
-            drawRect.y += yofs;
+            this.drawRect.x += xofs;
+            this.drawRect.y += yofs;
 
-            clientRect.oSet(drawRect);
+            this.clientRect.oSet(this.drawRect);
 //            System.out.println(drawRect);
-            if (rect.h() > 0.0 && rect.w() > 0.0) {
+            if ((this.rect.h() > 0.0) && (this.rect.w() > 0.0)) {
 
-                if (((flags & WIN_BORDER) != 0) && borderSize != 0.0) {
-                    clientRect.x += borderSize;
-                    clientRect.y += borderSize;
-                    clientRect.w -= borderSize;
-                    clientRect.h -= borderSize;
+                if (((this.flags & WIN_BORDER) != 0) && (this.borderSize != 0.0)) {
+                    this.clientRect.x += this.borderSize;
+                    this.clientRect.y += this.borderSize;
+                    this.clientRect.w -= this.borderSize;
+                    this.clientRect.h -= this.borderSize;
                 }
 
-                textRect.oSet(clientRect);
-                textRect.x += 2.0;
-                textRect.w -= 2.0;
-                textRect.y += 2.0;
-                textRect.h -= 2.0;
+                this.textRect.oSet(this.clientRect);
+                this.textRect.x += 2.0;
+                this.textRect.w -= 2.0;
+                this.textRect.y += 2.0;
+                this.textRect.h -= 2.0;
 
-                textRect.x += textAlignx;
-                textRect.y += textAligny;
+                this.textRect.x += this.textAlignx;
+                this.textRect.y += this.textAligny;
 
             }
-            origin.Set(rect.x() + (rect.w() / 2), rect.y() + (rect.h() / 2));
+            this.origin.Set(this.rect.x() + (this.rect.w() / 2), this.rect.y() + (this.rect.h() / 2));
 
         }
 
         private void CommonInit() {
-            childID = 0;
-            flags = 0;
-            lastTimeRun = 0;
-            origin.Zero();
-            fontNum = 0;
-            timeLine = -1;
-            xOffset = yOffset = 0.0f;
-            cursor = 0;
-            forceAspectWidth = 640;
-            forceAspectHeight = 480;
-            matScalex = 1;
-            matScaley = 1;
-            borderSize = 0;
-            noTime.data = false;
-            visible.data = true;
-            textAlign = 0;
-            textAlignx = 0;
-            textAligny = 0;
-            noEvents.data = false;
-            rotate.data = 0;
-            shear.Zero();
-            textScale.data = 0.35f;
-            backColor.Zero();
-            foreColor.oSet(new idVec4(1, 1, 1, 1));
-            hoverColor.oSet(new idVec4(1, 1, 1, 1));
-            matColor.oSet(new idVec4(1, 1, 1, 1));
-            borderColor.Zero();
-            background = null;
-            backGroundName.oSet(new idStr(""));
-            focusedChild = null;
-            captureChild = null;
-            overChild = null;
-            parent = null;
-            saveOps = null;
-            saveRegs = null;
-            timeLine = -1;
-            textShadow = 0;
-            hover = false;
+            this.childID = 0;
+            this.flags = 0;
+            this.lastTimeRun = 0;
+            this.origin.Zero();
+            this.fontNum = 0;
+            this.timeLine = -1;
+            this.xOffset = this.yOffset = 0.0f;
+            this.cursor = 0;
+            this.forceAspectWidth = 640;
+            this.forceAspectHeight = 480;
+            this.matScalex = 1;
+            this.matScaley = 1;
+            this.borderSize = 0;
+            this.noTime.data = false;
+            this.visible.data = true;
+            this.textAlign = 0;
+            this.textAlignx = 0;
+            this.textAligny = 0;
+            this.noEvents.data = false;
+            this.rotate.data = 0;
+            this.shear.Zero();
+            this.textScale.data = 0.35f;
+            this.backColor.Zero();
+            this.foreColor.oSet(new idVec4(1, 1, 1, 1));
+            this.hoverColor.oSet(new idVec4(1, 1, 1, 1));
+            this.matColor.oSet(new idVec4(1, 1, 1, 1));
+            this.borderColor.Zero();
+            this.background = null;
+            this.backGroundName.oSet(new idStr(""));
+            this.focusedChild = null;
+            this.captureChild = null;
+            this.overChild = null;
+            this.parent = null;
+            this.saveOps = null;
+            this.saveRegs = null;
+            this.timeLine = -1;
+            this.textShadow = 0;
+            this.hover = false;
 
             for (int i = 0; i < SCRIPT_COUNT.ordinal(); i++) {
-                scripts[i] = null;
+                this.scripts[i] = null;
             }
 
-            hideCursor.data = false;
+            this.hideCursor.data = false;
         }
 
         public void CleanUp() {
-            int i, c = drawWindows.Num();
+            int i;
+			final int c = this.drawWindows.Num();
             for (i = 0; i < c; i++) {
 //		delete drawWindows[i].simp;
-                drawWindows.oSet(i, null);
+                this.drawWindows.oSet(i, null);
             }
 
             // ensure the register list gets cleaned up
-            regList.Reset();
+            this.regList.Reset();
 
             // Cleanup the named events
-            namedEvents.DeleteContents(true);
+            this.namedEvents.DeleteContents(true);
 
-            drawWindows.Clear();
-            children.DeleteContents(true);
-            definedVars.DeleteContents(true);
-            timeLineEvents.DeleteContents(true);
+            this.drawWindows.Clear();
+            this.children.DeleteContents(true);
+            this.definedVars.DeleteContents(true);
+            this.timeLineEvents.DeleteContents(true);
             for (i = 0; i < SCRIPT_COUNT.ordinal(); i++) {
 //		delete scripts[i];
-                scripts[i] = null;
+                this.scripts[i] = null;
             }
             CommonInit();
         }
 
         public void DrawBorderAndCaption(final idRectangle drawRect) {
-            if (((flags & WIN_BORDER) != 0) && borderSize != 0 && borderColor.w() != 0) {
-                dc.DrawRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, borderSize, borderColor.data);
+            if (((this.flags & WIN_BORDER) != 0) && (this.borderSize != 0) && (this.borderColor.w() != 0)) {
+                this.dc.DrawRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, this.borderSize, this.borderColor.data);
             }
         }
 
@@ -1102,40 +1103,42 @@ public class Window {
         public void SetupTransforms(float x, float y) {
 
             trans.Identity();
-            org.Set(origin.x + x, origin.y + y, 0);
+            org.Set(this.origin.x + x, this.origin.y + y, 0);
 
-            if (rotate.data != 0) {
-                rot.Set(org, vec, rotate.data);
+            if (this.rotate.data != 0) {
+                rot.Set(org, vec, this.rotate.data);
                 trans = rot.ToMat3();
             }
 
-            if (shear.x != 0 || shear.y != 0) {
+            if ((this.shear.x != 0) || (this.shear.y != 0)) {
                 smat.Identity();
-                smat.oSet(0, 1, shear.x);
-                smat.oSet(1, 0, shear.y);
+                smat.oSet(0, 1, this.shear.x);
+                smat.oSet(1, 0, this.shear.y);
                 trans.oMulSet(smat);
             }
 
             if (!trans.IsIdentity()) {
-                dc.SetTransformInfo(org, trans);
+                this.dc.SetTransformInfo(org, trans);
             }
         }
 
         public boolean Contains(final idRectangle sr, float x, float y) {
-            idRectangle r = new idRectangle(sr);
-            r.x += actualX - drawRect.x;
-            r.y += actualY - drawRect.y;
+            final idRectangle r = new idRectangle(sr);
+            r.x += this.actualX - this.drawRect.x;
+            r.y += this.actualY - this.drawRect.y;
             return r.Contains(x, y);
         }
 
         public String GetName() {
-            return name.toString();//TODO:return idStr???
+            return this.name.toString();//TODO:return idStr???
         }
 
         static int simpleCount = 0, plainCount = 0;
 
         public boolean Parse(idParser src, boolean rebuild /*= true*/) {
-            idToken token = new idToken(), token2, token3, token4, token5, token6, token7;
+            final idToken token = new idToken();
+			idToken token2;
+			final idToken token3, token4, token5, token6, token7;
             idStr work;
             drawWin_t dwt;
 
@@ -1143,10 +1146,10 @@ public class Window {
                 CleanUp();
             }
 
-            timeLineEvents.Clear();
-            transitions.Clear();
+            this.timeLineEvents.Clear();
+            this.transitions.Clear();
 
-            namedEvents.DeleteContents(true);
+            this.namedEvents.DeleteContents(true);
 
             src.ExpectTokenType(TT_NAME, 0, token);
 
@@ -1171,20 +1174,20 @@ public class Window {
 
                 if (token.equals("windowDef") || token.equals("animationDef")) {
                     if (token.equals("animationDef")) {
-                        visible.data = false;
-                        rect.data = new idRectangle(0, 0, 0, 0);
+                        this.visible.data = false;
+                        this.rect.data = new idRectangle(0, 0, 0, 0);
                     }
                     src.ExpectTokenType(TT_NAME, 0, token);
                     token2 = token;
 //                    System.out.printf(">>>>>>>>%s\n", token.toString());
                     src.UnreadToken(token);
-                    drawWin_t dw = FindChildByName(token2.toString());
-                    if (dw != null && dw.win != null) {
+                    final drawWin_t dw = FindChildByName(token2.toString());
+                    if ((dw != null) && (dw.win != null)) {
                         SaveExpressionParseState();
                         dw.win.Parse(src, rebuild);
                         RestoreExpressionParseState();
                     } else {
-                        idWindow win = new idWindow(dc, gui);
+                        final idWindow win = new idWindow(this.dc, this.gui);
                         SaveExpressionParseState();
                         win.Parse(src, rebuild);
                         RestoreExpressionParseState();
@@ -1192,9 +1195,9 @@ public class Window {
                         dwt.simp = null;
                         dwt.win = null;
                         if (win.IsSimple()) {
-                            idSimpleWindow simple = new idSimpleWindow(win);
+                            final idSimpleWindow simple = new idSimpleWindow(win);
                             dwt.simp = simple;
-                            drawWindows.Append(dwt);
+                            this.drawWindows.Append(dwt);
 			    win.close();//delete win;
                             simpleCount++;
                         } else {
@@ -1202,12 +1205,12 @@ public class Window {
                             SetFocus(win, false);
                             dwt.win = win;
 //                            System.out.println(dwt.win.text.c_str());
-                            drawWindows.Append(dwt);
+                            this.drawWindows.Append(dwt);
                             plainCount++;
                         }
                     }
                 } else if (token.equals("editDef")) {
-                    idEditWindow win = new idEditWindow(dc, gui);
+                    final idEditWindow win = new idEditWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1215,9 +1218,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("choiceDef")) {
-                    idChoiceWindow win = new idChoiceWindow(dc, gui);
+                    final idChoiceWindow win = new idChoiceWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1225,9 +1228,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("sliderDef")) {
-                    idSliderWindow win = new idSliderWindow(dc, gui);
+                    final idSliderWindow win = new idSliderWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1235,9 +1238,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("markerDef")) {
-                    idMarkerWindow win = new idMarkerWindow(dc, gui);
+                    final idMarkerWindow win = new idMarkerWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1245,9 +1248,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("bindDef")) {
-                    idBindWindow win = new idBindWindow(dc, gui);
+                    final idBindWindow win = new idBindWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1255,9 +1258,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("listDef")) {
-                    idListWindow win = new idListWindow(dc, gui);
+                    final idListWindow win = new idListWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1265,9 +1268,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("fieldDef")) {
-                    idFieldWindow win = new idFieldWindow(dc, gui);
+                    final idFieldWindow win = new idFieldWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1275,9 +1278,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("renderDef")) {
-                    idRenderWindow win = new idRenderWindow(dc, gui);
+                    final idRenderWindow win = new idRenderWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1285,9 +1288,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("gameSSDDef")) {
-                    idGameSSDWindow win = new idGameSSDWindow(dc, gui);
+                    final idGameSSDWindow win = new idGameSSDWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1295,9 +1298,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("gameBearShootDef")) {
-                    idGameBearShootWindow win = new idGameBearShootWindow(dc, gui);
+                    final idGameBearShootWindow win = new idGameBearShootWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1305,9 +1308,9 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } else if (token.equals("gameBustOutDef")) {
-                    idGameBustOutWindow win = new idGameBustOutWindow(dc, gui);
+                    final idGameBustOutWindow win = new idGameBustOutWindow(this.dc, this.gui);
                     SaveExpressionParseState();
                     win.Parse(src, rebuild);
                     RestoreExpressionParseState();
@@ -1315,7 +1318,7 @@ public class Window {
                     win.SetParent(this);
                     dwt.simp = null;
                     dwt.win = win;
-                    drawWindows.Append(dwt);
+                    this.drawWindows.Append(dwt);
                 } // 
                 //  added new onEvent
                 else if (token.equals("onNamedEvent")) {
@@ -1325,7 +1328,7 @@ public class Window {
                         return false;
                     }
 
-                    rvNamedEvent ev = new rvNamedEvent(token.toString());
+                    final rvNamedEvent ev = new rvNamedEvent(token.toString());
 
                     src.SetMarker();
 
@@ -1352,9 +1355,9 @@ public class Window {
 //                            rvGEWindowWrapper.GetWrapper(this).GetScriptDict().Set(va("onEvent %s", token.c_str()), out);
 //                        }
 //                    }
-                    namedEvents.Append(ev);
+                    this.namedEvents.Append(ev);
                 } else if (token.equals("onTime")) {
-                    idTimeLineEvent ev = new idTimeLineEvent();
+                    final idTimeLineEvent ev = new idTimeLineEvent();
 
                     if (!src.ReadToken(token)) {
                         src.Error("Unexpected end of file");
@@ -1392,21 +1395,21 @@ public class Window {
                     // this is a timeline event
                     ev.pending = true;
 //                    System.out.println("pending +++++++++ " + ev);
-                    timeLineEvents.Append(ev);
+                    this.timeLineEvents.Append(ev);
                 } else if (token.equals("definefloat")) {
                     src.ReadToken(token);
                     work = token;
                     work.ToLower();
-                    idWinFloat varf = new idWinFloat();
+                    final idWinFloat varf = new idWinFloat();
                     varf.SetName(work.toString());
-                    definedVars.Append(varf);
+                    this.definedVars.Append(varf);
 
                     // add the float to the editors wrapper dict
                     // Set the marker after the float name
                     src.SetMarker();
 
                     // Read in the float 
-                    regList.AddReg(work.toString(), etoi(FLOAT), src, this, varf);
+                    this.regList.AddReg(work.toString(), etoi(FLOAT), src, this, varf);
 
                     // If we are in the gui editor then add the float to the defines
 //                    if (ID_ALLOW_TOOLS) {
@@ -1422,7 +1425,7 @@ public class Window {
                     src.ReadToken(token);
                     work = token;
                     work.ToLower();
-                    idWinVec4 var = new idWinVec4();
+                    final idWinVec4 var = new idWinVec4();
                     var.SetName(work.toString());
 
                     // set the marker so we can determine what was parsed
@@ -1432,8 +1435,8 @@ public class Window {
                     // FIXME: how about we add the var to the desktop instead of this window so it won't get deleted
                     //        when this window is destoyed which even happens during parsing with simple windows ?
                     //definedVars.Append(var);
-                    gui.GetDesktop().definedVars.Append(var);
-                    gui.GetDesktop().regList.AddReg(work.toString(), etoi(VEC4), src, gui.GetDesktop(), var);
+                    this.gui.GetDesktop().definedVars.Append(var);
+                    this.gui.GetDesktop().regList.AddReg(work.toString(), etoi(VEC4), src, this.gui.GetDesktop(), var);
 
                     // store the original vec4 for the editor
                     // If we are in the gui editor then add the float to the defines
@@ -1450,16 +1453,16 @@ public class Window {
                     src.ReadToken(token);
                     work = token;
                     work.ToLower();
-                    idWinFloat varf = new idWinFloat();
+                    final idWinFloat varf = new idWinFloat();
                     varf.SetName(work.toString());
-                    definedVars.Append(varf);
+                    this.definedVars.Append(varf);
 
                     // add the float to the editors wrapper dict
                     // set the marker to after the float name
                     src.SetMarker();
 
                     // Parse the float
-                    regList.AddReg(work.toString(), etoi(FLOAT), src, this, varf);
+                    this.regList.AddReg(work.toString(), etoi(FLOAT), src, this, varf);
 
                     // If we are in the gui editor then add the float to the defines
 //                    if (ID_ALLOW_TOOLS) {
@@ -1549,20 +1552,20 @@ public class Window {
 
         public String HandleEvent(final sysEvent_s event, boolean[] updateVisuals) {
 
-            cmd.oSet("");
+            this.cmd.oSet("");
 
-            if ((flags & WIN_DESKTOP) != 0) {
+            if ((this.flags & WIN_DESKTOP) != 0) {
                 actionDownRun = false;
                 actionUpRun = false;
-                if (expressionRegisters.Num() != 0 && ops.Num() != 0) {
+                if ((this.expressionRegisters.Num() != 0) && (this.ops.Num() != 0)) {
                     EvalRegs();
                 }
-                RunTimeEvents(gui.GetTime());
+                RunTimeEvents(this.gui.GetTime());
                 CalcRects(0, 0);
-                dc.SetCursor(etoi(CURSOR_ARROW));
+                this.dc.SetCursor(etoi(CURSOR_ARROW));
             }
 
-            if (visible.data && !noEvents.data) {
+            if (this.visible.data && !this.noEvents.data) {
 
                 if (event.evType == SE_KEY) {
                     EvalRegs(-1, true);
@@ -1572,18 +1575,18 @@ public class Window {
 
                     if (event.evValue == K_MOUSE1) {
 
-                        if (0 == event.evValue2 && GetCaptureChild() != null) {
+                        if ((0 == event.evValue2) && (GetCaptureChild() != null)) {
                             GetCaptureChild().LoseCapture();
-                            gui.GetDesktop().captureChild = null;
+                            this.gui.GetDesktop().captureChild = null;
                             return "";
                         }
 
-                        int c = children.Num();
+                        int c = this.children.Num();
                         while (--c >= 0) {
-                            if (children.oGet(c).visible.data
-                                    && children.oGet(c).Contains(children.oGet(c).drawRect, gui.CursorX(), gui.CursorY())
-                                    && !(children.oGet(c).noEvents.data)) {
-                                idWindow child = children.oGet(c);
+                            if (this.children.oGet(c).visible.data
+                                    && this.children.oGet(c).Contains(this.children.oGet(c).drawRect, this.gui.CursorX(), this.gui.CursorY())
+                                    && !(this.children.oGet(c).noEvents.data)) {
+                                final idWindow child = this.children.oGet(c);
                                 if (event.evValue2 != 0) {
                                     BringToTop(child);
                                     SetFocus(child);
@@ -1591,13 +1594,13 @@ public class Window {
                                         SetCapture(child);
                                     }
                                 }
-                                if (child.Contains(child.clientRect, gui.CursorX(), gui.CursorY())) {
+                                if (child.Contains(child.clientRect, this.gui.CursorX(), this.gui.CursorY())) {
                                     //if ((gui_edit.GetBool() && (child.flags & WIN_SELECTED)) || (!gui_edit.GetBool() && (child.flags & WIN_MOVABLE))) {
                                     //	SetCapture(child);
                                     //}
                                     SetFocus(child);
                                     final String childRet = child.HandleEvent(event, updateVisuals);
-                                    if (childRet != null && !childRet.isEmpty()) {
+                                    if ((childRet != null) && !childRet.isEmpty()) {
                                         return childRet;
                                     }
                                     if ((child.flags & WIN_MODAL) != 0) {
@@ -1606,8 +1609,8 @@ public class Window {
                                 } else {
                                     if (event.evValue2 != 0) {
                                         SetFocus(child);
-                                        boolean capture = true;
-                                        if (capture && ((child.flags & WIN_MOVABLE) != 0 || gui_edit.GetBool())) {
+                                        final boolean capture = true;
+                                        if (capture && (((child.flags & WIN_MOVABLE) != 0) || gui_edit.GetBool())) {
                                             SetCapture(child);
                                         }
                                         return "";
@@ -1616,35 +1619,35 @@ public class Window {
                                 }
                             }
                         }
-                        if (event.evValue2 != 0 && !actionDownRun) {
+                        if ((event.evValue2 != 0) && !actionDownRun) {
                             actionDownRun = RunScript(ON_ACTION);
                         } else if (!actionUpRun) {
                             actionUpRun = RunScript(ON_ACTIONRELEASE);
                         }
                     } else if (event.evValue == K_MOUSE2) {
 
-                        if (0 == event.evValue2 && GetCaptureChild() != null) {
+                        if ((0 == event.evValue2) && (GetCaptureChild() != null)) {
                             GetCaptureChild().LoseCapture();
-                            gui.GetDesktop().captureChild = null;
+                            this.gui.GetDesktop().captureChild = null;
                             return "";
                         }
 
-                        int c = children.Num();
+                        int c = this.children.Num();
                         while (--c >= 0) {
-                            if (children.oGet(c).visible.data
-                                    && children.oGet(c).Contains(children.oGet(c).drawRect, gui.CursorX(), gui.CursorY())
-                                    && !(children.oGet(c).noEvents.data)) {
-                                idWindow child = children.oGet(c);
+                            if (this.children.oGet(c).visible.data
+                                    && this.children.oGet(c).Contains(this.children.oGet(c).drawRect, this.gui.CursorX(), this.gui.CursorY())
+                                    && !(this.children.oGet(c).noEvents.data)) {
+                                final idWindow child = this.children.oGet(c);
                                 if (event.evValue2 != 0) {
                                     BringToTop(child);
                                     SetFocus(child);
                                 }
-                                if (child.Contains(child.clientRect, gui.CursorX(), gui.CursorY()) || GetCaptureChild() == child) {
-                                    if ((gui_edit.GetBool() && (child.flags & WIN_SELECTED) != 0) || (!gui_edit.GetBool() && (child.flags & WIN_MOVABLE) != 0)) {
+                                if (child.Contains(child.clientRect, this.gui.CursorX(), this.gui.CursorY()) || (GetCaptureChild() == child)) {
+                                    if ((gui_edit.GetBool() && ((child.flags & WIN_SELECTED) != 0)) || (!gui_edit.GetBool() && ((child.flags & WIN_MOVABLE) != 0))) {
                                         SetCapture(child);
                                     }
                                     final String childRet = child.HandleEvent(event, updateVisuals);
-                                    if (childRet != null && !childRet.isEmpty()) {
+                                    if ((childRet != null) && !childRet.isEmpty()) {
                                         return childRet;
                                     }
                                     if ((child.flags & WIN_MODAL) != 0) {
@@ -1655,23 +1658,23 @@ public class Window {
                         }
                     } else if (event.evValue == K_MOUSE3) {
                         if (gui_edit.GetBool()) {
-                            int c = children.Num();
+                            final int c = this.children.Num();
                             for (int i = 0; i < c; i++) {
-                                if (children.oGet(i).drawRect.Contains(gui.CursorX(), gui.CursorY())) {
+                                if (this.children.oGet(i).drawRect.Contains(this.gui.CursorX(), this.gui.CursorY())) {
                                     if (event.evValue2 != 0) {
-                                        children.oGet(i).flags ^= WIN_SELECTED;
-                                        if ((children.oGet(i).flags & WIN_SELECTED) != 0) {
-                                            flags &= ~WIN_SELECTED;
+                                        this.children.oGet(i).flags ^= WIN_SELECTED;
+                                        if ((this.children.oGet(i).flags & WIN_SELECTED) != 0) {
+                                            this.flags &= ~WIN_SELECTED;
                                             return "childsel";
                                         }
                                     }
                                 }
                             }
                         }
-                    } else if (event.evValue == K_TAB && event.evValue2 != 0) {
+                    } else if ((event.evValue == K_TAB) && (event.evValue2 != 0)) {
                         if (GetFocusedChild() != null) {
                             final String childRet = GetFocusedChild().HandleEvent(event, updateVisuals);
-                            if (childRet != null && !childRet.isEmpty()) {
+                            if ((childRet != null) && !childRet.isEmpty()) {
                                 return childRet;
                             }
 
@@ -1682,7 +1685,7 @@ public class Window {
                                 direction = -1;
                             }
 
-                            idWindow currentFocus = GetFocusedChild();
+                            final idWindow currentFocus = GetFocusedChild();
                             idWindow child = GetFocusedChild();
                             idWindow parent = child.GetParent();
                             while (parent != null) {
@@ -1694,14 +1697,14 @@ public class Window {
                                 } else if (direction < 0) {
                                     index = parent.GetChildCount() - 1;
                                 }
-                                while (index < parent.GetChildCount() && index >= 0) {
-                                    idWindow testWindow = parent.GetChild(index);
+                                while ((index < parent.GetChildCount()) && (index >= 0)) {
+                                    final idWindow testWindow = parent.GetChild(index);
                                     if (testWindow == currentFocus) {
                                         // we managed to wrap around and get back to our starting window
                                         foundFocus = true;
                                         break;
                                     }
-                                    if (testWindow != null && !testWindow.noEvents.data && testWindow.visible.data) {
+                                    if ((testWindow != null) && !testWindow.noEvents.data && testWindow.visible.data) {
                                         if ((testWindow.flags & WIN_CANFOCUS) != 0) {
                                             SetFocus(testWindow);
                                             foundFocus = true;
@@ -1725,7 +1728,7 @@ public class Window {
                                     // We didn't find anything, so go back up to our parent
                                     child = parent;
                                     parent = child.GetParent();
-                                    if (parent == gui.GetDesktop()) {
+                                    if (parent == this.gui.GetDesktop()) {
                                         // We got back to the desktop, so wrap around but don't actually go to the desktop
                                         parent = null;
                                         child = null;
@@ -1733,10 +1736,10 @@ public class Window {
                                 }
                             }
                         }
-                    } else if (event.evValue == K_ESCAPE && event.evValue2 != 0) {
+                    } else if ((event.evValue == K_ESCAPE) && (event.evValue2 != 0)) {
                         if (GetFocusedChild() != null) {
                             final String childRet = GetFocusedChild().HandleEvent(event, updateVisuals);
-                            if (childRet != null && !childRet.isEmpty()) {
+                            if ((childRet != null) && !childRet.isEmpty()) {
                                 return childRet;
                             }
                         }
@@ -1744,11 +1747,11 @@ public class Window {
                     } else if (event.evValue == K_ENTER) {
                         if (GetFocusedChild() != null) {
                             final String childRet = GetFocusedChild().HandleEvent(event, updateVisuals);
-                            if (childRet != null && !childRet.isEmpty()) {
+                            if ((childRet != null) && !childRet.isEmpty()) {
                                 return childRet;
                             }
                         }
-                        if ((flags & WIN_WANTENTER) != 0) {
+                        if ((this.flags & WIN_WANTENTER) != 0) {
                             if (event.evValue2 != 0) {
                                 RunScript(ON_ACTION);
                             } else {
@@ -1758,7 +1761,7 @@ public class Window {
                     } else {
                         if (GetFocusedChild() != null) {
                             final String childRet = GetFocusedChild().HandleEvent(event, updateVisuals);
-                            if (childRet != null && !childRet.isEmpty()) {
+                            if ((childRet != null) && !childRet.isEmpty()) {
                                 return childRet;
                             }
                         }
@@ -1769,57 +1772,57 @@ public class Window {
                         updateVisuals[0] = true;
                     }
                     final String mouseRet = RouteMouseCoords(event.evValue, event.evValue2);
-                    if (mouseRet != null && !mouseRet.isEmpty()) {
+                    if ((mouseRet != null) && !mouseRet.isEmpty()) {
                         return mouseRet;
                     }
                 } else if (event.evType == SE_NONE) {
                 } else if (event.evType == SE_CHAR) {
                     if (GetFocusedChild() != null) {
                         final String childRet = GetFocusedChild().HandleEvent(event, updateVisuals);
-                        if (childRet != null && !childRet.isEmpty()) {
+                        if ((childRet != null) && !childRet.isEmpty()) {
                             return childRet;
                         }
                     }
                 }
             }
 
-            gui.GetReturnCmd().oSet(cmd);
-            if (gui.GetPendingCmd().Length() != 0) {
-                gui.GetReturnCmd().oPluSet(" ; ");
-                gui.GetReturnCmd().oPluSet(gui.GetPendingCmd());
-                gui.GetPendingCmd().Clear();
+            this.gui.GetReturnCmd().oSet(this.cmd);
+            if (this.gui.GetPendingCmd().Length() != 0) {
+                this.gui.GetReturnCmd().oPluSet(" ; ");
+                this.gui.GetReturnCmd().oPluSet(this.gui.GetPendingCmd());
+                this.gui.GetPendingCmd().Clear();
             }
-            cmd.oSet("");
-            return gui.GetReturnCmd().toString();
+            this.cmd.oSet("");
+            return this.gui.GetReturnCmd().toString();
         }
 
         public void CalcRects(float x, float y) {
             CalcClientRect(0, 0);
-            drawRect.Offset(x, y);
-            clientRect.Offset(x, y);
-            actualX = drawRect.x;
-            actualY = drawRect.y;
-            int c = drawWindows.Num();
+            this.drawRect.Offset(x, y);
+            this.clientRect.Offset(x, y);
+            this.actualX = this.drawRect.x;
+            this.actualY = this.drawRect.y;
+            final int c = this.drawWindows.Num();
             for (int i = 0; i < c; i++) {
-                if (drawWindows.oGet(i).win != null) {
-                    drawWindows.oGet(i).win.CalcRects(clientRect.x + xOffset, clientRect.y + yOffset);
+                if (this.drawWindows.oGet(i).win != null) {
+                    this.drawWindows.oGet(i).win.CalcRects(this.clientRect.x + this.xOffset, this.clientRect.y + this.yOffset);
                 }
             }
-            drawRect.Offset(-x, -y);
-            clientRect.Offset(-x, -y);
+            this.drawRect.Offset(-x, -y);
+            this.clientRect.Offset(-x, -y);
         }
         public static int bla1 = 0, bla2 = 0, drawCursorTotal = 0;
 
         public void Redraw(float x, float y) {
             idStr str;
 
-            if (r_skipGuiShaders.GetInteger() == 1 || dc == null) {
+            if ((r_skipGuiShaders.GetInteger() == 1) || (this.dc == null)) {
                 return;
             }
 
-            int time = gui.GetTime();
+            final int time = this.gui.GetTime();
 
-            if (((flags & WIN_DESKTOP) != 0) && r_skipGuiShaders.GetInteger() != 3) {
+            if (((this.flags & WIN_DESKTOP) != 0) && (r_skipGuiShaders.GetInteger() != 3)) {
                 RunTimeEvents(time);
             }
 
@@ -1827,18 +1830,18 @@ public class Window {
                 return;
             }
 
-            if ((flags & WIN_SHOWTIME) != 0) {
-                dc.DrawText(va(" %0.1f seconds\n%s", (float) (time - timeLine) / 1000, gui.State().GetString("name")), 0.35f, 0, dc.colorWhite, new idRectangle(100, 0, 80, 80), false);
+            if ((this.flags & WIN_SHOWTIME) != 0) {
+                this.dc.DrawText(va(" %0.1f seconds\n%s", (float) (time - this.timeLine) / 1000, this.gui.State().GetString("name")), 0.35f, 0, this.dc.colorWhite, new idRectangle(100, 0, 80, 80), false);
             }
 
-            if ((flags & WIN_SHOWCOORDS) != 0) {
-                dc.EnableClipping(false);
-                str = new idStr(String.format("x: %d y: %d  cursorx: %d cursory: %d", (int) rect.x(), (int) rect.y(), (int) gui.CursorX(), (int) gui.CursorY()));
-                dc.DrawText(str.toString(), 0.25f, 0, dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
-                dc.EnableClipping(true);
+            if ((this.flags & WIN_SHOWCOORDS) != 0) {
+                this.dc.EnableClipping(false);
+                str = new idStr(String.format("x: %d y: %d  cursorx: %d cursory: %d", (int) this.rect.x(), (int) this.rect.y(), (int) this.gui.CursorX(), (int) this.gui.CursorY()));
+                this.dc.DrawText(str.toString(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
+                this.dc.EnableClipping(true);
             }
 
-            if (!visible.data) {
+            if (!this.visible.data) {
                 return;
             }
 
@@ -1847,27 +1850,27 @@ public class Window {
             SetFont();
             //if (flags & WIN_DESKTOP) {
             // see if this window forces a new aspect ratio
-            dc.SetSize(forceAspectWidth, forceAspectHeight);
+            this.dc.SetSize(this.forceAspectWidth, this.forceAspectHeight);
             //}
 
             //FIXME: go to screen coord tracking
-            drawRect.Offset(x, y);
-            clientRect.Offset(x, y);
-            textRect.Offset(x, y);
-            actualX = drawRect.x;
-            actualY = drawRect.y;
+            this.drawRect.Offset(x, y);
+            this.clientRect.Offset(x, y);
+            this.textRect.Offset(x, y);
+            this.actualX = this.drawRect.x;
+            this.actualY = this.drawRect.y;
 
-            idVec3 oldOrg = new idVec3();
-            idMat3 oldTrans = new idMat3();
+            final idVec3 oldOrg = new idVec3();
+            final idMat3 oldTrans = new idMat3();
 
-            dc.GetTransformInfo(oldOrg, oldTrans);
+            this.dc.GetTransformInfo(oldOrg, oldTrans);
 
             SetupTransforms(x, y);
-            DrawBackground(drawRect);
-            DrawBorderAndCaption(drawRect);
+            DrawBackground(this.drawRect);
+            DrawBorderAndCaption(this.drawRect);
 
-            if (0 == (flags & WIN_NOCLIP)) {
-                dc.PushClipRect(clientRect);
+            if (0 == (this.flags & WIN_NOCLIP)) {
+                this.dc.PushClipRect(this.clientRect);
             }
 
             if (r_skipGuiShaders.GetInteger() < 5) {
@@ -1879,52 +1882,52 @@ public class Window {
                 DebugDraw(time, x, y);
             }
 
-            int c = drawWindows.Num();
+            final int c = this.drawWindows.Num();
             for (int i = 0; i < c; i++) {
-                if (drawWindows.oGet(i).win != null) {
+                if (this.drawWindows.oGet(i).win != null) {
                     bla1++;
-                    drawWindows.oGet(i).win.Redraw(clientRect.x + xOffset, clientRect.y + yOffset);
+                    this.drawWindows.oGet(i).win.Redraw(this.clientRect.x + this.xOffset, this.clientRect.y + this.yOffset);
                 } else {
                     bla2++;
-                    drawWindows.oGet(i).simp.Redraw(clientRect.x + xOffset, clientRect.y + yOffset);
+                    this.drawWindows.oGet(i).simp.Redraw(this.clientRect.x + this.xOffset, this.clientRect.y + this.yOffset);
                 }
             }
 
             // Put transforms back to what they were before the children were processed
-            dc.SetTransformInfo(oldOrg, oldTrans);
+            this.dc.SetTransformInfo(oldOrg, oldTrans);
 
-            if (0 == (flags & WIN_NOCLIP)) {
-                dc.PopClipRect();
+            if (0 == (this.flags & WIN_NOCLIP)) {
+                this.dc.PopClipRect();
             }
 
             drawCursorTotal++;
             if (gui_edit.GetBool()
-                    || ((flags & WIN_DESKTOP) != 0
-                    && 0 == (flags & WIN_NOCURSOR)
-                    && !hideCursor.data
-                    && (gui.Active() || ((flags & WIN_MENUGUI) != 0)))) {
-                dc.SetTransformInfo(getVec3_origin(), getMat3_identity());
-                gui.DrawCursor();
+                    || (((this.flags & WIN_DESKTOP) != 0)
+                    && (0 == (this.flags & WIN_NOCURSOR))
+                    && !this.hideCursor.data
+                    && (this.gui.Active() || ((this.flags & WIN_MENUGUI) != 0)))) {
+                this.dc.SetTransformInfo(getVec3_origin(), getMat3_identity());
+                this.gui.DrawCursor();
             }
 
-            if (gui_debug.GetInteger() != 0 && (flags & WIN_DESKTOP) != 0) {
-                dc.EnableClipping(false);
-                str = new idStr(String.format("x: %.1f y: %.1f", gui.CursorX(), gui.CursorY()));
-                dc.DrawText(str.toString(), 0.25f, 0, dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
-                dc.DrawText(gui.GetSourceFile(), 0.25f, 0, dc.colorWhite, new idRectangle(0, 20, 300, 20), false);
-                dc.EnableClipping(true);
+            if ((gui_debug.GetInteger() != 0) && ((this.flags & WIN_DESKTOP) != 0)) {
+                this.dc.EnableClipping(false);
+                str = new idStr(String.format("x: %.1f y: %.1f", this.gui.CursorX(), this.gui.CursorY()));
+                this.dc.DrawText(str.toString(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 0, 100, 20), false);
+                this.dc.DrawText(this.gui.GetSourceFile(), 0.25f, 0, this.dc.colorWhite, new idRectangle(0, 20, 300, 20), false);
+                this.dc.EnableClipping(true);
             }
 
-            drawRect.Offset(-x, -y);
-            clientRect.Offset(-x, -y);
-            textRect.Offset(-x, -y);
+            this.drawRect.Offset(-x, -y);
+            this.clientRect.Offset(-x, -y);
+            this.textRect.Offset(-x, -y);
         }
 
         public void ArchiveToDictionary(idDict dict, boolean useNames /*= true*/) {
             //FIXME: rewrite without state
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                children.oGet(i).ArchiveToDictionary(dict);
+                this.children.oGet(i).ArchiveToDictionary(dict);
             }
         }
 
@@ -1934,9 +1937,9 @@ public class Window {
 
         public void InitFromDictionary(idDict dict, boolean byName /*= true*/) {
             //FIXME: rewrite without state
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                children.oGet(i).InitFromDictionary(dict);
+                this.children.oGet(i).InitFromDictionary(dict);
             }
         }
 
@@ -1958,9 +1961,9 @@ public class Window {
             UpdateWinVars();
 
             RunScript(n);
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                children.oGet(i).Activate(activate, act);
+                this.children.oGet(i).Activate(activate, act);
             }
 
             if (act.Length() != 0) {
@@ -1970,9 +1973,9 @@ public class Window {
 
         public void Trigger() {
             RunScript(ON_TRIGGER);
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                children.oGet(i).Trigger();
+                this.children.oGet(i).Trigger();
             }
             StateChanged(true);
         }
@@ -1987,7 +1990,7 @@ public class Window {
         }
 
         public void LoseCapture() {
-            flags &= ~WIN_CAPTURE;
+            this.flags &= ~WIN_CAPTURE;
         }
 
         public void Sized() {
@@ -1997,33 +2000,33 @@ public class Window {
         }
 
         public void Draw(int time, float x, float y) {
-            if (text.Length() == 0) {
+            if (this.text.Length() == 0) {
                 return;
             }
-            if (textShadow != 0) {
-                idStr shadowText = new idStr(text.data);
-                idRectangle shadowRect = textRect;
+            if (this.textShadow != 0) {
+                final idStr shadowText = new idStr(this.text.data);
+                final idRectangle shadowRect = this.textRect;
 
                 shadowText.RemoveColors();
-                shadowRect.x += textShadow;
-                shadowRect.y += textShadow;
+                shadowRect.x += this.textShadow;
+                shadowRect.y += this.textShadow;
 
-                dc.DrawText(shadowText.toString(), textScale.data, textAlign, colorBlack, shadowRect, !itob(flags & WIN_NOWRAP), -1);
+                this.dc.DrawText(shadowText.toString(), this.textScale.data, this.textAlign, colorBlack, shadowRect, !itob(this.flags & WIN_NOWRAP), -1);
             }
-            dc.DrawText(text.data.toString(), textScale.data, textAlign, foreColor.data, textRect, !itob(flags & WIN_NOWRAP), -1);
+            this.dc.DrawText(this.text.data.toString(), this.textScale.data, this.textAlign, this.foreColor.data, this.textRect, !itob(this.flags & WIN_NOWRAP), -1);
 
             if (gui_edit.GetBool()) {
-                dc.EnableClipping(false);
-                dc.DrawText(va("x: %d  y: %d", (int) rect.x(), (int) rect.y()), 0.25f, 0, dc.colorWhite, new idRectangle(rect.x(), rect.y() - 15, 100, 20), false);
-                dc.DrawText(va("w: %d  h: %d", (int) rect.w(), (int) rect.h()), 0.25f, 0, dc.colorWhite, new idRectangle(rect.x() + rect.w(), rect.w() + rect.h() + 5, 100, 20), false);
-                dc.EnableClipping(true);
+                this.dc.EnableClipping(false);
+                this.dc.DrawText(va("x: %d  y: %d", (int) this.rect.x(), (int) this.rect.y()), 0.25f, 0, this.dc.colorWhite, new idRectangle(this.rect.x(), this.rect.y() - 15, 100, 20), false);
+                this.dc.DrawText(va("w: %d  h: %d", (int) this.rect.w(), (int) this.rect.h()), 0.25f, 0, this.dc.colorWhite, new idRectangle(this.rect.x() + this.rect.w(), this.rect.w() + this.rect.h() + 5, 100, 20), false);
+                this.dc.EnableClipping(true);
             }
 
         }
 
         public void MouseExit() {
 
-            if (noEvents.data) {
+            if (this.noEvents.data) {
                 return;
             }
 
@@ -2032,7 +2035,7 @@ public class Window {
 
         public void MouseEnter() {
 
-            if (noEvents.data) {
+            if (this.noEvents.data) {
                 return;
             }
 
@@ -2040,20 +2043,20 @@ public class Window {
         }
 
         public void DrawBackground(final idRectangle drawRect) {
-            if (backColor.w() != 0) {
-                dc.DrawFilledRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, backColor.data);
+            if (this.backColor.w() != 0) {
+                this.dc.DrawFilledRect(drawRect.x, drawRect.y, drawRect.w, drawRect.h, this.backColor.data);
             }
 
-            if (background != null && matColor.w() != 0) {
+            if ((this.background != null) && (this.matColor.w() != 0)) {
                 float scalex, scaley;
-                if ((flags & WIN_NATURALMAT) != 0) {
-                    scalex = drawRect.w / background.GetImageWidth();
-                    scaley = drawRect.h / background.GetImageHeight();
+                if ((this.flags & WIN_NATURALMAT) != 0) {
+                    scalex = drawRect.w / this.background.GetImageWidth();
+                    scaley = drawRect.h / this.background.GetImageHeight();
                 } else {
-                    scalex = matScalex;
-                    scaley = matScaley;
+                    scalex = this.matScalex;
+                    scaley = this.matScaley;
                 }
-                dc.DrawMaterial(drawRect.x, drawRect.y, drawRect.w, drawRect.h, background, matColor.data, scalex, scaley);
+                this.dc.DrawMaterial(drawRect.x, drawRect.y, drawRect.w, drawRect.h, this.background, this.matColor.data, scalex, scaley);
             }
         }
 
@@ -2064,33 +2067,33 @@ public class Window {
                 return GetCaptureChild().RouteMouseCoords(xd, yd);
             }
 
-            if (xd == -2000 || yd == -2000) {
+            if ((xd == -2000) || (yd == -2000)) {
                 return "";
             }
 
-            int c = children.Num();
+            int c = this.children.Num();
             while (c > 0) {
-                idWindow child = children.oGet(--c);
-                if (child.visible.data && !child.noEvents.data && child.Contains(child.drawRect, gui.CursorX(), gui.CursorY())) {
+                final idWindow child = this.children.oGet(--c);
+                if (child.visible.data && !child.noEvents.data && child.Contains(child.drawRect, this.gui.CursorX(), this.gui.CursorY())) {
 
-                    dc.SetCursor(child.cursor);
+                    this.dc.SetCursor(child.cursor);
                     child.hover = true;
 
-                    if (overChild != child) {
-                        if (overChild != null) {
-                            overChild.MouseExit();
-                            str = overChild.cmd.toString();
+                    if (this.overChild != child) {
+                        if (this.overChild != null) {
+                            this.overChild.MouseExit();
+                            str = this.overChild.cmd.toString();
                             if (isNotNullOrEmpty(str)) {
-                                gui.GetDesktop().AddCommand(str);
-                                overChild.cmd.oSet("");
+                                this.gui.GetDesktop().AddCommand(str);
+                                this.overChild.cmd.oSet("");
                             }
                         }
-                        overChild = child;
-                        overChild.MouseEnter();
-                        str = overChild.cmd.toString();
+                        this.overChild = child;
+                        this.overChild.MouseEnter();
+                        str = this.overChild.cmd.toString();
                         if (isNotNullOrEmpty(str)) {
-                            gui.GetDesktop().AddCommand(str);
-                            overChild.cmd.oSet("");
+                            this.gui.GetDesktop().AddCommand(str);
+                            this.overChild.cmd.oSet("");
                         }
                     } else {
                         if (0 == (child.flags & WIN_HOLDCAPTURE)) {
@@ -2100,14 +2103,14 @@ public class Window {
                     return "";
                 }
             }
-            if (overChild != null) {
-                overChild.MouseExit();
-                str = overChild.cmd.toString();
+            if (this.overChild != null) {
+                this.overChild.MouseExit();
+                str = this.overChild.cmd.toString();
                 if (isNotNullOrEmpty(str)) {
-                    gui.GetDesktop().AddCommand(str);
-                    overChild.cmd.oSet("");
+                    this.gui.GetDesktop().AddCommand(str);
+                    this.overChild.cmd.oSet("");
                 }
-                overChild = null;
+                this.overChild = null;
             }
             return "";
         }
@@ -2122,25 +2125,25 @@ public class Window {
 
             UpdateWinVars();
 
-            if (expressionRegisters.Num() != 0 && ops.Num() != 0) {
+            if ((this.expressionRegisters.Num() != 0) && (this.ops.Num() != 0)) {
                 EvalRegs();
             }
 
-            int c = drawWindows.Num();
+            final int c = this.drawWindows.Num();
             for (int i = 0; i < c; i++) {
-                if (drawWindows.oGet(i).win != null) {
-                    drawWindows.oGet(i).win.StateChanged(redraw);
+                if (this.drawWindows.oGet(i).win != null) {
+                    this.drawWindows.oGet(i).win.StateChanged(redraw);
                 } else {
-                    drawWindows.oGet(i).simp.StateChanged(redraw);
+                    this.drawWindows.oGet(i).simp.StateChanged(redraw);
                 }
             }
 
             if (redraw) {
-                if ((flags & WIN_DESKTOP) != 0) {
+                if ((this.flags & WIN_DESKTOP) != 0) {
                     Redraw(0.0f, 0.0f);
                 }
-                if (background != null && background.CinematicLength() != 0) {
-                    background.UpdateCinematic(gui.GetTime());
+                if ((this.background != null) && (this.background.CinematicLength() != 0)) {
+                    this.background.UpdateCinematic(this.gui.GetTime());
                 }
             }
         }
@@ -2387,7 +2390,7 @@ public class Window {
 
         // SaveGame support
         public void WriteSaveGameString(final String string, idFile savefile) {
-            int len = string.length();
+            final int len = string.length();
 
             savefile.WriteInt(len);
             savefile.WriteString(string);
@@ -2398,16 +2401,17 @@ public class Window {
         }
 
         public void WriteSaveGameTransition(idTransitionData trans, idFile savefile) {
-            drawWin_t dw = new drawWin_t(), fdw;
+            final drawWin_t dw = new drawWin_t();
+			drawWin_t fdw;
             idStr winName = new idStr("");
             dw.simp = null;
             dw.win = null;
-            int offset = gui.GetDesktop().GetWinVarOffset(trans.data, dw);
-            if (dw.win != null || dw.simp != null) {
+            int offset = this.gui.GetDesktop().GetWinVarOffset(trans.data, dw);
+            if ((dw.win != null) || (dw.simp != null)) {
                 winName = new idStr((dw.win != null) ? dw.win.GetName() : dw.simp.name.toString());
             }
-            fdw = gui.GetDesktop().FindChildByName(winName.toString());
-            if (offset != -1 && fdw != null && (fdw.win != null || fdw.simp != null)) {
+            fdw = this.gui.GetDesktop().FindChildByName(winName.toString());
+            if ((offset != -1) && (fdw != null) && ((fdw.win != null) || (fdw.simp != null))) {
                 savefile.WriteInt(offset);
                 WriteSaveGameString(winName.toString(), savefile);
                 savefile.Write(trans.interp);
@@ -2420,112 +2424,112 @@ public class Window {
         public void WriteToSaveGame(idFile savefile) {
             int i;
 
-            WriteSaveGameString(cmd, savefile);
+            WriteSaveGameString(this.cmd, savefile);
 
-            savefile.WriteFloat(actualX);
-            savefile.WriteFloat(actualY);
-            savefile.WriteInt(childID);
-            savefile.WriteInt(flags);
-            savefile.WriteInt(lastTimeRun);
-            savefile.Write(drawRect);
-            savefile.Write(clientRect);
-            savefile.Write(origin);
-            savefile.WriteChar(fontNum);
-            savefile.WriteInt(timeLine);
-            savefile.WriteFloat(xOffset);
-            savefile.WriteFloat(yOffset);
-            savefile.WriteChar(cursor);
-            savefile.WriteFloat(forceAspectWidth);
-            savefile.WriteFloat(forceAspectHeight);
-            savefile.WriteFloat(matScalex);
-            savefile.WriteFloat(matScaley);
-            savefile.WriteFloat(borderSize);
-            savefile.WriteChar(textAlign);
-            savefile.WriteFloat(textAlignx);
-            savefile.WriteFloat(textAligny);
-            savefile.WriteChar(textShadow);
-            savefile.Write(shear);
+            savefile.WriteFloat(this.actualX);
+            savefile.WriteFloat(this.actualY);
+            savefile.WriteInt(this.childID);
+            savefile.WriteInt(this.flags);
+            savefile.WriteInt(this.lastTimeRun);
+            savefile.Write(this.drawRect);
+            savefile.Write(this.clientRect);
+            savefile.Write(this.origin);
+            savefile.WriteChar(this.fontNum);
+            savefile.WriteInt(this.timeLine);
+            savefile.WriteFloat(this.xOffset);
+            savefile.WriteFloat(this.yOffset);
+            savefile.WriteChar(this.cursor);
+            savefile.WriteFloat(this.forceAspectWidth);
+            savefile.WriteFloat(this.forceAspectHeight);
+            savefile.WriteFloat(this.matScalex);
+            savefile.WriteFloat(this.matScaley);
+            savefile.WriteFloat(this.borderSize);
+            savefile.WriteChar(this.textAlign);
+            savefile.WriteFloat(this.textAlignx);
+            savefile.WriteFloat(this.textAligny);
+            savefile.WriteChar(this.textShadow);
+            savefile.Write(this.shear);
 
-            WriteSaveGameString(name, savefile);
-            WriteSaveGameString(comment, savefile);
+            WriteSaveGameString(this.name, savefile);
+            WriteSaveGameString(this.comment, savefile);
 
             // WinVars
-            noTime.WriteToSaveGame(savefile);
-            visible.WriteToSaveGame(savefile);
-            rect.WriteToSaveGame(savefile);
-            backColor.WriteToSaveGame(savefile);
-            matColor.WriteToSaveGame(savefile);
-            foreColor.WriteToSaveGame(savefile);
-            hoverColor.WriteToSaveGame(savefile);
-            borderColor.WriteToSaveGame(savefile);
-            textScale.WriteToSaveGame(savefile);
-            noEvents.WriteToSaveGame(savefile);
-            rotate.WriteToSaveGame(savefile);
-            text.WriteToSaveGame(savefile);
-            backGroundName.WriteToSaveGame(savefile);
-            hideCursor.WriteToSaveGame(savefile);
+            this.noTime.WriteToSaveGame(savefile);
+            this.visible.WriteToSaveGame(savefile);
+            this.rect.WriteToSaveGame(savefile);
+            this.backColor.WriteToSaveGame(savefile);
+            this.matColor.WriteToSaveGame(savefile);
+            this.foreColor.WriteToSaveGame(savefile);
+            this.hoverColor.WriteToSaveGame(savefile);
+            this.borderColor.WriteToSaveGame(savefile);
+            this.textScale.WriteToSaveGame(savefile);
+            this.noEvents.WriteToSaveGame(savefile);
+            this.rotate.WriteToSaveGame(savefile);
+            this.text.WriteToSaveGame(savefile);
+            this.backGroundName.WriteToSaveGame(savefile);
+            this.hideCursor.WriteToSaveGame(savefile);
 
             // Defined Vars
-            for (i = 0; i < definedVars.Num(); i++) {
-                definedVars.oGet(i).WriteToSaveGame(savefile);
+            for (i = 0; i < this.definedVars.Num(); i++) {
+                this.definedVars.oGet(i).WriteToSaveGame(savefile);
             }
 
-            savefile.Write(textRect);
+            savefile.Write(this.textRect);
 
             // Window pointers saved as the child ID of the window
             int winID;
 
-            winID = focusedChild != null ? focusedChild.childID : -1;
+            winID = this.focusedChild != null ? this.focusedChild.childID : -1;
             savefile.WriteInt(winID);
 
-            winID = captureChild != null ? captureChild.childID : -1;
+            winID = this.captureChild != null ? this.captureChild.childID : -1;
             savefile.WriteInt(winID);
 
-            winID = overChild != null ? overChild.childID : -1;
+            winID = this.overChild != null ? this.overChild.childID : -1;
             savefile.WriteInt(winID);
 
             // Scripts
             for (i = 0; i < SCRIPT_COUNT.ordinal(); i++) {
-                if (scripts[i] != null) {
-                    scripts[i].WriteToSaveGame(savefile);
+                if (this.scripts[i] != null) {
+                    this.scripts[i].WriteToSaveGame(savefile);
                 }
             }
 
             // TimeLine Events
-            for (i = 0; i < timeLineEvents.Num(); i++) {
-                if (timeLineEvents.oGet(i) != null) {
-                    savefile.WriteBool(timeLineEvents.oGet(i).pending);
-                    savefile.WriteInt(timeLineEvents.oGet(i).time);
-                    if (timeLineEvents.oGet(i).event != null) {
-                        timeLineEvents.oGet(i).event.WriteToSaveGame(savefile);
+            for (i = 0; i < this.timeLineEvents.Num(); i++) {
+                if (this.timeLineEvents.oGet(i) != null) {
+                    savefile.WriteBool(this.timeLineEvents.oGet(i).pending);
+                    savefile.WriteInt(this.timeLineEvents.oGet(i).time);
+                    if (this.timeLineEvents.oGet(i).event != null) {
+                        this.timeLineEvents.oGet(i).event.WriteToSaveGame(savefile);
                     }
                 }
             }
 
             // Transitions
-            int num = transitions.Num();
+            final int num = this.transitions.Num();
 
             savefile.WriteInt(num);
-            for (i = 0; i < transitions.Num(); i++) {
-                WriteSaveGameTransition(transitions.oGet(i), savefile);
+            for (i = 0; i < this.transitions.Num(); i++) {
+                WriteSaveGameTransition(this.transitions.oGet(i), savefile);
             }
 
             // Named Events
-            for (i = 0; i < namedEvents.Num(); i++) {
-                if (namedEvents.oGet(i) != null) {
-                    WriteSaveGameString(namedEvents.oGet(i).mName.toString(), savefile);
-                    if (namedEvents.oGet(i).mEvent != null) {
-                        namedEvents.oGet(i).mEvent.WriteToSaveGame(savefile);
+            for (i = 0; i < this.namedEvents.Num(); i++) {
+                if (this.namedEvents.oGet(i) != null) {
+                    WriteSaveGameString(this.namedEvents.oGet(i).mName.toString(), savefile);
+                    if (this.namedEvents.oGet(i).mEvent != null) {
+                        this.namedEvents.oGet(i).mEvent.WriteToSaveGame(savefile);
                     }
                 }
             }
 
             // regList
-            regList.WriteToSaveGame(savefile);
+            this.regList.WriteToSaveGame(savefile);
 
             // Save children
-            for (i = 0; i < drawWindows.Num(); i++) {
-                drawWin_t window = drawWindows.oGet(i);
+            for (i = 0; i < this.drawWindows.Num(); i++) {
+                final drawWin_t window = this.drawWindows.oGet(i);
 
                 if (window.simp != null) {
                     window.simp.WriteToSaveGame(savefile);
@@ -2552,13 +2556,13 @@ public class Window {
 
             offset = savefile.ReadInt();
             if (offset != -1) {
-                idStr winName = new idStr();
+                final idStr winName = new idStr();
                 ReadSaveGameString(winName, savefile);
                 savefile.Read(trans.interp);
                 trans.data = null;
                 trans.offset = offset;
                 if (winName.Length() != 0) {
-                    idWinStr strVar = new idWinStr();
+                    final idWinStr strVar = new idWinStr();
                     strVar.Set(winName);
                     trans.data = strVar;
                 }
@@ -2568,101 +2572,101 @@ public class Window {
         public void ReadFromSaveGame(idFile savefile) {
             int i;
 
-            transitions.Clear();
+            this.transitions.Clear();
 
-            ReadSaveGameString(cmd, savefile);
+            ReadSaveGameString(this.cmd, savefile);
 
-            actualX = savefile.ReadFloat();
-            actualY = savefile.ReadFloat();
-            childID = savefile.ReadInt();
-            flags = savefile.ReadInt();
-            lastTimeRun = savefile.ReadInt();
-            savefile.Read(drawRect);
-            savefile.Read(clientRect);
-            savefile.Read(origin);
-            fontNum = (char) savefile.ReadChar();
-            timeLine = savefile.ReadInt();
-            xOffset = savefile.ReadFloat();
-            yOffset = savefile.ReadFloat();
-            cursor = (char) savefile.ReadChar();
-            forceAspectWidth = savefile.ReadFloat();
-            forceAspectHeight = savefile.ReadFloat();
-            matScalex = savefile.ReadFloat();
-            matScaley = savefile.ReadFloat();
-            borderSize = savefile.ReadFloat();
-            textAlign = (char) savefile.ReadChar();
-            textAlignx = savefile.ReadFloat();
-            textAligny = savefile.ReadFloat();
-            textShadow = (char) savefile.ReadChar();
-            savefile.Read(shear);
+            this.actualX = savefile.ReadFloat();
+            this.actualY = savefile.ReadFloat();
+            this.childID = savefile.ReadInt();
+            this.flags = savefile.ReadInt();
+            this.lastTimeRun = savefile.ReadInt();
+            savefile.Read(this.drawRect);
+            savefile.Read(this.clientRect);
+            savefile.Read(this.origin);
+            this.fontNum = (char) savefile.ReadChar();
+            this.timeLine = savefile.ReadInt();
+            this.xOffset = savefile.ReadFloat();
+            this.yOffset = savefile.ReadFloat();
+            this.cursor = (char) savefile.ReadChar();
+            this.forceAspectWidth = savefile.ReadFloat();
+            this.forceAspectHeight = savefile.ReadFloat();
+            this.matScalex = savefile.ReadFloat();
+            this.matScaley = savefile.ReadFloat();
+            this.borderSize = savefile.ReadFloat();
+            this.textAlign = (char) savefile.ReadChar();
+            this.textAlignx = savefile.ReadFloat();
+            this.textAligny = savefile.ReadFloat();
+            this.textShadow = (char) savefile.ReadChar();
+            savefile.Read(this.shear);
 
-            ReadSaveGameString(name, savefile);
-            ReadSaveGameString(comment, savefile);
+            ReadSaveGameString(this.name, savefile);
+            ReadSaveGameString(this.comment, savefile);
 
             // WinVars
-            noTime.ReadFromSaveGame(savefile);
-            visible.ReadFromSaveGame(savefile);
-            rect.ReadFromSaveGame(savefile);
-            backColor.ReadFromSaveGame(savefile);
-            matColor.ReadFromSaveGame(savefile);
-            foreColor.ReadFromSaveGame(savefile);
-            hoverColor.ReadFromSaveGame(savefile);
-            borderColor.ReadFromSaveGame(savefile);
-            textScale.ReadFromSaveGame(savefile);
-            noEvents.ReadFromSaveGame(savefile);
-            rotate.ReadFromSaveGame(savefile);
-            text.ReadFromSaveGame(savefile);
-            backGroundName.ReadFromSaveGame(savefile);
+            this.noTime.ReadFromSaveGame(savefile);
+            this.visible.ReadFromSaveGame(savefile);
+            this.rect.ReadFromSaveGame(savefile);
+            this.backColor.ReadFromSaveGame(savefile);
+            this.matColor.ReadFromSaveGame(savefile);
+            this.foreColor.ReadFromSaveGame(savefile);
+            this.hoverColor.ReadFromSaveGame(savefile);
+            this.borderColor.ReadFromSaveGame(savefile);
+            this.textScale.ReadFromSaveGame(savefile);
+            this.noEvents.ReadFromSaveGame(savefile);
+            this.rotate.ReadFromSaveGame(savefile);
+            this.text.ReadFromSaveGame(savefile);
+            this.backGroundName.ReadFromSaveGame(savefile);
 
             if (session.GetSaveGameVersion() >= 17) {
-                hideCursor.ReadFromSaveGame(savefile);
+                this.hideCursor.ReadFromSaveGame(savefile);
             } else {
-                hideCursor.data = false;
+                this.hideCursor.data = false;
             }
 
             // Defined Vars
-            for (i = 0; i < definedVars.Num(); i++) {
-                definedVars.oGet(i).ReadFromSaveGame(savefile);
+            for (i = 0; i < this.definedVars.Num(); i++) {
+                this.definedVars.oGet(i).ReadFromSaveGame(savefile);
             }
 
-            savefile.Read(textRect);
+            savefile.Read(this.textRect);
 
             // Window pointers saved as the child ID of the window
             int winID = -1;
 
             winID = savefile.ReadInt();
-            for (i = 0; i < children.Num(); i++) {
-                if (children.oGet(i).childID == winID) {
-                    focusedChild = children.oGet(i);
+            for (i = 0; i < this.children.Num(); i++) {
+                if (this.children.oGet(i).childID == winID) {
+                    this.focusedChild = this.children.oGet(i);
                 }
             }
             winID = savefile.ReadInt();
-            for (i = 0; i < children.Num(); i++) {
-                if (children.oGet(i).childID == winID) {
-                    captureChild = children.oGet(i);
+            for (i = 0; i < this.children.Num(); i++) {
+                if (this.children.oGet(i).childID == winID) {
+                    this.captureChild = this.children.oGet(i);
                 }
             }
             winID = savefile.ReadInt();
-            for (i = 0; i < children.Num(); i++) {
-                if (children.oGet(i).childID == winID) {
-                    overChild = children.oGet(i);
+            for (i = 0; i < this.children.Num(); i++) {
+                if (this.children.oGet(i).childID == winID) {
+                    this.overChild = this.children.oGet(i);
                 }
             }
 
             // Scripts
             for (i = 0; i < SCRIPT_COUNT.ordinal(); i++) {
-                if (scripts[i] != null) {
-                    scripts[i].ReadFromSaveGame(savefile);
+                if (this.scripts[i] != null) {
+                    this.scripts[i].ReadFromSaveGame(savefile);
                 }
             }
 
             // TimeLine Events
-            for (i = 0; i < timeLineEvents.Num(); i++) {
-                if (timeLineEvents.oGet(i) != null) {
-                    timeLineEvents.oGet(i).pending = savefile.ReadBool();
-                    timeLineEvents.oGet(i).time = savefile.ReadInt();
-                    if (timeLineEvents.oGet(i).event != null) {
-                        timeLineEvents.oGet(i).event.ReadFromSaveGame(savefile);
+            for (i = 0; i < this.timeLineEvents.Num(); i++) {
+                if (this.timeLineEvents.oGet(i) != null) {
+                    this.timeLineEvents.oGet(i).pending = savefile.ReadBool();
+                    this.timeLineEvents.oGet(i).time = savefile.ReadInt();
+                    if (this.timeLineEvents.oGet(i).event != null) {
+                        this.timeLineEvents.oGet(i).event.ReadFromSaveGame(savefile);
                     }
                 }
             }
@@ -2671,30 +2675,30 @@ public class Window {
             int num;
             num = savefile.ReadInt();
             for (i = 0; i < num; i++) {
-                idTransitionData trans = new idTransitionData();
+                final idTransitionData trans = new idTransitionData();
                 trans.data = null;
                 ReadSaveGameTransition(trans, savefile);
                 if (trans.data != null) {
-                    transitions.Append(trans);
+                    this.transitions.Append(trans);
                 }
             }
 
             // Named Events
-            for (i = 0; i < namedEvents.Num(); i++) {
-                if (namedEvents.oGet(i) != null) {
-                    ReadSaveGameString(namedEvents.oGet(i).mName, savefile);
-                    if (namedEvents.oGet(i).mEvent != null) {
-                        namedEvents.oGet(i).mEvent.ReadFromSaveGame(savefile);
+            for (i = 0; i < this.namedEvents.Num(); i++) {
+                if (this.namedEvents.oGet(i) != null) {
+                    ReadSaveGameString(this.namedEvents.oGet(i).mName, savefile);
+                    if (this.namedEvents.oGet(i).mEvent != null) {
+                        this.namedEvents.oGet(i).mEvent.ReadFromSaveGame(savefile);
                     }
                 }
             }
 
             // regList
-            regList.ReadFromSaveGame(savefile);
+            this.regList.ReadFromSaveGame(savefile);
 
             // Read children
-            for (i = 0; i < drawWindows.Num(); i++) {
-                drawWin_t window = drawWindows.oGet(i);
+            for (i = 0; i < this.drawWindows.Num(); i++) {
+                final drawWin_t window = this.drawWindows.oGet(i);
 
                 if (window.simp != null) {
                     window.simp.ReadFromSaveGame(savefile);
@@ -2703,18 +2707,18 @@ public class Window {
                 }
             }
 
-            if ((flags & WIN_DESKTOP) != 0) {
+            if ((this.flags & WIN_DESKTOP) != 0) {
                 FixupTransitions();
             }
         }
 
         public void FixupTransitions() {
-            int i, c = transitions.Num();
+            int i, c = this.transitions.Num();
             for (i = 0; i < c; i++) {
-                drawWin_t dw = gui.GetDesktop().FindChildByName(((idWinStr) transitions.oGet(i).data).c_str());
+                final drawWin_t dw = this.gui.GetDesktop().FindChildByName(((idWinStr) this.transitions.oGet(i).data).c_str());
 //		delete transitions[i].data;
-                transitions.oGet(i).data = null;
-                if (dw != null && (dw.win != null || dw.simp != null)) {//TODO:
+                this.transitions.oGet(i).data = null;
+                if ((dw != null) && ((dw.win != null) || (dw.simp != null))) {//TODO:
 //			if ( dw.win ) {
 //				if ( transitions.oGet(i).offset == (int)( ( idWindow  ) 0 ).rect ) {
 //					transitions.oGet(i).data = dw.win.rect;
@@ -2749,14 +2753,14 @@ public class Window {
 //				}
 //			}
                 }
-                if (transitions.oGet(i).data == null) {
-                    transitions.RemoveIndex(i);
+                if (this.transitions.oGet(i).data == null) {
+                    this.transitions.RemoveIndex(i);
                     i--;
                     c--;
                 }
             }
-            for (c = 0; c < children.Num(); c++) {
-                children.oGet(c).FixupTransitions();
+            for (c = 0; c < this.children.Num(); c++) {
+                this.children.oGet(c).FixupTransitions();
             }
         }
 
@@ -2768,40 +2772,40 @@ public class Window {
 
         public void FixupParms() {
             int i;
-            int c = children.Num();
+            int c = this.children.Num();
             for (i = 0; i < c; i++) {
-                children.oGet(i).FixupParms();
+                this.children.oGet(i).FixupParms();
             }
             for (i = 0; i < SCRIPT_COUNT.ordinal(); i++) {
-                if (scripts[i] != null) {
-                    scripts[i].FixupParms(this);
+                if (this.scripts[i] != null) {
+                    this.scripts[i].FixupParms(this);
                 }
             }
 
-            c = timeLineEvents.Num();
+            c = this.timeLineEvents.Num();
             for (i = 0; i < c; i++) {
-                timeLineEvents.oGet(i).event.FixupParms(this);
+                this.timeLineEvents.oGet(i).event.FixupParms(this);
             }
 
-            c = namedEvents.Num();
+            c = this.namedEvents.Num();
             for (i = 0; i < c; i++) {
-                namedEvents.oGet(i).mEvent.FixupParms(this);
+                this.namedEvents.oGet(i).mEvent.FixupParms(this);
             }
 
-            c = ops.Num();
+            c = this.ops.Num();
             for (i = 0; i < c; i++) {
-                if (ops.oGet(i).b == -2) {
+                if (this.ops.oGet(i).b == -2) {
                     // need to fix this up
-                    final String p = ops.oGet(i).a.c_str();
-                    idWinVar var = GetWinVarByName(p, true);
+                    final String p = this.ops.oGet(i).a.c_str();
+                    final idWinVar var = GetWinVarByName(p, true);
 //                    System.out.println("=="+p);
 //			delete []p;
-                    ops.oGet(i).a = /*(int)*/ var;
-                    ops.oGet(i).b = -1;
+                    this.ops.oGet(i).a = /*(int)*/ var;
+                    this.ops.oGet(i).b = -1;
                 }
             }
 
-            if ((flags & WIN_DESKTOP) != 0) {
+            if ((this.flags & WIN_DESKTOP) != 0) {
                 CalcRects(0, 0);
             }
 
@@ -2814,26 +2818,26 @@ public class Window {
         }
 
         public boolean HasOps() {
-            return (ops.Num() > 0);
+            return (this.ops.Num() > 0);
         }
         private static float[] regs = new float[MAX_EXPRESSION_REGISTERS];
         private static idWindow lastEval;
 
         public float EvalRegs(int test /*= -1*/, boolean force /*= false*/) {
 
-            if (!force && test >= 0 && test < MAX_EXPRESSION_REGISTERS && lastEval == this) {
+            if (!force && (test >= 0) && (test < MAX_EXPRESSION_REGISTERS) && (lastEval == this)) {
                 return regs[test];
             }
 
             lastEval = this;
 
-            if (expressionRegisters.Num() != 0) {
-                regList.SetToRegs(regs);
+            if (this.expressionRegisters.Num() != 0) {
+                this.regList.SetToRegs(regs);
                 EvaluateRegisters(regs);
-                regList.GetFromRegs(regs);
+                this.regList.GetFromRegs(regs);
             }
 
-            if (test >= 0 && test < MAX_EXPRESSION_REGISTERS) {
+            if ((test >= 0) && (test < MAX_EXPRESSION_REGISTERS)) {
                 return regs[test];
             }
 
@@ -2849,34 +2853,34 @@ public class Window {
         }
 
         public void StartTransition() {
-            flags |= WIN_INTRANSITION;
+            this.flags |= WIN_INTRANSITION;
         }
 
         public void AddTransition(idWinVar dest, idVec4 from, idVec4 to, int time, float accelTime, float decelTime) {
-            idTransitionData data = new idTransitionData();
+            final idTransitionData data = new idTransitionData();
             data.data = dest;
-            data.interp.Init(gui.GetTime(), accelTime * time, decelTime * time, time, from, to);
-            transitions.Append(data);
+            data.interp.Init(this.gui.GetTime(), accelTime * time, decelTime * time, time, from, to);
+            this.transitions.Append(data);
         }
 
         public void ResetTime(int t) {
 
-            timeLine = gui.GetTime() - t;
+            this.timeLine = this.gui.GetTime() - t;
 
-            int i, c = timeLineEvents.Num();
+            int i, c = this.timeLineEvents.Num();
             for (i = 0; i < c; i++) {
-                if (timeLineEvents.oGet(i).time >= t) {
-                    timeLineEvents.oGet(i).pending = true;
+                if (this.timeLineEvents.oGet(i).time >= t) {
+                    this.timeLineEvents.oGet(i).pending = true;
                 }
             }
 
-            noTime.data = false;
+            this.noTime.data = false;
 
-            c = transitions.Num();
+            c = this.transitions.Num();
             for (i = 0; i < c; i++) {
-                idTransitionData data = transitions.oGet(i);
-                if (data.interp.IsDone(gui.GetTime()) && data.data != null) {
-                    transitions.RemoveIndex(i);
+                final idTransitionData data = this.transitions.oGet(i);
+                if (data.interp.IsDone(this.gui.GetTime()) && (data.data != null)) {
+                    this.transitions.RemoveIndex(i);
                     i--;
                     c--;
                 }
@@ -2885,15 +2889,15 @@ public class Window {
         }
 
         public void ResetCinematics() {
-            if (background != null) {
-                background.ResetCinematicTime(gui.GetTime());
+            if (this.background != null) {
+                this.background.ResetCinematicTime(this.gui.GetTime());
             }
         }
 
         public int NumTransitions() {
-            int c = transitions.Num();
-            for (int i = 0; i < children.Num(); i++) {
-                c += children.oGet(i).NumTransitions();
+            int c = this.transitions.Num();
+            for (int i = 0; i < this.children.Num(); i++) {
+                c += this.children.oGet(i).NumTransitions();
             }
             return c;
         }
@@ -2902,7 +2906,7 @@ public class Window {
 
             boolean ifElseBlock = false;
 
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             // scripts start with { ( unless parm is true ) and have ; separated command lists.. commands are command,
             // arg.. basically we want everything between the { } as it will be interpreted at
@@ -2941,7 +2945,7 @@ public class Window {
                     }
                 }
 
-                idGuiScript gs = new idGuiScript();
+                final idGuiScript gs = new idGuiScript();
                 if (token.Icmp("if") == 0) {
                     gs.conditionReg = ParseExpression(src);
                     gs.ifList = new idGuiScriptList();
@@ -2990,8 +2994,8 @@ public class Window {
         }
 
         public boolean RunScript(int n) {
-            if (n >= ON_MOUSEENTER.ordinal() && n < SCRIPT_COUNT.ordinal()) {
-                return RunScriptList(scripts[n]);
+            if ((n >= ON_MOUSEENTER.ordinal()) && (n < SCRIPT_COUNT.ordinal())) {
+                return RunScriptList(this.scripts[n]);
             }
             return false;
         }
@@ -3033,59 +3037,59 @@ public class Window {
         public int ExpressionConstant(float f) {
             int i;
 
-            for (i = etoi(WEXP_REG_NUM_PREDEFINED); i < expressionRegisters.Num(); i++) {
-                if (!registerIsTemporary[i] && expressionRegisters.oGet(i) == f) {
+            for (i = etoi(WEXP_REG_NUM_PREDEFINED); i < this.expressionRegisters.Num(); i++) {
+                if (!registerIsTemporary[i] && (this.expressionRegisters.oGet(i) == f)) {
                     return i;
                 }
             }
-            if (expressionRegisters.Num() == MAX_EXPRESSION_REGISTERS) {
-                common.Warning("expressionConstant: gui %s hit MAX_EXPRESSION_REGISTERS", gui.GetSourceFile());
+            if (this.expressionRegisters.Num() == MAX_EXPRESSION_REGISTERS) {
+                common.Warning("expressionConstant: gui %s hit MAX_EXPRESSION_REGISTERS", this.gui.GetSourceFile());
                 return 0;
             }
 
-            int c = expressionRegisters.Num();
+            final int c = this.expressionRegisters.Num();
             if (i > c) {
                 while (i > c) {
-                    expressionRegisters.Append(-9999999f);
+                    this.expressionRegisters.Append(-9999999f);
                     i--;
                 }
             }
 
-            i = expressionRegisters.Append(f);
+            i = this.expressionRegisters.Append(f);
             registerIsTemporary[i] = false;
             return i;
         }
 
         public idRegisterList RegList() {
-            return regList;
+            return this.regList;
         }
 
         public void AddCommand(final String _cmd) {
-            String str = cmd.toString();
+            String str = this.cmd.toString();
             if (!str.isEmpty()) {
                 str += " ; ";
                 str += _cmd;
             } else {
                 str = _cmd;
             }
-            cmd.oSet(str);
+            this.cmd.oSet(str);
         }
 
         static int DEBUG_updateVars = 0;
 
         public void AddUpdateVar(idWinVar var) {
             var.DEBUG_COUNTER = DEBUG_updateVars++;
-            updateVars.AddUnique(var);
+            this.updateVars.AddUnique(var);
 //            System.out.printf("%d %s\n", DEBUG_updateVars, var.GetName());
         }
 
         public boolean Interactive() {
-            if (scripts[ON_ACTION.ordinal()] != null) {
+            if (this.scripts[ON_ACTION.ordinal()] != null) {
                 return true;
             }
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                if (children.oGet(i).Interactive()) {
+                if (this.children.oGet(i).Interactive()) {
                     return true;
                 }
             }
@@ -3093,12 +3097,12 @@ public class Window {
         }
 
         public boolean ContainsStateVars() {
-            if (updateVars.Num() != 0) {
+            if (this.updateVars.Num() != 0) {
                 return true;
             }
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                if (children.oGet(i).ContainsStateVars()) {
+                if (this.children.oGet(i).ContainsStateVars()) {
                     return true;
                 }
             }
@@ -3106,7 +3110,7 @@ public class Window {
         }
 
         public void SetChildWinVarVal(final String name, final String var, final String val) {
-            drawWin_t dw = FindChildByName(name);
+            final drawWin_t dw = FindChildByName(name);
             idWinVar wv = null;
             if (dw != null) {
                 if (dw.simp != null) {
@@ -3122,25 +3126,25 @@ public class Window {
         }
 
         public idWindow GetFocusedChild() {
-            if ((flags & WIN_DESKTOP) != 0) {
-                return gui.GetDesktop().focusedChild;
+            if ((this.flags & WIN_DESKTOP) != 0) {
+                return this.gui.GetDesktop().focusedChild;
             }
             return null;
         }
 
         public idWindow GetCaptureChild() {
-            if ((flags & WIN_DESKTOP) != 0) {
-                return gui.GetDesktop().captureChild;
+            if ((this.flags & WIN_DESKTOP) != 0) {
+                return this.gui.GetDesktop().captureChild;
             }
             return null;
         }
 
         public String GetComment() {
-            return comment.toString();
+            return this.comment.toString();
         }
 
         public void SetComment(final String p) {
-            comment.oSet(p);
+            this.comment.oSet(p);
         }
         public idStr cmd = new idStr();
 
@@ -3149,33 +3153,33 @@ public class Window {
             int c;
 
             // Find and run the event	
-            c = namedEvents.Num();
+            c = this.namedEvents.Num();
             for (i = 0; i < c; i++) {
-                if (namedEvents.oGet(i).mName.Icmp(eventName) != 0) {
+                if (this.namedEvents.oGet(i).mName.Icmp(eventName) != 0) {
                     continue;
                 }
 
                 UpdateWinVars();
 
                 // Make sure we got all the current values for stuff
-                if (expressionRegisters.Num() != 0 && ops.Num() != 0) {
+                if ((this.expressionRegisters.Num() != 0) && (this.ops.Num() != 0)) {
                     EvalRegs(-1, true);
                 }
 
-                RunScriptList(namedEvents.oGet(i).mEvent);
+                RunScriptList(this.namedEvents.oGet(i).mEvent);
 
                 break;
             }
 
             // Run the event in all the children as well
-            c = children.Num();
+            c = this.children.Num();
             for (i = 0; i < c; i++) {
-                children.oGet(i).RunNamedEvent(eventName);
+                this.children.oGet(i).RunNamedEvent(eventName);
             }
         }
 
         public void AddDefinedVar(idWinVar var) {
-            definedVars.AddUnique(var);
+            this.definedVars.AddUnique(var);
         }
 
         public idWindow FindChildByPoint(float x, float y, idWindow below /*= NULL*/) {
@@ -3184,8 +3188,8 @@ public class Window {
 
         public int GetChildIndex(idWindow window) {
             int find;
-            for (find = 0; find < drawWindows.Num(); find++) {
-                if (drawWindows.oGet(find).win == window) {
+            for (find = 0; find < this.drawWindows.Num(); find++) {
+                if (this.drawWindows.oGet(find).win == window) {
                     return find;
                 }
             }
@@ -3200,7 +3204,7 @@ public class Window {
          ================
          */
         public int GetChildCount() {
-            return drawWindows.Num();
+            return this.drawWindows.Num();
         }
 
         /*
@@ -3212,10 +3216,10 @@ public class Window {
          */private static int DBG_GetChild = 0;
         public idWindow GetChild(int index) {
             DBG_GetChild++;
-            final drawWin_t win_t = drawWindows.oGet(index);
+            final drawWin_t win_t = this.drawWindows.oGet(index);
             final idWindow win = win_t.win;
-            if (win_t != null && win_t.DBG_index == 10670) {
-                int a = 0;
+            if ((win_t != null) && (win_t.DBG_index == 10670)) {
+                final int a = 0;
             }
             return win;
         }
@@ -3232,11 +3236,11 @@ public class Window {
             int find;
 
             // Remove the child window
-            children.Remove(win);
+            this.children.Remove(win);
 
-            for (find = 0; find < drawWindows.Num(); find++) {
-                if (drawWindows.oGet(find).win == win) {
-                    drawWindows.RemoveIndex(find);
+            for (find = 0; find < this.drawWindows.Num(); find++) {
+                if (this.drawWindows.oGet(find).win == win) {
+                    this.drawWindows.RemoveIndex(find);
                     break;
                 }
             }
@@ -3254,7 +3258,7 @@ public class Window {
 
             win.parent = this;
 
-            drawWin_t dwt = new drawWin_t();
+            final drawWin_t dwt = new drawWin_t();
             dwt.simp = null;
             dwt.win = win;
 
@@ -3263,12 +3267,12 @@ public class Window {
                 int index;
                 index = GetChildIndex(before);
                 if (index != -1) {
-                    drawWindows.Insert(dwt, index);
+                    this.drawWindows.Insert(dwt, index);
                     return true;
                 }
             }
 
-            drawWindows.Append(dwt);
+            this.drawWindows.Append(dwt);
             return true;
         }
 
@@ -3307,20 +3311,20 @@ public class Window {
             SetDefaults();
 
             // Clear all registers since they will get recreated
-            regList.Reset();
-            expressionRegisters.Clear();
-            ops.Clear();
+            this.regList.Reset();
+            this.expressionRegisters.Clear();
+            this.ops.Clear();
 
             for (i = 0; i < dict.GetNumKeyVals(); i++) {
                 kv = dict.GetKeyVal(i);
 
                 // Special case name
                 if (NOT(kv.GetKey().Icmp("name"))) {
-                    name = kv.GetValue();
+                    this.name = kv.GetValue();
                     continue;
                 }
 
-                idParser src = new idParser(kv.GetValue().toString(), kv.GetValue().Length(), "",
+                final idParser src = new idParser(kv.GetValue().toString(), kv.GetValue().Length(), "",
                         LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
                 if (!ParseInternalVar(kv.GetKey().toString(), src)) {
                     // Kill the old register since the parse reg entry will add a new one
@@ -3347,7 +3351,7 @@ public class Window {
          ================
          */
         protected idWindow FindChildByPoint(float x, float y, idWindow[] below) {
-            int c = children.Num();
+            final int c = this.children.Num();
 
             // If we are looking for a window below this one then
             // the next window should be good, but this one wasnt it
@@ -3356,12 +3360,12 @@ public class Window {
                 return null;
             }
 
-            if (!Contains(drawRect, x, y)) {
+            if (!Contains(this.drawRect, x, y)) {
                 return null;
             }
 
             for (int i = c - 1; i >= 0; i--) {
-                idWindow found = children.oGet(i).FindChildByPoint(x, y, below);
+                final idWindow found = this.children.oGet(i).FindChildByPoint(x, y, below);
                 if (found != null) {
                     if (below[0] != null) {
                         continue;
@@ -3383,29 +3387,29 @@ public class Window {
          ================
          */
         protected void SetDefaults() {
-            forceAspectWidth = 640.0f;
-            forceAspectHeight = 480.0f;
-            matScalex = 1;
-            matScaley = 1;
-            borderSize = 0;
-            noTime.data = false;
-            visible.data = true;
-            textAlign = 0;
-            textAlignx = 0;
-            textAligny = 0;
-            noEvents.data = false;
-            rotate.data = 0;
-            shear.Zero();
-            textScale.data = 0.35f;
-            backColor.Zero();
-            foreColor.oSet(new idVec4(1, 1, 1, 1));
-            hoverColor.oSet(new idVec4(1, 1, 1, 1));
-            matColor.oSet(new idVec4(1, 1, 1, 1));
-            borderColor.Zero();
-            text.data.oSet("");
+            this.forceAspectWidth = 640.0f;
+            this.forceAspectHeight = 480.0f;
+            this.matScalex = 1;
+            this.matScaley = 1;
+            this.borderSize = 0;
+            this.noTime.data = false;
+            this.visible.data = true;
+            this.textAlign = 0;
+            this.textAlignx = 0;
+            this.textAligny = 0;
+            this.noEvents.data = false;
+            this.rotate.data = 0;
+            this.shear.Zero();
+            this.textScale.data = 0.35f;
+            this.backColor.Zero();
+            this.foreColor.oSet(new idVec4(1, 1, 1, 1));
+            this.hoverColor.oSet(new idVec4(1, 1, 1, 1));
+            this.matColor.oSet(new idVec4(1, 1, 1, 1));
+            this.borderColor.Zero();
+            this.text.data.oSet("");
 
-            background = null;
-            backGroundName.data.oSet("");
+            this.background = null;
+            this.backGroundName.data.oSet("");
         }
 ////
 //// friend class idSimpleWindow;
@@ -3418,25 +3422,25 @@ public class Window {
                 return false;
             }
 
-            if (ops.Num() != 0) {
+            if (this.ops.Num() != 0) {
                 return false;
             }
-            if ((flags & (WIN_HCENTER | WIN_VCENTER)) != 0) {
+            if ((this.flags & (WIN_HCENTER | WIN_VCENTER)) != 0) {
                 return false;
             }
-            if (children.Num() != 0 || drawWindows.Num() != 0) {
+            if ((this.children.Num() != 0) || (this.drawWindows.Num() != 0)) {
                 return false;
             }
             for (int i = 0; i < SCRIPT_COUNT.ordinal(); i++) {
-                if (scripts[i] != null) {
+                if (this.scripts[i] != null) {
                     return false;
                 }
             }
-            if (timeLineEvents.Num() != 0) {
+            if (this.timeLineEvents.Num() != 0) {
                 return false;
             }
 
-            if (namedEvents.Num() != 0) {
+            if (this.namedEvents.Num() != 0) {
                 return false;
             }
 
@@ -3444,26 +3448,27 @@ public class Window {
         }
 
         protected void UpdateWinVars() {
-            int c = updateVars.Num();
+            final int c = this.updateVars.Num();
             for (int i = 0; i < c; i++) {
 //                System.out.printf("%d %s\n", DEBUG_Activate, updateVars.oGet(i).c_str());
-                updateVars.oGet(i).Update();
+                this.updateVars.oGet(i).Update();
             }
         }
 
         protected void DisableRegister(final String _name) {
-            idRegister reg = RegList().FindReg(_name);
+            final idRegister reg = RegList().FindReg(_name);
             if (reg != null) {
                 reg.Enable(false);
             }
         }
 
         protected void Transition() {
-            int i, c = transitions.Num();
+            int i;
+			final int c = this.transitions.Num();
             boolean clear = true;
 
             for (i = 0; i < c; i++) {
-                idTransitionData data = transitions.oGet(i);
+                final idTransitionData data = this.transitions.oGet(i);
                 idWinRectangle r = null;
                 idWinFloat val = null;
                 idWinVec4 v4 = null;
@@ -3475,7 +3480,7 @@ public class Window {
                     r = (idWinRectangle) data.data;
                 }
 
-                if (data.interp.IsDone(gui.GetTime()) && data.data != null) {
+                if (data.interp.IsDone(this.gui.GetTime()) && (data.data != null)) {
                     if (v4 != null) {
                         v4.oSet(data.interp.GetEndValue());
                     } else if (val != null) {
@@ -3487,66 +3492,66 @@ public class Window {
                     clear = false;
                     if (data.data != null) {
                         if (v4 != null) {
-                            v4.oSet(data.interp.GetCurrentValue(gui.GetTime()));
+                            v4.oSet(data.interp.GetCurrentValue(this.gui.GetTime()));
                         } else if (val != null) {
-                            val.oSet(data.interp.GetCurrentValue(gui.GetTime()).oGet(0));
+                            val.oSet(data.interp.GetCurrentValue(this.gui.GetTime()).oGet(0));
                         } else {
-                            r.oSet(data.interp.GetCurrentValue(gui.GetTime()));
+                            r.oSet(data.interp.GetCurrentValue(this.gui.GetTime()));
                         }
                     } else {
-                        common.Warning("Invalid transitional data for window %s in gui %s", GetName(), gui.GetSourceFile());
+                        common.Warning("Invalid transitional data for window %s in gui %s", GetName(), this.gui.GetSourceFile());
                     }
                 }
             }
 
             if (clear) {
-                transitions.SetNum(0, false);
-                flags &= ~WIN_INTRANSITION;
+                this.transitions.SetNum(0, false);
+                this.flags &= ~WIN_INTRANSITION;
             }
         }
 
         protected void Time() {
 
-            if (noTime.data) {
+            if (this.noTime.data) {
                 return;
             }
 
-            if (timeLine == -1) {
-                timeLine = gui.GetTime();
+            if (this.timeLine == -1) {
+                this.timeLine = this.gui.GetTime();
             }
 
-            cmd.oSet("");
+            this.cmd.oSet("");
 
-            int c = timeLineEvents.Num();
+            final int c = this.timeLineEvents.Num();
             if (c > 0) {
                 for (int i = 0; i < c; i++) {
-                    if (timeLineEvents.oGet(i).pending && gui.GetTime() - timeLine >= timeLineEvents.oGet(i).time) {
-                        timeLineEvents.oGet(i).pending = false;
-                        RunScriptList(timeLineEvents.oGet(i).event);
+                    if (this.timeLineEvents.oGet(i).pending && ((this.gui.GetTime() - this.timeLine) >= this.timeLineEvents.oGet(i).time)) {
+                        this.timeLineEvents.oGet(i).pending = false;
+                        RunScriptList(this.timeLineEvents.oGet(i).event);
                     }
                 }
             }
-            if (gui.Active()) {
-                gui.GetPendingCmd().oPluSet(cmd);
+            if (this.gui.Active()) {
+                this.gui.GetPendingCmd().oPluSet(this.cmd);
             }
         }
 
         protected boolean RunTimeEvents(int time) {
 
-            if (time - lastTimeRun < USERCMD_MSEC) {
+            if ((time - this.lastTimeRun) < USERCMD_MSEC) {
                 //common->Printf("Skipping gui time events at %d\n", time);
                 return false;
             }
 
-            lastTimeRun = time;
+            this.lastTimeRun = time;
 
             UpdateWinVars();
 
-            if (expressionRegisters.Num() != 0 && ops.Num() != 0) {
+            if ((this.expressionRegisters.Num() != 0) && (this.ops.Num() != 0)) {
                 EvalRegs();
             }
 
-            if ((flags & WIN_INTRANSITION) != 0) {
+            if ((this.flags & WIN_INTRANSITION) != 0) {
                 Transition();
             }
 
@@ -3555,9 +3560,9 @@ public class Window {
             // renamed ON_EVENT to ON_FRAME
             RunScript(ON_FRAME);
 
-            int c = children.Num();
+            final int c = this.children.Num();
             for (int i = 0; i < c; i++) {
-                children.oGet(i).RunTimeEvents(time);
+                this.children.oGet(i).RunTimeEvents(time);
             }
 
             return true;
@@ -3600,25 +3605,25 @@ public class Window {
         }
 
         protected int ExpressionTemporary() {
-            if (expressionRegisters.Num() == MAX_EXPRESSION_REGISTERS) {
-                common.Warning("expressionTemporary: gui %s hit MAX_EXPRESSION_REGISTERS", gui.GetSourceFile());
+            if (this.expressionRegisters.Num() == MAX_EXPRESSION_REGISTERS) {
+                common.Warning("expressionTemporary: gui %s hit MAX_EXPRESSION_REGISTERS", this.gui.GetSourceFile());
                 return 0;
             }
-            int i = expressionRegisters.Num();
+            int i = this.expressionRegisters.Num();
             registerIsTemporary[i] = true;
-            i = expressionRegisters.Append(0f);
+            i = this.expressionRegisters.Append(0f);
             return i;
         }
 
         protected wexpOp_t ExpressionOp() {
-            if (ops.Num() == MAX_EXPRESSION_OPS) {
-                common.Warning("expressionOp: gui %s hit MAX_EXPRESSION_OPS", gui.GetSourceFile());
-                return ops.oGet(0);
+            if (this.ops.Num() == MAX_EXPRESSION_OPS) {
+                common.Warning("expressionOp: gui %s hit MAX_EXPRESSION_OPS", this.gui.GetSourceFile());
+                return this.ops.oGet(0);
             }
-            wexpOp_t wop = new wexpOp_t();
+            final wexpOp_t wop = new wexpOp_t();
 //	memset(&wop, 0, sizeof(wexpOp_t));
-            int i = ops.Append(wop);
-            return ops.oGet(i);
+            final int i = this.ops.Append(wop);
+            return this.ops.oGet(i);
         }
 
         protected int EmitOp(idWinVar a, int b, wexpOpType_t opType, wexpOp_t[] opp /*= NULL*/) {
@@ -3672,7 +3677,7 @@ public class Window {
         }
 
         protected int ParseEmitOp(idParser src, idWinVar a, wexpOpType_t opType, int priority, wexpOp_t[] opp /*= NULL*/) {
-            int b = ParseExpressionPriority(src, priority);
+            final int b = ParseExpressionPriority(src, priority);
             return EmitOp(a, b, opType, opp);
         }
 
@@ -3690,7 +3695,7 @@ public class Window {
          */
         protected int ParseTerm(idParser src, idWinVar var /*= NULL*/, int component /*= 0*/) {
 
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idWinVar a;
             int b;
 
@@ -3709,14 +3714,14 @@ public class Window {
             // parse negative numbers
             if (token.equals("-")) {
                 src.ReadToken(token);
-                if (token.type == TT_NUMBER || token.equals(".")) {
-                    return ExpressionConstant(-(float) token.GetFloatValue());
+                if ((token.type == TT_NUMBER) || token.equals(".")) {
+                    return ExpressionConstant(-token.GetFloatValue());
                 }
                 src.Warning("Bad negative number '%s'", token);
                 return 0;
             }
 
-            if (token.type == TT_NUMBER || token.equals(".") || token.equals("-")) {
+            if ((token.type == TT_NUMBER) || token.equals(".") || token.equals("-")) {
                 return ExpressionConstant(token.GetFloatValue());
             }
 
@@ -3781,7 +3786,7 @@ public class Window {
          =================
          */
         protected int ParseExpressionPriority(idParser src, int priority, idWinVar var /*= NULL*/, int component /*= 0*/) {
-            idToken token = new idToken();
+            final idToken token = new idToken();
             idWinInt a;
 
             if (priority == 0) {
@@ -3796,48 +3801,48 @@ public class Window {
                 return a.data;
             }
 
-            if (priority == 1 && token.equals("*")) {
+            if ((priority == 1) && token.equals("*")) {
                 return ParseEmitOp(src, a, WOP_TYPE_MULTIPLY, priority);
             }
-            if (priority == 1 && token.equals("/")) {
+            if ((priority == 1) && token.equals("/")) {
                 return ParseEmitOp(src, a, WOP_TYPE_DIVIDE, priority);
             }
-            if (priority == 1 && token.equals("%")) {	// implied truncate both to integer
+            if ((priority == 1) && token.equals("%")) {	// implied truncate both to integer
                 return ParseEmitOp(src, a, WOP_TYPE_MOD, priority);
             }
-            if (priority == 2 && token.equals("+")) {
+            if ((priority == 2) && token.equals("+")) {
                 return ParseEmitOp(src, a, WOP_TYPE_ADD, priority);
             }
-            if (priority == 2 && token.equals("-")) {
+            if ((priority == 2) && token.equals("-")) {
                 return ParseEmitOp(src, a, WOP_TYPE_SUBTRACT, priority);
             }
-            if (priority == 3 && token.equals(">")) {
+            if ((priority == 3) && token.equals(">")) {
                 return ParseEmitOp(src, a, WOP_TYPE_GT, priority);
             }
-            if (priority == 3 && token.equals(">=")) {
+            if ((priority == 3) && token.equals(">=")) {
                 return ParseEmitOp(src, a, WOP_TYPE_GE, priority);
             }
-            if (priority == 3 && token.equals("<")) {
+            if ((priority == 3) && token.equals("<")) {
                 return ParseEmitOp(src, a, WOP_TYPE_LT, priority);
             }
-            if (priority == 3 && token.equals("<=")) {
+            if ((priority == 3) && token.equals("<=")) {
                 return ParseEmitOp(src, a, WOP_TYPE_LE, priority);
             }
-            if (priority == 3 && token.equals("==")) {
+            if ((priority == 3) && token.equals("==")) {
                 return ParseEmitOp(src, a, WOP_TYPE_EQ, priority);
             }
-            if (priority == 3 && token.equals("!=")) {
+            if ((priority == 3) && token.equals("!=")) {
                 return ParseEmitOp(src, a, WOP_TYPE_NE, priority);
             }
-            if (priority == 4 && token.equals("&&")) {
+            if ((priority == 4) && token.equals("&&")) {
                 return ParseEmitOp(src, a, WOP_TYPE_AND, priority);
             }
-            if (priority == 4 && token.equals("||")) {
+            if ((priority == 4) && token.equals("||")) {
                 return ParseEmitOp(src, a, WOP_TYPE_OR, priority);
             }
-            if (priority == 4 && token.equals("?")) {
-                wexpOp_t[] oop = {null};
-                int o = ParseEmitOp(src, a, WOP_TYPE_COND, priority, oop);
+            if ((priority == 4) && token.equals("?")) {
+                final wexpOp_t[] oop = {null};
+                final int o = ParseEmitOp(src, a, WOP_TYPE_COND, priority, oop);
                 if (!src.ReadToken(token)) {
                     return o;
                 }
@@ -3875,20 +3880,20 @@ public class Window {
 
             int i, b;
             wexpOp_t op;
-            idVec4 v;
+            final idVec4 v;
 
-            int erc = expressionRegisters.Num();
-            int oc = ops.Num();
+            final int erc = this.expressionRegisters.Num();
+            final int oc = this.ops.Num();
             // copy the constants
             for (i = etoi(WEXP_REG_NUM_PREDEFINED); i < erc; i++) {
-                registers[i] = expressionRegisters.oGet(i);
+                registers[i] = this.expressionRegisters.oGet(i);
             }
 
             // copy the local and global parameters
-            registers[etoi(WEXP_REG_TIME)] = gui.GetTime();
+            registers[etoi(WEXP_REG_TIME)] = this.gui.GetTime();
 
             for (i = 0; i < oc; i++) {
-                op = ops.oGet(i);
+                op = this.ops.oGet(i);
                 if (op.b == -2) {
                     continue;
                 }
@@ -3904,7 +3909,7 @@ public class Window {
                         break;
                     case WOP_TYPE_DIVIDE:
                         if (registers[op.b] == 0.0f) {
-                            common.Warning("Divide by zero in window '%s' in %s", GetName(), gui.GetSourceFile());
+                            common.Warning("Divide by zero in window '%s' in %s", GetName(), this.gui.GetSourceFile());
                             registers[op.c] = registers[op.getA()];
                         } else {
                             registers[op.c] = registers[op.getA()] / registers[op.b];
@@ -3942,27 +3947,27 @@ public class Window {
                         registers[op.c] = (registers[op.getA()]) != 0 ? registers[op.b] : registers[op.getD()];
                         break;
                     case WOP_TYPE_AND:
-                        registers[op.c] = (registers[op.getA()] != 0 && registers[op.b] != 0) ? 1 : 0;
+                        registers[op.c] = ((registers[op.getA()] != 0) && (registers[op.b] != 0)) ? 1 : 0;
                         break;
                     case WOP_TYPE_OR:
-                        registers[op.c] = (registers[op.getA()] != 0 || registers[op.b] != 0) ? 1 : 0;
+                        registers[op.c] = ((registers[op.getA()] != 0) || (registers[op.b] != 0)) ? 1 : 0;
                         break;
                     case WOP_TYPE_VAR:
                         if (NOT(op.a)) {
                             registers[op.c] = 0.0f;
                             break;
                         }
-                        if (op.b >= 0 && registers[op.b] >= 0 && registers[op.b] < 4) {
+                        if ((op.b >= 0) && (registers[op.b] >= 0) && (registers[op.b] < 4)) {
                             // grabs vector components
-                            idWinVec4 var = (idWinVec4) (op.a);
+                            final idWinVec4 var = (idWinVec4) (op.a);
                             registers[op.c] = (var.data).oGet((int) registers[op.b]);
                         } else {
-                            registers[op.c] = ((idWinVar) (op.a)).x();
+                            registers[op.c] = (op.a).x();
                         }
                         break;
                     case WOP_TYPE_VARS:
                         if (op.a != null) {
-                            idWinStr var = (idWinStr) (op.a);
+                            final idWinStr var = (idWinStr) (op.a);
                             registers[op.c] = atof(var.c_str());
                         } else {
                             registers[op.c] = 0;
@@ -3970,7 +3975,7 @@ public class Window {
                         break;
                     case WOP_TYPE_VARF:
                         if (op.a != null) {
-                            idWinFloat var = (idWinFloat) (op.a);
+                            final idWinFloat var = (idWinFloat) (op.a);
                             registers[op.c] = var.data;
                         } else {
                             registers[op.c] = 0;
@@ -3978,7 +3983,7 @@ public class Window {
                         break;
                     case WOP_TYPE_VARI:
                         if (op.a != null) {
-                            idWinInt var = (idWinInt) (op.a);
+                            final idWinInt var = (idWinInt) (op.a);
                             registers[op.c] = var.data;
                         } else {
                             registers[op.c] = 0;
@@ -3986,7 +3991,7 @@ public class Window {
                         break;
                     case WOP_TYPE_VARB:
                         if (op.a != null) {
-                            idWinBool var = (idWinBool) (op.a);
+                            final idWinBool var = (idWinBool) (op.a);
                             registers[op.c] = btoi(var.data);
                         } else {
                             registers[op.c] = 0;
@@ -4001,16 +4006,16 @@ public class Window {
         }
 
         protected void SaveExpressionParseState() {
-            saveTemps = new boolean[MAX_EXPRESSION_REGISTERS];
+            this.saveTemps = new boolean[MAX_EXPRESSION_REGISTERS];
 //	memcpy(saveTemps, registerIsTemporary, MAX_EXPRESSION_REGISTERS * sizeof(bool));
-            System.arraycopy(registerIsTemporary, 0, saveTemps, 0, MAX_EXPRESSION_REGISTERS);
+            System.arraycopy(registerIsTemporary, 0, this.saveTemps, 0, MAX_EXPRESSION_REGISTERS);
         }
 
         protected void RestoreExpressionParseState() {
 //	memcpy(registerIsTemporary, saveTemps, MAX_EXPRESSION_REGISTERS * sizeof(bool));
-            System.arraycopy(saveTemps, 0, registerIsTemporary, 0, MAX_EXPRESSION_REGISTERS);
+            System.arraycopy(this.saveTemps, 0, registerIsTemporary, 0, MAX_EXPRESSION_REGISTERS);
 //            Mem_Free(saveTemps);
-            saveTemps = null;
+            this.saveTemps = null;
         }
 
         protected void ParseBracedExpression(idParser src) {
@@ -4023,8 +4028,8 @@ public class Window {
             for (int i = 0; i < SCRIPT_COUNT.ordinal(); i++) {
                 if (idStr.Icmp(name, ScriptNames[i]) == 0) {
                     // delete scripts[i];
-                    scripts[i] = new idGuiScriptList();
-                    return ParseScript(src, scripts[i]);
+                    this.scripts[i] = new idGuiScriptList();
+                    return ParseScript(src, this.scripts[i]);
                 }
             }
             return false;
@@ -4036,11 +4041,11 @@ public class Window {
             work = new idStr(name);
             work.ToLower();
 
-            idWinVar var = GetWinVarByName(work.toString(), false);
+            final idWinVar var = GetWinVarByName(work.toString(), false);
             if (var != null) {
                 for (int i = 0; i < NumRegisterVars; i++) {
                     if (idStr.Icmp(work, RegisterVars[i].name) == 0) {
-                        regList.AddReg(work.toString(), etoi(RegisterVars[i].type), src, this, var);
+                        this.regList.AddReg(work.toString(), etoi(RegisterVars[i].type), src, this, var);
                         DBG_ParseRegEntry++;
                         return true;
                     }
@@ -4048,10 +4053,10 @@ public class Window {
             }
 
             // not predefined so just read the next token and add it to the state
-            idToken tok = new idToken();
-            idVec4 v;
-            idWinInt vari = new idWinInt();
-            idWinFloat varf = new idWinFloat();
+            final idToken tok = new idToken();
+            final idVec4 v;
+            final idWinInt vari = new idWinInt();
+            final idWinFloat varf = new idWinFloat();
             idWinStr vars = new idWinStr();
             if (src.ReadToken(tok)) {
                 if (var != null) {
@@ -4064,24 +4069,24 @@ public class Window {
 //                            vari = new idWinInt();
                             vari.data = atoi(tok);
                             vari.SetName(work.toString());
-                            definedVars.Append(vari);
+                            this.definedVars.Append(vari);
                         } else if ((tok.subtype & TT_FLOAT) != 0) {
 //                            varf = new idWinFloat();
                             varf.data = atof(tok);
                             varf.SetName(work.toString());
-                            definedVars.Append(varf);
+                            this.definedVars.Append(varf);
                         } else {
 //                            vars = new idWinStr();
                             vars.data = tok;
                             vars.SetName(work.toString());
-                            definedVars.Append(vars);
+                            this.definedVars.Append(vars);
                         }
                         break;
                     default:
                         vars = new idWinStr();
                         vars.data = tok;
                         vars.SetName(work.toString());
-                        definedVars.Append(vars);
+                        this.definedVars.Append(vars);
                         break;
                 }
             }
@@ -4093,143 +4098,143 @@ public class Window {
 
             if (idStr.Icmp(_name, "showtime") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_SHOWTIME;
+                    this.flags |= WIN_SHOWTIME;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "showcoords") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_SHOWCOORDS;
+                    this.flags |= WIN_SHOWCOORDS;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "forceaspectwidth") == 0) {
-                forceAspectWidth = src.ParseFloat();
+                this.forceAspectWidth = src.ParseFloat();
                 return true;
             }
             if (idStr.Icmp(_name, "forceaspectheight") == 0) {
-                forceAspectHeight = src.ParseFloat();
+                this.forceAspectHeight = src.ParseFloat();
                 return true;
             }
             if (idStr.Icmp(_name, "matscalex") == 0) {
-                matScalex = src.ParseFloat();
+                this.matScalex = src.ParseFloat();
                 return true;
             }
             if (idStr.Icmp(_name, "matscaley") == 0) {
-                matScaley = src.ParseFloat();
+                this.matScaley = src.ParseFloat();
                 return true;
             }
             if (idStr.Icmp(_name, "bordersize") == 0) {
-                borderSize = src.ParseFloat();
+                this.borderSize = src.ParseFloat();
                 return true;
             }
             if (idStr.Icmp(_name, "nowrap") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_NOWRAP;
+                    this.flags |= WIN_NOWRAP;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "shadow") == 0) {
-                textShadow = (char) src.ParseInt();
+                this.textShadow = (char) src.ParseInt();
                 return true;
             }
             if (idStr.Icmp(_name, "textalign") == 0) {
-                textAlign = (char) src.ParseInt();
+                this.textAlign = (char) src.ParseInt();
                 return true;
             }
             if (idStr.Icmp(_name, "textalignx") == 0) {
-                textAlignx = src.ParseFloat();
+                this.textAlignx = src.ParseFloat();
                 return true;
             }
             if (idStr.Icmp(_name, "textaligny") == 0) {
-                textAligny = src.ParseFloat();
+                this.textAligny = src.ParseFloat();
                 return true;
             }
             if (idStr.Icmp(_name, "shear") == 0) {
-                shear.x = src.ParseFloat();
-                idToken tok = new idToken();
+                this.shear.x = src.ParseFloat();
+                final idToken tok = new idToken();
                 src.ReadToken(tok);
                 if (tok.Icmp(",") != 0) {
                     src.Error("Expected comma in shear definiation");
                     return false;
                 }
-                shear.y = src.ParseFloat();
+                this.shear.y = src.ParseFloat();
                 return true;
             }
             if (idStr.Icmp(_name, "wantenter") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_WANTENTER;
+                    this.flags |= WIN_WANTENTER;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "naturalmatscale") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_NATURALMAT;
+                    this.flags |= WIN_NATURALMAT;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "noclip") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_NOCLIP;
+                    this.flags |= WIN_NOCLIP;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "nocursor") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_NOCURSOR;
+                    this.flags |= WIN_NOCURSOR;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "menugui") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_MENUGUI;
+                    this.flags |= WIN_MENUGUI;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "modal") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_MODAL;
+                    this.flags |= WIN_MODAL;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "invertrect") == 0) {
                 if (src.ParseBool()) {
-                    flags |= WIN_INVERTRECT;
+                    this.flags |= WIN_INVERTRECT;
                 }
                 return true;
             }
             if (idStr.Icmp(_name, "name") == 0) {
-                ParseString(src, name);
+                ParseString(src, this.name);
                 return true;
             }
             if (idStr.Icmp(_name, "play") == 0) {
                 common.Warning("play encountered during gui parse.. see Robert\n");
-                idStr playStr = new idStr();
+                final idStr playStr = new idStr();
                 ParseString(src, playStr);
                 return true;
             }
             if (idStr.Icmp(_name, "comment") == 0) {
-                ParseString(src, comment);
+                ParseString(src, this.comment);
                 return true;
             }
             if (idStr.Icmp(_name, "font") == 0) {
-                idStr fontStr = new idStr();
+                final idStr fontStr = new idStr();
                 ParseString(src, fontStr);
-                fontNum = (char) dc.FindFont(fontStr.toString());
+                this.fontNum = (char) this.dc.FindFont(fontStr.toString());
                 return true;
             }
             return false;
         }
 
         protected void ParseString(idParser src, idStr out) {
-            idToken tok = new idToken();
+            final idToken tok = new idToken();
             if (src.ReadToken(tok)) {
                 out.oSet(tok);
             }
         }
 
         protected void ParseVec4(idParser src, idVec4 out) {
-            idToken tok = new idToken();
+            final idToken tok = new idToken();
             src.ReadToken(tok);
             out.x = atof(tok);
             src.ExpectTokenString(",");
@@ -4245,5 +4250,5 @@ public class Window {
 
         protected void ConvertRegEntry(final String name, idParser src, idStr out, int tabs) {
         }
-    };
+    }
 }

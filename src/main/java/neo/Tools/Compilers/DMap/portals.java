@@ -52,7 +52,7 @@ public class portals {
 
         int area0, area1;
         side_s side;
-    };
+    }
     //
     public static final interAreaPortal_t[] interAreaPortals = new interAreaPortal_t[MAX_INTER_AREA_PORTALS];
     public static int numInterAreaPortals;
@@ -102,8 +102,8 @@ public class portals {
             return false;    // to global outsideleaf
         }
 
-        if (p.nodes[0].planenum != PLANENUM_LEAF
-                || p.nodes[1].planenum != PLANENUM_LEAF) {
+        if ((p.nodes[0].planenum != PLANENUM_LEAF)
+                || (p.nodes[1].planenum != PLANENUM_LEAF)) {
             common.Error("Portal_EntityFlood: not a leaf");
         }
 
@@ -121,7 +121,7 @@ public class portals {
      =============
      */
     static void AddPortalToNodes(uPortal_s p, node_s front, node_s back) {
-        if (p.nodes[0] != null || p.nodes[1] != null) {
+        if ((p.nodes[0] != null) || (p.nodes[1] != null)) {
             common.Error("AddPortalToNode: allready included");
         }
 
@@ -195,11 +195,11 @@ public class portals {
      ================
      */
     static void MakeHeadnodePortals(tree_s tree) {
-        idBounds bounds = new idBounds();
+        final idBounds bounds = new idBounds();
         int i, j, n;
         uPortal_s p;
-        uPortal_s[] portals = new uPortal_s[6];
-        idPlane[] bplanes = new idPlane[6];
+        final uPortal_s[] portals = new uPortal_s[6];
+        final idPlane[] bplanes = new idPlane[6];
         idPlane pl;
         node_s node;
 
@@ -226,7 +226,7 @@ public class portals {
 
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 2; j++) {
-                n = j * 3 + i;
+                n = (j * 3) + i;
 
                 p = AllocPortal();
                 portals[n] = p;
@@ -270,7 +270,7 @@ public class portals {
         w = new idWinding(dmapGlobals.mapPlanes.oGet(node.planenum));
 
         // clip by all the parents
-        for (n = node.parent; n != null && w != null;) {
+        for (n = node.parent; (n != null) && (w != null);) {
             final idPlane plane = dmapGlobals.mapPlanes.oGet(n.planenum);
 
             if (n.children[0].equals(node)) {
@@ -278,7 +278,7 @@ public class portals {
                 w = w.Clip(plane, BASE_WINDING_EPSILON);
             } else {
                 // take back
-                idPlane back = plane.oNegative();
+                final idPlane back = plane.oNegative();
                 w = w.Clip(back, BASE_WINDING_EPSILON);
             }
             node = n;
@@ -307,7 +307,7 @@ public class portals {
         w = BaseWindingForNode(node);
 
         // clip the portal by all the other portals in the node
-        for (p = node.portals; p != null && w != null; p = p.next[side]) {
+        for (p = node.portals; (p != null) && (w != null); p = p.next[side]) {
             idPlane plane = new idPlane();
 
             if (p.nodes[0].equals(node)) {
@@ -381,13 +381,13 @@ public class portals {
             //
             p.winding.Split(plane, SPLIT_WINDING_EPSILON, frontwinding, backwinding);
 
-            if (frontwinding != null && frontwinding.IsTiny()) {
+            if ((frontwinding != null) && frontwinding.IsTiny()) {
 //			delete frontwinding;
                 frontwinding = null;
                 c_tinyportals++;
             }
 
-            if (backwinding != null && backwinding.IsTiny()) {
+            if ((backwinding != null) && backwinding.IsTiny()) {
 //			delete backwinding;
                 backwinding = null;
                 c_tinyportals++;
@@ -472,7 +472,7 @@ public class portals {
         }
 
         for (i = 0; i < 3; i++) {
-            if (node.bounds.oGet(0, i) < MIN_WORLD_COORD || node.bounds.oGet(1, i) > MAX_WORLD_COORD) {
+            if ((node.bounds.oGet(0, i) < MIN_WORLD_COORD) || (node.bounds.oGet(1, i) > MAX_WORLD_COORD)) {
                 common.Warning("node with unbounded volume");
                 break;
             }
@@ -573,8 +573,8 @@ public class portals {
      */
     static boolean FloodEntities(tree_s tree) {
         int i;
-        idVec3 origin = new idVec3();
-        String[] cl = {null};
+        final idVec3 origin = new idVec3();
+        final String[] cl = {null};
         boolean inside;
         node_s headnode;
 
@@ -601,7 +601,7 @@ public class portals {
             mapEnt.epairs.GetString("classname", "", cl);
 
             if (cl[0].equals("light")) {
-                String[] v = {null};
+                final String[] v = {null};
 
                 // don't place lights that have a light_start field, because they can still
                 // be valid if their origin is outside the world
@@ -625,16 +625,16 @@ public class portals {
                 inside = true;
             }
 
-            if (tree.outside_node.occupied != 0 && !errorShown) {
+            if ((tree.outside_node.occupied != 0) && !errorShown) {
                 errorShown = true;
                 common.Printf("Leak on entity # %d\n", i);
-                String[] p = {null};
+                final String[] p = {null};
 
                 mapEnt.epairs.GetString("classname", "", p);
                 common.Printf("Entity classname was: %s\n", p[0]);
                 mapEnt.epairs.GetString("name", "", p);
                 common.Printf("Entity name was: %s\n", p[0]);
-                idVec3 origin2 = new idVec3();
+                final idVec3 origin2 = new idVec3();
                 if (mapEnt.epairs.GetVector("origin", "", origin2)) {
                     common.Printf("Entity origin is: %f %f %f\n\n\n", origin2.x, origin2.y, origin2.z);
                 }
@@ -649,7 +649,7 @@ public class portals {
             common.Printf("entity reached from outside -- no filling\n");
         }
 
-        return (inside && 0 == tree.outside_node.occupied);
+        return (inside && (0 == tree.outside_node.occupied));
     }
 
     /*
@@ -791,7 +791,7 @@ public class portals {
             CheckAreas_r(node.children[1]);
             return;
         }
-        if (!node.opaque && node.area < 0) {
+        if (!node.opaque && (node.area < 0)) {
             common.Error("CheckAreas_r: area = %d", node.area);
         }
     }
@@ -868,9 +868,9 @@ public class portals {
             for (i = 0; i < numInterAreaPortals; i++) {
                 iap = interAreaPortals[i];
 
-                if (side == iap.side
-                        && ((p.nodes[0].area == iap.area0 && p.nodes[1].area == iap.area1)
-                        || (p.nodes[1].area == iap.area0 && p.nodes[0].area == iap.area1))) {
+                if ((side == iap.side)
+                        && (((p.nodes[0].area == iap.area0) && (p.nodes[1].area == iap.area1))
+                        || ((p.nodes[1].area == iap.area0) && (p.nodes[0].area == iap.area1)))) {
                     break;
                 }
             }

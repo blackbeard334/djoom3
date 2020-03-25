@@ -142,12 +142,12 @@ public class win_snd {
 
         @Override
         public int GetNumberOfSpeakers() {
-            return numSpeakers;
+            return this.numSpeakers;
         }
 
         @Override
         public int GetMixBufferSize() {
-            return MIXBUFFER_SAMPLES * blockAlign;
+            return MIXBUFFER_SAMPLES * this.blockAlign;
         }
 
         // WIN32 driver doesn't support write API
@@ -168,8 +168,8 @@ public class win_snd {
         @Override
         public boolean Initialize() {
 //            throw new TODO_Exception();
-            SourceDataLine dataLine;//for streaming
-            int hr;
+            final SourceDataLine dataLine;//for streaming
+            final int hr;
 //            AudioInputStream  audioInputStream = AudioSystem.getAudioInputStream(null);
 //            dataLine.
 //
@@ -216,7 +216,7 @@ public class win_snd {
 //	return false;
         }
 
-    };
+    }
 
     /*
      ===============
@@ -227,11 +227,11 @@ public class win_snd {
         if (ID_OPENAL) {
             try {
                 ALC.create();
-            } catch (UnsatisfiedLinkError ex) {
+            } catch (final UnsatisfiedLinkError ex) {
                 Logger.getLogger(win_snd.class.getName()).log(Level.SEVERE, null, ex);
                 common.Warning("LoadLibrary %s failed.", idSoundSystemLocal.s_libOpenAL.GetString());
                 return false;
-            } catch (IllegalStateException ex) {
+            } catch (final IllegalStateException ex) {
                 return "ALC has already been created.".equals(ex.getMessage());
             }
 

@@ -187,7 +187,7 @@ public class Common {
         public int imageAssetsTotal;
         public int modelAssetsTotal;
         public int soundAssetsTotal;
-    };
+    }
 
     public static abstract class idCommon {
 
@@ -287,7 +287,7 @@ public class Common {
 
         // Directly sample a keystate.
         public abstract int KeyState(int key);
-    };
+    }
     static final int MAX_PRINT_MSG_SIZE = 4096;
     static final int MAX_WARNING_LIST = 256;
 
@@ -297,7 +297,7 @@ public class Common {
         ERP_FATAL, // exit the entire game with a popup window
         ERP_DROP, // print to console and disconnect from game
         ERP_DISCONNECT					// don't kill server
-    };
+    }
     static final String BUILD_DEBUG = _DEBUG ? "-debug" : "";
 
     static class version_s {
@@ -306,9 +306,9 @@ public class Common {
         final String string;
 
         version_s() {
-            string = String.format("%s.%d%s %s %s", ENGINE_VERSION, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__/*, __TIME__*/);
+            this.string = String.format("%s.%d%s %s %s", ENGINE_VERSION, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__/*, __TIME__*/);
         }
-    };
+    }
     static final version_s version = new version_s();
 //
 //    
@@ -373,18 +373,18 @@ public class Common {
 //
         private idFile logFile;
 //
-        private String[] errorMessage = {null};//new char[MAX_PRINT_MSG_SIZE];
+        private final String[] errorMessage = {null};//new char[MAX_PRINT_MSG_SIZE];
 //
         private StringBuilder rd_buffer;
         private int rd_buffersize;
         private void_callback<String> rd_flush/*)( const char *buffer )*/;
         private idStr warningCaption;
-        private idStrList warningList;
-        private idStrList errorList;
+        private final idStrList warningList;
+        private final idStrList errorList;
 //
-        private int gameDLL;
+        private final int gameDLL;
 //
-        private idLangDict languageDict;
+        private final idLangDict languageDict;
 //#ifdef ID_WRITE_VERSION
         idCompressor config_compressor;
 //#endif
@@ -400,7 +400,7 @@ public class Common {
             int clientPacketsReceived;
             int serverPacketsReceived;
             int mostRecentServerPacketSequence;
-        };
+        }
         private static final int MAX_ASYNC_STATS = 1024;
         private final asyncStats_t[] com_asyncStats;	// indexed by com_ticNumber
         private int prevAsyncMsec;
@@ -412,33 +412,33 @@ public class Common {
         //
 
         public idCommonLocal() {
-            com_fullyInitialized = false;
-            com_refreshOnPrint = false;
-            com_errorEntered = 0;
-            com_shuttingDown = false;
+            this.com_fullyInitialized = false;
+            this.com_refreshOnPrint = false;
+            this.com_errorEntered = 0;
+            this.com_shuttingDown = false;
 
-            logFile = null;
+            this.logFile = null;
 
 //	strcpy( errorMessage, "" );
-            rd_buffer = null;
-            rd_buffersize = 0;
-            rd_flush = null;
+            this.rd_buffer = null;
+            this.rd_buffersize = 0;
+            this.rd_flush = null;
             this.warningList = new idStrList();
             this.errorList = new idStrList();
             this.languageDict = new idLangDict();
 
-            gameDLL = 0;
+            this.gameDLL = 0;
             this.com_asyncStats = new asyncStats_t[MAX_ASYNC_STATS];
-            for (int c = 0; c < com_asyncStats.length; c++) {
-                com_asyncStats[c] = new asyncStats_t();
+            for (int c = 0; c < this.com_asyncStats.length; c++) {
+                this.com_asyncStats[c] = new asyncStats_t();
             }
             this.com_consoleLines = new idCmdArgs[MAX_CONSOLE_LINES];
-            for (int c = 0; c < com_consoleLines.length; c++) {
-                com_consoleLines[c] = new idCmdArgs();
+            for (int c = 0; c < this.com_consoleLines.length; c++) {
+                this.com_consoleLines[c] = new idCmdArgs();
             }
 
             if (ID_WRITE_VERSION) {
-                config_compressor = null;
+                this.config_compressor = null;
             }
 
         }
@@ -465,7 +465,7 @@ public class Common {
                     // tokenize if the OS doesn't do it for us
                     args = new idCmdArgs();
                     args.TokenizeString(cmdline, true);
-                    int[] cArg = {argc};
+                    final int[] cArg = {argc};
                     argv = args.GetArgs(cArg);
                     argc = cArg[0];
                 }
@@ -512,7 +512,7 @@ public class Common {
                 InitCommands();
 
                 if (ID_WRITE_VERSION) {
-                    config_compressor = idCompressor.AllocArithmetic();
+                    this.config_compressor = idCompressor.AllocArithmetic();
                 }
 
                 // game specific initialization
@@ -540,8 +540,8 @@ public class Common {
 
                 ClearCommandLine();
 
-                com_fullyInitialized = true;
-            } catch (idException e) {
+                this.com_fullyInitialized = true;
+            } catch (final idException e) {
                 Sys_Error("Error during initialization");
             }
         }
@@ -549,7 +549,7 @@ public class Common {
         @Override
         public void Shutdown() {
 
-            com_shuttingDown = true;
+            this.com_shuttingDown = true;
 
             idAsyncNetwork.server.Kill();
             idAsyncNetwork.client.Shutdown();
@@ -574,16 +574,16 @@ public class Common {
 
             if (ID_WRITE_VERSION) {
                 //	delete config_compressor;
-                config_compressor = null;
+                this.config_compressor = null;
             }
 
             // free any buffered warning messages
             ClearWarnings(GAME_NAME + " shutdown");
-            warningCaption.Clear();
-            errorList.Clear();
+            this.warningCaption.Clear();
+            this.errorList.Clear();
 
             // free language dictionary
-            languageDict.Clear();
+            this.languageDict.Clear();
 
             // enable leak test
 //            Mem_EnableLeakTest("doom");
@@ -602,7 +602,7 @@ public class Common {
             }
 
             // don't try to shutdown if we are in a recursive error
-            if (0 == com_errorEntered) {
+            if (0 == this.com_errorEntered) {
                 Shutdown();
             }
 
@@ -611,7 +611,7 @@ public class Common {
 
         @Override
         public boolean IsInitialized() {
-            return com_fullyInitialized;
+            return this.com_fullyInitialized;
         }
         private static int lastTime;
 
@@ -657,8 +657,8 @@ public class Common {
                 // report timing information
                 if (com_speeds.GetBool()) {
 //			 int	lastTime;
-                    int nowTime = Sys_Milliseconds();
-                    int com_frameMsec = nowTime - lastTime;
+                    final int nowTime = Sys_Milliseconds();
+                    final int com_frameMsec = nowTime - lastTime;
                     lastTime = nowTime;
                     Printf("frame:%d all:%3d gfr:%3d rf:%3d bk:%3d\n", com_frameNumber, com_frameMsec, time_gameFrame, time_frontend, time_backend);
                     time_gameFrame = 0;
@@ -675,7 +675,7 @@ public class Common {
 //                    Printf(Sys_FPU_GetState());
 //                    FatalError("idCommon::Frame: the FPU stack is not empty at the end of the frame\n");
 //                }
-            } catch (idException ex) {
+            } catch (final idException ex) {
                 return;			// an ERP_DROP was thrown
             }
         }
@@ -712,13 +712,13 @@ public class Common {
         @Override
         public void Async() {
 //            System.out.println(">>>>>>"+System.nanoTime());
-            if (com_shuttingDown) {
+            if (this.com_shuttingDown) {
                 return;
             }
 
-            int msec = Sys_Milliseconds();
-            if (0 == lastTicMsec) {
-                lastTicMsec = msec - USERCMD_MSEC;
+            final int msec = Sys_Milliseconds();
+            if (0 == this.lastTicMsec) {
+                this.lastTicMsec = msec - USERCMD_MSEC;
             }
 
             if (!com_preciseTic.GetBool()) {
@@ -730,7 +730,7 @@ public class Common {
             int ticMsec = USERCMD_MSEC;
 
             // the number of msec per tic can be varies with the timescale cvar
-            float timescale = com_timescale.GetFloat();
+            final float timescale = com_timescale.GetFloat();
             if (timescale != 1.0f) {
                 ticMsec /= timescale;
                 if (ticMsec < 1) {
@@ -740,14 +740,14 @@ public class Common {
 
             // don't skip too many
             if (timescale == 1.0f) {
-                if (lastTicMsec + 10 * USERCMD_MSEC < msec) {
-                    lastTicMsec = msec - 10 * USERCMD_MSEC;
+                if ((this.lastTicMsec + (10 * USERCMD_MSEC)) < msec) {
+                    this.lastTicMsec = msec - (10 * USERCMD_MSEC);
                 }
             }
 
-            while (lastTicMsec + ticMsec <= msec) {
+            while ((this.lastTicMsec + ticMsec) <= msec) {
                 SingleAsyncTic();
-                lastTicMsec += ticMsec;
+                this.lastTicMsec += ticMsec;
             }
 //            System.out.println("<<<<<<<"+System.nanoTime());
         }
@@ -786,25 +786,25 @@ public class Common {
             String s;
 
             i = 0;
-            while (i < com_numConsoleLines) {
+            while (i < this.com_numConsoleLines) {
 //                if ( strcmp( com_consoleLines[ i ].Argv( 0 ), "set" ) ) {//TODO:strcmp equals returns false.
-                if (!"set".equals(com_consoleLines[i].Argv(0))) {
+                if (!"set".equals(this.com_consoleLines[i].Argv(0))) {
                     i++;
                     continue;
                 }
 
-                s = com_consoleLines[i].Argv(1);
+                s = this.com_consoleLines[i].Argv(1);
 
-                if (null == match || 0 == idStr.Icmp(s, match)) {
-                    cvarSystem.SetCVarString(s, com_consoleLines[i].Argv(2));
+                if ((null == match) || (0 == idStr.Icmp(s, match))) {
+                    cvarSystem.SetCVarString(s, this.com_consoleLines[i].Argv(2));
                     if (once) {
                         // kill the line
                         int j = i + 1;
-                        while (j < com_numConsoleLines) {
-                            com_consoleLines[j - 1] = com_consoleLines[j];
+                        while (j < this.com_numConsoleLines) {
+                            this.com_consoleLines[j - 1] = this.com_consoleLines[j];
                             j++;
                         }
-                        com_numConsoleLines--;
+                        this.com_numConsoleLines--;
                         continue;
                     }
                 }
@@ -853,15 +853,15 @@ public class Common {
 //                long ID_TIME_T;
                 String curTime;
                 String runtag;
-                idFile_Memory compressed = new idFile_Memory("compressed");
-                idBase64 out = new idBase64();
-                assert (config_compressor != null);
+                final idFile_Memory compressed = new idFile_Memory("compressed");
+                final idBase64 out = new idBase64();
+                assert (this.config_compressor != null);
 //                ID_TIME_T = time(null);
                 curTime = new Date().toString();
                 runtag = String.format("%s - %s", cvarSystem.GetCVarString("si_version"), curTime);
-                config_compressor.Init(compressed, true, 8);
-                config_compressor.WriteString(runtag);//
-                config_compressor.FinishCompress();
+                this.config_compressor.Init(compressed, true, 8);
+                this.config_compressor.WriteString(runtag);//
+                this.config_compressor.FinishCompress();
                 out.Encode(/*(const byte *)*/compressed.GetDataPtr(), compressed.Length());
                 f.Printf("// %s\n", out.c_str());
             }
@@ -886,30 +886,30 @@ public class Common {
 
         @Override
         public void BeginRedirect(StringBuilder buffer, int buffersize, void_callback<String> flush) {
-            if (null == buffer || 0 == buffersize || null == flush) {
+            if ((null == buffer) || (0 == buffersize) || (null == flush)) {
                 return;
             }
-            rd_buffer = buffer;
-            rd_buffersize = buffersize;
-            rd_flush = flush;
+            this.rd_buffer = buffer;
+            this.rd_buffersize = buffersize;
+            this.rd_flush = flush;
 
 //	*rd_buffer = 0;
         }
 
         @Override
         public void EndRedirect() {
-            if (rd_flush != null && rd_buffer.length() != 0) {// '\0') {
-                rd_flush.run(rd_buffer.toString());
+            if ((this.rd_flush != null) && (this.rd_buffer.length() != 0)) {// '\0') {
+                this.rd_flush.run(this.rd_buffer.toString());
             }
 
-            rd_buffer = null;
-            rd_buffersize = 0;
-            rd_flush = null;
+            this.rd_buffer = null;
+            this.rd_buffersize = 0;
+            this.rd_flush = null;
         }
 
         @Override
         public void SetRefreshOnPrint(boolean set) {
-            com_refreshOnPrint = set;
+            this.com_refreshOnPrint = set;
         }
 
         /*
@@ -939,7 +939,7 @@ public class Common {
          */
         @Override
         public void VPrintf(String fmt, Object... args) {
-            String[] msg = {null};//new char(MAX_PRINT_MSG_SIZE);
+            final String[] msg = {null};//new char(MAX_PRINT_MSG_SIZE);
             int timeLength;
 
             // if the cvar system is not initialized
@@ -969,13 +969,13 @@ public class Common {
                 Sys_Printf("idCommon::VPrintf: truncated to %d characters\n", msg[0].length() /*- 1*/);
             }
 
-            if (rd_buffer != null) {
-                if ((msg[0].length() + rd_buffer.length()) > (rd_buffersize - 1)) {
-                    rd_flush.run(rd_buffer.toString());
+            if (this.rd_buffer != null) {
+                if ((msg[0].length() + this.rd_buffer.length()) > (this.rd_buffersize - 1)) {
+                    this.rd_flush.run(this.rd_buffer.toString());
 //			*rd_buffer = 0;
                 }
 //		strcat( rd_buffer, msg );
-                rd_buffer.append(msg[0]);
+                this.rd_buffer.append(msg[0]);
                 return;
             }
 
@@ -998,18 +998,18 @@ public class Common {
 //#endif
 //#endif
             // logFile
-            if (com_logFile.GetInteger() != 0 && !logFileFailed && fileSystem.IsInitialized()) {
+            if ((com_logFile.GetInteger() != 0) && !logFileFailed && fileSystem.IsInitialized()) {
 //		static bool recursing;
 
-                if (null == logFile && !recursing) {
+                if ((null == this.logFile) && !recursing) {
                     final String newTime = new Date().toString();
                     final String fileName = (!com_logFileName.GetString().isEmpty() ? com_logFileName.GetString() : "qconsole.log");
 
                     // fileSystem.OpenFileWrite can cause recursive prints into here
                     recursing = true;
 
-                    logFile = fileSystem.OpenFileWrite(fileName);
-                    if (null == logFile) {
+                    this.logFile = fileSystem.OpenFileWrite(fileName);
+                    if (null == this.logFile) {
                         logFileFailed = true;
                         FatalError("failed to open log file '%s'\n", fileName);
                     }
@@ -1019,21 +1019,21 @@ public class Common {
                     if (com_logFile.GetInteger() > 1) {
                         // force it to not buffer so we get valid
                         // data even if we are crashing
-                        logFile.ForceFlush();
+                        this.logFile.ForceFlush();
                     }
 
                     Printf("log file '%s' opened on %s\n", fileName, newTime);
                 }
-                if (logFile != null) {
-                    logFile.WriteString(msg[0]);
-                    logFile.Flush();	// ForceFlush doesn't help a whole lot
+                if (this.logFile != null) {
+                    this.logFile.WriteString(msg[0]);
+                    this.logFile.Flush();	// ForceFlush doesn't help a whole lot
                 }
             }
 
             // don't trigger any updates if we are in the process of doing a fatal error
-            if (com_errorEntered != etoi(ERP_FATAL)) {
+            if (this.com_errorEntered != etoi(ERP_FATAL)) {
                 // update the console if we are in a long-running command, like dmap
-                if (com_refreshOnPrint) {
+                if (this.com_refreshOnPrint) {
                     session.UpdateScreen();
                 }
 
@@ -1071,7 +1071,7 @@ public class Common {
         @Override
         public void DPrintf(final String fmt, Object... args) {
 //	va_list		argptr;
-            String[] msg = {null};//new char[MAX_PRINT_MSG_SIZE];
+            final String[] msg = {null};//new char[MAX_PRINT_MSG_SIZE];
 
             if (!cvarSystem.IsInitialized() || !com_developer.GetBool()) {
                 return;			// don't confuse non-developers with techie stuff...
@@ -1083,12 +1083,12 @@ public class Common {
 //            msg[MAX_PRINT_MSG_SIZE - 1] = '\0';
 //
             // never refresh the screen, which could cause reentrency problems
-            boolean temp = com_refreshOnPrint;
-            com_refreshOnPrint = false;
+            final boolean temp = this.com_refreshOnPrint;
+            this.com_refreshOnPrint = false;
 
             Printf(S_COLOR_RED + "%s", msg[0]);
 
-            com_refreshOnPrint = temp;
+            this.com_refreshOnPrint = temp;
         }
 
         /*
@@ -1101,7 +1101,7 @@ public class Common {
         @Override
         public void Warning(final String fmt, Object... args) {
 //	va_list		argptr;
-            String[] msg = {null};//[MAX_PRINT_MSG_SIZE];
+            final String[] msg = {null};//[MAX_PRINT_MSG_SIZE];
 
 //	va_start( argptr, fmt );
             idStr.vsnPrintf(msg, MAX_PRINT_MSG_SIZE, fmt, args);
@@ -1110,8 +1110,8 @@ public class Common {
 
             Printf(S_COLOR_YELLOW + "WARNING: " + S_COLOR_RED + "%s\n", msg[0]);
 
-            if (warningList.Num() < MAX_WARNING_LIST) {
-                warningList.AddUnique(msg[0]);
+            if (this.warningList.Num() < MAX_WARNING_LIST) {
+                this.warningList.AddUnique(msg[0]);
             }
         }
 
@@ -1125,7 +1125,7 @@ public class Common {
         @Override
         public void DWarning(final String fmt, Object... args) throws idException {
 //	va_list		argptr;
-            String[] msg = {null};//new char[MAX_PRINT_MSG_SIZE];
+            final String[] msg = {null};//new char[MAX_PRINT_MSG_SIZE];
 
             if (!com_developer.GetBool()) {
                 return;			// don't confuse non-developers with techie stuff...
@@ -1143,31 +1143,31 @@ public class Common {
         public void PrintWarnings() throws idException {
             int i;
 
-            if (0 == warningList.Num()) {
+            if (0 == this.warningList.Num()) {
                 return;
             }
 
-            warningList.Sort();
+            this.warningList.Sort();
 
             Printf("------------- Warnings ---------------\n");
-            Printf("during %s...\n", warningCaption);
+            Printf("during %s...\n", this.warningCaption);
 
-            for (i = 0; i < warningList.Num(); i++) {
-                Printf(S_COLOR_YELLOW + "WARNING: " + S_COLOR_RED + "%s\n", warningList.oGet(i));
+            for (i = 0; i < this.warningList.Num(); i++) {
+                Printf(S_COLOR_YELLOW + "WARNING: " + S_COLOR_RED + "%s\n", this.warningList.oGet(i));
             }
-            if (warningList.Num() != 0) {
-                if (warningList.Num() >= MAX_WARNING_LIST) {
+            if (this.warningList.Num() != 0) {
+                if (this.warningList.Num() >= MAX_WARNING_LIST) {
                     Printf("more than %d warnings\n", MAX_WARNING_LIST);
                 } else {
-                    Printf("%d warnings\n", warningList.Num());
+                    Printf("%d warnings\n", this.warningList.Num());
                 }
             }
         }
 
         @Override
         public void ClearWarnings(String reason) {
-            warningCaption = new idStr(reason);
-            warningList.Clear();
+            this.warningCaption = new idStr(reason);
+            this.warningList.Clear();
         }
         static int lastErrorTime;
         static int errorCount;
@@ -1180,7 +1180,7 @@ public class Common {
             int code = etoi(ERP_DROP);
 
             // always turn this off after an error
-            com_refreshOnPrint = false;
+            this.com_refreshOnPrint = false;
 
             // when we are running automated scripts, make sure we
             // know if anything failed
@@ -1194,13 +1194,13 @@ public class Common {
             }
 
             // if we got a recursive error, make it fatal
-            if (com_errorEntered != 0) {
+            if (this.com_errorEntered != 0) {
                 // if we are recursively erroring while exiting
                 // from a fatal error, just kill the entire
                 // process immediately, which will prevent a
                 // full screen rendering window covering the
                 // error dialog
-                if (com_errorEntered == etoi(ERP_FATAL)) {
+                if (this.com_errorEntered == etoi(ERP_FATAL)) {
                     Sys_Quit();
                 }
                 code = etoi(ERP_FATAL);
@@ -1208,7 +1208,7 @@ public class Common {
 
             // if we are getting a solid stream of ERP_DROP, do an ERP_FATAL
             currentTime = Sys_Milliseconds();
-            if (currentTime - lastErrorTime < 100) {
+            if ((currentTime - lastErrorTime) < 100) {
                 if (++errorCount > 3) {
                     code = etoi(ERP_FATAL);
                 }
@@ -1217,18 +1217,18 @@ public class Common {
             }
             lastErrorTime = currentTime;
 
-            com_errorEntered = code;
+            this.com_errorEntered = code;
 
 //	va_start (argptr,fmt);
-            idStr.vsnPrintf(errorMessage, MAX_PRINT_MSG_SIZE, fmt, args);
+            idStr.vsnPrintf(this.errorMessage, MAX_PRINT_MSG_SIZE, fmt, args);
 //	va_end (argptr);
 //            errorMessage[errorMessage[.length - 1] = '\0';//TODO:is this needed?
 
             // copy the error message to the clip board
-            Sys_SetClipboardData(errorMessage[0]);
+            Sys_SetClipboardData(this.errorMessage[0]);
 
             // add the message to the error list
-            errorList.AddUnique(new idStr(errorMessage[0]));
+            this.errorList.AddUnique(new idStr(this.errorMessage[0]));
 
             // Dont shut down the session for gui editor or debugger
             if (0 == (com_editors & (EDITOR_GUI | EDITOR_DEBUGGER))) {
@@ -1236,18 +1236,18 @@ public class Common {
             }
 
             if (code == etoi(ERP_DISCONNECT)) {
-                com_errorEntered = 0;
-                throw new idException(errorMessage[0]);
+                this.com_errorEntered = 0;
+                throw new idException(this.errorMessage[0]);
                 // The gui editor doesnt want thing to com_error so it handles exceptions instead
             } else if ((com_editors & (EDITOR_GUI | EDITOR_DEBUGGER)) != 0) {
-                com_errorEntered = 0;
-                throw new idException(errorMessage[0]);
+                this.com_errorEntered = 0;
+                throw new idException(this.errorMessage[0]);
             } else if (code == etoi(ERP_DROP)) {
-                Printf("********************\nERROR: %s\n********************\n", errorMessage[0]);
-                com_errorEntered = 0;
-                throw new idException(errorMessage[0]);
+                Printf("********************\nERROR: %s\n********************\n", this.errorMessage[0]);
+                this.com_errorEntered = 0;
+                throw new idException(this.errorMessage[0]);
             } else {
-                Printf("********************\nERROR: %s\n********************\n", errorMessage[0]);
+                Printf("********************\nERROR: %s\n********************\n", this.errorMessage[0]);
             }
 
             if (cvarSystem.GetCVarBool("r_fullscreen")) {
@@ -1256,7 +1256,7 @@ public class Common {
 
             Shutdown();
 
-            Sys_Error("%s", errorMessage[0]);
+            Sys_Error("%s", this.errorMessage[0]);
         }
 
         /*
@@ -1271,29 +1271,29 @@ public class Common {
 //	va_list		argptr;
 
             // if we got a recursive error, make it fatal
-            if (com_errorEntered != 0) {
+            if (this.com_errorEntered != 0) {
                 // if we are recursively erroring while exiting
                 // from a fatal error, just kill the entire
                 // process immediately, which will prevent a
                 // full screen rendering window covering the
                 // error dialog
 
-                Sys_Printf("FATAL: recursed fatal error:\n%s\n", errorMessage[0]);
+                Sys_Printf("FATAL: recursed fatal error:\n%s\n", this.errorMessage[0]);
 
 //		va_start( argptr, fmt );
-                idStr.vsnPrintf(errorMessage, MAX_PRINT_MSG_SIZE, fmt, args);
+                idStr.vsnPrintf(this.errorMessage, MAX_PRINT_MSG_SIZE, fmt, args);
 //		va_end( argptr );
 //                errorMessage[errorMessage.length - 1] = '\0';//TODO:useless
 
-                Sys_Printf("%s\n", errorMessage[0]);
+                Sys_Printf("%s\n", this.errorMessage[0]);
 
                 // write the console to a log file?
                 Sys_Quit();
             }
-            com_errorEntered = etoi(ERP_FATAL);
+            this.com_errorEntered = etoi(ERP_FATAL);
 
 //	va_start( argptr, fmt );
-            idStr.vsnPrintf(errorMessage, MAX_PRINT_MSG_SIZE, fmt, args);
+            idStr.vsnPrintf(this.errorMessage, MAX_PRINT_MSG_SIZE, fmt, args);
 //	va_end( argptr );
 //            errorMessage[errorMessage.length - 1] = '\0';
 
@@ -1301,16 +1301,16 @@ public class Common {
                 cmdSystem.BufferCommandText(CMD_EXEC_NOW, "vid_restart partial windowed\n");
             }
 
-            Sys_SetFatalError(errorMessage[0]);
+            Sys_SetFatalError(this.errorMessage[0]);
 
             Shutdown();
 
-            Sys_Error("%s", errorMessage[0]);
+            Sys_Error("%s", this.errorMessage[0]);
         }
 
         @Override
         public idLangDict GetLanguageDict() {
-            return languageDict;
+            return this.languageDict;
         }
 //
 //        
@@ -1373,7 +1373,7 @@ public class Common {
             CheckToolMode();
 
             idFile file = fileSystem.OpenExplicitFileRead(fileSystem.RelativePathToOSPath(CONFIG_SPEC, "fs_savepath"));
-            boolean sysDetect = (null == file);
+            final boolean sysDetect = (null == file);
             if (!sysDetect) {
                 fileSystem.CloseFile(file);
             } else {
@@ -1381,7 +1381,7 @@ public class Common {
                 fileSystem.CloseFile(file);
             }
 
-            idCmdArgs args = new idCmdArgs();
+            final idCmdArgs args = new idCmdArgs();
             if (sysDetect) {
                 SetMachineSpec();
                 Com_ExecMachineSpec_f.getInstance().run(args);
@@ -1487,7 +1487,7 @@ public class Common {
         public void ShutdownGame(boolean reloading) {
 
             // kill sound first
-            idSoundWorld sw = soundSystem.GetPlayingSoundWorld();
+            final idSoundWorld sw = soundSystem.GetPlayingSoundWorld();
             if (sw != null) {
                 sw.StopAllSounds();
             }
@@ -1538,7 +1538,7 @@ public class Common {
         // localization
         public void InitLanguageDict() throws idException {
 //            idStr fileName;
-            languageDict.Clear();
+            this.languageDict.Clear();
 
             //D3XP: Instead of just loading a single lang file for each language
             //we are going to load all files that begin with the language name
@@ -1547,7 +1547,7 @@ public class Common {
             idFileList langFiles;
             langFiles = fileSystem.ListFilesTree("strings", ".lang", true);
 
-            idStrList langList = langFiles.GetList();
+            final idStrList langList = langFiles.GetList();
 
             StartupVariable("sys_lang", false);	// let it be set on the command line - this is needed because this init happens very early
             idStr langName = new idStr(cvarSystem.GetCVarString("sys_lang"));
@@ -1566,7 +1566,7 @@ public class Common {
 
             for (int i = 0; i < currentLangList.Num(); i++) {
                 //common.Printf("%s\n", currentLangList[i].c_str());
-                languageDict.Load(currentLangList.oGet(i).toString(), false);
+                this.languageDict.Load(currentLangList.oGet(i).toString(), false);
             }
 
             fileSystem.FreeFileList(langFiles);
@@ -1575,22 +1575,23 @@ public class Common {
         }
 
         public void LocalizeGui(final String fileName, idLangDict langDict) throws idException {
-            idStr out = new idStr(), ws = new idStr(), work;
-            ByteBuffer[] buffer = {null};
+            final idStr out = new idStr(), ws = new idStr();
+			idStr work;
+            final ByteBuffer[] buffer = {null};
             out.Empty();
             int k;
             char ch;
-            char slash = '\\';
-            char tab = 't';
-            char nl = 'n';
-            idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
+            final char slash = '\\';
+            final char tab = 't';
+            final char nl = 'n';
+            final idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
             if (fileSystem.ReadFile(fileName, buffer) > 0) {
                 src.LoadMemory(bbtocb(buffer[0]), bbtocb(buffer[0]).capacity(), fileName);
                 if (src.IsLoaded()) {
-                    idFile outFile = fileSystem.OpenFileWrite(fileName);
+                    final idFile outFile = fileSystem.OpenFileWrite(fileName);
                     common.Printf("Processing %s\n", fileName);
                     session.UpdateScreen();
-                    idToken token = new idToken();
+                    final idToken token = new idToken();
                     while (src.ReadToken(token)) {
                         src.GetLastWhiteSpace(ws);
                         out.Append(ws);
@@ -1604,7 +1605,7 @@ public class Common {
                             out.oSet("");
                         }
                         work = token.Right(6);
-                        if (token.Icmp("text") == 0 || work.Icmp("::text") == 0 || token.Icmp("choices") == 0) {
+                        if ((token.Icmp("text") == 0) || (work.Icmp("::text") == 0) || (token.Icmp("choices") == 0)) {
                             if (src.ReadToken(token)) {
                                 // see if already exists, if so save that id to this position in this file
                                 // otherwise add this to the list and save the id to this position in this file
@@ -1617,7 +1618,7 @@ public class Common {
                                     if (ch == '\t') {
                                         out.Append(slash);
                                         out.Append(tab);
-                                    } else if (ch == '\n' || ch == '\r') {
+                                    } else if ((ch == '\n') || (ch == '\r')) {
                                         out.Append(slash);
                                         out.Append(nl);
                                     } else {
@@ -1639,7 +1640,7 @@ public class Common {
                                     if (ch == '\t') {
                                         out.Append(slash);
                                         out.Append(tab);
-                                    } else if (ch == '\n' || ch == '\r') {
+                                    } else if ((ch == '\n') || (ch == '\r')) {
                                         out.Append(slash);
                                         out.Append(nl);
                                     } else {
@@ -1658,8 +1659,8 @@ public class Common {
         }
 
         public void LocalizeMapData(final String fileName, idLangDict langDict) throws idException {
-            ByteBuffer[] buffer = {null};
-            idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
+            final ByteBuffer[] buffer = {null};
+            final idLexer src = new idLexer(LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT);
 
             common.SetRefreshOnPrint(true);
 
@@ -1668,8 +1669,8 @@ public class Common {
                 if (src.IsLoaded()) {
                     common.Printf("Processing %s\n", fileName);
                     idStr mapFileName;
-                    idToken token = new idToken(), token2 = new idToken();
-                    idLangDict replaceArgs = new idLangDict();
+                    final idToken token = new idToken(), token2 = new idToken();
+                    final idLangDict replaceArgs = new idLangDict();
                     while (src.ReadToken(token)) {
                         mapFileName = token;
                         replaceArgs.Clear();
@@ -1698,17 +1699,17 @@ public class Common {
         public void LocalizeSpecificMapData(final String fileName, idLangDict langDict, final idLangDict replaceArgs) throws idException {
 //	idStr out, ws, work;
 
-            idMapFile map = new idMapFile();
+            final idMapFile map = new idMapFile();
             if (map.Parse(fileName, false, false)) {
-                int count = map.GetNumEntities();
+                final int count = map.GetNumEntities();
                 for (int i = 0; i < count; i++) {
-                    idMapEntity ent = map.GetEntity(i);
+                    final idMapEntity ent = map.GetEntity(i);
                     if (ent != null) {
                         for (int j = 0; j < replaceArgs.GetNumKeyVals(); j++) {
                             final idLangKeyValue kv = replaceArgs.GetKeyVal(j);
                             final String temp = ent.epairs.GetString(kv.key.toString());
-                            if (temp != null && !temp.isEmpty()) {
-                                idStr val = kv.value;
+                            if ((temp != null) && !temp.isEmpty()) {
+                                final idStr val = kv.value;
                                 if (val.toString().equals(temp)) {
                                     ent.epairs.Set(kv.key.toString(), langDict.AddString(temp));
                                 }
@@ -1721,13 +1722,13 @@ public class Common {
         }
 
         public void SetMachineSpec() throws idException {
-            long cpuid_t = Sys_GetProcessorId();
-            double ghz = Sys_ClockTicksPerSecond() * 0.000000001f;
-            int cores = Runtime.getRuntime().availableProcessors();
-            int vidRam = 512;// Sys_GetVideoRam();
-            int sysRam = Sys_GetSystemRam();
-            boolean[] oldCard = {false};
-            boolean[] nv10or20 = {false};
+            final long cpuid_t = Sys_GetProcessorId();
+            final double ghz = Sys_ClockTicksPerSecond() * 0.000000001f;
+            final int cores = Runtime.getRuntime().availableProcessors();
+            final int vidRam = 512;// Sys_GetVideoRam();
+            final int sysRam = Sys_GetSystemRam();
+            final boolean[] oldCard = {false};
+            final boolean[] nv10or20 = {false};
 
             renderSystem.GetCardCaps(oldCard, nv10or20);
 
@@ -1736,13 +1737,13 @@ public class Common {
                     (oldCard[0]) ? "a less than optimal video architecture"
                             : "an optimal video architecture");
 
-            if (ghz >= 2.75f && vidRam >= 512 && sysRam >= 1024 && !oldCard[0]) {//TODO:try to make this shit work.
+            if ((ghz >= 2.75f) && (vidRam >= 512) && (sysRam >= 1024) && !oldCard[0]) {//TODO:try to make this shit work.
                 Printf("This system qualifies for Ultra quality!\n");
                 com_machineSpec.SetInteger(3);
-            } else if (ghz >= ((cpuid_t & CPUID_AMD) != 0 ? 1.9f : 2.19f) && vidRam >= 256 && sysRam >= 512 && !oldCard[0]) {
+            } else if ((ghz >= ((cpuid_t & CPUID_AMD) != 0 ? 1.9f : 2.19f)) && (vidRam >= 256) && (sysRam >= 512) && !oldCard[0]) {
                 Printf("This system qualifies for High quality!\n");
                 com_machineSpec.SetInteger(2);
-            } else if (ghz >= ((cpuid_t & CPUID_AMD) != 0 ? 1.1f : 1.25f) && vidRam >= 128 && sysRam >= 384) {
+            } else if ((ghz >= ((cpuid_t & CPUID_AMD) != 0 ? 1.1f : 1.25f)) && (vidRam >= 128) && (sysRam >= 384)) {
                 Printf("This system qualifies for Medium quality.\n");
                 com_machineSpec.SetInteger(1);
             } else {
@@ -1851,17 +1852,17 @@ public class Common {
 
             added = false;
             // quote every token, so args with semicolons can work
-            for (i = 0; i < com_numConsoleLines; i++) {
-                if (0 == com_consoleLines[i].Argc()) {
+            for (i = 0; i < this.com_numConsoleLines; i++) {
+                if (0 == this.com_consoleLines[i].Argc()) {
                     continue;
                 }
 
                 // set commands won't override menu startup
-                if (idStr.Icmpn(com_consoleLines[i].Argv(0), "set", 3) != 0) {
+                if (idStr.Icmpn(this.com_consoleLines[i].Argv(0), "set", 3) != 0) {
                     added = true;
                 }
                 // directly as tokenized so nothing gets screwed
-                cmdSystem.BufferCommandArgs(CMD_EXEC_APPEND, com_consoleLines[i]);
+                cmdSystem.BufferCommandArgs(CMD_EXEC_APPEND, this.com_consoleLines[i]);
             }
 
             return added;
@@ -1870,24 +1871,24 @@ public class Common {
         private void ParseCommandLine(int argc, final String[] argv) {
             int i, current_count;
 
-            com_numConsoleLines = 0;
+            this.com_numConsoleLines = 0;
             current_count = 0;
             // API says no program path
             for (i = 0; i < argc; i++) {
                 if (argv[i].charAt(0) == '+') {
-                    com_numConsoleLines++;
-                    com_consoleLines[com_numConsoleLines - 1].AppendArg(argv[i].substring(1));
+                    this.com_numConsoleLines++;
+                    this.com_consoleLines[this.com_numConsoleLines - 1].AppendArg(argv[i].substring(1));
                 } else {
-                    if (0 == com_numConsoleLines) {
-                        com_numConsoleLines++;
+                    if (0 == this.com_numConsoleLines) {
+                        this.com_numConsoleLines++;
                     }
-                    com_consoleLines[com_numConsoleLines - 1].AppendArg(argv[i]);
+                    this.com_consoleLines[this.com_numConsoleLines - 1].AppendArg(argv[i]);
                 }
             }
         }
 
         private void ClearCommandLine() {
-            com_numConsoleLines = 0;
+            this.com_numConsoleLines = 0;
         }
 
         /*
@@ -1901,10 +1902,10 @@ public class Common {
         private boolean SafeMode() {
             int i;
 
-            for (i = 0; i < com_numConsoleLines; i++) {
-                if (0 == idStr.Icmp(com_consoleLines[i].Argv(0), "safe")
-                        || 0 == idStr.Icmp(com_consoleLines[i].Argv(0), "cvar_restart")) {
-                    com_consoleLines[i].Clear();
+            for (i = 0; i < this.com_numConsoleLines; i++) {
+                if ((0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "safe"))
+                        || (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "cvar_restart"))) {
+                    this.com_consoleLines[i].Clear();
                     return true;
                 }
             }
@@ -1922,24 +1923,24 @@ public class Common {
         private void CheckToolMode() {
             int i;
 
-            for (i = 0; i < com_numConsoleLines; i++) {
-                if (0 == idStr.Icmp(com_consoleLines[i].Argv(0), "guieditor")) {
+            for (i = 0; i < this.com_numConsoleLines; i++) {
+                if (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "guieditor")) {
                     com_editors |= EDITOR_GUI;
-                } else if (0 == idStr.Icmp(com_consoleLines[i].Argv(0), "debugger")) {
+                } else if (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "debugger")) {
                     com_editors |= EDITOR_DEBUGGER;
-                } else if (0 == idStr.Icmp(com_consoleLines[i].Argv(0), "editor")) {
+                } else if (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "editor")) {
                     com_editors |= EDITOR_RADIANT;
                 } // Nerve: Add support for the material editor
-                else if (0 == idStr.Icmp(com_consoleLines[i].Argv(0), "materialEditor")) {
+                else if (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "materialEditor")) {
                     com_editors |= EDITOR_MATERIAL;
                 }
 
-                if (0 == idStr.Icmp(com_consoleLines[i].Argv(0), "renderbump")
-                        || 0 == idStr.Icmp(com_consoleLines[i].Argv(0), "editor")
-                        || 0 == idStr.Icmp(com_consoleLines[i].Argv(0), "guieditor")
-                        || 0 == idStr.Icmp(com_consoleLines[i].Argv(0), "debugger")
-                        || 0 == idStr.Icmp(com_consoleLines[i].Argv(0), "dmap")
-                        || 0 == idStr.Icmp(com_consoleLines[i].Argv(0), "materialEditor")) {
+                if ((0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "renderbump"))
+                        || (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "editor"))
+                        || (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "guieditor"))
+                        || (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "debugger"))
+                        || (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "dmap"))
+                        || (0 == idStr.Icmp(this.com_consoleLines[i].Argv(0), "materialEditor"))) {
                     cvarSystem.SetCVarBool("r_fullscreen", false);
                     return;
                 }
@@ -1947,10 +1948,10 @@ public class Common {
         }
 
         private void CloseLogFile() {
-            if (logFile != null) {
+            if (this.logFile != null) {
                 com_logFile.SetBool(false); // make sure no further VPrintf attempts to open the log file again
-                fileSystem.CloseFile(logFile);
-                logFile = null;
+                fileSystem.CloseFile(this.logFile);
+                this.logFile = null;
             }
         }
 
@@ -1964,7 +1965,7 @@ public class Common {
         private void WriteConfiguration() {
             // if we are quiting without fully initializing, make sure
             // we don't write out anything
-            if (!com_fullyInitialized) {
+            if (!this.com_fullyInitialized) {
                 return;
             }
 
@@ -1974,7 +1975,7 @@ public class Common {
             cvarSystem.ClearModifiedFlags(CVAR_ARCHIVE);
 
             // disable printing out the "Writing to:" message
-            boolean developer = com_developer.GetBool();
+            final boolean developer = com_developer.GetBool();
             com_developer.SetBool(false);
 
             WriteConfigToFile(CONFIG_FILE);
@@ -1988,7 +1989,7 @@ public class Common {
             int i;
             idFile warningFile;
 
-            if (0 == warningList.Num()) {
+            if (0 == this.warningList.Num()) {
                 return;
             }
 
@@ -1996,23 +1997,23 @@ public class Common {
             if (warningFile != null) {
 
                 warningFile.Printf("------------- Warnings ---------------\n\n");
-                warningFile.Printf("during %s...\n", warningCaption);
-                warningList.Sort();
-                for (i = 0; i < warningList.Num(); i++) {
-                    warningList.oGet(i).RemoveColors();
-                    warningFile.Printf("WARNING: %s\n", warningList.oGet(i));
+                warningFile.Printf("during %s...\n", this.warningCaption);
+                this.warningList.Sort();
+                for (i = 0; i < this.warningList.Num(); i++) {
+                    this.warningList.oGet(i).RemoveColors();
+                    warningFile.Printf("WARNING: %s\n", this.warningList.oGet(i));
                 }
-                if (warningList.Num() >= MAX_WARNING_LIST) {
+                if (this.warningList.Num() >= MAX_WARNING_LIST) {
                     warningFile.Printf("\nmore than %d warnings!\n", MAX_WARNING_LIST);
                 } else {
-                    warningFile.Printf("\n%d warnings.\n", warningList.Num());
+                    warningFile.Printf("\n%d warnings.\n", this.warningList.Num());
                 }
 
                 warningFile.Printf("\n\n-------------- Errors ---------------\n\n");
-                errorList.Sort();
-                for (i = 0; i < errorList.Num(); i++) {
-                    errorList.oGet(i).RemoveColors();
-                    warningFile.Printf("ERROR: %s", errorList.oGet(i));
+                this.errorList.Sort();
+                for (i = 0; i < this.errorList.Num(); i++) {
+                    this.errorList.oGet(i).RemoveColors();
+                    warningFile.Printf("ERROR: %s", this.errorList.oGet(i));
                 }
 
                 warningFile.ForceFlush();
@@ -2025,7 +2026,7 @@ public class Common {
                     try {
 //                    WinExec(va("Notepad.exe %s", osPath.c_str()), SW_SHOW);
                         Runtime.getRuntime().exec(va("Notepad.exe %s", osPath));
-                    } catch (IOException ex) {
+                    } catch (final IOException ex) {
                         Logger.getLogger(Common.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -2037,11 +2038,11 @@ public class Common {
             // critical data structures
             Sys_EnterCriticalSection();
             try {
-                asyncStats_t stat = com_asyncStats[com_ticNumber & (MAX_ASYNC_STATS - 1)];//memset( stat, 0, sizeof( *stat ) );
+                final asyncStats_t stat = this.com_asyncStats[com_ticNumber & (MAX_ASYNC_STATS - 1)];//memset( stat, 0, sizeof( *stat ) );
                 stat.milliseconds = Sys_Milliseconds();
-                stat.deltaMsec = stat.milliseconds - com_asyncStats[(com_ticNumber - 1) & (MAX_ASYNC_STATS - 1)].milliseconds;
+                stat.deltaMsec = stat.milliseconds - this.com_asyncStats[(com_ticNumber - 1) & (MAX_ASYNC_STATS - 1)].milliseconds;
 
-                if (usercmdGen != null && com_asyncInput.GetBool()) {
+                if ((usercmdGen != null) && com_asyncInput.GetBool()) {
                     usercmdGen.UsercmdInterrupt();
                 }
 
@@ -2149,13 +2150,13 @@ public class Common {
         }
 
         private void PrintLoadingMessage(final String msg) {
-            if (msg == null || msg.isEmpty()) {
+            if ((msg == null) || msg.isEmpty()) {
                 return;
             }
             renderSystem.BeginFrame(renderSystem.GetScreenWidth(), renderSystem.GetScreenHeight());
             renderSystem.DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1, 1, declManager.FindMaterial("splashScreen"));
-            int len = msg.length();
-            renderSystem.DrawSmallStringExt((640 - len * SMALLCHAR_WIDTH) / 2, 410, msg.toCharArray(),
+            final int len = msg.length();
+            renderSystem.DrawSmallStringExt((640 - (len * SMALLCHAR_WIDTH)) / 2, 410, msg.toCharArray(),
                     new idVec4(0.0f, 0.81f, 0.94f, 1.0f), true, declManager.FindMaterial("textures/bigchars"));
             renderSystem.EndFrame(null, null);
         }
@@ -2173,7 +2174,7 @@ public class Common {
                 }
             }
         }
-    };
+    }
 //    
 //    
 //    
@@ -2205,7 +2206,7 @@ public class Common {
         public void run(idCmdArgs args) {
             RadiantInit();
         }
-    };
+    }
 
     /*
      =============
@@ -2228,7 +2229,7 @@ public class Common {
                 // DebuggerClientLaunch();
             }
         }
-    };
+    }
 
     /*
      =============
@@ -2247,7 +2248,7 @@ public class Common {
         public void run(idCmdArgs args) {
             GUIEditorInit();
         }
-    };
+    }
 
     /*
      =============
@@ -2268,7 +2269,7 @@ public class Common {
             soundSystem.SetMute(true);
             MaterialEditorInit();
         }
-    };
+    }
 
 
     /*
@@ -2288,7 +2289,7 @@ public class Common {
 
         @Override
         public void run(idCmdArgs args) throws idException {
-            MemInfo_t mi = new MemInfo_t();//memset( &mi, 0, sizeof( mi ) );
+            final MemInfo_t mi = new MemInfo_t();//memset( &mi, 0, sizeof( mi ) );
 
             mi.filebase = new idStr(session.GetCurrentMapName());
 
@@ -2319,7 +2320,7 @@ public class Common {
 
             fileSystem.CloseFile(f);
         }
-    };
+    }
 
 
     /*
@@ -2340,7 +2341,7 @@ public class Common {
             LightEditorInit(null);
             cvarSystem.SetCVarInteger("g_editEntityMode", 1);
         }
-    };
+    }
 
     /*
      ==================
@@ -2360,7 +2361,7 @@ public class Common {
             SoundEditorInit(null);
             cvarSystem.SetCVarInteger("g_editEntityMode", 2);
         }
-    };
+    }
 
     /*
      ==================
@@ -2417,7 +2418,7 @@ public class Common {
         public void run(idCmdArgs args) {
             ParticleEditorInit(null);
         }
-    };
+    }
 
     /*
      ==================
@@ -2436,7 +2437,7 @@ public class Common {
         public void run(idCmdArgs args) {
             ScriptEditorInit(null);
         }
-    };
+    }
 
     /*
      ==================
@@ -2455,7 +2456,7 @@ public class Common {
         public void run(idCmdArgs args) {
             PDAEditorInit(null);
         }
-    };
+    }
 
 
     /*
@@ -2486,7 +2487,7 @@ public class Common {
                 commonLocal.Error("Testing drop error");
             }
         }
-    };
+    }
 
     /*
      ==================
@@ -2524,12 +2525,12 @@ public class Common {
 
             while (true) {
                 now = eventLoop.Milliseconds();
-                if ((now - start) * 0.001f > s) {
+                if (((now - start) * 0.001f) > s) {
                     break;
                 }
             }
         }
-    };
+    }
 
     /*
      =================
@@ -2555,7 +2556,7 @@ public class Common {
 
 //	* ( int * ) 0 = 0x12345678;//not needed for java
         }
-    };
+    }
 
     /*
      =================
@@ -2574,7 +2575,7 @@ public class Common {
         public void run(idCmdArgs args) {
             commonLocal.Quit();
         }
-    };
+    }
 
     /*
      ===============
@@ -2605,7 +2606,7 @@ public class Common {
             commonLocal.Printf("Writing %s.\n", filename);
             commonLocal.WriteConfigToFile(filename.toString());
         }
-    };
+    }
 
     /*
      =================
@@ -2624,7 +2625,7 @@ public class Common {
         public void run(idCmdArgs args) throws idException {
             commonLocal.SetMachineSpec();
         }
-    };
+    }
 
     /*
      =================
@@ -2751,8 +2752,8 @@ public class Common {
                 cvarSystem.SetCVarBool("r_forceLoadImages", false, CVAR_ARCHIVE);
             }
 
-            boolean[] oldCard = {false};
-            boolean[] nv10or20 = {false};
+            final boolean[] oldCard = {false};
+            final boolean[] nv10or20 = {false};
             renderSystem.GetCardCaps(oldCard, nv10or20);
             if (oldCard[0]) {
                 cvarSystem.SetCVarBool("g_decals", false, CVAR_ARCHIVE);
@@ -2783,7 +2784,7 @@ public class Common {
 //	}
 //}
         }
-    };
+    }
 
     /*
      =================
@@ -2806,7 +2807,7 @@ public class Common {
                 return;
             }
 
-            if (args.Argc() > 1 && idStr.Icmp(args.Argv(1), "menu") == 0) {
+            if ((args.Argc() > 1) && (idStr.Icmp(args.Argv(1), "menu") == 0)) {
                 menu = true;
             }
 
@@ -2827,7 +2828,7 @@ public class Common {
                 }
             }
         }
-    };
+    }
 
     static class ListHash extends idHashTable<idStrList> {
 
@@ -2875,8 +2876,8 @@ public class Common {
 
             }
 
-            idLangDict strTable = new idLangDict();
-            String filename = va("strings/english%.3i.lang", com_product_lang_ext.GetInteger());
+            final idLangDict strTable = new idLangDict();
+            final String filename = va("strings/english%.3i.lang", com_product_lang_ext.GetInteger());
             if (strTable.Load(filename) == false) {
                 //This is a new file so set the base index
                 strTable.SetBaseID(com_product_lang_ext.GetInteger() * 100000);
@@ -2884,19 +2885,19 @@ public class Common {
 
             common.SetRefreshOnPrint(true);
 
-            ListHash listHash = new ListHash();
+            final ListHash listHash = new ListHash();
             LoadMapLocalizeData(listHash);
 
-            idStrList excludeList = new idStrList();
+            final idStrList excludeList = new idStrList();
             LoadGuiParmExcludeList(excludeList);
 
             if (args.Argc() == 3) {
                 strCount += LocalizeMap(args.Argv(2), strTable, listHash, excludeList, write);
             } else {
-                idStrList files = new idStrList();
+                final idStrList files = new idStrList();
                 GetFileList("z:/d3xp/d3xp/maps/game", "*.map", files);
                 for (int i = 0; i < files.Num(); i++) {
-                    String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
+                    final String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
                     strCount += LocalizeMap(file, strTable, listHash, excludeList, write);
                 }
             }
@@ -2911,7 +2912,7 @@ public class Common {
                 strTable.Save(filename);
             }
         }
-    };
+    }
 
     /*
      =================
@@ -2934,9 +2935,9 @@ public class Common {
                 return;
             }
 
-            idLangDict strTable = new idLangDict();
+            final idLangDict strTable = new idLangDict();
 
-            String filename = va("strings/english%.3i.lang", com_product_lang_ext.GetInteger());
+            final String filename = va("strings/english%.3i.lang", com_product_lang_ext.GetInteger());
             if (strTable.Load(filename) == false) {
                 //This is a new file so set the base index
                 strTable.SetBaseID(com_product_lang_ext.GetInteger() * 100000);
@@ -2944,7 +2945,7 @@ public class Common {
 
             idFileList files;
             if (idStr.Icmp(args.Argv(1), "all") == 0) {
-                String game = cvarSystem.GetCVarString("fs_game");
+                final String game = cvarSystem.GetCVarString("fs_game");
                 if (!game.isEmpty()) {
                     files = fileSystem.ListFilesTree("guis", "*.gui", true, game);
                 } else {
@@ -2971,7 +2972,7 @@ public class Common {
             }
             strTable.Save(filename);
         }
-    };
+    }
 
     static class Com_LocalizeGuiParmsTest_f extends cmdFunction_t {
 
@@ -2986,33 +2987,33 @@ public class Common {
 
             common.SetRefreshOnPrint(true);
 
-            idFile localizeFile = fileSystem.OpenFileWrite("gui_parm_localize.csv");
-            idFile noLocalizeFile = fileSystem.OpenFileWrite("gui_parm_nolocalize.csv");
+            final idFile localizeFile = fileSystem.OpenFileWrite("gui_parm_localize.csv");
+            final idFile noLocalizeFile = fileSystem.OpenFileWrite("gui_parm_nolocalize.csv");
 
-            idStrList excludeList = new idStrList();
+            final idStrList excludeList = new idStrList();
             LoadGuiParmExcludeList(excludeList);
 
-            idStrList files = new idStrList();
+            final idStrList files = new idStrList();
             GetFileList("z:/d3xp/d3xp/maps/game", "*.map", files);
 
             for (int i = 0; i < files.Num(); i++) {
 
                 common.Printf("Testing Map '%s'\n", files.oGet(i));
-                idMapFile map = new idMapFile();
+                final idMapFile map = new idMapFile();
 
-                String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
+                final String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
                 if (map.Parse(file, false, false)) {
-                    int count = map.GetNumEntities();
+                    final int count = map.GetNumEntities();
                     for (int j = 0; j < count; j++) {
-                        idMapEntity ent = map.GetEntity(j);
+                        final idMapEntity ent = map.GetEntity(j);
                         if (ent != null) {
                             idKeyValue kv = ent.epairs.MatchPrefix("gui_parm");
                             while (kv != null) {
                                 if (TestGuiParm(kv.GetKey(), kv.GetValue(), excludeList)) {
-                                    String out = va("%s,%s,%s\r\n", kv.GetValue(), kv.GetKey(), file);
+                                    final String out = va("%s,%s,%s\r\n", kv.GetValue(), kv.GetKey(), file);
                                     localizeFile.WriteString(out);
                                 } else {
-                                    String out = va("%s,%s,%s\r\n", kv.GetValue(), kv.GetKey(), file);
+                                    final String out = va("%s,%s,%s\r\n", kv.GetValue(), kv.GetKey(), file);
                                     noLocalizeFile.WriteString(out);//TODO:writeString?
                                 }
                                 kv = ent.epairs.MatchPrefix("gui_parm", kv);
@@ -3027,7 +3028,7 @@ public class Common {
 
             common.SetRefreshOnPrint(false);
         }
-    };
+    }
 
     static class Com_LocalizeMapsTest_f extends cmdFunction_t {
 
@@ -3040,26 +3041,26 @@ public class Common {
         @Override
         public void run(idCmdArgs args) throws idException {
 
-            ListHash listHash = new ListHash();
+            final ListHash listHash = new ListHash();
             LoadMapLocalizeData(listHash);
 
             common.SetRefreshOnPrint(true);
 
-            idFile localizeFile = fileSystem.OpenFileWrite("map_localize.csv");
+            final idFile localizeFile = fileSystem.OpenFileWrite("map_localize.csv");
 
-            idStrList files = new idStrList();
+            final idStrList files = new idStrList();
             GetFileList("z:/d3xp/d3xp/maps/game", "*.map", files);
 
             for (int i = 0; i < files.Num(); i++) {
 
                 common.Printf("Testing Map '%s'\n", files.oGet(i));
-                idMapFile map = new idMapFile();
+                final idMapFile map = new idMapFile();
 
-                String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
+                final String file = fileSystem.OSPathToRelativePath(files.oGet(i).toString());
                 if (map.Parse(file, false, false)) {
-                    int count = map.GetNumEntities();
+                    final int count = map.GetNumEntities();
                     for (int j = 0; j < count; j++) {
-                        idMapEntity ent = map.GetEntity(j);
+                        final idMapEntity ent = map.GetEntity(j);
                         if (ent != null) {
 
                             //Temp code to get a list of all entity key value pairs
@@ -3072,18 +3073,18 @@ public class Common {
                              idStr out = va("%s,%s,%s,%s\r\n", static classname.c_str(), kv.GetKey().c_str(), kv.GetValue().c_str(), file.c_str());
                              localizeFile.Write( out.c_str(), out.Length() );
                              }*/
-                            String /*static*/ className = ent.epairs.GetString("static classname");
+                            final String /*static*/ className = ent.epairs.GetString("static classname");
 
                             //Hack: for info_location
                             boolean hasLocation = false;
 
-                            idStrList[] list = {null};
+                            final idStrList[] list = {null};
                             listHash.Get(/*static*/className, list);
                             if (list[0] != null) {
 
                                 for (int k = 0; k < list[0].Num(); k++) {
 
-                                    String val = ent.epairs.GetString(list[0].oGet(k).toString(), "");
+                                    final String val = ent.epairs.GetString(list[0].oGet(k).toString(), "");
 
                                     if (/*static*/className.equals("info_location") && list[0].oGet(k).equals("location")) {
                                         hasLocation = true;
@@ -3092,7 +3093,7 @@ public class Common {
                                     if (isNotNullOrEmpty(val) && TestMapVal(val)) {
 
                                         if (!hasLocation || list[0].oGet(k).equals("location")) {
-                                            String out = va("%s,%s,%s\r\n", val, list[0].oGet(k), file);
+                                            final String out = va("%s,%s,%s\r\n", val, list[0].oGet(k), file);
                                             localizeFile.WriteString(out);
                                         }
                                     }
@@ -3102,9 +3103,9 @@ public class Common {
                             listHash.Get("all", list);
                             if (list[0] != null) {
                                 for (int k = 0; k < list[0].Num(); k++) {
-                                    String val = ent.epairs.GetString(list[0].oGet(k).toString(), "");
+                                    final String val = ent.epairs.GetString(list[0].oGet(k).toString(), "");
                                     if (isNotNullOrEmpty(val) && TestMapVal(val)) {
-                                        String out = va("%s,%s,%s\r\n", val, list[0].oGet(k), file);
+                                        final String out = va("%s,%s,%s\r\n", val, list[0].oGet(k), file);
                                         localizeFile.WriteString(out);
                                     }
                                 }
@@ -3118,7 +3119,7 @@ public class Common {
 
             common.SetRefreshOnPrint(false);
         }
-    };
+    }
 
     /*
      =================
@@ -3137,7 +3138,7 @@ public class Common {
         public void run(idCmdArgs args) {
             globalImages.StartBuild();
         }
-    };
+    }
 
     /*
      =================
@@ -3159,7 +3160,7 @@ public class Common {
             }
             globalImages.FinishBuild((args.Argc() > 1));
         }
-    };
+    }
 
     /*
      ==============
@@ -3196,7 +3197,7 @@ public class Common {
             common.Printf("  g_mapCycle       - name of .scriptcfg file for cycling maps.\n");
             common.Printf("See mapcycle.scriptcfg for an example of a mapcyle script.\n\n");
         }
-    };
+    }
 
     /*
      =================
@@ -3215,7 +3216,7 @@ public class Common {
         public void run(idCmdArgs args) throws idException {
             commonLocal.InitLanguageDict();
         }
-    };
+    }
 
     static void LoadMapLocalizeData(ListHash listHash) {
         throw new TODO_Exception();
@@ -3283,7 +3284,7 @@ public class Common {
 
     static boolean TestGuiParm(final String parm, final String value, idStrList excludeList) {
 
-        idStr testVal = new idStr(value);
+        final idStr testVal = new idStr(value);
 
         //Already Localized?
         if (testVal.Find("#str_") != -1) {
@@ -3319,20 +3320,20 @@ public class Common {
     static void GetFileList(final String dir, final String ext, idStrList list) {
 
         //Recurse Subdirectories
-        idStrList dirList = new idStrList();
+        final idStrList dirList = new idStrList();
         Sys_ListFiles(dir, "/", dirList);
         for (int i = 0; i < dirList.Num(); i++) {
             if (dirList.oGet(i).equals(".") || dirList.oGet(i).equals("..")) {
                 continue;
             }
-            String fullName = va("%s/%s", dir, dirList.oGet(i));
+            final String fullName = va("%s/%s", dir, dirList.oGet(i));
             GetFileList(fullName, ext, list);
         }
 
-        idStrList fileList = new idStrList();
+        final idStrList fileList = new idStrList();
         Sys_ListFiles(dir, ext, fileList);
         for (int i = 0; i < fileList.Num(); i++) {
-            idStr fullName = new idStr(va("%s/%s", dir, fileList.oGet(i)));
+            final idStr fullName = new idStr(va("%s/%s", dir, fileList.oGet(i)));
             list.Append(fullName);
         }
     }

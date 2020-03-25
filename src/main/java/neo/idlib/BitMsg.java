@@ -54,13 +54,13 @@ public class BitMsg {
         public idBitMsg() {
 //	writeData = null;
 //	readData = null;
-            maxSize = 0;
-            curSize = 0;
-            writeBit = 0;
-            readCount = 0;
-            readBit = 0;
-            allowOverflow = false;
-            overflowed = false;
+            this.maxSize = 0;
+            this.curSize = 0;
+            this.writeBit = 0;
+            this.readCount = 0;
+            this.readBit = 0;
+            this.allowOverflow = false;
+            this.overflowed = false;
         }
 //public					~idBitMsg() {}
 
@@ -73,159 +73,159 @@ public class BitMsg {
         }
 
         public void Init(ByteBuffer data, int length) {
-            writeData = data;
-            readData = data;
-            maxSize = length;
+            this.writeData = data;
+            this.readData = data;
+            this.maxSize = length;
         }
 
         public void InitReadOnly(final ByteBuffer data, int length) {
-            writeData = null;
-            readData = data;
-            maxSize = length;
+            this.writeData = null;
+            this.readData = data;
+            this.maxSize = length;
         }
 
         // get data for writing
         public ByteBuffer GetData() {
-            return writeData;
+            return this.writeData;
         }
 
         // get data for reading
         public ByteBuffer GetDataReadOnly() {
-            return readData.duplicate();
+            return this.readData.duplicate();
         }
 
         // get the maximum message size
         public int GetMaxSize() {
-            return maxSize;
+            return this.maxSize;
         }
 
         // generate error if not set and message is overflowed
         public void SetAllowOverflow(boolean set) {
-            allowOverflow = set;
+            this.allowOverflow = set;
         }
 
         // returns true if the message was overflowed
         public boolean IsOverflowed() {
-            return overflowed;
+            return this.overflowed;
         }
 
         // size of the message in bytes
         public int GetSize() {
-            return curSize;
+            return this.curSize;
         }
 
         // set the message size
         public void SetSize(int size) {
-            if (size > maxSize) {
-                curSize = maxSize;
+            if (size > this.maxSize) {
+                this.curSize = this.maxSize;
             } else {
                 if (size < 0) {
-                    curSize = 0;
+                    this.curSize = 0;
                 } else {
-                    curSize = size;
+                    this.curSize = size;
                 }
             }
         }
 
         // get current write bit
         public int GetWriteBit() {
-            return writeBit;
+            return this.writeBit;
         }
 
         // set current write bit
         public void SetWriteBit(int bit) {
-            writeBit = bit & 7;
-            if (writeBit != 0) {
-                final int pos = curSize - 1;
-                final int val = writeData.getInt(pos);
-                writeData.putInt(pos, val & (1 << writeBit) - 1);
+            this.writeBit = bit & 7;
+            if (this.writeBit != 0) {
+                final int pos = this.curSize - 1;
+                final int val = this.writeData.getInt(pos);
+                this.writeData.putInt(pos, val & ((1 << this.writeBit) - 1));
             }
         }
 
         // returns number of bits written
         public int GetNumBitsWritten() {
-            return ((curSize << 3) - ((8 - writeBit) & 7));
+            return ((this.curSize << 3) - ((8 - this.writeBit) & 7));
         }
 
         // space left in bits for writing
         public int GetRemainingWriteBits() {
-            return (maxSize << 3) - GetNumBitsWritten();
+            return (this.maxSize << 3) - GetNumBitsWritten();
         }
 
         // save the write state
         public void SaveWriteState(int[] s, int[] b) {
-            s[0] = curSize;
-            b[0] = writeBit;
+            s[0] = this.curSize;
+            b[0] = this.writeBit;
         }
 
         // restore the write state
         public void RestoreWriteState(int s, int b) {
-            curSize = s;
-            writeBit = b & 7;
-            if (writeBit != 0) {
-                final int pos = curSize - 1;
-                final int val = writeData.getInt(pos);
-                writeData.putInt(pos, val & (1 << writeBit) - 1);
+            this.curSize = s;
+            this.writeBit = b & 7;
+            if (this.writeBit != 0) {
+                final int pos = this.curSize - 1;
+                final int val = this.writeData.getInt(pos);
+                this.writeData.putInt(pos, val & ((1 << this.writeBit) - 1));
             }
         }
 
         // bytes read so far
         public int GetReadCount() {
-            return readCount;
+            return this.readCount;
         }
 
         // set the number of bytes and bits read
         public void SetReadCount(int bytes) {
-            readCount = bytes;
+            this.readCount = bytes;
         }
 
         // get current read bit
         public int GetReadBit() {
-            return readBit;
+            return this.readBit;
         }
 
         // set current read bit
         public void SetReadBit(int bit) {
-            readBit = bit & 7;
+            this.readBit = bit & 7;
         }
 
         // returns number of bits read
         public int GetNumBitsRead() {
-            return ((readCount << 3) - ((8 - readBit) & 7));
+            return ((this.readCount << 3) - ((8 - this.readBit) & 7));
         }
 
         // number of bits left to read
         public int GetRemainingReadBits() {
-            return (curSize << 3) - GetNumBitsRead();
+            return (this.curSize << 3) - GetNumBitsRead();
         }
 
         // save the read state
         public void SaveReadState(int[] c, int[] b) {
-            c[0] = readCount;
-            b[0] = readBit;
+            c[0] = this.readCount;
+            b[0] = this.readBit;
         }
 
         // restore the read state
         public void RestoreReadState(int c, int b) {
-            readCount = c;
-            readBit = b & 7;
+            this.readCount = c;
+            this.readBit = b & 7;
         }
 
         // begin writing
         public void BeginWriting() {
-            curSize = 0;
-            overflowed = false;
-            writeBit = 0;
+            this.curSize = 0;
+            this.overflowed = false;
+            this.writeBit = 0;
         }
 
         // space left in bytes
         public int GetRemainingSpace() {
-            return maxSize - curSize;
+            return this.maxSize - this.curSize;
         }
 
         // write up to the next byte boundary
         public void WriteByteAlign() {
-            writeBit = 0;
+            this.writeBit = 0;
         }
 
         /*
@@ -240,12 +240,12 @@ public class BitMsg {
             int fraction;
 
             try {
-                if (null == writeData) {
+                if (null == this.writeData) {
                     idLib.common.Error("idBitMsg.WriteBits: cannot write to message");
                 }
 
                 // check if the number of bits is valid
-                if (numBits == 0 || numBits < -31 || numBits > 32) {
+                if ((numBits == 0) || (numBits < -31) || (numBits > 32)) {
                     idLib.common.Error("idBitMsg.WriteBits: bad numBits %d", numBits);
                 }
 
@@ -253,14 +253,14 @@ public class BitMsg {
                 // this should be an error really, as it can go unnoticed and cause either bandwidth or corrupted data transmitted
                 if (numBits != 32) {
                     if (numBits > 0) {
-                        if (value > (1 << numBits) - 1) {
+                        if (value > ((1 << numBits) - 1)) {
                             idLib.common.Warning("idBitMsg.WriteBits: value overflow %d %d", value, numBits);
                         } else if (value < 0) {
                             idLib.common.Warning("idBitMsg.WriteBits: value overflow %d %d", value, numBits);
                         }
                     } else {
-                        int r = 1 << (- 1 - numBits);
-                        if (value > r - 1) {
+                        final int r = 1 << (- 1 - numBits);
+                        if (value > (r - 1)) {
                             idLib.common.Warning("idBitMsg.WriteBits: value overflow %d %d", value, numBits);
                         } else if (value < -r) {
                             idLib.common.Warning("idBitMsg.WriteBits: value overflow %d %d", value, numBits);
@@ -279,24 +279,24 @@ public class BitMsg {
 
                 // write the bits
                 while (numBits != 0) {
-                    if (writeBit == 0) {
+                    if (this.writeBit == 0) {
 //                        writeData.putInt(curSize, 0);
-                        writeData.put((byte) 0);
-                        curSize++;
+                        this.writeData.put((byte) 0);
+                        this.curSize++;
                     }
-                    put = 8 - writeBit;
+                    put = 8 - this.writeBit;
                     if (put > numBits) {
                         put = numBits;
                     }
                     fraction = value & ((1 << put) - 1);
-                    final int pos = curSize - 1;
-                    final int val = writeData.get(pos);
-                    writeData.put(pos, (byte) (val | fraction << writeBit));
+                    final int pos = this.curSize - 1;
+                    final int val = this.writeData.get(pos);
+                    this.writeData.put(pos, (byte) (val | (fraction << this.writeBit)));
                     numBits -= put;
                     value >>= put;
-                    writeBit = (writeBit + put) & 7;
+                    this.writeBit = (this.writeBit + put) & 7;
                 }
-            } catch (Lib.idException ex) {
+            } catch (final Lib.idException ex) {
                 Logger.getLogger(BitMsg.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -326,7 +326,7 @@ public class BitMsg {
         }
 
         public void WriteFloat(float f, int exponentBits, int mantissaBits) {
-            int bits = idMath.FloatToBits(f, exponentBits, mantissaBits);
+            final int bits = idMath.FloatToBits(f, exponentBits, mantissaBits);
             WriteBits(bits, 1 + exponentBits + mantissaBits);
         }
 
@@ -359,7 +359,7 @@ public class BitMsg {
                 byte[] bytePtr;
 
                 l = s.length();
-                if (maxLength >= 0 && l >= maxLength) {
+                if ((maxLength >= 0) && (l >= maxLength)) {
                     l = maxLength - 1;
                 }
                 dataPtr = GetByteSpace(l + 1);
@@ -419,8 +419,8 @@ public class BitMsg {
         }
 
         public void WriteDeltaFloat(float oldValue, float newValue, int exponentBits, int mantissaBits) {
-            int oldBits = idMath.FloatToBits(oldValue, exponentBits, mantissaBits);
-            int newBits = idMath.FloatToBits(newValue, exponentBits, mantissaBits);
+            final int oldBits = idMath.FloatToBits(oldValue, exponentBits, mantissaBits);
+            final int newBits = idMath.FloatToBits(newValue, exponentBits, mantissaBits);
             WriteDelta(oldBits, newBits, 1 + exponentBits + mantissaBits);
         }
 
@@ -482,7 +482,7 @@ public class BitMsg {
                 for (i = 0; i < dict.GetNumKeyVals(); i++) {
                     kv = dict.GetKeyVal(i);
                     basekv = base.FindKey(kv.GetKey().toString());
-                    if (basekv == null || basekv.GetValue().Icmp(kv.GetValue().toString()) != 0) {
+                    if ((basekv == null) || (basekv.GetValue().Icmp(kv.GetValue().toString()) != 0)) {
                         WriteString(kv.GetKey().toString());
                         WriteString(kv.GetValue().toString());
                         changed = true;
@@ -521,16 +521,16 @@ public class BitMsg {
 //
 
         public void BeginReading() {				// begin reading.
-            readCount = 0;
-            readBit = 0;
+            this.readCount = 0;
+            this.readBit = 0;
         }
 
         public int GetRemaingData() {			// number of bytes left to read
-            return curSize - readCount;
+            return this.curSize - this.readCount;
         }
 
         public void ReadByteAlign() {			// read up to the next byte boundary
-            readBit = 0;
+            this.readBit = 0;
         }
 
         /*
@@ -547,12 +547,12 @@ public class BitMsg {
             int fraction;
             boolean sgn;
 
-            if (null == readData) {
+            if (null == this.readData) {
                 idLib.common.FatalError("idBitMsg.ReadBits: cannot read from message");
             }
 
             // check if the number of bits is valid
-            if (numBits == 0 || numBits < -31 || numBits > 32) {
+            if ((numBits == 0) || (numBits < -31) || (numBits > 32)) {
                 idLib.common.FatalError("idBitMsg.ReadBits: bad numBits %d", numBits);
             }
 
@@ -572,20 +572,20 @@ public class BitMsg {
             }
 
             while (valueBits < numBits) {
-                if (readBit == 0) {
-                    readCount++;
+                if (this.readBit == 0) {
+                    this.readCount++;
                 }
-                get = 8 - readBit;
+                get = 8 - this.readBit;
                 if (get > (numBits - valueBits)) {
                     get = numBits - valueBits;
                 }
-                fraction = readData.get(readCount - 1);
-                fraction >>= readBit;
+                fraction = this.readData.get(this.readCount - 1);
+                fraction >>= this.readBit;
                 fraction &= (1 << get) - 1;
                 value |= fraction << valueBits;
 
                 valueBits += get;
-                readBit = (readBit + get) & 7;
+                this.readBit = (this.readBit + get) & 7;
             }
 
             if (sgn) {
@@ -624,16 +624,16 @@ public class BitMsg {
         }
 
         public float ReadFloat(int exponentBits, int mantissaBits) throws idException {
-            int bits = ReadBits(1 + exponentBits + mantissaBits);
+            final int bits = ReadBits(1 + exponentBits + mantissaBits);
             return idMath.BitsToFloat(bits, exponentBits, mantissaBits);
         }
 
         public float ReadAngle8() throws idException {
-            return (float) BYTE2ANGLE(ReadByte());
+            return BYTE2ANGLE(ReadByte());
         }
 
         public float ReadAngle16() throws idException {
-            return (float) SHORT2ANGLE(ReadShort());
+            return SHORT2ANGLE(ReadShort());
         }
 
         public idVec3 ReadDir(int numBits) throws idException {
@@ -647,7 +647,7 @@ public class BitMsg {
             l = 0;
             while (1 != 0) {
                 c = ReadByte();
-                if (c <= 0 || c >= 255) {
+                if ((c <= 0) || (c >= 255)) {
                     break;
                 }
                 // translate all fmt spec to avoid crash bugs in string routines
@@ -658,7 +658,7 @@ public class BitMsg {
                 // we will read past any excessively long string, so
                 // the following data can be read, but the string will
                 // be truncated
-                if (l < bufferSize - 1) {
+                if (l < (bufferSize - 1)) {
                     buffer[l] = (char) c;
                     l++;
                 }
@@ -672,23 +672,23 @@ public class BitMsg {
             int cnt;
 
             ReadByteAlign();
-            cnt = readCount;
+            cnt = this.readCount;
 
-            if (readCount + length > curSize) {
+            if ((this.readCount + length) > this.curSize) {
                 if (data != null) {
 //                    memcpy(data, readData + readCount, GetRemaingData());
-                    data.put(readData.array(), readCount, GetRemaingData());
+                    data.put(this.readData.array(), this.readCount, GetRemaingData());
                 }
-                readCount = curSize;
+                this.readCount = this.curSize;
             } else {
                 if (data != null) {
 //                    memcpy(data, readData + readCount, length);
-                    data.put(readData.array(), readCount, length);
+                    data.put(this.readData.array(), this.readCount, length);
                 }
-                readCount += length;
+                this.readCount += length;
             }
 
-            return (readCount - cnt);
+            return (this.readCount - cnt);
         }
 
         public void ReadNetadr(netadr_t adr) throws idException {
@@ -725,8 +725,8 @@ public class BitMsg {
         }
 
         public float ReadDeltaFloat(float oldValue, int exponentBits, int mantissaBits) throws idException {
-            int oldBits = idMath.FloatToBits(oldValue, exponentBits, mantissaBits);
-            int newBits = ReadDelta(oldBits, 1 + exponentBits + mantissaBits);
+            final int oldBits = idMath.FloatToBits(oldValue, exponentBits, mantissaBits);
+            final int newBits = ReadDelta(oldBits, 1 + exponentBits + mantissaBits);
             return idMath.BitsToFloat(newBits, exponentBits, mantissaBits);
         }
 
@@ -764,8 +764,8 @@ public class BitMsg {
         }
 
         public boolean ReadDeltaDict(idDict dict, final idDict base) throws idException {
-            char[] key = new char[Lib.MAX_STRING_CHARS];
-            char[] value = new char[Lib.MAX_STRING_CHARS];
+            final char[] key = new char[Lib.MAX_STRING_CHARS];
+            final char[] value = new char[Lib.MAX_STRING_CHARS];
             boolean changed = false;
 
             if (base != null) {
@@ -793,37 +793,37 @@ public class BitMsg {
             int max, bits;
             float bias;
 
-            assert (numBits >= 6 && numBits <= 32);
-            assert (dir.LengthSqr() - 1.0f < 0.01f);
+            assert ((numBits >= 6) && (numBits <= 32));
+            assert ((dir.LengthSqr() - 1.0f) < 0.01f);
 
             numBits /= 3;
             max = (1 << (numBits - 1)) - 1;
             bias = 0.5f / max;
 
-            bits = FLOATSIGNBITSET(dir.x) << (numBits * 3 - 1);
+            bits = FLOATSIGNBITSET(dir.x) << ((numBits * 3) - 1);
             bits |= (idMath.Ftoi((idMath.Fabs(dir.x) + bias) * max)) << (numBits * 2);
-            bits |= FLOATSIGNBITSET(dir.y) << (numBits * 2 - 1);
+            bits |= FLOATSIGNBITSET(dir.y) << ((numBits * 2) - 1);
             bits |= (idMath.Ftoi((idMath.Fabs(dir.y) + bias) * max)) << (numBits * 1);
-            bits |= FLOATSIGNBITSET(dir.z) << (numBits * 1 - 1);
+            bits |= FLOATSIGNBITSET(dir.z) << ((numBits * 1) - 1);
             bits |= (idMath.Ftoi((idMath.Fabs(dir.z) + bias) * max)) << (numBits * 0);
             return bits;
         }
 
         public static idVec3 BitsToDir(int bits, int numBits) {
-            float[] sign = {1.0f, -1.0f};
+            final float[] sign = {1.0f, -1.0f};
             int max;
             float invMax;
-            idVec3 dir = new idVec3();
+            final idVec3 dir = new idVec3();
 
-            assert (numBits >= 6 && numBits <= 32);
+            assert ((numBits >= 6) && (numBits <= 32));
 
             numBits /= 3;
             max = (1 << (numBits - 1)) - 1;
             invMax = 1.0f / max;
 
-            dir.x = sign[(bits >> (numBits * 3 - 1)) & 1] * ((bits >> (numBits * 2)) & max) * invMax;
-            dir.y = sign[(bits >> (numBits * 2 - 1)) & 1] * ((bits >> (numBits * 1)) & max) * invMax;
-            dir.z = sign[(bits >> (numBits * 1 - 1)) & 1] * ((bits >> (numBits * 0)) & max) * invMax;
+            dir.x = sign[(bits >> ((numBits * 3) - 1)) & 1] * ((bits >> (numBits * 2)) & max) * invMax;
+            dir.y = sign[(bits >> ((numBits * 2) - 1)) & 1] * ((bits >> (numBits * 1)) & max) * invMax;
+            dir.z = sign[(bits >> ((numBits * 1) - 1)) & 1] * ((bits >> (numBits * 0)) & max) * invMax;
             dir.NormalizeFast();
             return dir;
         }
@@ -831,15 +831,15 @@ public class BitMsg {
         private boolean CheckOverflow(int numBits) throws Lib.idException {
             assert (numBits >= 0);
             if (numBits > GetRemainingWriteBits()) {
-                if (!allowOverflow) {
+                if (!this.allowOverflow) {
                     idLib.common.FatalError("idBitMsg: overflow without allowOverflow set");
                 }
-                if (numBits > (maxSize << 3)) {
+                if (numBits > (this.maxSize << 3)) {
                     idLib.common.FatalError("idBitMsg: %d bits is > full message size", numBits);
                 }
                 idLib.common.Printf("idBitMsg: overflow\n");
                 BeginWriting();
-                overflowed = true;
+                this.overflowed = true;
                 return true;
             }
             return false;
@@ -848,7 +848,7 @@ public class BitMsg {
         private byte[] GetByteSpace(int length) throws Lib.idException {
             byte[] ptr;
 
-            if (null == writeData) {
+            if (null == this.writeData) {
                 idLib.common.FatalError("idBitMsg::GetByteSpace: cannot write to message");
             }
 
@@ -858,9 +858,9 @@ public class BitMsg {
             // check for overflow
             CheckOverflow(length << 3);
 
-            ptr = new byte[writeData.capacity() - curSize];
-            ((ByteBuffer) writeData.mark().position(curSize)).get(ptr).rewind();
-            curSize += length;
+            ptr = new byte[this.writeData.capacity() - this.curSize];
+            ((ByteBuffer) this.writeData.mark().position(this.curSize)).get(ptr).rewind();
+            this.curSize += length;
             return ptr;
         }
 
@@ -879,7 +879,7 @@ public class BitMsg {
             }
             return oldValue;
         }
-    };
+    }
     /*
      ==============================================================================
 
@@ -900,11 +900,11 @@ public class BitMsg {
         //
 
         public idBitMsgDelta() {
-            base = null;
-            newBase = null;
-            writeDelta = null;
-            readDelta = null;
-            changed = false;
+            this.base = null;
+            this.newBase = null;
+            this.writeDelta = null;
+            this.readDelta = null;
+            this.changed = false;
         }
 //public					~idBitMsgDelta() {}
 //
@@ -926,25 +926,25 @@ public class BitMsg {
         }
 
         public boolean HasChanged() {
-            return changed;
+            return this.changed;
         }
 
         public void WriteBits(int value, int numBits) throws idException {
-            if (newBase != null) {
-                newBase.WriteBits(value, numBits);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(value, numBits);
             }
 
-            if (null == base) {
-                writeDelta.WriteBits(value, numBits);
-                changed = true;
+            if (null == this.base) {
+                this.writeDelta.WriteBits(value, numBits);
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(numBits);
+                final int baseValue = this.base.ReadBits(numBits);
                 if (baseValue == value) {
-                    writeDelta.WriteBits(0, 1);
+                    this.writeDelta.WriteBits(0, 1);
                 } else {
-                    writeDelta.WriteBits(1, 1);
-                    writeDelta.WriteBits(value, numBits);
-                    changed = true;
+                    this.writeDelta.WriteBits(1, 1);
+                    this.writeDelta.WriteBits(value, numBits);
+                    this.changed = true;
                 }
             }
         }
@@ -974,7 +974,7 @@ public class BitMsg {
         }
 
         public void WriteFloat(float f, int exponentBits, int mantissaBits) throws idException {
-            int bits = idMath.FloatToBits(f, exponentBits, mantissaBits);
+            final int bits = idMath.FloatToBits(f, exponentBits, mantissaBits);
             WriteBits(bits, 1 + exponentBits + mantissaBits);
         }
 
@@ -992,60 +992,60 @@ public class BitMsg {
 
 //public	void			WriteString( final String s, int maxLength = -1 );
         public void WriteString(final String s, int maxLength) throws idException {
-            if (newBase != null) {
-                newBase.WriteString(s, maxLength);
+            if (this.newBase != null) {
+                this.newBase.WriteString(s, maxLength);
             }
 
-            if (null == base) {
-                writeDelta.WriteString(s, maxLength);
-                changed = true;
+            if (null == this.base) {
+                this.writeDelta.WriteString(s, maxLength);
+                this.changed = true;
             } else {
-                char[] baseString = new char[MAX_DATA_BUFFER];
-                base.ReadString(baseString, MAX_DATA_BUFFER);
+                final char[] baseString = new char[MAX_DATA_BUFFER];
+                this.base.ReadString(baseString, MAX_DATA_BUFFER);
                 if (idStr.Cmp(s, ctos(baseString)) == 0) {
-                    writeDelta.WriteBits(0, 1);
+                    this.writeDelta.WriteBits(0, 1);
                 } else {
-                    writeDelta.WriteBits(1, 1);
-                    writeDelta.WriteString(s, maxLength);
-                    changed = true;
+                    this.writeDelta.WriteBits(1, 1);
+                    this.writeDelta.WriteString(s, maxLength);
+                    this.changed = true;
                 }
             }
         }
 
         public void WriteData(final ByteBuffer data, int length) throws idException {
-            if (newBase != null) {
-                newBase.WriteData(data, length);
+            if (this.newBase != null) {
+                this.newBase.WriteData(data, length);
             }
 
-            if (null == base) {
-                writeDelta.WriteData(data, length);
-                changed = true;
+            if (null == this.base) {
+                this.writeDelta.WriteData(data, length);
+                this.changed = true;
             } else {
-                ByteBuffer baseData = ByteBuffer.allocate(MAX_DATA_BUFFER);
+                final ByteBuffer baseData = ByteBuffer.allocate(MAX_DATA_BUFFER);
                 assert (length < MAX_DATA_BUFFER);
-                base.ReadData(baseData, length);
+                this.base.ReadData(baseData, length);
                 if (data.equals(baseData)) {//TODO:compareTo??
-                    writeDelta.WriteBits(0, 1);
+                    this.writeDelta.WriteBits(0, 1);
                 } else {
-                    writeDelta.WriteBits(1, 1);
-                    writeDelta.WriteData(data, length);
-                    changed = true;
+                    this.writeDelta.WriteBits(1, 1);
+                    this.writeDelta.WriteData(data, length);
+                    this.changed = true;
                 }
             }
         }
 
         public void WriteDict(final idDict dict) throws idException {
-            if (newBase != null) {
-                newBase.WriteDeltaDict(dict, null);
+            if (this.newBase != null) {
+                this.newBase.WriteDeltaDict(dict, null);
             }
 
-            if (null == base) {
-                writeDelta.WriteDeltaDict(dict, null);
-                changed = true;
+            if (null == this.base) {
+                this.writeDelta.WriteDeltaDict(dict, null);
+                this.changed = true;
             } else {
-                idDict baseDict = new idDict();
-                base.ReadDeltaDict(baseDict, null);
-                changed = writeDelta.WriteDeltaDict(dict, baseDict);
+                final idDict baseDict = new idDict();
+                this.base.ReadDeltaDict(baseDict, null);
+                this.changed = this.writeDelta.WriteDeltaDict(dict, baseDict);
             }
         }
 //
@@ -1071,67 +1071,67 @@ public class BitMsg {
         }
 
         public void WriteDeltaFloat(float oldValue, float newValue, int exponentBits, int mantissaBits) throws idException {
-            int oldBits = idMath.FloatToBits(oldValue, exponentBits, mantissaBits);
-            int newBits = idMath.FloatToBits(newValue, exponentBits, mantissaBits);
+            final int oldBits = idMath.FloatToBits(oldValue, exponentBits, mantissaBits);
+            final int newBits = idMath.FloatToBits(newValue, exponentBits, mantissaBits);
             WriteDelta(oldBits, newBits, 1 + exponentBits + mantissaBits);
         }
 
         public void WriteDeltaByteCounter(int oldValue, int newValue) throws idException {
-            if (newBase != null) {
-                newBase.WriteBits(newValue, 8);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(newValue, 8);
             }
 
-            if (null == base) {
-                writeDelta.WriteDeltaByteCounter(oldValue, newValue);
-                changed = true;
+            if (null == this.base) {
+                this.writeDelta.WriteDeltaByteCounter(oldValue, newValue);
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(8);
+                final int baseValue = this.base.ReadBits(8);
                 if (baseValue == newValue) {
-                    writeDelta.WriteBits(0, 1);
+                    this.writeDelta.WriteBits(0, 1);
                 } else {
-                    writeDelta.WriteBits(1, 1);
-                    writeDelta.WriteDeltaByteCounter(oldValue, newValue);
-                    changed = true;
+                    this.writeDelta.WriteBits(1, 1);
+                    this.writeDelta.WriteDeltaByteCounter(oldValue, newValue);
+                    this.changed = true;
                 }
             }
         }
 
         public void WriteDeltaShortCounter(int oldValue, int newValue) throws idException {
-            if (newBase != null) {
-                newBase.WriteBits(newValue, 16);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(newValue, 16);
             }
 
-            if (null == base) {
-                writeDelta.WriteDeltaShortCounter(oldValue, newValue);
-                changed = true;
+            if (null == this.base) {
+                this.writeDelta.WriteDeltaShortCounter(oldValue, newValue);
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(16);
+                final int baseValue = this.base.ReadBits(16);
                 if (baseValue == newValue) {
-                    writeDelta.WriteBits(0, 1);
+                    this.writeDelta.WriteBits(0, 1);
                 } else {
-                    writeDelta.WriteBits(1, 1);
-                    writeDelta.WriteDeltaShortCounter(oldValue, newValue);
-                    changed = true;
+                    this.writeDelta.WriteBits(1, 1);
+                    this.writeDelta.WriteDeltaShortCounter(oldValue, newValue);
+                    this.changed = true;
                 }
             }
         }
 
         public void WriteDeltaLongCounter(int oldValue, int newValue) throws idException {
-            if (newBase != null) {
-                newBase.WriteBits(newValue, 32);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(newValue, 32);
             }
 
-            if (null == base) {
-                writeDelta.WriteDeltaLongCounter(oldValue, newValue);
-                changed = true;
+            if (null == this.base) {
+                this.writeDelta.WriteDeltaLongCounter(oldValue, newValue);
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(32);
+                final int baseValue = this.base.ReadBits(32);
                 if (baseValue == newValue) {
-                    writeDelta.WriteBits(0, 1);
+                    this.writeDelta.WriteBits(0, 1);
                 } else {
-                    writeDelta.WriteBits(1, 1);
-                    writeDelta.WriteDeltaLongCounter(oldValue, newValue);
-                    changed = true;
+                    this.writeDelta.WriteBits(1, 1);
+                    this.writeDelta.WriteDeltaLongCounter(oldValue, newValue);
+                    this.changed = true;
                 }
             }
         }
@@ -1140,21 +1140,21 @@ public class BitMsg {
         public int ReadBits(int numBits) throws idException {
             int value;
 
-            if (null == base) {
-                value = readDelta.ReadBits(numBits);
-                changed = true;
+            if (null == this.base) {
+                value = this.readDelta.ReadBits(numBits);
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(numBits);
-                if (null == readDelta || readDelta.ReadBits(1) == 0) {
+                final int baseValue = this.base.ReadBits(numBits);
+                if ((null == this.readDelta) || (this.readDelta.ReadBits(1) == 0)) {
                     value = baseValue;
                 } else {
-                    value = readDelta.ReadBits(numBits);
-                    changed = true;
+                    value = this.readDelta.ReadBits(numBits);
+                    this.changed = true;
                 }
             }
 
-            if (newBase != null) {
-                newBase.WriteBits(value, numBits);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(value, numBits);
             }
             return value;
         }
@@ -1186,16 +1186,16 @@ public class BitMsg {
         }
 
         public float ReadFloat(int exponentBits, int mantissaBits) throws idException {
-            int bits = ReadBits(1 + exponentBits + mantissaBits);
+            final int bits = ReadBits(1 + exponentBits + mantissaBits);
             return idMath.BitsToFloat(bits, exponentBits, mantissaBits);
         }
 
         public float ReadAngle8() throws idException {
-            return (float) BYTE2ANGLE(ReadByte());
+            return BYTE2ANGLE(ReadByte());
         }
 
         public float ReadAngle16() throws idException {
-            return (float) SHORT2ANGLE(ReadShort());
+            return SHORT2ANGLE(ReadShort());
         }
 
         public idVec3 ReadDir(int numBits) throws idException {
@@ -1203,63 +1203,63 @@ public class BitMsg {
         }
 
         public void ReadString(char[] buffer, int bufferSize) throws idException {
-            if (null == base) {
-                readDelta.ReadString(buffer, bufferSize);
-                changed = true;
+            if (null == this.base) {
+                this.readDelta.ReadString(buffer, bufferSize);
+                this.changed = true;
             } else {
-                char[] baseString = new char[MAX_DATA_BUFFER];
-                base.ReadString(baseString, MAX_DATA_BUFFER);
-                if (null == readDelta || readDelta.ReadBits(1) == 0) {
+                final char[] baseString = new char[MAX_DATA_BUFFER];
+                this.base.ReadString(baseString, MAX_DATA_BUFFER);
+                if ((null == this.readDelta) || (this.readDelta.ReadBits(1) == 0)) {
                     idStr.Copynz(buffer, ctos(baseString), bufferSize);
                 } else {
-                    readDelta.ReadString(buffer, bufferSize);
-                    changed = true;
+                    this.readDelta.ReadString(buffer, bufferSize);
+                    this.changed = true;
                 }
             }
 
-            if (newBase != null) {
-                newBase.WriteString(ctos(buffer));
+            if (this.newBase != null) {
+                this.newBase.WriteString(ctos(buffer));
             }
         }
 
         public void ReadData(ByteBuffer data, int length) throws idException {
-            if (null == base) {
-                readDelta.ReadData(data, length);
-                changed = true;
+            if (null == this.base) {
+                this.readDelta.ReadData(data, length);
+                this.changed = true;
             } else {
-                ByteBuffer baseData = ByteBuffer.allocate(MAX_DATA_BUFFER);
+                final ByteBuffer baseData = ByteBuffer.allocate(MAX_DATA_BUFFER);
                 assert (length < MAX_DATA_BUFFER);
-                base.ReadData(baseData, length);
-                if (null == readDelta || readDelta.ReadBits(1) == 0) {
+                this.base.ReadData(baseData, length);
+                if ((null == this.readDelta) || (this.readDelta.ReadBits(1) == 0)) {
 //			memcpy( data, baseData, length );
                     data.put(data);//.array(), 0, length);
                 } else {
-                    readDelta.ReadData(data, length);
-                    changed = true;
+                    this.readDelta.ReadData(data, length);
+                    this.changed = true;
                 }
             }
 
-            if (newBase != null) {
-                newBase.WriteData(data, length);
+            if (this.newBase != null) {
+                this.newBase.WriteData(data, length);
             }
         }
 
         public void ReadDict(idDict dict) throws idException {
-            if (null == base) {
-                readDelta.ReadDeltaDict(dict, null);
-                changed = true;
+            if (null == this.base) {
+                this.readDelta.ReadDeltaDict(dict, null);
+                this.changed = true;
             } else {
-                idDict baseDict = new idDict();
-                base.ReadDeltaDict(baseDict, null);
-                if (null == readDelta) {
+                final idDict baseDict = new idDict();
+                this.base.ReadDeltaDict(baseDict, null);
+                if (null == this.readDelta) {
                     dict = baseDict;
                 } else {
-                    changed = readDelta.ReadDeltaDict(dict, baseDict);
+                    this.changed = this.readDelta.ReadDeltaDict(dict, baseDict);
                 }
             }
 
-            if (newBase != null) {
-                newBase.WriteDeltaDict(dict, null);
+            if (this.newBase != null) {
+                this.newBase.WriteDeltaDict(dict, null);
             }
         }
 //
@@ -1287,29 +1287,29 @@ public class BitMsg {
         }
 
         public float ReadDeltaFloat(float oldValue, int exponentBits, int mantissaBits) throws idException {
-            int oldBits = idMath.FloatToBits(oldValue, exponentBits, mantissaBits);
-            int newBits = ReadDelta(oldBits, 1 + exponentBits + mantissaBits);
+            final int oldBits = idMath.FloatToBits(oldValue, exponentBits, mantissaBits);
+            final int newBits = ReadDelta(oldBits, 1 + exponentBits + mantissaBits);
             return idMath.BitsToFloat(newBits, exponentBits, mantissaBits);
         }
 
         public int ReadDeltaByteCounter(int oldValue) throws idException {
             int value;
 
-            if (null == base) {
-                value = readDelta.ReadDeltaByteCounter(oldValue);
-                changed = true;
+            if (null == this.base) {
+                value = this.readDelta.ReadDeltaByteCounter(oldValue);
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(8);
-                if (null == readDelta || readDelta.ReadBits(1) == 0) {
+                final int baseValue = this.base.ReadBits(8);
+                if ((null == this.readDelta) || (this.readDelta.ReadBits(1) == 0)) {
                     value = baseValue;
                 } else {
-                    value = readDelta.ReadDeltaByteCounter(oldValue);
-                    changed = true;
+                    value = this.readDelta.ReadDeltaByteCounter(oldValue);
+                    this.changed = true;
                 }
             }
 
-            if (newBase != null) {
-                newBase.WriteBits(value, 8);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(value, 8);
             }
             return value;
         }
@@ -1317,21 +1317,21 @@ public class BitMsg {
         public int ReadDeltaShortCounter(int oldValue) throws idException {
             int value;
 
-            if (null == base) {
-                value = readDelta.ReadDeltaShortCounter(oldValue);
-                changed = true;
+            if (null == this.base) {
+                value = this.readDelta.ReadDeltaShortCounter(oldValue);
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(16);
-                if (null == readDelta || readDelta.ReadBits(1) == 0) {
+                final int baseValue = this.base.ReadBits(16);
+                if ((null == this.readDelta) || (this.readDelta.ReadBits(1) == 0)) {
                     value = baseValue;
                 } else {
-                    value = readDelta.ReadDeltaShortCounter(oldValue);
-                    changed = true;
+                    value = this.readDelta.ReadDeltaShortCounter(oldValue);
+                    this.changed = true;
                 }
             }
 
-            if (newBase != null) {
-                newBase.WriteBits(value, 16);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(value, 16);
             }
             return value;
         }
@@ -1339,51 +1339,51 @@ public class BitMsg {
         public int ReadDeltaLongCounter(int oldValue) throws idException {
             int value;
 
-            if (null == base) {
-                value = readDelta.ReadDeltaLongCounter(oldValue);
-                changed = true;
+            if (null == this.base) {
+                value = this.readDelta.ReadDeltaLongCounter(oldValue);
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(32);
-                if (null == readDelta || readDelta.ReadBits(1) == 0) {
+                final int baseValue = this.base.ReadBits(32);
+                if ((null == this.readDelta) || (this.readDelta.ReadBits(1) == 0)) {
                     value = baseValue;
                 } else {
-                    value = readDelta.ReadDeltaLongCounter(oldValue);
-                    changed = true;
+                    value = this.readDelta.ReadDeltaLongCounter(oldValue);
+                    this.changed = true;
                 }
             }
 
-            if (newBase != null) {
-                newBase.WriteBits(value, 32);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(value, 32);
             }
             return value;
         }
 
         private void WriteDelta(int oldValue, int newValue, int numBits) throws idException {
-            if (newBase != null) {
-                newBase.WriteBits(newValue, numBits);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(newValue, numBits);
             }
 
-            if (null == base) {
+            if (null == this.base) {
                 if (oldValue == newValue) {
-                    writeDelta.WriteBits(0, 1);
+                    this.writeDelta.WriteBits(0, 1);
                 } else {
-                    writeDelta.WriteBits(1, 1);
-                    writeDelta.WriteBits(newValue, numBits);
+                    this.writeDelta.WriteBits(1, 1);
+                    this.writeDelta.WriteBits(newValue, numBits);
                 }
-                changed = true;
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(numBits);
+                final int baseValue = this.base.ReadBits(numBits);
                 if (baseValue == newValue) {
-                    writeDelta.WriteBits(0, 1);
+                    this.writeDelta.WriteBits(0, 1);
                 } else {
-                    writeDelta.WriteBits(1, 1);
+                    this.writeDelta.WriteBits(1, 1);
                     if (oldValue == newValue) {
-                        writeDelta.WriteBits(0, 1);
-                        changed = true;
+                        this.writeDelta.WriteBits(0, 1);
+                        this.changed = true;
                     } else {
-                        writeDelta.WriteBits(1, 1);
-                        writeDelta.WriteBits(newValue, numBits);
-                        changed = true;
+                        this.writeDelta.WriteBits(1, 1);
+                        this.writeDelta.WriteBits(newValue, numBits);
+                        this.changed = true;
                     }
                 }
             }
@@ -1392,30 +1392,30 @@ public class BitMsg {
         private int ReadDelta(int oldValue, int numBits) throws idException {
             int value;
 
-            if (null == base) {
-                if (readDelta.ReadBits(1) == 0) {
+            if (null == this.base) {
+                if (this.readDelta.ReadBits(1) == 0) {
                     value = oldValue;
                 } else {
-                    value = readDelta.ReadBits(numBits);
+                    value = this.readDelta.ReadBits(numBits);
                 }
-                changed = true;
+                this.changed = true;
             } else {
-                int baseValue = base.ReadBits(numBits);
-                if (null == readDelta || readDelta.ReadBits(1) == 0) {
+                final int baseValue = this.base.ReadBits(numBits);
+                if ((null == this.readDelta) || (this.readDelta.ReadBits(1) == 0)) {
                     value = baseValue;
-                } else if (readDelta.ReadBits(1) == 0) {
+                } else if (this.readDelta.ReadBits(1) == 0) {
                     value = oldValue;
-                    changed = true;
+                    this.changed = true;
                 } else {
-                    value = readDelta.ReadBits(numBits);
-                    changed = true;
+                    value = this.readDelta.ReadBits(numBits);
+                    this.changed = true;
                 }
             }
 
-            if (newBase != null) {
-                newBase.WriteBits(value, numBits);
+            if (this.newBase != null) {
+                this.newBase.WriteBits(value, numBits);
             }
             return value;
         }
-    };
+    }
 }

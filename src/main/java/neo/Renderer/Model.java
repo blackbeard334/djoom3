@@ -69,14 +69,14 @@ public class Model {
                     limit(length).
                     toArray(silEdge_t[]::new);
         }
-    };
+    }
 
     // this is used for calculating unsmoothed normals and tangents for deformed models
     public static class dominantTri_s {
 
         public int/*glIndex_t*/ v2, v3;
         public final float[] normalizationScale = new float[3];
-    };
+    }
 
     static class lightingCache_s {
         static final int BYTES = idVec3.BYTES;
@@ -89,15 +89,15 @@ public class Model {
         }
 
         public static ByteBuffer toByteBuffer(lightingCache_s[] cache) {
-            ByteBuffer data = BufferUtils.createByteBuffer(lightingCache_s.BYTES * cache.length);
+            final ByteBuffer data = BufferUtils.createByteBuffer(lightingCache_s.BYTES * cache.length);
 
-            for (lightingCache_s c : cache) {
+            for (final lightingCache_s c : cache) {
                 data.put(c.localLightVector.Write());
             }
 
             return (ByteBuffer) data.flip();
         }
-    };
+    }
 
     public static class shadowCache_s {
 
@@ -106,7 +106,7 @@ public class Model {
         public idVec4 xyz;			// we use homogenous coordinate tricks
 
         public shadowCache_s() {
-            xyz = new idVec4();
+            this.xyz = new idVec4();
         }
 
         shadowCache_s(ByteBuffer Position) {
@@ -114,15 +114,15 @@ public class Model {
         }
 
         public static ByteBuffer toByteBuffer(shadowCache_s[] cache) {
-            ByteBuffer data = BufferUtils.createByteBuffer(shadowCache_s.BYTES * cache.length);
+            final ByteBuffer data = BufferUtils.createByteBuffer(shadowCache_s.BYTES * cache.length);
 
-            for (shadowCache_s c : cache) {
+            for (final shadowCache_s c : cache) {
                 data.put(c.xyz.Write());
             }
 
             return (ByteBuffer) data.flip();
         }
-    };
+    }
     static final int SHADOW_CAP_INFINITE = 64;
 
     // our only drawing geometry type
@@ -217,10 +217,10 @@ public class Model {
             this.lightingCache = null;
             this.shadowCache = null;
         }
-    };
+    }
 
     static class idTriList extends idList<srfTriangles_s> {
-    };
+    }
 
     public static class modelSurface_s{
 
@@ -232,16 +232,16 @@ public class Model {
         public final   int DBG_count   = DBG_counter++;
         
         public modelSurface_s(){
-            int a = 1;
+            final int a = 1;
         }
-    };
+    }
 
     public enum dynamicModel_t {
 
         DM_STATIC, // never creates a dynamic model
         DM_CACHED, // once created, stays constant until the entity is updated (animating characters)
         DM_CONTINUOUS	// must be recreated for every single view (time dependent things like particles)
-    };
+    }
     //typedef enum {
     public static final int INVALID_JOINT = -1;
     //} jointHandle_t;
@@ -252,9 +252,9 @@ public class Model {
         public idMD5Joint parent;
 
         public idMD5Joint() {
-            parent = null;
+            this.parent = null;
         }
-    };
+    }
 
     // the init methods may be called again on an already created model when
     // a reloadModels is issued
@@ -411,5 +411,5 @@ public class Model {
         public abstract void WriteToDemoFile(idDemoFile f);
 
         public abstract void oSet(idRenderModel FindModel);
-    };
+    }
 }

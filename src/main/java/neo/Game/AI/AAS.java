@@ -35,25 +35,25 @@ public class AAS {
         int            moveAreaNum;     // number of the area the AI should move towards
         idVec3         secondaryGoal;   // secondary move goal for complex navigation
         idReachability reachability;    // reachability used for navigation
-    };
+    }
 
     static class aasGoal_s {
 
         int    areaNum;                 // area the goal is in
         idVec3 origin;			        // position of goal
-    };
+    }
 
     static class aasObstacle_s {
 
         idBounds absBounds;		        // absolute bounds of obstacle
         idBounds expAbsBounds;          // expanded absolute bounds of obstacle
-    };
+    }
 
     public static abstract class idAASCallback {
 
         // virtual						~idAASCallback() {};
         public abstract boolean TestArea(final idAAS aas, int areaNum);
-    };
+    }
 
     public abstract static class idAAS {
 
@@ -151,5 +151,5 @@ public class AAS {
 
         // Find the nearest goal which satisfies the callback.
         public abstract boolean FindNearestGoal(aasGoal_s goal, int areaNum, final idVec3 origin, final idVec3 target, int travelFlags, aasObstacle_s[] obstacles, int numObstacles, idAASCallback callback);
-    };
+    }
 }

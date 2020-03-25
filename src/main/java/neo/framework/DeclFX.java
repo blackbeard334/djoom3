@@ -52,7 +52,7 @@ public class DeclFX {
         FX_ATTACHENTITY,
         FX_LAUNCH,
         FX_SHOCKWAVE
-    };
+    }
 
     //
     // single fx structure
@@ -94,7 +94,7 @@ public class DeclFX {
         public boolean noshadows;
         public boolean particleTrackVelocity;
         public boolean trackOrigin;
-    };
+    }
 
     //
     // grouped fx structures
@@ -121,7 +121,7 @@ public class DeclFX {
 
         @Override
         public boolean Parse(String text, int textLength) throws Lib.idException {
-            idLexer src = new idLexer();
+            final idLexer src = new idLexer();
 
             src.LoadMemory(text, textLength, GetFileName(), GetLineNum());
             src.SetFlags(DECL_LEXER_FLAGS);
@@ -129,7 +129,7 @@ public class DeclFX {
 
             // scan through, identifying each individual parameter
             while (true) {
-                idToken token = new idToken();
+                final idToken token = new idToken();
 
                 if (!src.ReadToken(token)) {
                     break;
@@ -141,14 +141,14 @@ public class DeclFX {
 
                 if (0 == token.Icmp("bindto")) {
                     src.ReadToken(token);
-                    joint = token;
+                    this.joint = token;
                     continue;
                 }
 
                 if (0 == token.Icmp("{")) {
-                    idFXSingleAction action = new idFXSingleAction();
+                    final idFXSingleAction action = new idFXSingleAction();
                     ParseSingleFXAction(src, action);
-                    events.Append(action);
+                    this.events.Append(action);
                     continue;
                 }
             }
@@ -162,7 +162,7 @@ public class DeclFX {
 
         @Override
         public void FreeData() {
-            events.Clear();
+            this.events.Clear();
         }
 
         @Override
@@ -209,7 +209,7 @@ public class DeclFX {
 
         @Override
         public void List() throws idException {
-            common.Printf("%s, %d stages\n", GetName(), events.Num());
+            common.Printf("%s, %d stages\n", GetName(), this.events.Num());
         }
 //
 //
@@ -218,7 +218,7 @@ public class DeclFX {
 //
 
         private void ParseSingleFXAction(idLexer src, idFXSingleAction FXAction) throws Lib.idException {
-            idToken token = new idToken();
+            final idToken token = new idToken();
 
             FXAction.type = null;
             FXAction.sibling = -1;
@@ -353,7 +353,7 @@ public class DeclFX {
                 }
 
                 if (0 == token.Icmp("axis")) {
-                    idVec3 v = new idVec3();
+                    final idVec3 v = new idVec3();
                     v.x = src.ParseFloat();
                     src.ExpectTokenString(",");
                     v.y = src.ParseFloat();
@@ -366,7 +366,7 @@ public class DeclFX {
                 }
 
                 if (0 == token.Icmp("angle")) {
-                    idAngles a = new idAngles();
+                    final idAngles a = new idAngles();
                     a.oSet(0, src.ParseFloat());
                     src.ExpectTokenString(",");
                     a.oSet(1, src.ParseFloat());
@@ -380,11 +380,11 @@ public class DeclFX {
                 if (0 == token.Icmp("uselight")) {
                     src.ReadToken(token);
                     FXAction.data.oSet(token);
-                    for (int i = 0; i < events.Num(); i++) {
-                        if (events.oGet(i).name.Icmp(FXAction.data.toString()) == 0) {
+                    for (int i = 0; i < this.events.Num(); i++) {
+                        if (this.events.oGet(i).name.Icmp(FXAction.data.toString()) == 0) {
                             FXAction.sibling = i;
-                            FXAction.lightColor.oSet(events.oGet(i).lightColor);
-                            FXAction.lightRadius = events.oGet(i).lightRadius;
+                            FXAction.lightColor.oSet(this.events.oGet(i).lightColor);
+                            FXAction.lightRadius = this.events.oGet(i).lightRadius;
                         }
                     }
                     FXAction.type = FX_LIGHT;
@@ -427,8 +427,8 @@ public class DeclFX {
                 if (0 == token.Icmp("useModel")) {
                     src.ReadToken(token);
                     FXAction.data.oSet(token);
-                    for (int i = 0; i < events.Num(); i++) {
-                        if (events.oGet(i).name.Icmp(FXAction.data) == 0) {
+                    for (int i = 0; i < this.events.Num(); i++) {
+                        if (this.events.oGet(i).name.Icmp(FXAction.data) == 0) {
                             FXAction.sibling = i;
                         }
                     }
@@ -525,5 +525,5 @@ public class DeclFX {
         public void oSet(idDeclFX idDeclFX) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
-    };
+    }
 }

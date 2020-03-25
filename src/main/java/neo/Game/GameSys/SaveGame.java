@@ -96,19 +96,19 @@ public class SaveGame {
 
     public static class idSaveGame {
 
-        private idFile          file;
+        private final idFile          file;
         //
-        private idList<idClass> objects;
+        private final idList<idClass> objects;
         //
         //
 
         public idSaveGame(idFile savefile) {
 
-            file = savefile;
+            this.file = savefile;
 
             // Put NULL at the start of the list so we can skip over it.
-            objects = new idList<>();
-            objects.Append((idClass) null);
+            this.objects = new idList<>();
+            this.objects.Append((idClass) null);
         }
 
         // ~idSaveGame();
@@ -120,11 +120,11 @@ public class SaveGame {
             // read trace models
             idClipModel.SaveTraceModels(this);
 
-            for (i = 1; i < objects.Num(); i++) {
-                CallSave_r(objects.oGet(i).GetType(), objects.oGet(i));
+            for (i = 1; i < this.objects.Num(); i++) {
+                CallSave_r(this.objects.oGet(i).GetType(), this.objects.oGet(i));
             }
 
-            objects.Clear();
+            this.objects.Clear();
 
 // #ifdef ID_DEBUG_MEMORY
             // idStr gameState = file.GetName();
@@ -134,58 +134,58 @@ public class SaveGame {
         }
 
         public void AddObject(final idClass obj) {
-            objects.AddUnique(obj);
+            this.objects.AddUnique(obj);
         }
 
         public void WriteObjectList() {
             int i;
 
-            WriteInt(objects.Num() - 1);
-            for (i = 1; i < objects.Num(); i++) {
-                WriteString(objects.oGet(i).GetClassname());
+            WriteInt(this.objects.Num() - 1);
+            for (i = 1; i < this.objects.Num(); i++) {
+                WriteString(this.objects.oGet(i).GetClassname());
             }
         }
 
         public void Write(final ByteBuffer buffer, int len) {
-            file.Write(buffer, len);
+            this.file.Write(buffer, len);
         }
 
         public void Write(final SERiAL buffer) {
-            file.Write(buffer);
+            this.file.Write(buffer);
         }
 
         public void WriteInt(final int value) {
-            file.WriteInt(value);
+            this.file.WriteInt(value);
         }
 
         public void WriteJoint(final int/*jointHandle_t*/ value) {
-            file.WriteInt((int) value);
+            this.file.WriteInt(value);
         }
 
         public void WriteShort(final short value) {
-            file.WriteShort(value);
+            this.file.WriteShort(value);
         }
 
         public void WriteByte(final byte value) {
-            ByteBuffer buffer = ByteBuffer.allocate(1);
+            final ByteBuffer buffer = ByteBuffer.allocate(1);
             buffer.put(value);
 
-            file.Write(buffer, 1);//sizeof(value));
+            this.file.Write(buffer, 1);//sizeof(value));
         }
 
         public void WriteSignedChar(final short/*signed char*/ value) {
-            ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
+            final ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
             buffer.putShort(value);
 
-            file.Write(buffer, Short.BYTES);//sizeof(value));
+            this.file.Write(buffer, Short.BYTES);//sizeof(value));
         }
 
         public void WriteFloat(final float value) {
-            file.WriteFloat(value);
+            this.file.WriteFloat(value);
         }
 
         public void WriteBool(final boolean value) {
-            file.WriteBool(value);
+            this.file.WriteBool(value);
         }
 
         public void WriteString(final String string) {
@@ -193,7 +193,7 @@ public class SaveGame {
 
             len = string.length();
             WriteInt(len);
-            file.Write(atobb(string), len);
+            this.file.Write(atobb(string), len);
         }
 
         public void WriteString(final idStr string) {
@@ -201,52 +201,52 @@ public class SaveGame {
         }
 
         public void WriteVec2(final idVec2 vec) {
-            file.WriteVec2(vec);
+            this.file.WriteVec2(vec);
         }
 
         public void WriteVec3(final idVec3 vec) {
-            file.WriteVec3(vec);
+            this.file.WriteVec3(vec);
         }
 
         public void WriteVec4(final idVec4 vec) {
-            file.WriteVec4(vec);
+            this.file.WriteVec4(vec);
         }
 
         public void WriteVec6(final idVec6 vec) {
-            file.WriteVec6(vec);
+            this.file.WriteVec6(vec);
         }
 
         public void WriteWinding(final idWinding w) {
             int i, num;
             num = w.GetNumPoints();
-            file.WriteInt(num);
+            this.file.WriteInt(num);
             for (i = 0; i < num; i++) {
-                idVec5 v = w.oGet(i);
+                final idVec5 v = w.oGet(i);
                 LittleRevBytes(v/*, sizeof(float), sizeof(v) / sizeof(float)*/);
-                file.Write(v/*, sizeof(v)*/);
+                this.file.Write(v/*, sizeof(v)*/);
             }
         }
 
         public void WriteBounds(final idBounds bounds) {
-            idBounds b = bounds;
+            final idBounds b = bounds;
             LittleRevBytes(b/*, sizeof(float), sizeof(b) / sizeof(float)*/);
-            file.Write(b/*, sizeof(b)*/);
+            this.file.Write(b/*, sizeof(b)*/);
         }
 
         public void WriteMat3(final idMat3 mat) {
-            file.WriteMat3(mat);
+            this.file.WriteMat3(mat);
         }
 
         public void WriteAngles(final idAngles angles) {
-            idAngles v = angles;
+            final idAngles v = angles;
             LittleRevBytes(v/*, sizeof(float), sizeof(v) / sizeof(float)*/);
-            file.Write(v/*, sizeof(v)*/);
+            this.file.Write(v/*, sizeof(v)*/);
         }
 
         public void WriteObject(final idClass obj) {
             int index;
 
-            index = objects.FindIndex(obj);
+            index = this.objects.FindIndex(obj);
             if (index < 0) {
                 gameLocal.DPrintf("idSaveGame::WriteObject - WriteObject FindIndex failed\n");
 
@@ -350,7 +350,7 @@ public class SaveGame {
                 name = ui.Name();
                 WriteString(name);
                 WriteBool(unique);
-                if (ui.WriteToSaveGame(file) == false) {
+                if (ui.WriteToSaveGame(this.file) == false) {
                     gameLocal.Error("idSaveGame::WriteUserInterface: ui failed to write properly\n");
                 }
             }
@@ -552,9 +552,9 @@ public class SaveGame {
             WriteBool(trace.isConvex);
             // padding win32 native structs
 //            char[] tmp = new char[3];
-            ByteBuffer tmp = ByteBuffer.allocate(6);
+            final ByteBuffer tmp = ByteBuffer.allocate(6);
 //	memset( tmp, 0, sizeof( tmp ) );
-            file.Write(tmp, 3);
+            this.file.Write(tmp, 3);
         }
 
         public void WriteClipModel(final idClipModel clipModel) {
@@ -567,11 +567,11 @@ public class SaveGame {
         }
 
         public void WriteSoundCommands() {
-            gameSoundWorld.WriteToSaveGame(file);
+            gameSoundWorld.WriteToSaveGame(this.file);
         }
 
         public void WriteBuildNumber(final int value) {
-            file.WriteInt(BUILD_NUMBER);
+            this.file.WriteInt(BUILD_NUMBER);
         }
 
         private void CallSave_r(final idTypeInfo cls, final idClass obj) {
@@ -589,7 +589,7 @@ public class SaveGame {
         private void CallSave_r(final java.lang.Class/*idTypeInfo*/ cls, final idClass obj) {
             throw new TODO_Exception();
         }
-    };
+    }
 
     /* **********************************************************************
 
@@ -600,37 +600,37 @@ public class SaveGame {
 
         private int buildNumber;
         //
-        private idFile file;
+        private final idFile file;
         //
         private idList<idClass> objects;
         //
         //
 
         public idRestoreGame(idFile savefile) {
-            file = savefile;
+            this.file = savefile;
         }
         // ~idRestoreGame();
 
         public void CreateObjects() {
             int i;
-            int[] num = {0};
-            idStr className = new idStr();
+            final int[] num = {0};
+            final idStr className = new idStr();
             idTypeInfo type;
 
             ReadInt(num);
 
             // create all the objects
-            objects.SetNum(num[0] + 1);
+            this.objects.SetNum(num[0] + 1);
 //            memset(objects.Ptr(), 0, sizeof(objects[ 0]) * objects.Num());
-            Arrays.fill(objects.Ptr(), 0, objects.Num(), 0);
+            Arrays.fill(this.objects.Ptr(), 0, this.objects.Num(), 0);
 
-            for (i = 1; i < objects.Num(); i++) {
+            for (i = 1; i < this.objects.Num(); i++) {
                 ReadString(className);
                 type = idClass.GetClass(className.toString());
                 if (null == type) {
                     Error("idRestoreGame::CreateObjects: Unknown class '%s'", className.toString());
                 }
-                objects.oSetType(i, type.CreateInstance.run());
+                this.objects.oSetType(i, type.CreateInstance.run());
 
 // #ifdef ID_DEBUG_MEMORY
                 // InitTypeVariables( objects[i], type.classname, 0xce );
@@ -647,14 +647,14 @@ public class SaveGame {
             idClipModel.RestoreTraceModels(this);
 
             // restore all the objects
-            for (i = 1; i < objects.Num(); i++) {
-                CallRestore_r(objects.oGet(i).GetType(), objects.oGet(i));
+            for (i = 1; i < this.objects.Num(); i++) {
+                CallRestore_r(this.objects.oGet(i).GetType(), this.objects.oGet(i));
             }
 
             // regenerate render entities and render lights because are not saved
-            for (i = 1; i < objects.Num(); i++) {
-                if (objects.oGet(i).IsType(idEntity.class)) {
-                    idEntity ent = ((idEntity) objects.oGet(i));
+            for (i = 1; i < this.objects.Num(); i++) {
+                if (this.objects.oGet(i).IsType(idEntity.class)) {
+                    final idEntity ent = ((idEntity) this.objects.oGet(i));
                     ent.UpdateVisuals();
                     ent.Present();
                 }
@@ -672,9 +672,9 @@ public class SaveGame {
         public void DeleteObjects() {
 
             // Remove the NULL object before deleting
-            objects.RemoveIndex(0);
+            this.objects.RemoveIndex(0);
 
-            objects.DeleteContents(true);
+            this.objects.DeleteContents(true);
         }
 
         public void Error(final String fmt, Object... objects) {// id_attribute((format(printf,2,3)));
@@ -692,19 +692,19 @@ public class SaveGame {
         }
 
         public void Read(ByteBuffer buffer, int len) {
-            file.Read(buffer, len);
+            this.file.Read(buffer, len);
         }
 
         public void Read(SERiAL buffer) {
-            file.Read(buffer);
+            this.file.Read(buffer);
         }
 
         public void ReadInt(int[] value) {
-            file.ReadInt(value);
+            this.file.ReadInt(value);
         }
 
         public int ReadInt() {
-            int[] value = {0};
+            final int[] value = {0};
 
             this.ReadInt(value);
 
@@ -712,22 +712,22 @@ public class SaveGame {
         }
 
         public void ReadJoint(int[] jointHandle_t) {
-            file.ReadInt(jointHandle_t);
+            this.file.ReadInt(jointHandle_t);
         }
 
         public int ReadJoint() {
-            int[] jointHandle_t = {0};
+            final int[] jointHandle_t = {0};
             this.ReadJoint(jointHandle_t);
 
             return jointHandle_t[0];
         }
 
         public void ReadShort(short[] value) {
-            file.ReadShort(value);
+            this.file.ReadShort(value);
         }
 
         public short ReadShort() {
-            short[] value = {0};
+            final short[] value = {0};
 
             this.ReadShort(value);
 
@@ -735,11 +735,11 @@ public class SaveGame {
         }
 
         public void ReadByte(byte[] value) {
-            file.Read(ByteBuffer.wrap(value)/*, sizeof(value)*/);
+            this.file.Read(ByteBuffer.wrap(value)/*, sizeof(value)*/);
         }
 
         public byte ReadByte() {
-            byte[] value = {0};
+            final byte[] value = {0};
 
             this.ReadByte(value);
 
@@ -747,11 +747,11 @@ public class SaveGame {
         }
 
         public void ReadSignedChar(char[] value) {
-            file.ReadUnsignedChar(value/*, sizeof(value)*/);
+            this.file.ReadUnsignedChar(value/*, sizeof(value)*/);
         }
 
         public char ReadSignedChar() {
-            char[] c = new char[1];
+            final char[] c = new char[1];
 
             ReadSignedChar(c);
 
@@ -759,11 +759,11 @@ public class SaveGame {
         }
 
         public void ReadFloat(float[] value) {
-            file.ReadFloat(value);
+            this.file.ReadFloat(value);
         }
 
         public float ReadFloat() {
-            float[] value = {0};
+            final float[] value = {0};
 
             this.ReadFloat(value);
 
@@ -771,18 +771,18 @@ public class SaveGame {
         }
 
         public void ReadBool(boolean[] value) {
-            file.ReadBool(value);
+            this.file.ReadBool(value);
         }
 
         public boolean ReadBool() {
-            boolean[] value = {false};
+            final boolean[] value = {false};
             this.ReadBool(value);
 
             return value[0];
         }
 
         public void ReadString(idStr string) {
-            int[] len = {0};
+            final int[] len = {0};
 
             ReadInt(len);
             if (len[0] < 0) {
@@ -790,49 +790,49 @@ public class SaveGame {
             }
 
             string.Fill(' ', len[0]);
-            file.Read(atobb(string), len[0]);
+            this.file.Read(atobb(string), len[0]);
         }
 
         public void ReadVec2(idVec2 vec) {
-            file.ReadVec2(vec);
+            this.file.ReadVec2(vec);
         }
 
         public void ReadVec3(idVec3 vec) {
-            file.ReadVec3(vec);
+            this.file.ReadVec3(vec);
         }
 
         public void ReadVec4(idVec4 vec) {
-            file.ReadVec4(vec);
+            this.file.ReadVec4(vec);
         }
 
         public void ReadVec6(idVec6 vec) {
-            file.ReadVec6(vec);
+            this.file.ReadVec6(vec);
         }
 
         public void ReadWinding(idWinding w) {
             int i;
-            int[] num = {0};
-            file.ReadInt(num);
+            final int[] num = {0};
+            this.file.ReadInt(num);
             w.SetNumPoints(num[0]);
             for (i = 0; i < num[0]; i++) {
-                file.Read(w.oGet(i)/*, sizeof(idVec5)*/);
+                this.file.Read(w.oGet(i)/*, sizeof(idVec5)*/);
 //                LittleRevBytes(w.oGet(i), sizeof(float), sizeof(idVec5) / sizeof(float));
                 LittleRevBytes(w.oGet(i)/*, sizeof(float), sizeof(idVec5) / sizeof(float)*/);
             }
         }
 
         public void ReadBounds(idBounds bounds) {
-            file.Read(bounds/*, sizeof(bounds)*/);
+            this.file.Read(bounds/*, sizeof(bounds)*/);
 //            LittleRevBytes(bounds, sizeof(float), sizeof(bounds) / sizeof(float));
             LittleRevBytes(bounds/*, sizeof(float), sizeof(bounds) / sizeof(float)*/);
         }
 
         public void ReadMat3(idMat3 mat) {
-            file.ReadMat3(mat);
+            this.file.ReadMat3(mat);
         }
 
         public void ReadAngles(idAngles angles) {
-            file.Read(angles/*, sizeof(angles)*/);
+            this.file.Read(angles/*, sizeof(angles)*/);
             LittleRevBytes(angles/*, sizeof(float), sizeof(idAngles) / sizeof(float)*/);
         }
 
@@ -852,10 +852,10 @@ public class SaveGame {
         }
 
         public void ReadDict(idDict dict) {
-            int[] num = {0};
+            final int[] num = {0};
             int i;
-            idStr key = new idStr();
-            idStr value = new idStr();
+            final idStr key = new idStr();
+            final idStr value = new idStr();
 
             ReadInt(num);
 
@@ -872,7 +872,7 @@ public class SaveGame {
         }
 
         public void ReadMaterial(final idMaterial material) {
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             ReadString(name);
             if (0 == name.Length()) {
@@ -883,7 +883,7 @@ public class SaveGame {
         }
 
         public void ReadSkin(final idDeclSkin skin) {
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             ReadString(name);
             if (0 == name.Length()) {
@@ -894,7 +894,7 @@ public class SaveGame {
         }
 
         public void ReadParticle(final idDeclParticle particle) {
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             ReadString(name);
             if (0 == name.Length()) {
@@ -905,7 +905,7 @@ public class SaveGame {
         }
 
         public void ReadFX(final idDeclFX fx) {
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             ReadString(name);
             if (0 == name.Length()) {
@@ -916,7 +916,7 @@ public class SaveGame {
         }
 
         public void ReadSoundShader(final idSoundShader shader) {
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             ReadString(name);
             if (0 == name.Length()) {
@@ -927,7 +927,7 @@ public class SaveGame {
         }
 
         public void ReadModelDef(final idDeclModelDef modelDef) {
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             ReadString(name);
             if (0 == name.Length()) {
@@ -938,7 +938,7 @@ public class SaveGame {
         }
 
         public void ReadModel(idRenderModel model) {
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             ReadString(name);
             if (0 == name.Length()) {
@@ -949,17 +949,17 @@ public class SaveGame {
         }
 
         public void ReadUserInterface(idUserInterface ui) {
-            idStr name = new idStr();
+            final idStr name = new idStr();
 
             ReadString(name);
             if (0 == name.Length()) {
                 ui.oSet(null);
             } else {
-                boolean[] unique = {false};
+                final boolean[] unique = {false};
                 ReadBool(unique);
                 ui.oSet(uiManager.FindGui(name.toString(), true, unique[0]));
                 if (ui != null) {
-                    if (ui.ReadFromSaveGame(file) == false) {
+                    if (ui.ReadFromSaveGame(this.file) == false) {
                         Error("idSaveGame::ReadUserInterface: ui failed to read properly\n");
                     } else {
                         ui.StateChanged(gameLocal.time);
@@ -970,7 +970,7 @@ public class SaveGame {
 
         public void ReadRenderEntity(renderEntity_s renderEntity) {
             int i;
-            int[] index = {0};
+            final int[] index = {0};
 
             ReadModel(renderEntity.hModel);
 
@@ -1023,7 +1023,7 @@ public class SaveGame {
         }
 
         public void ReadRenderLight(renderLight_s renderLight) {
-            int[] index = {0};
+            final int[] index = {0};
             int i;
 
             ReadMat3(renderLight.axis);
@@ -1062,7 +1062,7 @@ public class SaveGame {
         }
 
         public void ReadRefSound(refSound_t refSound) {
-            int[] index = {0};
+            final int[] index = {0};
             ReadInt(index);
 
             refSound.referenceSound = gameSoundWorld.EmitterForIndex(index[0]);
@@ -1169,8 +1169,8 @@ public class SaveGame {
             ReadBounds(trace.bounds);
             trace.isConvex = ReadBool();
             // padding win32 native structs
-            ByteBuffer tmp = ByteBuffer.allocate(3 * 2);
-            file.Read(tmp, 3);
+            final ByteBuffer tmp = ByteBuffer.allocate(3 * 2);
+            this.file.Read(tmp, 3);
         }
 
         public void ReadClipModel(idClipModel clipModel) {
@@ -1187,18 +1187,18 @@ public class SaveGame {
 
         public void ReadSoundCommands() {
             gameSoundWorld.StopAllSounds();
-            gameSoundWorld.ReadFromSaveGame(file);
+            gameSoundWorld.ReadFromSaveGame(this.file);
         }
 
         public void ReadBuildNumber() {
-            int[] buildNumber = {0};
-            file.ReadInt(buildNumber);
+            final int[] buildNumber = {0};
+            this.file.ReadInt(buildNumber);
             this.buildNumber = buildNumber[0];
         }
 
         //						Used to retrieve the saved game buildNumber from within class Restore methods
         public int GetBuildNumber() {
-            return buildNumber;
+            return this.buildNumber;
         }
 
         private void CallRestore_r(final idTypeInfo cls, idClass obj) {
@@ -1217,5 +1217,5 @@ public class SaveGame {
             throw new TODO_Exception();
         }
 
-    };
+    }
 }

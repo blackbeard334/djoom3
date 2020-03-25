@@ -311,7 +311,7 @@ public class tr_trisurf {
 //                    + triMirroredVertAllocator.GetBaseBlockMemory()
 //                    + triDupVertAllocator.GetBaseBlockMemory()) >> 10);
         }
-    };
+    }
 
     /*
      =================
@@ -335,7 +335,7 @@ public class tr_trisurf {
         if (tri.shadowVertexes != null) {
             total += tri.numVerts;//* sizeof( tri.shadowVertexes[0] );
         } else if (tri.verts != null) {
-            if (tri.ambientSurface == null || tri.verts != tri.ambientSurface.verts) {
+            if ((tri.ambientSurface == null) || (tri.verts != tri.ambientSurface.verts)) {
                 total += tri.numVerts;// * sizeof( tri.verts[0] );
             }
         }
@@ -343,7 +343,7 @@ public class tr_trisurf {
             total += tri.numIndexes / 3;//* sizeof( tri.facePlanes[0] );
         }
         if (tri.indexes != null) {
-            if (tri.ambientSurface == null || tri.indexes != tri.ambientSurface.indexes) {
+            if ((tri.ambientSurface == null) || (tri.indexes != tri.ambientSurface.indexes)) {
                 total += tri.numIndexes;// * sizeof( tri.indexes[0] );
             }
         }
@@ -392,7 +392,7 @@ public class tr_trisurf {
             vertexCache.Free(tri.indexCache);
             tri.indexCache = null;
         }
-        if ((tri.shadowCache != null) && (tri.shadowVertexes != null || tri.verts != null)) {
+        if ((tri.shadowCache != null) && ((tri.shadowVertexes != null) || (tri.verts != null))) {
             // if we don't have tri.shadowVertexes, these are a reference to a
             // shadowCache on the original surface, which a vertex program
             // will take care of making unique for each light
@@ -733,12 +733,12 @@ public class tr_trisurf {
         }
 
         // must specify an integral number of triangles
-        if (tri.numIndexes % 3 != 0) {
+        if ((tri.numIndexes % 3) != 0) {
             common.Error("R_RangeCheckIndexes: numIndexes %% 3");
         }
 
         for (i = 0; i < tri.numIndexes; i++) {
-            if (tri.indexes[i] < 0 || tri.indexes[i] >= tri.numVerts) {
+            if ((tri.indexes[i] < 0) || (tri.indexes[i] >= tri.numVerts)) {
                 common.Error("R_RangeCheckIndexes: index out of range");
             }
         }
@@ -779,7 +779,7 @@ public class tr_trisurf {
             return remap;
         }
 
-        idHashIndex hash = new idHashIndex(1024, tri.numVerts);
+        final idHashIndex hash = new idHashIndex(1024, tri.numVerts);
 
         c_removed = 0;
         c_unique = 0;
@@ -790,9 +790,9 @@ public class tr_trisurf {
             hashKey = hash.GenerateKey(v1.xyz);
             for (j = hash.First(hashKey); j >= 0; j = hash.Next(j)) {
                 v2 = tri.verts[j];
-                if (v2.xyz.oGet(0) == v1.xyz.oGet(0)
-                        && v2.xyz.oGet(1) == v1.xyz.oGet(1)
-                        && v2.xyz.oGet(2) == v1.xyz.oGet(2)) {
+                if ((v2.xyz.oGet(0) == v1.xyz.oGet(0))
+                        && (v2.xyz.oGet(1) == v1.xyz.oGet(1))
+                        && (v2.xyz.oGet(2) == v1.xyz.oGet(2))) {
                     c_removed++;
                     remap[i] = j;
                     break;
@@ -844,7 +844,7 @@ public class tr_trisurf {
     public static void R_CreateDupVerts(srfTriangles_s tri) {
         int i;
 
-        int[] remap = new int[tri.numVerts];
+        final int[] remap = new int[tri.numVerts];
 
         // initialize vertex remap in case there are unused verts
         for (i = 0; i < tri.numVerts; i++) {
@@ -857,12 +857,12 @@ public class tr_trisurf {
         }
 
         // create duplicate vertex index based on the vertex remap
-        int[] tempDupVerts = new int[tri.numVerts * 2];
+        final int[] tempDupVerts = new int[tri.numVerts * 2];
         tri.numDupVerts = 0;
         for (i = 0; i < tri.numVerts; i++) {
             if (remap[i] != i) {
-                tempDupVerts[tri.numDupVerts * 2 + 0] = i;
-                tempDupVerts[tri.numDupVerts * 2 + 1] = remap[i];
+                tempDupVerts[(tri.numDupVerts * 2) + 0] = i;
+                tempDupVerts[(tri.numDupVerts * 2) + 1] = remap[i];
                 tri.numDupVerts++;
             }
         }
@@ -950,7 +950,7 @@ public class tr_trisurf {
             tri.verts[i].normal.Zero();
         }
 
-        if (null == tri.facePlanes || !tri.facePlanesCalculated) {
+        if ((null == tri.facePlanes) || !tri.facePlanesCalculated) {
             R_DeriveFacePlanes(tri);
         }
         if (null == tri.silIndexes) {
@@ -959,7 +959,7 @@ public class tr_trisurf {
         plane = tri.facePlanes[p = 0];
         for (i = 0; i < tri.numIndexes; i += 3, plane = tri.facePlanes[++p]) {
             for (j = 0; j < 3; j++) {
-                int index = tri.silIndexes[i + j];
+                final int index = tri.silIndexes[i + j];
                 tri.verts[index].normal.oPluSet(plane.Normal());
             }
         }
@@ -987,13 +987,13 @@ public class tr_trisurf {
         }
         hashKey = silEdgeHash.GenerateKey(v1, v2);
         // search for a matching other side
-        for (i = silEdgeHash.First(hashKey); i >= 0 && i < MAX_SIL_EDGES; i = silEdgeHash.Next(i)) {
-            if (silEdges[i].v1 == v1 && silEdges[i].v2 == v2) {
+        for (i = silEdgeHash.First(hashKey); (i >= 0) && (i < MAX_SIL_EDGES); i = silEdgeHash.Next(i)) {
+            if ((silEdges[i].v1 == v1) && (silEdges[i].v2 == v2)) {
                 c_duplicatedEdges++;
                 // allow it to still create a new edge
                 continue;
             }
-            if (silEdges[i].v2 == v1 && silEdges[i].v1 == v2) {
+            if ((silEdges[i].v2 == v1) && (silEdges[i].v1 == v2)) {
                 if (silEdges[i].p2 != numPlanes) {
                     c_tripledEdges++;
                     // allow it to still create a new edge
@@ -1045,7 +1045,7 @@ public class tr_trisurf {
             }
             return 0;
         }
-    };
+    }
 
     /*
      =================
@@ -1077,9 +1077,9 @@ public class tr_trisurf {
         for (i = 0; i < numTris; i++) {
             int i1, i2, i3;
 
-            i1 = tri.silIndexes[i * 3 + 0];
-            i2 = tri.silIndexes[i * 3 + 1];
-            i3 = tri.silIndexes[i * 3 + 2];
+            i1 = tri.silIndexes[(i * 3) + 0];
+            i2 = tri.silIndexes[(i * 3) + 1];
+            i3 = tri.silIndexes[(i * 3) + 2];
 
             // create the edges
             R_DefineEdge(i1, i2, i);
@@ -1087,7 +1087,7 @@ public class tr_trisurf {
             R_DefineEdge(i3, i1, i);
         }
 
-        if (c_duplicatedEdges != 0 || c_tripledEdges != 0) {
+        if ((c_duplicatedEdges != 0) || (c_tripledEdges != 0)) {
             common.DWarning("%d duplicated edge directions, %d tripled edges", c_duplicatedEdges, c_tripledEdges);
         }
 
@@ -1104,7 +1104,7 @@ public class tr_trisurf {
         if (omitCoplanarEdges) {
             for (i = 0; i < numSilEdges; i++) {
                 int i1, i2, i3;
-                idPlane plane = new idPlane();
+                final idPlane plane = new idPlane();
                 int base;
                 int j;
                 float d;
@@ -1188,7 +1188,7 @@ public class tr_trisurf {
     public static boolean R_FaceNegativePolarity(final srfTriangles_s tri, int firstIndex) {
         idDrawVert a, b, c;
         float area;
-        float[] d0 = new float[5], d1 = new float[5];
+        final float[] d0 = new float[5], d1 = new float[5];
 
         a = tri.verts[tri.indexes[firstIndex + 0]];
         b = tri.verts[tri.indexes[firstIndex + 1]];
@@ -1200,7 +1200,7 @@ public class tr_trisurf {
         d1[3] = c.st.oGet(0) - a.st.oGet(0);
         d1[4] = c.st.oGet(1) - a.st.oGet(1);
 
-        area = d0[3] * d1[4] - d0[4] * d1[3];
+        area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
         if (area >= 0) {
             return false;
         }
@@ -1224,7 +1224,7 @@ public class tr_trisurf {
                     limit(length).
                     toArray(faceTangents_t[]::new);
         }
-    };
+    }
 
     public static void R_DeriveFaceTangents(final srfTriangles_s tri, faceTangents_t[] faceTangents) {
         int i;
@@ -1242,7 +1242,7 @@ public class tr_trisurf {
         for (i = 0; i < tri.numIndexes; i += 3) {
             float area;
             idVec3 temp;
-            float[] d0 = new float[5], d1 = new float[5];
+            final float[] d0 = new float[5], d1 = new float[5];
 
             ft = faceTangents[i / 3];
 
@@ -1262,7 +1262,7 @@ public class tr_trisurf {
             d1[3] = c.st.oGet(0) - a.st.oGet(0);
             d1[4] = c.st.oGet(1) - a.st.oGet(1);
 
-            area = d0[3] * d1[4] - d0[4] * d1[3];
+            area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
             if (Math.abs(area) < 1e-20f) {
                 ft.negativePolarity = false;
                 ft.degenerate = true;
@@ -1284,30 +1284,30 @@ public class tr_trisurf {
                 final float inva = area < .0f ? -1 : 1;// was = 1.0f / area;
 
                 temp = new idVec3(
-                        (d0[0] * d1[4] - d0[4] * d1[0]) * inva,
-                        (d0[1] * d1[4] - d0[4] * d1[1]) * inva,
-                        (d0[2] * d1[4] - d0[4] * d1[2]) * inva);
+                        ((d0[0] * d1[4]) - (d0[4] * d1[0])) * inva,
+                        ((d0[1] * d1[4]) - (d0[4] * d1[1])) * inva,
+                        ((d0[2] * d1[4]) - (d0[4] * d1[2])) * inva);
                 temp.Normalize();
                 ft.tangents[0] = temp;
 
                 temp = new idVec3(
-                        (d0[3] * d1[0] - d0[0] * d1[3]) * inva,
-                        (d0[3] * d1[1] - d0[1] * d1[3]) * inva,
-                        (d0[3] * d1[2] - d0[2] * d1[3]) * inva);
+                        ((d0[3] * d1[0]) - (d0[0] * d1[3])) * inva,
+                        ((d0[3] * d1[1]) - (d0[1] * d1[3])) * inva,
+                        ((d0[3] * d1[2]) - (d0[2] * d1[3])) * inva);
                 temp.Normalize();
                 ft.tangents[1] = temp;
             } else {
                 temp = new idVec3(
-                        (d0[0] * d1[4] - d0[4] * d1[0]),
-                        (d0[1] * d1[4] - d0[4] * d1[1]),
-                        (d0[2] * d1[4] - d0[4] * d1[2]));
+                        ((d0[0] * d1[4]) - (d0[4] * d1[0])),
+                        ((d0[1] * d1[4]) - (d0[4] * d1[1])),
+                        ((d0[2] * d1[4]) - (d0[4] * d1[2])));
                 temp.Normalize();
                 ft.tangents[0] = temp;
 
                 temp = new idVec3(
-                        (d0[3] * d1[0] - d0[0] * d1[3]),
-                        (d0[3] * d1[1] - d0[1] * d1[3]),
-                        (d0[3] * d1[2] - d0[2] * d1[3]));
+                        ((d0[3] * d1[0]) - (d0[0] * d1[3])),
+                        ((d0[3] * d1[1]) - (d0[1] * d1[3])),
+                        ((d0[3] * d1[2]) - (d0[2] * d1[3])));
                 temp.Normalize();
                 ft.tangents[1] = temp;
             }
@@ -1336,7 +1336,7 @@ public class tr_trisurf {
 
         final boolean[] polarityUsed = new boolean[2];
         int negativeRemap;
-    };
+    }
 
     public static void R_DuplicateMirroredVertexes(srfTriangles_s tri) {
         tangentVert_t[] tVerts;
@@ -1385,7 +1385,7 @@ public class tr_trisurf {
         if (USE_TRI_DATA_ALLOCATOR) {
             tri.verts = /*triVertexAllocator.*/ Resize(tri.verts, totalVerts);
         } else {
-            idDrawVert[] oldVerts = tri.verts;
+            final idDrawVert[] oldVerts = tri.verts;
             R_AllocStaticTriSurfVerts(tri, totalVerts);
 //	memcpy( tri.verts, oldVerts, tri.numVerts * sizeof( tri.verts[0] ) );
             System.arraycopy(oldVerts, 0, tri.verts, 0, tri.numVerts);
@@ -1406,7 +1406,7 @@ public class tr_trisurf {
         tri.numVerts = totalVerts;
         // change the indexes
         for (i = 0; i < tri.numIndexes; i++) {
-            if (tVerts[tri.indexes[i]].negativeRemap != 0
+            if ((tVerts[tri.indexes[i]].negativeRemap != 0)
                     && R_FaceNegativePolarity(tri, 3 * (i / 3))) {
                 tri.indexes[i] = tVerts[tri.indexes[i]].negativeRemap;
             }
@@ -1519,7 +1519,7 @@ public class tr_trisurf {
     public static /*ID_INLINE*/ void VectorNormalizeFast2(final idVec3 v, idVec3 out) {
         float length;
 
-        length = idMath.RSqrt(v.oGet(0) * v.oGet(0) + v.oGet(1) * v.oGet(1) + v.oGet(2) * v.oGet(2));
+        length = idMath.RSqrt((v.oGet(0) * v.oGet(0)) + (v.oGet(1) * v.oGet(1)) + (v.oGet(2) * v.oGet(2)));
         out.oSet(0, v.oGet(0) * length);
         out.oSet(1, v.oGet(1) * length);
         out.oSet(2, v.oGet(2) * length);
@@ -1536,7 +1536,7 @@ public class tr_trisurf {
 
         int vertexNum;
         int faceNum;
-    };
+    }
 
     static class IndexSort implements cmp_t<indexSort_t> {
 
@@ -1550,12 +1550,12 @@ public class tr_trisurf {
             }
             return 0;
         }
-    };
+    }
 
     public static void R_BuildDominantTris(srfTriangles_s tri) {
         int i, j;
         dominantTri_s[] dt;
-        indexSort_t[] ind = new indexSort_t[tri.numIndexes];// R_StaticAlloc(tri.numIndexes);
+        final indexSort_t[] ind = new indexSort_t[tri.numIndexes];// R_StaticAlloc(tri.numIndexes);
 
         for (i = 0; i < tri.numIndexes; i++) {
             ind[i] = new indexSort_t();
@@ -1570,15 +1570,15 @@ public class tr_trisurf {
 
         for (i = 0; i < tri.numIndexes; i += j) {
             float maxArea = 0;
-            int vertNum = ind[i].vertexNum;
-            for (j = 0; i + j < tri.numIndexes && ind[i + j].vertexNum == vertNum; j++) {
-                float[] d0 = new float[5], d1 = new float[5];
+            final int vertNum = ind[i].vertexNum;
+            for (j = 0; ((i + j) < tri.numIndexes) && (ind[i + j].vertexNum == vertNum); j++) {
+                final float[] d0 = new float[5], d1 = new float[5];
                 idDrawVert a, b, c;
-                idVec3 normal = new idVec3(), tangent = new idVec3(), bitangent = new idVec3();
+                final idVec3 normal = new idVec3(), tangent = new idVec3(), bitangent = new idVec3();
 
-                int i1 = tri.indexes[ind[i + j].faceNum * 3 + 0];
-                int i2 = tri.indexes[ind[i + j].faceNum * 3 + 1];
-                int i3 = tri.indexes[ind[i + j].faceNum * 3 + 2];
+                final int i1 = tri.indexes[(ind[i + j].faceNum * 3) + 0];
+                final int i2 = tri.indexes[(ind[i + j].faceNum * 3) + 1];
+                final int i3 = tri.indexes[(ind[i + j].faceNum * 3) + 2];
 
                 a = tri.verts[i1];
                 b = tri.verts[i2];
@@ -1596,9 +1596,9 @@ public class tr_trisurf {
                 d1[3] = c.st.oGet(0) - a.st.oGet(0);
                 d1[4] = c.st.oGet(1) - a.st.oGet(1);
 
-                normal.oSet(0, (d1[1] * d0[2] - d1[2] * d0[1]));
-                normal.oSet(1, (d1[2] * d0[0] - d1[0] * d0[2]));
-                normal.oSet(2, (d1[0] * d0[1] - d1[1] * d0[0]));
+                normal.oSet(0, ((d1[1] * d0[2]) - (d1[2] * d0[1])));
+                normal.oSet(1, ((d1[2] * d0[0]) - (d1[0] * d0[2])));
+                normal.oSet(2, ((d1[0] * d0[1]) - (d1[1] * d0[0])));
 
                 float area = normal.Length();
 
@@ -1627,20 +1627,20 @@ public class tr_trisurf {
                 dt[vertNum].normalizationScale[2] = 1.0f / len;		// normal
 
                 // texture area
-                area = d0[3] * d1[4] - d0[4] * d1[3];
+                area = (d0[3] * d1[4]) - (d0[4] * d1[3]);
 
-                tangent.oSet(0, (d0[0] * d1[4] - d0[4] * d1[0]));
-                tangent.oSet(1, (d0[1] * d1[4] - d0[4] * d1[1]));
-                tangent.oSet(2, (d0[2] * d1[4] - d0[4] * d1[2]));
+                tangent.oSet(0, ((d0[0] * d1[4]) - (d0[4] * d1[0])));
+                tangent.oSet(1, ((d0[1] * d1[4]) - (d0[4] * d1[1])));
+                tangent.oSet(2, ((d0[2] * d1[4]) - (d0[4] * d1[2])));
                 len = tangent.Length();
                 if (len < 0.001f) {
                     len = 0.001f;
                 }
                 dt[vertNum].normalizationScale[0] = (area > 0 ? 1 : -1) / len;	// tangents[0]
 
-                bitangent.oSet(0, (d0[3] * d1[0] - d0[0] * d1[3]));
-                bitangent.oSet(1, (d0[3] * d1[1] - d0[1] * d1[3]));
-                bitangent.oSet(2, (d0[3] * d1[2] - d0[2] * d1[3]));
+                bitangent.oSet(0, ((d0[3] * d1[0]) - (d0[0] * d1[3])));
+                bitangent.oSet(1, ((d0[3] * d1[1]) - (d0[1] * d1[3])));
+                bitangent.oSet(2, ((d0[3] * d1[2]) - (d0[2] * d1[3])));
                 len = bitangent.Length();
                 if (len < 0.001f) {
                     len = 0.001f;
@@ -1746,7 +1746,7 @@ public class tr_trisurf {
 
         tr.pc.c_tangentIndexes += tri.numIndexes;
 
-        if (null == tri.facePlanes && allocFacePlanes) {
+        if ((null == tri.facePlanes) && allocFacePlanes) {
             R_AllocStaticTriSurfPlanes(tri, tri.numIndexes);
         }
         planes = tri.facePlanes;
@@ -1853,17 +1853,17 @@ public class tr_trisurf {
 //}else
         {
 
-            int[] dupVerts = tri.dupVerts;
-            idDrawVert[] verts = tri.verts;
+            final int[] dupVerts = tri.dupVerts;
+            final idDrawVert[] verts = tri.verts;
 
             // add the normal of a duplicated vertex to the normal of the first vertex with the same XYZ
             for (i = 0; i < tri.numDupVerts; i++) {
-                verts[dupVerts[i * 2 + 0]].normal.oPluSet(verts[dupVerts[i * 2 + 1]].normal);
+                verts[dupVerts[(i * 2) + 0]].normal.oPluSet(verts[dupVerts[(i * 2) + 1]].normal);
             }
 
             // copy vertex normals to duplicated vertices
             for (i = 0; i < tri.numDupVerts; i++) {
-                verts[dupVerts[i * 2 + 1]].normal = verts[dupVerts[i * 2 + 0]].normal;
+                verts[dupVerts[(i * 2) + 1]].normal = verts[dupVerts[(i * 2) + 0]].normal;
             }
 
         }
@@ -1942,10 +1942,10 @@ public class tr_trisurf {
         for (i = 0; i < tri.numIndexes; i += 3) {
             for (r = 0; r < 3; r++) {
                 a = tri.silIndexes[i + r];
-                b = tri.silIndexes[i + (r + 1) % 3];
-                c = tri.silIndexes[i + (r + 2) % 3];
+                b = tri.silIndexes[i + ((r + 1) % 3)];
+                c = tri.silIndexes[i + ((r + 2) % 3)];
                 for (j = i + 3; j < tri.numIndexes; j += 3) {
-                    if (tri.silIndexes[j] == a && tri.silIndexes[j + 1] == b && tri.silIndexes[j + 2] == c) {
+                    if ((tri.silIndexes[j] == a) && (tri.silIndexes[j + 1] == b) && (tri.silIndexes[j + 2] == c)) {
                         c_removed++;
 //					memmove( tri.indexes + j, tri.indexes + j + 3, ( tri.numIndexes - j - 3 ) * sizeof( tri.indexes[0] ) );
                         System.arraycopy(tri.indexes, j + 3, tri.indexes, j, tri.numIndexes - j - 3);
@@ -1982,7 +1982,7 @@ public class tr_trisurf {
             a = tri.silIndexes[i];
             b = tri.silIndexes[i + 1];
             c = tri.silIndexes[i + 2];
-            if (a == b || a == c || b == c) {
+            if ((a == b) || (a == c) || (b == c)) {
                 c_removed++;
 //			memmove( tri.indexes + i, tri.indexes + i + 3, ( tri.numIndexes - i - 3 ) * sizeof( tri.indexes[0] ) );
                 System.arraycopy(tri.indexes, i + 3, tri.indexes, i, tri.numIndexes - i - 3);
@@ -2017,7 +2017,7 @@ public class tr_trisurf {
             final idDrawVert b = tri.verts[tri.indexes[i + 1]];
             final idDrawVert c = tri.verts[tri.indexes[i + 2]];
 
-            if (a.st == b.st || b.st == c.st || c.st == a.st) {
+            if ((a.st == b.st) || (b.st == c.st) || (c.st == a.st)) {
                 c_degenerate++;
             }
         }
@@ -2042,14 +2042,14 @@ public class tr_trisurf {
 
         for (i = 0; i < tri.numIndexes; i++) {
             index = tri.indexes[i];
-            if (index < 0 || index >= tri.numVerts) {
+            if ((index < 0) || (index >= tri.numVerts)) {
                 common.Error("R_RemoveUnusedVerts: bad index");
             }
             mark[index] = 1;
 
             if (tri.silIndexes != null) {
                 index = tri.silIndexes[i];
-                if (index < 0 || index >= tri.numVerts) {
+                if ((index < 0) || (index >= tri.numVerts)) {
                     common.Error("R_RemoveUnusedVerts: bad index");
                 }
                 mark[index] = 1;
@@ -2437,7 +2437,7 @@ public class tr_trisurf {
     }
 
     private static idDrawVert[] Resize(idDrawVert[] verts, int totalVerts) {
-        idDrawVert[] newVerts = new idDrawVert[totalVerts];
+        final idDrawVert[] newVerts = new idDrawVert[totalVerts];
 
         System.arraycopy(verts, 0, newVerts, 0, verts.length);
 
@@ -2445,7 +2445,7 @@ public class tr_trisurf {
     }
 
     private static shadowCache_s[] Resize(shadowCache_s[] shadowVertexes, int numVerts) {
-        shadowCache_s[] newArray = new shadowCache_s[numVerts];
+        final shadowCache_s[] newArray = new shadowCache_s[numVerts];
         System.arraycopy(shadowVertexes, 0, newArray, 0, Math.min(shadowVertexes.length, numVerts));
         return newArray;
     }
@@ -2460,7 +2460,7 @@ public class tr_trisurf {
         }
 
         final int size = numIndexes > indexes.length ? indexes.length : numIndexes;
-        int[] newIndexes = new int[numIndexes];
+        final int[] newIndexes = new int[numIndexes];
 
         System.arraycopy(indexes, 0, newIndexes, 0, size);
 

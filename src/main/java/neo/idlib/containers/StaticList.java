@@ -27,9 +27,9 @@ public class StaticList {
         //
 
         public idStaticList(int size) {
-            num = 0;
+            this.num = 0;
             this.size = size;
-            list = (type[]) new Object[size];
+            this.list = (type[]) new Object[size];
         }
 
         public idStaticList(int size, Class<type> type) {
@@ -39,7 +39,7 @@ public class StaticList {
 
         public idStaticList(int size, Object object) {
             this(size);
-            list = ((idStaticList<type>) object).list;
+            this.list = ((idStaticList<type>) object).list;
         }
 //	public					idStaticList( const idStaticList<type,size> &other );
 //	public					~idStaticList<type,size>( void );
@@ -53,7 +53,7 @@ public class StaticList {
          ================
          */
         public void Clear() {										// marks the list as empty.  does not deallocate or intialize data.
-            num = 0;
+            this.num = 0;
         }
 
         /*
@@ -64,7 +64,7 @@ public class StaticList {
          ================
          */
         public int Num() {									// returns number of elements in list
-            return num;
+            return this.num;
         }
 
         /*
@@ -75,7 +75,7 @@ public class StaticList {
          ================
          */
         public int Max() {									// returns the maximum number of elements in the list
-            return size;
+            return this.size;
         }
 
         /*
@@ -87,8 +87,8 @@ public class StaticList {
          */
         public void SetNum(int newnum) {								// set number of elements in list
             assert (newnum >= 0);
-            assert (newnum <= size);
-            num = newnum;
+            assert (newnum <= this.size);
+            this.num = newnum;
         }
 //
 //public		size_t				Allocated( void ) const;							// returns total size of allocated memory
@@ -96,7 +96,7 @@ public class StaticList {
 
         // returns size of the used elements in the list
         public int/*size_t*/ MemoryUsed() {
-            return num * Integer.BYTES;//TODO: * sizeof(list[0]);
+            return this.num * Integer.BYTES;//TODO: * sizeof(list[0]);
         }
 //
 
@@ -110,16 +110,16 @@ public class StaticList {
          */
         public type oGet(int index) {
             assert (index >= 0);
-            assert (index < num);
+            assert (index < this.num);
 
-            return list[index];
+            return this.list[index];
         }
 
         public type oSet(int index, type value) {
             assert (index >= 0);
-            assert (index < num);
+            assert (index < this.num);
 
-            return list[index] = value;
+            return this.list[index] = value;
         }
 //public		type &				operator[]( int index );
 //
@@ -136,7 +136,7 @@ public class StaticList {
          ================
          */
         public type[] Ptr() {										// returns a pointer to the list
-            return list;
+            return this.list;
         }
 //public		const type *		Ptr( void ) const;									// returns a pointer to the list
 
@@ -148,11 +148,11 @@ public class StaticList {
          ================
          */
         public type Alloc() {										// returns reference to a new data element at the end of the list.  returns NULL when full.
-            if (num >= size) {
+            if (this.num >= this.size) {
                 return null;
             }
             try {
-                return list[num++] = (type) type.newInstance();//TODO:init value before sending back. EDIT:ugly, but working.
+                return this.list[this.num++] = this.type.newInstance();//TODO:init value before sending back. EDIT:ugly, but working.
             } catch (InstantiationException | IllegalAccessException ex) {
                 Logger.getLogger(StaticList.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -169,11 +169,11 @@ public class StaticList {
          ================
          */
         public int Append(final type obj) {// append element
-            assert (num < size);
-            if (num < size) {
-                list[ num] = obj;
-                num++;
-                return num - 1;
+            assert (this.num < this.size);
+            if (this.num < this.size) {
+                this.list[ this.num] = obj;
+                this.num++;
+                return this.num - 1;
             }
 
             return -1;
@@ -192,13 +192,13 @@ public class StaticList {
             int i;
             int n = other.Num();
 
-            if (num + n > other.size) {//TODO:which size??
-                n = size - num;
+            if ((this.num + n) > other.size) {//TODO:which size??
+                n = this.size - this.num;
             }
             for (i = 0; i < n; i++) {
-                list[i + num] = other.list[i];
+                this.list[i + this.num] = other.list[i];
             }
-            num += n;
+            this.num += n;
             return Num();
         }
 
@@ -233,24 +233,24 @@ public class StaticList {
         public int Insert(final type obj, int index) {				// insert the element at the given index
             int i;
 
-            assert (num < size);
-            if (num >= size) {
+            assert (this.num < this.size);
+            if (this.num >= this.size) {
                 return -1;
             }
 
             assert (index >= 0);
             if (index < 0) {
                 index = 0;
-            } else if (index > num) {
-                index = num;
+            } else if (index > this.num) {
+                index = this.num;
             }
 
-            for (i = num; i > index; --i) {
-                list[i] = list[i - 1];
+            for (i = this.num; i > index; --i) {
+                this.list[i] = this.list[i - 1];
             }
 
-            num++;
-            list[index] = obj;
+            this.num++;
+            this.list[index] = obj;
             return index;
         }
 
@@ -264,8 +264,8 @@ public class StaticList {
         public int FindIndex(final type obj) {				// find the index for the given element
             int i;
 
-            for (i = 0; i < num; i++) {
-                if (list[i] == obj) {
+            for (i = 0; i < this.num; i++) {
+                if (this.list[i] == obj) {
                     return i;
                 }
             }
@@ -288,8 +288,8 @@ public class StaticList {
         public int FindNull() {								// find the index for the first NULL pointer in the list
             int i;
 
-            for (i = 0; i < num; i++) {
-                if (list[ i] == null) {
+            for (i = 0; i < this.num; i++) {
+                if (this.list[ i] == null) {
                     return i;
                 }
             }
@@ -333,15 +333,15 @@ public class StaticList {
             int i;
 
             assert (index >= 0);
-            assert (index < num);
+            assert (index < this.num);
 
-            if ((index < 0) || (index >= num)) {
+            if ((index < 0) || (index >= this.num)) {
                 return false;
             }
 
-            num--;
-            for (i = index; i < num; i++) {
-                list[ i] = list[ i + 1];
+            this.num--;
+            for (i = index; i < this.num; i++) {
+                this.list[ i] = this.list[ i + 1];
             }
 
             return true;
@@ -383,18 +383,18 @@ public class StaticList {
         public void DeleteContents(boolean clear) {						// delete the contents of the list
             int i;
 
-            for (i = 0; i < size; i++) {
+            for (i = 0; i < this.size; i++) {
 //		delete list[ i ];
-                list[i] = null;
+                this.list[i] = null;
             }
 
             if (clear) {
                 Clear();
             } else {
 //		memset( list, 0, sizeof( list ) );
-                Arrays.fill(list, 0);
+                Arrays.fill(this.list, 0);
             }
         }
 
-    };
+    }
 }

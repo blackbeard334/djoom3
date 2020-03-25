@@ -262,7 +262,7 @@ public class tr_backend {
         if (tr_local.backEnd.glState.currenttmu == unit) {
             return;
         }
-        if (unit < 0 || unit >= tr_local.glConfig.maxTextureUnits && unit >= tr_local.glConfig.maxTextureImageUnits) {
+        if ((unit < 0) || ((unit >= tr_local.glConfig.maxTextureUnits) && (unit >= tr_local.glConfig.maxTextureImageUnits))) {
             common.Warning("GL_SelectTexture: unit = %d", unit);
             return;
         }
@@ -473,10 +473,10 @@ public class tr_backend {
         // check colormask
         //
         if ((diff & (GLS_REDMASK | GLS_GREENMASK | GLS_BLUEMASK | GLS_ALPHAMASK)) != 0) {
-           boolean r = (stateBits & GLS_REDMASK) == 0;
-           boolean g = (stateBits & GLS_GREENMASK) == 0;
-           boolean b = (stateBits & GLS_BLUEMASK) == 0;
-           boolean a = (stateBits & GLS_ALPHAMASK) == 0;
+           final boolean r = (stateBits & GLS_REDMASK) == 0;
+           final boolean g = (stateBits & GLS_GREENMASK) == 0;
+           final boolean b = (stateBits & GLS_BLUEMASK) == 0;
+           final boolean a = (stateBits & GLS_ALPHAMASK) == 0;
             qglColorMask(r, g, b, a);//solid backgroundus
         }
 
@@ -496,7 +496,7 @@ public class tr_backend {
         //
         if ((diff & GLS_ATEST_BITS) != 0) {
             if(backEnd.viewDef.numDrawSurfs==5){
-                tr_local.drawSurf_s temp = backEnd.viewDef.drawSurfs[3];
+                final tr_local.drawSurf_s temp = backEnd.viewDef.drawSurfs[3];
 //                backEnd.viewDef.drawSurfs[0] =
 //                backEnd.viewDef.drawSurfs[1] =
 //                backEnd.viewDef.drawSurfs[2] =
@@ -611,13 +611,13 @@ public class tr_backend {
         // clear screen for debugging
         // automatically enable this with several other debug tools
         // that might leave unrendered portions of the screen
-        if (r_clear.GetFloat() != 0 || r_clear.GetString().length() != 1 || r_lockSurfaces.GetBool() || r_singleArea.GetBool() || r_showOverDraw.GetBool()) {
+        if ((r_clear.GetFloat() != 0) || (r_clear.GetString().length() != 1) || r_lockSurfaces.GetBool() || r_singleArea.GetBool() || r_showOverDraw.GetBool()) {
             try (Scanner sscanf = new Scanner(r_clear.GetString())) {
 //		if ( sscanf( r_clear.GetString(), "%f %f %f", c[0], c[1], c[2] ) == 3 ) {
-                float[] c = {sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat()};
+                final float[] c = {sscanf.nextFloat(), sscanf.nextFloat(), sscanf.nextFloat()};
                 //if 3 floats are parsed
                 qglClearColor(c[0], c[1], c[2], 1);
-            } catch (NoSuchElementException elif) {
+            } catch (final NoSuchElementException elif) {
                 if (r_clear.GetInteger() == 2) {
                     qglClearColor(0.0f, 0.0f, 0.0f, 1.0f);
                 } else if (r_showOverDraw.GetBool()) {
@@ -655,14 +655,14 @@ public class tr_backend {
         for (i = 0; i < globalImages.images.Num(); i++) {
             image = globalImages.images.oGet(i);
             
-            if (image.texNum == idImage.TEXTURE_NOT_LOADED && image.partialImage == null) {
+            if ((image.texNum == idImage.TEXTURE_NOT_LOADED) && (image.partialImage == null)) {
                 continue;
             }
 
             w = glConfig.vidWidth / 20;
             h = glConfig.vidHeight / 15;
-            x = i % 20 * w;
-            y = i / 20 * h;
+            x = (i % 20) * w;
+            y = (i / 20) * h;
 
             // show in proportional size in mode 2
             if (r_showImages.GetInteger() == 2) {
@@ -734,7 +734,7 @@ public class tr_backend {
         RB_LogComment("***************** RB_CopyRender *****************\n");
 
         if (cmd.image != null) {
-            int[] imageWidth = {cmd.imageWidth}, imageHeight = {cmd.imageHeight};
+            final int[] imageWidth = {cmd.imageWidth}, imageHeight = {cmd.imageHeight};
             cmd.image.CopyFramebuffer(cmd.x, cmd.y, imageWidth, imageHeight, false);
             cmd.imageWidth = imageWidth[0];
             cmd.imageHeight = imageHeight[0];
@@ -755,7 +755,7 @@ public class tr_backend {
         // r_debugRenderToTexture
         int c_draw3d = 0, c_draw2d = 0, c_setBuffers = 0, c_swapBuffers = 0, c_copyRenders = 0;
 
-        if (RC_NOP == cmds.commandId && null == cmds.next) {
+        if ((RC_NOP == cmds.commandId) && (null == cmds.next)) {
             return;
         }
 
@@ -818,7 +818,7 @@ public class tr_backend {
 
         try {
             logFile.write(ByteBuffer.wrap(string.getBytes()));
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             Logger.getLogger(tr_backend.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -830,12 +830,12 @@ public class tr_backend {
 
         try {
             String bla = "";
-            for (Object c : comments) {
+            for (final Object c : comments) {
                 bla += c;
             }
 
             logFile.write(ByteBuffer.wrap(bla.getBytes()));
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             Logger.getLogger(tr_backend.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

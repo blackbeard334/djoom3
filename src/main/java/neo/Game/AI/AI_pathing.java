@@ -97,13 +97,13 @@ public class AI_pathing {
         idVec3   endPos = new idVec3();
         idVec3   normal = new idVec3();
         idEntity blockingEntity;
-    };
+    }
 
     static class obstacle_s {
         idVec2[]    bounds  = new idVec2[2];
         idWinding2D winding = new idWinding2D();
         idEntity    entity;
-    };
+    }
 
     static class pathNode_s {
 
@@ -119,19 +119,19 @@ public class AI_pathing {
         pathNode_s   next;
 
         public pathNode_s() {
-            pos = new idVec2();
-            delta = new idVec2();
+            this.pos = new idVec2();
+            this.delta = new idVec2();
             pathNodeAllocator++;
         }
 
         void Init() {
-            dir = 0;
-            pos.Zero();
-            delta.Zero();
-            obstacle = -1;
-            edgeNum = -1;
-            numNodes = 0;
-            parent = children[0] = children[1] = next = null;
+            this.dir = 0;
+            this.pos.Zero();
+            this.delta.Zero();
+            this.obstacle = -1;
+            this.edgeNum = -1;
+            this.numNodes = 0;
+            this.parent = this.children[0] = this.children[1] = this.next = null;
         }
 
         private void oSet(pathNode_s parent) {//TODO:how do we reference the non objects?
@@ -146,14 +146,14 @@ public class AI_pathing {
             this.children = parent.children;
             this.next = parent.next;
         }
-    };
+    }
 
     static class wallEdge_s {
 
         int edgeNum;
         int[] verts = new int[2];
         wallEdge_s next;
-    };
+    }
 
 
     /*
@@ -166,13 +166,13 @@ public class AI_pathing {
         idVec3 plane1, plane2;
 
         plane1 = idWinding2D.Plane2DFromPoints(start, end);
-        d0 = plane1.x * node.pos.x + plane1.y * node.pos.y + plane1.z;
+        d0 = (plane1.x * node.pos.x) + (plane1.y * node.pos.y) + plane1.z;
         while (node.parent != null) {
-            d1 = plane1.x * node.parent.pos.x + plane1.y * node.parent.pos.y + plane1.z;
+            d1 = (plane1.x * node.parent.pos.x) + (plane1.y * node.parent.pos.y) + plane1.z;
             if ((FLOATSIGNBITSET(d0) ^ FLOATSIGNBITSET(d1)) != 0) {
                 plane2 = idWinding2D.Plane2DFromPoints(node.pos, node.parent.pos);
-                d2 = plane2.x * start.x + plane2.y * start.y + plane2.z;
-                d3 = plane2.x * end.x + plane2.y * end.y + plane2.z;
+                d2 = (plane2.x * start.x) + (plane2.y * start.y) + plane2.z;
+                d3 = (plane2.x * end.x) + (plane2.y * end.y) + plane2.z;
                 if ((FLOATSIGNBITSET(d2) ^ FLOATSIGNBITSET(d3)) != 0) {
                     return true;
                 }
@@ -194,7 +194,7 @@ public class AI_pathing {
         for (i = 0; i < numObstacles; i++) {
 
             final idVec2[] bounds = obstacles[i].bounds;
-            if (point.x < bounds[0].x || point.y < bounds[0].y || point.x > bounds[1].x || point.y > bounds[1].y) {
+            if ((point.x < bounds[0].x) || (point.y < bounds[0].y) || (point.x > bounds[1].x) || (point.y > bounds[1].y)) {
                 continue;
             }
 
@@ -215,9 +215,9 @@ public class AI_pathing {
      */
     static void GetPointOutsideObstacles(final obstacle_s[] obstacles, final int numObstacles, idVec2 point, int[] obstacle, int[] edgeNum) {
         int i, j, k, n, bestObstacle, bestEdgeNum, queueStart, queueEnd;
-        int[] edgeNums = new int[2];
+        final int[] edgeNums = new int[2];
         float d, bestd;
-        float[][] scale = new float[2][1];
+        final float[][] scale = new float[2][1];
         idVec3 plane, bestPlane = new idVec3();
         idVec2 newPoint, dir, bestPoint = new idVec2();
         int[] queue;
@@ -241,7 +241,7 @@ public class AI_pathing {
         bestEdgeNum = 0;
         for (i = 0; i < w.GetNumPoints(); i++) {
             plane = idWinding2D.Plane2DFromPoints(w.oGet((i + 1) % w.GetNumPoints()), w.oGet(i), true);
-            d = plane.x * point.x + plane.y * point.y + plane.z;
+            d = (plane.x * point.x) + (plane.y * point.y) + plane.z;
             if (d < bestd) {
                 bestd = d;
                 bestPlane = plane;
@@ -286,8 +286,8 @@ public class AI_pathing {
                     continue;
                 }
                 // if the bounds do not intersect
-                if (obstacles[j].bounds[0].x > obstacles[i].bounds[1].x || obstacles[j].bounds[0].y > obstacles[i].bounds[1].y
-                        || obstacles[j].bounds[1].x < obstacles[i].bounds[0].x || obstacles[j].bounds[1].y < obstacles[i].bounds[0].y) {
+                if ((obstacles[j].bounds[0].x > obstacles[i].bounds[1].x) || (obstacles[j].bounds[0].y > obstacles[i].bounds[1].y)
+                        || (obstacles[j].bounds[1].x < obstacles[i].bounds[0].x) || (obstacles[j].bounds[1].y < obstacles[i].bounds[0].y)) {
                     continue;
                 }
 
@@ -338,10 +338,10 @@ public class AI_pathing {
      */
     static boolean GetFirstBlockingObstacle(final obstacle_s[] obstacles, int numObstacles, int skipObstacle, final idVec2 startPos, final idVec2 delta, float[] blockingScale, int[] blockingObstacle, int[] blockingEdgeNum) {
         int i;
-        int[] edgeNums = new int[2];
+        final int[] edgeNums = new int[2];
         float dist;
-        float[] scale1 = {0}, scale2 = {0};
-        idVec2[] bounds = new idVec2[2];
+        final float[] scale1 = {0}, scale2 = {0};
+        final idVec2[] bounds = new idVec2[2];
 
         // get bounds for the current movement delta
         bounds[0] = startPos.oMinus(new idVec2(CM_BOX_EPSILON, CM_BOX_EPSILON));
@@ -356,12 +356,12 @@ public class AI_pathing {
             if (i == skipObstacle) {
                 continue;
             }
-            if (bounds[0].x > obstacles[i].bounds[1].x || bounds[0].y > obstacles[i].bounds[1].y
-                    || bounds[1].x < obstacles[i].bounds[0].x || bounds[1].y < obstacles[i].bounds[0].y) {
+            if ((bounds[0].x > obstacles[i].bounds[1].x) || (bounds[0].y > obstacles[i].bounds[1].y)
+                    || (bounds[1].x < obstacles[i].bounds[0].x) || (bounds[1].y < obstacles[i].bounds[0].y)) {
                 continue;
             }
             if (obstacles[i].winding.RayIntersection(startPos, delta, scale1, scale2, edgeNums)) {
-                if (scale1[0] < blockingScale[0] && scale1[0] * dist > -0.01f && scale2[0] * dist > 0.01f) {
+                if ((scale1[0] < blockingScale[0]) && ((scale1[0] * dist) > -0.01f) && ((scale2[0] * dist) > 0.01f)) {
                     blockingScale = scale1;
                     blockingObstacle[0] = i;
                     blockingEdgeNum[0] = edgeNums[0];
@@ -378,21 +378,25 @@ public class AI_pathing {
      */
     static int GetObstacles(final idPhysics physics, final idAAS aas, final idEntity ignore, int areaNum, final idVec3 startPos, final idVec3 seekPos, obstacle_s[] obstacles, int maxObstacles, idBounds clipBounds) {
         int i, j, numListedClipModels, numObstacles, numVerts, clipMask;
-        int[] blockingObstacle = {0}, blockingEdgeNum = {0};
-        int[] wallEdges = new int[MAX_AAS_WALL_EDGES], verts = new int[2], lastVerts = new int[2], nextVerts = new int[2];
+        final int[] blockingObstacle = {0}, blockingEdgeNum = {0};
+        final int[] wallEdges = new int[MAX_AAS_WALL_EDGES], verts = new int[2], lastVerts = new int[2], nextVerts = new int[2];
         int numWallEdges;
-        float[] stepHeight = {0}, headHeight = {0}, blockingScale = {0}, min = {0}, max = {0};
-        idVec3 seekDelta, start = new idVec3(), end = new idVec3(), nextStart = new idVec3(), nextEnd = new idVec3();
-        idVec3[] silVerts = new idVec3[32];
-        idVec2 edgeDir, edgeNormal = new idVec2(), nextEdgeDir,
-                nextEdgeNormal = new idVec2(), lastEdgeNormal = new idVec2();
-        idVec2[] expBounds = new idVec2[2];
-        idVec2 obDelta;
+        final float[] stepHeight = {0}, headHeight = {0}, blockingScale = {0}, min = {0}, max = {0};
+        idVec3 seekDelta;
+		final idVec3 start = new idVec3(), end = new idVec3(), nextStart = new idVec3(), nextEnd = new idVec3();
+        final idVec3[] silVerts = new idVec3[32];
+        idVec2 edgeDir;
+		final idVec2 edgeNormal = new idVec2();
+		idVec2 nextEdgeDir;
+		final idVec2 nextEdgeNormal = new idVec2();
+		idVec2 lastEdgeNormal = new idVec2();
+        final idVec2[] expBounds = new idVec2[2];
+        final idVec2 obDelta;
         idPhysics obPhys;
         idBox box;
         idEntity obEnt;
         idClipModel clipModel;
-        idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
+        final idClipModel[] clipModelList = new idClipModel[MAX_GENTITIES];
 
         numObstacles = 0;
 
@@ -412,7 +416,7 @@ public class AI_pathing {
         // find all obstacles touching the clip bounds
         numListedClipModels = gameLocal.clip.ClipModelsTouchingBounds(clipBounds, clipMask, clipModelList, MAX_GENTITIES);
 
-        for (i = 0; i < numListedClipModels && numObstacles < MAX_OBSTACLES; i++) {
+        for (i = 0; (i < numListedClipModels) && (numObstacles < MAX_OBSTACLES); i++) {
             clipModel = clipModelList[i];
             obEnt = clipModel.GetEntity();
 
@@ -427,9 +431,9 @@ public class AI_pathing {
                     continue;
                 }
                 // if the actor is moving
-                idVec3 v1 = obPhys.GetLinearVelocity();
+                final idVec3 v1 = obPhys.GetLinearVelocity();
                 if (v1.LengthSqr() > Square(10.0f)) {
-                    idVec3 v2 = physics.GetLinearVelocity();
+                    final idVec3 v2 = physics.GetLinearVelocity();
                     if (v2.LengthSqr() > Square(10.0f)) {
                         // if moving in about the same direction
                         if (v1.oMultiply(v2) > 0.0f) {
@@ -446,7 +450,7 @@ public class AI_pathing {
 
             // check if we can step over the object
             clipModel.GetAbsBounds().AxisProjection(physics.GetGravityNormal().oNegative(), min, max);
-            if (max[0] < stepHeight[0] || min[0] > headHeight[0]) {
+            if ((max[0] < stepHeight[0]) || (min[0] > headHeight[0])) {
                 // can step over this one
                 continue;
             }
@@ -456,7 +460,7 @@ public class AI_pathing {
             numVerts = box.GetParallelProjectionSilhouetteVerts(physics.GetGravityNormal(), silVerts);
 
             // create a 2D winding for the obstacle;
-            obstacle_s obstacle = obstacles[numObstacles++];
+            final obstacle_s obstacle = obstacles[numObstacles++];
             obstacle.winding.Clear();
             for (j = 0; j < numVerts; j++) {
                 obstacle.winding.AddPoint(silVerts[j].ToVec2());
@@ -491,7 +495,7 @@ public class AI_pathing {
 
         // create obstacles for AAS walls
         if (aas != null) {
-            float halfBoundsSize = (expBounds[ 1].x - expBounds[ 0].x) * 0.5f;
+            final float halfBoundsSize = (expBounds[ 1].x - expBounds[ 0].x) * 0.5f;
 
             numWallEdges = aas.GetWallEdges(areaNum, clipBounds, TFL_WALK, wallEdges, MAX_AAS_WALL_EDGES);
             aas.SortWallEdges(wallEdges, numWallEdges);
@@ -499,14 +503,14 @@ public class AI_pathing {
             lastVerts[0] = lastVerts[1] = 0;
             lastEdgeNormal.Zero();
             nextVerts[0] = nextVerts[1] = 0;
-            for (i = 0; i < numWallEdges && numObstacles < MAX_OBSTACLES; i++) {
+            for (i = 0; (i < numWallEdges) && (numObstacles < MAX_OBSTACLES); i++) {
                 aas.GetEdge(wallEdges[i], start, end);
                 aas.GetEdgeVertexNumbers(wallEdges[i], verts);
                 edgeDir = end.ToVec2().oMinus(start.ToVec2());
                 edgeDir.Normalize();
                 edgeNormal.x = edgeDir.y;
                 edgeNormal.y = -edgeDir.x;
-                if (i < numWallEdges - 1) {
+                if (i < (numWallEdges - 1)) {
                     aas.GetEdge(wallEdges[i + 1], nextStart, nextEnd);
                     aas.GetEdgeVertexNumbers(wallEdges[i + 1], nextVerts);
                     nextEdgeDir = nextEnd.ToVec2().oMinus(nextStart.ToVec2());
@@ -515,7 +519,7 @@ public class AI_pathing {
                     nextEdgeNormal.y = -nextEdgeDir.x;
                 }
 
-                obstacle_s obstacle = obstacles[numObstacles++];
+                final obstacle_s obstacle = obstacles[numObstacles++];
                 obstacle.winding.Clear();
                 obstacle.winding.AddPoint(end.ToVec2());
                 obstacle.winding.AddPoint(start.ToVec2());
@@ -544,7 +548,7 @@ public class AI_pathing {
         // show obstacles
         if (ai_showObstacleAvoidance.GetBool()) {
             for (i = 0; i < numObstacles; i++) {
-                obstacle_s obstacle = obstacles[i];
+                final obstacle_s obstacle = obstacles[i];
                 for (j = 0; j < obstacle.winding.GetNumPoints(); j++) {
                     silVerts[j].oSet(obstacle.winding.oGet(j));
                     silVerts[j].z = startPos.z;
@@ -581,7 +585,7 @@ public class AI_pathing {
      */
     static void DrawPathTree(final pathNode_s root, final float height) {
         int i;
-        idVec3 start = new idVec3(), end = new idVec3();
+        final idVec3 start = new idVec3(), end = new idVec3();
         pathNode_s node;
 
         for (node = root; node != null; node = node.next) {
@@ -606,7 +610,8 @@ public class AI_pathing {
     static boolean GetPathNodeDelta(pathNode_s node, final obstacle_s[] obstacles, final idVec2 seekPos, boolean blocked) {
         int numPoints, edgeNum;
         boolean facing;
-        idVec2 seekDelta, dir;
+        idVec2 seekDelta;
+		final idVec2 dir;
         pathNode_s n;
 
         numPoints = obstacles[node.obstacle].winding.GetNumPoints();
@@ -618,7 +623,7 @@ public class AI_pathing {
             if (node.delta.LengthSqr() > 0.01f) {
                 break;
             }
-            node.edgeNum = (node.edgeNum + numPoints + (2 * node.dir - 1)) % numPoints;
+            node.edgeNum = (node.edgeNum + numPoints + ((2 * node.dir) - 1)) % numPoints;
         }
 
         // if not blocked
@@ -626,7 +631,7 @@ public class AI_pathing {
 
             // test if the current edge faces the goal
             seekDelta = seekPos.oMinus(node.pos);
-            facing = ((2 * node.dir - 1) * (node.delta.x * seekDelta.y - node.delta.y * seekDelta.x)) >= 0.0f;
+            facing = (((2 * node.dir) - 1) * ((node.delta.x * seekDelta.y) - (node.delta.y * seekDelta.x))) >= 0.0f;
 
             // if the current edge faces goal and the line from the current
             // position to the goal does not intersect the current path
@@ -641,7 +646,7 @@ public class AI_pathing {
             // if the edge is found going from this node to the root node
             for (n = node.parent; n != null; n = n.parent) {
 
-                if (node.obstacle != n.obstacle || node.edgeNum != n.edgeNum) {
+                if ((node.obstacle != n.obstacle) || (node.edgeNum != n.edgeNum)) {
                     continue;
                 }
 
@@ -669,11 +674,11 @@ public class AI_pathing {
      */
     static pathNode_s BuildPathTree(final obstacle_s[] obstacles, int numObstacles, final idBounds clipBounds, final idVec2 startPos, final idVec2 seekPos, obstaclePath_s path) {
         int obstaclePoints, bestNumNodes = MAX_OBSTACLE_PATH;
-        int[] blockingEdgeNum = {0}, blockingObstacle = {0};
-        float[] blockingScale = {0};
+        final int[] blockingEdgeNum = {0}, blockingObstacle = {0};
+        final float[] blockingScale = {0};
         pathNode_s root, node, child;
         // gcc 4.0
-        idQueueTemplate<pathNode_s/*, offsetof( pathNode_s, next )*/> pathNodeQueue = new idQueueTemplate<>(), treeQueue = new idQueueTemplate<>();
+        final idQueueTemplate<pathNode_s/*, offsetof( pathNode_s, next )*/> pathNodeQueue = new idQueueTemplate<>(), treeQueue = new idQueueTemplate<>();
         root = new pathNode_s();//pathNodeAllocator.Alloc();
         root.Init();
         root.pos = startPos;
@@ -682,19 +687,19 @@ public class AI_pathing {
         root.numNodes = 0;
         pathNodeQueue.Add(root);
 
-        for (node = pathNodeQueue.Get(); node != null && pathNodeAllocator < MAX_PATH_NODES; node = pathNodeQueue.Get()) {
+        for (node = pathNodeQueue.Get(); (node != null) && (pathNodeAllocator < MAX_PATH_NODES); node = pathNodeQueue.Get()) {
 
             treeQueue.Add(node);
 
             // if this path has more than twice the number of nodes than the best path so far
-            if (node.numNodes > bestNumNodes * 2) {
+            if (node.numNodes > (bestNumNodes * 2)) {
                 continue;
             }
 
             // don't move outside of the clip bounds
-            idVec2 endPos = node.pos.oPlus(node.delta);
-            if (endPos.x - CLIP_BOUNDS_EPSILON < clipBounds.oGet(0).x || endPos.x + CLIP_BOUNDS_EPSILON > clipBounds.oGet(1).x
-                    || endPos.y - CLIP_BOUNDS_EPSILON < clipBounds.oGet(0).y || endPos.y + CLIP_BOUNDS_EPSILON > clipBounds.oGet(1).y) {
+            final idVec2 endPos = node.pos.oPlus(node.delta);
+            if (((endPos.x - CLIP_BOUNDS_EPSILON) < clipBounds.oGet(0).x) || ((endPos.x + CLIP_BOUNDS_EPSILON) > clipBounds.oGet(1).x)
+                    || ((endPos.y - CLIP_BOUNDS_EPSILON) < clipBounds.oGet(0).y) || ((endPos.y + CLIP_BOUNDS_EPSILON) > clipBounds.oGet(1).y)) {
                 continue;
             }
 
@@ -756,7 +761,7 @@ public class AI_pathing {
 
                 child.obstacle = node.obstacle;
                 obstaclePoints = obstacles[node.obstacle].winding.GetNumPoints();
-                child.edgeNum = (node.edgeNum + obstaclePoints + (2 * node.dir - 1)) % obstaclePoints;
+                child.edgeNum = (node.edgeNum + obstaclePoints + ((2 * node.dir) - 1)) % obstaclePoints;
 
                 if (GetPathNodeDelta(child, obstacles, seekPos, false)) {
                     pathNodeQueue.Add(child);
@@ -792,7 +797,7 @@ public class AI_pathing {
                 bestDist = idMath.INFINITY;
                 bestNode = node;
                 for (n = node; n != null; n = n.parent) {
-                    if (n.children[0] != null && n.children[1] != null) {
+                    if ((n.children[0] != null) && (n.children[1] != null)) {
                         break;
                     }
                     if (n.dist < bestDist) {
@@ -810,7 +815,7 @@ public class AI_pathing {
                 }
 
                 for (lastNode = bestNode, node = bestNode.parent; node != null; lastNode = node, node = node.parent) {
-                    if (node.children[1] != null && (node.children[1] != lastNode)) {
+                    if ((node.children[1] != null) && (node.children[1] != lastNode)) {
                         node = node.children[1];
                         break;
                     }
@@ -826,12 +831,12 @@ public class AI_pathing {
      */
     static int OptimizePath(final pathNode_s root, final pathNode_s leafNode, final obstacle_s[] obstacles, int numObstacles, idVec2[] optimizedPath/*[MAX_OBSTACLE_PATH]*/) {
         int i, numPathPoints;
-        int[] edgeNums = new int[2];
+        final int[] edgeNums = new int[2];
         pathNode_s curNode, nextNode;
         idVec2 curPos, curDelta;
-        idVec2[] bounds = new idVec2[2];
+        final idVec2[] bounds = new idVec2[2];
         float curLength;
-        float[] scale1 = {0}, scale2 = {0};
+        final float[] scale1 = {0}, scale2 = {0};
 
         optimizedPath[0] = root.pos;
         numPathPoints = 1;
@@ -857,15 +862,15 @@ public class AI_pathing {
 
                 // test if the shortcut intersects with any obstacles
                 for (i = 0; i < numObstacles; i++) {
-                    if (bounds[0].x > obstacles[i].bounds[1].x || bounds[0].y > obstacles[i].bounds[1].y
-                            || bounds[1].x < obstacles[i].bounds[0].x || bounds[1].y < obstacles[i].bounds[0].y) {
+                    if ((bounds[0].x > obstacles[i].bounds[1].x) || (bounds[0].y > obstacles[i].bounds[1].y)
+                            || (bounds[1].x < obstacles[i].bounds[0].x) || (bounds[1].y < obstacles[i].bounds[0].y)) {
                         continue;
                     }
                     if (obstacles[i].winding.RayIntersection(curPos, curDelta, scale1, scale2, edgeNums)) {
-                        if (scale1[0] >= 0.0f && scale1[0] <= 1.0f && (i != nextNode.obstacle || scale1[0] * curLength < curLength - 0.5f)) {
+                        if ((scale1[0] >= 0.0f) && (scale1[0] <= 1.0f) && ((i != nextNode.obstacle) || ((scale1[0] * curLength) < (curLength - 0.5f)))) {
                             break;
                         }
-                        if (scale2[0] >= 0.0f && scale2[0] <= 1.0f && (i != nextNode.obstacle || scale2[0] * curLength < curLength - 0.5f)) {
+                        if ((scale2[0] >= 0.0f) && (scale2[0] <= 1.0f) && ((i != nextNode.obstacle) || ((scale2[0] * curLength) < (curLength - 0.5f)))) {
                             break;
                         }
                     }
@@ -893,7 +898,7 @@ public class AI_pathing {
 
         // calculate the path length
         pathLength = 0.0f;
-        for (i = 0; i < numPathPoints - 1; i++) {
+        for (i = 0; i < (numPathPoints - 1); i++) {
             pathLength += (optimizedPath[i + 1].oMinus(optimizedPath[i])).LengthFast();
         }
 
@@ -914,7 +919,7 @@ public class AI_pathing {
     static boolean FindOptimalPath(final pathNode_s root, final obstacle_s[] obstacles, int numObstacles, final float height, final idVec3 curDir, idVec3 seekPos) {
         int i, numPathPoints, bestNumPathPoints;
         pathNode_s node, lastNode, bestNode;
-        idVec2[] optimizedPath = new idVec2[MAX_OBSTACLE_PATH];
+        final idVec2[] optimizedPath = new idVec2[MAX_OBSTACLE_PATH];
         float pathLength, bestPathLength;
         boolean pathToGoalExists, optimizedPathCalculated;
 
@@ -968,7 +973,7 @@ public class AI_pathing {
                 node = node.children[1];
             } else {
                 for (lastNode = node, node = node.parent; node != null; lastNode = node, node = node.parent) {
-                    if (node.children[1] != null && !node.children[1].equals(lastNode)) {
+                    if ((node.children[1] != null) && !node.children[1].equals(lastNode)) {
                         node = node.children[1];
                         break;
                     }
@@ -984,10 +989,10 @@ public class AI_pathing {
         }
 
         if (ai_showObstacleAvoidance.GetBool()) {
-            idVec3 start = new idVec3(), end = new idVec3();
+            final idVec3 start = new idVec3(), end = new idVec3();
             start.z = end.z = height + 4.0f;
             numPathPoints = OptimizePath(root, bestNode, obstacles, numObstacles, optimizedPath);
-            for (i = 0; i < numPathPoints - 1; i++) {
+            for (i = 0; i < (numPathPoints - 1); i++) {
                 start.oSet(optimizedPath[i]);
                 end.oSet(optimizedPath[i + 1]);
                 gameRenderWorld.DebugArrow(colorCyan, start, end, 1);
@@ -1015,8 +1020,8 @@ public class AI_pathing {
      ============
      */
     static boolean PathTrace(final idEntity ent, final idAAS aas, final idVec3 start, final idVec3 end, int stopEvent, pathTrace_s trace, predictedPath_s path) {
-        trace_s[] clipTrace = {new trace_s()};
-        aasTrace_s aasTrace = new aasTrace_s();
+        final trace_s[] clipTrace = {new trace_s()};
+        final aasTrace_s aasTrace = new aasTrace_s();
 
 //	memset( &trace, 0, sizeof( trace ) );TODO:
         if (NOT(aas) || NOT(aas.GetSettings())) {
@@ -1116,22 +1121,22 @@ public class AI_pathing {
 
         float angle;		// angle in degrees in the range [-180, 180]
         float time;		// time it takes before the projectile arrives
-    };
+    }
 
     static int Ballistics(final idVec3 start, final idVec3 end, float speed, float gravity, ballistics_s[] bal/*[2]*/) {
         int n, i;
         float x, y, a, b, c, d, sqrtd, inva;
-        float[] p = new float[2];
+        final float[] p = new float[2];
 
         x = (end.ToVec2().oMinus(start.ToVec2())).Length();
         y = end.oGet(2) - start.oGet(2);
 
-        a = 4.0f * y * y + 4.0f * x * x;
-        b = -4.0f * speed * speed - 4.0f * y * gravity;
+        a = (4.0f * y * y) + (4.0f * x * x);
+        b = (-4.0f * speed * speed) - (4.0f * y * gravity);
         c = gravity * gravity;
 
-        d = b * b - 4.0f * a * c;
-        if (d <= 0.0f || a == 0.0f) {
+        d = (b * b) - (4.0f * a * c);
+        if ((d <= 0.0f) || (a == 0.0f)) {
             return 0;
         }
         sqrtd = idMath.Sqrt(d);
@@ -1144,7 +1149,7 @@ public class AI_pathing {
                 continue;
             }
             d = idMath.Sqrt(p[i]);
-            bal[n].angle = (float) atan2(0.5f * (2.0f * y * p[i] - gravity) / d, d * x);
+            bal[n].angle = (float) atan2((0.5f * ((2.0f * y * p[i]) - gravity)) / d, d * x);
             bal[n].time = (float) (x / (cos(bal[n].angle) * speed));
             bal[n].angle = idMath.AngleNormalize180(RAD2DEG(bal[n].angle));
             n++;
@@ -1165,7 +1170,7 @@ public class AI_pathing {
 
         t = zVel / gravity;
         // maximum height of projectile
-        maxHeight = start.z - 0.5f * gravity * (t * t);
+        maxHeight = start.z - (0.5f * gravity * (t * t));
 
         return maxHeight;
     }

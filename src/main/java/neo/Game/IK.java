@@ -70,51 +70,51 @@ public class IK /*ea*/ {
         //
 
         public idIK() {
-            ik_activate = false;
-            initialized = false;
-            self = null;
-            animator = null;
-            modifiedAnim = 0;
-            modelOffset = new idVec3();
+            this.ik_activate = false;
+            this.initialized = false;
+            this.self = null;
+            this.animator = null;
+            this.modifiedAnim = 0;
+            this.modelOffset = new idVec3();
         }
         // virtual					~idIK( void );
 
         public void Save(idSaveGame savefile) {
-            savefile.WriteBool(initialized);
-            savefile.WriteBool(ik_activate);
-            savefile.WriteObject(self);
-            savefile.WriteString(animator != null && animator.GetAnim(modifiedAnim) != null ? animator.GetAnim(modifiedAnim).Name() : "");
-            savefile.WriteVec3(modelOffset);
+            savefile.WriteBool(this.initialized);
+            savefile.WriteBool(this.ik_activate);
+            savefile.WriteObject(this.self);
+            savefile.WriteString((this.animator != null) && (this.animator.GetAnim(this.modifiedAnim) != null) ? this.animator.GetAnim(this.modifiedAnim).Name() : "");
+            savefile.WriteVec3(this.modelOffset);
         }
 
         public void Restore(idRestoreGame savefile) {
-            idStr anim = new idStr();
+            final idStr anim = new idStr();
 
-            initialized = savefile.ReadBool();
-            ik_activate = savefile.ReadBool();
-            savefile.ReadObject(/*reinterpret_cast<idClass *&>*/self);
+            this.initialized = savefile.ReadBool();
+            this.ik_activate = savefile.ReadBool();
+            savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/self);
             savefile.ReadString(anim);
-            savefile.ReadVec3(modelOffset);
+            savefile.ReadVec3(this.modelOffset);
 
-            if (self != null) {
-                animator = self.GetAnimator();
-                if (animator == null || animator.ModelDef() == null) {
+            if (this.self != null) {
+                this.animator = this.self.GetAnimator();
+                if ((this.animator == null) || (this.animator.ModelDef() == null)) {
                     gameLocal.Warning("idIK::Restore: IK for entity '%s' at (%s) has no model set.",
-                            self.name, self.GetPhysics().GetOrigin().ToString(0));
+                            this.self.name, this.self.GetPhysics().GetOrigin().ToString(0));
                 }
-                modifiedAnim = animator.GetAnim(anim.toString());
-                if (modifiedAnim == 0) {
+                this.modifiedAnim = this.animator.GetAnim(anim.toString());
+                if (this.modifiedAnim == 0) {
                     gameLocal.Warning("idIK::Restore: IK for entity '%s' at (%s) has no modified animation.",
-                            self.name, self.GetPhysics().GetOrigin().ToString(0));
+                            this.self.name, this.self.GetPhysics().GetOrigin().ToString(0));
                 }
             } else {
-                animator = null;
-                modifiedAnim = 0;
+                this.animator = null;
+                this.modifiedAnim = 0;
             }
         }
 
         public boolean IsInitialized() {
-            return initialized && ik_enable.GetBool();
+            return this.initialized && ik_enable.GetBool();
         }
 
         public boolean Init(idEntity self, final String anim, final idVec3 modelOffset) {
@@ -126,25 +126,25 @@ public class IK /*ea*/ {
 
             this.self = self;
 
-            animator = self.GetAnimator();
-            if (animator == null || animator.ModelDef() == null) {
+            this.animator = self.GetAnimator();
+            if ((this.animator == null) || (this.animator.ModelDef() == null)) {
                 gameLocal.Warning("idIK::Init: IK for entity '%s' at (%s) has no model set.",
                         self.name, self.GetPhysics().GetOrigin().ToString(0));
                 return false;
             }
-            if (animator.ModelDef().ModelHandle() == null) {
+            if (this.animator.ModelDef().ModelHandle() == null) {
                 gameLocal.Warning("idIK::Init: IK for entity '%s' at (%s) uses default model.",
                         self.name, self.GetPhysics().GetOrigin().ToString(0));
                 return false;
             }
-            model = animator.ModelHandle();
+            model = this.animator.ModelHandle();
             if (model == null) {
                 gameLocal.Warning("idIK::Init: IK for entity '%s' at (%s) has no model set.",
                         self.name, self.GetPhysics().GetOrigin().ToString(0));
                 return false;
             }
-            modifiedAnim = animator.GetAnim(anim);
-            if (modifiedAnim == 0) {
+            this.modifiedAnim = this.animator.GetAnim(anim);
+            if (this.modifiedAnim == 0) {
                 gameLocal.Warning("idIK::Init: IK for entity '%s' at (%s) has no modified animation.",
                         self.name, self.GetPhysics().GetOrigin().ToString(0));
                 return false;
@@ -159,7 +159,7 @@ public class IK /*ea*/ {
         }
 
         public void ClearJointMods() {
-            ik_activate = false;
+            this.ik_activate = false;
         }
 
         public boolean SolveTwoBones(final idVec3 startPos, final idVec3 endPos, final idVec3 dir, float len0, float len1, idVec3 jointPos) {
@@ -172,7 +172,7 @@ public class IK /*ea*/ {
             length = lengthInv * lengthSqr;
 
             // if the start and end position are too far out or too close to each other
-            if (length > len0 + len1 || length < idMath.Fabs(len0 - len1)) {
+            if ((length > (len0 + len1)) || (length < idMath.Fabs(len0 - len1))) {
                 jointPos.oSet(startPos.oPlus(vec0.oMultiply(0.5f)));
                 return false;
             }
@@ -181,8 +181,8 @@ public class IK /*ea*/ {
             vec1 = dir.oMinus(vec0.oMultiply(dir.oMultiply(vec0)));
             vec1.Normalize();
 
-            x = (length * length + len0 * len0 - len1 * len1) * (0.5f * lengthInv);
-            y = idMath.Sqrt(len0 * len0 - x * x);
+            x = (((length * length) + (len0 * len0)) - (len1 * len1)) * (0.5f * lengthInv);
+            y = idMath.Sqrt((len0 * len0) - (x * x));
 
             jointPos.oSet(startPos.oPlus(vec0.oMultiply(x).oPlus(vec1.oMultiply(y))));
 
@@ -200,7 +200,7 @@ public class IK /*ea*/ {
             return length;
         }
 
-    };
+    }
 
     /*
      ===============================================================================
@@ -265,44 +265,44 @@ public class IK /*ea*/ {
         public idIK_Walk() {
             int i;
 
-            initialized = false;
-            footModel = null;
-            numLegs = 0;
-            enabledLegs = 0;
+            this.initialized = false;
+            this.footModel = null;
+            this.numLegs = 0;
+            this.enabledLegs = 0;
             for (i = 0; i < MAX_LEGS; i++) {
-                footJoints[i] = INVALID_JOINT;
-                ankleJoints[i] = INVALID_JOINT;
-                kneeJoints[i] = INVALID_JOINT;
-                hipJoints[i] = INVALID_JOINT;
-                dirJoints[i] = INVALID_JOINT;
-                hipForward[i] = new idVec3();
-                kneeForward[i] = new idVec3();
-                upperLegLength[i] = 0;
-                lowerLegLength[i] = 0;
-                upperLegToHipJoint[i] = getMat3_identity();
-                lowerLegToKneeJoint[i] = getMat3_identity();
-                oldAnkleHeights[i] = 0;
+                this.footJoints[i] = INVALID_JOINT;
+                this.ankleJoints[i] = INVALID_JOINT;
+                this.kneeJoints[i] = INVALID_JOINT;
+                this.hipJoints[i] = INVALID_JOINT;
+                this.dirJoints[i] = INVALID_JOINT;
+                this.hipForward[i] = new idVec3();
+                this.kneeForward[i] = new idVec3();
+                this.upperLegLength[i] = 0;
+                this.lowerLegLength[i] = 0;
+                this.upperLegToHipJoint[i] = getMat3_identity();
+                this.lowerLegToKneeJoint[i] = getMat3_identity();
+                this.oldAnkleHeights[i] = 0;
             }
-            waistJoint = INVALID_JOINT;
+            this.waistJoint = INVALID_JOINT;
 
-            smoothing = 0.75f;
-            waistSmoothing = 0.5f;
-            footShift = 0;
-            waistShift = 0;
-            minWaistFloorDist = 0;
-            minWaistAnkleDist = 0;
-            footUpTrace = 32.0f;
-            footDownTrace = 32.0f;
-            tiltWaist = false;
-            usePivot = false;
+            this.smoothing = 0.75f;
+            this.waistSmoothing = 0.5f;
+            this.footShift = 0;
+            this.waistShift = 0;
+            this.minWaistFloorDist = 0;
+            this.minWaistAnkleDist = 0;
+            this.footUpTrace = 32.0f;
+            this.footDownTrace = 32.0f;
+            this.tiltWaist = false;
+            this.usePivot = false;
 
-            pivotFoot = -1;
-            pivotYaw = 0;
-            pivotPos = new idVec3();
+            this.pivotFoot = -1;
+            this.pivotYaw = 0;
+            this.pivotPos = new idVec3();
 
-            oldHeightsValid = false;
-            oldWaistHeight = 0;
-            waistOffset = new idVec3();
+            this.oldHeightsValid = false;
+            this.oldWaistHeight = 0;
+            this.waistOffset = new idVec3();
         }
         // virtual					~idIK_Walk( void );
 
@@ -312,68 +312,68 @@ public class IK /*ea*/ {
 
             super.Save(savefile);
 
-            savefile.WriteClipModel(footModel);
+            savefile.WriteClipModel(this.footModel);
 
-            savefile.WriteInt(numLegs);
-            savefile.WriteInt(enabledLegs);
+            savefile.WriteInt(this.numLegs);
+            savefile.WriteInt(this.enabledLegs);
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteInt(footJoints[i]);
+                savefile.WriteInt(this.footJoints[i]);
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteInt(ankleJoints[i]);
+                savefile.WriteInt(this.ankleJoints[i]);
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteInt(kneeJoints[i]);
+                savefile.WriteInt(this.kneeJoints[i]);
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteInt(hipJoints[i]);
+                savefile.WriteInt(this.hipJoints[i]);
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteInt(dirJoints[i]);
+                savefile.WriteInt(this.dirJoints[i]);
             }
-            savefile.WriteInt(waistJoint);
-
-            for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteVec3(hipForward[i]);
-            }
-            for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteVec3(kneeForward[i]);
-            }
+            savefile.WriteInt(this.waistJoint);
 
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteFloat(upperLegLength[i]);
+                savefile.WriteVec3(this.hipForward[i]);
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteFloat(lowerLegLength[i]);
+                savefile.WriteVec3(this.kneeForward[i]);
             }
 
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteMat3(upperLegToHipJoint[i]);
+                savefile.WriteFloat(this.upperLegLength[i]);
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteMat3(lowerLegToKneeJoint[i]);
+                savefile.WriteFloat(this.lowerLegLength[i]);
             }
 
-            savefile.WriteFloat(smoothing);
-            savefile.WriteFloat(waistSmoothing);
-            savefile.WriteFloat(footShift);
-            savefile.WriteFloat(waistShift);
-            savefile.WriteFloat(minWaistFloorDist);
-            savefile.WriteFloat(minWaistAnkleDist);
-            savefile.WriteFloat(footUpTrace);
-            savefile.WriteFloat(footDownTrace);
-            savefile.WriteBool(tiltWaist);
-            savefile.WriteBool(usePivot);
-
-            savefile.WriteInt(pivotFoot);
-            savefile.WriteFloat(pivotYaw);
-            savefile.WriteVec3(pivotPos);
-            savefile.WriteBool(oldHeightsValid);
-            savefile.WriteFloat(oldWaistHeight);
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.WriteFloat(oldAnkleHeights[i]);
+                savefile.WriteMat3(this.upperLegToHipJoint[i]);
             }
-            savefile.WriteVec3(waistOffset);
+            for (i = 0; i < MAX_LEGS; i++) {
+                savefile.WriteMat3(this.lowerLegToKneeJoint[i]);
+            }
+
+            savefile.WriteFloat(this.smoothing);
+            savefile.WriteFloat(this.waistSmoothing);
+            savefile.WriteFloat(this.footShift);
+            savefile.WriteFloat(this.waistShift);
+            savefile.WriteFloat(this.minWaistFloorDist);
+            savefile.WriteFloat(this.minWaistAnkleDist);
+            savefile.WriteFloat(this.footUpTrace);
+            savefile.WriteFloat(this.footDownTrace);
+            savefile.WriteBool(this.tiltWaist);
+            savefile.WriteBool(this.usePivot);
+
+            savefile.WriteInt(this.pivotFoot);
+            savefile.WriteFloat(this.pivotYaw);
+            savefile.WriteVec3(this.pivotPos);
+            savefile.WriteBool(this.oldHeightsValid);
+            savefile.WriteFloat(this.oldWaistHeight);
+            for (i = 0; i < MAX_LEGS; i++) {
+                savefile.WriteFloat(this.oldAnkleHeights[i]);
+            }
+            savefile.WriteVec3(this.waistOffset);
         }
 
         @Override
@@ -382,68 +382,68 @@ public class IK /*ea*/ {
 
             super.Restore(savefile);
 
-            savefile.ReadClipModel(footModel);
+            savefile.ReadClipModel(this.footModel);
 
-            numLegs = savefile.ReadInt();
-            enabledLegs = savefile.ReadInt();
+            this.numLegs = savefile.ReadInt();
+            this.enabledLegs = savefile.ReadInt();
             for (i = 0; i < MAX_LEGS; i++) {
-                footJoints[i] = savefile.ReadInt();
+                this.footJoints[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                ankleJoints[i] = savefile.ReadInt();
+                this.ankleJoints[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                kneeJoints[i] = savefile.ReadInt();
+                this.kneeJoints[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                hipJoints[i] = savefile.ReadInt();
+                this.hipJoints[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                dirJoints[i] = savefile.ReadInt();
+                this.dirJoints[i] = savefile.ReadInt();
             }
-            waistJoint = savefile.ReadInt();
-
-            for (i = 0; i < MAX_LEGS; i++) {
-                savefile.ReadVec3(hipForward[i]);
-            }
-            for (i = 0; i < MAX_LEGS; i++) {
-                savefile.ReadVec3(kneeForward[i]);
-            }
+            this.waistJoint = savefile.ReadInt();
 
             for (i = 0; i < MAX_LEGS; i++) {
-                upperLegLength[i] = savefile.ReadFloat();
+                savefile.ReadVec3(this.hipForward[i]);
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                lowerLegLength[i] = savefile.ReadFloat();
+                savefile.ReadVec3(this.kneeForward[i]);
             }
 
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.ReadMat3(upperLegToHipJoint[i]);
+                this.upperLegLength[i] = savefile.ReadFloat();
             }
             for (i = 0; i < MAX_LEGS; i++) {
-                savefile.ReadMat3(lowerLegToKneeJoint[i]);
+                this.lowerLegLength[i] = savefile.ReadFloat();
             }
 
-            smoothing = savefile.ReadFloat();
-            waistSmoothing = savefile.ReadFloat();
-            footShift = savefile.ReadFloat();
-            waistShift = savefile.ReadFloat();
-            minWaistFloorDist = savefile.ReadFloat();
-            minWaistAnkleDist = savefile.ReadFloat();
-            footUpTrace = savefile.ReadFloat();
-            footDownTrace = savefile.ReadFloat();
-            tiltWaist = savefile.ReadBool();
-            usePivot = savefile.ReadBool();
-
-            pivotFoot = savefile.ReadInt();
-            pivotYaw = savefile.ReadFloat();
-            savefile.ReadVec3(pivotPos);
-            oldHeightsValid = savefile.ReadBool();
-            oldWaistHeight = savefile.ReadFloat();
             for (i = 0; i < MAX_LEGS; i++) {
-                oldAnkleHeights[i] = savefile.ReadFloat();
+                savefile.ReadMat3(this.upperLegToHipJoint[i]);
             }
-            savefile.ReadVec3(waistOffset);
+            for (i = 0; i < MAX_LEGS; i++) {
+                savefile.ReadMat3(this.lowerLegToKneeJoint[i]);
+            }
+
+            this.smoothing = savefile.ReadFloat();
+            this.waistSmoothing = savefile.ReadFloat();
+            this.footShift = savefile.ReadFloat();
+            this.waistShift = savefile.ReadFloat();
+            this.minWaistFloorDist = savefile.ReadFloat();
+            this.minWaistAnkleDist = savefile.ReadFloat();
+            this.footUpTrace = savefile.ReadFloat();
+            this.footDownTrace = savefile.ReadFloat();
+            this.tiltWaist = savefile.ReadBool();
+            this.usePivot = savefile.ReadBool();
+
+            this.pivotFoot = savefile.ReadInt();
+            this.pivotYaw = savefile.ReadFloat();
+            savefile.ReadVec3(this.pivotPos);
+            this.oldHeightsValid = savefile.ReadBool();
+            this.oldWaistHeight = savefile.ReadFloat();
+            for (i = 0; i < MAX_LEGS; i++) {
+                this.oldAnkleHeights[i] = savefile.ReadFloat();
+            }
+            savefile.ReadVec3(this.waistOffset);
         }
         private static final idVec3[] footWinding/*[4]*/ = {
                     new idVec3(1.0f, 1.0f, 0),
@@ -456,18 +456,19 @@ public class IK /*ea*/ {
         public boolean Init(idEntity self, final String anim, final idVec3 modelOffset) {
             int i;
             float footSize;
-            idVec3[] verts = new idVec3[4];
-            idTraceModel trm = new idTraceModel();
+            final idVec3[] verts = new idVec3[4];
+            final idTraceModel trm = new idTraceModel();
             String jointName;
             idVec3 dir = new idVec3(), ankleOrigin, kneeOrigin, hipOrigin, dirOrigin;
-            idMat3 axis = new idMat3(), ankleAxis, kneeAxis, hipAxis;
+            final idMat3 axis = new idMat3();
+			idMat3 ankleAxis, kneeAxis, hipAxis;
 
             if (null == self) {
                 return false;
             }
 
-            numLegs = Min(self.spawnArgs.GetInt("ik_numLegs", "0"), MAX_LEGS);
-            if (numLegs == 0) {
+            this.numLegs = Min(self.spawnArgs.GetInt("ik_numLegs", "0"), MAX_LEGS);
+            if (this.numLegs == 0) {
                 return true;
             }
 
@@ -475,96 +476,96 @@ public class IK /*ea*/ {
                 return false;
             }
 
-            int numJoints = animator.NumJoints();
-            idJointMat[] joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
+            final int numJoints = this.animator.NumJoints();
+            final idJointMat[] joints = Stream.generate(idJointMat::new).limit(numJoints).toArray(idJointMat[]::new);
 
             // create the animation frame used to setup the IK
-            GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset().oPlus(modelOffset), animator.RemoveOrigin());
+            GameEdit.gameEdit.ANIM_CreateAnimFrame(this.animator.ModelHandle(), this.animator.GetAnim(this.modifiedAnim).MD5Anim(0), numJoints, joints, 1, this.animator.ModelDef().GetVisualOffset().oPlus(modelOffset), this.animator.RemoveOrigin());
 
-            enabledLegs = 0;
+            this.enabledLegs = 0;
 
             // get all the joints
-            for (i = 0; i < numLegs; i++) {
+            for (i = 0; i < this.numLegs; i++) {
 
                 jointName = self.spawnArgs.GetString(va("ik_foot%d", i + 1));
-                footJoints[i] = animator.GetJointHandle(jointName);
-                if (footJoints[i] == INVALID_JOINT) {
+                this.footJoints[i] = this.animator.GetJointHandle(jointName);
+                if (this.footJoints[i] == INVALID_JOINT) {
                     gameLocal.Error("idIK_Walk::Init: invalid foot joint '%s'", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_ankle%d", i + 1));
-                ankleJoints[i] = animator.GetJointHandle(jointName);
-                if (ankleJoints[i] == INVALID_JOINT) {
+                this.ankleJoints[i] = this.animator.GetJointHandle(jointName);
+                if (this.ankleJoints[i] == INVALID_JOINT) {
                     gameLocal.Error("idIK_Walk::Init: invalid ankle joint '%s'", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_knee%d", i + 1));
-                kneeJoints[i] = animator.GetJointHandle(jointName);
-                if (kneeJoints[i] == INVALID_JOINT) {
+                this.kneeJoints[i] = this.animator.GetJointHandle(jointName);
+                if (this.kneeJoints[i] == INVALID_JOINT) {
                     gameLocal.Error("idIK_Walk::Init: invalid knee joint '%s'\n", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_hip%d", i + 1));
-                hipJoints[i] = animator.GetJointHandle(jointName);
-                if (hipJoints[i] == INVALID_JOINT) {
+                this.hipJoints[i] = this.animator.GetJointHandle(jointName);
+                if (this.hipJoints[i] == INVALID_JOINT) {
                     gameLocal.Error("idIK_Walk::Init: invalid hip joint '%s'\n", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_dir%d", i + 1));
-                dirJoints[i] = animator.GetJointHandle(jointName);
+                this.dirJoints[i] = this.animator.GetJointHandle(jointName);
 
-                enabledLegs |= 1 << i;
+                this.enabledLegs |= 1 << i;
             }
 
             jointName = self.spawnArgs.GetString("ik_waist");
-            waistJoint = animator.GetJointHandle(jointName);
-            if (waistJoint == INVALID_JOINT) {
+            this.waistJoint = this.animator.GetJointHandle(jointName);
+            if (this.waistJoint == INVALID_JOINT) {
                 gameLocal.Error("idIK_Walk::Init: invalid waist joint '%s'\n", jointName);
             }
 
             // get the leg bone lengths and rotation matrices
-            for (i = 0; i < numLegs; i++) {
-                oldAnkleHeights[i] = 0;
+            for (i = 0; i < this.numLegs; i++) {
+                this.oldAnkleHeights[i] = 0;
 
-                ankleAxis = joints[ ankleJoints[ i]].ToMat3();
-                ankleOrigin = joints[ ankleJoints[ i]].ToVec3();
+                ankleAxis = joints[ this.ankleJoints[ i]].ToMat3();
+                ankleOrigin = joints[ this.ankleJoints[ i]].ToVec3();
 
-                kneeAxis = joints[ kneeJoints[ i]].ToMat3();
-                kneeOrigin = joints[ kneeJoints[ i]].ToVec3();
+                kneeAxis = joints[ this.kneeJoints[ i]].ToMat3();
+                kneeOrigin = joints[ this.kneeJoints[ i]].ToVec3();
 
-                hipAxis = joints[ hipJoints[ i]].ToMat3();
-                hipOrigin = joints[ hipJoints[ i]].ToVec3();
+                hipAxis = joints[ this.hipJoints[ i]].ToMat3();
+                hipOrigin = joints[ this.hipJoints[ i]].ToVec3();
 
                 // get the IK direction
-                if (dirJoints[i] != INVALID_JOINT) {
-                    dirOrigin = joints[ dirJoints[ i]].ToVec3();
+                if (this.dirJoints[i] != INVALID_JOINT) {
+                    dirOrigin = joints[ this.dirJoints[ i]].ToVec3();
                     dir = dirOrigin.oMinus(kneeOrigin);
                 } else {
                     dir.Set(1.0f, 0, 0);
                 }
 
-                hipForward[i] = dir.oMultiply(hipAxis.Transpose());
-                kneeForward[i] = dir.oMultiply(kneeAxis.Transpose());
+                this.hipForward[i] = dir.oMultiply(hipAxis.Transpose());
+                this.kneeForward[i] = dir.oMultiply(kneeAxis.Transpose());
 
                 // conversion from upper leg bone axis to hip joint axis
-                upperLegLength[i] = GetBoneAxis(hipOrigin, kneeOrigin, dir, axis);
-                upperLegToHipJoint[i] = hipAxis.oMultiply(axis.Transpose());
+                this.upperLegLength[i] = GetBoneAxis(hipOrigin, kneeOrigin, dir, axis);
+                this.upperLegToHipJoint[i] = hipAxis.oMultiply(axis.Transpose());
 
                 // conversion from lower leg bone axis to knee joint axis
-                lowerLegLength[i] = GetBoneAxis(kneeOrigin, ankleOrigin, dir, axis);
-                lowerLegToKneeJoint[i] = kneeAxis.oMultiply(axis.Transpose());
+                this.lowerLegLength[i] = GetBoneAxis(kneeOrigin, ankleOrigin, dir, axis);
+                this.lowerLegToKneeJoint[i] = kneeAxis.oMultiply(axis.Transpose());
             }
 
-            smoothing = self.spawnArgs.GetFloat("ik_smoothing", "0.75");
-            waistSmoothing = self.spawnArgs.GetFloat("ik_waistSmoothing", "0.75");
-            footShift = self.spawnArgs.GetFloat("ik_footShift", "0");
-            waistShift = self.spawnArgs.GetFloat("ik_waistShift", "0");
-            minWaistFloorDist = self.spawnArgs.GetFloat("ik_minWaistFloorDist", "0");
-            minWaistAnkleDist = self.spawnArgs.GetFloat("ik_minWaistAnkleDist", "0");
-            footUpTrace = self.spawnArgs.GetFloat("ik_footUpTrace", "32");
-            footDownTrace = self.spawnArgs.GetFloat("ik_footDownTrace", "32");
-            tiltWaist = self.spawnArgs.GetBool("ik_tiltWaist", "0");
-            usePivot = self.spawnArgs.GetBool("ik_usePivot", "0");
+            this.smoothing = self.spawnArgs.GetFloat("ik_smoothing", "0.75");
+            this.waistSmoothing = self.spawnArgs.GetFloat("ik_waistSmoothing", "0.75");
+            this.footShift = self.spawnArgs.GetFloat("ik_footShift", "0");
+            this.waistShift = self.spawnArgs.GetFloat("ik_waistShift", "0");
+            this.minWaistFloorDist = self.spawnArgs.GetFloat("ik_minWaistFloorDist", "0");
+            this.minWaistAnkleDist = self.spawnArgs.GetFloat("ik_minWaistAnkleDist", "0");
+            this.footUpTrace = self.spawnArgs.GetFloat("ik_footUpTrace", "32");
+            this.footDownTrace = self.spawnArgs.GetFloat("ik_footDownTrace", "32");
+            this.tiltWaist = self.spawnArgs.GetBool("ik_tiltWaist", "0");
+            this.usePivot = self.spawnArgs.GetBool("ik_usePivot", "0");
 
             // setup a clip model for the feet
             footSize = self.spawnArgs.GetFloat("ik_footSize", "4") * 0.5f;
@@ -573,10 +574,10 @@ public class IK /*ea*/ {
                     verts[i] = footWinding[i].oMultiply(footSize);
                 }
                 trm.SetupPolygon(verts, 4);
-                footModel = new idClipModel(trm);
+                this.footModel = new idClipModel(trm);
             }
 
-            initialized = true;
+            this.initialized = true;
 
             return true;
         }
@@ -585,39 +586,41 @@ public class IK /*ea*/ {
         public void Evaluate() {
             int i, newPivotFoot = 0;
             float modelHeight, jointHeight, lowestHeight;
-            float[] floorHeights = new float[MAX_LEGS];
+            final float[] floorHeights = new float[MAX_LEGS];
             float shift, smallestShift, newHeight, step, newPivotYaw, height, largestAnkleHeight;
             idVec3 modelOrigin, normal, hipDir, kneeDir, start, end;
-            idVec3[] jointOrigins = new idVec3[MAX_LEGS];
-            idVec3 footOrigin = new idVec3(), ankleOrigin = new idVec3(),
-                    kneeOrigin = new idVec3(), hipOrigin = new idVec3(), waistOrigin = new idVec3();
-            idMat3 modelAxis, waistAxis = new idMat3(), axis = new idMat3();
-            idMat3[] hipAxis = new idMat3[MAX_LEGS], kneeAxis = new idMat3[MAX_LEGS], ankleAxis = new idMat3[MAX_LEGS];
-            trace_s[] results = {null};
+            final idVec3[] jointOrigins = new idVec3[MAX_LEGS];
+            final idVec3 footOrigin = new idVec3(), ankleOrigin = new idVec3(),
+                    kneeOrigin = new idVec3();
+			idVec3 hipOrigin = new idVec3(), waistOrigin = new idVec3();
+            idMat3 modelAxis;
+			final idMat3 waistAxis = new idMat3(), axis = new idMat3();
+            final idMat3[] hipAxis = new idMat3[MAX_LEGS], kneeAxis = new idMat3[MAX_LEGS], ankleAxis = new idMat3[MAX_LEGS];
+            final trace_s[] results = {null};
 
-            if (null == self || !gameLocal.isNewFrame) {
+            if ((null == this.self) || !gameLocal.isNewFrame) {
                 return;
             }
 
             // if no IK enabled on any legs
-            if (0 == enabledLegs) {//TODO:make booleans out of ints that are boolean anyways. damn you C programmers!!
+            if (0 == this.enabledLegs) {//TODO:make booleans out of ints that are boolean anyways. damn you C programmers!!
                 return;
             }
 
-            normal = self.GetPhysics().GetGravityNormal().oNegative();
-            modelOrigin = self.GetPhysics().GetOrigin();
-            modelAxis = self.GetRenderEntity().axis;
+            normal = this.self.GetPhysics().GetGravityNormal().oNegative();
+            modelOrigin = this.self.GetPhysics().GetOrigin();
+            modelAxis = this.self.GetRenderEntity().axis;
             modelHeight = modelOrigin.oMultiply(normal);
 
-            modelOrigin.oPluSet(modelOffset.oMultiply(modelAxis));
+            modelOrigin.oPluSet(this.modelOffset.oMultiply(modelAxis));
 
             // create frame without joint mods
-            animator.CreateFrame(gameLocal.time, false);
+            this.animator.CreateFrame(gameLocal.time, false);
 
             // get the joint positions for the feet
             lowestHeight = idMath.INFINITY;
-            for (i = 0; i < numLegs; i++) {
-                animator.GetJointTransform(footJoints[i], gameLocal.time, footOrigin, axis);
+            for (i = 0; i < this.numLegs; i++) {
+                this.animator.GetJointTransform(this.footJoints[i], gameLocal.time, footOrigin, axis);
                 jointOrigins[i] = modelOrigin.oPlus(footOrigin.oMultiply(modelAxis));
                 jointHeight = jointOrigins[i].oMultiply(normal);
                 if (jointHeight < lowestHeight) {
@@ -626,53 +629,53 @@ public class IK /*ea*/ {
                 }
             }
 
-            if (usePivot) {
+            if (this.usePivot) {
 
                 newPivotYaw = modelAxis.oGet(0).ToYaw();
 
                 // change pivot foot
-                if (newPivotFoot != pivotFoot || idMath.Fabs(idMath.AngleNormalize180(newPivotYaw - pivotYaw)) > 30.0f) {
-                    pivotFoot = newPivotFoot;
-                    pivotYaw = newPivotYaw;
-                    animator.GetJointTransform(footJoints[pivotFoot], gameLocal.time, footOrigin, axis);
-                    pivotPos = modelOrigin.oPlus(footOrigin.oMultiply(modelAxis));
+                if ((newPivotFoot != this.pivotFoot) || (idMath.Fabs(idMath.AngleNormalize180(newPivotYaw - this.pivotYaw)) > 30.0f)) {
+                    this.pivotFoot = newPivotFoot;
+                    this.pivotYaw = newPivotYaw;
+                    this.animator.GetJointTransform(this.footJoints[this.pivotFoot], gameLocal.time, footOrigin, axis);
+                    this.pivotPos = modelOrigin.oPlus(footOrigin.oMultiply(modelAxis));
                 }
 
                 // keep pivot foot in place
-                jointOrigins[pivotFoot] = pivotPos;
+                jointOrigins[this.pivotFoot] = this.pivotPos;
             }
 
             // get the floor heights for the feet
-            for (i = 0; i < numLegs; i++) {
+            for (i = 0; i < this.numLegs; i++) {
 
-                if (0 == (enabledLegs & (1 << i))) {
+                if (0 == (this.enabledLegs & (1 << i))) {
                     continue;
                 }
 
-                start = jointOrigins[i].oPlus(normal.oMultiply(footUpTrace));
-                end = jointOrigins[i].oMinus(normal.oMultiply(footDownTrace));
-                gameLocal.clip.Translation(results, start, end, footModel, getMat3_identity(), CONTENTS_SOLID | CONTENTS_IKCLIP, self);
+                start = jointOrigins[i].oPlus(normal.oMultiply(this.footUpTrace));
+                end = jointOrigins[i].oMinus(normal.oMultiply(this.footDownTrace));
+                gameLocal.clip.Translation(results, start, end, this.footModel, getMat3_identity(), CONTENTS_SOLID | CONTENTS_IKCLIP, this.self);
                 floorHeights[i] = results[0].endpos.oMultiply(normal);
 
-                if (ik_debug.GetBool() && footModel != null) {
-                    idFixedWinding w = new idFixedWinding();
-                    for (int j = 0; j < footModel.GetTraceModel().numVerts; j++) {
-                        w.oPluSet(footModel.GetTraceModel().verts[j]);
+                if (ik_debug.GetBool() && (this.footModel != null)) {
+                    final idFixedWinding w = new idFixedWinding();
+                    for (int j = 0; j < this.footModel.GetTraceModel().numVerts; j++) {
+                        w.oPluSet(this.footModel.GetTraceModel().verts[j]);
                     }
                     gameRenderWorld.DebugWinding(colorRed, w, results[0].endpos, results[0].endAxis);
                 }
             }
 
-            final idPhysics phys = self.GetPhysics();
+            final idPhysics phys = this.self.GetPhysics();
 
             // test whether or not the character standing on the ground
-            boolean onGround = phys.HasGroundContacts();
+            final boolean onGround = phys.HasGroundContacts();
 
             // test whether or not the character is standing on a plat
             boolean onPlat = false;
             for (i = 0; i < phys.GetNumContacts(); i++) {
-                idEntity ent = gameLocal.entities[ phys.GetContact(i).entityNum];
-                if (ent != null && ent.IsType(idPlat.class)) {
+                final idEntity ent = gameLocal.entities[ phys.GetContact(i).entityNum];
+                if ((ent != null) && ent.IsType(idPlat.class)) {
                     onPlat = true;
                     break;
                 }
@@ -681,10 +684,10 @@ public class IK /*ea*/ {
             // adjust heights of the ankles
             smallestShift = idMath.INFINITY;
             largestAnkleHeight = -idMath.INFINITY;
-            for (i = 0; i < numLegs; i++) {
+            for (i = 0; i < this.numLegs; i++) {
 
-                if (onGround && (enabledLegs & (1 << i)) != 0) {
-                    shift = floorHeights[i] - modelHeight + footShift;
+                if (onGround && ((this.enabledLegs & (1 << i)) != 0)) {
+                    shift = (floorHeights[i] - modelHeight) + this.footShift;
                 } else {
                     shift = 0;
                 }
@@ -694,14 +697,14 @@ public class IK /*ea*/ {
                 }
 
                 ankleAxis[i] = new idMat3();
-                animator.GetJointTransform(ankleJoints[i], gameLocal.time, ankleOrigin, ankleAxis[i]);
+                this.animator.GetJointTransform(this.ankleJoints[i], gameLocal.time, ankleOrigin, ankleAxis[i]);
                 jointOrigins[i] = modelOrigin.oPlus(ankleOrigin.oMultiply(modelAxis));
 
                 height = jointOrigins[i].oMultiply(normal);
 
-                if (oldHeightsValid && !onPlat) {
-                    step = height + shift - oldAnkleHeights[i];
-                    shift -= smoothing * step;
+                if (this.oldHeightsValid && !onPlat) {
+                    step = (height + shift) - this.oldAnkleHeights[i];
+                    shift -= this.smoothing * step;
                 }
 
                 newHeight = height + shift;
@@ -709,65 +712,65 @@ public class IK /*ea*/ {
                     largestAnkleHeight = newHeight;
                 }
 
-                oldAnkleHeights[i] = newHeight;
+                this.oldAnkleHeights[i] = newHeight;
 
                 jointOrigins[i].oPluSet(normal.oMultiply(shift));
             }
 
-            animator.GetJointTransform(waistJoint, gameLocal.time, waistOrigin, waistAxis);
+            this.animator.GetJointTransform(this.waistJoint, gameLocal.time, waistOrigin, waistAxis);
             waistOrigin = modelOrigin.oPlus(waistOrigin.oMultiply(modelAxis));
 
             // adjust position of the waist
-            waistOffset = normal.oMultiply(smallestShift + waistShift);
+            this.waistOffset = normal.oMultiply(smallestShift + this.waistShift);
 
             // if the waist should be at least a certain distance above the floor
-            if (minWaistFloorDist > 0 && waistOffset.oMultiply(normal) < 0) {
+            if ((this.minWaistFloorDist > 0) && (this.waistOffset.oMultiply(normal) < 0)) {
                 start = waistOrigin;
-                end = waistOrigin.oPlus(waistOffset.oMinus(normal.oMultiply(minWaistFloorDist)));
-                gameLocal.clip.Translation(results, start, end, footModel, modelAxis, CONTENTS_SOLID | CONTENTS_IKCLIP, self);
-                height = (waistOrigin.oPlus(waistOffset.oMinus(results[0].endpos))).oMultiply(normal);
-                if (height < minWaistFloorDist) {
-                    waistOffset.oPluSet(normal.oMultiply(minWaistFloorDist - height));
+                end = waistOrigin.oPlus(this.waistOffset.oMinus(normal.oMultiply(this.minWaistFloorDist)));
+                gameLocal.clip.Translation(results, start, end, this.footModel, modelAxis, CONTENTS_SOLID | CONTENTS_IKCLIP, this.self);
+                height = (waistOrigin.oPlus(this.waistOffset.oMinus(results[0].endpos))).oMultiply(normal);
+                if (height < this.minWaistFloorDist) {
+                    this.waistOffset.oPluSet(normal.oMultiply(this.minWaistFloorDist - height));
                 }
             }
 
             // if the waist should be at least a certain distance above the ankles
-            if (minWaistAnkleDist > 0) {
-                height = (waistOrigin.oPlus(waistOffset)).oMultiply(normal);
-                if (height - largestAnkleHeight < minWaistAnkleDist) {
-                    waistOffset.oPluSet(normal.oMultiply(minWaistAnkleDist - (height - largestAnkleHeight)));
+            if (this.minWaistAnkleDist > 0) {
+                height = (waistOrigin.oPlus(this.waistOffset)).oMultiply(normal);
+                if ((height - largestAnkleHeight) < this.minWaistAnkleDist) {
+                    this.waistOffset.oPluSet(normal.oMultiply(this.minWaistAnkleDist - (height - largestAnkleHeight)));
                 }
             }
 
-            if (oldHeightsValid) {
+            if (this.oldHeightsValid) {
                 // smoothly adjust height of waist
-                newHeight = (waistOrigin.oPlus(waistOffset)).oMultiply(normal);
-                step = newHeight - oldWaistHeight;
-                waistOffset.oMinSet(normal.oMultiply(waistSmoothing * step));
+                newHeight = (waistOrigin.oPlus(this.waistOffset)).oMultiply(normal);
+                step = newHeight - this.oldWaistHeight;
+                this.waistOffset.oMinSet(normal.oMultiply(this.waistSmoothing * step));
             }
 
             // save height of waist for smoothing
-            oldWaistHeight = (waistOrigin.oPlus(waistOffset)).oMultiply(normal);
+            this.oldWaistHeight = (waistOrigin.oPlus(this.waistOffset)).oMultiply(normal);
 
-            if (!oldHeightsValid) {
-                oldHeightsValid = true;
+            if (!this.oldHeightsValid) {
+                this.oldHeightsValid = true;
                 return;
             }
 
             // solve IK
-            for (i = 0; i < numLegs; i++) {
+            for (i = 0; i < this.numLegs; i++) {
 
                 // get the position of the hip in world space
-                animator.GetJointTransform(hipJoints[i], gameLocal.time, hipOrigin, axis);
-                hipOrigin = modelOrigin.oPlus(waistOffset.oPlus(hipOrigin.oMultiply(modelAxis)));
-                hipDir = hipForward[i].oMultiply(axis.oMultiply(modelAxis));
+                this.animator.GetJointTransform(this.hipJoints[i], gameLocal.time, hipOrigin, axis);
+                hipOrigin = modelOrigin.oPlus(this.waistOffset.oPlus(hipOrigin.oMultiply(modelAxis)));
+                hipDir = this.hipForward[i].oMultiply(axis.oMultiply(modelAxis));
 
                 // get the IK bend direction
-                animator.GetJointTransform(kneeJoints[i], gameLocal.time, kneeOrigin, axis);
-                kneeDir = kneeForward[i].oMultiply(axis.oMultiply(modelAxis));
+                this.animator.GetJointTransform(this.kneeJoints[i], gameLocal.time, kneeOrigin, axis);
+                kneeDir = this.kneeForward[i].oMultiply(axis.oMultiply(modelAxis));
 
                 // solve IK and calculate knee position
-                SolveTwoBones(hipOrigin, jointOrigins[i], kneeDir, upperLegLength[i], lowerLegLength[i], kneeOrigin);
+                SolveTwoBones(hipOrigin, jointOrigins[i], kneeDir, this.upperLegLength[i], this.lowerLegLength[i], kneeOrigin);
 
                 if (ik_debug.GetBool()) {
                     gameRenderWorld.DebugLine(colorCyan, hipOrigin, kneeOrigin);
@@ -778,62 +781,62 @@ public class IK /*ea*/ {
 
                 // get the axis for the hip joint
                 GetBoneAxis(hipOrigin, kneeOrigin, hipDir, axis);
-                hipAxis[i] = upperLegToHipJoint[i].oMultiply((axis.oMultiply(modelAxis.Transpose())));
+                hipAxis[i] = this.upperLegToHipJoint[i].oMultiply((axis.oMultiply(modelAxis.Transpose())));
 
                 // get the axis for the knee joint
                 GetBoneAxis(kneeOrigin, jointOrigins[i], kneeDir, axis);
-                kneeAxis[i] = lowerLegToKneeJoint[i].oMultiply((axis.oMultiply(modelAxis.Transpose())));
+                kneeAxis[i] = this.lowerLegToKneeJoint[i].oMultiply((axis.oMultiply(modelAxis.Transpose())));
             }
 
             // set the joint mods
-            animator.SetJointAxis(waistJoint, JOINTMOD_WORLD_OVERRIDE, waistAxis);
-            animator.SetJointPos(waistJoint, JOINTMOD_WORLD_OVERRIDE, (waistOrigin.oPlus(waistOffset.oMinus(modelOrigin))).oMultiply(modelAxis.Transpose()));
-            for (i = 0; i < numLegs; i++) {
-                animator.SetJointAxis(hipJoints[i], JOINTMOD_WORLD_OVERRIDE, hipAxis[i]);
-                animator.SetJointAxis(kneeJoints[i], JOINTMOD_WORLD_OVERRIDE, kneeAxis[i]);
-                animator.SetJointAxis(ankleJoints[i], JOINTMOD_WORLD_OVERRIDE, ankleAxis[i]);
+            this.animator.SetJointAxis(this.waistJoint, JOINTMOD_WORLD_OVERRIDE, waistAxis);
+            this.animator.SetJointPos(this.waistJoint, JOINTMOD_WORLD_OVERRIDE, (waistOrigin.oPlus(this.waistOffset.oMinus(modelOrigin))).oMultiply(modelAxis.Transpose()));
+            for (i = 0; i < this.numLegs; i++) {
+                this.animator.SetJointAxis(this.hipJoints[i], JOINTMOD_WORLD_OVERRIDE, hipAxis[i]);
+                this.animator.SetJointAxis(this.kneeJoints[i], JOINTMOD_WORLD_OVERRIDE, kneeAxis[i]);
+                this.animator.SetJointAxis(this.ankleJoints[i], JOINTMOD_WORLD_OVERRIDE, ankleAxis[i]);
             }
 
-            ik_activate = true;
+            this.ik_activate = true;
         }
 
         @Override
         public void ClearJointMods() {
             int i;
 
-            if (null == self || !ik_activate) {
+            if ((null == this.self) || !this.ik_activate) {
                 return;
             }
 
-            animator.SetJointAxis(waistJoint, JOINTMOD_NONE, getMat3_identity());
-            animator.SetJointPos(waistJoint, JOINTMOD_NONE, getVec3_origin());
-            for (i = 0; i < numLegs; i++) {
-                animator.SetJointAxis(hipJoints[i], JOINTMOD_NONE, getMat3_identity());
-                animator.SetJointAxis(kneeJoints[i], JOINTMOD_NONE, getMat3_identity());
-                animator.SetJointAxis(ankleJoints[i], JOINTMOD_NONE, getMat3_identity());
+            this.animator.SetJointAxis(this.waistJoint, JOINTMOD_NONE, getMat3_identity());
+            this.animator.SetJointPos(this.waistJoint, JOINTMOD_NONE, getVec3_origin());
+            for (i = 0; i < this.numLegs; i++) {
+                this.animator.SetJointAxis(this.hipJoints[i], JOINTMOD_NONE, getMat3_identity());
+                this.animator.SetJointAxis(this.kneeJoints[i], JOINTMOD_NONE, getMat3_identity());
+                this.animator.SetJointAxis(this.ankleJoints[i], JOINTMOD_NONE, getMat3_identity());
             }
 
-            ik_activate = false;
+            this.ik_activate = false;
         }
 
         public void EnableAll() {
-            enabledLegs = (1 << numLegs) - 1;
-            oldHeightsValid = false;
+            this.enabledLegs = (1 << this.numLegs) - 1;
+            this.oldHeightsValid = false;
         }
 
         public void DisableAll() {
-            enabledLegs = 0;
-            oldHeightsValid = false;
+            this.enabledLegs = 0;
+            this.oldHeightsValid = false;
         }
 
         public void EnableLeg(int num) {
-            enabledLegs |= 1 << num;
+            this.enabledLegs |= 1 << num;
         }
 
         public void DisableLeg(int num) {
-            enabledLegs &= ~(1 << num);
+            this.enabledLegs &= ~(1 << num);
         }
-    };
+    }
 
     /*
      ===============================================================================
@@ -874,20 +877,20 @@ public class IK /*ea*/ {
         public idIK_Reach() {
             int i;
 
-            initialized = false;
-            numArms = 0;
-            enabledArms = 0;
+            this.initialized = false;
+            this.numArms = 0;
+            this.enabledArms = 0;
             for (i = 0; i < MAX_ARMS; i++) {
-                handJoints[i] = INVALID_JOINT;
-                elbowJoints[i] = INVALID_JOINT;
-                shoulderJoints[i] = INVALID_JOINT;
-                dirJoints[i] = INVALID_JOINT;
-                shoulderForward[i].Zero();
-                elbowForward[i].Zero();
-                upperArmLength[i] = 0;
-                lowerArmLength[i] = 0;
-                upperArmToShoulderJoint[i].Identity();
-                lowerArmToElbowJoint[i].Identity();
+                this.handJoints[i] = INVALID_JOINT;
+                this.elbowJoints[i] = INVALID_JOINT;
+                this.shoulderJoints[i] = INVALID_JOINT;
+                this.dirJoints[i] = INVALID_JOINT;
+                this.shoulderForward[i].Zero();
+                this.elbowForward[i].Zero();
+                this.upperArmLength[i] = 0;
+                this.lowerArmLength[i] = 0;
+                this.upperArmToShoulderJoint[i].Identity();
+                this.lowerArmToElbowJoint[i].Identity();
             }
         }
         // virtual					~idIK_Reach( void );
@@ -897,40 +900,40 @@ public class IK /*ea*/ {
             int i;
             super.Save(savefile);
 
-            savefile.WriteInt(numArms);
-            savefile.WriteInt(enabledArms);
+            savefile.WriteInt(this.numArms);
+            savefile.WriteInt(this.enabledArms);
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteInt(handJoints[i]);
+                savefile.WriteInt(this.handJoints[i]);
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteInt(elbowJoints[i]);
+                savefile.WriteInt(this.elbowJoints[i]);
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteInt(shoulderJoints[i]);
+                savefile.WriteInt(this.shoulderJoints[i]);
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteInt(dirJoints[i]);
-            }
-
-            for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteVec3(shoulderForward[i]);
-            }
-            for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteVec3(elbowForward[i]);
+                savefile.WriteInt(this.dirJoints[i]);
             }
 
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteFloat(upperArmLength[i]);
+                savefile.WriteVec3(this.shoulderForward[i]);
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteFloat(lowerArmLength[i]);
+                savefile.WriteVec3(this.elbowForward[i]);
             }
 
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteMat3(upperArmToShoulderJoint[i]);
+                savefile.WriteFloat(this.upperArmLength[i]);
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.WriteMat3(lowerArmToElbowJoint[i]);
+                savefile.WriteFloat(this.lowerArmLength[i]);
+            }
+
+            for (i = 0; i < MAX_ARMS; i++) {
+                savefile.WriteMat3(this.upperArmToShoulderJoint[i]);
+            }
+            for (i = 0; i < MAX_ARMS; i++) {
+                savefile.WriteMat3(this.lowerArmToElbowJoint[i]);
             }
         }
 
@@ -939,40 +942,40 @@ public class IK /*ea*/ {
             int i;
             super.Restore(savefile);
 
-            numArms = savefile.ReadInt();
-            enabledArms = savefile.ReadInt();
+            this.numArms = savefile.ReadInt();
+            this.enabledArms = savefile.ReadInt();
             for (i = 0; i < MAX_ARMS; i++) {
-                handJoints[i] = savefile.ReadInt();
+                this.handJoints[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                elbowJoints[i] = savefile.ReadInt();
+                this.elbowJoints[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                shoulderJoints[i] = savefile.ReadInt();
+                this.shoulderJoints[i] = savefile.ReadInt();
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                dirJoints[i] = savefile.ReadInt();
-            }
-
-            for (i = 0; i < MAX_ARMS; i++) {
-                savefile.ReadVec3(shoulderForward[i]);
-            }
-            for (i = 0; i < MAX_ARMS; i++) {
-                savefile.ReadVec3(elbowForward[i]);
+                this.dirJoints[i] = savefile.ReadInt();
             }
 
             for (i = 0; i < MAX_ARMS; i++) {
-                upperArmLength[i] = savefile.ReadFloat();
+                savefile.ReadVec3(this.shoulderForward[i]);
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                lowerArmLength[i] = savefile.ReadFloat();
+                savefile.ReadVec3(this.elbowForward[i]);
             }
 
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.ReadMat3(upperArmToShoulderJoint[i]);
+                this.upperArmLength[i] = savefile.ReadFloat();
             }
             for (i = 0; i < MAX_ARMS; i++) {
-                savefile.ReadMat3(lowerArmToElbowJoint[i]);
+                this.lowerArmLength[i] = savefile.ReadFloat();
+            }
+
+            for (i = 0; i < MAX_ARMS; i++) {
+                savefile.ReadMat3(this.upperArmToShoulderJoint[i]);
+            }
+            for (i = 0; i < MAX_ARMS; i++) {
+                savefile.ReadMat3(this.lowerArmToElbowJoint[i]);
             }
         }
 
@@ -980,16 +983,17 @@ public class IK /*ea*/ {
         public boolean Init(idEntity self, final String anim, final idVec3 modelOffset) {
             int i;
             String jointName;
-            idTraceModel trm = new idTraceModel();
+            final idTraceModel trm = new idTraceModel();
             idVec3 dir = new idVec3(), handOrigin, elbowOrigin, shoulderOrigin, dirOrigin;
-            idMat3 axis = new idMat3(), handAxis = new idMat3(), elbowAxis, shoulderAxis;
+            final idMat3 axis = new idMat3();
+			idMat3 handAxis = new idMat3(), elbowAxis, shoulderAxis;
 
             if (null == self) {
                 return false;
             }
 
-            numArms = Min(self.spawnArgs.GetInt("ik_numArms", "0"), MAX_ARMS);
-            if (numArms == 0) {
+            this.numArms = Min(self.spawnArgs.GetInt("ik_numArms", "0"), MAX_ARMS);
+            if (this.numArms == 0) {
                 return true;
             }
 
@@ -997,74 +1001,74 @@ public class IK /*ea*/ {
                 return false;
             }
 
-            int numJoints = animator.NumJoints();
-            idJointMat[] joints = new idJointMat[numJoints];
+            final int numJoints = this.animator.NumJoints();
+            final idJointMat[] joints = new idJointMat[numJoints];
 
             // create the animation frame used to setup the IK
-            GameEdit.gameEdit.ANIM_CreateAnimFrame(animator.ModelHandle(), animator.GetAnim(modifiedAnim).MD5Anim(0), numJoints, joints, 1, animator.ModelDef().GetVisualOffset().oPlus(modelOffset), animator.RemoveOrigin());
+            GameEdit.gameEdit.ANIM_CreateAnimFrame(this.animator.ModelHandle(), this.animator.GetAnim(this.modifiedAnim).MD5Anim(0), numJoints, joints, 1, this.animator.ModelDef().GetVisualOffset().oPlus(modelOffset), this.animator.RemoveOrigin());
 
-            enabledArms = 0;
+            this.enabledArms = 0;
 
             // get all the joints
-            for (i = 0; i < numArms; i++) {
+            for (i = 0; i < this.numArms; i++) {
 
                 jointName = self.spawnArgs.GetString(va("ik_hand%d", i + 1));
-                handJoints[i] = animator.GetJointHandle(jointName);
-                if (handJoints[i] == INVALID_JOINT) {
+                this.handJoints[i] = this.animator.GetJointHandle(jointName);
+                if (this.handJoints[i] == INVALID_JOINT) {
                     gameLocal.Error("idIK_Reach::Init: invalid hand joint '%s'", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_elbow%d", i + 1));
-                elbowJoints[i] = animator.GetJointHandle(jointName);
-                if (elbowJoints[i] == INVALID_JOINT) {
+                this.elbowJoints[i] = this.animator.GetJointHandle(jointName);
+                if (this.elbowJoints[i] == INVALID_JOINT) {
                     gameLocal.Error("idIK_Reach::Init: invalid elbow joint '%s'\n", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_shoulder%d", i + 1));
-                shoulderJoints[i] = animator.GetJointHandle(jointName);
-                if (shoulderJoints[i] == INVALID_JOINT) {
+                this.shoulderJoints[i] = this.animator.GetJointHandle(jointName);
+                if (this.shoulderJoints[i] == INVALID_JOINT) {
                     gameLocal.Error("idIK_Reach::Init: invalid shoulder joint '%s'\n", jointName);
                 }
 
                 jointName = self.spawnArgs.GetString(va("ik_elbowDir%d", i + 1));
-                dirJoints[i] = animator.GetJointHandle(jointName);
+                this.dirJoints[i] = this.animator.GetJointHandle(jointName);
 
-                enabledArms |= 1 << i;
+                this.enabledArms |= 1 << i;
             }
 
             // get the arm bone lengths and rotation matrices
-            for (i = 0; i < numArms; i++) {
+            for (i = 0; i < this.numArms; i++) {
 
-                handAxis = joints[ handJoints[ i]].ToMat3();
-                handOrigin = joints[ handJoints[ i]].ToVec3();
+                handAxis = joints[ this.handJoints[ i]].ToMat3();
+                handOrigin = joints[ this.handJoints[ i]].ToVec3();
 
-                elbowAxis = joints[ elbowJoints[ i]].ToMat3();
-                elbowOrigin = joints[ elbowJoints[ i]].ToVec3();
+                elbowAxis = joints[ this.elbowJoints[ i]].ToMat3();
+                elbowOrigin = joints[ this.elbowJoints[ i]].ToVec3();
 
-                shoulderAxis = joints[ shoulderJoints[ i]].ToMat3();
-                shoulderOrigin = joints[ shoulderJoints[ i]].ToVec3();
+                shoulderAxis = joints[ this.shoulderJoints[ i]].ToMat3();
+                shoulderOrigin = joints[ this.shoulderJoints[ i]].ToVec3();
 
                 // get the IK direction
-                if (dirJoints[i] != INVALID_JOINT) {
-                    dirOrigin = joints[ dirJoints[ i]].ToVec3();
+                if (this.dirJoints[i] != INVALID_JOINT) {
+                    dirOrigin = joints[ this.dirJoints[ i]].ToVec3();
                     dir = dirOrigin.oMinus(elbowOrigin);
                 } else {
                     dir.Set(-1.0f, 0.0f, 0.0f);
                 }
 
-                shoulderForward[i] = dir.oMultiply(shoulderAxis.Transpose());
-                elbowForward[i] = dir.oMultiply(elbowAxis.Transpose());
+                this.shoulderForward[i] = dir.oMultiply(shoulderAxis.Transpose());
+                this.elbowForward[i] = dir.oMultiply(elbowAxis.Transpose());
 
                 // conversion from upper arm bone axis to should joint axis
-                upperArmLength[i] = GetBoneAxis(shoulderOrigin, elbowOrigin, dir, axis);
-                upperArmToShoulderJoint[i] = shoulderAxis.oMultiply(axis.Transpose());
+                this.upperArmLength[i] = GetBoneAxis(shoulderOrigin, elbowOrigin, dir, axis);
+                this.upperArmToShoulderJoint[i] = shoulderAxis.oMultiply(axis.Transpose());
 
                 // conversion from lower arm bone axis to elbow joint axis
-                lowerArmLength[i] = GetBoneAxis(elbowOrigin, handOrigin, dir, axis);
-                lowerArmToElbowJoint[i] = elbowAxis.oMultiply(axis.Transpose());
+                this.lowerArmLength[i] = GetBoneAxis(elbowOrigin, handOrigin, dir, axis);
+                this.lowerArmToElbowJoint[i] = elbowAxis.oMultiply(axis.Transpose());
             }
 
-            initialized = true;
+            this.initialized = true;
 
             return true;
         }
@@ -1072,36 +1076,39 @@ public class IK /*ea*/ {
         @Override
         public void Evaluate() {
             int i;
-            idVec3 modelOrigin, shoulderOrigin = new idVec3(), elbowOrigin = new idVec3(), handOrigin = new idVec3(), shoulderDir, elbowDir;
-            idMat3 modelAxis, axis = new idMat3();
-            idMat3[] shoulderAxis = new idMat3[MAX_ARMS], elbowAxis = new idMat3[MAX_ARMS];
-            trace_s[] trace = {null};
+            idVec3 modelOrigin, shoulderOrigin = new idVec3();
+			final idVec3 elbowOrigin = new idVec3();
+			idVec3 handOrigin = new idVec3(), shoulderDir, elbowDir;
+            idMat3 modelAxis;
+			final idMat3 axis = new idMat3();
+            final idMat3[] shoulderAxis = new idMat3[MAX_ARMS], elbowAxis = new idMat3[MAX_ARMS];
+            final trace_s[] trace = {null};
 
-            modelOrigin = self.GetRenderEntity().origin;
-            modelAxis = self.GetRenderEntity().axis;
+            modelOrigin = this.self.GetRenderEntity().origin;
+            modelAxis = this.self.GetRenderEntity().axis;
 
             // solve IK
-            for (i = 0; i < numArms; i++) {
+            for (i = 0; i < this.numArms; i++) {
 
                 // get the position of the shoulder in world space
-                animator.GetJointTransform(shoulderJoints[i], gameLocal.time, shoulderOrigin, axis);
+                this.animator.GetJointTransform(this.shoulderJoints[i], gameLocal.time, shoulderOrigin, axis);
                 shoulderOrigin = modelOrigin.oPlus(shoulderOrigin.oMultiply(modelAxis));
-                shoulderDir = shoulderForward[i].oMultiply(axis.oMultiply(modelAxis));
+                shoulderDir = this.shoulderForward[i].oMultiply(axis.oMultiply(modelAxis));
 
                 // get the position of the hand in world space
-                animator.GetJointTransform(handJoints[i], gameLocal.time, handOrigin, axis);
+                this.animator.GetJointTransform(this.handJoints[i], gameLocal.time, handOrigin, axis);
                 handOrigin = modelOrigin.oPlus(handOrigin.oMultiply(modelAxis));
 
                 // get first collision going from shoulder to hand
-                gameLocal.clip.TracePoint(trace, shoulderOrigin, handOrigin, CONTENTS_SOLID, self);
+                gameLocal.clip.TracePoint(trace, shoulderOrigin, handOrigin, CONTENTS_SOLID, this.self);
                 handOrigin = trace[0].endpos;
 
                 // get the IK bend direction
-                animator.GetJointTransform(elbowJoints[i], gameLocal.time, elbowOrigin, axis);
-                elbowDir = elbowForward[i].oMultiply(axis.oMultiply(modelAxis));
+                this.animator.GetJointTransform(this.elbowJoints[i], gameLocal.time, elbowOrigin, axis);
+                elbowDir = this.elbowForward[i].oMultiply(axis.oMultiply(modelAxis));
 
                 // solve IK and calculate elbow position
-                SolveTwoBones(shoulderOrigin, handOrigin, elbowDir, upperArmLength[i], lowerArmLength[i], elbowOrigin);
+                SolveTwoBones(shoulderOrigin, handOrigin, elbowDir, this.upperArmLength[i], this.lowerArmLength[i], elbowOrigin);
 
                 if (ik_debug.GetBool()) {
                     gameRenderWorld.DebugLine(colorCyan, shoulderOrigin, elbowOrigin);
@@ -1112,36 +1119,36 @@ public class IK /*ea*/ {
 
                 // get the axis for the shoulder joint
                 GetBoneAxis(shoulderOrigin, elbowOrigin, shoulderDir, axis);
-                shoulderAxis[i] = upperArmToShoulderJoint[i].oMultiply(axis.oMultiply(modelAxis.Transpose()));
+                shoulderAxis[i] = this.upperArmToShoulderJoint[i].oMultiply(axis.oMultiply(modelAxis.Transpose()));
 
                 // get the axis for the elbow joint
                 GetBoneAxis(elbowOrigin, handOrigin, elbowDir, axis);
-                elbowAxis[i] = lowerArmToElbowJoint[i].oMultiply(axis.oMultiply(modelAxis.Transpose()));
+                elbowAxis[i] = this.lowerArmToElbowJoint[i].oMultiply(axis.oMultiply(modelAxis.Transpose()));
             }
 
-            for (i = 0; i < numArms; i++) {
-                animator.SetJointAxis(shoulderJoints[i], JOINTMOD_WORLD_OVERRIDE, shoulderAxis[i]);
-                animator.SetJointAxis(elbowJoints[i], JOINTMOD_WORLD_OVERRIDE, elbowAxis[i]);
+            for (i = 0; i < this.numArms; i++) {
+                this.animator.SetJointAxis(this.shoulderJoints[i], JOINTMOD_WORLD_OVERRIDE, shoulderAxis[i]);
+                this.animator.SetJointAxis(this.elbowJoints[i], JOINTMOD_WORLD_OVERRIDE, elbowAxis[i]);
             }
 
-            ik_activate = true;
+            this.ik_activate = true;
         }
 
         @Override
         public void ClearJointMods() {
             int i;
 
-            if (null == self || !ik_activate) {
+            if ((null == this.self) || !this.ik_activate) {
                 return;
             }
 
-            for (i = 0; i < numArms; i++) {
-                animator.SetJointAxis(shoulderJoints[i], JOINTMOD_NONE, getMat3_identity());
-                animator.SetJointAxis(elbowJoints[i], JOINTMOD_NONE, getMat3_identity());
-                animator.SetJointAxis(handJoints[i], JOINTMOD_NONE, getMat3_identity());
+            for (i = 0; i < this.numArms; i++) {
+                this.animator.SetJointAxis(this.shoulderJoints[i], JOINTMOD_NONE, getMat3_identity());
+                this.animator.SetJointAxis(this.elbowJoints[i], JOINTMOD_NONE, getMat3_identity());
+                this.animator.SetJointAxis(this.handJoints[i], JOINTMOD_NONE, getMat3_identity());
             }
 
-            ik_activate = false;
+            this.ik_activate = false;
         }
-    };
+    }
 }

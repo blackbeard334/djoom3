@@ -187,8 +187,6 @@ public abstract class win_local {
         // SMP acceleration vars
     }
 
-    ;
-
     public static Win32Vars_t win32 = new Win32Vars_t();
 
 }
