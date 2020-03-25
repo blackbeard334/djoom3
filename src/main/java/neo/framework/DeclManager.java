@@ -1244,12 +1244,16 @@ public class DeclManager {
         //
 
         idDeclManagerLocal() {
-            this.declTypes = new idList<>();
-            this.declFolders = new idList<>();
+            this.declTypes = new idList<idDeclType>();
+            this.declFolders = new idList<idDeclFolder>();
 
-            this.loadedFiles = new idList<>();
+            this.loadedFiles = new idList<idDeclFile>();
             this.hashTables = new idHashIndex[etoi(DECL_MAX_TYPES)];
-            this.linearLists = new idList[etoi(DECL_MAX_TYPES)];
+            {
+                @SuppressWarnings("unchecked")
+                idList<idDeclLocal>[] linearLists = new idList[etoi(DECL_MAX_TYPES)];
+                this.linearLists = linearLists;
+            }
 
             for (int d = 0; d < etoi(DECL_MAX_TYPES); d++) {
                 hashTables[d] = new idHashIndex();

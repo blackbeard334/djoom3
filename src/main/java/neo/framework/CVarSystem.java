@@ -768,7 +768,7 @@ public class CVarSystem {
 
         public idCVarSystemLocal() {
             initialized = false;
-            cvars = new idList<>();
+            cvars = new idList<idInternalCVar>();
             cvarHash = new idHashIndex();
             modifiedFlags = 0;
         }
@@ -1277,7 +1277,7 @@ public class CVarSystem {
             idStr match, indent = new idStr(), str = new idStr();
             String string;
             idInternalCVar cvar;
-            idList<idInternalCVar> cvarList = new idList<>();
+            idList<idInternalCVar> cvarList = new idList<idInternalCVar>();
 
             argNum = 1;
             show show = SHOW_VALUE;

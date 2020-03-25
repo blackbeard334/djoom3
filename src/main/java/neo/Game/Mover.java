@@ -256,8 +256,14 @@ public class Mover {
         //
         private int/*qhandle_t*/ areaPortal;		// 0 = no portal
         //
-        private final idList<idEntityPtr<idEntity>> guiTargets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<>().getClass());
+		private final idList<idEntityPtr<idEntity>> guiTargets;
 
+		{
+	        @SuppressWarnings("unchecked")
+	        idList<idEntityPtr<idEntity>> guiTargets1 = (idList<idEntityPtr<idEntity>>) new idList<idEntityPtr<idEntity>>((Class<idEntityPtr<idEntity>>) new idEntityPtr<>().getClass());
+	        guiTargets = guiTargets1;
+		}
+        
         @Override
         public idClass CreateInstance() {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -2044,7 +2050,9 @@ public class Mover {
             areaPortal = 0;
             blocked = false;
             fl.networkSync = true;
-            guiTargets = new idList(idEntityPtr.class);
+	        @SuppressWarnings("unchecked")
+	        idList<idEntityPtr<idEntity>> guiTargets1 = (idList<idEntityPtr<idEntity>>) new idList<idEntityPtr<idEntity>>((Class<idEntityPtr<idEntity>>) new idEntityPtr<>().getClass());
+	        guiTargets = guiTargets1;
         }
 
         // ~idMover_Binary();

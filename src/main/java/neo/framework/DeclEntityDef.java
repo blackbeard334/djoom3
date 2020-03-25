@@ -89,7 +89,7 @@ public class DeclEntityDef {
             // if they don't conflict.  We can't have circular recursions, because each entityDef will
             // never be parsed mroe than once
             // find all of the dicts first, because copying inherited values will modify the dict
-            idList<idDeclEntityDef> defList = new idList<>();
+            idList<idDeclEntityDef> defList = new idList<idDeclEntityDef>();
 
             while (true) {
                 final idKeyValue kv;

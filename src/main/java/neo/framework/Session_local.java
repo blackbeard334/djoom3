@@ -4370,7 +4370,7 @@ public class Session_local {
             int i;
             idStr name;
             idStrList fileList = new idStrList();
-            idList<fileTIME_T> fileTimes = new idList<>();
+            idList<fileTIME_T> fileTimes = new idList<fileTIME_T>();
 
             loadGameList.Clear();
             fileList.Clear();

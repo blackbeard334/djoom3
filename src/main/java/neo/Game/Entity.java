@@ -498,8 +498,12 @@ public class Entity {
 //        public abstract idTypeInfo GetType();
 //        public static idEventFunc<idEntity>[] eventCallbacks;
 //
-        public idEntity() {
-            targets = (idList<idEntityPtr<idEntity>>) new idList<>(new idEntityPtr<>().getClass());
+		public idEntity() {
+			{
+		        @SuppressWarnings("unchecked")
+		        idList<idEntityPtr<idEntity>> targets = (idList<idEntityPtr<idEntity>>) new idList<idEntityPtr<idEntity>>((java.lang.Class<idEntityPtr<idEntity>>) new idEntityPtr<idEntity>().getClass());
+		        this.targets = targets;
+			}
 
             entityNumber = ENTITYNUM_NONE;
             entityDefNumber = -1;

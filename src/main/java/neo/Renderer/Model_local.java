@@ -122,7 +122,7 @@ public class Model_local {
 
         // the inherited public interface
         public idRenderModelStatic() {
-            this.surfaces = new idList<>(modelSurface_s.class);
+            this.surfaces = new idList<modelSurface_s>(modelSurface_s.class);
             name = new idStr("<undefined>");
             (bounds = new idBounds()).Clear();
             lastModifiedFrame = 0;

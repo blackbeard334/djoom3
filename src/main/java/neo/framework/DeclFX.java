@@ -213,7 +213,7 @@ public class DeclFX {
         }
 //
 //
-        public idList<idFXSingleAction> events = new idList<>();
+        public idList<idFXSingleAction> events = new idList<idFXSingleAction>();
         public idStr joint = new idStr();
 //
 

@@ -972,7 +972,7 @@ public class DeclParticle {
         //
         
         public idDeclParticle(){
-            stages = new idList<>();
+            stages = new idList<idParticleStage>();
             bounds = new idBounds();
         }
 

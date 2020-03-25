@@ -35,7 +35,7 @@ public class StrList {
          ================
          */
         @Override
-        public void Sort(cmp_t compare) {
+        public void Sort(cmp_t<idStr> compare) {
             int i;
 
             if (0 == Num()) {

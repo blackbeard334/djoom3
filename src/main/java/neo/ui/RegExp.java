@@ -249,7 +249,7 @@ public class RegExp {
         //
 
         public idRegisterList() {
-            regs = new idList<>(4);//.SetGranularity(4);
+            regs = new idList<idRegister>(4);//.SetGranularity(4);
             regHash = new idHashIndex(32, 4);//.SetGranularity(4);
 //            regHash.Clear(32, 4);
         }

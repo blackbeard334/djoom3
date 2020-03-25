@@ -165,8 +165,8 @@ public class ServerScan {
             challenge = 0;
 
             this.net_info = new idDict();
-            this.net_servers = new idList<>();
-            this.m_sortedServers = new idList<>();
+            this.net_servers = new idList<inServer_t>();
+            this.m_sortedServers = new idList<Integer>();
             this.screenshot = new idStr();
             LocalClear();
         }

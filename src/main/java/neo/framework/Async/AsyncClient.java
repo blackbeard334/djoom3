@@ -243,7 +243,7 @@ public class AsyncClient {
         private int dlRequest;                              // randomized number to keep track of the requests
         private int[] dlChecksums = new int[MAX_PURE_PAKS]; // 0-terminated, first element is the game pak checksum or 0
         private int dlCount;                                // total number of paks we request download for ( including the game pak )
-        private idList<pakDlEntry_t> dlList = new idList<>();// list of paks to download, with url and name
+        private idList<pakDlEntry_t> dlList = new idList<pakDlEntry_t>();// list of paks to download, with url and name
         private int currentDlSize;
         private int totalDlSize;                            // for partial progress stuff
         //

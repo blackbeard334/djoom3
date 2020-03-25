@@ -363,7 +363,7 @@ public class CmdSystem {
         idCmdSystemLocal() {
             this.completionString = new idStr();
             this.completionParms = new idStrList();
-            this.tokenizedCmds = new idList<>();
+            this.tokenizedCmds = new idList<idCmdArgs>();
             this.postReload = new idCmdArgs();
         }
 
@@ -819,7 +819,7 @@ public class CmdSystem {
             int i;
             String match;
             commandDef_s cmd;
-            idList<commandDef_s> cmdList = new idList<>();
+            idList<commandDef_s> cmdList = new idList<commandDef_s>();
 
             if (args.Argc() > 1) {
                 match = args.Args(1, -1);

@@ -26,7 +26,7 @@ public class DeclTable {
 
         private boolean clamp;
         private boolean snap;
-        private idList<Float> values = new idList<>();
+        private idList<Float> values = new idList<Float>();
         //
         //
 

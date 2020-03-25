@@ -180,8 +180,8 @@ public class Anim_Blend {
         private int                   numAnims;
         private idStr                 name = new idStr();
         private idStr                 realname = new idStr();
-        private idList<frameLookup_t> frameLookup = new idList();
-        private idList<frameCommand_t> frameCommands = new idList<>(frameCommand_t.class);
+        private idList<frameLookup_t> frameLookup = new idList<frameLookup_t>();
+        private idList<frameCommand_t> frameCommands = new idList<frameCommand_t>(frameCommand_t.class);
         private animFlags_t flags;
 //
 //
@@ -2800,9 +2800,9 @@ public class Anim_Blend {
             frameBounds = new idBounds();
             frameBounds.Clear();
 
-            AFPoseJoints = new idList<>(1);
-            AFPoseJointMods = new idList<>(1);
-            AFPoseJointFrame = new idList<>(1);
+            AFPoseJoints = new idList<Integer>(1);
+            AFPoseJointMods = new idList<idAFPoseJointMod>(1);
+            AFPoseJointFrame = new idList<idJointQuat>(1);
             AFPoseBounds = new idBounds();
 
             ClearAFPose();

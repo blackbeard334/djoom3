@@ -412,8 +412,8 @@ public class DeclAF {
         public int[] contents = new int[1];
         public int[] clipMask = new int[1];
         public boolean selfCollision;
-        public final idList<idDeclAF_Body>       bodies      = new idList<>(idDeclAF_Body.class);
-        public final idList<idDeclAF_Constraint> constraints = new idList<>(idDeclAF_Constraint.class);
+        public final idList<idDeclAF_Body>       bodies      = new idList<idDeclAF_Body>(idDeclAF_Body.class);
+        public final idList<idDeclAF_Constraint> constraints = new idList<idDeclAF_Constraint>(idDeclAF_Constraint.class);
         //
         //
 

@@ -41,7 +41,7 @@ public class DeclSkin {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private idList<skinMapping_t> mappings = new idList<>();
+		private idList<skinMapping_t> mappings = new idList<skinMapping_t>();
         private idStrList associatedModels = new idStrList();
         //
         //

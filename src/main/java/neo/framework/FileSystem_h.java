@@ -1007,12 +1007,12 @@ public class FileSystem_h {
             loadedFileFromDir = false;
             restartGamePakChecksum = 0;
             backgroundThread = new xthreadInfo();//memset( &backgroundThread, 0, sizeof( backgroundThread ) );
-            this.serverPaks = new idList<>();
+            this.serverPaks = new idList<pack_t>();
             addonPaks = null;
             this.mapDict = new idDict();
 
-            restartChecksums = new idList<>();
-            addonChecksums = new idList<>();
+            restartChecksums = new idList<Integer>();
+            addonChecksums = new idList<Integer>();
 
             this.dir_cache = new idDEntry[MAX_CACHED_DIRS];
             for (int s = 0; s < MAX_CACHED_DIRS; s++) {

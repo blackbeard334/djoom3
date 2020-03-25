@@ -433,7 +433,7 @@ public class Player {
         public int nextItemPickup;
         public int nextItemNum;
         public int onePickupTime;
-        public idList<idItemInfo>      pickupItemNames = new idList<>(idItemInfo.class);
+        public idList<idItemInfo>      pickupItemNames = new idList<idItemInfo>(idItemInfo.class);
         public idList<idObjectiveInfo> objectiveNames  = new idList<>();
 
         public idInventory() {
