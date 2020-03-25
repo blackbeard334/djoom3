@@ -630,7 +630,7 @@ public class SaveGame {
                 if (null == type) {
                     Error("idRestoreGame::CreateObjects: Unknown class '%s'", className.toString());
                 }
-                objects.oSet(i, type.CreateInstance.run());
+                objects.oSetType(i, type.CreateInstance.run());
 
 // #ifdef ID_DEBUG_MEMORY
                 // InitTypeVariables( objects[i], type.classname, 0xce );

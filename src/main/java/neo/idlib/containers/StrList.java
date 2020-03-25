@@ -35,25 +35,25 @@ public class StrList {
          ================
          */
         @Override
-        public void Sort(cmp_t compare) {
+        public void Sort(cmp_t<idStr> compare) {
             int i;
 
-            if (0 == num) {
+            if (0 == Num()) {
                 return;
             }
 
             idList<idStr> other = new idList<>();
-            idList<idStrPtr> pointerList = new idList<>();
+            idList<idStr> pointerList = new idList<>();
 
-            pointerList.SetNum(num);
-            for (i = 0; i < num; i++) {
-                pointerList.oSet(i, this.oGet(i));
+            pointerList.SetNum(Num());
+            for (i = 0; i < Num(); i++) {
+                pointerList.oSetType(i, this.oGet(i));
             }
 
             pointerList.Sort();
 
-            other.SetNum(num);
-            other.SetGranularity(granularity);
+            other.SetNum(Num());
+            other.SetGranularity(GetGranularity());
             for (i = 0; i < other.Num(); i++) {
                 other.oSet(i, pointerList.oGet(i));
             }
@@ -68,40 +68,40 @@ public class StrList {
          Sorts a subsection of the list of strings alphabetically.
          ================
          */
-        @Override
-        public void SortSubSection(int startIndex, int endIndex, cmp_t compare) {
-            int i, s;
-
-            if (0 == num) {
-                return;
-            }
-            if (startIndex < 0) {
-                startIndex = 0;
-            }
-            if (endIndex >= num) {
-                endIndex = num - 1;
-            }
-            if (startIndex >= endIndex) {
-                return;
-            }
-
-            idList<idStr> other = new idList<>();
-            idList<idStrPtr> pointerList = new idList<>();
-
-            s = endIndex - startIndex + 1;
-            other.SetNum(s);
-            pointerList.SetNum(s);
-            for (i = 0; i < s; i++) {
-                other.oSet(i, this.oGet(startIndex + i));
-                pointerList.oSet(i, other.oGet(i));
-            }
-
-            pointerList.Sort();
-
-            for (i = 0; i < s; i++) {
-                this.oSet(startIndex + i, pointerList.oGet(i));
-            }
-        }
+//        @Override
+//        public void SortSubSection(int startIndex, int endIndex, cmp_t compare) {
+//            int i, s;
+//
+//            if (0 == Num()) {
+//                return;
+//            }
+//            if (startIndex < 0) {
+//                startIndex = 0;
+//            }
+//            if (endIndex >= Num()) {
+//                endIndex = Num() - 1;
+//            }
+//            if (startIndex >= endIndex) {
+//                return;
+//            }
+//
+//            idList<idStr> other = new idList<>();
+//            idList<idStrPtr> pointerList = new idList<>();
+//
+//            s = endIndex - startIndex + 1;
+//            other.SetNum(s);
+//            pointerList.SetNum(s);
+//            for (i = 0; i < s; i++) {
+//                other.oSet(i, this.oGet(startIndex + i));
+//                pointerList.oSetType(i, other.oGet(i));
+//            }
+//
+//            pointerList.Sort();
+//
+//            for (i = 0; i < s; i++) {
+//                this.oSet(startIndex + i, pointerList.oGet(i));
+//            }
+//        }
 
         @Override
         public int Size() {
@@ -131,11 +131,11 @@ public class StrList {
             }
 
             idList<idStr> other = new idList<>();
-            idList<idStrPtr> pointerList = new idList<>();
+            idList<idStr> pointerList = new idList<>();
 
             pointerList.SetNum(list.Num());
             for (i = 0; i < list.Num(); i++) {
-                pointerList.oSet(i, list.oGet(i));
+                pointerList.oSetType(i, list.oGet(i));
             }
 
             pointerList.Sort(new idListSortComparePaths());
@@ -159,16 +159,16 @@ public class StrList {
 
     };
 
-    class idStrPtrList extends idList<idStr> {
-    }
-
-    class idStrPtr extends idStr {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-    }
+//    class idStrPtrList extends idList<idStr> {
+//    }
+//
+//    class idStrPtr extends idStr {
+//
+//		/**
+//		 * 
+//		 */
+//		private static final long serialVersionUID = 1L;
+//    }
 
     /*
      ===============================================================================
@@ -185,11 +185,11 @@ public class StrList {
      Compares two pointers to strings. Used to sort a list of string pointers alphabetically in idList<idStr>::Sort.
      ================
      */
-    static class idListSortComparePaths implements cmp_t<idStr> {
+    private static class idListSortComparePaths implements cmp_t<idStr> {
 
         @Override
         public int compare(idStr a, idStr b) {
-            return a.IcmpPath(b.toString());
+            return a.IcmpPath(b.getData());
         }
     }
 

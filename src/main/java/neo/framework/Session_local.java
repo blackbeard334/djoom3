@@ -4457,7 +4457,7 @@ public class Session_local {
             // Build the gui list
             for (i = 0; i < list.GetNumMods(); i++) {
                 guiActive.SetStateString(va("modsList_item_%d", i), list.GetDescription(i));
-                modsList.oSet(i, list.GetMod(i));
+                modsList.oSetType(i, list.GetMod(i));
             }
             guiActive.DeleteStateVar(va("modsList_item_%d", list.GetNumMods()));
             guiActive.SetStateString("modsList_sel_0", "-1");

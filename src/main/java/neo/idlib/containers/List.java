@@ -3,6 +3,7 @@ package neo.idlib.containers;
 import static neo.TempDump.NOT;
 import static neo.TempDump.reflects._Minus;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
@@ -16,7 +17,7 @@ import neo.framework.CVarSystem.idInternalCVar;
 import neo.framework.CmdSystem;
 import neo.framework.CmdSystem.commandDef_s;
 import neo.idlib.Text.Str.idStr;
-import neo.idlib.containers.StrList.idStrPtr;
+//import neo.idlib.containers.StrList.idStrPtr;
 import neo.idlib.containers.StrPool.idPoolStr;
 
 /**
@@ -39,10 +40,12 @@ public class List {
                 + Integer.SIZE
                 + CPP_class.Pointer.SIZE;//type
 
-        protected int num;
-        private   int size;
-        protected int granularity = 16;
-        private type[]      list;
+        // the number of elements currently contained in the array.
+        private int num;
+        // the number of elements currently allocated for.
+        private int size;
+        private int granularity = 16;
+        private type[]      array;
         private Class<type> type;
         //
         private static int DBG_counter = 0;
@@ -58,56 +61,162 @@ public class List {
 
         public idList(Class<type> type) {
             this();
-            this.type = type;
+            this.setType(type);
         }
 
         public idList(int newgranularity) {
             assert (newgranularity > 0);
 
-            list = null;
-            granularity = newgranularity;
+            this.setArray(null);
+            this.setGranularity(newgranularity);
             Clear();
         }
 
-        public idList(int newgranularity, Class<type> type) {
+        idList(int newgranularity, Class<type> type) {
             this(newgranularity);
-            this.type = type;
+            this.setType(type);
         }
 
-        public idList(final idList<type> other) {
-            list = null;
-            this.oSet(other);
-        }
+//        private idList(final idList<type> other) {
+//            this.setArray(null); // necessary ???
+//            this.oSet(other);
+//        }
+
 //public					~idList<type>( );
 //
+
+		private type[] getArray() {
+			return array;
+		}
+
+    	private type getArrayType(int index) {
+    		return getArray()[index];
+    	}
+
+		private void setArray(type[] array) {
+			this.array = array;
+		}
+
+    	private type setArrayType(int index, type element) {
+    		return this.getArray()[index] = element;
+    	}
+
+		private int getSize() {
+			return size;
+		}
+
+
+		private void setSize(int size) {
+			this.size = size;
+		}
+
+
+		private int getGranularity() {
+			return granularity;
+		}
+
+
+		private void setGranularity(int granularity) {
+			this.granularity = granularity;
+		}
+
+		private Class<type> getType() {
+			return type;
+		}
+
+
+		private void setType(Class<type> type) {
+			this.type = type;
+		}
+
+
+		private int getNum() {
+			return num;
+		}
+
+
+		private void setNum(int num) {
+			this.num = num;
+		}
+
+		@SuppressWarnings("unchecked")
+		private type[] castArrayType(ArrayList<type> types) {
+			return (type[]) types.toArray();
+		}
+
+		private ArrayList<type> generateArray(int size) {
+			ArrayList<type> types = new ArrayList<type>();
+			addInitializedValues(types, size);
+			return types;
+		}
+
+		private ArrayList<type> addInitializedValues(ArrayList<type> types, int size) {
+			for (int i = 0; i < size; i++) {
+				types.add(instantiateType());// TODO: check if any of this is necessary?
+			}
+			return types;
+		}
+
+		private type instantiateType() {
+			return instantiateType(type);
+		}
+
+		private type instantiateType(Class<?> type) {
+			if (type != null) {
+	            try {
+	            	@SuppressWarnings("unchecked")
+					type instance = (type) type.newInstance();
+					return instance;//TODO: check if any of this is necessary?
+	            } catch (InstantiationException | IllegalAccessException ex) {
+	                Logger.getLogger(List.class.getName()).log(Level.SEVERE, "could not initialize " + ((type==null) ? "null" : type), ex);
+	            }
+			}
+            return null;
+		}
+
+		private void adjustArray() {
+            if (NOT(getArray())) {
+                Resize(getGranularity());
+            }
+
+            if (Num() == getSize()) {
+                int newsize;
+
+                if (getGranularity() == 0) {	// this is a hack to fix our memset classes
+                	this.setGranularity(16);
+                }
+                newsize = getSize() + getGranularity();
+                Resize(newsize - newsize % getGranularity());
+            }
+		}
 
         /*
          ================
          idList<type>::Clear
 
-         Frees up the memory allocated by the list.  Assumes that type automatically handles freeing up memory.
+         Frees up the memory allocated by the array.  Assumes that type automatically handles freeing up memory.
          ================
          */
-        public void Clear() {										// clear the list
-//            if (list) {
-//                delete[] list;
+        public void Clear() {										// clear the array
+//            if (array) {
+//                delete[] array;
 //            }
 
-            list = null;
-            num = 0;
-            size = 0;
+        	this.setArray(null);
+        	this.setNum(0);
+        	this.setSize(0);
         }
 
         /*
          ================
          idList<type>::Num
 
-         Returns the number of elements currently contained in the list.
+         Returns the number of elements currently contained in the array.
          Note that this is NOT an indication of the memory allocated.
          ================
          */
-        public int Num() {									// returns number of elements in list
-            return num;
+        public int Num() {									// returns number of elements in array
+            return getNum();
         }
 
         /*
@@ -117,9 +226,9 @@ public class List {
          Returns the number of elements currently allocated for.
          ================
          */
-        public int NumAllocated() {							// returns number of elements allocated for
-            return size;
-        }
+//        public int NumAllocated() {							// returns number of elements allocated for
+//            return size;
+//        }
 
         /*
          ================
@@ -132,13 +241,13 @@ public class List {
             int newsize;
 
             assert (newgranularity > 0);
-            granularity = newgranularity;
+            this.setGranularity(newgranularity);
 
-            if (list != null) {
+            if (getArray() != null) {
                 // resize it to the closest level of granularity
-                newsize = num + granularity - 1;
-                newsize -= newsize % granularity;
-                if (newsize != size) {
+                newsize = Num() + getGranularity() - 1;
+                newsize -= newsize % getGranularity();
+                if (newsize != getSize()) {
                     Resize(newsize);
                 }
             }
@@ -152,7 +261,7 @@ public class List {
          ================
          */
         public int GetGranularity() {						// get the current granularity
-            return granularity;
+            return getGranularity();
         }
 //
 
@@ -160,27 +269,27 @@ public class List {
          ================
          idList<type>::Allocated
 
-         return total memory allocated for the list in bytes, but doesn't take into account additional memory allocated by type
+         return total memory allocated for the array in bytes, but doesn't take into account additional memory allocated by type
          ================
          */
         public int Allocated() {						// returns total size of allocated memory
+            return getSize();
+        }
+
+        public /*size_t*/ int Size() {						// returns total size of allocated memory including size of array type
             return size;
         }
 
-        public /*size_t*/ int Size() {						// returns total size of allocated memory including size of list type
-            return Allocated();
-        }
+        public /*size_t*/ int MemoryUsed() {					// returns size of the used elements in the array
 
-        public /*size_t*/ int MemoryUsed() {					// returns size of the used elements in the list
-
-            return num /* sizeof( *list )*/;
+            return Num() /* sizeof( *array )*/;
         }
 
         /*
          ================
          idList<type>::operator=
 
-         Copies the contents and size attributes of another list.
+         Copies the contents and size attributes of another array.
          ================
          */
         public idList<type> oSet(final idList<type> other) {
@@ -188,15 +297,15 @@ public class List {
 
             Clear();
 
-            this.num = other.num;
-            this.size = other.size;
-            this.granularity = other.granularity;
-            this.type = other.type;
+            this.setNum(other.getNum());
+            this.setSize(other.getSize());
+            this.setGranularity(other.getGranularity());
+            this.setType(other.getType());
 
-            if (this.size != 0) {
-                this.list = (type[]) new Object[size];
-                for (i = 0; i < this.num; i++) {
-                    this.list[i] = other.list[i];
+            if (this.getSize() != 0) {
+                this.setArray(castArrayType(generateArray(getSize())));
+                for (i = 0; i < this.Num(); i++) {
+                    this.getArray()[i] = other.getArray()[i];
                 }
             }
 
@@ -213,9 +322,9 @@ public class List {
          */
         public type oGet(int index) {
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
             
-            return list[index];
+            return getArrayType(index);
         }
 //public	type &			operator[]( int index );
 //
@@ -223,28 +332,39 @@ public class List {
 //            assert (index >= 0);
 //            assert (index < num);
 //
-//            return list[index] = value;
+//            return array[index] = value;
 //        }
 
-        public type oSet(int index, Object value) {
-            assert (index >= 0);
-            assert (index < num);
+        /**
+         * @deprecated use {@link idList}#oSet(int index, type value) instead
+         */
+        @SuppressWarnings("unchecked")
+		public type oSetType(int index, Object value) {
+        	return oSet(index, (type) value);
+        }
 
-            return list[index] = (type) value;
+        public type oSet(int index, type value) {
+            assert (index >= 0);
+            assert (index < Num());
+
+            return setArrayType(index, (type) value);
         }
 
         public type oPluSet(int index, type value) {
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
 
-//            if (list[index] instanceof Double) {
-//                return list[index] = (type) (Object) ((Double) list[index] + (Double) value);//TODO:test thsi shit
+//            if (array[index] instanceof Double) {
+//                return array[index] = (type) (Object) ((Double) array[index] + (Double) value);//TODO:test thsi shit
 //            }
-//            if (list[index] instanceof Float) {
-//                return list[index] = (type) (Object) ((Float) list[index] + (Float) value);//TODO:test thsi shit
+//            if (array[index] instanceof Float) {
+//                return array[index] = (type) (Object) ((Float) array[index] + (Float) value);//TODO:test thsi shit
 //            }
-//            if (list[index] instanceof Integer) {
-            return list[index] = (type) (Object) (((Number) list[index]).doubleValue() + ((Number) value).doubleValue());//TODO:test thsi shit
+//            if (array[index] instanceof Integer) {
+            @SuppressWarnings("unchecked")
+            type element = (type) (Object) (((Number) getArrayType(index)).doubleValue() + ((Number) value).doubleValue());//TODO:test thsi shit
+            this.setArrayType(index, element);
+            return element;
 //            }
         }
 //
@@ -256,10 +376,10 @@ public class List {
          Resizes the array to exactly the number of elements it contains or frees up memory if empty.
          ================
          */
-        public void Condense() {									// resizes list to exactly the number of elements it contains
-            if (list != null) {
-                if (num != 0) {
-                    Resize(num);
+        public void Condense() {									// resizes array to exactly the number of elements it contains
+            if (getArray() != null) {
+                if (Num() != 0) {
+                    Resize(Num());
                 } else {
                     Clear();
                 }
@@ -274,36 +394,36 @@ public class List {
          Contents are copied using their = operator so that data is correnctly instantiated.
          ================
          */
-        public void Resize(int newsize) {								// resizes list to the given number of elements
+        public void Resize(int newsize) {								// resizes array to the given number of elements
             type[] temp;
             int i;
 
             assert (newsize >= 0);
 
-            // free up the list if no data is being reserved
+            // free up the array if no data is being reserved
             if (newsize <= 0) {
                 Clear();
                 return;
             }
 
-            if (newsize == size) {
+            if (newsize == getSize()) {
                 // not changing the size, so just exit
                 return;
             }
 
-            temp = list;
-            size = newsize;
-            if (size < num) {
-                num = size;
+            temp = getArray();
+            this.setSize(newsize);
+            if (newsize < Num()) {
+            	this.setNum(newsize);
             }
 
-            // copy the old list into our new one
-            list = (type[]) new Object[size];
-            for (i = 0; i < num; i++) {
-                list[i] = temp[i];
+            // copy the old array into our new one
+            this.setArray(castArrayType(generateArray(newsize)));
+            for (i = 0; i < Num(); i++) {
+            	getArray()[i] = temp[i];
             }
 
-            // delete the old list if it exists
+            // delete the old array if it exists
 //	if ( temp ) {
 //		delete[] temp;
 //	}
@@ -317,40 +437,40 @@ public class List {
          Contents are copied using their = operator so that data is correnctly instantiated.
          ================
          */
-        public void Resize(int newsize, int newgranularity) {			// resizes list and sets new granularity
+        public void Resize(int newsize, int newgranularity) {			// resizes array and sets new granularity
             type[] temp;
             int i;
 
             assert (newsize >= 0);
 
             assert (newgranularity > 0);
-            granularity = newgranularity;
+            this.setGranularity(newgranularity);
 
-            // free up the list if no data is being reserved
+            // free up the array if no data is being reserved
             if (newsize <= 0) {
                 Clear();
                 return;
             }
 
-            temp = list;
-            size = newsize;
-            if (size < num) {
-                num = size;
+            temp = getArray();
+            this.setSize(newsize);
+            if (newsize < Num()) {
+            	this.setNum(newsize);
             }
 
-            // copy the old list into our new one
-            list = (type[]) new Object[size];
-            for (i = 0; i < num; i++) {
-                list[i] = temp[i];
+            // copy the old array into our new one
+            this.setArray(castArrayType(generateArray(newsize)));
+            for (i = 0; i < Num(); i++) {
+            	getArray()[i] = temp[i];
             }
 
-            // delete the old list if it exists
+            // delete the old array if it exists
 //	if ( temp ) {
 //		delete[] temp;
 //	}
         }
 
-        public void SetNum(int newnum) {			// set number of elements in list and resize to exactly this number if necessary
+        public void SetNum(int newnum) {			// set number of elements in array and resize to exactly this number if necessary
             SetNum(newnum, true);
         }
 
@@ -361,101 +481,78 @@ public class List {
          Resize to the exact size specified irregardless of granularity
          ================
          */
-        public void SetNum(int newnum, boolean resize) {			// set number of elements in list and resize to exactly this number if necessary
+        public void SetNum(int newnum, boolean resize) {			// set number of elements in array and resize to exactly this number if necessary
             assert (newnum >= 0);
-            if (resize || newnum > size) {
+            if (resize || newnum > getSize()) {
                 Resize(newnum);
             }
-            num = newnum;
+            this.setNum(newnum);
         }
 
         /*
          ================
          idList<type>::AssureSize
 
-         Makes sure the list has at least the given number of elements.
+         Makes sure the array has at least the given number of elements.
          ================
          */
-        public void AssureSize(int newSize) {							// assure list has given number of elements, but leave them uninitialized
+        public void AssureSize(int newSize) {							// assure array has given number of elements, but leave them uninitialized
             int newNum = newSize;
 
-            if (newSize > size) {
+            if (newSize > getSize()) {
 
-                if (granularity == 0) {	// this is a hack to fix our memset classes
-                    granularity = 16;
+                if (getGranularity() == 0) {	// this is a hack to fix our memset classes
+                	this.setGranularity(16);
                 }
 
-                newSize += granularity - 1;
-                newSize -= newSize % granularity;
+                newSize += getGranularity() - 1;
+                newSize -= newSize % getGranularity();
                 Resize(newSize);
             }
 
-            num = newNum;
+            this.setNum(newNum);
         }
 
         /*
          ================
          idList<type>::AssureSize
 
-         Makes sure the list has at least the given number of elements and initialize any elements not yet initialized.
+         Makes sure the array has at least the given number of elements and initialize any elements not yet initialized.
          ================
          */
-        public void AssureSize(int newSize, final type initValue) {	// assure list has given number of elements and initialize any new elements
-            int newNum = newSize;
+        public void AssureSize(int newSize, final type initValue) {	// assure array has given number of elements and initialize any new elements
+            int oldNum = Num();
 
-            if (newSize > size) {
+            AssureSize(newSize);
 
-                if (granularity == 0) {	// this is a hack to fix our memset classes
-                    granularity = 16;
-                }
-
-                newSize += granularity - 1;
-                newSize -= newSize % granularity;
-                num = size;
-                Resize(newSize);
-
-                for (int i = num; i < newSize; i++) {
-                    list[i] = initValue;
+            if (newSize > oldNum) {
+                for (int i = oldNum; i < newSize; i++) {
+                	getArray()[i] = initValue;
                 }
             }
-
-            num = newNum;
         }
 
         /*
          ================
          idList<type>::AssureSizeAlloc
 
-         Makes sure the list has at least the given number of elements and allocates any elements using the allocator.
+         Makes sure the array has at least the given number of elements and allocates any elements using the allocator.
 
          NOTE: This function can only be called on lists containing pointers. Calling it
          on non-pointer lists will cause a compiler error.
          ================
          */
-        public void AssureSizeAlloc(int newSize, /*new_t*/ Class allocator) {	// assure the pointer list has the given number of elements and allocate any new elements
-            int newNum = newSize;
+        public void AssureSizeAlloc(int newSize, /*new_t*/ Class<type> allocator) {	// assure the pointer array has the given number of elements and allocate any new elements
+            int oldNum = Num();
 
-            if (newSize > size) {
+            AssureSize(newSize);
 
-                if (granularity == 0) {	// this is a hack to fix our memset classes
-                    granularity = 16;
-                }
-
-                newSize += granularity - 1;
-                newSize -= newSize % granularity;
-                num = size;
-                Resize(newSize);
-
-                for (int i = num; i < newSize; i++) {
-                    try {
-                        list[i] = /*( * allocator) ()*/ (type) allocator.newInstance();//TODO: check if any of this is necessary?
-                    } catch (InstantiationException | IllegalAccessException ex) {
-                        Logger.getLogger(List.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+            if (newSize > oldNum) {
+                for (int i = oldNum; i < newSize; i++) {
+                	getArray()[i] = /*( * allocator) ()*/ instantiateType(allocator);//TODO: check if any of this is necessary?
                 }
             }
 
-            num = newNum;
         }
 //
 
@@ -463,46 +560,46 @@ public class List {
          ================
          idList<type>::Ptr
 
-         Returns a pointer to the begining of the array.  Useful for iterating through the list in loops.
+         Returns a pointer to the begining of the array.  Useful for iterating through the array in loops.
 
-         Note: may return NULL if the list is empty.
+         Note: may return NULL if the array is empty.
 
          FIXME: Create an iterator template for this kind of thing.
          ================
          */
         @Deprecated
-        public type[] Ptr() {										// returns a pointer to the list
-            return list;
+        public type[] Ptr() {										// returns a pointer to the array
+            return getArray();
         }
 
         public <T> T[] Ptr(final Class<? extends T[]> type) {
-            if (this.num == 0)
+            if (this.Num() == 0)
                 return null;
             
-            // returns a pointer to the list
-            return Arrays.copyOf(this.list, this.num, type);
+            // returns a pointer to the array
+            return Arrays.copyOf(this.getArray(), this.getNum(), type);
         }
-//public	const type *	Ptr( ) const;									// returns a pointer to the list
+//public	const type *	Ptr( ) const;									// returns a pointer to the array
 
         /*
          ================
          idList<type>::Alloc
 
-         Returns a reference to a new data element at the end of the list.
+         Returns a reference to a new data element at the end of the array.
          ================
          */
-        public type Alloc() {									// returns reference to a new data element at the end of the list
-            if (NOT(list)) {
-                Resize(granularity);
+        public type Alloc() {									// returns reference to a new data element at the end of the array
+            if (NOT(getArray())) {
+                Resize(getGranularity());
             }
 
-            if (num == size) {
-                Resize(size + granularity);
+            if (Num() == getSize()) {
+                Resize(getSize() + getGranularity());
             }
-            try {
-                return list[num++] = type.newInstance();
-            } catch (InstantiationException | IllegalAccessException ex) {
-//                Logger.getLogger(List.class.getName()).log(Level.SEVERE, null, ex);
+            type instance = instantiateType();
+            if (instance != null) {
+            	this.setArrayType(this.num++, instance);
+            	return instance;
             }
 
             return null;
@@ -512,30 +609,18 @@ public class List {
          ================
          idList<type>::Append
 
-         Increases the size of the list by one element and copies the supplied data into it.
+         Increases the size of the array by one element and copies the supplied data into it.
 
          Returns the index of the new element.
          ================
          */
         public int Append(final type obj) {// append element
-            if (NOT(list)) {
-                Resize(granularity);
-            }
+        	adjustArray();
 
-            if (num == size) {
-                int newsize;
+            getArray()[Num()] = obj;
+            this.setNum(getNum()+1);
 
-                if (granularity == 0) {	// this is a hack to fix our memset classes
-                    granularity = 16;
-                }
-                newsize = size + granularity;
-                Resize(newsize - newsize % granularity);
-            }
-
-            list[num] = obj;
-            num++;
-
-            return num - 1;
+            return Num() - 1;
         }
 
         /**
@@ -553,17 +638,17 @@ public class List {
          ================
          idList<type>::Append
 
-         adds the other list to this one
+         adds the other array to this one
 
-         Returns the size of the new combined list
+         Returns the size of the new combined array
          ================
          */
-        public int Append(final idList<type> other) {				// append list
-            if (NOT(list)) {
-                if (granularity == 0) {	// this is a hack to fix our memset classes
-                    granularity = 16;
+        public int Append(final idList<type> other) {				// append array
+            if (NOT(getArray())) {
+                if (getGranularity() == 0) {	// this is a hack to fix our memset classes
+                	this.setGranularity(16);
                 }
-                Resize(granularity);
+                Resize(getGranularity());
             }
 
             int n = other.Num();
@@ -578,7 +663,7 @@ public class List {
          ================
          idList<type>::AddUnique
 
-         Adds the data to the list if it doesn't already exist.  Returns the index of the data in the list.
+         Adds the data to the array if it doesn't already exist.  Returns the index of the data in the array.
          ================
          */
         public int AddUnique(final type obj) {			// add unique element
@@ -600,37 +685,25 @@ public class List {
          ================
          idList<type>::Insert
 
-         Increases the size of the list by at leat one element if necessary 
+         Increases the size of the array by at leat one element if necessary 
          and inserts the supplied data into it.
 
          Returns the index of the new element.
          ================
          */
         public int Insert(final type obj, int index) {			// insert the element at the given index
-            if (NOT(list)) {
-                Resize(granularity);
-            }
-
-            if (num == size) {
-                int newsize;
-
-                if (granularity == 0) {	// this is a hack to fix our memset classes
-                    granularity = 16;
-                }
-                newsize = size + granularity;
-                Resize(newsize - newsize % granularity);
-            }
+        	adjustArray();
 
             if (index < 0) {
                 index = 0;
-            } else if (index > num) {
-                index = num;
+            } else if (index > Num()) {
+                index = Num();
             }
-            for (int i = num; i > index; --i) {
-                list[i] = list[i - 1];
+            for (int i = Num(); i > index; --i) {
+            	getArray()[i] = getArray()[i - 1];
             }
-            num++;
-            list[index] = obj;
+            this.setNum(getNum()+1);
+            this.setArrayType(index, obj);
             return index;
         }
 
@@ -638,14 +711,14 @@ public class List {
          ================
          idList<type>::FindIndex
 
-         Searches for the specified data in the list and returns it's index.  Returns -1 if the data is not found.
+         Searches for the specified data in the array and returns it's index.  Returns -1 if the data is not found.
          ================
          */
         public int FindIndex(final type obj) {				// find the index for the given element
             int i;
 
-            for (i = 0; i < num; i++) {
-                if (Objects.equals(list[i], obj)) {
+            for (i = 0; i < Num(); i++) {
+                if (Objects.equals(getArray()[i], obj)) {
                     return i;
                 }
             }
@@ -658,7 +731,7 @@ public class List {
          ================
          idList<type>::Find
 
-         Searches for the specified data in the list and returns it's address. Returns NULL if the data is not found.
+         Searches for the specified data in the array and returns it's address. Returns NULL if the data is not found.
          ================
          */
         public Integer Find(final type obj) {						// find pointer to the given element
@@ -676,17 +749,17 @@ public class List {
          ================
          idList<type>::FindNull
 
-         Searches for a NULL pointer in the list.  Returns -1 if NULL is not found.
+         Searches for a NULL pointer in the array.  Returns -1 if NULL is not found.
 
          NOTE: This function can only be called on lists containing pointers. Calling it
          on non-pointer lists will cause a compiler error.
          ================
          */
-        public int FindNull() {								// find the index for the first NULL pointer in the list
+        public int FindNull() {								// find the index for the first NULL pointer in the array
             int i;
 
-            for (i = 0; i < num; i++) {
-                if (NOT(list[i])) {
+            for (i = 0; i < Num(); i++) {
+                if (NOT(getArray()[i])) {
                     return i;
                 }
             }
@@ -699,20 +772,20 @@ public class List {
          ================
          idList<type>::IndexOf
 
-         Takes a pointer to an element in the list and returns the index of the element.
-         This is NOT a guarantee that the object is really in the list. 
-         Function will assert in debug builds if pointer is outside the bounds of the list,
+         Takes a pointer to an element in the array and returns the index of the element.
+         This is NOT a guarantee that the object is really in the array. 
+         Function will assert in debug builds if pointer is outside the bounds of the array,
          but remains silent in release builds.
          ================
          */
-        public int IndexOf(final type objptr) {					// returns the index for the pointer to an element in the list
+        public int IndexOf(final type objptr) {					// returns the index for the pointer to an element in the array
             int index;
 
-//            index = objptr - list;
+//            index = objptr - array;
             index = FindIndex(objptr);
 
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
 
             return index;
         }
@@ -722,24 +795,24 @@ public class List {
          idList<type>::RemoveIndex
 
          Removes the element at the specified index and moves all data following the element down to fill in the gap.
-         The number of elements in the list is reduced by one.  Returns false if the index is outside the bounds of the list.
-         Note that the element is not destroyed, so any memory used by it may not be freed until the destruction of the list.
+         The number of elements in the array is reduced by one.  Returns false if the index is outside the bounds of the array.
+         Note that the element is not destroyed, so any memory used by it may not be freed until the destruction of the array.
          ================
          */
         public boolean RemoveIndex(int index) {							// remove the element at the given index
             int i;
 
-            assert (list != null);
+            assert (getArray() != null);
             assert (index >= 0);
-            assert (index < num);
+            assert (index < Num());
 
-            if ((index < 0) || (index >= num)) {
+            if ((index < 0) || (index >= Num())) {
                 return false;
             }
 
-            num--;
-            for (i = index; i < num; i++) {
-                list[i] = list[i + 1];
+            this.setNum(getNum() - 1);
+            for (i = index; i < Num(); i++) {
+            	getArray()[i] = getArray()[i + 1];
             }
 
             return true;
@@ -749,9 +822,9 @@ public class List {
          ================
          idList<type>::Remove
 
-         Removes the element if it is found within the list and moves all data following the element down to fill in the gap.
-         The number of elements in the list is reduced by one.  Returns false if the data is not found in the list.  Note that
-         the element is not destroyed, so any memory used by it may not be freed until the destruction of the list.
+         Removes the element if it is found within the array and moves all data following the element down to fill in the gap.
+         The number of elements in the array is reduced by one.  Returns false if the data is not found in the array.  Note that
+         the element is not destroyed, so any memory used by it may not be freed until the destruction of the array.
          ================
          */
         public boolean Remove(final type obj) {							// remove the element
@@ -769,39 +842,45 @@ public class List {
          ================
          idList<type>::Sort
 
-         Performs a qsort on the list using the supplied comparison function.  Note that the data is merely moved around the
-         list, so any pointers to data within the list may no longer be valid.
+         Performs a qsort on the array using the supplied comparison function.  Note that the data is merely moved around the
+         array, so any pointers to data within the array may no longer be valid.
          ================
          */
         public void Sort() {
-            if (NOT(list)) {
+            if (NOT(getArray())) {
                 return;
             }
 
-            if (list[0] instanceof idStr
-                    || list[0] instanceof idPoolStr
-                    || list[0] instanceof idStrPtr) {
-                this.Sort(new StrList.idListSortCompare());
+            if (getArray()[0] instanceof idStr
+            		//|| getArray()[0] instanceof idStrPtr
+                    || getArray()[0] instanceof idPoolStr) {
+            	@SuppressWarnings("unchecked")
+            	cmp_t<type> compare = (cmp_t<type>) new StrList.idListSortCompare();
+            	this.Sort(compare);
 
-            } else if (list[0] instanceof idInternalCVar) {
-                this.Sort(new CVarSystem.idListSortCompare());
+            } else if (getArray()[0] instanceof idInternalCVar) {
+            	@SuppressWarnings("unchecked")
+            	cmp_t<type> compare = (cmp_t<type>) new CVarSystem.idListSortCompare();
+                this.Sort(compare);
 
-            } else if (list[0] instanceof commandDef_s) {
-                this.Sort(new CmdSystem.idListSortCompare());
+            } else if (getArray()[0] instanceof commandDef_s) {
+            	@SuppressWarnings("unchecked")
+            	cmp_t<type> compare = (cmp_t<type>) new CmdSystem.idListSortCompare();
+                this.Sort(compare);
 
             } else {
                 this.Sort(new idListSortCompare<type>());
             }
         }
 
-        public void Sort(cmp_t compare /*= ( cmp_t * )&idListSortCompare<type> */) {
+        public void Sort(cmp_t<type> compare /*= ( cmp_t * )&idListSortCompare<type> */) {
 
 //	typedef int cmp_c(const void *, const void *);
 //
 //	cmp_c *vCompare = (cmp_c *)compare;
-//	qsort( ( void * )list, ( size_t )num, sizeof( type ), vCompare );
-            if (list != null) {
-                Arrays.sort(list, compare);
+//	qsort( ( void * )array, ( size_t )num, sizeof( type ), vCompare );
+            if (getArray() != null) {
+                Arrays.sort(getArray(), compare);
             }
         }
 
@@ -810,32 +889,32 @@ public class List {
          ================
          idList<type>::SortSubSection
 
-         Sorts a subsection of the list.
+         Sorts a subsection of the array.
          ================
          */
-        public void SortSubSection(int startIndex, int endIndex) {
-            this.SortSubSection(startIndex, endIndex, new idListSortCompare<type>());
-        }
-
-        public void SortSubSection(int startIndex, int endIndex, cmp_t compare /*= ( cmp_t * )&idListSortCompare<type>*/) {
-            if (NOT(list)) {
-                return;
-            }
-            if (startIndex < 0) {
-                startIndex = 0;
-            }
-            if (endIndex >= num) {
-                endIndex = num - 1;
-            }
-            if (startIndex >= endIndex) {
-                return;
-            }
-//	typedef int cmp_c(const void *, const void *);
+//        public void SortSubSection(int startIndex, int endIndex) {
+//            this.SortSubSection(startIndex, endIndex, new idListSortCompare<type>());
+//        }
 //
-//	cmp_c *vCompare = (cmp_c *)compare;
-//	qsort( ( void * )( &list[startIndex] ), ( size_t )( endIndex - startIndex + 1 ), sizeof( type ), vCompare );
-            Arrays.sort(list, startIndex, endIndex, compare);
-        }
+//        public void SortSubSection(int startIndex, int endIndex, cmp_t compare /*= ( cmp_t * )&idListSortCompare<type>*/) {
+//            if (NOT(array)) {
+//                return;
+//            }
+//            if (startIndex < 0) {
+//                startIndex = 0;
+//            }
+//            if (endIndex >= Num()) {
+//                endIndex = Num() - 1;
+//            }
+//            if (startIndex >= endIndex) {
+//                return;
+//            }
+////	typedef int cmp_c(const void *, const void *);
+////
+////	cmp_c *vCompare = (cmp_c *)compare;
+////	qsort( ( void * )( &array[startIndex] ), ( size_t )( endIndex - startIndex + 1 ), sizeof( type ), vCompare );
+//            Arrays.sort(array, startIndex, endIndex, compare);
+//        }
 
         /*
          ================
@@ -848,47 +927,47 @@ public class List {
             final int swap_num, swap_size, swap_granularity;
             final type[] swap_list;
 
-            swap_num = num;
-            swap_size = size;
-            swap_granularity = granularity;
-            swap_list = list;
+            swap_num = Num();
+            swap_size = getSize();
+            swap_granularity = getGranularity();
+            swap_list = getArray();
 
-            num = other.num;
-            size = other.size;
-            granularity = other.granularity;
-            list = other.list;
+            this.setNum(other.Num());
+            this.setSize(other.getSize());
+            this.setGranularity(other.getGranularity());
+            this.setArray(other.getArray());
 
-            other.num = swap_num;
-            other.size = swap_size;
-            other.granularity = swap_granularity;
-            other.list = swap_list;
+            other.setNum(swap_num);
+            other.setSize(swap_size);
+            other.setGranularity(swap_granularity);
+            other.setArray(swap_list);
         }
 
         /*
          ================
          idList<type>::DeleteContents
 
-         Calls the destructor of all elements in the list.  Conditionally frees up memory used by the list.
+         Calls the destructor of all elements in the array.  Conditionally frees up memory used by the array.
          Note that this only works on lists containing pointers to objects and will cause a compiler error
-         if called with non-pointers.  Since the list was not responsible for allocating the object, it has
+         if called with non-pointers.  Since the array was not responsible for allocating the object, it has
          no information on whether the object still exists or not, so care must be taken to ensure that
          the pointers are still valid when this function is called.  Function will set all pointers in the
-         list to NULL.
+         array to NULL.
          ================
          */
-        public void DeleteContents(boolean clear) {						// delete the contents of the list
+        public void DeleteContents(boolean clear) {						// delete the contents of the array
             int i;
 
-            for (i = 0; i < num; i++) {
-//		delete list[i ];
-                list[i] = null;
+            for (i = 0; i < Num(); i++) {
+//		delete array[i ];
+                getArray()[i] = null;
             }
 
             if (clear) {
                 Clear();
             } else {
-//		memset( list, 0, size * sizeof( type ) );
-                list = (type[]) new Object[list.length];
+//		memset( array, 0, size * sizeof( type ) );
+            	this.setArray(castArrayType(generateArray(array.length)));
             }
         }
     };

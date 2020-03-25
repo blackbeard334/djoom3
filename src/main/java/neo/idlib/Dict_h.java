@@ -253,7 +253,7 @@ public class Dict_h {
             args.SetNum(n);
             try {
                 for (i = 0; i < n; i++) {
-                    args.oSet(i, other.args.oGet(i).clone());
+                    args.oSetType(i, other.args.oGet(i).clone());
                 }
             } catch (CloneNotSupportedException ex) {
                 throw new idException(ex);

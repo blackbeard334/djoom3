@@ -881,7 +881,7 @@ public class Player {
             pdas.SetNum(num);
             for (i = 0; i < num; i++) {
                 itemname = String.format("pda_%d", i);
-                pdas.oSet(i, dict.GetString(itemname, "default"));
+                pdas.oSetType(i, dict.GetString(itemname, "default"));
             }
 
             // videos
@@ -889,7 +889,7 @@ public class Player {
             videos.SetNum(num);
             for (i = 0; i < num; i++) {
                 itemname = String.format("video_%d", i);
-                videos.oSet(i, dict.GetString(itemname, "default"));
+                videos.oSetType(i, dict.GetString(itemname, "default"));
             }
 
             // emails
@@ -897,7 +897,7 @@ public class Player {
             emails.SetNum(num);
             for (i = 0; i < num; i++) {
                 itemname = String.format("email_%d", i);
-                emails.oSet(i, dict.GetString(itemname, "default"));
+                emails.oSetType(i, dict.GetString(itemname, "default"));
             }
 
             // weapons are stored as a number for persistant data, but as strings in the entityDef
