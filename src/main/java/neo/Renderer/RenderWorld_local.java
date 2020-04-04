@@ -104,7 +104,7 @@ import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
-import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
+import static neo.Renderer.opengl.QGLConst.GL_LINE_LOOP;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

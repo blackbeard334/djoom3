@@ -76,11 +76,11 @@ import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Text.Str.C_COLOR_DEFAULT;
 import static neo.idlib.math.Vector.getVec3_zero;
 import static neo.sys.win_glimp.GLimp_Shutdown;
-import static org.lwjgl.opengl.GL11.GL_BACK;
-import static org.lwjgl.opengl.GL11.GL_FRONT;
-import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
-import static org.lwjgl.opengl.GL11.GL_RGB;
-import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static neo.Renderer.opengl.QGLConst.GL_BACK;
+import static neo.Renderer.opengl.QGLConst.GL_FRONT;
+import static neo.Renderer.opengl.QGLConst.GL_NO_ERROR;
+import static neo.Renderer.opengl.QGLConst.GL_RGB;
+import static neo.Renderer.opengl.QGLConst.GL_UNSIGNED_BYTE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

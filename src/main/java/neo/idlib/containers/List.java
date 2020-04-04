@@ -230,7 +230,7 @@ public class List {
 					type instance = (type) type.newInstance();
 					return instance;//TODO: check if any of this is necessary?
 	            } catch (InstantiationException | IllegalAccessException ex) {
-	                Logger.getLogger(List2.class.getName()).log(Level.SEVERE, "could not initialize " + ((type==null) ? "null" : type), ex);
+	                Logger.getLogger(List.class.getName()).log(Level.SEVERE, "could not initialize " + ((type==null) ? "null" : type), ex);
 	            }
 			}
             return null;

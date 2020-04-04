@@ -156,8 +156,8 @@ import static neo.idlib.Text.Token.TT_NUMBER;
 import static neo.idlib.precompiled.MAX_EXPRESSION_OPS;
 import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
 import static neo.ui.UserInterface.uiManager;
-import static org.lwjgl.opengl.ARBFragmentProgram.GL_FRAGMENT_PROGRAM_ARB;
-import static org.lwjgl.opengl.ARBVertexProgram.GL_VERTEX_PROGRAM_ARB;
+import static neo.Renderer.opengl.QGLConst.GL_FRAGMENT_PROGRAM_ARB;
+import static neo.Renderer.opengl.QGLConst.GL_VERTEX_PROGRAM_ARB;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

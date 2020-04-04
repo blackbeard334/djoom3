@@ -35,10 +35,10 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.flatten;
 import static neo.TempDump.wrapToNativeBuffer;
 import static neo.idlib.Lib.idLib.common;
-import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static org.lwjgl.opengl.EXTTextureCompressionS3TC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_BORDER_COLOR;
+import static neo.Renderer.opengl.QGLConst.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+import static neo.Renderer.opengl.QGLConst.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+import static neo.Renderer.opengl.QGLConst.GL_TEXTURE_2D;
+import static neo.Renderer.opengl.QGLConst.GL_TEXTURE_BORDER_COLOR;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
