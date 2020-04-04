@@ -5,8 +5,13 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
 
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 import neo.openal.QALIfc;
 
 public class Lwjgl3QAL implements QALIfc {
@@ -138,5 +143,18 @@ public class Lwjgl3QAL implements QALIfc {
     public int alSourceUnqueueBuffers(int sourceName) {
     	return AL10.alSourceUnqueueBuffers(sourceName);
     }
+
+	public void createCapabilities(long openalDevice) {
+        final ALCCapabilities alcCapabilities = ALC.createCapabilities(openalDevice);
+        final ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+	}
+
+	public void freeOpenAL() {
+		ALC.destroy();
+	}
+
+	public void loadOpenAL() {
+		ALC.create();
+	}
 
 }

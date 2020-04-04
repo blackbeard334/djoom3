@@ -70,4 +70,10 @@ public interface QALIfc {
 
     int alSourceUnqueueBuffers(int sourceName);
 
+    void createCapabilities(long openalDevice);
+
+    void loadOpenAL();
+
+    void freeOpenAL();
+
 }

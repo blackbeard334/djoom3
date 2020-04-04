@@ -56,10 +56,6 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.ALC;
-import org.lwjgl.openal.ALCCapabilities;
-import org.lwjgl.openal.ALCapabilities;
 
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.RenderWorld.idRenderWorld;
@@ -87,6 +83,7 @@ import neo.idlib.CmdArgs.idCmdArgs;
 import neo.idlib.Text.Str.idStr;
 import neo.idlib.containers.List.idList;
 import neo.idlib.math.Math_h.idMath;
+import neo.openal.QAL;
 
 /**
  *
@@ -293,8 +290,7 @@ public class snd_system {
 
                     alcMakeContextCurrent(this.openalContext);
                     
-                    final ALCCapabilities alcCapabilities = ALC.createCapabilities(this.openalDevice);
-                    final ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+                    QAL.createCapabilities(this.openalDevice);
                     common.Printf("Done.\n");
 
                     // try to obtain EAX extensions

@@ -139,4 +139,16 @@ public class QAL implements QALConstantsIfc {
     	return impl.alSourceUnqueueBuffers(sourceName);
     }
 
+    public static void createCapabilities(long openalDevice) {
+    	impl.createCapabilities(openalDevice);
+    }
+
+    public static void freeOpenAL() {
+    	impl.freeOpenAL();
+    }
+
+   public static void loadOpenAL() {
+    	impl.loadOpenAL();
+    }
+
 }
