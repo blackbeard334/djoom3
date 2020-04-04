@@ -102,9 +102,9 @@ import static neo.idlib.math.Plane.PLANESIDE_BACK;
 import static neo.idlib.math.Plane.PLANESIDE_CROSS;
 import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
+import static neo.opengl.QGLConstants.GL_LINE_LOOP;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
-import static neo.Renderer.opengl.QGLConst.GL_LINE_LOOP;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

@@ -1,6 +1,6 @@
 package neo.Renderer;
 
-import static neo.Renderer.opengl.QGLConst.GL_UNSIGNED_INT;
+import static neo.opengl.QGLConstants.GL_UNSIGNED_INT;
 
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;

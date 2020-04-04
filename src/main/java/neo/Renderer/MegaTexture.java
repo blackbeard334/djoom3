@@ -18,10 +18,10 @@ import static neo.framework.FileSystem_h.fileSystem;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_CUR;
 import static neo.framework.File_h.fsOrigin_t.FS_SEEK_SET;
 import static neo.framework.Session.session;
-import static neo.Renderer.opengl.QGLConst.GL_VERTEX_PROGRAM_ARB;
-import static neo.Renderer.opengl.QGLConst.GL_RGBA;
-import static neo.Renderer.opengl.QGLConst.GL_TEXTURE_2D;
-import static neo.Renderer.opengl.QGLConst.GL_UNSIGNED_BYTE;
+import static neo.opengl.QGLConstants.GL_RGBA;
+import static neo.opengl.QGLConstants.GL_TEXTURE_2D;
+import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
+import static neo.opengl.QGLConstants.GL_VERTEX_PROGRAM_ARB;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;

@@ -31,27 +31,28 @@ import static neo.sys.win_main.Sys_Sleep;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.sys.win_snd.Sys_FreeOpenAL;
 import static neo.sys.win_snd.Sys_LoadOpenAL;
-import static org.lwjgl.openal.AL10.AL_BUFFER;
-import static org.lwjgl.openal.AL10.AL_NO_ERROR;
-import static org.lwjgl.openal.AL10.AL_ROLLOFF_FACTOR;
-import static org.lwjgl.openal.AL10.alDeleteSources;
-import static org.lwjgl.openal.AL10.alGenSources;
-import static org.lwjgl.openal.AL10.alGetError;
-import static org.lwjgl.openal.AL10.alIsExtensionPresent;
-import static org.lwjgl.openal.AL10.alSourceStop;
-import static org.lwjgl.openal.AL10.alSourcef;
-import static org.lwjgl.openal.AL10.alSourcei;
-import static org.lwjgl.openal.ALC10.ALC_DEVICE_SPECIFIER;
-import static org.lwjgl.openal.ALC10.alcCloseDevice;
-import static org.lwjgl.openal.ALC10.alcCreateContext;
-import static org.lwjgl.openal.ALC10.alcDestroyContext;
-import static org.lwjgl.openal.ALC10.alcGetString;
-import static org.lwjgl.openal.ALC10.alcMakeContextCurrent;
-import static org.lwjgl.openal.ALC10.alcOpenDevice;
-import static org.lwjgl.openal.ALC10.alcProcessContext;
-import static org.lwjgl.openal.ALC10.alcSuspendContext;
+import static neo.openal.QALConstants.AL_BUFFER;
+import static neo.openal.QALConstants.AL_NO_ERROR;
+import static neo.openal.QALConstants.AL_ROLLOFF_FACTOR;
+import static neo.openal.QALConstants.ALC_DEVICE_SPECIFIER;
+import static neo.openal.QAL.alDeleteSources;
+import static neo.openal.QAL.alGenSources;
+import static neo.openal.QAL.alGetError;
+import static neo.openal.QAL.alIsExtensionPresent;
+import static neo.openal.QAL.alSourceStop;
+import static neo.openal.QAL.alSourcef;
+import static neo.openal.QAL.alSourcei;
+import static neo.openal.QAL.alcCloseDevice;
+import static neo.openal.QAL.alcCreateContext;
+import static neo.openal.QAL.alcDestroyContext;
+import static neo.openal.QAL.alcGetString;
+import static neo.openal.QAL.alcMakeContextCurrent;
+import static neo.openal.QAL.alcOpenDevice;
+import static neo.openal.QAL.alcProcessContext;
+import static neo.openal.QAL.alcSuspendContext;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
@@ -288,7 +289,7 @@ public class snd_system {
                 } else {
                     common.Printf("Setup OpenAL device and context... ");
                     this.openalDevice = alcOpenDevice((ByteBuffer) null);
-                    this.openalContext = alcCreateContext(this.openalDevice, (int[]) null);
+                    this.openalContext = alcCreateContext(this.openalDevice, (IntBuffer) null);
 
                     alcMakeContextCurrent(this.openalContext);
                     

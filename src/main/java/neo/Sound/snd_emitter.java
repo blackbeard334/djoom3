@@ -25,22 +25,23 @@ import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
 import static neo.sys.win_main.Sys_EnterCriticalSection;
 import static neo.sys.win_main.Sys_LeaveCriticalSection;
 import static neo.sys.win_shared.Sys_Milliseconds;
-import static org.lwjgl.openal.AL10.AL_BUFFER;
-import static org.lwjgl.openal.AL10.AL_NO_ERROR;
-import static org.lwjgl.openal.AL10.AL_PLAYING;
-import static org.lwjgl.openal.AL10.AL_SOURCE_STATE;
-import static org.lwjgl.openal.AL10.AL_STOPPED;
-import static org.lwjgl.openal.AL10.alGetError;
-import static org.lwjgl.openal.AL10.alIsSource;
-import static org.lwjgl.openal.AL10.alSourceStop;
-import static org.lwjgl.openal.AL10.alSourcei;
+import static neo.openal.QALConstants.AL_BUFFER;
+import static neo.openal.QALConstants.AL_NO_ERROR;
+import static neo.openal.QALConstants.AL_PLAYING;
+import static neo.openal.QALConstants.AL_SOURCE_STATE;
+import static neo.openal.QALConstants.AL_STOPPED;
+import static neo.openal.QAL.alDeleteBuffers;
+import static neo.openal.QAL.alGetError;
+import static neo.openal.QAL.alGetSourcei;
+import static neo.openal.QAL.alIsSource;
+import static neo.openal.QAL.alSourceStop;
+import static neo.openal.QAL.alSourcei;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
 
 import neo.Renderer.RenderWorld.idRenderWorld;
 import neo.Sound.snd_cache.idSoundSample;
@@ -615,7 +616,7 @@ public class snd_emitter {
                 if ((this.openalStreamingBuffer.get(0) != 0) && (this.openalStreamingBuffer.get(1) != 0) && (this.openalStreamingBuffer.get(2) != 0)) {
                     alGetError();
 //                    alDeleteBuffers(3, openalStreamingBuffer[0]);
-                    AL10.alDeleteBuffers(this.openalStreamingBuffer);
+                    alDeleteBuffers(this.openalStreamingBuffer);
                     if (alGetError() == AL_NO_ERROR) {
                         this.openalStreamingBuffer.clear();
                     }
@@ -624,7 +625,7 @@ public class snd_emitter {
                 if ((this.lastopenalStreamingBuffer.get(0) != 0) && (this.lastopenalStreamingBuffer.get(1) != 0) && (this.lastopenalStreamingBuffer.get(2) != 0)) {
                     alGetError();
 //                    alDeleteBuffers(3, lastopenalStreamingBuffer[0]);
-                    AL10.alDeleteBuffers(this.lastopenalStreamingBuffer);
+                    alDeleteBuffers(this.lastopenalStreamingBuffer);
                     if (alGetError() == AL_NO_ERROR) {
                         this.lastopenalStreamingBuffer.clear();
                     }
@@ -1275,7 +1276,7 @@ public class snd_emitter {
 
                         if (idSoundSystemLocal.useOpenAL && alIsSource(chan.openalSource)) {
 //                            alGetSourcei(chan.openalSource, AL_SOURCE_STATE, state);
-                            state = AL10.alGetSourcei(chan.openalSource, AL_SOURCE_STATE);
+                            state = alGetSourcei(chan.openalSource, AL_SOURCE_STATE);
                         }
                         final idSlowChannel slow = GetSlowChannel(chan);
 

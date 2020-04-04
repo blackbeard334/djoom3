@@ -75,12 +75,12 @@ import static neo.framework.Session.session;
 import static neo.idlib.Lib.colorWhite;
 import static neo.idlib.Text.Str.C_COLOR_DEFAULT;
 import static neo.idlib.math.Vector.getVec3_zero;
+import static neo.opengl.QGLConstants.GL_BACK;
+import static neo.opengl.QGLConstants.GL_FRONT;
+import static neo.opengl.QGLConstants.GL_NO_ERROR;
+import static neo.opengl.QGLConstants.GL_RGB;
+import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
 import static neo.sys.win_glimp.GLimp_Shutdown;
-import static neo.Renderer.opengl.QGLConst.GL_BACK;
-import static neo.Renderer.opengl.QGLConst.GL_FRONT;
-import static neo.Renderer.opengl.QGLConst.GL_NO_ERROR;
-import static neo.Renderer.opengl.QGLConst.GL_RGB;
-import static neo.Renderer.opengl.QGLConst.GL_UNSIGNED_BYTE;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
