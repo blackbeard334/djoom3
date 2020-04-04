@@ -1,6 +1,6 @@
 package neo.opengl;
 
-public interface QGLConstants {
+public interface QGLConstantsIfc {
 
 	int GL_ADD = 0x104;
 

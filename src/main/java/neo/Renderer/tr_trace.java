@@ -20,9 +20,9 @@ import static neo.Renderer.tr_rendertools.RB_DrawBounds;
 import static neo.Renderer.tr_trisurf.R_DeriveFacePlanes;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
-import static neo.opengl.QGLConstants.GL_LINE_LOOP;
-import static neo.opengl.QGLConstants.GL_MODULATE;
-import static neo.opengl.QGLConstants.GL_TEXTURE_COORD_ARRAY;
+import static neo.opengl.QGLConstantsIfc.GL_LINE_LOOP;
+import static neo.opengl.QGLConstantsIfc.GL_MODULATE;
+import static neo.opengl.QGLConstantsIfc.GL_TEXTURE_COORD_ARRAY;
 
 import neo.Renderer.Model.srfTriangles_s;
 import neo.Renderer.tr_local.drawSurf_s;
