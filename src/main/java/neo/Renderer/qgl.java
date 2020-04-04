@@ -1876,4 +1876,61 @@ public class qgl {
                 flip();
     }
 
+
+    public static void glBegin(int mode) {
+    	GL11.glBegin(mode);
+    }
+    
+    public static void glBlendFunc(int sfactor, int dfactor) {
+    	GL11.glBlendFunc(sfactor, dfactor);
+    }
+    
+    public static void glClear(int mask) {
+        GL11.glClear(mask);
+    }
+    
+    public static void glClearColor(float red,float green, float blue, float alpha) {
+        GL11.glClearColor(red, green, blue, alpha);
+    }
+    
+    public static void glColor3f(float red, float green, float blue) {
+    	GL11.glColor3f(red, green, blue);
+    }
+
+    public static void glDisable(int target) {
+        GL11.glDisable(target);
+    }
+
+    public static void glDrawBuffer(int buf) {
+        GL11.glDrawBuffer(buf);
+    }
+
+    public static void glEnd() {
+    	GL11.glEnd();
+    }
+
+    public static void glFlush() {
+        GL11.glFlush();
+    }
+
+    public static void glLoadIdentity() {
+        GL11.glLoadIdentity();
+    }
+
+    public static void glMatrixMode(int mode) {
+        GL11.glMatrixMode(mode);
+    }
+
+    public static void glOrtho(double l, double r, double b, double t, double n, double f) {
+        GL11.glOrtho(l, r, b, t, n, f);
+    }
+
+    public static void glPolygonMode(int face, int mode) {
+        GL11.glPolygonMode(face, mode);
+    }
+
+    public static void glVertex3f(float x, float y, float z) {
+        GL11.glVertex3f(x, y, z);
+    }
+
 }
