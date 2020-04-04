@@ -104,7 +104,7 @@ import static neo.idlib.math.Plane.PLANESIDE_FRONT;
 import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
-import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
+import static neo.Renderer.opengl.QGLConstants.GL_LINE_LOOP;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -1749,7 +1749,7 @@ public class RenderWorld_local {
             src.ExpectAnyToken(token);
 
             model = renderModelManager.AllocModel();
-            model.InitEmpty(token.toString());
+            model.InitEmpty(token.getData());
 
             final int numSurfaces = src.ParseInt();
             if (numSurfaces < 0) {
@@ -1817,7 +1817,7 @@ public class RenderWorld_local {
             src.ExpectAnyToken(token);
 
             model = renderModelManager.AllocModel();
-            model.InitEmpty(token.toString());
+            model.InitEmpty(token.getData());
 
             surf.shader = tr.defaultMaterial;
 
@@ -2233,7 +2233,7 @@ public class RenderWorld_local {
             // if we are reloading the same map, check the timestamp
             // and try to skip all the work
             final long[] currentTimeStamp = new long[1];
-            fileSystem.ReadFile(filename.toString(), null, currentTimeStamp);
+            fileSystem.ReadFile(filename.getData(), null, currentTimeStamp);
 
             if (this.mapName.equals(name)) {
                 if ((currentTimeStamp[0] != FILE_NOT_FOUND_TIMESTAMP) && (currentTimeStamp[0] == this.mapTimeStamp[0])) {
@@ -2249,7 +2249,7 @@ public class RenderWorld_local {
 
             FreeWorld();
 
-            src = new idLexer(filename.toString(), LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
+            src = new idLexer(filename.getData(), LEXFL_NOSTRINGCONCAT | LEXFL_NODOLLARPRECOMPILE);
             if (!src.IsLoaded()) {
                 common.Printf("idRenderWorldLocal::InitFromMap: %s not found\n", filename);
                 ClearWorld();

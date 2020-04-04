@@ -1094,7 +1094,7 @@ public class Console {
 
             final idStr msg = new idStr();
             idAsyncNetwork.server.GetAsyncStatsAvgMsg(msg);
-            SCR_DrawTextRightAlign(yy, msg.toString());
+            SCR_DrawTextRightAlign(yy, msg.getData());
 
         } else if (idAsyncNetwork.client.IsActive()) {
 
@@ -1141,7 +1141,7 @@ public class Console {
             } else {
                 percent = (localTime * 100) / sampleTime;
             }
-            SCR_DrawTextLeftAlign(yy, "%3d: %3d%% (%1.2f) %s: %s (%dkB)", numActiveDecoders, percent, decoderInfo.lastVolume, decoderInfo.format.toString(), decoderInfo.name.toString(), decoderInfo.numBytes >> 10);
+            SCR_DrawTextLeftAlign(yy, "%3d: %3d%% (%1.2f) %s: %s (%dkB)", numActiveDecoders, percent, decoderInfo.lastVolume, decoderInfo.format.getData(), decoderInfo.name.getData(), decoderInfo.numBytes >> 10);
             numActiveDecoders++;
         }
         return yy[0];
@@ -1193,7 +1193,7 @@ public class Console {
                 return;
             }
 
-            final String fileName = new idStr(args.Argv(1)).DefaultFileExtension(".txt").toString();
+            final String fileName = new idStr(args.Argv(1)).DefaultFileExtension(".txt").getData();
 
             common.Printf("Dumped console text to %s.\n", fileName);
 

@@ -76,14 +76,14 @@ public class ModelManager {
         public abstract idRenderModel FindModel(final String modelName);
 
         public idRenderModel FindModel(final idStr modelName) {
-            return FindModel(modelName.toString());
+            return FindModel(modelName.getData());
         }
 
         // returns NULL if not loadable
         public abstract idRenderModel CheckModel(final String modelName);
 
         public idRenderModel CheckModel(final idStr modelName) {
-            return CheckModel(modelName.toString());
+            return CheckModel(modelName.getData());
         }
 
         // returns the default cube model
@@ -417,13 +417,13 @@ public class ModelManager {
 
                 mem = model.Memory();
                 totalMem += mem;
-                f.Printf("%s %s\n", idStr.FormatNumber(mem).toString(), model.Name());
+                f.Printf("%s %s\n", idStr.FormatNumber(mem).getData(), model.Name());
             }
 
 //	delete sortIndex;
             mi.modelAssetsTotal = totalMem;
 
-            f.Printf("\nTotal model bytes allocated: %s\n", idStr.FormatNumber(totalMem).toString());
+            f.Printf("\nTotal model bytes allocated: %s\n", idStr.FormatNumber(totalMem).getData());
             fileSystem.CloseFile(f);
         }
 

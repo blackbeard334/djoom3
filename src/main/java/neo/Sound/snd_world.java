@@ -700,20 +700,20 @@ public class snd_world {
                 idFile rL, lL, wO;
                 idStr name;
 
-                name = new idStr(this.aviDemoPath.toString() + this.aviDemoName + ".wav");
-                wO = fileSystem.OpenFileWrite(name.toString());
+                name = new idStr(this.aviDemoPath.getData() + this.aviDemoName + ".wav");
+                wO = fileSystem.OpenFileWrite(name.getData());
                 if (null == wO) {
                     common.Error("Couldn't write %s", name.c_str());
                 }
 
                 name.oSet(this.aviDemoPath + "channel_right.raw");
-                rL = fileSystem.OpenFileRead(name.toString());
+                rL = fileSystem.OpenFileRead(name.getData());
                 if (null == rL) {
                     common.Error("Couldn't open %s", name.c_str());
                 }
 
                 name.oSet(this.aviDemoPath + "channel_left.raw");
-                lL = fileSystem.OpenFileRead(name.toString());
+                lL = fileSystem.OpenFileRead(name.getData());
                 if (null == lL) {
                     common.Error("Couldn't open %s", name.c_str());
                 }
@@ -834,7 +834,7 @@ public class snd_world {
                         name = chan.soundShader.GetName();
                         savefile.WriteString(name);
 
-                        name = chan.leadinSample.name.toString();
+                        name = chan.leadinSample.name.getData();
                         savefile.WriteString(name);
                     }
                 }

@@ -708,11 +708,11 @@ public class Item {
                         shotName.oPluSet("/");
                         shotName.oPluSet(this.spawnArgs.GetString("screenshot"));
                         shotName.SetFileExtension(".tga");
-                        player.hud.SetStateString("screenshot", shotName.toString());
+                        player.hud.SetStateString("screenshot", shotName.getData());
                         player.hud.SetStateString("objective", "1");
                         player.hud.SetStateString("objectivetext", this.spawnArgs.GetString("objectivetext"));
                         player.hud.SetStateString("objectivetitle", this.spawnArgs.GetString("objectivetitle"));
-                        player.GiveObjective(this.spawnArgs.GetString("objectivetitle"), this.spawnArgs.GetString("objectivetext"), shotName.toString());
+                        player.GiveObjective(this.spawnArgs.GetString("objectivetitle"), this.spawnArgs.GetString("objectivetext"), shotName.getData());
 
                         // a tad slow but keeps from having to update all objectives in all maps with a name ptr
                         for (int i = 0; i < gameLocal.num_entities; i++) {
@@ -768,7 +768,7 @@ public class Item {
                     // draw a view to a texture
                     renderSystem.CropRenderSize(256, 256, true);
                     gameRenderWorld.RenderScene(fullView);
-                    renderSystem.CaptureRenderToFile(shotName.toString());
+                    renderSystem.CaptureRenderToFile(shotName.getData());
                     renderSystem.UnCrop();
                 }
             }
@@ -1026,11 +1026,11 @@ public class Item {
             kv = ent.spawnArgs.MatchPrefix(va("def_drop%sItem", type), null);
             while (kv != null) {
 
-                c = kv.GetKey().toString();// + kv.GetKey().Length();
+                c = kv.GetKey().getData();// + kv.GetKey().Length();
                 length = kv.GetKey().Length();
                 if ((idStr.Icmp(c.substring(length - 5), "Joint") != 0) && (idStr.Icmp(c.substring(length - 8), "Rotation") != 0)) {
 
-                    key = kv.GetKey().toString() + 4;
+                    key = kv.GetKey().getData() + 4;
                     key2 = key;
                     key += "Joint";
                     key2 += "Offset";
@@ -1049,7 +1049,7 @@ public class Item {
                         angles.roll = sscanf.nextFloat();
                         sscanf.close();
                     } else {
-                        key = kv.GetKey().toString() + 4;
+                        key = kv.GetKey().getData() + 4;
                         key += "Rotation";
                         ent.spawnArgs.GetAngles(key, "0 0 0", angles);
                     }
@@ -1057,7 +1057,7 @@ public class Item {
 
                     origin.oPluSet(ent.spawnArgs.GetVector(key2, "0 0 0"));
 
-                    item = DropItem(kv.GetValue().toString(), origin, axis, getVec3_origin(), 0, 0);
+                    item = DropItem(kv.GetValue().getData(), origin, axis, getVec3_origin(), 0, 0);
                     if ((list != null) && (item != null)) {
                         list.Append(item);
                     }

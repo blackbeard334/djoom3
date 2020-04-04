@@ -179,7 +179,7 @@ public class CmdArgs {
                 // check for negative numbers
                 if (!keepAsStrings && (token.equals("-"))) {
                     if (lex.CheckTokenType(TT_NUMBER, 0, number) != 0) {
-                        token.oSet("-" + number.toString());
+                        token.oSet("-" + number.getData());
                     }
                 }
 
@@ -189,7 +189,7 @@ public class CmdArgs {
                         return;
                     }
                     if (idLib.cvarSystem != null) {
-                        token.oSet(idLib.cvarSystem.GetCVarString(token.toString()));
+                        token.oSet(idLib.cvarSystem.GetCVarString(token.getData()));
                     } else {
                         token.oSet("<unknown>");
                     }
@@ -203,7 +203,7 @@ public class CmdArgs {
 
 //                tokenized.append(token);//damn pointers!
                 // regular token
-                this.argv[this.argc] = this.tokenized.replace(totalLen, this.tokenized.capacity(), token.toString()).substring(totalLen);
+                this.argv[this.argc] = this.tokenized.replace(totalLen, this.tokenized.capacity(), token.getData()).substring(totalLen);
                 this.argc++;
 
 //                idStr::Copynz( tokenized + totalLen, token.c_str(), sizeof( tokenized ) - totalLen );

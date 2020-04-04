@@ -313,7 +313,7 @@ public class Script_Interpreter {
             if ((null == this.eventEntity) || !this.eventEntity.RespondsTo(evdef)) {
                 if ((this.eventEntity != null) && developer.GetBool()) {
                     // give a warning in developer mode
-                    Warning("Function '%s' not supported on entity '%s'", evdef.GetName(), this.eventEntity.name.toString());
+                    Warning("Function '%s' not supported on entity '%s'", evdef.GetName(), this.eventEntity.name.getData());
                 }
                 // always return a safe value when an object doesn't exist
                 switch (evdef.GetReturnType()) {
@@ -576,7 +576,7 @@ public class Script_Interpreter {
 
             savefile.ReadString(funcname);
             if (funcname.Length() != 0) {
-                this.multiFrameEvent = idEventDef.FindEvent(funcname.toString());
+                this.multiFrameEvent = idEventDef.FindEvent(funcname.getData());
             }
 
             savefile.ReadObject(this./*reinterpret_cast<idClass *&>*/eventEntity);

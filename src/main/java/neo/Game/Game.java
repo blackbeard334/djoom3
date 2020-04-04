@@ -832,12 +832,12 @@ public class Game {
             args.Set("origin", org.ToString());
             args.Set("spawnclass", "idAFEntity_Generic");
             if (isNotNullOrEmpty(af.model)) {
-                args.Set("model", af.model.toString());
+                args.Set("model", af.model.getData());
             } else {
                 args.Set("model", fileName);
             }
             if (isNotNullOrEmpty(af.skin)) {
-                args.Set("skin", af.skin.toString());
+                args.Set("skin", af.skin.getData());
             }
             args.Set("articulatedFigure", fileName);
             args.Set("nodrop", "1");
@@ -1024,7 +1024,7 @@ public class Game {
                     continue;
                 }
 //		sscanf( arg.GetValue(), "%f %f %f %f %f %f", &origin.x, &origin.y, &origin.z, &angles.pitch, &angles.yaw, &angles.roll );
-                final Scanner sscanf = new Scanner(arg.GetValue().toString());
+                final Scanner sscanf = new Scanner(arg.GetValue().getData());
                 origin.x = sscanf.nextFloat();
                 origin.y = sscanf.nextFloat();
                 origin.z = sscanf.nextFloat();
@@ -1339,8 +1339,8 @@ public class Game {
                 if (mapent != null) {
                     for (int i = 0; i < dict.GetNumKeyVals(); i++) {
                         final idKeyValue kv = dict.GetKeyVal(i);
-                        final String key = kv.GetKey().toString();
-                        final String val = kv.GetValue().toString();
+                        final String key = kv.GetKey().getData();
+                        final String val = kv.GetValue().getData();
                         mapent.epairs.Set(key, val);
                     }
                 }

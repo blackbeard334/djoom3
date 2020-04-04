@@ -156,7 +156,7 @@ public class Model_md5 {
             parser.ExpectTokenString("numverts");
             count = parser.ParseInt();
             if (count < 0) {
-                parser.Error("Invalid size: %s", token.toString());
+                parser.Error("Invalid size: %s", token.getData());
             }
 
             this.texCoords.SetNum(count);
@@ -490,7 +490,7 @@ public class Model_md5 {
         public void Print() {
             int i = 0;
 
-            common.Printf("%s\n", this.name.toString());
+            common.Printf("%s\n", this.name.getData());
             common.Printf("Dynamic model.\n");
             common.Printf("Generated smooth normals.\n");
             common.Printf("    verts  tris weights material\n");
@@ -800,7 +800,7 @@ public class Model_md5 {
                 return "<invalid joint>";
             }
 
-            return this.joints.oGet(handle).name.toString();
+            return this.joints.oGet(handle).name.getData();
         }
 
         @Override
@@ -871,7 +871,7 @@ public class Model_md5 {
                 num = ent.numJoints;
                 for (i = 0; i < num; joint = ent.joints[++i]) {
                     pos = ent.origin.oPlus(joint.ToVec3().oMultiply(ent.axis));
-                    session.rw.DrawText(this.joints.oGet(i).name.toString(), pos.oPlus(offset), scale, colorWhite, view.renderView.viewaxis, 1);
+                    session.rw.DrawText(this.joints.oGet(i).name.getData(), pos.oPlus(offset), scale, colorWhite, view.renderView.viewaxis, 1);
                 }
             }
         }

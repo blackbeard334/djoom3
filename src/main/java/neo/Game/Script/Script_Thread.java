@@ -911,7 +911,7 @@ public class Script_Thread {
             assert (self != null);
 
             Init();
-            SetThreadName(self.name.toString());
+            SetThreadName(self.name.getData());
             this.interpreter.EnterObjectFunction(self, func, false);
             if (g_debugScript.GetBool()) {
                 gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, this.threadNum, this.threadName);
@@ -941,7 +941,7 @@ public class Script_Thread {
             assert (self != null);
 
             Init();
-            SetThreadName(self.name.toString());
+            SetThreadName(self.name.getData());
             this.interpreter.ThreadCall(source, func, args);
             if (g_debugScript.GetBool()) {
                 gameLocal.Printf("%d: create thread (%d) '%s'\n", gameLocal.time, this.threadNum, this.threadName);
@@ -1401,7 +1401,7 @@ public class Script_Thread {
         }
 
         public String GetThreadName() {
-            return this.threadName.toString();
+            return this.threadName.getData();
         }
 
         public void Error(final String fmt, Object... objects) {// const id_attribute((format(printf,2,3)));
@@ -1445,7 +1445,7 @@ public class Script_Thread {
         }
 
         public static void ReturnString(final idStr text) {
-            ReturnString(text.toString());
+            ReturnString(text.getData());
         }
 
         public static void ReturnFloat(float value) {

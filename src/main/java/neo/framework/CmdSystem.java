@@ -363,7 +363,7 @@ public class CmdSystem {
         idCmdSystemLocal() {
             this.completionString = new idStr();
             this.completionParms = new idStrList();
-            this.tokenizedCmds = new idList<>();
+            this.tokenizedCmds = new idList<idCmdArgs>();
             this.postReload = new idCmdArgs();
         }
 
@@ -608,7 +608,7 @@ public class CmdSystem {
                 path.StripTrailing('/');
 
                 // list folders
-                names = fileSystem.ListFiles(path.toString(), "/", true, true);
+                names = fileSystem.ListFiles(path.getData(), "/", true, true);
                 for (i = 0; i < names.GetNumFiles(); i++) {
                     idStr name = new idStr(names.GetFile(i));
                     if (stripFolder) {
@@ -625,7 +625,7 @@ public class CmdSystem {
 //                va_start(argPtr, stripFolder);
 //                for (extension = va_arg(argPtr, String); extension != null; extension = va_arg(argPtr, String)) {
                 for (final Object extension : objects) {
-                    names = fileSystem.ListFiles(path.toString(), extension.toString(), true, true);
+                    names = fileSystem.ListFiles(path.getData(), extension.toString(), true, true);
                     for (i = 0; i < names.GetNumFiles(); i++) {
                         final idStr name = new idStr(names.GetFile(i));
                         if (stripFolder) {
@@ -641,7 +641,7 @@ public class CmdSystem {
 //                va_end(argPtr);
             }
             for (i = 0; i < this.completionParms.Num(); i++) {
-                callback.run(this.completionParms.oGet(i).toString());
+                callback.run(this.completionParms.oGet(i).getData());
             }
         }
 
@@ -820,7 +820,7 @@ public class CmdSystem {
             int i;
             String match;
             commandDef_s cmd;
-            final idList<commandDef_s> cmdList = new idList<>();
+            final idList<commandDef_s> cmdList = new idList<commandDef_s>();
 
             if (args.Argc() > 1) {
                 match = args.Args(1, -1);
@@ -978,7 +978,7 @@ public class CmdSystem {
 
                 filename = new idStr(args.Argv(1));
                 filename.DefaultFileExtension(".cfg");
-                len = fileSystem.ReadFile(filename.toString(),/*reinterpret_cast<void **>*/ f, null);
+                len = fileSystem.ReadFile(filename.getData(),/*reinterpret_cast<void **>*/ f, null);
                 if (null == f[0]) {
                     common.Printf("couldn't exec %s\n", args.Argv(1));
                     return;

@@ -61,8 +61,8 @@ public class Physics_Base {
         public idPhysics_Base() {
             this.self = null;
             this.clipMask = 0;
-            this.contacts = new idList<>(contactInfo_t.class);
-            this.contactEntities = new idList<>(contactEntity_t.class);
+            this.contacts = new idList<contactInfo_t>(contactInfo_t.class);
+            this.contactEntities = new idList<contactEntity_t>(contactEntity_t.class);
 //            SetGravity(gameLocal.GetGravity());
             this.gravityVector = new idVec3(gameLocal.GetGravity());
             this.gravityNormal = new idVec3(gameLocal.GetGravity());

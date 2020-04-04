@@ -355,7 +355,7 @@ public class Lexer {
         }
 
         public boolean LoadFile(final idStr filename) throws idException {
-            return this.LoadFile(filename.toString());
+            return this.LoadFile(filename.getData());
         }
 
         // load a script from the given file at the given offset with the given length
@@ -415,7 +415,7 @@ public class Lexer {
         // so source strings extracted from a file can still refer to proper line numbers in the file
         // NOTE: the ptr is expected to point at a valid C string: ptr[length] == '\0'
         public boolean LoadMemory(final idStr ptr, int length, final idStr name/*= 1*/) throws idException {
-            return LoadMemory(CharBuffer.wrap(ptr.c_str()), length, name.toString());
+            return LoadMemory(CharBuffer.wrap(ptr.c_str()), length, name.getData());
         }
 
         public boolean LoadMemory(final String ptr, int length, final String name/*= 1*/) throws idException {
@@ -456,7 +456,7 @@ public class Lexer {
         }
 
         public boolean LoadMemory(final idStr ptr, int length, final String name) throws idException {
-            return LoadMemory(ptr.toString(), length, name);
+            return LoadMemory(ptr.getData(), length, name);
         }
 
         // free the script
@@ -620,7 +620,7 @@ public class Lexer {
                         str.oSet("unknown type");
                         break;
                 }
-                this.Error("expected a %s but found '%s'", str.toString(), token.toString());
+                this.Error("expected a %s but found '%s'", str.getData(), token.getData());
                 return 0;
             }
             if (token.type == TT_NUMBER) {
@@ -651,7 +651,7 @@ public class Lexer {
                         str.Append("integer ");
                     }
                     str.StripTrailing(' ');
-                    this.Error("expected %s but found '%s'", str.toString(), token.toString());
+                    this.Error("expected %s but found '%s'", str.getData(), token.getData());
                     return 0;
                 }
             } else if (token.type == TT_PUNCTUATION) {
@@ -660,7 +660,7 @@ public class Lexer {
                     return 0;
                 }
                 if (token.subtype != subtype) {
-                    this.Error("expected '%s' but found '%s'", GetPunctuationFromId(subtype), token.toString());
+                    this.Error("expected '%s' but found '%s'", GetPunctuationFromId(subtype), token.getData());
                     return 0;
                 }
             }
@@ -714,9 +714,9 @@ public class Lexer {
 
         // returns true if the next token equals the given string but does not remove the token from the source
         public boolean PeekTokenString(final String string) throws idException {
-            final idToken tok = new idToken();
+            final idToken token = new idToken();
 
-            if (!ReadToken(tok)) {
+            if (!ReadToken(token)) {
                 return false;
             }
 
@@ -724,7 +724,7 @@ public class Lexer {
             this.script_p = this.lastScript_p;
             this.line = this.lastline;
 
-            return (tok.toString().equals(string));
+            return (token.getData().equals(string));
         }
 
         // returns true if the next token equals the given type but does not remove the token from the source
@@ -752,7 +752,7 @@ public class Lexer {
             final idToken token = new idToken();
 
             while (this.ReadToken(token)) {
-                if (token.toString().equals(string)) {
+                if (token.getData().equals(string)) {
                     return true;
                 }
             }
@@ -860,7 +860,7 @@ public class Lexer {
             }
 
             out.Strip(' ');
-            return out.toString();
+            return out.getData();
         }
 //
 
@@ -1059,14 +1059,14 @@ public class Lexer {
 
             out.Empty();
             if (!this.ExpectTokenString("{")) {
-                return out.toString();
+                return out.getData();
             }
             out.oSet("{");
             depth = 1;
             do {
                 if (!this.ReadToken(token)) {
                     Error("missing closing brace");
-                    return out.toString();
+                    return out.getData();
                 }
 
                 // if the token is on a new line
@@ -1090,7 +1090,7 @@ public class Lexer {
                 out.oPluSet(" ");
             } while (depth != 0);
 
-            return out.toString();
+            return out.getData();
         }
 
         /*
@@ -1112,7 +1112,7 @@ public class Lexer {
             out.Empty();
 
             if (!this.ExpectTokenString("{")) {
-                return out.toString();
+                return out.getData();
             }
 
             out.oSet("{");
@@ -1163,7 +1163,7 @@ public class Lexer {
                 }
                 out.oPluSet(c);
             }
-            return out.toString();
+            return out.getData();
         }
 
         /*
@@ -1187,7 +1187,7 @@ public class Lexer {
             out.Empty();
 
             if (!this.ExpectTokenString("{")) {
-                return out.toString();
+                return out.getData();
             }
 
             out.oSet("{");
@@ -1238,7 +1238,7 @@ public class Lexer {
                 }
                 out.oPluSet(c);
             }
-            return out.toString();
+            return out.getData();
         }
 
         // parse the rest of the line
@@ -1257,7 +1257,7 @@ public class Lexer {
                 }
                 out.oPluSet(token);
             }
-            return out.toString();
+            return out.getData();
         }
 
         // retrieves the white space characters before the last read token
@@ -1392,9 +1392,9 @@ public class Lexer {
 //            va_end(ap);
 
             if ((this.flags & LEXFL_NOFATALERRORS) != 0) {
-                idLib.common.Warning("file %s, line %d: %s", this.filename.toString(), this.line, text);
+                idLib.common.Warning("file %s, line %d: %s", this.filename.getData(), this.line, text);
             } else {
-                idLib.common.Error("file %s, line %d: %s", this.filename.toString(), this.line, text);
+                idLib.common.Error("file %s, line %d: %s", this.filename.getData(), this.line, text);
             }
         }
 
@@ -1411,7 +1411,7 @@ public class Lexer {
 //	va_start( ap, str );
 //	vsprintf( text, str, ap );
 //	va_end( ap );
-            idLib.common.Warning("file %s, line %d: %s", this.filename.toString(), this.line, text);
+            idLib.common.Warning("file %s, line %d: %s", this.filename.getData(), this.line, text);
         }
 
         // returns true if Error() was called with LEXFL_NOFATALERRORS or LEXFL_NOERRORS set
@@ -1879,7 +1879,7 @@ public class Lexer {
                         }
                         if (0 == (this.flags & LEXFL_ALLOWFLOATEXCEPTIONS)) {
 //                            token.AppendDirty('\0');	// zero terminate for c_str
-                            this.Error("parsed %s", token.toString());
+                            this.Error("parsed %s", token.getData());
                         }
                     }
                 } else if (dot > 1) {

@@ -239,7 +239,7 @@ public class Parser {
         }
 
         public boolean LoadFile(final idStr filename) throws idException {
-            return LoadFile(filename.toString());
+            return LoadFile(filename.getData());
         }
 
         // load a source file
@@ -411,7 +411,7 @@ public class Parser {
                 // if the token is a name
                 if ((token.type == TT_NAME) && (0 == (token.flags & TOKEN_FL_RECURSIVE_DEFINE))) {
                     // check if the name is a define macro
-                    define = FindHashedDefine(this.definehash, token.toString());
+                    define = FindHashedDefine(this.definehash, token.getData());
                     // if it is a define macro
                     if (define != null) {
                         // expand the defined macro
@@ -513,7 +513,7 @@ public class Parser {
                     return false;
                 }
                 if (token.subtype != subtype) {
-                    this.Error("expected '%s' but found '%s'", this.scriptstack.GetPunctuationFromId(subtype), token.toString());
+                    this.Error("expected '%s' but found '%s'", this.scriptstack.GetPunctuationFromId(subtype), token.getData());
                     return false;
                 }
             }
@@ -676,14 +676,14 @@ public class Parser {
 
             out.Empty();
             if (!this.ExpectTokenString("{")) {
-                return out.toString();
+                return out.getData();
             }
             out.oSet("{");
             depth = 1;
             do {
                 if (!this.ReadToken(token)) {
                     Error("missing closing brace");
-                    return out.toString();
+                    return out.getData();
                 }
 
                 // if the token is on a new line
@@ -715,14 +715,14 @@ public class Parser {
                 }
 
                 if (token.type == TT_STRING) {
-                    out.Append("\"" + token.toString() + "\"");
+                    out.Append("\"" + token.getData() + "\"");
                 } else {
                     out.Append(token);
                 }
                 out.Append(" ");
             } while (depth != 0);
 
-            return out.toString();
+            return out.getData();
         }
 
         /*
@@ -756,7 +756,7 @@ public class Parser {
                 }
                 out.Append(token);
             }
-            return out.toString();
+            return out.getData();
         }
 
         // unread the given token
@@ -1389,7 +1389,7 @@ public class Parser {
                             break;
                         }
                     } else if (token.type == TT_NAME) {
-                        newdefine = FindHashedDefine(this.definehash, token.toString());
+                        newdefine = FindHashedDefine(this.definehash, token.getData());
                         if (newdefine != null) {
                             if (!this.ExpandDefineIntoSource(token, newdefine)) {
                                 return false;
@@ -1425,7 +1425,7 @@ public class Parser {
             token.whiteSpaceEnd_p = 0;
 //	(*token) = "";
             for (t = tokens[0]; t != null; t = t.next) {//TODO:check if tokens[0] should be used.
-                token.Append(t.toString());
+                token.Append(t.getData());
             }
             return true;
         }
@@ -1573,7 +1573,7 @@ public class Parser {
                 parmnum = -1;
                 // if the token is a name, it could be a define parameter
                 if (dt.type == TT_NAME) {
-                    parmnum = FindDefineParm(define, dt.toString());
+                    parmnum = FindDefineParm(define, dt.getData());
                 }
                 // if it is a define parameter
                 if (parmnum >= 0) {
@@ -1593,7 +1593,7 @@ public class Parser {
                     if (dt.equals("#")) {
                         // the stringizing operator must be followed by a define parameter
                         if (dt.next != null) {
-                            parmnum = FindDefineParm(define, dt.next.toString());
+                            parmnum = FindDefineParm(define, dt.next.getData());
                         } else {
                             parmnum = -1;
                         }
@@ -1854,13 +1854,13 @@ public class Parser {
                 path.StripFilename();
                 path.oPluSet("/");
                 path.oPluSet(token);
-                if (!script.LoadFile(path.toString(), this.OSPath)) {
+                if (!script.LoadFile(path.getData(), this.OSPath)) {
                     // try absolute path
                     path.oSet(token);
-                    if (!script.LoadFile(path.toString(), this.OSPath)) {
+                    if (!script.LoadFile(path.getData(), this.OSPath)) {
                         // try from the include path
                         path.oSet(this.includepath.oPlus(token));
-                        if (!script.LoadFile(path.toString(), this.OSPath)) {
+                        if (!script.LoadFile(path.getData(), this.OSPath)) {
 //					delete script;
                             script = null;
                         }
@@ -1889,7 +1889,7 @@ public class Parser {
                     return true;
                 }
                 script = new idLexer();
-                if (!script.LoadFile(this.includepath.oPlus(path).toString(), this.OSPath)) {
+                if (!script.LoadFile(this.includepath.oPlus(path).getData(), this.OSPath)) {
 //			delete script;
                     script = null;
                 }
@@ -1957,7 +1957,7 @@ public class Parser {
                 this.Error("expected name after #ifdef, found '%s'", token);
                 return false;
             }
-            d = FindHashedDefine(this.definehash, token.toString());
+            d = FindHashedDefine(this.definehash, token.getData());
             skip = ((type == INDENT_IFDEF) == (d == null)) ? 1 : 0;
             this.PushIndent(type, skip);
             return true;
@@ -2150,7 +2150,7 @@ public class Parser {
                         }
                         //v = (value_t *) GetClearedMemory(sizeof(value_t));
                         error = AllocValue(v, value_heap, numvalues);
-                        if (FindHashedDefine(this.definehash, t.toString()) != null) {
+                        if (FindHashedDefine(this.definehash, t.getData()) != null) {
                             v.intValue = 1;
                             v.floatValue = 1;
                         } else {
@@ -2612,7 +2612,7 @@ public class Parser {
                         lastToken = t;
                     } else {
                         //then it must be a define
-                        define = FindHashedDefine(this.definehash, token.toString());
+                        define = FindHashedDefine(this.definehash, token.getData());
                         if (null == define) {
                             this.Error("can't Evaluate '%s', not defined", token);
                             return false;
@@ -2711,7 +2711,7 @@ public class Parser {
                         lasttoken = t;
                     } else {
                         //then it must be a define
-                        define = FindHashedDefine(this.definehash, token.toString());
+                        define = FindHashedDefine(this.definehash, token.getData());
                         if (null == define) {
                             this.Warning("can't Evaluate '%s', not defined", token);
                             return false;
@@ -2781,7 +2781,7 @@ public class Parser {
                 return false;
             }
             // check if the define already exists
-            define = FindHashedDefine(this.definehash, token.toString());
+            define = FindHashedDefine(this.definehash, token.getData());
             if (define != null) {
                 if ((define.flags & DEFINE_FIXED) != 0) {
                     this.Error("can't redefine '%s'", token);
@@ -2794,7 +2794,7 @@ public class Parser {
                     return false;
                 }
                 // if the define was not removed (define.flags & DEFINE_FIXED)
-                define = FindHashedDefine(this.definehash, token.toString());
+                define = FindHashedDefine(this.definehash, token.getData());
             }
             // allocate define
 //	define = (define_t *) Mem_ClearedAlloc(sizeof(define_t) + token.Length() + 1);
@@ -2823,7 +2823,7 @@ public class Parser {
                             return false;
                         }
 
-                        if (FindDefineParm(define, token.toString()) >= 0) {
+                        if (FindDefineParm(define, token.getData()) >= 0) {
                             this.Error("two the same define parameters");
                             return false;
                         }
@@ -2862,7 +2862,7 @@ public class Parser {
             last = null;
             do {
                 t = new idToken(token);
-                if ((t.type == TT_NAME) && t.toString().equals(define.name)) {
+                if ((t.type == TT_NAME) && t.getData().equals(define.name)) {
                     t.flags |= TOKEN_FL_RECURSIVE_DEFINE;
                     this.Warning("recursive define (removed recursion)");
                 }
@@ -3055,7 +3055,7 @@ public class Parser {
                     }
                     return true;
                 } else {
-                    switch (token.toString()) {
+                    switch (token.getData()) {
                         case "include":
                             return this.Directive_include();
                         case "define":

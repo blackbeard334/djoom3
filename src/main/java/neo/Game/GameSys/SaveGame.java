@@ -197,7 +197,7 @@ public class SaveGame {
         }
 
         public void WriteString(final idStr string) {
-            this.WriteString(string.toString());
+            this.WriteString(string.getData());
         }
 
         public void WriteVec2(final idVec2 vec) {
@@ -626,9 +626,9 @@ public class SaveGame {
 
             for (i = 1; i < this.objects.Num(); i++) {
                 ReadString(className);
-                type = idClass.GetClass(className.toString());
+                type = idClass.GetClass(className.getData());
                 if (null == type) {
-                    Error("idRestoreGame::CreateObjects: Unknown class '%s'", className.toString());
+                    Error("idRestoreGame::CreateObjects: Unknown class '%s'", className.getData());
                 }
                 this.objects.oSetType(i, type.CreateInstance.run());
 
@@ -944,7 +944,7 @@ public class SaveGame {
             if (0 == name.Length()) {
                 model.oSet(null);
             } else {
-                model.oSet(renderModelManager.FindModel(name.toString()));
+                model.oSet(renderModelManager.FindModel(name.getData()));
             }
         }
 
@@ -957,7 +957,7 @@ public class SaveGame {
             } else {
                 final boolean[] unique = {false};
                 ReadBool(unique);
-                ui.oSet(uiManager.FindGui(name.toString(), true, unique[0]));
+                ui.oSet(uiManager.FindGui(name.getData(), true, unique[0]));
                 if (ui != null) {
                     if (ui.ReadFromSaveGame(this.file) == false) {
                         Error("idSaveGame::ReadUserInterface: ui failed to read properly\n");

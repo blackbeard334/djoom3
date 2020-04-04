@@ -1525,7 +1525,7 @@ public class Game_local {
                         declManager.MediaPrint("Precaching gui %s\n", kv.GetValue());
                         final idUserInterface gui = uiManager.Alloc();
                         if (gui != null) {
-                            gui.InitFromFile(kv.GetValue().toString());
+                            gui.InitFromFile(kv.GetValue().getData());
                             uiManager.DeAlloc(gui);
                         }
                     }
@@ -1598,7 +1598,7 @@ public class Game_local {
             kv = dict.MatchPrefix("def", null);
             while (kv != null) {
                 if (kv.GetValue().Length() != 0) {
-                    FindEntityDef(kv.GetValue().toString(), false);
+                    FindEntityDef(kv.GetValue().getData(), false);
                 }
                 kv = dict.MatchPrefix("def", kv);
             }
@@ -3145,7 +3145,7 @@ public class Game_local {
         }
 
         public String GetMapName() {
-            return this.mapFileName.toString();
+            return this.mapFileName.getData();
         }
 
         public int NumAAS() {
@@ -3670,7 +3670,7 @@ public class Game_local {
         }
 
         public idDict FindEntityDefDict(final idStr name) {
-            return FindEntityDefDict(name.toString());
+            return FindEntityDefDict(name.getData());
         }
 
         public void RegisterEntity(idEntity ent) {
@@ -4111,7 +4111,7 @@ public class Game_local {
         }
 
         public idEntity FindEntity(final idStr name) {
-            return FindEntity(name.toString());
+            return FindEntity(name.getData());
         }
 
         /*
@@ -4596,12 +4596,12 @@ public class Game_local {
             }
             // we don't allow numeric ui_name so this can't go wrong
             if (client.IsNumeric()) {
-                player = GetClientByNum(Integer.parseInt(client.toString()));
+                player = GetClientByNum(Integer.parseInt(client.getData()));
             } else {
-                player = GetClientByName(client.toString());
+                player = GetClientByName(client.getData());
             }
             if (null == player) {
-                common.Printf("Player '%s' not found\n", client.toString());
+                common.Printf("Player '%s' not found\n", client.getData());
             }
             return player;
         }
@@ -4895,7 +4895,7 @@ public class Game_local {
                     return true;
                 }
                 // a select set of si_ changes will cause a full restart of the server
-                if ((keyval.GetValue().Cmp(keyval2.GetValue().toString()) != 0) && ((0 == keyval.GetKey().Cmp("si_pure")) || (0 == keyval.GetKey().Cmp("si_map")))) {
+                if ((keyval.GetValue().Cmp(keyval2.GetValue().getData()) != 0) && ((0 == keyval.GetKey().Cmp("si_pure")) || (0 == keyval.GetKey().Cmp("si_map")))) {
                     return true;
                 }
             }
@@ -5342,7 +5342,7 @@ public class Game_local {
                 gameRenderWorld.DebugBounds((ent.IsHidden() ? colorLtGrey : colorOrange).oMultiply(frac), ent.GetPhysics().GetAbsBounds());
                 if (viewTextBounds.IntersectsBounds(ent.GetPhysics().GetAbsBounds())) {
                     final idVec3 center = ent.GetPhysics().GetAbsBounds().GetCenter();
-                    gameRenderWorld.DrawText(ent.name.toString(), center.oMinus(up), 0.1f, (colorWhite).oMultiply(frac), axis, 1);
+                    gameRenderWorld.DrawText(ent.name.getData(), center.oMinus(up), 0.1f, (colorWhite).oMultiply(frac), axis, 1);
                     gameRenderWorld.DrawText(ent.GetEntityDefName(), center, 0.1f, (colorWhite).oMultiply(frac), axis, 1);
                     gameRenderWorld.DrawText(va("#%d", ent.entityNumber), center.oPlus(up), 0.1f, (colorWhite).oMultiply(frac), axis, 1);
                 }
@@ -5403,7 +5403,7 @@ public class Game_local {
                         }
                     }
                     if (viewTextBounds.IntersectsBounds(entBounds)) {
-                        gameRenderWorld.DrawText(ent.name.toString(), entBounds.GetCenter(), 0.1f, colorWhite, axis, 1);
+                        gameRenderWorld.DrawText(ent.name.getData(), entBounds.GetCenter(), 0.1f, colorWhite, axis, 1);
                         gameRenderWorld.DrawText(va("#%d", ent.entityNumber), entBounds.GetCenter().oPlus(up), 0.1f, colorWhite, axis, 1);
                     }
                 }
@@ -6083,7 +6083,7 @@ public class Game_local {
                         }
 
                         for (k = 0; k < this.shakeSounds.Num(); k++) {
-                            if (this.shakeSounds.oGet(k).IcmpPath(soundName.toString()) == 0) {
+                            if (this.shakeSounds.oGet(k).IcmpPath(soundName.getData()) == 0) {
                                 break;
                             }
                         }

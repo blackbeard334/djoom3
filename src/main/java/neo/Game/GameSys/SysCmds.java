@@ -305,7 +305,7 @@ public class SysCmds {
                 if (func != null) {
                     // set all the entity names in case the user named one in the script that wasn't referenced in the default script
                     for (ent = gameLocal.spawnedEntities.Next(); ent != null; ent = ent.spawnNode.Next()) {
-                        gameLocal.program.SetEntity(ent.name.toString(), ent);
+                        gameLocal.program.SetEntity(ent.name.getData(), ent);
                     }
 
                     thread = new idThread(func);
@@ -841,10 +841,10 @@ public class SysCmds {
             outMsg.Init(msgBuf, msgBuf.capacity());
             outMsg.WriteByte(team ? GAME_RELIABLE_MESSAGE_TCHAT : GAME_RELIABLE_MESSAGE_CHAT);
             outMsg.WriteString(name);
-            outMsg.WriteString(text.toString(), -1, false);
+            outMsg.WriteString(text.getData(), -1, false);
             networkSystem.ClientSendReliableMessage(outMsg);
         } else {
-            gameLocal.mpGame.ProcessChatMessage(gameLocal.localClientNum, team, name, text.toString(), null);
+            gameLocal.mpGame.ProcessChatMessage(gameLocal.localClientNum, team, name, text.getData(), null);
         }
     }
 
@@ -1439,7 +1439,7 @@ public class SysCmds {
 
             if (lastLight != null) {
                 // find map file entity
-                mapEnt = mapFile.FindEntity(lastLight.name.toString());
+                mapEnt = mapFile.FindEntity(lastLight.name.getData());
 
                 if (removeFromMap && (mapEnt != null)) {
                     mapFile.RemoveEntity(mapEnt);
@@ -1486,7 +1486,7 @@ public class SysCmds {
                 }
 
                 light = (idLight) ent;
-                mapEnt = mapFile.FindEntity(light.name.toString());
+                mapEnt = mapFile.FindEntity(light.name.getData());
 
                 if (removeFromMap && (mapEnt != null)) {
                     mapFile.RemoveEntity(mapEnt);
@@ -1907,7 +1907,7 @@ public class SysCmds {
                 name.oSet(args.Argv(1));
                 name.oSet("def/" + name);
                 name.DefaultFileExtension(".def");
-                exporter.ExportDefFile(name.toString());
+                exporter.ExportDefFile(name.getData());
             }
         }
     }
@@ -1946,7 +1946,7 @@ public class SysCmds {
                 name.oSet(args.Argv(1));
                 name.oSet("def/" + name);
                 name.DefaultFileExtension(".def");
-                exporter.ExportDefFile(name.toString());
+                exporter.ExportDefFile(name.getData());
             }
             idAnimManager.forceExport = false;
         }
@@ -2283,7 +2283,7 @@ public class SysCmds {
             }
 
             // find map file entity
-            mapEnt = mapFile.FindEntity(s.name.toString());
+            mapEnt = mapFile.FindEntity(s.name.getData());
             // create new map file entity if there isn't one for this articulated figure
             if (NOT(mapEnt)) {
                 mapEnt = new idMapEntity();
@@ -2311,7 +2311,7 @@ public class SysCmds {
             }
 
             // write out the map file
-            mapFile.Write(mapName.toString(), ".map");
+            mapFile.Write(mapName.getData(), ".map");
         }
     }
 
@@ -2436,7 +2436,7 @@ public class SysCmds {
             }
 
             // write out the map file
-            mapFile.Write(mapName.toString(), ".map");
+            mapFile.Write(mapName.getData(), ".map");
         }
     }
 
@@ -2500,7 +2500,7 @@ public class SysCmds {
                 af.SaveState(dict);
 
                 // find map file entity
-                mapEnt = mapFile.FindEntity(af.name.toString());
+                mapEnt = mapFile.FindEntity(af.name.getData());
                 // create new map file entity if there isn't one for this articulated figure
                 if (NOT(mapEnt)) {
                     mapEnt = new idMapEntity();
@@ -2520,7 +2520,7 @@ public class SysCmds {
             }
 
             // write out the map file
-            mapFile.Write(mapName.toString(), ".map");
+            mapFile.Write(mapName.getData(), ".map");
         }
     }
 
@@ -2656,7 +2656,7 @@ public class SysCmds {
                 light.SaveState(dict);
 
                 // find map file entity
-                mapEnt = mapFile.FindEntity(light.name.toString());
+                mapEnt = mapFile.FindEntity(light.name.getData());
                 // create new map file entity if there isn't one for this light
                 if (NOT(mapEnt)) {
                     mapEnt = new idMapEntity();
@@ -2676,7 +2676,7 @@ public class SysCmds {
             }
 
             // write out the map file
-            mapFile.Write(mapName.toString(), ".map");
+            mapFile.Write(mapName.getData(), ".map");
         }
     }
 
@@ -2733,7 +2733,7 @@ public class SysCmds {
                     dict.SetVector("origin", ent.GetPhysics().GetOrigin());
 
                     // find map file entity
-                    mapEnt = mapFile.FindEntity(ent.name.toString());
+                    mapEnt = mapFile.FindEntity(ent.name.getData());
                     // create new map file entity if there isn't one for this entity
                     if (NOT(mapEnt)) {
                         continue;
@@ -2744,7 +2744,7 @@ public class SysCmds {
             }
 
             // write out the map file
-            mapFile.Write(mapName.toString(), ".map");
+            mapFile.Write(mapName.getData(), ".map");
         }
     }
 
@@ -2835,7 +2835,7 @@ public class SysCmds {
             // Argv(3) = comments
             final idStr str = new idStr(args.Argv(1));
             str.SetFileExtension(".txt");
-            final idFile file = fileSystem.OpenFileAppend(str.toString());
+            final idFile file = fileSystem.OpenFileAppend(str.getData());
             if (file != null) {
                 file.WriteFloatString("\"view\"\t( %s )\t( %s )\r\n", origin.ToString(), axis.ToString());
                 file.WriteFloatString("\"comments\"\t\"%s: %s\"\r\n\r\n", args.Argv(2), args.Argv(3));
@@ -2848,7 +2848,7 @@ public class SysCmds {
             viewComments.oPluSet(origin.ToString());
             viewComments.oPluSet("\n");
             viewComments.oPluSet(args.Argv(3));
-            player.hud.SetStateString("viewcomments", viewComments.toString());
+            player.hud.SetStateString("viewcomments", viewComments.getData());
             player.hud.HandleNamedEvent("showViewComments");
         }
     }
@@ -2923,7 +2923,7 @@ public class SysCmds {
                     str.oPluSet("comments");
                 }
                 str.SetFileExtension(".txt");
-                if (!parser.LoadFile(str.toString())) {
+                if (!parser.LoadFile(str.getData())) {
                     gameLocal.Printf("No view notes for %s\n", gameLocal.GetMapName());
                     return;
                 }
@@ -2931,7 +2931,7 @@ public class SysCmds {
 
             if (parser.ExpectTokenString("view") && parser.Parse1DMatrix(3, origin)
                     && parser.Parse1DMatrix(9, axis) && parser.ExpectTokenString("comments") && parser.ReadToken(token)) {
-                player.hud.SetStateString("viewcomments", token.toString());
+                player.hud.SetStateString("viewcomments", token.getData());
                 player.hud.HandleNamedEvent("showViewComments");
                 player.Teleport(origin, axis.ToAngles(), null);
             } else {

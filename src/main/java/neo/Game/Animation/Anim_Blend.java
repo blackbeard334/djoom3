@@ -180,8 +180,8 @@ public class Anim_Blend {
         private int                   numAnims;
         private idStr                 name = new idStr();
         private idStr                 realname = new idStr();
-        private final idList<frameLookup_t> frameLookup = new idList();
-        private final idList<frameCommand_t> frameCommands = new idList<>(frameCommand_t.class);
+        private final idList<frameLookup_t> frameLookup = new idList<frameLookup_t>();
+        private final idList<frameCommand_t> frameCommands = new idList<frameCommand_t>(frameCommand_t.class);
         private animFlags_t flags;
 //
 //
@@ -256,11 +256,11 @@ public class Anim_Blend {
         }
 
         public String Name() {
-            return this.name.toString();
+            return this.name.getData();
         }
 
         public String FullName() {
-            return this.realname.toString();
+            return this.realname.getData();
         }
 
 
@@ -375,7 +375,7 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_SCRIPTFUNCTION;
-                fc.function = gameLocal.program.FindFunction(token.toString());
+                fc.function = gameLocal.program.FindFunction(token.getData());
                 if (NOT(fc.function)) {
                     return va("Function '%s' not found", token);
                 }
@@ -390,7 +390,7 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_EVENTFUNCTION;
-                final idEventDef ev = idEventDef.FindEvent(token.toString());
+                final idEventDef ev = idEventDef.FindEvent(token.getData());
                 if (null == ev) {
                     return va("Event '%s' not found", token);
                 }
@@ -567,7 +567,7 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_MELEE;
-                if (NOT(gameLocal.FindEntityDef(token.toString(), false))) {
+                if (NOT(gameLocal.FindEntityDef(token.getData(), false))) {
                     return va("Unknown entityDef '%s'", token);
                 }
                 fc.string = new idStr(token);
@@ -576,7 +576,7 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_DIRECTDAMAGE;
-                if (NOT(gameLocal.FindEntityDef(token.toString(), false))) {
+                if (NOT(gameLocal.FindEntityDef(token.getData(), false))) {
                     return va("Unknown entityDef '%s'", token);
                 }
                 fc.string = new idStr(token);
@@ -585,7 +585,7 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_BEGINATTACK;
-                if (NOT(gameLocal.FindEntityDef(token.toString(), false))) {
+                if (NOT(gameLocal.FindEntityDef(token.getData(), false))) {
                     return va("Unknown entityDef '%s'", token);
                 }
                 fc.string = new idStr(token);
@@ -595,7 +595,7 @@ public class Anim_Blend {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
                 }
-                if (!token.IsEmpty() && NOT(modelDef.FindJoint(token.toString()))) {
+                if (!token.IsEmpty() && NOT(modelDef.FindJoint(token.getData()))) {
                     return va("Joint '%s' not found", token);
                 }
                 fc.type = FC_MUZZLEFLASH;
@@ -607,7 +607,7 @@ public class Anim_Blend {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
                 }
-                if (NOT(modelDef.FindJoint(token.toString()))) {
+                if (NOT(modelDef.FindJoint(token.getData()))) {
                     return va("Joint '%s' not found", token);
                 }
                 fc.type = FC_CREATEMISSILE;
@@ -616,7 +616,7 @@ public class Anim_Blend {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
                 }
-                if (NOT(modelDef.FindJoint(token.toString()))) {
+                if (NOT(modelDef.FindJoint(token.getData()))) {
                     return va("Joint '%s' not found", token);
                 }
                 fc.type = FC_LAUNCHMISSILE;
@@ -625,7 +625,7 @@ public class Anim_Blend {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
                 }
-                jointInfo = modelDef.FindJoint(token.toString());
+                jointInfo = modelDef.FindJoint(token.getData());
                 if (NOT(jointInfo)) {
                     return va("Joint '%s' not found", token);
                 }
@@ -664,13 +664,13 @@ public class Anim_Blend {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_ENABLE_LEG_IK;
-                fc.index = atoi(token.toString());
+                fc.index = atoi(token.getData());
             } else if (token.equals("disableLegIK")) {
                 if (!src.ReadTokenOnLine(token)) {
                     return "Unexpected end of line";
                 }
                 fc.type = FC_DISABLE_LEG_IK;
-                fc.index = atoi(token.toString());
+                fc.index = atoi(token.getData());
             } else if (token.equals("recordDemo")) {
                 fc.type = FC_RECORDDEMO;
                 if (src.ReadTokenOnLine(token)) {
@@ -747,17 +747,17 @@ public class Anim_Blend {
                             break;
                         }
                         case FC_SCRIPTFUNCTIONOBJECT: {
-                            gameLocal.CallObjectFrameCommand(ent, command.string.toString());
+                            gameLocal.CallObjectFrameCommand(ent, command.string.getData());
                             break;
                         }
                         case FC_EVENTFUNCTION: {
-                            final idEventDef ev = idEventDef.FindEvent(command.string.toString());
+                            final idEventDef ev = idEventDef.FindEvent(command.string.getData());
                             ent.ProcessEvent(ev);
                             break;
                         }
                         case FC_SOUND: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_ANY, 0, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_ANY, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -768,7 +768,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_VOICE: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_VOICE, 0, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_VOICE, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_voice' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -779,7 +779,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_VOICE2: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_VOICE2, 0, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_VOICE2, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_voice2' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -790,7 +790,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_BODY: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_BODY, 0, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_BODY, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_body' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -801,7 +801,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_BODY2: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_BODY2, 0, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_BODY2, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_body2' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -812,7 +812,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_BODY3: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_BODY3, 0, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_BODY3, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_body3' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -823,7 +823,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_WEAPON: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_WEAPON, 0, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_WEAPON, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_weapon' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -834,7 +834,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_GLOBAL: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_ANY, SSF_GLOBAL, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_ANY, SSF_GLOBAL, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_global' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -845,7 +845,7 @@ public class Anim_Blend {
                         }
                         case FC_SOUND_ITEM: {
                             if (NOT(command.soundShader)) {
-                                if (!ent.StartSound(command.string.toString(), SND_CHANNEL_ITEM, 0, false, null)) {
+                                if (!ent.StartSound(command.string.getData(), SND_CHANNEL_ITEM, 0, false, null)) {
                                     gameLocal.Warning("Framecommand 'sound_item' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                             ent.name, FullName(), frame + 1, command.string);
                                 }
@@ -857,7 +857,7 @@ public class Anim_Blend {
                         case FC_SOUND_CHATTER: {
                             if (ent.CanPlayChatterSounds()) {
                                 if (NOT(command.soundShader)) {
-                                    if (!ent.StartSound(command.string.toString(), SND_CHANNEL_VOICE, 0, false, null)) {
+                                    if (!ent.StartSound(command.string.getData(), SND_CHANNEL_VOICE, 0, false, null)) {
                                         gameLocal.Warning("Framecommand 'sound_chatter' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
                                                 ent.name, FullName(), frame + 1, command.string);
                                     }
@@ -868,7 +868,7 @@ public class Anim_Blend {
                             break;
                         }
                         case FC_FX: {
-                            idEntityFx.StartFx(command.string.toString(), null, null, ent, true);
+                            idEntityFx.StartFx(command.string.getData(), null, null, ent, true);
                             break;
                         }
                         case FC_SKIN: {
@@ -878,7 +878,7 @@ public class Anim_Blend {
                         case FC_TRIGGER: {
                             idEntity target;
 
-                            target = gameLocal.FindEntity(command.string.toString());
+                            target = gameLocal.FindEntity(command.string.getData());
                             if (target != null) {
                                 target.Signal(SIG_TRIGGER);
                                 target.ProcessEvent(EV_Activate, ent);
@@ -1162,7 +1162,7 @@ public class Anim_Blend {
                         MakeDefault();
                         return false;
                     }
-                    this.modelHandle = renderModelManager.FindModel(filename.toString());
+                    this.modelHandle = renderModelManager.FindModel(filename.getData());
                     if (null == this.modelHandle) {
                         src.Warning("Model '%s' not found", filename);
                         MakeDefault();
@@ -1263,7 +1263,7 @@ public class Anim_Blend {
                     }
 
                     for (i = ANIMCHANNEL_ALL + 1; i < ANIM_NumAnimChannels; i++) {
-                        if (0 == idStr.Icmp(channelNames[ i], token2.toString())) {
+                        if (0 == idStr.Icmp(channelNames[ i], token2.getData())) {
                             break;
                         }
                     }
@@ -1610,7 +1610,7 @@ public class Anim_Blend {
             }
 
             joint = this.modelHandle.GetJoints();
-            return joint[ jointHandle].name.toString();
+            return joint[ jointHandle].name.getData();
         }
 
         public int NumJointsOnChannel(int channel) {
@@ -1725,7 +1725,7 @@ public class Anim_Blend {
                 }
 
                 // lookup the animation
-                md5anim = animationLib.GetAnim(token.toString());
+                md5anim = animationLib.GetAnim(token.getData());
                 if (null == md5anim) {
                     src.Warning("Couldn't load anim '%s'", token);
                     MakeDefault();
@@ -1760,7 +1760,7 @@ public class Anim_Blend {
                 return false;
             }
 
-            anim.SetAnim(this, realname.toString(), alias.toString(), numAnims, md5anims);
+            anim.SetAnim(this, realname.getData(), alias.getData(), numAnims, md5anims);
 //	memset( &flags, 0, sizeof( flags ) );
             flags = new animFlags_t();
 
@@ -2800,9 +2800,9 @@ public class Anim_Blend {
             this.frameBounds = new idBounds();
             this.frameBounds.Clear();
 
-            this.AFPoseJoints = new idList<>(1);
-            this.AFPoseJointMods = new idList<>(1);
-            this.AFPoseJointFrame = new idList<>(1);
+            this.AFPoseJoints = new idList<Integer>(1);
+            this.AFPoseJointMods = new idList<idAFPoseJointMod>(1);
+            this.AFPoseJointFrame = new idList<idJointQuat>(1);
             this.AFPoseBounds = new idBounds();
 
             ClearAFPose();
@@ -3002,7 +3002,7 @@ public class Anim_Blend {
         }
 
         public void GetJointList(final idStr jointnames, idList<Integer/*jointHandle_t*/> jointList) {
-            GetJointList(jointnames.toString(), jointList);
+            GetJointList(jointnames.getData(), jointList);
         }
 
         public int NumAnims() {
@@ -3038,7 +3038,7 @@ public class Anim_Blend {
         }
 
         public boolean HasAnim(final idStr name) {
-            return HasAnim(name.toString());
+            return HasAnim(name.getData());
         }
 
         public void ServiceAnims(int fromtime, int totime) {
@@ -4019,7 +4019,7 @@ public class Anim_Blend {
                 }
 
                 public int/*jointHandle_t*/ GetJointHandle(final idStr name) {
-                    return GetJointHandle(name.toString());
+                    return GetJointHandle(name.getData());
                 }
 
                 public String GetJointName(int/*jointHandle_t*/ handle) {

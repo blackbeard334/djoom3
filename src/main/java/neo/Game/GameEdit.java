@@ -345,7 +345,7 @@ public class GameEdit {
             }
 
             key.oSet(String.format("bindConstraint bind%d", largestNum));
-            value = String.format("ballAndSocket %s %s", bindBodyName.toString(), af.GetAnimator().GetJointName(this.joint));
+            value = String.format("ballAndSocket %s %s", bindBodyName.getData(), af.GetAnimator().GetJointName(this.joint));
 
             af.spawnArgs.Set(key, value);
             af.spawnArgs.Set("bind", "worldspawn");
@@ -549,7 +549,7 @@ public class GameEdit {
                     if (ent.fl.selected) {
                         drawArrows = true;
                     }
-                    final idSoundShader ss = declManager.FindSound(ent.spawnArgs.GetString(textKey.toString()));
+                    final idSoundShader ss = declManager.FindSound(ent.spawnArgs.GetString(textKey.getData()));
                     if (ss.HasDefaultSound() || (ss.base.GetState() == DS_DEFAULTED)) {
                         color.Set(1.0f, 0.0f, 1.0f, 1.0f);
                     }
@@ -587,7 +587,7 @@ public class GameEdit {
                 }
 
                 if (textKey.Length() != 0) {
-                    final String text = ent.spawnArgs.GetString(textKey.toString());
+                    final String text = ent.spawnArgs.GetString(textKey.getData());
                     if (viewTextBounds.ContainsPoint(ent.GetPhysics().GetOrigin())) {
                         gameRenderWorld.DrawText(text, ent.GetPhysics().GetOrigin().oPlus(new idVec3(0, 0, 12)), 0.25f, colorWhite, axis, 1);
                     }
@@ -638,7 +638,7 @@ public class GameEdit {
 
         pattern = pattern.replaceAll("%d", "\\d+");
 
-        Scanner scanner = new Scanner(key.toString());
+        Scanner scanner = new Scanner(key.getData());
 
         result = scanner.findInLine(Pattern.compile(pattern));
         if (isNotNullOrEmpty(result)) {

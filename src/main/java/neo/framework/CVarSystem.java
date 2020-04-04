@@ -602,7 +602,7 @@ public class CVarSystem {
                 this.floatValue = this.integerValue;
                 if ((idStr.Icmp(this.value, "0") != 0) && (idStr.Icmp(this.value, "1") != 0)) {
                     this.valueString = new idStr((this.integerValue != 0));
-                    this.value = this.valueString.toString();
+                    this.value = this.valueString.getData();
                 }
             } else if ((this.flags & CVAR_INTEGER) != 0) {
                 this.integerValue = atoi(this.value);
@@ -617,7 +617,7 @@ public class CVarSystem {
                 }
                 if (clamped || !idStr.IsNumeric(this.value) || (idStr.FindChar(this.value, '.') != 0)) {
                     this.valueString = new idStr(this.integerValue);
-                    this.value = this.valueString.toString();
+                    this.value = this.valueString.getData();
                 }
                 this.floatValue = this.integerValue;
             } else if ((this.flags & CVAR_FLOAT) != 0) {
@@ -633,7 +633,7 @@ public class CVarSystem {
                 }
                 if (clamped || !idStr.IsNumeric(this.value)) {
                     this.valueString = new idStr(this.floatValue);
-                    this.value = this.valueString.toString();
+                    this.value = this.valueString.getData();
                 }
                 this.integerValue = (int) this.floatValue;
             } else {
@@ -690,7 +690,7 @@ public class CVarSystem {
             }
 
             if (null == newValue) {
-                newValue = this.resetString.toString();
+                newValue = this.resetString.getData();
             }
 
             if (!force) {
@@ -719,7 +719,7 @@ public class CVarSystem {
 
         public void Reset() {
             this.valueString = this.resetString;
-            this.value = this.valueString.toString();
+            this.value = this.valueString.getData();
             UpdateValue();
         }
 
@@ -768,7 +768,7 @@ public class CVarSystem {
 
         public idCVarSystemLocal() {
             this.initialized = false;
-            this.cvars = new idList<>();
+            this.cvars = new idList<idInternalCVar>();
             this.cvarHash = new idHashIndex();
             this.modifiedFlags = 0;
         }
@@ -950,7 +950,7 @@ public class CVarSystem {
                 if (null == this.cvars.oGet(i).valueCompletion) {
                     continue;
                 }
-                if (idStr.Icmp(args.Argv(0), this.cvars.oGet(i).nameString.toString()) == 0) {
+                if (idStr.Icmp(args.Argv(0), this.cvars.oGet(i).nameString.getData()) == 0) {
                     this.cvars.oGet(i).valueCompletion.run(args, callback);
                     break;
                 }
@@ -1028,9 +1028,9 @@ public class CVarSystem {
 
             for (int i = 0; i < dict.GetNumKeyVals(); i++) {
                 final idKeyValue kv = dict.GetKeyVal(i);
-                internal = FindInternal(kv.GetKey().toString());
+                internal = FindInternal(kv.GetKey().getData());
                 if (internal != null) {
-                    internal.InternalServerSetString(kv.GetValue().toString());
+                    internal.InternalServerSetString(kv.GetValue().getData());
                 }
             }
         }
@@ -1129,7 +1129,7 @@ public class CVarSystem {
                         current = 0.0f;
                     }
                     common.Printf("set %s = %f\n", args.Argv(1), current);
-                    cvar.Set(new idStr(current).toString(), false, false);
+                    cvar.Set(new idStr(current).getData(), false, false);
                 }
             }
         }
@@ -1278,7 +1278,7 @@ public class CVarSystem {
 			final idStr indent = new idStr(), str = new idStr();
             String string;
             idInternalCVar cvar;
-            final idList<idInternalCVar> cvarList = new idList<>();
+            final idList<idInternalCVar> cvarList = new idList<idInternalCVar>();
 
             argNum = 1;
             show show = SHOW_VALUE;
@@ -1310,7 +1310,7 @@ public class CVarSystem {
                     continue;
                 }
 
-                if ((match.Length() != 0) && !cvar.nameString.Filter(match.toString(), false)) {
+                if ((match.Length() != 0) && !cvar.nameString.Filter(match.getData(), false)) {
                     continue;
                 }
 
@@ -1333,7 +1333,7 @@ public class CVarSystem {
 
                     for (i = 0; i < cvarList.Num(); i++) {
                         cvar = cvarList.oGet(i);
-                        common.Printf(FORMAT_STRING + S_COLOR_WHITE + "%s\n", cvar.nameString, CreateColumn(cvar.GetDescription(), NUM_DESCRIPTION_CHARS, indent.toString(), str));
+                        common.Printf(FORMAT_STRING + S_COLOR_WHITE + "%s\n", cvar.nameString, CreateColumn(cvar.GetDescription(), NUM_DESCRIPTION_CHARS, indent.getData(), str));
                     }
                     break;
                 }
@@ -1350,7 +1350,7 @@ public class CVarSystem {
                             }
                         } else if ((cvar.GetFlags() & CVAR_FLOAT) != 0) {
                             if (cvar.GetMinValue() < cvar.GetMaxValue()) {
-                                common.Printf(FORMAT_STRING + S_COLOR_RED + "float " + S_COLOR_WHITE + "[%s, %s]\n", cvar.GetName(), new idStr(cvar.GetMinValue()).toString(), new idStr(cvar.GetMaxValue()).toString());
+                                common.Printf(FORMAT_STRING + S_COLOR_RED + "float " + S_COLOR_WHITE + "[%s, %s]\n", cvar.GetName(), new idStr(cvar.GetMinValue()).getData(), new idStr(cvar.GetMaxValue()).getData());
                             } else {
                                 common.Printf(FORMAT_STRING + S_COLOR_RED + "float\n", cvar.GetName());
                             }
@@ -1458,7 +1458,7 @@ public class CVarSystem {
 
                     // throw out any variables the user created
                     if (0 == (cvar.flags & CVAR_STATIC)) {
-                        hash = localCVarSystem.cvarHash.GenerateKey(cvar.nameString.toString(), false);
+                        hash = localCVarSystem.cvarHash.GenerateKey(cvar.nameString.getData(), false);
 //			delete cvar;
                         localCVarSystem.cvars.RemoveIndex(i);
                         localCVarSystem.cvarHash.RemoveIndex(hash, i);
@@ -1499,7 +1499,7 @@ public class CVarSystem {
         while (lastLine < i) {
             string.Append(text[lastLine++]);
         }
-        return string.toString();
+        return string.getData();
     }
 
     /*

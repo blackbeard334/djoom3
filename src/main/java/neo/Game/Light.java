@@ -577,10 +577,10 @@ public class Light {
             this.fl.takedamage = false;
 
             if (this.brokenModel.Length() != 0) {
-                SetModel(this.brokenModel.toString());
+                SetModel(this.brokenModel.getData());
 
                 if (!this.spawnArgs.GetBool("nonsolid")) {
-                    GetPhysics().SetClipModel(new idClipModel(this.brokenModel.toString()), 1.0f);
+                    GetPhysics().SetClipModel(new idClipModel(this.brokenModel.getData()), 1.0f);
                     GetPhysics().SetContents(CONTENTS_SOLID);
                 }
             } else if (this.spawnArgs.GetBool("hideModelOnBreak")) {

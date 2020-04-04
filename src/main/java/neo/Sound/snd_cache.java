@@ -108,11 +108,11 @@ public class snd_cache {
         public long/*ID_TIME_T*/ GetNewTimeStamp() {
             final long[] timestamp = {0};
 
-            fileSystem.ReadFile(this.name.toString(), null, timestamp);
+            fileSystem.ReadFile(this.name.getData(), null, timestamp);
             if (timestamp[0] == FILE_NOT_FOUND_TIMESTAMP) {
                 final idStr oggName = new idStr(this.name);
                 oggName.SetFileExtension(".ogg");
-                fileSystem.ReadFile(oggName.toString(), null, timestamp);
+                fileSystem.ReadFile(oggName.getData(), null, timestamp);
             }
             return timestamp[0];
         }
@@ -190,7 +190,7 @@ public class snd_cache {
             final idWaveFile fh = new idWaveFile();
             final waveformatex_s[] info = {null};
 
-            if (fh.Open(this.name.toString(), info) == -1) {
+            if (fh.Open(this.name.getData(), info) == -1) {
                 common.Warning("Couldn't load sound '%s' using default", this.name);
                 MakeDefault();
                 return;
@@ -710,12 +710,12 @@ public class snd_cache {
                 }
 
                 total += sample.objectMemSize;
-                f.Printf("%s %s\n", idStr.FormatNumber(sample.objectMemSize).toString(), sample.name.toString());
+                f.Printf("%s %s\n", idStr.FormatNumber(sample.objectMemSize).getData(), sample.name.getData());
             }
 
             mi.soundAssetsTotal = total;
 
-            f.Printf("\nTotal sound bytes allocated: %s\n", idStr.FormatNumber(total).toString());
+            f.Printf("\nTotal sound bytes allocated: %s\n", idStr.FormatNumber(total).getData());
             fileSystem.CloseFile(f);
         }
     }

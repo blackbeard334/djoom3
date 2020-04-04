@@ -102,7 +102,7 @@ public class UserInterfaceLocal {
         // ~idUserInterfaceLocal();
         @Override
         public String Name() {
-            return this.source.toString();
+            return this.source.getData();
         }
 
         @Override
@@ -316,7 +316,7 @@ public class UserInterfaceLocal {
             if (this.desktop != null) {
                 this.activateStr.oSet("");
                 this.desktop.Activate(activate, this.activateStr);
-                return this.activateStr.toString();
+                return this.activateStr.getData();
             }
             return "";
         }
@@ -387,12 +387,12 @@ public class UserInterfaceLocal {
             for (int i = 0; i < num; i++) {
                 kv = this.state.GetKeyVal(i);
                 len = kv.GetKey().Length();
-                string = kv.GetKey().toString();
+                string = kv.GetKey().getData();
                 savefile.WriteInt(len);
                 savefile.WriteString(string);
 
                 len = kv.GetValue().Length();
-                string = kv.GetValue().toString();
+                string = kv.GetValue().getData();
                 savefile.WriteInt(len);
                 savefile.WriteString(string);
             }
@@ -512,7 +512,7 @@ public class UserInterfaceLocal {
         }
 
         public String GetSourceFile() {
-            return this.source.toString();
+            return this.source.getData();
         }
 
         public long[]/*ID_TIME_T*/ GetTimeStamp() {

@@ -163,7 +163,7 @@ public class Script_Program {
         }
 
         public String Name() {
-            return this.name.toString();
+            return this.name.getData();
         }
 
         public void Clear() {
@@ -466,7 +466,7 @@ public class Script_Program {
         }
 
         public String Name() {
-            return this.name.toString();
+            return this.name.getData();
         }
 
         public int/*etype_t*/ Type() {
@@ -595,7 +595,7 @@ public class Script_Program {
         public String GetParmName(int parmNumber) {
             assert (parmNumber >= 0);
             assert (parmNumber < this.parmTypes.Num());
-            return this.parmNames.oGet(parmNumber).toString();
+            return this.parmNames.oGet(parmNumber).getData();
         }
 
         public int NumFunctions() {
@@ -686,8 +686,8 @@ public class Script_Program {
                 return;
             }
 
-            if (!SetType(typeName.toString())) {
-                savefile.Error("idScriptObject::Restore: failed to restore object of type '%s'.", typeName.toString());
+            if (!SetType(typeName.getData())) {
+                savefile.Error("idScriptObject::Restore: failed to restore object of type '%s'.", typeName.getData());
             }
 
             savefile.ReadInt(size);
@@ -1421,7 +1421,7 @@ public class Script_Program {
         }
 
         public String Name() {
-            return this.name.toString();
+            return this.name.getData();
         }
 
         public idVarDef GetDefs() {

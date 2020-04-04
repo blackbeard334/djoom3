@@ -122,7 +122,7 @@ public class Model_local {
 
         // the inherited public interface
         public idRenderModelStatic() {
-            this.surfaces = new idList<>(modelSurface_s.class);
+            this.surfaces = new idList<modelSurface_s>(modelSurface_s.class);
             this.name = new idStr("<undefined>");
             (this.bounds = new idBounds()).Clear();
             this.lastModifiedFrame = 0;
@@ -149,16 +149,16 @@ public class Model_local {
             this.name.ExtractFileExtension(extension);
 
             if (extension.Icmp("ase") == 0) {
-                loaded = LoadASE(this.name.toString());
+                loaded = LoadASE(this.name.getData());
                 this.reloadable = true;
             } else if (extension.Icmp("lwo") == 0) {
-                loaded = LoadLWO(this.name.toString());
+                loaded = LoadLWO(this.name.getData());
                 this.reloadable = true;
             } else if (extension.Icmp("flt") == 0) {
-                loaded = LoadFLT(this.name.toString());
+                loaded = LoadFLT(this.name.getData());
                 this.reloadable = true;
             } else if (extension.Icmp("ma") == 0) {
-                loaded = LoadMA(this.name.toString());
+                loaded = LoadMA(this.name.getData());
                 this.reloadable = true;
             } else {
                 common.Warning("idRenderModelStatic::InitFromFile: unknown type for model: \'%s\'", this.name);
@@ -208,7 +208,7 @@ public class Model_local {
         @Override
         public void LoadModel() {
             PurgeModel();
-            InitFromFile(this.name.toString());
+            InitFromFile(this.name.getData());
         }
 
         @Override
@@ -450,7 +450,7 @@ public class Model_local {
 
         @Override
         public String Name() {
-            return this.name.toString();
+            return this.name.getData();
         }
 
         @Override
@@ -623,7 +623,7 @@ public class Model_local {
 //		delete cachedModel;
 //		cachedModel = NULL;
             }
-            common.Error("InstantiateDynamicModel called on static model '%s'", this.name.toString());
+            common.Error("InstantiateDynamicModel called on static model '%s'", this.name.getData());
             return null;
         }
 
@@ -879,7 +879,7 @@ public class Model_local {
                 final idStr tgaName = new idStr(fileName);
                 tgaName.StripFileExtension();
                 tgaName.Append(".tga");
-                R_WriteTGA(tgaName.toString(), image, size, size, false);
+                R_WriteTGA(tgaName.getData(), image, size, size, false);
 //                R_StaticFree(image);
 //return false;
             }

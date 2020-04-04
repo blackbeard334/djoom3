@@ -650,7 +650,7 @@ public class MultiplayerGame {
 //            va_end(argptr);
             temp = new idStr(String.format(fmt, objects));
 
-            gameLocal.Printf("%s\n", temp.toString());
+            gameLocal.Printf("%s\n", temp.getData());
 
             this.chatHistory[ this.chatHistoryIndex % NUM_CHAT_NOTIFY].line = temp;
             this.chatHistory[ this.chatHistoryIndex % NUM_CHAT_NOTIFY].fade = 6;
@@ -689,7 +689,7 @@ public class MultiplayerGame {
             // send the current serverinfo values
             for (i = 0; i < gameLocal.serverInfo.GetNumKeyVals(); i++) {
                 final idKeyValue keyval = gameLocal.serverInfo.GetKeyVal(i);
-                this.mainGui.SetStateString(keyval.GetKey().toString(), keyval.GetValue().toString());
+                this.mainGui.SetStateString(keyval.GetKey().getData(), keyval.GetValue().getData());
             }
             this.mainGui.StateChanged(gameLocal.time);
             if (__linux__) {
@@ -1696,14 +1696,14 @@ public class MultiplayerGame {
                     }
                     break;
                 case VOTE_GAMETYPE:
-                    si_gameType.SetString(this.voteValue.toString());
+                    si_gameType.SetString(this.voteValue.getData());
                     gameLocal.MapRestart();
                     break;
                 case VOTE_KICK:
                     cmdSystem.BufferCommandText(CMD_EXEC_NOW, va("kick %s", this.voteValue));
                     break;
                 case VOTE_MAP:
-                    si_map.SetString(this.voteValue.toString());
+                    si_map.SetString(this.voteValue.getData());
                     gameLocal.MapRestart();
                     break;
                 case VOTE_SPECTATORS:
@@ -1941,11 +1941,11 @@ public class MultiplayerGame {
             }
             snd_key = keyval.GetKey();
             name = gameLocal.userInfo[ clientNum].GetString("ui_name");
-            text_key = String.format("txt_%s", snd_key.Right(snd_key.Length() - 4).toString());
+            text_key = String.format("txt_%s", snd_key.Right(snd_key.Length() - 4).getData());
             if (team || (this.gameState == COUNTDOWN) || (this.gameState == GAMEREVIEW)) {
-                ProcessChatMessage(clientNum, team, name, spawnArgs.GetString(text_key), spawnArgs.GetString(snd_key.toString()));
+                ProcessChatMessage(clientNum, team, name, spawnArgs.GetString(text_key), spawnArgs.GetString(snd_key.getData()));
             } else {
-                p.StartSound(snd_key.toString(), SND_CHANNEL_ANY, 0, true, null);
+                p.StartSound(snd_key.getData(), SND_CHANNEL_ANY, 0, true, null);
                 ProcessChatMessage(clientNum, team, name, spawnArgs.GetString(text_key), null);
             }
         }
@@ -3132,7 +3132,7 @@ public class MultiplayerGame {
                     j = 0;
                     i = this.chatHistoryIndex - this.chatHistorySize;
                     while (i < this.chatHistoryIndex) {
-                        this.guiChat.SetStateString(va("chat%d", j), this.chatHistory[i % NUM_CHAT_NOTIFY].line.toString());
+                        this.guiChat.SetStateString(va("chat%d", j), this.chatHistory[i % NUM_CHAT_NOTIFY].line.getData());
                         // don't set alpha above 4, the gui only knows that
                         this.guiChat.SetStateInt(va("alpha%d", j), Min(4, this.chatHistory[i % NUM_CHAT_NOTIFY].fade));
                         j++;

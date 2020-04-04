@@ -637,7 +637,7 @@ public class Misc {
 
             // make sure the model gets cached
             this.spawnArgs.GetString("broken", "", broken);
-            if ((broken.Length() != 0) && NOT(renderModelManager.CheckModel(broken.toString()))) {
+            if ((broken.Length() != 0) && NOT(renderModelManager.CheckModel(broken.getData()))) {
                 gameLocal.Error("idDamagable '%s' at (%s): cannot load broken model '%s'", this.name, GetPhysics().GetOrigin().ToString(0), broken);
             }
 
@@ -680,7 +680,7 @@ public class Misc {
 
             this.spawnArgs.GetString("broken", "", broken);
             if (broken.Length() != 0) {
-                SetModel(broken.toString());
+                SetModel(broken.getData());
             }
 
             // offset the start time of the shader to sync it to the gameLocal time
@@ -908,7 +908,7 @@ public class Misc {
             this.spawnArgs.GetString("ent2", "", name2);
 
             if (name1.Length() != 0) {
-                this.ent1 = gameLocal.FindEntity(name1.toString());
+                this.ent1 = gameLocal.FindEntity(name1.getData());
                 if (null == this.ent1) {
                     gameLocal.Error("idSpring '%s' at (%s): cannot find first entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name1);
                 }
@@ -917,7 +917,7 @@ public class Misc {
             }
 
             if (name2.Length() != 0) {
-                this.ent2 = gameLocal.FindEntity(name2.toString());
+                this.ent2 = gameLocal.FindEntity(name2.getData());
                 if (null == this.ent2) {
                     gameLocal.Error("idSpring '%s' at (%s): cannot find second entity '%s'", this.name, GetPhysics().GetOrigin().ToString(0), name2);
                 }
@@ -2083,7 +2083,7 @@ public class Misc {
         @Override
         public void Think() {
             if ((this.thinkFlags & TH_THINK) != 0) {
-                gameRenderWorld.DrawText(this.text.toString(), GetPhysics().GetOrigin(), 0.25f, colorWhite, this.playerOriented ? gameLocal.GetLocalPlayer().viewAngles.ToMat3() : GetPhysics().GetAxis().Transpose(), 1);
+                gameRenderWorld.DrawText(this.text.getData(), GetPhysics().GetOrigin(), 0.25f, colorWhite, this.playerOriented ? gameLocal.GetLocalPlayer().viewAngles.ToMat3() : GetPhysics().GetAxis().Transpose(), 1);
                 for (int i = 0; i < this.targets.Num(); i++) {
                     if (this.targets.oGet(i).GetEntity() != null) {
                         gameRenderWorld.DebugArrow(colorBlue, GetPhysics().GetOrigin(), this.targets.oGet(i).GetEntity().GetPhysics().GetOrigin(), 1);

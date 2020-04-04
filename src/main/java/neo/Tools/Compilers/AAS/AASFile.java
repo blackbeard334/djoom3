@@ -302,7 +302,7 @@ public class AASFile {
 
             common.Printf("loading %s\n", name);
 
-            if (!src.LoadFile(name.toString())) {
+            if (!src.LoadFile(name.getData())) {
                 common.Error("WARNING: couldn't load %s\n", name);
                 return false;
             }
@@ -694,7 +694,7 @@ public class AASFile {
 
         // virtual 					~idAASFile() {}
         public String GetName() {
-            return this.name.toString();
+            return this.name.getData();
         }
 
         public long/*unsigned int*/ GetCRC() {
@@ -871,7 +871,7 @@ public class AASFile {
         fp.WriteFloatString("\n\t\t{\n");
         for (i = 0; i < reach.dict.GetNumKeyVals(); i++) {
             keyValue = reach.dict.GetKeyVal(i);
-            fp.WriteFloatString("\t\t\t\"%s\" \"%s\"\n", keyValue.GetKey().toString(), keyValue.GetValue().toString());
+            fp.WriteFloatString("\t\t\t\"%s\" \"%s\"\n", keyValue.GetKey().getData(), keyValue.GetValue().getData());
         }
         fp.WriteFloatString("\t\t}\n");
 

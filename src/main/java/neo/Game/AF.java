@@ -161,7 +161,7 @@ public class AF {
 
             if (this.self != null) {
                 SetAnimator(this.self.GetAnimator());
-                Load(this.self, this.name.toString());
+                Load(this.self, this.name.getData());
                 if (this.hasBindConstraints) {
                     AddBindConstraints();
                 }
@@ -216,21 +216,21 @@ public class AF {
 
             if ((file.bodies.Num() == 0) || !file.bodies.oGet(0).jointName.equals("origin")) {
                 gameLocal.Warning("idAF::Load: articulated figure '%s' for entity '%s' at (%s) has no body which modifies the origin joint.",
-                        this.name.toString(), ent.name.toString(), ent.GetPhysics().GetOrigin().ToString(0));
+                        this.name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0));
                 return false;
             }
 
             modelDef = this.animator.ModelDef();
             if ((modelDef == null) || (modelDef.GetState() == DS_DEFAULTED)) {
                 gameLocal.Warning("idAF::Load: articulated figure '%s' for entity '%s' at (%s) has no or defaulted modelDef '%s'",
-                        this.name.toString(), ent.name.toString(), ent.GetPhysics().GetOrigin().ToString(0), modelDef != null ? modelDef.GetName() : "");
+                        this.name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0), modelDef != null ? modelDef.GetName() : "");
                 return false;
             }
 
             model = this.animator.ModelHandle();
             if ((model == null) || model.IsDefaultModel()) {
                 gameLocal.Warning("idAF::Load: articulated figure '%s' for entity '%s' at (%s) has no or defaulted model '%s'",
-                        this.name.toString(), ent.name.toString(), ent.GetPhysics().GetOrigin().ToString(0), model != null ? model.Name() : "");
+                        this.name.getData(), ent.name.getData(), ent.GetPhysics().GetOrigin().ToString(0), model != null ? model.Name() : "");
                 return false;
             }
 
@@ -329,7 +329,7 @@ public class AF {
         }
 
         public boolean Load(idEntity ent, final idStr fileName) {
-            return Load(ent, fileName.toString());
+            return Load(ent, fileName.getData());
         }
 
         public boolean IsLoaded() {
@@ -337,7 +337,7 @@ public class AF {
         }
 
         public String GetName() {
-            return this.name.toString();
+            return this.name.getData();
         }
 
 
@@ -758,9 +758,9 @@ public class AF {
 
                 name.oSet(kv.GetKey());
                 name.Strip("body ");
-                body = this.physicsObj.GetBody(name.toString());
+                body = this.physicsObj.GetBody(name.getData());
                 if (body != null) {
-                    final Scanner sscanf = new Scanner(kv.GetValue().toString());
+                    final Scanner sscanf = new Scanner(kv.GetValue().getData());
 //			sscanf( kv.GetValue(), "%f %f %f %f %f %f", &origin.x, &origin.y, &origin.z, &angles.pitch, &angles.yaw, &angles.roll );
                     origin.x = sscanf.nextFloat();
                     origin.y = sscanf.nextFloat();
@@ -830,7 +830,7 @@ public class AF {
                     this.physicsObj.AddConstraint(c);
                     lexer.ReadToken(jointName);
 
-                    final int/*jointHandle_t*/ joint = this.animator.GetJointHandle(jointName.toString());
+                    final int/*jointHandle_t*/ joint = this.animator.GetJointHandle(jointName.getData());
                     if (joint == INVALID_JOINT) {
                         gameLocal.Warning("idAF::AddBindConstraints: joint '%s' not found", jointName);
                     }
@@ -876,8 +876,8 @@ public class AF {
                 name.oSet(kv.GetKey());
                 name.Strip("bindConstraint ");
 
-                if (this.physicsObj.GetConstraint(name.toString()) != null) {
-                    this.physicsObj.DeleteConstraint(name.toString());
+                if (this.physicsObj.GetConstraint(name.getData()) != null) {
+                    this.physicsObj.DeleteConstraint(name.getData());
                 }
 
                 kv = args.MatchPrefix("bindConstraint ", kv);
@@ -996,7 +996,7 @@ public class AF {
             trm.Translate(centerOfMass.oNegative());
             origin.oPluSet(centerOfMass.oMultiply(axis));
 
-            body = this.physicsObj.GetBody(fb.name.toString());
+            body = this.physicsObj.GetBody(fb.name.getData());
             if (body != null) {
                 clip = body.GetClipModel();
                 if (!clip.IsEqual(trm)) {
@@ -1039,7 +1039,7 @@ public class AF {
                 } else {
                     mod = AF_JOINTMOD_AXIS;
                 }
-                AddBody(body, joints, fb.jointName.toString(), mod);
+                AddBody(body, joints, fb.jointName.getData(), mod);
             }
 
             if (!fb.frictionDirection.ToVec3().equals(getVec3_origin())) {
@@ -1050,7 +1050,7 @@ public class AF {
             }
 
             // update table to find the nearest articulated figure body for a joint of the skeletal model
-            this.animator.GetJointList(fb.containedJoints.toString(), jointList);
+            this.animator.GetJointList(fb.containedJoints.getData(), jointList);
             for (i = 0; i < jointList.Num(); i++) {
                 if (this.jointBody.oGet(jointList.oGet(i)) != -1) {
                     gameLocal.Warning("%s: joint '%s' is already contained by body '%s'",
@@ -1068,13 +1068,13 @@ public class AF {
             idAngles angles;
             idMat3 axis;
 
-            body1 = this.physicsObj.GetBody(fc.body1.toString());
-            body2 = this.physicsObj.GetBody(fc.body2.toString());
+            body1 = this.physicsObj.GetBody(fc.body1.getData());
+            body2 = this.physicsObj.GetBody(fc.body2.getData());
 
             switch (fc.type) {
                 case DECLAF_CONSTRAINT_FIXED: {
                     idAFConstraint_Fixed c;
-                    c = (idAFConstraint_Fixed) this.physicsObj.GetConstraint(fc.name.toString());
+                    c = (idAFConstraint_Fixed) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
@@ -1086,7 +1086,7 @@ public class AF {
                 }
                 case DECLAF_CONSTRAINT_BALLANDSOCKETJOINT: {
                     idAFConstraint_BallAndSocketJoint c;
-                    c = (idAFConstraint_BallAndSocketJoint) this.physicsObj.GetConstraint(fc.name.toString());
+                    c = (idAFConstraint_BallAndSocketJoint) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
@@ -1117,7 +1117,7 @@ public class AF {
                 }
                 case DECLAF_CONSTRAINT_UNIVERSALJOINT: {
                     idAFConstraint_UniversalJoint c;
-                    c = (idAFConstraint_UniversalJoint) this.physicsObj.GetConstraint(fc.name.toString());
+                    c = (idAFConstraint_UniversalJoint) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
@@ -1149,7 +1149,7 @@ public class AF {
                 }
                 case DECLAF_CONSTRAINT_HINGE: {
                     idAFConstraint_Hinge c;
-                    c = (idAFConstraint_Hinge) this.physicsObj.GetConstraint(fc.name.toString());
+                    c = (idAFConstraint_Hinge) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
@@ -1179,7 +1179,7 @@ public class AF {
                 }
                 case DECLAF_CONSTRAINT_SLIDER: {
                     idAFConstraint_Slider c;
-                    c = (idAFConstraint_Slider) this.physicsObj.GetConstraint(fc.name.toString());
+                    c = (idAFConstraint_Slider) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
@@ -1192,7 +1192,7 @@ public class AF {
                 }
                 case DECLAF_CONSTRAINT_SPRING: {
                     idAFConstraint_Spring c;
-                    c = (idAFConstraint_Spring) this.physicsObj.GetConstraint(fc.name.toString());
+                    c = (idAFConstraint_Spring) this.physicsObj.GetConstraint(fc.name.getData());
                     if (c != null) {
                         c.SetBody1(body1);
                         c.SetBody2(body2);
@@ -1276,7 +1276,7 @@ public class AF {
 
         @Override
         public boolean run(Object model, idJointMat[] frame, idStr jointName, idVec3 origin, idMat3 axis) {
-            return run(model, frame, jointName.toString(), origin, axis);
+            return run(model, frame, jointName.getData(), origin, axis);
         }
     }
 }

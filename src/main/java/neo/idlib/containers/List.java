@@ -46,7 +46,9 @@ public class List {
         private int size;
         private int granularity = 16;
         private type[]      array;
+        private ArrayList<type> list;
         private Class<type> type;
+        //private type instance = instance();
         //
         private static int DBG_counter = 0;
         private final  int DBG_count   = DBG_counter++;
@@ -78,7 +80,7 @@ public class List {
         }
 
 //        private idList(final idList<type> other) {
-//            this.setArray(null); // necessary ???
+//        	this.setArray(null); // necessary ???
 //            this.oSet(other);
 //        }
 
@@ -120,6 +122,31 @@ public class List {
 			this.granularity = granularity;
 		}
 
+		private ArrayList<type> getList() {
+			return this.list;
+		}
+
+    	private type getListType(int index) {
+    		return getList().get(index);
+    	}
+
+		private void setList(ArrayList<type> list) {
+			this.list = list;
+		}
+
+    	private type setListType(int index, type element) {
+    		if ((getList() != null) && (index>=getList().size())) {
+    			return getList().set(index, element);
+    		} else {
+    			if (getList() != null) {
+    				//list = new LinkedList<type>();
+    				getList().size(); // throw NullPointerException
+    			}
+    			getList().add(index, element);
+    			return getList().get(index);
+    		}
+    	}
+
 		private Class<type> getType() {
 			return this.type;
 		}
@@ -156,6 +183,40 @@ public class List {
 			}
 			return types;
 		}
+
+//		private type instance() {
+//			TypeVariable<?>[] typeVariables = getClass().getTypeParameters();
+//			Class<?> typo = Object.class;
+//			Class<type> type = null;
+//			if (typeVariables.length > 0) {
+//				AnnotatedType[]  atyp;
+//				for (TypeVariable<?> typeVariable : typeVariables) {
+//					if ("type".equals(typeVariable.getName())) {
+//						atyp = typeVariable.getAnnotatedBounds();
+//						for (AnnotatedType annotatedType : atyp) {
+//							try {
+//								@SuppressWarnings("unchecked")
+//								Class<type> typ = (Class<type>) Class.forName(annotatedType.getType().getTypeName());
+//								if (!typo.equals(typ)) {
+//									type = typ;
+//									System.err.println("                                                                      "+typ.getName());
+//									break;
+//								}
+//							} catch (ClassNotFoundException | ClassCastException e) {
+//							}
+//						}
+//					}
+//				}
+//			}
+//			if (type == null) {
+//				@SuppressWarnings("unchecked")
+//				Class<type> typ = (Class<type>) typo;
+//				type = typ;
+//			}
+//			// always Object.class => fail
+//			instance = instantiateType(type);
+//			return instance;
+//		}
 
 		private type instantiateType() {
 			return instantiateType(this.type);

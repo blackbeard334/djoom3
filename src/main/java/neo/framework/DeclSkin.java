@@ -41,7 +41,7 @@ public class DeclSkin {
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private final idList<skinMapping_t> mappings = new idList<>();
+		private final idList<skinMapping_t> mappings = new idList<skinMapping_t>();
         private final idStrList associatedModels = new idStrList();
         //
         //
@@ -103,7 +103,7 @@ public class DeclSkin {
                 }
 
                 if (0 == token.Icmp("model")) {
-                    this.associatedModels.Append(token2.toString());
+                    this.associatedModels.Append(token2.getData());
                     continue;
                 }
 
@@ -161,7 +161,7 @@ public class DeclSkin {
 
         public String GetAssociatedModel(int index) {
             if ((index >= 0) && (index < this.associatedModels.Num())) {
-                return this.associatedModels.oGet(index).toString();
+                return this.associatedModels.oGet(index).getData();
             }
             return "";
         }

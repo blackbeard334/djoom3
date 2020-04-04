@@ -423,7 +423,7 @@ public class DeclManager {
         }
 
         public idDecl FindType(declType_t type, idStr name, boolean makeDefault) {
-            return FindType(type, name.toString(), makeDefault);
+            return FindType(type, name.getData(), makeDefault);
         }
 
         public idDecl FindType(declType_t type, String name) {
@@ -629,7 +629,7 @@ public class DeclManager {
 
         @Override
         public String GetName() {
-            return this.name.toString();
+            return this.name.getData();
         }
 
         @Override
@@ -681,7 +681,7 @@ public class DeclManager {
 
         @Override
         public String GetFileName() {
-            return (this.sourceFile != null) ? this.sourceFile.fileName.toString() : "*invalid*";
+            return (this.sourceFile != null) ? this.sourceFile.fileName.getData() : "*invalid*";
         }
 
         @Override
@@ -1031,7 +1031,7 @@ public class DeclManager {
             // check for an unchanged timestamp
             if (!force && (this.timestamp[0] != 0)) {
                 /*ID_TIME_T*/ final long[] testTimeStamp = new long[1];
-                fileSystem.ReadFile(this.fileName.toString(), null, testTimeStamp);
+                fileSystem.ReadFile(this.fileName.getData(), null, testTimeStamp);
 
                 if (testTimeStamp == this.timestamp) {
                     return;
@@ -1064,15 +1064,15 @@ public class DeclManager {
             boolean reparse;
 
             // load the text
-            common.DPrintf("...loading '%s'\n", this.fileName.toString());
-            length = fileSystem.ReadFile(this.fileName.toString(), buffer, this.timestamp);
+            common.DPrintf("...loading '%s'\n", this.fileName.getData());
+            length = fileSystem.ReadFile(this.fileName.getData(), buffer, this.timestamp);
             if (length == -1) {
-                common.FatalError("couldn't load %s", this.fileName.toString());
+                common.FatalError("couldn't load %s", this.fileName.getData());
                 return BigInteger.ZERO;
             }
 
-            if (!src.LoadMemory(bbtocb(buffer[0]), length, this.fileName.toString())) {
-                common.Error("Couldn't parse %s", this.fileName.toString());
+            if (!src.LoadMemory(bbtocb(buffer[0]), length, this.fileName.getData())) {
+                common.Error("Couldn't parse %s", this.fileName.getData());
 //                Mem_Free(buffer);
                 return BigInteger.ZERO;
             }
@@ -1105,7 +1105,7 @@ public class DeclManager {
                 numTypes = declManagerLocal.GetNumDeclTypes();
                 for (i = 0; i < numTypes; i++) {
                     final idDeclType typeInfo = declManagerLocal.GetDeclType(i);
-                    if ((typeInfo != null) && (typeInfo.typeName.Icmp(token.toString()) == 0)) {
+                    if ((typeInfo != null) && (typeInfo.typeName.Icmp(token.getData()) == 0)) {
                         identifiedType = typeInfo.type;
                         break;
                     }
@@ -1151,7 +1151,7 @@ public class DeclManager {
                     continue;
                 }
 
-                name = token.toString();
+                name = token.getData();
 
                 // make sure there's a '{'
                 if (!src.ReadToken(token)) {
@@ -1174,7 +1174,7 @@ public class DeclManager {
                 if (newDecl != null) {
                     // update the existing copy
                     if ((newDecl.sourceFile != this) || newDecl.redefinedInReload) {
-                        src.Warning("%s '%s' previously defined at %s:%d", declManagerLocal.GetDeclNameFromType(identifiedType), name, newDecl.sourceFile.fileName.toString(), newDecl.sourceLine);
+                        src.Warning("%s '%s' previously defined at %s:%d", declManagerLocal.GetDeclNameFromType(identifiedType), name, newDecl.sourceFile.fileName.getData(), newDecl.sourceLine);
                         continue;
                     }
                     if (newDecl.declState != DS_UNPARSED) {
@@ -1244,12 +1244,17 @@ public class DeclManager {
         //
 
         idDeclManagerLocal() {
-            this.declTypes = new idList<>();
-            this.declFolders = new idList<>();
+            this.declTypes = new idList<idDeclType>();
+            this.declFolders = new idList<idDeclFolder>();
 
-            this.loadedFiles = new idList<>();
+            this.loadedFiles = new idList<idDeclFile>();
             this.hashTables = new idHashIndex[etoi(DECL_MAX_TYPES)];
-            this.linearLists = new idList[etoi(DECL_MAX_TYPES)];
+            {
+                @SuppressWarnings("unchecked")
+				final
+                idList<idDeclLocal>[] linearLists = new idList[etoi(DECL_MAX_TYPES)];
+                this.linearLists = linearLists;
+            }
 
             for (int d = 0; d < etoi(DECL_MAX_TYPES); d++) {
                 this.hashTables[d] = new idHashIndex();
@@ -1443,7 +1448,7 @@ public class DeclManager {
             }
 
             // scan for decl files
-            fileList = fileSystem.ListFiles(declFolder.folder.toString(), declFolder.extension.toString(), true);
+            fileList = fileSystem.ListFiles(declFolder.folder.getData(), declFolder.extension.getData(), true);
 
             // load and parse decl files
             for (i = 0; i < fileList.GetNumFiles(); i++) {
@@ -1451,14 +1456,14 @@ public class DeclManager {
 
                 // check whether this file has already been loaded
                 for (j = 0; j < this.loadedFiles.Num(); j++) {
-                    if (fileName.Icmp(this.loadedFiles.oGet(j).fileName.toString()) == 0) {
+                    if (fileName.Icmp(this.loadedFiles.oGet(j).fileName.getData()) == 0) {
                         break;
                     }
                 }
                 if (j < this.loadedFiles.Num()) {
                     df = this.loadedFiles.oGet(j);
                 } else {
-                    df = new idDeclFile(fileName.toString(), defaultType);
+                    df = new idDeclFile(fileName.getData(), defaultType);
                     this.loadedFiles.Append(df);
                 }
                 df.LoadAndParse();
@@ -1520,7 +1525,7 @@ public class DeclManager {
             if ((typeIndex < 0) || (typeIndex >= this.declTypes.Num()) || (this.declTypes.oGet(typeIndex) == null)) {
                 common.FatalError("idDeclManager::GetDeclNameFromType: bad type: %d", typeIndex);
             }
-            return this.declTypes.oGet(typeIndex).typeName.toString();
+            return this.declTypes.oGet(typeIndex).typeName.getData();
         }
 
         @Override
@@ -1705,7 +1710,7 @@ public class DeclManager {
             }
 
             common.Printf("--------------------\n");
-            common.Printf("%d of %d %s\n", printed, count, this.declTypes.oGet(type.ordinal()).typeName.toString());
+            common.Printf("%d of %d %s\n", printed, count, this.declTypes.oGet(type.ordinal()).typeName.getData());
         }
 
         @Override
@@ -1719,13 +1724,13 @@ public class DeclManager {
             // look it up, skipping the public path so it won't parse or reference
             final idDeclLocal decl = FindTypeWithoutParsing(type, args.Argv(1), false);
             if (null == decl) {
-                common.Printf("%s '%s' not found.\n", this.declTypes.oGet(type.ordinal()).typeName.toString(), args.Argv(1));
+                common.Printf("%s '%s' not found.\n", this.declTypes.oGet(type.ordinal()).typeName.getData(), args.Argv(1));
                 return;
             }
 
             // print information common to all decls
-            common.Printf("%s %s:\n", this.declTypes.oGet(type.ordinal()).typeName.toString(), decl.name.toString());
-            common.Printf("source: %s:%d\n", decl.sourceFile.fileName.toString(), decl.sourceLine);
+            common.Printf("%s %s:\n", this.declTypes.oGet(type.ordinal()).typeName.getData(), decl.name.getData());
+            common.Printf("source: %s:%d\n", decl.sourceFile.fileName.getData(), decl.sourceLine);
             common.Printf("----------\n");
             if (decl.textSource != null) {
                 final String[] declText = new String[1];//[decl.textLength + 1 ];
@@ -1790,14 +1795,14 @@ public class DeclManager {
 
             // find existing source file or create a new one
             for (i = 0; i < this.loadedFiles.Num(); i++) {
-                if (this.loadedFiles.oGet(i).fileName.Icmp(fileName.toString()) == 0) {
+                if (this.loadedFiles.oGet(i).fileName.Icmp(fileName.getData()) == 0) {
                     break;
                 }
             }
             if (i < this.loadedFiles.Num()) {
                 sourceFile = this.loadedFiles.oGet(i);
             } else {
-                sourceFile = new idDeclFile(fileName.toString(), type);
+                sourceFile = new idDeclFile(fileName.getData(), type);
                 this.loadedFiles.Append(sourceFile);
             }
 
@@ -1929,7 +1934,7 @@ public class DeclManager {
                     }
 
                     String str;//[1024];
-                    str = String.format("touch %s %s\n", this.declTypes.oGet(i).typeName.toString(), decl.GetName());
+                    str = String.format("touch %s %s\n", this.declTypes.oGet(i).typeName.getData(), decl.GetName());
                     common.Printf("%s", str);
                     f.Printf("%s", str);
                 }
@@ -2033,7 +2038,7 @@ public class DeclManager {
                 if (this.linearLists[typeIndex].oGet(i).name.Icmp(ctos(canonicalName)) == 0) {
                     // only print these when decl_show is set to 2, because it can be a lot of clutter
                     if (decl_show.GetInteger() > 1) {
-                        MediaPrint("referencing %s %s\n", this.declTypes.oGet(type.ordinal()).typeName.toString(), name);
+                        MediaPrint("referencing %s %s\n", this.declTypes.oGet(type.ordinal()).typeName.getData(), name);
                     }
                     return this.linearLists[typeIndex].oGet(i);
                 }
@@ -2110,7 +2115,7 @@ public class DeclManager {
                     }
                     totalStructs += size;
 
-                    common.Printf("%4dk %4d %s\n", size >> 10, num, declManagerLocal.declTypes.oGet(i).typeName.toString());
+                    common.Printf("%4dk %4d %s\n", size >> 10, num, declManagerLocal.declTypes.oGet(i).typeName.getData());
                 }
 
                 for (i = 0; i < declManagerLocal.loadedFiles.Num(); i++) {
@@ -2183,7 +2188,7 @@ public class DeclManager {
                     common.Printf("valid types: ");
                     for (i = 0; i < declManagerLocal.declTypes.Num(); i++) {
                         if (declManagerLocal.declTypes.oGet(i) != null) {
-                            common.Printf("%s ", declManagerLocal.declTypes.oGet(i).typeName.toString());
+                            common.Printf("%s ", declManagerLocal.declTypes.oGet(i).typeName.getData());
                         }
                     }
                     common.Printf("\n");
@@ -2204,7 +2209,7 @@ public class DeclManager {
                 if (i < values.length) {
                     final idDecl decl = declManagerLocal.FindType(values[i], new idStr(args.Argv(2)), false);
                     if (null == decl) {
-                        common.Printf("%s '%s' not found\n", declManagerLocal.declTypes.oGet(i).typeName.toString(), args.Argv(2));
+                        common.Printf("%s '%s' not found\n", declManagerLocal.declTypes.oGet(i).typeName.getData(), args.Argv(2));
                     }
                 }
             }

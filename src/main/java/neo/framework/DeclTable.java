@@ -26,7 +26,7 @@ public class DeclTable {
 
         private boolean clamp;
         private boolean snap;
-        private final idList<Float> values = new idList<>();
+        private final idList<Float> values = new idList<Float>();
         //
         //
 
@@ -94,7 +94,7 @@ public class DeclTable {
                     }
 
                 } else {
-                    src.Warning("unknown token '%s'", token.toString());
+                    src.Warning("unknown token '%s'", token.getData());
                     MakeDefault();
                     return false;
                 }

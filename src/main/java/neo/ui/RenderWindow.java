@@ -236,7 +236,7 @@ public class RenderWindow {
             if ((this.animName.Length() != 0) && (this.animClass.Length() != 0)) {
                 this.worldEntity.numJoints = this.worldEntity.hModel.NumJoints();
                 this.worldEntity.joints = new idJointMat[this.worldEntity.numJoints];
-                this.modelAnim = gameEdit.ANIM_GetAnimFromEntityDef(this.animClass.toString(), this.animName.toString());
+                this.modelAnim = gameEdit.ANIM_GetAnimFromEntityDef(this.animClass.getData(), this.animName.toString());
                 if (this.modelAnim != null) {
                     this.animLength = gameEdit.ANIM_GetLength(this.modelAnim);
                     this.animEndTime = time + this.animLength;
