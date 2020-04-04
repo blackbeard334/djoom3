@@ -12,17 +12,20 @@ import static neo.framework.FileSystem_h.FILE_NOT_FOUND_TIMESTAMP;
 import static neo.framework.FileSystem_h.fileSystem;
 import static neo.idlib.Lib.Min;
 import static neo.idlib.math.Simd.MIXBUFFER_SAMPLES;
-import static org.lwjgl.openal.AL10.AL_FORMAT_MONO16;
-import static org.lwjgl.openal.AL10.AL_FORMAT_STEREO16;
-import static org.lwjgl.openal.AL10.AL_NO_ERROR;
-import static org.lwjgl.openal.AL10.alGetError;
-import static org.lwjgl.openal.AL10.alIsExtensionPresent;
+import static neo.openal.QALConstants.AL_FORMAT_MONO16;
+import static neo.openal.QALConstants.AL_FORMAT_STEREO16;
+import static neo.openal.QALConstants.AL_NO_ERROR;
+import static neo.openal.QAL.alBufferData;
+import static neo.openal.QAL.alDeleteBuffers;
+import static neo.openal.QAL.alGenBuffers;
+import static neo.openal.QAL.alGetError;
+import static neo.openal.QAL.alIsBuffer;
+import static neo.openal.QAL.alIsExtensionPresent;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.AL10;
 
 import neo.Sound.snd_local.idSampleDecoder;
 import neo.Sound.snd_local.waveformatex_s;
@@ -147,14 +150,14 @@ public class snd_cache {
             if (idSoundSystemLocal.useOpenAL) {
                 alGetError();
 //                alGenBuffers(1, openalBuffer);
-                this.openalBuffer = AL10.alGenBuffers();
+                this.openalBuffer = alGenBuffers();
                 if (alGetError() != AL_NO_ERROR) {
                     common.Error("idSoundCache: error generating OpenAL hardware buffer");
                 }
 
                 alGetError();
 //                alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, objectMemSize, objectInfo.nSamplesPerSec);
-                AL10.alBufferData(this.openalBuffer/*  <<TODO>>   */, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, this.nonCacheData, this.objectInfo.nSamplesPerSec);
+                alBufferData(this.openalBuffer/*  <<TODO>>   */, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, this.nonCacheData, this.objectInfo.nSamplesPerSec);
                 if (alGetError() != AL_NO_ERROR) {
                     common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                 } else {
@@ -235,15 +238,15 @@ public class snd_cache {
                 if (this.objectInfo.wFormatTag == WAVE_FORMAT_TAG_PCM) {
                     alGetError();
 //                    alGenBuffers(1, openalBuffer);
-                    this.openalBuffer = AL10.alGenBuffers();
+                    this.openalBuffer = alGenBuffers();
                     if (alGetError() != AL_NO_ERROR) {
                         common.Error("idSoundCache: error generating OpenAL hardware buffer");
                     }
 //                    if (alIsBuffer(openalBuffer)) {
-                    if (AL10.alIsBuffer(this.openalBuffer)) {
+                    if (alIsBuffer(this.openalBuffer)) {
                         alGetError();
 //                        alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, nonCacheData, objectMemSize, objectInfo.nSamplesPerSec);
-                        AL10.alBufferData(this.openalBuffer, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, this.nonCacheData, this.objectInfo.nSamplesPerSec);
+                        alBufferData(this.openalBuffer, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, this.nonCacheData, this.objectInfo.nSamplesPerSec);
                         if (alGetError() != AL_NO_ERROR) {
                             common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                         } else {
@@ -280,11 +283,11 @@ public class snd_cache {
                     if ((MACOS_X && (this.objectSize < (this.objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))
                             || (alIsExtensionPresent("EAX-RAM") &&  (this.objectSize < (this.objectInfo.nSamplesPerSec * idSoundSystemLocal.s_decompressionLimit.GetInteger())))) {
                         alGetError();
-                        this.openalBuffer = AL10.alGenBuffers();
+                        this.openalBuffer = alGenBuffers();
                         if (alGetError() != AL_NO_ERROR) {
                             common.Error("idSoundCache: error generating OpenAL hardware buffer");
                         }
-                        if (AL10.alIsBuffer(this.openalBuffer)) {
+                        if (alIsBuffer(this.openalBuffer)) {
                             final idSampleDecoder decoder = idSampleDecoder.Alloc();
                             ByteBuffer destData = BufferUtils.createByteBuffer((LengthIn44kHzSamples() + 1) * Float.BYTES);//soundCacheAllocator.Alloc( ( LengthIn44kHzSamples() + 1 ) * sizeof( float ) );
 
@@ -326,7 +329,7 @@ public class snd_cache {
 
                             alGetError();
 //                            alBufferData(openalBuffer, objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, objectSize * sizeof(short), objectInfo.nSamplesPerSec);
-                            AL10.alBufferData(this.openalBuffer, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, this.objectInfo.nSamplesPerSec);
+                            alBufferData(this.openalBuffer, this.objectInfo.nChannels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, destData, this.objectInfo.nSamplesPerSec);
                             if (alGetError() != AL_NO_ERROR) {
                                 common.Error("idSoundCache: error loading data into OpenAL hardware buffer");
                             } else {
@@ -403,7 +406,7 @@ public class snd_cache {
             if (this.hardwareBuffer && idSoundSystemLocal.useOpenAL) {
                 alGetError();
 //                alDeleteBuffers(1, openalBuffer);
-                AL10.alDeleteBuffers(this.openalBuffer);
+                alDeleteBuffers(this.openalBuffer);
                 if (alGetError() != AL_NO_ERROR) {
                     common.Error("idSoundCache: error unloading data from OpenAL hardware buffer");
                 } else {
