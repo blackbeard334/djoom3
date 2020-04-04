@@ -129,6 +129,36 @@ import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
 import static neo.ui.DeviceContext.idDeviceContext.colorBlue;
 import static neo.ui.DeviceContext.idDeviceContext.colorRed;
 import static neo.ui.DeviceContext.idDeviceContext.colorWhite;
+<<<<<<< HEAD
+=======
+import static neo.Renderer.opengl.QGLConstants.GL_ALL_ATTRIB_BITS;
+import static neo.Renderer.opengl.QGLConstants.GL_ALWAYS;
+import static neo.Renderer.opengl.QGLConstants.GL_COLOR_BUFFER_BIT;
+import static neo.Renderer.opengl.QGLConstants.GL_CULL_FACE;
+import static neo.Renderer.opengl.QGLConstants.GL_DEPTH_COMPONENT;
+import static neo.Renderer.opengl.QGLConstants.GL_DEPTH_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_EQUAL;
+import static neo.Renderer.opengl.QGLConstants.GL_FLOAT;
+import static neo.Renderer.opengl.QGLConstants.GL_INCR;
+import static neo.Renderer.opengl.QGLConstants.GL_KEEP;
+import static neo.Renderer.opengl.QGLConstants.GL_LINES;
+import static neo.Renderer.opengl.QGLConstants.GL_LINE_LOOP;
+import static neo.Renderer.opengl.QGLConstants.GL_MODELVIEW;
+import static neo.Renderer.opengl.QGLConstants.GL_POLYGON;
+import static neo.Renderer.opengl.QGLConstants.GL_POLYGON_OFFSET_FILL;
+import static neo.Renderer.opengl.QGLConstants.GL_POLYGON_OFFSET_LINE;
+import static neo.Renderer.opengl.QGLConstants.GL_PROJECTION;
+import static neo.Renderer.opengl.QGLConstants.GL_QUADS;
+import static neo.Renderer.opengl.QGLConstants.GL_RGBA;
+import static neo.Renderer.opengl.QGLConstants.GL_SCISSOR_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_STENCIL_BUFFER_BIT;
+import static neo.Renderer.opengl.QGLConstants.GL_STENCIL_INDEX;
+import static neo.Renderer.opengl.QGLConstants.GL_STENCIL_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE_2D;
+import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE_COORD_ARRAY;
+import static neo.Renderer.opengl.QGLConstants.GL_TRIANGLES;
+import static neo.Renderer.opengl.QGLConstants.GL_UNSIGNED_BYTE;
+>>>>>>> refs/remotes/origin/develop
 
 import java.nio.ByteBuffer;
 

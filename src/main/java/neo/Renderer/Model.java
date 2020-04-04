@@ -1,6 +1,10 @@
 package neo.Renderer;
 
+<<<<<<< HEAD
 import static neo.opengl.QGLConstants.GL_UNSIGNED_INT;
+=======
+import static neo.Renderer.opengl.QGLConstants.GL_UNSIGNED_INT;
+>>>>>>> refs/remotes/origin/develop
 
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;

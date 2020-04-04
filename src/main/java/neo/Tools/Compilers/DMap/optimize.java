@@ -24,12 +24,21 @@ import static neo.framework.Common.common;
 import static neo.idlib.math.Vector.DotProduct;
 import static neo.idlib.math.Vector.VectorMA;
 import static neo.idlib.math.Vector.VectorSubtract;
+<<<<<<< HEAD
 import static neo.opengl.QGLConstants.GL_BLEND;
 import static neo.opengl.QGLConstants.GL_LINES;
 import static neo.opengl.QGLConstants.GL_LINE_LOOP;
 import static neo.opengl.QGLConstants.GL_ONE;
 import static neo.opengl.QGLConstants.GL_POINTS;
 import static neo.opengl.QGLConstants.GL_TRIANGLES;
+=======
+import static neo.Renderer.opengl.QGLConstants.GL_BLEND;
+import static neo.Renderer.opengl.QGLConstants.GL_LINES;
+import static neo.Renderer.opengl.QGLConstants.GL_LINE_LOOP;
+import static neo.Renderer.opengl.QGLConstants.GL_ONE;
+import static neo.Renderer.opengl.QGLConstants.GL_POINTS;
+import static neo.Renderer.opengl.QGLConstants.GL_TRIANGLES;
+>>>>>>> refs/remotes/origin/develop
 
 import java.util.Arrays;
 

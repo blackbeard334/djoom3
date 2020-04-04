@@ -158,6 +158,11 @@ import static neo.idlib.precompiled.MAX_EXPRESSION_REGISTERS;
 import static neo.opengl.QGLConstants.GL_FRAGMENT_PROGRAM_ARB;
 import static neo.opengl.QGLConstants.GL_VERTEX_PROGRAM_ARB;
 import static neo.ui.UserInterface.uiManager;
+<<<<<<< HEAD
+=======
+import static neo.Renderer.opengl.QGLConstants.GL_FRAGMENT_PROGRAM_ARB;
+import static neo.Renderer.opengl.QGLConstants.GL_VERTEX_PROGRAM_ARB;
+>>>>>>> refs/remotes/origin/develop
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

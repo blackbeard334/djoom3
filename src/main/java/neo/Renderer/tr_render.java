@@ -78,6 +78,28 @@ import static neo.opengl.QGLConstants.GL_TEXTURE_GEN_T;
 import static neo.opengl.QGLConstants.GL_TRIANGLES;
 import static neo.sys.win_glimp.GLimp_ActivateContext;
 import static neo.sys.win_glimp.GLimp_DeactivateContext;
+<<<<<<< HEAD
+=======
+import static neo.Renderer.opengl.QGLConstants.GL_DEPTH_BUFFER_BIT;
+import static neo.Renderer.opengl.QGLConstants.GL_DEPTH_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_FLOAT;
+import static neo.Renderer.opengl.QGLConstants.GL_MODELVIEW;
+import static neo.Renderer.opengl.QGLConstants.GL_NORMAL_ARRAY;
+import static neo.Renderer.opengl.QGLConstants.GL_OBJECT_LINEAR;
+import static neo.Renderer.opengl.QGLConstants.GL_PROJECTION;
+import static neo.Renderer.opengl.QGLConstants.GL_R;
+import static neo.Renderer.opengl.QGLConstants.GL_S;
+import static neo.Renderer.opengl.QGLConstants.GL_STENCIL_BUFFER_BIT;
+import static neo.Renderer.opengl.QGLConstants.GL_STENCIL_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_T;
+import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE;
+import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE_GEN_MODE;
+import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE_GEN_R;
+import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE_GEN_S;
+import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE_GEN_T;
+import static neo.Renderer.opengl.QGLConstants.GL_TRIANGLES;
+import static neo.Renderer.opengl.QGLConstants.GL_REFLECTION_MAP;
+>>>>>>> refs/remotes/origin/develop
 
 import neo.Renderer.Cinematic.cinData_t;
 import neo.Renderer.Image.idImage;

@@ -58,6 +58,26 @@ import static neo.opengl.QGLConstants.GL_TRUE;
 import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
 import static neo.sys.win_glimp.GLimp_SwapBuffers;
 import static neo.sys.win_shared.Sys_Milliseconds;
+<<<<<<< HEAD
+=======
+import static neo.Renderer.opengl.QGLConstants.GL_ALPHA_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_BLEND;
+import static neo.Renderer.opengl.QGLConstants.GL_COLOR_BUFFER_BIT;
+import static neo.Renderer.opengl.QGLConstants.GL_CULL_FACE;
+import static neo.Renderer.opengl.QGLConstants.GL_DEPTH_BUFFER_BIT;
+import static neo.Renderer.opengl.QGLConstants.GL_DEPTH_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_FRONT;
+import static neo.Renderer.opengl.QGLConstants.GL_LEQUAL;
+import static neo.Renderer.opengl.QGLConstants.GL_MODELVIEW;
+import static neo.Renderer.opengl.QGLConstants.GL_PROJECTION;
+import static neo.Renderer.opengl.QGLConstants.GL_RGBA;
+import static neo.Renderer.opengl.QGLConstants.GL_SCISSOR_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_STENCIL_TEST;
+import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE_2D;
+import static neo.Renderer.opengl.QGLConstants.GL_TRIANGLES;
+import static neo.Renderer.opengl.QGLConstants.GL_TRUE;
+import static neo.Renderer.opengl.QGLConstants.GL_UNSIGNED_BYTE;
+>>>>>>> refs/remotes/origin/develop
 
 import java.nio.ByteBuffer;
 
