@@ -3,7 +3,6 @@ package neo.Tools.Compilers.DMap;
 import static neo.Renderer.qgl.qglVertex3fv;
 import static neo.Renderer.tr_backend.RB_SetGL2D;
 import static neo.Tools.Compilers.DMap.dmap.dmapGlobals;
-<<<<<<< HEAD
 import static neo.opengl.QGLConstants.GL_COLOR_BUFFER_BIT;
 import static neo.opengl.QGLConstants.GL_DEPTH_TEST;
 import static neo.opengl.QGLConstants.GL_FILL;
@@ -16,20 +15,6 @@ import static neo.opengl.QGLConstants.GL_ONE_MINUS_SRC_ALPHA;
 import static neo.opengl.QGLConstants.GL_POLYGON;
 import static neo.opengl.QGLConstants.GL_PROJECTION;
 import static neo.opengl.QGLConstants.GL_SRC_ALPHA;
-=======
-import static neo.Renderer.opengl.QGLConstants.GL_COLOR_BUFFER_BIT;
-import static neo.Renderer.opengl.QGLConstants.GL_DEPTH_TEST;
-import static neo.Renderer.opengl.QGLConstants.GL_FILL;
-import static neo.Renderer.opengl.QGLConstants.GL_FRONT;
-import static neo.Renderer.opengl.QGLConstants.GL_FRONT_AND_BACK;
-import static neo.Renderer.opengl.QGLConstants.GL_LINES;
-import static neo.Renderer.opengl.QGLConstants.GL_LINE_LOOP;
-import static neo.Renderer.opengl.QGLConstants.GL_MODELVIEW;
-import static neo.Renderer.opengl.QGLConstants.GL_ONE_MINUS_SRC_ALPHA;
-import static neo.Renderer.opengl.QGLConstants.GL_POLYGON;
-import static neo.Renderer.opengl.QGLConstants.GL_PROJECTION;
-import static neo.Renderer.opengl.QGLConstants.GL_SRC_ALPHA;
->>>>>>> refs/remotes/origin/develop
 import static neo.Renderer.qgl.glBegin;
 import static neo.Renderer.qgl.glBlendFunc;
 import static neo.Renderer.qgl.glClear;

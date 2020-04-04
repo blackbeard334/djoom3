@@ -1,12 +1,7 @@
 package neo.Renderer;
 
-<<<<<<< HEAD
 import static neo.opengl.QGLConstants.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 import static neo.opengl.QGLConstants.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-=======
-import static neo.Renderer.opengl.QGLConstants.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-import static neo.Renderer.opengl.QGLConstants.GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
->>>>>>> refs/remotes/origin/develop
 
 /**
  *

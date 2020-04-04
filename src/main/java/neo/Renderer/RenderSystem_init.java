@@ -95,33 +95,6 @@ import static neo.sys.win_input.Sys_ShutdownInput;
 import static neo.sys.win_main.Sys_GetProcessorString;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
-<<<<<<< HEAD
-=======
-import static neo.Renderer.opengl.QGLConstants.GL_MAX_TEXTURE_COORDS_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_MAX_TEXTURE_IMAGE_UNITS_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_MAX_TEXTURE_UNITS_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_DECR_WRAP_EXT;
-import static neo.Renderer.opengl.QGLConstants.GL_INCR_WRAP_EXT;
-import static neo.Renderer.opengl.QGLConstants.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
-import static neo.Renderer.opengl.QGLConstants.GL_DECR;
-import static neo.Renderer.opengl.QGLConstants.GL_EXTENSIONS;
-import static neo.Renderer.opengl.QGLConstants.GL_FRONT;
-import static neo.Renderer.opengl.QGLConstants.GL_INCR;
-import static neo.Renderer.opengl.QGLConstants.GL_INVALID_ENUM;
-import static neo.Renderer.opengl.QGLConstants.GL_INVALID_OPERATION;
-import static neo.Renderer.opengl.QGLConstants.GL_INVALID_VALUE;
-import static neo.Renderer.opengl.QGLConstants.GL_MAX_TEXTURE_SIZE;
-import static neo.Renderer.opengl.QGLConstants.GL_NO_ERROR;
-import static neo.Renderer.opengl.QGLConstants.GL_OUT_OF_MEMORY;
-import static neo.Renderer.opengl.QGLConstants.GL_RENDERER;
-import static neo.Renderer.opengl.QGLConstants.GL_RGB;
-import static neo.Renderer.opengl.QGLConstants.GL_STACK_OVERFLOW;
-import static neo.Renderer.opengl.QGLConstants.GL_STACK_UNDERFLOW;
-import static neo.Renderer.opengl.QGLConstants.GL_STENCIL_INDEX;
-import static neo.Renderer.opengl.QGLConstants.GL_UNSIGNED_BYTE;
-import static neo.Renderer.opengl.QGLConstants.GL_VENDOR;
-import static neo.Renderer.opengl.QGLConstants.GL_VERSION;
->>>>>>> refs/remotes/origin/develop
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;

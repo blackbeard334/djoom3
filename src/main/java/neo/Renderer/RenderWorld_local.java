@@ -105,10 +105,6 @@ import static neo.idlib.math.Plane.SIDE_BACK;
 import static neo.opengl.QGLConstants.GL_LINE_LOOP;
 import static neo.sys.win_shared.Sys_Milliseconds;
 import static neo.ui.UserInterface.uiManager;
-<<<<<<< HEAD
-=======
-import static neo.Renderer.opengl.QGLConstants.GL_LINE_LOOP;
->>>>>>> refs/remotes/origin/develop
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

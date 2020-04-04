@@ -81,14 +81,6 @@ import static neo.opengl.QGLConstants.GL_NO_ERROR;
 import static neo.opengl.QGLConstants.GL_RGB;
 import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
 import static neo.sys.win_glimp.GLimp_Shutdown;
-<<<<<<< HEAD
-=======
-import static neo.Renderer.opengl.QGLConstants.GL_BACK;
-import static neo.Renderer.opengl.QGLConstants.GL_FRONT;
-import static neo.Renderer.opengl.QGLConstants.GL_NO_ERROR;
-import static neo.Renderer.opengl.QGLConstants.GL_RGB;
-import static neo.Renderer.opengl.QGLConstants.GL_UNSIGNED_BYTE;
->>>>>>> refs/remotes/origin/develop
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

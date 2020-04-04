@@ -18,17 +18,10 @@ import static neo.framework.CmdSystem.CMD_FL_RENDERER;
 import static neo.framework.CmdSystem.cmdSystem;
 import static neo.framework.Common.common;
 import static neo.idlib.math.Simd.SIMDProcessor;
-<<<<<<< HEAD
 import static neo.opengl.QGLConstants.GL_ARRAY_BUFFER_ARB;
 import static neo.opengl.QGLConstants.GL_ELEMENT_ARRAY_BUFFER_ARB;
 import static neo.opengl.QGLConstants.GL_STATIC_DRAW_ARB;
 import static neo.opengl.QGLConstants.GL_STREAM_DRAW_ARB;
-=======
-import static neo.Renderer.opengl.QGLConstants.GL_ARRAY_BUFFER_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_ELEMENT_ARRAY_BUFFER_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_STATIC_DRAW_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_STREAM_DRAW_ARB;
->>>>>>> refs/remotes/origin/develop
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

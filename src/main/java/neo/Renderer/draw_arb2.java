@@ -76,7 +76,6 @@ import static neo.TempDump.NOT;
 import static neo.TempDump.isNotNullOrEmpty;
 import static neo.framework.Common.common;
 import static neo.idlib.Lib.idLib.fileSystem;
-<<<<<<< HEAD
 import static neo.opengl.QGLConstants.GL_ALWAYS;
 import static neo.opengl.QGLConstants.GL_COLOR_ARRAY;
 import static neo.opengl.QGLConstants.GL_FLOAT;
@@ -90,21 +89,6 @@ import static neo.opengl.QGLConstants.GL_TEXTURE0_ARB;
 import static neo.opengl.QGLConstants.GL_TEXTURE_COORD_ARRAY;
 import static neo.opengl.QGLConstants.GL_UNSIGNED_BYTE;
 import static neo.opengl.QGLConstants.GL_VERTEX_PROGRAM_ARB;
-=======
-import static neo.Renderer.opengl.QGLConstants.GL_FRAGMENT_PROGRAM_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE0_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_PROGRAM_ERROR_POSITION_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_PROGRAM_ERROR_STRING_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_PROGRAM_FORMAT_ASCII_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_VERTEX_PROGRAM_ARB;
-import static neo.Renderer.opengl.QGLConstants.GL_ALWAYS;
-import static neo.Renderer.opengl.QGLConstants.GL_COLOR_ARRAY;
-import static neo.Renderer.opengl.QGLConstants.GL_FLOAT;
-import static neo.Renderer.opengl.QGLConstants.GL_INVALID_OPERATION;
-import static neo.Renderer.opengl.QGLConstants.GL_STENCIL_BUFFER_BIT;
-import static neo.Renderer.opengl.QGLConstants.GL_TEXTURE_COORD_ARRAY;
-import static neo.Renderer.opengl.QGLConstants.GL_UNSIGNED_BYTE;
->>>>>>> refs/remotes/origin/develop
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
